@@ -1684,7 +1684,7 @@ def test_nightly_preflight_alarm_is_explicitly_bounded_and_never_overrides() -> 
     # Execute the preflight through a bounded stdlib Python subprocess instead.
     assert "python3 -c '" in block
     assert "subprocess.run(" in block
-    assert '[sys.executable, "-m", "scripts.prophet_settlement_preflight"]' in block
+    assert "python3 -m scripts.prophet_settlement_preflight" in block
     assert "timeout=budget" in block
     assert "0 < budget <= 120" in block
     assert '    timeout "$preflight_budget_seconds"' not in block
@@ -1784,4 +1784,20 @@ def test_darwin_alarm_rejects_unbounded_budget_without_starting_child(tmp_path) 
     assert "CHILD_SHOULD_NOT_RUN" not in result.stdout
     assert "could not produce its typed receipt (rc=2)" in result.stdout
     assert elapsed < 5
+    assert not outputs.exists()
+
+
+def test_dag_discovered_command_is_the_one_the_supervisor_runs(tmp_path) -> None:
+    """A comment or a hardcoded second target must not satisfy the workflow scanner."""
+    block = _alarm_block()
+    declared = "python3 -m scripts.prophet_settlement_preflight"
+    assert block.count(declared) == 1
+    altered = block.replace(declared, "python3 -m scripts.absent_preflight_probe")
+    result, outputs, _ = _run_alarm(
+        altered, tmp_path, "print('WRONG_TARGET_RAN')\n", no_timeout_binary=True,
+    )
+    assert result.returncode == 0  # Alarm failure is nonfatal to the checkpoint.
+    assert "WRONG_TARGET_RAN" not in result.stdout
+    assert "scripts.absent_preflight_probe" in result.stdout
+    assert "could not produce its typed receipt (rc=1)" in result.stdout
     assert not outputs.exists()

@@ -448,7 +448,8 @@ PY
     # and are never rewritten here — alarm-only in every terminal state.
     preflight_budget_seconds="${PROPHET_PREFLIGHT_BUDGET_SECONDS:-120}"
     # stdlib child supervisor: macstudio's Darwin runners need no GNU timeout.
-    # subprocess.run kills and waits for the preflight child at the bound.
+    # Pass the real module command as argv so DAG discovery and execution agree.
+    # Use this interpreter for the child rather than resolving python3 a second time.
     python3 -c '
 import os
 import subprocess
@@ -462,7 +463,7 @@ if not (0 < budget <= 120):
     raise SystemExit(2)
 try:
     completed = subprocess.run(
-        [sys.executable, "-m", "scripts.prophet_settlement_preflight"],
+        [sys.executable, *sys.argv[2:]],
         timeout=budget,
         check=False,
     )
@@ -471,7 +472,7 @@ except subprocess.TimeoutExpired:
 except OSError:
     raise SystemExit(125)
 raise SystemExit(completed.returncode)
-' 2>&1; preflight_rc=$?
+' python3 -m scripts.prophet_settlement_preflight 2>&1; preflight_rc=$?
     if [ "$preflight_rc" -eq 124 ]; then
       echo "::warning title=prophet accepted-source preflight::preflight child exceeded its ${preflight_budget_seconds}s execution budget (timeout rc=124); settlement evidence stays unbound"
     elif [ "$preflight_rc" -ne 0 ]; then
