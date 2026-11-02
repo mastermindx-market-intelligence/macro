@@ -384,11 +384,16 @@ def _fixture_corpus(work: Path) -> dict[str, Any]:
 
 
 def _real_corpus(work: Path, data_root: Path) -> dict[str, Any]:
-    """Build the state bundle over a COPY of a committed data root.
+    """Build the state bundle and its capacity inputs over a COPY of a data root.
 
-    The existing nightly builder does the whole job over the copy; the
-    repository's data tree is never written.
+    The existing nightly builders do the whole job over the copy, in the
+    nightly order (state, then the inputs that bind it); the repository's data
+    tree is never written.  A copied inputs file binds the copied generation,
+    not the rebuilt one, so without the rebuild every evaluate request would
+    measure only the ``_INPUTS_NOT_BOUND`` refusal (V0).  A refused inputs
+    build stops the bench rather than silently measuring that refusal.
     """
+    import scripts.build_capital_structure_capacity_inputs as inputs_builder  # noqa: PLC0415
     import scripts.build_capital_structure_state as state_builder  # noqa: PLC0415
     from engine.capital_structure.verified_projection_generation import (  # noqa: PLC0415
         read_verified_projection_generation,
@@ -397,6 +402,10 @@ def _real_corpus(work: Path, data_root: Path) -> dict[str, Any]:
     copy = work / "data-root-copy"
     shutil.copytree(data_root, copy)
     state_builder.build_from_disk(root=copy)
+    try:
+        inputs_builder.build_from_disk(root=copy)
+    except Exception as exc:  # noqa: BLE001 — named, never a silent 503 corpus
+        raise RuntimeError(f"the copied data root publishes no bound capacity inputs: {exc}") from exc
     bundle = json.loads((copy / "state_bundle.json").read_text(encoding="utf-8"))
     issuer_rows = tuple(
         str(state["request"]["issuer_id"]) for state in bundle["issuers"]
