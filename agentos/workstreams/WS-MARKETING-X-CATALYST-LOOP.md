@@ -121,7 +121,7 @@ waves:
     status: in_progress
     depends_on: [FLAGS-ON]
     next_action: >
-      PR from branch claude/mx-catalyst-flags-on-20261102: receipts minted/verified for the live
+      PR #10522 (branch claude/mx-catalyst-flags-on-20261102): receipts minted/verified for the live
       catalyst.scan/v2 shape (authority + UI), _ux_banner() replaces the false "not admitted"
       staged banner, tests. After merge + deploy: set CATALYST_UX_ENABLED=1 and restart macro-api.
       Still open for B1: wire build_existing_owner_service under CATALYST_OPTIN_ENABLED from

@@ -38,7 +38,7 @@ not_done:
   - "#10468 (figure yield) is owned by the repo sweeper: proof went stale when main fd27c31a changed the check definitions; refresh deferred for CI capacity."
   - "Snapshot pruning for marketing/catalyst-sec-source/v1/ still needs an owner decision (no-reclaim law)."
 next_action: >
-  Merge this PR on green with one independent read-only review, let the 3-minute deploy pick it
+  Merge PR #10522 on green with one independent read-only review, let the 3-minute deploy pick it
   up, set CATALYST_UX_ENABLED=1 and restart macro-api, re-check the hosted page. Then B1: wire the
   funnel seam under CATALYST_OPTIN_ENABLED from app/main.py, provision the catalyst_consent_* RPCs
   with the identity/consent owner, witness one real OTP request on staging, and only then set the
