@@ -24895,11 +24895,13 @@ jobs:
       - "config/global_liquidity_transmission_v1.yml"
       - "engine/global_liquidity.py"
       - "engine/global_liquidity_transmission.py"
+      - "engine/global_liquidity_views.py"
       - "scripts/build_global_liquidity_transmission.py"
       - "tests/fixtures/global_liquidity_transmission_wliq1_window.json"
       - "tests/test_global_liquidity.py"
       - "tests/test_global_liquidity_transmission.py"
       - "tests/test_global_liquidity_transmission_liveness_v2.py"
+      - "tests/test_global_liquidity_views.py"
       - ".github/workflows/daily.yml"
       - "scripts/ci/daily_engine_commit_outputs.sh"
       - "site/liquiditydata/global_liquidity_transmission.json"
@@ -24914,7 +24916,7 @@ jobs:
       - name: install state-producer test dependencies
         run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
       - name: global liquidity state producers — legacy parity and W-LIQ.1 contract
-        run: python -m pytest tests/test_global_liquidity.py tests/test_global_liquidity_transmission.py tests/test_global_liquidity_transmission_liveness_v2.py -q
+        run: python -m pytest tests/test_global_liquidity.py tests/test_global_liquidity_transmission.py tests/test_global_liquidity_transmission_liveness_v2.py tests/test_global_liquidity_views.py -q
 
   china-strategies-income-tile:
     if: ${{ false }}  # executed inside ci-pack, not a disabled gate
@@ -43677,6 +43679,11 @@ jobs:
       - "lib/site_assets.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
       - "engine/market_os/**"
+      - "engine/__init__.py"
+      - "engine/global_liquidity_accounting.py"
+      - "engine/global_liquidity_knowledge_time.py"
+      - "engine/global_liquidity_outlook.py"
+      - "engine/global_liquidity_views.py"
       - "scripts/build_macro_workspaces.py"
       - "tests/test_macro_workspace_build.py"
       - "tests/test_macro_workspace_business_activity.py"
