@@ -54,27 +54,30 @@ waves:
     next_action: "ORCH-PAPER returned PLATFORM_FAILURE r2 (file-wide size warning); seat decision (c): items 2/4/5 + 8 axis cells PAPER_CAPACITY_LIMITED, acceptance via rendered-product browser proof under the Full RIG."
   - id: P09
     title: Genuine design/reference admission and the applicable Full RIG scope record
-    status: in_progress
+    status: done
     depends_on: [P07-P08]
-    next_action: "Re-export 6W1R-0, re-freeze RIG sector-intelligence-cycles-20261021, commission Reviewer A (GLM review lane -> reviews/product_regression.yml) and Reviewer B (Opus READ_ONLY auditor -> reviews/visual_taste.yml) against the frozen sha."
+    next_action: "RIG sector-intelligence-cycles-20261021 APPROVE_WITH_CONDITIONS at frozen 4161d404 (verdict 9, approval.yml; SIC-APR-01..05 bind the P19-P23 production proof). Reference law only — not a merge, deployment or acceptance."
   - id: P10-P13
     title: One complete Macro investigation (Brief → Rotation → Dossier → Cycles → dated members → stock/Prophet/Research → restored origin)
     status: in_progress
     depends_on: [P04-P06, P07-P08]
-    next_action: "I-wave merged on PR #9917 (I09A2/I05R2/I06R/I07R2, reviews PASS_WITH_NOTES, MINORs fixed, site pairs shipped at 72e4cca3); resolve the merge against current main, then run the complete investigation journey on the rendered product."
+    next_action: "Sector Central legs candidate-accepted at P19 (verifiers A/B: 81 of 92 R3A rows CONFIRMED; residuals in proposal.yml p19_p20_dispositions_20261102). The Cycles leg is BLOCKED: no in-shell Cycles workspace exists on HEAD (Verifier C). Complete only after the Cycles build wave lands."
   - id: P14-P18
     title: Lenses, comparisons, history, Cycles depth, watches/saved investigations, compatibility, bounded scientific disposition
-    status: todo
+    status: in_progress
     depends_on: [P10-P13]
+    next_action: "Commission the Cycles build wave (SIC-I03/I09B against the approved design_refs/sector-paper-20261021/cycles_ia.md): rail Explore -> Cycles, Dossier Cycle tab (U07), overdue/phase_v2_age/doctrine_stance/estimate_kinds/series_provenance/hazard parity rendering, C19 MODEL-badge qualification by model_cell_current_claim, typed states, light/ZH/1440/390 cells. Opus orchestrator (ROUTE: ORCHESTRATION) + Fabric/builder lanes; fresh review; never a seat self-merge."
   - id: P19-P20
     title: Independent integrated acceptance and targeted repair
-    status: todo
+    status: done
     depends_on: [P14-P18]
+    next_action: "P19 returns stored byte-exact under research/sector_completion_20261021/p19/ (A 42/46 CONFIRMED, B 39/46, C 0/42 with J04 BLOCKED); 134-row CSV filled; P20 repairs: subsectors.js basket denominator (SC-066), trackBox Measured/已实测 (SIC-APR-04), four sector-paper suites wired into reference-integrity, ceilings funded +9. Fresh READ_ONLY review of the P20 source diff pending."
   - id: P21-P23
     title: Normal release, served user journeys, next natural update or qualified no-change, explicit closeout
-    status: todo
+    status: in_progress
     depends_on: [P19-P20]
-next_action: "Consume ORCH-DATA B05 r2 (RB05 MAJOR repair) + B12 + RB12 and merge the accepted refs on top of the D-wave chain (B06 merged d3f08a76); consume the ORCH-PAPER Rotation/Dossier/Research R3 boards, freeze I02/I03/I04/I08, launch I05R/I06R/I07R/I09A on the pushed head; #9917 stays draft."
+    next_action: "P21 = PARTIAL release only (Sector Central half + CI wiring) after the P20 review and binding CI; squash-merge with --match-head-commit; never described as completion. P22 on both served surfaces after the Cycles wave lands; P23 separate acceptances + matrix *_to_record fill."
+next_action: "Fresh READ_ONLY review of the P20 source diff on #9917 -> binding CI green -> squash-merge as a PARTIAL release (Sector Central half; the Cycles replacement is NOT DELIVERED) -> commission the Cycles build wave -> P22 production/natural-update proof on both served surfaces -> P23."
 ---
 
 # Sector Intelligence + Sector Cycles completion

@@ -41318,6 +41318,17 @@ jobs:
       # job, no `paths:` needed -- runs on every PR.
       - name: XPV2-SC-R3A binding pack — fixture/routing/access mutation-armor
         run: python -m pytest tests/test_xpv2_sector_r3_fixture.py -q
+      # Sector Paper design-reference guards (RIG set sector-intelligence-cycles-20261021,
+      # design_refs/sector-paper-20261021/): the shared-component specimen (SIC-P-COMP),
+      # the bilingual copy deck's shipped-string citations (sic-p-copy-20261021-r1;
+      # PRC-049..051), the Sector Cycles IA against C01-C28 (SIC-P-CYC) and the board x
+      # state matrix (sic-p-states-20261021-r1). Each asserts ONLY against committed
+      # design_refs/, research/ and templates/ text -- never live site/ or data/ -- so they
+      # sit with this job's reference-integrity mandate (a frozen reference used faithfully).
+      # Wired by the contract-delta gate on #9917 (ci run 41426752895: four new suites
+      # named by no run: step). Unscoped job, no `paths:` needed -- runs on every PR.
+      - name: Sector Paper design-reference guards (components, copy deck, cycles IA, state matrix)
+        run: python -m pytest tests/test_sector_paper_components.py tests/test_sector_paper_copy_deck.py tests/test_sector_paper_cycles_ia.py tests/test_sector_paper_state_matrix.py -q
   dataos-prospective-reference:
     if: ${{ false }}  # executed inside ci-pack; this is a required code gate.
     gate: code

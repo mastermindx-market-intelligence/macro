@@ -663,3 +663,23 @@ def test_screener_action_requires_both_owners_and_refreshes_when_source_arrives(
     assert result["calls"] == ["Information Technology"]
     page = (TPL / "dashboard.html.j2").read_text()
     assert page.count("window.dispatchEvent(new Event('us-screener:availability'))") == 2
+
+
+def test_forward_track_record_badge_never_prints_the_customer_word_validated():
+    """SIC-APR-04 (approval.yml; re-carried R3C-VALIDATED-21D) — P20 repair, 2026-11-02.
+
+    engine/index_leadership_track.py:257 emits the verdict 'validated' once a horizon matures and
+    clears the Newey-West bar, so the served Sector Central page could print the banned customer
+    word on the forward-track-record badge (trackBox: EN 'Validated' / ZH '已验证'). The face now
+    reads 'Measured' / '已实测' (deck tagline 'Measured, not forecast' / '实测，非预测'); the
+    three-state mapping (cleared / measuring / accruing), the badge colours and the explicitly
+    labelled 21d figures are unchanged. Binds the served template; the production readback is P22.
+    """
+    page = (TPL / "sector_central.html.j2").read_text()
+    start = page.index("function trackBox(tr)")
+    body = page[start:page.index("function leadershipStrip(d)", start)]
+    assert "L('Measured', '已实测')" in body
+    assert "L('Measuring', '测量中')" in body and "L('Accruing', '积累中')" in body
+    assert "'Validated'" not in body and "已验证" not in body
+    assert "tr.verdict === 'validated' ? 'var(--up)'" in body  # the engine key and colour map stay
+    assert "21d hit-rate" in body  # explicitly labelled 21d figures keep their own line

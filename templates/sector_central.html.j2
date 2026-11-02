@@ -3411,7 +3411,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
   function trackBox(tr) {
     if (!tr) return '';
     var vcol = tr.verdict === 'validated' ? 'var(--up)' : tr.verdict === 'measuring' ? 'var(--info)' : 'var(--muted)';
-    var vlab = tr.verdict === 'validated' ? L('Validated', '已验证') : tr.verdict === 'measuring' ? L('Measuring', '测量中') : L('Accruing', '积累中');
+    var vlab = tr.verdict === 'validated' ? L('Measured', '已实测') : tr.verdict === 'measuring' ? L('Measuring', '测量中') : L('Accruing', '积累中'); // SIC-APR-04 (P20 2026-11-02): engine key unchanged (engine/index_leadership_track.py:257); the face reads Measured/已实测 — deck "Measured, not forecast"
     var days = tr.n_days || 0;
     var h = '<div class="lead-track"><span class="tr-badge" style="color:' + vcol + ';border-color:' + vcol + '">📊 ' + L('Forward track record', '前瞻战绩') + ': ' + vlab + '</span> '
       + '<span class="tr-txt">' + L((tr.n_snapshots || 0) + ' calls logged over ' + days + (days === 1 ? ' day' : ' days'), (tr.n_snapshots || 0) + ' 条记录，历时 ' + days + ' 天') + '</span>';

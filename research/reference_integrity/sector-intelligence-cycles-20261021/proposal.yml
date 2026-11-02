@@ -2353,3 +2353,124 @@ post_approval_maintenance_20261102:
   artifact_change: none (EN/ZH/role strings, PNGs, components and verdict unchanged; frozen_sha 4161d404 unchanged)
   what: 'Record maintenance after approval, not a change to the design: the #9917 integration branch merged main f125051fdb37 (merge-base 2d50943eb154) and main''s edits to templates/sector_cycles.js (+48 lines), templates/sector_central.html.j2 (+31/-19) and templates/mm_brain.js moved the production lines the deck''s `source` citations point at, so tests/test_sector_paper_copy_deck.py::test_cited_sources_carry_a_fragment reported 46 rows stale (fragment or ZH outside the cited window) and two more were re-pointed by hand first. Every stale citation was re-pointed through a pre-merge -> merged line map (difflib equal blocks over the HEAD and merged file; no fallback was needed — every cited line still exists verbatim) by the seat''s deck_repoint2.py; the EN/ZH/role strings are byte-unchanged.'
   proof: 'readback at the merge commit: git diff 4161d404 <merge> -- design_refs/sector-paper-20261021 touches one file (copy_deck.json), 48 lines changed in each direction, and every changed line carries a "source": field (grep -vc ''"source": "'' over the +/- lines prints 0); deck_repoint2.py asserts the deck with every source field stripped is equal to the 4161d404 deck; pytest tests/test_sector_paper_copy_deck.py: 13 passed on the merged tree. Approval conditions unaffected: SIC-V8-C02 binds the served deck copy and its falsifier, SIC-V8-VT2 the drawer pointer, SIC-APR-01..05 the built surface — none cites a deck line number; verdict.yml, approval.yml, manifest.yml, continuity.yml and reviews/** untouched. This block is appended at EOF only, so every line number SIC-V9-C01 names (:306, :311, :1329, :2232, :2308 and the wc -l counts pinned to their shas) still holds; the header lines :37-41 are not touched.'
+
+# P19/P20 dispositions (2026-11-02, ledger not design): three independent READ_ONLY verifier returns, stored byte-exact under
+# research/sector_completion_20261021/p19/ (sha256 table in p19/README.md), disposed the 134 capability rows at the merged head
+# ec1f1ea694d5 (P19_CAPABILITY_DISPOSITION_2026-11-02.csv: 80 CONFIRMED, 24 PARTIAL, 15 UNSUPPORTED, 13 NOT_DELIVERED,
+# 1 CONFIRMED-with-contract-gap, 1 BLOCK_CONFIRMED). P20 repaired only the material failures named below; nothing drawn changed
+# (frozen_sha 4161d404 and the approval receipt unchanged). Appended at EOF only; nothing above this block moves.
+p19_p20_dispositions_20261102:
+- id: P20-SC-066
+  row: SC-066 (R3A-66)
+  verifier_verdict: UNSUPPORTED (Verifier B, major)
+  finding: >-
+    The BLOCKED_DATA premise at dispositions SC-066 ("no D-wave lane changed that producer") is false at the merged head:
+    engine/subsector_confluence.py:488-491 emits the basket coverage census {n_baskets, n_listed, n_gateable, n_thin}
+    (SIC-D-B03), while templates/subsectors.js heroSection read cov.n_subsectors for every universe and printed
+    "of undefined" on the Baskets tab.
+  repair: >-
+    templates/subsectors.js: covTotal is cov.n_subsectors when present, else cov.n_listed; the honest line renders only
+    when both n_gateable and the denominator are present (EN "N of M", ZH "N/M 个"). Pinned by
+    tests/test_subsector_confluence.py::test_us_subsector_js_hero_denominator_falls_back_to_n_listed_for_baskets.
+  re_disposition: BLOCKED_DATA -> IMPROVE (delivered at source; served proof owed at P22 on the Baskets-tab cell)
+  review: behaviour changed, so a fresh non-authoring READ_ONLY review of the source diff is required before P21; receipt under p19/
+- id: P20-SC-020
+  row: SC-020 (R3A-20)
+  verifier_verdict: UNSUPPORTED (Verifier A)
+  finding: >-
+    The RETAIN claim named a summary strip the shell hides: templates/_sector_central_paper.css.j2:26 sets
+    .si-view[data-view="overview"] .si-view-read { display:none } (branch-only, since 4fd82658); the Brief hero carries the summary.
+  re_disposition: RETAIN -> RELOCATE (ledger-only; the capability lives in the Brief hero; no source change)
+- id: P20-SC-025
+  row: SC-025 (R3A-25)
+  verifier_verdict: UNSUPPORTED (Verifier A)
+  finding: >-
+    The hero fallback changed from main's "US Sector Intelligence 🇺🇸" (f125051f:2354) to "Leadership not measured."
+    (templates/sector_central.html.j2:1516,1529): a typed unmeasured state replaced a title, so RETAIN was the wrong word.
+  re_disposition: RETAIN -> IMPROVE (delivered; ledger-only)
+- id: P20-SC-027
+  row: SC-027 (R3A-27)
+  verifier_verdict: CONFIRMED with contract gap (Verifier A)
+  finding: >-
+    The _dtpState stale guard (templates/sector_central.html.j2:1645-1646) is byte-identical to main (:1867-1868): an
+    unparseable as_of_utc yields mode 'live'. Inherited; adjudicated as ADJUDICATIONS §A6 of mastermind-xpv2-sector-r3
+    ("Overview stale guard fails open on malformed as_of_utc"); the expression is armor-pinned by
+    tests/test_xpv2_sector_r3_fixture.py:837.
+  disposition: carried, not repaired under this programme (owner XPV2-SC-R3A); named at P23 as an inherited contract conflict
+- id: P20-SC-031
+  row: SC-031 (R3A-31)
+  verifier_verdict: UNSUPPORTED (Verifier A)
+  finding: >-
+    Every getElementById('actnow') lookup — templates/sector_central.html.j2:3024 (fetch-fail fallback), :3027
+    (__siWireTrace), :3368 (focus delegate) and templates/si_workspace.js:294 (pendingTrace) — resolves to nothing on HEAD,
+    on main and on the rendered page: only id="actnow-section" (:2092) and id="action-board"
+    (_us_act_now_board.html.j2:291) exist. Inherited dead code.
+  disposition: carried; a bounded repair + review is routed only if a P22 journey needs lane-trace expansion
+- id: P20-SC-035-089
+  rows: SC-035 (R3A-35), SC-089 (R3A-89)
+  verifier_verdict: PARTIAL (Verifier A; Verifier B)
+  residuals: >-
+    SC-035: the Record/Methods home the matrix names is not a mounted view on HEAD (served as deck-cited copy inside the
+    board; the Cycles-wave Record surface owes it). SC-089: abstention fields and the dossier unavailable/corrected states
+    (state_matrix.csv NOT YET PRODUCED rows) are not rendered.
+  disposition: carried to the Cycles build wave and the P22 state cells
+- id: P20-R3A-47-52-75-86
+  rows: R3A-47, R3A-52, R3A-75, R3A-86
+  verifier_verdict: UNSUPPORTED (Verifier B — not located within budget)
+  seat_located_pointers: >-
+    R3A-47 templates/subsector_rotation.js:3,260 (marketdata/subsector_rotation.json) and templates/rotation_events.js:8,203,986
+    (rotation_events.json, sector_fragmentation.json); R3A-52 templates/heatmap.js:205-264 (generated_utc poll and swap);
+    R3A-86 hrefs templates/sector_central.html.j2:1503-1507,1535-1536,2096,2438,3872 at ec1f1ea6 (all inside si_workspace
+    VIEWS). R3A-75 stays UNSUPPORTED (not located by the seat either).
+  disposition: seat pointers are not independent confirmation; the P20 reviewer is asked to confirm or reject them
+- id: P20-SIC-APR-04
+  condition: SIC-APR-04 (re-carried R3C-VALIDATED-21D)
+  finding: >-
+    engine/index_leadership_track.py:257 emits the verdict 'validated' once a horizon matures and clears the Newey-West
+    bar, and trackBox in templates/sector_central.html.j2 mapped it to the face label EN 'Validated' / ZH '已验证' on the
+    forward track-record badge — so the served build could print the banned customer word.
+  repair: >-
+    trackBox now renders 'Measured' / '已实测' for that state (deck tagline 'Measured, not forecast' / '实测，非预测');
+    the engine key, colours, the measuring/accruing states and the labelled 21d line are unchanged. Pinned by
+    tests/test_sector_central_paper.py::test_forward_track_record_badge_never_prints_the_customer_word_validated.
+  residual: >-
+    templates/sector_central.html.j2:2280 carries the word inside the board-ordering receipt tooltip (data-tip-en: the
+    absolute-trend drawdown gate "is validated for drawdown/staying-power control") — not forward-track-record wording and
+    inherited from main; recorded for the P22 observer, not repaired under SIC-APR-04. The narrower candidate disclosure
+    "Context only · evidence proven at 5d · never sizes decisions" that the predecessor note names exists only on the
+    R3b-2 candidate reference, not on the production template; the served badge keeps its own disclosure line
+    ("grades mature at 5 / 10 / 21 / 63d — measured, not asserted").
+  status: repaired at source; discharged only by the P21/P22 readback on the served EN and ZH surfaces
+- id: P20-C19-PARITY-BADGE
+  row: C19
+  verifier_verdict: PARTIAL (Verifier C, major)
+  finding: >-
+    engine/cycle_rhythm.py:173-195 publishes model_cell_current_claim = 'parity_failed' from engine/hazard_parity.py
+    (B12 verdict PARITY_FAILS), but templates/sector_cycles.js consumes no parity field: _hzPass (:1072) treats every
+    source === "MODEL" cell as PASS, so the legacy page shows an unqualified MODEL/PASS badge.
+  disposition: >-
+    not repaired on the legacy surface (a qualified-badge state needs the design reference and dual-theme/ZH review);
+    frozen requirement of the Cycles build wave (SIC-I03/I09B): a MODEL cell whose live parity claim is parity_failed
+    renders degraded (PRIOR or unavailable treatment), never PASS. Inherited from main; no invented signal.
+- id: P20-CYCLES-NOT-DELIVERED
+  rows: >-
+    NOT_DELIVERED: C04, C07, C08, C10, C17, C21, C24, C25, C26, C27, C28, U07, U13; UNSUPPORTED: C02, C05, C06, C11, C12,
+    C13, C14; PARTIAL: the other 22 C/U rows; CONFIRMED: none.
+  finding: >-
+    Verifier C's blocker: the in-shell Sector Cycles workspace (rail Explore -> Cycles, Dossier Cycle tab) does not exist
+    on HEAD; the legacy /sector_cycles.html is unchanged. Masterplan P15/P17 (SIC-I03/I09B) are unmet; the BOARD CLAIM
+    OPEN rows (dispositions C02, C03, C05, C17, C21) stay open.
+  disposition: >-
+    J04 is downgraded to BLOCKED; the Sector Cycles replacement is NOT DELIVERED, so #9917 can only land as a PARTIAL
+    release (Sector Central shell + engines + design reference + CI wiring) and is never described as the programme's
+    completion. The Cycles build wave is commissioned next against the approved cycles_ia.md.
+- id: P20-EVIDENCE-IDENTITY
+  finding: >-
+    evidence/cells.yml was captured at d86344b93a0b (pre-merge); main's chrome changes merged in ec1f1ea6 are production
+    chrome, not programme changes. Verifier B flagged templates/forming_narratives.js:53-58 (runtime stylesheet injection)
+    as out of scope — noted for the design-law owner, no change here.
+  disposition: P22 re-captures on the served build; the cells are candidate-stage evidence only
+- id: P20-AUTHOR-APPROVER
+  note: >-
+    The seat authored the claim packet and this ledger; the three P19 verifier receipts and the P20 reviewer receipt are
+    the independent part. No approval is manufactured here: P21 is a merge decision and P23 the acceptance.

@@ -5429,9 +5429,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_897),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_910),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_651),
+    ("templates/index.html", 137, 5_906),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_919),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_660),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6942,6 +6942,22 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     count 130 -> 131; the index/free-content job-count ceilings, selectors
     and the ten-pack bound stay unchanged. Planning weights are not measured
     execution times.
+
+    Sector Intelligence P20 (2026-11-02, #9917): the contract-delta gate on the
+    merged head (ci run 41426752895) found four new pytest suites named by no
+    run: step — tests/test_sector_paper_components.py,
+    test_sector_paper_copy_deck.py, test_sector_paper_cycles_ia.py and
+    test_sector_paper_state_matrix.py, the design_refs/sector-paper-20261021
+    guards. They are wired as one step of the UNSCOPED reference-integrity job
+    (the job that owns frozen design references), whose planning weight
+    therefore rises 9 -> 18 (one more command naming four tests/test_ files);
+    being unscoped it rides every probe, so each probe measures exactly nine
+    units more on the same job count and the same ten packs: index 137 jobs /
+    5,906, free-content 137 jobs / 5,919, plan-book 131 jobs / 5,660. No job
+    enters or leaves. Fund exactly the measured values: 5,897 -> 5,906,
+    5,910 -> 5,919, 5,651 -> 5,660; job-count ceilings, selectors and the
+    ten-pack bound stay unchanged. Planning weights are not measured execution
+    times.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS

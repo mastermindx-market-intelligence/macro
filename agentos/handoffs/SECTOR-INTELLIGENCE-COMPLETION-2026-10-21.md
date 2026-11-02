@@ -136,3 +136,19 @@ conflict against current `main` that the seat resolves next by merging `main` in
 
 Next: RIG re-freeze and the two independent reviewers (GLM product-regression lane; Opus READ_ONLY visual-taste
 auditor), the P10–P18 journeys on the rendered product, then undraft → CI → merge → P19–P23 natural-update proof.
+
+## Checkpoint 4 — P19 disposed, P20 repaired (2026-11-02 11:0xZ)
+
+Since checkpoint 3: main merged into #9917 (ec1f1ea6), RIG rounds 7–9 ended APPROVE_WITH_CONDITIONS at frozen 4161d404
+(approval.yml; SIC-APR-01..05 bind the production proof), the PR left draft. P19: three READ_ONLY verifiers returned
+(research/sector_completion_20261021/p19/, sha256 in its README): Sector Central rows largely CONFIRMED (A 42/46, B 39/46);
+**Verifier C's blocker — the in-shell Sector Cycles workspace does not exist on HEAD** (C/U rows 0 CONFIRMED, J04 BLOCKED;
+P15/P17 unmet). P20 repaired the material failures only: subsectors.js basket denominator (SC-066, test-pinned), trackBox
+'Measured/已实测' for SIC-APR-04 (test-pinned), four dark sector-paper suites wired into the unscoped reference-integrity job
+(the contract-delta red on ci run 41426752895), packing ceilings funded +9 to the measured 5,906/5,919/5,660. Ledger:
+proposal.yml `p19_p20_dispositions_20261102`; acceptance note §E records the split disposition.
+
+Next: fresh READ_ONLY review of the P20 source diff → binding CI green → squash-merge #9917 as a PARTIAL release (Sector
+Central half + CI wiring; never the programme's completion) → commission the Cycles build wave (SIC-I03/I09B, C19 badge
+qualification, U07 port, typed states, light/ZH/1440/390 cells) → P22 production + natural-update proof on both served
+surfaces → P23 separate acceptances and the 134-row `*_to_record` fill.
