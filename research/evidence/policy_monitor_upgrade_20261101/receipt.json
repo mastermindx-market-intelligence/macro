@@ -6,13 +6,14 @@
     "site/policy_lever.json",
     "data/regime/latest.json"
   ],
-  "command": "CI=1 python3 tests/probe_policy_monitor_browser.py --out research/evidence/policy_monitor_upgrade_20261101 --states populated,partial,missing",
-  "resolved_sha": "4bcba1f0a5ed2a1db440b07a820c4dfc8df1c7e1",
-  "template_blob": "013bfe94ad4dbefd8d36e8e15028b7dcfabdea48",
-  "normalizer_blob": "39594ef8322838750045c8f62974b79fa9fb5ffa",
-  "face_fragment_blob": "50057761f26882b1237467d81f7bd19445c5a295",
-  "dialog_fragment_blob": "b5ef05fed9cf45fc7e24a3241a35ea50a6fb7a68",
-  "stylesheet_blob": "45ea7b9232b3d1ef421cf51ac5c38f5ef3c6f094",
+  "command": "CI=1 python3 tests/probe_policy_monitor_browser.py --out /tmp/policy-monitor-r4-final-20261101 --states populated,partial,missing,malformed",
+  "resolved_sha": "19eea495290e5df443984f820e49bb0b26d3b97f",
+  "source_dirty": false,
+  "template_blob": "e5dfcbe92035a5c553cec795f0006bac3c7f64ba",
+  "normalizer_blob": "159cf2bf19695cf973dfd6ff213c10bf09c291e7",
+  "face_fragment_blob": "19923c6623cc82d16e8705abb00306e7c5e426e1",
+  "dialog_fragment_blob": "547257b1d4ba7b80b5196e2e98a4c9b6fc1240fd",
+  "stylesheet_blob": "40c031a1b886ca4b85f3b5036cea21d53504e3bf",
   "harness_note": "The macro page's detailed dialogs are the registration benefit: the page's own MMXAccessPreview resolves an anonymous visitor to the sign-in sheet, so the probe resolves that preview as a signed-in tier before it clicks the face. The page's own mx5OpenDlg/mx5CloseDlg controller opens the real dialog; no markup or controller code is patched.",
   "shapes": [
     {
@@ -27,11 +28,11 @@
           "file": "policy-populated-en-dark-1440-face.png",
           "clip": {
             "x": 28,
-            "y": 342.1,
+            "y": 355.6,
             "width": 353.5,
-            "height": 316.5
+            "height": 289.5
           },
-          "bytes": 30461
+          "bytes": 31028
         },
         {
           "kind": "dialog",
@@ -42,11 +43,17 @@
             "width": 1004,
             "height": 844
           },
-          "bytes": 123825
+          "bytes": 103249
         }
       ],
-      "table_rows": 5,
-      "fed_dot_rows": 8,
+      "table_rows": 4,
+      "fed_dot_rows": 4,
+      "no_dialog_overflow": true,
+      "no_launcher_overlap": true,
+      "launcher_nodes": 1,
+      "keyboard_disclosures_reachable": true,
+      "keyboard_disclosures_activate": true,
+      "reverse_focus_wrap": true,
       "reopen_ok": true,
       "escape_closed": true,
       "focus_returned": true,
@@ -64,37 +71,43 @@
           "file": "policy-populated-en-dark-390-face.png",
           "clip": {
             "x": 6,
-            "y": 277.4,
-            "width": 378.0,
+            "y": 277.7,
+            "width": 378,
             "height": 289.5
           },
-          "bytes": 36389
+          "bytes": 38774
         },
         {
           "kind": "dialog",
           "file": "policy-populated-en-dark-390-dialog.png",
           "clip": {
-            "x": 0.0,
+            "x": 0,
             "y": 114.6,
             "width": 390,
             "height": 729.4
           },
-          "bytes": 75355
+          "bytes": 60707
         },
         {
           "kind": "chart",
           "file": "policy-populated-en-dark-390-chart.png",
           "clip": {
             "x": 19,
-            "y": 397.7,
+            "y": 605.5,
             "width": 352,
-            "height": 258.7
+            "height": 238.5
           },
-          "bytes": 17180
+          "bytes": 19943
         }
       ],
-      "table_rows": 5,
-      "fed_dot_rows": 8,
+      "table_rows": 4,
+      "fed_dot_rows": 4,
+      "no_dialog_overflow": true,
+      "no_launcher_overlap": true,
+      "launcher_nodes": 1,
+      "keyboard_disclosures_reachable": true,
+      "keyboard_disclosures_activate": true,
+      "reverse_focus_wrap": true,
       "reopen_ok": true,
       "escape_closed": true,
       "focus_returned": true,
@@ -112,11 +125,11 @@
           "file": "policy-populated-zh-dark-1440-face.png",
           "clip": {
             "x": 28,
-            "y": 355.1,
+            "y": 355.6,
             "width": 353.5,
             "height": 289.5
           },
-          "bytes": 28440
+          "bytes": 32358
         },
         {
           "kind": "dialog",
@@ -127,11 +140,17 @@
             "width": 1004,
             "height": 844
           },
-          "bytes": 142347
+          "bytes": 112364
         }
       ],
-      "table_rows": 5,
-      "fed_dot_rows": 8,
+      "table_rows": 4,
+      "fed_dot_rows": 4,
+      "no_dialog_overflow": true,
+      "no_launcher_overlap": true,
+      "launcher_nodes": 1,
+      "keyboard_disclosures_reachable": true,
+      "keyboard_disclosures_activate": true,
+      "reverse_focus_wrap": true,
       "reopen_ok": true,
       "escape_closed": true,
       "focus_returned": true,
@@ -149,37 +168,43 @@
           "file": "policy-populated-zh-dark-390-face.png",
           "clip": {
             "x": 6,
-            "y": 277.2,
-            "width": 378.0,
+            "y": 277.5,
+            "width": 378,
             "height": 289.5
           },
-          "bytes": 35753
+          "bytes": 39192
         },
         {
           "kind": "dialog",
           "file": "policy-populated-zh-dark-390-dialog.png",
           "clip": {
-            "x": 0.0,
+            "x": 0,
             "y": 114.6,
             "width": 390,
             "height": 729.4
           },
-          "bytes": 86367
+          "bytes": 66184
         },
         {
           "kind": "chart",
           "file": "policy-populated-zh-dark-390-chart.png",
           "clip": {
             "x": 19,
-            "y": 596.5,
+            "y": 604,
             "width": 352,
-            "height": 247.5
+            "height": 240
           },
-          "bytes": 25197
+          "bytes": 20075
         }
       ],
-      "table_rows": 5,
-      "fed_dot_rows": 8,
+      "table_rows": 4,
+      "fed_dot_rows": 4,
+      "no_dialog_overflow": true,
+      "no_launcher_overlap": true,
+      "launcher_nodes": 1,
+      "keyboard_disclosures_reachable": true,
+      "keyboard_disclosures_activate": true,
+      "reverse_focus_wrap": true,
       "reopen_ok": true,
       "escape_closed": true,
       "focus_returned": true,
@@ -197,11 +222,11 @@
           "file": "policy-populated-en-light-1440-face.png",
           "clip": {
             "x": 28,
-            "y": 342.1,
+            "y": 355.6,
             "width": 353.5,
-            "height": 316.5
+            "height": 289.5
           },
-          "bytes": 18385
+          "bytes": 19255
         },
         {
           "kind": "dialog",
@@ -212,11 +237,17 @@
             "width": 1004,
             "height": 844
           },
-          "bytes": 108512
+          "bytes": 92241
         }
       ],
-      "table_rows": 5,
-      "fed_dot_rows": 8,
+      "table_rows": 4,
+      "fed_dot_rows": 4,
+      "no_dialog_overflow": true,
+      "no_launcher_overlap": true,
+      "launcher_nodes": 1,
+      "keyboard_disclosures_reachable": true,
+      "keyboard_disclosures_activate": true,
+      "reverse_focus_wrap": true,
       "reopen_ok": true,
       "escape_closed": true,
       "focus_returned": true,
@@ -234,37 +265,43 @@
           "file": "policy-populated-en-light-390-face.png",
           "clip": {
             "x": 6,
-            "y": 277.4,
-            "width": 378.0,
+            "y": 277.7,
+            "width": 378,
             "height": 289.5
           },
-          "bytes": 18881
+          "bytes": 20635
         },
         {
           "kind": "dialog",
           "file": "policy-populated-en-light-390-dialog.png",
           "clip": {
-            "x": 0.0,
+            "x": 0,
             "y": 114.6,
             "width": 390,
             "height": 729.4
           },
-          "bytes": 64676
+          "bytes": 53506
         },
         {
           "kind": "chart",
           "file": "policy-populated-en-light-390-chart.png",
           "clip": {
             "x": 19,
-            "y": 397.7,
+            "y": 605.5,
             "width": 352,
-            "height": 258.7
+            "height": 238.5
           },
-          "bytes": 13294
+          "bytes": 16265
         }
       ],
-      "table_rows": 5,
-      "fed_dot_rows": 8,
+      "table_rows": 4,
+      "fed_dot_rows": 4,
+      "no_dialog_overflow": true,
+      "no_launcher_overlap": true,
+      "launcher_nodes": 1,
+      "keyboard_disclosures_reachable": true,
+      "keyboard_disclosures_activate": true,
+      "reverse_focus_wrap": true,
       "reopen_ok": true,
       "escape_closed": true,
       "focus_returned": true,
@@ -282,11 +319,11 @@
           "file": "policy-populated-zh-light-1440-face.png",
           "clip": {
             "x": 28,
-            "y": 355.1,
+            "y": 355.6,
             "width": 353.5,
             "height": 289.5
           },
-          "bytes": 18045
+          "bytes": 21309
         },
         {
           "kind": "dialog",
@@ -297,11 +334,17 @@
             "width": 1004,
             "height": 844
           },
-          "bytes": 130610
+          "bytes": 104703
         }
       ],
-      "table_rows": 5,
-      "fed_dot_rows": 8,
+      "table_rows": 4,
+      "fed_dot_rows": 4,
+      "no_dialog_overflow": true,
+      "no_launcher_overlap": true,
+      "launcher_nodes": 1,
+      "keyboard_disclosures_reachable": true,
+      "keyboard_disclosures_activate": true,
+      "reverse_focus_wrap": true,
       "reopen_ok": true,
       "escape_closed": true,
       "focus_returned": true,
@@ -319,37 +362,43 @@
           "file": "policy-populated-zh-light-390-face.png",
           "clip": {
             "x": 6,
-            "y": 277.2,
-            "width": 378.0,
+            "y": 277.5,
+            "width": 378,
             "height": 289.5
           },
-          "bytes": 19337
+          "bytes": 22459
         },
         {
           "kind": "dialog",
           "file": "policy-populated-zh-light-390-dialog.png",
           "clip": {
-            "x": 0.0,
+            "x": 0,
             "y": 114.6,
             "width": 390,
             "height": 729.4
           },
-          "bytes": 80046
+          "bytes": 60668
         },
         {
           "kind": "chart",
           "file": "policy-populated-zh-light-390-chart.png",
           "clip": {
             "x": 19,
-            "y": 596.5,
+            "y": 604,
             "width": 352,
-            "height": 247.5
+            "height": 240
           },
-          "bytes": 22501
+          "bytes": 17160
         }
       ],
-      "table_rows": 5,
-      "fed_dot_rows": 8,
+      "table_rows": 4,
+      "fed_dot_rows": 4,
+      "no_dialog_overflow": true,
+      "no_launcher_overlap": true,
+      "launcher_nodes": 1,
+      "keyboard_disclosures_reachable": true,
+      "keyboard_disclosures_activate": true,
+      "reverse_focus_wrap": true,
       "reopen_ok": true,
       "escape_closed": true,
       "focus_returned": true,
@@ -367,11 +416,11 @@
           "file": "policy-partial-en-dark-1440-face.png",
           "clip": {
             "x": 28,
-            "y": 342.1,
+            "y": 355.6,
             "width": 353.5,
-            "height": 316.5
+            "height": 289.5
           },
-          "bytes": 29560
+          "bytes": 29825
         },
         {
           "kind": "dialog",
@@ -382,11 +431,17 @@
             "width": 1004,
             "height": 844
           },
-          "bytes": 118820
+          "bytes": 103901
         }
       ],
-      "table_rows": 5,
-      "fed_dot_rows": 8,
+      "table_rows": 4,
+      "fed_dot_rows": 4,
+      "no_dialog_overflow": true,
+      "no_launcher_overlap": true,
+      "launcher_nodes": 1,
+      "keyboard_disclosures_reachable": true,
+      "keyboard_disclosures_activate": true,
+      "reverse_focus_wrap": true,
       "reopen_ok": true,
       "escape_closed": true,
       "focus_returned": true,
@@ -404,37 +459,43 @@
           "file": "policy-partial-zh-light-390-face.png",
           "clip": {
             "x": 6,
-            "y": 277.2,
-            "width": 378.0,
+            "y": 277.5,
+            "width": 378,
             "height": 289.5
           },
-          "bytes": 18640
+          "bytes": 21778
         },
         {
           "kind": "dialog",
           "file": "policy-partial-zh-light-390-dialog.png",
           "clip": {
-            "x": 0.0,
+            "x": 0,
             "y": 114.6,
             "width": 390,
             "height": 729.4
           },
-          "bytes": 80258
+          "bytes": 58378
         },
         {
           "kind": "chart",
           "file": "policy-partial-zh-light-390-chart.png",
           "clip": {
             "x": 19,
-            "y": 596.5,
+            "y": 604,
             "width": 352,
-            "height": 247.5
+            "height": 240
           },
-          "bytes": 20435
+          "bytes": 14497
         }
       ],
-      "table_rows": 5,
-      "fed_dot_rows": 8,
+      "table_rows": 4,
+      "fed_dot_rows": 4,
+      "no_dialog_overflow": true,
+      "no_launcher_overlap": true,
+      "launcher_nodes": 1,
+      "keyboard_disclosures_reachable": true,
+      "keyboard_disclosures_activate": true,
+      "reverse_focus_wrap": true,
       "reopen_ok": true,
       "escape_closed": true,
       "focus_returned": true,
@@ -452,11 +513,11 @@
           "file": "policy-missing-en-dark-1440-face.png",
           "clip": {
             "x": 28,
-            "y": 366.1,
+            "y": 365.6,
             "width": 353.5,
             "height": 268.5
           },
-          "bytes": 26453
+          "bytes": 25707
         },
         {
           "kind": "dialog",
@@ -467,11 +528,17 @@
             "width": 1004,
             "height": 844
           },
-          "bytes": 99827
+          "bytes": 83519
         }
       ],
       "table_rows": 0,
-      "fed_dot_rows": 4,
+      "fed_dot_rows": 0,
+      "no_dialog_overflow": true,
+      "no_launcher_overlap": true,
+      "launcher_nodes": 1,
+      "keyboard_disclosures_reachable": true,
+      "keyboard_disclosures_activate": true,
+      "reverse_focus_wrap": true,
       "reopen_ok": true,
       "escape_closed": true,
       "focus_returned": true,
@@ -489,26 +556,129 @@
           "file": "policy-missing-zh-light-390-face.png",
           "clip": {
             "x": 6,
-            "y": 301.2,
-            "width": 378.0,
+            "y": 301.5,
+            "width": 378,
             "height": 241.5
           },
-          "bytes": 16190
+          "bytes": 15075
         },
         {
           "kind": "dialog",
           "file": "policy-missing-zh-light-390-dialog.png",
           "clip": {
-            "x": 0.0,
+            "x": 0,
             "y": 114.6,
             "width": 390,
             "height": 729.4
           },
-          "bytes": 77999
+          "bytes": 55649
         }
       ],
       "table_rows": 0,
+      "fed_dot_rows": 0,
+      "no_dialog_overflow": true,
+      "no_launcher_overlap": true,
+      "launcher_nodes": 1,
+      "keyboard_disclosures_reachable": true,
+      "keyboard_disclosures_activate": true,
+      "reverse_focus_wrap": true,
+      "reopen_ok": true,
+      "escape_closed": true,
+      "focus_returned": true,
+      "no_page_overflow": true
+    },
+    {
+      "state": "malformed",
+      "theme": "dark",
+      "lang": "en",
+      "width": 1440,
+      "height": 1000,
+      "files": [
+        {
+          "kind": "card-face",
+          "file": "policy-malformed-en-dark-1440-face.png",
+          "clip": {
+            "x": 28,
+            "y": 341.6,
+            "width": 353.5,
+            "height": 316.5
+          },
+          "bytes": 31204
+        },
+        {
+          "kind": "dialog",
+          "file": "policy-malformed-en-dark-1440-dialog.png",
+          "clip": {
+            "x": 218,
+            "y": 78,
+            "width": 1004,
+            "height": 844
+          },
+          "bytes": 102675
+        }
+      ],
+      "table_rows": 3,
       "fed_dot_rows": 4,
+      "no_dialog_overflow": true,
+      "no_launcher_overlap": true,
+      "launcher_nodes": 1,
+      "keyboard_disclosures_reachable": true,
+      "keyboard_disclosures_activate": true,
+      "reverse_focus_wrap": true,
+      "reopen_ok": true,
+      "escape_closed": true,
+      "focus_returned": true,
+      "no_page_overflow": true
+    },
+    {
+      "state": "malformed",
+      "theme": "light",
+      "lang": "zh",
+      "width": 390,
+      "height": 844,
+      "files": [
+        {
+          "kind": "card-face",
+          "file": "policy-malformed-zh-light-390-face.png",
+          "clip": {
+            "x": 6,
+            "y": 277.5,
+            "width": 378,
+            "height": 289.5
+          },
+          "bytes": 20308
+        },
+        {
+          "kind": "dialog",
+          "file": "policy-malformed-zh-light-390-dialog.png",
+          "clip": {
+            "x": 0,
+            "y": 114.6,
+            "width": 390,
+            "height": 729.4
+          },
+          "bytes": 54326
+        },
+        {
+          "kind": "chart",
+          "file": "policy-malformed-zh-light-390-chart.png",
+          "clip": {
+            "x": 19,
+            "y": 604,
+            "width": 352,
+            "height": 240
+          },
+          "bytes": 13582
+        }
+      ],
+      "table_rows": 3,
+      "fed_dot_rows": 4,
+      "no_dialog_overflow": true,
+      "no_launcher_overlap": true,
+      "launcher_nodes": 1,
+      "keyboard_disclosures_reachable": true,
+      "keyboard_disclosures_activate": true,
+      "reverse_focus_wrap": true,
       "reopen_ok": true,
       "escape_closed": true,
       "focus_returned": true,

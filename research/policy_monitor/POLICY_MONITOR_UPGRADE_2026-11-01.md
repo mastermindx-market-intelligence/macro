@@ -376,3 +376,40 @@ panel step, with their exact source/test paths. No workflow permissions, gate,
 budget, pack ceiling, timeout, waiver, or required-check policy is changed.
 The manifest blob was identical on the UI head and current main
 75c68c5f4141b4f82674ec503b69f0b8de2a718b before these narrow additions.
+
+### Final integrated local and browser proof
+
+At clean source commit 19eea495290e5df443984f820e49bb0b26d3b97f:
+
+- CI=1 python3 -m pytest tests/test_policy_monitor_view.py tests/test_policy_monitor_ui.py tests/test_policy_lever.py -q --tb=short -rs
+  -> 304 passed, 1 skipped in 55.94s. The skip explicitly concerns absent
+  CL=F cached price data in the isolated checkout; no tested assertion failed.
+- CI=1 python3 tests/probe_policy_monitor_browser.py --out /tmp/policy-monitor-r4-final-20261101 --states populated,partial,missing,malformed
+  -> 14 shapes, 34 images, rc0 in52.91s. Receipt source_dirty=false and exact
+  template/normalizer/fragment/style Git blob IDs bind the evidence.
+- Eight populated shapes cover EN/ZH x dark/light x1440/390. Each of the three
+  degraded states covers EN/dark/1440 and ZH/light/390. Every shape passed
+  page/dialog overflow, actual-present launcher non-overlap, keyboard disclosure
+  reachability/activation, reverse focus wrap, reopen, Escape and focus return.
+- Root inspected the final desktop light/EN and dark/ZH compositions, populated
+  mobile dark/EN and light/ZH chart, and partial/malformed/missing views. Clear
+  assessment/evidence separation, desktop rail beside the chart, readable mobile
+  geometry, honest gaps and unavailable states, no colored container edges.
+  The two luminance treatments retain distinct surfaces and readable separation.
+- The probe uses the real production template and committed payloads with a
+  fixture signed-in preview tier. It proves the rendered modal path, not live
+  authentication, deployment, feed completeness or refreshed market observations.
+
+The committed evidence directory now replaces R1's superseded images/receipt
+with this exact-source proof; R1 history remains available at2184d1d.
+The evidence-only checkpoint changes no executable source or test. Review is
+commissioned on the unchanged source commit19eea495 through independent paid
+run policy-monitor-r4-independent-review-20261101 (controller8323; Grok lane
+launch observed; retained result pending). Formal non-author GitHub approval
+and release are not proven.
+
+Current-base reconciliation: the four pre-existing touched product/test files
+(build_policy_lever.py, build_site.py, dashboard.html.j2, test_policy_lever.py)
+have identical baseline/main blobs at9af0a33e and75c68c5f. The CI manifest was
+also identical before R4. Six intervening main commits therefore do not change
+those owned source baselines; current hosted merge checks still govern release.
