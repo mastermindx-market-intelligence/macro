@@ -10083,6 +10083,12 @@ def test_authority_lookup_cost_and_pagination_fit_the_admitted_budget():
         ([{"id": 333722846, "login": "renamed-author", "type": "User"}], "writer-ineligible", 0),
         ([{"id": 292968551, "login": "renamed-account", "type": "User"}], "writer-ineligible", 0),
         ([{"id": 54321, "login": "ChrisWong6031-Creator", "type": "User"}], "writer-ineligible", 0),
+        ([{"id": 318946022, "login": "renamed-user", "type": "User"}], "writer-ineligible", 0),
+        ([{"id": 54321, "login": "MASTERMINDX-2", "type": "User"}], "writer-ineligible", 0),
+        ([{"id": 318950944, "login": "renamed-user", "type": "User"}], "writer-ineligible", 0),
+        ([{"id": 54321, "login": "MASTERMINDX-3", "type": "User"}], "writer-ineligible", 0),
+        ([{"id": 199161495, "login": "renamed-user", "type": "User"}], "writer-ineligible", 0),
+        ([{"id": 54321, "login": "CURSORAGENT", "type": "User"}], "writer-ineligible", 0),
         ([{"id": 54321, "login": "MastermindXryan", "type": "User"}], "writer-ineligible", 0),
         ([{"id": True, "login": "ambiguous", "type": "User"}], "writer-ineligible", 0),
         ([None], "writer-ineligible", 0),
@@ -10107,7 +10113,7 @@ def test_prophet_merge_requires_the_selected_writer(monkeypatch, writers, verdic
         if url == f"{MOG.GITHUB_API}/user":
             assert method == "GET" and token == "write"
             observed.append("identity")
-            answer = next(answers)
+            answer = next(answers, writers[-1])
             if isinstance(answer, Exception):
                 raise answer
             return (200, answer) if answer else (403, {})
@@ -10123,4 +10129,5 @@ def test_prophet_merge_requires_the_selected_writer(monkeypatch, writers, verdic
     assert MOG.sweep_pull("mastermindx-market-intelligence/macro", pull, "read", "write",
                           _freshness()) == verdict
     assert observed.count("merge") == put_count
+    assert observed.count("identity") == len(writers)
     assert list(answers) == []

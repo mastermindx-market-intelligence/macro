@@ -6732,6 +6732,16 @@ def reprove(
     return "conflict"
 
 
+# Match the standing exclusions by account ID after a rename and by login
+# if a barred name is assigned to another account.
+PROPHET_EXCLUDED_WRITERS = {
+    "chriswong6031-creator": 292968551,
+    "mastermindx-2": 318946022,
+    "mastermindx-3": 318950944,
+    "cursoragent": 199161495,
+}
+
+
 def prophet_writer_allowed(repo: str, pull: dict[str, Any], merge_token: str) -> bool:
     """Check the identity GitHub authenticates with the actual #9495 write token."""
     if repo.casefold() != "mastermindx-market-intelligence/macro" or str(pull.get("number")) != "9495":
@@ -6751,9 +6761,14 @@ def prophet_writer_allowed(repo: str, pull: dict[str, Any], merge_token: str) ->
             _annotate("warning", "Prophet writer", "PR #9495: incomplete GitHub account identity.")
             return False
     # Preserve both the immutable account exclusion and the named-login exclusion.
-    if (writer.get("type") not in {"User", "Bot"}
-            or writer["id"] in {author["id"], 292968551}
-            or writer["login"].casefold() in {author["login"].casefold(), "chriswong6031-creator"}):
+    writer_login = writer["login"].casefold()
+    if (
+        writer.get("type") not in {"User", "Bot"}
+        or writer["id"] == author["id"]
+        or writer_login == author["login"].casefold()
+        or writer["id"] in PROPHET_EXCLUDED_WRITERS.values()
+        or writer_login in PROPHET_EXCLUDED_WRITERS
+    ):
         _annotate("warning", "Prophet writer", "PR #9495: selected writer is ineligible.")
         return False
     print(f"PR #9495: GitHub authenticated the selected writer as {writer['login']} ({writer['id']}).")
