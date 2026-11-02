@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_policy_monitor.css.j2
+  - templates/_policy_monitor_face.html.j2
+  - templates/_policy_monitor_dialog.html.j2
+  - templates/dashboard.html.j2
+manifest: mockups/evidence/policy-monitor-upgrade-20261101/manifest.json

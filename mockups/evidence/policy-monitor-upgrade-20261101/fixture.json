@@ -1,0 +1,5 @@
+{
+  "source_commit": "df0680156a3a75dbe97a3eca2aaadb8823f90242",
+  "fixture_sha256": "966d17d03c99dbc90a858907db82264f49fc518dc2db24b37bcda465a5d1458d",
+  "fixture_scope": "Anonymous local component presentation fixture. Actual dashboard template and committed payloads. Only unrelated body siblings hidden, dialog opened and scrolled to combined stance for bounded screenshots. No credential, access-tier stub, live authentication or production-release claim. Separate 14-shape production-controller probe verifies open/close/focus behavior. Open presentation includes the existing mx5-dlg-in, mx5-dlg-open and mx5-dlg-lock classes; it does not call or claim the authentication controller. The original grid/panel ancestors are preserved; only unrelated siblings are hidden."
+}

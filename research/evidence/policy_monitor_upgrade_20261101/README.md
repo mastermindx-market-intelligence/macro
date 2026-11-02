@@ -1,30 +1,24 @@
-# Policy Monitor: final source-bound visual proof
+# Policy Monitor — current visual proof
 
-Source commit: `afc33cb328f354a95923957928432f9ed64b86b0`. Both receipts record a clean checkout and exact source blob identities. These files supersede the first candidate's evidence; that history is retained in earlier commits.
+Feature source: `df0680156a3a75dbe97a3eca2aaadb8823f90242` (R6). The source remained clean during capture.
 
-## Main browser matrix
+## Current verification
 
-`receipt.json` binds 14 shapes and34 captures. Populated views cover both themes, both languages and1440/390 widths. Partial, missing and malformed data each cover desktop EN/dark and mobile ZH/light. Every interaction/overflow assertion passed: Escape, reopen, focus return, keyboard disclosure traversal/activation, reverse focus wrap, no page/dialog overflow, and no overlap with the actual-present floating launcher.
+- Focused suite: **318 passed, no skips**, 60.29 seconds. Includes twelve new regression cases that reproduced and closed the independent review's two provenance-label blockers.
+- `receipt.json`: **14 shapes / 34 PNGs**, all interaction and overflow assertions passed in 52.90 seconds. Populated English/Chinese × light/dark × desktop/mobile, plus partial, missing and malformed inputs. Real dashboard template, actual committed input payloads, shared dialog controller and keyboard trap. This test supplies a signed-in preview fixture; it does not prove live authentication or deployment.
+- Canonical UI evidence: [24-state manifest](../../../mockups/evidence/policy-monitor-upgrade-20261101/manifest.json) and [owning receipt](../../../mockups/evidence/policy-monitor-upgrade-20261101/EVIDENCE.yml). Eight actual theme/language/viewport cells and sixteen real hover/focus cells. All reported state applications and PNG bytes passed the existing receipt validator. The component preview is anonymous and is explicitly scoped in its README and fixture.json.
 
-- [Light desktop](policy-populated-en-light-1440-dialog.png)
-- [Dark desktop in Chinese](policy-populated-zh-dark-1440-dialog.png)
-- [Dark mobile](policy-populated-en-dark-390-dialog.png)
-- [Light mobile chart in Chinese](policy-populated-zh-light-390-chart.png)
-- [Partial data](policy-partial-zh-light-390-dialog.png)
-- [Malformed data](policy-malformed-en-dark-1440-dialog.png)
-- [Missing data](policy-missing-zh-light-390-dialog.png)
+## Suggested views
 
-## Real producer supplement
+- [Desktop light](policy-populated-en-light-1440-dialog.png)
+- [Desktop dark](policy-populated-en-dark-1440-dialog.png)
+- [Mobile dark](policy-populated-en-dark-390-dialog.png)
+- [Chinese mobile light](policy-populated-zh-light-390-dialog.png)
+- [Mobile chart](policy-populated-en-dark-390-chart.png)
+- [Missing input](policy-missing-en-dark-1440-dialog.png)
 
-`produced-sections.json` binds six additional lower-section captures to the existing producer's in-memory output and committed CL_F/SMH/SOXX price files, alert file, configuration and market payload. It records generation/evaluation separately from the actual market/technical observation dates. Both supplemental browser shapes passed all interaction checks. No generated site artifact was hand-edited or committed.
+## Historical evidence retained with its source identity
 
-- [Activity and named stochastic reading](policy-produced-en-light-1440-dialog-activity.png)
-- [Desktop transmission](policy-produced-en-light-1440-dialog-transmission.png)
-- [Desktop context](policy-produced-en-light-1440-dialog-context.png)
-- [Mobile activity](policy-produced-zh-dark-390-dialog-activity.png)
-- [Mobile transmission](policy-produced-zh-dark-390-dialog-transmission.png)
-- [Mobile context](policy-produced-zh-dark-390-dialog-context.png)
+`produced-sections.json` and the six `policy-produced-*` images remain bound to `afc33cb328f354a95923957928432f9ed64b86b0`. They verify real producer output for the activity, transmission and calendar sections; they are **not current R6-head screenshots**. Earlier R1 success claims and screenshots are superseded.
 
-The browser uses the real production template and existing modal controller with a fixture signed-in preview tier. This is rendered application proof, not live authentication or production-deployment proof. Source dates and incomplete feed coverage remain explicit.
-
-Focused regression:306 passed, zero skips. Independent technical review, hosted checks and normal release gates remain separate from these receipts.
+Independent final-head review, current hosted CI, normal release and served-page proof remain separate gates. This evidence package does not claim any of those gates passed.

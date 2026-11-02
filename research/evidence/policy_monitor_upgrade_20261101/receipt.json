@@ -6,13 +6,13 @@
     "site/policy_lever.json",
     "data/regime/latest.json"
   ],
-  "command": "CI=1 python3 tests/probe_policy_monitor_browser.py --out /tmp/policy-monitor-r5-final-20261101 --states populated,partial,missing,malformed",
-  "resolved_sha": "afc33cb328f354a95923957928432f9ed64b86b0",
+  "command": "CI=1 python3 tests/probe_policy_monitor_browser.py --out /tmp/policy-monitor-r6-final-20261102 --states populated,partial,missing,malformed",
+  "resolved_sha": "df0680156a3a75dbe97a3eca2aaadb8823f90242",
   "source_dirty": false,
   "template_blob": "e5dfcbe92035a5c553cec795f0006bac3c7f64ba",
-  "normalizer_blob": "159cf2bf19695cf973dfd6ff213c10bf09c291e7",
+  "normalizer_blob": "8e00a6fc97687c94160a5858233ce1b5b964f8f6",
   "face_fragment_blob": "19923c6623cc82d16e8705abb00306e7c5e426e1",
-  "dialog_fragment_blob": "58880af75e936141a9b426a644e4f8855ffc5ea5",
+  "dialog_fragment_blob": "3b79568eb00e007d49ea4cde66a83c588d51ecc3",
   "stylesheet_blob": "b261a890918748bf7e588379736a7ae4be8b2cff",
   "harness_note": "The macro page's detailed dialogs are the registration benefit: the page's own MMXAccessPreview resolves an anonymous visitor to the sign-in sheet, so the probe resolves that preview as a signed-in tier before it clicks the face. The page's own mx5OpenDlg/mx5CloseDlg controller opens the real dialog; no markup or controller code is patched.",
   "shapes": [
@@ -43,7 +43,7 @@
             "width": 1004,
             "height": 844
           },
-          "bytes": 103244
+          "bytes": 103243
         }
       ],
       "table_rows": 4,
@@ -72,7 +72,7 @@
           "clip": {
             "x": 6,
             "y": 277.7,
-            "width": 378,
+            "width": 378.0,
             "height": 289.5
           },
           "bytes": 38774
@@ -81,12 +81,12 @@
           "kind": "dialog",
           "file": "policy-populated-en-dark-390-dialog.png",
           "clip": {
-            "x": 0,
+            "x": 0.0,
             "y": 114.6,
             "width": 390,
             "height": 729.4
           },
-          "bytes": 60694
+          "bytes": 60707
         },
         {
           "kind": "chart",
@@ -97,7 +97,7 @@
             "width": 352,
             "height": 238.5
           },
-          "bytes": 19724
+          "bytes": 19943
         }
       ],
       "table_rows": 4,
@@ -140,7 +140,7 @@
             "width": 1004,
             "height": 844
           },
-          "bytes": 112341
+          "bytes": 112355
         }
       ],
       "table_rows": 4,
@@ -169,7 +169,7 @@
           "clip": {
             "x": 6,
             "y": 277.5,
-            "width": 378,
+            "width": 378.0,
             "height": 289.5
           },
           "bytes": 39192
@@ -178,21 +178,21 @@
           "kind": "dialog",
           "file": "policy-populated-zh-dark-390-dialog.png",
           "clip": {
-            "x": 0,
+            "x": 0.0,
             "y": 114.6,
             "width": 390,
             "height": 729.4
           },
-          "bytes": 66184
+          "bytes": 66209
         },
         {
           "kind": "chart",
           "file": "policy-populated-zh-dark-390-chart.png",
           "clip": {
             "x": 19,
-            "y": 604,
+            "y": 604.0,
             "width": 352,
-            "height": 240
+            "height": 240.0
           },
           "bytes": 20075
         }
@@ -266,7 +266,7 @@
           "clip": {
             "x": 6,
             "y": 277.7,
-            "width": 378,
+            "width": 378.0,
             "height": 289.5
           },
           "bytes": 20635
@@ -275,7 +275,7 @@
           "kind": "dialog",
           "file": "policy-populated-en-light-390-dialog.png",
           "clip": {
-            "x": 0,
+            "x": 0.0,
             "y": 114.6,
             "width": 390,
             "height": 729.4
@@ -334,7 +334,7 @@
             "width": 1004,
             "height": 844
           },
-          "bytes": 104674
+          "bytes": 104686
         }
       ],
       "table_rows": 4,
@@ -363,7 +363,7 @@
           "clip": {
             "x": 6,
             "y": 277.5,
-            "width": 378,
+            "width": 378.0,
             "height": 289.5
           },
           "bytes": 22459
@@ -372,21 +372,21 @@
           "kind": "dialog",
           "file": "policy-populated-zh-light-390-dialog.png",
           "clip": {
-            "x": 0,
+            "x": 0.0,
             "y": 114.6,
             "width": 390,
             "height": 729.4
           },
-          "bytes": 60640
+          "bytes": 60677
         },
         {
           "kind": "chart",
           "file": "policy-populated-zh-light-390-chart.png",
           "clip": {
             "x": 19,
-            "y": 604,
+            "y": 604.0,
             "width": 352,
-            "height": 240
+            "height": 240.0
           },
           "bytes": 17160
         }
@@ -431,7 +431,7 @@
             "width": 1004,
             "height": 844
           },
-          "bytes": 103901
+          "bytes": 103910
         }
       ],
       "table_rows": 4,
@@ -460,7 +460,7 @@
           "clip": {
             "x": 6,
             "y": 277.5,
-            "width": 378,
+            "width": 378.0,
             "height": 289.5
           },
           "bytes": 21778
@@ -469,21 +469,21 @@
           "kind": "dialog",
           "file": "policy-partial-zh-light-390-dialog.png",
           "clip": {
-            "x": 0,
+            "x": 0.0,
             "y": 114.6,
             "width": 390,
             "height": 729.4
           },
-          "bytes": 58373
+          "bytes": 58378
         },
         {
           "kind": "chart",
           "file": "policy-partial-zh-light-390-chart.png",
           "clip": {
             "x": 19,
-            "y": 604,
+            "y": 604.0,
             "width": 352,
-            "height": 240
+            "height": 240.0
           },
           "bytes": 14497
         }
@@ -528,7 +528,7 @@
             "width": 1004,
             "height": 844
           },
-          "bytes": 83519
+          "bytes": 83486
         }
       ],
       "table_rows": 0,
@@ -557,7 +557,7 @@
           "clip": {
             "x": 6,
             "y": 301.5,
-            "width": 378,
+            "width": 378.0,
             "height": 241.5
           },
           "bytes": 15075
@@ -566,12 +566,12 @@
           "kind": "dialog",
           "file": "policy-missing-zh-light-390-dialog.png",
           "clip": {
-            "x": 0,
+            "x": 0.0,
             "y": 114.6,
             "width": 390,
             "height": 729.4
           },
-          "bytes": 55649
+          "bytes": 55689
         }
       ],
       "table_rows": 0,
@@ -614,7 +614,7 @@
             "width": 1004,
             "height": 844
           },
-          "bytes": 102675
+          "bytes": 102672
         }
       ],
       "table_rows": 3,
@@ -643,7 +643,7 @@
           "clip": {
             "x": 6,
             "y": 277.5,
-            "width": 378,
+            "width": 378.0,
             "height": 289.5
           },
           "bytes": 20308
@@ -652,7 +652,7 @@
           "kind": "dialog",
           "file": "policy-malformed-zh-light-390-dialog.png",
           "clip": {
-            "x": 0,
+            "x": 0.0,
             "y": 114.6,
             "width": 390,
             "height": 729.4
@@ -664,9 +664,9 @@
           "file": "policy-malformed-zh-light-390-chart.png",
           "clip": {
             "x": 19,
-            "y": 604,
+            "y": 604.0,
             "width": 352,
-            "height": 240
+            "height": 240.0
           },
           "bytes": 13582
         }
