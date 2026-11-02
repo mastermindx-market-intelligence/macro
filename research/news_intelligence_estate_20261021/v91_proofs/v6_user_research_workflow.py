@@ -239,7 +239,14 @@ def p1_read_source(scratch: Path, f2) -> tuple[str, str]:
 
 # --------------------------------------------------------- P2: signed in ----
 def p2_signed_in(_scratch: Path) -> tuple[str, str]:
-    """The signed-in read: gate observed refusing; pass-through is human-gated."""
+    """The signed-in read: gate observed refusing; pass-through is human-gated.
+
+    Authentication half: the real gate refuses a missing token. Authorization
+    half, observed offline: enforce_site_full(always=True) refuses a stubbed
+    identity whose entitlement lookup answers "not entitled" and passes one
+    whose lookup answers "entitled" (the store lookup is the only part stubbed;
+    the decision is the producer's). A real signed-in session remains human.
+    """
     import app.ticker_news as api
     from fastapi import HTTPException
 
@@ -254,14 +261,36 @@ def p2_signed_in(_scratch: Path) -> tuple[str, str]:
             "gate did not refuse an unauthenticated read (no HTTPException); "
             "gate app/ticker_news.py:195; no-test"
         )
+
+    import app.paywall as paywall
+
+    def _probe(entitled: bool) -> tuple[str, int | None]:
+        original = paywall._entitled
+        paywall._entitled = lambda user_id, feature, **kw: (entitled, "pro" if entitled else "essential")
+        try:
+            with _quiet():
+                paywall.enforce_site_full({"id": "SYNTH-USER-P2"}, always=True)
+            return "passed", None
+        except HTTPException as exc:
+            detail = exc.detail if isinstance(exc.detail, dict) else {}
+            return ("locked" if detail.get("locked") else "other"), exc.status_code
+        finally:
+            paywall._entitled = original
+
+    unpaid = _probe(False)
+    paid = _probe(True)
+    entitlement_ok = unpaid == ("locked", 403) and paid == ("passed", None)
     return "HUMAN_GATE", (
-        f"gate refuses unauthenticated read HTTP {refused[0]} '{refused[1]}'; "
-        f"pass-through needs a real Supabase signed-in session "
+        f"gate refuses unauthenticated read HTTP {refused[0]} '{refused[1]}'; entitlement "
+        f"half observed offline: non-entitled stub -> {unpaid[0]}/{unpaid[1]}, entitled stub "
+        f"-> {paid[0]} (app/paywall.py:518 enforce_site_full always=True; discriminating="
+        f"{entitlement_ok}); pass-through needs a real Supabase signed-in session "
         f"(app/main.py:1030 require_user verifies a bearer/session token), "
         f"unavailable offline; gate app/ticker_news.py:195; no-test"
     )
 
 
+# ------------------------------------------------- P3: inspect company ----
 # ------------------------------------------------- P3: inspect company ----
 def p3_inspect(scratch: Path) -> tuple[str, str]:
     """Inspect company or theme: exposure producer plus the consumer leg."""
@@ -311,7 +340,8 @@ def p3_inspect(scratch: Path) -> tuple[str, str]:
                     {"ticker": "SYNQ", "added": "2025-01-01", "removed": None}
                 ]
             },
-            # SYNR was removed before the as-of day -> no exposure expected.
+            # SYNR was removed before the as-of day -> no exposure expected
+            # (its basket IS mapped to the theme; only the removal empties it).
             SYN_BASKET_R: {
                 "members": [
                     {
@@ -331,15 +361,13 @@ def p3_inspect(scratch: Path) -> tuple[str, str]:
                 "foresight_id": SYN_THEME,
                 "name_en": SYN_THEME_EN,
                 "name_zh": SYN_THEME_ZH,
-                "basket_ids": [SYN_BASKET_A],
+                # Both baskets map to the theme, so SYNR's empty exposure can
+                # only come from the removal rule (removed <= as_of), not from
+                # an unmapped basket.
+                "basket_ids": [SYN_BASKET_A, SYN_BASKET_R],
             }
         ],
-        "unmapped_baskets": [
-            {
-                "id": SYN_BASKET_R,
-                "reason": "explicitly outside the canonical theme registry",
-            }
-        ],
+        "unmapped_baskets": [],
     }
     theme_state = {
         "schema": "neuralweb.theme_state.v1",
@@ -361,6 +389,7 @@ def p3_inspect(scratch: Path) -> tuple[str, str]:
         sorted(exposures) == ["SYNQ", "SYNR", "SYNZ"]
         and exposures["SYNQ"]["exposures"] == EXPECTED_SYNQ_EXPOSURES
         and exposures["SYNR"]["exposures"] == []
+        and exposures["SYNR"]["coverage"]["status"] == "no_active_membership"
         and exposures["SYNZ"]["exposures"] == []
         and exposures["SYNZ"]["coverage"]["status"] == "no_active_membership"
     )
@@ -382,8 +411,9 @@ def p3_inspect(scratch: Path) -> tuple[str, str]:
     verdict = "PROVEN" if producer_ok and consumer_ok else "PARTIAL"
     return verdict, (
         f"SYNQ member->1 exposure {SYN_THEME} via {SYN_BASKET_A}; "
-        f"removed SYNR->[] and non-member SYNZ->[] "
-        f"(coverage={exposures['SYNZ']['coverage']['status']}); "
+        f"removed SYNR (mapped basket, removed<=as_of)->[] "
+        f"coverage={exposures['SYNR']['coverage']['status']} and non-member SYNZ->[] "
+        f"coverage={exposures['SYNZ']['coverage']['status']}; "
         f"consumer leg app/integrated_answer.py:730 status={leg_pos.get('status')} "
         f"for SYNQ, {leg_neg.get('status')}/{leg_neg.get('degraded_reason')} "
         f"for SYNZZ; producer engine/company_theme_exposure/views.py:217; "
@@ -400,88 +430,159 @@ def p3_inspect(scratch: Path) -> tuple[str, str]:
 
 
 # ------------------------------------------------------ P4/P5 route probe ----
+_MUTATING = {"post", "put", "patch"}
+
+
 def _route_handlers() -> list[dict]:
-    """Enumerate post/put/patch route handlers in app/*.py via the ast module."""
+    """Enumerate mutating routes under app/ (recursive) via the ast module.
+
+    Covers ``@x.post/put/patch`` decorators, ``@x.api_route(..., methods=[...])``
+    decorators and ``add_api_route(...)`` calls with a mutating method.
+    """
     rows: list[dict] = []
-    for py in sorted((ROOT / "app").glob("*.py")):
+
+    def _methods(call: ast.Call) -> set[str]:
+        for kw in call.keywords:
+            if kw.arg == "methods" and isinstance(kw.value, (ast.List, ast.Tuple)):
+                return {
+                    str(elt.value).lower() for elt in kw.value.elts
+                    if isinstance(elt, ast.Constant)
+                } & _MUTATING
+        return set()
+
+    def _path(call: ast.Call) -> str:
+        if call.args and isinstance(call.args[0], ast.Constant) and isinstance(call.args[0].value, str):
+            return call.args[0].value
+        return ""
+
+    for py in sorted((ROOT / "app").rglob("*.py")):
         tree = ast.parse(py.read_text(encoding="utf-8"))
+        rel = py.relative_to(ROOT).as_posix()
         for node in ast.walk(tree):
-            if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                continue
-            for dec in node.decorator_list:
-                target = dec.func if isinstance(dec, ast.Call) else dec
-                if not (
-                    isinstance(target, ast.Attribute)
-                    and isinstance(target.value, ast.Name)
-                    and target.attr in {"post", "put", "patch"}
-                ):
-                    continue
-                path = ""
-                if (
-                    isinstance(dec, ast.Call)
-                    and dec.args
-                    and isinstance(dec.args[0], ast.Constant)
-                    and isinstance(dec.args[0].value, str)
-                ):
-                    path = dec.args[0].value
-                rows.append(
-                    {
-                        "module": py.name,
-                        "line": node.lineno,
-                        "method": target.attr,
-                        "path": path,
-                        "name": node.name,
-                    }
-                )
-    rows.sort(key=lambda row: (row["module"], row["line"]))
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                for dec in node.decorator_list:
+                    target = dec.func if isinstance(dec, ast.Call) else dec
+                    if not (isinstance(target, ast.Attribute) and isinstance(target.value, ast.Name)):
+                        continue
+                    if target.attr in _MUTATING:
+                        methods = {target.attr}
+                    elif target.attr == "api_route" and isinstance(dec, ast.Call):
+                        methods = _methods(dec)
+                    else:
+                        continue
+                    path = _path(dec) if isinstance(dec, ast.Call) else ""
+                    for method in sorted(methods):
+                        rows.append({"module": rel, "line": node.lineno, "method": method,
+                                     "path": path, "name": node.name, "via": "decorator"})
+            elif isinstance(node, ast.Call):
+                target = node.func
+                if isinstance(target, ast.Attribute) and target.attr == "add_api_route":
+                    for method in sorted(_methods(node)):
+                        rows.append({"module": rel, "line": node.lineno, "method": method,
+                                     "path": _path(node), "name": "add_api_route",
+                                     "via": "add_api_route"})
+    rows.sort(key=lambda row: (row["module"], row["line"], row["method"]))
+    return rows
+
+
+_JS_WRITE_RE = re.compile(
+    r"sb\.from\(\s*['\"](\w+)['\"]\s*\)\s*\.\s*(insert|update|upsert|delete)\s*\("
+)
+_WATCHLIST_TABLES = {"watchlists", "watchlist_symbols"}
+
+
+def _browser_writes() -> list[dict]:
+    """Browser-side Supabase writes in templates/**/*.js (source probe)."""
+    rows: list[dict] = []
+    for js in sorted((ROOT / "templates").rglob("*.js")):
+        text = js.read_text(encoding="utf-8", errors="replace")
+        owner_scoped = ".eq('user_id', user.id)" in text
+        for match in _JS_WRITE_RE.finditer(text):
+            rows.append({
+                "module": js.relative_to(ROOT).as_posix(),
+                "line": text.count("\n", 0, match.start()) + 1,
+                "table": match.group(1),
+                "verb": match.group(2),
+                "owner_scoped": owner_scoped,
+            })
     return rows
 
 
 def p4_save_follow(_scratch: Path, handlers: list[dict]) -> tuple[str, int, str]:
-    """Save or follow a source or theme: does any mutating route persist one?"""
+    """Save or follow a source or theme: does any persisted path exist?
+
+    A news/source/theme follow route is the row's own target (PARTIAL: located,
+    propagation unproven). Absent that, an owner-scoped browser write to the
+    Supabase watchlist tables persists a COMPANY follow for a signed-in user
+    (PARTIAL: company only; source/theme follow and news-assessment save are
+    still absent). Nothing persisted is ABSENT. Returns the count of
+    news/source/theme routes so P7 can ask whether a saved assessment exists.
+    """
     matches = [
         row
         for row in handlers
         if any(token in row["path"].lower() for token in FOLLOW_TOKENS)
         and any(token in row["path"].lower() for token in SCOPE_TOKENS)
     ]
+    writes = _browser_writes()
+    watch_writes = [w for w in writes if w["table"] in _WATCHLIST_TABLES and w["owner_scoped"]]
     nearest = sorted(
         (row for row in handlers if row["name"] in NEAREST_SAVE_HANDLERS),
         key=lambda row: (row["module"], row["line"]),
     )
     nearest_text = " ".join(
-        f"app/{row['module']}:{row['line']} {row['name'].replace('_', '-')}"
-        for row in nearest
+        f"{row['module']}:{row['line']} {row['name'].replace('_', '-')}" for row in nearest
     )
-    counts = {method: sum(1 for row in handlers if row["method"] == method)
-              for method in ("post", "put", "patch")}
+    counts = {method: sum(1 for row in handlers if row["method"] == method) for method in sorted(_MUTATING)}
     total = len(handlers)
+    census = (
+        f"{total} mutating routes under app/ (post={counts['post']} put={counts['put']} "
+        f"patch={counts['patch']}; api_route/add_api_route included)"
+    )
     if matches:
-        found = " ".join(
-            f"app/{row['module']}:{row['line']} {row['path']}" for row in matches
-        )
+        found = " ".join(f"{row['module']}:{row['line']} {row['path']}" for row in matches)
         return "PARTIAL", len(matches), (
-            f"{total} post/put/patch handlers "
-            f"(post={counts['post']} put={counts['put']} patch={counts['patch']}) "
-            f"in app/*.py; {len(matches)} route(s) persist a followed news source "
-            f"or market theme: {found}; no-test"
+            f"{census}; {len(matches)} route(s) persist a followed news source or market "
+            f"theme: {found}; propagation to a saved assessment unproven; no-test"
+        )
+    if watch_writes:
+        first = watch_writes[0]
+        tables = ",".join(sorted({w["table"] for w in watch_writes}))
+        return "PARTIAL", 0, (
+            f"{census}; 0 persist a followed news source or market theme; a COMPANY follow "
+            f"persists for a signed-in owner-scoped user: {len(watch_writes)} browser writes to "
+            f"{tables} ({first['module']}:{first['line']} {first['verb']}; user_id-filtered; "
+            f"Terminal 0001_init.sql schema per engine/fif_saved_research_notifications.py:6); "
+            f"source/theme follow and news-assessment save absent; nearest routes "
+            f"{nearest_text}; follow/saved open in "
+            f"research/news_intelligence_estate_20261021/MASTERPLAN.md:77 Macro #9612; "
+            f"source probe, not observed behaviour; no-test"
         )
     return "ABSENT", 0, (
-        f"{total} post/put/patch handlers "
-        f"(post={counts['post']} put={counts['put']} patch={counts['patch']}) in "
-        f"app/*.py; 0 persist a followed news source or market theme; nearest "
-        f"{nearest_text}; follow/saved open in "
-        f"research/news_intelligence_estate_20261021/MASTERPLAN.md:77 Macro #9612; "
-        f"no-test"
+        f"{census}; 0 persist a followed news source or market theme; 0 owner-scoped "
+        f"browser writes to watchlist tables; nearest {nearest_text}; follow/saved open in "
+        f"research/news_intelligence_estate_20261021/MASTERPLAN.md:77 Macro #9612; no-test"
     )
+
+
+_THESIS_OWNER_TABLES = ("theses", "thesis_versions")
+# Write verbs only (case-sensitive, word-bounded): a GET that selects `updated_at`
+# next to the table name is a read, not a writer.
+_WRITE_VERB_RE = r"\b(POST|PATCH|PUT|insert|upsert)\b"
 
 
 def p5_propose(_scratch: Path, handlers: list[dict]) -> tuple[str, str]:
-    """Propose a thesis change through the existing user owner."""
+    """Propose a thesis change through the existing user owner.
+
+    The existing user owner is Supabase public.theses + public.thesis_versions
+    (the immutable revision ledger; engine/thesis_condition_monitor.py:23).
+    engine/news_impact/thesis.py is the news-impact fact log, not that owner.
+    Scope: Macro paths only; the Terminal repository, which owns the schema and
+    may hold a user-authored revision writer, is not inspected offline (UNKNOWN).
+    """
     route_hits = sorted(
-        row
-        for row in handlers
-        if any(token in row["path"].lower() for token in PROPOSAL_ROUTE_TOKENS)
+        (row for row in handlers if any(token in row["path"].lower() for token in PROPOSAL_ROUTE_TOKENS)),
+        key=lambda row: (row["module"], row["line"]),
     )
     thesis_path = ROOT / "engine" / "news_impact" / "thesis.py"
     tree = ast.parse(thesis_path.read_text(encoding="utf-8"))
@@ -490,24 +591,42 @@ def p5_propose(_scratch: Path, handlers: list[dict]) -> tuple[str, str]:
         for node in tree.body
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
     )
-    name_hits = [
-        name
-        for name in names
-        if any(token in name.lower() for token in PROPOSAL_CALLABLE_TOKENS)
-    ]
-    if route_hits or name_hits:
+    name_hits = [name for name in names if any(token in name.lower() for token in PROPOSAL_CALLABLE_TOKENS)]
+
+    owner_pattern = re.compile(
+        rf"{_WRITE_VERB_RE}[^\n]{{0,120}}\b({'|'.join(_THESIS_OWNER_TABLES)})\b|"
+        rf"\b({'|'.join(_THESIS_OWNER_TABLES)})\b[^\n]{{0,120}}{_WRITE_VERB_RE}"
+    )
+    mention_files: list[str] = []
+    writer_files: list[str] = []
+    for base in ("app", "engine", "lib", "scripts", "templates"):
+        for path in sorted((ROOT / base).rglob("*")):
+            if path.suffix not in {".py", ".js"} or not path.is_file():
+                continue
+            text = path.read_text(encoding="utf-8", errors="replace")
+            if re.search(r"\bthesis_versions\b", text):
+                rel = path.relative_to(ROOT).as_posix()
+                mention_files.append(rel)
+                if owner_pattern.search(text):
+                    writer_files.append(rel)
+    owner_named = "thesis_versions" in (ROOT / "engine" / "thesis_condition_monitor.py").read_text(encoding="utf-8")
+
+    if route_hits or name_hits or writer_files:
         return "PARTIAL", (
-            f"proposal entry point located: routes "
-            f"{[row['path'] for row in route_hits]} callables {name_hits}; "
+            f"proposal entry point located: routes {[row['path'] for row in route_hits]} "
+            f"callables {name_hits} thesis_versions writers {writer_files}; owner "
+            f"public.theses/thesis_versions engine/thesis_condition_monitor.py:23; "
             f"engine/news_impact/thesis.py:8; no-test"
         )
     return "ABSENT", (
-        f"0 of {len(handlers)} post/put/patch routes in app/*.py named "
-        f"propose/proposal/thesis; {len(names)} top-level callables in "
-        f"engine/news_impact/thesis.py, 0 propose*; mutation is owner fact "
-        f"append engine/news_impact/thesis.py:569 and the view is the pure "
-        f"projector engine/news_impact/thesis.py:660; standing kill "
-        f"DNR:KILL-THESIS-LOBE engine/news_impact/thesis.py:8; no-test"
+        f"existing user owner = Supabase public.theses + public.thesis_versions "
+        f"(engine/thesis_condition_monitor.py:23, named={owner_named}); Macro writers to "
+        f"thesis_versions: {len(writer_files)} across {len(mention_files)} mentioning files; "
+        f"0 of {len(handlers)} mutating routes under app/ named propose/proposal/thesis; "
+        f"engine/news_impact/thesis.py is the fact log ({len(names)} callables, 0 propose*; "
+        f"append engine/news_impact/thesis.py:569, projector :660, DNR:KILL-THESIS-LOBE :8); "
+        f"scope: no Macro path proposes a thesis_versions row from a news item; Terminal "
+        f"writer not inspected offline (UNKNOWN); no-test"
     )
 
 
@@ -515,44 +634,65 @@ def p5_propose(_scratch: Path, handlers: list[dict]) -> tuple[str, str]:
 _CREATE_TABLE_RE = re.compile(
     r"CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?[\"'`\[]?(\w+)", re.IGNORECASE
 )
+# The FIRST stores a V6 build must reuse, each with the Macro file that names it.
+FIRST_STORES = (
+    ("public.theses/thesis_versions", "engine/thesis_condition_monitor.py", "thesis_versions"),
+    ("public.alert_outbox", "engine/thesis_condition_monitor.py", "alert_outbox"),
+    ("public.alert_outbox writer", "engine/alert_delivery_drain.py", "alert_outbox"),
+    ("data/alerts/watchlist_alerts.jsonl", "scripts/run_watchlist_sentinel.py", "watchlist_alerts.jsonl"),
+    ("theme_thesis_ledger.jsonl", "engine/neuralweb/theme_thesis.py", "theme_thesis_ledger"),
+    ("capital_structure_saved_scenarios", "contracts/capital_structure_saved_scenarios.table.sql", "capital_structure_saved_scenarios"),
+)
 
 
 def p6_no_second_store(_scratch: Path) -> tuple[str, str]:
-    """No second thesis or alert store: source scan of app/ and engine/."""
+    """No second thesis or alert store: name the first stores, then scan.
+
+    The canonical stores live in Supabase migrations outside this repository
+    (Terminal PR #502 theses/thesis_versions, PR #513 alert_outbox) plus two
+    file ledgers and one SQL contract here; each is confirmed from the Macro
+    file that names it. The CREATE TABLE scan then covers app/ (recursive),
+    engine/, lib/, scripts/ and contracts/*.sql. Absence by scan is a source
+    probe, so the ceiling is PARTIAL.
+    """
     modules = sorted(
-        list((ROOT / "app").glob("*.py")) + list((ROOT / "engine").rglob("*.py"))
+        list((ROOT / "app").rglob("*.py")) + list((ROOT / "engine").rglob("*.py"))
+        + list((ROOT / "lib").rglob("*.py")) + list((ROOT / "scripts").rglob("*.py"))
+        + list((ROOT / "contracts").rglob("*.sql"))
     )
     statements = 0
     named: list[str] = []
-    stems: list[Path] = []
     for module in modules:
         text = module.read_text(encoding="utf-8", errors="replace")
         for match in _CREATE_TABLE_RE.finditer(text):
             statements += 1
-            if re.search(r"thesis|alert", match.group(1), re.IGNORECASE):
-                named.append(f"{module.name}:{match.group(1)}")
-        if re.search(r"thesis|alert", module.stem, re.IGNORECASE):
-            stems.append(module)
-    stem_sql = {
-        module: ("CREATE TABLE" in module.read_text(encoding="utf-8", errors="replace")
-                 or "sqlite3.connect" in module.read_text(encoding="utf-8", errors="replace"))
-        for module in stems
-    }
-    with_sql = sum(1 for value in stem_sql.values() if value)
+            if re.search(r"thesis|alert|saved", match.group(1), re.IGNORECASE):
+                named.append(f"{module.relative_to(ROOT).as_posix()}:{match.group(1)}")
+    confirmed = [
+        label for label, rel, needle in FIRST_STORES
+        if needle in (ROOT / rel).read_text(encoding="utf-8", errors="replace")
+    ]
     return "PARTIAL", (
-        f"source scan app/+engine/ ({len(modules)} files, {statements} CREATE TABLE): "
-        f"{len(named)} tables named thesis/alert"
-        f"{' -> ' + ','.join(sorted(named)) if named else ''}; {len(stems)} modules "
-        f"named *thesis*/*alert* (incl. engine/news_impact/thesis.py), {with_sql} "
-        f"with sqlite/CREATE TABLE; standing kill DNR:KILL-THESIS-LOBE declares no "
-        f"mutable thesis object engine/news_impact/thesis.py:8; absence by scan is a "
-        f"source probe, not an observed behaviour; no-test"
+        f"first stores a V6 build must reuse ({len(confirmed)}/{len(FIRST_STORES)} confirmed "
+        f"from the naming file): {'; '.join(confirmed)}; CREATE TABLE scan app/+engine/+lib/+"
+        f"scripts/+contracts/*.sql ({len(modules)} files, {statements} statements): "
+        f"{len(named)} tables named thesis/alert/saved"
+        f"{' -> ' + ','.join(sorted(named)) if named else ''}; standing kill "
+        f"DNR:KILL-THESIS-LOBE engine/news_impact/thesis.py:8; Supabase migrations are not in "
+        f"this tree (engine/thesis_condition_monitor.py:23 engine/alert_delivery_drain.py:628); "
+        f"absence by scan is a source probe, not an observed behaviour; no-test"
     )
 
 
 # --------------------------------------------- P7: correction after save ----
-def p7_correction_reaches_saved(scratch: Path, f2, save_matches: int) -> tuple[str, str]:
-    """Correction after save reaches the saved research: end-to-end absence."""
+def p7_correction_reaches_saved(scratch: Path, f2, news_surfaces: int) -> tuple[str, str]:
+    """Correction after save reaches the saved research: end-to-end absence.
+
+    The verdict turns on whether a saved NEWS ASSESSMENT exists for the
+    correction to reach (a news/source/theme follow surface from P4). A company
+    watchlist stores tickers, not assessments, and the device-local Filing
+    Forensics briefcase is neither signed-in nor news, so neither counts.
+    """
     from engine.qbus_news_store import NewsStore
 
     db = scratch / "p7-news.sqlite3"
@@ -586,18 +726,21 @@ def p7_correction_reaches_saved(scratch: Path, f2, save_matches: int) -> tuple[s
         corrected_title = snap.rows[0].title if snap.rows else None
     finally:
         reader.close()
-    correction_ok = corrected_title == "SYNTH-TITLE-B"
-    if save_matches:
+    briefcase = ROOT / "templates" / "fif_saved_briefcase.js"
+    briefcase_local = briefcase.exists() and "saved_against" in briefcase.read_text(encoding="utf-8")
+    if news_surfaces:
         return "PARTIAL", (
             f"correction reaches store state title={corrected_title}; "
-            f"{save_matches} save/follow surface(s) located in P4 but propagation "
+            f"{news_surfaces} news/source/theme follow surface(s) located in P4 but propagation "
             f"to a saved assessment unproven; engine/qbus_news_reducer.py:166; no-test"
         )
     return "ABSENT", (
         f"correction observed in store: title SYNTH-TITLE-A->{corrected_title} after "
         f"corrected revision commit (engine/qbus_news_reducer.py:166 reduce_revision) "
-        f"but no saved research exists to receive it (P4: 0 save/follow handlers); "
-        f"no end-to-end path; no-test"
+        f"but no saved news assessment exists to receive it (P4: {news_surfaces} news/source/"
+        f"theme follow surfaces; the company watchlist stores tickers, not assessments; the "
+        f"device-local briefcase templates/fif_saved_briefcase.js:1 saved_against="
+        f"{briefcase_local} is neither signed-in nor news); no end-to-end path; no-test"
     )
 
 
@@ -632,7 +775,7 @@ def main() -> int:
     for verdict, evidence in (p3_inspect(SCRATCH),):
         tally[verdict] += 1
         print(f"V6 P3 {verdict} {evidence}", flush=True)
-    p4_verdict, save_matches, p4_evidence = p4_save_follow(SCRATCH, handlers)
+    p4_verdict, news_surfaces, p4_evidence = p4_save_follow(SCRATCH, handlers)
     tally[p4_verdict] += 1
     print(f"V6 P4 {p4_verdict} {p4_evidence}", flush=True)
     for verdict, evidence in (p5_propose(SCRATCH, handlers),):
@@ -642,7 +785,7 @@ def main() -> int:
         tally[verdict] += 1
         print(f"V6 P6 {verdict} {evidence}", flush=True)
     for verdict, evidence in (
-        p7_correction_reaches_saved(SCRATCH, f2, save_matches),
+        p7_correction_reaches_saved(SCRATCH, f2, news_surfaces),
     ):
         tally[verdict] += 1
         print(f"V6 P7 {verdict} {evidence}", flush=True)
