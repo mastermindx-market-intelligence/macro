@@ -45643,6 +45643,13 @@ jobs:
       - "scripts/build_sector_holdings_coverage.py"
       # Read by name in the receipt test since EW-P5 FU2 (site copy of a bound render input).
       - "site/si_workspace.js"
+      # Closure widening 2026-11-02 (contract-delta on the tested merge ref of #9917):
+      # scripts/build_sector_central.py -> engine/sector_cycles.py -> engine/hazard_parity.py
+      # loads the W4.2 panel/fit scripts by literal path, and the panel script names
+      # the W4.1 census — all three now sit in this suite's closure.
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
