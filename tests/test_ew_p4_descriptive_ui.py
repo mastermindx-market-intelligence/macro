@@ -672,3 +672,61 @@ def test_fu_scan_reaches_every_drawer_line():
     text = _text(_new_elements(render(envelope(_fixtures()["observed_rise"]))))
     for phrase in ("What argues against this", "What would undo this", "Next: "):
         assert phrase in text, phrase
+
+
+# ---------------------------------------------------------------------------
+# EW-P4-ACT O06: no consumer claims an id without a source-owned receipt.
+# ---------------------------------------------------------------------------
+def _no_receipt(v):
+    v.pop("recorded")
+
+
+def _set_receipt(key, value):
+    def mutate(v):
+        v["recorded"][key] = value
+    return mutate
+
+
+O06_VARIANTS = {
+    "missing": _no_receipt,
+    "null": lambda v: v.update(recorded=None),
+    "non_object": lambda v: v.update(recorded="macro.rotation_events.ledger"),
+    "array": lambda v: v.update(recorded=[v["recorded"]]),
+    "wrong_source": _set_receipt("source", "macro.rotation_events.cache"),
+    "wrong_ledger": _set_receipt("ledger", "rotation_events/other.jsonl"),
+    "uppercase_hex": lambda v: v["recorded"].update(receipt_sha256=v["recorded"]["receipt_sha256"].upper()),
+    "short_digest": lambda v: v["recorded"].update(receipt_sha256=v["recorded"]["receipt_sha256"][1:]),
+    "non_string_digest": _set_receipt("receipt_sha256", 7),
+}
+
+
+def _observation_id_attr(dlg: str) -> str:
+    m = re.search(r'id="gde-ew"[^>]*data-observation-id="([^"]*)"', dlg)
+    assert m, "data-observation-id missing"
+    return m.group(1)
+
+
+def test_o06_a_receipted_view_keeps_its_id():
+    fixture = _fixtures()["journey_b_both_fell"]
+    dlg = render(envelope(fixture))
+    assert state_of(dlg) == "observed"
+    assert _observation_id_attr(dlg) == fixture["notification"]["observation_id"]
+
+
+@pytest.mark.parametrize("variant", sorted(O06_VARIANTS))
+def test_o06_a_view_without_its_ledger_receipt_is_unreadable_and_claims_no_id(variant):
+    fixture = deepcopy(_fixtures()["journey_b_both_fell"])
+    O06_VARIANTS[variant](fixture)
+    lib_validate(fixture["notification"])  # the notification itself is still lib-valid
+    dlg = render(envelope(fixture))
+    assert state_of(dlg) == "unreadable", variant
+    assert _observation_id_attr(dlg) == "", variant
+    assert fixture["notification"]["observation_id"] not in dlg, variant
+
+
+def test_o06_an_invalid_view_never_echoes_its_raw_id():
+    """Supersedes the B1 echo: malformed_id used to carry rotobs_XYZ escaped in the attribute."""
+    dlg = render(envelope(_fixtures()["malformed_id"]))
+    assert state_of(dlg) == "unreadable"
+    assert _observation_id_attr(dlg) == ""
+    assert "rotobs_XYZ" not in dlg
