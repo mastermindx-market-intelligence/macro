@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-13T18:25:07Z",
+ "accession": "0001493152-26-016338",
+ "cik": "0000771266",
+ "doc_byte_length": 1805474,
+ "doc_sha256": "7b69216bb04f67b346c897eb5e3a1d8ab835422646f33a0d8e8dca3597c3a549",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-13",
+ "form": "10-K",
+ "period_of_report": "2025-12-27",
+ "primary_document": "form10-k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 352965,
+  "byte_start": 352556,
+  "normalized": "Industrial and medical markets are growing, with customers like HMDmD, expanding our customer base. Research and development revenues, primarily from U.S. Government contracts, accounted for 12% of total revenues in 2025 and 2024. The Company generally seeks a balance between research and development to low-rate initial production (“LRIP”) sales, with the overall intent of shifting more to LRIP",
+  "normalized_sha256": "f8168a5969abee7aad38124950f06d45fabcca494f14528c108a0d3132e14e5b",
+  "raw": "Industrial\nand medical markets are growing, with customers like HMDmD, expanding our customer base. Research and development revenues,\nprimarily from U.S. Government contracts, accounted for 12% of total revenues in 2025 and 2024. The\nCompany generally seeks a balance between research and development to low-rate initial production (&#8220;LRIP&#8221;) sales, with\nthe overall intent of shifting more to LRIP",
+  "raw_sha256": "4ec592080560b65083b9bd90ffa4c24dd4937251dac052e1a4266d3291c2c0a1"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/771266/000149315226016338/form10-k.htm",
+ "xbrl_contexts": []
+}

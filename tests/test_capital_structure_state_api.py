@@ -20,6 +20,7 @@ from datetime import datetime, timedelta, timezone
 import dataclasses
 import hashlib
 import json
+import os
 import re
 from pathlib import Path
 from typing import Any, NamedTuple
@@ -1730,6 +1731,132 @@ def test_u1b_inputs_bundle_fails_closed_while_state_keeps_serving(
 
 
 # ---------------------------------------------------------------------------
+# V0 — validity is cached per published file; binding is checked per request
+# ---------------------------------------------------------------------------
+
+
+def _counting_validator(monkeypatch: pytest.MonkeyPatch, *, fail: bool = False) -> dict[str, int]:
+    """Count full-bundle validations behind the loader (optionally failing each)."""
+    calls = {"validate": 0}
+    real = api.validate_capacity_inputs_bundle
+
+    def counting(value: Any) -> None:
+        calls["validate"] += 1
+        if fail:
+            raise ValueError("forced contract failure")
+        real(value)
+
+    monkeypatch.setattr(api, "validate_capacity_inputs_bundle", counting)
+    return calls
+
+
+def _write_inputs(path: Path, record: dict[str, Any]) -> None:
+    path.write_text(json.dumps(record, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def test_v0_unbound_inputs_are_validated_once_and_refused_every_time(
+    client: TestClient, served: _Served, built: _Built, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A valid bundle that binds another generation is checked once, then refused cheaply."""
+    _write_inputs(
+        served.state_path.parent / CAPACITY_INPUTS_FILENAME,
+        _inputs_bundle_record(built, state_generation_id="state_bundle:another"),
+    )
+    served.reset()
+    calls = _counting_validator(monkeypatch)
+    try:
+        for _ in range(4):
+            refused = client.post(EVALUATE_PATH, json=_scenario_body())
+            assert refused.status_code == 503
+            assert _detail(refused) == _INPUTS_NOT_BOUND
+            _checked(refused)
+        assert calls["validate"] == 1
+    finally:
+        api._reset_inputs_cache()
+
+
+def test_v0_bound_inputs_serve_identical_envelopes_from_one_validation(
+    client: TestClient, with_inputs: _Inputs, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls = _counting_validator(monkeypatch)
+    first = _checked(client.post(EVALUATE_PATH, json=_scenario_body()), status=200)
+    second = _checked(client.post(EVALUATE_PATH, json=_scenario_body()), status=200)
+    assert first == second
+    assert calls["validate"] == 1
+
+
+def test_v0_cached_inputs_are_rebound_against_the_state_served_now(
+    served: _Served, with_inputs: _Inputs, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A cache hit never outlives the generation it binds, and never re-validates."""
+    calls = _counting_validator(monkeypatch)
+    assert api._load_inputs() == with_inputs.record
+    assert calls["validate"] == 1
+
+    served_state = api._load_state()
+    moved = {**served_state, "generation_id": "state_bundle:moved-on"}
+    monkeypatch.setattr(api, "_load_state", lambda: moved)
+    with pytest.raises(HTTPException) as caught:
+        api._load_inputs()
+    assert caught.value.status_code == 503
+    assert caught.value.detail == _INPUTS_NOT_BOUND
+
+    monkeypatch.setattr(api, "_load_state", lambda: served_state)
+    assert api._load_inputs() == with_inputs.record
+    assert calls["validate"] == 1
+
+
+def test_v0_a_new_published_file_is_validated_again(
+    served: _Served, built: _Built, with_inputs: _Inputs, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls = _counting_validator(monkeypatch)
+    assert api._load_inputs() == with_inputs.record
+    assert api._load_inputs() == with_inputs.record
+    assert calls["validate"] == 1
+
+    republished = _inputs_bundle_record(built)
+    republished_body = json.dumps(republished, indent=4, sort_keys=True) + "\n"
+    with_inputs.path.write_text(republished_body, encoding="utf-8")
+    assert api._load_inputs() == republished
+    assert calls["validate"] == 2
+
+
+def test_v0_mtime_and_size_each_invalidate_the_cache_alone(
+    with_inputs: _Inputs, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Either stat field changing on its own is a new file: neither half of the key is redundant."""
+    calls = _counting_validator(monkeypatch)
+    assert api._load_inputs() == with_inputs.record
+    assert calls["validate"] == 1
+
+    before = with_inputs.path.stat()
+    os.utime(with_inputs.path, ns=(before.st_atime_ns, before.st_mtime_ns + 1_000_000_000))
+    assert with_inputs.path.stat().st_size == before.st_size
+    assert api._load_inputs() == with_inputs.record
+    assert calls["validate"] == 2
+
+    touched = with_inputs.path.stat()
+    with_inputs.path.write_text(json.dumps(with_inputs.record, indent=4, sort_keys=True) + "\n", encoding="utf-8")
+    os.utime(with_inputs.path, ns=(touched.st_atime_ns, touched.st_mtime_ns))
+    resized = with_inputs.path.stat()
+    assert (resized.st_mtime_ns, resized.st_size != touched.st_size) == (touched.st_mtime_ns, True)
+    assert api._load_inputs() == with_inputs.record
+    assert calls["validate"] == 3
+
+
+def test_v0_a_failed_validation_is_never_cached(
+    client: TestClient, with_inputs: _Inputs, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls = _counting_validator(monkeypatch, fail=True)
+    for attempt in range(1, 4):
+        refused = client.post(EVALUATE_PATH, json=_scenario_body())
+        assert refused.status_code == 503
+        assert _detail(refused) == _INPUTS_UNAVAILABLE
+        _checked(refused)
+        assert calls["validate"] == attempt
+
+
+# ---------------------------------------------------------------------------
 # Gate 20 — the production mount probe includes the evaluate route
 # ---------------------------------------------------------------------------
 
@@ -1749,3 +1876,30 @@ def test_u1b_router_mount_probe_includes_evaluate() -> None:
 
     mounted = main_mod.app.openapi().get("paths", {})
     assert f"{PREFIX}/issuers/{{issuer_id}}/scenarios/evaluate" in mounted
+
+
+def test_u2_router_mount_probe_includes_changes_saved_and_export() -> None:
+    """Gate 31 (SPEC_U2 §2): every U2-2 route is entitled at declaration,
+    answers its own methods only, and is mounted in the production app."""
+    saved_path = f"{PREFIX}/issuers/{{issuer_id}}/scenarios/saved"
+    expected = (
+        (f"{PREFIX}/issuers/{{issuer_id}}/changes", {"GET"}),
+        (saved_path, {"GET", "POST"}),
+        (f"{saved_path}/{{saved_id}}", {"GET", "DELETE"}),
+        (f"{saved_path}/{{saved_id}}/export.{{fmt}}", {"GET"}),
+        (f"{PREFIX}/issuers/{{issuer_id}}/scenarios/evaluate/export.{{fmt}}", {"POST"}),
+    )
+    by_path: dict[str, set[str]] = {}
+    for route in api.router.routes:
+        by_path.setdefault(route.path, set()).update(route.methods)
+        calls = {dependency.call for dependency in route.dependant.dependencies}
+        assert api.require_site_full_user in calls, route.path
+    for path, methods in expected:
+        assert path in by_path, path
+        assert methods <= by_path[path], (path, methods)
+
+    import app.main as main_mod  # noqa: PLC0415
+
+    mounted = main_mod.app.openapi().get("paths", {})
+    for path, _methods in expected:
+        assert path in mounted, path

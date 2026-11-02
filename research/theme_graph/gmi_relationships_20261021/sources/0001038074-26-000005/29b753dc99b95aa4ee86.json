@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-10T21:08:36Z",
+ "accession": "0001038074-26-000005",
+ "cik": "0001038074",
+ "doc_byte_length": 1674294,
+ "doc_sha256": "9e341102c42a9d25e6b7507e3d306292400c077473fc161e3272f9cb4f397ac4",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-10",
+ "form": "10-K",
+ "period_of_report": "2026-01-03",
+ "primary_document": "slab-20260103.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1208416,
+  "byte_start": 1208001,
+  "normalized": "Arrow Electronics28",
+  "normalized_sha256": "b8adaf0998b8993c6e4b3b161f3ce7b53c0812c4e13fd362a5b7a942842f7167",
+  "raw": "Arrow Electronics</span></td><td colspan=\"2\" style=\"background-color:#cceeff;border-top:0.75pt solid #000000;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:114%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-89\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-600\">28",
+  "raw_sha256": "29b753dc99b95aa4ee869382e5f98be7c72aac9f6c8126660c8f590a3c364ddf"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1038074/000103807426000005/slab-20260103.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 42374,
+   "byte_start": 41707,
+   "context_ref": "c-89",
+   "raw": "<xbrli:context id=\"c-89\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001038074</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">slab:ArrowElectronicsMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">slab:DistributorsMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-12-29</xbrli:startDate><xbrli:endDate>2026-01-03</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "26f706e5395f1ea9cf2c2c628f690b0151cd3c57e2cbbd2183746ffbb06d06e7"
+  }
+ ]
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-19T10:30:34Z",
+ "accession": "0001193125-26-115081",
+ "cik": "0001966983",
+ "doc_byte_length": 3672914,
+ "doc_sha256": "866869c17fe04fb41aaf54dd2458be4225161c7e922d725e3ed666a8b948702c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-19",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "lac-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3584134,
+  "byte_start": 3583845,
+  "normalized": "Second Amendment to Lithium Offtake Agreement, dated December 20, 2024, by and among Lithium Americas Corp., Lithium Nevada LLC, and General Motors Holdings LLC (incorporated by reference to Exhibit 10.9 to the Annual Report on Form 10-K filed by Lithium Americas Corp. on March 28, 2025).",
+  "normalized_sha256": "fcc1c77b25f530aa22d3c082ea51418380c951ffd90fece14d0c48ac7fc1e555",
+  "raw": "Second Amendment to Lithium Offtake Agreement, dated December 20, 2024, by and among Lithium Americas Corp., Lithium Nevada LLC, and General Motors Holdings LLC (incorporated by reference to Exhibit 10.9 to the Annual Report on Form 10-K filed by Lithium Americas Corp. on March 28, 2025).",
+  "raw_sha256": "fcc1c77b25f530aa22d3c082ea51418380c951ffd90fece14d0c48ac7fc1e555"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1966983/000119312526115081/lac-20251231.htm",
+ "xbrl_contexts": []
+}

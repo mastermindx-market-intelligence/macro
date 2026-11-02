@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-23T18:15:26Z",
+ "accession": "0001193125-26-119321",
+ "cik": "0001280263",
+ "doc_byte_length": 4117571,
+ "doc_sha256": "deeacde656e445319dba455f66696bc4ccbee30ed2c9ef92dc4a9695c8f83852",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-23",
+ "form": "10-K",
+ "period_of_report": "2026-01-31",
+ "primary_document": "amba-20260131.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 329023,
+  "byte_start": 328455,
+  "normalized": "In fiscal year 2026, the customer representing 10% or more of revenue was WT Microelectronics Co., Ltd., formerly Wintech Microelectronics Co., Ltd., or WT, our non-exclusive sales representative and fulfillment partner in Asia other than Japan, which accounted for approximately 70% of total revenue. We currently rely, and expect to continue to rely, on a limited number of customers for a significant portion of our revenue.",
+  "normalized_sha256": "6416555582eebf2e47eea802cce869185d926c4596aab34345e15d166483902b",
+  "raw": "In fiscal year 2026, the customer representing 10% or more of revenue was WT Microelectronics Co., Ltd., formerly Wintech Microelectronics Co., Ltd., or WT, our non-exclusive sales representative and fulfillment partner in Asia other than Japan, which accounted for approximately 70% of total revenue. We currently rely, and expect to continue to rely, on a limited number of customers for a significant portion of our revenue.</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\"> ",
+  "raw_sha256": "4f3917d2a6f1cecb45335a9f133240c363ea24beb2c5a466bc3758b308de4290"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1280263/000119312526119321/amba-20260131.htm",
+ "xbrl_contexts": []
+}
