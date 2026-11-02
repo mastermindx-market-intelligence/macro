@@ -243,29 +243,49 @@ ACQUISITION_DATE_PATTERN_WIDENED = (
 # abstained; a row it values carries the widened mapping's rule digest, so
 # the digest always names the search that actually produced the value.
 #
-# Acquisition-date sentence guard (diversified_v1 second-lane repair). A
-# date the widened pattern captures may value ``acquisition_date`` only from
-# a sentence that (i) carries a completion verb governing the deal — a form
-# of "acquire", or "completed the acquisition" / "completed its
-# acquisition" / "closed the acquisition" / "consummated" — (ii) carries no
-# announcement, agreement or payment wording — "announced", "agreement to
-# acquire", "entered into", "agreed to", "definitive agreement", "paid",
-# "pending", "expects to", "will acquire" — and (iii) whose captured date
-# falls inside the report's fiscal period. Accept shapes: "On <date>, the
-# Company acquired ...", "On <date>, the Company completed the acquisition
-# of ...". Reject shapes: "On <date>, the Company announced its agreement
-# to acquire ..." (announcement), "On <date>, X entered into a ... agreement
-# to acquire ..." (agreement), "... was paid as of <date> ..." (payment),
-# and any completion sentence dated outside the report's fiscal period — a
-# prior-year deal re-narrated in a later filing, or a closing after the
-# period end (a subsequent event). The guard is generic: no issuer, ticker
-# or deal vocabulary. The first candidate sentence in document order that
-# passes all three tests wins; none passing is a typed absence.
+# Acquisition-date sentence guard (diversified_v1 second-lane repair; armed
+# for the frozen search as well by the third-lane repair). A date either
+# pattern captures may value ``acquisition_date`` only from a sentence that
+# (i) carries a completion verb governing the deal — a form of "acquire",
+# "completed the acquisition" / "completed its acquisition" / "closed the
+# acquisition" / "consummated", or the passive "acquisition … was completed"
+# shape — (ii) carries no announcement, agreement or payment wording —
+# "announced", "agreement to acquire", "entered into", "agreed to",
+# "definitive agreement", "paid", "pending", "expects to", "will acquire" —
+# and (iii) whose captured date falls inside the report's fiscal period.
+# Accept shapes: "On <date>, the Company acquired ...", "On <date>, the
+# Company completed the acquisition of ...", "The acquisition of X was
+# completed on <date> ...", "The acquisition by the Company of X was
+# completed on <date> ...", "The acquisition was completed on <date> ...".
+# The passive "acquisition … was completed" shape counts only when
+# "acquisition" is followed by "of"/"by" (naming the target) or directly by
+# "was completed" — an intervening noun ("acquisition agreement",
+# "acquisition payment") is not the deal's completion. Reject shapes: "On
+# <date>, the Company announced its agreement to acquire ..."
+# (announcement), "On <date>, X entered into a ... agreement to acquire ..."
+# (agreement), "... was paid as of <date> ..." (payment), "The Company's
+# acquisition agreement was completed on <date> ..." and "The Company
+# completed the acquisition agreement on <date> ..." (agreement "was
+# completed" sentences), "The final payment for the acquisition was
+# completed on <date> ..." / "The acquisition payment was completed on
+# <date> ..." / "Financing for the acquisition was completed on <date> ..."
+# (payment and financing "was completed" sentences — they can literally
+# contain "the acquisition was completed"; those payment and financing
+# reject words also cover the plural and re-/pre- derived forms —
+# payments, repayments, prepayments, financings, refinancings), and any
+# completion sentence
+# dated outside the report's fiscal period — a prior-year deal re-narrated
+# in a later filing, or a closing after the period end (a subsequent
+# event). The guard is generic: no issuer, ticker or deal vocabulary. The
+# first candidate sentence in document order that passes all three tests
+# wins; none passing is a typed absence.
 _ACQUISITION_COMPLETION_PATTERN = re.compile(
     r"\bacquir(?:ed|es|e|ing)\b"
     r"|completed (?:the|its) acquisition"
     r"|closed the acquisition"
-    r"|consummated",
+    r"|consummated"
+    r"|acquisition\s+(?:of|by)\b[^.;]{0,80}\bwas completed\b"
+    r"|acquisition\s+was completed\b",
     re.IGNORECASE,
 )
 _ACQUISITION_NON_COMPLETION_PATTERN = re.compile(
@@ -274,7 +294,10 @@ _ACQUISITION_NON_COMPLETION_PATTERN = re.compile(
     r"|entered into"
     r"|agreed to"
     r"|definitive agreement"
+    r"|acquisition agreement"
     r"|\bpaid\b"
+    r"|\b(?:re|pre)?payments?\b"
+    r"|\b(?:re)?financings?\b"
     r"|pending"
     r"|expects to"
     r"|will acquire",
@@ -394,17 +417,18 @@ def _guarded_acquisition_date_match(
     hi: int,
     section_span: tuple[int, int],
     period: tuple[date, date],
+    pattern: str = ACQUISITION_DATE_PATTERN_WIDENED,
 ) -> "re.Match[str] | None":
-    """The first widened-pattern date match whose sentence passes the guard.
+    """The first ``pattern`` date match whose sentence passes the guard.
 
     Scans every capture in document order; a candidate survives only when
     its sentence carries a completion verb, no announcement/agreement/
     payment wording, and a date inside ``period`` (see the accept and reject
-    shapes documented at ``_ACQUISITION_COMPLETION_PATTERN``).
+    shapes documented at ``_ACQUISITION_COMPLETION_PATTERN``). The frozen and
+    the widened date pattern run under the same guard, each over its own
+    captures.
     """
-    for match in re.compile(ACQUISITION_DATE_PATTERN_WIDENED).finditer(
-        text, lo, hi
-    ):
+    for match in re.compile(pattern).finditer(text, lo, hi):
         sentence_span = narrative.sentence_span(
             text, match.start(), match.end(), section_span
         )
@@ -559,10 +583,12 @@ def _rewrite_narrative_row(
     and a row it values carries the widened mapping's rule digest so the
     digest names the search that actually produced the value.
 
-    ``date_period`` arms the acquisition-date sentence guard: the widened
-    date search then takes the first captured date whose sentence carries a
-    completion verb, no announcement/agreement/payment wording, and a date
-    inside the fiscal period (see ``_ACQUISITION_COMPLETION_PATTERN``).
+    ``date_period`` arms the acquisition-date sentence guard: every variant's
+    date search — frozen and widened alike — then takes the first captured
+    date whose sentence carries a completion verb, no announcement/agreement/
+    payment wording, and a date inside the fiscal period (see
+    ``_ACQUISITION_COMPLETION_PATTERN``); with no period the frozen search
+    keeps running unguarded, exactly as before.
     """
     field_id = row["field_id"]
     rule_id = f"pk07.{field_id}.text_span/v1"
@@ -597,13 +623,13 @@ def _rewrite_narrative_row(
         if section_span is None:
             continue
         lo, hi = section_span
-        if (
-            variant is not mapping
-            and date_group is not None
-            and date_period is not None
-        ):
+        if date_group is not None and date_period is not None:
+            # The sentence guard binds every variant equally (third-lane
+            # repair): a frozen-heading date capture that fails it is the
+            # same typed absence a failed widened capture is — a valued field
+            # must mean what its name says.
             match = _guarded_acquisition_date_match(
-                nt.text, lo, hi, section_span, date_period
+                nt.text, lo, hi, section_span, date_period, variant.pattern
             )
         else:
             match = re.compile(variant.pattern).search(nt.text, lo, hi)
@@ -763,6 +789,20 @@ def _goodwill_rollforward_row(
         return _check_row(
             catalogue_check, "not_evaluable", reason="missing_dependency"
         )
+    # The opening probe is minted with no catalogue unit, so the framework's
+    # USD gate never screened it: compare its unit with the closing row's
+    # unit exactly as ``_impairment_vs_carrying_row`` does — a non-USD
+    # prior-instant fact must never enter the identity unchecked.
+    opening_unit = opening[1]
+    closing_unit = _row_unit(ledger, rows["goodwill"])
+    if (
+        opening_unit is not None
+        and closing_unit is not None
+        and opening_unit != closing_unit
+    ):
+        return _check_row(
+            catalogue_check, "not_evaluable", reason="unit_mismatch"
+        )
     tolerance = _closing_tolerance(ledger, rows["goodwill"])
     expected = (
         opening[0]
@@ -892,9 +932,9 @@ class Pk07Producer(PackProducer):
             narrative_fallback = fallback
             date_period = None
             if field_id == "acquisition_date":
-                # The widened date search runs only under its sentence guard,
-                # which needs the fiscal period; with no derivable bound the
-                # field stays the frozen search's own typed absence.
+                # Both date searches run only under the sentence guard, which
+                # needs the fiscal period; with no derivable bound the frozen
+                # search keeps running alone and unguarded.
                 if fiscal_period is not None:
                     date_period = fiscal_period
                 else:

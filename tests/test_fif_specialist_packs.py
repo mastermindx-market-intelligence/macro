@@ -12392,6 +12392,339 @@ def test_pk07_guard_completion_after_the_fiscal_period_is_typed_absence() -> Non
     assert row["text_value"] is None
 
 
+# 50.3 §TESTS (third repair lane): the frozen-variant acquisition-date guard
+# and the goodwill rollforward unit gate. The frozen "Note N – Business
+# Combinations" search values the date only from a sentence the guard accepts
+# — a completion verb (including the passive "acquisition … was completed"
+# shape), no announcement/agreement/payment wording, and a date inside the
+# fiscal period — and the rollforward's prior-instant opening probe is
+# compared with the closing row's unit before the identity is asserted,
+# exactly as impairment_vs_carrying already refuses differing units. Fixtures
+# marked "fail-on-parent" assert behavior the pre-repair pack got wrong;
+# fixtures marked "pin" hold on both the pre- and post-repair pack.
+
+
+def test_pk07_frozen_heading_announcement_sentence_is_typed_absence() -> None:
+    # (T1, fail-on-parent): the frozen note heading locates, but the only
+    # date sentence announces a pending agreement — the guard refuses it and
+    # the field is the same typed absence the widened path produces.
+    paragraphs = (
+        "Note 3 – Business Combinations. The Company announced on June 1,"
+        " 2025 a definitive agreement to acquire Testcorp Incorporated in an"
+        " all-cash transaction. The transaction is pending.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+    assert row["reason"] == "missing_dependency"
+    assert any(
+        "pk07.acquisition_date: narrative_span_not_located;" in line
+        for line in result["limitations"]
+    )
+
+
+def test_pk07_frozen_heading_out_of_period_completion_is_typed_absence() -> None:
+    # (T2, fail-on-parent): a passive completion sentence dated before the
+    # fiscal period start (a prior-year deal re-narrated in a FY2025 pack) is
+    # refused by the in-period bound even under the frozen heading.
+    paragraphs = (
+        "Note 3 – Business Combinations. The acquisition of Testcorp"
+        " Industries was completed on March 15, 2024.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+
+
+def test_pk07_frozen_heading_in_period_passive_completion_values() -> None:
+    # (T3, pin): the passive "acquisition … was completed" shape inside the
+    # fiscal period still values the date through the frozen search, whose
+    # own rule digest names the mapping that produced the value.
+    paragraphs = (
+        "Note 3 – Business Combinations. The acquisition of Testco Industries"
+        " was completed on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "June 15, 2025"
+    assert row["mapping_rule_digest"] == pack_base._text_span_digest(
+        pk07_mna._ACQUISITION_DATE_MAPPING
+    )
+
+
+def test_pk07_rollforward_eur_opening_against_usd_closing_is_unit_mismatch() -> None:
+    # (T4, fail-on-parent): the prior-instant goodwill fact is tagged EUR
+    # while the closing row is USD; the identity 1000+300-50-100+10 = 1160
+    # ties numerically but across two currencies — differing units are never
+    # compared, exactly as impairment_vs_carrying refuses them.
+    facts = (
+        ("us-gaap:Goodwill", "c-ip", "1000", "eur"),
+        ("us-gaap:Goodwill", "c-i", "1160", "usd"),
+        ("us-gaap:GoodwillAcquiredDuringPeriod", "c-fy", "300", "usd"),
+        ("us-gaap:GoodwillWrittenOffRelatedToSaleOfBusinessUnit", "c-fy", "50", "usd"),
+        ("us-gaap:GoodwillImpairmentLoss", "c-fy", "100", "usd"),
+        ("us-gaap:GoodwillForeignCurrencyTranslationGainLoss", "c-fy", "10", "usd"),
+    )
+    result = produce_pack("PK07", _pk07_testco_input(facts))
+    assert contract.validate_pack_result(result) == []
+    check = _pk07_check(result, "goodwill_rollforward_closed")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "unit_mismatch"
+
+
+def test_pk07_rollforward_all_usd_still_passes_with_the_unit_gate() -> None:
+    # (T5, pin): the same roll-forward entirely in USD still passes through
+    # the unit gate — opening USD against closing USD never refuses.
+    result = produce_pack("PK07", _pk07_testco_input(_TESTCO_ROLLFORWARD))
+    check = _pk07_check(result, "goodwill_rollforward_closed")
+    assert check["status"] == "pass"
+    assert check["reason"] is None
+    assert check["tolerance"] == "1"
+
+
+# 50.4 §TESTS (fourth repair lane): the passive completion window tightened.
+# An agreement, payment or financing "was completed" sentence is not the
+# deal's completion, so it may never value acquisition_date: the passive
+# accept alternative now requires "acquisition of/by …" or a bare
+# "acquisition was completed", and the reject pattern names agreement,
+# payment and financing wording (the wording matters because "payment for
+# the acquisition was completed" literally contains "the acquisition was
+# completed"). Fixtures marked "fail-on-parent" assert behavior the
+# pre-repair pack got wrong; fixtures marked "pin" hold on both the pre-
+# and post-repair pack.
+
+
+def test_pk07_frozen_heading_agreement_completion_is_typed_absence() -> None:
+    # (T6, fail-on-parent): the passive alternative's unconstrained window
+    # let "The Company's acquisition agreement was completed …" value as
+    # the acquisition date under the frozen heading; it is a typed absence.
+    paragraphs = (
+        "Note 3 – Business Combinations. The Company's acquisition agreement"
+        " was completed on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+
+
+def test_pk07_frozen_heading_payment_completion_is_typed_absence() -> None:
+    # (T7, fail-on-parent): "The final payment for the acquisition was
+    # completed …" literally contains "the acquisition was completed" —
+    # the payment wording refuses it.
+    paragraphs = (
+        "Note 3 – Business Combinations. The final payment for the"
+        " acquisition was completed on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+
+
+def test_pk07_frozen_heading_acquisition_payment_completion_is_typed_absence() -> None:
+    # (T8, fail-on-parent): "The acquisition payment was completed …" is a
+    # payment sentence, never a deal completion.
+    paragraphs = (
+        "Note 3 – Business Combinations. The acquisition payment was"
+        " completed on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+
+
+def test_pk07_frozen_heading_financing_completion_is_typed_absence() -> None:
+    # (T9, fail-on-parent): "Financing for the acquisition was completed …"
+    # again literally contains "the acquisition was completed" — the
+    # financing wording refuses it.
+    paragraphs = (
+        "Note 3 – Business Combinations. Financing for the acquisition was"
+        " completed on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+
+
+def test_pk07_widened_heading_wording_completion_sentences_are_typed_absence() -> None:
+    # (T10, fail-on-parent): the same agreement, payment and financing
+    # "was completed" sentences under the widened heading family.
+    for sentence in (
+        "The Company's acquisition agreement was completed on June 15, 2025.",
+        "The final payment for the acquisition was completed on June 15, 2025.",
+        "Financing for the acquisition was completed on June 15, 2025.",
+    ):
+        paragraphs = (
+            "Note 2. Acquisitions. " + sentence,
+            _PK07_DEV_IMPAIRMENT_NOTE,
+        )
+        result = produce_pack(
+            "PK07", _pk07_guard_input(_PK07_GUARD_FACTS, paragraphs)
+        )
+        assert contract.validate_pack_result(result) == []
+        row = _row(result, "acquisition_date")
+        assert row["quality_state"] != "valued"
+        assert row["text_value"] is None
+
+
+def test_pk07_widened_heading_completed_acquisition_agreement_is_typed_absence() -> None:
+    # (T11, fail-on-parent): the active "completed the acquisition
+    # agreement" shape is an agreement sentence — the guard refuses it.
+    paragraphs = (
+        "Note 2. Acquisitions. The Company completed the acquisition"
+        " agreement on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_guard_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+
+
+def test_pk07_frozen_heading_passive_of_completion_still_values() -> None:
+    # (T12, pin): "The acquisition of X was completed on <date>" inside the
+    # fiscal period still values through the frozen search on both sides of
+    # the repair.
+    paragraphs = (
+        "Note 3 – Business Combinations. The acquisition of Testco Industries"
+        " was completed on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "June 15, 2025"
+
+
+def test_pk07_frozen_heading_passive_by_completion_still_values() -> None:
+    # (T13, pin): "The acquisition by the Company of X was completed on
+    # <date>" — the by-form of the same passive shape — still values.
+    paragraphs = (
+        "Note 3 – Business Combinations. The acquisition by the Company of"
+        " Testco Industries was completed on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "June 15, 2025"
+
+
+def test_pk07_frozen_heading_bare_passive_completion_still_values() -> None:
+    # (T14, pin): the bare "The acquisition was completed on <date>" shape
+    # — no target named — still values.
+    paragraphs = (
+        "Note 3 – Business Combinations. The acquisition was completed on"
+        " June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "June 15, 2025"
+
+
+# 50.5 §TESTS (fifth repair lane): the payment and financing reject words
+# widened. Matching only the singular underived forms let a repayment,
+# prepayment or refinancing "was completed" sentence — and the plural
+# "payments" / "financings" forms — slip past the guard and value the
+# event's date as acquisition_date (each contains the literal "the
+# acquisition was completed"); the reject words now cover the plural and
+# re-/pre- derived forms. Fixtures marked "fail-on-parent" assert behavior
+# the pre-repair pack got wrong.
+
+
+def test_pk07_frozen_heading_repayment_completion_is_typed_absence() -> None:
+    # (T15, fail-on-parent): "The repayment in connection with the
+    # acquisition was completed …" is a repayment sentence, not the deal's
+    # completion — the widened payment reject word refuses it.
+    paragraphs = (
+        "Note 3 – Business Combinations. The repayment in connection with the"
+        " acquisition was completed on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+
+
+def test_pk07_frozen_heading_refinancing_completion_is_typed_absence() -> None:
+    # (T16, fail-on-parent): "The refinancing of the acquisition was
+    # completed …" is a refinancing sentence — the widened financing reject
+    # word refuses it.
+    paragraphs = (
+        "Note 3 – Business Combinations. The refinancing of the acquisition"
+        " was completed on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+
+
+def test_pk07_widened_heading_derived_completion_sentences_are_typed_absence() -> None:
+    # (T17, fail-on-parent): the repayment, refinancing, prepayment and
+    # plural payments/financings "was completed" sentences under the
+    # widened heading family.
+    for sentence in (
+        "The repayment in connection with the acquisition was completed on"
+        " June 15, 2025.",
+        "The refinancing of the acquisition was completed on June 15, 2025.",
+        "The prepayment of the acquisition was completed on June 15, 2025.",
+        "Payments for the acquisition was completed on June 15, 2025.",
+        "Financings for the acquisition was completed on June 15, 2025.",
+    ):
+        paragraphs = (
+            "Note 2. Acquisitions. " + sentence,
+            _PK07_DEV_IMPAIRMENT_NOTE,
+        )
+        result = produce_pack(
+            "PK07", _pk07_guard_input(_PK07_GUARD_FACTS, paragraphs)
+        )
+        assert contract.validate_pack_result(result) == []
+        row = _row(result, "acquisition_date")
+        assert row["quality_state"] != "valued"
+        assert row["text_value"] is None
+
+
+def test_pk07_frozen_heading_prepayment_plural_completions_are_typed_absence() -> None:
+    # (T18, fail-on-parent): the prepayment and plural payments/financings
+    # "was completed" sentences under the frozen heading.
+    for sentence in (
+        "The prepayment of the acquisition was completed on June 15, 2025.",
+        "Payments for the acquisition was completed on June 15, 2025.",
+        "Financings for the acquisition was completed on June 15, 2025.",
+    ):
+        paragraphs = (
+            "Note 3 – Business Combinations. " + sentence,
+            _PK07_DEV_IMPAIRMENT_NOTE,
+        )
+        result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+        assert contract.validate_pack_result(result) == []
+        row = _row(result, "acquisition_date")
+        assert row["quality_state"] != "valued"
+        assert row["text_value"] is None
+
+
 # 31b. PK09 dev-corpus recall repairs (diversified_v1 + litigation_v1) --------
 # Synthetic probes for the 2026-11-01 repair lane fif-pk09dev-20261101-r1:
 # heading variants, the financial-statement index TOC line, the report's own
