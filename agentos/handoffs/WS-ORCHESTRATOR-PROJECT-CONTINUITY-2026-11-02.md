@@ -12,6 +12,10 @@ state_before: >
   already corrected those source milestones, but its latest head still instructed
   successors to wait for merged PR 656 and to hold merged PR 1289 as Draft.
 changed:
+  - path: scripts/agentos.py
+    what: "Emit complete compact JSON only for compile-context; preserve every field, human text and other command formatting."
+  - path: tests/test_agentos_compile.py
+    what: "Add lossless Unicode/accounting, format-only envelope overflow and unchanged text-renderer regressions."
   - path: agentos/workstreams/WS-ORCHESTRATOR-PROJECT-CONTINUITY.md
     what: "Correct the W3 source-release frontier without claiming installed or live behavior."
   - path: research/ORCHESTRATOR_PROJECT_CONTINUITY_IMPLEMENTATION.md
@@ -20,6 +24,12 @@ changed:
     what: "Provide one latest dated recovery record on the original source carrier."
 prs: [10181]
 verified:
+  - claim: "The default native component rejected the original complete owner bundle because its envelope exceeded the existing cap."
+    command: "Actual Mastermind session_start_context with the original Macro owner read_context, budget 4000, synthetic resume event on this exact workspace; no installed hook or provider invoked."
+    result: "AGENTOS_CONTEXT_DELIVERY_TOO_LARGE; original owner JSON 32173 bytes before the envelope. Equivalent compact JSON is 27398 bytes, with json.loads equality. This is component evidence, not native model delivery."
+  - claim: "Formatting regressions fail before repair and the complete compiler suite passes after the owner-only fix."
+    command: "python3 -B -m pytest -q tests/test_agentos_compile.py -k compact_wire; python3 -B -m pytest -q tests/test_agentos_compile.py"
+    result: "Before: 2 failed, 1 passed for the two expected formatting assertions. After: 3 passed; complete existing compiler suite 107 passed, zero skips/failures, 32.76 seconds. No constraint is removed and the native 32-KiB cap is unchanged."
   - claim: "PR 656 and PR 1289 completed protected source release."
     command: "gh pr view 656 --repo mastermindx-market-intelligence/Mastermind --json state,mergeCommit,mergedAt; gh pr view 1289 --repo mastermindx-market-intelligence/Mastermind --json state,mergeCommit,mergedAt"
     result: "656: MERGED 2026-10-25T13:12:10Z as 6d7f652ca1de478a1732c4829063baa220062352. 1289: MERGED 2026-11-02T07:36:23Z as e522c26b96c0323db0740f0dee1a27c800bab792."
@@ -70,7 +80,7 @@ Mastermind #1957; the original engineering plan remains
 
 ## Completion boundary
 
-MISSION_COMPLETE: false. This correction removes stale source-release actions;
+MISSION_COMPLETE: false. This correction removes stale source-release actions and unnecessary machine-wire formatting overhead;
 it does not complete W1/W3/W4. The prior full evidence record is
 `agentos/handoffs/WS-ORCHESTRATOR-PROJECT-CONTINUITY-2026-10-25.md`.
 A successor should read the current workstream and this handoff first, then only

@@ -788,3 +788,24 @@ brief; do not rebuild either implementation or create another ACK owner.
 The wave states, current next action and effect fences remain solely on the
 workstream and November 2 dated handoff. Earlier source-status prose in this
 plan is historical where superseded by these exact GitHub merge receipts.
+
+### Complete context within the existing native envelope
+
+The November 2 source-to-consumer reproduction used the actual protected
+`session_start_context` and owner `read_context` functions, a synthetic resume
+event, and the original records workspace. At budget 4000 the complete owner
+JSON was 32,173 bytes before the required envelope; the adapter returned
+`AGENTOS_CONTEXT_DELIVERY_TOO_LARGE`. Compact JSON represented exactly the same
+parsed object in 27,398 bytes. This is a concrete component failure, not an
+assertion that all previous session stalls shared this cause.
+
+The existing owner now emits compact JSON for `compile-context` only. All selected
+source, constraints, degraded inputs, exclusions and omission accounting remain;
+the human text renderer and other JSON commands keep their previous formatting.
+No adapter re-encoding, clipping, larger cap, new reader or new lifecycle is added.
+Three focused regressions went from 2 failures/1 pass to 3 passes; the whole
+compiler suite passed 107 cases. The adjacent open #9965 experience-projection
+change touches the compiler call but not this output-format hunk; preserve its
+complete optional metadata when composing. Current source blobs before this fix
+matched main for both code and tests. Release, installed source selection and
+actual served-session use still need their own proof.
