@@ -1321,6 +1321,12 @@ jobs:
       - "engine/marketing/state.py"
       - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -3446,6 +3452,12 @@ jobs:
       - "engine/marketing/state.py"
       - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4513,6 +4525,12 @@ jobs:
       - "engine/marketing/state.py"
       - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -8531,6 +8549,12 @@ jobs:
       - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
       - "lib/rotation_observation_notification.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9196,6 +9220,7 @@ jobs:
       - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - "engine/alert_delivery_drain.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12754,6 +12779,12 @@ jobs:
       - "engine/marketing/catalyst_source_store.py"
       - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -13080,8 +13111,11 @@ jobs:
           tests/test_capital_structure_scenario_inputs.py
           tests/test_capital_structure_state_changes.py
           tests/test_capital_structure_saved_scenarios.py
+          tests/test_capital_structure_saved_scenario_api.py
+          tests/test_capital_structure_saved_scenario_monitor.py
           tests/test_capital_structure_scenario_export.py
           tests/test_capital_structure_v0_recovery.py
+          tests/test_capital_structure_v0_serving.py
           tests/test_capital_structure_a1_served_properties.py
           tests/test_nwqs_c_dilution.py
           tests/test_compile_capital_structure_registration_lifecycles.py
@@ -16908,6 +16942,12 @@ jobs:
       - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
       - "lib/rotation_observation_notification.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -26856,6 +26896,7 @@ jobs:
       - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - "engine/alert_delivery_drain.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -27435,6 +27476,7 @@ jobs:
       - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - "engine/alert_delivery_drain.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -30245,6 +30287,12 @@ jobs:
       - "engine/marketing/state.py"
       - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -32332,6 +32380,7 @@ jobs:
       - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - "engine/alert_delivery_drain.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -37933,6 +37982,7 @@ jobs:
       - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - "engine/alert_delivery_drain.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -39235,6 +39285,12 @@ jobs:
       - "engine/marketing/state.py"
       - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -42433,6 +42489,12 @@ jobs:
       - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -43609,6 +43671,12 @@ jobs:
       - "engine/research_intelligence/__init__.py"
       - "engine/seasonality/__init__.py"
       - "tests/__init__.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -48674,6 +48742,12 @@ jobs:
       - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
       - "lib/rotation_observation_notification.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
