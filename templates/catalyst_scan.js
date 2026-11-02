@@ -303,10 +303,21 @@
       });
       const json = await res.json().catch(() => null);
       if (!res.ok) {
-        const e = new Error(res.status === 429 ? "Rate limit reached. Try again later." :
+        // Named consent gates the owner publishes (never an address, token or SQL text).
+        const named = {
+          PENDING_CONSENT_EXPIRED: "That verification request has expired. Request a new code.",
+          PENDING_CONSENT_REPLAYED: "That verification was already used. Request a new code.",
+          PENDING_CONSENT_MISMATCH: "The code does not belong to this verification request. Request a new code.",
+          CONSENT_REVOKED_OR_CHANGED: "Updates for this event were withdrawn earlier and cannot be re-enabled.",
+          ADDRESS_SUPPRESSED: "This address has opted out; no updates will be sent.",
+          IDENTITY_UNVERIFIED: "The code could not be verified for this address.",
+          INVALID_VERIFICATION_REF: "The verification request is no longer valid. Start again."
+        }[json && typeof json.detail === "string" ? json.detail : ""];
+        const e = new Error(named ? named :
+          res.status === 429 ? "Rate limit reached. Try again later." :
           res.status === 503 ? "The service is temporarily unavailable; nothing was submitted." :
           res.status === 404 ? "This feature is not enabled yet." :
-          res.status === 400 || res.status === 403 || res.status === 409 || res.status === 415 ?
+          res.status === 400 || res.status === 403 || res.status === 409 || res.status === 410 || res.status === 415 ?
             "The request could not be verified. Review the scan and try again." :
             "Request failed; nothing has been confirmed.");
         e.status = res.status;

@@ -1,4 +1,5 @@
 """HTTP integration seam and existing authoritative sender/OTP adapters."""
+import json
 from datetime import datetime, timezone
 
 from fastapi import FastAPI
@@ -558,3 +559,70 @@ def test_g6_verify_honeypot_rejected_before_flag_and_guard(web, monkeypatch):
     assert res.status_code == 400 and res.json()["detail"] == "ABUSE_CHECK_FAILED"
     assert calls == []
     assert service.verifies == []
+
+
+def _rpc_http_error(status: int, body: bytes | None):
+    import io
+    import urllib.error
+    return urllib.error.HTTPError("https://db.invalid/rest/v1/rpc/catalyst_consent_confirm", status,
+                                  "Bad Request", {}, io.BytesIO(body) if body is not None else None)
+
+
+def _rpc_refusal(name: str):
+    return _rpc_http_error(400, json.dumps({"code": "P0001", "details": None, "hint": None, "message": name}).encode())
+
+
+@pytest.mark.parametrize("name,code,status", [
+    ("PENDING_REF_UNAVAILABLE", "PENDING_CONSENT_EXPIRED", 410),
+    ("INVALID_PENDING_REF", "INVALID_VERIFICATION_REF", 400),
+    ("CONSENT_ADDRESS_SUPPRESSED", "ADDRESS_SUPPRESSED", 403),
+    ("CONSENT_GOTRUE_UNVERIFIED", "IDENTITY_UNVERIFIED", 403),
+    ("CONSENT_ALREADY_REVOKED_OR_MISMATCHED", "CONSENT_REVOKED_OR_CHANGED", 409),
+    ("CONSENT_PENDING_NOT_CURRENT", "PENDING_CONSENT_EXPIRED", 410),
+    ("CONSENT_INTENT_MISMATCH", "PENDING_CONSENT_MISMATCH", 409),
+    ("CONSENT_INTENT_ALREADY_USED", "PENDING_CONSENT_REPLAYED", 409),
+])
+def test_named_rpc_refusals_become_public_4xx_gates(name, code, status):
+    """A `raise exception 'NAME'` inside the consent RPCs (PostgREST 400) reaches the
+    visitor as the allow-listed public gate, not the generic 503 (B2 UX)."""
+    from engine.marketing.catalyst_lifecycle import ConsentRecord, FunnelGate, SCOPE
+
+    def pg(method, path, body):
+        raise _rpc_refusal(name)
+    owner = catalyst_optin.SupabaseConsentRpcOwner(pg=pg)
+    record = ConsentRecord(UID, "investor@example.com", "event-123", ("NVDA",),
+                           SCOPE, "2026-10-09T03:00:00+00:00", "nonce-A", {})
+    for call in (lambda: owner.resolve_pending_intent("opaque_testref_1234", "tag"),
+                 lambda: owner.confirm(record)):
+        with pytest.raises(FunnelGate) as caught:
+            call()
+        assert (caught.value.code, caught.value.status) == (code, status)
+        assert "example.com" not in str(caught.value)
+
+
+@pytest.mark.parametrize("exc", [
+    _rpc_refusal("CONSENT_PURPOSE_INVALID"),              # app-side bug: not a visitor gate
+    _rpc_refusal("CATALYST_CONSENT_RLS_MODE_BLOCK"),      # install fence name
+    _rpc_refusal("CONSENT_ADDRESS_SUPPRESSED: extra"),    # must match exactly
+    _rpc_http_error(400, b"not json"),
+    _rpc_http_error(400, b"[1,2]"),
+    _rpc_http_error(400, None),
+    _rpc_http_error(500, json.dumps({"message": "CONSENT_ADDRESS_SUPPRESSED"}).encode()),
+    _rpc_http_error(401, json.dumps({"message": "PENDING_REF_UNAVAILABLE"}).encode()),
+])
+def test_unlisted_or_malformed_rpc_failures_stay_generic(exc):
+    """Anything outside the allow-list propagates untouched, so the lifecycle's generic
+    503 (PENDING_CONSENT_UNAVAILABLE / CONSENT_WRITE_UNCONFIRMED) still applies."""
+    import urllib.error
+    from engine.marketing.catalyst_lifecycle import ConsentRecord, SCOPE
+
+    def pg(method, path, body):
+        raise exc
+    owner = catalyst_optin.SupabaseConsentRpcOwner(pg=pg)
+    record = ConsentRecord(UID, "investor@example.com", "event-123", ("NVDA",),
+                           SCOPE, "2026-10-09T03:00:00+00:00", "nonce-A", {})
+    with pytest.raises(urllib.error.HTTPError):
+        owner.resolve_pending_intent("opaque_testref_1234", "tag")
+    with pytest.raises(urllib.error.HTTPError):
+        owner.confirm(record)
+    assert owner.available() is False

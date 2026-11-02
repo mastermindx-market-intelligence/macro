@@ -295,13 +295,48 @@ class SupabaseConsentRpcOwner(ConsentOwner):
     def __init__(self, pg: Callable[..., Any] | None = None):
         self._pg_override = pg
 
+    # PostgREST answers a `raise exception 'NAME'` from inside an RPC with HTTP 400 and
+    # a JSON body whose "message" is that name. Only these allow-listed, public-safe
+    # names become 4xx gates the browser can act on; every other failure keeps the
+    # generic 503 the lifecycle applies, so SQL text never reaches a visitor.
+    REFUSALS: dict[str, tuple[str, int]] = {
+        # resolve(): the ref is unknown, expired, consumed or for another address.
+        "PENDING_REF_UNAVAILABLE": ("PENDING_CONSENT_EXPIRED", 410),
+        "INVALID_PENDING_REF": ("INVALID_VERIFICATION_REF", 400),
+        # confirm(): the owner's own veto chain, by name.
+        "CONSENT_ADDRESS_SUPPRESSED": ("ADDRESS_SUPPRESSED", 403),
+        "CONSENT_GOTRUE_UNVERIFIED": ("IDENTITY_UNVERIFIED", 403),
+        "CONSENT_ALREADY_REVOKED_OR_MISMATCHED": ("CONSENT_REVOKED_OR_CHANGED", 409),
+        "CONSENT_PENDING_NOT_CURRENT": ("PENDING_CONSENT_EXPIRED", 410),
+        "CONSENT_INTENT_MISMATCH": ("PENDING_CONSENT_MISMATCH", 409),
+        "CONSENT_INTENT_ALREADY_USED": ("PENDING_CONSENT_REPLAYED", 409),
+    }
+
+    @classmethod
+    def named_refusal(cls, exc: urllib.error.HTTPError) -> tuple[str, int] | None:
+        """The (public code, status) of an allow-listed RPC refusal, else None."""
+        if exc.code != 400:
+            return None
+        try:
+            raw = exc.read()
+            message = json.loads(raw.decode("utf-8", "replace")).get("message") if raw else None
+        except Exception:  # no body, not JSON, not an object: not a named refusal
+            return None
+        return cls.REFUSALS.get(message.strip()) if isinstance(message, str) else None
+
     def _rpc(self, name: str, payload: dict) -> Any:
         if self._pg_override is not None:
             pg = self._pg_override
         else:
             from app import mailer
             pg = mailer._pg
-        return pg("POST", "rpc/" + name, body=payload)
+        try:
+            return pg("POST", "rpc/" + name, body=payload)
+        except urllib.error.HTTPError as exc:
+            gate = self.named_refusal(exc)
+            if gate is None:
+                raise
+            raise FunnelGate(*gate) from None
 
     @staticmethod
     def _one(result: Any) -> dict:
