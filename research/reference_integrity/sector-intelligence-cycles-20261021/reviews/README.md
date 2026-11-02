@@ -54,3 +54,12 @@ against `204500aa` on 2026-11-02 and their receipts are the top-level files list
 were archived unchanged. `manifest.yml` carried `in_review` from this re-freeze and carries `revise` after the round-6 verdict;
 `proposal.yml` carries `revision_mandate_round5` and its `proposed_artifact.frozen_sha` moves with the manifest field (SIC-V5-C13,
 asserted by the re-freeze script).
+
+Re-freeze 2026-11-02 at `78c14f7d1fb5d0b46f4dbf3cb093e9dfa6ccd86e` (repair wave 6: SIC-V6-C01..C09; boards 0–41, one seat-direct tree
+commit 78c14f7d): the round-6 receipts listed above are archived byte-exact under `round6_204500aa/` (`critic_return/` plus the normalized
+`visual_taste.yml` / `product_regression.yml`, same sha256 as the table). The top-level `critic_return/`, `visual_taste.yml` and
+`product_regression.yml` remain the round-6 receipts until the round-7 critics (same two identities, r7, same quarantine, which now also
+covers `round6_204500aa/*<other role>*`) return against `78c14f7d`; the round-7 receipts then replace them (review_round 7) and the
+header above is rewritten. `manifest.yml` carries `in_review` from this re-freeze; `proposal.yml` carries `revision_mandate_round6` and its
+`proposed_artifact.frozen_sha` moves with the manifest field (asserted by the re-freeze script). Round 7 is confirmatory (SIC-ADJ-04:
+approval binds to the shipped bytes): it verifies each of SIC-V6-C01..C09 landed as described and that the re-rendered boards regress nothing.

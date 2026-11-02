@@ -29,10 +29,15 @@
 # PASS_WITH_CONDITIONS (PRC-046..048 minor record/test/deck findings, PRC-049 minor from the rationale) → verdict REVISE round 6 with
 # SIC-V6-C01..C09 (C05..C08 the authority-adopted polish, C09 the re-render discipline) and SIC-ADJ-04 (approval binds to the shipped
 # bytes); repair wave 6 → re-freeze → confirmatory round 7 (revision_mandate_round6 is appended at the wave-6 re-freeze).
+# Re-frozen 2026-11-02 at 78c14f7d (repair wave 6, seat-direct, one tree commit 78c14f7d: SIC-V6-C01..C09 — drift-record ZH-only marker, HOLD citation :1059-1063 + test
+# strength + proofs narrowed, clock_read/clock_ladder sourced to templates/sector_cycles.js:164-165 with ZH NEW, the deck test ZH rule row_gaps + falsifier and 37 deck
+# rows re-sourced, ZH clock-mismatch patterns in verb/colon construction, .cyc-cards align-items:start, methods parity chip align-self:flex-start, the page-level
+# session family in data vocabulary; boards 28-31/34-36/39-41 re-rendered, the 32 other PNGs byte-identical; confirmatory round 7). proposed_artifact.frozen_sha and
+# manifest.yml frozen_sha both read 78c14f7d — asserted equal by the seat's refreeze6.py (revision_mandate_round6 at the end of this file).
 schema: mastermind.rig_proposal.v1
 reference_id: sector-intelligence-cycles-20261021
 proposed_artifact:
-  frozen_sha: 204500aa619c95677eee8f3bb2133f454847f792
+  frozen_sha: 78c14f7d1fb5d0b46f4dbf3cb093e9dfa6ccd86e
   paths:
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/boards_manifest.yml
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/00-components-desktop-both-en.png
@@ -2160,3 +2165,57 @@ revision_mandate_round5:
   disposition: cure_in_repair_commit
   cure: 'Re-disposed cured by the critic in pass 2 against its own round-4 second pass (board 27: 16 drawn, 0 gaps; png_px checked); no regression on boards 28/34/41.'
   proof: 'wave 5 at 204500aa (one seat-direct tree commit): re-disposed cured by the critic in round-5 pass 2 (board 27: 16 drawn, 0 gaps; png_px checked); wave 5 leaves board 27 unchanged (27-coverage-matrix-desktop-light-en.png 1440x1026, boards_manifest row 27 untouched) and coverage_matrix.wave5_summary records the matrix unchanged at 16/16 with boards 40/41 outside it; boards 28/34/41 re-rendered without regression of the coverage claim.'
+# Round-6 mandate (verdict.yml round 6, REVISE, SIC-ADJ-04, SIC-V6-C01..C09; blocking findings in verdict order; every row minor — the critics' final pass-2 severity,
+# the VTC rows advisory for Reviewer B and authority-adopted; cure = the authority's verdict note verbatim; proof = the wave-6 tree at 78c14f7d). SIC-V6-C09 (seat-bound,
+# no finding id): Cycles boards 28-31/34-36/39-41 re-rendered, the 32 other PNGs byte-identical (sha256 unchanged, listed in the wave-6 commit), png_px parity, zh-latin=0 on
+# every ZH board under the SIC-ADJ-03 scope, one warn-ink chip per card, deck + ontology tests green — recorded in cycles_repair/capture.log (wave 6) and coverage_matrix.wave6_summary.
+# proposed_artifact.frozen_sha and manifest.yml frozen_sha both read 78c14f7d at this re-freeze, asserted equal by refreeze6.py.
+revision_mandate_round6:
+- id: PRC-046
+  severity: minor
+  condition: SIC-V6-C01
+  disposition: cure_in_repair_commit
+  cure: 'Minor, reworded by the critic after rationale: one explicit out-of-census marker on _mag7_tape_strip.html.j2:227 suffices, pointing at the record''s own scope rule (COMPONENTS.md:137-138), stating direct-read confirmation and the round-4 declaration (PRC-036); proposal.yml:2127 narrowed the same way; census command, count and commits unchanged. The census-count gap was withdrawn (298 reproduced at three SHAs). Cure SIC-V6-C01.'
+  proof: 'wave 6 at 78c14f7d (one seat-direct tree commit): design_refs/sector-paper-20261021/components/COMPONENTS.md:132-147 Production drift record: the list is introduced (:140-143) as a subset read from that output, not an inventory — seven of its eight entries are same-line hits in that output; the eighth, templates/_mag7_tape_strip.html.j2:227, is a ZH-only rendering (no EN watch on the line), outside the stated census under the scope rule above, confirmed by direct read of the line and declared in round 4 (PRC-036) — and the entry itself (:145) carries the marker (ZH-only; outside the census); proposal.yml:2132 (the PRC-042 wave-5 proof) narrowed the same way: seven same-line hits named, one ZH-only rendering outside the census; the census at the wave-6 tree reproduces 298 lines with _mag7_tape_strip.html.j2:227 absent and the seven other entries present once each (seat check, not committed). The Engine map bullet moved from :163 to :166 with the three added lines.'
+- id: PRC-047
+  severity: minor
+  condition: SIC-V6-C02
+  disposition: cure_in_repair_commit
+  cure: 'Minor, reworded: both HOLD proofs (proposal.yml:2051 round-4 annotation, :2133 round-5 mandate) overclaim and cite :1060-1063; the SIC-V5-C02 proposal clause is not met. Cure: :1059-1063 in the three copies, the trend_up × Peak fragment and the named-cell assertions in the test, proofs describing only what the test asserts. Cure SIC-V6-C02.'
+  proof: 'wave 6 at 78c14f7d (one seat-direct tree commit): engine/cycle_ontology.py:162 (the DOCTRINE_STANCE HOLD comment), design_refs/sector-paper-20261021/cycles_ia.md:157 and components/COMPONENTS.md:166 all cite engine/cycle_ontology.py:1059-1063 — :1059 opens the override (if (trend_up and phase == "Peak"), :1063 closes it (note_key = "extended_uptrend"); tests/test_cycle_ontology.py:1061 test_hold_sentence_is_identical_and_true now also asserts the fragment trend_up and phase == "Peak" in the cited range (:1085) and the phrases every RALLY ON row / Recovery × TOP WATCH / BOTTOM WATCH / TURN SIGNALED / FRESH BUY in the folded sentence (:1088); its docstring states exactly the three checks (identity after whitespace folding; the cited range holds the override''s condition and effects; the hand-written expected set vs resolve_state — the test does not parse the cells out of the sentence); proposal.yml:2056 (the round-4 annotation) and :2138 (the PRC-037 wave-5 proof) reworded to describe only what the test asserts; 62 passed, 2 skipped across tests/test_sector_paper_copy_deck.py + tests/test_cycle_ontology.py on the wave-6 tree.'
+- id: PRC-048
+  severity: minor
+  condition: SIC-V6-C03
+  disposition: cure_in_repair_commit
+  cure: 'Minor, reworded: the cure is bound to an exact source shape — a leading file:line citation (templates/sector_cycles.js:164-165) carrying cycle read so is_note() keeps the row cited, then the ZH 周期读数 declared NEW with its SIC-V3 provenance; no face string changes. Cure SIC-V6-C03.'
+  proof: 'wave 6 at 78c14f7d (one seat-direct tree commit): copy_deck.json:159 cycles.clock_read source begins templates/sector_cycles.js:164-165 (divergenceHTML doc: the cycle read and the timing ladder disagree) (EN); ZH NEW (SIC-V3 wave-3 proposal, 1ad748c8, SIC-V3-C03: …) — a leading file:line citation, so is_note() does not skip the row, whose window carries the EN fragment cycle read (sector_cycles.js:164 // amber "clocks disagree" chip — rendered ONLY when the cycle read and the timing); the ZH 周期读数 is declared NEW with its SIC-V3 provenance (engine/cycle_ontology.py:305 uses the words inside a divergence sentence, not as a label); :161 cycles.clock_ladder takes the same shape (ZH 时序阶梯 NEW); both rows pass test_cited_sources_carry_a_fragment under the ZH rule.'
+- id: PRC-049
+  severity: minor
+  condition: SIC-V6-C04
+  disposition: cure_in_repair_commit
+  cure: 'Minor, new in pass 2 from the rationale (source: rationale): test_cited_sources_carry_a_fragment passes on any one nearby EN fragment, so a misattributed ZH string is never caught. Cure SIC-V6-C04; the seat''s read-only survey at 204500aa finds 34 cited rows whose ZH has no fragment in the cited window, each to be re-sourced to the production line that carries it or declared ZH NEW.'
+  proof: 'wave 6 at 78c14f7d (one seat-direct tree commit): tests/test_sector_paper_copy_deck.py:210 row_gaps(entry) applies the any-fragment check and then the ZH rule — a cited row''s ZH runs ([一-鿿]{2,}) must have a fragment in the cited window (:176 _window decodes JS \\uXXXX escapes, :173, because templates/sector_central.html.j2 writes its state ZH that way), else the source must carry ZH NEW (:172) or a ZH path:line sub-citation (:171, :198 zh_window) whose own window carries a ZH fragment; test_cited_sources_carry_a_fragment (:280) reports every gap; test_zh_rule_catches_a_misattributed_zh (:292) is the falsifier — stanceHTML :155 cited with its L(...) at :162 is flagged, sub-cited to :162 or declared NEW it is clean, a ZH the sub-cited line does not carry is flagged; the file header states the rule; 32 deck rows re-sourced under it (19 re-cited to the line or range carrying both EN and ZH, 1 ZH sub-citation — components.stance_act → ZH engine/cycle_ontology.py:144, 9 ZH NEW declarations with provenance incl. clock_read / clock_ladder, 3 state rows annotated that the template writes the ZH as JS escapes) plus the 5 rows C05/C08 reword (37 rows changed); the provenance drawers render those sources inside <details>.'
+- id: VTC-043
+  severity: minor
+  condition: SIC-V6-C05
+  disposition: cure_in_repair_commit
+  cure: 'Minor advisory (Reviewer B holds it non-binding after the rationale); authority-adopted as polish: both ZH mismatch patterns (copy_deck.json:177/178) take the verb/colon construction. Cure SIC-V6-C05.'
+  proof: 'wave 6 at 78c14f7d (one seat-direct tree commit): copy_deck.json:177 cycles.hazard_mismatch_pattern zh {a_name}：{leg}，趋向{turn} · {b_name}显示{phase}，下一拐点为{expected} and :178 cycles.rhythm_mismatch_pattern zh {a_name}显示下一拐点为{turn} · {b_name}显示{phase}，下一拐点为{expected} (EN unchanged; sources carry the wave-6 note); rendered on boards 30/34/35/36/41 as 风险时钟：向上段，趋向顶部 · 阶段时钟显示回落中，下一拐点为底部 (XLC) and 节律时钟显示下一拐点为顶部 · 阶段时钟显示回落中，下一拐点为底部 (XLF/XLK/XLC) — DOM read at the wave-6 tree; the ladder and read lines (ladder_state_pattern / read pattern, not named by the finding) keep their noun-phrase 为 construction; nothing typed in build_cycles.py.'
+- id: VTC-044
+  severity: minor
+  condition: SIC-V6-C06
+  disposition: cure_in_repair_commit
+  cure: 'Minor advisory, reworded by the critic to the empty-band half (the Clocks-block-first IA stands: clock trust gates the reading of the sections beneath it); authority-adopted: .cyc-cards align-items:start so a card ends where its content ends. Cure SIC-V6-C06.'
+  proof: 'wave 6 at 78c14f7d (one seat-direct tree commit): cycles.css:28 .cyc-cards{…;align-items:start} (comment SIC-V6-C06) — each card ends where its drawn sections end, no empty band under the 3-up grid (boards 28/29/34/35/40/41 re-rendered; card-region crop inspected at 28); the Clocks block stays first in each card (build_cycles.py card order unchanged; the clock-trust-gates-the-read IA reason accepted by the critic in round-6 pass 2).'
+- id: VTC-045
+  severity: minor
+  condition: SIC-V6-C07
+  disposition: cure_in_repair_commit
+  cure: 'Minor advisory; authority-adopted: .cyc-method .spc-chip align-self:flex-start. Cure SIC-V6-C07.'
+  proof: 'wave 6 at 78c14f7d (one seat-direct tree commit): cycles.css:72 .cyc-method .spc-chip{align-self:flex-start} (comment SIC-V6-C07) — the methods-card parity chip hugs its content inside the flex column (boards 28-41 re-rendered; methods-card crop inspected at 28).'
+- id: VTC-046
+  severity: minor
+  condition: SIC-V6-C08
+  disposition: cure_in_repair_commit
+  cure: 'Minor advisory; authority-adopted: the page-level data-session family moves to data vocabulary with no clock / 时钟 / 对齐 term surviving; the per-card Clocks block keeps its name; wording bound in copy_deck.json. Cure SIC-V6-C08.'
+  proof: 'wave 6 at 78c14f7d (one seat-direct tree commit): copy_deck.json:247 cycles.events_chip Events data / 事件数据, :248 cycles.fragmentation_chip Fragmentation data / 分化数据, :249 cycles.aligned_qualifier Data sessions aligned on the history day {d}; not current under this banner / 数据交易日在历史日 {d} 一致；在此横幅下并非当前; cycles_repair/enum_zh.json:10 aligned 一致 (its _source line records the wave-6 rewording; deck copy, no production ZH status string); boards_manifest.yml rows 28, 34, 35, 36, 39 carry the tag rotation data aligned (fresh); proposal.yml:266 board-28 note the same; rendered chips Events data · aligned / 事件数据 · 一致 and Fragmentation data · aligned / 分化数据 · 一致 with the qualifier on boards 28-41 (DOM read at the wave-6 tree: the events panel''s face carries no clock / Clock / 时钟 / 对齐 term — the only clock string there is the data-clock attribute name, not drawn); the per-card Clocks block keeps its name (deck cycles.clocks_h3 unchanged); nothing typed in build_cycles.py.'
