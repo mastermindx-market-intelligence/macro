@@ -111,3 +111,25 @@ def test_applier_points_at_the_deploy_files_and_prints_no_values():
 def test_review_only_file_is_a_stub_with_no_sql():
     assert "SUPERSEDED" in STUB
     assert not any(l.strip() and not l.lstrip().startswith("--") for l in STUB.splitlines())
+
+
+def test_round2_review_fixes_are_present():
+    # F1: every apply reconciles grants against the incumbent opt-out/suppression state
+    # BEFORE the install fence, so a rollback window cannot resurrect a withdrawn grant.
+    fence_at = APPLY.index("do $consent_install_fence$")
+    recon = re.search(r"update public\.catalyst_consent_grants g\s+set revoked_at_utc = pg_catalog\.now\(\)"
+                      r".*?marketing_opt_out.*?email_suppression", APPLY, re.S)
+    assert recon and recon.start() < fence_at
+    # F3: a second user on the same intent is a named refusal.
+    assert "exception when unique_violation then" in APPLY[APPLY.index("catalyst_consent_confirm("):]
+    assert "CONSENT_INTENT_ALREADY_USED" in APPLY
+    # F2/F6: the fence covers the pending table owner and the incumbent tables' readability.
+    fence = APPLY[fence_at:]
+    for name in ("CATALYST_CONSENT_TABLE_OWNER_BLOCK: pending", "CATALYST_CONSENT_INCUMBENT_TABLE_ACCESS_BLOCK",
+                 "CATALYST_CONSENT_INCUMBENT_TABLE_MISSING_BLOCK", "CATALYST_CONSENT_AUTH_USERS_READ_BLOCK"):
+        assert name in fence
+    # F8: the applier's census checks authenticated too, counts enabled triggers on the
+    # right tables, and never exits a failed apply without a census.
+    for key in ("authenticated_execute_begin", "authenticated_table_select", "triggers_enabled"):
+        assert key in APPLIER
+    assert 'call("rollback;")' in APPLIER

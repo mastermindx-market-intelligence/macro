@@ -80,11 +80,33 @@ incumbent unsubscribe and preference writes are unaffected (proven by the local 
 - **Boot-only probe.** The application checks `catalyst_consent_contract()` once per
   worker at import (6 s timeout). A transient DB failure at boot leaves the funnel off for
   that worker until the next `systemctl restart macro-api`; workers can diverge.
-- **RPC refusals reach the app as PostgREST 400 errors.** The opt-in verify route maps
-  `FunnelGate` only, so a named owner refusal (replay, revoked grant, clock window)
-  currently surfaces to the browser as a 500 rather than a named 4xx. This is a recorded
-  application finding for the B2 wave (map PostgREST error bodies to `FunnelGate`), not a
-  SQL change; it cannot create a grant or send mail.
+- **Named refusals are collapsed by the app (B2 finding, corrected 2026-11-02).** An RPC
+  `raise exception 'NAME'` reaches the app as a PostgREST 400 (`urllib.error.HTTPError`).
+  `SupabaseConsentRpcOwner._rpc` does not parse the body; the lifecycle wraps the owner
+  calls, so a resolve refusal (expired or unknown pending ref) surfaces as the generic
+  503 `PENDING_CONSENT_UNAVAILABLE` and a confirm refusal (suppressed address, revoked
+  grant, intent mismatch, clock window) as 503 `CONSENT_WRITE_UNCONFIRMED`; the browser
+  never sees the name. No 500 and no grant or mail side effect. Mapping the allow-listed
+  names to specific 4xx `FunnelGate` codes is B2 UX work; a pre-minted tree exists at
+  `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mx-catalyst-b2-rpc-refusals-7c43dc6707b15c83`
+  (branch `claude/ssd-mx-catalyst-b2-rpc-refusals-7c43dc6707b15c83`, base main 392f59ace354).
+- **Re-apply reconciliation (round-2 review fix, 2026-11-02).** While the two incumbent-table
+  triggers are absent (a rollback window) an opt-out or suppression cannot revoke grants, so
+  every apply first revokes active grants whose user is opted out or whose address is
+  suppressed. Re-applying never resurrects a withdrawn grant; a clean first apply is a no-op.
+- **One intent, one user.** A second GoTrue user confirming the same signed intent gets
+  `CONSENT_INTENT_ALREADY_USED`, never a raw unique-constraint error.
+- **Install fence (extended).** Besides policies, client grants, a foreign owner and FORCE
+  RLS on the consent tables, the fence stops on a pending table with a different owner
+  (`CATALYST_CONSENT_TABLE_OWNER_BLOCK: pending`), on `email_suppression`/`email_prefs`
+  missing (`…INCUMBENT_TABLE_MISSING_BLOCK`), on either being FORCE RLS or owned by someone
+  other than the function owner without BYPASSRLS (`…INCUMBENT_TABLE_ACCESS_BLOCK: <table>`),
+  and on the owner lacking SELECT on `auth.users` (`…AUTH_USERS_READ_BLOCK`). Any of these
+  would otherwise make the suppression veto silently see no rows.
+- **Failed apply.** The applier sends `rollback;` after a non-2xx apply or rollback, then
+  prints the census state anyway (never a bare exit code). `--verify` also requires the
+  `authenticated` role to hold no execute/select and all three triggers to be enabled on
+  their tables.
 
 ## Where this sits in the flag sequence
 
@@ -94,6 +116,19 @@ wiring (`app/catalyst_optin_wiring.py`) is deployed; `MAIL_UNSUB_SECRET` (32+ ch
 logs `catalyst optin wiring configured`; and one real OTP request is witnessed on the
 hosted page. `MAIL_CATALYST_ENABLED` is a separate, later gate (delivery), untouched here.
 
+**OTP delivery constraint (read-only census of the Supabase auth config, 2026-11-02).**
+The project has no custom SMTP configured (`smtp_host` unset); GoTrue sends the opt-in
+OTP through Supabase's built-in email service, which is rate-limited to 2 emails per
+hour (`rate_limit_email_sent`) and, per the Supabase docs page "Send emails with custom
+SMTP" (read 2026-11-02), Auth refuses delivery to addresses that are not part of the
+project's team. OTP length is 8 digits, expiry 3600 s
+(the app accepts 6-8 digits). Consequences: the "one real OTP request witnessed" step
+can be proven on the hosted page (202 + pending ref, GoTrue accepts the send) but the
+code only arrives in a team member's inbox, and entering it is a human step; a pilot
+cohort of outside recipients needs a custom SMTP provider configured in Supabase Auth
+(credentials, SPF/DKIM) before B2. That provisioning is a Chairman decision (provider,
+spend), not something a seat may enroll.
+
 ## Local proof
 
 ```bash
@@ -102,5 +137,7 @@ LC_ALL=C TMPDIR=/private/tmp/pgrev PATH=/opt/homebrew/bin:$PATH python3 scripts/
 
 Needs `initdb`, `pg_ctl`, `psql` on PATH and a short TMPDIR (Unix-socket path limit).
 Creates a throwaway cluster, applies 0009 twice, runs the suppression races, applies the
-rollback, proves the incumbent writes, re-applies. Prints one PASS line per property;
+rollback, proves the incumbent writes, opts a user out inside the window, re-applies and
+proves the window opt-out revoked. Also runs the extracted install fence alone against a
+stray client grant and an unreadable incumbent table. Prints one PASS line per property;
 `PRODUCTION_DB_EFFECTS=NONE` is literal.

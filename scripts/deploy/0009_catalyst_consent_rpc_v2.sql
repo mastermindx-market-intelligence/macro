@@ -21,6 +21,10 @@
 -- both tables and all functions, is not a client role, and the tables are not under
 -- FORCE ROW LEVEL SECURITY (the owner bypasses the deny-all RLS from inside the RPCs).
 -- The Management API and the dashboard SQL editor both run as `postgres`, which holds.
+-- The SECURITY DEFINER bodies also read public.email_suppression, public.email_prefs
+-- and auth.users as that owner: it must own the two incumbent tables (or hold
+-- BYPASSRLS), neither may be FORCE RLS, and it must hold SELECT on auth.users;
+-- otherwise the suppression veto would silently see no rows. Fenced below.
 --
 -- SEMANTICS WORTH KNOWING.
 --   * Revocation is permanent per (user, event, scope). A later confirm for the same
@@ -37,8 +41,14 @@
 --   * The two incumbent-table triggers never block an incumbent write: a blank address
 --     on email_suppression is left to that table's own constraints (the trigger returns
 --     NEW untouched); only a lock wait can delay it.
---   * Every RPC refuses NULL or malformed input with a named exception, never a
---     constraint error and never a silent success.
+--   * Every mutating RPC refuses NULL or malformed input with a named exception, never
+--     a constraint error and never a silent success. catalyst_consent_current is a
+--     pure lookup: NULL or unknown keys return NULL (no grant), which the app treats
+--     as absent.
+--   * Re-apply reconciliation. While the two incumbent-table triggers are absent (a
+--     rollback window), an opt-out or a suppression cannot revoke grants; every apply
+--     therefore revokes active grants whose user is opted out or whose address is
+--     suppressed, so re-applying never resurrects a grant the estate withdrew.
 
 begin;
 set local lock_timeout = '3s';
@@ -324,14 +334,18 @@ begin
     raise exception 'CONSENT_ADDRESS_SUPPRESSED';
   end if;
 
-  insert into public.catalyst_consent_grants
-    (user_id,event_id,scope,tickers,intent_id,verified_at_utc,first_touch)
-  values (p_user_id,p_event_id,p_scope,v_pending.tickers,p_intent_id,v_verified,p_first_touch)
-  on conflict (user_id,event_id,scope) do nothing
-  returning * into v_record;
-  if found then
-    v_created := true;
-  else
+  begin
+    insert into public.catalyst_consent_grants
+      (user_id,event_id,scope,tickers,intent_id,verified_at_utc,first_touch)
+    values (p_user_id,p_event_id,p_scope,v_pending.tickers,p_intent_id,v_verified,p_first_touch)
+    on conflict (user_id,event_id,scope) do nothing
+    returning * into v_record;
+    v_created := found;
+  exception when unique_violation then
+    -- intent_id is unique across users: one signed intent confirms one user only.
+    raise exception 'CONSENT_INTENT_ALREADY_USED';
+  end;
+  if not v_created then
     select * into v_record from public.catalyst_consent_grants g
      where g.user_id=p_user_id and g.event_id=p_event_id and g.scope=p_scope;
   end if;
@@ -482,6 +496,20 @@ create trigger catalyst_consent_global_user_revocation
   before insert or update of marketing_opt_out on public.email_prefs
   for each row execute function public.catalyst_consent_on_global_user_optout();
 
+-- Re-apply reconciliation (see header): revoke, idempotently, every active grant whose
+-- user is opted out or whose address is suppressed. The grant guard permits exactly
+-- this transition (NULL -> revoked). No-op on a clean first apply.
+update public.catalyst_consent_grants g
+   set revoked_at_utc = pg_catalog.now()
+  from auth.users u
+ where g.user_id = u.id
+   and g.revoked_at_utc is null
+   and (exists (select 1 from public.email_prefs e
+                 where e.user_id = g.user_id and e.marketing_opt_out)
+        or exists (select 1 from public.email_suppression s
+                    where pg_catalog.lower(pg_catalog.btrim(s.email))
+                        = pg_catalog.lower(pg_catalog.btrim(u.email))));
+
 -- All seven entrypoints accept only private service-role PostgREST callers.
 -- SECURITY DEFINER does not make them public RPCs. No browser role can EXECUTE.
 revoke all on function public.catalyst_consent_contract() from public, anon, authenticated;
@@ -500,7 +528,8 @@ grant execute on function public.catalyst_consent_interested(text,integer) to se
 grant execute on function public.catalyst_consent_revoke(uuid,text,text) to service_role;
 
 -- Final install fence: existing policies, client grants, a service_role table grant,
--- a foreign owner or FORCE RLS are a STOP, never silently accepted by CREATE TABLE
+-- a foreign owner, FORCE RLS or an incumbent table the owner cannot read are a STOP,
+-- never silently accepted by CREATE TABLE
 -- IF NOT EXISTS or the RPC grant phase. A fence failure rolls the whole file back.
 do $consent_install_fence$
 declare
@@ -509,6 +538,9 @@ declare
   v_priv text;
   v_table_owner oid;
   v_owner_name text;
+  v_pending_owner oid;
+  v_bypass boolean;
+  v_rec record;
 begin
   if exists (
     select 1 from pg_catalog.pg_policies p
@@ -544,6 +576,34 @@ begin
   select r.rolname into v_owner_name from pg_catalog.pg_roles r where r.oid=v_table_owner;
   if v_owner_name is null or v_owner_name in ('anon','authenticated','service_role') then
     raise exception 'CATALYST_CONSENT_TABLE_OWNER_BLOCK';
+  end if;
+  select c.relowner into v_pending_owner
+    from pg_catalog.pg_class c join pg_catalog.pg_namespace n on n.oid=c.relnamespace
+   where n.nspname='public' and c.relname='catalyst_consent_pending';
+  if v_pending_owner is distinct from v_table_owner then
+    raise exception 'CATALYST_CONSENT_TABLE_OWNER_BLOCK: pending';
+  end if;
+  -- The SECURITY DEFINER bodies read the incumbent email tables as the owner: it must
+  -- own them (or hold BYPASSRLS) and they must not be FORCE RLS, or the suppression
+  -- veto and the interested() filter would silently see no rows.
+  if (select pg_catalog.count(*) from pg_catalog.pg_class c
+        join pg_catalog.pg_namespace n on n.oid=c.relnamespace
+       where n.nspname='public' and c.relname in ('email_suppression','email_prefs')) <> 2 then
+    raise exception 'CATALYST_CONSENT_INCUMBENT_TABLE_MISSING_BLOCK';
+  end if;
+  select r.rolbypassrls into v_bypass from pg_catalog.pg_roles r where r.oid=v_table_owner;
+  for v_rec in
+    select c.relname, c.relowner, c.relforcerowsecurity
+      from pg_catalog.pg_class c join pg_catalog.pg_namespace n on n.oid=c.relnamespace
+     where n.nspname='public' and c.relname in ('email_suppression','email_prefs')
+  loop
+    if not coalesce(v_bypass,false)
+       and (v_rec.relowner is distinct from v_table_owner or v_rec.relforcerowsecurity) then
+      raise exception 'CATALYST_CONSENT_INCUMBENT_TABLE_ACCESS_BLOCK: %', v_rec.relname;
+    end if;
+  end loop;
+  if not pg_catalog.has_table_privilege(v_owner_name, 'auth.users', 'SELECT') then
+    raise exception 'CATALYST_CONSENT_AUTH_USERS_READ_BLOCK';
   end if;
   foreach v_fn in array array[
     'catalyst_consent_contract()',

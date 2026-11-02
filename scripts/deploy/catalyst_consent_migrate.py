@@ -55,6 +55,13 @@ select pg_catalog.jsonb_build_object(
   'policies', (select pg_catalog.count(*) from pg_catalog.pg_policies
                 where schemaname = 'public' and tablename like 'catalyst\\_consent\\_%'),
   'anon_execute_begin', pg_catalog.has_function_privilege('anon', 'public.catalyst_consent_begin(text,text,text)', 'EXECUTE'),
+  'authenticated_execute_begin', pg_catalog.has_function_privilege('authenticated', 'public.catalyst_consent_begin(text,text,text)', 'EXECUTE'),
+  'authenticated_table_select', pg_catalog.has_table_privilege('authenticated', 'public.catalyst_consent_grants', 'SELECT'),
+  'triggers_enabled', (select pg_catalog.count(*) from pg_catalog.pg_trigger t join pg_catalog.pg_class c on c.oid = t.tgrelid
+                        where t.tgname like 'catalyst\\_consent\\_%' and not t.tgisinternal and t.tgenabled <> 'D'
+                          and ((t.tgname = 'catalyst_consent_global_address_revocation' and c.relname = 'email_suppression')
+                               or (t.tgname = 'catalyst_consent_global_user_revocation' and c.relname = 'email_prefs')
+                               or (t.tgname = 'catalyst_consent_grant_immutable' and c.relname = 'catalyst_consent_grants'))),
   'service_execute_begin', pg_catalog.has_function_privilege('service_role', 'public.catalyst_consent_begin(text,text,text)', 'EXECUTE'),
   'service_table_select', pg_catalog.has_table_privilege('service_role', 'public.catalyst_consent_grants', 'SELECT'),
   'anon_table_select', pg_catalog.has_table_privilege('anon', 'public.catalyst_consent_grants', 'SELECT'),
@@ -120,11 +127,13 @@ def _report(census: dict) -> str:
     fns = set(census.get("functions") or [])
     trg = set(census.get("triggers") or [])
     tbl = set(census.get("tables") or [])
-    installed = set(RPCS) <= fns and set(TRIGGER_FUNCTIONS) <= fns and set(TRIGGERS) <= trg and set(TABLES) <= tbl
+    installed = (set(RPCS) <= fns and set(TRIGGER_FUNCTIONS) <= fns and set(TRIGGERS) <= trg and set(TABLES) <= tbl
+                 and ("triggers_enabled" not in census or census.get("triggers_enabled") == len(TRIGGERS)))
     absent = not (fns & (set(RPCS) | set(TRIGGER_FUNCTIONS))) and not (trg & set(TRIGGERS))
     contract_ok = census.get("contract") == {"owner": "email_consent", "version": 2}
     grants_ok = (census.get("anon_execute_begin") is False and census.get("service_execute_begin") is True
                  and census.get("service_table_select") is False and census.get("anon_table_select") is False
+                 and census.get("authenticated_execute_begin") is False and census.get("authenticated_table_select") is False
                  and census.get("policies") == 0)
     print(f"functions={len(fns & (set(RPCS) | set(TRIGGER_FUNCTIONS)))}/{len(RPCS) + len(TRIGGER_FUNCTIONS)} "
           f"triggers={len(trg & set(TRIGGERS))}/{len(TRIGGERS)} tables={len(tbl & set(TABLES))}/{len(TABLES)} "
@@ -143,16 +152,24 @@ def main() -> int:
     for arg in ("--apply", "--rollback", "--verify"):
         if arg in sys.argv[1:]:
             mode = arg
+    failed = False
     if mode == "--apply":
         code, body = call(APPLY_SQL.read_text())
         print(f"apply_http={code} {'ok' if code in (200, 201) else body}")
-        if code not in (200, 201):
-            return 1
+        failed = code not in (200, 201)
     elif mode == "--rollback":
         code, body = call(ROLLBACK_SQL.read_text())
         print(f"rollback_http={code} {'ok' if code in (200, 201) else body}")
-        if code not in (200, 201):
-            return 1
+        failed = code not in (200, 201)
+    if failed:
+        # The file is one explicit transaction; a failure inside it commits nothing. Clear
+        # any aborted transaction the pooled connection might still hold, then take the
+        # census anyway so the operator sees the resulting state, never a bare exit code.
+        call("rollback;")
+        census = _census(absent_ok=True)
+        if census is not None:
+            print(f"state={_report(census)}")
+        return 1
     census = _census(absent_ok=True)
     if census is None:
         return 1
