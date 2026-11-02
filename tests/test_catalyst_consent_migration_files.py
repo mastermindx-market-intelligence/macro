@@ -133,3 +133,8 @@ def test_round2_review_fixes_are_present():
     for key in ("authenticated_execute_begin", "authenticated_table_select", "triggers_enabled"):
         assert key in APPLIER
     assert 'call("rollback;")' in APPLIER
+    # Round 3 (post-PASS nits): transport failures still take the census, replica-only
+    # triggers do not count as enabled, a BYPASSRLS owner still needs SELECT.
+    assert "urllib.error.URLError" in APPLIER and "_effect=UNKNOWN" in APPLIER
+    assert "t.tgenabled in ('O','A')" in APPLIER
+    assert "has_table_privilege(v_owner_name, 'public.'||v_rec.relname, 'SELECT')" in fence

@@ -58,7 +58,7 @@ select pg_catalog.jsonb_build_object(
   'authenticated_execute_begin', pg_catalog.has_function_privilege('authenticated', 'public.catalyst_consent_begin(text,text,text)', 'EXECUTE'),
   'authenticated_table_select', pg_catalog.has_table_privilege('authenticated', 'public.catalyst_consent_grants', 'SELECT'),
   'triggers_enabled', (select pg_catalog.count(*) from pg_catalog.pg_trigger t join pg_catalog.pg_class c on c.oid = t.tgrelid
-                        where t.tgname like 'catalyst\\_consent\\_%' and not t.tgisinternal and t.tgenabled <> 'D'
+                        where t.tgname like 'catalyst\\_consent\\_%' and not t.tgisinternal and t.tgenabled in ('O','A')
                           and ((t.tgname = 'catalyst_consent_global_address_revocation' and c.relname = 'email_suppression')
                                or (t.tgname = 'catalyst_consent_global_user_revocation' and c.relname = 'email_prefs')
                                or (t.tgname = 'catalyst_consent_grant_immutable' and c.relname = 'catalyst_consent_grants'))),
@@ -103,6 +103,10 @@ def call(sql: str):
     except urllib.error.HTTPError as e:
         # Error bodies name the SQL failure (fence names, lock timeouts); never a secret.
         return e.code, e.read().decode()[:600]
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        # Transport failure: the request may or may not have reached the server, so the
+        # caller must treat the effect as unknown and take the census regardless.
+        return 0, type(e).__name__
 
 
 def _census(absent_ok: bool) -> dict | None:
@@ -153,22 +157,23 @@ def main() -> int:
         if arg in sys.argv[1:]:
             mode = arg
     failed = False
-    if mode == "--apply":
-        code, body = call(APPLY_SQL.read_text())
-        print(f"apply_http={code} {'ok' if code in (200, 201) else body}")
-        failed = code not in (200, 201)
-    elif mode == "--rollback":
-        code, body = call(ROLLBACK_SQL.read_text())
-        print(f"rollback_http={code} {'ok' if code in (200, 201) else body}")
+    if mode in ("--apply", "--rollback"):
+        src = APPLY_SQL if mode == "--apply" else ROLLBACK_SQL
+        code, body = call(src.read_text())
+        print(f"{mode[2:]}_http={code} {'ok' if code in (200, 201) else body}")
+        if code == 0:
+            print(f"{mode[2:]}_effect=UNKNOWN (transport failure; the census below is the truth)")
         failed = code not in (200, 201)
     if failed:
         # The file is one explicit transaction; a failure inside it commits nothing. Clear
         # any aborted transaction the pooled connection might still hold, then take the
         # census anyway so the operator sees the resulting state, never a bare exit code.
-        call("rollback;")
+        try:
+            call("rollback;")
+        except Exception:  # best effort only; the census is what matters
+            pass
         census = _census(absent_ok=True)
-        if census is not None:
-            print(f"state={_report(census)}")
+        print(f"state={_report(census)}" if census is not None else "state=UNKNOWN (census unavailable)")
         return 1
     census = _census(absent_ok=True)
     if census is None:

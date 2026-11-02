@@ -101,10 +101,12 @@ incumbent unsubscribe and preference writes are unaffected (proven by the local 
   (`CATALYST_CONSENT_TABLE_OWNER_BLOCK: pending`), on `email_suppression`/`email_prefs`
   missing (`…INCUMBENT_TABLE_MISSING_BLOCK`), on either being FORCE RLS or owned by someone
   other than the function owner without BYPASSRLS (`…INCUMBENT_TABLE_ACCESS_BLOCK: <table>`),
-  and on the owner lacking SELECT on `auth.users` (`…AUTH_USERS_READ_BLOCK`). Any of these
+  on a BYPASSRLS owner lacking SELECT on either (`…ACCESS_BLOCK: <table> select`), and on
+  the owner lacking SELECT on `auth.users` (`…AUTH_USERS_READ_BLOCK`). Any of these
   would otherwise make the suppression veto silently see no rows.
 - **Failed apply.** The applier sends `rollback;` after a non-2xx apply or rollback, then
-  prints the census state anyway (never a bare exit code). `--verify` also requires the
+  prints the census state anyway (never a bare exit code). A transport failure (timeout,
+  reset) prints `apply_effect=UNKNOWN` and still takes the census: the census is the truth. `--verify` also requires the
   `authenticated` role to hold no execute/select and all three triggers to be enabled on
   their tables.
 

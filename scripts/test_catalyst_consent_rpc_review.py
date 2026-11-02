@@ -35,6 +35,8 @@ ROLLBACK = ROOT / "scripts/deploy/0009_catalyst_consent_rpc_v2_rollback.sql"
 USER = "9507e687-116a-4d30-9c30-fdf45c9d91b2"
 OTHER_USER = "00000000-0000-4000-8000-000000000404"   # synthetic; same intent, second user
 WINDOW_USER = "00000000-0000-4000-8000-000000000505"  # synthetic; grant held across a rollback
+WINDOW2_USER = "00000000-0000-4000-8000-000000000606"  # synthetic; suppressed inside the window
+WINDOW2_EMAIL = "window2+user@example.invalid"
 EMAIL = "fixture+updates@example.invalid"
 SECRET = "synthetic_hmac_only_no_real_user_or_token_0123456789"
 EVENT = "synthetic-event-20261009"
@@ -423,10 +425,26 @@ def _verify(db: TestPostgres) -> None:
     db.sql("grant usage on sequence public.catalyst_consent_grants_grant_id_seq to authenticated")
     db.sql(fence, denied="CATALYST_CONSENT_CLIENT_SEQUENCE_GRANT_BLOCK")
     db.sql("revoke usage on sequence public.catalyst_consent_grants_grant_id_seq from authenticated")
-    if db.sql("select rolbypassrls from pg_catalog.pg_roles where rolname=current_user") == "f":
-        db.sql("alter table public.email_prefs force row level security")
-        db.sql(fence, denied="CATALYST_CONSENT_INCUMBENT_TABLE_ACCESS_BLOCK")
-        db.sql("alter table public.email_prefs no force row level security")
+    # The owner-shaped branches, proven with a NOBYPASSRLS owner (round 3): the bootstrap
+    # superuser bypasses RLS, so hand the consent tables to a plain role and walk every
+    # refusal in fence order, then give them back.
+    db.sql("create role fence_probe nosuperuser nobypassrls nologin")
+    db.sql("alter table public.catalyst_consent_grants owner to fence_probe")
+    db.sql(fence, denied="CATALYST_CONSENT_TABLE_OWNER_BLOCK: pending")
+    db.sql("alter table public.catalyst_consent_pending owner to fence_probe")
+    db.sql(fence, denied="CATALYST_CONSENT_INCUMBENT_TABLE_ACCESS_BLOCK")  # foreign-owned email tables
+    db.sql("alter table public.email_prefs owner to fence_probe")
+    db.sql("alter table public.email_suppression owner to fence_probe")
+    db.sql("alter table public.email_prefs force row level security")
+    db.sql(fence, denied="CATALYST_CONSENT_INCUMBENT_TABLE_ACCESS_BLOCK: email_prefs")
+    db.sql("alter table public.email_prefs no force row level security")
+    db.sql(fence, denied="CATALYST_CONSENT_AUTH_USERS_READ_BLOCK")
+    db.sql("grant select on auth.users to fence_probe")
+    db.sql(fence, denied="CATALYST_CONSENT_RPC_OWNER_BLOCK")  # the RPCs still belong to the superuser
+    db.sql("revoke select on auth.users from fence_probe")
+    for tbl in ("catalyst_consent_grants", "catalyst_consent_pending", "email_prefs", "email_suppression"):
+        db.sql("alter table public." + tbl + " owner to current_user")
+    db.sql("drop role fence_probe")
     db.sql(fence)
     print("INSTALL_FENCE_FIRES=PASS")
     assert json.loads(db.sql("select public.catalyst_consent_contract()")) == contract
@@ -532,6 +550,16 @@ def _verify_rollback(db: TestPostgres) -> None:
                              "::uuid," + _quote(EVENT) + "," + _quote(SCOPE) + ",ARRAY['NVDA']::text[]," +
                              _quote(window_nonce) + "," + _quote(_iso()) + ",'{}'::jsonb)"))
     assert held["created"] is True
+    # A second grant whose address gets suppressed inside the window (round 3, N4).
+    db.sql("insert into auth.users values (" + _quote(WINDOW2_USER) + "::uuid," + _quote(WINDOW2_EMAIL) +
+           ",now()) on conflict do nothing")
+    window2_nonce = "synthetic_intent_nonce_window2_abcdefghij"
+    window2 = _new_intent(datetime.now(timezone.utc), window2_nonce, ["NVDA"])
+    db.sql("select public.catalyst_consent_begin(" + ",".join(map(_quote, window2)) + ")")
+    held2 = json.loads(db.sql("select public.catalyst_consent_confirm(" + _quote(WINDOW2_USER) +
+                              "::uuid," + _quote(EVENT) + "," + _quote(SCOPE) + ",ARRAY['NVDA']::text[]," +
+                              _quote(window2_nonce) + "," + _quote(_iso()) + ",'{}'::jsonb)"))
+    assert held2["created"] is True
     grants_before = db.sql("select count(*) from public.catalyst_consent_grants")
     revoked_before = db.sql("select count(*) from public.catalyst_consent_grants where revoked_at_utc is not null")
     db.apply(path=ROLLBACK)
@@ -549,14 +577,16 @@ def _verify_rollback(db: TestPostgres) -> None:
     db.sql("update public.email_prefs set marketing_opt_out=false where user_id=" + _quote(USER) + "::uuid")
     db.sql("delete from public.email_suppression where email='rollback+probe@example.invalid'")
     db.sql("delete from public.email_prefs where user_id=" + _quote(USER) + "::uuid")
-    # An opt-out made while the triggers were absent must still revoke on re-apply.
+    # An opt-out or a suppression made while the triggers were absent must still revoke on re-apply.
     db.sql("insert into public.email_prefs(user_id,marketing_opt_out) values (" + _quote(WINDOW_USER) + "::uuid,true)")
+    db.sql("insert into public.email_suppression values (" + _quote(WINDOW2_EMAIL.upper()) + ",'unsubscribe')")
     # Re-apply after rollback: service restored, ledger intact, revocations permanent.
     db.apply()
     assert json.loads(db.sql("select public.catalyst_consent_contract()")) == {"owner": "email_consent", "version": 2}
-    assert db.sql("select count(*) from public.catalyst_consent_grants where revoked_at_utc is not null") == str(int(revoked_before) + 1)
-    assert db.sql("select count(*) from public.catalyst_consent_grants where user_id=" + _quote(WINDOW_USER) +
-                  "::uuid and revoked_at_utc is not null") == "1"
+    assert db.sql("select count(*) from public.catalyst_consent_grants where revoked_at_utc is not null") == str(int(revoked_before) + 2)
+    assert db.sql("select count(*) from public.catalyst_consent_grants where user_id in (" + _quote(WINDOW_USER) +
+                  "::uuid," + _quote(WINDOW2_USER) + "::uuid) and revoked_at_utc is not null") == "2"
+    db.sql("delete from public.email_suppression where email=" + _quote(WINDOW2_EMAIL.upper()))
     # Clearing the opt-out afterwards does not bring the grant back.
     db.sql("update public.email_prefs set marketing_opt_out=false where user_id=" + _quote(WINDOW_USER) + "::uuid")
     assert all(r["user_id"] != WINDOW_USER for r in json.loads(db.sql(

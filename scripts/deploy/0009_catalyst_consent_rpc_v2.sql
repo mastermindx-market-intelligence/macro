@@ -601,6 +601,10 @@ begin
        and (v_rec.relowner is distinct from v_table_owner or v_rec.relforcerowsecurity) then
       raise exception 'CATALYST_CONSENT_INCUMBENT_TABLE_ACCESS_BLOCK: %', v_rec.relname;
     end if;
+    -- A BYPASSRLS owner of a foreign-owned table still needs SELECT on it.
+    if not pg_catalog.has_table_privilege(v_owner_name, 'public.'||v_rec.relname, 'SELECT') then
+      raise exception 'CATALYST_CONSENT_INCUMBENT_TABLE_ACCESS_BLOCK: % select', v_rec.relname;
+    end if;
   end loop;
   if not pg_catalog.has_table_privilege(v_owner_name, 'auth.users', 'SELECT') then
     raise exception 'CATALYST_CONSENT_AUTH_USERS_READ_BLOCK';
