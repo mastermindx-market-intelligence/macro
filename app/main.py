@@ -2915,3 +2915,19 @@ except Exception as _catalyst_secure_exc:  # noqa: BLE001
     _logging.getLogger("macro.api").error(
         "catalyst secure opt-in router unavailable (fail closed): %r",
         _catalyst_secure_exc)
+
+# B1 seam: configure the owner-backed opt-in funnel only when production admits
+# it (both switches on, HMAC secrets present, identity endpoint configured, and
+# the consent owner answering its v2 contract probe). DEFAULT OFF: every refusal
+# or failure leaves the router at 503 CATALYST_INTEGRATION_NOT_READY. This never
+# applies the consent RPC, never enables delivery and binds no rights authority.
+try:
+    from app.catalyst_optin_wiring import (  # noqa: E402
+        configure_from_environment as _configure_catalyst_optin,
+    )
+    _configure_catalyst_optin()
+except Exception as _catalyst_optin_wiring_exc:  # noqa: BLE001
+    import logging as _logging  # noqa: PLC0415
+    _logging.getLogger("macro.api").warning(
+        "catalyst opt-in funnel not configured: %s",
+        type(_catalyst_optin_wiring_exc).__name__)
