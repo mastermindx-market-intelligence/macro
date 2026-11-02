@@ -67,3 +67,15 @@ were archived unchanged. `manifest.yml` carried `in_review` from this re-freeze 
 the re-freeze script). Round 7 was confirmatory under SIC-ADJ-04: both critics pass the wave-6 bytes; the two minor findings, the
 nit and the adopted advisory are cured in wave 7 (SIC-V7-C01..C06) and a confirmatory round 8 re-reads them; SIC-ADJ-05
 (`../verdict.yml`) makes round 8 the last confirmatory round unless it finds a defect.
+
+Re-freeze 2026-11-02 at `213a91b9428f339dcac3ddf7dd1dd3d1346d5c17` (repair wave 7: SIC-V7-C01..C06; boards 0–41, one seat-direct tree
+commit 213a91b9): the round-7 receipts listed above are archived byte-exact under `round7_78c14f7d/` (`critic_return/` plus the normalized
+`visual_taste.yml` / `product_regression.yml`, same sha256 as the table). The top-level `critic_return/`, `visual_taste.yml` and
+`product_regression.yml` remain the round-7 receipts until the round-8 critics (same two identities, r8, same quarantine, which now also
+covers `round7_78c14f7d/*<other role>*`) return against `213a91b9`; the round-8 receipts then replace them (review_round 8) and the
+header above is rewritten. `manifest.yml` carries `in_review` from this re-freeze; `proposal.yml` carries `revision_mandate_round7` and its
+`proposed_artifact.frozen_sha` moves with the manifest field (asserted by the re-freeze script; no header lines were inserted, so the
+wave-7 line references hold at 213a91b9). Round 8 is confirmatory and, under SIC-ADJ-05 (`../verdict.yml`), the last unless it finds a
+defect: it verifies each of SIC-V7-C01..C06 landed as described, states which SIC-V7-C03 outcome holds (the seat landed (i), with the
+:155-row deviation stated in `revision_mandate_round7`), and that the re-rendered boards regress nothing; a note both critics hold
+non-binding becomes an implementation-bound condition of the approval receipt rather than another wave.
