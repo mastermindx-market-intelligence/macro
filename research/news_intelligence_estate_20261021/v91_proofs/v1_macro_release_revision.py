@@ -409,20 +409,66 @@ def v1_p6(news_pulls_truth: bool) -> str:
     return verdict
 
 
+def _first_line(rel: str, needle: str) -> int:
+    """1-based line of the first occurrence of needle in rel under ROOT (0 if absent)."""
+    try:
+        text = (ROOT / rel).read_text(encoding="utf-8", errors="replace")
+    except FileNotFoundError:
+        return 0
+    for index, line in enumerate(text.splitlines(), 1):
+        if needle in line:
+            return index
+    return 0
+
+
 def v1_p7() -> str:
-    """P7 Brain answer agrees: does any app/ module read the radar artifact?"""
-    app_files = sorted((ROOT / "app").glob("*.py"))
-    readers = [
-        path.name for path in app_files
+    """P7 Brain answer agrees: follow the Brain's import and tool chain to the radar.
+
+    The signed-in ask_brain route imports engine.neuralweb.ask_brain, whose read-tool
+    list carries read_inflation_intelligence; that tool (cortex) reads
+    data/release_forecast/inflation_intelligence.json, which engine.inflation_intelligence
+    builds from the radar's own latest.json (the byte-identical twin of
+    site/macrodata/release_forecast.json). So the Brain does read the radar. What is
+    not checked anywhere is release-vintage agreement: the Brain's released_state is
+    latest-revised index history, and no code compares it with the radar vintage.
+    """
+    chain = {
+        "route": _first_line("app/main.py", "def ask_brain("),
+        "route_import": _first_line("app/main.py", "from engine.neuralweb.ask_brain import ask"),
+        "tool_listed": _first_line("engine/neuralweb/ask_brain.py", '"read_inflation_intelligence"'),
+        "tool_def": _first_line("engine/neuralweb/cortex.py", "def _tool_read_inflation_intelligence("),
+        "tool_reads": _first_line(
+            "engine/neuralweb/cortex.py", '"release_forecast", "inflation_intelligence.json"'
+        ),
+        "built_from_radar": _first_line("engine/inflation_intelligence.py", "DEFAULT_RADAR_LATEST ="),
+        "radar_twin": _first_line("scripts/build_release_forecast.py", "byte-identical"),
+    }
+    vintage_caveat = _first_line("engine/neuralweb/mastermind_context.py", "not original-release vintage")
+    app_readers = sorted(
+        str(path.relative_to(ROOT))
+        for top in ("app", "engine")
+        for path in (ROOT / top).rglob("*.py")
         if "release_forecast" in path.read_text(encoding="utf-8", errors="replace")
-    ]
-    verdict = "ABSENT" if not readers else "PARTIAL"
+    )
+    chain_complete = all(chain.values())
+    verdict = "PARTIAL" if chain_complete else "ABSENT"
+    cites = (
+        f"app/main.py:{chain['route'] or 1} app/main.py:{chain['route_import'] or 1} "
+        f"engine/neuralweb/ask_brain.py:{chain['tool_listed'] or 1} "
+        f"engine/neuralweb/cortex.py:{chain['tool_def'] or 1} "
+        f"engine/neuralweb/cortex.py:{chain['tool_reads'] or 1} "
+        f"engine/inflation_intelligence.py:{chain['built_from_radar'] or 1} "
+        f"scripts/build_release_forecast.py:{chain['radar_twin'] or 1} "
+        f"engine/neuralweb/mastermind_context.py:{vintage_caveat or 1}"
+    )
     evidence = (
-        f"probe: {len(readers)} of {len(app_files)} app modules mention "
-        f"release_forecast{'' if not readers else ' (' + ','.join(readers) + ')'}; the "
-        "Brain run surface registers and pumps answer streams with no radar read "
-        "(nearest code app/brain_runs.py:214); the only release_forecast consumer is "
-        "the signed-in browser fetch at templates/dashboard.html.j2:11546. no-test"
+        f"reader chain resolved={chain_complete} (signed-in ask_brain route -> "
+        f"engine.neuralweb.ask_brain tool list -> cortex read_inflation_intelligence -> "
+        f"data/release_forecast/inflation_intelligence.json -> built from the radar's "
+        f"latest.json, the byte-identical twin of site/macrodata/release_forecast.json); "
+        f"{len(app_readers)} app/engine modules mention release_forecast; missing half: "
+        f"the Brain's released_state is latest-revised index history and no code checks "
+        f"it against the release vintage, and a live answer is signed-in; {cites}. no-test"
     )
     print(f"V1 P7 {verdict} {evidence}")
     return verdict
