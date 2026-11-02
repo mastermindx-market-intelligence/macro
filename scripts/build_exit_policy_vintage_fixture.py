@@ -64,6 +64,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from engine import us_board_snapshots  # noqa: E402
 from scripts.exit_policy_study import (  # noqa: E402
     LEDGER_HISTORY_FROM,
     REPORT_PATH,
@@ -101,7 +102,16 @@ def _ledger_ref() -> str:
 
 def _materialise(ref: str, dest: Path) -> None:
     """Check the source files out of `ref` into a scratch root."""
-    for rel in _SRC_FILES:
+    rels = list(_SRC_FILES)
+    listed = subprocess.run(
+        ["git", "-C", str(ROOT), "ls-tree", "--name-only", ref,
+         "data/us_board_ledger/snapshots_parts/"],
+        capture_output=True, text=True, check=True).stdout
+    for line in listed.splitlines():
+        rel = line.strip()
+        if rel:
+            rels.append(rel)
+    for rel in rels:
         p = subprocess.run(["git", "-C", str(ROOT), "show", f"{ref}:{rel}"],
                            capture_output=True)
         if p.returncode != 0:          # absent at that ref — the loaders tolerate it
@@ -114,7 +124,8 @@ def _materialise(ref: str, dest: Path) -> None:
 def _distil_snapshots(src: Path, dest: Path) -> int:
     """Keep only the fields load_board_days reads: as_of, buy[].ticker, buy[].hold.
 
-    The real file is ~17 MiB of full board payloads. The provenance counters it feeds
+    The real file is ~17 MiB of full board payloads (base plus snapshots_parts/,
+    engine/us_board_snapshots.py). The provenance counters it feeds
     (`n_days_snapshots`, `n_days_before_definition`) are incremented PER LINE, so the
     line count and each line's as_of are preserved exactly — a distillation that
     collapsed duplicate days would move the counts the report prints.
@@ -122,7 +133,7 @@ def _distil_snapshots(src: Path, dest: Path) -> int:
     dest.parent.mkdir(parents=True, exist_ok=True)
     n = 0
     with dest.open("w") as fh:
-        for line in src.read_text().splitlines():
+        for line in us_board_snapshots.read_lines(src):
             line = line.strip()
             if not line:
                 continue

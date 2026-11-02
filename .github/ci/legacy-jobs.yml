@@ -6093,6 +6093,7 @@ jobs:
       - "engine/neuralweb/market_memory_identity_candidate.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
+      - "engine/us_board_snapshots.py"
       - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
       - "tests/test_ipo_prospectus_terms.py"
@@ -10172,6 +10173,7 @@ jobs:
       - "engine/trial_ledger.py"
       - "engine/tushare_freshness.py"
       - "engine/universe_history.py"
+      - "engine/us_board_snapshots.py"
       - "engine/validation.py"
       - "engine/valuation.py"
       - "engine/velocity.py"
@@ -10503,6 +10505,7 @@ jobs:
       - "engine/trial_ledger.py"
       - "engine/tushare_freshness.py"
       - "engine/universe_history.py"
+      - "engine/us_board_snapshots.py"
       - "engine/validation.py"
       - "engine/yield_momentum.py"
       - "lib/ai_costs.py"
@@ -10986,6 +10989,7 @@ jobs:
       - "engine/trial_ledger.py"
       - "engine/tushare_freshness.py"
       - "engine/universe_history.py"
+      - "engine/us_board_snapshots.py"
       - "engine/validation.py"
       - "engine/valuation.py"
       - "engine/velocity.py"
@@ -17973,6 +17977,7 @@ jobs:
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
+      - engine/us_board_snapshots.py
       - lib/stooq.py
       - engine/intl_performance_charts.py
       - engine/rates_command_basis.py
@@ -22175,6 +22180,7 @@ jobs:
       - "engine/trial_ledger.py"
       - "engine/tushare_freshness.py"
       - "engine/universe_history.py"
+      - "engine/us_board_snapshots.py"
       - "engine/validation.py"
       - "engine/valuation.py"
       - "engine/velocity.py"
@@ -22428,6 +22434,7 @@ jobs:
       - "lib/intl_chart_publication.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
+      - engine/us_board_snapshots.py
       - lib/intl_eod_publication.py
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
@@ -22759,6 +22766,7 @@ jobs:
       - "config/intl_source_rights_matrix_v1.json"
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
+      - "engine/us_board_snapshots.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "engine/liquidity_currency.py"
@@ -26281,6 +26289,7 @@ jobs:
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - app/deploy/ohlc_origin_known_hosts
+      - "engine/us_board_snapshots.py"
       - scripts/publish_ohlc.py
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -30381,6 +30390,7 @@ jobs:
     paths:
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
+      - "engine/us_board_snapshots.py"
       - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
       - "engine/ipo_prospectus_terms.py"
@@ -30891,6 +30901,10 @@ jobs:
       # 2026-10-13: consolidate the historical groups above into one actual pytest
       # process. Keep every full-suite file and order; pytest still names each
       # failed node. All 311 nodes equal the six original command collections.
+      # 2026-11-02: data/us_board_ledger/snapshots.jsonl rolls over to snapshots_parts/
+      # before GitHub's 100 MiB blob limit. The four suites at the end of this step pin
+      # the parts module, every reader and the grader's append on the rolled-over
+      # layout, and the census of files that name the base path.
       - name: Board source clocks, outcome ledgers, accountability, continuity and Canada binding
         run: >-
           python -m pytest
@@ -30909,6 +30923,10 @@ jobs:
           tests/test_us_board_continuity_guard.py
           tests/test_build_stock_library_price_clock.py
           tests/test_canada_canonical_board.py
+          tests/test_us_board_snapshots.py
+          tests/test_us_board_snapshot_readers_build.py
+          tests/test_us_board_snapshot_readers_grade.py
+          tests/test_us_board_snapshot_reader_census.py
           -q
 
 
@@ -33482,6 +33500,7 @@ jobs:
       - "engine/tushare_freshness.py"
       - "engine/universe_history.py"
       - "engine/us_board_rank.py"
+      - "engine/us_board_snapshots.py"
       - "engine/us_prophet_fusion.py"
       - "engine/validation.py"
       - "engine/valuation.py"
@@ -33689,6 +33708,7 @@ jobs:
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - app/deploy/ohlc_origin_known_hosts
+      - "engine/us_board_snapshots.py"
       - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
       - "lib/intl_surveillance_mount.py"
@@ -35166,6 +35186,7 @@ jobs:
       - "engine/intl_global_universe.py"
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
+      - "engine/us_board_snapshots.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "engine/liquidity_currency.py"
@@ -47799,6 +47820,7 @@ jobs:
       - "engine/options_nbbo_cohort.py"
       - "engine/options_payoff.py"
       - "engine/options_plan_expiry.py"
+      - "engine/us_board_snapshots.py"
       - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenario_bindings.py"

@@ -83,6 +83,13 @@ repaired here** — see the ERA BREAK section of the PR that set this boundary.
   *unrecorded history*, not a defect. Legacy rows keep nulls (schema-union convention).
 * **Store-gated columns can be null forever on old rows** even after their store matures:
   PIT gates count store rows `< as_of`, and `as_of` is frozen per row.
+* **`snapshots.jsonl` is a frozen base plus `snapshots_parts/`:** GitHub refuses any blob
+  over 100 MiB, so the base takes no new row once it would pass 48 MiB (it was
+  88,488,651 B on 2026-11-02, so it is already frozen). Later
+  rows go to `snapshots_parts/part-NNNNNN.jsonl` (at most 48 MiB each, numbered from
+  part-000001 with no gap). Read the ledger through `engine/us_board_snapshots.py`, never
+  the base alone: the base alone is missing every row written after the rollover.
+  Nothing was moved or truncated.
 
 ## Per-column coverage starts (measured 2026-08-04)
 

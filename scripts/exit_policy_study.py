@@ -168,6 +168,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from engine import track_scoring as ts  # noqa: E402
+from engine import us_board_snapshots  # noqa: E402
 # Import, never copy: the definition cut, the horizon, and the incumbent's own exit legs
 # belong to the grader. If the grader moves them, this study moves with it instead of
 # silently measuring a different cohort.
@@ -284,8 +285,8 @@ def load_board_days(root: Path | None = None) -> tuple[dict[str, set[str]],
     prov = {"n_days_snapshots": 0, "n_days_retro_only": 0,
             "n_tickers_added_by_retro": 0, "n_days_before_definition": 0}
 
-    if snap_path.exists():
-        for line in snap_path.read_text().splitlines():
+    if us_board_snapshots.exists(snap_path):
+        for line in us_board_snapshots.read_lines(snap_path):
             line = line.strip()
             if not line:
                 continue

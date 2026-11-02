@@ -115,7 +115,7 @@ def iter_lines(base: Path | str) -> Iterator[str]:
     a single file could before the rollover.
     """
     for p in _checked_paths(base):
-        with open(p, encoding="utf-8") as fh:
+        with p.open(encoding="utf-8") as fh:
             yield from fh
 
 

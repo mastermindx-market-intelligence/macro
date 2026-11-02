@@ -90,6 +90,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from engine import bottom_ruler as BR  # noqa: E402
+from engine import us_board_snapshots  # noqa: E402
 from engine.ledger_clock import (  # noqa: E402
     ClockContractError,
     ledger_date_str,
@@ -199,10 +200,10 @@ def _read_prices(ticker: str) -> tuple[pd.Series, pd.Series | None, pd.Series | 
 # ACCRUE — collect bottom-class flags from the three sources
 # --------------------------------------------------------------------------- #
 def _read_snapshots() -> list[dict]:
-    if not SNAPSHOTS_JSONL.exists():
+    if not us_board_snapshots.exists(SNAPSHOTS_JSONL):
         return []
     rows = []
-    for line in SNAPSHOTS_JSONL.read_text(encoding="utf-8").splitlines():
+    for line in us_board_snapshots.read_lines(SNAPSHOTS_JSONL):
         line = line.strip()
         if not line:
             continue
