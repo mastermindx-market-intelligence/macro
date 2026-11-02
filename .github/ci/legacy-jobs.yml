@@ -348,6 +348,7 @@ jobs:
       - "collectors/sec_capital_structure.py"
       - "config/capital_structure_share_source_admission.v1.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_registration_lifecycle.schema.json"
@@ -2481,6 +2482,7 @@ jobs:
       - "collectors/sec_capital_structure.py"
       - "config/capital_structure_share_source_admission.v1.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_registration_lifecycle.schema.json"
@@ -3541,6 +3543,7 @@ jobs:
       - "collectors/sec_capital_structure.py"
       - "config/capital_structure_share_source_admission.v1.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_registration_lifecycle.schema.json"
@@ -6252,6 +6255,7 @@ jobs:
       - "engine/capital_structure/projection.py"
       - "engine/capital_structure/source_identity.py"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_projection.schema.json"
       - "collectors/edgar_8k.py"
       - "collectors/edgar_dilution.py"
@@ -7673,6 +7677,7 @@ jobs:
       - "config/us_search_aliases_zh.json"
       - "contracts/capital_structure_capacity_inputs.v1.schema.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_projection.schema.json"
@@ -11971,6 +11976,7 @@ jobs:
       - "config/us_names_zh.json"
       - "config/us_search_aliases_zh.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -13063,6 +13069,7 @@ jobs:
           tests/test_capital_structure_instrument_resolution.py
           tests/test_c19_wp14_capital_observation_pins.py
           tests/test_capital_structure_event_spine.py
+          tests/test_capital_structure_registration_lifecycle.py
           tests/test_capital_structure_graph.py
           tests/test_capital_structure_legacy_compat.py
           tests/test_capital_structure_pit.py
@@ -13078,6 +13085,7 @@ jobs:
           tests/test_capital_policy_projection.py
           tests/test_capital_structure_api.py
           tests/test_capital_structure_state_bundle.py
+          tests/test_capital_structure_state_bundle_document_terms.py
           tests/test_capital_structure_state_api.py
           tests/test_capital_structure_source_identity.py
           tests/test_capital_structure_source_manifest.py
@@ -13149,6 +13157,7 @@ jobs:
       - "config/capability_manifest.yml"
       - "config/metabolism_budget.yml"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_projection.schema.json"
       - "data/capital_structure/**"
       - "engine/__init__.py"
@@ -15801,6 +15810,7 @@ jobs:
       - "config/capital_structure_share_source_admission.v1.json"
       - "contracts/capital_structure_capacity_inputs.v1.schema.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_registration_lifecycle.schema.json"
@@ -17090,6 +17100,7 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json"
+      - "research/theme_graph/gmi_relationships_20261021/m3/describe_premises_v1.json"
       - "research/theme_graph/microtheme_membership_candidates_2026-10-08.json"
       - "templates/gmi*"
       - "templates/theme.css"
@@ -29395,6 +29406,7 @@ jobs:
       - "collectors/sec_capital_structure.py"
       - "config/capital_structure_share_source_admission.v1.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_registration_lifecycle.schema.json"
@@ -38699,6 +38711,7 @@ jobs:
       - "collectors/sec_capital_structure.py"
       - "config/capital_structure_share_source_admission.v1.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_registration_lifecycle.schema.json"
@@ -41981,6 +41994,7 @@ jobs:
       - "config/capital_structure_share_source_admission.v1.json"
       - "contracts/capital_structure_capacity_inputs.v1.schema.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_registration_lifecycle.schema.json"
@@ -43986,6 +44000,7 @@ jobs:
       - "config/market_memory_retained_use.v1.json"
       - "contracts/capital_structure_capacity_inputs.v1.schema.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_registration_lifecycle.schema.json"
@@ -49072,6 +49087,7 @@ jobs:
       - "config/intl_source_rights_matrix_v1.json"
       - "contracts/capital_structure_capacity_inputs.v1.schema.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_registration_lifecycle.schema.json"
