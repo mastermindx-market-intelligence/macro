@@ -741,7 +741,7 @@ def validate_opportunity_evidence_summary(
         raise OpportunityContextContractError("opportunity evidence market reflection is unavailable")
 
     support = payload.get("support")
-    if not isinstance(support, Mapping) or support != {
+    if type(support) is not dict or support != {
         "state": "UNAVAILABLE",
         "facts": None,
         "reason": "DIRECTIONAL_SUPPORT_NOT_ADMITTED",
@@ -892,7 +892,7 @@ def validate_opportunity_context(payload: Mapping[str, object]) -> None:
         raise OpportunityContextContractError("native_phase block is not closed")
 
     entry = payload.get("fresh_entry")
-    if not isinstance(entry, Mapping) or set(entry) != {
+    if type(entry) is not dict or set(entry) != {
         "owner_schema", "state", "entry_open", "reason", "availability_id",
         "evaluated_at", "market_session", "strategy", "current_price", "zone",
         "invalidation", "chase_state", "owner_status", "blockers", "reasons",
@@ -946,13 +946,15 @@ def validate_opportunity_context(payload: Mapping[str, object]) -> None:
             )
 
     user_state = payload.get("user_state")
-    if not isinstance(user_state, Mapping) or set(user_state) != {"plan", "watchlist", "portfolio"}:
+    if type(user_state) is not dict or set(user_state) != {"plan", "watchlist", "portfolio"}:
         raise OpportunityContextContractError("private user state fields are not closed")
-    if user_state.get("plan") != _UNJOINED_USER_STATE["plan"]:
+    if type(user_state.get("plan")) is not dict or user_state["plan"] != _UNJOINED_USER_STATE["plan"]:
         raise OpportunityContextContractError("private Plan state must remain owner-controlled")
-    if user_state.get("watchlist") != _UNJOINED_USER_STATE["watchlist"]:
+    if type(user_state.get("watchlist")) is not dict or user_state["watchlist"] != _UNJOINED_USER_STATE["watchlist"]:
         raise OpportunityContextContractError("watchlist state must remain unjoined")
     portfolio_state = user_state.get("portfolio")
+    if type(portfolio_state) is not dict:
+        raise OpportunityContextContractError("private portfolio state must be an ordinary object")
     if portfolio_state == _UNJOINED_USER_STATE["portfolio"]:
         pass
     elif (
@@ -975,6 +977,8 @@ def validate_opportunity_context(payload: Mapping[str, object]) -> None:
     else:
         raise OpportunityContextContractError("private portfolio state is incoherent")
     evidence_summary = payload.get("evidence_summary")
+    if type(evidence_summary) is not dict:
+        raise OpportunityContextContractError("cross-domain evidence state must be an ordinary object")
     if evidence_summary == _UNJOINED_EVIDENCE:
         pass
     elif isinstance(evidence_summary, Mapping):
@@ -987,7 +991,7 @@ def validate_opportunity_context(payload: Mapping[str, object]) -> None:
         raise OpportunityContextContractError("cross-domain evidence state is incoherent")
     forecast = payload.get("forecast")
     if (
-        not isinstance(forecast, Mapping)
+        type(forecast) is not dict
         or set(forecast) != set(_UNQUALIFIED_FORECAST)
         or forecast.get("qualified") is not False
         or forecast.get("heads") is not None

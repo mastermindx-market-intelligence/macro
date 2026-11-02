@@ -1159,3 +1159,78 @@ def test_displayed_owner_b4_reason_cannot_be_invented():
     out["fresh_entry"]["reason"] = "INVENTED_DISPLAY_REASON"
     with pytest.raises(OpportunityContextContractError, match="reason"):
         validate_opportunity_context(out)
+
+
+# OLI post-merge source review: sentinel and forecast objects must be plain
+# dictionaries so an in-process mapping cannot lie about equality or .get().
+class _LyingSentinelDict(dict):
+    def __eq__(self, other):
+        return True
+
+    def __ne__(self, other):
+        return False
+
+
+class _LyingForecastDict(dict):
+    def get(self, key, default=None):
+        if key == "heads":
+            return None
+        return super().get(key, default)
+
+
+@pytest.mark.parametrize("surface", ["plan", "watchlist", "portfolio"])
+def test_private_unjoined_sentinel_cannot_hide_a_dict_subclass(surface):
+    out = compose_opportunity_context(projection(), episode_id=eid())
+    fake = _LyingSentinelDict(out["user_state"][surface])
+    fake["state"] = "ACTIVE_PRIVATE_DATA"
+    out["user_state"][surface] = fake
+    assert out["user_state"][surface]["state"] == "ACTIVE_PRIVATE_DATA"
+    with pytest.raises(OpportunityContextContractError, match="private|portfolio|watchlist"):
+        validate_opportunity_context(out)
+
+
+def test_missing_b4_sentinel_cannot_hide_false_entry_permission():
+    out = compose_opportunity_context(projection(), episode_id=eid())
+    fake = _LyingSentinelDict(out["fresh_entry"])
+    fake["entry_open"] = False
+    out["fresh_entry"] = fake
+    assert out["fresh_entry"]["entry_open"] is False
+    with pytest.raises(OpportunityContextContractError, match="fresh_entry|missing B4"):
+        validate_opportunity_context(out)
+
+
+def test_unqualified_forecast_subclass_cannot_hide_directional_heads():
+    out = compose_opportunity_context(projection(), episode_id=eid())
+    fake = _LyingForecastDict(out["forecast"])
+    fake["heads"] = {"direction": "up", "value": 1}
+    assert fake.get("heads") is None
+    assert fake["heads"] is not None
+    out["forecast"] = fake
+    with pytest.raises(OpportunityContextContractError, match="unqualified forecast"):
+        validate_opportunity_context(out)
+
+
+def test_unjoined_oev_sentinel_cannot_hide_directional_claim():
+    out = compose_opportunity_context(projection(), episode_id=eid())
+    fake = _LyingSentinelDict(out["evidence_summary"])
+    fake["status"] = "JOINED"
+    out["evidence_summary"] = fake
+    with pytest.raises(OpportunityContextContractError, match="evidence|cross-domain"):
+        validate_opportunity_context(out)
+
+
+def test_oev_support_sentinel_cannot_hide_positive_claim():
+    p = projection()
+    summary = project_opportunity_evidence_summary(
+        p, episode_id=eid(), evidence_vector=_opportunity_evidence_vector(),
+    )
+    fake = _LyingSentinelDict(summary["support"])
+    fake["state"] = "AVAILABLE"
+    fake["facts"] = [{"direction": "bullish"}]
+    summary["support"] = fake
+    assert summary["support"]["state"] == "AVAILABLE"
+    with pytest.raises(OpportunityContextContractError, match="directional support"):
+        validate_opportunity_evidence_summary(
+            summary, identity_security_id="SEC:US-XNAS-AAPL",
+            market_session="2026-09-18",
+        )
