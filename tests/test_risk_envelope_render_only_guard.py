@@ -17,11 +17,13 @@ RENDER_ONLY_WORKFLOWS = (
 
 
 def _fixture(root: Path, *, session="2026-10-30", revision="settled"):
+    source = {"asof": session, "score": 43, "verdict": "MIXED", "components": [{"score": 14}]}
     env = {
         "schema": "mastermind.risk_envelope/v1",
         "revision": revision,
         "source_session": session,
         "as_of": session,
+        "market_transition": {"current_snapshot": source},
         "bundle_id": "source-bound-001",
         "data_state": "PARTIAL",
         "hazard_summary": {"stage": "FRAGILE"},
@@ -34,7 +36,7 @@ def _fixture(root: Path, *, session="2026-10-30", revision="settled"):
         files[name] = path
     market = root / "data/market_state/latest.json"
     market.parent.mkdir(parents=True, exist_ok=True)
-    market.write_text(json.dumps({"asof": session}))
+    market.write_text(json.dumps(source))
     return env, files, market
 
 
@@ -139,6 +141,17 @@ def test_same_session_fresh_different_committed_bundles_are_withheld(tmp_path, m
     assert producer.write(tmp_path) == {}
     assert checked == []  # Refuse at pair equality before any HEAD acceptance.
     assert all(path.read_bytes() == originals[name] for name, path in files.items())
+
+
+@pytest.mark.parametrize("field,value", [("score", 44), ("components", [{"score": 22}]), ("score", True)])
+def test_same_session_market_correction_withholds_older_pair(tmp_path, monkeypatch, field, value):
+    _env, files, market = _fixture(tmp_path)
+    original, _checked = _arm(monkeypatch, files)
+    current = json.loads(market.read_bytes())
+    current[field] = value
+    market.write_text(json.dumps(current))
+    assert producer.write(tmp_path) == {}
+    assert all(path.read_bytes() == original[name] for name, path in files.items())
 
 
 def test_missing_git_commit_is_not_treated_as_settlement(tmp_path, monkeypatch):
