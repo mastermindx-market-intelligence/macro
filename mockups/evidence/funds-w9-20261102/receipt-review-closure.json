@@ -1,0 +1,26 @@
+{
+  "scope": "actual retained Berkshire raw snapshot+actual matching receipt through incumbent _apply_receipt_metadata; source-only old/new helper comparison",
+  "candidate": "cfdc34588dd590cd400cf39f01df04c642ba19e0",
+  "old_candidate": "b56054a686bbfbd8da58c2949a6ffc78fb36f0b3",
+  "receipt_rows": 1,
+  "old_result": {
+    "status": "unavailable"
+  },
+  "new_result": {
+    "status": "available",
+    "manager": "Berkshire Hathaway (Buffett)",
+    "cik": "1067983",
+    "accession": "0001193125-26-352200",
+    "form": "13F-HR",
+    "index_url": "https://www.sec.gov/Archives/edgar/data/1067983/000119312526352200/0001193125-26-352200-index.html",
+    "receipt_index_url": "https://www.sec.gov/Archives/edgar/data/1067983/000119312526352200/index.json",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1067983/000119312526352200/56757.xml",
+    "source_sha256": "6a2798aa0fa9731c33b0f0b748229eaf7cdf118f9c46fd5a4a9a3de6979d4d95"
+  },
+  "row_count": 29,
+  "engine_sha256": "b8738e828cb8ea3c21cc021d26dc56417e37a731715a78fe1481de405777eb2c",
+  "tests": "75 affected cases passed; scoped closure includes actual _read_all -> receipt -> normalization -> resolution -> metadata test",
+  "limits": [
+    "No SEC fetch, financial acquisition, score/holdings recompute or production proof"
+  ]
+}

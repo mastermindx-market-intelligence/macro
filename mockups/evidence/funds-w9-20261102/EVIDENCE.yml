@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/fund_index.html.j2
+  - templates/fund_dossier.html.j2
+manifest: manifest.json

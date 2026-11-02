@@ -1,0 +1,24 @@
+{
+  "scope": "retained-source fixture, not service authorization or production",
+  "source_base": "90e0644f9f08ab37115dfffedce2ba7939b0835d",
+  "reviewed_initial_candidate": "b56054a686bbfbd8da58c2949a6ffc78fb36f0b3",
+  "receipt_correction": "cfdc34588dd590cd400cf39f01df04c642ba19e0",
+  "source_sha256": {
+    "engine/fund_intelligence.py": "b8738e828cb8ea3c21cc021d26dc56417e37a731715a78fe1481de405777eb2c",
+    "templates/fund_index.html.j2": "b9ad53b8a69db9af1b806512edec452cd121f9f0f782997157417519abd07dbb",
+    "templates/fund_dossier.html.j2": "80a70a8e22ef655ec63eb3985e21ae5ee461d36b9944bf16904055ee0b0e18ec",
+    "tests/test_smart_money_v3.py": "324a631d1c96c9d4a842387b89252c451e1947e3ffcc715d99ae96b4dcda4152",
+    "tests/test_fund_page_typography.py": "bc103e950a04474fdba1dee9bb0d4882951a6d52df083b4c20626596cda777a8"
+  },
+  "rendered_sha256": {
+    "fund_index.html": "60fe12ab88bbdce1f8a16c6455ceac65435da83285a01c4eeb24aa8d492e9444",
+    "fund_berkshire.html": "2eca50e63147c57169c7b2527e8cecc35072d83a082f5cbee9dcd83c7212cde5"
+  },
+  "checks": [
+    "75 affected cases pass",
+    "4 degraded/empty render cases pass after unavailable-copy repair",
+    "added-lines design guard passes",
+    "16 canonical real-browser REST cells; explicit role/state gaps remain",
+    "2 standalone and2 composed unavailable-portal journeys, separate from normal healthy/authenticated/public proof"
+  ]
+}

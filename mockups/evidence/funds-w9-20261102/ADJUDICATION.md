@@ -1,0 +1,21 @@
+# Funds retained-filing source and presentation repair — P12.T18.S1
+
+The directory remains the governed discovery board, and each manager remains an instrument analyzer. The investor job is to inspect one manager's reported period-end holdings, understand the original filing and reporting lag, open a qualified holding, and return without treating an old disclosure as current positions. The accepted family contract is [the Shared Shell plan](https://github.com/mastermindx-market-intelligence/macro/pull/7949#issuecomment-6589273748).
+
+The source follows `collectors/edgar_13f` → incumbent original snapshot and filing receipts → `engine.smart_money._read_all` → resolved fund history → existing `book_meta` → the existing fund templates. No holdings, scores, prices, classification map, amendments, source clock, API, store, entitlement policy or collector is changed. The original SEC index is derived only from the selected retained CIK and accession, with an exact same-filing receipt check. Invalid, conflicting or unavailable metadata yields an explicit unavailable source. Holdings reuse the incumbent `stock.html#ticker` destination; unresolved tickers remain noninteractive.
+
+The first independent Fabric review correctly rejected the initial candidate because the incumbent receipt uses same-accession `index.json`, rather than the human-readable `-index.html` URL. The correction admits only those two exact same-filing forms. A real read-path regression and the retained Berkshire record reproduce old unavailable → new available. The independent review is a finding-bearing review, not an unconditional PASS or a production claim. Its source finding and deterministic closure are preserved in this folder.
+
+## Art direction and reference
+
+Dark uses the existing graphite panels and quiet depth. Light uses the existing cool canvas, white surfaces and firmer hairlines. Both keep the existing typography, material tokens, semantic data colors and complete focus outlines. Four demonstrated colored container edges are replaced by even neutral borders. The touched note radii use the incumbent `--r-ctl` scale and its existing 8px fallback; no palette or token root is introduced.
+
+Paper file `01M2WGNCX9475G79JRKJTCM08P`, governed starter boards `1RY-0` and `1TH-0`, supplies discovery/analyzer composition grammar. It is not a route-specific approved Funds screen, and live baselines are not new design authority. The canonical page overrides bind the directory and manager archetypes.
+
+## Evidence and limits
+
+The canonical `scripts/capture_page_evidence.py` real-browser driver captured both changed templates in dark/light × EN/ZH × 1440 desktop/390 mobile. Its injected driver factory only restricts networking to the isolated fixture origin; no credential or financial-source request is permitted. `manifest.json` records all 16 REST cells, applied state, screenshot digests, console failures and explicit access/state gaps. The fixture uses the original published 50-manager directory and Berkshire's 29 published holdings. Its selected original snapshot is period-end 2026-06-30, filed 2026-08-14, CIK1067983, accession0001193125-26-352200. The actual retained receipt/normalization/resolution chain supplies the source; published holding values are retained without recomputation.
+
+Earlier selected desktop EN and mobile ZH cases exercised the documented standalone analyzer fallback through `stock.html#AAPL`, browser Back to the manager, and the directory breadcrumb. No focus-restoration claim is made for that standalone browser behavior.
+
+The default Terminal portal's unavailable-frame return defect was preserved and routed separately as P12.T21. Its owner supplied a disjoint portal repair; selected Funds composition checked exact `sym=AAPL`, the manager return URL, restored holding focus and directory return against that separate source. Those runtime assets are not part of this Funds source patch. These are isolated source/fixture proofs, with the Terminal renderer deliberately unavailable; they do not establish healthy authenticated Terminal, beta or production, public entitlement, a fetched SEC source body, current positions, or protected publication. Normal render and served-byte acceptance remain required.

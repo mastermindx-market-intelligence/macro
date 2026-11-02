@@ -131,7 +131,7 @@ html[data-theme="dark"] .grade.D { color:#ef6a6a; }
 .sm-card { background:var(--panel); border:1px solid var(--line); border-radius:12px;
            padding:14px 16px; margin-top:10px; overflow-x:auto; }
 .banner { font-size:11.5px; color:var(--muted); background:var(--panel2); border:1px solid var(--line);
-          border-radius:9px; padding:8px 12px; margin:8px 0 4px;
+          border-radius:var(--r-ctl,8px); padding:8px 12px; margin:8px 0 4px;
           line-height:1.55; }
 .disc { background:var(--panel2); border:1px solid var(--line);
         border-radius:10px; padding:11px 14px; margin:14px 0 4px; font-size:12px;
@@ -296,7 +296,7 @@ table.sm-t th.sorted { color:var(--text); }
   <p>{{ t('Reporting manager','申报管理人') }}: {{ FILING.get('manager') or FNAME or '—' }} · CIK <span class="num">{{ FILING.get('cik') }}</span> · {{ FILING.get('form') }}</p>
   <p><a href="{{ FILING.get('index_url') }}">{{ t('Original SEC filing','SEC 原始申报') }}</a> · <span class="num">{{ FILING.get('accession') }}</span></p>
   {% else %}
-  <p>{{ t('Original filing source unavailable for this retained snapshot. Reported dates and holdings remain available below.','此留存快照的原始申报来源暂不可用。下方仍可查看已披露的日期和持仓。') }}</p>
+  <p>{{ t('Original filing source unavailable for this retained snapshot. Return to the fund directory to inspect another manager.','此留存快照的原始申报来源暂不可用。可返回基金目录查看其他管理人。') }}</p>
   {% endif %}
 </div>
 
