@@ -27,7 +27,7 @@ def _sha(path=None):
 
 
 def _run(monkeypatch, *, mode=MODE, text="CANARY_OK", supplied_env=None):
-    monkeypatch.setattr(ppm.ai_costs, "estimate_cost_usd", lambda *a: 0.0005)
+    monkeypatch.setattr(ppm.ai_costs, "estimate_cost_usd", lambda *a, **kw: 0.0005)
     monkeypatch.setattr(ppm.ai_costs, "record_usage", lambda **kw: None)
     actual_calls = []
 
@@ -95,7 +95,7 @@ def test_not_armed_or_not_executing_refuses_before_credentials(monkeypatch, arm,
 
 @pytest.mark.parametrize("estimate", [None, -0.01, 0.011, float("nan"), float("inf"), True])
 def test_unknown_or_overcap_price_refuses_before_credential(monkeypatch, estimate):
-    monkeypatch.setattr(ppm.ai_costs, "estimate_cost_usd", lambda *a: estimate)
+    monkeypatch.setattr(ppm.ai_costs, "estimate_cost_usd", lambda *a, **kw: estimate)
     monkeypatch.setattr(ppm, "_resolve_credential",
                         lambda *_: pytest.fail("pricing refusal read secret"))
     with pytest.raises(canary.CanaryRefusal, match="PRICING_NOT_QUALIFIED"):
