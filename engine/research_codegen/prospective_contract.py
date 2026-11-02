@@ -224,11 +224,15 @@ def assess_label_readiness(run, prepared, *, local_observations=()):
                 causes = [code if code in _REFUSAL_CODES else "LABEL_DECLARATION_INVALID"]
             labels.append(dict(decision_sha256=hashlib.sha256(bridge._canonical_bytes(key)).hexdigest(),
                                label_id=name, state=state, missing_evidence=causes))
+    expected_decisions = [hashlib.sha256(bridge._canonical_bytes(
+        (t.fold_id, t.entity_id, t.decision_id))).hexdigest() for t in prepared.decisions]
     freeze = verify_freeze_proposal(prepared.freeze_proposal, prepared=prepared)
     return dict(schema="research_codegen.prospective_readiness.v1", scope="SYNTHETIC_ENGINEERING_ONLY",
         proposal_sha256=prepared.freeze_proposal.sha256, freeze_status=freeze["status"],
         status="REFUSED" if any(r["state"] == "REFUSED" for r in labels) else "UNQUALIFIED",
         driver_proposal_binding="UNAVAILABLE",
+        expected_decision_sha256s=expected_decisions,
+        decision_coverage_sha256=_digest(expected_decisions),
         missing_evidence=freeze["missing_evidence"], labels=labels,
         unknown_count=sum(r["state"] == "UNKNOWN" for r in labels),
         unqualified_count=sum(r["state"] == "UNQUALIFIED" for r in labels),
@@ -247,7 +251,7 @@ _REFUSAL_CODES = frozenset({"LABEL_DEPENDENCY_MISMATCH", "LABEL_BASIS_MISMATCH",
 def validate_public_readiness(value):
     """Closed advisory projection: no raw labels, timestamps, paths or issuer claims."""
     bridge._closed(value, ("schema", "scope", "proposal_sha256", "freeze_status", "status",
-        "driver_proposal_binding", "missing_evidence",
+        "driver_proposal_binding", "missing_evidence", "expected_decision_sha256s", "decision_coverage_sha256",
         "labels", "unknown_count", "unqualified_count", "refused_count", "pending_count", "mature_count", *_FLAGS))
     _require(type(value["schema"]) is str and value["schema"] == "research_codegen.prospective_readiness.v1"
              and type(value["scope"]) is str and value["scope"] == "SYNTHETIC_ENGINEERING_ONLY"
@@ -266,6 +270,11 @@ def validate_public_readiness(value):
         _require(type(items) is list and 0 < len(items) <= 16
                  and all(type(c) is str and c in permitted for c in items))
         return list(items)
+    expected = value["expected_decision_sha256s"]
+    _require(type(expected) is list and len(expected) <= 4096
+             and all(contracts._sha(item) for item in expected)
+             and len(set(expected)) == len(expected)
+             and value["decision_coverage_sha256"] == _digest(expected))
     labels, seen, groups = [], set(), {}
     _require(type(value["labels"]) is list and len(value["labels"]) <= 8192)
     for row in value["labels"]:
@@ -281,5 +290,8 @@ def validate_public_readiness(value):
         count = value[state + "_count"]
         _require(type(count) is int and count == sum(r["state"] == state.upper() for r in labels))
     _require(value["status"] == ("REFUSED" if value["refused_count"] else "UNQUALIFIED"))
-    _require(all(names == {"mae25", "reference_exit21"} for names in groups.values()))
-    return {**value, "missing_evidence": reasons(value["missing_evidence"]), "labels": labels}
+    _require([(r["decision_sha256"], r["label_id"]) for r in labels]
+             == [(decision, name) for decision in expected for name, _ in LABEL_DEPENDENCIES],
+             "LABEL_COVERAGE_MISMATCH")
+    return {**value, "expected_decision_sha256s": list(expected),
+            "missing_evidence": reasons(value["missing_evidence"]), "labels": labels}

@@ -941,6 +941,10 @@ def _diagnostic_engineering_evidence(public, evidence):
     if "prospective_readiness" in evidence:
         from engine.research_codegen.prospective_contract import validate_public_readiness
         prospective["prospective_readiness"] = validate_public_readiness(evidence["prospective_readiness"])
+        coverage_count = len(prospective["prospective_readiness"]["expected_decision_sha256s"])
+        require(coverage_count >= len(attempts))
+        if copied_controls[1]["status"] == "MATCHED_EXPECTATION":
+            require(coverage_count == len(attempts))
     return {**prospective, "schema": evidence["schema"], "identity": dict(identity),
             "accounting": dict(accounting), "attempts": attempts,
             "controls": copied_controls, "authority": "display_only",

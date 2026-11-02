@@ -161,15 +161,15 @@ def _render_packet(lines: list[str], i: int, pkt: dict) -> None:
                 raise ValueError("INVALID_DIAGNOSTIC_ENGINEERING_EVIDENCE")
             checked = diagnostic_review_packet(pkt["diagnostic"],
                 engineering_evidence={key: attached[key] for key in keys})["engineering_evidence"]
-            lines.extend(["", "**Engineering controls — synthetic receipts only**", "",
-                          "| Control | Observation | Evidence SHA-256 |",
-                          "| --- | --- | --- |"])
             if "prospective_readiness" in checked:
                 readiness = checked["prospective_readiness"]
                 lines.extend(["Freeze proposal: UNQUALIFIED; authoritative issuer unavailable.",
                     f"Label readiness: unknown={readiness['unknown_count']}, "
                     f"unqualified={readiness['unqualified_count']}, refused={readiness['refused_count']}; "
                     "pending=0, mature=0. Source contract only.", ""])
+            lines.extend(["", "**Engineering controls — synthetic receipts only**", "",
+                          "| Control | Observation | Evidence SHA-256 |",
+                          "| --- | --- | --- |"])
             for control in checked["controls"]:
                 evidence = control["evidence_sha256"] or "none"
                 lines.append(f"| {control['id']} | {control['status']} | {evidence} |")

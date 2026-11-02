@@ -720,3 +720,41 @@ def test_recomputed_but_substituted_proposal_refuses_before_transport(connected_
         pd.run_prefix_driver(prepared, source=connected_case[1][index], engine=engine,
             spec=pf.spec(), config_sha256=run.identity.config_sha256)
     assert engine.calls == []
+
+
+@pytest.mark.parametrize("mutation", ["empty", "drop_pair", "reorder", "coverage_digest", "erase_all"])
+def test_public_readiness_conserves_exact_decision_coverage(connected_case, mutation):
+    _, outcome, public, _, receipts = execute_case(connected_case)
+    packet = diagnostic_review_packet(public, engineering_receipts=receipts)
+    evidence = packet["engineering_evidence"]
+    altered = deepcopy({key: evidence[key] for key in
+        ("schema", "identity", "accounting", "attempts", "controls", "prospective_readiness")})
+    readiness = altered["prospective_readiness"]
+    if mutation in ("empty", "erase_all"):
+        readiness["labels"] = []
+        for field in ("unknown_count", "unqualified_count", "refused_count", "pending_count", "mature_count"):
+            readiness[field] = 0
+        if mutation == "erase_all":
+            from engine.research_codegen import prospective_contract as pc
+            readiness["expected_decision_sha256s"] = []
+            readiness["decision_coverage_sha256"] = pc._digest([])
+    elif mutation == "drop_pair":
+        readiness["labels"] = readiness["labels"][2:]
+        readiness["unknown_count"] -= 2
+    elif mutation == "reorder":
+        readiness["labels"] = list(reversed(readiness["labels"]))
+    else:
+        readiness["decision_coverage_sha256"] = "e" * 64
+    with pytest.raises(ValueError):
+        diagnostic_review_packet(public, engineering_evidence=altered)
+
+
+def test_readiness_prose_does_not_split_controls_table(connected_case):
+    _, _, public, _, receipts = execute_case(connected_case)
+    packet = diagnostic_review_packet(public, engineering_receipts=receipts)
+    markdown = render_markdown([packet], "2026-11-01T00:00:00Z")
+    lines = markdown.splitlines()
+    header = lines.index("| Control | Observation | Evidence SHA-256 |")
+    assert markdown.index("Label readiness:") < markdown.index("**Engineering controls")
+    assert lines[header + 1] == "| --- | --- | --- |"
+    assert all(line.startswith("| ") for line in lines[header + 2:header + 7])
