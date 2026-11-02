@@ -772,3 +772,61 @@ Five source-bound helper cases were executed against unmodified board-row code; 
 The companion validator checks documentary task/source counts, graph acyclicity, inverse acceptance ownership, original-wave coverage, relative links, claims and script syntax. It does not certify model efficacy, source rights, production installation or live user acceptance. Public artifact hashes verify bytes, not the truth of every future inference.
 
 The current assignment is complete when the recovery selection/masterplan/handoff is published and its local/remote bytes and portable package are verified. The actual RIC product remains incomplete. No new model, production data, schedule, protected setting, source-owner branch, workflow or deployment was changed while authoring. No Fable/Opus/Fabric worker was dispatched. Receiving Fable first reconciles current source/custody and the described frontier, not another broad portfolio census.
+
+## 18. November 1 calendar publication incident
+
+This is a bounded repair within the existing R1, F0, V0 and B1 tasks and
+WS:RATES-INFLATION-COMMAND, commissioned by the Chairman's live November 1 request:
+remove the stale CPI publication state completely and make future official detection
+and publication near instant. It does not reopen accepted F0 calendar work, forecast
+research, trading authority or the wider programme.
+
+Source entry: Macro main 9af0a33eb38b08d902c3e593cb0e276d3f0d6a18; incumbent CPI repair
+PR #9435 at 211c9f87050b804beeb20129606acccf7c7c1d99; independent countdown/forecast
+consumer PR #10106 at 1ad0a0e45eaae42dc0163d7bccb71470efa983b8. Protected procedure:
+Mastermind 19cb00cfed26b68f0a8a5cdc0f2f1a9463a3feec, Skillpack 1.0.1/bootstrap 1.
+The existing programme task tree remains this file; the organisational frontier
+belongs in the existing workstream's dated handoff, not a second task registry.
+
+### Bounded tasks and acceptance
+
+| Subtask | Parent | Label | Dependency and observable acceptance |
+|---|---|---|---|
+| R1.LIVE.1 | R1 | implementation_complete | Retain live incident evidence: HTTP 200/no-store and a current envelope still contain cpi:2026-10-14, parser v1, data_ready false, detected October 14. The screenshot's 08:31 ET is that historical event, not a new CPI release. |
+| F0.LIVE.1 | F0 | implementation_complete | Existing #9435 repair parses all four period-bound official CPI values and re-admits the retained dated archive. Existing tests and CI are evidence, not independent acceptance or production release. Preserve exact event identity, original detection and official-source binding. |
+| V0.LIVE.1 | V0 | ready | Reproduce extraction delay after the seven-day event window and ensure health retains unresolved publication age. A fresh heartbeat cannot turn unresolved old facts into a healthy release claim. Test outage, malformed/incorrect-period source and successful automatic recovery without changing canonical scoring. |
+| B1.LIVE.1 | B1 | ready | Isolate the incumbent release task from slow quote/risk leaves within the existing orchestrator/systemd owner. Remove its old fast-lane invocation. One writer lock protects durable state and publication across all entry points; no second feed, scheduler authority, queue or registry. |
+| B1.LIVE.2 | B1 | proposed | After B1.LIVE.1, use bounded source-aware hot-window polling and honest backoff. Measure actual maximum probe gaps, not timer configuration alone. Idle operation must avoid high-frequency upstream requests. Preserve source timeouts, identity checks, original clocks and atomic last-good publication. |
+| B1.LIVE.3 | B1 | proposed | After B1.LIVE.2, make the already-open Events UI update within seconds of a verified public write. Use the same snapshot endpoint, coalesce requests, stop unnecessary hidden-tab work, and resynchronise on focus/reconnect. Do not add a second truth feed. |
+| V0.LIVE.2 | V0 | proposed | Verify slow neighboring jobs, slow/unavailable official source, retries, duplicate invocations, restart, malformed/older snapshots and a visible already-open modal. Verified old reports remain dated historical context, not newly arriving market events. |
+| A0.LIVE.1 | A0 | blocked | Needs independent non-author review, required exact-head CI, existing protected release, installed-code readback and signed-in production UI proof for #9435 and #10106. The next natural source publication provides a separate upstream-to-screen latency observation. |
+
+### Engineering decision and proof boundary
+
+Prefer a dedicated release lane in the existing orchestrator over a concurrent loop
+inside the crowded fast service. This replaces the old invocation; it does not add
+another release writer. Its cadence must be independent of quote and risk task
+duration. Bound the hot window using the existing calendar and extraction state,
+return to ordinary cadence after verification/deadline, and preserve bounded source
+load when data are unavailable. A shared producer lock must cover migration and
+manual entry points, not only the new lane name.
+
+The initial proposed engineering budgets are a source probe interval of at most
+five seconds during a declared scheduled-release window, and a visible-tab refresh
+within approximately two seconds of an available verified snapshot under the
+controlled local test profile. These are test targets, not production claims or a
+promise about when an agency publishes. Report upstream response time, extraction,
+atomic public write and browser paint separately; if an upstream timeout prevents
+that bound, the UI and health must disclose the delay. Source-available-to-screen
+proof requires actual observable source availability; scheduled-to-detected is a
+different measurement.
+
+DARK/LIGHT TREATMENT: preserve existing semantic surfaces, tokens, typography and
+focus outlines. This repair changes lifecycle copy and refresh behavior rather
+than inventing new visual components. EN/ZH status and dates must remain equivalent.
+Browser proof covers the existing dialog in both themes and languages, desktop and
+mobile, with no reload required for the actual update.
+
+All release effects remain gated by current source and deployment law. No fixture,
+local replay, green CI, plan label or PR description establishes live acceptance.
+
