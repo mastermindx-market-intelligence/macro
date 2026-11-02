@@ -191,6 +191,39 @@ function harness(options) {
     healthGate = {};
     healthGate.promise = new Promise((resolve) => { healthGate.resolve = resolve; });
   }
+  // Optional per-call response sequences: options.catalogResponses and
+  // options.statementsResponses are arrays whose elements are { status } (an
+  // HTTP error answer) or { catalog } / { statements } (a payload answer);
+  // the last element repeats once the sequence is exhausted. Absent — the
+  // default — the single-answer options below answer exactly as before.
+  // options.statementsGate ({ promise, resolve }) holds every statements
+  // answer back until it is resolved by hand, so a prime can be left open.
+  function sequenceStep(sequence, needle) {
+    if (!sequence) return null;
+    const seen = fetchCalls.filter((call) => call.url.indexOf(needle) >= 0).length;
+    return sequence[Math.min(seen - 1, sequence.length - 1)];
+  }
+
+  function errorResponse(status) {
+    return Promise.resolve({
+      ok: false,
+      status,
+      headers: { get: () => '' },
+      text: () => Promise.resolve('{"detail":"unavailable"}'),
+    });
+  }
+
+  function envelopeResponse(payload) {
+    const packed = envelope(payload);
+    return Promise.resolve({
+      ok: true,
+      headers: { get: (name) => (name === 'X-FIF-Response-SHA256' ? packed.sha256 : '') },
+      arrayBuffer: () => Promise.resolve(packed.body.buffer.slice(
+        packed.body.byteOffset, packed.body.byteOffset + packed.body.byteLength
+      )),
+    });
+  }
+
   function responseFor(url, init) {
     const text = init && init.body ? String(init.body) : '';
     fetchCalls.push({ url: String(url), body: text, method: init && init.method });
@@ -203,6 +236,8 @@ function harness(options) {
       return healthGate ? healthGate.promise.then(answer) : answer();
     }
     if (String(url).indexOf('/api/forensics/v1/financial/catalog') >= 0) {
+      const step = sequenceStep(options.catalogResponses, '/api/forensics/v1/financial/catalog');
+      if (step) return step.status ? errorResponse(step.status) : envelopeResponse(step.catalog || { entity: {}, filings: null });
       if (options.catalogStatus) {
         return Promise.resolve({
           ok: false,
@@ -221,6 +256,13 @@ function harness(options) {
       });
     }
     if (String(url).indexOf('/api/forensics/v1/financial/statements') >= 0) {
+      const step = sequenceStep(options.statementsResponses, '/api/forensics/v1/financial/statements');
+      if (step && step.status) return errorResponse(step.status);
+      if (step || options.statementsGate) {
+        const answer = () => envelopeResponse((step && (step.statements || statementsPayload()))
+          || options.statements || statementsPayload());
+        return options.statementsGate ? options.statementsGate.promise.then(answer) : answer();
+      }
       const packed = envelope(options.statements || statementsPayload());
       return Promise.resolve({
         ok: true,
@@ -1054,4 +1096,96 @@ test('FIF a: the served filing is named beside the tree in both languages', asyn
   assert.equal(bare.api.state.statements.phase, 'ready');
   assert.doesNotMatch(bare.nodes['ff-statements'].innerHTML, /ff-statement-notice/,
     'a payload without a filing names no filing');
+});
+
+// ── Catalog retry, prime reset guard, transition reports (review round 3) ───
+//
+// Pins:
+// - a REJECTED catalog request (HTTP error / transport failure) is never
+//   reused: the caller waiting on it still gets phase 'none' and the panel
+//   accession, but the next open asks the catalog again. A foreign-entity or
+//   malformed payload settles from the resolve branch and STAYS cached.
+// - a prime request that was open across a statements reset (company
+//   A → B → A) can no longer write the columns of the reset state.
+// - the transition-period reports 10-KT and 10-QT are periodic reports, so a
+//   catalog whose latest periodic filing is a transition report opens it.
+
+test('FIF e: a rejected catalog answer is not reused — the next open asks again', async () => {
+  const drive = harness({
+    catalogResponses: [
+      { status: 503 },
+      { catalog: catalogPayload(AAPL_ENTITY, LATER_FILINGS) },
+    ],
+    statementsResponses: [{ status: 503 }, {}],
+  });
+  drive.api.state.datasetMode = 'production';
+  drive.api.setTab('statements', false);
+  await settle();
+  assert.equal(drive.api.state.statements.phase, 'error', 'the failed statements request lands in error');
+  assert.equal(postsTo(drive, 'catalog').length, 1);
+  assert.deepEqual(statementAccessions(drive), [PANEL_ACCESSION],
+    'the rejected catalog leaves the panel accession for that open');
+
+  drive.api.setTab('statements', false);
+  await settle();
+  assert.equal(postsTo(drive, 'catalog').length, 2, 'the catalog is asked again after the rejected entry');
+  assert.deepEqual(statementAccessions(drive), [PANEL_ACCESSION, '0000320193-26-000020'],
+    'the second statements request opens the catalog-resolved accession');
+  assert.equal(drive.api.state.statements.phase, 'ready');
+});
+
+test('FIF e: a foreign-entity catalog answer stays cached across a statements retry', async () => {
+  const drive = harness({
+    catalogResponses: [{ catalog: catalogPayload(MSFT_ENTITY, LATER_FILINGS) }],
+    statementsResponses: [{ status: 503 }, {}],
+  });
+  drive.api.state.datasetMode = 'production';
+  drive.api.setTab('statements', false);
+  await settle();
+  assert.equal(drive.api.state.statements.phase, 'error');
+  drive.api.setTab('statements', false);
+  await settle();
+  assert.equal(postsTo(drive, 'catalog').length, 1, 'a resolved foreign answer is reused, not re-asked');
+  assert.deepEqual(statementAccessions(drive), [PANEL_ACCESSION, PANEL_ACCESSION],
+    'the panel accession stays in force');
+  assert.equal(drive.api.state.statements.phase, 'ready');
+});
+
+test('FIF f: a prime open across a statements reset never writes the columns', async () => {
+  const gate = {};
+  gate.promise = new Promise((resolve) => { gate.resolve = resolve; });
+  const drive = primeDrive({
+    catalog: catalogPayload(AAPL_ENTITY, LATER_FILINGS),
+    statementsGate: gate,
+  });
+  drive.api.state.datasetMode = 'production';
+  drive.api.setTab('compare', false);
+  await settle();
+  assert.equal(postsTo(drive, 'statements').length, 1, 'the prime request is open, held by the gate');
+
+  // The page resets the statements state (the company switch A → B → A resets
+  // exactly this way) while the old prime is still open, then the old answer
+  // lands for the still-selected original company.
+  drive.api.resetStatementsState();
+  gate.resolve();
+  await settle();
+  assert.equal(postsTo(drive, 'statements').length, 1, 'no second statements request was needed');
+  assert.equal(drive.api.state.statementColumns.length, 0,
+    'the stale prime cannot write columns across a reset');
+});
+
+test('FIF e: a catalog whose latest periodic filing is a transition report opens it', async () => {
+  for (const form of ['10-KT', '10-QT']) {
+    const filings = [
+      { form: '10-Q', accession: '0000320193-26-000006', period_of_report: '2025-12-27', filing_date: '2026-01-30' },
+      { form, accession: '0000320193-26-000099', period_of_report: '2026-03-28', filing_date: '2026-05-01' },
+    ];
+    const drive = harness({ catalog: catalogPayload(AAPL_ENTITY, filings) });
+    drive.api.state.datasetMode = 'production';
+    drive.api.setTab('statements', false);
+    await settle();
+    assert.equal(drive.api.state.statements.phase, 'ready', form);
+    assert.deepEqual(statementAccessions(drive), ['0000320193-26-000099'],
+      form + ' is a periodic report and the latest period wins');
+  }
 });

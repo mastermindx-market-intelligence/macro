@@ -1,0 +1,62 @@
+
+.cycle-lock{
+  box-sizing:border-box;
+  display:block;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  margin:16px 0;
+  padding:16px;
+  overflow-wrap:anywhere;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--r-card,12px);
+  color:var(--text);
+}
+.cycle-lock-h{
+  margin:0 0 8px;
+  font-size:17px;
+  line-height:1.35;
+  font-weight:700;
+  color:var(--text);
+}
+.cycle-lock-p{
+  margin:0 0 14px;
+  max-width:100%;
+  font-size:14px;
+  line-height:1.5;
+  color:var(--muted);
+}
+.cycle-lock-acts{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px 14px;
+  max-width:100%;
+  margin:0;
+}
+.cycle-lock-btn{
+  box-sizing:border-box;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+  max-width:100%;
+  padding:8px 16px;
+  border:1px solid var(--link);
+  border-radius:var(--r-ctl,8px);
+  color:var(--link);
+  font-weight:700;
+  line-height:1.2;
+  text-decoration:none;
+}
+.cycle-lock-signin{
+  box-sizing:border-box;
+  display:inline-flex;
+  align-items:center;
+  min-height:44px;
+  max-width:100%;
+  color:var(--link);
+  text-decoration:none;
+}
+.cycle-lock[hidden],.cycle-lock-signin[hidden]{display:none}
