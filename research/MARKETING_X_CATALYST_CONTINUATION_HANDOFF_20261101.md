@@ -237,9 +237,13 @@ Three facts, each checked on main at 5085667c:
 1. Scan receipts were minted only for the contract `catalyst.scan/v1` shape;
    the live source cycle serves `catalyst.scan/v2`, so no `scan_receipt` was
    ever issued in production and `request_optin` would always answer
-   `SCAN_PROOF_REQUIRED`. `app/catalyst_scan_authority.py` and
-   `app/catalyst_scan_ui.js` now sign and carry the token for both schema
-   pairs (same receipt body, same producer re-read on verify).
+   `SCAN_PROOF_REQUIRED`. `app/catalyst_scan_authority.py`,
+   `app/catalyst_scan_ui.js` and `templates/catalyst_scan.js` now sign and
+   carry the token for both schema pairs (same receipt body, same producer
+   re-read on verify). A receipt is minted only while the funnel is reachable
+   (`CATALYST_OPTIN_ENABLED=1` AND `catalyst_optin.configured()`), so with the
+   switch off the live page carries no token and neither UI opens the email
+   form (independent review of PR #10522, finding 1).
 2. The funnel service seam `build_existing_owner_service` has no caller:
    `app/main.py` mounts the router but never calls `catalyst_optin.configure`,
    so even with the flag on the route answers 503

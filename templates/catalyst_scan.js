@@ -277,10 +277,11 @@
     show(results, true);
     // Proof is a private client capability. It stays only in a closure and is
     // passed solely to the same-origin, positive-consent owner after disclosure.
-    // The incumbent Session02 proof authority signs v1 only. Never let a
-    // fabricated v2 receipt open an opt-in form before its own admission.
-    if (eligible.length && data.schema === "catalyst.scan/v1" &&
-        typeof data.scan_receipt === "string" &&
+    // The 02 proof authority signs the contract v1 and live Stage A v2 scans
+    // alike; checkScan validated the (schema, schema_version) pair before this
+    // point. The server mints a receipt only while the opt-in funnel is
+    // reachable, so an absent token keeps the form hidden.
+    if (eligible.length && typeof data.scan_receipt === "string" &&
         data.scan_receipt.length <= 1024 && data.scan_receipt.length > 20) {
       scanReceipt = data.scan_receipt;
       formShownAt = Date.now();

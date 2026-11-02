@@ -121,6 +121,19 @@ def _require_enabled(name: str) -> None:
         raise HTTPException(503, "Catalyst scan is not publicly enabled")
 
 
+def _optin_ready() -> bool:
+    """The opt-in funnel accepts a request only when its switch is on AND the
+    integration owner has configured the 02 service; either alone answers 503.
+    Receipts and invitations follow this fact, never the flag by itself."""
+    if not _enabled("CATALYST_OPTIN_ENABLED"):
+        return False
+    try:
+        from app.catalyst_optin import configured
+        return configured()
+    except Exception:
+        return False
+
+
 def normalize_tickers(raw: Any) -> list[str]:
     """Validate BEFORE contacting a producer; dedupe preserving order."""
     parts = raw.split(",") if isinstance(raw, str) else raw
@@ -433,6 +446,11 @@ def public_scan_with_receipt(tickers: Any, event_id: Any = None) -> dict:
     or unconfigured scan still returns its public value, without a proof token.
     """
     scan = scan_with_reader(tickers, event_id)
+    # A receipt exists only to open the 02 opt-in funnel. While that funnel is
+    # not reachable no token is minted, so neither UI invites an email for a
+    # request that would answer 503 (PR #10522 independent review, finding 1).
+    if not _optin_ready():
+        return scan
     try:
         from app.catalyst_scan_authority import ScanReceiptAuthority
         receipt = ScanReceiptAuthority().issue(scan)
@@ -614,10 +632,11 @@ def _ux_banner() -> str:
 
     Source rights are asserted per result row by admission (the
     sec_issuer_earnings_release_facts family), so the banner never claims
-    rights are unadmitted. Email updates follow the separate opt-in switch:
-    without it the page says so instead of promising verified delivery.
+    rights are unadmitted. Email updates follow the opt-in funnel's real
+    readiness (switch on AND service configured): otherwise the page says so
+    instead of promising verified delivery.
     """
-    if _enabled("CATALYST_OPTIN_ENABLED"):
+    if _optin_ready():
         return ("PUBLIC PREVIEW · Limited coverage from rights-qualified SEC sources; "
                 "optional email updates require separate verification.")
     return ("PUBLIC PREVIEW · Limited coverage from rights-qualified SEC sources; "

@@ -133,6 +133,7 @@ def test_live_stage_a_v2_scan_is_signed_and_verified():
     assert "ZZZZ" not in raw and "checked_window" not in raw
     # A schema/version pair that does not match is never signed.
     assert authority.issue({**scan, "schema_version": 1}) is None
+    assert authority.issue({**scan, "publication_state": "COMPLETE_EMPTY"}) is None
     assert authority.issue({**scan, "schema": "catalyst.scan/v1"}) is None
     assert authority.issue({**scan, "schema": "catalyst.scan/v3", "schema_version": 3}) is None
 

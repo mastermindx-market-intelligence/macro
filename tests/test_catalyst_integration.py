@@ -641,7 +641,18 @@ def test_public_json_issues_scan_proof_only_after_qualified_result(monkeypatch):
     assert no_secret.json()["results"][0]["status"] == "SUPPORTED"
 
     monkeypatch.setenv("CATALYST_SCAN_RECEIPT_SECRET", "t" * 40)
-    eligible = client.post("/api/catalyst/scan", json={"tickers": ["NVDA", "ZZZZ"]})
+    # Secret alone is not enough: with the opt-in funnel unreachable the
+    # public value still has no receipt, so no UI invites an email.
+    monkeypatch.delenv("CATALYST_OPTIN_ENABLED", raising=False)
+    assert "scan_receipt" not in client.post(
+        "/api/catalyst/scan", json={"tickers": ["NVDA", "ZZZZ"]}).json()
+    from app import catalyst_optin
+    monkeypatch.setenv("CATALYST_OPTIN_ENABLED", "1")
+    catalyst_optin.configure(object())
+    try:
+        eligible = client.post("/api/catalyst/scan", json={"tickers": ["NVDA", "ZZZZ"]})
+    finally:
+        catalyst_optin.configure(None)
     assert eligible.status_code == 200
     assert eligible.json()["scan_receipt"].count(".") == 1
     assert eligible.json()["results"][1]["status"] == "NOT_COVERED"
@@ -674,7 +685,25 @@ def test_public_json_issues_scan_proof_for_live_v2_scan(monkeypatch):
         return ci.sanitize_public_scan(p, list(tickers))
 
     monkeypatch.setattr(ci, "scan_with_reader", live_fixture)
-    live = client.get("/api/catalyst/scan?tickers=NVDA,ZZZZ")
+    from app import catalyst_optin
+    # Opt-in switch off: a live v2 scan serves its value with NO receipt, so
+    # neither UI can invite an email for a funnel that would answer 503.
+    monkeypatch.delenv("CATALYST_OPTIN_ENABLED", raising=False)
+    quiet = client.get("/api/catalyst/scan?tickers=NVDA,ZZZZ")
+    assert quiet.status_code == 200 and "scan_receipt" not in quiet.json()
+    page = client.get("/api/catalyst/nojs?tickers=NVDA")
+    assert page.status_code == 200
+    assert "id='catalyst-scan-proof' value=''" in page.text
+    # Switch on but the integration owner never configured the service: same.
+    monkeypatch.setenv("CATALYST_OPTIN_ENABLED", "1")
+    catalyst_optin.configure(None)
+    assert "scan_receipt" not in client.get("/api/catalyst/scan?tickers=NVDA").json()
+    # Switch on AND service configured: the live v2 scan carries a receipt.
+    catalyst_optin.configure(object())
+    try:
+        live = client.get("/api/catalyst/scan?tickers=NVDA,ZZZZ")
+    finally:
+        catalyst_optin.configure(None)
     assert live.status_code == 200
     body = live.json()
     assert (body["schema"], body["schema_version"]) == ("catalyst.scan/v2", 2)
@@ -770,7 +799,8 @@ def test_catalyst_server_rendered_supported_proof_only_after_scan(monkeypatch):
     assert "<script>alert(1)</script>" not in response
 
 
-def test_catalyst_ui_node_interactive_flow():
+@pytest.mark.parametrize("pair", [("catalyst.scan/v1", 1), ("catalyst.scan/v2", 2)])
+def test_catalyst_ui_node_interactive_flow(pair):
     """Execute first-party script in an isolated fake DOM: no network or users."""
     import shutil
     import subprocess
@@ -812,7 +842,7 @@ const window={
   history:{replaceState(a,b,url){replaced=url;}},
   performance:{now(){tick+=4000;return tick;}}
 };
-const sample={schema:'catalyst.scan/v1',schema_version:1,as_of_utc:'2026-10-09T15:00:00Z',
+const sample={schema:'__SCHEMA__',schema_version:__VERSION__,as_of_utc:'2026-10-09T15:00:00Z',
   event_id:'synthetic-earnings',coverage_note:'Only fixture evidence',
   scan_receipt:'example.valid_signature',
   results:[{ticker:'NVDA',status:'SUPPORTED',headline:'Synthetic filing',
@@ -871,6 +901,7 @@ async function main(){
 }
 main().catch((e)=>{console.error(e.stack);process.exitCode=1});
 """
+    code = code.replace("__SCHEMA__", pair[0]).replace("__VERSION__", str(pair[1]))
     syntax = subprocess.run([node, "--check", str(source)], capture_output=True, text=True)
     assert syntax.returncode == 0, syntax.stderr
     done = subprocess.run([node, "-e", code, str(source)],
@@ -899,7 +930,16 @@ def test_staged_session03_primary_ui_and_fallback(monkeypatch):
     assert "verified email updates are not yet enabled" in page.text
     assert "not admitted" not in page.text
     monkeypatch.setenv("CATALYST_OPTIN_ENABLED", "1")
-    with_optin = client.get("/api/catalyst?tickers=NVDA&event_id=fixture-earnings-20261008")
+    from app import catalyst_optin
+    catalyst_optin.configure(None)
+    flag_only = client.get("/api/catalyst?tickers=NVDA&event_id=fixture-earnings-20261008")
+    assert flag_only.status_code == 200
+    assert "verified email updates are not yet enabled" in flag_only.text
+    catalyst_optin.configure(object())
+    try:
+        with_optin = client.get("/api/catalyst?tickers=NVDA&event_id=fixture-earnings-20261008")
+    finally:
+        catalyst_optin.configure(None)
     assert with_optin.status_code == 200
     assert "optional email updates require separate verification" in with_optin.text
     assert "not yet enabled" not in with_optin.text

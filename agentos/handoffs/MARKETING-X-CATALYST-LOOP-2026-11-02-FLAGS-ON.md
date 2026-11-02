@@ -1,6 +1,6 @@
 ---
 workstream: WS:MARKETING-X-CATALYST-LOOP
-session: ce215fa3-31dc-4e76-a4e6-662daeddca8b
+session: claude/mx-catalyst-flags-on-20261102
 model: fable
 ended_because: checkpoint
 mission: >
@@ -19,10 +19,10 @@ changed:
     what: CATALYST_PUBLIC_ENABLED=1, CATALYST_UX_ENABLED=0, CATALYST_OPTIN_ENABLED=0, CATALYST_SCAN_RECEIPT_SECRET generated on-host; MAIL_CATALYST_ENABLED absent; macro-api restarted 2026-11-02T06:12Z
   - path: app/catalyst_scan_authority.py
     what: receipts are minted and verified for the contract v1 scan and the live Stage A v2 scan alike (schema/version pair must match; same receipt body; verify still re-reads the producer)
-  - path: app/catalyst_scan_ui.js
-    what: the browser keeps the receipt on either validated schema pair instead of dropping v2 tokens
-  - path: app/catalyst_integration.py
-    what: _ux_banner() replaces the hardcoded "not admitted" staged banner with state-accurate copy keyed to the opt-in switch
+  - path: app/catalyst_scan_ui.js, templates/catalyst_scan.js
+    what: both browser UIs keep the receipt on either validated schema pair instead of dropping v2 tokens; an absent token keeps the opt-in form hidden
+  - path: app/catalyst_integration.py, app/catalyst_optin.py
+    what: receipts are minted only while the opt-in funnel is reachable (_optin_ready = switch on AND catalyst_optin.configured()), so no UI invites an email for a request that would answer 503 (independent review finding 1); _ux_banner() replaces the hardcoded "not admitted" staged banner with copy keyed to that same readiness
   - path: tests/test_catalyst_scan_authority.py, tests/test_catalyst_integration.py
     what: v2 receipt mint/verify witness, v2 route receipt witness, banner copy witnesses for both opt-in states
   - path: research/MARKETING_X_CATALYST_CONTINUATION_HANDOFF_20261101.md
