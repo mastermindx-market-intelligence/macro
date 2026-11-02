@@ -29054,6 +29054,9 @@ jobs:
     # gate: code because the verdict is a pure function of the PR tree (templates +
     # test); free-content-estate is gate: data and never runs on a pull request.
     paths:
+      - templates/calculators/risk_of_ruin.html.j2
+      - site/tools/calculators/risk-of-ruin.html
+      - tests/js/risk_of_ruin_current_input.test.cjs
       - templates/calculators/compounding.html.j2
       - templates/calculators/dollar_cost_averaging.html.j2
       - tests/js/calculator_input_integrity.test.mjs
@@ -29070,6 +29073,10 @@ jobs:
           python-version: "3.12"
       - name: install copy feedback test dependency
         run: pip install pytest
+      - name: Risk of Ruin current input and truthful copy feedback
+        run: |
+          node tests/js/risk_of_ruin_current_input.test.cjs templates/calculators/risk_of_ruin.html.j2
+          node tests/js/risk_of_ruin_current_input.test.cjs site/tools/calculators/risk-of-ruin.html
       - name: CAGR truthful copy feedback
         run: python -m pytest tests/test_cagr_copy_feedback.py -q
       - name: calculator input, chart, language and copy integrity

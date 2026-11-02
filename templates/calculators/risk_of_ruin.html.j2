@@ -226,6 +226,17 @@
     var worker = makeWorker(), useWorker = !!worker;
     var last=null, pending=null, seq=0, busyTimer=null;
 
+    // Input intent owns the result immediately, including the debounce interval.
+    function invalidateResult(){
+      seq++;
+      pending=null; last=null;
+      if(busyTimer){ clearTimeout(busyTimer); busyTimer=null; }
+      dash(); outPlain.className="co-plain";
+      outPlain.textContent=document.documentElement.getAttribute("data-lang")==="zh"
+        ? "正在按当前输入重新计算…" : "Recalculating for the current inputs…";
+      copyBtn.disabled=true; copied.classList.remove("show");
+    }
+
     // paint the instant (non-simulated) fields; the ruin % arrives separately
     function paintFrame(p){
       outExp.textContent = (p.expR>=0?"+":"") + p.expR.toFixed(2) + " R";
@@ -239,7 +250,7 @@
     // apply the simulated risk-of-ruin once it comes back (worker or sync)
     function applyRuin(ruinPct){
       if(!pending) return;
-      pending.ruinPct = ruinPct; last = pending;
+      pending.ruinPct = ruinPct; last = pending; copyBtn.disabled=false;
       if(busyTimer){ clearTimeout(busyTimer); busyTimer=null; }
       outMain.textContent = pct(ruinPct); outMain.style.opacity="";
       var band;
@@ -258,7 +269,7 @@
     }
 
     function render(){
-      seq++;                                    // invalidate any in-flight worker result
+      invalidateResult();                       // invalidate any in-flight worker result
       var mySeq = seq;
       var inp={ W:numFrom(els.winrate), b:numFrom(els.payoff), r:numFrom(els.riskpct),
                 dd:numFrom(els.ruindd), N:numFrom(els.trades) };
@@ -296,17 +307,36 @@
         " trades, " + last.dd.toFixed(last.dd%1?1:0) + "% ruin line) · expectancy " +
         (last.expR>=0?"+":"") + last.expR.toFixed(2) + " R — mastermind-x.com";
     }
+    var copyAttempt=0;
     copyBtn.addEventListener("click", function(){
       var line=copyLine(); if(!line) return;
-      var done=function(){ copied.classList.add("show"); setTimeout(function(){copied.classList.remove("show");},1600); };
-      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(line).then(done,done); }
-      else { var ta=document.createElement("textarea"); ta.value=line; document.body.appendChild(ta); ta.select();
-        try{document.execCommand("copy");}catch(e){} document.body.removeChild(ta); done(); }
+      var copySeq=seq, attempt=++copyAttempt;
+      copied.classList.remove("show");
+      var done=function(){
+        if(copySeq!==seq || attempt!==copyAttempt) return;
+        copied.classList.add("show");
+        setTimeout(function(){
+          if(copySeq===seq && attempt===copyAttempt) copied.classList.remove("show");
+        },1600);
+      };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        try{ navigator.clipboard.writeText(line).then(done,function(){}); }catch(e){}
+      } else {
+        var ta=document.createElement("textarea"); ta.value=line; document.body.appendChild(ta); ta.select();
+        var success=false;
+        try{ success=document.execCommand("copy")===true; }catch(e){}
+        document.body.removeChild(ta);
+        if(success) done();
+      }
     });
 
     // debounce input; the sim itself runs in the worker so typing stays smooth
     var renderTimer=null;
-    function scheduleRender(){ if(renderTimer) clearTimeout(renderTimer); renderTimer=setTimeout(render, 150); }
+    function scheduleRender(){
+      invalidateResult();
+      if(renderTimer) clearTimeout(renderTimer);
+      renderTimer=setTimeout(render, 150);
+    }
     ["winrate","payoff","riskpct","ruindd","trades"].forEach(function(id){
       els[id].addEventListener("input", scheduleRender);
     });
