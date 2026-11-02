@@ -530,6 +530,11 @@ def _fault_shim(tmp_path: Path, env: dict[str, str], mode: str) -> tuple[dict[st
     shim = tmp_path / "shim"
     shim.mkdir()
     arm = tmp_path / "shim.arm"
+    # blob mode also witnesses the live claims file's size at the instant the
+    # blob read runs: a restore that redirects onto the live file has already
+    # truncated it to 0 by then.
+    watch = tmp_path / "lane" / "data" / "qledger" / "claims.jsonl"
+    witness = tmp_path / "shim.witness"
     real_git = subprocess.run(["bash", "-c", "command -v git"], capture_output=True, text=True).stdout.strip()
     (shim / "git").write_text(
         "#!/usr/bin/env bash\n"
@@ -537,7 +542,7 @@ def _fault_shim(tmp_path: Path, env: dict[str, str], mode: str) -> tuple[dict[st
         '  sub=""; has_e=0; has_blob=0\n'
         '  for a in "$@"; do case "$a" in ls-tree|cat-file) [ -n "$sub" ] || sub="$a" ;; -e) has_e=1 ;; blob) has_blob=1 ;; esac; done\n'
         f'  if [ "{mode}" = lookup ] && {{ [ "$sub" = ls-tree ] || {{ [ "$sub" = cat-file ] && [ "$has_e" = 1 ]; }}; }}; then echo "fatal: shim: object lookup unavailable" >&2; exit 128; fi\n'
-        f'  if [ "{mode}" = blob ] && [ "$sub" = cat-file ] && [ "$has_blob" = 1 ]; then echo "fatal: shim: blob read failed" >&2; exit 128; fi\n'
+        f'  if [ "{mode}" = blob ] && [ "$sub" = cat-file ] && [ "$has_blob" = 1 ]; then wc -c < "{watch}" > "{witness}" 2>/dev/null || echo missing > "{witness}"; echo "fatal: shim: blob read failed" >&2; exit 128; fi\n'
         "fi\n"
         f'exec "{real_git}" "$@"\n'
     )
@@ -575,9 +580,45 @@ def test_restore_never_destroys_the_surviving_bytes_when_a_snapshot_read_fails(t
         f"restore rewrote the parked claims on a failed {mode} read (size now {_size(claims)}):\n{proc.stdout}{proc.stderr}"
     )
     assert not list(claims.parent.glob("claims.jsonl.restore.*")), "restore left a temp file behind"
+    if mode == "blob":
+        witness = (tmp_path / "shim.witness").read_text().strip()
+        assert witness == str(len(head_bytes)), (
+            f"live claims file was {witness!r} bytes while the blob read ran (no intermediate write allowed)"
+        )
     assert "::error title=qledger carve custody LOST::" in proc.stdout, proc.stdout
     assert "data/qledger/claims.jsonl" in proc.stdout.split("custody LOST::", 1)[1].splitlines()[0]
     assert "claims.jsonl(deleted)" not in proc.stdout, proc.stdout
+    assert "restored byte-identical" not in proc.stdout, proc.stdout
+    assert "rc=0" in proc.stdout
+
+
+def test_restore_never_moves_the_blob_into_a_directory_at_the_path(tmp_path):
+    """#10481 review (fabric rs-leader-10481-review-r1): when the worktree path
+    has become a DIRECTORY, POSIX `mv -f tmp dir` moves the verified temp INTO
+    the directory and the swap leaks the snapshot blob there. A non-file at
+    the path is LOST `(not-a-file)`: nothing is written, moved or removed."""
+    env = _env(tmp_path)
+    repo, _ = _seed(tmp_path, env)
+    claims = repo / "data" / "qledger" / "claims.jsonl"
+    _grow(claims, LIMIT + 4096)
+    _git(repo, "add", "data/", "site/", env=env)
+    proc = _bash(
+        repo,
+        f'. "{HELPER}"; qledger_carve_staged; echo "carved=$QLEDGER_CARVED"; '
+        'rm -f data/qledger/claims.jsonl; mkdir data/qledger/claims.jsonl; echo sentinel > data/qledger/claims.jsonl/sentinel; '
+        'qledger_carve_restore; echo "rc=$?"',
+        env,
+    )
+    assert proc.returncode == 0, proc.stderr + proc.stdout
+    assert "carved=true" in proc.stdout
+    assert claims.is_dir(), "restore replaced or removed the directory at the path"
+    assert sorted(p.name for p in claims.iterdir()) == ["sentinel"], (
+        f"restore wrote into the directory at the path: {sorted(p.name for p in claims.iterdir())}"
+    )
+    assert (claims / "sentinel").read_text() == "sentinel\n"
+    assert not list(claims.parent.glob("claims.jsonl.restore.*")), "restore left a temp file behind"
+    assert "::error title=qledger carve custody LOST::" in proc.stdout, proc.stdout
+    assert "data/qledger/claims.jsonl(not-a-file)" in proc.stdout, proc.stdout
     assert "restored byte-identical" not in proc.stdout, proc.stdout
     assert "rc=0" in proc.stdout
 

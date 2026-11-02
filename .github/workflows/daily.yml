@@ -1031,12 +1031,16 @@ jobs:
               if [ -z "$want" ]; then lost="$lost $qpath(lookup-failed)"; continue; fi
               have=$(git hash-object -- "$qpath" 2>/dev/null) || have=""
               if [ "$have" != "$want" ]; then
+                # A non-file at the path (a directory) cannot be swapped: POSIX `mv`
+                # would move the temp INTO it and leak the blob. Report LOST, touch nothing.
+                if [ -e "$qpath" ] && [ ! -f "$qpath" ]; then lost="$lost $qpath(not-a-file)"; continue; fi
                 # Read into a sibling temp file and swap in only a hash-verified
                 # copy: a failed blob read must never truncate the surviving file.
                 mkdir -p -- "$(dirname -- "$qpath")" 2>/dev/null || true
                 tmp=$(mktemp "$qpath.restore.XXXXXX" 2>/dev/null) || tmp=""
                 if [ -n "$tmp" ] && git cat-file blob "$QLEDGER_SNAPSHOT:$qpath" > "$tmp" 2>/dev/null \
                    && [ "$(git hash-object -- "$tmp" 2>/dev/null)" = "$want" ]; then
+                  chmod u=rw,go=r -- "$tmp" 2>/dev/null || true
                   mv -f -- "$tmp" "$qpath" 2>/dev/null || true
                 fi
                 if [ -n "$tmp" ]; then rm -f -- "$tmp" 2>/dev/null || true; fi

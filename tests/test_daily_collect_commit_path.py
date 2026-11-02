@@ -1613,6 +1613,11 @@ def _write_shims(shim_dir, real_git):
         "  fi\n"
         "  if [ \"$fault_mode\" = \"blob\" ] && [ \"$sub\" = \"cat-file\" ] && "
         "[ \"$has_blob\" = \"1\" ]; then\n"
+        "    # Witness: the live file's size at the moment the blob read runs. A\n"
+        "    # restore that redirects onto the live file has already truncated it.\n"
+        "    if [ -n \"${SHIM_WATCH_FILE:-}\" ] && [ -n \"${SHIM_WATCH_OUT:-}\" ]; then\n"
+        "      wc -c < \"$SHIM_WATCH_FILE\" > \"$SHIM_WATCH_OUT\" 2>/dev/null || echo missing > \"$SHIM_WATCH_OUT\"\n"
+        "    fi\n"
         "    echo \"fatal: shim: blob read failed (simulated)\" >&2\n"
         "    exit 128\n"
         "  fi\n"
@@ -1853,6 +1858,8 @@ def _run_carve_publish(tmp_path, collect_steps, monkeypatch, race, park_mode=Non
         restore_env = step_env_for("restore")
         if restore_fault:
             restore_env["SHIM_FAULT_MODE"] = restore_fault
+            restore_env["SHIM_WATCH_FILE"] = str(repo / "data" / "qledger" / "claims.jsonl")
+            restore_env["SHIM_WATCH_OUT"] = str(tmp_path / "restore_watch_size")
         procs["restore"] = _run_step(restore_run, repo, restore_env)
 
     return {
@@ -2158,6 +2165,15 @@ def test_qledger_restore_never_destroys_surviving_bytes_on_a_failed_read(
     )
     for leftover in claims.parent.glob("claims.jsonl.restore.*"):
         pytest.fail(f"restore step left a temp file behind: {leftover}")
+    if fault == "blob":
+        # No intermediate write either: at the instant the blob read ran, the
+        # live file still held the full parked bytes (a restore that redirects
+        # onto the live file and then rewrites HEAD bytes would witness 0 here).
+        witness = (tmp_path / "restore_watch_size").read_text().strip()
+        assert witness == str(len(h["claims_at_base"])), (
+            f"live claims file was {witness!r} bytes while the blob read ran; "
+            f"expected the untouched parked size {len(h['claims_at_base'])}"
+        )
     # SIGNAL: the path is reported LOST, never as restored/deleted.
     restore_text = (restore.stdout or "") + (restore.stderr or "")
     assert "::error title=qledger carve custody LOST::" in restore_text, (
@@ -2341,6 +2357,20 @@ def test_qledger_carve_custody_reports_a_lost_path_without_failing(
     assert "LOST" in summary, f"step summary missing the LOST marker: {summary!r}"
     assert "data/qledger/claims.jsonl" in summary, (
         f"step summary missing the claims path: {summary!r}"
+    )
+    # #10481 review: a non-file at the path is reported `(not-a-file)` and left
+    # untouched — POSIX `mv -f tmp dir` would otherwise move the verified blob
+    # INTO the directory and leak it there.
+    assert "data/qledger/claims.jsonl(not-a-file)" in text, (
+        f"directory at the path was not classified (not-a-file); output: {text!r}"
+    )
+    assert claims_path.is_dir() and sorted(p.name for p in claims_path.iterdir()) == ["sentinel"], (
+        f"restore step wrote into or replaced the directory at the path: "
+        f"{sorted(p.name for p in claims_path.iterdir()) if claims_path.is_dir() else 'not a dir'}"
+    )
+    assert (claims_path / "sentinel").read_text() == "placeholder\n"
+    assert not list(claims_path.parent.glob("claims.jsonl.restore.*")), (
+        "restore step left a temp file beside the directory"
     )
     # The twin (track_record.json) was restorable and must appear in BOTH the
     # warning AND as a successful restore in the worktree.
