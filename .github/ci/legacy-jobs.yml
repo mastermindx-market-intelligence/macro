@@ -33067,6 +33067,9 @@ jobs:
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
+      - app/deploy/live-rollback.sh
+      - app/deploy/live-setup.sh
+      - app/deploy/update.sh
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
