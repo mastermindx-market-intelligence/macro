@@ -154,6 +154,20 @@ _ISSUER_CIK_RE = re.compile(r"\Asec:cik:([0-9]{10})\Z")
 _USD_UNITS = frozenset({"usd", "iso4217:usd"})
 _ISO_DATE_RE = re.compile(r"\A[0-9]{4}-[0-9]{2}-[0-9]{2}\Z")
 _ITEM_ID_BAD_CHARACTER = re.compile(r"[^A-Za-z0-9:._/-]")
+#: Every availability clock a FIF provenance cell may carry
+#: (``engine.fundamental_forensics.query`` provenance); a fact is available at
+#: the latest one present.
+_FIF_PROVENANCE_CLOCKS = (
+    "accepted_at",
+    "filing_metadata_available_at",
+    "recorded_at",
+    "mapping_available_at",
+    "governance_available_at",
+    "computed_at",
+    "published_at",
+    "source_ready_at",
+    "system_ready_at",
+)
 
 _BINDING_CONCEPTS_CACHE: dict[str, str] | None = None
 _COVERAGE_INDEX_CACHE: dict[str, frozenset[str]] | None = None
@@ -526,9 +540,10 @@ def _filing_available_at_index(dataset: Any) -> dict[str, datetime]:
     return index
 
 
-def _select_instant_date(dataset: Any, as_of_moment: datetime) -> str | None:
+def _select_instant_date(
+    dataset: Any, as_of_moment: datetime, concepts: Mapping[str, str]
+) -> str | None:
     """The latest instant balance-sheet date provable at the cutoff (F0b §3)."""
-    concepts = _binding_concepts()
     filing_available = _filing_available_at_index(dataset)
     events = getattr(getattr(dataset, "ledger", None), "events", None) or ()
     best: date | None = None
@@ -598,11 +613,17 @@ def _facts_from_receipt(
             # A cell the owner reported outside USD is carried unknown in its
             # own unit; funding excludes it rather than converting (F0b §5).
             amount = {"value": None, "unit": unit_text, "status": "unknown"}
-        moment = (
-            _clock_moment(provenance.get("accepted_at"))
-            or _clock_moment(provenance.get("filing_metadata_available_at"))
-            or _clock_moment(provenance.get("recorded_at"))
-        )
+        # A cell is knowable only once EVERY clock it depends on has passed, so
+        # its availability is the LATEST present clock (FIF validates
+        # ``system_ready_at`` as the max of its prerequisites), never the first.
+        clocks = [
+            moment
+            for moment in (
+                _clock_moment(provenance.get(name)) for name in _FIF_PROVENANCE_CLOCKS
+            )
+            if moment is not None
+        ]
+        moment = max(clocks) if clocks else None
         if moment is None or moment > as_of_moment:
             continue  # no provable availability, or defence in depth past the cutoff
         filed = provenance.get("filed_at")
@@ -667,7 +688,9 @@ def _resolve_financial_facts(
     The published reason vocabulary is closed (SPEC_U1B §2), so EVERY
     unavailable path returns the same published denial upstream and this
     binder keeps the specific internal cause as ``detail`` for tests and
-    diagnosis.  Nothing on a per-issuer path ever raises out of here.
+    diagnosis.  Nothing on a per-issuer path ever raises out of here; a
+    malformed cutoff or a drifted binding config is a build defect and
+    aborts the build instead of hiding as per-issuer unavailability.
     """
     if provider is None:
         return (), "unknown", provider_detail or _DETAIL_STORE_NOT_SELECTED
@@ -677,6 +700,7 @@ def _resolve_financial_facts(
         raise ScenarioInputsError(
             f"financials binder: as_of {as_of!r} is not an ISO-8601 instant"
         ) from None
+    concepts = _binding_concepts()
 
     # §1 — entity mapping: CS issuer -> FIF entity id over the shipped
     # coverage contracts (or a test-injected resolver).  No mapping is
@@ -705,7 +729,7 @@ def _resolve_financial_facts(
     except Exception:  # noqa: BLE001 - FinancialQueryUnavailableError and every other failure
         return (), "unknown", _DETAIL_DATASET_UNAVAILABLE
     try:
-        period_end = _select_instant_date(dataset, as_of_moment)
+        period_end = _select_instant_date(dataset, as_of_moment, concepts)
     except Exception:  # noqa: BLE001 - a damaged ledger is dataset unavailability
         return (), "unknown", _DETAIL_DATASET_UNAVAILABLE
     if period_end is None:
@@ -740,13 +764,15 @@ def _bind_financials(
     provider: Any | None = None,
     entity_resolver: Callable[[str], str | None] | None = None,
     provider_detail: str | None = None,
+    detail_tally: dict[str, int] | None = None,
 ) -> FamilyEntry:
     """Bind the financials family from FIF, or name why nothing is bound (F0b).
 
     Unavailable financials carry the closed published reason alone; a partial
     bind carries every reportable cell as a
     ``capital_structure.financial_item_observation.v1`` fact whose digest and
-    cutoff the binding pins.
+    cutoff the binding pins.  ``detail_tally`` (the build's) counts each
+    internal cause for the run summary; the bundle never carries it.
     """
     facts, cash_basis, detail = _resolve_financial_facts(
         issuer_id,
@@ -756,6 +782,8 @@ def _bind_financials(
         entity_resolver=entity_resolver,
     )
     if detail is not None:
+        if detail_tally is not None:
+            detail_tally[detail] = detail_tally.get(detail, 0) + 1
         return FamilyEntry(
             family=FINANCIALS_FAMILY,
             support="unavailable",
@@ -870,13 +898,20 @@ def build_from_disk(
         provider, provider_detail = financial_provider, None
 
     issuers: dict[str, dict[str, FamilyEntry]] = {}
+    # Internal causes behind the one published financials denial; logged in
+    # the summary for diagnosis, never written into the bundle.
+    financials_details: dict[str, int] = {}
     for record in state_bundle.get("issuers") or ():
         issuer_id = str(record["request"]["issuer_id"])
         issuers[issuer_id] = {
             INSTRUMENTS_FAMILY: _bind_instruments(root, issuer_id, as_of),
             SHARE_BASIS_FAMILY: _bind_share_basis(root, issuer_id, as_of),
             FINANCIALS_FAMILY: _bind_financials(
-                issuer_id, as_of, provider=provider, provider_detail=provider_detail
+                issuer_id,
+                as_of,
+                provider=provider,
+                provider_detail=provider_detail,
+                detail_tally=financials_details,
             ),
             COMMITMENTS_FAMILY: _bind_commitments(root, issuer_id, as_of, source_generation_id),
         }
@@ -904,6 +939,7 @@ def build_from_disk(
         "as_of": as_of,
         "issuers": record["coverage"]["issuer_count"],
         "families": {family: tally["unavailable"] for family, tally in tallies.items()},
+        "financials_details": dict(sorted(financials_details.items())),
         "out_path": str(target),
         "byte_length": len(payload),
     }

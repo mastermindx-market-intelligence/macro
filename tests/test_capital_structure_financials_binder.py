@@ -16,7 +16,8 @@ every cell refused; a filing that became available after the cutoff).
 Test map (FROZEN SPEC): T1 mode gate · T2 store failure · T3 coverage ·
 T4 resolve failures · T5 happy path · T6 point-in-time · T7 missing cells ·
 T8 forbidden fields · T9 funding intake · T10 build determinism ·
-T11 ambiguous coverage.
+T11 ambiguous coverage · T12 binding-config drift aborts · T13 summary
+detail counts.
 """
 from __future__ import annotations
 
@@ -350,7 +351,8 @@ def _late_filing_dataset() -> SimpleNamespace:
 def test_t6a_selection_never_uses_a_filing_after_the_cutoff() -> None:
     dataset = _late_filing_dataset()
     as_of_moment = datetime(2031, 1, 1, tzinfo=timezone.utc)
-    assert producer._select_instant_date(dataset, as_of_moment) == "2030-12-31"
+    concepts = producer._binding_concepts()
+    assert producer._select_instant_date(dataset, as_of_moment, concepts) == "2030-12-31"
 
 
 def test_t6b_no_filing_readable_at_the_cutoff_is_no_balance_sheet() -> None:
@@ -447,6 +449,68 @@ def test_t6c_a_late_filing_is_never_queried_and_never_emitted(
     assert facts[0]["amount"] == {"value": "7000", "unit": "usd", "status": "known"}
     assert facts[0]["source"]["receipt_sha256"] == "c" * 64
     assert facts[0]["source"]["accession"] == "acc-early"
+
+
+def test_t6d_availability_is_the_latest_provenance_clock(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A cell is available once EVERY clock has passed: the max, never the first."""
+
+    def _node(cell_id: str, metric_id: str, provenance: dict[str, str]) -> dict[str, Any]:
+        return {
+            "cell_id": cell_id,
+            "metric_id": metric_id,
+            "period": {"kind": "instant", "end": "2030-12-31"},
+            "state": "value",
+            "value": "7000",
+            "unit": "USD",
+            "provenance": {"accession": "acc-early", "form": "10-K", **provenance},
+        }
+
+    def _clocks(*, body: bytes, provider: Any) -> SimpleNamespace:
+        return SimpleNamespace(
+            sha256="f" * 64,
+            envelope={
+                "receipt": {
+                    "root_cell_ids": ["cash", "receivables"],
+                    "nodes": [
+                        # accepted < filing metadata < recorded: available at recorded
+                        _node(
+                            "cash",
+                            "cash_and_cash_equivalents",
+                            {
+                                "accepted_at": "2030-06-30T00:00:00Z",
+                                "filing_metadata_available_at": "2030-07-01T00:00:00Z",
+                                "recorded_at": "2030-07-02T12:00:00Z",
+                            },
+                        ),
+                        # accepted before the cutoff, but the system was ready only
+                        # after it: not knowable at the cutoff, so never emitted
+                        _node(
+                            "receivables",
+                            "accounts_receivable_net",
+                            {
+                                "accepted_at": "2030-06-30T00:00:00Z",
+                                "recorded_at": "2030-06-30T00:00:00Z",
+                                "system_ready_at": "2031-02-01T00:00:00Z",
+                            },
+                        ),
+                    ],
+                }
+            },
+        )
+
+    monkeypatch.setattr(producer, "execute_financial_query", _clocks)
+    facts, cash_basis, detail = producer._resolve_financial_facts(
+        AAPL_ISSUER,
+        "2031-01-01T00:00:00Z",
+        provider=_Fip1Provider(_late_filing_dataset()),
+        entity_resolver=_resolver,
+    )
+    assert detail is None and cash_basis == "unrestricted_cash"
+    assert [fact["source"]["metric_id"] for fact in facts] == ["cash_and_cash_equivalents"]
+    available = datetime.fromisoformat(facts[0]["available_at"].replace("Z", "+00:00"))
+    assert available == datetime(2030, 7, 2, 12, tzinfo=timezone.utc)
 
 
 # ---------------------------------------------------------------------------
@@ -635,3 +699,60 @@ def test_t11_ambiguous_coverage_mapping_is_refused(
     entry = producer._bind_financials(AAPL_ISSUER, AS_OF, provider=provider)
     assert entry.support == "unavailable"
     assert entry.reason_codes == COMPANYFACTS_DENIAL
+
+
+# ---------------------------------------------------------------------------
+# T12 — a drifted binding config aborts the build, never hides per issuer
+# ---------------------------------------------------------------------------
+
+
+def test_t12_drifted_binding_config_aborts_the_build(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    drifted = tmp_path / "drifted_binding.json"
+    drifted.write_text(json.dumps({"items": []}), encoding="utf-8")
+    monkeypatch.setattr(producer, "_BINDING_CONCEPTS_CACHE", None)
+    monkeypatch.setattr(producer, "FINANCIAL_BINDING_CONFIG", drifted)
+
+    with pytest.raises(producer.ScenarioInputsError, match="exposes no source concept"):
+        producer._resolve_financial_facts(
+            AAPL_ISSUER, AS_OF, provider=_fip1_provider(), entity_resolver=_resolver
+        )
+
+    served = U1B._served_root(tmp_path / "served")
+    target = served / CAPACITY_INPUTS_FILENAME
+    before = target.read_bytes() if target.exists() else None
+    monkeypatch.setattr(producer, "_COVERAGE_INDEX_CACHE", {})
+    with pytest.raises(producer.ScenarioInputsError, match="exposes no source concept"):
+        producer.build_from_disk(
+            root=served, generated_at="2026-09-30T12:00:00Z", financial_provider=_fip1_provider()
+        )
+    after = target.read_bytes() if target.exists() else None
+    assert after == before  # nothing published over a drifted config
+
+
+# ---------------------------------------------------------------------------
+# T13 — the run summary counts internal causes; the bundle never carries them
+# ---------------------------------------------------------------------------
+
+
+def test_t13_summary_counts_financials_details_outside_the_bundle(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    served = U1B._served_root(tmp_path / "served")
+    state = json.loads((served / "state_bundle.json").read_text(encoding="utf-8"))
+    issuer_count = len(state["issuers"])
+    assert issuer_count >= 1
+    monkeypatch.setattr(producer, "_COVERAGE_INDEX_CACHE", {})  # no issuer is covered
+
+    summary = producer.build_from_disk(
+        root=served, generated_at="2026-09-30T12:00:00Z", financial_provider=_fip1_provider()
+    )
+    assert summary["status"] == "ok"
+    assert summary["financials_details"] == {"fif_entity_not_covered": issuer_count}
+    assert summary["families"]["financials"] == issuer_count
+
+    published = (served / CAPACITY_INPUTS_FILENAME).read_text(encoding="utf-8")
+    assert "fif_entity_not_covered" not in published
+    for entry in json.loads(published)["issuers"].values():
+        assert entry["financials"]["reason_codes"] == list(COMPANYFACTS_DENIAL)
