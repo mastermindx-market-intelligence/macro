@@ -5546,6 +5546,21 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     index136/5868, free135/5840, Prophet128/5612, all ten packs. Fund only
     six added estimator units per probe; no job/pack/runtime limit changes.
 
+    2026-10-22 Expectation Surface nav row (ITP-ES wave 2, #10077) adds
+    tests/test_expectation_surface_nav.py as one run: step of the existing
+    `unrun-nav-chrome` navigation owner (contract-delta's unrun-suite gate;
+    no new job, no second navigation owner). Composed on protected main
+    d81eb778: index 136 jobs / 5,867, free-content 135 / 5,839, plan-book
+    128 / 5,611, all ten packs with identical selected IDs versus main
+    (136/5,864, 135/5,836, 128/5,608); newly selected: none. The +3 per
+    probe is the new step's estimator weight on the already-selected job.
+    Fund only 5,867/5,839/5,611; job ceilings 136/136/130, the ten-pack
+    limit and every other bound stay unchanged.
+    2026-11-01 merge of main d08e0da7765c into #10077: the post-#10294
+    ceilings above (137/5,886, 138/5,877, 130/5,636) already cover this
+    composition (measured 136/5,836, 137/5,863, 129/5,586, ten packs,
+    no breach), so the 10-22 funding is absorbed and no ceiling moves.
+
     2026-10-22 visual-evidence correction composes protected8c23f6 and
     native-plan Brief coverage without removing any suite. Actual compiler
     114.88s: index136/5862, free-content135/5834, Prophet128/5606, ten packs.

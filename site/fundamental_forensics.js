@@ -12,6 +12,7 @@
   var FINANCIAL_QUERY_URL = '/api/forensics/v1/financial/query';
   var FINANCIAL_REVISIONS_URL = '/api/forensics/v1/financial/revisions';
   var FINANCIAL_STATEMENTS_URL = '/api/forensics/v1/financial/statements';
+  var FINANCIAL_CATALOG_URL = '/api/forensics/v1/financial/catalog';
   var FINANCIAL_QUERY_XLSX_URL = '/api/forensics/v1/financial/query.xlsx';
   var DESKTOP_QUERY = '(min-width: 1100px)';
   var state = {
@@ -55,6 +56,10 @@
     statementColumns: [],
     statements: { phase: 'idle' },
     statementCells: [],
+    // Production-only: the filings the admitted generation serves, and the
+    // one-shot period prime the revisions panel takes from them.
+    catalog: { entityId: '', phase: 'idle', filings: [], promise: null },
+    periodPrime: null,
     exportUnavailable: false,
     receipt: {
       phase: 'idle',
@@ -280,6 +285,7 @@
       'SEC Company Facts normalized projection': 'SEC 公司事实标准化投影',
       'repository quarterly and annual EDGAR panels': '仓库内季度及年度 EDGAR 面板',
       'normalized_quarterly_projection': '标准化季度投影',
+      'coverage_contract_catalog_only': '覆盖合约·仅申报目录',
       'filing_index': '披露索引',
       'companyfacts_source': '公司事实来源'
     };
@@ -2152,6 +2158,7 @@
     state.financial = { phase: 'idle' };
     state.queryNodes = null;
     state.statementColumns = [];
+    state.periodPrime = null;
   }
 
   function ensureFinancialData() {
@@ -2244,6 +2251,26 @@
       }
     }
     if (!latestBody.periods.length) {
+      // The panel snapshot can carry periods without starts. In production the
+      // admitted generation's own statement columns supply them: prime once per
+      // issuer, then re-evaluate; a failed prime settles into no-periods.
+      if (!pinnedBody && state.datasetMode === 'production' && latestBody.entity_id) {
+        var prime = state.periodPrime;
+        if (!prime || prime.entityId !== latestBody.entity_id) {
+          prime = { entityId: latestBody.entity_id, settled: false, promise: null };
+          prime.promise = primeStatementColumns(prime.entityId).then(function () { prime.settled = true; });
+          state.periodPrime = prime;
+        }
+        if (!prime.settled) {
+          state.financial = { phase: 'loading' };
+          renderRevisions();
+          prime.promise.then(function () {
+            if (token !== state.financialToken) return;
+            ensureFinancialData();
+          });
+          return;
+        }
+      }
       state.financial = { phase: 'no-periods' };
       renderRevisions();
       return;
@@ -2487,7 +2514,7 @@
   // ── Statement tree (§3.5 statements POST, spec row 6) ───────────────────
   // Accession comes from the disclosure layer's current filing or the query
   // provenance — never guessed from a ticker or a period label.
-  function currentAccession() {
+  function panelAccession() {
     var current = disclosureDocuments(company()).find(function (document) {
       return document._filing_role === 'current';
     });
@@ -2504,38 +2531,79 @@
     return '';
   }
 
-  function resetStatementsState() {
-    state.statementsToken += 1;
-    state.statements = { phase: 'idle' };
-    state.statementCells = [];
-    state.statementColumns = [];
+  // FIF catalog: the filings the admitted production generation serves. The
+  // company panel is a refreshed snapshot whose accession can name a filing
+  // the generation never admitted, so production asks only for a listed one.
+  // Golden/demonstration wiring has no catalog and keeps the panel accession.
+  // The promise never rejects: any failure leaves the panel accession in force.
+  function ensureCatalog(entityId) {
+    if (state.datasetMode !== 'production' || !entityId) {
+      return Promise.resolve({ phase: 'none', filings: [] });
+    }
+    var cached = state.catalog;
+    if (cached && cached.entityId === entityId && cached.promise) return cached.promise;
+    var entry = { entityId: entityId, phase: 'loading', filings: [], promise: null };
+    state.catalog = entry;
+    entry.promise = financialPost(FINANCIAL_CATALOG_URL, {
+      schema: 'fundamental_forensics.financial_catalog_request/v1',
+      entity_id: entityId
+    }).then(function (payload) {
+      var entity = objectValue(payload && payload.entity) || {};
+      if (entity.entity_id !== entityId || !Array.isArray(payload.filings)) {
+        entry.phase = 'none';
+      } else {
+        entry.filings = payload.filings.filter(objectValue);
+        entry.phase = 'ready';
+      }
+      return entry;
+    }, function () {
+      entry.phase = 'none';
+      return entry;
+    });
+    return entry.promise;
   }
 
-  function ensureStatements() {
-    if (state.tab !== 'statements') return;
+  var PERIODIC_FORM = /^(10-K|10-Q|20-F|40-F)(\/A)?$/;
+
+  // Latest periodic report the catalog lists: latest period, the original
+  // ahead of its amendment, then the later filing date. '' when none is listed.
+  function latestPeriodicAccession(filings) {
+    var best = null;
+    filings.forEach(function (filing) {
+      var form = String(filing.form || '');
+      if (!PERIODIC_FORM.test(form) || !filing.accession) return;
+      var rank = [String(filing.period_of_report || ''), /\/A$/.test(form) ? '0' : '1', String(filing.filing_date || '')];
+      var better = !best;
+      for (var index = 0; !better && index < rank.length; index += 1) {
+        if (rank[index] === best.rank[index]) continue;
+        better = rank[index] > best.rank[index];
+        break;
+      }
+      if (better) best = { rank: rank, accession: String(filing.accession) };
+    });
+    return best ? best.accession : '';
+  }
+
+  function currentAccession() {
+    var accession = panelAccession();
     var target = company();
-    if (!target) return;
-    if (state.statements.phase === 'loading' || state.statements.phase === 'ready') return;
-    var entityId = String(target.entity_id || '');
-    var accession = currentAccession();
-    if (!entityId || !accession) {
-      state.statements = { phase: 'unavailable' };
-      renderStatementTree();
-      return;
+    var catalog = state.catalog;
+    if (!target || !catalog || catalog.phase !== 'ready' || catalog.entityId !== String(target.entity_id || '')) {
+      return accession;
     }
-    var token = state.statementsToken + 1;
-    state.statementsToken = token;
-    state.statements = { phase: 'loading' };
-    renderStatementTree();
-    financialPost(FINANCIAL_STATEMENTS_URL, {
+    var listed = accession && catalog.filings.some(function (filing) {
+      return String(filing.accession) === accession;
+    });
+    return listed ? accession : latestPeriodicAccession(catalog.filings);
+  }
+
+  function fetchStatements(entityId, accession) {
+    return financialPost(FINANCIAL_STATEMENTS_URL, {
       schema: 'fundamental_forensics.financial_statement_request/v1',
       entity_id: entityId,
       accession: accession
     }).then(function (payload) {
-      if (token !== state.statementsToken) return;
       var statements = Array.isArray(payload && payload.statements) ? payload.statements.filter(objectValue) : [];
-      state.statements = { phase: statements.length ? 'ready' : 'empty', statements: statements };
-      state.statementCells = [];
       var columns = [];
       // PF-1: every statement repeats its comparative periods, so columns are
       // de-duplicated by the server's own period identity before they are
@@ -2556,9 +2624,76 @@
           }
         });
       });
-      state.statementColumns = columns;
+      return { statements: statements, columns: columns, filing: objectValue(payload && payload.filing) };
+    });
+  }
+
+  // Revisions periods from the admitted generation's statement columns. Never
+  // rejects; columns land only for the same issuer and only when none exist.
+  function primeStatementColumns(entityId) {
+    return ensureCatalog(entityId).then(function () {
+      var target = company();
+      if (!target || String(target.entity_id || '') !== entityId) return null;
+      var accession = currentAccession();
+      if (!accession) return null;
+      return fetchStatements(entityId, accession).then(function (result) {
+        var current = company();
+        if (!current || String(current.entity_id || '') !== entityId) return;
+        if (state.statementColumns.length) return;
+        state.statementColumns = result.columns;
+      });
+    }).catch(function () { return null; });
+  }
+
+  function resetStatementsState() {
+    state.statementsToken += 1;
+    state.statements = { phase: 'idle' };
+    state.statementCells = [];
+    state.statementColumns = [];
+    state.catalog = { entityId: '', phase: 'idle', filings: [], promise: null };
+  }
+
+  function ensureStatements() {
+    if (state.tab !== 'statements') return;
+    var target = company();
+    if (!target) return;
+    if (state.statements.phase === 'loading' || state.statements.phase === 'ready') return;
+    var entityId = String(target.entity_id || '');
+    var production = state.datasetMode === 'production';
+    var accession = production ? '' : currentAccession();
+    if (!entityId || (!production && !accession)) {
+      state.statements = { phase: 'unavailable' };
       renderStatementTree();
-    }).catch(function (error) {
+      return;
+    }
+    var token = state.statementsToken + 1;
+    state.statementsToken = token;
+    state.statements = { phase: 'loading' };
+    renderStatementTree();
+    var apply = function (result) {
+      if (token !== state.statementsToken) return;
+      state.statements = {
+        phase: result.statements.length ? 'ready' : 'empty',
+        statements: result.statements,
+        filing: result.filing
+      };
+      state.statementCells = [];
+      state.statementColumns = result.columns;
+      renderStatementTree();
+    };
+    var pending = production
+      ? ensureCatalog(entityId).then(function () {
+        if (token !== state.statementsToken) return null;
+        var resolved = currentAccession();
+        if (!resolved) {
+          state.statements = { phase: 'unavailable' };
+          renderStatementTree();
+          return null;
+        }
+        return fetchStatements(entityId, resolved).then(apply);
+      })
+      : fetchStatements(entityId, accession).then(apply);
+    pending.catch(function (error) {
       if (token !== state.statementsToken) return;
       if (error && (error.status === 401 || error.status === 403)) {
         showLoadError(error);
@@ -2567,6 +2702,56 @@
       state.statements = { phase: 'error' };
       renderStatementTree();
     });
+  }
+
+  function signedCompact(value) {
+    var numeric = numberValue(value);
+    if (numeric == null) return compactNumber(value, 1);
+    return (numeric < 0 ? '−' : '') + compactNumber(Math.abs(numeric), 1);
+  }
+
+  // FIF (b): a statement cell's unit picks its display, so a share count is
+  // never shown as dollars. Units arrive as measure names, optionally
+  // prefixed (iso4217:USD, xbrli:shares, USD/shares); USD and per-share USD
+  // keep the money format.
+  function statementValueText(cell) {
+    var parts = String(cell.unit == null ? '' : cell.unit).split('/').map(function (part) {
+      var measure = part.trim();
+      return measure.slice(measure.lastIndexOf(':') + 1).toLowerCase();
+    }).filter(Boolean);
+    var perShare = parts.length === 2 && /^shares?$/.test(parts[1]);
+    if (!parts.length || parts[0] === 'usdpershare' || (parts[0] === 'usd' && (parts.length === 1 || perShare))) {
+      return formatValue(cell.value, 'currency');
+    }
+    if (parts.length === 1 && /^shares?$/.test(parts[0])) return signedCompact(cell.value);
+    if (/^[a-z]{3}$/.test(parts[0]) && (parts.length === 1 || perShare)) {
+      return signedCompact(cell.value) + ' ' + parts[0].toUpperCase() + (perShare ? '/share' : '');
+    }
+    return signedCompact(cell.value);
+  }
+
+  // The served filing the tree was rebuilt from, named beside the tree.
+  function servedFilingCaption(filing) {
+    filing = objectValue(filing);
+    if (!filing || !filing.accession) return '';
+    var en = [];
+    var zh = [];
+    if (filing.form) {
+      en.push(String(filing.form));
+      zh.push(String(filing.form));
+    }
+    if (filing.period_of_report) {
+      en.push('period ending ' + filing.period_of_report);
+      zh.push('报告期截至' + filing.period_of_report);
+    }
+    if (filing.filing_date) {
+      en.push('filed ' + filing.filing_date);
+      zh.push('提交于' + filing.filing_date);
+    }
+    en.push('accession ' + filing.accession);
+    zh.push('文件编号 ' + filing.accession);
+    return '<p class="ff-statement-notice">' +
+      pair('As-reported filing shown: ' + en.join(' · '), '所示按披露原样的财报：' + zh.join(' · ')) + '</p>';
   }
 
   // Defect (c): a presentation arc whose preferred label is in the XBRL
@@ -2596,7 +2781,8 @@
       return sourceControlHtml({ kind: 'statement' });
     }
     var negated = isNegatedLabelRole(row.preferred_label_role);
-    var control = controlFromStatementCell(cell, formatValue(negated ? negatedDecimalText(exact) : exact, 'currency'));
+    var shown = negated ? Object.assign({}, cell, { value: negatedDecimalText(exact) }) : cell;
+    var control = controlFromStatementCell(cell, statementValueText(shown));
     control.metricId = String(row.standardized_metric_id || '');
     state.statementCells.push({
       occurrenceId: control.occurrenceId,
@@ -2695,7 +2881,7 @@
         '<div class="ff-table-wrap"><table class="ff-table ff-statement-table"><thead><tr>' + header +
         '</tr></thead><tbody>' + body + '</tbody></table></div></section>';
     }).join('');
-    ui.statements.innerHTML = blocks;
+    ui.statements.innerHTML = servedFilingCaption(statements.filing) + blocks;
   }
 
   // ── Peer panel (§4, R5) ─────────────────────────────────────────────────

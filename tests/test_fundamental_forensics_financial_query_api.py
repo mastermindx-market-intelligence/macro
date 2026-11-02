@@ -1197,6 +1197,7 @@ _FINANCIAL_PATHS = (
     "/api/forensics/v1/financial/revisions",
     "/api/forensics/v1/financial/packet",
     "/api/forensics/v1/financial/statements",
+    "/api/forensics/v1/financial/catalog",
 )
 
 

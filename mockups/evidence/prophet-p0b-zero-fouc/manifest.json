@@ -530,7 +530,7 @@
     "browser_receipts": {
       "hk": {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
-        "sha256": "b5ebddfc4d2d038c6fc836eb41d8f2d224eedf010385a3d0ae8a3a4d802b4683",
+        "sha256": "acc5413e0fe0b175c64031e5daeb2a2f0e777a84692d43c9874267b5421cca33",
         "pass": true,
         "primary_cases": 48,
         "degraded_control_cases": 16,
@@ -538,7 +538,7 @@
       },
       "ca": {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-        "sha256": "13403b1b14c19d1c129b4c27a3b5085ad7daf7627522c7e8a0ac2ec1d4394f99",
+        "sha256": "9bcefb71131068c6b6259580640a9f10d78281bb916e51076cef08746554c64e",
         "pass": true,
         "primary_cases": 48,
         "degraded_control_cases": 16,
@@ -553,9 +553,9 @@
     },
     "fixture_receipt": {
       "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-      "sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d"
+      "sha256": "a404d8de1d75201af999045c4dccc680de85a05978a26a1632df84b2af62444b"
     },
-    "generated_at": "2026-10-23T16:12:45.749290+00:00",
+    "generated_at": "2026-11-02T03:02:40.262792+00:00",
     "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
     "pass": true,
     "schema": "mastermind.prophet_p0b_owner_empty_repair_extension.v1",
