@@ -1,0 +1,88 @@
+{
+  "validated_commit": "79b62ed728af6a647b50a4a50566b3dc02d36525",
+  "results": [
+    {
+      "name": "deploy_shell",
+      "command": [
+        "bash",
+        "-n",
+        "app/deploy/update.sh"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.16,
+      "log": "/tmp/news-9612-79b62ed728af-20261102-deploy_shell.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tail": "",
+      "committed_log": "docs/evidence/news-cockpit-20261102/validation-final-deploy_shell.log"
+    },
+    {
+      "name": "mounted",
+      "command": [
+        "npm",
+        "--prefix",
+        "tests/news-desk",
+        "test"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 18.96,
+      "log": "/tmp/news-9612-79b62ed728af-20261102-mounted.log",
+      "log_sha256": "630123ee51ccae1fd4e3e5685b7ac47597f44341af622835c320d966d2548df1",
+      "tail": "waits for the accepted live descriptor without rendering its bodies (170.793959ms)\n\u2714 a fresh accepted snapshot permits a deliberate retry after a transient history revision (178.041041ms)\n\u2714 history pagination rejects a changed match total within the same revision (166.872125ms)\n\u2714 retained search generations abort and ignore superseded queries (199.494166ms)\n\u2714 retained search has a real deadline even when a late fixture ignores abort (177.555709ms)\n\u2714 history HTTP 401 clears protected dialogs and fences the active stream (321.9395ms)\n\u2714 history HTTP 403 clears protected dialogs and fences the active stream (300.564666ms)\n\u2714 a 503 retained page does not keep the last successful historical body (182.484084ms)\n\u2714 coverage keeps missing collection counters unknown and updates an open disclosure without taking focus (220.678333ms)\n\u2714 embedded News sign-in delegates once to the shell while initialization is pending (138.777625ms)\n\u2714 News sign-in retains standalone and modified-link navigation (224.503ms)\n\u2714 News sign-in respects a previously handled click (192.476583ms)\n\u2714 a claimed News sign-in never starts a second route after shell refusal or failure (188.536708ms)\n\u2714 mobile filters stage changes until Apply and count time and region (166.305833ms)\n\u2714 cancelled mobile filter changes do not alter the feed or saved scope (153.4165ms)\n\u2714 responsive controls preserve applied filters and return focus to a visible trigger (175.121416ms)\n\u2714 mobile workspace keeps coverage and reading density available (363.166208ms)\n\u2714 story triggers expose the current reader selection to assistive technology (338.886208ms)\n\u2714 resizing an open filter sheet keeps keyboard focus inside its dialog (448.235834ms)\n\u2139 tests 66\n\u2139 suites 0\n\u2139 pass 66\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 17274.447708\n",
+      "committed_log": "docs/evidence/news-cockpit-20261102/validation-final-mounted.log"
+    },
+    {
+      "name": "news_diff",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "79b62ed728af6a647b50a4a50566b3dc02d36525^2",
+        "79b62ed728af6a647b50a4a50566b3dc02d36525",
+        "--",
+        "templates/news.html.j2",
+        "templates/news_desk.css",
+        "templates/news_desk.js",
+        "site/news.html",
+        "tests/test_news_page_render.py",
+        "tests/news-desk",
+        ".github/ci/legacy-jobs.yml",
+        "tests/test_ci_pack.py",
+        "app/deploy/update.sh",
+        "docs/NEWS_DESK_RELEASE.md"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.1,
+      "log": "/tmp/news-9612-79b62ed728af-20261102-news_diff.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tail": "",
+      "committed_log": "docs/evidence/news-cockpit-20261102/validation-final-news_diff.log"
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_news_page_render.py",
+        "tests/test_news_desk_js.py",
+        "tests/test_news_desk_api.py",
+        "tests/test_research_news_intake.py",
+        "tests/test_marketing_intelligence_desk.py",
+        "tests/test_gdelt_client.py",
+        "tests/test_deploy_update_self_heal.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 141.73,
+      "log": "/tmp/news-9612-79b62ed728af-20261102-python.log",
+      "log_sha256": "927a1c8bb439c1735f494410ae0af302e55ed559d5d06da6fc61c0c0419f58e8",
+      "tail": "ve-code-releases\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-90d258f8-40e5-4459-bc0f-0cd829a07488/delegation-immutable0/kit/native-code-releases'\n    warnings.warn(\n\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-90d258f8-40e5-4459-bc0f-0cd829a07488/delegation-immutable0/kit\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-90d258f8-40e5-4459-bc0f-0cd829a07488/delegation-immutable0/kit'\n    warnings.warn(\n\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-90d258f8-40e5-4459-bc0f-0cd829a07488/delegation-immutable0\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-90d258f8-40e5-4459-bc0f-0cd829a07488/delegation-immutable0'\n    warnings.warn(\n\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-90d258f8-40e5-4459-bc0f-0cd829a07488\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-90d258f8-40e5-4459-bc0f-0cd829a07488'\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n719 passed, 6 warnings in 138.65s (0:02:18)\n",
+      "committed_log": "docs/evidence/news-cockpit-20261102/validation-final-python.log"
+    }
+  ],
+  "head_still_exact": true,
+  "tracked_tree_still_clean": true,
+  "browser_acceptance": "UNRUN",
+  "paper_refinement": "NOT_APPLIED",
+  "deployment": "NOT_DEPLOYED"
+}

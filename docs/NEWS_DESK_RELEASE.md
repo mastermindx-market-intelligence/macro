@@ -827,3 +827,119 @@ An exact-job/News-path open-PR search found no competing repair, and the
 existing build map was checked. This remains the original News-owned heal;
 no separate pack-repair lane or workflow exemption is created.
 Validation and publication of the corrected candidate remain pending.
+
+## Verified current source and release hold — 2026-11-02
+
+The original News operation and M2 branch now contain code commit
+`79b62ed728af6a647b50a4a50566b3dc02d36525`, tree
+`721687648faf9ddca7b8c04d56bd44d0453db7a6`, with parents
+`18e8ea64638de31d7e01f934a3f3db8ccf3aeb0c` and accepted Macro main
+`5085667c12c0366a9249ad699e082d37e02d1143`. The managed commit
+applied through the original publisher, with a clean synchronized index.
+The earlier 75d7/fd27 prepared compositions were incorporated into this
+single exact-main integration, not separately published or treated as final.
+A read-only bulk diff was stopped before effects; its unchanged staged
+tree and empty unstaged/unmerged state were verified before continuing.
+Unilateral accepted-main blobs were then restored exactly; shared CI
+paths and the restart trigger retain their verified semantic union.
+The News UI templates are unchanged from the tested source refinement.
+
+The final registry contains 375 unique jobs. Eleven shared path fields
+retain the exact three-way additive multisets. The eight News dependency
+registrations in the four repaired exclusive jobs remain present.
+Executable CI-test AST matches accepted main; only prior News measurement
+history/docstrings differ. No test command, suite, selector, job limit,
+runtime limit or packing ceiling is weakened.
+
+The generated News artifact now has SHA-256
+`14601f425cac15399fb65746eadc0877b4759a6303f9ff389f01bf310e52d746`.
+The current canonical finalizer reaches a fixed point; reporting seed,
+calendar edition and event-impact bytes retain their previously recorded
+hashes. This remains a source/artifact composition, not a fresh data build
+or a covering production render.
+
+### Exact-code validation
+
+On immutable code commit 79b62ed728af:
+- 719 Python tests PASS across News rendering, JS contracts, API, intake,
+  marketing intelligence, GDELT and deployment self-heal. The log retains
+  six runtime warnings; no warning suppression, cleanup exemption or
+  unrelated temporary-file deletion was introduced.
+- 66 mounted aggregate/company interaction tests PASS, zero skips/failures.
+- Deployment shell syntax and the News-owned diff check PASS.
+- Canonical dependency closure PASS for all four repaired exclusive jobs (no missing paths). Whole-manifest packing PASS: index136/5846, free-content137/5873 and plan-book129/5596, each ten packs; all existing ceilings remain unchanged.
+
+The inventory is bound to the exact 79b62ed728af tree: 141,544 tracked
+paths, payload SHA-256
+`a8db90f65cd714528c4d96c72794410c9e44580452f0948618faed85393139c3`.
+The closure preflight is deliberately scoped to the four repaired jobs;
+the packing census covers the whole current manifest. Neither replaces
+the full required hosted gates. All source test commands, logs and
+report digests are retained in this evidence directory. A following
+documentation-only receipt commit preserves the same tested executable
+source; its new exact head still requires current hosted CI.
+
+### Paper, preview and independent review
+
+No Paper canvas mutation was attempted or applied in this continuation.
+Current explicit target remains file01M2WGNCX9475G79JRKJTCM08P,
+pagep-3-1, dark/light desktop6FXR-0/6GMY-0 and
+dark/light mobile6GUZ-0/6H8F-0. Fresh screenshots confirm the existing
+boards, not the new source refinement. The direct app still refuses the
+16e6 catalog because its installed v13 expects the earlier catalog.
+
+The existing Paper owner release is Mastermind PR1925 at exact source
+e7016693f602f9f8c2dc52c99ac7111d4a641773. It has independent formal
+approval by MastermindX1 (review5732534188) and green PR-head checks.
+The already-enqueued merge group is cb9b48fa6ac722d08a7a9581fe5c07ff6c9d1578;
+at the latest read, Mastermind OS passed and CI run41396012272 still had
+one test shard active. Do not re-enqueue or infer protected acceptance.
+Owner checkpoint6570560627 records the verified Ryan v15 candidate,
+unchanged v13 rollback and original service/tunnel. Protected merge,
+one authorized original-owner cutover, and real disposable-scratch
+HTML-schema edit/readback/screenshot/reconnect proof remain required.
+Do not use MASTERMIND PAGES as a runtime canary or take over that lane.
+
+The bounded paid proposal news-paper-16e-proposal-20261102-c2-01 returned
+terminal rc0 with response SHA-256
+`2ee76b5831f9c59f21753683b9938def9d0b4cf354afbdf2d1540078a4c6419d`.
+It could not access the specified M2 captures and instead used a sibling
+PR fixture. Its unapplied bridge proposal differs from the authoritative
+owner candidate. It is NOT accepted, NOT applied and does not qualify the
+live runtime or substitute for independent source review.
+
+The loopback fixture preview and public tunnel are both stopped, with
+termination readback. The preview harness uses illustrative reporting,
+a fixture-only identity and a fixed frontend-asset allowlist; it does not
+connect to the production news database. Automatic approval review
+rejected the public loca.lt route because it would send preview
+source/application data through an unapproved third party. No alternative
+public tunnel, raw CDP or browser bypass was used. The built-in Static App
+Previews skill is for isolated self-contained demos and does not qualify
+this multi-file production application. Current-source browser acceptance
+remains UNRUN and requires a permitted reachable route.
+
+Original independent News review
+`news-9612-f07ba3-source-review-20261022` retains terminal rc1,
+QWEN_FINAL_RESPONSE_UNCONFIRMED, no verdict and retry_allowed=false.
+Its exact identity, unknown usage and no-replay disposition are unchanged.
+No new run, provider switch or material revision is treated as a reset.
+The prior uncertain historical checkpoint writes are not replayed.
+
+### Explicit hold and next permitted actions
+
+Hold owner: Sol, original News operation
+`news-cockpit-rebuild-20261018-astra-01`. PR9612 remains DRAFT with
+merge-blocked, no auto-merge and no merge-on-green arm.
+Release requires current required hosted checks, lawful disposition of
+the original independent review and independent acceptance of the final
+source, actual guarded Paper refinement/readback, and browser acceptance
+in desktop/mobile, dark/light and EN/ZH. Then follow the incumbent normal
+merge and covering render/deploy path and verify the real signed-in News
+page, current API build, stream renewal, source clocks and served assets.
+Source-rights owners and holds #8697/#7982/#8057 remain unchanged.
+
+No protected merge, production deployment, real-user acceptance,
+production-ready visual claim, SHIPPED claim or background follow-up is
+asserted. Passing automated tests and preserved fixture designs do not
+complete the user's requested Paper redesign and live replacement.
