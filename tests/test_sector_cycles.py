@@ -369,6 +369,375 @@ def test_rs_history_zero_benchmark_close_cannot_emit_infinity():
     json.dumps(clean_rows, allow_nan=False)    # must not raise
 
 
+_CYCLE_LOCK_BANNED = (
+    "实时", "申报", "validated", "已验证", "live", "forecast",
+    "falsifier", "refuted", "证伪", "z-score", "percentile rank",
+)
+
+# Frozen reader sentences. Split only so each source line stays short.
+_CYCLE_LOCK_SHELLS = (
+    (
+        "sector_cycles.html.j2",
+        "sector_cycles.js",
+        "sc-cards",
+        (
+            "Members get each sector fund on the cycle clock, "
+            "its scorecard, and what drove each leg of the move."
+        ),
+        "会员可查看每只板块 ETF 的周期时钟、记分卡，以及每一段走势背后的原因。",
+    ),
+    (
+        "sector_cycles_china.html.j2",
+        "sector_cycles.js",
+        "sc-cards",
+        (
+            "Members get each Shenwan sector and A-share basket "
+            "on the cycle clock, its scorecard, and the typical "
+            "next-turn rhythm."
+        ),
+        "会员可查看每个申万行业与 A 股主题篮子的周期时钟、记分卡，以及典型的下一拐点节奏。",
+    ),
+    (
+        "country_cycles.html.j2",
+        "sector_cycles.js",
+        "sc-cards",
+        (
+            "Members get each country fund and regional bloc "
+            "on the cycle clock, its scorecard, and its strength "
+            "against the US."
+        ),
+        "会员可查看每只国家 ETF 与区域板块的周期时钟、记分卡，以及相对美国的强弱。",
+    ),
+    (
+        "cycle.html.j2",
+        "cycle_app.js",
+        "cyc-cards",
+        (
+            "Members get where each cycle sits on one clock, "
+            "each cycle's scorecard, and the projection drawn "
+            "from its backing tape."
+        ),
+        "会员可查看各周期在同一张时钟上的位置、每个周期的记分卡，以及由其底层数据得出的推算。",
+    ),
+    (
+        "markets.html.j2",
+        "markets_app.js",
+        "cyc-cards",
+        (
+            "Members get where each market sits on one clock, "
+            "each market's scorecard, and the valuation map."
+        ),
+        "会员可查看各市场在同一张时钟上的位置、每个市场的记分卡，以及估值地图。",
+    ),
+    (
+        "subsectors.html.j2",
+        "subsectors.js",
+        "sc-app",
+        (
+            "Members get each sub-industry's timing score, "
+            "which groups just turned buyable, which are late "
+            "or fading, and the stocks firing inside them."
+        ),
+        "会员可查看每个子行业的时机评分、哪些刚转为可买、哪些已偏晚或转弱，以及其中触发的个股。",
+    ),
+)
+
+
+def _cycle_lock_script():
+    """The slot's inline script, cut out of the partial. It holds no Jinja."""
+    import re
+
+    text = _template_text("_cycle_locked_slot.html.j2")
+    match = re.search(r"<script>([\s\S]*?)</script>", text)
+    assert match is not None, "cycle lock partial has no inline script"
+    return match.group(1)
+
+
+def _run_cycle_lock(children, mode, status):
+    """Run the shipped lock script under node with a fake window and fetch."""
+    import json
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed")
+    flags = json.dumps([name == "empty" for name in children])
+    lines = [
+        "var flags = " + flags + ";",
+        "var mode = " + json.dumps(mode) + ";",
+        "var status = " + str(int(status)) + ";",
+        "var fetches = [];",
+        "var hideCalls = [];",
+        "function dead() {",
+        "  return {style: {setProperty: function (p, v, pri) {",
+        "    hideCalls.push([p, v, pri]);",
+        "  }}};",
+        "}",
+        "var deads = [dead(), dead()];",
+        "var signin = {hidden: true};",
+        "signin.addEventListener = function () {};",
+        "var slot = {",
+        "  hidden: true,",
+        '  attrs: {"data-fill": "the-fill",',
+        '    "data-renderer": "sector_cycles.js",',
+        '    "data-hide": "#dead-a,#dead-b"},',
+        "  getAttribute: function (k) { return this.attrs[k] || null; },",
+        "  querySelector: function (sel) {",
+        '    if (sel === ".cycle-lock-signin") return signin;',
+        "    if (sel.indexOf('signin') !== -1) return signin;",
+        "    return null;",
+        "  }",
+        "};",
+        "var kids = flags.map(function (isEmpty) {",
+        "  return {classList: {contains: function (c) {",
+        '    return c === "empty" && isEmpty;',
+        "  }}};",
+        "});",
+        "var fill = {children: kids};",
+        "var document = {",
+        "  getElementById: function (id) {",
+        '    if (id === "cycle-lock") return slot;',
+        '    if (id === "the-fill") return fill;',
+        "    return null;",
+        "  },",
+        "  querySelectorAll: function () { return deads; }",
+        "};",
+        "var listeners = [];",
+        "var window = {addEventListener: function (t, fn) {",
+        "  listeners.push(fn);",
+        "}};",
+        "var location = {href: ''};",
+        "function fetch(url, opts) {",
+        "  fetches.push({url: url, opts: opts});",
+        '  if (mode === "throw") throw new Error("sync");',
+        '  if (mode === "reject") return Promise.reject(new Error("no"));',
+        "  return Promise.resolve({status: status});",
+        "}",
+    ]
+    lines.append(_cycle_lock_script())
+    lines.extend([
+        "listeners[0]();",
+        "Promise.resolve().then(function () {",
+        "  var opts = fetches.length ? fetches[0].opts : null;",
+        "  console.log(JSON.stringify({",
+        "    n: fetches.length,",
+        "    url: fetches.length ? fetches[0].url : '',",
+        "    method: opts ? opts.method : '',",
+        "    credentials: opts ? opts.credentials : '',",
+        "    cache: opts ? opts.cache : '',",
+        "    slotHidden: slot.hidden,",
+        "    signinHidden: signin.hidden,",
+        "    hides: hideCalls",
+        "  }));",
+        "});",
+    ])
+    done = subprocess.run(
+        [node, "-e", "\n".join(lines)],
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert done.returncode == 0, done.stderr
+    return json.loads(done.stdout.strip())
+
+
+def _cycle_lock_expr(block, name):
+    """String value of one lock_* assignment, joining Jinja ~ pieces."""
+    import re
+
+    found = re.search(r"\b" + name + r"\s*=\s*", block)
+    assert found is not None, name
+    rest = block[found.end():]
+    out = []
+    depth = 0
+    quote = ""
+    i = 0
+    while i < len(rest):
+        c = rest[i]
+        if quote:
+            out.append(c)
+            if c == quote:
+                quote = ""
+            i += 1
+            continue
+        if c in "'\"":
+            quote = c
+            out.append(c)
+            i += 1
+            continue
+        if c in "([":
+            depth += 1
+        elif c in ")]" and depth:
+            depth -= 1
+        elif c == "," and depth == 0:
+            break
+        out.append(c)
+        i += 1
+    parts = re.findall(r"'([^']*)'|\"([^\"]*)\"", "".join(out))
+    return "".join(a if a != "" else b for a, b in parts)
+
+
+def _cycle_lock_with(text, name):
+    import re
+
+    pat = (
+        r"\{%\s*with\b(.*?)%\}"
+        r"\s*\{%\s*include\s+\"_cycle_locked_slot\.html\.j2\"\s*%\}"
+    )
+    found = re.search(pat, text, re.S)
+    assert found is not None, (
+        name + " does not include _cycle_locked_slot.html.j2"
+    )
+    return found.group(1)
+
+
+def test_cycle_lock_skips_fetch_when_fill_has_a_child():
+    got = _run_cycle_lock(["card"], "ok", 401)
+    assert got["n"] == 0
+    assert got["slotHidden"] is True
+    assert got["signinHidden"] is True
+    assert got["hides"] == []
+
+
+def test_cycle_lock_shows_signin_on_401():
+    got = _run_cycle_lock([], "ok", 401)
+    assert got["n"] == 1
+    assert got["url"] == "sector_cycles.js"
+    assert got["method"] == "HEAD"
+    assert got["credentials"] == "same-origin"
+    assert got["cache"] == "no-store"
+    assert got["slotHidden"] is False
+    assert got["signinHidden"] is False
+    assert got["hides"] == [
+        ["display", "none", "important"],
+        ["display", "none", "important"],
+    ]
+
+
+def test_cycle_lock_hides_signin_on_403():
+    got = _run_cycle_lock([], "ok", 403)
+    assert got["n"] == 1
+    assert got["slotHidden"] is False
+    assert got["signinHidden"] is True
+
+
+def test_cycle_lock_treats_only_empty_marker_as_unfilled():
+    got = _run_cycle_lock(["empty"], "ok", 401)
+    assert got["n"] == 1
+    assert got["slotHidden"] is False
+    assert got["signinHidden"] is False
+
+
+@pytest.mark.parametrize("status", [200, 500])
+def test_cycle_lock_ignores_other_statuses(status):
+    got = _run_cycle_lock([], "ok", status)
+    assert got["n"] == 1
+    assert got["slotHidden"] is True
+    assert got["signinHidden"] is True
+    assert got["hides"] == []
+
+
+@pytest.mark.parametrize("mode", ["reject", "throw"])
+def test_cycle_lock_ignores_fetch_failures(mode):
+    got = _run_cycle_lock([], mode, 401)
+    assert got["n"] == 1
+    assert got["slotHidden"] is True
+    assert got["signinHidden"] is True
+    assert got["hides"] == []
+
+
+def test_cycle_lock_shells_parse_and_name_their_slots():
+    import re
+    import jinja2
+
+    env = jinja2.Environment()
+    for name, renderer, fill, en, zh in _CYCLE_LOCK_SHELLS:
+        text = _template_text(name)
+        env.parse(text)
+        block = _cycle_lock_with(text, name)
+        assert _cycle_lock_expr(block, "lock_renderer") == renderer
+        assert re.search(
+            r'<script src="' + re.escape(renderer) + r'"',
+            text,
+        )
+        got_fill = _cycle_lock_expr(block, "lock_fill")
+        assert got_fill == fill
+        assert ('id="' + fill + '"') in text
+        hide = _cycle_lock_expr(block, "lock_hide")
+        for ident in re.findall(r"#([A-Za-z0-9_-]+)", hide):
+            assert ('id="' + ident + '"') in text, (name, ident)
+        got_en = _cycle_lock_expr(block, "lock_en")
+        got_zh = _cycle_lock_expr(block, "lock_zh")
+        assert got_en == en
+        assert got_zh == zh
+        assert got_en and got_zh
+        assert re.search(r"\d", got_en) is None
+        assert re.search(r"\d", got_zh) is None
+
+
+def test_cycle_lock_each_shell_renders_its_own_slot():
+    """Through Jinja, each shell's with-block fills the partial with its values."""
+    import re
+    import jinja2
+
+    root = Path(__file__).resolve().parents[1] / "templates"
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(root)))
+    pattern = re.compile(
+        r"\{%\s*with\b.*?%\}\s*"
+        r"\{%\s*include\s+\"_cycle_locked_slot\.html\.j2\"\s*%\}\s*"
+        r"\{%\s*endwith\s*%\}",
+        re.S,
+    )
+    for name, renderer, fill, en, zh in _CYCLE_LOCK_SHELLS:
+        found = pattern.findall(_template_text(name))
+        assert len(found) == 1, name
+        html = env.from_string(found[0]).render()
+        tag = re.search(r"<div\b[^>]*\bid=\"cycle-lock\"[^>]*>", html)
+        assert tag is not None, name
+        assert ('data-renderer="' + renderer + '"') in tag.group(0), name
+        assert ('data-fill="' + fill + '"') in tag.group(0), name
+        hide = re.search(r"data-hide=\"([^\"]+)\"", html)
+        assert hide is not None, name
+        assert ("#" + fill) in hide.group(1), name
+        assert 'href="plans.html"' in html, name
+        assert en in html, name
+        assert zh in html, name
+
+
+def test_cycle_lock_partial_is_hidden_and_plain():
+    import re
+
+    text = _template_text("_cycle_locked_slot.html.j2")
+    slot = re.search(
+        r'<div\b[^>]*\bid="cycle-lock"[^>]*>',
+        text,
+        re.S,
+    )
+    assert slot is not None and re.search(r"\bhidden\b", slot.group(0))
+    link = re.search(
+        r'<a\b[^>]*\bcycle-lock-signin\b[^>]*>',
+        text,
+        re.S,
+    )
+    assert link is not None and re.search(r"\bhidden\b", link.group(0))
+    assert "These readings are for members" in text
+    assert "这些读数仅向会员开放" in text
+    assert "See plans" in text
+    assert "查看方案" in text
+    assert "Already a member? Sign in" in text
+    assert "已是会员？登录" in text
+    blob = text
+    for name, _renderer, _fill, en, zh in _CYCLE_LOCK_SHELLS:
+        block = _cycle_lock_with(_template_text(name), name)
+        blob += _cycle_lock_expr(block, "lock_en")
+        blob += _cycle_lock_expr(block, "lock_zh")
+        assert en == _cycle_lock_expr(block, "lock_en")
+        assert zh == _cycle_lock_expr(block, "lock_zh")
+    for word in _CYCLE_LOCK_BANNED:
+        assert word not in blob, word
+
+
 def test_rs_benchmark_ffill_is_bounded():
     # MUTATION: `.ffill()` without `limit=RS_BENCH_FFILL_LIMIT` -> the benchmark gap is
     # carried forever, so the last 3 stale dates reappear in the RS series.
