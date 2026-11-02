@@ -48,7 +48,10 @@ refusal, never a silent approximation.  No fixture on this base can exceed
 ``MAX_BRANCHES`` for that ONE request only (the production constant is never
 edited) and records ``branch_bound_probe.monkeypatched_limit``; the kernel's
 own refusal shape (``capacity_joint`` lines 302-309) is recorded alongside
-what the served body actually carried.
+what the served body actually carried.  The served request needs an issuer
+with two active routes; a corpus with none records
+``served_request.active_pair_found = False`` and names the gap instead of a
+served claim.
 """
 from __future__ import annotations
 
@@ -817,18 +820,28 @@ def _strip_identity(node: Any) -> Any:
     return node
 
 
+#: The one ``MAX_BRANCHES`` both the kernel probe and the served over-bound
+#: request run under.  Two exclusive routes give two branches, one past it, so
+#: the served blocker must carry the kernel's refusal text verbatim.
+_PROBE_BRANCH_LIMIT = 1
+
+
 def _branch_bound_probe(world: ServingWorld) -> dict[str, Any]:
     """One served evaluate request over the declared branch bound.
 
     No fixture on this base can exceed 4096 exclusive-choice branches through
     the API, so ``MAX_BRANCHES`` is monkeypatched for this ONE request only;
     the production constant is restored in ``finally`` and the substitution is
-    recorded.  The SAME body is posted twice — once under the declared bound,
-    once over it — so the two served answers differ by nothing but the bound.
-    The kernel's own refusal shape (``solve_joint``, lines 302-309) is recorded
-    beside what the served body actually carried.
+    recorded.  The served request needs an issuer with two ACTIVE routes, since
+    the envelope drops inactive members of a declared group before the solve;
+    the first such served issuer is used, and a corpus with none records that
+    gap instead of a served claim.  The SAME body is posted twice — once under
+    the declared bound, once over it — so the two served answers differ by
+    nothing but the bound.  The kernel's own refusal shape (``solve_joint``,
+    lines 302-309) is recorded beside what the served body actually carried.
     """
     from engine.capital_structure import capacity_joint  # noqa: PLC0415
+    from engine.capital_structure.capacity import ACTIVE_ROUTE_STATUSES  # noqa: PLC0415
 
     probe: dict[str, Any] = {
         "declared_limit": capacity_joint.MAX_BRANCHES,
@@ -837,7 +850,8 @@ def _branch_bound_probe(world: ServingWorld) -> dict[str, Any]:
         "served_request": None,
     }
     real = capacity_joint.MAX_BRANCHES
-    capacity_joint.MAX_BRANCHES = 1
+    capacity_joint.MAX_BRANCHES = _PROBE_BRANCH_LIMIT
+    probe["monkeypatched_limit"] = _PROBE_BRANCH_LIMIT
     try:
         kernel = capacity_joint.solve_joint(
             [
@@ -852,39 +866,73 @@ def _branch_bound_probe(world: ServingWorld) -> dict[str, Any]:
     kernel_blockers = (probe["kernel_refusal"] or {}).get("blockers") or ()
 
     with world.new_client() as client:
-        plain = client.post(world.evaluate_path, json=world.evaluate_body)
-        try:
-            plain_body = plain.json()
-        except ValueError:
-            plain_body = None
-        route_ids = [
-            str(route.get("route_id"))
-            for route in (
-                (plain_body or {}).get("result", {}).get("capacity_envelope", {}).get("routes")
-                or []
-            )
-        ]
+        # The joint solve only ever sees ACTIVE members of a declared group
+        # (capacity._exclusive_groups drops ineligible and unknown routes and
+        # never passes a group left with fewer than two), so the served probe
+        # needs an issuer with two active routes.  The served issuers are
+        # scanned in order and the first such issuer is used.
+        scanned = 0
+        plain_status: int | None = None
+        evaluate_path: str | None = None
+        active_ids: list[str] = []
+        for issuer_id in world.issuer_ids:
+            path = f"{_PREFIX}/issuers/{issuer_id}/scenarios/evaluate"
+            plain = client.post(path, json=world.evaluate_body)
+            scanned += 1
+            if plain.status_code != 200:
+                continue
+            try:
+                plain_body = plain.json()
+            except ValueError:
+                continue
+            active = [
+                str(route.get("route_id"))
+                for route in (
+                    (plain_body or {}).get("result", {}).get("capacity_envelope", {}).get("routes")
+                    or []
+                )
+                if route.get("status") in ACTIVE_ROUTE_STATUSES
+            ]
+            if len(active) >= 2:
+                plain_status = int(plain.status_code)
+                evaluate_path = path
+                active_ids = active
+                break
+        if evaluate_path is None:
+            probe["served_request"] = {
+                "active_pair_found": False,
+                "issuers_scanned": scanned,
+                "served_body_names_the_refusal": None,
+                "gap": (
+                    "no served issuer in this corpus carries two active (eligible or "
+                    "conditional) routes, so a declared exclusive group is dropped "
+                    "before the joint solve and no served request can reach the branch "
+                    "bound; the engine-path refusal is proven by "
+                    "tests/test_capital_structure_v0_serving.py::"
+                    "test_v0_engine_path_carries_the_joint_refusal"
+                ),
+            }
+            probe["note"] = _probe_note()
+            return probe
         probe_body = dict(world.evaluate_body)
-        exclusivity_declared = len(route_ids) >= 2
-        if exclusivity_declared:
-            kept = tuple(
-                (str(key), str(value))
-                for key, value in (world.evaluate_body.get("other_assumptions") or ())
-                if str(key) != "route_exclusivity"
-            )
-            probe_body["other_assumptions"] = list(
-                kept + (("route_exclusivity", "|".join(route_ids[:2])),)
-            )
-        under_bound = client.post(world.evaluate_path, json=probe_body)
+        kept = tuple(
+            (str(key), str(value))
+            for key, value in (world.evaluate_body.get("other_assumptions") or ())
+            if str(key) != "route_exclusivity"
+        )
+        probe_body["other_assumptions"] = list(
+            kept + (("route_exclusivity", "|".join(active_ids[:2])),)
+        )
+        under_bound = client.post(evaluate_path, json=probe_body)
         under_bound_status = int(under_bound.status_code)
         try:
             under_bound_body = under_bound.json()
         except ValueError:
             under_bound_body = None
-        capacity_joint.MAX_BRANCHES = 0
-        probe["monkeypatched_limit"] = 0
+        capacity_joint.MAX_BRANCHES = _PROBE_BRANCH_LIMIT
+        probe["monkeypatched_limit"] = _PROBE_BRANCH_LIMIT
         try:
-            over_bound = client.post(world.evaluate_path, json=probe_body)
+            over_bound = client.post(evaluate_path, json=probe_body)
         finally:
             capacity_joint.MAX_BRANCHES = real
         over_bound_status = int(over_bound.status_code)
@@ -898,10 +946,13 @@ def _branch_bound_probe(world: ServingWorld) -> dict[str, Any]:
             else ""
         )
         probe["served_request"] = {
-            "plain_status": int(plain.status_code),
+            "active_pair_found": True,
+            "issuers_scanned": scanned,
+            "evaluate_path": evaluate_path,
+            "exclusive_group": list(active_ids[:2]),
+            "plain_status": plain_status,
             "under_bound_status": under_bound_status,
             "over_bound_status": over_bound_status,
-            "exclusivity_declared": exclusivity_declared,
             "served_view_generation_id": ((over_bound_body or {}).get("view") or {}).get(
                 "generation_id"
             ),
@@ -926,11 +977,17 @@ def _branch_bound_probe(world: ServingWorld) -> dict[str, Any]:
                 else False
             ),
         }
-    probe["note"] = (
-        "MAX_BRANCHES was monkeypatched to 0 for the one over-bound request only; "
+    probe["note"] = _probe_note()
+    return probe
+
+
+def _probe_note() -> str:
+    """The one sentence every branch-bound probe record carries."""
+    return (
+        f"MAX_BRANCHES was monkeypatched to {_PROBE_BRANCH_LIMIT} for the kernel probe "
+        "and the one over-bound request only; "
         "the production constant 4096 is never edited"
     )
-    return probe
 
 
 # ---------------------------------------------------------------------------

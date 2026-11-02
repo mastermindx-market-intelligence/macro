@@ -163,12 +163,20 @@ def test_v0_branch_bound_returns_the_typed_refusal(record: dict[str, Any]) -> No
     assert kernel["blockers"] == [
         "exclusive choices give 2 branches, above the 1 enumeration limit"
     ]
-    assert probe["monkeypatched_limit"] == 0
+    assert probe["monkeypatched_limit"] == 1
     assert probe["declared_limit"] == 4096
 
     # (b) The served evaluate request driven over that bound must carry the
-    # same typed refusal, never a silent approximation (SPEC_V0 §1).
+    # same typed refusal, never a silent approximation (SPEC_V0 §1).  The
+    # probe can only drive it when some served issuer carries two active
+    # routes; otherwise the record names the gap and the engine-path test
+    # below carries the proof.
     served = probe["served_request"]
+    assert served["issuers_scanned"] >= 1, served
+    if served["active_pair_found"] is False:
+        assert served["served_body_names_the_refusal"] is None, served
+        assert "test_v0_engine_path_carries_the_joint_refusal" in served["gap"], served
+        return
     assert served["over_bound_status"] == 200, served
     assert served["served_view_generation_id"] == record["corpus"]["generation_id"]
     assert served["served_body_names_the_refusal"] is True, (
@@ -183,6 +191,26 @@ def test_v0_branch_bound_returns_the_typed_refusal(record: dict[str, Any]) -> No
         f"joint_check_status={served['served_joint_check_status']!r}); the kernel "
         f"refusal was {json.dumps(kernel, sort_keys=True)}"
     )
+
+
+def test_v0_engine_path_carries_the_joint_refusal(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The envelope the evaluate route serves names the kernel refusal and
+    leaves the aggregate unknown, rather than answering from a partial solve."""
+    from engine.capital_structure import capacity_joint
+    from tests.test_capital_structure_capacity_c2 import TAKE_A, TAKE_B, a21_kwargs, evaluate
+
+    monkeypatch.setattr(capacity_joint, "MAX_BRANCHES", 1)
+    evaluation, _, _ = evaluate(**a21_kwargs(other=(("route_exclusivity", f"{TAKE_A}|{TAKE_B}"),)))
+    envelope = evaluation.envelope
+    assert envelope.mutually_exclusive == ((TAKE_A, TAKE_B),)
+    assert (
+        "joint_solve_refused:exclusive choices give 2 branches, above the 1 enumeration limit"
+        in envelope.blockers
+    ), envelope.blockers
+    assert envelope.aggregate_bound.status == "unknown"
+    assert envelope.aggregate_bound.value is None
+    note = envelope.aggregate_bound.note or ""
+    assert "joint solve refused" in note and "floor and ceiling unstated" in note, note
 
 
 # ---------------------------------------------------------------------------
