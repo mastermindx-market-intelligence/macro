@@ -71,9 +71,9 @@
     <a class="ni-source-link" href="#dlg-events" data-news-panel="dlg-events">{{ ni_bi('Event calendar', '事件日历') }} <span aria-hidden="true">↗</span></a>
   </aside>
   {% if ni.invalid or not ni_known or not ni_news_known %}
-  <div class="ni-notice" role="status"><strong>{{ ni_bi('Some information is unavailable.', '部分信息暂不可用。') }}</strong> {{ ni_bi('Available items remain below; missing data does not mean a quiet market.', '下方保留可用内容；缺失数据不代表市场平静。') }}</div>
+  <div class="ni-notice" role="status"><strong>{{ ni_bi('Some information is unavailable.', '部分信息暂不可用。') }}</strong> {{ ni_bi('Available items remain below; missing data does not mean a quiet market.', '下方保留可用内容；缺失数据不代表市场平静。') if ni_total else ni_bi('No usable items were supplied; missing data does not mean a quiet market.', '本次快照未提供可用内容；缺失数据不代表市场平静。') }}</div>
   {% elif ni.coverage_partial %}
-  <div class="ni-notice" role="status" data-news-coverage="partial"><strong>{{ ni_bi('Headline coverage is partial.', '新闻覆盖不完整。') }}</strong> {{ ni_bi('Some sources are unavailable; available reports remain below.', '部分来源暂不可用；下方保留可用报道。') }}</div>
+  <div class="ni-notice" role="status" data-news-coverage="partial"><strong>{{ ni_bi('Headline coverage is partial.', '新闻覆盖不完整。') }}</strong> {{ ni_bi('Some sources are unavailable; available reports remain below.', '部分来源暂不可用；下方保留可用报道。') if ni.headlines else ni_bi('Some sources are unavailable; no usable headlines were supplied in this snapshot.', '部分来源暂不可用；本次快照未提供可用报道。') }}</div>
   {% endif %}
   <div class="ni-tools" data-news-toolbar hidden>
     <div class="ni-filters" role="group" aria-label="Filter developments" data-news-aria-en="Filter developments" data-news-aria-zh="筛选动态">

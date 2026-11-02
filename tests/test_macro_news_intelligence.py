@@ -33,6 +33,7 @@ def test_malformed_inputs_render_partial_state(alerts, news):
     assert soup.select_one('.ni-notice')
     assert soup.select_one('.ni-empty')
     assert not soup.select('[data-news-item]')
+    assert 'No usable items were supplied' in soup.select_one('.ni-notice').text
 
 def test_unavailable_is_distinct_from_empty_and_failed_search():
     soup = render()
@@ -68,6 +69,17 @@ def test_per_source_coverage_survives_available_headlines(reason, partial):
     assert len(soup.select('[data-news-item="headlines"]')) == 1
     if partial:
         assert '新闻覆盖不完整' in soup.select_one('.ni-notice').text
+
+@pytest.mark.parametrize('alerts', [[], [{'rule':'event_risk', 'message':'Jobs in 5 days'}]])
+def test_partial_coverage_without_headlines_does_not_promise_reports(alerts):
+    soup = render(alerts=alerts, macro_news={'headlines':[], 'leg_status':{
+        'gdelt':{'n':0,'degraded_reason':'rate_limited'},
+        'official_rss':{'n':0,'degraded_reason':'no_headlines'}}})
+    notice = soup.select_one('[data-news-coverage="partial"]')
+    assert notice and 'no usable headlines were supplied' in notice.text
+    assert '本次快照未提供可用报道' in notice.text
+    assert 'available reports remain' not in notice.text
+    assert len(soup.select('[data-al-row]')) == len(alerts)
 
 def test_parent_integration_and_build_asset_contract():
     parent = (ROOT/'templates/dashboard.html.j2').read_text()
