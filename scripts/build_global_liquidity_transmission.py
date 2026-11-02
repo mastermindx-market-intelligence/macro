@@ -21,6 +21,12 @@ from engine.global_liquidity_transmission import (  # noqa: E402
     load_producer_config,
     walk_forward_factor_comparison,
 )
+from engine import global_liquidity_outlook as _glt_outlook  # noqa: E402
+from engine.global_liquidity_views import (  # noqa: E402
+    compose_views,
+    failed_views,
+    validate_views,
+)
 from lib import store  # noqa: E402
 
 
@@ -28,6 +34,7 @@ CONTRACT_PATH = ROOT / "site/liquiditydata/global_liquidity_transmission.json"
 HISTORY_PATH = ROOT / "data/global_liquidity_transmission/state_history.parquet"
 HISTORY_META_PATH = ROOT / "data/global_liquidity_transmission/state_history_meta.json"
 COMPARISON_PATH = ROOT / "data/global_liquidity_transmission/factor_comparison_btc_4w.json"
+T09_RESULT_PATH = ROOT / "research" / "GLT_T09_FORECAST_RESULT_2026-10-13.json"
 
 _ASOF_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
@@ -158,6 +165,26 @@ def _backdated_receipt_regression(payload: dict, previous: dict):
     return None
 
 
+def _compose_views(payload) -> dict:
+    """Compose the display-only views block; never raises, never prints."""
+    asof = (payload.get("state") or {}).get("asof")
+    try:
+        t09, unreadable = None, False
+        if T09_RESULT_PATH.exists():
+            try:
+                t09 = json.loads(T09_RESULT_PATH.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                unreadable = True
+        probe = _glt_outlook.snapshot(ROOT, as_of=date.fromisoformat(asof))
+        views = compose_views(payload, None, t09, None, as_of=asof, outlook_inputs={"probe": probe})
+        if unreadable:
+            views["statistical_forecast"] = {"status": "unavailable", "reason_key": "forecast_package_unreadable"}
+            validate_views(views)
+        return views
+    except Exception:
+        return failed_views(asof)
+
+
 def build(asof: str | None = None, *, out: str | None = None, print_notice: bool = True) -> dict:
     wall_start = time.monotonic()
     producer_cfg = load_producer_config()
@@ -168,6 +195,8 @@ def build(asof: str | None = None, *, out: str | None = None, print_notice: bool
         asof=asof,
         generated_at=generated_at,
     )
+
+    payload["views"] = _compose_views(payload)
 
     if out is not None:
         # (e) bounded replay: write ONLY --out; the stored history can never be
