@@ -738,7 +738,7 @@ def _note_past(kind, lang):
             "That month has passed with no confirmed " + turn
             + ". From this series\u2019 own median half-cycle ("
             + length
-            + ") \u2014 a timing RHYTHM, not a backtested forecast."
+            + ") \u2014 a timing RHYTHM, not a backtested prediction."
         )
     noun = "顶部" if kind == "peak" else "底部"
     return (
@@ -754,7 +754,7 @@ def _note_next(lang):
         return (
             "From this series\u2019 own median half-cycle ("
             + length
-            + ") \u2014 a timing RHYTHM, not a backtested forecast."
+            + ") \u2014 a timing RHYTHM, not a backtested prediction."
         )
     return (
         "基于该序列自身的中位半周期（" + length
@@ -1206,3 +1206,15 @@ def test_hazard_tooltip_revision_clause_reads_in_the_readers_language(lang, want
     got = _hz_tip(hz, "13w", True, lang)
     assert want in got and other not in got
     assert want not in _hz_tip({"epoch": "2031-Q1", "direction": "UP"}, "13w", True, lang)
+
+
+def test_reader_copy_in_sector_cycles_js_never_says_forecast():
+    # The page's copy law bans "forecast". Code names (forecastPoint) and // comments
+    # are not copy; every quoted string is, so none of them may carry the word.
+    import re
+
+    text = re.sub(r"(?m)^\s*//.*$", "", _template_text("sector_cycles.js"))
+    literals = re.findall(r'"(?:[^"\\\n]|\\.)*"|\'(?:[^\'\\\n]|\\.)*\'', text)
+    assert len(literals) > 1000
+    assert [s for s in literals if "forecast" in s.lower()] == []
+    assert sum("not a backtested prediction" in s for s in literals) == 3

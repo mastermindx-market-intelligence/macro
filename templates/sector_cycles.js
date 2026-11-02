@@ -520,7 +520,7 @@
                    x1: (hi != null ? Math.min(hi, META.xDomain[1]) : cx),
                    cx: cx, color: s.accent, opacity: 0.12, labelY: 11,
                    label: L("PROJ ", "推演 ") + ar + L(" · rhythm", " · 节奏"),
-                   title: L("Projected next turn ~", "推演下一拐点 ~") + fmtMon(p.central) + L(" — typical rhythm, not a backtested forecast", " — 典型节奏，非回测预测") });
+                   title: L("Projected next turn ~", "推演下一拐点 ~") + fmtMon(p.central) + L(" — typical rhythm, not a backtested prediction", " — 典型节奏，非回测预测") });
       }
     }
     return out;
@@ -1235,7 +1235,7 @@
       zh = nounZ + "原预计";
       noteE = "That month has passed with no confirmed " + nounE;
       noteE += ". From this series\u2019 own median half-cycle (";
-      noteE += lenVal + ") \u2014 a timing RHYTHM, not a backtested forecast.";
+      noteE += lenVal + ") \u2014 a timing RHYTHM, not a backtested prediction.";
       noteZ = "该月已过，尚无确认的" + nounZ + "。";
       noteZ += "基于该序列自身的中位半周期（" + lenVal + "）";
       noteZ += "\u2014\u2014属时间节奏，并非回测预测。";
@@ -1264,7 +1264,7 @@
         '<span class="sc-fcast-k">' + L("Projected next " + (up ? "peak" : "trough"), "推演下一" + (up ? "顶部" : "底部")) + '</span></div>' +
       '<div class="sc-fcast-date">' + fmtMon(p.central) + '</div>' +
       (band ? '<div class="sc-fcast-band">' + L("typical range ", "典型区间 ") + band + '</div>' : "") +
-      '<div class="sc-fcast-note">' + L("From this series’ own median half-cycle (" + lenVal + ") — a timing RHYTHM, not a backtested forecast.",
+      '<div class="sc-fcast-note">' + L("From this series’ own median half-cycle (" + lenVal + ") — a timing RHYTHM, not a backtested prediction.",
         "基于该序列自身的中位半周期（" + lenVal + "）——属时间节奏，并非回测预测。") + '</div>' +
     '</div>';
   }
