@@ -15,6 +15,7 @@ import os
 import re
 import tempfile
 import threading
+from datetime import datetime, timezone
 from pathlib import Path
 from types import MappingProxyType
 from typing import Any, Mapping
@@ -119,7 +120,9 @@ def run_canary(
     # Pricing rows must be reviewed and known before commercial spend.
     # This bounded estimate is a preflight guard, NOT an issuer-enforced cap.
     try:
-        estimate = pm.ai_costs.estimate_cost_usd(model_id, 256, MAX_TOKENS)
+        estimate = pm.ai_costs.estimate_cost_usd(
+            model_id, 256, MAX_TOKENS, as_of_utc=datetime.now(timezone.utc)
+        )
     except Exception:
         estimate = None
     if (
