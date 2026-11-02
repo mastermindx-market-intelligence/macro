@@ -571,7 +571,7 @@ def _qualified_scenario_client(monkeypatch,tmp_path,x2_inputs):
     for hop in state['chains'][0]['hops']:
         hop['from']=mapping[hop['from']];hop['to']=mapping[hop['to']]
     root=fx.build_root(tmp_path,yaml_doc=chain,state_doc=state,slug=chain['chain'])
-    def qualified(root,snapshot,assumption):
+    def qualified(root,snapshot,assumption,**kwargs):
         return replace(baseline,source_manifest_hash=snapshot['source']['source_manifest_hash'])
     monkeypatch.setattr(runtime,'_load_native_baseline',qualified)
     return _client(monkeypatch,tmp_path,root=root,chain=chain['chain']),root
@@ -597,8 +597,8 @@ def test_x2_post_detects_owner_mutation_after_evaluation(monkeypatch,tmp_path,x2
     from engine import ontology_scenario_runtime as runtime
     client,root=_qualified_scenario_client(monkeypatch,tmp_path,x2_inputs)
     original=runtime._load_native_baseline
-    def changing(*args):
-        baseline=original(*args)
+    def changing(*args,**kwargs):
+        baseline=original(*args,**kwargs)
         target=root/'data/transmission/chain_state.json'
         target.write_bytes(target.read_bytes()+b'\n')
         return baseline
@@ -1051,3 +1051,91 @@ with TestClient(app) as client:
                             cwd=Path(__file__).resolve().parents[1],
                             capture_output=True, text=True, check=False)
     assert result.returncode == 0, result.stderr
+
+
+@pytest.fixture
+def published_wti(monkeypatch, tmp_path, x2_inputs):
+    """Synthetic prices through the real WTI capture/export writer. No acquisition."""
+    import hashlib
+    import pandas as pd
+    from datetime import datetime
+    from engine import ontology_scenario_runtime as runtime, transmission_chains as txi
+    from lib import store
+
+    _, chain, historical, assumption = x2_inputs
+    cutoff = historical.knowledge_cutoff
+    now = datetime.fromisoformat(cutoff.replace('Z', '+00:00'))
+    ids = list(chain['nodes'])
+    state = fx.chain_state(slug=chain['chain'])
+    mapping = dict(zip(['n1','n2','n3','n4'], ids))
+    for node in state['chains'][0]['nodes']:
+        node['id'] = mapping[node['id']]
+    for hop in state['chains'][0]['hops']:
+        hop['from'], hop['to'] = mapping[hop['from']], mapping[hop['to']]
+    state.update(asof=historical.effective_at, built=cutoff)
+    data = tmp_path / 'data'
+    yahoo = data / 'yahoo'
+    yahoo.mkdir(parents=True)
+    monkeypatch.setattr(store.config, 'data_dir', lambda: data)
+    monkeypatch.setattr(store, '_availability_now', lambda: now)
+    frame = historical.series.to_frame('close')
+    path = yahoo / 'CL_F.parquet'
+    frame.to_parquet(path)
+    native = store.capture_yahoo_wti_observation(frame, frame, adapter_return_known_by=now,
+        lineage=dict(provider='yahoo', ticker='CL=F', series_identity='vendor_continuous_CL=F',
+                     field='Close', basis='vendor_continuous_close_no_adj_close_returned'))
+    export = store.export_yahoo_wti_observation(native, frame, frame)
+    raw = path.read_bytes()
+    capture = dict(schema='txi.prospective_input_read.v1', status='observed_input_bytes',
+                   capture_started_at=cutoff, capture_completed_at=cutoff,
+                   causal_state_sha256=hashlib.sha256(txi._capture_json(txi._causal_projection(state))).hexdigest(),
+                   observation_asof=historical.effective_at, reads=[dict(path='data/yahoo/CL_F.parquet',
+                   bytes=len(raw), sha256=hashlib.sha256(raw).hexdigest(), status='present')])
+    capture['generation_id'] = 'sha256:' + hashlib.sha256(txi._capture_json(capture)).hexdigest()
+    state['input_capture'] = capture
+    fx.build_root(tmp_path, yaml_doc=chain, state_doc=state, slug=chain['chain'])
+    snap = runtime.compose_snapshot(tmp_path, chain=chain['chain'], now=now)
+    labels = tuple((str(d.date()), str(d.date())) for d in frame.index)
+    sessions = runtime.VerifiedWTISessions(export['sha256'], capture['generation_id'],
+        snap['source']['source_manifest_hash'], cutoff, cutoff, cutoff, labels, historical.future_sessions,
+        historical.calendar_id, historical.calendar_version, historical.rights_ref)
+    return tmp_path, assumption, snap, sessions
+
+
+def test_wti_real_adapter_uses_only_server_verified_sessions(monkeypatch, published_wti):
+    from engine import ontology_scenario_runtime as runtime
+    root, assumption, snapshot, sessions = published_wti
+    manifest = snapshot['source']['source_manifest_hash']
+    with _client(monkeypatch, root, root=root, chain=snapshot['source']['chain']) as client:
+        payload = _scenario_payload(snapshot)
+        refused = client.post(SCENARIO_ROUTE, json=payload)
+        assert refused.status_code == 200
+        result = refused.json()
+        assert result['root_evaluation']['status'] == 'UNAVAILABLE' and result['owner_receipt'] is None
+        assert 'vendor_session_label_mapping' in result['root_evaluation']['missing_owner_inputs']
+        payload['verified_wti_sessions'] = {}
+        assert client.post(SCENARIO_ROUTE, json=payload).status_code == 400
+    qualified = runtime.evaluate_current_scenario(root, assumption, manifest, verified_wti_sessions=sessions)
+    assert qualified['root_evaluation']['status'] == 'ROOT_THRESHOLD_MET'
+    assert qualified['owner_receipt']['calendar_id'] == sessions.calendar_id
+    assert qualified['owner_receipt']['source_manifest_hash'] == manifest
+
+
+@pytest.mark.parametrize('bad', ['late','completion','cutoff','labels','txi','export','parquet'])
+def test_wti_baseline_refuses_unbound_or_late_inputs(published_wti, bad):
+    from dataclasses import replace
+    from engine import ontology_scenario_runtime as runtime
+    root, assumption, snapshot, sessions = published_wti
+    stale = 'sha256:' + '0'*64
+    if bad == 'parquet':
+        (root / 'data/yahoo/CL_F.parquet').write_bytes(b'changed')
+    else:
+        updates = dict(late={'known_by': '2099-01-01T00:00:00Z'}, cutoff={'knowledge_cutoff':'2020-01-01T00:00:00Z'},
+                       completion={'last_session_completed_at':'2099-01-01T00:00:00Z'},
+                       labels={'historical_labels':sessions.historical_labels[:-1]},
+                       txi={'txi_generation':stale}, export={'observation_sha256':'0'*64})
+        sessions = replace(sessions, **updates[bad])
+    out = runtime.evaluate_current_scenario(root, assumption, snapshot['source']['source_manifest_hash'],
+                                           verified_wti_sessions=sessions)
+    assert out['root_evaluation']['status'] == 'UNAVAILABLE'
+    assert out['owner_receipt'] is None

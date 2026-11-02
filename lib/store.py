@@ -390,6 +390,19 @@ def _wti_parquet_bytes(path: Path) -> bytes:
         os.close(descriptor)
 
 
+def _wti_parquet_image(parquet_raw: bytes) -> bytes:
+    """Canonical values used by both the export writer and the scenario reader."""
+    import pyarrow.parquet as parquet
+
+    # Bound decompression before decoding a local canonical parquet generation.
+    table = parquet.ParquetFile(io.BytesIO(parquet_raw))
+    metadata = table.metadata
+    if (metadata.num_rows > _CAPTURE_ROW_LIMIT or metadata.num_columns > 4 or
+            sum(metadata.row_group(i).total_byte_size for i in range(metadata.num_row_groups)) > 32 * 1024 * 1024):
+        raise ValueError("WTI canonical decoded bound refused")
+    return _availability_image(table.read().to_pandas())
+
+
 def export_yahoo_wti_observation(capture: dict, provider_slice: pd.DataFrame,
                                   merged: pd.DataFrame) -> dict:
     """Export exact private capture bytes through existing Yahoo data publication.
@@ -402,8 +415,6 @@ def export_yahoo_wti_observation(capture: dict, provider_slice: pd.DataFrame,
     sidecar; a durability failure after replacement remains an uncertain
     publication, never grounds to replay acquisition or fabricate success.
     """
-    import pyarrow.parquet as parquet
-
     receipt = capture["receipt"]
     if receipt.get("schema") != "yahoo.wti_observation_capture.v1" or receipt.get("ticker") != "CL=F":
         raise ValueError("WTI capture export schema refused")
@@ -423,13 +434,7 @@ def export_yahoo_wti_observation(capture: dict, provider_slice: pd.DataFrame,
             raise ValueError("WTI capture export length mismatch")
     canonical = yahoo / "CL_F.parquet"
     parquet_raw = _wti_parquet_bytes(canonical)
-    # Bound decompression before decoding a local canonical parquet generation.
-    table = parquet.ParquetFile(io.BytesIO(parquet_raw))
-    metadata = table.metadata
-    if (metadata.num_rows > _CAPTURE_ROW_LIMIT or metadata.num_columns > 4 or
-            sum(metadata.row_group(i).total_byte_size for i in range(metadata.num_row_groups)) > 32 * 1024 * 1024):
-        raise ValueError("WTI canonical decoded bound refused")
-    if _availability_image(table.read().to_pandas()) != merged_raw:
+    if _wti_parquet_image(parquet_raw) != merged_raw:
         raise ValueError("WTI canonical/capture values differ")
     exported_at = _availability_now()
     if exported_at < datetime.fromisoformat(receipt["merged_capture_image"]["immutable_publication_durable_at_utc"]):
