@@ -32,6 +32,8 @@ name: ci-main-heartbeat
 # cancel a heartbeat), and generous per-job `timeout-minutes` (never trip a timeout on
 # the normal ~4-min engine batch). The 6-hourly cadence dwarfs the ~5-min runtime, so
 # overlap is effectively impossible.
+# The checkout step alone reads 4.6-6.2 min on this repository and reached the 10-min
+# limit on three jobs in six runs, so the guard jobs carry 20.
 #
 # CADENCE — every 6h (a few times daily). Detection latency ≈ heartbeat interval + the
 # 2h sentinel interval (~6-8h worst case). Tighten to `*/4` or `*/3` if desired; the
@@ -60,7 +62,7 @@ jobs:
   # ── pure static guards (mirror ci.yml: nav-gap) ────────────────────────────
   nav-gap:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - name: nav menu must keep a top gap (committed site/)
@@ -69,7 +71,7 @@ jobs:
   # ── font-ui definition guard (mirror ci.yml: font-ui-defined) ──────────────
   font-ui-defined:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -85,7 +87,7 @@ jobs:
   # ── contract drift guard (mirror ci.yml: contract-drift) ───────────────────
   contract-drift:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -115,7 +117,7 @@ jobs:
   # nowhere near the ~67-min nightly budget.
   chronicle-suite:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -140,7 +142,7 @@ jobs:
   # so no ci.yml path filter would have caught it).
   template-site-sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -199,7 +201,7 @@ jobs:
   # ── workflow-yaml parse guard (mirror ci.yml: workflow-yaml) ───────────────
   workflow-yaml:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -226,7 +228,7 @@ jobs:
   # ── DAG conformance (mirror ci.yml: dag-conformance) ───────────────────────
   dag-conformance:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -247,7 +249,7 @@ jobs:
   # exists for. Hermetic by construction — no network, no engine data.
   tier-gate:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -276,7 +278,7 @@ jobs:
   # for the same reason as site-access-boundary below.
   paywall-contracts:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -296,7 +298,7 @@ jobs:
   # a red in the bake-dependent tier-preview step kept it from running.
   site-access-boundary:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -404,7 +406,7 @@ jobs:
 
   free-content-estate:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - name: install minimal deps

@@ -41,6 +41,7 @@ owns_paths:
   - config/catalyst_pilot_universe.json
   - app/deploy/macro-catalyst-source-cycle.service
   - app/deploy/macro-catalyst-source-cycle.timer
+  - app/catalyst_source_wiring.py
 waves:
   - id: A1-INT
     title: Integrate the verified Session00/01/02 catalyst loop onto main
@@ -86,19 +87,25 @@ waves:
       Ships with A3-SOURCE behind independent review. DO_NOT_REDO.
   - id: A3-SOURCE
     title: Live pinned SEC source cycle (writer) + exact-document grant adapter (reader)
-    status: in_progress
+    status: done
     depends_on: [RIGHTS-DEC]
     next_action: >
-      Writer catalyst_source_cycle + timer and reader catalyst_source_adapter.build_admitted_source;
-      the adapter mints one grant per issuer EX-99.1 URL + sha with the D4 expiry and D5 owner_ref/receipt_id.
-      Integrate, independently review, merge, then install the writer timer on the production host.
+      Merged to main in PR #10379 (636abe2a66d2) after independent read-only review rounds, each
+      repaired (rights REVISE; 2a REVISE; 2b, re-review and delta ACCEPT_WITH_FINDINGS; final
+      scoped re-check recorded in the PR body). The deploy installed and armed the writer timer.
+      Production 2026-11-01 (counts/states only): macro-api on 636abe2a66d; timer enabled + active on
+      a 5-minute cadence; first two cycles COMPLETE exit 0 with 20/20 issuers ok, 6 events, snapshot
+      published, 32 then 26 SEC GETs; all four catalyst flags absent, so /api/catalyst, scan and nojs
+      return 503. Rung: MERGED + PRODUCTION_PROOF of the writer (flags OFF). DO_NOT_REDO.
   - id: GAPS
     title: Carried engineering gaps G1–G7 from the 2026-10-31 merge handoff
-    status: in_progress
+    status: done
     depends_on: [SHIP]
     next_action: >
-      NO_QUALIFIED_EVENT pill, A04 clock render, A07(c)/(d) browser witnesses, update.sh restart fence,
-      partner pack F3/F4, B04-DEDUP/F1, consent RPC review on PostgreSQL. Each lands with its test.
+      Merged to main in PR #10379 (636abe2a66d2) with their tests, under
+      DEC:MX-CATALYST-GAPS-SEAT-RULINGS-20261101. Still carried by design: MAIL_CATALYST_ENABLED
+      stays OFF while the strict xfail B04 per-user dedup test fails; the consent RPC review
+      needs PostgreSQL. DO_NOT_REDO.
   - id: OWNER-GATES
     title: Owner acts outside the seat — flags ON, hosted proofs, acceptance
     status: todo
@@ -144,10 +151,11 @@ artifacts:
   - research/marketing_dockets/D07_FUNNEL_LIFECYCLE_MNZ.md
   - research/marketing_dockets/catalyst_fable_20261031/SEC_ISSUER_EARNINGS_RELEASE_PUBLIC_FACTS.json
 next_action: >
-  #10257 is MERGED + PRODUCTION_PROOF (OFF state). The seat recorded the SEC rights decision D1–D5
-  (DEC:MX-CATALYST-SEC-ISSUER-EARNINGS-RELEASE-PUBLIC-FACTS) and is shipping A3-SOURCE (live pinned
-  SEC source cycle + exact-document grant adapter) and GAPS G1–G7 in one reviewed PR, then installs
-  the writer timer. After that, only the operator's flags-ON and the hosted proofs remain.
+  A3-SOURCE and GAPS are MERGED in PR #10379 (636abe2a66d2); the writer timer runs in production and
+  publishes the namespaced index (PRODUCTION_PROOF of the writer). Remaining: the operator's
+  flags-ON decision (CATALYST_PUBLIC_ENABLED / CATALYST_OPTIN_ENABLED / CATALYST_UX_ENABLED, then
+  restart macro-api), the hosted A2 live-scan proof after that, and the figure-yield follow-up
+  in engine/earnings_release/figures.py.
 ---
 
 # Marketing X — Catalyst Loop acquisition engine
