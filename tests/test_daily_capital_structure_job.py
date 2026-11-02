@@ -686,6 +686,25 @@ def test_u1b_daily_job_runs_compiler_then_inputs_producer_after_state(steps):
     )
 
 
+def test_candidate_compiler_gets_the_same_source_store_env_as_the_terms_compiler(steps):
+    """cs_candidates resolves sources through build_source_stores(), like cs_terms.
+
+    Without the step-local R2 env no store is admissible, so the compiler refused
+    every night and the instruments family stayed unavailable for every issuer.
+    The env must name exactly the stores cs_terms names, each bound to its own
+    secret, and nothing else (no flag, mode or authority variable rides along).
+    """
+    terms = next(s for s in steps if s.get("id") == "cs_terms")
+    candidates = next(s for s in steps if s.get("id") == "cs_candidates")
+    terms_env = dict(terms.get("env") or {})
+    candidates_env = dict(candidates.get("env") or {})
+    store_keys = {k for k in terms_env if k.startswith("R2_")}
+    assert {"R2_BUCKET", "R2_CAPITAL_STRUCTURE_BUCKET", "R2_RESEARCH_BUCKET"} <= store_keys
+    assert candidates_env == {k: terms_env[k] for k in store_keys}, candidates_env
+    for key, value in candidates_env.items():
+        assert value == "${{ secrets.%s }}" % key, (key, value)
+
+
 # ──────────────────────────────────────────────────────────────────────────────
 # SPEC_U2 §2 gate 38: the U2-3 nightly steps — the previous-generation capture
 # BEFORE the state step overwrites it, the fatal change-ledger derivation
@@ -767,7 +786,11 @@ def test_u2_daily_job_previous_capture_changes_and_monitor_steps_are_ordered_and
     ), changes_run
 
     monitor_step = _step_by_id(steps, _CS_MONITOR_STEP)
-    assert monitor_step.get("if") == "always()", monitor_step.get("if")
+    # Step-level gate: the monitor attributes moved rows against tonight's
+    # change ledger, so it runs only when cs_changes produced one.
+    assert monitor_step.get("if") == (
+        "always() && steps.cs_changes.outcome == 'success'"
+    ), monitor_step.get("if")
     assert monitor_step.get("continue-on-error") is True, (
         "the monitor is fail-soft: a missing table or an unapplied DDL is a "
         "typed unavailable night, never a failed lane"
@@ -934,3 +957,48 @@ def test_the_handoff_carries_every_part_and_no_staged_write(daily):
         "continuation parts must ride the handoff under data/capital_structure, "
         "never be excluded by name"
     )
+
+
+def test_inputs_producer_selects_the_published_fif_store_and_nothing_else(steps):
+    """cs_inputs binds financials from FIF's published production datasets (F0).
+
+    Without an explicit per-step selection the binder never builds a FIF store, so
+    every issuer's financials family is ``fif_production_store_not_selected``. The
+    step selects production mode and the dedicated R2_RESEARCH store family the FIF
+    publisher writes with, each bound to its own secret; no generic R2_* value,
+    flag or authority variable rides along, and the mode is never a default.
+    """
+    terms = next(s for s in steps if s.get("id") == "cs_terms")
+    inputs = next(s for s in steps if s.get("id") == "cs_inputs")
+    terms_env = dict(terms.get("env") or {})
+    inputs_env = dict(inputs.get("env") or {})
+    research_keys = {
+        "R2_RESEARCH_ENDPOINT",
+        "R2_RESEARCH_ACCESS_KEY_ID",
+        "R2_RESEARCH_SECRET_ACCESS_KEY",
+        "R2_RESEARCH_BUCKET",
+    }
+    assert set(inputs_env) == research_keys | {"FIF_FINANCIAL_DATASET_MODE"}, inputs_env
+    assert inputs_env["FIF_FINANCIAL_DATASET_MODE"] == "production"
+    for key in research_keys:
+        assert inputs_env[key] == "${{ secrets.%s }}" % key, (key, inputs_env[key])
+        assert terms_env.get(key) == inputs_env[key], key
+
+
+def test_fif_production_mode_reaches_only_the_inputs_producer(daily):
+    """No other step, job or workflow-level env selects FIF production mode.
+
+    The selection is a per-step choice for cs_inputs, never a default
+    (DEC-FIF-D3): it must not widen to the workflow, a job, another step, or a
+    ``$GITHUB_ENV`` write that would leak it into later steps.
+    """
+    mode = "FIF_FINANCIAL_DATASET_MODE"
+    assert mode not in (daily.get("env") or {})
+    holders = []
+    for job_id, job_def in daily["jobs"].items():
+        assert mode not in (job_def.get("env") or {}), job_id
+        for step in job_def.get("steps") or []:
+            if mode in (step.get("env") or {}):
+                holders.append((job_id, step.get("id")))
+            assert mode not in str(step.get("run") or ""), (job_id, step.get("id"))
+    assert holders == [(JOB, "cs_inputs")], holders

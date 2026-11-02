@@ -2377,7 +2377,9 @@ jobs:
       - "tests/test_build_capital_structure_projection.py"
       - "tests/test_capital_structure_api.py"
       - "tests/test_capital_structure_capacity.py"
+      - "tests/test_capital_structure_financials_binder.py"
       - "tests/test_capital_structure_funding.py"
+      - "tests/test_capital_structure_inputs_row_reader.py"
       - "tests/test_capital_structure_instrument_candidates.py"
       - "tests/test_capital_structure_instrument_economics.py"
       - "tests/test_capital_structure_instrument_resolution.py"
@@ -13143,6 +13145,7 @@ jobs:
           tests/test_capital_structure_authorized_shares.py
           tests/test_capital_structure_closed_bundle.py
           tests/test_capital_structure_funding.py
+          tests/test_capital_structure_financials_binder.py
           tests/test_capital_structure_instrument_economics.py
           tests/test_capital_structure_supply_scenarios.py
           tests/test_capital_structure_transactions.py
@@ -13150,6 +13153,7 @@ jobs:
           tests/test_capital_structure_supply_variable.py
           tests/test_capital_structure_scenario_composition.py
           tests/test_capital_structure_scenario_inputs.py
+          tests/test_capital_structure_inputs_row_reader.py
           tests/test_capital_structure_state_changes.py
           tests/test_capital_structure_saved_scenarios.py
           tests/test_capital_structure_saved_scenario_api.py
@@ -45417,6 +45421,8 @@ jobs:
       # Reached through scripts/build_sector_central.py's import chain (closure guard).
       - "app/mailer.py"
       - "scripts/build_sector_holdings_coverage.py"
+      # Read by name in the receipt test since EW-P5 FU2 (site copy of a bound render input).
+      - "site/si_workspace.js"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
