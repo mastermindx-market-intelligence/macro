@@ -124,6 +124,12 @@ filesystem, or network operations. It does not replace the exporter's separate
 `bind_inventory_commit(candidate, registry_bytes)` proof of an inventory commit
 on protected `origin/main` carrying the exact canonical registry bytes.
 
+For admitted GMI index and coverage directory entries, the exporter reuses the
+rendered document's complete `l-en`/`l-zh` H1 text when no bilingual navigation
+label exists. Missing, incomplete, or ambiguous headings fail publication rather
+than inventing a translation. Historical inventories without those directory
+entries require no heading read. Label extraction changes no membership or group.
+
 ### `payload_tier`, precisely
 
 Every macro `*.html` **shell** has been anonymous since 2026-08-04

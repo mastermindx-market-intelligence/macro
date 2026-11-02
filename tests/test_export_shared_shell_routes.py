@@ -644,3 +644,91 @@ def test_publication_source_helper_rejects_each_incomplete_input(repo, problem):
         del registry["sources"][repo]["sha"]
     with pytest.raises(ValueError, match=repo.title() + " source"):
         exporter.validate_publication_sources(registry)
+
+
+@pytest.mark.parametrize("heading,expected", [
+    ('<h1 class="gmi-h1"><span class="l-en">All micro-themes</span><span class="l-zh">全部细分主题</span></h1>',
+     {"en": "All micro-themes", "zh": "全部细分主题"}),
+    ('<h1 class="gmi-h1"><span class="l-en">Coverage &amp; receipts</span><span class="l-zh">覆盖率与凭证</span></h1>',
+     {"en": "Coverage & receipts", "zh": "覆盖率与凭证"}),
+    ('<h1><span class="l-en title"><strong>Coverage</strong> &amp; receipts</span><span class="l-zh">覆盖率与<em>凭证</em></span></h1>',
+     {"en": "Coverage & receipts", "zh": "覆盖率与凭证"}),
+])
+def test_rendered_heading_uses_existing_locale_span_text(heading, expected):
+    assert document_heading_label(heading) == expected
+
+
+@pytest.mark.parametrize("heading", [
+    '<h1><span class="l-en">English</span></h1>',
+    '<h1><span class="l-en">English</span><span class="l-en">Other</span><span class="l-zh">中文</span></h1>',
+    '<h1><span class="l-en l-zh">Both</span></h1>',
+    '<h1><span class="l-en"> </span><span class="l-zh">中文</span></h1>',
+    '<h1><span class="l-en">English<span class="l-zh">中文</span></h1>',
+    '<h1><span class="l-en">English</span><span class="l-zh">中文</h1>',
+    '<h1>Unqualified <span class="l-en">English</span><span class="l-zh">中文</span></h1>',
+    '<h1><span class="l-en">English</span><span class="l-zh">中文</span></h1><h1>Other</h1>',
+])
+def test_rendered_heading_refuses_partial_or_ambiguous_locales(heading):
+    with pytest.raises(ValueError):
+        document_heading_label(heading)
+
+
+def _add_gmi_heading_documents(fx, *, index_heading=None, nav=False):
+    headings = {
+        "/gmi-index.html": index_heading or '<h1><span class="l-en">All micro-themes</span><span class="l-zh">全部细分主题</span></h1>',
+        "/gmi-coverage.html": '<h1><span class="l-en">Coverage &amp; receipts</span><span class="l-zh">覆盖率与凭证</span></h1>',
+    }
+    for path, heading in headings.items():
+        fx.registry["pages"].append(fixture_registry_row(path))
+        _write(fx.repo, "site" + path, '<!doctype html><html><head><title>GMI</title></head><body>' + heading + '</body></html>')
+    if nav:
+        _write(fx.repo, FIXTURE_TEMPLATES[0], FIXTURE_NAV +
+               '<a href="gmi-index.html">{{ t(\'Index nav\', \'目录导航\') }}</a>')
+    fx.registry_bytes = (json.dumps(fx.registry, ensure_ascii=False, indent=2) + "\n").encode()
+    fx.registry_path.write_bytes(fx.registry_bytes)
+    _write(fx.repo, REGISTRY_PATH_IN_REPO, fx.registry_bytes.decode())
+    tip = _commit(fx.repo, "existing rendered bilingual GMI headings")
+    _git(fx.repo, "update-ref", "refs/remotes/origin/main", tip)
+    return tip
+
+
+def test_cli_sources_gmi_labels_without_changing_membership_or_old_inventories(
+        tmp_path, inventory_fixture):
+    fx = inventory_fixture
+    tip = _add_gmi_heading_documents(fx)
+    # Its old Macro pin has neither GMI document. No missing-source read occurs.
+    historical, output = run_exporter(tmp_path, fx)
+    assert historical.returncode == 0, historical.stderr
+    assert json.loads(output.read_text())["legacyPaths"] == ["/macro.html", "/stocks/Alpha.html"]
+    done, output = run_exporter(tmp_path, fx, "--inventory-ref", tip)
+    assert done.returncode == 0, done.stderr
+    result = json.loads(output.read_text())
+    titles = {x["href"]: x["title"] for x in result["directory"]}
+    assert titles["/gmi-index.html"] == {"en": "All micro-themes", "zh": "全部细分主题"}
+    assert titles["/gmi-coverage.html"] == {"en": "Coverage & receipts", "zh": "覆盖率与凭证"}
+    expected_paths = sorted(["/macro.html", "/stocks/Alpha.html", "/gmi-index.html", "/gmi-coverage.html"] +
+                            [f"/stocks/earnings/member-{n:03}.html" for n in range(104)])
+    assert result["legacyPaths"] == expected_paths
+    assert result["nativePaths"] == []
+    assert result["coverage"]["familyMembers"] == {"macro:stocks_family": 105}
+    assert [x["href"] for x in result["directory"]] == ["/gmi-index.html", "/gmi-coverage.html", "/macro.html"]
+
+
+def test_cli_keeps_bilingual_nav_precedence_over_document_heading(tmp_path, inventory_fixture):
+    fx = inventory_fixture
+    tip = _add_gmi_heading_documents(fx, index_heading='<h1>Partial English heading</h1>', nav=True)
+    done, output = run_exporter(tmp_path, fx, "--inventory-ref", tip)
+    assert done.returncode == 0, done.stderr
+    entry = next(x for x in json.loads(output.read_text())["directory"] if x["href"] == "/gmi-index.html")
+    assert entry["title"] == {"en": "Index nav", "zh": "目录导航"}
+
+
+def test_cli_refuses_partial_gmi_heading_before_replacing_output(tmp_path, inventory_fixture):
+    fx = inventory_fixture
+    tip = _add_gmi_heading_documents(fx, index_heading='<h1><span class="l-en">English only</span></h1>')
+    output = tmp_path / "projection.json"
+    output.write_text("previous complete projection\n")
+    done, output = run_exporter(tmp_path, fx, "--inventory-ref", tip)
+    assert done.returncode != 0
+    assert "bilingual" in done.stderr
+    assert output.read_text() == "previous complete projection\n"

@@ -66,16 +66,82 @@ def navigation_labels(texts: list[str]) -> dict[str, dict[str, str]]:
     return out
 
 
+class HeadingLocales(HTMLParser):
+    """Read complete locale spans while refusing partial or ambiguous headings."""
+    VOID = frozenset("area base br col embed hr img input link meta param source track wbr".split())
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.values: dict[str, list[str]] = {"en": [], "zh": []}
+        self.stack: list[str] = []
+        self.active: str | None = None
+        self.depth = 0
+        self.parts: list[str] = []
+        self.seen = False
+        self.invalid = False
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag == "span":
+            classes = [value or "" for key, value in attrs if key == "class"]
+            locales = [locale for locale in self.values
+                       if any("l-" + locale in value.split() for value in classes)]
+            if locales:
+                self.seen = True
+                if len(locales) != 1 or len(classes) != 1 or self.active is not None:
+                    self.invalid = True
+                else:
+                    self.active = locales[0]
+                    self.depth = len(self.stack) + 1
+                    self.parts = []
+        if tag in self.VOID:
+            if tag == "br" and self.active is not None:
+                self.parts.append(" ")
+        else:
+            self.stack.append(tag)
+
+    def handle_endtag(self, tag: str) -> None:
+        if not self.stack or self.stack[-1] != tag:
+            self.invalid = True
+            return
+        if self.active is not None and len(self.stack) == self.depth:
+            self.values[self.active].append("".join(self.parts).strip())
+            self.active = None
+        self.stack.pop()
+
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.handle_starttag(tag, attrs)
+        if tag not in self.VOID:
+            self.handle_endtag(tag)
+
+    def handle_data(self, data: str) -> None:
+        if self.active is not None:
+            self.parts.append(data)
+        elif data.strip():
+            self.invalid = True
+
+
 def document_heading_label(text: str) -> dict[str, str]:
     """Read the existing bilingual H1; never invent a slug translation."""
-    heading = re.search(r"<h1\b[^>]*>(.*?)</h1>", text, re.S)
-    if heading is None:
+    headings = re.findall(r"<h1\b[^>]*>(.*?)</h1>", text, re.S | re.I)
+    if not headings:
         raise ValueError("directory source has no H1")
-    translated = TRANSLATION.search(heading[1])
+    if (len(headings) != 1 or len(re.findall(r"<h1\b", text, re.I)) != 1
+            or len(re.findall(r"</h1\s*>", text, re.I)) != 1):
+        raise ValueError("directory source has ambiguous bilingual H1s")
+    heading = headings[0]
+    locales = HeadingLocales()
+    locales.feed(heading)
+    locales.close()
+    if locales.seen:
+        if (locales.invalid or locales.stack or locales.active is not None
+                or any(len(values) != 1 or not values[0] for values in locales.values.values())):
+            raise ValueError("directory source H1 is not unambiguous bilingual text")
+        return {locale: values[0] for locale, values in locales.values.items()}
+    translated = TRANSLATION.search(heading)
     if translated:
         return {"en": html.unescape(translated[2].strip()),
                 "zh": html.unescape(translated[4].strip())}
-    plain = html.unescape(re.sub(r"<[^>]+>", "", heading[1])).strip()
+    plain = html.unescape(re.sub(r"<[^>]+>", "", heading)).strip()
     parts = plain.split(" · ", 1)
     if len(parts) != 2 or not all(parts):
         raise ValueError("directory source H1 is not bilingual")
@@ -343,6 +409,12 @@ def main() -> int:
     doc = derive_projection(registry, paths, denied, labels,
                             registry_digest=hashlib.sha256(raw).hexdigest(), inventory_ref=source_pin,
                             document_paths=document_inventory(ROOT, ref, paths))
+    # These admitted documents own their bilingual names in rendered H1 spans.
+    # Existing navigation labels win; absent, excluded and historical pages need no read.
+    for item in doc["directory"]:
+        if item["href"] in ("/gmi-index.html", "/gmi-coverage.html") and item["href"] not in labels:
+            item["title"] = document_heading_label(source("site" + item["href"]))
+    doc["directory"].sort(key=lambda item: (item["title"]["en"].casefold(), item["href"]))
     if args.inventory_ref is not None:
         # Cross-revision provenance: sources.macro keeps the registry's own pin;
         # the bound inventory is recorded as its own immutable source.
