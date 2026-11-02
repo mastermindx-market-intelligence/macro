@@ -4,7 +4,7 @@ templates/tablesort.js sorts a column numerically only when every non-missing
 cell parses as a number. Each MTF-tape cell renders an arrow glyph plus the RSI
 ("▲61"), which is text, so the timeframe <td> must carry data-sort="<rsi>", and
 data-sort="" (a missing value, sorted last) when the cell or its RSI is absent.
-Renders only the mx5-dlg-mtf-tbl block of templates/dashboard.html.j2 with a
+Renders the Evidence Breakdown dialog with a
 synthetic MS2 fixture; no data/ reads.
 """
 from __future__ import annotations
@@ -15,16 +15,12 @@ import jinja2
 from bs4 import BeautifulSoup
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-TEMPLATE = ROOT / "templates" / "dashboard.html.j2"
-OPEN = '<table class="mx5-dlg-mtf-tbl">'
+TEMPLATE = ROOT / "templates" / "_macro_evidence_dialog.html.j2"
 
 
 def _render(indices):
     src = TEMPLATE.read_text(encoding="utf-8")
-    assert src.count(OPEN) == 1, "expected exactly one MTF tape table in dashboard.html.j2"
-    start = src.index(OPEN)
-    end = src.index("</table>", start) + len("</table>")
-    html = jinja2.Environment().from_string(src[start:end]).render(MS2={"mtf": {"indices": indices}})
+    html = jinja2.Environment().from_string(src).render(MS2={"mtf": {"indices": indices}})
     return BeautifulSoup(html, "html.parser")
 
 

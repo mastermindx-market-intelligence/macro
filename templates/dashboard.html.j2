@@ -2342,6 +2342,7 @@
 {% if mode != 'stocks' %}
 <style id="macro-attio-type">
 {% include "_macro_attio_type.css.j2" %}
+{% include "_macro_evidence_dialog.css.j2" %}
 </style>
 <style id="risk-envelope-band-css">
 {% include "_risk_envelope_band.css.j2" %}
@@ -7568,7 +7569,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {% set MS = market_state %}
     {% set _va = {'green':'▲','yellow':'▶','red':'▼'}.get(MS.color, '▶') %}
     {# Pre-compute _band_weakest for verdict band Zone 2/3 (same logic as _weakest below) #}
-    {% set _band_weakest = MS.components | sort(attribute='score') | first if (MS and MS.components is defined and MS.components) else none %}
+    {% set _scored_factors = (MS.components|default([], true)|select('mapping')
+       |selectattr('score','number')|rejectattr('score','boolean')
+       |selectattr('score','ge',0)|selectattr('score','le',100)|list) %}
+    {% set _band_weakest = _scored_factors|sort(attribute='score')|first if _scored_factors else none %}
     {% endif %}
     {# ── "What would flip this call" context strip (design-doctrine ruling 2026-07-16).
        Renders ONLY already-calibrated engine keys from data/regime/latest.json:
@@ -7972,14 +7976,14 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {# Factor rows for factor popover #}
     {# MS (hero scope), NOT MS2 — MS2 is set later in the ledger section and is
        undefined here, which rendered "0 signals aligned" + an empty factor popover #}
-    {% set _mx5_comps = MS.components if (MS and MS.components is defined and MS.components) else [] %}
+    {% set _mx5_comps = _scored_factors|default([]) %}
     {% set _mx5_n_good = (_mx5_comps | selectattr('tone','equalto','good') | list | length) %}
     {# every leg that is NOT supportive — warn, bad, or an unrecognised tone. Counting
        the complement (never just 'warn') means a new tone can never disappear from the
        chip and turn dissent into an implied all-clear. #}
     {% set _mx5_n_warn = (_mx5_comps | length) - _mx5_n_good %}
     {# Weakest leg #}
-    {% set _mx5_weakest = _mx5_comps | sort(attribute='score') | first if _mx5_comps else none %}
+    {% set _mx5_weakest = _band_weakest|default(none) %}
     {# 60-session path from ms_history VM key #}
     {% set _mx5_hist = ms_history if (ms_history is defined and ms_history and ms_history | length >= 2) else none %}
     {% set _mx5_hist_n = _mx5_hist | length if _mx5_hist else 0 %}
@@ -8871,7 +8875,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   <div class="mx4-rack">
 
   {# 1. EVIDENCE row + tray #}
-  {% set _weakest = MS2.components | sort(attribute='score') | first if (MS2 and MS2.components) else none %}
+  {% set _weakest = _band_weakest|default(none) %}
   <div class="sx" id="sx-evidence" style="--isle-color:var(--isle-evidence)">
     {# Three-priority glance. Details stay in the Evidence dialog opened by the card.
        Priority order: stance, nearest event/weakest leg, active policy/risk radar. #}
@@ -12458,119 +12462,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
      Content = the old island interiors rendered inline (S2/S3 will redesign).
      Dialogs rendered outside the rack grid to avoid stacking-context issues. #}
 
-  {# dlg-evidence: Evidence six-factor breakdown — S2 redesign #}
-  <div class="mx5-dlg" id="dlg-evidence" role="dialog" aria-modal="true" tabindex="-1">
-    <div class="mx5-dlg-backdrop" onclick="mx5CloseDlg()"></div>
-    <div class="mx5-dlg-panel">
-      <div class="mx5-dlg-header">
-        <span class="mx5-dlg-title"><span class="l-en">Signals — Evidence Breakdown</span><span class="l-zh">信号 — 依据分析</span></span>
-        <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
-      </div>
-      <div class="mx5-dlg-body">
-
-        {# — Composite read — bind to MS (same object as hero) so glance and drill-down never disagree #}
-        {% if MS %}
-        <div class="mx5-dlg-eyebrow"><span class="l-en">Composite Score</span><span class="l-zh">综合评分</span></div>
-        <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:20px">
-          {% set _dlge_col = 'var(--up)' if MS.score >= 60 else ('var(--warn)' if MS.score >= 42 else 'var(--down)') %}
-          <span style="font-size:40px;font-weight:900;font-variant-numeric:tabular-nums;color:{{ _dlge_col }};line-height:1">{{ MS.score }}</span>
-          <div>
-            <div style="font-size:14px;font-weight:700;color:{{ _dlge_col }}">
-              <span class="l-en">{{ MS.label_en }}</span>
-              <span class="l-zh">{{ MS.label_zh or MS.label_en }}</span>
-            </div>
-            <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));margin-top:3px">
-              <span class="l-en">Blended 0–100 · ≥60 risk-on · 42–59 mixed · &lt;42 risk-off</span>
-              <span class="l-zh">合成 0-100 · ≥60 偏多 · 42-59 混合 · &lt;42 避险</span>
-            </div>
-          </div>
-        </div>
-        {% endif %}
-
-        {# — Six factor rows — #}
-        <div class="mx5-dlg-eyebrow"><span class="l-en">Six Factors</span><span class="l-zh">六大因子</span></div>
-        {% if MS2 and MS2.components %}
-        {% set _dlge_weakest = (MS2.components | sort(attribute='score') | first) if MS2.components else none %}
-        {% for c in MS2.components %}
-        {% set _ec = 'var(--up)' if c.tone == 'good' else ('var(--down)' if c.tone == 'bad' else 'var(--warn)') %}
-        {% set _is_wk = (_dlge_weakest and c.label_en == _dlge_weakest.label_en) %}
-        <div class="mx5-dlg-factor-row{{ ' weakest' if _is_wk }}">
-          <div>
-            <div class="mx5-dlg-factor-name">
-              <span class="l-en">{{ c.label_en }}</span><span class="l-zh">{{ c.label_zh or c.label_en }}</span>
-              {% if _is_wk %}<span class="v2chip c-warn" style="font-size:9px;padding:1px 5px;margin-left:6px;vertical-align:middle"><span class="l-en">WEAKEST</span><span class="l-zh">最弱</span></span>{% endif %}
-            </div>
-            {% if c.read_en is defined and c.read_en %}
-            <div class="mx5-dlg-factor-read"><span class="l-en">{{ c.read_en }}</span><span class="l-zh">{{ c.read_zh or c.read_en }}</span></div>
-            {% endif %}
-          </div>
-          <div>
-            <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:{{ [c.score,100]|min }}%;background:{{ _ec }}"></div></div>
-            <div class="mx5-dlg-bar-ticks"><span>0</span><span>50</span><span>100</span></div>
-          </div>
-          <div class="mx5-dlg-factor-score" style="color:{{ _ec }}">{{ c.score }}</div>
-        </div>
-        {% endfor %}
-
-        {# — Weakest leg callout — #}
-        {% if _dlge_weakest %}
-        <div class="mx5-dlg-weakest-callout">
-          <div class="mx5-dlg-weakest-icon">
-            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-            </svg>
-          </div>
-          <div>
-            <div class="mx5-dlg-weakest-label"><span class="l-en">Watch: {{ _dlge_weakest.label_en }}</span><span class="l-zh">关注：{{ _dlge_weakest.label_zh or _dlge_weakest.label_en }}</span></div>
-            <div class="mx5-dlg-weakest-sub">
-              <span class="l-en">Weakest leg at {{ _dlge_weakest.score }}/100 — the closest flip-trigger. Confirms what has already turned; does not forecast.</span>
-              <span class="l-zh">最弱分项 {{ _dlge_weakest.score }}/100，最接近翻转触发点。确认已转向信号，不预测未来。</span>
-            </div>
-          </div>
-        </div>
-        {% endif %}
-
-        {# — Multi-timeframe tape — #}
-        {% if MS2 and MS2.mtf and MS2.mtf.indices %}
-        <div class="mx5-dlg-sep"></div>
-        <div class="mx5-dlg-eyebrow"><span class="l-en">Multi-Timeframe Tape · Broad US Market</span><span class="l-zh">多周期趋势 · 美股大盘</span></div>
-        <table class="mx5-dlg-mtf-tbl">
-          <thead><tr>
-            <th><span class="l-en">Index</span><span class="l-zh">指数</span></th>
-            <th>1D</th><th>3D</th><th>7D</th><th>30D</th>
-            <th style="text-align:right"><span class="l-en">Confluence</span><span class="l-zh">合流</span></th>
-          </tr></thead>
-          <tbody>
-          {% for r in MS2.mtf.indices %}
-          <tr>
-            <td style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36))"><span class="l-en">{{ r.label_en }}</span><span class="l-zh">{{ r.label_zh or r.label_en }}</span></td>
-            {% for tf in ['D','3D','W','M'] %}{% set cell = r.cells[tf] %}
-            <td{% if cell and cell.rsi is not none %} data-sort="{{ cell.rsi|round|int }}"{% else %} data-sort=""{% endif %}>{% if cell %}<span class="ms-cell2 {{ cell.tone }}"><span class="ar">{{ cell.arrow }}</span><span class="rsi">{{ cell.rsi|round|int if cell.rsi is not none else '·' }}</span></span>{% else %}<span class="ms-cell2 flat"><span class="ar">·</span></span>{% endif %}</td>
-            {% endfor %}
-            <td style="text-align:right"><span class="mx5-dlg-mtf-conf {{ r.tone }}"><span class="l-en">{{ r.confluence_en }}</span><span class="l-zh">{{ r.confluence_zh or r.confluence_en }}</span></span></td>
-          </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-        {% endif %}
-
-        {# — Footnote — #}
-        <div class="mx5-dlg-sep"></div>
-        <div style="display:flex;align-items:flex-start;gap:10px;font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5">
-          <span class="v2-display-badge" style="flex-shrink:0;margin-top:1px"><span class="l-en">DISPLAY-ONLY</span><span class="l-zh">仅展示</span></span>
-          <span>
-            <span class="l-en">Confirms what has already turned — does not forecast. Gauntlet applies at promotion only. {{ 'as of ' ~ MS2.asof if (MS2 and MS2.asof is defined and MS2.asof) else '' }}</span>
-            <span class="l-zh">确认已转向信号，不预测未来。{{ MS2.asof ~ ' 数据' if (MS2 and MS2.asof is defined and MS2.asof) else '' }}</span>
-          </span>
-        </div>
-
-        {% else %}
-        <p style="font-size:12px;color:var(--ink-2,rgba(255,255,255,.6));margin-top:16px"><span class="l-en">No signal data available.</span><span class="l-zh">暂无信号数据。</span></p>
-        {% endif %}
-
-      </div>
-    </div>
-  </div>
+  {% include "_macro_evidence_dialog.html.j2" %}
 
   {# ── Shared benchmark-strip component (dlg-fed + dlg-events) ──────────────────
      Glass rows: big odds numeral, movement arrow, honest "what traders price" eyebrow.
