@@ -1,7 +1,7 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-11-02",
-  "generated_utc": "2026-11-02T19:15:41.095526+00:00",
+  "generated_utc": "2026-11-02T21:03:14.267958+00:00",
   "n_tickers": 2916,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
@@ -996,18 +996,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "APCX": {
-      "ticker": "APCX",
-      "channels": [
-        "insider_cluster"
-      ],
-      "weighted_score": 1.0,
-      "insider_net_usd": 116087190.0,
-      "insider_buyers": 31,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "SCTH": {
       "ticker": "SCTH",
       "channels": [
@@ -1028,6 +1016,18 @@
       "weighted_score": 1.0,
       "insider_net_usd": 98736477.0,
       "insider_buyers": 55,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "UUU": {
+      "ticker": "UUU",
+      "channels": [
+        "insider_cluster"
+      ],
+      "weighted_score": 1.0,
+      "insider_net_usd": 93635950.0,
+      "insider_buyers": 48,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
