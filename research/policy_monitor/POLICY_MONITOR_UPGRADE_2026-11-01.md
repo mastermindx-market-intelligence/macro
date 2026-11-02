@@ -81,3 +81,36 @@ This is a consequential single-domain product capability with frozen authority/d
 
 ## Evidence
 Initial source readback: this file's Git commit is the task-tree revision; later evidence must cite exact implementation/review revisions and browser artifacts. No construction, tests, worker START, deployment or acceptance is claimed by this initial plan.
+
+## Revision R2 — existing-producer integrity (2026-11-01 America/Chicago)
+Previous task-tree revision: fdbcd947556dc768d5428ebdfe8cfeb08e86d11d. This revision preserves the P2/P3 presentation assignment and extends the existing producer boundary in response to reproduced defects. It does not change policy scoring, introduce a new producer, or retarget an active source writer.
+
+Principal source probe against scripts/build_policy_lever.py at baseline reproduced: a valid JSON array raises AttributeError; wholly malformed JSON returns numeric zero counts; a future-dated record enters both observed windows and becomes the last event. These are defects in the source aggregates that a renderer cannot repair reliably. Empty readable files and valid old records must remain distinguishable from an unusable source, without claiming complete feed coverage.
+
+| ID | Parent/dependencies | Editorial label | Capability / acceptance | Intended lane / review |
+|---|---|---|---|---|
+| P2.T1 | P1 | ready | Repair the existing jawboning reader: strict object/timestamp/text validation, one evaluation instant, future exclusion, eligible last event, independent rejection diagnostics and honest unavailable counts. Preserve existing output keys and recorded-zero behavior where justified. | Separate admitted C2 Fabric producer writer; independent source review |
+| P2.T2 | P2.T1 | ready | Give the existing calendar structured event/evaluation dates and upcoming/today/past semantics; add genuine computation and component timestamps without relabelling source age. | Same producer writer; deterministic date tests |
+| P4.T1 | P2,P3,P2.T1,P2.T2 | proposed | Integrate the producer and presentation branches only after both writer effects are reconciled; make the monitor consume source-quality and date metadata; run adversarial records through the real generated-page consumer. | Sole authorized integration writer; independent exact-head review |
+
+### Bounded producer source scope
+scripts/build_policy_lever.py, its directly affected tests (primarily tests/test_policy_lever.py), and this same task tree only. Read all existing consumers before changing optional/null behavior. Do not touch the active presentation branch, templates, build_site, the new presentation normalizer, policy scoring/thresholds, feed collection/writing, generated site output, runtime, CI policy, auth or unrelated source.
+
+Implementation must reject valid non-object JSON before .get; reject unusable timestamp types/values; use the established UTC convention for naive source timestamps; count only records within a window and <= the single evaluation instant; select the last eligible observed event; safely bound display summaries to strings; distinguish missing/unreadable, empty-readable, wholly unusable, and partially usable files through additive quality metadata. Diagnostics classify malformed JSON, invalid structure, invalid timestamp, future records and valid records. Read success does not prove collection completeness. Future-only/all-invalid input must not become a confident zero. Valid older records may support zero recorded activity with coverage explicitly unknown.
+
+Preserve top-level as_of as the existing market-input date. Add a separate actual computed/evaluated timestamp; do not claim it is feed freshness. Calendar must carry 2026-11-03 as an event date and evaluated date plus event state. Retain compatibility fields where reasonable but never output perpetual live zero-days after the event as the authoritative display. Do not change the frozen PS-R9 scoring policy.
+
+### Custody and integration
+Presentation branch claude/policy-monitor-upgrade-20261101 remains exclusively assigned to the original UI builder. Producer branch claude/policy-monitor-integrity-20261101 is isolated from the same common plan revision and has a distinct sole writer. The source paths are disjoint except for plan evidence, which will be deliberately consolidated by the later integration writer. Producer author commits and pushes this branch and returns exact commit/diff/test receipts; no second PR, no merge, no approval, no release. The original single presentation PR remains the final carrier if one is created. No result/checkpoint alone transfers or releases source custody.
+
+### Required falsifiers
+- JSON [], null, strings and numeric scalars cannot crash the producer.
+- Wrong-type, missing, invalid, naive and offset timestamps have explicit deterministic handling.
+- All malformed or all invalid-time inputs produce unavailable counts; future alerts are excluded from counts and last observed event.
+- Valid older data plus a future record yields zero in the applicable recent window and the older last observed event, with partial-source qualification.
+- Empty readable source remains distinct from absent/unreadable and wholly invalid source; no unsupported complete-coverage claim.
+- Last-event summaries with malformed nested types cannot crash or inject raw markup.
+- Calendar before/on/after 2026-11-03 has deterministic correct state; evaluation date is distinct from old semis source date.
+- Existing complete, partial-basket, stale-copy, arming and PS-R9 state regressions retain their current semantics.
+
+R2 is a source-bound extension for P2.T1/P2.T2 and P4.T1; P1 acceptance and P2/P3 design semantics are preserved. No worker START, implementation completion, independent acceptance or release is claimed by this revision.
