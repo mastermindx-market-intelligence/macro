@@ -941,12 +941,60 @@
       return pa !== pb ? pa - pb : a.now.pos - b.now.pos;
     });
   }
+  function turnRecordText(r) {
+    var nFunds = r.funds.length;
+    var nFalse = r["false"];
+    var en = "The turn record dated " + r.as_of
+      + " grades an earlier version of this method,"
+      + " run on a shorter price history."
+      + " It is not a record of the method behind this month's cards."
+      + " Across " + nFunds + " US sector funds it met " + r.met
+      + " of " + r.turns + " real turns. " + r.right
+      + " calls were right and " + nFalse + " were false;"
+      + " right means within " + r.tau_months
+      + " months of a real turn.";
+    var zh = "转折记录（日期 " + r.as_of
+      + "）检验的是本方法的早期版本，所用价格历史较短，"
+      + "并不是本月卡片所用方法的记录。在 " + nFunds
+      + " 只美国行业基金中，它命中了 " + r.turns
+      + " 个实际转折中的 " + r.met + " 个。判断正确 "
+      + r.right + " 次、错误 " + nFalse
+      + " 次；正确指与实际转折相差不超过 " + r.tau_months
+      + " 个月。";
+    return L(en, zh);
+  }
+  function mountTurnRecord(list) {
+    var grid = document.getElementById("sc-cards");
+    if (!grid) return;
+    var p = document.getElementById("sc-turnrec");
+    if (!p) {
+      p = el("p", "sc-prov-text");
+      p.id = "sc-turnrec";
+      grid.insertAdjacentElement("afterend", p);
+    }
+    var rec = DATA.turn_record;
+    var hit = false;
+    var i = 0;
+    if (!IS_CN && rec && rec.funds && list) {
+      for (i = 0; i < list.length; i++) {
+        if (rec.funds.indexOf(list[i].id) >= 0) hit = true;
+      }
+    }
+    if (!hit) {
+      p.hidden = true;
+      p.textContent = "";
+      return;
+    }
+    p.hidden = false;
+    p.textContent = turnRecordText(rec);
+  }
   function mountCards() {
     var grid = document.getElementById("sc-cards");
     if (!grid) return;
     Object.keys(sparks).forEach(function (k) { try { sparks[k].destroy(); } catch (e) {} });
     sparks = {};
     grid.innerHTML = "";
+    mountTurnRecord(sortedActive());
     sortedActive().forEach(function (s) {
       var nw = s.now, tilt = tiltOf(s);
       var card = el("article", "cyc-card");
@@ -1093,6 +1141,10 @@
   function hazardLineHTML(s) {
     var hz = s.now && s.now.hazard;
     if (!hz) return "";
+    if (hz.unavailable) {
+      return '<div class="cyc-hazard sc-hazard"><span class="hz-label">' +
+        L("Turn hazard", "转折风险") + '</span>' + esc(_hzWithheld(hz)) + '</div>';
+    }
     function cell(key, label, labelZh) {
       var c = hz[key];
       if (!c || c.p == null) return "";
@@ -1127,9 +1179,26 @@
     if (hz["1m"] && hz["1m"].p != null) return { key: "1m", c: hz["1m"], pass: false };
     return null;
   }
+  function _hzWithheld(hz) {
+    if (!hz || !hz.unavailable) return "";
+    var cdf = hz.unavailable_reason === "non_monotone_cdf";
+    var en = cdf
+      ? ("Unavailable today — the model's short- and long-window reads disagreed, "
+          + "so no clean probability can be shown.")
+      : "Unavailable today — a required input didn't settle cleanly.";
+    var zh = cdf
+      ? "今日暂不可用——模型的短窗与长窗读数不一致，无法给出可靠概率。"
+      : "今日暂不可用——所需输入未能完整结算。";
+    return L(en, zh);
+  }
   function hazardCardChip(s) {
     var hz = s.now && s.now.hazard;
     if (!hz) return "";
+    if (hz.unavailable) {
+      return '<div class="cc-hz hz-muted" title="' + esc(_hzWithheld(hz)) + '">' +
+        '<span class="cc-hz-k">' + L("Turn hazard", "转折风险") + '</span> ' +
+        L("Unavailable today", "今日暂不可用") + '</div>';
+    }
     var pick = _hzPick(hz);
     if (!pick) return "";
     return '<div class="cc-hz' + (pick.pass ? '' : ' hz-muted') + '" title="' + esc(_hzTip(hz, pick.key, pick.pass)) + '">' +

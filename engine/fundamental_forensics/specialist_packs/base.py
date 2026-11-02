@@ -642,7 +642,12 @@ def _dimensions_admitted(occurrence: Any, allowed: tuple[str, ...]) -> bool:
     if occurrence.dimensions_known is False:
         return False
     context = occurrence.context
-    axes = set(context.explicit_dimensions) | set(context.typed_dimensions)
+    # Both containers hold (axis, member) PAIRS; ``allowed`` names AXES, so
+    # the comparison set is the axis names. An empty ``allowed`` therefore
+    # still admits only an undimensioned occurrence, exactly as before.
+    axes = {axis for axis, _ in context.explicit_dimensions} | {
+        axis for axis, _ in context.typed_dimensions
+    }
     return axes <= set(allowed)
 
 
@@ -815,6 +820,38 @@ def _rf9_conflict_limitation(
     )
 
 
+def _rf1_unit_mismatch(
+    *,
+    catalogue_unit: str | None,
+    occurrences: Sequence[Any],
+    representative: Any,
+    limitations: list[str] | None,
+    field_id: str,
+) -> list[Any]:
+    """R-F1: the ledger occurrences whose unit fails the catalogue unit.
+
+    Returns the mismatching occurrences — empty, with no check imposed, when
+    the catalogue field declares no unit (``catalogue_unit is None``) or the
+    representative's unit is equivalent — and appends the shared
+    "fact unit X is not Y" limitation when the check fails. Shared by the
+    plain and the axes fact resolvers so the typed refusal is byte-identical
+    whichever resolver observed the facts.
+    """
+    equivalents = _unit_equivalents(catalogue_unit)
+    if equivalents is None:
+        return []
+    ledger_unit = _unit_measure(representative.unit)
+    if ledger_unit in equivalents:
+        return []
+    if limitations is not None:
+        limitations.append(
+            f"{field_id}: fact unit {ledger_unit} is not {catalogue_unit}"
+        )
+    return [
+        item for item in occurrences if _unit_measure(item.unit) not in equivalents
+    ]
+
+
 def _resolve_fact_mapping(
     *,
     pack_id: str,
@@ -947,36 +984,28 @@ def _resolve_fact_mapping(
         else:
             representative = max(admitted, key=_duration_days)
         catalogue_unit = catalogue_field.get("unit")
-        equivalents = _unit_equivalents(catalogue_unit)
-        if equivalents is not None:
+        mismatching = _rf1_unit_mismatch(
+            catalogue_unit=catalogue_unit,
+            occurrences=admitted,
+            representative=representative,
+            limitations=limitations,
+            field_id=field_id,
+        )
+        if mismatching:
             # R-F1: the ledger unit must satisfy the catalogue unit before the
             # catalogue unit is copied onto the row.
-            ledger_unit = _unit_measure(representative.unit)
-            if ledger_unit not in equivalents:
-                mismatching = [
-                    item
-                    for item in admitted
-                    if _unit_measure(item.unit) not in equivalents
-                ]
-                if limitations is not None:
-                    limitations.append(
-                        f"{field_id}: fact unit {ledger_unit} is not"
-                        f" {catalogue_unit}"
-                    )
-                return _absence_row(
-                    catalogue_field,
-                    por,
-                    "not_evaluable",
-                    "unit_mismatch",
-                    concept=mapping.concepts[0],
-                    occurrence_ids=[
-                        item.occurrence_id for item in mismatching
-                    ],
-                    mapping=mapping,
-                    pack_id=pack_id,
-                    catalogue=catalogue,
-                    limitations=limitations,
-                )
+            return _absence_row(
+                catalogue_field,
+                por,
+                "not_evaluable",
+                "unit_mismatch",
+                concept=mapping.concepts[0],
+                occurrence_ids=[item.occurrence_id for item in mismatching],
+                mapping=mapping,
+                pack_id=pack_id,
+                catalogue=catalogue,
+                limitations=limitations,
+            )
         row = _base_row(catalogue_field, por)
         row["quality_state"] = "valued"
         row["non_value_state"] = None
@@ -1486,6 +1515,7 @@ def _resolve_axes_fact_mapping(
     field_id = catalogue_field["field_id"]
     period_kind = catalogue_field["period_kind"]
     allowed_axes = set(mapping.optional_axes)
+    catalogue_unit = catalogue_field.get("unit")
 
     undimensioned: list[Any] = []
     members: list[Any] = []
@@ -1582,19 +1612,40 @@ def _resolve_axes_fact_mapping(
 
     if undimensioned and mapping.consolidated_row:
         representative = min(undimensioned, key=lambda item: item.occurrence_id)
-        instant = representative.context.instant if cover else None
-        row, value, decimals = _axes_valued_row(
-            catalogue_field=catalogue_field,
-            por=por,
+        mismatching = _rf1_unit_mismatch(
+            catalogue_unit=catalogue_unit,
             occurrences=undimensioned,
             representative=representative,
-            instant=instant,
+            limitations=limitations,
+            field_id=field_id,
         )
-        stamp(row)
-        emitted.append(row)
-        consolidated_value = value
-        if decimals is not None:
-            decimals_seen.append(decimals)
+        if mismatching:
+            # R-F1: the same typed refusal the plain fact resolver imposes —
+            # the catalogue unit is never stamped onto a wrong-unit fact.
+            outcome = _absence_row(
+                catalogue_field,
+                por,
+                "not_evaluable",
+                "unit_mismatch",
+                concept=concept,
+                occurrence_ids=[item.occurrence_id for item in mismatching],
+            )
+            stamp(outcome.row)
+            emitted.append(outcome.row)
+        else:
+            instant = representative.context.instant if cover else None
+            row, value, decimals = _axes_valued_row(
+                catalogue_field=catalogue_field,
+                por=por,
+                occurrences=undimensioned,
+                representative=representative,
+                instant=instant,
+            )
+            stamp(row)
+            emitted.append(row)
+            consolidated_value = value
+            if decimals is not None:
+                decimals_seen.append(decimals)
 
     member_rows: list[tuple[str, dict[str, Any], Decimal | None]] = []
     for (explicit_key, typed_key), occurrences in groups.items():
@@ -1616,6 +1667,28 @@ def _resolve_axes_fact_mapping(
             member_rows.append((canonical_json(row["dimensions"]), row, None))
             continue
         representative = min(occurrences, key=lambda item: item.occurrence_id)
+        mismatching = _rf1_unit_mismatch(
+            catalogue_unit=catalogue_unit,
+            occurrences=occurrences,
+            representative=representative,
+            limitations=limitations,
+            field_id=field_id,
+        )
+        if mismatching:
+            # R-F1: the member refuses on its own; valid sibling members stay
+            # valued, exactly like the row-level conflict branch above.
+            row = _base_row(catalogue_field, por)
+            row["quality_state"] = "not_evaluable"
+            row["non_value_state"] = "not_evaluable"
+            row["coverage_state"] = "unmapped"
+            row["reason"] = "unit_mismatch"
+            row["concept"] = concept
+            row["source_occurrence_ids"] = sorted(
+                {item.occurrence_id for item in mismatching}
+            )
+            stamp(row)
+            member_rows.append((canonical_json(row["dimensions"]), row, None))
+            continue
         row, value, decimals = _axes_valued_row(
             catalogue_field=catalogue_field,
             por=por,
