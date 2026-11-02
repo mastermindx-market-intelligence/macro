@@ -312,14 +312,36 @@ def test_shell_lists_all_thirteen_views_with_labels():
             assert (en, zh) == (GS_EN[key], GS_ZH[key]), (key, en, zh)
 
 
-def test_seven_new_tabs_disabled_without_available_payload():
+def test_seven_new_tabs_disabled_without_available_payload(monkeypatch):
+    # DEC:INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT (seat ruling A,
+    # 2026-10-31): the invariant is "a GS tab/option is enabled iff its builder
+    # exists AND produced a panel". Negative branch — the TRUE no-payload world is
+    # every builder module absent (empty loaders no longer imply that: W2B's
+    # dossier builder builds honest abstain panels over an empty universe, and
+    # builders never abstain merely to keep tests green): all seven stay disabled,
+    # exactly the W2F assertion. Positive branch — generic over whatever this
+    # branch ships: enabled <=> the page carries a panel for that view, so W2A's
+    # scanner/coverage panels pass here without editing this test again.
+    import lib.intl_surveillance_mount as _mount
     module = _fixture_site()
+    monkeypatch.setattr(_mount, "BUILDERS",
+                        {view: "lib.intl_gs_absent_%s" % view for view in GS_VIEWS})
     html = module.render_intl_page()
     for key in GS_VIEWS:
         button = re.search(r'<button[^>]*data-im-view="%s"[^>]*>' % key, html).group(0)
         assert "disabled" in button, key
         option = re.search(r'<option value="%s"[^>]*>' % key, html).group(0)
         assert "disabled" in option, key
+    monkeypatch.undo()
+    html = module.render_intl_page()
+    with_panels = set(re.findall(
+        r'<section[^>]*data-im-panel[^>]*data-view="([a-z_]+)"', html)) & set(GS_VIEWS)
+    assert with_panels, "the page ships at least one built GS view"
+    for key in GS_VIEWS:
+        button = re.search(r'<button[^>]*data-im-view="%s"[^>]*>' % key, html).group(0)
+        option = re.search(r'<option value="%s"[^>]*>' % key, html).group(0)
+        assert ("disabled" in button) == (key not in with_panels), key
+        assert ("disabled" in option) == (key not in with_panels), key
 
 
 def test_legacy_entries_byte_identical_with_and_without_payload():
@@ -341,25 +363,50 @@ def test_legacy_entries_byte_identical_with_and_without_payload():
         assert line1 and line2 and line1 == line2, key
 
 
-def test_shell_renders_no_surveillance_wrapper_without_panels():
+def test_shell_renders_no_surveillance_wrapper_without_panels(monkeypatch):
+    # DEC:INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT: the wrapper
+    # renders iff a view produced panels. Negative branch — TRUE no-payload world
+    # (every builder module absent): no wrapper, the W2F assertion unchanged.
+    # Generic converse — a page whose views produced panels renders exactly one
+    # wrapper, inside the workspace, whatever views exist on this branch.
+    import lib.intl_surveillance_mount as _mount
     module = _fixture_site()
+    monkeypatch.setattr(_mount, "BUILDERS",
+                        {view: "lib.intl_gs_absent_%s" % view for view in GS_VIEWS})
     html = module.render_intl_page()
     assert 'class="intl-gs"' not in html, "wrapper must not render with no panels"
+    monkeypatch.undo()
+    html = module.render_intl_page()
+    has_panels = bool(re.search(
+        r'<section[^>]*data-im-panel[^>]*data-view="(?:%s)"' % "|".join(GS_VIEWS), html))
+    assert has_panels == ('class="intl-gs"' in html), "wrapper presence must track panels"
+    assert html.count('class="intl-gs"') == 1
+    assert html.index('class="intl-workspace"') < html.index('class="intl-gs"'), \
+        "surveillance wrapper must render inside the workspace"
 
 
 # ---------------------------------------------------------------- 2.6 stub view
 
 
 def test_stub_coverage_view_enables_only_coverage():
+    # DEC:INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT: the stub
+    # proves the seam for views WITHOUT an attached builder — it enables exactly
+    # coverage and produces its panel. Every other view follows the honest-state
+    # rule, disabled iff this page carries no panel for it, so a real builder
+    # landing on this branch (W2B's dossier today, W2A's views later) stays
+    # enabled without editing this test again.
     module = _fixture_site()
     html = module.render_intl_page(stub_coverage=True)
     button = re.search(r'<button[^>]*data-im-view="coverage"[^>]*>', html).group(0)
     assert "disabled" not in button
+    with_panels = set(re.findall(
+        r'<section[^>]*data-im-panel[^>]*data-view="([a-z_]+)"', html)) & set(GS_VIEWS)
+    assert "coverage" in with_panels, "the stub must produce the coverage panel"
     for key in GS_VIEWS:
         if key == "coverage":
             continue
         other = re.search(r'<button[^>]*data-im-view="%s"[^>]*>' % key, html).group(0)
-        assert "disabled" in other, key
+        assert ("disabled" in other) == (key not in with_panels), key
     section = re.search(r'<section[^>]*data-im-panel[^>]*data-view="coverage"[^>]*>', html).group(0)
     for attr in ("data-view", "data-horizon", "data-basis", "data-source"):
         assert attr in section, attr
@@ -393,8 +440,16 @@ def test_attach_surveillance_none_is_none():
     assert _load_mount().attach_surveillance(None) is None
 
 
-def test_absent_builders_are_not_built_and_leave_workspace_intact():
+def test_absent_builders_are_not_built_and_leave_workspace_intact(monkeypatch):
+    # DEC:INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT: at W2F no
+    # builder module existed, so any call was implicitly builder-less. That world
+    # is now explicit — every BUILDERS entry points at an absent module — and the
+    # W2F assertions hold unchanged: not_built for all seven, no panels, caller
+    # workspace intact. Builders that DO exist never abstain merely to keep this
+    # green (B1); they are simply absent here.
     mount = _load_mount()
+    monkeypatch.setattr(mount, "BUILDERS",
+                        {view: "lib.intl_gs_absent_%s" % view for view in GS_VIEWS})
     workspace = _base_workspace()
     result = mount.attach_surveillance(workspace, universe_loader=lambda: {}, rights_loader=lambda: {})
     assert set(result["surveillance"]["views"]) == set(GS_VIEWS)
@@ -456,6 +511,13 @@ def test_builder_status_ladder(monkeypatch):
     _install_builder(monkeypatch, "transmission", lambda **_kwargs: [])
     _install_builder(monkeypatch, "dossier", lambda **_kwargs: [
         dict(view="dossier", context_id="im-gs-dossier", context={}, generation=None, payload={"a": 1})])
+    # DEC:INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT (seat
+    # ruling A): the not_built rung needs a TRUE absent-module world. This
+    # branch ships a real coverage builder (W2A), so the rung redirects
+    # coverage's BUILDERS entry to an absent module — the W2B idiom — while
+    # scenario and replay are genuinely absent on every branch and pin the
+    # same rung without any patch.
+    monkeypatch.setitem(mount.BUILDERS, "coverage", "lib.intl_gs_absent_coverage")
     result = mount.attach_surveillance(_base_workspace(), universe_loader=lambda: {}, rights_loader=lambda: {})
     views = result["surveillance"]["views"]
     assert views["scanner"] == {"status": "error", "reason": "ValueError"}
@@ -464,6 +526,8 @@ def test_builder_status_ladder(monkeypatch):
     assert views["dossier"]["status"] == "available"
     assert result["surveillance_panels"] and result["surveillance_panels"][0]["view"] == "dossier"
     assert views["coverage"]["status"] == "not_built"
+    assert views["scenario"]["status"] == "not_built"
+    assert views["replay"]["status"] == "not_built"
 
 
 def test_no_network_or_file_writes(monkeypatch):
@@ -486,7 +550,24 @@ def test_no_network_or_file_writes(monkeypatch):
     monkeypatch.setattr(socket_module, "socket", no_socket)
     monkeypatch.setattr("builtins.open", guarded_open)
     result = mount.attach_surveillance(_base_workspace(), universe_loader=lambda: {}, rights_loader=lambda: {})
-    assert result["surveillance"]["views"]["scanner"]["status"] == "not_built"
+    views = result["surveillance"]["views"]
+    # DEC:INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT (seat
+    # ruling A): scanner not_built was the W2F world (no builder module
+    # existed). This branch ships the scanner builder, and over the empty
+    # universe it builds honest panels with neither network nor file writes,
+    # so it must NOT abstain to keep this test green (B1). The invariant is
+    # available-iff-panel across every view; scenario/replay keep the true
+    # not_built negative for views with no builder at all.
+    panels_by_view = {}
+    for panel in result["surveillance_panels"]:
+        panels_by_view[panel["view"]] = panels_by_view.get(panel["view"], 0) + 1
+    for view, entry in views.items():
+        assert (entry["status"] == "available") == (panels_by_view.get(view, 0) > 0), view
+    assert views["scanner"]["status"] == "available"
+    assert panels_by_view.get("scanner", 0) > 0, \
+        "the scanner builder produces panels without network or writes"
+    assert views["scenario"]["status"] == "not_built"
+    assert views["replay"]["status"] == "not_built"
 
 
 # ---------------------------------------------------------------- 2.8 build_intl
@@ -738,6 +819,21 @@ def _frozen_base() -> str:
     return sha
 
 
+# Shared surfaces the W2F foundation must never carry edits to. They belong to
+# the theme and navigation families (templates/theme.css, templates/_navlinks.html.j2)
+# and change through those families' own PRs: unconditional, this guard blocked
+# every such PR (2026-10-22, ITP-ES #10077 added the Expectation Surface nav row
+# and moved theme.css's icon-import stamp, and the guard went red on a change
+# that touched no International surface). The two shared entries are therefore
+# enforced only when the same change also touches a GS production surface
+# (_GS_SURFACE_PREFIXES); the GS-owned engine/lib entries stay frozen outright.
+# The scoping lives INSIDE the guard function: tests/test_ci_pack_semantic.py
+# (CanonicalMainPreparationTests) compiles this function and _frozen_base alone
+# into a bare namespace (REPO, subprocess, re, pytest) to prove the original
+# guard still passes unchanged trees and rejects a changed frozen file, so the
+# body may not reach for module-level helpers. A shared entry with no GS change
+# in the diff PASSES (returns) rather than skipping: pytest.skip raised inside
+# that harness would silently skip the harness test itself.
 @pytest.mark.parametrize("path", [
     "templates/theme.css",
     "templates/_navlinks.html.j2",
@@ -746,11 +842,52 @@ def _frozen_base() -> str:
     "lib/intl_global_observation_adapter.py",
 ])
 def test_frozen_files_unchanged_vs_origin_main(path):
+    shared_frozen = {"templates/theme.css", "templates/_navlinks.html.j2"}
+    gs_surface_prefixes = (
+        "engine/intl_global_",
+        "lib/intl_global_",
+        "lib/intl_gs_",
+        "lib/intl_surveillance_",
+        "scripts/build_intl.py",
+        "templates/intl",
+        "site/intl",
+    )
     base = _frozen_base()
+    if path in shared_frozen:
+        # Shared theme/nav surface: frozen only when the same change also
+        # touches an International GS production surface; FAILS CLOSED.
+        names = subprocess.run(["git", "diff", "--name-only", base, "--"],
+                               cwd=REPO, capture_output=True, text=True)
+        if names.returncode != 0:
+            pytest.fail(f"FAIL CLOSED: git diff --name-only {base} errored: {names.stderr.strip()}")
+        gs_changed = sorted(line.strip() for line in names.stdout.splitlines()
+                            if line.strip().startswith(gs_surface_prefixes))
+        if not gs_changed:
+            return
     result = subprocess.run(["git", "diff", "--quiet", base, "--", path],
                             cwd=REPO, capture_output=True, text=True)
     if result.returncode not in (0, 1):
         pytest.fail(f"FAIL CLOSED: git diff {base} -- {path} errored: {result.stderr.strip()}")
+    # Narrowed 2026-10-22 (GMI explorer, ORCH-UI G-UI-17): theme.css is the ONE
+    # shared token file every program extends (design constitution: "tokens
+    # extend theme.css only"). The freeze protects the bytes the INTL surfaces
+    # read; a pure END-OF-FILE append cannot alter them, so it passes. Any
+    # removed or rewritten line, or an insertion anywhere but the tail, still
+    # fails closed. Kept INSIDE this function on purpose: ci-control-plane's
+    # tests/test_ci_pack_semantic.py compiles this guard body alone (by name)
+    # against a fixture checkout, so a module-level helper or constant is a
+    # NameError there (measured ci-pack-1 on #10099, 2026-11-02).
+    append_only = frozenset({"templates/theme.css"})
+    if result.returncode == 1 and path in append_only:
+        shown = subprocess.run(["git", "show", f"{base}:{path}"], cwd=REPO,
+                               capture_output=True, text=True)
+        if shown.returncode != 0:
+            pytest.fail(f"FAIL CLOSED: git show {base}:{path} errored: {shown.stderr.strip()}")
+        after = (REPO / path).read_text(encoding="utf-8")
+        assert after.startswith(shown.stdout), (
+            f"{path} changed vs merge-base(origin/main, HEAD) {base}: only a pure end-of-file "
+            "append is permitted; an existing byte was removed, rewritten or displaced")
+        return
     assert result.returncode == 0, f"{path} changed vs merge-base(origin/main, HEAD) {base}"
 
 
@@ -1753,8 +1890,10 @@ def test_fx5_horizon_label_vocabulary():
     assert horizon_label("1m") == ("1M", "1月")
     assert horizon_label("3m") == ("3M", "3月")
     assert horizon_label("20d") == ("20D", "20日")
-    assert horizon_label("6m") == ("6m", "6m")
-    assert horizon_label("ytd") == ("ytd", "ytd")
+    assert horizon_label("6m") == ("6M", "6个月")
+    assert horizon_label("12m") == ("1Y", "1年")
+    assert horizon_label("ytd") == ("YTD", "年初至今")
+    assert horizon_label("2y") == ("2y", "2y")
 
 
 def test_fx5_snapshot_readout_and_control_share_one_vocabulary():

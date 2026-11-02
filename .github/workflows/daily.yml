@@ -168,6 +168,7 @@ jobs:
     timeout-minutes: 300
     outputs:
       government_revenue_projection_needed: ${{ steps.pushdata.outputs.published }}
+      government_revenue_source_sha: ${{ steps.pushdata.outputs.source_sha }}
       # ── CAPITAL-STRUCTURE HANDOFF CONTRACT (2026-08-06 job split) ──────────
       # The capital-structure chain moved to its own `capital_structure` job. Its
       # INPUT — the source ledger `run collectors` (sec_capital_structure) just
@@ -961,8 +962,12 @@ jobs:
             # attempt rather than fail open. Every other fence outcome returns 0.
             if ! push_append_only_fence origin/main; then push_backoff; continue; fi
             if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
+              GOVREV_PUSH_SOURCE_SHA=$(git rev-parse HEAD)
               if push_do; then
                 echo "pushed market data on attempt $PUSH_ATTEMPT"
+                # No caller binding is emitted if the checkout drifted across push.
+                [ "$(git rev-parse HEAD)" = "$GOVREV_PUSH_SOURCE_SHA" ] || exit 75
+                printf 'source_sha=%s\n' "$GOVREV_PUSH_SOURCE_SHA" >> "$GITHUB_OUTPUT"
                 echo "published=true" >> "$GITHUB_OUTPUT"
                 push_won
                 exit 0
@@ -1014,15 +1019,34 @@ jobs:
           if [ -z "$qpaths" ]; then lost=" snapshot-unreadable:$QLEDGER_SNAPSHOT"; fi
           while IFS= read -r qpath; do
             [ -n "$qpath" ] || continue
-            if git cat-file -e "$QLEDGER_SNAPSHOT:$qpath" 2>/dev/null; then
+            # Classify against the snapshot TREE, never against a lookup exit code
+            # (#9556 post-merge findings 6285214966 + 6290288707): a readable tree
+            # that lacks the path is a deferred deletion; an unreadable tree
+            # (object store, lock, OOM) is LOST and the surviving bytes stay put.
+            if ! entry=$(git ls-tree --name-only "$QLEDGER_SNAPSHOT" -- "$qpath" 2>/dev/null); then
+              lost="$lost $qpath(lookup-failed)"; continue
+            fi
+            if [ -n "$entry" ]; then
               want=$(git rev-parse "$QLEDGER_SNAPSHOT:$qpath" 2>/dev/null) || want=""
+              if [ -z "$want" ]; then lost="$lost $qpath(lookup-failed)"; continue; fi
               have=$(git hash-object -- "$qpath" 2>/dev/null) || have=""
-              if [ -n "$want" ] && [ "$have" != "$want" ]; then
+              if [ "$have" != "$want" ]; then
+                # A non-file at the path (a directory) cannot be swapped: POSIX `mv`
+                # would move the temp INTO it and leak the blob. Report LOST, touch nothing.
+                if [ -e "$qpath" ] && [ ! -f "$qpath" ]; then lost="$lost $qpath(not-a-file)"; continue; fi
+                # Read into a sibling temp file and swap in only a hash-verified
+                # copy: a failed blob read must never truncate the surviving file.
                 mkdir -p -- "$(dirname -- "$qpath")" 2>/dev/null || true
-                git cat-file blob "$QLEDGER_SNAPSHOT:$qpath" > "$qpath" 2>/dev/null || true
+                tmp=$(mktemp "$qpath.restore.XXXXXX" 2>/dev/null) || tmp=""
+                if [ -n "$tmp" ] && git cat-file blob "$QLEDGER_SNAPSHOT:$qpath" > "$tmp" 2>/dev/null \
+                   && [ "$(git hash-object -- "$tmp" 2>/dev/null)" = "$want" ]; then
+                  chmod u=rw,go=r -- "$tmp" 2>/dev/null || true
+                  mv -f -- "$tmp" "$qpath" 2>/dev/null || true
+                fi
+                if [ -n "$tmp" ]; then rm -f -- "$tmp" 2>/dev/null || true; fi
                 have=$(git hash-object -- "$qpath" 2>/dev/null) || have=""
               fi
-              if [ -n "$want" ] && [ "$have" = "$want" ]; then restored="$restored $qpath"; else lost="$lost $qpath"; fi
+              if [ "$have" = "$want" ]; then restored="$restored $qpath"; else lost="$lost $qpath"; fi
             else
               rm -f -- "$qpath" 2>/dev/null || true
               if [ -e "$qpath" ]; then lost="$lost $qpath(deleted)"; else restored="$restored $qpath(deleted)"; fi
@@ -1481,6 +1505,17 @@ jobs:
         # public twin; terms, capacity, runway, scores, probabilities, and Prophet
         # authority stay absent.
         run: python -m scripts.build_capital_structure_projection
+      - name: capture the previous capital-structure generation (for the change ledger)
+        # SPEC_U2 U2-3 (a): the change-ledger producer below diffs TONIGHT's
+        # state generation against the PREVIOUS published one, so the previous
+        # state bundle and capacity inputs must be copied to $RUNNER_TEMP
+        # BEFORE the state step overwrites them. Absence on a first night (or
+        # after a bundle that refused to publish) is the stated baseline, so
+        # every copy is `|| true` — this step can never red the lane.
+        id: cs_previous_state
+        run: |
+          cp data/capital_structure/state_bundle.json "$RUNNER_TEMP/previous_state_bundle.json" 2>/dev/null || true
+          cp data/capital_structure/capacity_inputs.json "$RUNNER_TEMP/previous_capacity_inputs.json" 2>/dev/null || true
       - name: build the capital-structure state bundle (registration family; whole generation or nothing)
         id: cs_state
         # Reads the same verified generation, the generation-bound health horizon
@@ -1515,7 +1550,61 @@ jobs:
         # a default, never a zero. Fatal like the state step: a failed validation
         # leaves the previous bundle in place, and a bundle that does not bind the
         # served state generation must not ride this checkpoint (SPEC_U1B §3).
+        # Financials bind from FIF's published production datasets (§13 F0: bind,
+        # never rebuild): the mode is selected for this step only, never as a
+        # default, and the store is the dedicated R2_RESEARCH family the FIF
+        # publisher writes with. A missing or failing store is a typed unavailable
+        # family, never a failed step.
+        env:
+          FIF_FINANCIAL_DATASET_MODE: production
+          R2_RESEARCH_ENDPOINT: ${{ secrets.R2_RESEARCH_ENDPOINT }}
+          R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
+          R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
+          R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
         run: python -m scripts.build_capital_structure_capacity_inputs
+      - name: build the capital-structure change ledger (one changeset or nothing)
+        # SPEC_U2 U2-3 (b): the typed change desk between the PREVIOUS
+        # published generation (captured by cs_previous_state above) and
+        # tonight's, derived by scripts.build_capital_structure_state_changes
+        # from the two published bundles alone — the same fact the change-desk
+        # API serves, produced once per generation so the monitor and the API
+        # never disagree about what changed. Fatal like the compilers above:
+        # one changeset or nothing — a failed derivation must not ride this
+        # checkpoint, and an absent/unreadable previous bundle is the stated
+        # BASELINE (exit 0), never a synthesized diff.
+        id: cs_changes
+        run: python -m scripts.build_capital_structure_state_changes --root data/capital_structure --previous "$RUNNER_TEMP/previous_state_bundle.json" --previous-inputs "$RUNNER_TEMP/previous_capacity_inputs.json"
+      - name: saved-scenario monitor (typed restore outcomes -> alert outbox; fail-soft)
+        # SPEC_U2 U2-3 (c): the enqueue-only monitor over the users' OWN saved
+        # rows — classified offline against tonight's generation through the
+        # same composition the evaluate route owes, deduped by a frozen
+        # fire_event_id, delivered by the incumbent alert_outbox drain. It
+        # writes NOTHING into the tree (never a staged-path producer). Fail-
+        # soft: absent creds/tables/inputs -> typed unavailable, 0 rows, exit
+        # 0. Dormant unless BOTH CS_SAVED_SCENARIO_ENABLE=1 AND
+        # ALERT_DRAIN_ENABLE=1 (checked before the producer is even imported);
+        # arming the secret is human-only enrollment (SPEC_U2 §3). Runs only
+        # when tonight's change ledger was produced: a failed derivation leaves
+        # no ledger to attribute against, so the monitor stays silent rather
+        # than classify every moved row as unattributed (step-level gate; the
+        # job's coupling to collect is unchanged).
+        id: cs_saved_monitor
+        if: always() && steps.cs_changes.outcome == 'success'
+        timeout-minutes: 3
+        continue-on-error: true
+        env:
+          # FIF producer precedent (engine job): reuse the incumbent repo
+          # service-role secret; the monitor's SUPABASE_URL has a reviewed
+          # project default, so it is NOT injected here.
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          CS_SAVED_SCENARIO_ENABLE: ${{ secrets.CS_SAVED_SCENARIO_ENABLE }}
+          ALERT_DRAIN_ENABLE: ${{ secrets.ALERT_DRAIN_ENABLE }}
+        run: '[ "${{ job.status }}" = "cancelled" ] && { echo "cs saved scenario monitor: job cancelled, skipping"; exit 0; }; python -m scripts.run_capital_structure_saved_scenario_monitor || echo "::warning::cs saved scenario monitor failed (non-fatal)"'
+      - name: summarize the capital-structure change-ledger steps (diagnostics only)
+        # One log line naming all three U2-3 outcomes, so a night's change
+        # ledger and monitor state are greppable without the job log.
+        if: always()
+        run: echo "cs_previous_state=${{ steps.cs_previous_state.outcome }} cs_changes=${{ steps.cs_changes.outcome }} cs_saved_monitor=${{ steps.cs_saved_monitor.outcome }}"
       # Diagnostics only — changes NO behavior. When the compiler above fails, the
       # ledger it rejected is the one artifact that identifies WHY, and today it is
       # unrecoverable: the failure skips every later step, so the post-collect tree
@@ -1611,6 +1700,7 @@ jobs:
           && steps.cs_state.outcome == 'success'
           && (steps.cs_candidates.outcome == 'success' || steps.cs_candidates.outcome == 'failure')
           && steps.cs_inputs.outcome == 'success'
+          && steps.cs_changes.outcome == 'success'
         id: commitcs
         run: |
           echo "committed=false" >> "$GITHUB_OUTPUT"
@@ -1691,6 +1781,7 @@ jobs:
       actions: read
     uses: ./.github/workflows/government-revenue-live.yml
     with:
+      source_sha: ${{ needs.collect.outputs.government_revenue_source_sha }}
       projection_only: true
 
   # collect_tail: the slow post-adapter accrual band, split out of `collect`
@@ -2148,6 +2239,8 @@ jobs:
           # circuit_breaker are written solely by collect-core's adapter sweep,
           # present in every job's base) — accepted at the 07-14 split review.
           git add data/ site/basketdata/
+          # GH001 carve (scripts/ci/qledger_carve.sh, #9556 parity): an oversize staged qledger blob sank this whole commit nightly from 10-21; withhold stays green.
+          . "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"; qledger_carve_staged || exit 0
           if git diff --cached --quiet; then echo "no tail data changes to commit"; exit 0; fi
           git commit -m "data: collect-tail accrual $(date -u +%F)"
           # best-effort push: same 5-retry rebase loop as the collect job's
@@ -2545,6 +2638,7 @@ jobs:
       - name: timings band — engine-core (W2)
         run: python3 scripts/nightly_timings.py mark --band engine-core || echo "::warning::timings band mark failed (non-fatal)"
       - name: run regime engine + build dashboard + daily brief (resilient)
+        id: regime_dashboard
         if: steps.leader_accepted_source.outputs.ready == 'true'
         # Self-diagnosing + deploy-resilient: each builder runs isolated; a failure
         # is surfaced as a ::error:: annotation (readable on the run page + via the
@@ -2598,12 +2692,16 @@ jobs:
         run: python -m scripts.close_pass_reconcile
 
       - name: publish Filing Forensics private state
+        id: native_private_publish
         # Publish only after the full workbench build returned. The publisher validates
         # gzip/schema, writes the existing PRIVATE Research Vault bucket, reads it back,
         # and byte-verifies it. Failure is loud but retains the last-good private object;
         # no premium state is ever staged by the broad site/data commit below.
         continue-on-error: true
         env:
+          NATIVE_DIVERGENCE_PAYLOAD_SHA256: ${{ steps.regime_dashboard.outputs.native_divergence_payload_sha256 }}
+          NATIVE_DIVERGENCE_SOURCE_SHA256: ${{ steps.regime_dashboard.outputs.native_divergence_source_sha256 }}
+          NATIVE_DIVERGENCE_PRODUCER_COMMIT: ${{ steps.regime_dashboard.outputs.native_divergence_producer_commit }}
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
@@ -2611,7 +2709,23 @@ jobs:
           R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
           R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
           R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
-        run: python -m scripts.build_fundamental_forensics --publish-only
+        run: |
+          set +e
+          python -m scripts.build_fundamental_forensics --publish-only
+          forensics_rc=$?
+          python -m scripts.publish_native_divergence_capture
+          capture_rc=$?
+          if [ "$capture_rc" -ne 0 ]; then echo "::warning title=native divergence::private capture unresolved; retain original journal"; fi
+          exit "$forensics_rc"
+      - name: retain this run's native divergence journal (metadata only)
+        if: ${{ always() && steps.native_private_publish.outputs.native_divergence_journal != '' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: native-divergence-journal-${{ github.run_id }}-${{ github.run_attempt }}-engine
+          path: ${{ steps.native_private_publish.outputs.native_divergence_journal }}
+          if-no-files-found: warn
+          retention-days: 14
       - name: backfill regime stamps (nw-macro-rail R5)
         # Calls engine.qledger.backfill_regime_stamps() — stamps regime columns onto qledger
         # rows that have as_of within regime_vector.parquet coverage.  Near-term yield ≈ 2 rows
@@ -2753,175 +2867,8 @@ jobs:
         # "enforce Prophet R2 index tombstone" step below, on every nightly wake
         # regardless of whether this step ran (r2_ready gates ONLY on an index
         # content change, so an unchanged-index night must not skip the tombstone).
-        run: |
-          set -euo pipefail
-          R2_INDEX_FILE="$(mktemp "${RUNNER_TEMP}/prophet-r2-index.XXXXXX.json")"
-          cleanup_prophet_r2() { rm -f -- "$R2_INDEX_FILE"; }
-          trap cleanup_prophet_r2 EXIT
-
-          verify_prophet_checkpoint_current() {
-            git fetch origin +refs/heads/main:refs/remotes/origin/main \
-              || return 1
-            git merge-base --is-ancestor "$PROPHET_CHECKPOINT_SHA" origin/main \
-              || return 1
-            git diff --quiet "$PROPHET_CHECKPOINT_SHA" origin/main -- \
-              data/prophet \
-              data/prophet_arena \
-              site/prophet
-          }
-
-          if ! verify_prophet_checkpoint_current; then
-            echo "::warning title=Prophet R2 publish superseded::checkpoint $PROPHET_CHECKPOINT_SHA is not the current origin/main Prophet projection; preserving the newer R2/main authority"
-            exit 0
-          fi
-          git show "${PROPHET_CHECKPOINT_SHA}:site/prophet/index.json" > "$R2_INDEX_FILE"
-          ACTUAL_SHA256="$(python3 -c 'import hashlib,sys; print(hashlib.sha256(open(sys.argv[1], "rb").read()).hexdigest())' "$R2_INDEX_FILE")"
-          if [ "$ACTUAL_SHA256" != "$PROPHET_INDEX_SHA256" ]; then
-            echo "::error title=Prophet R2 publish hash mismatch::commit bytes do not match the checkpoint output; refusing R2 upload"
-            exit 1
-          fi
-          # Close the fetch/hash window as far as the object store permits. R2
-          # has no compare-and-swap against a Git ref, so a second main proof is
-          # the last action before the single-object upload.
-          if ! verify_prophet_checkpoint_current; then
-            echo "::warning title=Prophet R2 publish superseded::origin/main Prophet state advanced during verification; preserving the newer publication"
-            exit 0
-          fi
-          python3 - "$R2_INDEX_FILE" <<'PY'
-          import json
-          import os
-          import subprocess
-          import sys
-          from datetime import datetime, timezone
-          from pathlib import Path
-
-          from scripts.build_prophet import (
-              R2_HEALTH_KEY,
-              _r2_client,
-              build_public_health_projection,
-              guarded_put_object,
-          )
-
-          local_path = Path(sys.argv[1])
-          client = _r2_client()
-          if client is None:
-              print(
-                  "::warning title=Prophet R2 credentials unavailable::"
-                  "guarded Git checkpoint landed; R2 remained unchanged",
-                  flush=True,
-              )
-              raise SystemExit(0)
-          from botocore.exceptions import ClientError
-
-          bucket = os.environ.get("R2_BUCKET") or "mastermindx"
-          expected_sha = os.environ["PROPHET_INDEX_SHA256"]
-          checkpoint_sha = os.environ["PROPHET_CHECKPOINT_SHA"]
-          published_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-          index = json.loads(local_path.read_text(encoding="utf-8"))
-          health_payload = build_public_health_projection(
-              index,
-              checkpoint_sha=checkpoint_sha,
-              index_sha256=expected_sha,
-              published_at=published_at,
-          )
-          health_bytes = json.dumps(
-              health_payload, allow_nan=False, default=str, indent=2,
-          ).encode("utf-8")
-
-          # Snapshot the destination generation first. The conditional put below
-          # makes any concurrent R2 writer win rather than be overwritten.
-          try:
-              current = client.head_object(Bucket=bucket, Key=R2_HEALTH_KEY)
-          except ClientError as exc:
-              response = exc.response or {}
-              status = (response.get("ResponseMetadata") or {}).get("HTTPStatusCode")
-              code = str((response.get("Error") or {}).get("Code") or "")
-              if status == 404 or code in {"404", "NoSuchKey", "NotFound"}:
-                  condition = {"IfNoneMatch": "*"}
-              else:
-                  print(
-                      "::error title=Prophet R2 preflight failed::"
-                      "could not read the current object generation; upload withheld",
-                      flush=True,
-                  )
-                  raise SystemExit(1) from exc
-          else:
-              etag = str(current.get("ETag") or "")
-              metadata = current.get("Metadata") or {}
-              if (
-                  metadata.get("git-checkpoint") == checkpoint_sha
-                  and metadata.get("sha256") == expected_sha
-              ):
-                  print(
-                      "::notice title=Prophet R2 already current::"
-                      "the guarded checkpoint hash is already published",
-                      flush=True,
-                  )
-                  raise SystemExit(0)
-              if not etag:
-                  print(
-                      "::error title=Prophet R2 preflight failed::"
-                      "current object supplied no ETag for a conditional update",
-                      flush=True,
-                  )
-                  raise SystemExit(1)
-              condition = {"IfMatch": etag}
-
-          # Re-prove Git after the R2 generation snapshot. If main or R2 moves
-          # after its respective proof, the conditional put rejects the race.
-          git_checks = (
-              ["git", "fetch", "origin", "+refs/heads/main:refs/remotes/origin/main"],
-              ["git", "merge-base", "--is-ancestor", checkpoint_sha, "origin/main"],
-              [
-                  "git", "diff", "--quiet", checkpoint_sha, "origin/main", "--",
-                  "data/prophet", "data/prophet_arena", "site/prophet",
-              ],
-          )
-          if any(subprocess.run(cmd, check=False).returncode for cmd in git_checks):
-              print(
-                  "::warning title=Prophet R2 publish superseded::"
-                  "current main changed during R2 preflight; upload withheld",
-                  flush=True,
-              )
-              raise SystemExit(0)
-
-          try:
-              guarded_put_object(
-                  client,
-                  bucket=bucket,
-                  key=R2_HEALTH_KEY,
-                  Body=health_bytes,
-                  ContentType="application/json",
-                  Metadata={
-                      "git-checkpoint": checkpoint_sha,
-                      "sha256": expected_sha,
-                  },
-                  **condition,
-              )
-          except ClientError as exc:
-              status = ((exc.response or {}).get("ResponseMetadata") or {}).get(
-                  "HTTPStatusCode"
-              )
-              if status == 412:
-                  print(
-                      "::warning title=Prophet R2 publish superseded::"
-                      "the R2 object advanced concurrently; preserving that writer",
-                      flush=True,
-                  )
-                  raise SystemExit(0) from exc
-              print(
-                  "::error title=Prophet R2 upload failed::"
-                  "guarded Git checkpoint landed but its verified health receipt did not reach R2",
-                  flush=True,
-              )
-              raise SystemExit(1) from exc
-          print(
-              "::notice title=Prophet R2 published::"
-              "uploaded the public health receipt for the guarded Git checkpoint",
-              flush=True,
-          )
-          PY
+        # Body extracted verbatim to scripts/ci/daily_engine_prophet_r2_health_publish.sh (512KB processing-cap diet 2026-11-02 — tests/test_workflow_file_size.py).
+        run: bash scripts/ci/daily_engine_prophet_r2_health_publish.sh
       - name: enforce Prophet R2 index tombstone (unconditional)
         if: ${{ !cancelled() }}
         timeout-minutes: 5
@@ -3561,6 +3508,13 @@ jobs:
         timeout-minutes: 25
         continue-on-error: true
         run: bash scripts/ci/daily_engine_commit_outputs.sh
+      # QLEDGER CARVE CUSTODY (scripts/ci/qledger_carve.sh): the committer restores the
+      # carved runner-local ledger bytes from its EXIT trap; the 25m step timeout or a
+      # job cancel can SIGKILL it first, so this always() step restores from the
+      # recorded snapshot (idempotent; never stages, commits or pushes; LOST is ::error).
+      - name: restore carved qledger bytes after the core checkpoint (runner-local, never published)
+        if: always()
+        run: . scripts/ci/qledger_carve.sh; qledger_carve_restore_from_file
       # Runs AFTER the band that contains `build_baskets --snapshot`, so it grades THIS
       # run's stamp rather than last night's. The plane it watches can die with every
       # signal green: both snapshot writers are content-deduped, so "membership has not
@@ -5163,6 +5117,9 @@ jobs:
       - name: commit engine outputs
         if: always()   # commit the freshly-built pages even if a LATER optional builder times out or is cancelled. pages.yml deploys the COMMITTED main tree, so a skipped commit = stale live site. The builders are individually resilient (each leaves the prior page in place on its own error), so partial output is never broken — committing what built beats shipping nothing.
         run: bash scripts/ci/daily_engine_commit_outputs.sh
+      - name: restore carved qledger bytes after the engine commit (runner-local, never published)
+        if: always()
+        run: . scripts/ci/qledger_carve.sh; qledger_carve_restore_from_file
       - name: assemble machine-consumable feeds (site/feeds -> R2)
         if: always()
         # Handoff H4 (2026-07-02 incident): risk_radar snapshot, froth/dislocation
@@ -5184,6 +5141,30 @@ jobs:
         # published there. An engine checkout never holds that store, so listing it here only ever
         # produced a nightly publish_r2 refusal warning (under the _DATA_DIR_MIN_FILES floor).
         run: python -m scripts.publish_r2 --dirs ohlc,intlohlc,canadaohlc,subsectorohlc,subsectorohlc_russell,subsectorohlc_nasdaq,stockdata,intlstockdata,canadastockdata,intraday,feeds,stock_personality,oddsmatrix,odds_ohlcv,seasonalitydata/entities || echo "::warning::R2 publish failed (non-fatal)"
+      - name: publish complete US OHLC generation to the existing site origin
+        if: always()
+        timeout-minutes: 20
+        env:
+          OHLC_DEPLOY_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
+        # The producer receipt binds this main-branch run before output-commit
+        # rebasing. The publisher verifies it, the pinned SSH host and the
+        # receiver's predecessor fence; missing/partial output is a visible failure.
+        run: |
+          set -euo pipefail
+          umask 077
+          if [ -z "${OHLC_DEPLOY_KEY:-}" ]; then
+            echo "::error::OHLC origin delivery requires the existing VPS deploy key"
+            exit 1
+          fi
+          key_file=$(mktemp "${RUNNER_TEMP}/ohlc-deploy-key.XXXXXX")
+          trap 'rm -f -- "$key_file"' EXIT
+          printf '%s\n' "$OHLC_DEPLOY_KEY" > "$key_file"
+          unset OHLC_DEPLOY_KEY
+          python -m scripts.publish_ohlc publish \
+            --manifest site/_tmp/ohlc-complete.json \
+            --payload-dir site/ohlc \
+            --evidence-dir "${HOME}/.local/state/macro-ohlc-delivery/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            --ssh-key "$key_file"
       - name: verify R2 data plane freshness (loud tripwire — the publish above is non-fatal)
         # The publish step swallows every failure (incl. the exit-0 no-op when the R2_*
         # secrets are absent/expired), so the live site would serve stale per-ticker data
@@ -6380,6 +6361,8 @@ jobs:
           # data/qledger's one committed-file fence (the CONTROL clock, #5970) is a
           # .gitignore rule, so a plain add here can never re-commit it.
           git add data/qledger 2>/dev/null || true
+          # GH001 carve (scripts/ci/qledger_carve.sh, #9556 parity): an oversize staged qledger blob sank this whole commit nightly from 10-21; withhold stays green.
+          . "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"; qledger_carve_staged || exit 0
           if git diff --cached --quiet; then echo "no stock-brief changes"; exit 0; fi
           git commit -m "stock-briefs: AI research briefs + accountable leans $(date -u +%F)"
           # best-effort push (own files → rebases clean against engine/factor_series)

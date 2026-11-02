@@ -1,6 +1,6 @@
 {
   "schema": "prophet_arena.scoreboard/v1",
-  "as_of": "2026-10-22",
+  "as_of": "2026-11-02",
   "tier": "display",
   "authority": {
     "tier": "display",
@@ -72,54 +72,12 @@
   "headline_min_closed": 20,
   "harness_validity": {
     "c0_plan_ids": [
-      "ALHC-BULL-20261016",
-      "BILL-BULL-20261021",
-      "BRX-BULL-20261016",
-      "CARR-BULL-20261016",
-      "DLB-BULL-20261021",
-      "FUL-BULL-20261016",
-      "GOLF-BULL-20261021",
-      "HCSG-BULL-20261016",
-      "HE-BULL-20261021",
-      "INVX-BULL-20261021",
-      "IRT-BULL-20261021",
-      "KEY-BULL-20261021",
-      "LNG-BULL-20261021",
-      "LYV-BULL-20261021",
-      "MGEE-BULL-20261021",
-      "NBIX-BULL-20261021",
-      "NDAQ-BULL-20261021",
-      "NFG-BULL-20261016",
-      "O-BULL-20261016",
-      "OKE-BULL-20261021",
-      "PCG-BULL-20261021",
-      "PTCT-BULL-20261021",
-      "UNF-BULL-20261021"
+      "LQDA-BULL-20261029",
+      "NB-BULL-20261026"
     ],
     "live_plan_ids": [
-      "ALHC-BULL-20261016",
-      "BILL-BULL-20261021",
-      "BRX-BULL-20261016",
-      "CARR-BULL-20261016",
-      "DLB-BULL-20261021",
-      "FUL-BULL-20261016",
-      "GOLF-BULL-20261021",
-      "HCSG-BULL-20261016",
-      "HE-BULL-20261021",
-      "INVX-BULL-20261021",
-      "IRT-BULL-20261021",
-      "KEY-BULL-20261021",
-      "LNG-BULL-20261021",
-      "LYV-BULL-20261021",
-      "MGEE-BULL-20261021",
-      "NBIX-BULL-20261021",
-      "NDAQ-BULL-20261021",
-      "NFG-BULL-20261016",
-      "O-BULL-20261016",
-      "OKE-BULL-20261021",
-      "PCG-BULL-20261021",
-      "PTCT-BULL-20261021",
-      "UNF-BULL-20261021"
+      "LQDA-BULL-20261029",
+      "NB-BULL-20261026"
     ],
     "c0_mismatch_count": 0,
     "missing_from_mirror": [],
@@ -133,21 +91,21 @@
       "label": "the live rule, mirrored",
       "label_zh": "\u5b9e\u76d8\u89c4\u5219\u955c\u50cf",
       "grain": "selection",
-      "n_open": 327,
-      "n_closed": 256,
-      "win_rate_pct": 42.0,
-      "avg_pct": -2.8,
-      "median_pct": -2.64,
-      "expired_share_pct": 33.2,
+      "n_open": 425,
+      "n_closed": 279,
+      "win_rate_pct": 43.9,
+      "avg_pct": -2.43,
+      "median_pct": -2.32,
+      "expired_share_pct": 32.6,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "EXPIRED": 85,
-        "INVALIDATED": 72,
-        "NO_ENTRY": 56,
-        "T1_HIT": 41,
+        "EXPIRED": 91,
+        "INVALIDATED": 79,
+        "NO_ENTRY": 58,
+        "T1_HIT": 49,
         "T2_HIT": 2
       },
-      "nights_recorded": 30,
+      "nights_recorded": 35,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true
     },
@@ -156,29 +114,29 @@
       "label": "earlier entries first",
       "label_zh": "\u4f18\u5148\u8f83\u65e9\u5165\u573a",
       "grain": "selection",
-      "n_open": 69,
-      "n_closed": 69,
-      "win_rate_pct": 32.7,
-      "avg_pct": -4.6,
-      "median_pct": -4.54,
-      "expired_share_pct": 39.1,
+      "n_open": 80,
+      "n_closed": 74,
+      "win_rate_pct": 34.6,
+      "avg_pct": -4.35,
+      "median_pct": -4.28,
+      "expired_share_pct": 40.5,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "EXPIRED": 27,
+        "EXPIRED": 30,
         "INVALIDATED": 17,
-        "NO_ENTRY": 20,
+        "NO_ENTRY": 22,
         "T1_HIT": 5
       },
-      "nights_recorded": 28,
+      "nights_recorded": 32,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true,
       "vs_champion": {
         "shared_nights": 17,
-        "n_policy": 49,
-        "n_champion": 164,
-        "avg_pct": -4.6,
-        "champion_avg_pct": -2.97,
-        "diff_pp": -1.62
+        "n_policy": 52,
+        "n_champion": 176,
+        "avg_pct": -4.35,
+        "champion_avg_pct": -2.78,
+        "diff_pp": -1.57
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     },
@@ -187,30 +145,30 @@
       "label": "washout turns added",
       "label_zh": "\u7eb3\u5165\u8d85\u8dcc\u8f6c\u6298",
       "grain": "selection",
-      "n_open": 55,
-      "n_closed": 125,
-      "win_rate_pct": 34.3,
-      "avg_pct": -5.54,
-      "median_pct": -5.4,
+      "n_open": 71,
+      "n_closed": 130,
+      "win_rate_pct": 35.8,
+      "avg_pct": -5.22,
+      "median_pct": -5.26,
       "expired_share_pct": 39.2,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "EXPIRED": 49,
+        "EXPIRED": 51,
         "INVALIDATED": 31,
-        "NO_ENTRY": 23,
-        "T1_HIT": 21,
+        "NO_ENTRY": 24,
+        "T1_HIT": 23,
         "T2_HIT": 1
       },
-      "nights_recorded": 28,
+      "nights_recorded": 32,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true,
       "vs_champion": {
-        "shared_nights": 25,
-        "n_policy": 99,
-        "n_champion": 197,
-        "avg_pct": -5.72,
-        "champion_avg_pct": -2.73,
-        "diff_pp": -2.98
+        "shared_nights": 28,
+        "n_policy": 105,
+        "n_champion": 216,
+        "avg_pct": -5.37,
+        "champion_avg_pct": -2.43,
+        "diff_pp": -2.94
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     },
@@ -219,29 +177,29 @@
       "label": "book size follows dispersion",
       "label_zh": "\u6301\u4ed3\u6570\u91cf\u968f\u79bb\u6563\u5ea6",
       "grain": "selection",
-      "n_open": 37,
-      "n_closed": 62,
-      "win_rate_pct": 35.6,
-      "avg_pct": -4.5,
+      "n_open": 43,
+      "n_closed": 65,
+      "win_rate_pct": 36.2,
+      "avg_pct": -4.49,
       "median_pct": -4.54,
-      "expired_share_pct": 45.2,
+      "expired_share_pct": 46.2,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "EXPIRED": 28,
+        "EXPIRED": 30,
         "INVALIDATED": 13,
-        "NO_ENTRY": 17,
+        "NO_ENTRY": 18,
         "T1_HIT": 4
       },
-      "nights_recorded": 27,
+      "nights_recorded": 31,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true,
       "vs_champion": {
-        "shared_nights": 16,
-        "n_policy": 45,
-        "n_champion": 148,
-        "avg_pct": -4.5,
-        "champion_avg_pct": -2.66,
-        "diff_pp": -1.84
+        "shared_nights": 17,
+        "n_policy": 47,
+        "n_champion": 168,
+        "avg_pct": -4.49,
+        "champion_avg_pct": -2.78,
+        "diff_pp": -1.72
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     },
@@ -250,30 +208,30 @@
       "label": "weekly-aligned only",
       "label_zh": "\u4ec5\u9650\u5468\u7ebf\u540c\u5411",
       "grain": "selection",
-      "n_open": 43,
-      "n_closed": 44,
-      "win_rate_pct": 35.3,
-      "avg_pct": -4.23,
-      "median_pct": -1.71,
-      "expired_share_pct": 38.6,
+      "n_open": 47,
+      "n_closed": 49,
+      "win_rate_pct": 41.0,
+      "avg_pct": -2.81,
+      "median_pct": -1.56,
+      "expired_share_pct": 40.8,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "EXPIRED": 17,
-        "INVALIDATED": 14,
+        "EXPIRED": 20,
+        "INVALIDATED": 15,
         "NO_ENTRY": 10,
-        "T1_HIT": 1,
+        "T1_HIT": 2,
         "T2_HIT": 2
       },
-      "nights_recorded": 26,
+      "nights_recorded": 29,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true,
       "vs_champion": {
-        "shared_nights": 17,
-        "n_policy": 34,
-        "n_champion": 151,
-        "avg_pct": -4.23,
-        "champion_avg_pct": -3.35,
-        "diff_pp": -0.88
+        "shared_nights": 19,
+        "n_policy": 39,
+        "n_champion": 163,
+        "avg_pct": -2.81,
+        "champion_avg_pct": -3.02,
+        "diff_pp": 0.21
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     },
@@ -282,32 +240,32 @@
       "label": "cut dead money at 21 sessions",
       "label_zh": "21\u4e2a\u4ea4\u6613\u65e5\u6b62\u635f\u79bb\u573a",
       "grain": "closure",
-      "n_open": 318,
-      "n_closed": 265,
-      "win_rate_pct": 32.4,
-      "avg_pct": -2.56,
-      "median_pct": -2.3,
-      "expired_share_pct": 6.4,
-      "time_stopped_share_pct": 35.5,
+      "n_open": 413,
+      "n_closed": 291,
+      "win_rate_pct": 34.2,
+      "avg_pct": -2.15,
+      "median_pct": -2.17,
+      "expired_share_pct": 6.9,
+      "time_stopped_share_pct": 34.7,
       "outcomes": {
-        "EXPIRED": 17,
-        "INVALIDATED": 56,
-        "NO_ENTRY": 55,
-        "T1_HIT": 41,
+        "EXPIRED": 20,
+        "INVALIDATED": 62,
+        "NO_ENTRY": 57,
+        "T1_HIT": 49,
         "T2_HIT": 2,
-        "time_stopped": 94
+        "time_stopped": 101
       },
-      "nights_recorded": 30,
+      "nights_recorded": 35,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true,
       "vs_champion": {
-        "n_paired": 200,
-        "avg_diff_pp": 0.37,
+        "n_paired": 221,
+        "avg_diff_pp": 0.39,
         "median_diff_pp": 0.0,
-        "better": 51,
-        "worse": 32,
-        "same": 117,
-        "unpaired_plans": 65
+        "better": 54,
+        "worse": 33,
+        "same": 134,
+        "unpaired_plans": 70
       },
       "vs_champion_basis": "per-plan paired \u2014 same plan ids and entries as the live rule, different exits"
     },
@@ -316,29 +274,29 @@
       "label": "almost-ready entries admitted",
       "label_zh": "\u7eb3\u5165\u300c\u5373\u5c06\u4e70\u5165\u300d\u6863",
       "grain": "selection",
-      "n_open": 66,
-      "n_closed": 74,
-      "win_rate_pct": 34.0,
-      "avg_pct": -4.13,
-      "median_pct": -4.03,
-      "expired_share_pct": 37.8,
+      "n_open": 79,
+      "n_closed": 78,
+      "win_rate_pct": 35.7,
+      "avg_pct": -3.92,
+      "median_pct": -3.65,
+      "expired_share_pct": 39.7,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "EXPIRED": 28,
+        "EXPIRED": 31,
         "INVALIDATED": 18,
-        "NO_ENTRY": 21,
+        "NO_ENTRY": 22,
         "T1_HIT": 7
       },
-      "nights_recorded": 28,
+      "nights_recorded": 32,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true,
       "vs_champion": {
         "shared_nights": 18,
-        "n_policy": 53,
-        "n_champion": 169,
-        "avg_pct": -4.13,
-        "champion_avg_pct": -2.83,
-        "diff_pp": -1.3
+        "n_policy": 56,
+        "n_champion": 181,
+        "avg_pct": -3.92,
+        "champion_avg_pct": -2.65,
+        "diff_pp": -1.27
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     }
@@ -359,10 +317,10 @@
     }
   ],
   "tonight": {
-    "asof": "2026-10-22",
-    "standouts_as_of": "2026-10-21",
-    "price_through": "2026-10-21",
-    "observed_at_utc": "2026-10-22T16:24:28.790485+00:00",
+    "asof": "2026-11-02",
+    "standouts_as_of": "2026-10-30",
+    "price_through": "2026-10-30",
+    "observed_at_utc": "2026-11-02T07:18:12.903281+00:00",
     "source_delayed": false,
     "source_unknown": false,
     "source_basis": "panel_majority",
@@ -370,18 +328,20 @@
     "gate_go": false,
     "dispersion": {
       "mode": "not_lean_in",
-      "state": "lean_out",
-      "artifact_as_of": "2026-10-22",
+      "state": "neutral",
+      "artifact_as_of": "2026-11-02",
       "stale_sessions": 0,
       "cap": 6,
       "path": "data/dispersion/regime.json"
     },
     "door_w": {
       "ok": true,
-      "candidates": 23,
-      "rows": 23,
-      "skipped_no_prices": 0,
-      "skipped_tickers": [],
+      "candidates": 39,
+      "rows": 38,
+      "skipped_no_prices": 1,
+      "skipped_tickers": [
+        "XLU"
+      ],
       "reason": null,
       "door_w_disclosure": {
         "source": "baskets/membership.json",
@@ -390,446 +350,181 @@
         "reason": null,
         "evaluated": 712,
         "skipped": 5,
-        "state_turn": 66,
-        "fresh": 26,
-        "aligned": 23,
-        "asof_max": "2026-10-22",
+        "state_turn": 56,
+        "fresh": 39,
+        "aligned": 39,
+        "asof_max": "2026-10-30",
         "asof_mismatch": 0,
         "fresh_weeks_max": 2,
         "align_grids": [
           "2B",
           "3B"
         ],
-        "runtime_s": 21.6
+        "runtime_s": 16.9
       }
     },
     "policies": {
       "C0_champion_mirror": {
         "selected_tickers": [
-          "FDX",
-          "MCO",
-          "PII",
-          "SPG",
-          "NUE",
-          "ENR",
-          "SON",
-          "RELY",
-          "LIVN",
-          "OTTR",
-          "CBU",
-          "INVX",
+          "GM",
+          "FLS",
+          "VSAT",
+          "JNJ",
+          "HP",
+          "CVCO",
+          "EPC",
+          "CRGY",
+          "EPR",
+          "CVNA",
+          "VRT",
+          "AM",
+          "MTZ",
+          "TKO",
+          "CC",
+          "SJM",
+          "MRCY",
+          "LBRT",
+          "TSCO",
+          "CENX",
+          "SHEN",
+          "FRPT",
           "VTR",
-          "CHRD",
-          "FITB",
-          "FOX",
-          "NDAQ",
-          "ORI",
-          "ROP",
-          "FANG",
-          "PRGS",
-          "GD",
-          "DAN",
-          "TFX",
-          "NE",
-          "KEY",
-          "HQY",
-          "BC",
-          "LYV",
-          "O",
-          "HAL",
-          "OGS",
-          "DLB",
-          "DCI",
-          "BILL",
-          "D",
-          "ATR",
-          "AYI",
-          "ADBE",
-          "UNF",
-          "COO",
-          "CASH",
+          "AVNT",
+          "PJT",
+          "SUPN",
+          "MC",
+          "BOOT",
+          "CF",
+          "MSEX",
+          "CWT",
+          "FBK",
+          "IBP",
+          "NB",
+          "POR",
+          "NOV",
+          "NRG",
           "NBIX",
-          "CRH",
-          "HRL",
-          "HSY",
-          "RPM",
-          "NXST",
-          "HII",
-          "LNG",
-          "OKE",
-          "CXM",
-          "DPZ",
-          "HCSG",
-          "SKT",
-          "OSIS",
-          "CMC",
-          "FICO",
-          "HE",
-          "VYX",
-          "MGEE",
-          "GIII",
-          "CHWY",
-          "BRX",
-          "MZTI",
-          "PTCT",
-          "GOLF",
-          "REYN",
-          "EXE",
-          "FUL",
-          "UDR",
-          "EIX",
-          "NFG",
-          "IRT",
-          "ENOV",
-          "CARR",
-          "PCG",
-          "ALHC"
+          "GTY",
+          "HMN",
+          "WWW",
+          "TFIN",
+          "MRP",
+          "PRI",
+          "WPC",
+          "UE",
+          "CARG",
+          "TROW",
+          "OSK",
+          "LQDA",
+          "EMN",
+          "FSLR",
+          "VTOL",
+          "XRAY",
+          "PRG",
+          "NVST",
+          "PENN",
+          "CMCSA",
+          "AROC",
+          "CWK",
+          "ORA",
+          "INGR",
+          "IP",
+          "CAR",
+          "UVV",
+          "MKC",
+          "NVO",
+          "SLVM"
         ],
         "plan_ids": [
-          "ALHC-BULL-20261016",
-          "BILL-BULL-20261021",
-          "BRX-BULL-20261016",
-          "CARR-BULL-20261016",
-          "DLB-BULL-20261021",
-          "FUL-BULL-20261016",
-          "GOLF-BULL-20261021",
-          "HCSG-BULL-20261016",
-          "HE-BULL-20261021",
-          "INVX-BULL-20261021",
-          "IRT-BULL-20261021",
-          "KEY-BULL-20261021",
-          "LNG-BULL-20261021",
-          "LYV-BULL-20261021",
-          "MGEE-BULL-20261021",
-          "NBIX-BULL-20261021",
-          "NDAQ-BULL-20261021",
-          "NFG-BULL-20261016",
-          "O-BULL-20261016",
-          "OKE-BULL-20261021",
-          "PCG-BULL-20261021",
-          "PTCT-BULL-20261021",
-          "UNF-BULL-20261021"
+          "LQDA-BULL-20261029",
+          "NB-BULL-20261026"
         ],
-        "n_plans": 23,
+        "n_plans": 2,
         "selection": {
-          "admitted": 78,
+          "admitted": 68,
           "cap": null,
           "cap_applied": false,
           "selection_basis": "lossless live champion mirror",
           "truncated": 0
         },
         "origination": {
-          "offered": 78,
-          "skipped_duplicate_id": 17,
-          "skipped_open_plan": 4,
-          "skipped_clock_provenance": 34,
+          "offered": 68,
+          "skipped_duplicate_id": 51,
+          "skipped_open_plan": 10,
+          "skipped_clock_provenance": 5,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-22",
-          "price_basis_date": "2026-10-21",
+          "recorded_at": "2026-11-02",
+          "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [
             {
-              "ticker": "FDX",
-              "id": "FDX-BULL-20261016",
+              "ticker": "JNJ",
+              "id": "JNJ-BULL-20261029",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
               ]
             },
             {
-              "ticker": "MCO",
-              "id": "MCO-BULL-20261016",
+              "ticker": "CVCO",
+              "id": "CVCO-BULL-20261029",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
               ]
             },
             {
-              "ticker": "PII",
-              "id": "PII-BULL-20261021",
+              "ticker": "MRCY",
+              "id": "MRCY-BULL-20261029",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
               ]
             },
             {
-              "ticker": "SPG",
-              "id": "SPG-BULL-20261016",
+              "ticker": "PJT",
+              "id": "PJT-BULL-20261029",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
               ]
             },
             {
-              "ticker": "ENR",
-              "id": "ENR-BULL-20261021",
+              "ticker": "MC",
+              "id": "MC-BULL-20261029",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "SON",
-              "id": "SON-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "LIVN",
-              "id": "LIVN-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "CBU",
-              "id": "CBU-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
-              ]
-            },
-            {
-              "ticker": "VTR",
-              "id": "VTR-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "FITB",
-              "id": "FITB-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
-              ]
-            },
-            {
-              "ticker": "ORI",
-              "id": "ORI-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "ROP",
-              "id": "ROP-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "PRGS",
-              "id": "PRGS-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
-              ]
-            },
-            {
-              "ticker": "GD",
-              "id": "GD-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "TFX",
-              "id": "TFX-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "HQY",
-              "id": "HQY-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "BC",
-              "id": "BC-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "DCI",
-              "id": "DCI-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "ATR",
-              "id": "ATR-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
-              ]
-            },
-            {
-              "ticker": "AYI",
-              "id": "AYI-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
-              ]
-            },
-            {
-              "ticker": "ADBE",
-              "id": "ADBE-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
-              ]
-            },
-            {
-              "ticker": "COO",
-              "id": "COO-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "CASH",
-              "id": "CASH-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "CRH",
-              "id": "CRH-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "HRL",
-              "id": "HRL-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "HSY",
-              "id": "HSY-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "NXST",
-              "id": "NXST-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "CXM",
-              "id": "CXM-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "DPZ",
-              "id": "DPZ-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "OSIS",
-              "id": "OSIS-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "FICO",
-              "id": "FICO-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "VYX",
-              "id": "VYX-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "CHWY",
-              "id": "CHWY-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "MZTI",
-              "id": "MZTI-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
               ]
             }
           ],
-          "originated": 23,
-          "validation_failed": 34
+          "originated": 2,
+          "validation_failed": 5
         },
-        "ledger_rows_appended": 23,
-        "ledger_closures_appended": 5
+        "ledger_rows_appended": 2,
+        "ledger_closures_appended": 0
       },
       "C1_buy_soon_first": {
         "selected_tickers": [
-          "FDX",
-          "MCO",
-          "PII",
-          "SPG",
-          "NUE",
-          "ENR",
-          "SON",
-          "RELY",
-          "LIVN",
-          "OTTR",
-          "CBU",
-          "INVX"
+          "GM",
+          "FLS",
+          "VSAT",
+          "JNJ",
+          "HP",
+          "CVCO",
+          "EPC",
+          "CRGY",
+          "EPR",
+          "CVNA",
+          "VRT",
+          "AM"
         ],
-        "plan_ids": [
-          "INVX-BULL-20261021"
-        ],
-        "n_plans": 1,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
-          "admitted": 78,
+          "admitted": 68,
           "cap": 12,
           "cap_applied": true,
           "act_level_2": 0,
@@ -837,113 +532,64 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 2,
+          "skipped_duplicate_id": 9,
           "skipped_open_plan": 1,
-          "skipped_clock_provenance": 8,
+          "skipped_clock_provenance": 2,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-22",
-          "price_basis_date": "2026-10-21",
+          "recorded_at": "2026-11-02",
+          "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [
             {
-              "ticker": "FDX",
-              "id": "FDX-BULL-20261016",
+              "ticker": "JNJ",
+              "id": "JNJ-BULL-20261029",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
               ]
             },
             {
-              "ticker": "MCO",
-              "id": "MCO-BULL-20261016",
+              "ticker": "CVCO",
+              "id": "CVCO-BULL-20261029",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "PII",
-              "id": "PII-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "SPG",
-              "id": "SPG-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "ENR",
-              "id": "ENR-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "SON",
-              "id": "SON-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "LIVN",
-              "id": "LIVN-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "CBU",
-              "id": "CBU-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
               ]
             }
           ],
-          "originated": 1,
-          "validation_failed": 8
+          "originated": 0,
+          "validation_failed": 2
         },
-        "ledger_rows_appended": 1,
-        "ledger_closures_appended": 1
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       },
       "C3_door_w_union": {
         "selected_tickers": [
-          "FDX",
-          "MCO",
-          "PII",
-          "SPG",
-          "NUE",
-          "ENR",
-          "SON",
-          "RELY",
-          "ROL",
-          "ATO",
-          "CIEN",
-          "TJX"
+          "GM",
+          "FLS",
+          "VSAT",
+          "JNJ",
+          "HP",
+          "CVCO",
+          "EPC",
+          "CRGY",
+          "LHX",
+          "TJX",
+          "CRH",
+          "ATO"
         ],
         "plan_ids": [
-          "ATO-BULL-20261021",
-          "CIEN-BULL-20261021",
-          "ROL-BULL-20261021"
+          "ATO-BULL-20261030",
+          "LHX-BULL-20261030"
         ],
-        "n_plans": 3,
+        "n_plans": 2,
         "selection": {
-          "admitted": 78,
+          "admitted": 68,
           "cap": 12,
           "cap_applied": true,
-          "door_w_offered": 23,
+          "door_w_offered": 38,
           "door_w_already_in_champion_pool": 1,
           "door_w_reserved_slots": 4,
           "door_w_selected": 4,
@@ -951,727 +597,336 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 2,
-          "skipped_open_plan": 1,
-          "skipped_clock_provenance": 6,
-          "skipped_no_spot": 0,
-          "skipped_door_w_no_geometry": 0,
-          "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-22",
-          "price_basis_date": "2026-10-21",
-          "clock_errors": [],
-          "validation_failures": [
-            {
-              "ticker": "FDX",
-              "id": "FDX-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "MCO",
-              "id": "MCO-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "PII",
-              "id": "PII-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "SPG",
-              "id": "SPG-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "ENR",
-              "id": "ENR-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "SON",
-              "id": "SON-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            }
-          ],
-          "originated": 3,
-          "validation_failed": 6
-        },
-        "ledger_rows_appended": 3,
-        "ledger_closures_appended": 4
-      },
-      "C4_dispersion_cap": {
-        "selected_tickers": [
-          "FDX",
-          "MCO",
-          "PII",
-          "SPG",
-          "NUE",
-          "ENR"
-        ],
-        "plan_ids": [],
-        "n_plans": 0,
-        "selection": {
-          "admitted": 78,
-          "cap": 6,
-          "cap_applied": true
-        },
-        "origination": {
-          "offered": 6,
-          "skipped_duplicate_id": 1,
-          "skipped_open_plan": 0,
-          "skipped_clock_provenance": 5,
-          "skipped_no_spot": 0,
-          "skipped_door_w_no_geometry": 0,
-          "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-22",
-          "price_basis_date": "2026-10-21",
-          "clock_errors": [],
-          "validation_failures": [
-            {
-              "ticker": "FDX",
-              "id": "FDX-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "MCO",
-              "id": "MCO-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "PII",
-              "id": "PII-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "SPG",
-              "id": "SPG-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "ENR",
-              "id": "ENR-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            }
-          ],
-          "originated": 0,
-          "validation_failed": 5
-        },
-        "ledger_rows_appended": 0,
-        "ledger_closures_appended": 1
-      },
-      "C5_align2_gate": {
-        "selected_tickers": [
-          "FOX",
-          "DAN",
-          "DLB",
-          "HII",
-          "LNG",
-          "CHWY",
-          "MZTI",
-          "EXE"
-        ],
-        "plan_ids": [
-          "DLB-BULL-20261021",
-          "LNG-BULL-20261021"
-        ],
-        "n_plans": 2,
-        "selection": {
-          "admitted": 78,
-          "cap": 12,
-          "cap_applied": true,
-          "align_gate": {
-            "admitted": 8,
-            "admitted_via_fallback": 4,
-            "excluded_misaligned": 70,
-            "excluded_unreadable": 0,
-            "basis": "event_atlas weekly align_class == 2 (its full value), falling back to align_now == 3 (its full value) when the name has no weekly event on record; a name the atlas cannot read is excluded, never admitted"
-          },
-          "passed_gate": 8,
-          "excluded": 70
-        },
-        "origination": {
-          "offered": 8,
-          "skipped_duplicate_id": 4,
-          "skipped_open_plan": 0,
+          "skipped_duplicate_id": 5,
+          "skipped_open_plan": 3,
           "skipped_clock_provenance": 2,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-22",
-          "price_basis_date": "2026-10-21",
+          "recorded_at": "2026-11-02",
+          "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [
             {
-              "ticker": "CHWY",
-              "id": "CHWY-BULL-20261016",
+              "ticker": "JNJ",
+              "id": "JNJ-BULL-20261029",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
               ]
             },
             {
-              "ticker": "MZTI",
-              "id": "MZTI-BULL-20261016",
+              "ticker": "CVCO",
+              "id": "CVCO-BULL-20261029",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
               ]
             }
           ],
           "originated": 2,
           "validation_failed": 2
         },
-        "ledger_rows_appended": 2,
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
+      },
+      "C4_dispersion_cap": {
+        "selected_tickers": [
+          "GM",
+          "FLS",
+          "VSAT",
+          "JNJ",
+          "HP",
+          "CVCO"
+        ],
+        "plan_ids": [],
+        "n_plans": 0,
+        "selection": {
+          "admitted": 68,
+          "cap": 6,
+          "cap_applied": true
+        },
+        "origination": {
+          "offered": 6,
+          "skipped_duplicate_id": 4,
+          "skipped_open_plan": 0,
+          "skipped_clock_provenance": 2,
+          "skipped_no_spot": 0,
+          "skipped_door_w_no_geometry": 0,
+          "skipped_door_w_tickers": [],
+          "recorded_at": "2026-11-02",
+          "price_basis_date": "2026-10-30",
+          "clock_errors": [],
+          "validation_failures": [
+            {
+              "ticker": "JNJ",
+              "id": "JNJ-BULL-20261029",
+              "stage": "clock_provenance",
+              "errors": [
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
+              ]
+            },
+            {
+              "ticker": "CVCO",
+              "id": "CVCO-BULL-20261029",
+              "stage": "clock_provenance",
+              "errors": [
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
+              ]
+            }
+          ],
+          "originated": 0,
+          "validation_failed": 2
+        },
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
+      },
+      "C5_align2_gate": {
+        "selected_tickers": [
+          "FLS",
+          "TSCO",
+          "FRPT",
+          "NRG",
+          "CWK",
+          "INGR"
+        ],
+        "plan_ids": [],
+        "n_plans": 0,
+        "selection": {
+          "admitted": 68,
+          "cap": 12,
+          "cap_applied": true,
+          "align_gate": {
+            "admitted": 6,
+            "admitted_via_fallback": 4,
+            "excluded_misaligned": 62,
+            "excluded_unreadable": 0,
+            "basis": "event_atlas weekly align_class == 2 (its full value), falling back to align_now == 3 (its full value) when the name has no weekly event on record; a name the atlas cannot read is excluded, never admitted"
+          },
+          "passed_gate": 6,
+          "excluded": 62
+        },
+        "origination": {
+          "offered": 6,
+          "skipped_duplicate_id": 5,
+          "skipped_open_plan": 1,
+          "skipped_clock_provenance": 0,
+          "skipped_no_spot": 0,
+          "skipped_door_w_no_geometry": 0,
+          "skipped_door_w_tickers": [],
+          "recorded_at": "2026-11-02",
+          "price_basis_date": "2026-10-30",
+          "clock_errors": [],
+          "validation_failures": [],
+          "originated": 0,
+          "validation_failed": 0
+        },
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C6_time_stop_21": {
         "selected_tickers": [
-          "FDX",
-          "MCO",
-          "PII",
-          "SPG",
-          "NUE",
-          "ENR",
-          "SON",
-          "RELY",
-          "LIVN",
-          "OTTR",
-          "CBU",
-          "INVX",
+          "GM",
+          "FLS",
+          "VSAT",
+          "JNJ",
+          "HP",
+          "CVCO",
+          "EPC",
+          "CRGY",
+          "EPR",
+          "CVNA",
+          "VRT",
+          "AM",
+          "MTZ",
+          "TKO",
+          "CC",
+          "SJM",
+          "MRCY",
+          "LBRT",
+          "TSCO",
+          "CENX",
+          "SHEN",
+          "FRPT",
           "VTR",
-          "CHRD",
-          "FITB",
-          "FOX",
-          "NDAQ",
-          "ORI",
-          "ROP",
-          "FANG",
-          "PRGS",
-          "GD",
-          "DAN",
-          "TFX",
-          "NE",
-          "KEY",
-          "HQY",
-          "BC",
-          "LYV",
-          "O",
-          "HAL",
-          "OGS",
-          "DLB",
-          "DCI",
-          "BILL",
-          "D",
-          "ATR",
-          "AYI",
-          "ADBE",
-          "UNF",
-          "COO",
-          "CASH",
+          "AVNT",
+          "PJT",
+          "SUPN",
+          "MC",
+          "BOOT",
+          "CF",
+          "MSEX",
+          "CWT",
+          "FBK",
+          "IBP",
+          "NB",
+          "POR",
+          "NOV",
+          "NRG",
           "NBIX",
-          "CRH",
-          "HRL",
-          "HSY",
-          "RPM",
-          "NXST",
-          "HII",
-          "LNG",
-          "OKE",
-          "CXM",
-          "DPZ",
-          "HCSG",
-          "SKT",
-          "OSIS",
-          "CMC",
-          "FICO",
-          "HE",
-          "VYX",
-          "MGEE",
-          "GIII",
-          "CHWY",
-          "BRX",
-          "MZTI",
-          "PTCT",
-          "GOLF",
-          "REYN",
-          "EXE",
-          "FUL",
-          "UDR",
-          "EIX",
-          "NFG",
-          "IRT",
-          "ENOV",
-          "CARR",
-          "PCG",
-          "ALHC"
+          "GTY",
+          "HMN",
+          "WWW",
+          "TFIN",
+          "MRP",
+          "PRI",
+          "WPC",
+          "UE",
+          "CARG",
+          "TROW",
+          "OSK",
+          "LQDA",
+          "EMN",
+          "FSLR",
+          "VTOL",
+          "XRAY",
+          "PRG",
+          "NVST",
+          "PENN",
+          "CMCSA",
+          "AROC",
+          "CWK",
+          "ORA",
+          "INGR",
+          "IP",
+          "CAR",
+          "UVV",
+          "MKC",
+          "NVO",
+          "SLVM"
         ],
         "plan_ids": [
-          "ALHC-BULL-20261016",
-          "BILL-BULL-20261021",
-          "BRX-BULL-20261016",
-          "CARR-BULL-20261016",
-          "DLB-BULL-20261021",
-          "FUL-BULL-20261016",
-          "GOLF-BULL-20261021",
-          "HCSG-BULL-20261016",
-          "HE-BULL-20261021",
-          "INVX-BULL-20261021",
-          "IRT-BULL-20261021",
-          "KEY-BULL-20261021",
-          "LNG-BULL-20261021",
-          "LYV-BULL-20261021",
-          "MGEE-BULL-20261021",
-          "NBIX-BULL-20261021",
-          "NDAQ-BULL-20261021",
-          "NFG-BULL-20261016",
-          "O-BULL-20261016",
-          "OKE-BULL-20261021",
-          "PCG-BULL-20261021",
-          "PTCT-BULL-20261021",
-          "UNF-BULL-20261021"
+          "LQDA-BULL-20261029",
+          "NB-BULL-20261026"
         ],
-        "n_plans": 23,
+        "n_plans": 2,
         "selection": {
-          "admitted": 78,
+          "admitted": 68,
           "cap": null,
           "cap_applied": false,
           "selection_basis": "identical to lossless C0 by construction",
           "truncated": 0
         },
         "origination": {
-          "offered": 78,
-          "skipped_duplicate_id": 17,
-          "skipped_open_plan": 4,
-          "skipped_clock_provenance": 34,
+          "offered": 68,
+          "skipped_duplicate_id": 51,
+          "skipped_open_plan": 10,
+          "skipped_clock_provenance": 5,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-22",
-          "price_basis_date": "2026-10-21",
+          "recorded_at": "2026-11-02",
+          "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [
             {
-              "ticker": "FDX",
-              "id": "FDX-BULL-20261016",
+              "ticker": "JNJ",
+              "id": "JNJ-BULL-20261029",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
               ]
             },
             {
-              "ticker": "MCO",
-              "id": "MCO-BULL-20261016",
+              "ticker": "CVCO",
+              "id": "CVCO-BULL-20261029",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
               ]
             },
             {
-              "ticker": "PII",
-              "id": "PII-BULL-20261021",
+              "ticker": "MRCY",
+              "id": "MRCY-BULL-20261029",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
               ]
             },
             {
-              "ticker": "SPG",
-              "id": "SPG-BULL-20261016",
+              "ticker": "PJT",
+              "id": "PJT-BULL-20261029",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
               ]
             },
             {
-              "ticker": "ENR",
-              "id": "ENR-BULL-20261021",
+              "ticker": "MC",
+              "id": "MC-BULL-20261029",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "SON",
-              "id": "SON-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "LIVN",
-              "id": "LIVN-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "CBU",
-              "id": "CBU-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
-              ]
-            },
-            {
-              "ticker": "VTR",
-              "id": "VTR-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "FITB",
-              "id": "FITB-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
-              ]
-            },
-            {
-              "ticker": "ORI",
-              "id": "ORI-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "ROP",
-              "id": "ROP-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "PRGS",
-              "id": "PRGS-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
-              ]
-            },
-            {
-              "ticker": "GD",
-              "id": "GD-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "TFX",
-              "id": "TFX-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "HQY",
-              "id": "HQY-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "BC",
-              "id": "BC-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "DCI",
-              "id": "DCI-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "ATR",
-              "id": "ATR-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
-              ]
-            },
-            {
-              "ticker": "AYI",
-              "id": "AYI-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
-              ]
-            },
-            {
-              "ticker": "ADBE",
-              "id": "ADBE-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
-              ]
-            },
-            {
-              "ticker": "COO",
-              "id": "COO-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "CASH",
-              "id": "CASH-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "CRH",
-              "id": "CRH-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "HRL",
-              "id": "HRL-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "HSY",
-              "id": "HSY-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "NXST",
-              "id": "NXST-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "CXM",
-              "id": "CXM-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "DPZ",
-              "id": "DPZ-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "OSIS",
-              "id": "OSIS-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "FICO",
-              "id": "FICO-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "VYX",
-              "id": "VYX-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "CHWY",
-              "id": "CHWY-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "MZTI",
-              "id": "MZTI-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
               ]
             }
           ],
-          "originated": 23,
-          "validation_failed": 34
+          "originated": 2,
+          "validation_failed": 5
         },
-        "ledger_rows_appended": 23,
-        "ledger_closures_appended": 5
+        "ledger_rows_appended": 2,
+        "ledger_closures_appended": 0
       },
       "C7_buy_soon_admitted": {
         "selected_tickers": [
-          "FDX",
-          "MCO",
-          "PII",
-          "SPG",
-          "NUE",
-          "ENR",
-          "SON",
-          "RELY",
-          "LIVN",
-          "OTTR",
-          "CBU",
-          "INVX"
+          "GM",
+          "FLS",
+          "VSAT",
+          "JNJ",
+          "HP",
+          "CVCO",
+          "EPC",
+          "CRGY",
+          "EPR",
+          "CVNA",
+          "VRT",
+          "AM"
         ],
-        "plan_ids": [
-          "INVX-BULL-20261021"
-        ],
-        "n_plans": 1,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
-          "admitted": 78,
+          "admitted": 68,
           "cap": 12,
           "cap_applied": true,
-          "admitted_with_widening": 78,
-          "buy_soon_in_board": 0,
-          "buy_soon_admitted_by_widening": 0,
+          "admitted_with_widening": 69,
+          "buy_soon_in_board": 1,
+          "buy_soon_admitted_by_widening": 1,
           "buy_soon_selected": 0,
           "widening": "the status-class gate is relaxed for buy_soon rows only; tone, band, tier, entry-signal presence and the champion's own ordering stay the champion's"
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 2,
+          "skipped_duplicate_id": 9,
           "skipped_open_plan": 1,
-          "skipped_clock_provenance": 8,
+          "skipped_clock_provenance": 2,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-22",
-          "price_basis_date": "2026-10-21",
+          "recorded_at": "2026-11-02",
+          "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [
             {
-              "ticker": "FDX",
-              "id": "FDX-BULL-20261016",
+              "ticker": "JNJ",
+              "id": "JNJ-BULL-20261029",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
               ]
             },
             {
-              "ticker": "MCO",
-              "id": "MCO-BULL-20261016",
+              "ticker": "CVCO",
+              "id": "CVCO-BULL-20261029",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "PII",
-              "id": "PII-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "SPG",
-              "id": "SPG-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "ENR",
-              "id": "ENR-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "SON",
-              "id": "SON-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "LIVN",
-              "id": "LIVN-BULL-20261016",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-16' postdates tier_event_date '2026-10-15'"
-              ]
-            },
-            {
-              "ticker": "CBU",
-              "id": "CBU-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
               ]
             }
           ],
-          "originated": 1,
-          "validation_failed": 8
+          "originated": 0,
+          "validation_failed": 2
         },
-        "ledger_rows_appended": 1,
-        "ledger_closures_appended": 1
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       }
     }
   },

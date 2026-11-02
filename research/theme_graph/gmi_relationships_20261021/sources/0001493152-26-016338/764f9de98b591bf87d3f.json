@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-13T18:25:07Z",
+ "accession": "0001493152-26-016338",
+ "cik": "0000771266",
+ "doc_byte_length": 1805474,
+ "doc_sha256": "7b69216bb04f67b346c897eb5e3a1d8ab835422646f33a0d8e8dca3597c3a549",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-13",
+ "form": "10-K",
+ "period_of_report": "2025-12-27",
+ "primary_document": "form10-k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 351892,
+  "byte_start": 351459,
+  "normalized": "Our primary market is defense, with significant customers including Collins Aerospace and DRS Network & Imaging Systems LLC. In fiscal year 2025, defense sales (excluding R&D contracts) accounted for 74% of total revenue, down from 82% in 2024, but maintaining a strong reliance on this sector. These results were a by-product of an intentional strategic shift in market focus, which we believe is already proving successful.",
+  "normalized_sha256": "29ae425fc3291822388f332133136d090ac056bb2136801cf0d570961bbd6f23",
+  "raw": "Our\nprimary market is defense, with significant customers including Collins Aerospace and DRS Network &amp; Imaging Systems LLC. In fiscal\nyear 2025, defense sales (excluding R&amp;D contracts) accounted for 74% of total revenue, down from 82% in 2024, but maintaining\na strong reliance on this sector. These results were a by-product of an intentional strategic shift in market focus, which we believe\nis already proving successful.",
+  "raw_sha256": "764f9de98b591bf87d3fac37a83806f58d640469cd883bfc0e22f40828a25fc4"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/771266/000149315226016338/form10-k.htm",
+ "xbrl_contexts": []
+}

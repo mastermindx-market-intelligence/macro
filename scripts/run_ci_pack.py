@@ -102,7 +102,7 @@ ALLOWED_JOB_KEYS = {
 #: `gate: data` jobs still run and still red something a human reads — the
 #: field never deletes a receipt.
 GATE_VALUES = ("code", "data")
-ALLOWED_STEP_KEYS = {"name", "proof_id", "run", "uses", "with", "phase", "timeout-minutes"}
+ALLOWED_STEP_KEYS = {"name", "proof_id", "run", "uses", "with", "phase", "timeout-minutes", "acquisition"}
 
 # Changing any item in this string changes the job execution contract digest.
 # It deliberately describes only the infrastructure shared by all legacy jobs;
@@ -593,7 +593,23 @@ def _bounded_detail(value: object, *, limit: int = SEMANTIC_DETAIL_MAX_BYTES) ->
     )
 
 
-def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
+def _browser_dependency_diagnostic_commands() -> tuple[str, ...]:
+    from scripts.ci_browser_dependency_capture import capture_commands
+
+    return capture_commands()
+
+
+# Native activation is closed to these existing owners and their original
+# TOTAL grants. Each setup still shares that total and its finite setup bound.
+NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES = 10
+NATIVE_BROWSER_LOGICAL_JOB_ID = "ontology-explorer"
+NATIVE_BRAIN_LOGICAL_JOB_ID = "unrun-brain-gateway"
+NATIVE_BRAIN_LOGICAL_JOB_TIMEOUT_MINUTES = 15
+NATIVE_BEA_LOGICAL_JOB_ID = "bea-gvc-current-descriptive-consumer"
+NATIVE_BEA_LOGICAL_JOB_TIMEOUT_MINUTES = 10
+
+
+def _incumbent_browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
     """Opt-in attribution only; setup consumes the original logical deadline."""
     if "phase" not in step:
         if "timeout-minutes" in step:
@@ -614,6 +630,59 @@ def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
         "budget": "within_original_logical_job_deadline",
     }
 
+def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
+    # Unmarked jobs retain the protected projection, validation and digest.
+    if "acquisition" not in step:
+        return _incumbent_browser_setup_spec(step)
+    if type(step.get("acquisition")) is not str or step.get("acquisition") != "native_parallel" or step.get("phase") != "browser_setup":
+        raise ManifestError("native acquisition requires its explicit browser setup phase")
+    incumbent = _incumbent_browser_setup_spec({key: value for key, value in step.items() if key != "acquisition"})
+    assert incumbent is not None
+    from scripts.ci_browser_native_setup import BOUND_FILES
+    return {
+        **incumbent,
+        "acquisition": "native_parallel",
+        "executed_strategy": "native_apt_transaction_download4_no_download_install_then_playwright_chromium",
+        "native_source_sha256": {
+            name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest() for name in BOUND_FILES
+        },
+        "diagnostics": _browser_dependency_diagnostic_commands(),
+        "diagnostic_source_sha256": {
+            name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest()
+            for name in ("ci_browser_dependency_inputs.py", "ci_browser_dependency_capture.py")
+        },
+    }
+
+
+def _run_native_browser_setup(
+    setup: Mapping[str, Any], *, job_deadline: float, setup_started_at: float, command_env: Mapping[str, str],
+) -> CommandObservation:
+    """Explicit owner capture/acquisition shares original job and setup deadlines."""
+    commands = (*setup["diagnostics"], setup["command"])
+    setup_deadline = min(job_deadline, setup_started_at + setup["timeout_minutes"] * 60)
+    for command_index, command in enumerate(commands):
+        now = setup_started_at if command_index == 0 else time.monotonic()
+        remaining = max(0.0, setup_deadline - now)
+        if remaining <= 0:
+            return CommandObservation(
+                outcome="timed_out", returncode=None, failure_signature=None,
+                detail="logical job timeout exhausted before this command started",
+                timeout_settlement="not_started",
+            )
+        if command_index == len(commands) - 1:
+            from scripts.ci_browser_native_setup import run_native_setup
+            return CommandObservation(**run_native_setup(
+                deadline=setup_deadline, command_env=command_env,
+                expected_sources=setup["native_source_sha256"], browser_stream=_stream_command,
+            ))
+        result = _stream_command(command, env=command_env, timeout_seconds=remaining)
+        if result.outcome == "timed_out" or result.timeout_settlement == "unknown":
+            return replace(result, detail="dependency input capture: " + (result.detail or result.outcome))
+        if result.outcome != "passed":
+            print("::warning title=browser-dependency-inputs::capture unavailable; required installation remains unchanged", flush=True)
+    raise AssertionError("native browser setup has no installer command")
+
+
 
 def _browser_setup_contract(job: LegacyJob) -> tuple[dict[str, Any], ...]:
     contract = tuple(
@@ -628,6 +697,20 @@ def _browser_setup_contract(job: LegacyJob) -> tuple[dict[str, Any], ...]:
         or job.definition["timeout-minutes"] <= 0
     ):
         raise ManifestError("browser setup requires a finite original logical-job deadline")
+    if any(spec.get("acquisition") == "native_parallel" for spec in contract):
+        admitted_totals = {
+            NATIVE_BROWSER_LOGICAL_JOB_ID: NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES,
+            NATIVE_BRAIN_LOGICAL_JOB_ID: NATIVE_BRAIN_LOGICAL_JOB_TIMEOUT_MINUTES,
+            NATIVE_BEA_LOGICAL_JOB_ID: NATIVE_BEA_LOGICAL_JOB_TIMEOUT_MINUTES,
+        }
+        if job.job_id not in admitted_totals:
+            raise ManifestError("native browser acquisition is restricted to ontology-explorer, unrun-brain-gateway and bea-gvc-current-descriptive-consumer")
+        contract = tuple(
+            {**spec, "logical_job_timeout_minutes": admitted_totals[job.job_id],
+             "activation_job_id": job.job_id}
+            if spec.get("acquisition") == "native_parallel" else spec
+            for spec in contract
+        )
     return contract
 
 
@@ -3424,6 +3507,172 @@ def _tested_tree_ancestry_ready(
     return merge_base.returncode == 0 and bool(re.fullmatch(r"[0-9a-f]{40}", value))
 
 
+# Exact paths compared by the international-workspace-browser frozen guard
+# (tests/test_intl_gs_foundation.py). The international-dislocation-explorer
+# job passes its own compared paths from its manifest step (F10) so that this
+# module's closure never names that guard's builder script.
+INTERNATIONAL_FOUNDATION_FROZEN_PATHS = (
+    "templates/theme.css",
+    "templates/_navlinks.html.j2",
+    "engine/intl_global_universe.py",
+    "engine/intl_global_observation.py",
+    "lib/intl_global_observation_adapter.py",
+)
+
+
+def prepare_canonical_main(
+    root: Path, *, tested_tree_sha: str, base_ref: str = "main",
+    frozen_paths: tuple[str, ...] = INTERNATIONAL_FOUNDATION_FROZEN_PATHS,
+) -> str:
+    """Acquire actual main once, then deepen only its pinned history as needed.
+
+    ``frozen_paths`` are the exact repository paths the calling job's frozen
+    guard compares at the canonical base and the tested tree; every one must be
+    present offline at both before this returns.
+
+    The International frozen-file guard reads origin/main and its merge base
+    with HEAD. Its fetch-depth-0 preparation already establishes tested-tree
+    ancestry; an unrestricted second fetch need not reacquire unrelated history
+    or auto-follow tags. Retain that ancestry with relative deepening, explicitly
+    create origin/main, and never repin to a main tip that moves during this call.
+
+    The manifest runs each synchronous fetch under the logical job's existing
+    deadline and process group. A failed/unknown fetch propagates immediately: only a completed
+    acquisition with valid bindings but insufficient ancestry earns a deeper rung.
+    Filter only this canonical acquisition, with child-only declarations so Git
+    does not persist a partial-clone policy on the fully materialized checkout.
+    Required guard objects must be present offline before returning. There is no
+    transport retry, private timeout, workspace restoration, or replay.
+    """
+    if base_ref != "main":
+        raise RuntimeError("canonical-main preparation requires base_ref='main'")
+    if not isinstance(tested_tree_sha, str) or not re.fullmatch(
+        r"[0-9a-f]{40}", tested_tree_sha
+    ):
+        raise RuntimeError("canonical-main preparation requires an exact tested-tree SHA")
+    if (not isinstance(frozen_paths, tuple) or not frozen_paths or not all(
+            isinstance(path, str) and path and not path.startswith("/")
+            and ".." not in path.split("/") for path in frozen_paths)):
+        raise RuntimeError("canonical-main preparation requires exact relative frozen paths")
+
+    root = root.resolve()
+    # Only the explicit acquisition may use transport. All readiness/object
+    # probes fail closed rather than silently repairing a missing promisor blob.
+    fetch_env = _trusted_git_environment(root)
+    fetch_env.update({
+        "GIT_CONFIG_COUNT": "2",
+        "GIT_CONFIG_KEY_0": "remote.origin.promisor",
+        "GIT_CONFIG_VALUE_0": "true",
+        "GIT_CONFIG_KEY_1": "remote.origin.partialclonefilter",
+        "GIT_CONFIG_VALUE_1": "blob:none",
+    })
+    git_env = _trusted_git_environment(root)
+    git_env.update(GIT_NO_LAZY_FETCH="1", GIT_ALLOW_PROTOCOL="")
+    canonical_sha: str | None = None
+    previous_depth = 0
+
+    def commit(ref: str) -> str:
+        result = _git_cmd(root, git_env, "rev-parse", "--verify", f"{ref}^{{commit}}")
+        value = result.stdout.strip().lower()
+        if result.returncode != 0 or not re.fullmatch(r"[0-9a-f]{40}", value):
+            raise RuntimeError(f"canonical-main preparation cannot resolve {ref!r}")
+        return value
+
+    def check_bindings() -> None:
+        if commit("HEAD") != tested_tree_sha:
+            raise RuntimeError("canonical-main preparation changed/mismatched tested HEAD")
+        if canonical_sha is not None and commit("origin/main") != canonical_sha:
+            raise RuntimeError("canonical-main preparation lost its pinned origin/main")
+
+    def is_shallow() -> bool:
+        result = _git_cmd(root, git_env, "rev-parse", "--is-shallow-repository")
+        if result.returncode != 0 or result.stdout.strip() not in {"true", "false"}:
+            raise RuntimeError("canonical-main preparation cannot determine shallow state")
+        return result.stdout.strip() == "true"
+
+    def require_local_objects(canonical_base: str) -> None:
+        # ``frozen_paths`` are the exact paths compared by the caller's guard.
+
+        def required(*args: str) -> str:
+            result = _git_cmd(root, git_env, *args)
+            if result.returncode != 0:
+                raise RuntimeError("canonical-main required local object unavailable")
+            return result.stdout.strip()
+
+        raw = required("cat-file", "-p", tested_tree_sha)
+        parents = [line.split()[1] for line in raw.splitlines()
+                   if line.startswith("parent ")]
+        commits = {canonical_sha, tested_tree_sha, canonical_base, *parents}
+        if len(parents) == 2:
+            commits.add(required("merge-base", *parents))
+        for oid in commits:
+            if not isinstance(oid, str) or not re.fullmatch(r"[0-9a-f]{40}", oid):
+                raise RuntimeError("canonical-main required object identity unavailable")
+            required("cat-file", "-e", f"{oid}^{{commit}}")
+            required("cat-file", "-e", f"{oid}^{{tree}}")
+        for ref in (canonical_base, tested_tree_sha):
+            for path in frozen_paths:
+                entry = required("ls-tree", ref, "--", path)
+                fields = entry.split()
+                if (len(fields) != 4 or fields[1] != "blob" or fields[3] != path
+                        or not re.fullmatch(r"[0-9a-f]{40}", fields[2])):
+                    raise RuntimeError("canonical-main required frozen object unavailable")
+                required("cat-file", "-e", f"{fields[2]}^{{blob}}")
+
+    for depth in _EXACT_TESTED_TREE_DEPTHS:
+        check_bindings()
+        command = ["git", "fetch", "--no-recurse-submodules", "--no-tags",
+                   "--filter=blob:none"]
+        # Absolute --depth can shorten already-qualified tested-tree history.
+        # Reuse the existing finite ancestry ladder as *additional* generations.
+        increment = depth - previous_depth
+        if is_shallow():
+            command.append(f"--deepen={increment}")
+        canonical_want = (
+            "+refs/heads/main:refs/remotes/origin/main"
+            if canonical_sha is None else canonical_sha
+        )
+        command.extend(["origin", canonical_want, tested_tree_sha])
+        print(
+            "::notice title=international-workspace-browser::acquiring canonical "
+            f"main {'tip' if canonical_sha is None else canonical_sha}; "
+            f"additional ancestry limit {depth}",
+            flush=True,
+        )
+        subprocess.run(command, cwd=root, env=fetch_env, check=True)
+        fetched_sha = commit("FETCH_HEAD")
+        if canonical_sha is None:
+            canonical_sha = commit("origin/main")
+        if fetched_sha != canonical_sha:
+            raise RuntimeError("canonical-main acquisition did not retain its first fetched main")
+        check_bindings()
+
+        merge_base = _git_cmd(root, git_env, "merge-base", canonical_sha, tested_tree_sha)
+        value = merge_base.stdout.strip().lower()
+        if merge_base.returncode not in (0, 1) or (
+            merge_base.returncode == 0 and not re.fullmatch(r"[0-9a-f]{40}", value)
+        ):
+            raise RuntimeError("canonical-main merge-base probe failed")
+        if merge_base.returncode == 0 and _tested_tree_ancestry_ready(
+            root, git_env, tested_tree_sha
+        ):
+            require_local_objects(value)
+            check_bindings()
+            print(
+                "::notice title=international-workspace-browser::canonical main "
+                f"{canonical_sha}; tested tree {tested_tree_sha}; merge base {value}",
+                flush=True,
+            )
+            return canonical_sha
+        if not is_shallow():
+            raise RuntimeError("canonical-main ancestry is unavailable in a complete repository")
+        previous_depth = depth
+
+    raise RuntimeError(
+        "canonical-main ancestry remained unavailable after the bounded deepen ladder"
+    )
+
+
 def _prepare_provided_actions(
     job: LegacyJob,
     *,
@@ -3614,12 +3863,19 @@ def _run_job(
         semantic_env["GIT_NO_REPLACE_OBJECTS"] = "1"
     timeout_minutes = job.definition.get("timeout-minutes")
     timeout_seconds = int(timeout_minutes) * 60 if timeout_minutes else None
+    job_started_at = time.monotonic() if timeout_seconds is not None else None
     job_deadline = (
-        time.monotonic() + timeout_seconds if timeout_seconds is not None else None
+        job_started_at + timeout_seconds if timeout_seconds is not None else None
     )
     specs = semantic_step_specs(job)
     by_index = {spec.step_index: spec for spec in specs}
     setups = {spec["step_index"]: spec for spec in _browser_setup_contract(job)}
+    native_limits = [spec["logical_job_timeout_minutes"] for spec in setups.values()
+                     if spec.get("acquisition") == "native_parallel"]
+    if native_limits:
+        timeout_minutes = min(timeout_minutes, *native_limits)
+        timeout_seconds = int(timeout_minutes) * 60
+        job_deadline = job_started_at + timeout_seconds
     observations: list[dict[str, Any]] = []
     failure: str | None = None
     infrastructure: dict[str, Any] = {"outcome": "passed"}
@@ -3660,9 +3916,10 @@ def _run_job(
             )
             print(f"::group::{job.job_id} — {step_name}", flush=True)
             group_open = True
+            command_started_at = time.monotonic() if job_deadline is not None else None
             remaining = (
-                max(0.0, job_deadline - time.monotonic())
-                if job_deadline is not None
+                max(0.0, job_deadline - command_started_at)
+                if command_started_at is not None
                 else None
             )
             if setup is not None and remaining is not None:
@@ -3677,11 +3934,16 @@ def _run_job(
                 )
             else:
                 command_attempted = True
-                result = _stream_command(
-                    command,
-                    env=semantic_env,
-                    timeout_seconds=remaining,
-                )
+                if setup is not None and setup.get("acquisition") == "native_parallel":
+                    result = _run_native_browser_setup(
+                        setup, job_deadline=job_deadline, setup_started_at=command_started_at, command_env=semantic_env,
+                    )
+                else:
+                    result = _stream_command(
+                        command,
+                        env=semantic_env,
+                        timeout_seconds=remaining,
+                    )
         except Exception as exc:  # noqa: BLE001 — preserve earlier observations
             if command_attempted:
                 timeout_settlement = "unknown"
@@ -3968,6 +4230,23 @@ def _child_environment(
     if command_env.get("CI_CHANGED_FILES_FILE"):
         command_env.pop("CI_CHANGED_FILES_JSON", None)
     return _child_git_environment(command_env)
+
+
+def _export_tested_tree_sha(bound_tree_sha: str | None) -> bool:
+    """Publish the plan-bound tested tree to legacy steps as ``TESTED_TREE_SHA``.
+
+    The International canonical-main gates read ``CI_TESTED_TREE_SHA`` first and
+    ``TESTED_TREE_SHA`` second. ci.yml exports ``TESTED_TREE_SHA`` in the pack
+    step's ``env:``; the trusted and canary executors pass only CLI flags, so a
+    pack that knows its plan publishes the value once here, before either child
+    environment is assembled. An explicit value is never overridden (exact-base
+    replay sets ``CI_TESTED_TREE_SHA`` deliberately and keeps precedence).
+    Returns True only when this call set the variable.
+    """
+    if bound_tree_sha is None or os.environ.get("TESTED_TREE_SHA"):
+        return False
+    os.environ["TESTED_TREE_SHA"] = bound_tree_sha
+    return True
 
 
 def _child_git_environment(command_env: Mapping[str, str]) -> dict[str, str]:
@@ -5056,6 +5335,9 @@ def execute_pack(
         r"[0-9a-f]{40}", bound_tree_sha
     ):
         bound_tree_sha = None
+    # F10 review F1: both international legacy gates need the tested tree in the
+    # step environment on every executor, not only the ci.yml pack step.
+    _export_tested_tree_sha(bound_tree_sha)
     command_env = _child_environment(changed_files_file)
     if plan is not None:
         try:

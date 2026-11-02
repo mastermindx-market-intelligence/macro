@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000018230-21-000063",
+    "expected_period_end": "2020-12-31",
+    "expected_span_ref": null,
+    "expected_unit": "ratio",
+    "expected_value_text": null,
+    "fiscal_year": 2020,
+    "form_type": "10-K",
+    "format_class": "ixbrl_inline",
+    "issuer": "CAT",
+    "label_class": "extract_absent",
+    "pack_id": "PK11",
+    "polarity": "negative",
+    "reason": "cat-20201231.htm | untagged | Industrial 10-K with no regulatory-capital disclosure: grepped for 'common equity tier', 'CET1', 'tier 1 capital', 'regulatory capital': 0 matches each.",
+    "section_family": "cet1_or_stated_ratio",
+    "split": "held_out",
+    "target_id": "cet1_ratio_disclosed",
+    "target_kind": "extract",
+    "trial_id": "PK11|0000018230-21-000063|extract|cet1_ratio_disclosed"
+  },
+  {
+    "accession": "0000018230-21-000063",
+    "expected_period_end": "2020-12-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": null,
+    "fiscal_year": 2020,
+    "form_type": "10-K",
+    "format_class": "ixbrl_inline",
+    "issuer": "CAT",
+    "label_class": "extract_absent",
+    "pack_id": "PK11",
+    "polarity": "negative",
+    "reason": "cat-20201231.htm | untagged | No deposit liabilities in the CAT 10-K: grepped the plain text for 'deposits' (any case): 0 matches at all.",
+    "section_family": "lcr_or_stated_liq",
+    "split": "held_out",
+    "target_id": "deposits",
+    "target_kind": "extract",
+    "trial_id": "PK11|0000018230-21-000063|extract|deposits"
+  }
+]

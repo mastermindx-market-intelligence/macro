@@ -30,9 +30,30 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
 #dlg-risk .gde-disc-body {padding-top:8px; border-top:1px solid var(--line);}
 #dlg-risk .gde-tblwrap {max-width:100%; overflow-x:auto;}
 #dlg-risk .gde-tbl {width:100%; border-collapse:collapse; font-size:var(--fs-label);}
-#dlg-risk .gde-tbl th, #dlg-risk .gde-tbl td {padding:8px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+#dlg-risk .gde-tbl th, #dlg-risk .gde-tbl td {padding:8px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; overflow-wrap:break-word;}
 #dlg-risk .gde-tbl th {color:var(--ink-2); font-weight:600;}
 #dlg-risk .gde-tbl td {color:var(--ink-1);}
+/* Review (FU2): the page-wide body.page-macro td rule puts the numeric face on every
+   non-first cell; prose and labels in this table read in the UI face, and the As-of
+   date never splits across lines when the read column takes the width. */
+#dlg-risk .gde-tbl td[data-label-en="As of"] {white-space:nowrap;}
+#dlg-risk .gde-tbl td .l-en, #dlg-risk .gde-tbl td .l-zh {font-family:var(--font-ui); letter-spacing:normal;}
+/* D2 (FU2 recapture): below 481 px four columns cannot hold "Leadership cohort" or
+   the uppercase headers without letter-level breaks, so the table reduces to one
+   stacked card per source: the header row leaves the visual flow (still read by
+   assistive tech) and every cell carries its own column label from data-label-*. */
+@media(max-width:480px) {
+  #dlg-risk .gde-tbl thead {position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;}
+  #dlg-risk .gde-tbl, #dlg-risk .gde-tbl tbody {display:block;}
+  #dlg-risk .gde-tbl tr {display:block; padding:6px 0; border-bottom:1px solid var(--line);}
+  #dlg-risk .gde-tbl td {display:grid; grid-template-columns:minmax(0, 7.5em) minmax(0, 1fr); gap:0 12px; padding:3px 0; border-bottom:0;}
+  #dlg-risk .gde-tbl td::before {color:var(--ink-2); font-weight:600; font-size:var(--fs-label); font-family:var(--font-ui); letter-spacing:normal;}
+  #dlg-risk .gde-tbl td > * {grid-column:2;}
+  /* The label is visual only (empty alt text): assistive tech still has the header row.
+     The plain declaration first is the fallback for engines without the alt-text syntax. */
+  html:not([data-lang="zh"]) #dlg-risk .gde-tbl td::before {content:attr(data-label-en); content:attr(data-label-en) / "";}
+  html[data-lang="zh"] #dlg-risk .gde-tbl td::before {content:attr(data-label-zh); content:attr(data-label-zh) / "";}
+}
 #dlg-risk .gde-warn {color:var(--ink-warn);}
 #dlg-risk .gde-req {color:var(--ink-3);}
 #dlg-risk .gde-disc-h {font-size:var(--fs-sm); font-weight:600; margin:12px 0 4px;}
@@ -41,7 +62,6 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
 @media(max-width:640px) {
   #dlg-risk .riskdlg-context {padding:12px;}
   #dlg-risk .gde-reads {gap:8px 16px;}
-  #dlg-risk .gde-tbl {min-width:460px;}
 }
 
 /* The legacy band must not impose its rails or large spacing inside Risk Radar. */
@@ -65,3 +85,70 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
 
 #dlg-risk .gde-live-source-rows {white-space:pre-line; font-size:var(--fs-label); line-height:1.6; overflow-wrap:anywhere;}
 #dlg-risk #gde-live-sources[hidden] {display:none;}
+
+/* ── EW-P4.T1 descriptive early-warning observation (consumer-only). Chairman
+   2026-10-18 rule: even one-piece borders on ALL four sides, neutral or
+   surface-warn-subtle backgrounds from tokens, no edge stripe / accent rail /
+   inset shadow bar; state carried by text + ink color, never color alone. ── */
+#dlg-risk .gde-scope {font-size:var(--fs-label); color:var(--ink-3);}
+#dlg-risk .gde-ew {--gde-ew-surface:var(--esurf-neutral-soft); margin-top:8px; padding:10px 12px; border:1px solid var(--line); border-radius:var(--r-card); background:var(--gde-ew-surface); overflow-wrap:anywhere;}
+/* L3: light is its own art direction. The card is a raised white panel with the card
+   shadow on the deeper canvas, never a recessed --panel2 well. Only the surface token
+   moves, so the warning-state backgrounds below still win. */
+html[data-theme="light"] #dlg-risk .gde-ew {--gde-ew-surface:var(--panel); box-shadow:var(--card-shadow);}
+#dlg-risk .gde-ew[data-ew-state="stale"],
+#dlg-risk .gde-ew[data-ew-state="unavailable"],
+#dlg-risk .gde-ew[data-ew-state="unreadable"],
+#dlg-risk .gde-ew[data-ew-state="withdrawn"],
+#dlg-risk .gde-ew[data-ew-state="partial"],
+#dlg-risk .gde-ew[data-ew-state="conflicting"] {background:var(--surface-warn-subtle);}
+#dlg-risk .gde-ew-head {margin:0; display:flex; gap:8px; align-items:baseline; flex-wrap:wrap; font-size:var(--fs-sm); color:var(--ink-1);}
+#dlg-risk .gde-ew-scope {font-weight:600;}
+#dlg-risk .gde-ew-state {font-weight:600; color:var(--text);}
+#dlg-risk .gde-ew[data-ew-state="stale"] .gde-ew-state,
+#dlg-risk .gde-ew[data-ew-state="unavailable"] .gde-ew-state,
+#dlg-risk .gde-ew[data-ew-state="unreadable"] .gde-ew-state,
+#dlg-risk .gde-ew[data-ew-state="withdrawn"] .gde-ew-state,
+#dlg-risk .gde-ew[data-ew-state="partial"] .gde-ew-state,
+#dlg-risk .gde-ew[data-ew-state="conflicting"] .gde-ew-state {color:var(--ink-warn);}
+#dlg-risk .gde-ew[data-ew-state="corrected"] .gde-ew-state {color:var(--ink-info);}
+#dlg-risk .gde-ew-what {margin:6px 0 0; font-size:var(--fs-sm); line-height:1.45; color:var(--ink-1);}
+#dlg-risk .gde-ew-note {margin:4px 0 0; font-size:var(--fs-label); color:var(--ink-2);}
+#dlg-risk .gde-ew-when {margin:4px 0 0; font-size:var(--fs-label); color:var(--ink-3);}
+#dlg-risk .gde-ew-built {color:var(--muted); font-size:var(--fs-label);}
+#dlg-risk .gde-ew-means {margin:4px 0 0; font-size:var(--fs-label); color:var(--ink-3);}
+#dlg-risk .gde-ew-next {display:inline-block; margin-top:6px; font-size:var(--fs-label); color:var(--link);}
+#dlg-risk .gde-ew-next:focus-visible, #dlg-risk .gde-ew-study > summary:focus-visible {outline:2px solid var(--link); outline-offset:2px; border-radius:var(--r-ctl);}
+#dlg-risk .gde-ew-brief-h {margin-top:4px;}
+#dlg-risk .gde-ew-tablewrap {margin-top:8px; max-width:100%;}
+#dlg-risk .gde-ew-legs {width:100%; border-collapse:collapse; font-size:var(--fs-label);}
+#dlg-risk .gde-ew-legs caption {caption-side:top; text-align:left; padding:0 8px 4px; color:var(--ink-3); font-size:var(--fs-label);}
+#dlg-risk .gde-ew-legs th, #dlg-risk .gde-ew-legs td {padding:6px 8px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; overflow-wrap:anywhere;}
+/* D6: row headers read as sentence-case UI labels on both hosts; the page-wide
+   body.page-macro th rule would otherwise make them uppercase micro type. */
+#dlg-risk .gde-ew-legs th {color:var(--ink-2); font-weight:600; font-family:var(--font-ui); font-size:var(--fs-label); text-transform:none; letter-spacing:normal;}
+#dlg-risk .gde-ew-legs td {color:var(--ink-1); font-variant-numeric:tabular-nums;}
+/* Review (FU2): sector names read in the UI face on both hosts; only .tnum cells are figures. */
+#dlg-risk .gde-ew-legs td:not(.tnum) {font-family:var(--font-ui); letter-spacing:normal; font-variant-numeric:normal;}
+#dlg-risk .gde-ew-contextline {margin:6px 0 0; font-size:var(--fs-sm); line-height:1.45;}
+#dlg-risk .gde-ew-horizons {display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;}
+#dlg-risk .gde-ew-hz {flex:1 1 150px; min-width:0; border:1px solid var(--line); border-radius:var(--r-ctl); padding:8px 10px; font-size:var(--fs-label); color:var(--ink-2); display:flex; gap:6px 10px; align-items:baseline; flex-wrap:wrap;}
+#dlg-risk .gde-ew-hz-k {font-weight:600; color:var(--ink-1);}
+#dlg-risk .gde-ew-hz-v {font-size:var(--fs-md); font-weight:650; color:var(--ink-1);}
+#dlg-risk .gde-ew-hz-q {color:var(--ink-3);}
+#dlg-risk .gde-ew-against {padding-left:16px; margin:0; font-size:var(--fs-label); line-height:1.5; color:var(--ink-2);}
+#dlg-risk .gde-ew-study {margin-top:10px; font-size:var(--fs-label);}
+#dlg-risk .gde-ew-study > summary {cursor:pointer; min-height:32px; align-content:center; color:var(--ink-2);}
+#dlg-risk .gde-ew-dl {margin:4px 0 0;}
+#dlg-risk .gde-ew-dl > div {display:flex; gap:4px 12px; flex-wrap:wrap; padding:5px 0; border-bottom:1px solid var(--line);}
+#dlg-risk .gde-ew-dl dt {flex:0 0 auto; color:var(--ink-3); font-weight:600;}
+#dlg-risk .gde-ew-dl dd {margin:0; min-width:0; flex:1 1 120px; color:var(--ink-1); overflow-wrap:anywhere;}
+#dlg-risk .gde-ew-id {user-select:all; font-family:var(--font-mono);}
+@media(max-width:640px) {
+  #dlg-risk .gde-ew {padding:10px;}
+  #dlg-risk .gde-ew-horizons {flex-direction:column;}
+  #dlg-risk .gde-ew-hz {flex-basis:100%;}
+  #dlg-risk .gde-ew-legs th, #dlg-risk .gde-ew-legs td {display:block; width:100%; box-sizing:border-box; border-bottom:none; padding:2px 8px;}
+  #dlg-risk .gde-ew-legs tr {display:block; border-bottom:1px solid var(--line); padding:4px 0;}
+  #dlg-risk .gde-ew-legs {border-bottom:1px solid var(--line);}
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-24T21:12:49Z",
+ "accession": "0001274494-26-000021",
+ "cik": "0001274494",
+ "doc_byte_length": 2523372,
+ "doc_sha256": "ff883aa776a121c56d64e7638751b50bc84338328aa7bb5700bc84875b40f59a",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-24",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "fslr-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 289265,
+  "byte_start": 288727,
+  "normalized": "During 2025, we sold the majority of our solar modules to customers with projects in the United States. During 2025, Silicon Ranch Corporation and NextEra Energy each accounted for 10% or more of our modules business net sales. For more information about risks related to our customers, see Item 1A.",
+  "normalized_sha256": "abb2114df65c0ae5ada71797db841bb14c27c31d424865640bfde44584410cd3",
+  "raw": " During 2025, we sold the majority of our solar modules to customers with projects in the United States. During 2025, Silicon Ranch Corporation and NextEra Energy</span><span style=\"color:#0094ff;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"> </span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">each accounted for 10% or more of our modules business net sales. For more information about risks related to our customers, see Item 1A.",
+  "raw_sha256": "e825fa210c7220721b7671bc90d2ae026b2ff107ec49ecac8705dab605d457a4"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1274494/000127449426000021/fslr-20251231.htm",
+ "xbrl_contexts": []
+}

@@ -77,7 +77,9 @@ StateDirectoryMode=0700
 # First adoption may still execute the predecessor updater. Create only the
 # fixed empty anchors before the API's mandatory mount namespace is constructed.
 ExecStartPre=+/usr/bin/python3 -I /opt/macro/app/deploy/medtech-prereqs.py
-ExecStart=/opt/macro-api/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
+# Compile the measured bootstrap buffer directly; neither it nor the allowlisted
+# F04 imports may silently execute an older .pyc. No source/path evidence is public.
+ExecStart=/opt/macro-api/.venv/bin/python3 -B -c "import sys; p='/opt/macro/app/runtime_attestation.py'; f=open(p,'rb'); b=f.read(262145); f.close(); 0<len(b)<=262144 or sys.exit('F04_BOOTSTRAP_BOUND'); c=compile(b,p,'exec',dont_inherit=True); exec(c,{'__name__':'__main__','__file__':p,'_BOOTSTRAP_SOURCE':b,'_BOOTSTRAP_CODE':c})"
 Restart=always
 RestartSec=2
 # Light hardening (still runs as root for MVP simplicity; tighten to a dedicated

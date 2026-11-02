@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-10T19:00:16Z",
+ "accession": "0001070412-26-000038",
+ "cik": "0001070412",
+ "doc_byte_length": 3388540,
+ "doc_sha256": "e7ed4b7df1c9c022d89e8933072d1ce4bd1b6aa1030355fd8a5326189a7f8485",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-10",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "cnx-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2551581,
+  "byte_start": 2550622,
+  "normalized": "During the year ended December 31, 2024, sales to Citadel Energy Marketing LLC were $134,909 and sales to NRG Business Marketing LLC were $132,935, each of which comprised over 10% of the Company's revenue from contracts with external customers for the period.",
+  "normalized_sha256": "7035f956a6a69f2c910434f5123b8864aae7676346ba15278eadf31170d9863b",
+  "raw": "During the year ended December&#160;31, 2024, sales to Citadel Energy Marketing LLC were $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-239\" decimals=\"-3\" name=\"us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax\" format=\"ixt:num-dot-decimal\" scale=\"3\" id=\"f-1380\">134,909</ix:nonFraction> and sales to NRG Business Marketing LLC were $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-240\" decimals=\"-3\" name=\"us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax\" format=\"ixt:num-dot-decimal\" scale=\"3\" id=\"f-1381\">132,935</ix:nonFraction>, each of which comprised over <ix:nonFraction unitRef=\"number\" contextRef=\"c-241\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1382\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-242\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1383\">10</ix:nonFraction></ix:nonFraction>% of the Company's revenue from contracts with external customers for the period.",
+  "raw_sha256": "3e219485ca988e51a212fe1b9706453c15ae42ef4a622c0fd790626c08454821"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1070412/000107041226000038/cnx-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 110505,
+   "byte_start": 109813,
+   "context_ref": "c-241",
+   "raw": "<xbrli:context id=\"c-241\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001070412</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">cnx:CitadelEnergyMarketingLLCMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "9ee6e674981cc016265d4f3000281d356a00a0793ea0c81540cf9a085a1b8eea"
+  }
+ ]
+}
