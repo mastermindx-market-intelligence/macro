@@ -288,15 +288,58 @@ if ! cmp -s "$APP_DIR/app/deploy/update.sh" /usr/local/bin/macro-update; then
 	stop_reciprocal_market_memory_writers
 fi
 
+# BEGIN MACRO_UPDATE_FREE_SPACE_GUARD
+# Root-disk floor before the pull writes anything (2026-10-19 and 2026-11-01
+# refills). Every pull lands a new pack in $APP_DIR/.git/objects on the root
+# filesystem; on a full disk the next one fails half-way and journald, Caddy
+# and the API start failing with it. Below the floor, or when free space or the
+# floor cannot be read as a number, this tick skips the fetch: it says why on
+# stderr and in the system log, leaves a marker that names the shortfall, and
+# still runs the reconciliation below against the current checkout (so a timer
+# disarmed above is re-armed, as on any no-change tick), then exits 1. A refused
+# pull also holds back deploys of fixes, by design: recovering space is a
+# manual step (app/deploy/README.md, "Git store maintenance"), never something
+# this updater improvises. The 7 GiB floor is set above what the nightly repack
+# needed on a normal night (about 4 GiB measured 2026-11-01), so on most nights
+# the repack can still run below a refused pull; when it cannot, it refuses and
+# says so, and the recovery stays manual.
+MIN_FREE_KIB="${MACRO_UPDATE_MIN_FREE_KIB:-7340032}"
+DISK_REFUSED_MARKER="${MACRO_UPDATE_DISK_MARKER:-/run/macro-update-disk-refused}"
+DISK_REFUSED=0
+DISK_REFUSAL=""
+ROOT_FREE_KIB=$(df --output=avail -k "$APP_DIR/.git/objects" 2>/dev/null | tail -n 1 | tr -d ' ') || ROOT_FREE_KIB=""
+if ! [[ $ROOT_FREE_KIB =~ ^[0-9]+$ ]] || ! [[ $MIN_FREE_KIB =~ ^[0-9]+$ ]] || [ "$ROOT_FREE_KIB" -lt "$MIN_FREE_KIB" ]; then
+	DISK_REFUSED=1
+	DISK_REFUSAL="macro-update: REFUSED pull: ${ROOT_FREE_KIB:-unreadable} KiB free on $APP_DIR/.git/objects, floor ${MIN_FREE_KIB} KiB; nothing pulled; this tick reconciles the current checkout and exits 1 (recovery: app/deploy/README.md, 'Git store maintenance')"
+	echo "$DISK_REFUSAL" >&2
+	logger -p user.err -t macro-update "$DISK_REFUSAL" 2>/dev/null || true
+	echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) $DISK_REFUSAL" > "$DISK_REFUSED_MARKER" 2>/dev/null || true
+else
+	rm -f "$DISK_REFUSED_MARKER"
+fi
+# END MACRO_UPDATE_FREE_SPACE_GUARD
+
 # Do not add --depth here: depth-one fetches sever the new tip from previously
 # published revisions, breaking the native accepts_revision ancestry check even
 # when both commit objects remain present. Ordinary fetch preserves connectivity
 # for later updates. Existing shallow boundaries require a separate repair;
 # this updater never deepens or rewrites them. A fetch failure still aborts
-# under strict mode before OLD/NEW and reset.
-git -C "$APP_DIR" fetch -q origin main
+# under strict mode before OLD/NEW and reset. A disk-refused tick skips the
+# fetch and pins NEW to HEAD without reading FETCH_HEAD: a fetch that failed
+# part-way (as on a full disk) truncates FETCH_HEAD to empty, and reading it
+# would abort the tick here before the reconciliation below. From here on a
+# refused tick is a no-change tick: nothing below resets or pulls.
+# BEGIN MACRO_UPDATE_PULL_SELECT
+if [ "$DISK_REFUSED" -eq 0 ]; then
+	git -C "$APP_DIR" fetch -q origin main
+fi
 OLD=$(git -C "$APP_DIR" rev-parse HEAD)
-NEW=$(git -C "$APP_DIR" rev-parse FETCH_HEAD)
+if [ "$DISK_REFUSED" -eq 1 ]; then
+	NEW=$OLD
+else
+	NEW=$(git -C "$APP_DIR" rev-parse FETCH_HEAD)
+fi
+# END MACRO_UPDATE_PULL_SELECT
 CHANGED=""
 REPO_UPDATED=0
 RECONCILED=0
@@ -2562,6 +2605,68 @@ if systemctl is-enabled macro-api.service >/dev/null 2>&1 && \
 	fi
 fi
 
+# GIT STORE MAINTENANCE — 2026-10-19 root-disk incident: every pull lands a new
+# fetch pack and auto-gc is disabled on the box (gc.auto=0), so nothing ever
+# consolidated them; /opt/macro/.git reached 41G in 263 packs and filled the
+# root disk. Same self-arming contract as the backup timer above: gated on
+# macro-api.service, re-armed when a source changes or an installed copy is
+# absent. The script is installed BEFORE the units are verified because the
+# service's ExecStart names the installed path (and a running maintenance
+# keeps its old inode, as with this updater's own self-update). The .service
+# is a oneshot and is never started from here; only the timer is (re)armed.
+# The journald size cap rides the same block: without it the persistent
+# journal may take 10% of the root filesystem.
+if systemctl is-enabled macro-api.service >/dev/null 2>&1 && \
+   { echo "$CHANGED" | grep -qE '^app/deploy/(macro-git-store-maintenance\.(sh|service|timer)|journald-macro-vps\.conf)$' || \
+     [ ! -f /usr/local/sbin/macro-git-store-maintenance ] || \
+     [ ! -f /etc/systemd/system/macro-git-store-maintenance.timer ] || \
+     [ ! -f /etc/systemd/journald.conf.d/10-macro-vps-cap.conf ]; }; then
+	GIT_MAINT_SOURCE="$APP_DIR/app/deploy/macro-git-store-maintenance.sh"
+	GIT_MAINT_BIN=/usr/local/sbin/macro-git-store-maintenance
+	if ! cmp -s "$GIT_MAINT_SOURCE" "$GIT_MAINT_BIN"; then
+		if bash -n "$GIT_MAINT_SOURCE"; then
+			install -m 0755 "$GIT_MAINT_SOURCE" "$GIT_MAINT_BIN"
+			RECONCILED=1
+			echo "macro-update: macro-git-store-maintenance script updated"
+		else
+			echo "macro-update: refusing macro-git-store-maintenance script update — bash -n failed" >&2
+		fi
+	fi
+	GIT_MAINT_UNIT_SOURCES=(
+		"$APP_DIR/app/deploy/macro-git-store-maintenance.service"
+		"$APP_DIR/app/deploy/macro-git-store-maintenance.timer"
+	)
+	if [ -x "$GIT_MAINT_BIN" ] && systemd-analyze verify "${GIT_MAINT_UNIT_SOURCES[@]}"; then
+		GIT_MAINT_UNIT_UPDATED=0
+		for UNIT_SOURCE in "${GIT_MAINT_UNIT_SOURCES[@]}"; do
+			UNIT=$(basename "$UNIT_SOURCE")
+			if ! cmp -s "$UNIT_SOURCE" "/etc/systemd/system/$UNIT"; then
+				install -m 0644 "$UNIT_SOURCE" "/etc/systemd/system/$UNIT"
+				GIT_MAINT_UNIT_UPDATED=1
+			fi
+		done
+		if [ "$GIT_MAINT_UNIT_UPDATED" -eq 1 ]; then
+			systemctl daemon-reload
+			systemctl restart macro-git-store-maintenance.timer 2>/dev/null || true
+			RECONCILED=1
+			echo "macro-update: macro-git-store-maintenance units updated"
+		fi
+		systemctl enable --now macro-git-store-maintenance.timer >/dev/null 2>&1 || \
+			echo "macro-update: macro-git-store-maintenance.timer could not be enabled" >&2
+	else
+		echo "macro-update: refusing macro-git-store-maintenance unit update — script not installed or systemd-analyze verify failed" >&2
+	fi
+	JOURNALD_CAP_SOURCE="$APP_DIR/app/deploy/journald-macro-vps.conf"
+	JOURNALD_CAP=/etc/systemd/journald.conf.d/10-macro-vps-cap.conf
+	if ! cmp -s "$JOURNALD_CAP_SOURCE" "$JOURNALD_CAP"; then
+		install -D -m 0644 "$JOURNALD_CAP_SOURCE" "$JOURNALD_CAP"
+		systemctl restart systemd-journald 2>/dev/null || \
+			echo "macro-update: systemd-journald restart failed; the cap applies from its next start" >&2
+		RECONCILED=1
+		echo "macro-update: journald size cap updated"
+	fi
+fi
+
 # PRESS-FEEDS is a long-running daemon, unlike the oneshot live-plane timers
 # above. Arming remains an explicit operator choice: this block neither installs
 # an absent unit nor enables/starts an inactive one. Once the operator has
@@ -2757,6 +2862,14 @@ if [ "$OHLC_DELIVERY_EXIT_STATUS" -ne 0 ]; then
 	fi
 fi
 # END OHLC_DELIVERY_EXIT_STATUS
+# BEGIN DISK_REFUSAL_EXIT_STATUS
+if [ "${DISK_REFUSED:-0}" -eq 1 ]; then
+	echo "macro-update: tick reconciled without pulling: $DISK_REFUSAL" >&2
+	if [ "${DEPLOY_EXIT_STATUS:-0}" -eq 0 ]; then
+		DEPLOY_EXIT_STATUS=1
+	fi
+fi
+# END DISK_REFUSAL_EXIT_STATUS
 # BEGIN DEPLOY_EXIT_STATUS
 if [ "${W2C_LANE_FROZEN:-0}" -eq 1 ]; then
 	echo "macro-update: deploy finished with status ${DEPLOY_EXIT_STATUS:-1} (frozen lanes: w2c)" >&2

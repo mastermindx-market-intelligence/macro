@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-24T10:51:59Z",
+ "accession": "0001628280-26-026991",
+ "cik": "0001786909",
+ "doc_byte_length": 17263150,
+ "doc_sha256": "d7cc679b2a248cba7860d9fafa396859d4c941e2e5aa0a4bd63afe52fbad8da8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-24",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "sbsw-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 12424059,
+  "byte_start": 12423388,
+  "normalized": "On 19 December 2024 Sibanye-Stillwater entered into a US$500 million streaming agreement with Franco-Nevada in exchange for the sale",
+  "normalized_sha256": "6f1b8d249e77cd3d33fc24172de9502fa3b3c154dee27fb94abd154be5bdcd62",
+  "raw": "On 19 December 2024 Sibanye-Stillwater entered into a </span><span style=\"font-family:'Century Gothic', sans-serif;font-size:7.5pt;font-style:normal;font-weight:normal;left:266.64pt;position:var(--position);text-decoration:none;white-space:pre\">US$<ix:nonFraction unitRef=\"usd\" contextRef=\"c-1835\" decimals=\"-6\" name=\"sbsw:StreamArrangementContractCommitment\" scale=\"6\" id=\"f-6804\">500</ix:nonFraction>&#160;million</span><span style=\"font-family:'Century Gothic', sans-serif;font-size:7.5pt;font-style:normal;font-weight:normal;left:316.48pt;position:var(--position);text-decoration:none;white-space:pre\"> streaming agreement with Franco-Nevada in exchange for the sale ",
+  "raw_sha256": "b69a430e32670fabafbceca72de465bf1edae5b8d3abaa809430caabaf97477f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1786909/000162828026026991/sbsw-20251231.htm",
+ "xbrl_contexts": []
+}

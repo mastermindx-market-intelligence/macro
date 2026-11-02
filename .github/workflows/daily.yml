@@ -1019,15 +1019,34 @@ jobs:
           if [ -z "$qpaths" ]; then lost=" snapshot-unreadable:$QLEDGER_SNAPSHOT"; fi
           while IFS= read -r qpath; do
             [ -n "$qpath" ] || continue
-            if git cat-file -e "$QLEDGER_SNAPSHOT:$qpath" 2>/dev/null; then
+            # Classify against the snapshot TREE, never against a lookup exit code
+            # (#9556 post-merge findings 6285214966 + 6290288707): a readable tree
+            # that lacks the path is a deferred deletion; an unreadable tree
+            # (object store, lock, OOM) is LOST and the surviving bytes stay put.
+            if ! entry=$(git ls-tree --name-only "$QLEDGER_SNAPSHOT" -- "$qpath" 2>/dev/null); then
+              lost="$lost $qpath(lookup-failed)"; continue
+            fi
+            if [ -n "$entry" ]; then
               want=$(git rev-parse "$QLEDGER_SNAPSHOT:$qpath" 2>/dev/null) || want=""
+              if [ -z "$want" ]; then lost="$lost $qpath(lookup-failed)"; continue; fi
               have=$(git hash-object -- "$qpath" 2>/dev/null) || have=""
-              if [ -n "$want" ] && [ "$have" != "$want" ]; then
+              if [ "$have" != "$want" ]; then
+                # A non-file at the path (a directory) cannot be swapped: POSIX `mv`
+                # would move the temp INTO it and leak the blob. Report LOST, touch nothing.
+                if [ -e "$qpath" ] && [ ! -f "$qpath" ]; then lost="$lost $qpath(not-a-file)"; continue; fi
+                # Read into a sibling temp file and swap in only a hash-verified
+                # copy: a failed blob read must never truncate the surviving file.
                 mkdir -p -- "$(dirname -- "$qpath")" 2>/dev/null || true
-                git cat-file blob "$QLEDGER_SNAPSHOT:$qpath" > "$qpath" 2>/dev/null || true
+                tmp=$(mktemp "$qpath.restore.XXXXXX" 2>/dev/null) || tmp=""
+                if [ -n "$tmp" ] && git cat-file blob "$QLEDGER_SNAPSHOT:$qpath" > "$tmp" 2>/dev/null \
+                   && [ "$(git hash-object -- "$tmp" 2>/dev/null)" = "$want" ]; then
+                  chmod u=rw,go=r -- "$tmp" 2>/dev/null || true
+                  mv -f -- "$tmp" "$qpath" 2>/dev/null || true
+                fi
+                if [ -n "$tmp" ]; then rm -f -- "$tmp" 2>/dev/null || true; fi
                 have=$(git hash-object -- "$qpath" 2>/dev/null) || have=""
               fi
-              if [ -n "$want" ] && [ "$have" = "$want" ]; then restored="$restored $qpath"; else lost="$lost $qpath"; fi
+              if [ "$have" = "$want" ]; then restored="$restored $qpath"; else lost="$lost $qpath"; fi
             else
               rm -f -- "$qpath" 2>/dev/null || true
               if [ -e "$qpath" ]; then lost="$lost $qpath(deleted)"; else restored="$restored $qpath(deleted)"; fi

@@ -1765,6 +1765,40 @@ def _strength_word(score: int) -> tuple[str, str]:
     return ("faint", "微弱")
 
 
+def _fresh_cross_when(when) -> tuple[str, str, str, str]:
+    """Line and chip wording for the session a same-day cross printed.
+
+    Returns (line EN, line ZH, chip EN, chip ZH). A calendar date becomes
+    ``on D Mon YYYY`` / ``于YYYY年M月D日`` in the line and ``D Mon`` / ``M月D日``
+    on the chip (no zero padding, English month fixed so the text does not
+    follow the process locale). Missing or unparsable becomes
+    ``at the latest session`` / ``于最新交易日`` and ``latest session`` /
+    ``最新交易日``.
+    """
+    fallback = ("at the latest session", "于最新交易日", "latest session", "最新交易日")
+    months = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+    from datetime import date, datetime
+
+    day: date | None = None
+    if isinstance(when, datetime):
+        day = when.date()
+    elif isinstance(when, date):
+        day = when
+    elif isinstance(when, str) and when.strip():
+        head = when.strip().split()[0][:10]
+        try:
+            day = date.fromisoformat(head)
+        except ValueError:
+            day = None
+    if day is None:
+        return fallback
+    return (f"on {day.day} {months[day.month - 1]} {day.year}",
+            f"于{day.year}年{day.month}月{day.day}日",
+            f"{day.day} {months[day.month - 1]}",
+            f"{day.month}月{day.day}日")
+
+
 def signal_age_fields(state: str, score: int, age: dict) -> dict:
     """Plain-language 'when did this signal cross / how strong is it' lines
     (EN + ZH) plus a compact badge, built from signal_age() + the ladder score."""
@@ -1787,14 +1821,15 @@ def signal_age_fields(state: str, score: int, age: dict) -> dict:
               f"（约 {wk} 周以上）——属于既定趋势，并非新出现的信号。")
         short, short_zh = f"{days}d+", f"{days}天+"
     elif days == 0:
-        en = f"⏱ {label} signal just triggered today (fresh cross"
-        zh = f"⏱ {label_zh}信号于今日刚刚触发（全新交叉"
+        en_when, zh_when, chip_en, chip_zh = _fresh_cross_when(when)
+        en = f"⏱ {label} signal triggered {en_when} (fresh cross"
+        zh = f"⏱ {label_zh}信号{zh_when}刚刚触发（全新交叉"
         if prev_label:
             en += f" from {prev_label}"
             zh += f"，自{prev_label_zh}翻转"
         en += ")."
         zh += "）。"
-        short, short_zh = "today", "今日"
+        short, short_zh = chip_en, chip_zh
     else:
         unit = "trading day" if days == 1 else "trading days"
         en = f"⏱ {label} signal triggered {days} {unit} ago"
