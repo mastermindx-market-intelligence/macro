@@ -34,11 +34,11 @@
 # rows re-sourced, ZH clock-mismatch patterns in verb/colon construction, .cyc-cards align-items:start, methods parity chip align-self:flex-start, the page-level
 # session family in data vocabulary; boards 28-31/34-36/39-41 re-rendered, the 32 other PNGs byte-identical; confirmatory round 7). proposed_artifact.frozen_sha and
 # manifest.yml frozen_sha both read 78c14f7d — asserted equal by the seat's refreeze6.py (revision_mandate_round6 at the end of this file).
-# Round 7 at 78c14f7d (confirmatory, SIC-ADJ-04): Reviewer B PASS/PASS (no conditions; VTC-043..046 cured; VTC-047 minor advisory,
-# non-binding) / Reviewer A PASS_WITH_CONDITIONS/PASS_WITH_CONDITIONS (PRC-046..049 cured, SIC-V6-C01..C09 met; PRC-050/051 minor,
-# PRC-052 nit from the rationale) → verdict REVISE round 7 with SIC-V7-C01..C06 (C04 the adopted 显示 polish, C05 the PRC-052 record,
-# C06 the re-render discipline) and SIC-ADJ-05 (round 8 is the last confirmatory round unless it finds a defect); repair wave 7 →
-# re-freeze 2026-11-02 at 213a91b9 (wave 7 landed; frozen_sha both read 213a91b9, refreeze7.py; no header lines inserted — wave-7 line references hold) → round 8.
+# Round 7 at 78c14f7d (confirmatory, SIC-ADJ-04): Reviewer B PASS/PASS (VTC-047 advisory) / Reviewer A PASS_WITH_CONDITIONS ×2 (PRC-050/051 minor, PRC-052 nit) → REVISE round 7, SIC-V7-C01..C06, SIC-ADJ-05 (round 8 the last confirmatory round unless it finds a defect);
+# wave 7 → re-freeze 2026-11-02 at 213a91b9 (frozen_sha both read 213a91b9, refreeze7.py; no header lines inserted — wave-7 line references hold). Round 8 at 213a91b9 (confirmatory, SIC-ADJ-05): Reviewer B
+# PASS_WITH_CONDITIONS ×2 (VTC-043..047 cured, C04/C06 met; VTC-048 minor DEFECT of the record — the 31/39 diff box is the global header search-field row, not 'the hero-title band'; VTC-049 non-binding) / Reviewer A
+# PASS_WITH_CONDITIONS ×2 (PRC-046..052 cured, C01..C06 met, C03 outcome (i) deviation holds; PRC-053 minor DEFECT — false normalizer docstrings; PRC-054 non-binding; PRC-055 minor DEFECT from the rationale — the
+# frozen :2190 qualifier reads :2066 for the :2067 residual) → verdict REVISE round 8 with SIC-V8-C01/C03/C04/VT1 (record and docstrings only, one literal test assertion) and SIC-ADJ-06; wave 8 → re-freeze → bounded round 9.
 schema: mastermind.rig_proposal.v1
 reference_id: sector-intelligence-cycles-20261021
 proposed_artifact:
