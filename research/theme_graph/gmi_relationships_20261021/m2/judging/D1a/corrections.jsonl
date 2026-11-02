@@ -1,0 +1,2 @@
+{"after":"scope.product_quote='our x86 instruction sets' (unique)","before":"scope.product_quote='our x86 products' (3 occurrences; scope quotes carry no occurrence field)","candidate_id":"cand:bbd77702a7ade29f9b38","code":"QUOTE_AMBIGUOUS","round":1}
+{"after":"scope.product_quote='patents and technology rights related to a license agreement' (unique)","before":"scope.product_quote='patents and technology rights' (2 occurrences; scope quotes carry no occurrence field)","candidate_id":"cand:824cd1190f6616870fd0","code":"QUOTE_AMBIGUOUS","round":1}

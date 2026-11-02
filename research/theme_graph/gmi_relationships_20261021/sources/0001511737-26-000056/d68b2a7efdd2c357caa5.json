@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-21T10:59:08Z",
+ "accession": "0001511737-26-000056",
+ "cik": "0001511737",
+ "doc_byte_length": 1642170,
+ "doc_sha256": "9ba61b71704883139ba49a45d4d923e3174c13eaedbaefc954029a95c2b62ed4",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-21",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "ubnt-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 289374,
+  "byte_start": 289120,
+  "normalized": "example, we currently rely upon some chipset suppliers, such as Qualcomm and Broadcom, as single-source suppliers of certain components for some of our products, and a disruption in the supply of those components would significantly disrupt our business.",
+  "normalized_sha256": "d68b2a7efdd2c357caa5ff1a9009208957a9b89a9cc0d6e9148d02dd4a2841a9",
+  "raw": "example, we currently rely upon some chipset suppliers, such as Qualcomm and Broadcom, as single-source suppliers of certain components for some of our products, and a disruption in the supply of those components would significantly disrupt our business.",
+  "raw_sha256": "d68b2a7efdd2c357caa5ff1a9009208957a9b89a9cc0d6e9148d02dd4a2841a9"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1511737/000151173726000056/ubnt-20260630.htm",
+ "xbrl_contexts": []
+}
