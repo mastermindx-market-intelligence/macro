@@ -5122,6 +5122,12 @@ CURATED_EXCLUSIVE = {
     # single-suite owner. Its explicit paths cover the static import closure
     # and package ancestor init, without accepting unrelated render probes.
     "aibrief-countdown-pr",
+    # 2026-11-01 GMI relationships (ORCH-REL M1/M2/M3): the eleven relationship
+    # suites get one gate:code exclusive home with their measured import/read
+    # closure (package v2, edges, SEC source packets, m2 extraction samples).
+    # Registered from the lanes' ci_registration_proposal*.yml; no pack
+    # ceiling is loosened and no unrelated render probe is selected.
+    "company-intelligence-relationships",
 }
 
 
