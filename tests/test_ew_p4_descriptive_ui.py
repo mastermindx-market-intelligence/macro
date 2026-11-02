@@ -621,11 +621,48 @@ def _git_blob_id(path: Path) -> str:
     return hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
 
 
+# _radar_harness_digest() over the templates/ tree of the receipt's source revision
+# 5d6fcf2a (dashboard blob 512a9af5). tests/test_macro_risk_dialog.py, the
+# ew_p4_observation fixtures and this file's helpers above are unchanged since then.
+RADAR_HOST_HARNESS_SHA256 = "04bc50792cd2326785fd7525226e002efe07919285c22530b83ca81710a774ed"
+
+
+def _probe_dlg_element(html: str) -> str:
+    """probe_ew_p4_descriptive_ui_browser._dlg_element: #dlg-risk from its opening <div>
+    up to the element holding #dlg-policy."""
+    start = html.rfind("<div", 0, html.index('id="dlg-risk"'))
+    rest = html[start:]
+    j = rest.find('id="dlg-policy"')
+    if j > 0:
+        end = rest.rfind("<div", 0, j)
+        rest = rest[: end if end > 0 else j]
+    return rest
+
+
+def _radar_harness_digest(tpl=None) -> str:
+    """sha256 of everything the browser probe takes from the Radar host page: the inline
+    <style> blocks of the default render (_dashboard_styles) and the #dlg-risk element of
+    every radar envelope it screenshots (radar_html), in the probe's order."""
+    tpl = tpl or _dashboard_template()
+    page = tpl.render(**_vm(), mode="macro")
+    parts = ["\n".join(re.findall(r"<style[^>]*>(.*?)</style>", page, re.S))]
+    fx = _fixtures()
+    envs = [_journey_c(), envelope(fx["journey_b_both_fell"])]
+    envs += [envelope(fx[n] if n else None) for n in (
+        "partial_window_mismatch", "conflict_20s", None, "withdrawn", "corrected", "malformed_ratio")]
+    for env in envs:
+        parts.append(_probe_dlg_element(tpl.render(**_vm(risk_envelope=env), mode="macro")))
+    return hashlib.sha256("\0".join(parts).encode("utf-8")).hexdigest()
+
+
 def test_receipt_shots_depict_the_source_under_test():
     """The shots were rendered from the receipt's source_revision. A file cannot name
     the commit that contains it, so the receipt binds the render INPUTS instead: every
     one must be byte-identical (git blob id) on the tree CI checks out, which makes the
-    receipt hold for the exact head under test and fail on any later render edit."""
+    receipt hold for the exact head under test and fail on any later render edit. The
+    one exception is templates/dashboard.html.j2, the whole Macro page: it is held to a
+    digest of what the probe takes from it (_radar_harness_digest), so an edit to any
+    inline style or to the risk dialog fails while an edit to another panel does not."""
     rec = json.loads((EVIDENCE / "receipt.json").read_text(encoding="utf-8"))
     assert rec["base"] == "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd"
     eq = rec["pr_source_equivalence"]
@@ -654,6 +691,14 @@ def test_receipt_shots_depict_the_source_under_test():
         if row["path"].startswith("site/") and not p.exists():
             continue  # sparse local trees omit site/; templates/ carries the same bytes
         assert row["blob_at_source_revision"] == row["blob_on_pr_branch"], row["path"]
+        if row["path"] == "templates/dashboard.html.j2":
+            # The Radar host page is one template for the whole Macro page, so an edit to
+            # another section (the data-health panel, say) changes its blob without
+            # changing what these shots show. Hold it to what the probe takes from it:
+            # an edit to any inline style or to the risk dialog still fails here.
+            assert _radar_harness_digest() == RADAR_HOST_HARNESS_SHA256, row["path"]
+            if _git_blob_id(p) != row["blob_at_source_revision"]:
+                continue
         assert _git_blob_id(p) == row["blob_at_source_revision"], row["path"]
 
     glance = (ROOT / "templates" / "rotation_glance.css").read_bytes()
