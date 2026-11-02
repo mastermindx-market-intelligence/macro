@@ -164,7 +164,7 @@ def _name_of(state: Mapping[str, Any], names: Mapping[str, str] | None) -> str:
 def _catalyst_for(state: Mapping[str, Any], as_of: date | None) -> dict[str, Any] | None:
     legs = state.get("legs") if isinstance(state.get("legs"), Mapping) else {}
     catalyst = legs.get("catalyst") if isinstance(legs, Mapping) else None
-    if not isinstance(catalyst, Mapping):
+    if as_of is None or not isinstance(catalyst, Mapping):
         return None
     observables = catalyst.get("next_observables") or []
     if not isinstance(observables, list):
@@ -176,17 +176,13 @@ def _catalyst_for(state: Mapping[str, Any], as_of: date | None) -> dict[str, Any
         # Upstream security_state.v1 observables carry an estimated window;
         # the contract has no announced `date` field. Read window_start only.
         start = _iso_date(item.get("window_start"))
-        if start is None:
+        if start is None or start < as_of:
             continue
         dated.append((start, item))
     if not dated:
         return None
     dated.sort(key=lambda pair: pair[0])
     event_date, item = dated[0]
-    if as_of is None:
-        return None
-    if event_date < as_of:
-        return None
     if trading_days_between(as_of, event_date) > CATALYST_WINDOW_TRADING_DAYS:
         return None
     window_end = _iso_date(item.get("window_end")) or event_date
