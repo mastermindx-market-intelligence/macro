@@ -40,31 +40,43 @@ def prepare(monkeypatch, tmp_path, mode_id, *, qualify=False):
         monkeypatch.setattr(ppm, "MODELARK_RESPONSES_PROFILES", profiles)
 
 
-def spy_client(monkeypatch, *, model, text="mock answer", status="completed",
-               input_tokens=11, output_tokens=5, error=None):
-    calls = {"init": [], "create": []}
+def spy_http(monkeypatch, *, model, text="mock answer", response_status="completed",
+             http_status=200, input_tokens=11, output_tokens=5,
+             error=None, bad_json=False):
+    calls = {"mount": [], "post": [], "closed": 0}
 
-    def factory(**kwargs):
-        calls["init"].append(kwargs)
+    class FakeResponse:
+        status_code = http_status
 
-        def create(**request):
-            calls["create"].append(request)
-            if error:
+        def json(self):
+            if bad_json:
+                raise ValueError("no JSON")
+            return {
+                "model": model,
+                "status": response_status,
+                "output": [
+                    {"type": "message", "content": [{"type": "output_text", "text": text}]},
+                ],
+                "usage": {"input_tokens": input_tokens, "output_tokens": output_tokens},
+            }
+
+    class FakeSession:
+        def mount(self, prefix, adapter):
+            calls["mount"].append({"prefix": prefix, "adapter": adapter})
+
+        def post(self, url, **kwargs):
+            calls["post"].append({"url": url, **kwargs})
+            if error is not None:
                 raise error
-            return types.SimpleNamespace(
-                model=model,
-                status=status,
-                output_text=text,
-                usage=types.SimpleNamespace(
-                    input_tokens=input_tokens,
-                    output_tokens=output_tokens,
-                ),
-                output=[],
-            )
+            return FakeResponse()
 
-        return types.SimpleNamespace(responses=types.SimpleNamespace(create=create))
+        def close(self):
+            calls["closed"] += 1
 
-    monkeypatch.setitem(sys.modules, "openai", types.SimpleNamespace(OpenAI=factory))
+    monkeypatch.setitem(sys.modules, "requests", types.SimpleNamespace(
+        Session=FakeSession,
+        adapters=types.SimpleNamespace(HTTPAdapter=lambda **kw: kw),
+    ))
     return calls
 
 
@@ -137,9 +149,9 @@ def test_destination_or_billing_tamper_fails_before_credential(tmp_path, field, 
 
 
 @pytest.mark.parametrize("mode_id", MODELS)
-def test_qualified_test_profile_uses_one_pinned_responses_call(monkeypatch, tmp_path, mode_id):
+def test_qualified_fixture_uses_one_pinned_responses_request(monkeypatch, tmp_path, mode_id):
     prepare(monkeypatch, tmp_path, mode_id, qualify=True)
-    calls = spy_client(monkeypatch, model=MODELS[mode_id])
+    calls = spy_http(monkeypatch, model=MODELS[mode_id])
     receipts = []
     monkeypatch.setattr(ppm.ai_costs, "record_usage", lambda **kw: receipts.append(kw))
     result = ppm.call_mode(
@@ -148,17 +160,19 @@ def test_qualified_test_profile_uses_one_pinned_responses_call(monkeypatch, tmp_
     )
     assert result.ok is True
     assert result.text == "mock answer"
-    assert result.input_tokens == 11 and result.output_tokens == 5
+    assert (result.input_tokens, result.output_tokens) == (11, 5)
     assert result.fallback == "none"
     assert result.price_state in {"known", "unknown"}
     assert result.cost_identity == "byteplus/metered"
-    assert len(calls["init"]) == len(calls["create"]) == 1
-    init = calls["init"][0]
-    assert init["api_key"] == FAKE_CREDENTIAL
-    assert init["base_url"] == "https://ark.ap-southeast.bytepluses.com/api/v3"
-    assert init["max_retries"] == 0
-    body = calls["create"][0]
-    assert body == {
+    assert len(calls["mount"]) == len(calls["post"]) == calls["closed"] == 1
+    assert calls["mount"][0] == {"prefix": "https://", "adapter": {"max_retries": 0}}
+    request = calls["post"][0]
+    assert request["url"] == "https://ark.ap-southeast.bytepluses.com/api/v3/responses"
+    assert request["headers"]["Authorization"] == "Bearer " + FAKE_CREDENTIAL
+    assert request["headers"]["Content-Type"] == "application/json"
+    assert request["allow_redirects"] is False
+    assert request["timeout"] == ppm.DEFAULT_TIMEOUT_S
+    assert request["json"] == {
         "model": MODELS[mode_id],
         "input": [
             {"role": "system", "content": "system"},
@@ -178,7 +192,7 @@ def test_qualified_test_profile_uses_one_pinned_responses_call(monkeypatch, tmp_
 def test_provider_served_model_must_be_exact(monkeypatch, tmp_path, served):
     mode_id = "modelark_glm_flash_api"
     prepare(monkeypatch, tmp_path, mode_id, qualify=True)
-    spy_client(monkeypatch, model=served)
+    spy_http(monkeypatch, model=served)
     usages = []
     monkeypatch.setattr(ppm.ai_costs, "record_usage", lambda **kw: usages.append(kw))
     receipt = ppm.call_mode(
@@ -197,7 +211,7 @@ def test_provider_served_model_must_be_exact(monkeypatch, tmp_path, served):
 def test_incomplete_or_empty_is_not_success(monkeypatch, tmp_path, status, text):
     mode_id = "modelark_glm_flash_api"
     prepare(monkeypatch, tmp_path, mode_id, qualify=True)
-    spy_client(monkeypatch, model=MODELS[mode_id], status=status, text=text)
+    spy_http(monkeypatch, model=MODELS[mode_id], response_status=status, text=text)
     receipt = ppm.call_mode(
         mode_id, "s", "u", max_tokens=10,
         env={"BYTEPLUS_MODELARK_API_KEY": FAKE_CREDENTIAL},
@@ -206,28 +220,38 @@ def test_incomplete_or_empty_is_not_success(monkeypatch, tmp_path, status, text)
     assert receipt.text is None
 
 
-@pytest.mark.parametrize("status,error_class", [(401, "auth"), (429, "usage_limit"), (503, "transport")])
+@pytest.mark.parametrize("status,error_class", [
+    (401, "auth"), (429, "usage_limit"), (503, "transport"), (302, "transport"),
+])
 def test_http_error_is_single_attempt_and_existing_taxonomy(monkeypatch, tmp_path, status, error_class):
     mode_id = "modelark_deepseek_flash_api"
     prepare(monkeypatch, tmp_path, mode_id, qualify=True)
-
-    class MockApiError(Exception):
-        status_code = status
-
-    calls = spy_client(monkeypatch, model=MODELS[mode_id], error=MockApiError("secret not logged"))
+    calls = spy_http(monkeypatch, model=MODELS[mode_id], http_status=status)
     receipt = ppm.call_mode(
         mode_id, "s", "u", max_tokens=10,
         env={"BYTEPLUS_MODELARK_API_KEY": FAKE_CREDENTIAL},
     )
     assert receipt.ok is False and receipt.error_class == error_class
-    assert len(calls["create"]) == 1
+    assert len(calls["post"]) == calls["closed"] == 1
+    assert calls["post"][0]["allow_redirects"] is False
     assert FAKE_CREDENTIAL not in repr(receipt)
+
+
+def test_invalid_json_fails_closed_without_content_or_usage(monkeypatch, tmp_path):
+    mode_id = "modelark_glm_flash_api"
+    prepare(monkeypatch, tmp_path, mode_id, qualify=True)
+    spy_http(monkeypatch, model=MODELS[mode_id], bad_json=True)
+    receipt = ppm.call_mode(mode_id, "s", "u", max_tokens=10,
+                            env={"BYTEPLUS_MODELARK_API_KEY": FAKE_CREDENTIAL})
+    assert receipt.ok is False and receipt.error_class == "error"
+    assert receipt.text is None
+    assert receipt.input_tokens is None and receipt.output_tokens is None
 
 
 def test_null_usage_remains_unknown_without_fabricated_cost(monkeypatch, tmp_path):
     mode_id = "modelark_glm_flash_api"
     prepare(monkeypatch, tmp_path, mode_id, qualify=True)
-    spy_client(monkeypatch, model=MODELS[mode_id], input_tokens=None, output_tokens=None)
+    spy_http(monkeypatch, model=MODELS[mode_id], input_tokens=None, output_tokens=None)
     usages = []
     monkeypatch.setattr(ppm.ai_costs, "record_usage", lambda **kw: usages.append(kw))
     receipt = ppm.call_mode(
