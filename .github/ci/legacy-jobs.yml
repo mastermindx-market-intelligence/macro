@@ -2377,6 +2377,7 @@ jobs:
       - "tests/test_build_capital_structure_projection.py"
       - "tests/test_capital_structure_api.py"
       - "tests/test_capital_structure_capacity.py"
+      - "tests/test_capital_structure_financials_binder.py"
       - "tests/test_capital_structure_funding.py"
       - "tests/test_capital_structure_instrument_candidates.py"
       - "tests/test_capital_structure_instrument_economics.py"
@@ -13143,6 +13144,7 @@ jobs:
           tests/test_capital_structure_authorized_shares.py
           tests/test_capital_structure_closed_bundle.py
           tests/test_capital_structure_funding.py
+          tests/test_capital_structure_financials_binder.py
           tests/test_capital_structure_instrument_economics.py
           tests/test_capital_structure_supply_scenarios.py
           tests/test_capital_structure_transactions.py
