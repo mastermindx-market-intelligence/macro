@@ -121,6 +121,26 @@ def test_bad_or_provisional_pair_is_withheld_without_writes(tmp_path, monkeypatc
     assert producer.write(tmp_path) == {}
 
 
+def test_same_session_fresh_different_committed_bundles_are_withheld(tmp_path, monkeypatch):
+    """Two valid Oct 30/FRESH settled envelopes are NOT a pair if bundles differ.
+
+    This is the real post-nightly split found on main 2026-11-02.  The immutable
+    HEAD preimages in _arm are distinct but individually valid: only pairwise
+    equality permits a renderer to reuse a settled claim.
+    """
+    env, files, _market = _fixture(tmp_path)
+    first, second = "durable-bundle-oct30", "public-bundle-oct30"
+    for name, path in files.items():
+        settled = dict(env, data_state="FRESH",
+                       bundle_id=first if name.startswith("data/") else second)
+        path.write_text(json.dumps(settled, sort_keys=True) + "\n")
+    originals, checked = _arm(monkeypatch, files)
+    assert originals["data/risk_envelope/latest.json"] != originals["site/riskdata/risk_envelope.json"]
+    assert producer.write(tmp_path) == {}
+    assert checked == []  # Refuse at pair equality before any HEAD acceptance.
+    assert all(path.read_bytes() == originals[name] for name, path in files.items())
+
+
 def test_missing_git_commit_is_not_treated_as_settlement(tmp_path, monkeypatch):
     _env, files, _market = _fixture(tmp_path)
     _arm(monkeypatch, files)
