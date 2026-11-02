@@ -121,8 +121,9 @@ waves:
     next_action: >
       Lane claude/ssd-mx-catalyst-b2-sender-0934aa6d20e78b47: FunnelService.deliver_generation,
       ConsolidatedRevision, format_generation, ledger key catalyst:<event>:<generation>:<user>;
-      deliver_update loads the whole generation (load_public_revisions). The strict xfail B04
-      test passes without its marker. DEC:MX-CATALYST-B2-CONSOLIDATED-SENDER-20261102. After
+      deliver_update loads the whole generation (load_public_revisions only). The strict xfail
+      B04 test passes without its marker. Independent READ_ONLY review: SAFE_AFTER_SHOULD_FIX,
+      S1 + N1–N6 applied. DEC:MX-CATALYST-B2-CONSOLIDATED-SENDER-20261102. After
       CI + independent review: merge. MAIL_CATALYST_ENABLED stays OFF: docket B2 acceptance
       needs an SMTP provider on the host and a designated consenting test recipient (Chairman
       spend, named once).

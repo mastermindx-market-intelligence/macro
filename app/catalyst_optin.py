@@ -257,7 +257,9 @@ class ExistingMailerDelivery(DeliveryAuthority):
         one_click = marketing.unsub_api_url(record.user_id)
         if not footer.startswith("https://") or not one_click.startswith("https://"):
             return "skipped_no_smtp"
-        bundle = revision if isinstance(revision, ConsolidatedRevision) else consolidate(revision)
+        # Re-validate whatever the caller built: the mailer never trusts a bundle
+        # it did not assemble (empty, duplicate, mixed or unapproved items).
+        bundle = consolidate(revision.items if isinstance(revision, ConsolidatedRevision) else revision)
         subject, body, plain = format_generation(bundle, footer)
         try:
             return mailer.send(template="catalyst_material_revision", cls="marketing",
@@ -471,14 +473,13 @@ def deliver_update(event_id: str, generation: int) -> dict:
         raise FunnelGate("INVALID_REVISION", 400)
     # The producer hands over the WHOLE generation (every per-ticker revision) so
     # that a reader following several of its tickers is mailed once (docket B04).
-    # load_public_revisions is that contract; a single-revision loader is the
-    # one-ticker special case and is never dripped ticker by ticker here.
+    # load_public_revisions is the only accepted contract: a single-revision
+    # loader cannot attest that the generation has one ticker, and a drip of it
+    # would mail the first ticker and leave the rest ALREADY_CLAIMED.
     loader = getattr(service.revisions, "load_public_revisions", None)
-    single = getattr(service.revisions, "load_public_revision", None)
-    if not callable(loader) and not callable(single):
+    if not callable(loader):
         raise FunnelGate("REVISION_OWNER_NOT_READY")
-    loaded = loader(event_id, generation) if callable(loader) else single(event_id, generation)
-    revisions = (loaded,) if isinstance(loaded, PublicRevision) else loaded
+    revisions = loader(event_id, generation)
     if (not isinstance(revisions, (tuple, list)) or not revisions or
             not all(isinstance(r, PublicRevision) and r.event_id == event_id and r.generation == generation
                     for r in revisions)):

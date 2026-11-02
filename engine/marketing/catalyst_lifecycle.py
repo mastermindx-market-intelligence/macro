@@ -199,7 +199,11 @@ class ConsolidatedRevision:
 
 
 def consolidate(revisions: Sequence[PublicRevision] | PublicRevision) -> ConsolidatedRevision:
-    """Validate one generation's per-ticker revisions as a single delivery unit."""
+    """Validate one generation's per-ticker revisions as a single delivery unit.
+
+    Items are ordered by ticker so the same set always renders the same copy,
+    whatever order the producer handed them over in.
+    """
     items = (revisions,) if isinstance(revisions, PublicRevision) else tuple(revisions)
     if (not items or len(items) > MAX_CONSOLIDATED_ITEMS
             or not all(isinstance(item, PublicRevision) for item in items)):
@@ -211,7 +215,8 @@ def consolidate(revisions: Sequence[PublicRevision] | PublicRevision) -> Consoli
         raise FunnelGate("INVALID_REVISION_SET", 400)
     if len({item.ticker for item in items}) != len(items):
         raise FunnelGate("INVALID_REVISION_SET", 400)
-    return ConsolidatedRevision(head.event_id, head.generation, items)
+    return ConsolidatedRevision(head.event_id, head.generation,
+                                tuple(sorted(items, key=lambda item: item.ticker)))
 
 
 @dataclass(frozen=True)
@@ -755,8 +760,19 @@ class FunnelService:
         The idempotency key never carries a ticker, so a producer that drips one
         generation ticker by ticker gets ALREADY_CLAIMED from the second call on:
         the first message stands and nobody is mailed twice. A producer with more
-        than one ticker in a generation must hand them over together.
+        than one ticker in a generation must hand them over together: when the
+        revision authority can enumerate the generation and reports any other
+        ticker in it, this one-ticker call is refused outright rather than
+        mailing the first ticker and leaving the rest ALREADY_CLAIMED.
         """
+        loader = getattr(self.revisions, "load_public_revisions", None)
+        if callable(loader):
+            try:
+                siblings = tuple(loader(revision.event_id, revision.generation))
+            except Exception as exc:
+                raise FunnelGate("REVISION_OWNER_PROTOCOL_MISMATCH") from exc
+            if {getattr(item, "ticker", None) for item in siblings} != {revision.ticker}:
+                raise FunnelGate("INVALID_REVISION_SET", 400)
         return self.deliver_generation((revision,), limit=limit, now=now)
 
     def deliver_generation(self, revisions: Sequence[PublicRevision], *, limit: int = 50,
@@ -939,16 +955,19 @@ def format_generation(bundle: ConsolidatedRevision | Sequence[PublicRevision],
     """ONE message for every followed ticker of one event+generation (docket B04).
 
     A single item renders exactly as format_revision. Several items keep each
-    ticker's own rights-qualified block, in producer order, under one subject
-    that names the tickers and nothing else; one unsubscribe link closes it.
+    ticker's own rights-qualified block, in ticker order, under one subject
+    that names the count and the tickers and nothing else (prefixed
+    "Correction:" when any block is a correction or retraction); one
+    unsubscribe link closes it. A caller-built bundle is re-validated here.
     """
-    if not isinstance(bundle, ConsolidatedRevision):
-        bundle = consolidate(bundle)
+    bundle = consolidate(bundle.items if isinstance(bundle, ConsolidatedRevision) else bundle)
     if len(bundle.items) == 1:
         return format_revision(bundle.items[0], unsubscribe_url)
     unsub_line, unsub_html = _unsubscribe(unsubscribe_url)
     blocks = [_revision_block(item) for item in bundle.items]
-    subject = f"{len(bundle.items)} updates: {', '.join(bundle.tickers)}"
+    corrected = any(item.correction != "none" for item in bundle.items)
+    subject = (("Correction: " if corrected else "")
+               + f"{len(bundle.items)} updates: {', '.join(bundle.tickers)}")
     lines: list[str] = [subject]
     for _heading, block_lines, _block in blocks:
         lines.append("")

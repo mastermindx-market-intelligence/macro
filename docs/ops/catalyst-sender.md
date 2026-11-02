@@ -7,8 +7,11 @@ Owner: `engine/marketing/catalyst_lifecycle.py` (`FunnelService.deliver_generati
 ## Contract
 
 - The producer hands over **every per-ticker revision of one event+generation at once**
-  (`load_public_revisions(event_id, generation) -> tuple[PublicRevision, ...]`; a
-  `load_public_revision` single loader is the one-ticker special case).
+  (`load_public_revisions(event_id, generation) -> tuple[PublicRevision, ...]`). A
+  single-revision loader is not accepted by the seam (`REVISION_OWNER_NOT_READY`), and
+  `FunnelService.deliver(revision)` refuses (`INVALID_REVISION_SET`) when the authority
+  reports more than one ticker in that generation: a ticker-by-ticker drip would mail the
+  first ticker and leave the rest `ALREADY_CLAIMED`.
 - The lifecycle refuses a set that mixes events or generations, repeats a ticker, is
   empty, exceeds 12 items or holds an unapproved revision (`INVALID_REVISION_SET`).
 - A reader's bundle is the followed tickers whose evidence (`as_of_utc`) is newer than
@@ -21,8 +24,18 @@ Owner: `engine/marketing/catalyst_lifecycle.py` (`FunnelService.deliver_generati
   second email. A producer that drips one generation ticker by ticker therefore gets
   `ALREADY_CLAIMED` from the second call on; the drip is not a supported contract.
 - Copy: one item renders as before (`Update:`/`Correction:` heading, message, evidence
-  clock, sources, unsubscribe). Several items keep each ticker's own block in producer
-  order under the subject `N updates: T1, T2`; the subject carries tickers only.
+  clock, sources, unsubscribe). Several items keep each ticker's own block in ticker
+  order under the subject `N updates: T1, T2`, prefixed `Correction:` when any block is a
+  correction or retraction; the subject carries the count and tickers only. The mailer
+  and the formatter re-validate any bundle they did not assemble.
+
+## Before the mail flag is ever turned on
+
+- The ledger key no longer carries a ticker. Confirm the incumbent `email_log` holds no
+  row whose `idem_key` starts with `catalyst:` under the old
+  `catalyst:<event>:<generation>:<ticker>:<user>` shape (expected zero: the host has never
+  had SMTP). An old-shape claim would not collide with the new key, so a reader claimed
+  under it could be mailed again for the same generation.
 
 ## Gates that stay closed
 

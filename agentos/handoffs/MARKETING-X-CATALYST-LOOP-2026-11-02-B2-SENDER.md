@@ -15,9 +15,9 @@ state_before: >
   MAIL_CATALYST_ENABLED OFF on the host under that precondition; the host has no SMTP.
 changed:
   - path: engine/marketing/catalyst_lifecycle.py
-    what: ConsolidatedRevision + consolidate (set validation), FunnelService.deliver_generation (per-item rights before roster and per reader; bundle = followed tickers with evidence newer than the consent; key catalyst:<event>:<generation>:<user>), deliver() kept as the one-ticker wrapper, format_generation (one block per ticker, one unsubscribe link)
+    what: ConsolidatedRevision + consolidate (set validation, ticker order), FunnelService.deliver_generation (per-item rights before roster and per reader; bundle = followed tickers with evidence newer than the consent; key catalyst:<event>:<generation>:<user>), deliver() kept as the one-ticker wrapper, format_generation (one block per ticker, one unsubscribe link)
   - path: app/catalyst_optin.py
-    what: ExistingMailerDelivery.deliver formats a bundle; deliver_update loads the whole generation through load_public_revisions (single-revision loader as the one-ticker case) and calls deliver_generation
+    what: ExistingMailerDelivery.deliver re-validates and formats a bundle; deliver_update loads the whole generation through load_public_revisions only (a single-revision loader is REVISION_OWNER_NOT_READY) and calls deliver_generation
   - path: tests/test_catalyst_lifecycle.py
     what: B04 xfail removed (passes); per-ticker drip test rewritten to the claimed-once contract; keys without ticker; test_b2_* block (consolidated dispatch, unfollowed/already-seen items, NOT_SECOND_VALUE, SUPPRESSED, refused sets, rights before roster and per reader, formatter)
   - path: tests/test_catalyst_optin.py
@@ -37,9 +37,12 @@ verified:
   - claim: the owner, lifecycle and integration suites hold on the lane head
     command: pytest tests/test_catalyst_lifecycle.py tests/test_catalyst_optin.py; pytest tests/test_catalyst_*.py
     result: 157 passed; 745 passed with the one pre-existing sparse-tree failure (test_staged_session03_primary_ui_and_fallback, 503 under pytest on a sparse tree; a direct TestClient probe returns 200)
+  - claim: independent READ_ONLY review (Opus) of the lane head ccd12d554aa9 returned SAFE_AFTER_SHOULD_FIX with no MUST-FIX; S1 (single-loader fallback and one-ticker deliver() could drip a wider generation) and N1–N6 (consent-change guard untested, producer-order copy, caller-built bundle trusted, correction hidden in the subject, old-shape ledger keys, stale docket contract) are applied on the next head
+    command: pytest tests/test_catalyst_lifecycle.py tests/test_catalyst_optin.py tests/test_catalyst_integration.py -q -p no:cacheprovider
+    result: see the PR verdict comment for the post-fix counts
 unverified:
-  - claim: the lane head is green on CI and independently reviewed
-    what_would_verify: the PR's ci-authority rollup and a READ_ONLY reviewer verdict recorded on the PR
+  - claim: the lane head is green on CI
+    what_would_verify: the PR's ci-authority rollup
   - claim: docket B2 acceptance (one permitted update to a designated consenting test recipient, inbox observed, revoke, next dispatch suppressed)
     what_would_verify: an SMTP provider on the macro-api host plus that recipient (Chairman spend; named once, never re-asked), then MAIL_CATALYST_ENABLED=1 under a recorded decision
 unresolved:

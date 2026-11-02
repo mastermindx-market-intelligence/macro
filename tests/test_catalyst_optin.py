@@ -360,12 +360,12 @@ def test_private_delivery_summary_exposes_rights_hold_after_partial_provider_acc
     """A blocked subscriber must not be hidden by an earlier successful send."""
     class Source:
         @staticmethod
-        def load_public_revision(event_id, generation):
-            return PublicRevision(
+        def load_public_revisions(event_id, generation):
+            return (PublicRevision(
                 event_id, generation, "2026-10-09T04:00:00+00:00",
                 "2026-10-09T03:00:00+00:00", "NVDA", "Revised source",
                 "Qualified correction", ("https://www.sec.gov/",),
-                True, True, True, True)
+                True, True, True, True),)
 
     class SimulatedBatch:
         revisions = Source()
@@ -401,10 +401,10 @@ def test_private_delivery_summary_exposes_rights_hold_after_partial_provider_acc
 def test_00_private_delivery_seam_needs_an_authoritative_revision_loader():
     from engine.marketing.catalyst_lifecycle import PublicRevision
     class Loader:
-        def load_public_revision(self, event_id, generation):
-            return PublicRevision(event_id, generation, "2026-10-09T04:00:00+00:00",
-                                  "2026-10-09T03:00:00+00:00", "NVDA", "Material update",
-                                  "New source update", ("https://www.sec.gov/",), True, True, True, True)
+        def load_public_revisions(self, event_id, generation):
+            return (PublicRevision(event_id, generation, "2026-10-09T04:00:00+00:00",
+                                   "2026-10-09T03:00:00+00:00", "NVDA", "Material update",
+                                   "New source update", ("https://www.sec.gov/",), True, True, True, True),)
     class ServiceStub:
         def __init__(self): self.revisions, self.calls = Loader(), []
         def deliver_generation(self, revisions, now):
@@ -598,6 +598,16 @@ def test_b2_private_seam_hands_the_whole_generation_to_the_lifecycle():
             with pytest.raises(FunnelGate) as error:
                 catalyst_optin.deliver_update("event-123", 2)
             assert error.value.code == "REVISION_OWNER_PROTOCOL_MISMATCH"
+
+        class SingleLoaderOnly:
+            # A producer that can only hand over one ticker at a time cannot
+            # attest the generation's width; the seam does not drip it (review S1).
+            def load_public_revision(self, event_id, generation):
+                return _rev("NVDA")
+        service.revisions = SingleLoaderOnly()
+        with pytest.raises(FunnelGate) as error:
+            catalyst_optin.deliver_update("event-123", 2)
+        assert error.value.code == "REVISION_OWNER_NOT_READY" and len(service.calls) == 1
     finally:
         catalyst_optin.configure(None)
 
@@ -613,6 +623,13 @@ def test_b2_canonical_mailer_sends_one_consolidated_message_per_user():
     assert sender.deliver(record, bundle, "catalyst:event-123:2:" + UID) == "sent"
     assert len(mailer.calls) == 1
     sent = mailer.calls[0]
-    assert sent["subject"] == "2 updates: NVDA, AMD" and sent["idem_key"] == "catalyst:event-123:2:" + UID
+    assert sent["subject"] == "2 updates: AMD, NVDA" and sent["idem_key"] == "catalyst:event-123:2:" + UID
     assert sent["html"].count("<h2>") == 2 and "AMD material update" in sent["text"]
     assert sent["strict_ledger"] is True and sent["template"] == "catalyst_material_revision"
+    # A bundle the mailer did not assemble is re-validated, never trusted (review N3).
+    for bad in (ConsolidatedRevision("event-123", 2, (_rev("NVDA"), _rev("NVDA"))),
+                ConsolidatedRevision("event-123", 2, ()),
+                ConsolidatedRevision("event-123", 2, (_rev("NVDA"), _rev("AMD", operator_approved=False)))):
+        with pytest.raises(FunnelGate):
+            sender.deliver(record, bad, "catalyst:event-123:2:" + UID)
+    assert len(mailer.calls) == 1

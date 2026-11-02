@@ -1216,7 +1216,7 @@ def test_b2_one_generation_two_followed_tickers_is_one_consolidated_dispatch():
     receipts = service.deliver_generation(_generation("NVDA", "AMD"), now=NOW + timedelta(hours=2))
     assert [row["state"] for row in receipts] == ["PROVIDER_ACCEPTED"]
     assert len(ledger.sends) == 1
-    assert capture.calls[0][1] == ("NVDA", "AMD")
+    assert capture.calls[0][1] == ("AMD", "NVDA")  # ticker order, whatever the producer's
     assert capture.calls[0][2] == "catalyst:event-123:2:" + UID
     assert capture.calls[0][3].event_id == "event-123" and capture.calls[0][3].generation == 2
     again = service.deliver_generation(_generation("AMD", "NVDA"), now=NOW + timedelta(hours=2))
@@ -1291,12 +1291,49 @@ def test_b2_one_item_losing_rights_after_roster_holds_the_whole_message():
 
     def rights(revision, at_utc):
         reads.append(revision.ticker)
-        # both items pass the pre-roster read; AMD is withdrawn at the per-user boundary
-        return None if (revision.ticker == "AMD" and reads.count("AMD") > 1) else live(revision, at_utc)
+        # both items pass the pre-roster read; NVDA is withdrawn at the per-user boundary
+        return None if (revision.ticker == "NVDA" and reads.count("NVDA") > 1) else live(revision, at_utc)
     revisions.read_public_rights = rights
     receipts = service.deliver_generation(_generation("NVDA", "AMD"), now=NOW + timedelta(hours=2))
     assert [row["state"] for row in receipts] == ["SOURCE_RIGHTS_NOT_CURRENT"]
-    assert reads == ["NVDA", "AMD", "NVDA", "AMD"] and not capture.calls
+    assert reads == ["AMD", "NVDA", "AMD", "NVDA"] and not capture.calls
+
+
+def test_b2_consent_widened_between_rights_read_and_send_holds_the_message():
+    """An item without a rights read at THIS reader's boundary never ships (review N1)."""
+    service, *_rest, _sender = make()
+    service.sender = capture = _CaptureSender()
+    verified(service)  # the consent covers NVDA + AMD
+    consent, seen = service.consent, []
+    live = consent.current
+
+    def current(user_id, event_id):
+        record = live(user_id, event_id)
+        seen.append(user_id)
+        # the read before the rights reads follows NVDA only; the re-read right
+        # before the sender follows both, so AMD had no rights read for this reader
+        return replace(record, tickers=("NVDA",)) if len(seen) == 1 else record
+    consent.current = current
+    receipts = service.deliver_generation(_generation("NVDA", "AMD"), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in receipts] == ["CONSENT_OWNER_PROTOCOL_MISMATCH"]
+    assert not capture.calls and len(seen) == 2
+
+
+def test_b2_one_ticker_deliver_refuses_a_generation_the_authority_says_is_wider():
+    """deliver(revision) is only honest for a one-ticker generation (review S1)."""
+    service, _otp, _store, _supp, revisions, _sender = make()
+    service.sender = capture = _CaptureSender()
+    verified(service)
+    revisions.load_public_revisions = lambda event_id, generation: _generation("NVDA", "AMD")
+    fails("INVALID_REVISION_SET", lambda: service.deliver(update(ticker="NVDA"), now=NOW + timedelta(hours=2)))
+    assert not capture.calls
+    revisions.load_public_revisions = lambda event_id, generation: (_ for _ in ()).throw(ConnectionError("down"))
+    fails("REVISION_OWNER_PROTOCOL_MISMATCH",
+          lambda: service.deliver(update(ticker="NVDA"), now=NOW + timedelta(hours=2)))
+    revisions.load_public_revisions = lambda event_id, generation: _generation("NVDA")
+    receipts = service.deliver(update(ticker="NVDA"), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in receipts] == ["PROVIDER_ACCEPTED"]
+    assert capture.calls[0][1] == ("NVDA",)
 
 
 def test_b2_format_generation_keeps_each_ticker_block_and_one_unsubscribe():
@@ -1304,7 +1341,7 @@ def test_b2_format_generation_keeps_each_ticker_block_and_one_unsubscribe():
     nvda = update(ticker="NVDA")
     amd = update(ticker="AMD", headline="AMD <b>guides</b> lower", what_changed="<script>x</script>")
     subject, body, plain = format_generation((nvda, amd), "https://mastermind-x.com/unsubscribe.html?t=token")
-    assert subject == "2 updates: NVDA, AMD"
+    assert subject == "2 updates: AMD, NVDA"  # ticker order, not producer order (review N2)
     assert body.count("<h2>") == 2 and body.count("Unsubscribe") == 1
     assert "<script>" not in body and "&lt;script&gt;" in body and "&lt;b&gt;" in body
     assert plain.count("Update: ") == 2
@@ -1313,3 +1350,14 @@ def test_b2_format_generation_keeps_each_ticker_block_and_one_unsubscribe():
     assert format_generation((nvda,), "https://mastermind-x.com/u") == format_revision(nvda, "https://mastermind-x.com/u")
     fails("UNSUBSCRIBE_LINK_UNAVAILABLE", lambda: format_generation((nvda, amd), "http://insecure.example"))
     fails("INVALID_REVISION_SET", lambda: format_generation((nvda, nvda), "https://mastermind-x.com/u"))
+    # a caller-built bundle is re-validated, never trusted (review N3)
+    from engine.marketing.catalyst_lifecycle import ConsolidatedRevision
+    fails("INVALID_REVISION_SET", lambda: format_generation(
+        ConsolidatedRevision("event-123", 2, (nvda, nvda)), "https://mastermind-x.com/u"))
+    # a correction or retraction inside the bundle is flagged in the subject (review N4)
+    withdrawn = update(ticker="TSLA", correction="retracted",
+                       correction_note="The guidance figure was withdrawn by the source.")
+    subject, body, plain = format_generation((nvda, withdrawn), "https://mastermind-x.com/u")
+    assert subject == "Correction: 2 updates: NVDA, TSLA"
+    assert plain.count("Correction: ") == 2 and plain.count("Update: ") == 1
+    assert "withdrawn by the source" in body and "revised guidance" not in body.split("<h2>")[2]
