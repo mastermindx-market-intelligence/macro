@@ -507,8 +507,10 @@ PACK_GLOBAL_INVALIDATORS = (
 # A main commit touching one of these re-plans every pull request as full-suite,
 # so every existing green is stale whatever the pull request's own footprint.  The
 # `.github/` entries are left out on purpose: `.github/ci/**` and the PR-gate
-# workflows are already check definitions above, and a dispatch-only workflow
-# edit deliberately does not send the queue through CI again.
+# workflows are check definitions (`ci_definition_files`) and stale every proof on
+# their own.  Any other workflow edit, including one to a reusable workflow a PR
+# gate calls, stales only the pull requests whose own surface matches it, as
+# before this list existed.
 MAIN_GLOBAL_INVALIDATORS = tuple(
     pattern
     for pattern in PACK_GLOBAL_INVALIDATORS
@@ -2672,8 +2674,8 @@ class ProofFreshness:
             invalidator (planned full-suite, so every job runs): stale;
           * a job that is, or was, not `scope: exclusive` is selected by inferred
             imports the sweeper cannot see: stale;
-          * an exclusive job without `paths` on either side is one the pack
-            refuses to load: stale;
+          * an exclusive job with missing, empty or malformed `paths` on either
+            side: stale, because those paths are what decide its selection;
           * an exclusive job is stale when one of the pull request's files matches
             its old or new `paths` under the pack's own glob semantics.
 
@@ -2733,8 +2735,10 @@ class ProofFreshness:
                 ):
                     return f"main commit {short} left job {job_id!r} with malformed paths"
                 if not paths:
-                    # The pack refuses to load an exclusive job without paths, so
-                    # main's CI cannot plan this manifest at all.
+                    # Only this refusal of `load_legacy_jobs` is mirrored, because
+                    # the paths decide selection.  Its other refusals (path entry
+                    # syntax, the gate value, the coverage audit) fail the main
+                    # commit's own CI, which the main-red breaker already holds.
                     return f"main commit {short} edited job {job_id!r}, which declares no paths"
                 declared.extend(paths)
             selected = next(
@@ -3234,6 +3238,23 @@ class ProofFreshness:
                     f"main commit {commit['sha'][:12]} changed too many files to list, "
                     "so it cannot be shown to be outside the surface"
                 )
+            # Before the data/site/hot-tape skip: a `conftest.py` or `package.json`
+            # under data/ or site/ is still an invalidator, whatever else the
+            # commit is.  Only a `[skip ci]` message, judged above without listing
+            # files, is let through.
+            invalidator = next(
+                (
+                    name
+                    for name in files
+                    if _selector_matches_any(MAIN_GLOBAL_INVALIDATORS, name)
+                ),
+                None,
+            )
+            if invalidator is not None:
+                return True, (
+                    f"main commit {commit['sha'][:12]} changed {invalidator}, a global "
+                    "CI invalidator, so every pull request is now planned full-suite"
+                )
             if is_skip_ci_noise(message, files):
                 continue  # data/site/hot-tape tick, not an edit
             product_commits += 1
@@ -3264,19 +3285,6 @@ class ProofFreshness:
                 bounded_manifest = True
             if files and all(name.startswith(PIPELINE_TREES) for name in files):
                 continue  # a render/nightly bake, not an edit
-            invalidator = next(
-                (
-                    name
-                    for name in files
-                    if _selector_matches_any(MAIN_GLOBAL_INVALIDATORS, name)
-                ),
-                None,
-            )
-            if invalidator is not None:
-                return True, (
-                    f"main commit {commit['sha'][:12]} changed {invalidator}, a global "
-                    "CI invalidator, so every pull request is now planned full-suite"
-                )
             for name in files:
                 if bounded_manifest and name == LEGACY_MANIFEST_PATH:
                     continue

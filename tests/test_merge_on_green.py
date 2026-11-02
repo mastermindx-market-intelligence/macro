@@ -10191,6 +10191,27 @@ def test_a_main_commit_touching_a_global_invalidator_re_proves_every_pull_reques
     assert f"changed {invalidator}, a global CI invalidator" in reason
 
 
+@pytest.mark.parametrize(
+    "invalidator",
+    [
+        "site/package.json",  # ci-trigger-closure: data — fixture changed-file name, never opened
+        "data/nightly/conftest.py",  # ci-trigger-closure: data — fixture changed-file name, never opened
+    ],
+)
+def test_a_global_invalidator_under_data_or_site_is_not_skipped_as_a_data_tick(invalidator):
+    """A commit made only of data/ and site/ files is skipped as a data tick, but the
+    pack still plans every pull request full-suite when one of those files is a
+    `conftest.py` or a `package.json`.  The invalidator check runs first."""
+    assert MOG.is_skip_ci_noise("chore: refresh", [invalidator])
+    freshness = _freshness(
+        commits=[(MAIN_MOVED_AT_1026, [invalidator])],
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
+    )
+    stale, reason = freshness.stale_for(_pull(), _clean_proof())
+    assert stale is True, reason
+    assert f"changed {invalidator}, a global CI invalidator" in reason
+
+
 def test_a_dispatch_only_workflow_edit_is_not_a_global_invalidator():
     """The pack lists `.github/workflows/**` as an invalidator, but only the PR-gate
     workflows decide a pull request's checks; editing a dispatch-only workflow must
@@ -10462,6 +10483,124 @@ def test_the_manifest_read_walks_small_trees_and_fails_closed(monkeypatch):
     stale, reason = freshness.stale_for(_pull(), _clean_proof())
     assert stale is True, reason
     assert "edited .github/ci/legacy-jobs.yml and it could not be read" in reason
+
+
+def _pack_job(paths=None, *, scope="exclusive", gate="code", command="echo ok") -> dict:
+    """A job `run_ci_pack.load_legacy_jobs` accepts, unlike `_legacy_job`."""
+    job = {"if": "${{ false }}", "runs-on": "ubuntu-latest", "gate": gate}
+    if scope is not None:
+        job["scope"] = scope
+    if paths is not None:
+        job["paths"] = paths
+    job["steps"] = [{"name": "check", "run": command}]
+    return job
+
+
+_FX_PATHS = ["engine/fx/**", "tests/test_fx_guard.py"]  # ci-trigger-closure: data — fixture changed-file name, never opened
+_UNRELATED = "engine/signal_quality.py"  # ci-trigger-closure: data — fixture changed-file name, never opened
+
+
+def _pack_manifest(**overrides) -> dict:
+    """The pack-valid twin of `_base_manifest`.  An override replaces a job in
+    place, adds it at the end, or deletes it when None."""
+    jobs = {
+        "fx-guard": _pack_job(_FX_PATHS),
+        "broad": _pack_job(scope=None),
+        "nightly-data": _pack_job(["data/nightly/**"], gate="data"),
+    }
+    for name, job in overrides.items():
+        if job is None:
+            del jobs[name.replace("_", "-")]
+        else:
+            jobs[name.replace("_", "-")] = job
+    return {"version": 1, "jobs": jobs}
+
+
+def _pack_reruns(tmp_path, before, after, pr_files) -> bool:
+    """Whether the CI pack itself would now plan different checks for this pull
+    request: the edit is not a bounded job delta, the selected jobs differ, or a
+    changed job is selected."""
+    from scripts import run_ci_pack as PACK
+
+    changed = PACK._classify_bounded_manifest_job_delta(before, after)
+    if changed is None:
+        return True
+    selected = []
+    for side, document in (("before", before), ("after", after)):
+        path = tmp_path / f"{side}.yml"
+        path.write_text(yaml.safe_dump(document, sort_keys=False))
+        jobs, _reason = PACK.select_jobs(PACK.load_legacy_jobs(path, gate="code"), pr_files)
+        selected.append({job.job_id for job in jobs})
+    return selected[0] != selected[1] or bool(set(changed) & selected[1])
+
+
+_FX_EDITED = _pack_manifest(fx_guard=_pack_job(["engine/fx/**", "tests/test_fx_rates.py"]))  # ci-trigger-closure: data — fixture changed-file name, never opened
+_FX_COMMAND = _pack_manifest(fx_guard=_pack_job(_FX_PATHS, command="echo changed"))
+_RATES_ADDED = _pack_manifest(rates_guard=_pack_job(["engine/rates/**"]))
+_SINGLE_STAR = _pack_manifest(fx_guard=_pack_job(["engine/fx/*.py"]))
+_MACRO = _pack_manifest(macro=_pack_job(["engine/macro/**"], scope=None))
+
+
+@pytest.mark.parametrize(
+    "before, after, pr_files, exact",
+    [
+        pytest.param(None, _FX_EDITED, [_UNRELATED], True, id="paths-edit-unrelated"),
+        pytest.param(None, _pack_manifest(fx_guard=_pack_job([*_FX_PATHS, _UNRELATED])), [_UNRELATED], True, id="path-added"),
+        pytest.param(None, _pack_manifest(fx_guard=_pack_job(["engine/fx/**"])), ["tests/test_fx_guard.py"], True, id="path-dropped"),  # ci-trigger-closure: data — fixture changed-file name, never opened
+        pytest.param(None, _FX_COMMAND, ["engine/fx/spot.py"], True, id="command-selected"),  # ci-trigger-closure: data — fixture changed-file name, never opened
+        pytest.param(None, _FX_COMMAND, [_UNRELATED], True, id="command-unrelated"),
+        pytest.param(None, _RATES_ADDED, ["engine/rates/curve.py"], True, id="added-selected"),  # ci-trigger-closure: data — fixture changed-file name, never opened
+        pytest.param(None, _RATES_ADDED, [_UNRELATED], True, id="added-unrelated"),
+        pytest.param(
+            None,
+            _pack_manifest(nightly_data=_pack_job(["data/nightly/**"], gate="data", command="echo changed")),
+            ["data/nightly/rates.json"],  # ci-trigger-closure: data — fixture changed-file name, never opened
+            True,
+            id="data-gate",
+        ),
+        pytest.param(None, _pack_manifest(fx_guard=None), [_UNRELATED], True, id="deleted-job"),
+        pytest.param(None, _FX_EDITED, [MOG.LEGACY_MANIFEST_PATH], True, id="pr-edits-manifest"),
+        pytest.param(None, _FX_EDITED, ["requirements.txt"], True, id="pr-touches-invalidator"),  # ci-trigger-closure: data — fixture changed-file name, never opened
+        # `*` stays inside one directory in both copies of the glob.
+        pytest.param(_SINGLE_STAR, _FX_EDITED, ["engine/fx/deep/spot.py"], True, id="star-vs-globstar"),  # ci-trigger-closure: data — fixture changed-file name, never opened
+        pytest.param(
+            _SINGLE_STAR,
+            _pack_manifest(fx_guard=_pack_job(["engine/fx/*.py", "tests/test_fx_rates.py"])),  # ci-trigger-closure: data — fixture changed-file name, never opened
+            ["engine/fx/deep/spot.py"],  # ci-trigger-closure: data — fixture changed-file name, never opened
+            True,
+            id="star-misses-subdirectory",
+        ),
+        # Non-exclusive jobs: the sweeper re-proves every edit to one, so only
+        # the one direction is checked (see the docstring).
+        pytest.param(None, _pack_manifest(broad=_pack_job(scope=None, command="echo changed")), [_UNRELATED], False, id="unscoped-edit"),
+        pytest.param(
+            _MACRO,
+            _pack_manifest(macro=_pack_job(["engine/macro/**"], scope=None, command="echo changed")),
+            [_UNRELATED],
+            False,
+            id="non-exclusive-with-paths",
+        ),
+    ],
+)
+def test_a_bounded_manifest_verdict_agrees_with_the_ci_pack(tmp_path, before, after, pr_files, exact):
+    """The sweeper decides bounded manifest edits from pinned copies and its own
+    reading of `paths`.  Here the real pack loads both manifests and selects jobs
+    for the pull request's files.  A kept proof must be one the pack would not
+    rerun; for exclusive and data-gate jobs the verdicts must match exactly.
+
+    Scope inference (`infer_job_scopes`) is left out because it reads the
+    repository's suites.  It changes only non-exclusive jobs, and an unchanged
+    job selects the same way under both manifests, so it can move the pack's
+    answer only when a non-exclusive job was edited, which the sweeper always
+    re-proves."""
+    before = before or _pack_manifest()
+    reruns = _pack_reruns(tmp_path, before, after, pr_files)
+    stale, reason = _judge_manifest_edit(after, pr_files, before=before)
+    if exact:
+        assert stale is reruns, reason
+    else:
+        # Re-proved whatever the pack's inferred scope would say.
+        assert stale is True, reason
 
 
 def _top_level_function(tree, name):
