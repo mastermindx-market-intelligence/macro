@@ -29,6 +29,42 @@ from tests.test_prophet_source_epochs_reader import (
 
 
 
+def settle_disclosure_capture(page):
+    """Wait for the real page transition; keep controls and styles intact."""
+    from scripts.capture_page_evidence import _wait_transient_fx_gone
+
+    page.wait_for_function("document.readyState === 'complete'")
+    page.evaluate("document.fonts.ready")
+    assert _wait_transient_fx_gone(page)
+    disclosure = page.locator("#us-prophet-source-epochs")
+    disclosure.evaluate("el => el.scrollIntoView({block:'center'})")
+    # The canonical capture driver also settles for 400ms after state changes.
+    page.wait_for_timeout(400)
+    assert _wait_transient_fx_gone(page)
+    page.wait_for_function("""() => {
+      let el=document.getElementById('us-prophet-source-epochs');
+      while(el){
+        const style=getComputedStyle(el);
+        if(Number(style.opacity)<0.99 || style.filter!=='none') return false;
+        el=el.parentElement;
+      }
+      return true;
+    }""", timeout=3000)
+    readable = disclosure.evaluate("""el => {
+      const rows=Array.from(el.querySelectorAll('dd, .epoch-refusal:not([hidden])'));
+      return rows.every(row=>{
+        const r=row.getBoundingClientRect();
+        return [r.left+3,r.left+r.width/2,r.right-3].every(x=>
+          [r.top+3,r.top+r.height/2,r.bottom-3].every(y=>{
+            const hit=document.elementFromPoint(x,y);
+            return !!hit && el.contains(hit);
+          }));
+      });
+    }""")
+    assert readable, "disclosure source metadata or refusal is occluded"
+    return disclosure
+
+
 def capture_design_evidence(browser, origin, state, canonical_payload, proof, output):
     """Use the repo's canonical emitter with a real reader-path browser driver."""
     from datetime import datetime, timezone
@@ -103,6 +139,7 @@ def capture_design_evidence(browser, origin, state, canonical_payload, proof, ou
                 assert not errors, errors
                 observed = page.evaluate(evidence._OBSERVER_SCRIPT.strip(),
                                          dict(evidence.DEFAULT_OBSERVER_CONFIG)) or {}
+                settle_disclosure_capture(page)
                 screenshot = page.screenshot(full_page=True)
                 driver_cells.append({"cell_id": cell.cell_id, **applied,
                                      "focus_visible": cell.force_state is not None})
@@ -290,6 +327,7 @@ def prove(output: Path, visual_output: Path | None = None):
                             assert bounds["radius"] == "8px", bounds
                             assert bounds["unoccluded"], bounds
                             assert bounds["theme"] == theme and bounds["lang"] == language, bounds
+                            settle_disclosure_capture(page)
                             filename = f"{width}-{theme}-{language}.png"
                             disclosure.screenshot(path=str(output / filename))
                             proof["matrix"].append({
@@ -339,7 +377,7 @@ def prove(output: Path, visual_output: Path | None = None):
                     if case == "different_index":
                         page.locator("#us-prophet-source-epochs details").evaluate("el => el.open=true")
                         page.locator("#us-prophet-source-epochs").evaluate("el => el.scrollIntoView({block:'center'})")
-                        page.locator("#us-prophet-source-epochs").screenshot(path=str(output / "390-refused-index.png"))
+                        settle_disclosure_capture(page).screenshot(path=str(output / "390-refused-index.png"))
                     context.close()
                 if visual_output is not None:
                     capture_design_evidence(
