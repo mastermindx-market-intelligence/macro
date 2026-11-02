@@ -4438,6 +4438,9 @@ CURATED_EXCLUSIVE = {
     # F04 real-Git acquisition reads three deploy scripts. Its dedicated job
     # preserves the broader self-heal owner without widening unrelated probes.
     "deploy-git-history",
+    # 2026-10-19/11-01 root-disk refills: the bounded store-maintenance job reads
+    # its script, units and the update.sh/setup.sh stanzas that self-arm them.
+    "deploy-git-store-maintenance",
     # PR #7861: Options matrix source/session/retention checks are hermetic.
     # The exclusive manifest scope retains both suites, their concrete import
     # closure, config.yml fallback and the retention-fixture wildcard. This
