@@ -528,7 +528,7 @@ next_actions:
     for historical sessions; consume the owner's return on #6805 once.
   - >
     8. R7 US journey (research/prophet_v4/R7_US_JOURNEY_TRACE_2026-11-01.md, PR
-    #10385 at 56263d9b — record §4b + two receipts pushed onto the reviewed 7ed3bbf9,
+    #10385 at 774c059a — record §4b/§4c + three receipts pushed onto the reviewed 7ed3bbf9,
     still ARMED merge-on-green after one independent Opus
     read-only review round — MAJOR record overclaim + two MINOR test gaps repaired;
     contract-delta 0/0): the why-section leak (3 of 17 CVCO J11 hits: raw engine
@@ -550,9 +550,13 @@ next_actions:
     f50fc7b7, signed-in boundary (/api/me, premiumdata, prophet/index.json,
     prophet_live.json 200; 401 anonymous) and an entitled DOM with 95 setup nodes vs 3
     in the bytes; the click that opens the CVCO detail, a DOM post and an entitlement
-    probe were REFUSED by the classifier (final). Remaining human act: one click on
-    "Setup detail" in the CVCO pool row in the shared pane, after which the seat reads
-    the opened body with read-only pane tools. J7 FINDING routed to #6817 (comment
+    probe were REFUSED by the classifier (final). The Chairman then clicked "Setup
+    detail" on the CVCO pool row (§4c): the read-only modal shows the source binding
+    field for field (spot 619.00, zone 589.20-619.00, stop 506.30, invalidation 491.11,
+    chase 630.90, above-200 Yes, weekly No, provisional No, entry read 2026-10-29) and
+    the PRE-#10385 why-copy "buy fired; forward confirmation pending" — the R7 US
+    display proof is DONE for CVCO; plan relation, #plv-asof and the evidence expander
+    are not observed (runtime / second click). J7 FINDING routed to #6817 (comment
     6567010819): candidate_pool.source_digest/counts are never published (render-time
     project_candidate_visibility only), so J7 is unsatisfiable from published artifacts
     since #8108 — law unchanged, consume the owner's return once. J6 plan relation and
