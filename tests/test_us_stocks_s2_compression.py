@@ -11,6 +11,7 @@ import re
 from pathlib import Path
 
 import pytest
+from bs4 import BeautifulSoup
 
 from engine import i18n
 from tests.test_dashboard_template_render import _base_vm, _env
@@ -84,14 +85,16 @@ def test_stocks_page_drops_folded_and_demoted_panels():
 def test_action_board_header_carries_folded_strip_when_mode_stocks():
     """S2 §1.3: mode-gated include after </h2>; strip is a header, not a panel."""
     html = _stocks(latest=LATEST, us_standouts=STANDOUTS)
-    ab = html[html.index('id="action-board"'):html.index('id="prophet-live"')]
-    assert 'class="acb-tape"' in ab
-    assert 'id="megacap-tape"' in ab
-    assert 'class="panel span12" id="megacap-tape"' not in html
-    assert "Theme heat &amp; reasons → Sector Intelligence" in ab
-    assert "主题热度与详情 → 行业情报页" in ab
-    assert 'href="sector_central.html#si-heat-section"' in ab
-    assert "Theme reasons → Sector Intelligence" not in ab
+    doc = BeautifulSoup(html, "html.parser")
+    board = doc.select_one("#action-board")
+    tape = board.select_one("#megacap-tape.acb-tape")
+    assert tape is not None
+    assert "panel" not in tape.get("class", [])
+    assert len(doc.select("#megacap-tape")) == 1
+    link = board.select_one('h2 a[href="sector_central.html#si-heat-section"]')
+    assert link.select_one(".l-en").get_text(strip=True) == "Theme heat & reasons → Sector Intelligence"
+    assert link.select_one(".l-zh").get_text(strip=True) == "主题热度与详情 → 行业情报页"
+
 
 
 def test_mode_gate_does_not_leak_megacap_onto_sector_central_include():

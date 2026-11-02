@@ -41361,6 +41361,11 @@ jobs:
       - "tests/test_macro_risk_dialog.py"
       - "tests/test_risk_envelope_radar_integration.py"
       - "tests/test_us_stocks_s2_compression.py"
+      - "tests/test_prophet_page_composition.py"
+      - "tests/test_action_board_hover_cards.py"
+      - "templates/_us_act_now_board.html.j2"
+      - "templates/_prophet_page.css.j2"
+      - "templates/_prophet_workspace.css.j2"
       - "tests/test_unified_dashboard_b2w2.py"
       - "tests/test_macro_mtf_sort_key.py"
       - "tests/test_mag7_tape_strip.py"
@@ -41563,6 +41568,7 @@ jobs:
           tests/test_risk_envelope_radar_integration.py
           tests/test_risk_radar_workspace.py
           tests/test_us_stocks_s2_compression.py
+          tests/test_prophet_page_composition.py
           tests/test_unified_dashboard_b2w2.py
           tests/test_ud_b2_w1_vw_fold.py
           tests/test_vsb_surface.py
