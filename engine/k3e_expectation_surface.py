@@ -19,6 +19,8 @@ ATTEMPTS_PATH = "data/revisions/expectation_attempts.parquet"
 STATUSES = {"success", "partial", "null", "http_401", "http_403",
             "http_429", "malformed", "error"}
 ESTIMATE_TYPES = {"average", "median", "high", "low", "growth", "year_ago"}
+CONSENSUS_RECORD_CLASSES = frozenset({"earnings_estimate", "revenue_estimate"})
+NON_CONSENSUS_RECORD_CLASS = "NON_CONSENSUS_RECORD_CLASS"
 BLOCKED_RIGHTS = {"RIGHTS_BLOCKED", "UNLICENSED", "PROHIBITED", "BLOCKED"}
 DISPLAY_ONLY_RIGHTS = {"DISPLAY_ONLY"}
 GROUP_FIELDS = ("collection_session_id", "attempt_id", "provider",
@@ -176,6 +178,12 @@ def _build_alias_index(records):
             vendor = record.get("vendor")
             if vendor not in PROVIDER_VENDOR_SPACE.values():
                 continue
+            kind = record.get("alias_kind")
+            if kind is not None and not (isinstance(kind, float) and math.isnan(kind)):
+                if kind != "occ_root":
+                    raise IdentityError("unsupported alias relation kind")
+                VendorAliasTable.from_records([record])
+                continue  # option roots are never expectation-provider ticker aliases
             vendor_symbol = record.get("vendor_symbol")
             security_id = record.get("security_id")
             if not isinstance(vendor, str) or not vendor:
@@ -187,7 +195,10 @@ def _build_alias_index(records):
             valid_from = _window_date(record.get("valid_from"))
             valid_to = _window_date(record.get("valid_to"))
             ingested = _knowledge_clock(record.get("ingested_at"))
-            alias_row = AliasRow(vendor, vendor_symbol, security_id, valid_from, valid_to)
+            alias_row = AliasRow(vendor, vendor_symbol, security_id, valid_from, valid_to,
+                                 attempt_id=record.get("attempt_id"),
+                                 alias_family_id=record.get("alias_family_id"),
+                                 alias_revision_id=record.get("alias_revision_id"))
             rows_for_table.append(alias_row)
             index[(vendor, vendor_symbol)].append((alias_row, ingested))
         VendorAliasTable(rows_for_table)
@@ -402,6 +413,9 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
             faults.append("INCOMPLETE_SNAPSHOT_IDENTITY")
         if row.get("observation_type") not in ESTIMATE_TYPES | {"covering_analyst_count"}:
             faults.append("INVALID_OBSERVATION_TYPE")
+        cls = row.get("provider_record_class")
+        if isinstance(cls, str) and cls and cls not in CONSENSUS_RECORD_CLASSES:
+            faults.append(NON_CONSENSUS_RECORD_CLASS)
         if row.get("value") is None:
             if row.get("missingness_reason") is None:
                 faults.append("NULL_WITHOUT_MISSINGNESS")

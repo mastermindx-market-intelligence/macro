@@ -8,6 +8,7 @@ in the supplied filing member.
 """
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass, field
 from decimal import Decimal, InvalidOperation, localcontext
 from bisect import bisect_left
@@ -25,9 +26,37 @@ from xml.parsers import expat
 SEC_FILING_PARSER_SCHEMA = "fundamental_forensics.sec_filing_parser/v1"
 SEC_FILING_PARSER_PROFILE = "strict_offline_ixbrl/v1"
 SEC_FILING_PARSER_VERSION = "1"
-# Stable semantic compatibility authority.  It changes only when the
-# deterministic grammar/value algorithms change; runtime library versions are
-# observed provenance and must not invalidate retained evidence on replay.
+# Stable semantic compatibility authority for ACCEPTED OUTPUT.  A change that
+# strictly widens the acceptance set while every previously accepted input
+# produces byte-identical output is compatible and does NOT bump this value;
+# any change that alters the output bytes of any previously accepted input
+# DOES bump it (and needs a separate seat ruling because it moves pins).
+# Compatibility is one-directional.  A newer build accepts a strict superset
+# of inputs, but an older build reports this same fingerprint and still
+# refuses the inputs only the newer build admits: a pre-widening build
+# refuses the CAT primaries admitted by the same-document fragment-href
+# widening with "escaped ix:nonNumeric relative URI markup is unsupported in
+# the offline profile" on source replay.  A rollback must therefore not
+# replay results minted after a widening.  For that widening, byte identity
+# on previously accepted inputs holds by construction - the new predicate
+# runs only on the path that used to raise - and the 132/132 corpus byte
+# identity was checked out of band by the D1-ext lane; its receipts live on
+# the lane host, not in git.  The one exception to "strict superset": D1X-5
+# (PR #9095) narrowed that widening under this same fingerprint - a member
+# carrying ANY element whose local name casefolds to ``base`` (any namespace;
+# previously only an exact-case XHTML ``base``) now refuses where a pre-D1X-5
+# build admits it.  The 140-file corpus census found 0 such members, so no
+# accepted output changed.  The nil-fact inert-attribute tolerance
+# (DEC:FIF-PARSER-NIL-FACT-INERT-ATTRIBUTES-TOLERATED-20261031) is another
+# strict widening under this same fingerprint: a nil numeric fact carrying
+# inert decimals/precision/scale/format/sign is admitted with all five dropped
+# and exactly one per-fact ``nil_fact_inert_attributes_dropped`` diagnostic, a
+# path that previously raised, so every accepted output stays byte-identical.
+# Refusal verdicts are not fingerprint-bound;
+# they are bound by the committed ``_VERDICT_PIN`` in
+# tests/test_fif_gsrc_capture.py, regenerated in the same PR.  Runtime
+# library versions are observed provenance and must not invalidate retained
+# evidence on replay.
 SEC_FILING_PARSER_ALGORITHM_FINGERPRINT = "95f7e4b7ff20c7bdae2070b0d910d2f539f21366e75415bedcbf07e7af538d92"
 
 XBRLI = "http://www.xbrl.org/2003/instance"
@@ -64,7 +93,7 @@ SUPPORTED_TRANSFORMS: Mapping[str, str] = {
 
 _HARD_LIMITS = MappingProxyType({
     "max_bytes": 32 * 1024 * 1024,
-    "max_nodes": 200_000,
+    "max_nodes": 300_000,
     "max_depth": 128,
     "max_attributes_per_element": 256,
     "max_total_attributes": 500_000,
@@ -76,16 +105,16 @@ _HARD_LIMITS = MappingProxyType({
     "max_total_namespace_bytes": 8 * 1024 * 1024,
     "max_text_bytes": 16 * 1024 * 1024,
     "max_text_events": 100_000,
-    "max_fact_text_bytes": 1 * 1024 * 1024,
+    "max_fact_text_bytes": 2 * 1024 * 1024,
     "max_contexts": 5_000,
     "max_units": 2_000,
-    "max_facts": 10_000,
+    "max_facts": 12_000,
     "max_continuations": 10_000,
-    "max_continuation_chain": 16,
+    "max_continuation_chain": 32,
     "max_dimensions_per_context": 256,
     "max_measures_per_unit": 256,
     "max_abs_scale": 308,
-    "max_output_bytes": 24 * 1024 * 1024,
+    "max_output_bytes": 64 * 1024 * 1024,
     "max_metadata_bytes": 16 * 1024,
 })
 # Public immutable admission profile.  A deployment may replace the mapping
@@ -531,9 +560,46 @@ _URI_BEARING_MARKUP_ATTRIBUTES = frozenset(
     }
 )
 
+# A same-document fragment reference: ``#`` plus one ASCII XML-style name.
+# This grammar refuses by construction an empty fragment, whitespace, control
+# and format characters, non-ASCII, and the URI delimiters ``% / \ : ?``.
+_SAME_DOCUMENT_FRAGMENT_HREF = re.compile(r"#[A-Za-z_][A-Za-z0-9._-]*")
+
+_XML_BASE_ATTRIBUTE = f"{{{XML}}}base"
+
+
+def _is_same_document_fragment_href(
+    child: _Node,
+    name: str,
+    value: str,
+    document_ids: Mapping[str, int],
+    *,
+    document_base_changed: bool,
+) -> bool:
+    """Admit exactly one base-URI-free shape inside escaped nonNumeric markup.
+
+    A document carrying any ``xml:base`` attribute, or any element whose local
+    name casefolds to ``base`` in any namespace, is treated as able to redirect
+    a fragment to another resource (fail closed), so such a document never
+    qualifies.
+    """
+    return (
+        not document_base_changed
+        and child.namespace == XHTML
+        and child.local == "a"
+        and name == "href"
+        and _SAME_DOCUMENT_FRAGMENT_HREF.fullmatch(value) is not None
+        and document_ids.get(value[1:], 0) == 1
+    )
+
 
 def _escaped_nonnumeric_markup(
-    node: _Node, content: bytes, limits: Mapping[str, int]
+    node: _Node,
+    content: bytes,
+    limits: Mapping[str, int],
+    *,
+    document_ids: Mapping[str, int],
+    document_base_changed: bool,
 ) -> str:
     """Retain relevant markup for ``ix:nonNumeric escape=\"true\"``.
 
@@ -543,7 +609,12 @@ def _escaped_nonnumeric_markup(
     which the target XBRL serializer escapes.  Relative URI resolution needs
     a document base URI, which this offline single-member profile deliberately
     does not possess, so such markup is rejected rather than silently emitted
-    with the wrong target value.
+    with the wrong target value.  The single exception is a same-document
+    fragment reference - an XHTML ``a`` element whose unprefixed ``href`` is
+    ``#`` plus an ASCII name that is the ``id`` of exactly one element in this
+    member - which needs no base URI, so its markup is retained unchanged,
+    and only when the member carries no base-changing construct (``xml:base``
+    anywhere, or any element whose local name casefolds to ``base``).
     """
     chunks: list[bytes] = []
 
@@ -564,6 +635,10 @@ def _escaped_nonnumeric_markup(
                 for name, value in child.attrs.items():
                     _namespace, local = _split_qname(name)
                     if local in _URI_BEARING_MARKUP_ATTRIBUTES and not urlsplit(value).scheme:
+                        if _is_same_document_fragment_href(
+                            child, name, value, document_ids, document_base_changed=document_base_changed
+                        ):
+                            continue
                         raise SecFilingParseError(
                             "escaped ix:nonNumeric relative URI markup is unsupported in the offline profile"
                         )
@@ -761,6 +836,13 @@ def _apply_numeric(
 
 
 def _direct_text(node: _Node, events: list[_TextEvent]) -> str:
+    if isinstance(events, _TextEvents):
+        # Built events are source ordered. Keep the identity check (including
+        # excluded text), but do not scan unrelated siblings for every context.
+        assert node.end is not None
+        left = bisect_left(events.starts, node.start_tag_end)
+        right = bisect_left(events.starts, node.end)
+        events = events[left:right]
     return "".join(event.value for event in events if event.owner is node)
 
 
@@ -1194,7 +1276,7 @@ def _fact_accuracy(
     nil: bool,
     inline: bool,
     limits: Mapping[str, int],
-) -> tuple[str | None, str | None, str | None, int | None, str | None]:
+) -> tuple[str | None, str | None, str | None, int | None, str | None, list[str]]:
     decimals = _attr(node, "decimals")
     precision = _attr(node, "precision")
     _validate_accuracy_lexicals(decimals, precision)
@@ -1205,15 +1287,34 @@ def _fact_accuracy(
     if not numeric:
         if any(value is not None for value in (decimals, precision, sign, scale)):
             raise SecFilingParseError("non-numeric fact carries numeric attributes")
+        if nil and format_qname is not None:
+            raise SecFilingParseError("nil fact cannot carry accuracy, transform, sign, or scale")
     elif not nil and (decimals is None and precision is None):
         raise SecFilingParseError("numeric fact must carry decimals or precision unless nil")
-    if nil and any(value is not None for value in (decimals, precision, sign, scale, format_qname)):
-        raise SecFilingParseError("nil fact cannot carry accuracy, transform, sign, or scale")
     if not inline and any(value is not None for value in (sign, scale, format_qname)):
         raise SecFilingParseError("native XBRL fact cannot carry Inline XBRL attributes")
+    if nil:
+        # DEC:FIF-PARSER-NIL-FACT-INERT-ATTRIBUTES-TOLERATED-20261031: a nil
+        # fact has no value, so decimals/precision/scale/format/sign on it are
+        # inert.  They are dropped (and reported per fact) instead of refusing
+        # the member.  The native Inline-attribute check above deliberately
+        # stays first: a structural violation is not inert.  This branch used
+        # to raise, so the widening never changes accepted output bytes.
+        dropped = sorted(
+            name
+            for name, value in (
+                ("decimals", decimals),
+                ("format", format_qname),
+                ("precision", precision),
+                ("scale", scale),
+                ("sign", sign),
+            )
+            if value is not None
+        )
+        return None, None, None, None, None, dropped
     if inline and sign not in {None, "-"}:
         raise SecFilingParseError("Inline XBRL sign must be '-' when present")
-    return decimals, precision, sign, scale, format_qname
+    return decimals, precision, sign, scale, format_qname, []
 
 
 def _fact_record(
@@ -1228,7 +1329,9 @@ def _fact_record(
     content: bytes,
     *,
     inline: bool,
-) -> tuple[dict[str, Any], dict[str, Any] | None]:
+    document_ids: Mapping[str, int],
+    document_base_changed: bool,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     fact_id = _attr(node, "id")
     if fact_id is not None:
         _normalized_identifier(fact_id, field_name="fact id")
@@ -1269,7 +1372,7 @@ def _fact_record(
             _assert_allowed_attrs(node, common | {"unitRef"}, field_name="ix:fraction")
     else:
         _assert_allowed_attrs(node, {"id", "contextRef", "unitRef", "decimals", "precision", f"{{{XSI}}}nil", f"{{{XML}}}lang"}, field_name="native XBRL fact")
-    decimals, precision, sign, scale, format_qname = _fact_accuracy(
+    decimals, precision, sign, scale, format_qname, dropped_attributes = _fact_accuracy(
         node, numeric=numeric, nil=nil, inline=inline, limits=limits
     )
     if kind == "fraction" and any(value is not None for value in (decimals, precision, sign, scale, format_qname)):
@@ -1283,7 +1386,13 @@ def _fact_record(
     excluded_events = _events_for(lexical_node, events, excluded=True)
     all_events = list(local_events)
     raw_parts = [
-        _escaped_nonnumeric_markup(node, content, limits)
+        _escaped_nonnumeric_markup(
+            node,
+            content,
+            limits,
+            document_ids=document_ids,
+            document_base_changed=document_base_changed,
+        )
         if inline and kind == "nonnumeric" and escape
         else "".join(event.value for event in local_events)
     ]
@@ -1291,7 +1400,13 @@ def _fact_record(
         continuation = continuation_records[continuation_id]
         continuation_node = continuation_nodes[continuation_id]
         raw_parts.append(
-            _escaped_nonnumeric_markup(continuation_node, content, limits)
+            _escaped_nonnumeric_markup(
+                continuation_node,
+                content,
+                limits,
+                document_ids=document_ids,
+                document_base_changed=document_base_changed,
+            )
             if escape
             else str(continuation["raw_value"])
         )
@@ -1309,7 +1424,7 @@ def _fact_record(
     # order used to construct raw_value: fact-local material, then each link.
     raw = _node_text_bytes("".join(raw_parts), limits, field_name="fact")
     fraction: dict[str, Any] | None = None
-    diagnostic: dict[str, Any] | None = None
+    fact_diagnostics: list[dict[str, Any]] = []
     if nil:
         if raw or excluded_events or node.children:
             raise SecFilingParseError("nil fact must not contain content")
@@ -1352,11 +1467,23 @@ def _fact_record(
             raw, format_qname=format_qname, sign=sign, scale=scale, inline=inline
         )
     if status in {"unsupported_transform", "invalid_value"}:
-        diagnostic = {
-            "code": status,
-            "fact_start": node.start,
-            "format": format_qname,
-        }
+        fact_diagnostics.append(
+            {
+                "code": status,
+                "fact_start": node.start,
+                "format": format_qname,
+            }
+        )
+    if dropped_attributes:
+        # Per-fact diagnostic, never a counter: it is emitted only on the
+        # previously-refusing path, so accepted output stays byte-identical.
+        fact_diagnostics.append(
+            {
+                "code": "nil_fact_inert_attributes_dropped",
+                "fact_start": node.start,
+                "attributes": dropped_attributes,
+            }
+        )
     return (
         {
             "fact_id": fact_id,
@@ -1383,7 +1510,7 @@ def _fact_record(
             "excluded_text_spans": _event_spans(excluded_events),
             "source_span": _span(node.start, int(node.end)),
         },
-        diagnostic,
+        fact_diagnostics,
     )
 
 
@@ -1793,10 +1920,17 @@ def parse_sec_filing_document(content: bytes, *, document_name: str) -> dict[str
             # is compatible because it is a strict UTF-8 subset, but accepting
             # UTF-8 multibyte bytes under an ASCII declaration would make this
             # admission policy silently contradict the source declaration.
-            if declared_encoding in {b"ascii", b"us-ascii"} and any(byte > 0x7F for byte in content):
+            if declared_encoding in {b"ascii", b"us-ascii"} and not content.isascii():
                 raise SecFilingParseError("XML declaration ASCII contradicts non-ASCII content")
 
     root, nodes, events = _TreeBuilder(content, limits).build()
+    document_ids: Counter[str] = Counter()
+    document_base_changed = False
+    for node in nodes:
+        if "id" in node.attrs:
+            document_ids[node.attrs["id"]] += 1
+        if _XML_BASE_ATTRIBUTE in node.attrs or node.local.casefold() == "base":
+            document_base_changed = True
     if any(
         node.namespace in LEGACY_IX_NAMESPACES or IX10 in node.namespaces.values()
         for node in nodes
@@ -1847,7 +1981,7 @@ def parse_sec_filing_document(content: bytes, *, document_name: str) -> dict[str
     facts: list[dict[str, Any]] = []
     diagnostics: list[dict[str, Any]] = []
     for node in facts_nodes:
-        fact, diagnostic = _fact_record(
+        fact, fact_diagnostics = _fact_record(
             node,
             events,
             chains.get(node.start, []),
@@ -1858,10 +1992,11 @@ def parse_sec_filing_document(content: bytes, *, document_name: str) -> dict[str
             limits,
             content,
             inline=document_kind == "inline_xbrl",
+            document_ids=document_ids,
+            document_base_changed=document_base_changed,
         )
         facts.append(fact)
-        if diagnostic is not None:
-            diagnostics.append(diagnostic)
+        diagnostics.extend(fact_diagnostics)
     for context in contexts:
         if context["segment_content_status"] == "partial":
             diagnostics.append(
@@ -2167,7 +2302,7 @@ def validate_sec_filing_parse_result(
     )
     facts = _exact_list(result["facts"], field_name="facts", maximum=limits["max_facts"])
     diagnostics = _exact_list(
-        result["diagnostics"], field_name="diagnostics", maximum=limits["max_facts"] + (2 * limits["max_contexts"])
+        result["diagnostics"], field_name="diagnostics", maximum=(2 * limits["max_facts"]) + (2 * limits["max_contexts"])
     )
     for label, items in (("contexts", contexts), ("units", units), ("continuations", continuations), ("facts", facts)):
         _source_ordered(items, field_name=label, length=length)
@@ -2544,7 +2679,52 @@ def validate_sec_filing_parse_result(
             item.get("fact_start", item.get("source_spans", [{"start": 0}])[0]["start"]), item["code"]
         )
     )
-    if diagnostics != expected_diagnostics:
+    # nil_fact_inert_attributes_dropped cannot be recomputed from the fact
+    # records (the dropped attributes are gone by design), so it is admitted
+    # structurally against the nil numeric fact records instead.
+    inert_diagnostics: list[Any] = []
+    admitted_diagnostics: list[Any] = []
+    for item in diagnostics:
+        if isinstance(item, dict) and item.get("code") == "nil_fact_inert_attributes_dropped":
+            inert_diagnostics.append(item)
+        else:
+            admitted_diagnostics.append(item)
+    if admitted_diagnostics != expected_diagnostics:
+        raise SecFilingParseError("diagnostics are not derived from parser records")
+    nil_numeric_fact_by_start = {
+        fact["source_span"]["start"]: fact
+        for fact in facts
+        if fact["kind"] == "numeric"
+        and fact["nil"]
+        and all(fact[name] is None for name in ("decimals", "format", "precision", "scale", "sign"))
+    }
+    inert_starts: set[Any] = set()
+    for item in inert_diagnostics:
+        if (
+            set(item) != {"code", "fact_start", "attributes"}
+            or isinstance(item["fact_start"], bool)
+            or not isinstance(item["fact_start"], int)
+            or type(item["attributes"]) is not list
+            or not item["attributes"]
+            or any(
+                not isinstance(name, str) or name not in {"decimals", "format", "precision", "scale", "sign"}
+                for name in item["attributes"]
+            )
+            or len(item["attributes"]) != len(set(item["attributes"]))
+            or item["attributes"] != sorted(item["attributes"])
+        ):
+            raise SecFilingParseError("nil-fact inert-attribute diagnostic is malformed")
+        if item["fact_start"] not in nil_numeric_fact_by_start:
+            raise SecFilingParseError("nil-fact inert-attribute diagnostic does not point at a nil numeric fact")
+        if item["fact_start"] in inert_starts:
+            raise SecFilingParseError("nil-fact inert-attribute diagnostic is duplicated")
+        inert_starts.add(item["fact_start"])
+    if diagnostics != sorted(
+        diagnostics,
+        key=lambda item: (
+            item.get("fact_start", item.get("source_spans", [{"start": 0}])[0]["start"]), item["code"]
+        ),
+    ):
         raise SecFilingParseError("diagnostics are not derived from parser records")
     coverage_fields = {"document_scope", "fact_inventory_complete", "context_references_complete", "unit_references_complete", "continuation_graph_complete", "canonical_value_complete", "context_count", "unit_count", "continuation_count", "fact_count", "diagnostic_count", "unknown_scenario_content_count", "unknown_segment_content_count", "structural_validation_complete", "ixds_validation_complete", "xbrl_schema_validation_complete", "taxonomy_validation_complete"}
     ix_coverage_fields = {"ix_relationship_count", "ix_footnote_count", "ix_footnote_continuation_count"}

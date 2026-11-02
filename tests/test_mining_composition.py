@@ -288,6 +288,61 @@ def test_duplicate_local_asset_labels_are_not_additional_supply():
     _validate(result)
 
 
+def test_changed_source_withholds_a_replaced_industrial_view():
+    """W10-1: a withdrawn economics channel also withdraws the industrial-views panel.
+
+    ``_suppress_native_blocks`` collapses ``economics.native_blocks`` to ``[]`` for every
+    mapped omission — ``changed_source`` included — while the industrial-views channel read
+    ``bundle.interpretation_blocks`` unconditionally. A changed source therefore published
+    stale causal text beside an empty economics panel: exactly the pairing
+    ``select_mining_evidence`` refuses for the drawer with ``generation_changed``.
+
+    Two arms, both load-bearing:
+
+    * WITHDRAWN (the obligation) — ``changed_source`` carrying one replaced industrial view.
+      ``native_blocks == []``, ``limitations == ['changed_source']`` and status ``degraded``
+      are the OBSERVED pre-fix baseline and must not move; the new fact is
+      ``industrial_views == []``.
+    * NOT-WITHDRAWN (the positive control) — ``copper_complete``, which carries no omission
+      and OBSERVEDly one native block, with the same view: the view must still publish.
+      Without this arm the pin is a bare negative assertion that a mutant emptying
+      ``interpretation_blocks`` wholesale would also satisfy.
+
+    Synthetic casebook via ``dataclasses.replace`` only. No fixture edit, no route, no I/O.
+    """
+    view = {
+        "stable_subject_id": "subject:ardent-copper",
+        "view_kind": "industrial",
+        "description": "fictional smelter constraint carried over from the prior source revision",
+        "evidence_refs": ["synthetic-copper-source-4"],
+    }
+
+    # Arm 1 — the obligation: withdrawal takes the causal text with it.
+    case = synthetic_case("changed_source")
+    withdrawn = composition.compose_mining_research(
+        case.query, _replace(case.bundle, interpretation_blocks=(view,))
+    )
+    assert withdrawn["economics"]["native_blocks"] == [], withdrawn["economics"]["native_blocks"]
+    assert withdrawn["limitations"] == ["changed_source"], withdrawn["limitations"]
+    assert withdrawn["summary"]["status"] == "degraded", withdrawn["summary"]
+    assert withdrawn["industrial_views"] == [], withdrawn["industrial_views"]
+    _validate(withdrawn)
+
+    # Arm 2 — the positive control: a non-withdrawn source still publishes the view.
+    copper = synthetic_case("copper_complete")
+    published = composition.compose_mining_research(
+        copper.query, _replace(copper.bundle, interpretation_blocks=(view,))
+    )
+    assert len(published["economics"]["native_blocks"]) == 1, published["economics"]["native_blocks"]
+    assert "changed_source" not in published["limitations"], published["limitations"]
+    assert [v["stable_subject_id"] for v in published["industrial_views"]] == [
+        "subject:ardent-copper"
+    ], published["industrial_views"]
+    assert published["industrial_views"][0]["description"] == view["description"]
+    assert published["industrial_views"][0]["evidence_refs"] == ["synthetic-copper-source-4"]
+    _validate(published)
+
+
 def test_internal_transfer_keeps_elimination_sign():
     """MGD-19 / W-R: an intersegment elimination row keeps its reported negative sign."""
     # The synthetic rare-earth complete case exposes no internal-transfer row; the contract
@@ -1095,3 +1150,287 @@ def _assert_empty_path_degrades(result, label):
     assert result["authorized_coverage"]["industry_total"] is None, label
     # A degraded payload is still a VALID payload, never a raised exception.
     _validate(result)
+
+
+# ---------------------------------------------------------------------------
+# T04b — T03 fact rows carry period onto the native block (MGD-10, two arms)
+# ---------------------------------------------------------------------------
+
+_T04B_PERIOD = "Quarter ended 2026-06-30"
+_T04B_SCOPE = ("2026-04-01", "2026-06-30", "2025-04-01", "2025-06-30")
+_T04B_SUBJECT = "0000000421"
+_PERIOD_BEFORE_ISSUER_VALIDITY = "omitted:period_before_issuer_validity"
+
+
+def _t04b_copper_sales_rows() -> list[dict]:
+    """One synthetic FCX sales row from the witness profile. No live figure."""
+    from engine.company_intelligence.mining_issuer_profiles import (
+        FCX_METRICS,
+        bind_witness_release,
+        fcx_profile,
+    )
+
+    metric = next(item for item in FCX_METRICS if item.metric == "consolidated_copper_sales")
+    body = (
+        "<html><body>"
+        f"<h2>{metric.selection_label}</h2>"
+        "<table><tr>"
+        f"<th>Label</th><th>Basis</th><th>Unit</th><th>{_T04B_PERIOD}</th>"
+        "</tr><tr>"
+        f"<td>{metric.row_label}</td><td>consolidated</td><td>{metric.unit}</td><td>111</td>"
+        "</tr></table></body></html>"
+    )
+    bound = bind_witness_release(
+        cik="0000999991",
+        accession="0000999991-26-000001",
+        body=body,
+        form="8-K",
+        filing_date="2026-07-23",
+        acceptance_datetime="2026-07-23T13:00:00Z",
+        report_date="2026-06-30",
+        exhibit_url="https://example.invalid/synthetic/fcx-t04b",
+        content_type="text/html",
+    )
+    assert "sec.gov" not in (bound.revision.exhibit_url or "")
+    profile = fcx_profile(fiscal_scope=_T04B_SCOPE)
+    return profile.extract_release_facts(
+        bound=bound,
+        document_id="doc-t04b",
+        event_id="evt-t04b",
+    )
+
+
+def _t04b_bundle(*, valid_from: str | None = None, time_valid_bridge: bool = False):
+    from tests.mining_casebook import financial_packets_from_event_facts
+
+    case = synthetic_case("copper_complete")
+    packets = financial_packets_from_event_facts(
+        _t04b_copper_sales_rows(),
+        stable_subject_id=_T04B_SUBJECT,
+    )
+    identity = dict(case.bundle.identity_results[0])
+    identity["stable_subject_id"] = _T04B_SUBJECT
+    if valid_from is not None:
+        identity["valid_from"] = valid_from
+    if time_valid_bridge:
+        identity["time_valid_bridge"] = True
+    bundle = _replace(
+        case.bundle,
+        financial_packets=packets,
+        identity_results=(identity,),
+    )
+    return case.query, bundle
+
+
+def test_t04b_fact_row_period_is_on_the_native_block() -> None:
+    query, bundle = _t04b_bundle()
+    result = composition.compose_mining_research(query, bundle)
+    blocks = result["economics"]["native_blocks"]
+    assert len(blocks) == 1
+    assert blocks[0]["period"] == _T04B_PERIOD
+    assert blocks[0]["value"] == 111.0
+    assert blocks[0]["stable_subject_id"] == _T04B_SUBJECT
+    assert result["limitations"] == ["omitted:expectations"]
+    _validate(result)
+
+
+def test_t04b_period_before_issuer_validity_refuses_attribution() -> None:
+    query, bundle = _t04b_bundle(valid_from="2026-07-01")
+    result = composition.compose_mining_research(query, bundle)
+    assert result["limitations"] == [
+        "omitted:expectations",
+        _PERIOD_BEFORE_ISSUER_VALIDITY,
+    ]
+    assert result["economics"]["native_blocks"] == []
+    assert result["economics"]["status"] == "degraded"
+    assert result["summary"]["status"] == "degraded"
+    _validate(result)
+
+
+def test_t04b_time_valid_period_mints_attribution() -> None:
+    query, bundle = _t04b_bundle(valid_from="2026-07-01", time_valid_bridge=True)
+    result = composition.compose_mining_research(query, bundle)
+    assert result["limitations"] == ["omitted:expectations"]
+    blocks = result["economics"]["native_blocks"]
+    assert len(blocks) == 1
+    assert blocks[0]["period"] == _T04B_PERIOD
+    assert blocks[0]["stable_subject_id"] == _T04B_SUBJECT
+    assert blocks[0]["value"] == 111.0
+    assert result["economics"]["status"] == "ready"
+    _validate(result)
+
+
+def test_t04b_two_identity_bundle_withholds_only_the_early_subject() -> None:
+    """Each packet is withheld only against the identity row it names.
+
+    The window issuer is first, so a first-row validity check keeps the early
+    packet. The early packet's subject is that issuer's CIK, not its
+    stable_subject_id; the window packet matches by stable_subject_id.
+    """
+    case = synthetic_case("copper_complete")
+    window_subject = "subject:window-issuer"
+    early_cik = "0000002222"
+    window = {
+        "name": "Window Issuer Synthetic",
+        "cik": "0000001111",
+        "stable_subject_id": window_subject,
+        "valid_from": "2020-01-01",
+        "fictional": True,
+    }
+    early = {
+        "name": "Early Issuer Synthetic",
+        "cik": early_cik,
+        "stable_subject_id": "subject:early-issuer",
+        "valid_from": "2026-07-01",
+        "fictional": True,
+    }
+    early_packet = {
+        "stable_subject_id": early_cik,
+        "measure": "reported operating income",
+        "value": 11,
+        "basis": "fictional reported dollars",
+        "source_label": "synthetic-early",
+        "period": "Quarter ended 2026-06-30",
+    }
+    window_packet = {
+        "stable_subject_id": window_subject,
+        "measure": "reported operating income",
+        "value": 22,
+        "basis": "fictional reported dollars",
+        "source_label": "synthetic-window",
+        "period": "Quarter ended 2026-09-30",
+    }
+    bundle = _replace(
+        case.bundle,
+        identity_results=(window, early),
+        financial_packets=(early_packet, window_packet),
+    )
+    result = composition.compose_mining_research(case.query, bundle)
+    assert result["limitations"] == [
+        "omitted:expectations",
+        _PERIOD_BEFORE_ISSUER_VALIDITY,
+    ]
+    blocks = result["economics"]["native_blocks"]
+    assert [block["stable_subject_id"] for block in blocks] == [window_subject]
+    assert blocks[0]["period"] == "Quarter ended 2026-09-30"
+    assert blocks[0]["value"] == 22
+    _validate(result)
+
+
+# ---------------------------------------------------------------------------
+# W10-3 — the company card prints the two typed absences
+# ---------------------------------------------------------------------------
+
+# The pinned pair, in the pinned order. The card prints the identity row's
+# ``typed_absences`` verbatim as ``absences: [{field, reason}]``; the order pin
+# below fails if the two entries are swapped in the row.
+_TYPED_ABSENCES_COPPER = [
+    {"field": "fiscal_year_end_month", "reason": "missing_source"},
+    {"field": "listing_mic", "reason": "missing_source"},
+]
+
+
+def test_typed_absences_appear_on_the_company_card():
+    """W10-3: an identity row carrying ``typed_absences`` prints them on the
+    company card as ``absences`` (order preserved, reason ``missing_source``).
+    An identity row without the key keeps today's four-key company object
+    byte-for-byte — the card is opt-in on ``typed_absences`` and never mints a
+    limitation (the T07 copper ``limitations`` bytes must not move).
+    """
+    case = synthetic_case(
+        "copper_complete", issuer={"typed_absences": list(_TYPED_ABSENCES_COPPER)}
+    )
+    result = composition.compose_mining_research(case.query, case.bundle)
+    card = result["companies"][0]
+    # The identity bytes are unchanged: the card is widened, not rewritten.
+    assert card["name"] == "Ardent Copper Holdings"
+    assert card["cik"] == "0000000421"
+    assert card["absences"] == _TYPED_ABSENCES_COPPER
+    # Order pin: the printed order equals the identity row's order.
+    assert [absence["field"] for absence in card["absences"]] == [
+        "fiscal_year_end_month",
+        "listing_mic",
+    ]
+    _validate(result)
+
+    # The unchanged path: without the key, the company object is today's
+    # four-key object, byte-identical under ``json.dumps``.
+    plain = synthetic_case("copper_complete")
+    plain_result = composition.compose_mining_research(plain.query, plain.bundle)
+    assert "absences" not in plain_result["companies"][0]
+    assert json.dumps(plain_result["companies"]) == json.dumps(
+        [
+            {
+                "stable_subject_id": "0000000421",
+                "name": "Ardent Copper Holdings",
+                "cik": "0000000421",
+                "role": "issuer",
+            }
+        ]
+    )
+
+
+def test_typed_absences_do_not_mint_an_issuer_identity():
+    """W10-3 pin (restates W6-1, does not newly enroll): printing the two typed
+    absences on the company card mints no ``IssuerIdentity`` and enrolls no
+    ticker drawer. ``fcx_issuer`` / ``mp_issuer`` stay ``None`` (no admitted
+    fiscal-year-end or listing-MIC receipt) and ``profile_for_ticker`` stays
+    unbound for FCX/MP even after a compose whose identity row carries
+    ``typed_absences``.
+    """
+    from engine.company_intelligence.issuer_profiles import profile_for_ticker
+    from engine.company_intelligence.mining_issuer_profiles import fcx_issuer, mp_issuer
+
+    case = synthetic_case(
+        "copper_complete", issuer={"typed_absences": list(_TYPED_ABSENCES_COPPER)}
+    )
+    composition.compose_mining_research(case.query, case.bundle)
+    assert fcx_issuer() is None
+    assert mp_issuer() is None
+    assert profile_for_ticker("FCX") is None
+    assert profile_for_ticker("MP") is None
+
+
+# ---------------------------------------------------------------------------
+# W15-B — _iso_date_in returns only real calendar dates (date-window defect)
+# ---------------------------------------------------------------------------
+
+
+def test_iso_date_in_rejects_non_gregorian_windows() -> None:
+    """A YYYY-MM-DD-shaped window that is not a real date never counts.
+
+    The old isdigit-only scan accepted ``0000-00-00``, month 13, day 40 and
+    fullwidth digits, so the validity comparison could run on a non-date.
+    The first window that IS a real Gregorian date is returned instead.
+    """
+    assert composition._iso_date_in("0000-00-00") is None
+    assert composition._iso_date_in("2026-13-40") is None
+    assert composition._iso_date_in("2026-02-30") is None
+    assert composition._iso_date_in("\uff12\uff10\uff12\uff16-\uff10\uff13-\uff13\uff11") is None
+    assert composition._iso_date_in("2026-03-31") == "2026-03-31"
+    assert composition._iso_date_in("FY2026-03-31") == "2026-03-31"
+    assert composition._iso_date_in("0000-00-00 later 2027-03-31") == "2027-03-31"
+
+
+def test_placeholder_date_window_does_not_precede_validity() -> None:
+    """A placeholder window is skipped; the later real date governs the withhold.
+
+    The identity row is shaped exactly like the rows built by
+    ``test_t04b_two_identity_bundle_withholds_only_the_early_subject``
+    (name/cik/stable_subject_id/valid_from/fictional).
+    """
+    row = {
+        "name": "FCX Synthetic",
+        "cik": "0000000421",
+        "stable_subject_id": "subject:fcx",
+        "valid_from": "2026-01-01",
+        "fictional": True,
+    }
+    # Old bug: "0000-00-00" sorted before "2026-01-01" and withheld the packet.
+    assert composition._period_precedes_issuer_validity(
+        "0000-00-00 later 2027-03-31", "subject:fcx", [row]
+    ) is False
+    # Control: a genuine pre-validity date still fires the real withhold.
+    assert composition._period_precedes_issuer_validity(
+        "2025-06-30", "subject:fcx", [row]
+    ) is True

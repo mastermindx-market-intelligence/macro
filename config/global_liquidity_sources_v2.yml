@@ -1,0 +1,699 @@
+# Global liquidity source qualification matrix — v2 (T03, lane B1, 2026-10-13).
+#
+# Measured-truth document: every coverage number below was measured by the seat
+# (probe `git show <sha>:<path>` read into pandas) at measured_at_sha below; dates
+# and row counts are copied exactly, nothing is extrapolated. It CITES the data,
+# never copies data values or history. Where a fact is unknown it says `unknown`.
+#
+# LAW (binding on every consumer of this file):
+#   C04: economic period, publication (release), first-system-known (evidence
+#        available), vintage, correction and decision clocks are distinct and
+#        never substituted.
+#   C05: central_bank_assets, reserves, broad_money, private_credit,
+#        funding_price and market_liquidity are DIFFERENT concepts; never summed,
+#        averaged or substituted across concepts.
+#   C06: `credit_impulse_global` stays NULL with status
+#        `insufficient_comparable_pit_coverage` — no in-repo BIS GLI /
+#        external-credit store (S27); China TSF is a flow aggregate in CNY with
+#        conservative availability; US C&I is a bank-loan stock with
+#        first-print-only vintages; their definitions, units, sectors and clocks
+#        are not comparable, so no global scalar is computable.
+#        `broad_money_global` is null for the same class of reason: only US M2
+#        (M2SL) is level-available; China M2 is yoy-only; EZ/JP/KR/GB M2 are absent.
+#   FORBIDDEN POOL: china_tsf, us_ci_loans, bis_gli_external_credit may never be
+#        pooled/summed/averaged into one credit measure (see `pooling` below).
+#
+# Display tier: validated: false. Claim level: source_qualification_display_tier.
+
+schema_version: 2
+namespace: global_liquidity_sources_v2
+# none: config/global_liquidity_transmission_v1.yml is untouched; this is a new namespace.
+supersedes: none
+measured_at_sha: f2a21e8d7f28
+validated: false
+claim_level: source_qualification_display_tier
+concepts:
+  - central_bank_assets
+  - reserves
+  - broad_money
+  - private_credit
+  - funding_price
+  - market_liquidity
+uses:
+  - display
+  - reconstructed_research
+  - vintage_qualified_research
+  - prospective_eligibility
+verdict_values: [eligible, conditional, excluded]
+
+pooling:
+  forbidden_pools:
+    - id: global_private_credit
+      members: [china_tsf, us_ci_loans, bis_gli_external_credit]
+      reason: >-
+        C06/forbidden pool: China TSF is a flow aggregate in CNY with conservative
+        availability, US C&I loans are a bank-loan stock in USD with first-print-only
+        vintages, and BIS GLI external credit is absent (S27); their definitions,
+        units, sectors and clocks are not comparable, so pooling, summing or
+        averaging them into one credit measure is forbidden.
+
+global_scalars:
+  credit_impulse_global:
+    value: null
+    status: insufficient_comparable_pit_coverage
+    reason: >-
+      No in-repo BIS GLI / external-credit store (S27); China TSF is a flow aggregate
+      in CNY with conservative availability; US C&I is a bank-loan stock with
+      first-print-only vintages; their definitions, units, sectors and clocks are not
+      comparable, so no global scalar is computable.
+  broad_money_global:
+    value: null
+    status: insufficient_comparable_pit_coverage
+    reason: >-
+      Only US M2 (M2SL) is level-available; China M2 is yoy-only; EZ/JP/KR/GB M2 are
+      absent, so no comparable level series exists across jurisdictions and no global
+      broad-money scalar is computable.
+
+sources:
+  # ---- central_bank_assets -------------------------------------------------
+  - id: fed_total_assets
+    series: "FRED WALCL (H.4.1 total assets)"
+    jurisdiction: US
+    concept: central_bank_assets
+    role: "level"
+    unit: "USD millions"
+    clocks:
+      economic_period: "Wednesday balance-sheet level (weekly)"
+      release: "H.4.1 publication Thursday ~16:30 ET (reference Wednesday + 1 business day)"
+      first_system_known: "unknown per-row — collector fetch keeps no receipt; reconstruct as release + 1 business day"
+    vintage:
+      archive: none
+      revision_risk: "low — rarely revised"
+      correction_behaviour: "unknown — latest-only mirror; no in-repo archive to observe corrections"
+    licence_class: public_us_government
+    coverage: {start: "2002-12-18", end: "2026-10-07", rows: 1243, measured_at_sha: f2a21e8d7f28}
+    repo_path: data/fred/WALCL.parquet
+    column: fed_balance_sheet
+    verdicts:
+      display: {verdict: eligible, reason: "public weekly Fed balance-sheet level"}
+      reconstructed_research:
+        verdict: conditional
+        reason: "release_lag_aligned (Wed + 1BD) with an explicitly stated non-revised assumption; no per-row first-known receipt"
+      vintage_qualified_research:
+        verdict: excluded
+        reason: "no in-repo vintage archive — WALCL is absent from data/fred_vintage"
+      prospective_eligibility:
+        verdict: conditional
+        reason: "forward-only once a receipt-stamped producer exists"
+    exclusion_reason: null
+    sources_cited: [S08, S11, S28, "https://fred.stlouisfed.org/series/WALCL"]
+
+  - id: fed_reserve_balances
+    series: "FRED WRESBAL (H.4.1 reserve balances)"
+    jurisdiction: US
+    concept: reserves
+    role: "level, WEEK AVERAGE — LAW: WRESBAL is a week average while WALCL is a Wednesday level; never combine the two in one identity"
+    unit: "USD millions"
+    clocks:
+      economic_period: "week ending Wednesday, weekly average"
+      release: "H.4.1 publication Thursday ~16:30 ET (reference Wednesday + 1 business day)"
+      first_system_known: "unknown per-row — collector fetch keeps no receipt; reconstruct as release + 1 business day"
+    vintage:
+      archive: none
+      revision_risk: "low"
+      correction_behaviour: "unknown — latest-only mirror; no in-repo archive to observe corrections"
+    licence_class: public_us_government
+    coverage: {start: "2002-12-18", end: "2026-10-07", rows: 1243, measured_at_sha: f2a21e8d7f28}
+    repo_path: data/fred/WRESBAL.parquet
+    column: reserve_balances
+    verdicts:
+      display: {verdict: eligible, reason: "public weekly reserve-balances statistic"}
+      reconstructed_research:
+        verdict: conditional
+        reason: "release_lag_aligned (Wed + 1BD), non-revised assumption stated; week-average statistic must never enter an identity with WALCL's Wednesday level"
+      vintage_qualified_research:
+        verdict: excluded
+        reason: "no in-repo vintage archive — WRESBAL is absent from data/fred_vintage"
+      prospective_eligibility:
+        verdict: conditional
+        reason: "forward-only once a receipt-stamped producer exists"
+    exclusion_reason: null
+    sources_cited: [S08, S28, "https://fred.stlouisfed.org/series/WRESBAL"]
+
+  - id: fed_rrp
+    series: "FRED RRPONTSYD + data/nyfed/rrp.parquet (deeper operation store, rows=3267 2013-04-02..2026-10-08, col rrp_bn)"
+    jurisdiction: US
+    concept: reserves
+    role: "identity_component — a non-reserve LIABILITY drain inside the net-liquidity identity, not reserves themselves"
+    unit: "USD billions"
+    clocks:
+      economic_period: "reverse-repo operation day D"
+      release: "NY Fed same day ~13:15 ET"
+      first_system_known: "unknown per-row — same-day NY Fed publication; collector fetch keeps no receipt"
+    vintage:
+      archive: none
+      revision_risk: "low — append-only operation history"
+      correction_behaviour: "unknown — no in-repo archive to observe corrections"
+    licence_class: public_us_government
+    coverage: {start: "2003-02-07", end: "2026-10-08", rows: 3343, measured_at_sha: f2a21e8d7f28}
+    repo_path: data/fred/RRPONTSYD.parquet
+    column: on_rrp
+    verdicts:
+      display: {verdict: eligible, reason: "public daily facility level"}
+      reconstructed_research:
+        verdict: eligible
+        reason: "same-day publication ~13:15 ET makes release alignment trivially satisfiable"
+      vintage_qualified_research:
+        verdict: excluded
+        reason: "no in-repo vintage archive"
+      prospective_eligibility:
+        verdict: conditional
+        reason: "forward-only once a receipt-stamped producer exists"
+    exclusion_reason: null
+    sources_cited: [S08, "https://fred.stlouisfed.org/series/RRPONTSYD"]
+
+  - id: fed_tga
+    series: "data/treasury/tga (Daily Treasury Statement)"
+    jurisdiction: US
+    concept: reserves
+    role: "identity_component — a non-reserve liability drain inside the net-liquidity identity, not reserves themselves"
+    unit: "USD millions"
+    clocks:
+      economic_period: "business day D"
+      release: "D + 1 business day ~16:00 ET (S29)"
+      first_system_known: "unknown per-row — D+1BD publication; collector fetch keeps no receipt"
+    vintage:
+      archive: none
+      revision_risk: "low"
+      correction_behaviour: "unknown — no in-repo archive to observe corrections"
+    licence_class: public_us_government
+    coverage: {start: "2005-10-03", end: "2026-10-07", rows: 5143, measured_at_sha: f2a21e8d7f28}
+    repo_path: data/treasury/tga.parquet
+    column: tga_mn
+    verdicts:
+      display: {verdict: eligible, reason: "public daily Treasury General Account level"}
+      reconstructed_research:
+        verdict: eligible
+        reason: "D + 1 business day publication lag (S29) is the release alignment"
+      vintage_qualified_research:
+        verdict: excluded
+        reason: "no in-repo vintage archive"
+      prospective_eligibility:
+        verdict: conditional
+        reason: "forward-only once a receipt-stamped producer exists"
+    exclusion_reason: null
+    sources_cited: [S08, S29]
+
+  - id: fed_net_liquidity
+    series: "derived data/macro/fed_net_liquidity (formula owner: engine.canon.load_net_liquidity_components — the single formula is NOT restated here)"
+    jurisdiction: US
+    concept: central_bank_assets
+    role: "derived_proxy — Fed assets net of two non-reserve liabilities; never reserves (still contains currency, other liabilities and capital) and never a total-asset level; never summed with fed_total_assets"
+    unit: "USD billions"
+    clocks:
+      economic_period: "inherits components (WALCL Wednesday level; RRP operation day; TGA business day)"
+      release: "inherits the max (latest) of component releases"
+      first_system_known: "inherits the max (latest) of component first-known clocks"
+    vintage:
+      archive: none
+      revision_risk: "n/a — recomputed from component stores"
+      correction_behaviour: "recomputed by the formula owner; no independent vintage"
+    licence_class: derived
+    coverage: {start: "2002-12-18", end: "2026-10-08", rows: 5445, measured_at_sha: f2a21e8d7f28}
+    repo_path: data/macro/fed_net_liquidity.parquet
+    column: netliq_bn
+    verdicts:
+      display:
+        verdict: conditional
+        reason: "must be labelled 'incomplete proxy' — it omits other non-reserve liabilities and capital, so it is never reserves (S28)"
+      reconstructed_research:
+        verdict: conditional
+        reason: "component clocks inherited at their max; incomplete proxy disclosure mandatory"
+      vintage_qualified_research:
+        verdict: excluded
+        reason: "derived series; no independent vintage archive"
+      prospective_eligibility:
+        verdict: conditional
+        reason: "only once every component carries a receipt-stamped first-known clock"
+    exclusion_reason: null
+    sources_cited: [S08, S11, S28]
+
+  - id: fed_other_nonreserve_liabilities_and_capital
+    series: "absent"
+    jurisdiction: US
+    concept: reserves
+    role: "identity_component (absent) — the residual N in R = A − N"
+    unit: "unknown — no in-repo store"
+    clocks:
+      economic_period: "unknown — no in-repo store"
+      release: "unknown — no in-repo store"
+      first_system_known: "unknown — no in-repo store"
+    vintage:
+      archive: none
+      revision_risk: "unknown — no in-repo store"
+      correction_behaviour: "unknown — no in-repo store"
+    licence_class: absent
+    coverage: {start: null, end: null, rows: null, measured_at_sha: null}
+    repo_path: "absent"
+    column: null
+    verdicts:
+      display: {verdict: excluded, reason: "absent — nothing to display"}
+      reconstructed_research: {verdict: excluded, reason: "absent"}
+      vintage_qualified_research: {verdict: excluded, reason: "absent"}
+      prospective_eligibility: {verdict: excluded, reason: "absent"}
+    exclusion_reason: "absent: the Fed's other non-reserve liabilities and capital have no in-repo store, so reserves R = A − N are not computable in-repo (S28)"
+    sources_cited: [S28]
+
+  - id: ecb_total_assets
+    series: "FRED ECBASSETSW (ECB weekly financial statement)"
+    jurisdiction: EA
+    concept: central_bank_assets
+    role: "level, EUR millions — USD translation needs EURUSD; the in-repo Yahoo EURUSD store is licensed_no_redistribution"
+    unit: "EUR millions"
+    clocks:
+      economic_period: "Friday reference date (weekly)"
+      release: "following Tuesday (~2 business days after reference)"
+      first_system_known: "unknown per-row — collector fetch keeps no receipt; reconstruct as release"
+    vintage:
+      archive: none
+      revision_risk: "medium — full revision path unknown"
+      correction_behaviour: "unknown — no in-repo archive to observe corrections"
+    licence_class: public_with_attribution
+    coverage: {start: "1999-01-01", end: "2026-09-25", rows: 1448, measured_at_sha: f2a21e8d7f28}
+    repo_path: data/fred/ECBASSETSW.parquet
+    column: ecb_assets
+    verdicts:
+      display: {verdict: eligible, reason: "public ECB weekly statement level, attribution required, native EUR"}
+      reconstructed_research:
+        verdict: conditional
+        reason: "+2BD release alignment; revision path unknown (no vintage); USD translation needs EURUSD whose in-repo store is licensed_no_redistribution"
+      vintage_qualified_research:
+        verdict: excluded
+        reason: "absent from the in-repo vintage archive"
+      prospective_eligibility:
+        verdict: conditional
+        reason: "forward-only once a receipt-stamped producer exists"
+    exclusion_reason: null
+    sources_cited: [S08, S11, "https://fred.stlouisfed.org/series/ECBASSETSW"]
+
+  - id: boj_total_assets
+    series: "FRED JPNASSETS (BoJ accounts)"
+    jurisdiction: JP
+    concept: central_bank_assets
+    role: "level — store labels are MONTH-START; the statistic is month-end (DSC:BOJ-ASSETS-REQUIRE-MONTH-END-ANCHOR)"
+    unit: "JPY 100 millions"
+    clocks:
+      economic_period: "month-END (FRED labels the month start; anchor to month end)"
+      release: "~2 business days after month end"
+      first_system_known: "unknown per-row — collector fetch keeps no receipt; reconstruct as release"
+    vintage:
+      archive: none
+      revision_risk: "medium — full revision path unknown"
+      correction_behaviour: "unknown — no in-repo archive to observe corrections"
+    licence_class: public_with_attribution
+    coverage: {start: "1998-04-01", end: "2026-09-01", rows: 342, measured_at_sha: f2a21e8d7f28}
+    repo_path: data/fred/JPNASSETS.parquet
+    column: boj_assets
+    verdicts:
+      display:
+        verdict: conditional
+        reason: "month-end anchor mandatory — displaying the FRED month-start label as the economic date is the census landmine"
+      reconstructed_research:
+        verdict: conditional
+        reason: "month-end anchor + ~2BD release alignment; revision path unknown (no vintage)"
+      vintage_qualified_research:
+        verdict: excluded
+        reason: "absent from the in-repo vintage archive"
+      prospective_eligibility:
+        verdict: conditional
+        reason: "forward-only once a receipt-stamped producer exists"
+    exclusion_reason: null
+    sources_cited: [S08, S11, "https://fred.stlouisfed.org/series/JPNASSETS"]
+
+  - id: pboc_balance_sheet
+    series: "absent"
+    jurisdiction: CN
+    concept: central_bank_assets
+    role: "absent — fx_reserves and OMO bulletins are context only, never PBoC total assets"
+    unit: "unknown — no in-repo store"
+    clocks:
+      economic_period: "unknown — no in-repo store"
+      release: "unknown — no in-repo store"
+      first_system_known: "unknown — no in-repo store"
+    vintage:
+      archive: none
+      revision_risk: "unknown — no in-repo store"
+      correction_behaviour: "unknown — no in-repo store"
+    licence_class: absent
+    coverage: {start: null, end: null, rows: null, measured_at_sha: null}
+    repo_path: "absent"
+    column: null
+    verdicts:
+      display: {verdict: excluded, reason: "absent — nothing to display"}
+      reconstructed_research: {verdict: excluded, reason: "absent"}
+      vintage_qualified_research: {verdict: excluded, reason: "absent"}
+      prospective_eligibility: {verdict: excluded, reason: "absent"}
+    exclusion_reason: "absent: no in-repo PBoC total-assets store; data/china_pboc/fx_reserves.parquet (rows=225, 2008-01-01..2026-09-01, cols fx_reserves,gold_reserves) and data/china_omo/operations.parquet (rows=112, operation bulletins, no date index) are CONTEXT ONLY and never PBoC total assets"
+    sources_cited: [S08]
+
+  # ---- broad_money / private_credit ----------------------------------------
+  - id: china_tsf
+    series: "data/china_credit/tsf (owner: collectors/china_credit.py, PBoC direct)"
+    jurisdiction: CN
+    concept: private_credit
+    role: "flow, CNY — FORBIDDEN POOL member: never pooled into a global credit measure"
+    unit: "CNY 100 millions (亿元), monthly increment"
+    clocks:
+      economic_period: "reference month M"
+      release: "mid M+1, irregular (PBoC posts ~day 10-16 of M+1)"
+      first_system_known: "explicit conservative availability stamp = day 16 of M+1 (TSF_RELEASE_DOM)"
+    vintage:
+      archive: none
+      revision_risk: "later PBoC revisions remain possible and are not captured"
+      correction_behaviour: "unknown — no in-repo archive to observe corrections"
+    licence_class: terms_unverified
+    coverage: {start: "2015-01-01", end: "2026-08-01", rows: 140, measured_at_sha: f2a21e8d7f28}
+    repo_path: data/china_credit/tsf.parquet
+    column: tsf_total
+    verdicts:
+      display: {verdict: eligible, reason: "public PBoC monthly flow (terms per owner)"}
+      reconstructed_research:
+        verdict: conditional
+        reason: "explicit_conservative_availability: actable only from day 16 of M+1 (TSF_RELEASE_DOM)"
+      vintage_qualified_research:
+        verdict: excluded
+        reason: "no vintage archive; later revisions not captured"
+      prospective_eligibility:
+        verdict: conditional
+        reason: "forward-only once a receipt-stamped producer exists"
+    exclusion_reason: null
+    sources_cited: [S08]
+
+  - id: us_ci_loans
+    series: "FRED BUSLOANS (H.8 commercial & industrial loans)"
+    jurisdiction: US
+    concept: private_credit
+    role: "stock, USD bn — FORBIDDEN POOL member: never pooled into a global credit measure"
+    unit: "USD billions"
+    clocks:
+      economic_period: "month"
+      release: "H.8 weekly Friday ~16:15 ET; the monthly figure is revised"
+      first_system_known: "first print archived in data/fred_vintage (one row per series-period)"
+    vintage:
+      archive: first_print_only
+      revision_risk: "monthly revised (H.8)"
+      correction_behaviour: "later revisions are not archived — the archive stores the FIRST PRINT only"
+    licence_class: public_us_government
+    coverage: {start: "1947-01-01", end: "2026-08-01", rows: 956, measured_at_sha: f2a21e8d7f28}
+    repo_path: data/fred/BUSLOANS.parquet
+    column: ci_loans
+    verdicts:
+      display: {verdict: eligible, reason: "public monthly bank-loan stock"}
+      reconstructed_research:
+        verdict: conditional
+        reason: "monthly figure revised after first print; release alignment stated"
+      vintage_qualified_research:
+        verdict: eligible
+        reason: "first print only — 357 archived periods 1996-12..2026-08 in data/fred_vintage"
+      prospective_eligibility:
+        verdict: conditional
+        reason: "forward-only once a receipt-stamped producer exists"
+    exclusion_reason: null
+    sources_cited: [S08, S30, "https://fred.stlouisfed.org/series/BUSLOANS"]
+
+  - id: bis_gli_external_credit
+    series: "absent"
+    jurisdiction: global
+    concept: private_credit
+    role: "absent (cross-border/external credit) — FORBIDDEN POOL member"
+    unit: "unknown — no in-repo store"
+    clocks:
+      economic_period: "quarterly with long lag (S27)"
+      release: "unknown — no in-repo store"
+      first_system_known: "unknown — no in-repo store"
+    vintage:
+      archive: none
+      revision_risk: "unknown — no in-repo store"
+      correction_behaviour: "unknown — no in-repo store"
+    licence_class: terms_unverified
+    coverage: {start: null, end: null, rows: null, measured_at_sha: null}
+    repo_path: "absent"
+    column: null
+    verdicts:
+      display: {verdict: excluded, reason: "absent — nothing to display"}
+      reconstructed_research: {verdict: excluded, reason: "absent"}
+      vintage_qualified_research: {verdict: excluded, reason: "absent"}
+      prospective_eligibility: {verdict: excluded, reason: "absent"}
+    exclusion_reason: "absent: no in-repo BIS GLI / external-credit store (S27); in-repo BIS us_gap.parquet (rows=274, 1957-12-31..2026-03-31, col gap) and DSR are STRUCTURAL credit-to-GDP measures, excluded from transmission use (not GLI)"
+    sources_cited: [S27, S08]
+
+  - id: us_m2
+    series: "FRED M2SL (H.6 M2 money stock)"
+    jurisdiction: US
+    concept: broad_money
+    role: "level"
+    unit: "USD billions"
+    clocks:
+      economic_period: "month"
+      release: "H.6 ~4th Tuesday of M+1; revised"
+      first_system_known: "first print archived in data/fred_vintage (one row per series-period)"
+    vintage:
+      archive: first_print_only
+      revision_risk: "revised (H.6)"
+      correction_behaviour: "later revisions are not archived — the archive stores the FIRST PRINT only"
+    licence_class: public_us_government
+    coverage: {start: "1959-01-01", end: "2026-08-01", rows: 812, measured_at_sha: f2a21e8d7f28}
+    repo_path: data/fred/M2SL.parquet
+    column: us_m2
+    verdicts:
+      display: {verdict: eligible, reason: "public monthly money-stock level"}
+      reconstructed_research:
+        verdict: conditional
+        reason: "revised monthly; ~4th-Tuesday release alignment stated"
+      vintage_qualified_research:
+        verdict: eligible
+        reason: "first print only — 357 archived periods 1996-12..2026-08 in data/fred_vintage"
+      prospective_eligibility:
+        verdict: conditional
+        reason: "forward-only once a receipt-stamped producer exists"
+    exclusion_reason: null
+    sources_cited: [S08, S30, "https://fred.stlouisfed.org/series/M2SL"]
+
+  - id: china_m2
+    series: "data/china_macro/money_supply (EastMoney aggregation of official data)"
+    jurisdiction: CN
+    concept: broad_money
+    role: "yoy only — not a level"
+    unit: "percent, year-over-year"
+    clocks:
+      economic_period: "month"
+      release: "unknown — not stored"
+      first_system_known: "unknown — EastMoney aggregation carries no release timestamp (S08)"
+    vintage:
+      archive: none
+      revision_risk: "unbounded — revision risk unmeasured (S08)"
+      correction_behaviour: "unknown — no in-repo archive to observe corrections"
+    licence_class: terms_unverified
+    coverage: {start: "2008-01-01", end: "2026-08-01", rows: 224, measured_at_sha: f2a21e8d7f28}
+    repo_path: data/china_macro/money_supply.parquet
+    column: m2_yoy
+    verdicts:
+      display:
+        verdict: conditional
+        reason: "context display of a yoy rate only — never presented as a level and never mixed into a global broad-money scalar"
+      reconstructed_research: {verdict: excluded, reason: "yoy-only, not a level"}
+      vintage_qualified_research: {verdict: excluded, reason: "no vintage archive"}
+      prospective_eligibility: {verdict: excluded, reason: "no first-known clock exists to qualify"}
+    exclusion_reason: "all research excluded: yoy-only (not a level), no release/first-known clock, not PIT-safe (S08)"
+    sources_cited: [S08]
+
+  - id: ez_jp_kr_gb_m2
+    series: "absent"
+    jurisdiction: [EA, JP, KR, GB]
+    concept: broad_money
+    role: "absent"
+    unit: "unknown — no in-repo store"
+    clocks:
+      economic_period: "unknown — no in-repo store"
+      release: "unknown — no in-repo store"
+      first_system_known: "unknown — no in-repo store"
+    vintage:
+      archive: none
+      revision_risk: "unknown — no in-repo store"
+      correction_behaviour: "unknown — no in-repo store"
+    licence_class: absent
+    coverage: {start: null, end: null, rows: null, measured_at_sha: null}
+    repo_path: "absent"
+    column: null
+    verdicts:
+      display: {verdict: excluded, reason: "absent — nothing to display"}
+      reconstructed_research: {verdict: excluded, reason: "absent"}
+      vintage_qualified_research: {verdict: excluded, reason: "absent"}
+      prospective_eligibility: {verdict: excluded, reason: "absent"}
+    exclusion_reason: "absent: EZ/JP/KR/GB M2 have no in-repo store; the legacy discontinued FRED feeds were explicitly removed and must not be revived (S08)"
+    sources_cited: [S08]
+
+  # ---- funding_price / market_liquidity ------------------------------------
+  - id: us_funding_rates
+    series: >-
+      FRED SOFR, EFFR, DFF, IORB (family) — measured: SOFR rows=2127 2018-04-03..2026-10-07;
+      EFFR rows=6595 2000-07-03..2026-10-07; DFF rows=26397 1954-07-01..2026-10-07;
+      IORB rows=1899 2021-07-29..2026-10-09
+    jurisdiction: US
+    concept: funding_price
+    role: "rate, % — spreads (SOFR−IORB, EFFR−IORB) only on common dates: start 2021-07-29 (IORB start)"
+    unit: "percent per annum"
+    clocks:
+      economic_period: "SOFR/EFFR: day D; DFF: daily including weekends; IORB: administered, effective date"
+      release: "SOFR ~08:00 ET D+1BD; EFFR ~09:00 ET D+1BD (NY Fed); DFF/IORB per Board publication"
+      first_system_known: "unknown per-row — collector fetch keeps no receipt; reconstruct as release"
+    vintage:
+      archive: none
+      revision_risk: "low — fixing/administered rates"
+      correction_behaviour: "unknown — SOFR and IORB are absent from the vintage archive"
+    licence_class: public_us_government
+    coverage: {start: "2018-04-03", end: "2026-10-07", rows: 2127, measured_at_sha: f2a21e8d7f28}
+    repo_path: data/fred/SOFR.parquet
+    column: sofr
+    verdicts:
+      display: {verdict: eligible, reason: "public administered/fixed policy and funding rates"}
+      reconstructed_research:
+        verdict: eligible
+        reason: "published D+1BD (~08:00/09:00 ET for SOFR/EFFR); alignment is release + 1 business day"
+      vintage_qualified_research:
+        verdict: excluded
+        reason: "SOFR and IORB are not in the vintage archive"
+      prospective_eligibility:
+        verdict: conditional
+        reason: "forward-only once a receipt-stamped producer exists"
+    exclusion_reason: null
+    sources_cited: [S08, "https://fred.stlouisfed.org/series/SOFR", "https://fred.stlouisfed.org/series/EFFR", "https://fred.stlouisfed.org/series/DFF", "https://fred.stlouisfed.org/series/IORB"]
+
+  - id: market_liquidity_proxies
+    series: >-
+      FRED DTWEXBGS (H.10), DFII10, BAMLH0A0HYM2 (family) — measured: DTWEXBGS rows=5203
+      2006-01-02..2026-10-02; DFII10 rows=5946 2003-01-02..2026-10-07; BAMLH0A0HYM2
+      rows=7774 1996-12-31..2026-10-07
+    jurisdiction: US
+    concept: market_liquidity
+    role: "index / yield / spread proxies"
+    unit: "DTWEXBGS index; DFII10 yield %; HY OAS spread %"
+    clocks:
+      economic_period: "DTWEXBGS weekly H.10 (Monday); DFII10 daily; HY OAS daily"
+      release: "~+1 business day (market data publication)"
+      first_system_known: "unknown per-row — collector fetch keeps no receipt; reconstruct as release"
+    vintage:
+      archive: none
+      revision_risk: "low — market data effectively non-revised"
+      correction_behaviour: "unknown — none of the three are in the vintage archive; HY OAS pre-window history lives only in the append-only repo store (upstream serves a rolling window)"
+    licence_class: licensed_no_redistribution
+    coverage: {start: "2006-01-02", end: "2026-10-02", rows: 5203, measured_at_sha: f2a21e8d7f28}
+    repo_path: data/fred/DTWEXBGS.parquet
+    column: broad_dollar
+    verdicts:
+      display:
+        verdict: conditional
+        reason: "HY OAS custody gap: the ICE BofA licence for derived display is not verified in repo (DTWEXBGS/DFII10 are public US government)"
+      reconstructed_research:
+        verdict: conditional
+        reason: "+1BD market-data alignment stated; HY OAS display/licence custody gap"
+      vintage_qualified_research:
+        verdict: excluded
+        reason: "none of DTWEXBGS/DFII10/BAMLH0A0HYM2 are in the vintage archive"
+      prospective_eligibility:
+        verdict: conditional
+        reason: "forward-only once a receipt-stamped producer exists and the HY OAS licence gap is closed"
+    exclusion_reason: null
+    sources_cited: [S08, S11, "https://fred.stlouisfed.org/series/DTWEXBGS", "https://fred.stlouisfed.org/series/DFII10", "https://fred.stlouisfed.org/series/BAMLH0A0HYM2"]
+
+  - id: nfci_anfci
+    series: "FRED NFCI / ANFCI (Chicago Fed financial conditions) — measured: rows=2909 1971-01-08..2026-10-02 (pair, as measured)"
+    jurisdiction: US
+    concept: market_liquidity
+    role: "composite index"
+    unit: "index (dimensionless)"
+    clocks:
+      economic_period: "week"
+      release: "weekly; the ENTIRE history is re-estimated on each release"
+      first_system_known: "unknown per-row — collector fetch keeps no receipt"
+    vintage:
+      archive: none
+      revision_risk: "whole-history revision each release"
+      correction_behaviour: "entire history re-estimated each release — never PIT from a latest-only mirror"
+    licence_class: public_us_government
+    coverage: {start: "1971-01-08", end: "2026-10-02", rows: 2909, measured_at_sha: f2a21e8d7f28}
+    repo_path: data/fred/NFCI.parquet
+    column: nfci
+    verdicts:
+      display: {verdict: eligible, reason: "public weekly financial-conditions index"}
+      reconstructed_research:
+        verdict: excluded
+        reason: "entire history re-estimated each release — not point-in-time"
+      vintage_qualified_research:
+        verdict: excluded
+        reason: "absent from the vintage archive (deliberately deferred in collectors/fred.py)"
+      prospective_eligibility:
+        verdict: excluded
+        reason: "whole-history re-estimation cannot be made PIT by a receipt stamp alone"
+    exclusion_reason: "all research excluded: NFCI/ANFCI re-estimate their entire history every weekly release; not point-in-time (S08; collectors/fred.py defers them from the vintage matrix for the same reason)"
+    sources_cited: [S08, "https://fred.stlouisfed.org/series/NFCI", "https://fred.stlouisfed.org/series/ANFCI"]
+
+  - id: hkma_shibor_context
+    series: >-
+      data/hkma/interbank_liquidity.parquet (cols agg_balance, hibor_on, ...) +
+      data/china_funding/shibor.parquet — measured: shibor rows=2381 2015-05-08..2026-10-12
+    jurisdiction: HK
+    concept: funding_price
+    role: "jurisdiction context — HK aggregate balance / SHIBOR fixing, never a global funding factor"
+    unit: "unknown — HKMA native aggregate-balance units; hibor_on in percent"
+    clocks:
+      economic_period: "day"
+      release: "daily fixing / HKMA publication"
+      first_system_known: "unknown per-row — collector fetch keeps no receipt"
+    vintage:
+      archive: none
+      revision_risk: "low — operational/fixing history, typically non-revised"
+      correction_behaviour: "unknown — no in-repo archive to observe corrections"
+    licence_class: terms_unverified
+    coverage: {start: "2002-01-02", end: "2026-10-09", rows: 6345, measured_at_sha: f2a21e8d7f28}
+    repo_path: data/hkma/interbank_liquidity.parquet
+    column: agg_balance
+    verdicts:
+      display: {verdict: eligible, reason: "jurisdiction context (HK interbank liquidity, SHIBOR fixings)"}
+      reconstructed_research:
+        verdict: excluded
+        reason: "jurisdiction context only — not a homogeneous global funding factor"
+      vintage_qualified_research:
+        verdict: excluded
+        reason: "no vintage archive"
+      prospective_eligibility:
+        verdict: excluded
+        reason: "out of scope for the global measure by construction"
+    exclusion_reason: "research excluded from the global measure: jurisdiction context only (S08)"
+    sources_cited: [S08]
+
+  - id: cross_currency_basis
+    series: "absent"
+    jurisdiction: global
+    concept: funding_price
+    role: "absent"
+    unit: "unknown — no in-repo store"
+    clocks:
+      economic_period: "unknown — no in-repo store"
+      release: "unknown — no in-repo store"
+      first_system_known: "unknown — no in-repo store"
+    vintage:
+      archive: none
+      revision_risk: "unknown — no in-repo store"
+      correction_behaviour: "unknown — no in-repo store"
+    licence_class: absent
+    coverage: {start: null, end: null, rows: null, measured_at_sha: null}
+    repo_path: "absent"
+    column: null
+    verdicts:
+      display: {verdict: excluded, reason: "absent — nothing to display"}
+      reconstructed_research: {verdict: excluded, reason: "absent"}
+      vintage_qualified_research: {verdict: excluded, reason: "absent"}
+      prospective_eligibility: {verdict: excluded, reason: "absent"}
+    exclusion_reason: "absent: no in-repo cross-currency basis store; CNH futures/spot basis, HIBOR−SOFR and the HKMA aggregate balance are local diagnostics and must not be renamed into a covered global basis basket (S08)"
+    sources_cited: [S08]

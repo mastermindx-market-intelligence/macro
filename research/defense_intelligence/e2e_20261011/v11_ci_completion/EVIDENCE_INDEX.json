@@ -1,0 +1,80 @@
+{
+  "schema": "defense.evidence_index.v1",
+  "files": [
+    {
+      "path": "ADJUDICATION.json",
+      "bytes": 2526,
+      "sha256": "3f58fe36b5a209dcbed3d1c4001c83ccc2e641b5327c7e3b8d822efbcde08412"
+    },
+    {
+      "path": "CAPACITY_DELIVERY_RESPONSE.json",
+      "bytes": 290,
+      "sha256": "38149f8d54a770683873efa34e51445b9fa2650ab700ea9fc197aba57ce4f714"
+    },
+    {
+      "path": "CAPACITY_ORIGINAL_BINDING.json",
+      "bytes": 1326,
+      "sha256": "9cd3b6de0d13ae7f49607ce3ee6671ab470a0a5276484f65ce1e57daf7fc389b"
+    },
+    {
+      "path": "DOWNSTREAM_INCOMPLETE.log.gz",
+      "bytes": 775,
+      "sha256": "e943ab32088e0a00319e8dac2c888976f15ab3850b88b5662c15f3143558445c"
+    },
+    {
+      "path": "DOWNSTREAM_RECOVERY_RED.log.gz",
+      "bytes": 2145,
+      "sha256": "10b6c48d7e50947a70f208a91cdc1337916df177edcdc213e7eeccb8a2c91cf8"
+    },
+    {
+      "path": "FMS_MIGRATION_GREEN.log.gz",
+      "bytes": 718,
+      "sha256": "32e661bfd2e905cdd2dd98e79ce2e939f910d7fc613ca9c4864363393b49ace9"
+    },
+    {
+      "path": "FMS_ORIGINAL_BINDING.json",
+      "bytes": 1356,
+      "sha256": "6ca3726e4894f9973e3a16fbb18302f9890cd41302845bd4e3743acf2a54e825"
+    },
+    {
+      "path": "FMS_ORIGINAL_DELIVERY_RECEIPT.json",
+      "bytes": 2857,
+      "sha256": "482ceed01626a50266837ad02b664876b45c3cdbfa37125874b566b43efaa83d"
+    },
+    {
+      "path": "FMS_ORIGINAL_PROCESS.json",
+      "bytes": 2115,
+      "sha256": "602c926aa4bd9ddef7e1731e659da68672e57c0e67ea89c2e5684903441bff15"
+    },
+    {
+      "path": "FMS_PARENT_NEGATIVE_CONTROLS.json",
+      "bytes": 692,
+      "sha256": "6e6fc23aaa2a35b969c28756dc57035b95166911c9b77ff3f8547ddd924d8248"
+    },
+    {
+      "path": "FMS_WORKER.patch",
+      "bytes": 8285,
+      "sha256": "78b02cf504de3d55ada54ea6476ef5090a2d5c62bf138a20651f17384f9a80af"
+    },
+    {
+      "path": "FMS_WORKER_RETURN.txt",
+      "bytes": 2860,
+      "sha256": "dc55a524bd10dc83fe78e6a9597fe003450e4d7fe1f105dd8aad0a0bbea2e1db"
+    },
+    {
+      "path": "FMS_WORKER_VALIDATION.json",
+      "bytes": 8878,
+      "sha256": "e2f1292cd683573a60aba931a7f14ced9315573442de89985636f1eaea74d051"
+    },
+    {
+      "path": "IDENTITY_MIGRATION_GREEN.log.gz",
+      "bytes": 52,
+      "sha256": "310cc020ffdd2b32dd215f9ae847e12f00a2285e9a2930ae8ed6d19c7e2751b5"
+    },
+    {
+      "path": "SBIR_ASSET_FIXTURES_GREEN.log.gz",
+      "bytes": 778,
+      "sha256": "12c448cd3f146373b2111b68d58a8c2d4a7ea08d2004626c08e0ea1846ebd72f"
+    }
+  ]
+}

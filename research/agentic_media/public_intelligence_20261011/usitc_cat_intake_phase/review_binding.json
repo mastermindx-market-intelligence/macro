@@ -1,0 +1,21 @@
+{
+  "run_id": "mmx-press-usitc-cat-facts-20261014-001",
+  "root": "01a12a2a-d7e1-77b1-9262-ab593179dd13",
+  "parent": "01a12a2a-d7e1-77b1-9262-ab593179dd13",
+  "result_sha256": "782e48b7673eac68e854fadc940ae05cea50948473437eae7ae1930af435b70d",
+  "parent_verdict": "ACCEPTED_FACT_CENSUS_WITH_EXCLUDED_COMMENTARY",
+  "scope": "Source clock chain, named parties, exact four claim groups, 5+3+2+5 arithmetic and narrow proposed factual framing checked against both original PDF pages/text. Final seven-point sidecar separately reviewed by parent.",
+  "excluded_worker_commentary": [
+    "The statement no public-interest intervener is not established merely by OUII nonparticipation.",
+    "Remaining claim counts or current case status are not inferred from subtracting historical lists.",
+    "Not a settlement is limited to this notice not establishing a settlement; no universal assertion about other proceedings."
+  ],
+  "integrated_correction": "Attribute the unopposed-motions statement to Bobcat, as the source does.",
+  "not_claimed": [
+    "publication rights approval by worker",
+    "Press generation or acceptance",
+    "current legal advice",
+    "stock-price or revenue consequences"
+  ],
+  "observed_at": "2026-10-14T17:30:12.983431+00:00"
+}

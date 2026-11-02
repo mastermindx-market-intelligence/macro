@@ -16,7 +16,7 @@ READ PATH changed.
 The harness loads the SHIPPED templates/government-revenue-dossiers.js
 unmodified, and also extracts the REAL page helper functions (esc, text,
 date, tr, zh, n, money, factCell, safeUrl, obj, arr) verbatim from
-templates/government_revenue.html.j2 -- not hand-retyped stand-ins -- so a
+templates/government-revenue-page.js.j2 -- not hand-retyped stand-ins -- so a
 regression in either file's real formatting/localization breaks this suite,
 not just a private copy of it.
 """
@@ -34,7 +34,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 DOSSIER_JS_PATH = ROOT / "templates" / "government-revenue-dossiers.js"
-TEMPLATE_PATH = ROOT / "templates" / "government_revenue.html.j2"
+TEMPLATE_PATH = ROOT / "templates" / "government-revenue-page.js.j2"
 FIXTURE_PATH = ROOT / "tests" / "fixtures" / "govrev_company_bridge" / "p00032_event.json"
 
 TEMPLATE = TEMPLATE_PATH.read_text(encoding="utf-8")
@@ -61,7 +61,7 @@ GOV_EVENT = _load_gov_event()
 
 
 # ---------------------------------------------------------------------------
-# Real page helpers -- extracted verbatim from templates/government_revenue.html.j2,
+# Real page helpers -- extracted verbatim from templates/government-revenue-page.js.j2,
 # never hand-retyped, so this suite tracks the REAL production formatting/
 # localization rather than a private stand-in copy of it.
 # ---------------------------------------------------------------------------
@@ -72,7 +72,7 @@ _HELPER_NAMES = ["obj", "arr", "zh", "tr", "esc", "n", "text", "money", "date", 
 def _extract_helper_line(name: str) -> str:
     pattern = re.compile(r"^  function " + re.escape(name) + r"\(.*$", re.M)
     match = pattern.search(TEMPLATE)
-    assert match, f"real helper function {name!r} not found in government_revenue.html.j2 -- extraction pattern drifted"
+    assert match, f"real helper function {name!r} not found in government-revenue-page.js.j2 -- extraction pattern drifted"
     return match.group(0)
 
 

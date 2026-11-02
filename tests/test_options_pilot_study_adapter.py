@@ -17,6 +17,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from unittest import mock
 
@@ -619,6 +620,372 @@ class Q02U1CausalityAndNoRescueTests(unittest.TestCase):
             forged = adapter.build_inspect_report(spec, digest, None)
         self.assertEqual(_increment_claims(forged), ["$.b1_ri_note"])
         self.assertNotEqual(_increment_claims({"incrementality_label": "x"}), [])
+
+
+class Q03GuardTests(unittest.TestCase):
+    # NYSE sessions around Thanksgiving 2026, written by hand. 2026-11-26 is
+    # Thanksgiving, an NYSE holiday, and is omitted. 2026-11-27 is a session.
+    _THANKSGIVING_2026_SESSIONS = (
+        date(2026, 10, 21),
+        date(2026, 10, 22),
+        date(2026, 10, 23),
+        date(2026, 10, 26),
+        date(2026, 10, 27),
+        date(2026, 10, 28),
+        date(2026, 10, 29),
+        date(2026, 10, 30),
+        date(2026, 11, 2),
+        date(2026, 11, 3),
+        date(2026, 11, 4),
+        date(2026, 11, 5),
+        date(2026, 11, 6),
+        date(2026, 11, 9),
+        date(2026, 11, 10),
+        date(2026, 11, 11),
+        date(2026, 11, 12),
+        date(2026, 11, 13),
+        date(2026, 11, 16),
+        date(2026, 11, 17),
+        date(2026, 11, 18),
+        date(2026, 11, 19),
+        date(2026, 11, 20),
+        date(2026, 11, 23),
+        date(2026, 11, 24),
+        date(2026, 11, 25),
+        date(2026, 11, 27),
+        date(2026, 11, 30),
+    )
+
+    def test_current_69_row_board_never_becomes_historical_universe(self):
+        board_path = RESEARCH / "gex-published-board-extract.json"
+        board = json.loads(board_path.read_text(encoding="utf-8"))
+        self.assertEqual(board["as_of"], "2026-10-01")
+        self.assertEqual(
+            board["source"]["snapshot_ref"],
+            "3d9969c15bba0f57b64da7592c0731cc8a0f2eac",
+        )
+        self.assertEqual(len(board["buy"]), 69)
+
+        result = adapter.qualify_population_candidate(board)
+        self.assertIs(result["historical_universe"], False)
+        self.assertEqual(result["kind"], "single_receipt_replay")
+        self.assertIsNone(result["dataset_manifest"])
+        self.assertTrue(result["reasons"])
+        self.assertTrue(all(isinstance(reason, str) and reason for reason in result["reasons"]))
+        self.assertTrue(any("receipt" in reason.lower() for reason in result["reasons"]))
+
+        forged = {
+            "historical_universe": True,
+            "kind": "historical_universe",
+            "dataset_manifest": {"sha256": "not-a-qualification-receipt"},
+            "rows": list(range(500)),
+        }
+        forged_result = adapter.qualify_population_candidate(forged)
+        self.assertIs(forged_result["historical_universe"], False)
+        self.assertEqual(forged_result["kind"], "single_receipt_replay")
+        self.assertIsNone(forged_result["dataset_manifest"])
+
+    def test_purge_uses_actual_label_interval_and_nyse_sessions(self):
+        source = ADAPTER.read_text(encoding="utf-8")
+        self.assertNotIn("effective_blocks", source)
+        self.assertNotIn("nyse_calendar", source)
+
+        sessions = self._THANKSGIVING_2026_SESSIONS
+        self.assertNotIn(date(2026, 11, 26), sessions)
+        self.assertIn(date(2026, 11, 27), sessions)
+
+        training_cutoff = datetime(2026, 11, 19, 21, 0, tzinfo=timezone.utc)
+        validation_start = datetime(2026, 11, 20, 15, 0, tzinfo=timezone.utc)
+        # 30 minutes that land exactly on validation_start. A strict ">" would keep this row.
+        p1_decision = datetime(2026, 11, 20, 14, 30, tzinfo=timezone.utc)
+        p1_overlap = {
+            "id": "p1-30m-overlap",
+            "pilot": "P1",
+            "decision_at": p1_decision,
+            "label_end": p1_decision + timedelta(days=20),
+            "label_mature_at": training_cutoff,
+        }
+        # Formation 2026-10-29 plus 20 NYSE sessions ends 2026-11-27, spanning the
+        # Thanksgiving holiday. Plus 20 calendar days ends 2026-11-18, before
+        # validation, so that gap would keep the row.
+        p3_span = {
+            "id": "p3-session-span",
+            "pilot": "P3",
+            "formation_session": date(2026, 10, 29),
+            "label_end": date(2026, 10, 29) + timedelta(days=20),
+            "label_mature_at": training_cutoff,
+        }
+        p3_kept = {
+            "id": "p3-mature-kept",
+            "pilot": "P3",
+            "formation_session": date(2026, 10, 21),
+            "label_mature_at": training_cutoff,
+        }
+        p3_late = {
+            "id": "p3-late-mature",
+            "pilot": "P3",
+            "formation_session": date(2026, 10, 21),
+            "label_mature_at": training_cutoff + timedelta(seconds=1),
+        }
+
+        p1_start, p1_end = adapter.label_interval(p1_overlap, sessions=sessions)
+        self.assertEqual(p1_start, p1_decision)
+        self.assertEqual(p1_end, p1_decision + timedelta(minutes=30))
+        self.assertEqual(p1_end, validation_start)
+
+        span_start, span_end = adapter.label_interval(p3_span, sessions=sessions)
+        calendar_gap_end = date(2026, 10, 29) + timedelta(days=20)
+        self.assertEqual(span_start, date(2026, 10, 29))
+        self.assertEqual(span_end, date(2026, 11, 27))
+        self.assertEqual(calendar_gap_end, date(2026, 11, 18))
+        self.assertLess(calendar_gap_end, validation_start.date())
+        self.assertGreaterEqual(span_end, validation_start.date())
+
+        kept_start, kept_end = adapter.label_interval(p3_kept, sessions=sessions)
+        self.assertEqual(kept_start, date(2026, 10, 21))
+        self.assertEqual(kept_end, date(2026, 11, 18))
+        self.assertLess(kept_end, validation_start.date())
+
+        kept, purged = adapter.purge_training_rows(
+            [p1_overlap, p3_span, p3_kept, p3_late],
+            training_cutoff=training_cutoff,
+            validation_start=validation_start,
+            sessions=sessions,
+        )
+        self.assertEqual([row["id"] for row in kept], ["p3-mature-kept"])
+        self.assertEqual(
+            sorted(row["id"] for row in purged),
+            ["p1-30m-overlap", "p3-late-mature", "p3-session-span"],
+        )
+
+    def test_validation_and_holdout_are_disjoint_and_outcome_blind(self):
+        sessions = (
+            date(2025, 12, 22),
+            date(2025, 12, 23),
+            date(2025, 12, 24),
+            date(2025, 12, 26),
+            date(2025, 12, 29),
+            date(2025, 12, 30),
+            date(2025, 12, 31),
+            date(2026, 10, 1),
+            date(2026, 10, 15),
+            date(2026, 10, 16),
+            date(2026, 10, 30),
+            date(2026, 11, 2),
+            date(2026, 11, 3),
+            date(2026, 11, 20),
+            date(2026, 11, 27),
+        )
+        lawful = {
+            "training_start": date(2026, 10, 1),
+            "training_fit_cutoff": date(2026, 10, 15),
+            "validation_start": date(2026, 10, 16),
+            "validation_end": date(2026, 10, 30),
+            "test_model_sealed_at": date(2026, 11, 2),
+            "test_start": date(2026, 11, 3),
+            "test_end": date(2026, 11, 20),
+            "multiplicity_family_id": "six-pilot-holm-v1",
+            "accepted_trial_id": "must-not-bind",
+        }
+        overlap = dict(lawful)
+        overlap["validation_end"] = date(2026, 11, 3)
+        holdout = {
+            "training_start": date(2025, 12, 22),
+            "training_fit_cutoff": date(2025, 12, 23),
+            "validation_start": date(2025, 12, 24),
+            "validation_end": date(2025, 12, 26),
+            "test_model_sealed_at": date(2025, 12, 29),
+            "test_start": date(2025, 12, 31),
+            "test_end": date(2025, 12, 31),
+            "multiplicity_family_id": "six-pilot-holm-v1",
+        }
+        non_session = dict(lawful)
+        non_session["test_start"] = date(2026, 11, 26)
+        non_session["test_end"] = date(2026, 11, 27)
+        wrong_family = dict(lawful)
+        wrong_family["multiplicity_family_id"] = "options-theta-bh-60"
+        sealed_outcome = dict(lawful)
+        sealed_outcome["q_value"] = 0.0412
+
+        cases = (
+            (overlap, "SPLIT_OVERLAP"),
+            (holdout, "HOLDOUT_INSIDE_INSPECTED_SPAN"),
+            (sealed_outcome, "SEAL_CONTAINS_OUTCOME"),
+            (wrong_family, "FAMILY_ID_MISMATCH"),
+            (non_session, "NON_SESSION_BOUNDARY"),
+        )
+        for proposal, code in cases:
+            with self.subTest(code=code):
+                with self.assertRaises(adapter.Refusal) as ctx:
+                    adapter.validate_split_proposal(proposal, sessions=sessions)
+                self.assertEqual(ctx.exception.code, code)
+
+        for field, value in (
+            ("loss", 0.02),
+            ("label", {"y": 1}),
+            ("p_value", 0.001),
+            ("q_value", 0.10),
+        ):
+            proposal = dict(lawful)
+            proposal[field] = value
+            with self.subTest(outcome=field):
+                with self.assertRaises(adapter.Refusal) as ctx:
+                    adapter.validate_split_proposal(proposal, sessions=sessions)
+                self.assertEqual(ctx.exception.code, "SEAL_CONTAINS_OUTCOME")
+
+        receipt = adapter.validate_split_proposal(lawful, sessions=sessions)
+        for field in (
+            "training_start",
+            "training_fit_cutoff",
+            "validation_start",
+            "validation_end",
+            "test_model_sealed_at",
+            "test_start",
+            "test_end",
+        ):
+            self.assertEqual(receipt[field], lawful[field])
+        self.assertEqual(receipt["multiplicity_family_id"], "six-pilot-holm-v1")
+        self.assertIsNone(receipt["accepted_trial_id"])
+        for field in ("loss", "label", "p_value", "q_value"):
+            self.assertIn(field, receipt)
+            self.assertIsNone(receipt[field])
+
+    def test_p6_without_complete_fills_is_unavailable_not_synthetic(self):
+        empty = {
+            "order_id": "p6-empty",
+            "requested_quantity": 10,
+            "child_fills": [],
+            "fee_receipt": None,
+        }
+        partial = {
+            "order_id": "p6-partial",
+            "requested_quantity": 10,
+            "child_fills": [{"quantity": 4, "price": 1.2}],
+            "fee_receipt": {"amount": 0.65},
+        }
+        missing_fee = {
+            "order_id": "p6-no-fee",
+            "requested_quantity": 10,
+            "child_fills": [{"quantity": 10, "price": 1.2}],
+            "fee_receipt": None,
+        }
+        for order in (empty, partial, missing_fee):
+            result = adapter.p6_primary_label(order)
+            self.assertEqual(result["status"], "unavailable")
+            self.assertIsInstance(result["confirmatory_p"], float)
+            self.assertEqual(result["confirmatory_p"], 1.0)
+            self.assertIs(result["in_coverage_census"], True)
+            self.assertIsNone(result.get("training_label"))
+            self.assertIsNone(result.get("y_bps"))
+
+        # OA-3 entry: the ask inside a 60-second quote window, offered as y.
+        quote_label = {
+            **empty,
+            "y": {
+                "boundary": "expression.available_at",
+                "selected_side": "ask",
+                "quote_event_window_seconds": 60,
+                "minimum_displayed_contracts": 1,
+                "ask": "1.25",
+            },
+        }
+        # Simulated hedged markout offered as y. Not an actual fill.
+        markout_label = {
+            **empty,
+            "y": {
+                "kind": "simulated_markout",
+                "p_entry_side": "ask",
+                "markout_usd": 3.5,
+            },
+        }
+        for order in (quote_label, markout_label):
+            with self.assertRaises(adapter.Refusal) as ctx:
+                adapter.p6_primary_label(order)
+            self.assertEqual(ctx.exception.code, "P6_SUBSTITUTE_LABEL_REFUSED")
+
+    def test_six_pilot_family_is_holm_not_bh(self):
+        pilots = ("P1", "P2", "P3", "P4", "P5", "P6")
+        one_small = {"P1": 0.001, "P2": 1, "P3": 1, "P4": 1, "P5": 1, "P6": 1}
+        rejected = adapter.holm_six_pilot(one_small)
+        self.assertEqual(adapter.HOLM_ALPHA, 0.05)
+        self.assertEqual(rejected["family_id"], "six-pilot-holm-v1")
+        self.assertEqual(rejected["alpha"], 0.05)
+        self.assertEqual(rejected["family_size"], 6)
+        self.assertEqual(rejected["rejected"], ["P1"])
+        self.assertEqual(rejected["steps"][0]["pilot"], "P1")
+        self.assertEqual(rejected["steps"][0]["threshold"], 0.05 / 6)
+        self.assertLessEqual(rejected["steps"][0]["p"], rejected["steps"][0]["threshold"])
+        self.assertEqual(rejected["steps"][1]["pilot"], "P2")
+        self.assertEqual(rejected["steps"][1]["threshold"], 0.05 / 5)
+        self.assertGreater(rejected["steps"][1]["p"], rejected["steps"][1]["threshold"])
+        self.assertEqual(
+            [step["threshold"] for step in rejected["thresholds"]],
+            [0.05 / (7 - k) for k in range(1, 7)],
+        )
+
+        # 0.02 > 0.05/6, so Holm rejects none. BH at q=0.10 would reject all six
+        # because 0.02 <= 0.10. That route is refused, not computed.
+        flat = {pilot: 0.02 for pilot in pilots}
+        none_rejected = adapter.holm_six_pilot(flat)
+        self.assertEqual(none_rejected["rejected"], [])
+        self.assertGreater(0.02, 0.05 / 6)
+        self.assertEqual(none_rejected["steps"][0]["pilot"], "P1")
+        self.assertGreater(none_rejected["steps"][0]["p"], none_rejected["steps"][0]["threshold"])
+        self.assertLessEqual(0.02, 0.10)
+
+        with self.assertRaises(adapter.Refusal) as ctx:
+            adapter.holm_six_pilot(flat, procedure="benjamini-hochberg")
+        self.assertEqual(ctx.exception.code, "MULTIPLICITY_FAMILY_REFUSED")
+
+        with self.assertRaises(adapter.Refusal) as ctx:
+            adapter.holm_six_pilot(flat, family_id="options-theta-bh-60")
+        self.assertEqual(ctx.exception.code, "MULTIPLICITY_FAMILY_REFUSED")
+
+        with self.assertRaises(adapter.Refusal) as ctx:
+            adapter.holm_six_pilot(flat, qvalues={pilot: 0.02 for pilot in pilots})
+        self.assertEqual(ctx.exception.code, "MULTIPLICITY_FAMILY_REFUSED")
+
+        missing = {"P1": 0.001, "P2": 1.0, "P3": 1.0, "P4": 1.0, "P5": 1.0}
+        with self.assertRaises(adapter.Refusal) as ctx:
+            adapter.holm_six_pilot(missing)
+        self.assertEqual(ctx.exception.code, "PILOT_KEY_MISSING")
+
+        with self.assertRaises(TypeError):
+            adapter.holm_six_pilot(flat, alpha=0.10)
+
+    def test_equity_p3_result_does_not_promote_index_0dte_endpoint(self):
+        completed = run_cli(
+            "--spec", str(SPEC), "--mode", "synthetic-p3", "--reference", str(REFERENCE)
+        )
+        self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+        report = parse_stdout(completed)
+        self.assertIs(report["cohort_guard"]["equity_p3_promotes_index_0dte"], False)
+        self.assertEqual(
+            report["cohort_guard"]["endpoint"],
+            {"root": "SPX", "cohort": "0DTE"},
+        )
+        self.assertIs(report["empirical_acceptance"], False)
+
+    def test_holm_refuses_non_finite_or_out_of_range_pvalues(self):
+        for value in (
+            float("nan"),
+            float("inf"),
+            float("-inf"),
+            -0.5,
+            -1e-12,
+            1.0000001,
+            2,
+        ):
+            pvalues = {"P1": 0.001, "P2": value, "P3": 1.0, "P4": 1.0, "P5": 1.0, "P6": 1.0}
+            with self.subTest(p2=value):
+                with self.assertRaises(adapter.Refusal) as ctx:
+                    adapter.holm_six_pilot(pvalues)
+                self.assertEqual(ctx.exception.code, "PVALUE_OUT_OF_RANGE")
+
+        at_bounds = {"P1": 0, "P2": 1, "P3": 1, "P4": 1, "P5": 1, "P6": 1}
+        self.assertEqual(adapter.holm_six_pilot(at_bounds)["rejected"], ["P1"])
+        all_one = {"P1": 1.0, "P2": 1.0, "P3": 1.0, "P4": 1.0, "P5": 1.0, "P6": 1.0}
+        self.assertEqual(adapter.holm_six_pilot(all_one)["rejected"], [])
 
 
 if __name__ == "__main__":

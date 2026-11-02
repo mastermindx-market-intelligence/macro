@@ -34,6 +34,17 @@ CAPTURED_AT = CUTOFF + timedelta(seconds=30)
 
 
 @pytest.fixture(autouse=True)
+def _admit_test_site_principal(monkeypatch):
+    # The API dependency below supplies this synthetic principal. The new
+    # disclosure guard rechecks its current entitlement through the same owner.
+    from engine.neuralweb import market_memory_retained_use as use
+    def admit(user_id):
+        if user_id != "pit-test-user":
+            raise use.RetainedUseError("test principal not admitted")
+    monkeypatch.setattr(use, "_enforce_current_site_user", admit)
+
+
+@pytest.fixture(autouse=True)
 def _reset_context_rate_limits() -> None:
     api._reset_symbol_rate_limit_for_tests()
     yield
@@ -1302,17 +1313,15 @@ def test_api_context_rate_limit_is_private_and_precedes_second_store_read(
 
 
 def test_api_store_failure_is_coarsened_private_and_retryable(
-    monkeypatch: pytest.MonkeyPatch,
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
 ) -> None:
     packet = _packet()
 
-    class BrokenReader:
-        mode = "operational_pit"
-
-        def read_stored_as_known_at(self, **_kwargs):
-            raise pit.MarketMemoryStoreError("sensitive internal path")
-
-    monkeypatch.setattr(api, "_pit_reader", BrokenReader)
+    reader = pit.FileAsKnownAtReader(tmp_path / "unavailable")
+    def broken_read(**_kwargs):
+        raise pit.MarketMemoryStoreError("sensitive internal path")
+    monkeypatch.setattr(reader, "read_stored_as_known_at", broken_read)
+    monkeypatch.setattr(api, "_pit_reader", lambda: reader)
     response = _api_client().get(_query_url(packet))
 
     assert response.status_code == 503

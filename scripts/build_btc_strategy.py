@@ -361,6 +361,7 @@ def build_context(close: pd.Series | None = None, chart_points: int = 240) -> di
 
     ctx = {
         "as_of": today.strftime("%b %d, %Y"),
+        "as_of_zh": f"{today.year}年{today.month}月{today.day}日",
         "btc_price": float(close.iloc[-1]),
         "btc_chg": float(close.pct_change().iloc[-1] * 100),
         "phase": phase,

@@ -5,7 +5,7 @@
     "period_of_report": "2025-12-31",
     "selection": "admission_candidate",
     "manifest_sha256": "88deec70816cfcebfed5b13ba6aae010199a5c9b1a26aea5fc47853b98b6503b",
-    "admission": "primary_unparseable",
+    "admission": "ADMITTED",
     "statement_roles_state": "extracted"
   },
   {
@@ -14,7 +14,7 @@
     "period_of_report": "2024-12-31",
     "selection": "admission_candidate",
     "manifest_sha256": "81e4206c6d0e179aa4ef95902b71fea0d98fb2159454b4f16a0eddac97555237",
-    "admission": "primary_unparseable",
+    "admission": "ADMITTED",
     "statement_roles_state": "extracted"
   },
   {
@@ -23,7 +23,7 @@
     "period_of_report": "2026-06-30",
     "selection": "admission_candidate",
     "manifest_sha256": "7b69baf66ab6aac4f56063667deb959b38c2cf3a1a8d546a11f2c02a75a27afa",
-    "admission": "primary_unparseable",
+    "admission": "ADMITTED",
     "statement_roles_state": "extracted"
   },
   {
@@ -32,7 +32,7 @@
     "period_of_report": "2026-03-31",
     "selection": "admission_candidate",
     "manifest_sha256": "de2caccf73f9952769b980ea120b58c1fb74acdbbea1579039086002e5aac73d",
-    "admission": "primary_unparseable",
+    "admission": "ADMITTED",
     "statement_roles_state": "extracted"
   },
   {

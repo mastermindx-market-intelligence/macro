@@ -1,0 +1,428 @@
+{
+  "contract": "government_revenue.publisher_recovery_baseline.v1",
+  "repository": "mastermindx-market-intelligence/macro",
+  "families": {
+    "government-revenue-live.yml": "refresh",
+    "daily.yml": "government_revenue_projection / refresh",
+    "fms-acquire.yml": "publish / refresh"
+  },
+  "source_closure": {
+    "scripts/ci/govrev_publisher_preflight.py": "f5fb09af2d8bfe34065b3e3c23082021398e6af146ea9e9fe74b5ca393e80878",
+    "scripts/ci/govrev_candidate_proof.py": "43267a7a3352810d7dd3751d3c4e6150dbc6e274a0ceb6d129c627a5ba26e299",
+    "scripts/ci/fms_persist.py": "6b0decd045e494d1aaf4f77b00eade3d205e17004470b2cb081311bbabbed4d1",
+    ".github/workflows/government-revenue-live.yml": "e6f2941f9efaf638d8bc82592a6f5cf38d9b0323db2e8c2dd087b08052aa1376",
+    ".github/workflows/daily.yml": "bc3a1e6c97479b2ac07de56fca0efae3a159b94c93ce40adb7c4a3a834f23e77",
+    ".github/workflows/fms-acquire.yml": "91e65a31eb3c38c38dad3aa99e9c4f80c7c31fa44820af1d7a6720aa2e0b904a"
+  },
+  "scan_created_after": "2026-10-10T17:26:49Z",
+  "legacy_effects_reconciled_at": "2026-10-13T06:55:59.489033+00:00",
+  "legacy_census_complete": true,
+  "legacy_census_evidence_sha256": "6c8b785ef50edb3aa88c486c5e5aa456385ecb4df169aff456e2bdd33febcd97",
+  "reconciled_legacy_operations": [
+    {
+      "run_id": 38342984890,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/daily.yml",
+      "publisher_job_id": 115117944474,
+      "publisher_job_name": "government_revenue_projection",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "2f59512132caa9ac3c6ad1c26728f9e758e25185540c1bb6b29a4c1bd1f06bf5"
+    },
+    {
+      "run_id": 38340204231,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/daily.yml",
+      "publisher_job_id": 115123830511,
+      "publisher_job_name": "government_revenue_projection",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "782eb8454295d865626a318c95f4dee0429e9f58a41baf3457cd1d4b7394678a"
+    },
+    {
+      "run_id": 38335616740,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/daily.yml",
+      "publisher_job_id": 115123824207,
+      "publisher_job_name": "government_revenue_projection",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "bfdeacba95d63d80816fcb8be129e05108087ad82b189a8858840bbf85955fb3"
+    },
+    {
+      "run_id": 38196229068,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/daily.yml",
+      "publisher_job_id": 114639379130,
+      "publisher_job_name": "government_revenue_projection",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "47cb0b411d679d45b1c787640df9f04f89641abac08a4eab8e2b36f8c0627dfc"
+    },
+    {
+      "run_id": 38192634426,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/daily.yml",
+      "publisher_job_id": 114679265920,
+      "publisher_job_name": "government_revenue_projection",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "c3f7a4b7ee0091b565249813a8244f787bc5a8843b1e3ddacee66f1b8bfae26b"
+    },
+    {
+      "run_id": 38103820170,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/daily.yml",
+      "publisher_job_id": 114365032798,
+      "publisher_job_name": "government_revenue_projection",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "f8736ff97a2e32362f4c34c721764738419a5e65d81aa8ba10b6408cc003c6c1"
+    },
+    {
+      "run_id": 38100953149,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/daily.yml",
+      "publisher_job_id": 114376720325,
+      "publisher_job_name": "government_revenue_projection",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "7fcb2e6effa193b952de83718ce33e0f21452ec62a9a68ff5a0c4d424e84d66d"
+    },
+    {
+      "run_id": 38035425833,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/daily.yml",
+      "publisher_job_id": 114181429775,
+      "publisher_job_name": "government_revenue_projection",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "e1a30f7396e32386cf8b25d633467cf1ac3f0dadf45a94c61f57c602cd3278b4"
+    },
+    {
+      "run_id": 38017284947,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/daily.yml",
+      "publisher_job_id": 114110286060,
+      "publisher_job_name": "government_revenue_projection",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "53f0b905eced164f1a133cf60f26234f8512a2bc20cab59207113d8b422c4aae"
+    },
+    {
+      "run_id": 38014851530,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/daily.yml",
+      "publisher_job_id": 114121429792,
+      "publisher_job_name": "government_revenue_projection",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "5cde4d72559a62b71179ad9237a085d6d1590e8cbcc5714cb88e7e2d3a04209f"
+    },
+    {
+      "run_id": 37877249459,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/daily.yml",
+      "publisher_job_id": 113648580628,
+      "publisher_job_name": "government_revenue_projection",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "f9956d8e81c09b67cfacf979f4f92d9541a7e615bfa793909630e168b89d157e"
+    },
+    {
+      "run_id": 37874656026,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/daily.yml",
+      "publisher_job_id": 113680083993,
+      "publisher_job_name": "government_revenue_projection / refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "f9328035a94b57c7747c0eb47215165e0f7312551db656c0976b776bb811562c"
+    },
+    {
+      "run_id": 38349255222,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "publisher_job_id": 115137648386,
+      "publisher_job_name": "refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "16223db7677d5d79bc5b3063aafe76b5c9ac372aec3ade86baa87092bf322387"
+    },
+    {
+      "run_id": 38331330830,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "publisher_job_id": 115081492887,
+      "publisher_job_name": "refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "103f91f8d79066b8ed292220a5226c84bb2679957d1c7e85b3eff18109f7fb6f"
+    },
+    {
+      "run_id": 38294367506,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "publisher_job_id": 114961791054,
+      "publisher_job_name": "refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "939f9ca94da1ec5ecd3697b4552959659e5f4a0cf3669f2c5971f7bfe5290a10"
+    },
+    {
+      "run_id": 38227522483,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "publisher_job_id": 114738581482,
+      "publisher_job_name": "refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "2932f2ca47157add8af335f4a5d496a5155a1a3509b41c6121dfa959a3de6e93"
+    },
+    {
+      "run_id": 38192933592,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "publisher_job_id": 114629377229,
+      "publisher_job_name": "refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "5bd82b047314e377f46fc8545f54225809ec7988770a60aa74e37094741bb7ef"
+    },
+    {
+      "run_id": 38180298788,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "publisher_job_id": 114591241102,
+      "publisher_job_name": "refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "bc65c363b8b29dc0cc1fc853f68b39f9cdbaec93b7788ce78d3ee6078c016803"
+    },
+    {
+      "run_id": 38163704708,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "publisher_job_id": 114541756152,
+      "publisher_job_name": "refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "cb851f995f6b4ef2d5c20c74f97278c653c45dc4ffda153993909d43a7040460"
+    },
+    {
+      "run_id": 38143195502,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "publisher_job_id": 114481079826,
+      "publisher_job_name": "refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "0701fa7b09fecce7d75d20b01aa224764be717643189cffeb12192a0a9aa8faa"
+    },
+    {
+      "run_id": 38117841159,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "publisher_job_id": 114406242052,
+      "publisher_job_name": "refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "e52f9bd04b177052426d5ebd7d90d6ae6e3458e5ebba48bc948a471cf9238a9a"
+    },
+    {
+      "run_id": 38097614025,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "publisher_job_id": 114346690581,
+      "publisher_job_name": "refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "2492834fe9e7bcbeea409eb452eda47f94614cadc49c6a32496ef025ced57c98"
+    },
+    {
+      "run_id": 38084637558,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "publisher_job_id": 114308497826,
+      "publisher_job_name": "refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "4f1ff6b76efc191c131b00e7f4f5f6562eac7da70fe2c66f6572f62844f89ac2"
+    },
+    {
+      "run_id": 38071767533,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "publisher_job_id": 114270439235,
+      "publisher_job_name": "refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "e09cbf4d0304277598739d206bcc6fdef4cec6bdc82b50fef5a5be51eab739eb"
+    },
+    {
+      "run_id": 38301316428,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/fms-acquire.yml",
+      "publisher_job_id": 114985613116,
+      "publisher_job_name": "publish",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "86ef436a6d908f2251105999fb793b5344ddb6b3e71f03b72d72e217ca36f3f9"
+    },
+    {
+      "run_id": 38155385453,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/fms-acquire.yml",
+      "publisher_job_id": 114518399318,
+      "publisher_job_name": "publish / refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "4dafdf737710edf5c5e30b594e44c3673253f6e7db6d02ba49bc907aef68b20b"
+    },
+    {
+      "run_id": 38065701597,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/fms-acquire.yml",
+      "publisher_job_id": 114253655002,
+      "publisher_job_name": "publish",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "fcef7faf856a1f8649937a21a9501f0dc62fc41135435fba2badf3c5e6f27e50"
+    },
+    {
+      "run_id": 37964490334,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/fms-acquire.yml",
+      "publisher_job_id": 113937140042,
+      "publisher_job_name": "publish / refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "d58eb7e067e43c4f0e6c01a0e8c06851999dafc0e5a769ac972026787f4be81a"
+    },
+    {
+      "run_id": 37817847821,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/fms-acquire.yml",
+      "publisher_job_id": 113452765739,
+      "publisher_job_name": "publish / refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "8c11ed10848b31a1576573b690f513bb85701d5fbc0672e22a66e7db13e0a78d"
+    },
+    {
+      "run_id": 37659899048,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/fms-acquire.yml",
+      "publisher_job_id": 112926252093,
+      "publisher_job_name": "publish / refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "476c1c01e0580a1021af977bbc7fc724ef01a8e01524d7323e4698fa326e32f2"
+    },
+    {
+      "run_id": 37499570919,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/fms-acquire.yml",
+      "publisher_job_id": 112393943882,
+      "publisher_job_name": "publish / refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "88228111a2aae2c0e72f0efe0483bba61a187bf244ea7a7632e19be9d4cc685f"
+    },
+    {
+      "run_id": 37429748417,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/fms-acquire.yml",
+      "publisher_job_id": 112161184629,
+      "publisher_job_name": "publish / refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "dea59d5a38bd409967dba2f2c6c048378e5cae3ca9422e226f0235f05c6ca4a3"
+    },
+    {
+      "run_id": 37363042223,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/fms-acquire.yml",
+      "publisher_job_id": 111942699040,
+      "publisher_job_name": "publish",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "4949b2ccff4a0d6ec888bf2d9c090a00adc7b3eb17de29c242e230ff23d0a25b"
+    }
+  ],
+  "legacy_never_started_workflow_whitelist": [
+    {
+      "audit_evidence_sha256": "4a21ca40d438cad158a9bbcd8b7a1664d45d19999b63747076ead6456f01ba40",
+      "workflow": {
+        "workflow_path": ".github/workflows/government-revenue-live.yml",
+        "git_blob_sha": "33e09e0a5ad62d5b2ff3316e36992d20059b9681",
+        "sha256": "f683ec3a78dae317ced62be724ffbc4d790fe9f27eacdf0c8e27de1e2d74fbea",
+        "bytes": 58405
+      },
+      "publisher_job_id": "refresh",
+      "sole_repository_publication_step_name": "commit complete evidence projection",
+      "timestamp_policy": "authenticated_completed_skipped_is_nonexecution",
+      "callers": {
+        "daily.yml": {
+          "caller_job_id": "government_revenue_projection",
+          "exact_uses": "./.github/workflows/government-revenue-live.yml",
+          "caller_job_block_sha256": "c794181e229ee2f154ee91e68509134befa2be17cfaa23a110f0aee3173145d8",
+          "projection_only": true,
+          "git_blob_sha": "a408e9da439b5d0b3741b26d08ccce26a43128a4",
+          "source_sha256": "2427c7ea88277e38c6a886ff5947455c280f405a1f90e3317a431c6ab6228f31"
+        },
+        "fms-acquire.yml": {
+          "caller_job_id": "publish",
+          "exact_uses": "./.github/workflows/government-revenue-live.yml",
+          "caller_job_block_sha256": "f0b9002493292d6a4e9ef8137039ddb80bf68b6a588326327f4d962bc062ccbf",
+          "projection_only": true,
+          "git_blob_sha": "ebe9d19e6df5ebc5fc11f5e6c3257f73d54ff050",
+          "source_sha256": "88b395b0e200a9dee8bd93a66560eef036ff7c618892dd78598aab675cb0ffe0"
+        }
+      },
+      "dependency_source_identities": {
+        "scripts/build_government_revenue.py": {
+          "git_blob_sha": "3439db3497a0186c5c1e642739336d81c6c02ca7",
+          "sha256": "8b55901ad8c517549d2f97eeb4872fbb1fdb223dd77971f902fd01bd9ac1cf90",
+          "bytes": 69074
+        },
+        "scripts/collect.py": {
+          "git_blob_sha": "6d7174cb65cbc4b5eaba5eb9952361a17df2b512",
+          "sha256": "f94e940e5f4c3cc887dbe3f3caf57e51769e53df68f163c315c1a69bdc57d549",
+          "bytes": 99361
+        },
+        "scripts/ci/push_retry.sh": {
+          "git_blob_sha": "b3abe82ba137466fe42a1160b1ba2a65dd19e576",
+          "sha256": "e77771b4250b58a3f520331ed03cdc0333567ee88957cc7eb548034367f4f044",
+          "bytes": 55096
+        },
+        "collectors/sam_gov.py": {
+          "git_blob_sha": "0c47a48875b93e237033a61000d664d5c0d3bdcd",
+          "sha256": "18faaa7d3754a9eb108e3407c3fbe2b1cdaa591180e9557313284b0a0c94d629",
+          "bytes": 73568
+        },
+        "collectors/base.py": {
+          "git_blob_sha": "b1d603ad303208c2c8d9e9e7947aed6016d7ae33",
+          "sha256": "488e5cf1c9feff3ad42c17b6810c600af3411cf0bdac28e8444b7147c1d5eaae",
+          "bytes": 37286
+        }
+      }
+    }
+  ],
+  "root_adjudication_references": {
+    "original_native_root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+    "census_evidence_sha256": "6c8b785ef50edb3aa88c486c5e5aa456385ecb4df169aff456e2bdd33febcd97",
+    "classifier_patch_sha256": "fba87b533655b7403755b939ec9efe267fe98e1eeef1a7963ad60d7a5896e646",
+    "independent_classifier_review_sha256": "de8004bcdcf3b0de91522d167081faf032d8e577937fd515bc7a7eb1d23d312e",
+    "legacy_workflow_semantic_audit_sha256": "4a21ca40d438cad158a9bbcd8b7a1664d45d19999b63747076ead6456f01ba40",
+    "final_cutover_source_binding_owner": "root; source_closure not yet bound",
+    "current_source_requalification_sha256": "d2be30ab95a470f2d756595209328b23c1ed97739608e75302735edc16607a07",
+    "current_source_requalification_path": "research/defense_intelligence/e2e_20261011/CURRENT_PUBLISHER_SOURCE_REQUALIFICATION_20261018.json"
+  },
+  "evidence_clocks": {
+    "census_observed_at": "2026-10-13T06:55:59.489033+00:00",
+    "census_created_window_upper_observed": "2026-10-13T06:51:28Z",
+    "legacy_workflow_audit_observed_at": "2026-10-13T07:11:56.110224+00:00"
+  },
+  "scope": "Only GovRev publisher operations; FMS acquisition and unrelated DAILY/engine effects remain separately owned. No generation/publication/installation/issuance claim."
+}

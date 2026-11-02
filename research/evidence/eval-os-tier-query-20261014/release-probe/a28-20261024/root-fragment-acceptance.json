@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-24T04:24:29.543074+00:00",
+  "verdict": "ACCEPTED_SOURCE_ONLY_REPRESENTATION_REPAIR",
+  "commit": "5c3c17e708e72e0cfd31872cd0c3bf942d091d2d",
+  "sole_parent_verified": true,
+  "complete_parsed_manifest_equal": true,
+  "exact_changed_path": ".github/ci/legacy-jobs.yml",
+  "original_red_and_42_plus_4_green_XML_verified": true,
+  "classification": "HostedUNKNOWN retained; local source cause reproduced and fixed. No hostedbasePASS claim.",
+  "publication": "NOT_ATTEMPTED; originalpack0 stillrunning04:23."
+}

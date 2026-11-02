@@ -1,0 +1,13 @@
+{
+  "observed_at": "2026-10-14T01:18:58.814035+00:00",
+  "sha256": {
+    "engine/press/validators.py": "fdbae60b9bec3635db2a7732e9a2519a4a600d4f0e9e83ee65e962d11786cc46",
+    "scripts/run_press.py": "dde7b6a3117d26534d445117c728143ef3558c5266b11af7c453cc2b624a624d",
+    "tests/test_press_markup_safety.py": "b2325f220089f26e3ab85befa82647caae550f3913f0322037607972a44f3bbc",
+    "tests/test_press_run.py": "42e64ee4fd78d673aebc141b5c4603c8e7e2dca3a0c1592c39734bb16226ba3f",
+    "tests/test_press_validators.py": "50cb2e05594172cd6f889043b4dfd3010000ad73c693c8a380852cd2b9c4c694"
+  },
+  "provider_calls": 0,
+  "public_writes": 0,
+  "publication_approved": false
+}

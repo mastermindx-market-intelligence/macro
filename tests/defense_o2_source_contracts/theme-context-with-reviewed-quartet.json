@@ -1,0 +1,367 @@
+{
+  "as_of": "2026-10-13T04:34:30.785729+00:00",
+  "authority": {
+    "can_add_candidates": false,
+    "can_escalate": false,
+    "can_gate": false,
+    "can_originate_signal": false,
+    "can_rank": false,
+    "can_size": false,
+    "context_only": true,
+    "tier": "display"
+  },
+  "content_id": "gptc1-e995103f56d024a64c02bfe6",
+  "contract": "government_program_theme_context.v1",
+  "generated_at": "2026-10-13T04:34:30.785729+00:00",
+  "owner_bindings": {
+    "atlas": {
+      "admission_ref": "existing:identity_atlas.json",
+      "available_at": "2026-08-19T05:44:34.128190+00:00",
+      "content_id": "gria1-4eeaa88c8cbabfaa800fc67d",
+      "contract": "government_revenue_identity_atlas.v1",
+      "house_observed_at": null,
+      "owner_kind": "identity_atlas",
+      "rights_state": "qualified_public_display",
+      "sha256": "cc1d26e024f3bd5290b935b64b9290b6e0aba6d64eda8185eda15b241004a9a2",
+      "source_available_at": null
+    },
+    "fms": {
+      "admission_ref": "existing:fms_case_graph.json",
+      "available_at": "2026-10-11T16:29:02.044466+00:00",
+      "content_id": "grfms1-786b18094417266f8ccbce08",
+      "contract": "government_fms_case.v1",
+      "house_observed_at": null,
+      "owner_kind": "fms",
+      "rights_state": "qualified_public_display",
+      "sha256": "f586d2a25722d8aa98a61b0be1863bee7f736c7025a45e26c35f3e8e15a2581e",
+      "source_available_at": null
+    },
+    "ontology": {
+      "admission_ref": "existing:program_ontology.json",
+      "available_at": "2026-08-23T07:50:00+00:00",
+      "content_id": null,
+      "contract": "government_program_ontology.v1",
+      "house_observed_at": null,
+      "owner_kind": "program_ontology",
+      "rights_state": "qualified_public_display",
+      "sha256": "5785b5fe1e9ad0ad74739cb64f9756310708a51332b7decbba73a8d240da1e3f",
+      "source_available_at": null
+    },
+    "quartet_economics": {
+      "admission_ref": "O3review:MANIFEST.sha256:2df3b88823aa9a5bea7931c772c4bdf44d9f93d84375ce094eb652ccb93610ff",
+      "available_at": "2026-10-13T03:10:00+00:00",
+      "content_id": "dfe1-07b9016f6b41f792dfece23e",
+      "contract": "defense_economics.v1",
+      "house_observed_at": null,
+      "owner_kind": "defense_economics",
+      "rights_state": "qualified_public_display",
+      "sha256": "bd5017d33bbf4c4a7ca95798c92c742577405d0264b7dc525590da07a27086a9",
+      "source_available_at": null
+    }
+  },
+  "schema_version": "1.0.0",
+  "themes": [
+    {
+      "rails": {
+        "contrary_case": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "economics": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "exposure": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "funding_stage": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "market_context": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "next_event": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        }
+      },
+      "research_state": "EVIDENCE_INSUFFICIENT",
+      "theme_id": "golden_dome"
+    },
+    {
+      "rails": {
+        "contrary_case": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "economics": {
+          "reason_code": "issuer_segment_context_no_program_allocation",
+          "references": [
+            {
+              "owner_key": "quartet_economics",
+              "pointer": "/profiles/0/axes/economics/facts/0",
+              "row_id": "evt_cik0000936468_2026q2_results:defense_segment_sales"
+            },
+            {
+              "owner_key": "quartet_economics",
+              "pointer": "/profiles/0/axes/economics/facts/1",
+              "row_id": "evt_cik0000936468_2026q2_results:defense_segment_operating_profit"
+            },
+            {
+              "owner_key": "quartet_economics",
+              "pointer": "/profiles/0/axes/economics/facts/2",
+              "row_id": "evt_cik0000936468_2026q2_results:defense_segment_margin"
+            },
+            {
+              "owner_key": "quartet_economics",
+              "pointer": "/profiles/1/axes/economics/facts/0",
+              "row_id": "evt_cik0000101829_2026q2_results:defense_segment_sales"
+            },
+            {
+              "owner_key": "quartet_economics",
+              "pointer": "/profiles/1/axes/economics/facts/1",
+              "row_id": "evt_cik0000101829_2026q2_results:defense_segment_operating_profit"
+            },
+            {
+              "owner_key": "quartet_economics",
+              "pointer": "/profiles/1/axes/economics/facts/2",
+              "row_id": "evt_cik0000101829_2026q2_results:defense_segment_margin"
+            }
+          ],
+          "state": "partial"
+        },
+        "exposure": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "funding_stage": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "market_context": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "next_event": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        }
+      },
+      "research_state": "EVIDENCE_INSUFFICIENT",
+      "theme_id": "munitions_replenishment"
+    },
+    {
+      "rails": {
+        "contrary_case": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "economics": {
+          "reason_code": "issuer_segment_context_no_program_allocation",
+          "references": [
+            {
+              "owner_key": "quartet_economics",
+              "pointer": "/profiles/2/axes/economics/facts/0",
+              "row_id": "evt_cik0001133421_2026q2_results:defense_segment_sales"
+            },
+            {
+              "owner_key": "quartet_economics",
+              "pointer": "/profiles/2/axes/economics/facts/1",
+              "row_id": "evt_cik0001133421_2026q2_results:defense_segment_operating_profit"
+            },
+            {
+              "owner_key": "quartet_economics",
+              "pointer": "/profiles/2/axes/economics/facts/2",
+              "row_id": "evt_cik0001133421_2026q2_results:defense_segment_margin"
+            },
+            {
+              "owner_key": "quartet_economics",
+              "pointer": "/profiles/3/axes/economics/facts/0",
+              "row_id": "evt_cik0000202058_2026q2_results:defense_segment_sales"
+            },
+            {
+              "owner_key": "quartet_economics",
+              "pointer": "/profiles/3/axes/economics/facts/1",
+              "row_id": "evt_cik0000202058_2026q2_results:defense_segment_margin"
+            }
+          ],
+          "state": "partial"
+        },
+        "exposure": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "funding_stage": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "market_context": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "next_event": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        }
+      },
+      "research_state": "EVIDENCE_INSUFFICIENT",
+      "theme_id": "space"
+    },
+    {
+      "rails": {
+        "contrary_case": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "economics": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "exposure": {
+          "reason_code": "contractor_identity_not_reviewed",
+          "references": [
+            {
+              "owner_key": "fms",
+              "pointer": "/cases/3/contractors/0",
+              "row_id": "fms:transmittal:25-104"
+            }
+          ],
+          "state": "unreviewed"
+        },
+        "funding_stage": {
+          "reason_code": "congressional_notification_only",
+          "references": [
+            {
+              "owner_key": "fms",
+              "pointer": "/cases/3",
+              "row_id": "fms:transmittal:25-104"
+            }
+          ],
+          "state": "partial"
+        },
+        "market_context": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "next_event": {
+          "reason_code": "condition_not_scheduled_date",
+          "references": [
+            {
+              "owner_key": "fms",
+              "pointer": "/cases/3/advancement_condition",
+              "row_id": "fms:transmittal:25-104"
+            }
+          ],
+          "state": "partial"
+        }
+      },
+      "research_state": "EVIDENCE_INSUFFICIENT",
+      "theme_id": "nato_fms_demand"
+    },
+    {
+      "rails": {
+        "contrary_case": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "economics": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "exposure": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "funding_stage": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "market_context": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "next_event": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        }
+      },
+      "research_state": "EVIDENCE_INSUFFICIENT",
+      "theme_id": "fleet_sustainment_upgrades"
+    },
+    {
+      "rails": {
+        "contrary_case": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "economics": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "exposure": {
+          "reason_code": "reviewed_program_participation",
+          "references": [
+            {
+              "owner_key": "ontology",
+              "pointer": "/role_assertions/0",
+              "row_id": "prog-role:c483832bff9d"
+            },
+            {
+              "owner_key": "atlas",
+              "pointer": "/issuers/4/entities/1",
+              "row_id": "legal:gd:electric-boat-corp"
+            }
+          ],
+          "state": "supported"
+        },
+        "funding_stage": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "market_context": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        },
+        "next_event": {
+          "reason_code": "owner_reference_absent",
+          "references": [],
+          "state": "source_unavailable"
+        }
+      },
+      "research_state": "EVIDENCE_INSUFFICIENT",
+      "theme_id": "shipbuilding"
+    }
+  ]
+}

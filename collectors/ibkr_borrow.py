@@ -191,6 +191,32 @@ def _parse(text: str) -> tuple[pd.DataFrame, str | None]:
     return df, stamp
 
 
+def _preserve_superseded(path, stamp: str | None, d) -> object | None:
+    """C19 WP24 DQ1-3: if today's capture file already exists from a DIFFERENT
+    #BOF snapshot, move it to daily/superseded/ before it is overwritten.
+    Returns the new path, or None when nothing was moved (no file, the same
+    snapshot re-read, or an unreadable stamp)."""
+    if not path.exists():
+        return None
+    try:
+        old = pd.read_parquet(path, columns=["snapshot_et"])["snapshot_et"].dropna()
+    except Exception as e:  # noqa: BLE001 — never block today's capture on the old file
+        log.warning("ibkr_borrow: cannot read snapshot_et from %s (%s)", path, e)
+        return None
+    if old.empty:
+        return None
+    old_stamp = str(old.iloc[0])
+    if old_stamp == str(stamp):
+        return None
+    dest_dir = _daily_dir() / "superseded"
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    safe = "".join(ch for ch in old_stamp if ch.isalnum()) or "unknown"
+    dest = dest_dir / f"{pd.Timestamp(d).date()}__{safe}.parquet"
+    path.replace(dest)
+    log.info("ibkr_borrow: superseded capture %s (ET %s) -> %s", path.name, old_stamp, dest)
+    return dest
+
+
 def _num(s: str) -> float:
     try:
         return float(s.strip())
@@ -234,11 +260,16 @@ class IbkrBorrowAdapter(Adapter):
         last = fresh["date"].max()
         path = _daily_path(last)
         path.parent.mkdir(parents=True, exist_ok=True)
-        # One immutable file per capture date. A same-day re-run overwrites only
-        # today's file with the newer snapshot; every PRIOR date is never touched
-        # or rewritten — that is both the PIT guarantee and the reason git does
-        # not accumulate a full-panel blob per night.
+        # One file per capture date. A same-day re-run replaces today's file with
+        # the newer snapshot; every PRIOR date is never touched or rewritten —
+        # that is both the PIT guarantee and the reason git does not accumulate a
+        # full-panel blob per night. C19 WP24 DQ1-3: a replaced same-day file
+        # whose #BOF snapshot_et differs is first moved to
+        # daily/superseded/<date>__<snapshot_et>.parquet, so the earlier
+        # generation survives. load_panel's glob is non-recursive, so the
+        # superseded files never enter the panel or the capture count.
         fresh = fresh.sort_values("ticker").reset_index(drop=True)
+        _preserve_superseded(path, stamp, last)
         fresh.to_parquet(path, index=False)
         fee = fresh["fee_pct"].dropna()
         in_uni = fresh[fresh["in_universe"]]

@@ -161,6 +161,7 @@ from __future__ import annotations
 from hashlib import sha256
 import json
 import logging
+import math
 from datetime import datetime, time, timedelta, timezone
 from typing import Any
 
@@ -296,6 +297,52 @@ _FEED_DELAY_FALLBACK_MIN = 15.0
 #: One number, derived once, so an ad-hoc dict cannot silently gate differently.
 _FALLBACK_MAX_AGE_MIN = _FEED_DELAY_FALLBACK_MIN + _DEFAULTS["quote_slack_min"]
 
+#: The schema of the freshness-policy disclosure carried in every payload's meta.
+FRESHNESS_POLICY_SCHEMA = "prophet_live.quote_freshness_policy/v1"
+
+
+def quote_max_age_policy(cfg: dict[str, Any] | None) -> dict[str, Any]:
+    """The exact staleness ceiling this pass applies, and how it was resolved.
+
+    ONE read shared by the state machine and the artifact's disclosure: the value
+    is read exactly as ``_resolve_state`` reads it — ``cfg["quote_max_age_min"]``
+    first, else the fallback ceiling — so meta can never name a number the gate did
+    not use. ``resolution`` names the same three provenance classes :func:`live_cfg`
+    resolves (``explicit`` operator lever, ``derived`` off the data plan,
+    ``fallback``), and ``malformed`` marks a configured value no lawful bound can be
+    read from (bool, non-numeric, non-finite): disclosed unusable rather than
+    laundered into a clean limit. Zero and negative are disclosed VERBATIM — they
+    are numbers, and the gate genuinely ran on them. Metadata only: nothing in the
+    state machine reads this block.
+    """
+    if not isinstance(cfg, dict):
+        return {"schema": FRESHNESS_POLICY_SCHEMA, "quote_max_age_min": None,
+                "resolution": "malformed"}
+    raw = cfg.get("quote_max_age_min")
+    if raw is None:
+        # An ABSENT key resolves to the machine's own .get default. An explicit
+        # None crashes the machine's float() read and darks the pass eval_error —
+        # only the former is the fallback ceiling; neither is a number.
+        absent = "quote_max_age_min" not in cfg
+        return {"schema": FRESHNESS_POLICY_SCHEMA,
+                "quote_max_age_min": _FALLBACK_MAX_AGE_MIN if absent else None,
+                "resolution": "fallback" if absent else "malformed"}
+    number: float | None = None
+    if not isinstance(raw, bool) and isinstance(raw, (int, float)):
+        try:
+            candidate = float(raw)
+        except (OverflowError, ValueError):  # pragma: no cover - huge int corner
+            candidate = float("nan")
+        if math.isfinite(candidate):
+            number = candidate
+    if number is None:
+        return {"schema": FRESHNESS_POLICY_SCHEMA, "quote_max_age_min": None,
+                "resolution": "malformed"}
+    resolution = cfg.get("quote_max_age_resolution")
+    return {"schema": FRESHNESS_POLICY_SCHEMA, "quote_max_age_min": number,
+            "resolution": resolution if resolution in ("explicit", "derived")
+            else "explicit"}
+
 
 def live_cfg(cfg: dict | None) -> dict[str, Any]:
     """Resolve the evaluator config: ``config.yml prophet_live`` over in-code defaults.
@@ -339,13 +386,17 @@ def live_cfg(cfg: dict | None) -> dict[str, Any]:
         declared = ((cfg or {}).get("live") or {}).get("delayed_min")
         if declared is not None:
             feed_delay = max(0.0, float(declared))
-        out["quote_max_age_min"] = (float(block["quote_max_age_min"])
-                                    if block.get("quote_max_age_min") is not None
+        explicit = block.get("quote_max_age_min") is not None
+        out["quote_max_age_min"] = (float(block["quote_max_age_min"]) if explicit
                                     else feed_delay + float(out["quote_slack_min"]))
+        # HOW the ceiling above was resolved — the operator lever won, or it was
+        # derived off the data plan. Disclosed verbatim by quote_max_age_policy.
+        out["quote_max_age_resolution"] = "explicit" if explicit else "derived"
     except Exception as exc:  # noqa: BLE001
         log.warning("live_states: bad prophet_live config (%s) — using defaults", exc)
         out = {k: (dict(v) if isinstance(v, dict) else v) for k, v in _DEFAULTS.items()}
         out["quote_max_age_min"] = _FALLBACK_MAX_AGE_MIN
+        out["quote_max_age_resolution"] = "fallback"
     return out
 
 
@@ -448,16 +499,31 @@ def _iso(now: datetime) -> str:
     return _utc(now).isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
-def _basis_receipt(
+#: The closed field set of one measured basis-relation material. The receipt hashes
+#: EXACTLY these keys and nothing else, so the material a consumer re-hashes must be
+#: field-for-field this shape (native B4 readers verify that before trusting a row).
+BASIS_RELATION_FIELDS: tuple[str, ...] = (
+    "schema", "subject", "state", "pack_as_of", "levels_adjustment", "quote_adjustment",
+    "gap_pct", "tol_pct",
+)
+
+
+def _basis_relation_material(
     *,
     subject: str,
     pack_as_of: str,
     levels_adjustment: str,
     gap_pct: float,
     tol_pct: float,
-) -> str:
-    """Content-address one measured per-name relationship between pack levels and tape."""
-    material: dict[str, Any] = {
+) -> dict[str, Any]:
+    """The measured per-name relationship between pack levels and tape, as a dict.
+
+    Published on a RESOLVED row beside its receipt under ``basis_relation`` so a strict
+    downstream reader can re-hash the EXACT measured material (and read the subject and
+    pack cut it binds) instead of trusting an opaque digest. The receipt below hashes
+    this dict field-for-field; the two can never drift because both are built here.
+    """
+    return {
         "schema": BASIS_RELATION_SCHEMA,
         "subject": str(subject),
         "state": "RESOLVED",
@@ -467,10 +533,37 @@ def _basis_receipt(
         "gap_pct": round(float(gap_pct), 6),
         "tol_pct": round(abs(float(tol_pct)), 6),
     }
+
+
+def basis_relation_receipt(material: dict[str, Any]) -> str:
+    """Re-hash a published basis-relation material to its canonical receipt.
+
+    ONE definition of the digest (same canonical encoding ``_basis_relation_material``
+    is hashed with), so downstream validators and this module cannot disagree about
+    what a ``basis_receipt`` commits to.
+    """
     blob = json.dumps(
         material, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False
     ).encode("utf-8")
     return "sha256:" + sha256(blob).hexdigest()
+
+
+def _basis_receipt(
+    *,
+    subject: str,
+    pack_as_of: str,
+    levels_adjustment: str,
+    gap_pct: float,
+    tol_pct: float,
+) -> str:
+    """Content-address one measured per-name relationship between pack levels and tape."""
+    return basis_relation_receipt(_basis_relation_material(
+        subject=subject,
+        pack_as_of=pack_as_of,
+        levels_adjustment=levels_adjustment,
+        gap_pct=gap_pct,
+        tol_pct=tol_pct,
+    ))
 
 
 _CANONICAL_ADJUSTMENTS = frozenset({ADJUSTED, UNADJUSTED})
@@ -948,6 +1041,9 @@ def dark_artifact(reason: str, *, now: datetime, cfg: dict[str, Any],
             # HOW stale the tape was when we declined to speak.
             "quote_asof": quote_asof,
             "delay_min": delay_min,
+            # ...and WHAT ceiling the lane enforces, resolved exactly as a live pass
+            # resolves it (metadata only; a dark pass evaluated no name).
+            "quote_freshness_policy": quote_max_age_policy(cfg),
             "dark_counts": {reason: 1},
             # Always present, so a consumer never has to tell "no unknowns" from "this
             # payload predates the bucket". A whole-artifact dark evaluated no name.
@@ -1045,13 +1141,26 @@ def evaluate(pack: dict[str, Any] | None, quotes: dict[str, Any], prev: dict[str
             tol = abs(float(audit["tol_pct"]))
             if tol > 0.0 and abs(float(gap)) <= tol:
                 st["basis_status"] = "RESOLVED"
-                st["basis_receipt"] = _basis_receipt(
+                # The MEASURED material travels beside its receipt, so a strict native
+                # reader can re-hash exactly what was hashed and read the subject and
+                # pack cut it binds — an opaque digest alone cannot be checked against
+                # the row that claims it. Same branch, same inputs, one hash: the
+                # material re-hashes to the receipt by construction (tests pin it).
+                st["basis_relation"] = _basis_relation_material(
                     subject=str(tkr),
                     pack_as_of=pack_as_of,
                     levels_adjustment=levels_adjustment,
                     gap_pct=float(gap),
                     tol_pct=tol,
                 )
+                st["basis_receipt"] = basis_relation_receipt(st["basis_relation"])
+                # The two inputs the audit actually read for THIS name, disclosed so a
+                # native reader can bind its own observed private quote's previous close
+                # (and the pack's as-of close) to the measured gap without re-running
+                # the audit. Absent wherever the receipt is absent — disclosure is part
+                # of the same positive measurement, never a row of its own.
+                st["basis_as_of_close"] = float(entry.get("as_of_close"))
+                st["basis_prev_close"] = float(q.get("prev_close"))
         # A name whose levels are NOT on the artifact's stated basis says so on its own
         # row. Only the exceptions carry the key — the rule is written down in
         # `meta.price_adjustment` and in the module docstring, so a reader derives
@@ -1088,6 +1197,13 @@ def evaluate(pack: dict[str, Any] | None, quotes: dict[str, Any], prev: dict[str
             # House convention: the VENDOR delay floor, not a measured latency. The
             # per-name measured age rides on each state as quote_age_min.
             "delay_min": delay_min,
+            # THE EXACT STALENESS CEILING THIS PASS GATED ON — the number
+            # `_resolve_state` compared every quote age against (same
+            # explicit/derived/fallback resolution), disclosed so a downstream
+            # native reader can re-answer the freshness question at its own read
+            # time without assuming today's config describes this artifact.
+            # Metadata only: no verdict below reads this block.
+            "quote_freshness_policy": quote_max_age_policy(cfg),
             "pack_as_of": pack_as_of,
             "pack_built_at": pack.get("built_at"),
             "expected_session": expected,

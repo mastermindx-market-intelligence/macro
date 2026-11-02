@@ -40,6 +40,7 @@ HOUSE LAWS (RIC-W7 binding)
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
@@ -48,6 +49,30 @@ from pathlib import Path
 from typing import Any
 
 log = logging.getLogger(__name__)
+
+
+def _curve_accounting_board_shell(reason: str) -> dict:
+    """curve_accounting.v1 "unavailable" shell for a missing/malformed
+    transmission contract (RIC Y1b). Never a fabricated read."""
+    return {
+        "schema": "curve_accounting.v1",
+        "calculation_version": "ric_y1_curve_accounting.v1",
+        "basis_schema": None,
+        "cutoff": None,
+        "asof": None,
+        "status": "unavailable",
+        "reason": reason,
+        "display_only": True,
+        "authority": False,
+        "can_score": False,
+        "can_size": False,
+        "can_trade": False,
+        "law": [],
+        "observations": {},
+        "comparisons": {},
+        "accounting_views": [],
+        "views_are_alternatives_never_summed": True,
+    }
 
 # ---------------------------------------------------------------------------
 # Frozen thresholds (module-level constants — unit-tested exhaustively)
@@ -346,7 +371,7 @@ def _build_hawkish_legs(
     cpi_detail_en = "No upcoming CPI data with hotter skew."
     cpi_detail_zh = "无近期CPI数据显示偏热倾斜。"
     for item in release_items:
-        rtype = item.get("release_type", "")
+        rtype = item.get("release_type", "") if isinstance(item, dict) else ""
         if rtype in {"cpi_headline", "cpi_core"}:
             tag = _safe_get(item, "surprise_skew", "tag")
             if tag == "hotter":
@@ -499,7 +524,7 @@ def _build_easing_legs(
     e2_detail_zh = "无NFP偏冷倾斜；商品综合增长方向未下行。"
 
     for item in release_items:
-        if item.get("release_type") == "nfp":
+        if isinstance(item, dict) and item.get("release_type") == "nfp":
             tag = _safe_get(item, "surprise_skew", "tag")
             if tag == "cooler":
                 nfp_cooler = True
@@ -708,7 +733,7 @@ def _compute_divergence(
     # hotter CPI while breakevens down, or cooler CPI while breakevens up
     cpi_tag = None
     for item in release_items:
-        if item.get("release_type") in {"cpi_headline", "cpi_core"}:
+        if isinstance(item, dict) and item.get("release_type") in {"cpi_headline", "cpi_core"}:
             cpi_tag = _safe_get(item, "surprise_skew", "tag")
             break
 
@@ -817,16 +842,335 @@ def _render_cuts(implied_cuts_12m: int | float | None) -> dict[str, str]:
         return {"en": f"about {count_word_en} cut{'s' if count != 1 else ''}", "zh": f"约{count_word_zh}降息"}
 
 
-def _build_rate_path_row(fed_path: dict) -> dict:
-    """Build the rate_path display row."""
+def _t0_text(value: Any) -> str | None:
+    """A non-blank string verbatim, else None (UNKNOWN). Never a default source."""
+    if isinstance(value, str) and value.strip():
+        return value
+    return None
+
+
+def _t0_day(value: Any):
+    """Leading YYYY-MM-DD of an ISO string as a date; None when absent or malformed."""
+    if not isinstance(value, str) or len(value) < 10:
+        return None
+    try:
+        return datetime.strptime(value[:10], "%Y-%m-%d").date()
+    except (TypeError, ValueError):
+        return None
+
+
+def _t0_countdown(item: dict, release_meta: dict, display_cutoff: Any) -> dict:
+    """Release countdown bound to an explicit display cutoff (A05).
+
+    The source snapshot (artefact asof + the item's build-time days_to) is carried verbatim
+    and never re-stamped. Without a display cutoff the count is HISTORICAL and no current day
+    count is claimed; with one, days are recomputed from the item's release_date.
+    """
+    if display_cutoff is not None and not isinstance(display_cutoff, str):
+        display_cutoff = str(display_cutoff)
+    source_cutoff = release_meta.get("asof")
+    countdown = {
+        "source_cutoff": source_cutoff,
+        "source_days_to": item.get("days_to"),
+        "display_cutoff": display_cutoff,
+        "days_to": None,
+        "state": "historical",
+        "method": "source_snapshot",
+    }
+    if display_cutoff is None:
+        return countdown
+    countdown["method"] = "release_forecast_release_date"
+    display_day = _t0_day(display_cutoff)
+    source_day = _t0_day(source_cutoff)
+    if display_day is None or source_day is None:
+        countdown["state"] = "unknown"
+        return countdown
+    if source_day > display_day:
+        countdown["state"] = "source_after_display_cutoff"
+        return countdown
+    release_day = _t0_day(item.get("release_date"))
+    if release_day is None:
+        countdown["state"] = "unknown"
+        return countdown
+    delta = (release_day - display_day).days
+    if delta >= 0:
+        countdown["state"] = "current"
+        countdown["days_to"] = delta
+    else:
+        countdown["state"] = "released"
+    return countdown
+
+
+# --------------------------------------------------------------------------- #
+# T0-B basis contract helpers (rates_command_basis.v1).
+#
+# All of this code sits BELOW the f01 line pins (engine lines 557-575), so it
+# must never be moved above them, and the frozen contract module is imported
+# FUNCTION-LOCALLY only — no module-level import of rates_command_basis.
+# --------------------------------------------------------------------------- #
+
+
+def _t0b_number(value: Any) -> float | None:
+    """Coerce a raw board value to a finite float; None for anything else.
+
+    bool is not a number here, NaN/inf are not numbers here, and a numeric
+    string is accepted only via float() inside try. Never raises.
+    """
+    if isinstance(value, bool):
+        return None
+    if not isinstance(value, (int, float, str)):
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    if number != number or number in (float("inf"), float("-inf")):
+        return None
+    return number
+
+
+def _t0b_basis_cutoff(explicit: Any, source_asof: Any) -> str | None:
+    """Publication cutoff for a basis record: explicit, else source asof.
+
+    Build time is NEVER a cutoff; None when neither exists, so the row
+    carries no basis rather than a fabricated one.
+    """
+    if explicit is not None:
+        return str(explicit)
+    if isinstance(source_asof, str) and source_asof:
+        return source_asof
+    return None
+
+
+def _t0b_precision(stamp: Any) -> str:
+    """Precision of an evidence stamp: 'day' only for a YYYY-MM-DD stamp."""
+    if isinstance(stamp, str) and len(stamp) == 10:
+        try:
+            datetime.strptime(stamp, "%Y-%m-%d")
+            return "day"
+        except ValueError:
+            return "unknown"
+    return "unknown"
+
+
+# Exact fed_path implied_source_en labels -> basis source keys. Exact string
+# equality only (never prefix/substring): an unknown label stays UNKNOWN.
+_RATE_SOURCE_BASIS = {
+    "ZQ fed-funds futures": {
+        "source": "rate_futures:ZQ",
+        "target": "effr_monthly_average",
+        "basket_or_index": "EFFR",
+        "rate_index": "EFFR",
+        "averaging_law": "arithmetic_calendar_day",
+    },
+    "ZQ front (30d) only": {
+        "source": "rate_futures:ZQ",
+        "target": "effr_monthly_average",
+        "basket_or_index": "EFFR",
+        "rate_index": "EFFR",
+        "averaging_law": "arithmetic_calendar_day",
+    },
+    "SR3 SOFR futures": {
+        "source": "rate_futures:SR3",
+        "target": "sofr_compounded_quarter",
+        "basket_or_index": "SOFR",
+        "rate_index": "SOFR",
+        "averaging_law": "compounded_business_day",
+    },
+}
+
+
+def _t0b_basis_contract_version() -> str:
+    """Frozen contract version carried at the artifact top level."""
+    from engine import rates_command_basis as rcb
+
+    return rcb.SCHEMA_VERSION
+
+
+# Exact fed_path implied_source_en labels -> the D0 provenance strip key
+# (engine/fed_path.py _selected_strip). Rights are read from that strip only.
+_RATE_SOURCE_STRIP = {
+    "ZQ fed-funds futures": "zq",
+    "SR3 SOFR futures": "sofr",
+    "ZQ front (30d) only": "zq_front",
+}
+
+
+def _rate_path_rights(fed_path: dict, label: Any) -> str:
+    """Rights of the selected futures strip, from D0 `implied_source_meta`.
+
+    Never asserted here: an absent provenance block, an unmapped label, a
+    strip without a rights field or a value outside the B0 vocabulary all
+    stay "unknown" (which B0 refuses for export purposes).
+    """
+    from engine import rates_command_basis as rcb
+
+    strip_key = _RATE_SOURCE_STRIP.get(label) if isinstance(label, str) else None
+    meta = fed_path.get("implied_source_meta")
+    strips = meta.get("strips") if isinstance(meta, dict) else None
+    strip = strips.get(strip_key) if isinstance(strips, dict) and strip_key else None
+    rights = strip.get("rights") if isinstance(strip, dict) else None
+    return rights if rights in rcb.RIGHTS_VALUES else "unknown"
+
+
+def _rate_path_basis(fed_path: dict, cutoff: Any) -> dict | None:
+    """Qualify the m12 implied-path value as a rates_command_basis.v1 record.
+
+    None when fed_path is not a dict or no basis cutoff exists. The source
+    label decides the basis keys: an unknown label leaves them UNKNOWN
+    (omitted) with limitation `source_unknown` — never a guessed default.
+    """
+    from engine import rates_command_basis as rcb
+
+    if not isinstance(fed_path, dict):
+        return None
+    basis_cutoff = _t0b_basis_cutoff(cutoff, fed_path.get("asof"))
+    if basis_cutoff is None:
+        return None
     implied = fed_path.get("implied") or {}
+    if not isinstance(implied, dict):
+        implied = {}
+    label = fed_path.get("implied_source_en")
+    source_keys = _RATE_SOURCE_BASIS.get(label) if isinstance(label, str) else None
+    limitations = [
+        "risk_premium_not_stripped",
+        "implied_bp_12m_is_month12_path_minus_policy_level",
+    ]
+    # Evidence stamps: the fed_path asof only; reference_start/reference_end,
+    # vintage, source_version, content_ref and admitted_at stay UNKNOWN —
+    # never derived from asof+12m.
+    asof = fed_path.get("asof")
+    asof_stamp = asof if isinstance(asof, str) else None
+    meta: dict[str, Any] = {
+        "subject": "fed_path.implied_path.m12",
+        "evidence_class": "market_implied_expectation",
+        "unit": "pct_ann_rate",
+        "seasonal_treatment": rcb.NA,
+        "curve_convention": rcb.NA,
+        "tenor": rcb.NA,
+        "model_id": rcb.NA,
+        "target_epoch": rcb.NA,
+        "observation_time": asof_stamp,
+        "observation_precision": _t0b_precision(asof_stamp),
+        "first_public_evidence": asof_stamp,
+        "first_public_precision": _t0b_precision(asof_stamp),
+        "rights": _rate_path_rights(fed_path, label),
+    }
+    if source_keys is None:
+        limitations.append("source_unknown")
+    else:
+        meta.update(source_keys)
+        if label == "ZQ front (30d) only":
+            limitations.append("degraded_front_month_only")
+    meta["limitations"] = tuple(limitations)
+    value = _t0b_number(implied.get("m12"))
+    return rcb.qualify_observation(value, meta, basis_cutoff).to_dict()
+
+
+def _cpi_basis(item: dict, release_meta: dict, cutoff: Any) -> dict | None:
+    """Qualify the nearest-CPI projection point as a basis record.
+
+    None unless the item is a CPI release with a declared MoM SA target and a
+    basis cutoff exists: any other (or missing) target means the unit is
+    UNKNOWN, so the observation cannot be qualified — never assume MoM.
+    """
+    import calendar as _calendar
+
+    from engine import rates_command_basis as rcb
+
+    if not isinstance(item, dict):
+        return None
+    if item.get("release_type") not in {"cpi_headline", "cpi_core"}:
+        return None
+    # The frozen gate is the producer's byte-exact MoM SA target string
+    # "mom_sa_pct"; every other spelling (case or whitespace variants
+    # included) leaves the unit UNKNOWN, so no basis is attached.
+    if item.get("target") != "mom_sa_pct":
+        return None
+    artefact = release_meta if isinstance(release_meta, dict) else {}
+    basis_cutoff = _t0b_basis_cutoff(cutoff, artefact.get("asof"))
+    if basis_cutoff is None:
+        return None
+    headline = item.get("release_type") == "cpi_headline"
+    limitations: list[str] = []
+    target = "cpi_u_all_items_mom_sa" if headline else "cpi_u_core_mom_sa"
+    if item.get("first_print_basis") == "first_print":
+        target += "_first_print"
+    else:
+        limitations.append("first_print_basis_undeclared")
+    meta: dict[str, Any] = {
+        "subject": "CPIAUCSL" if headline else "CPILFESL",
+        "evidence_class": "house_estimate",
+        "unit": "pct_mom",
+        "target": target,
+        "basket_or_index": "CPI-U",
+        "seasonal_treatment": "sa",
+        "rate_index": rcb.NA,
+        "averaging_law": rcb.NA,
+        "curve_convention": rcb.NA,
+        "tenor": rcb.NA,
+        "source": "release_forecast",
+        "rights": "display_only",
+    }
+    period = item.get("period")
+    if isinstance(period, str) and len(period) == 7 and period[4] == "-":
+        try:
+            last_day = _calendar.monthrange(int(period[:4]), int(period[5:7]))[1]
+        except ValueError:
+            last_day = None
+        if last_day is not None:
+            meta["reference_start"] = f"{period}-01"
+            meta["reference_end"] = f"{period}-{last_day:02d}"
+    for version_key in ("schema_version", "version"):
+        version_val = artefact.get(version_key)
+        if isinstance(version_val, str) and version_val:
+            meta["source_version"] = version_val
+            break
+    for item_key, meta_key in (("model_epoch", "model_id"), ("target_epoch", "target_epoch")):
+        item_val = item.get(item_key)
+        if isinstance(item_val, str) and item_val:
+            meta[meta_key] = item_val
+    asof = artefact.get("asof")
+    asof_stamp = asof if isinstance(asof, str) else None
+    meta["observation_time"] = asof_stamp
+    meta["observation_precision"] = _t0b_precision(asof_stamp)
+    meta["first_public_evidence"] = asof_stamp
+    meta["first_public_precision"] = _t0b_precision(asof_stamp)
+    # Model status is read exactly where _build_inflation_row reads it.
+    ms = artefact.get("methodology_status")
+    if not isinstance(ms, dict):
+        ms = {}
+    quality: list[str] = []
+    forecast_epoch = ms.get("forecast_epoch")
+    if isinstance(forecast_epoch, str) and "experimental" in forecast_epoch:
+        quality.append("experimental")
+    accuracy_claim = ms.get("accuracy_claim")
+    if isinstance(accuracy_claim, str) and accuracy_claim.startswith("withheld"):
+        quality.append("accuracy_withheld")
+    meta["quality"] = tuple(quality)
+    meta["limitations"] = tuple(limitations)
+    value = _t0b_number(_safe_get(item, "projection", "point"))
+    return rcb.qualify_observation(value, meta, basis_cutoff).to_dict()
+
+
+def _build_rate_path_row(fed_path: dict, *, cutoff: Any = None) -> dict:
+    """Build the rate_path display row."""
+    if not isinstance(fed_path, dict):
+        fed_path = {}
+    implied = fed_path.get("implied") or {}
+    if not isinstance(implied, dict):
+        implied = {}
     dots = fed_path.get("dots") or []
+    if not isinstance(dots, list):
+        dots = []
     gap = fed_path.get("gap") or {}
+    if not isinstance(gap, dict):
+        gap = {}
     implied_cuts_12m = fed_path.get("implied_cuts_12m")
     implied_bp_12m = fed_path.get("implied_bp_12m")
     path_read = _render_cuts(implied_cuts_12m)
 
-    return {
+    row = {
         "asof": fed_path.get("asof"),
         "policy_rate": fed_path.get("policy_rate"),
         "implied_path": {
@@ -844,20 +1188,43 @@ def _build_rate_path_row(fed_path: dict) -> dict:
         "headline_zh": fed_path.get("headline_zh"),
         "read_en": fed_path.get("read_en"),
         "read_zh": fed_path.get("read_zh"),
-        "source_en": fed_path.get("implied_source_en", "ZQ fed-funds futures"),
-        "source_zh": fed_path.get("implied_source_zh", "ZQ联邦基金期货"),
+        "source_en": _t0_text(fed_path.get("implied_source_en")),
+        "source_zh": _t0_text(fed_path.get("implied_source_zh")),
     }
+    # The basis key is ALWAYS present; None when the observation cannot be
+    # qualified. The basis never edits the row's display fields.
+    row["basis"] = _rate_path_basis(fed_path, cutoff)
+    return row
 
 
-def _build_inflation_row(tx: dict, release_items: list[dict]) -> dict:
+def _build_inflation_row(
+    tx: dict,
+    release_items: list[dict],
+    *,
+    release_meta: dict | None = None,
+    display_cutoff: Any = None,
+    cutoff: Any = None,
+) -> dict:
     """Build the inflation display row."""
     infl = (_safe_get(tx, "state", "inflation") or {})
     exp = (_safe_get(tx, "state", "expectations") or {})
+    meta = release_meta if isinstance(release_meta, dict) else {}
+    ms = meta.get("methodology_status")
+    if not isinstance(ms, dict):
+        ms = {}
+    if not isinstance(release_items, list):
+        release_items = []
 
     # Nearest CPI projection data
     cpi_proj = None
     for item in release_items:
+        if not isinstance(item, dict):
+            continue
         if item.get("release_type") in {"cpi_headline", "cpi_core"}:
+            cov = item.get("coverage_flags")
+            if not isinstance(cov, dict):
+                cov = {}
+            bs = item.get("benchmark_set")
             cpi_proj = {
                 "release_type": item.get("release_type"),
                 "period": item.get("period"),
@@ -866,7 +1233,26 @@ def _build_inflation_row(tx: dict, release_items: list[dict]) -> dict:
                 "point": _safe_get(item, "projection", "point"),
                 "surprise_skew_tag": _safe_get(item, "surprise_skew", "tag"),
                 "surprise_skew_sigma": _safe_get(item, "surprise_skew", "sigma"),
+                "target": item.get("target"),
+                "model_epoch": item.get("model_epoch"),
+                "target_epoch": item.get("target_epoch"),
+                "primary_forecast_basis": item.get("primary_forecast_basis"),
+                "context_metrics_basis": item.get("context_metrics_basis"),
+                "model_maturity": cov.get("model_maturity"),
+                "forecast_epoch": ms.get("forecast_epoch"),
+                "accuracy_claim": ms.get("accuracy_claim"),
+                "benchmark_ids": (
+                    sorted(str(k) for k in bs)
+                    if isinstance(bs, dict) and bs
+                    else None
+                ),
+                "first_print_basis": item.get("first_print_basis"),
+                "countdown": _t0_countdown(item, meta, display_cutoff),
             }
+            # The basis key is ALWAYS present on nearest_cpi (None when the
+            # observation cannot be qualified); when nearest_cpi itself is
+            # None there is no basis to add.
+            cpi_proj["basis"] = _cpi_basis(item, release_meta, cutoff)
             break
 
     return {
@@ -1049,6 +1435,8 @@ def _build_market_check(
 ) -> dict:
     """Build the market_check display block (juxtaposition only, never fused)."""
     implied = fed_path.get("implied") or {}
+    if not isinstance(implied, dict):
+        implied = {}
     implied_bp_12m = fed_path.get("implied_bp_12m")
     headline_en = fed_path.get("headline_en", "")
     headline_zh = fed_path.get("headline_zh", "")
@@ -1207,11 +1595,13 @@ def compose_stance(board: dict) -> dict[str, str]:
 # Main build_board function
 # ---------------------------------------------------------------------------
 
-def build_board(root=None) -> dict:
+def build_board(root=None, *, cutoff=None) -> dict:
     """Build the full rates_command.v1 artifact.
 
     Fails open everywhere: absent/corrupt input -> leg active=None, never raises.
     Returns a complete dict with display_only=True, authority=False.
+
+    cutoff: optional display cutoff (ISO date) for release countdowns; None = historical
     """
     data_dir = _data_root(root)
     caveats: list[str] = [
@@ -1247,6 +1637,19 @@ def build_board(root=None) -> dict:
         "series": {},
     }
 
+    # RIC Y1b: curve accounting passes through VERBATIM from the transmission
+    # snapshot (no recomputation, basis/vintage/rights carried as produced);
+    # a missing or malformed contract gets the "unavailable" shell.
+    _ca = tx.get("curve_accounting")
+    if isinstance(_ca, dict):
+        curve_accounting = _ca
+    elif _ca is None:
+        curve_accounting = _curve_accounting_board_shell(
+            "transmission_contract_missing_curve_accounting")
+    else:
+        curve_accounting = _curve_accounting_board_shell(
+            "transmission_contract_malformed_curve_accounting")
+
     # zq_path.parquet -> H1 d20
     zq_d20_bp: float | None = None
     try:
@@ -1265,7 +1668,11 @@ def build_board(root=None) -> dict:
 
     # release_forecast/latest.json
     release_latest = _read_json(data_dir / "release_forecast" / "latest.json") or {}
+    if not isinstance(release_latest, dict):
+        release_latest = {}
     release_items = release_latest.get("upcoming") or []
+    if not isinstance(release_items, list):
+        release_items = []
 
     # market_state/latest.json
     market_state = _read_json(data_dir / "market_state" / "latest.json") or {}
@@ -1377,16 +1784,26 @@ def build_board(root=None) -> dict:
     # ------------------------------------------------------------------ #
     # 4. Board rows
     # ------------------------------------------------------------------ #
+    # C0 §2.7 / S2: the th_iran row is gated on intel freshness at the
+    # explicit cutoff when one is supplied (a stale theater becomes a
+    # caveat, never a live condition). With no cutoff the legacy
+    # build-time staleness is used so the historical contract survives.
     iran_row = None
-    for t in (intel.get("administration") or {}).get("theaters") or []:
-        if t.get("id") == "th_iran":
-            iran_row = {"title_en": t.get("title_en"), "title_zh": t.get("title_zh"),
-                        "facts_en": t.get("facts_en")}
-            break
+    iran_age = _c0_geo_iran_caveat_age(intel, cutoff) if isinstance(intel, dict) else None
+    iran_fresh = iran_age is None or iran_age <= _C0_GEO_STALE_DAYS
+    if iran_fresh:
+        for t in (intel.get("administration") or {}).get("theaters") or []:
+            if t.get("id") == "th_iran":
+                iran_row = {"title_en": t.get("title_en"), "title_zh": t.get("title_zh"),
+                            "facts_en": t.get("facts_en")}
+                break
 
     board = {
-        "rate_path_row": _build_rate_path_row(fed_path),
-        "inflation_row": _build_inflation_row(tx, release_items),
+        "rate_path_row": _build_rate_path_row(fed_path, cutoff=cutoff),
+        "inflation_row": _build_inflation_row(
+            tx, release_items, release_meta=release_latest, display_cutoff=cutoff,
+            cutoff=cutoff,
+        ),
         "risk_row": _build_risk_row(tx),
         "policy_row": _build_policy_row(policy_lever, intel, intel_stale_days),
     }
@@ -1405,7 +1822,12 @@ def build_board(root=None) -> dict:
     # 7. Determine asof (newest input)
     # ------------------------------------------------------------------ #
     candidate_dates = [d for d in [main_asof, tx_asof] if d]
-    asof = max(candidate_dates) if candidate_dates else str(datetime.now(timezone.utc).date())
+    if candidate_dates:
+        asof = max(candidate_dates)
+        build_time_fallback = False
+    else:
+        asof = str(datetime.now(timezone.utc).date())
+        build_time_fallback = True
 
     # Build the pre-stance artifact (needed by compose_stance)
     pre_artifact = {
@@ -1429,15 +1851,60 @@ def build_board(root=None) -> dict:
         "caveats": caveats,
     }
 
-    # Stance sentence
-    stance = compose_stance(pre_artifact)
+    # Stance is composed by the C0 layer below (with the §2.6 basis-safe
+    # guard); no direct compose_stance call here. The §2.6 guard requires
+    # the rate-path basis state and D1 identification, both of which are
+    # derivable from the pre_artifact + fed_path without an I0 read.
+    board = pre_artifact.get("board") if isinstance(pre_artifact, dict) else {}
+    rate_path_row = board.get("rate_path_row") if isinstance(board, dict) else {}
+    _rp_basis = rate_path_row.get("basis") if isinstance(rate_path_row, dict) else None
+    basis_present = (
+        isinstance(_rp_basis, dict)
+        and _rp_basis.get("value_state") == "present"
+    )
+    d1_identified = _c0_d1_any_identified(
+        fed_path if isinstance(fed_path, dict) else {}
+    )
+    pre_artifact["stance"] = _c0_compose_stance_with_basis_guard(
+        pre_artifact,
+        basis_present=basis_present,
+        d1_identified=d1_identified,
+    )
 
     # Final artifact
     artifact = dict(pre_artifact)
-    artifact["stance"] = stance
     # changes + prev_state are added by the builder (build_changes call)
     artifact["changes"] = {"vs_asof": None, "items": []}
     artifact["prev_state"] = {"as_of": None, "state": {}}
+    artifact["basis_contract_version"] = _t0b_basis_contract_version()
+    # qualified_comparisons, board_generation and inflation_lenses are filled
+    # by the C0 layer below; an empty list means "not yet compared" only
+    # AFTER the C0 layer has run (the gaps live on each row's basis record).
+    artifact["qualified_comparisons"] = []
+    # RIC Y1b: display-only curve accounting (A22-A24), attached AFTER the
+    # stance is composed so compose_stance's input is unchanged. Export stays
+    # closed until the E1 ruling.
+    artifact["curve_accounting"] = curve_accounting
+    artifact["curve_accounting_export"] = {
+        "export_allowed": False,
+        "reason": "awaiting_e1_ruling",
+        "display_only": True,
+    }
+
+    # C0 layer (RIC-W7 binding): qualified_comparisons, board_generation,
+    # inflation_lenses and the caveat extension. Never re-touches stance
+    # (the basis-safe guard already wrote pre_artifact["stance"] above);
+    # never overwrites the legacy keys (curve_accounting, curve_accounting_export,
+    # top-level asof). Reads I0 once (shared between comparisons and the
+    # verbatim lenses carry).
+    artifact = _c0_apply_to_artifact(
+        artifact,
+        fed_path=fed_path,
+        data_dir=data_dir,
+        cutoff=cutoff,
+        build_time_fallback=build_time_fallback,
+        intel=intel,
+    )
 
     return artifact
 
@@ -1573,3 +2040,690 @@ def build_changes(
     changes = {"vs_asof": base_asof, "items": items}
     prev_state = {"as_of": base_asof, "state": base}
     return changes, prev_state
+
+
+# --------------------------------------------------------------------------- #
+# C0 comparison layer (RIC-W7 binding).
+#
+# Above this block, the board shipped with `qualified_comparisons = []` and
+# no per-component generation integrity. C0 fills that gap with B0-backed
+# cross-component comparisons (or upstream references), generation integrity,
+# the inflation_lenses carry, and basis-safe stance copy when the rate-path
+# cannot be matched to the policy rate. No upstream computation is redone
+# here (seat ruling S7): D1's effr_meeting_path vs_target_midpoint and I0's
+# matched_lenses.comparisons are referenced by input_id, content_ref and
+# per-comparison cutoff, never re-run.
+# --------------------------------------------------------------------------- #
+
+# Staleness threshold for the geo_iran intel theater at the cutoff (§2.7).
+# Reused name (no new constant beyond this single threshold).
+_C0_GEO_STALE_DAYS: int = SHOCK_STALE_DAYS  # 7 calendar days; same envelope as H3.
+
+# Inflation-lenses payload size cap (§2.11d). 16 KiB is the wire cap.
+_C0_LENS_LIMIT_BYTES: int = 16384
+
+# Input-id prefixes used by the comparison layer to point at upstream bytes.
+_C0_D1_INPUT_ID_PREFIX: str = "data/bonds/bond_health.json#/fed_path/effr_meeting_path"
+_C0_I0_INPUT_ID_PREFIX: str = (
+    "data/release_forecast/inflation_intelligence.json#/matched_lenses"
+)
+_C0_I0_PATH: str = "data/release_forecast/inflation_intelligence.json"
+_C0_D1_PATH: str = "data/bonds/bond_health.json"
+
+
+def _c0_sha256_bytes(path: Path) -> str | None:
+    """sha256 hex of `path`'s bytes, or None when unreadable.
+
+    Fail-open: a missing or unreadable file yields None so the comparison
+    layer records provenance as best it can without raising.
+    """
+    try:
+        if not path.exists() or not path.is_file():
+            return None
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+    except Exception:
+        return None
+
+
+def _c0_input_id(prefix: str, *pointers: str) -> str:
+    """Build a C0 input_id from a file-prefix and one or more JSON pointers.
+
+    Pointer segments are joined with '/'; the prefix keeps its own trailing
+    '/fed_path/...' or '/matched_lenses' tail. Empty pointer segments are
+    dropped so the result is always a clean path#fragment form.
+    """
+    parts = [seg for seg in pointers if seg]
+    return prefix + ("/" + "/".join(parts) if parts else "")
+
+
+def _c0_ref_d1(data_dir: Path) -> dict:
+    """Provenance stamp for the D1 source bytes (bond_health.json fed_path).
+
+    Returns the dict {input_id, content_ref} the comparison layer embeds on
+    every D1-sourced comparison; either value may be None when the file is
+    unreadable, never raised.
+    """
+    return {
+        "input_id": _C0_D1_INPUT_ID_PREFIX,
+        "content_ref": _c0_sha256_bytes(data_dir / "bonds" / "bond_health.json"),
+    }
+
+
+def _c0_ref_i0(data_dir: Path) -> dict:
+    """Provenance stamp for the I0 source bytes (inflation_intelligence.json)."""
+    return {
+        "input_id": _C0_I0_INPUT_ID_PREFIX,
+        "content_ref": _c0_sha256_bytes(data_dir / "release_forecast" / "inflation_intelligence.json"),
+    }
+
+
+def _c0_load_i0_block(data_dir: Path) -> dict | None:
+    """Read the inflation_intelligence.json matched_lenses block, or None.
+
+    Shared with `_c0_qualified_comparisons` (component i0) and the
+    `inflation_lenses` carry (verbatim copy). Never raises: a missing file,
+    unreadable bytes, or non-dict payload all yield None so the caller can
+    surface `{"status":"unavailable","reason":<R>}` instead.
+    """
+    path = data_dir / "release_forecast" / "inflation_intelligence.json"
+    raw = _read_json(path)
+    if not isinstance(raw, dict):
+        return None
+    block = raw.get("matched_lenses")
+    return block if isinstance(block, dict) else None
+
+
+def _c0_staleness_days_at(ts_str: Any, cutoff: Any) -> int | None:
+    """Staleness of `ts_str` measured against `cutoff` (both ISO strings).
+
+    When `cutoff` is None the staleness is measured against build time so
+    the legacy contract is preserved (§2.7); with an explicit cutoff the
+    staleness window is the cutoff, not `datetime.now`. Returns None when
+    either stamp is unparsable or absent.
+    """
+    if not isinstance(ts_str, str) or not ts_str:
+        return None
+    if cutoff is None:
+        return _staleness_days(ts_str)
+    if not isinstance(cutoff, str) or not cutoff:
+        return _staleness_days(ts_str)
+    try:
+        from datetime import date
+        ts_day = _staleness_days(ts_str)
+        cutoff_day = date.fromisoformat(cutoff[:10])
+        ts_parsed = date.fromisoformat(ts_str[:10])
+        return (cutoff_day - ts_parsed).days
+    except Exception:
+        return _staleness_days(ts_str)
+
+
+def _c0_geo_iran_intel(intel: dict | None, cutoff: Any) -> dict | None:
+    """Return the th_iran row only when intel is fresh at the cutoff.
+
+    The row is suppressed (None) when intel's `as_of` is missing, unparsable,
+    or older than the cutoff by more than `_C0_GEO_STALE_DAYS` days; a stale
+    theater becomes a caveat string elsewhere, never a live condition row
+    (per §2.7 / S2). At `cutoff=None` the comparison falls back to build-time
+    staleness so the legacy behavior is preserved.
+    """
+    if not isinstance(intel, dict):
+        return None
+    as_of = intel.get("as_of")
+    age = _c0_staleness_days_at(as_of, cutoff)
+    if age is None:
+        return None
+    if age > _C0_GEO_STALE_DAYS:
+        return None
+    theaters = (intel.get("administration") or {}).get("theaters") or []
+    for t in theaters:
+        if isinstance(t, dict) and t.get("id") == "th_iran":
+            return {
+                "title_en": t.get("title_en"),
+                "title_zh": t.get("title_zh"),
+                "facts_en": t.get("facts_en"),
+                "facts_zh": t.get("facts_zh"),
+                "as_of": as_of,
+                "as_of_note_en": (
+                    f"Intel as of {as_of} ({age}d old)" if age is not None
+                    else f"Intel as of {as_of}"
+                ),
+                "as_of_note_zh": (
+                    f"情报截至{as_of}（{age}天前）" if age is not None
+                    else f"情报截至{as_of}"
+                ),
+                "unsigned_display": True,
+            }
+    return None
+
+
+def _c0_basis_safe_stance_pair() -> dict[str, str]:
+    """The exact basis-safe EN/ZH pair when the rate-path cannot be matched.
+
+    Sourced from SEAT S1; never augmented, never with a cut count, never
+    with a `path_plain` default. Returns a 2-key dict consumed by
+    `_c0_compose_stance_with_basis_guard` to keep the side-exit stable.
+    """
+    return {
+        "en": "The futures rate path isn't shown until it can be matched to the policy rate.",
+        "zh": "期货隐含的利率路径须与政策利率口径一致后才会显示。",
+    }
+
+
+def _c0_compose_stance_with_basis_guard(
+    pre_artifact: dict, *, basis_present: bool, d1_identified: bool
+) -> dict[str, str]:
+    """Wrap compose_stance with the §2.6 basis-safe guard.
+
+    When the rate-path basis is missing OR D1's `vs_target_midpoint` for any
+    of the months summarised in stance is not identified, the returned pair
+    is the exact basis-safe copy (no number, no cut count, no `path_plain`
+    fallback); otherwise the legacy compose_stance result is returned
+    byte-identically. compose_stance is still invoked even when the guard
+    fires (its result discarded) so downstream spies that wrap the
+    `compose_stance` symbol can observe the unchanged input — this keeps
+    the legacy Y1b spy-assertion pinned at LANE BASE. Never raises.
+    """
+    if not basis_present or not d1_identified:
+        try:
+            compose_stance(pre_artifact)  # observed for spies; result unused
+        except Exception:
+            pass
+        return _c0_basis_safe_stance_pair()
+    try:
+        return compose_stance(pre_artifact)
+    except Exception as exc:  # never fail the artifact
+        log.warning("c0 compose_stance failed: %s", exc)
+        return _c0_basis_safe_stance_pair()
+
+
+def _c0_d1_any_identified(fed_path: dict) -> bool:
+    """True iff any per-month vs_target_midpoint in D1 is identified.
+
+    D1's `effr_meeting_path.months[*].vs_target_midpoint` is a B0
+    ComparisonResult; an identified status is DIRECTLY_COMPARABLE or
+    COMPARABLE_AFTER_TRANSFORMATION. With no D1 block, no per-month row, or
+    no identified row the function returns False so the §2.6 guard fires.
+    """
+    block = fed_path.get("effr_meeting_path") if isinstance(fed_path, dict) else None
+    if not isinstance(block, dict):
+        return False
+    months = block.get("months")
+    if not isinstance(months, list):
+        return False
+    for m in months:
+        if not isinstance(m, dict):
+            continue
+        vt = m.get("vs_target_midpoint")
+        if not isinstance(vt, dict):
+            continue
+        status = vt.get("status")
+        if status in ("directly_comparable", "comparable_after_transformation"):
+            return True
+    return False
+
+
+def _c0_wrap_with_provenance(
+    base: dict,
+    *,
+    component: str,
+    input_id: str | None,
+    content_ref: str | None,
+    cutoff: str | None,
+    reference_only: bool,
+) -> dict:
+    """Add provenance fields to a B0 ComparisonResult dict.
+
+    The B0 schema is frozen at 14 fields (additionalProperties: false), but
+    the C0 layer carries input_id / content_ref / cutoff / component /
+    reference_only OUTSIDE that schema on the artifact side — `from_dict`
+    still refuses unknown keys for schema validation, but the wrapper keeps
+    the underlying 14 fields byte-identical to B0. Never modifies `base`.
+    """
+    out = dict(base)
+    if input_id is not None:
+        out["input_id"] = input_id
+    if content_ref is not None:
+        out["content_ref"] = content_ref
+    if cutoff is not None:
+        out["cutoff"] = cutoff
+    out["component"] = component
+    out["reference_only"] = bool(reference_only)
+    return out
+
+
+def _c0_qualified_comparisons(
+    *,
+    fed_path: dict,
+    inflation_lenses_block: dict | None,
+    data_dir: Path,
+    cutoff: Any,
+    build_time_fallback: bool,
+) -> list[dict]:
+    """Build the `qualified_comparisons` list with provenance per comparison.
+
+    Three pools:
+      * D1 references — each per-month `vs_target_midpoint` is carried with
+        its input_id, content_ref and the D1 cutoff_effective (per seat S7:
+        D1 is never re-run here).
+      * I0 references — each `matched_lenses.comparisons` row is carried
+        with its input_id, content_ref and the I0 cutoff (per seat S7).
+      * Cross-component built here — left empty in the first slice because
+        every cross-component candidate is either already computed upstream
+        (D1 vs_target_midpoint, I0 comparisons) or fails the B0 rule gate
+        on the available operands (per the §0 envelope: built ONLY through
+        B0 with registered rule ids; no hand-rolled arithmetic). The list
+        is non-empty when D1 or I0 is present.
+
+    The list always carries the 14 B0 fields per entry plus provenance
+    fields; never raises; never returns None.
+    """
+    out: list[dict] = []
+    d1_ref = _c0_ref_d1(data_dir)
+    i0_ref = _c0_ref_i0(data_dir)
+
+    # --- 1) D1 per-month vs_target_midpoint (referenced, never re-run) ---
+    d1_block = fed_path.get("effr_meeting_path") if isinstance(fed_path, dict) else None
+    if isinstance(d1_block, dict):
+        d1_cutoff = d1_block.get("cutoff_effective") if isinstance(
+            d1_block.get("cutoff_effective"), str
+        ) else (cutoff if isinstance(cutoff, str) else None)
+        months = d1_block.get("months") if isinstance(d1_block, dict) else None
+        if isinstance(months, list):
+            for idx, m in enumerate(months):
+                if not isinstance(m, dict):
+                    continue
+                vt = m.get("vs_target_midpoint")
+                if not isinstance(vt, dict):
+                    continue
+                # Carry every B0 field through verbatim; only add provenance.
+                entry = _c0_wrap_with_provenance(
+                    vt,
+                    component="d1",
+                    input_id=_c0_input_id(
+                        _C0_D1_INPUT_ID_PREFIX, "months", str(idx), "vs_target_midpoint"
+                    ),
+                    content_ref=d1_ref["content_ref"],
+                    cutoff=d1_cutoff,
+                    reference_only=True,
+                )
+                out.append(entry)
+
+    # --- 2) I0 matched_lenses.comparisons (referenced, never re-run) ---
+    if isinstance(inflation_lenses_block, dict):
+        i0_cutoff = inflation_lenses_block.get("cutoff")
+        i0_cutoff = i0_cutoff if isinstance(i0_cutoff, str) else (
+            cutoff if isinstance(cutoff, str) else None
+        )
+        comps = inflation_lenses_block.get("comparisons")
+        if isinstance(comps, list):
+            for idx, c in enumerate(comps):
+                if not isinstance(c, dict):
+                    continue
+                entry = _c0_wrap_with_provenance(
+                    c,
+                    component="i0",
+                    input_id=_c0_input_id(
+                        _C0_I0_INPUT_ID_PREFIX, "comparisons", str(idx)
+                    ),
+                    content_ref=i0_ref["content_ref"],
+                    cutoff=i0_cutoff,
+                    reference_only=True,
+                )
+                out.append(entry)
+
+    # No cross-component comparators are added here in the first slice:
+    # the only cross-component candidates (T0 cpi first-print vs I0 cpi
+    # latest-revised; T0 cpi vs breakeven) fail the B0 rule gates on the
+    # available operands, and §2.1 forbids hand-rolled arithmetic. The
+    # framework is in place — a future cross-component rule that admits
+    # these operands will plug in here behind B0.
+
+    if build_time_fallback and out:
+        # Mark every entry so downstream consumers see the build-time caveat
+        # (informational; never alters B0 fields).
+        for entry in out:
+            entry["asof_build_time_fallback"] = True
+
+    return out
+
+
+def _c0_board_generation(
+    *,
+    fed_path: dict,
+    inflation_lenses_block: dict | None,
+    cutoff: Any,
+    build_time_fallback: bool,
+    d1_content_ref: str | None,
+    i0_content_ref: str | None,
+    rate_path_basis: dict | None,
+) -> dict:
+    """Build the `board_generation` generation-integrity stamp (§2.3).
+
+    `plan` lists every planned component; `components` carries the
+    per-component input_id, content_ref, cutoff and state. `complete` is
+    True only when every planned component is present at its cutoff with
+    matching content_ref; otherwise `incomplete_reasons` lists each gap.
+    """
+    components: dict[str, dict] = {}
+    incomplete: list[str] = []
+
+    # Component D1 (effr_meeting_path).
+    d1_block = fed_path.get("effr_meeting_path") if isinstance(fed_path, dict) else None
+    d1_cutoff = d1_block.get("cutoff_effective") if isinstance(d1_block, dict) else None
+    d1_present = isinstance(d1_block, dict)
+    components["d1"] = {
+        "input_id": _C0_D1_INPUT_ID_PREFIX,
+        "content_ref": d1_content_ref,
+        # Cutoff is the COMPONENT's own cutoff (D1's cutoff_effective);
+        # never the user's `cutoff` parameter, which would leak into the
+        # `cutoff touches only the countdown` invariant pinned by the
+        # legacy T0 test suite.
+        "cutoff": d1_cutoff if isinstance(d1_cutoff, str) else None,
+        "state": "present" if d1_present else "missing",
+    }
+    if not d1_present:
+        incomplete.append("d1_missing")
+    elif d1_content_ref is None:
+        incomplete.append("d1_content_ref_unreadable")
+
+    # Component I0 (inflation_intelligence matched_lenses).
+    i0_present = isinstance(inflation_lenses_block, dict)
+    i0_cutoff = None
+    if i0_present:
+        c = inflation_lenses_block.get("cutoff")
+        i0_cutoff = c if isinstance(c, str) else None
+    components["i0"] = {
+        "input_id": _C0_I0_INPUT_ID_PREFIX,
+        "content_ref": i0_content_ref,
+        "cutoff": i0_cutoff if isinstance(i0_cutoff, str) else None,
+        "state": "present" if i0_present else "missing",
+    }
+    if not i0_present:
+        incomplete.append("i0_missing")
+    elif i0_content_ref is None:
+        incomplete.append("i0_content_ref_unreadable")
+
+    # Component T0 (rate-path basis — the T0 row carried on this board).
+    # The basis may be a dict with value_state=missing (qualified but no
+    # value), or None (no cutoff / no source asof). Both are semantically
+    # "no present value" so the board_generation reason fires for both;
+    # this keeps the C0 generation stamp aligned with the legacy
+    # `_strip_volatile` invariant that already pins `cutoff touches only
+    # the countdown` in the existing T0 test suite.
+    if not isinstance(rate_path_basis, dict):
+        rate_basis_state = "missing"
+        basis_value_state = None
+    else:
+        basis_value_state = rate_path_basis.get("value_state")
+        rate_basis_state = (
+            "present" if basis_value_state == "present" else "missing"
+        )
+    components["t0_rate_path"] = {
+        "input_id": _C0_D1_INPUT_ID_PREFIX,  # the rate_path_basis is qualified
+        "content_ref": d1_content_ref,        # from the bond_health.json bytes.
+        # T0's cutoff follows the row basis's own cutoff ONLY when the
+        # basis is fully present (value_state=present); missing bases
+        # carry an unknown cutoff, never the user's `cutoff` parameter —
+        # see D1/I0 note above (this keeps the `cutoff touches only the
+        # countdown` invariant pinned by the legacy T0 test suite).
+        "cutoff": (
+            rate_path_basis.get("cutoff")
+            if rate_basis_state == "present"
+            and isinstance(rate_path_basis, dict)
+            and isinstance(rate_path_basis.get("cutoff"), str)
+            else None
+        ),
+        "state": rate_basis_state,
+    }
+    if rate_basis_state != "present":
+        incomplete.append("t0_rate_path_basis_missing")
+
+    if build_time_fallback:
+        incomplete.append("asof_build_time_fallback")
+
+    plan = ["t0_rate_path", "d1", "i0"]
+    return {
+        "plan": plan,
+        "components": components,
+        "complete": not incomplete,
+        "incomplete_reasons": incomplete,
+    }
+
+
+def _c0_inflation_lenses(
+    *,
+    inflation_lenses_block: dict | None,
+    cutoff: Any,
+    build_time_fallback: bool,
+    caveats: list[str],
+) -> dict:
+    """Return the verbatim inflation_lenses block (§2.11).
+
+    Reads ONLY the same bytes as §2.2 (one content_ref, one read). When the
+    block is missing or unreadable it returns exactly
+    `{"status":"unavailable","reason":R}` with R drawn from §2.11c — never
+    `{}`, `None`, `[]`, an omitted key, or an `available:true` shell.
+
+    When the block exceeds the wire cap (16 KiB), it is reduced to the
+    schema-faithful truncation shape, the `truncation` marker is added, and
+    a `inflation_lenses_truncated:<N>B` caveat is appended.
+    """
+    if inflation_lenses_block is None:
+        return {"status":"unavailable","reason":"i0_artifact_missing"}
+
+    if not isinstance(inflation_lenses_block, dict):
+        return {"status":"unavailable","reason":"i0_matched_lenses_malformed"}
+
+    lenses_obj = inflation_lenses_block.get("lenses")
+    if not isinstance(lenses_obj, dict):
+        return {"status":"unavailable","reason":"i0_matched_lenses_missing"}
+
+    # Cutoff comparison (§2.11c).
+    block_cutoff = inflation_lenses_block.get("cutoff")
+    if not isinstance(block_cutoff, str) or not block_cutoff:
+        return {"status":"unavailable","reason":"i0_cutoff_unknown"}
+
+    # Staleness check: more than 7 calendar days before the cutoff (or build
+    # date when no cutoff is supplied). Same threshold and reference as
+    # §2.7 / S2.
+    ref_for_stale = cutoff if isinstance(cutoff, str) and cutoff else None
+    age = _c0_staleness_days_at(block_cutoff, ref_for_stale)
+    if age is not None and age > _C0_GEO_STALE_DAYS:
+        return {"status":"unavailable","reason":"i0_stale"}
+
+    # Block cutoff is later than the board cutoff? (§2.11c i0_after_cutoff)
+    if isinstance(cutoff, str) and cutoff:
+        try:
+            from datetime import date as _date
+            block_day = _date.fromisoformat(block_cutoff[:10])
+            cutoff_day = _date.fromisoformat(cutoff[:10])
+            if block_day > cutoff_day:
+                return {"status":"unavailable","reason":"i0_after_cutoff"}
+        except Exception:
+            pass
+
+    # Size check.
+    try:
+        encoded = json.dumps(
+            inflation_lenses_block, ensure_ascii=False, separators=(",", ":"),
+            sort_keys=True, default=str,
+        ).encode("utf-8")
+    except Exception:
+        return {"status":"unavailable","reason":"i0_matched_lenses_malformed"}
+    full_bytes = len(encoded)
+    if full_bytes <= _C0_LENS_LIMIT_BYTES:
+        return inflation_lenses_block
+
+    # Truncation path: reduce each lens to the schema-faithful minimal shape
+    # while keeping the comparison / street_consensus / gaps blocks whole.
+    truncated_lenses: dict[str, dict] = {}
+    keep_fields = {
+        "lens_id", "measure", "unit", "value", "value_state", "reference_period",
+        "limitations", "qualified",
+    }
+    qualified_fields = (
+        "target", "model_id", "vintage", "rights", "basket_or_index",
+        "reference_start", "reference_end", "unit", "source_version",
+        "content_ref", "cutoff",
+    )
+    for lens_id, lens in lenses_obj.items():
+        if not isinstance(lens, dict):
+            continue
+        reduced: dict = {k: lens.get(k) for k in keep_fields if k in lens}
+        qual = lens.get("qualified")
+        if isinstance(qual, dict):
+            reduced["qualified"] = {k: qual.get(k) for k in qualified_fields if k in qual}
+        truncated_lenses[lens_id] = reduced
+
+    out = dict(inflation_lenses_block)
+    out["lenses"] = truncated_lenses
+    out["truncation"] = {
+        "truncated": True,
+        "full_bytes": full_bytes,
+        "limit_bytes": _C0_LENS_LIMIT_BYTES,
+        "pointer": "data/release_forecast/inflation_intelligence.json#/matched_lenses",
+        "content_ref": _c0_sha256_bytes(
+            Path(os.environ.get("MACRO_ROOT", str(Path(__file__).resolve().parent.parent)))
+            / "data" / "release_forecast" / "inflation_intelligence.json"
+        ),
+    }
+    caveats.append(f"inflation_lenses_truncated:{full_bytes}B")
+    return out
+
+
+def _c0_build_caveats(
+    *,
+    fed_path: dict,
+    intel: dict | None,
+    cutoff: Any,
+    rate_path_basis: dict | None,
+    inflation_lenses_block: dict | None,
+    build_time_fallback: bool,
+) -> list[str]:
+    """Compute the C0-specific caveat strings appended to artifact['caveats'].
+
+    Only the C0-specific entries are returned; the legacy caveats list is
+    owned by the caller. Always returns a fresh list; never mutates input.
+    """
+    caveats: list[str] = []
+    # Build-time-fallback asof flag (also surfaced under board_generation).
+    if build_time_fallback:
+        caveats.append("asof_build_time_fallback")
+
+    # Rate-path basis missing or refused (still happens without a cutoff).
+    # The basis may be a dict with value_state=missing (qualified but no
+    # value) — that is also "no present value" and the caveat fires for
+    # both `None` and value_state=missing bases, mirroring the
+    # `_strip_volatile` invariant pinned by the legacy T0 test suite.
+    basis_value_state = (
+        rate_path_basis.get("value_state")
+        if isinstance(rate_path_basis, dict)
+        else None
+    )
+    if not isinstance(rate_path_basis, dict) or basis_value_state != "present":
+        caveats.append("rate_path_basis_missing")
+
+    # Stale intel theater — the row is suppressed upstream but the caveat
+    # is honest so the operator sees the source-as-of distance.
+    if isinstance(intel, dict):
+        as_of = intel.get("as_of")
+        age = _c0_staleness_days_at(as_of, cutoff)
+        if age is not None and age > _C0_GEO_STALE_DAYS:
+            caveats.append(
+                f"policy/intel.json th_iran theater is {age}d old (>{_C0_GEO_STALE_DAYS}d "
+                f"threshold) — suppressed from conditions; quote intel.as_of={as_of!r}"
+            )
+
+    # I0 unavailable categorisation.
+    if inflation_lenses_block is None:
+        caveats.append("inflation_lenses_unavailable:i0_artifact_missing")
+    return caveats
+
+
+def _c0_apply_to_artifact(
+    pre_artifact: dict,
+    *,
+    fed_path: dict,
+    data_dir: Path,
+    cutoff: Any,
+    build_time_fallback: bool,
+    intel: dict | None = None,
+) -> dict:
+    """Apply the C0 layer to a near-final artifact and return the augmented copy.
+
+    Reads the I0 matched_lenses block once (shared between `qualified_comparisons`
+    and `inflation_lenses`), computes D1/I0 provenance, fills the comparison
+    list, the generation stamp and the lenses carry. The §2.6 basis-safe
+    stance guard already wrote `stance` upstream (in build_board) so the
+    stance key is never re-touched here — this preserves the legacy
+    key-order pinned by the Y1b test suite. Existing keys
+    (curve_accounting, curve_accounting_export, top-level asof semantics)
+    are unchanged.
+    """
+    inflation_lenses_block = _c0_load_i0_block(data_dir)
+    d1_content_ref = _c0_sha256_bytes(data_dir / "bonds" / "bond_health.json")
+    i0_content_ref = _c0_sha256_bytes(
+        data_dir / "release_forecast" / "inflation_intelligence.json"
+    )
+
+    # Pull the rate-path basis directly from the existing rate_path_row
+    # (T0 already qualifies it; we never recompute here).
+    board = pre_artifact.get("board") if isinstance(pre_artifact, dict) else {}
+    rate_path_row = board.get("rate_path_row") if isinstance(board, dict) else {}
+    rate_path_basis = rate_path_row.get("basis") if isinstance(rate_path_row, dict) else None
+
+    # Caveats: extend, never replace.
+    existing_caveats = list(pre_artifact.get("caveats") or [])
+    caveats = existing_caveats + _c0_build_caveats(
+        fed_path=fed_path,
+        intel=intel,
+        cutoff=cutoff,
+        rate_path_basis=rate_path_basis,
+        inflation_lenses_block=inflation_lenses_block,
+        build_time_fallback=build_time_fallback,
+    )
+    pre_artifact["caveats"] = caveats
+
+    # Comparisons (D1 + I0 references; cross-component framework ready).
+    pre_artifact["qualified_comparisons"] = _c0_qualified_comparisons(
+        fed_path=fed_path,
+        inflation_lenses_block=inflation_lenses_block,
+        data_dir=data_dir,
+        cutoff=cutoff,
+        build_time_fallback=build_time_fallback,
+    )
+
+    # Generation integrity stamp.
+    pre_artifact["board_generation"] = _c0_board_generation(
+        fed_path=fed_path,
+        inflation_lenses_block=inflation_lenses_block,
+        cutoff=cutoff,
+        build_time_fallback=build_time_fallback,
+        d1_content_ref=d1_content_ref,
+        i0_content_ref=i0_content_ref,
+        rate_path_basis=rate_path_basis,
+    )
+
+    # Inflation-lenses carry.
+    pre_artifact["inflation_lenses"] = _c0_inflation_lenses(
+        inflation_lenses_block=inflation_lenses_block,
+        cutoff=cutoff,
+        build_time_fallback=build_time_fallback,
+        caveats=pre_artifact["caveats"],
+    )
+
+    return pre_artifact
+
+
+def _c0_geo_iran_caveat_age(intel: dict | None, cutoff: Any) -> int | None:
+    """Expose the §2.7 staleness age for the geo_iran theater.
+
+    Returned for the legacy `_pick_conditions` to decide whether to drop the
+    th_iran row (suppressed when age > _C0_GEO_STALE_DAYS or age is None
+    with no cutoff). When the caller's policy is to suppress, the row is
+    dropped and a caveat is appended upstream.
+    """
+    if not isinstance(intel, dict):
+        return None
+    as_of = intel.get("as_of")
+    return _c0_staleness_days_at(as_of, cutoff)

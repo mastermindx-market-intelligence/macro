@@ -1091,6 +1091,14 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
           <span class="lbl"><span class="l-en">Headline mult</span><span class="l-zh">整体倍数</span></span>
           <span class="val">{{ eng_recal.headline.recal_multiplier }}×</span>
         </div>
+        {% if eng_recal.headline.get('recal_halfwidth_days') is not none %}
+        <div class="mh-recal-stat">
+          <span class="lbl">
+            <span class="l-en">Half-width (days)</span><span class="l-zh">半宽（天）</span>
+          </span>
+          <span class="val">{{ eng_recal.headline.recal_halfwidth_days | round(1) }}</span>
+        </div>
+        {% endif %}
         <div class="mh-recal-stat">
           <span class="lbl"><span class="l-en">Forward-only mult</span><span class="l-zh">仅前向倍数</span></span>
           <span class="val">{{ eng_recal.forward_only.recal_multiplier }}×</span>
@@ -1742,6 +1750,118 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
       <span class="mh-sh-sub"><span class="l-en">Grading closure · trial budgets · experiment registry · reliability accrual · IMCE prospective capture</span><span class="l-zh">评分闭环 · 试验预算 · 实验注册表 · 可靠性积累 · IMCE 前瞻捕获</span></span>
     </div>
 
+    {%- macro thesis_overlay(row, lead='', absent='') -%}
+    {%- set ovmap = {'INTACT': ['still tracked', '仍在跟踪'],
+                     'BROKEN': ['broken', '已失效'],
+                     'WEAKENING': ['weakening', '走弱']} -%}
+    {%- if row.llm_status and 'llm_heat_at_open' in row and 'llm_heat_now' in row -%}
+    {%- set ov = ovmap.get(row.llm_status, [row.llm_status, row.llm_status]) -%}
+    {%- set rs = row.llm_broken_reasons or [] -%}
+    {%- set enf = (' · fired: ' ~ (rs|join(', ')|e)) if rs else '' -%}
+    {%- set zhf = (' · 触发：' ~ (rs|join('、')|e)) if rs else '' -%}
+    {{ lead }}<span class="l-en">overlay {{ ov[0]|e }} · heat
+      {{ row.llm_heat_at_open|e }} → {{ row.llm_heat_now|e }}{{ enf }}</span>
+    <span class="l-zh">叠加 {{ ov[1]|e }} · 热度
+      {{ row.llm_heat_at_open|e }} → {{ row.llm_heat_now|e }}{{ zhf }}</span>
+    {%- else -%}{{ absent }}{%- endif -%}
+    {%- endmacro -%}
+    {# ── 0. BROKEN THESES (thesis monitor) — display only ─────────────────
+       Self-defaulting like the ETF-windows tile, so the panel is absent-safe in
+       ANY render context.  autoescape=False in the builder: every interpolated
+       producer string below carries |e.  No new CSS — existing eg-* classes. #}
+    {% set thesis_monitor_broken = thesis_monitor_broken | default(none) %}
+    {% if thesis_monitor_broken and thesis_monitor_broken.get('available')
+          and thesis_monitor_broken.rows %}
+    {% set tm = thesis_monitor_broken %}
+    <div class="eg-subpanel" id="eg-thesis-broken">
+      <div class="eg-subhd">
+        <h3><span class="l-en">Broken theses</span><span class="l-zh">已失效论点</span></h3>
+        <span class="eg-subhd-meta">
+          <span class="l-en">{{ tm.n_broken|e }} broken · {{ tm.n_weakening|e }} weakening ·
+            as of {{ tm.asof|e }}</span>
+          <span class="l-zh">{{ tm.n_broken|e }} 个已失效 · {{ tm.n_weakening|e }} 个走弱 ·
+            截至 {{ tm.asof|e }}</span>
+        </span>
+      </div>
+      <div class="eg-table-wrap">
+      <table class="eg-table">
+        <thead>
+          <tr>
+            <th><span class="l-en">Theme</span><span class="l-zh">主题</span></th>
+            <th><span class="l-en">Opened</span><span class="l-zh">开启于</span></th>
+            <th><span class="l-en">Stage at open</span><span class="l-zh">开启时阶段</span></th>
+            <th><span class="l-en">Kill criterion fired</span>
+            <span class="l-zh">触发的失效条件</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in tm.rows %}
+          <tr>
+            <td class="eg-mono">{{ row.theme|e }}</td>
+            <td class="eg-mono">{{ (row.opened or '—')|e }}</td>
+            <td class="eg-mono">{{ (row.stage_at_open or '—')|e }}</td>
+            <td>
+              {% if row.fired %}
+              {% for f in row.fired %}{{ f.kind|e }} — {{ f.detail|e }}
+                {% if not loop.last %}<br>{% endif %}{% endfor %}
+              {% else %}
+              —
+              {% endif %}
+              {{ thesis_overlay(row, lead='<br>') }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>{# end .eg-table-wrap #}
+      <div class="eg-footnote">
+        <span class="l-en">Source: <code>data/foresight/thesis_monitor.json</code>.
+        Deterministic kill criteria. An AI-judged thesis names each condition the
+        monitor recorded: physical_lost (physical confirmation lost), below_quorum
+        (too few surfaces), heat_drop (heat fell past the break line); a row
+        without that record shows llm_inputs, the inputs it was judged on.
+        Display only, not a sizing input.</span>
+        <span class="l-zh">来源：<code>data/foresight/thesis_monitor.json</code>。
+        确定性失效条件。AI 评判的论点列出监测器记录的每项触发条件：physical_lost（实体确认丢失）、
+        below_quorum（信号面不足）、heat_drop（热度跌破失效线）；未带该记录的行显示 llm_inputs，
+        即其评判所依据的输入。仅供展示，不用于仓位决策。</span>
+      </div>
+    </div>
+    {% endif %}
+
+    {# ── 0b. STILL TRACKED theses (INTACT sibling, spec 4) — display only;
+       hidden when intact_rows is empty.  Not a claim the thesis is true. #}
+    {% if thesis_monitor_broken and thesis_monitor_broken.get('available')
+          and thesis_monitor_broken.intact_rows %}
+    <div class="eg-subpanel" id="eg-thesis-intact">
+      <div class="eg-subhd">
+        <h3><span class="l-en">Still tracked</span><span class="l-zh">仍在跟踪</span></h3>
+      </div>
+      <div class="eg-table-wrap">
+      <table class="eg-table">
+        <thead>
+          <tr>
+            <th><span class="l-en">Theme</span><span class="l-zh">主题</span></th>
+            <th><span class="l-en">Opened</span><span class="l-zh">开启于</span></th>
+            <th><span class="l-en">Stage at open</span><span class="l-zh">开启时阶段</span></th>
+            <th><span class="l-en">AI overlay</span><span class="l-zh">AI 叠加</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in thesis_monitor_broken.intact_rows %}
+          <tr>
+            <td class="eg-mono">{{ row.theme|e }}</td>
+            <td class="eg-mono">{{ (row.opened or '—')|e }}</td>
+            <td class="eg-mono">{{ (row.stage_at_open or '—')|e }}</td>
+            <td>{{ thesis_overlay(row, absent='—') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    </div>
+    {% endif %}
+
     {# ── 1. GRADING CLOSURE TABLE ────────────────────────────────────────── #}
     {% if grading_closure and grading_closure.get('available') %}
     <div class="eg-subpanel" id="eg-grading-closure">
@@ -1763,6 +1883,7 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
             <th><span class="l-en">Ledger key</span><span class="l-zh">账本键</span></th>
             <th><span class="l-en">n_logged</span><span class="l-zh">已记录</span></th>
             <th><span class="l-en">n_graded</span><span class="l-zh">已评分</span></th>
+            <th><span class="l-en">Last graded</span><span class="l-zh">最近评分</span></th>
             <th><span class="l-en">Verdict</span><span class="l-zh">裁定</span></th>
             <th><span class="l-en">Starvation (TIME vs BUILD)</span><span class="l-zh">缺失类型（时间 vs 构建）</span></th>
           </tr>
@@ -1773,6 +1894,9 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
             <td class="eg-mono">{{ row.key }}</td>
             <td class="eg-num">{{ row.n_logged }}</td>
             <td class="eg-num">{{ row.n_graded }}</td>
+            <td class="eg-mono">
+              {% if row.last_graded_at %}{{ row.last_graded_at[:10] }}{% else %}—{% endif %}
+            </td>
             <td>
               {% if row.verdict == 'CLOSED' %}
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -2086,12 +2210,32 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
         <div class="mh-metric-note">
           <span class="l-en">{{ h.ahead_str }} ahead of {{ efw.benchmark }} · outright median {{ h.median_ret_str }} · {{ h.n_pending }} window{{ '' if h.n_pending == 1 else 's' }} still open</span>
           <span class="l-zh">{{ h.ahead_str }} 跑赢 {{ efw.benchmark }} · 绝对中位数 {{ h.median_ret_str }} · 仍有 {{ h.n_pending }} 个窗口未收官</span>
+          {% if h.get('n_immature') or h.get('n_unpriceable') %}
+          <span class="l-en">
+            {% if h.get('n_immature') %}· {{ h.n_immature }} still maturing{% endif %}
+            {% if h.get('n_unpriceable') %} · {{ h.n_unpriceable }} cannot be priced{% endif %}
+          </span>
+          <span class="l-zh">
+            {% if h.get('n_immature') %}· {{ h.n_immature }} 仍在成熟{% endif %}
+            {% if h.get('n_unpriceable') %} · {{ h.n_unpriceable }} 无法定价{% endif %}
+          </span>
+          {% endif %}
         </div>
         {% else %}
         <div class="mh-metric-val">—</div>
         <div class="mh-metric-ci">
           <span class="l-en">collecting — {{ h.n_pending }} window{{ '' if h.n_pending == 1 else 's' }} still open</span>
           <span class="l-zh">积累中——仍有 {{ h.n_pending }} 个窗口未收官</span>
+          {% if h.get('n_immature') or h.get('n_unpriceable') %}
+          <span class="l-en">
+            {% if h.get('n_immature') %}· {{ h.n_immature }} still maturing{% endif %}
+            {% if h.get('n_unpriceable') %} · {{ h.n_unpriceable }} cannot be priced{% endif %}
+          </span>
+          <span class="l-zh">
+            {% if h.get('n_immature') %}· {{ h.n_immature }} 仍在成熟{% endif %}
+            {% if h.get('n_unpriceable') %} · {{ h.n_unpriceable }} 无法定价{% endif %}
+          </span>
+          {% endif %}
         </div>
         <div class="mh-metric-note">
           <span class="l-en">A window closes {{ h.horizon }} trading sessions after its board is logged. Nothing to report until one does.</span>
@@ -2168,7 +2312,12 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
     {%- elif u == 'draws' -%}<span class="ric-fig-u"><span class="l-en">draws</span><span class="l-zh">次抽样</span></span>
     {%- elif u == 'tickers' -%}<span class="ric-fig-u"><span class="l-en">tickers</span><span class="l-zh">只标的</span></span>
     {%- elif u == 't_statistic' -%}<span class="ric-fig-u"><span class="l-en">t</span><span class="l-zh">t 值</span></span>
+    {%- elif u == 'q_probability' -%}<span class="ric-fig-u"><span class="l-en">q</span><span class="l-zh">q 值</span></span>
     {%- elif u == 'probability' -%}<span class="ric-fig-u"><span class="l-en">p</span><span class="l-zh">p 值</span></span>
+    {%- elif u == 'log_payroll_change_per_cpi_percentage_point' -%}<span class="ric-fig-u"><span class="l-en">log payroll / CPI pp</span><span class="l-zh">工资单对数 / CPI 百分点</span></span>
+    {%- elif u == 'observations' -%}<span class="ric-fig-u"><span class="l-en">observations</span><span class="l-zh">个观测</span></span>
+    {%- elif u == 'configurations' -%}<span class="ric-fig-u"><span class="l-en">configurations</span><span class="l-zh">组配置</span></span>
+    {%- elif u == 'lags' -%}<span class="ric-fig-u"><span class="l-en">lags</span><span class="l-zh">阶滞后</span></span>
     {%- elif u == 'ratio' -%}<span class="ric-fig-u"><span class="l-en">ratio</span><span class="l-zh">比值</span></span>
     {%- endif -%}
   {%- endmacro -%}
@@ -2176,6 +2325,7 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
   {%- macro ric_method_receipt(f) -%}
     {%- if f == 'synthetic_control' -%}<span class="l-en">Method: synthetic control</span><span class="l-zh">方法：合成对照</span>
     {%- elif f == 'event_study' -%}<span class="l-en">Method: event study</span><span class="l-zh">方法：事件研究</span>
+    {%- elif f == 'local_projections' -%}<span class="l-en">Method: local projections</span><span class="l-zh">方法：局部投影</span>
     {%- else -%}<span class="l-en">Method: {{ f|replace('_', ' ') }}</span><span class="l-zh">方法：{{ f|replace('_', ' ') }}</span>
     {%- endif -%}
   {%- endmacro -%}
@@ -2219,7 +2369,7 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
       {{ '%.2f'|format(v[0] * 100) }}% … {{ '%.2f'|format(v[2] * 100) }}%
       <span class="ric-fig-sub"><span class="l-en">bootstrap median</span><span class="l-zh">自助法中位数</span> {{ '%.2f'|format(v[1] * 100) }}%</span>
     {%- elif u == 'return_fraction' or u == 'fraction' -%}{{ '%.3f'|format(v * 100) }}%
-    {%- elif u == 'probability' and v is number and v is not sameas true and v is not sameas false -%}
+    {%- elif u in ('probability', 'q_probability') and v is number and v is not sameas true and v is not sameas false -%}
       {%- set floor = item.get('display_floor') -%}
       {%- set draws = item.get('draws') -%}
       {%- if floor is number and floor is not sameas true and floor is not sameas false and v < floor -%}
@@ -2245,6 +2395,7 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
         {{ '%.4f'|format(v) }}{{ ric_unit(u) }}
       {%- endif -%}
     {%- elif u in ('months', 'events', 'episodes', 'draws', 'tickers') -%}{{ v }}{{ ric_unit(u) }}
+    {%- elif u == 'log_payroll_change_per_cpi_percentage_point' and v is number -%}{{ '%.6f'|format(v) }}{{ ric_unit(u) }}
     {%- elif v is number -%}{{ '%.4f'|format(v) }}{{ ric_unit(u) }}
     {%- else -%}{{ v|e }}
     {%- endif -%}
@@ -2274,6 +2425,7 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
   } %}
   {% set ric_path_status_gloss = {
     'EXPLORATORY_NON_GATED': ('Exploratory — not gated', '探索性 —— 未设门槛'),
+    'RESEARCH_DIAGNOSTIC': ('Research diagnostic', '研究诊断'),
   } %}
   {% set ric_en_months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] %}
   {% set ric_n = ric_cards|length %}
@@ -2309,7 +2461,7 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
   <section class="mh-section" id="ric-section">
     <div class="mh-sh">
       <h2><span class="l-en">Research Implications</span><span class="l-zh">研究含义</span></h2>
-      <span class="mh-sh-sub"><span class="l-en">What two frozen estimator runs actually produced</span><span class="l-zh">两次冻结的估计运行实际产出了什么</span></span>
+      <span class="mh-sh-sub"><span class="l-en">What the frozen estimator runs actually produced</span><span class="l-zh">冻结的估计运行实际产出了什么</span></span>
     </div>
 
     <p class="mh-stand">
@@ -2335,7 +2487,7 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
         <span class="l-en">All</span><span class="l-zh">全部</span></button>
       {% for fam in ric_cards|map(attribute='method_family')|unique|list %}
       <button type="button" class="ric-fbtn" data-ric-f="fam:{{ fam }}" aria-pressed="false">
-        <span class="l-en">{{ fam|replace('_', ' ')|title }}</span><span class="l-zh">{{ '合成对照' if fam == 'synthetic_control' else ('事件研究' if fam == 'event_study' else fam) }}</span></button>
+        <span class="l-en">{{ fam|replace('_', ' ')|title }}</span><span class="l-zh">{{ '合成对照' if fam == 'synthetic_control' else ('事件研究' if fam == 'event_study' else ('局部投影' if fam == 'local_projections' else fam)) }}</span></button>
       {% endfor %}
       {% set ns = namespace(other_emitted=false) %}
       {% for q in ric_cards|map(attribute='quality')|unique|list %}
@@ -2430,7 +2582,7 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
             </div>
             {% endif %}
             <div class="ric-fig" data-ric-code="cutoff">
-              <span class="ric-fig-l"><span class="l-en">Data through</span><span class="l-zh">数据截至</span></span>
+              <span class="ric-fig-l">{% if card.method_family == 'local_projections' %}<span class="l-en">Information cutoff</span><span class="l-zh">信息截止时间</span>{% else %}<span class="l-en">Data through</span><span class="l-zh">数据截至</span>{% endif %}</span>
               <span class="ric-fig-v">
                 {%- set cutoff_iso = card.cutoff if card.cutoff is string else '' -%}
                 {%- if cutoff_iso|length >= 10 and cutoff_iso[4] == '-' and cutoff_iso[7] == '-' -%}
@@ -2477,6 +2629,7 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
              invented effect curve, so the whole block is gated on the contract. #}
           {% if card.ordered_effect_path and card.ordered_effect_path.owner_supplied and card.ordered_effect_path.points %}
           {%- set pts = card.ordered_effect_path.points -%}
+          {%- set lp_path = card.ordered_effect_path.y_unit == 'log_payroll_change_per_cpi_percentage_point' -%}
           {%- set xs = pts|map(attribute='horizon')|list -%}
           {%- set ys = pts|map(attribute='value')|list -%}
           {%- set xmin = xs|min -%}{%- set xmax = xs|max -%}
@@ -2492,7 +2645,7 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
             {%- set es = card.ordered_effect_path.evidence_status -%}
             <div class="ric-path-t">
               <span class="l-en"><strong>{{ ric_path_status_gloss[es][0] if es in ric_path_status_gloss else es }}</strong> · Recorded path, {{ card.ordered_effect_path.y_unit|replace('_', ' ') }} by {{ card.ordered_effect_path.x_unit|replace('_', ' ') }}. {{ card.ordered_effect_path.sample_basis.en|e }} {{ card.ordered_effect_path.comparison_note.en|e }} Descriptive — the owner did not identify a cause.</span>
-              <span class="l-zh"><strong>{{ ric_path_status_gloss[es][1] if es in ric_path_status_gloss else es }}</strong> · 记录路径：纵轴为{{ '累计异常收益' if card.ordered_effect_path.y_unit == 'cumulative_abnormal_return' else card.ordered_effect_path.y_unit }}，横轴为公告后交易日。{{ card.ordered_effect_path.sample_basis.zh|e }} {{ card.ordered_effect_path.comparison_note.zh|e }} 属描述性结果，所有者未识别成因。</span>
+              <span class="l-zh"><strong>{{ ric_path_status_gloss[es][1] if es in ric_path_status_gloss else es }}</strong> · 记录路径：纵轴为{{ '工资单对数变化 / CPI 百分点' if lp_path else ('累计异常收益' if card.ordered_effect_path.y_unit == 'cumulative_abnormal_return' else card.ordered_effect_path.y_unit) }}，横轴为{{ '月度观测期限' if lp_path else '公告后交易日' }}。{{ card.ordered_effect_path.sample_basis.zh|e }} {{ card.ordered_effect_path.comparison_note.zh|e }} 属描述性结果，所有者未识别成因。</span>
             </div>
             <svg viewBox="0 0 {{ W }} {{ H }}" role="img" aria-labelledby="{{ card_anchor }}-path-title" preserveAspectRatio="xMidYMid meet">
               <title id="{{ card_anchor }}-path-title">{{ card.ordered_effect_path.accessible_name.en|e }} / {{ card.ordered_effect_path.accessible_name.zh|e }}</title>
@@ -2506,14 +2659,17 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
               {% for p in pts %}
               <circle class="ric-path-dot{% if p.horizon == card.ordered_effect_path.selected_horizon %} ric-path-dot-selected{% endif %}" cx="{{ '%.1f'|format(PL + ((p.horizon - xmin) / xr) * (W - PL - PR)) }}" cy="{{ '%.1f'|format(PT + ((yhi - p.value) / yr) * (H - PT - PB)) }}" r="{{ 4 if p.horizon == card.ordered_effect_path.selected_horizon else 2 }}"/>
               {% endfor %}
-              <text class="ric-path-ax" x="0" y="{{ PT + 4 }}">{{ '%.1f'|format(yhi * 100) }}%</text>
-              <text class="ric-path-ax" x="0" y="{{ H - PB }}">{{ '%.1f'|format(ylo * 100) }}%</text>
+              <text class="ric-path-ax" x="0" y="{{ PT + 4 }}">{% if lp_path %}{{ '%.2g'|format(yhi) }}{% else %}{{ '%.1f'|format(yhi * 100) }}%{% endif %}</text>
+              <text class="ric-path-ax" x="0" y="{{ H - PB }}">{% if lp_path %}{{ '%.2g'|format(ylo) }}{% else %}{{ '%.1f'|format(ylo * 100) }}%{% endif %}</text>
               <text class="ric-path-ax" x="{{ PL }}" y="{{ H - 6 }}">{{ xmin }}</text>
               <text class="ric-path-ax" x="{{ '%.1f'|format(xanchor) }}" y="{{ H - 6 }}" text-anchor="middle">0</text>
               <text class="ric-path-ax" x="{{ W - PR }}" y="{{ H - 6 }}" text-anchor="end">{{ xmax }}</text>
             </svg>
             <div class="ric-path-callout">
-              {% if headline_point %}
+              {% if lp_path %}
+              <span class="l-en">Fixed primary coefficient at horizon {{ selected_point.horizon }} monthly observations: {{ '%.6f'|format(selected_point.value) }} log payroll change per CPI percentage point · n={{ selected_point.n }} regression rows. No independent episode count is identified.</span>
+              <span class="l-zh">固定主配置在第{{ selected_point.horizon }}个月度观测期限的系数：每 CPI 百分点对应 {{ '%.6f'|format(selected_point.value) }} 工资单对数变化 · n={{ selected_point.n }} 个回归行。尚未识别独立事件期计数。</span>
+              {% elif headline_point %}
               <span class="l-en">Curve at selected +{{ selected_point.horizon }}-day horizon: {{ '%.2f'|format(selected_point.value * 100) }}% · n={{ selected_point.n }} events. This is not the {{ '%.3f'|format(headline_point.value * 100) }}% episode-clustered headline.</span>
               <span class="l-zh">曲线在所选 +{{ selected_point.horizon }} 日期限：{{ '%.2f'|format(selected_point.value * 100) }}% · n={{ selected_point.n }} 个事件；该数值并非按事件期聚类的 {{ '%.3f'|format(headline_point.value * 100) }}% 标题数值。</span>
               {% else %}

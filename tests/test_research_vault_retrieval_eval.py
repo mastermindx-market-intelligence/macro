@@ -367,3 +367,152 @@ def test_t7_thresholds_are_none():
     benchmark = load_benchmark(FIXTURE)
     assert score(benchmark, {})["thresholds"] is None
     assert score(benchmark, _perfect(benchmark))["thresholds"] is None
+
+
+# Full-document evaluation shares this module and its established CI owner.
+from copy import deepcopy
+import hashlib
+import pytest
+from engine.research_vault import retrieval_eval as e
+
+
+def _full_sha(t): return hashlib.sha256(t.encode()).hexdigest()
+
+
+def _full_source(text='中文 tail evidence.', report='r', family='f', lineage='l'):
+    return dict(report_id=report, source_pdf_sha256='a'*64, extracted_text_sha256=_full_sha(text), family_id=family, lineage_id=lineage)
+
+
+def _full_benchmark(text='中文 tail evidence.'):
+    s=_full_source(text)
+    span={**s,'start_byte':0,'end_byte':len(text.encode()),'passage_text_sha256':_full_sha(text)}
+    return dict(schema=e.FULL_DOCUMENT_BENCHMARK_SCHEMA,protocol_sha256='b'*64,candidate_frozen_sha256='c'*64,
+                cases=[dict(id='c',query='tail evidence',stratum='tail_only',split='development',fill_state='READY',abstain_expected=False,
+                            searched_scope=[s],expected_doc_ids=['r'],gold_spans=[span])])
+
+
+def _full_run(text='中文 tail evidence.'):
+    s=_full_source(text)
+    return dict(status='OK',ranked_report_ids=['r'],abstained=False,
+                evidence=dict(evidence_state='FOUND',passages=[{**s,'text':text,'start_byte':0,'end_byte':len(text.encode()),'passage_text_sha256':_full_sha(text)}]))
+
+
+def _full_score(b, r, text='中文 tail evidence.'):
+    s=_full_source(text)
+    return e.score_full_document(b,r,source_texts={tuple(s[k] for k in e._FULL_TUPLE):text})
+
+
+def test_missing_timeout_empty_and_unavailable_stay_in_denominator():
+    b=_full_benchmark(); b['cases']=[{**deepcopy(b['cases'][0]),'id':str(i)} for i in range(5)]
+    r={'0':_full_run(),'1':dict(status='TIMEOUT'), '2':dict(status='EMPTY_CORPUS'), '3':dict(status='UNAVAILABLE')}
+    got=_full_score(b,r)
+    assert got['ready_denominator']==5
+    assert got['literal_support_rate']==.2
+    assert got['recall_at_k']==.2
+    assert len(got['failure_catalogue'])==4
+
+
+def test_wrong_revision_same_quote_cannot_mask_identity():
+    r=_full_run();r['evidence']['passages'][0]['source_pdf_sha256']='f'*64
+    got=_full_score(_full_benchmark(),{'c':r})
+    assert got['recall_at_k']==1
+    assert got['exact_evidence_identity_rate']==0
+    assert got['literal_support_rate']==0
+
+
+def test_utf8_character_offsets_and_forged_text_fail_literal_support():
+    r=_full_run();r['evidence']['passages'][0]['end_byte']=len('中文 tail evidence.')
+    got=_full_score(_full_benchmark(),{'c':r})
+    assert got['exact_evidence_identity_rate']==1
+    assert got['literal_support_rate']==0
+    r=_full_run();r['evidence']['passages'][0]['text']='fabricated'
+    assert _full_score(_full_benchmark(),{'c':r})['literal_support_rate']==0
+
+
+def test_context_passage_can_cover_smaller_gold_span():
+    text='Context. 中文 tail evidence. More context.'
+    b=_full_benchmark(text);g=b['cases'][0]['gold_spans'][0]
+    g['start_byte']=len('Context. '.encode());g['end_byte']=len('Context. 中文 tail evidence.'.encode());g['passage_text_sha256']=_full_sha('中文 tail evidence.')
+    assert _full_score(b,{'c':_full_run(text)},text)['literal_support_rate']==1
+
+
+def test_precision_is_separate_from_recall_and_support():
+    r=_full_run();r['ranked_report_ids']=['r','wrong'];bad=deepcopy(r['evidence']['passages'][0]);bad['source_pdf_sha256']='f'*64
+    r['evidence']['passages'].append(bad)
+    got=_full_score(_full_benchmark(),{'c':r})
+    assert got['recall_at_k']==1
+    assert got['precision_at_k']==.5
+    assert got['evidence_precision']==.5
+
+
+def test_family_or_lineage_cannot_cross_holdout():
+    for same_axis in ('family_id','lineage_id'):
+        b=_full_benchmark();case=deepcopy(b['cases'][0]);case['id']='h';case['split']='holdout'
+        changed='lineage_id' if same_axis=='family_id' else 'family_id'
+        case['searched_scope'][0][changed]='different';case['gold_spans'][0][changed]='different'
+        b['cases'].append(case)
+        with pytest.raises(ValueError,match='crosses split'):e.validate_full_document_benchmark(b)
+
+
+def test_wrong_gold_span_and_unavailable_gold_body_refuse_labels():
+    b=_full_benchmark();b['cases'][0]['gold_spans'][0]['passage_text_sha256']='d'*64
+    with pytest.raises(ValueError,match='gold literal'):_full_score(b,{'c':_full_run()})
+    with pytest.raises(ValueError,match='unavailable'):e.score_full_document(_full_benchmark(),{},source_texts={})
+
+
+def test_absent_and_no_text_require_clean_real_abstention():
+    b=_full_benchmark();c=b['cases'][0];c.update(stratum='truly_absent',abstain_expected=True,expected_doc_ids=[],gold_spans=[],expected_evidence_state='NOT_FOUND')
+    r=dict(status='OK',abstained=True,ranked_report_ids=[],evidence=dict(evidence_state='NOT_FOUND',passages=[]))
+    assert _full_score(b,{'c':r})['abstention_accuracy']==1
+    r['status']='TIMEOUT';assert _full_score(b,{'c':r})['abstention_accuracy']==0
+    c.update(stratum='no_text',expected_evidence_state='UNAVAILABLE');r['status']='OK'
+    assert _full_score(b,{'c':r})['abstention_accuracy']==0  # false NOT_FOUND
+    r['evidence']['evidence_state']='UNAVAILABLE'
+    assert _full_score(b,{'c':r})['abstention_accuracy']==1
+    r['status']='TIMEOUT';assert _full_score(b,{'c':r})['abstention_accuracy']==0
+
+
+def test_all_required_strata_are_representable_and_pending_explicit():
+    b=_full_benchmark();b['cases']=[{**deepcopy(b['cases'][0]),'id':s,'stratum':s} for s in e._FULL_STRATA]
+    b['cases'][0]['fill_state']='PENDING_HOST_FILL'
+    got=_full_score(b,{})
+    assert got['ready_denominator']==5 and got['excluded_pending']==1
+    assert set(got['per_stratum'])==e._FULL_STRATA
+
+
+def test_synthetic_fixture_has_literal_gold_for_real_six_strata_cases():
+    import json
+    from pathlib import Path
+    fixture=Path(__file__).parent/'fixtures/research_vault/full_document_benchmark_synthetic_v1.json'
+    b=json.loads(fixture.read_text())
+    source_texts={tuple(s[k] for k in e._FULL_TUPLE):s['text'] for s in b['synthetic_sources']}
+    got=e.score_full_document(b,{},source_texts=source_texts)
+    assert got['ready_denominator']==6 and got['case_accuracy']==0
+    tail=next(c for c in b['cases'] if c['stratum']=='tail_only')
+    assert tail['gold_spans'][0]['start_byte']>60000
+    assert len(next(c for c in b['cases'] if c['stratum']=='institution_disagreement')['gold_spans'])==2
+
+
+def test_multi_source_question_requires_all_documents_and_all_gold_spans():
+    b=_full_benchmark();s=_full_source(report='other',family='other',lineage='other')
+    g={**s,'start_byte':0,'end_byte':len('中文 tail evidence.'.encode()),'passage_text_sha256':_full_sha('中文 tail evidence.')}
+    b['cases'][0]['searched_scope'].append(s);b['cases'][0]['expected_doc_ids'].append('other');b['cases'][0]['gold_spans'].append(g)
+    r=_full_run();r['ranked_report_ids']=['r','other']
+    bodies={tuple(x[k] for k in e._FULL_TUPLE):'中文 tail evidence.' for x in b['cases'][0]['searched_scope']}
+    got=e.score_full_document(b,{'c':r},source_texts=bodies)
+    assert got['recall_at_k']==1 and got['literal_support_rate']==0 and got['case_accuracy']==0
+    assert got['cases'][0]['gold_span_recall']==.5
+    r['evidence']['passages'].append({**g,'text':'中文 tail evidence.'})
+    assert e.score_full_document(b,{'c':r},source_texts=bodies)['case_accuracy']==1
+    r['ranked_report_ids']=['r']
+    assert e.score_full_document(b,{'c':r},source_texts=bodies)['case_accuracy']==0
+
+
+def test_partial_utf8_gold_and_missing_query_are_rejected():
+    b=_full_benchmark();g=b['cases'][0]['gold_spans'][0];raw='中文 tail evidence.'.encode()
+    g.update(start_byte=1,end_byte=3,passage_text_sha256=hashlib.sha256(raw[1:3]).hexdigest())
+    with pytest.raises(ValueError,match='UTF8 scalar'):_full_score(b,{'c':_full_run()})
+    b=_full_benchmark();del b['cases'][0]['query']
+    with pytest.raises(ValueError,match='query'):_full_score(b,{'c':_full_run()})
+    b=_full_benchmark();b['cases'][0].update(stratum='no_text',abstain_expected=True,expected_doc_ids=[],gold_spans=[])
+    with pytest.raises(ValueError,match='expected negative'):_full_score(b,{})

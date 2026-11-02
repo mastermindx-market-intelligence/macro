@@ -11,6 +11,7 @@ from functools import lru_cache
 from hashlib import sha256
 import json
 from pathlib import Path
+import re
 from typing import Any, Mapping
 
 from jsonschema import Draft202012Validator
@@ -46,6 +47,8 @@ QUALITY_COVERAGE_KEYS = (
 )
 QUALITY_TO_COVERAGE = dict(QUALITY_COVERAGE_KEYS)
 ABSENCE_STATES = frozenset(key for key, _ in QUALITY_COVERAGE_KEYS if key != "valued")
+_CONCEPT_REASON_PARAMETER = re.compile(r"^[a-z][a-z0-9-]*:[A-Za-z_][A-Za-z0-9_.-]*$")
+_PREFIX_REASON_PARAMETER = re.compile(r"^[a-z][a-z0-9-]*$")
 
 _CONTRACTS = Path(__file__).resolve().parents[2] / "contracts"
 _ENVELOPE_PATH = _CONTRACTS / "specialist_pack_result.v1.schema.json"
@@ -182,6 +185,11 @@ def _evidence_errors(
     for index, row in enumerate(fields):
         if row.get("quality_state") == "valued":
             kind = row.get("evidence_kind")
+            if row.get("type") in NUMERIC_TYPES and kind == "text_span":
+                errors.append(
+                    f"fields.{index}.evidence_kind: valued numeric row requires evidence"
+                    " from xbrl_fact, table_cell or formula, never text_span"
+                )
             if kind == "xbrl_fact":
                 ids = row.get("source_occurrence_ids")
                 if not isinstance(ids, list) or not ids:
@@ -223,10 +231,19 @@ def _evidence_errors(
                     errors.append(
                         f"fields.{index}.table_cell: valued table_cell requires a table_cell object"
                     )
-                elif cell.get("table_id") is None:
-                    errors.append(
-                        f"fields.{index}.table_cell: valued table_cell requires a non-null table_id"
-                    )
+                else:
+                    if cell.get("table_id") is None:
+                        errors.append(
+                            f"fields.{index}.table_cell: valued table_cell requires a non-null table_id"
+                        )
+                    if cell.get("row") is None:
+                        errors.append(
+                            f"fields.{index}.table_cell: valued table_cell requires a non-null row"
+                        )
+                    if cell.get("column") is None:
+                        errors.append(
+                            f"fields.{index}.table_cell: valued table_cell requires a non-null column"
+                        )
             elif kind == "formula":
                 if row.get("formula_rule_id") is None:
                     errors.append(
@@ -346,6 +363,103 @@ def _catalogue_membership_errors(
     return errors
 
 
+def _reason_code_error(
+    path: str, reason: Any, members: Mapping[str, Any]
+) -> str | None:
+    """Return one ``path: message`` error for a reason that is not a member."""
+    if not isinstance(reason, str):
+        return f"{path}: reason must be a non-null catalogue reason code string"
+    if any(not (0x20 <= ord(character) <= 0x7E) for character in reason):
+        return f"{path}: {reason!r} contains a control or non-ASCII character"
+    code, sep, param = reason.partition(":")
+    if code not in members:
+        return f"{path}: {reason!r} is not a catalogue reason code"
+    parameter = members[code]
+    if parameter is None:
+        if sep:
+            return f"{path}: {reason!r} carries a parameter but {code!r} takes none"
+    elif parameter == "concept":
+        if not _CONCEPT_REASON_PARAMETER.fullmatch(param):
+            return (
+                f"{path}: {reason!r} does not match the concept parameter grammar"
+                " <taxonomy>:<Concept>"
+            )
+    elif parameter == "prefix":
+        if not _PREFIX_REASON_PARAMETER.fullmatch(param):
+            return (
+                f"{path}: {reason!r} does not match the prefix parameter grammar"
+                " <prefix>"
+            )
+    return None
+
+
+def _reason_code_errors(
+    obj: Mapping[str, Any],
+    pack_schema: Mapping[str, Any],
+    fields: list[Mapping[str, Any]],
+    checks: list[Mapping[str, Any]],
+) -> list[str]:
+    errors: list[str] = []
+    members = {
+        item.get("code"): item.get("parameter")
+        for item in _mapping_rows(pack_schema.get("reason_codes"))
+        if isinstance(item.get("code"), str)
+    }
+    applicability = obj.get("applicability")
+    if isinstance(applicability, Mapping):
+        reason = applicability.get("reason")
+        error = _reason_code_error("applicability.reason", reason, members)
+        if error is not None:
+            errors.append(error)
+        elif (
+            applicability.get("state") == "applicable"
+            and isinstance(reason, str)
+            and reason.partition(":")[0] != "applicability_rule_satisfied"
+        ):
+            errors.append(
+                "applicability.reason: an applicable result must cite"
+                " applicability_rule_satisfied"
+            )
+        elif (
+            applicability.get("state") != "applicable"
+            and isinstance(reason, str)
+            and reason.partition(":")[0] == "applicability_rule_satisfied"
+        ):
+            errors.append(
+                "applicability.reason: applicability_rule_satisfied is only"
+                " valid for an applicable result"
+            )
+    for index, row in enumerate(fields):
+        reason = row.get("reason")
+        if row.get("quality_state") == "valued":
+            if reason is None:
+                continue
+            error = _reason_code_error(f"fields.{index}.reason", reason, members)
+            if error is not None:
+                errors.append(error)
+        elif reason is None:
+            errors.append(
+                f"fields.{index}.reason: non-valued row requires a non-null catalogue reason code"
+            )
+        else:
+            error = _reason_code_error(f"fields.{index}.reason", reason, members)
+            if error is not None:
+                errors.append(error)
+    for index, check in enumerate(checks):
+        reason = check.get("reason")
+        if reason is None:
+            if check.get("status") in ("not_evaluable", "not_applicable"):
+                errors.append(
+                    f"checks.{index}.reason: {check.get('status')!r} check requires"
+                    " a non-null catalogue reason code"
+                )
+            continue
+        error = _reason_code_error(f"checks.{index}.reason", reason, members)
+        if error is not None:
+            errors.append(error)
+    return errors
+
+
 def catalogue_errors(pack_id: str) -> list[str]:
     """Return meta-schema errors plus duplicate catalogue field/check ids."""
     schema = load_catalogue_schema()
@@ -373,6 +487,35 @@ def catalogue_errors(pack_id: str) -> list[str]:
             errors.append(f"checks.{index}.check_id: duplicate check_id {check_id!r}")
         else:
             seen_checks.add(check_id)
+    seen_reason_codes: set[str] = set()
+    for index, row in enumerate(_mapping_rows(pack.get("reason_codes"))):
+        code = row.get("code")
+        if not isinstance(code, str):
+            continue
+        if re.fullmatch(r"[a-z][a-z0-9_]*", code) is None:
+            # The meta-schema pattern uses re.search, so a trailing newline or
+            # any other boundary slip passes it; refuse anything fullmatch
+            # would not accept.
+            errors.append(
+                f"reason_codes.{index}.code: {code!r} does not fully match ^[a-z][a-z0-9_]*$"
+            )
+        if code in seen_reason_codes:
+            errors.append(
+                f"reason_codes.{index}.code: duplicate reason code {code!r}"
+            )
+        else:
+            seen_reason_codes.add(code)
+    for index, row in enumerate(_mapping_rows(pack.get("fields"))):
+        allowed = row.get("allowed_evidence_kinds")
+        if (
+            row.get("type") in NUMERIC_TYPES
+            and isinstance(allowed, list)
+            and "text_span" in allowed
+        ):
+            errors.append(
+                f"fields.{index}.allowed_evidence_kinds: numeric field"
+                f" {row.get('field_id')!r} may not admit text_span evidence"
+            )
     return errors
 
 
@@ -420,6 +563,14 @@ def validate_pack_result(obj: Any) -> list[str]:
     errors.extend(_row_semantic_errors(fields))
     errors.extend(_evidence_errors(fields, checks))
     errors.extend(_coverage_errors(obj, fields))
-    if pack_schema is not None and pack_schema.get("catalogue_state") == "specified":
-        errors.extend(_catalogue_membership_errors(obj, pack_schema, fields, checks))
+    if pack_schema is not None:
+        catalogue_state = pack_schema.get("catalogue_state")
+        if catalogue_state == "specified":
+            errors.extend(_catalogue_membership_errors(obj, pack_schema, fields, checks))
+            errors.extend(_reason_code_errors(obj, pack_schema, fields, checks))
+        elif catalogue_state != "unspecified":
+            errors.append(
+                f"catalogue_state: {catalogue_state!r} is not a known catalogue"
+                " state; result refused"
+            )
     return errors

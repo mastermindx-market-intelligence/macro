@@ -1,0 +1,42 @@
+{# ── FINANCE W10-FIN-1 · live not-connected watching list ──────────────────
+   Two NOT_YET_EVALUABLE falsifiers shipped into `ul.fi-falsifiers` while
+   the foundation route is unwired. The falsifiers come from
+   engine.sector_intelligence.finance_watching.shell_watching_items(),
+   which runs apply_page_signal on in-module synthetic constants; this
+   include only renders what the page gate already produced. No WATCHING,
+   no fetch, no research/finance read.
+
+   Layout (from finance_intelligence.css):
+     .fi-falsifier       — three-column grid (auto 1fr auto)
+     .fi-falsifier-chip  — state chip (left)
+     .fi-falsifier-statement — EN clause (middle)
+     .fi-falsifier-window — ISO date (right)
+   The ZH clause mirrors the page-level bilingual deck. When the caller
+   does not supply watching_items the loop renders nothing — a render
+   without the bridge context stays an empty ul, as before this wave.
+
+   The builder passes shell_statement_zh and shell_window_zh into the
+   render context (dicts keyed by the synthetic case_id). Both default
+   to empty dicts so a render without the bridge context stays empty.
+
+   The chip's visible text is the governed EN/ZH pair of the D.18
+   falsifier_state map in finance_intelligence.js — NOT the raw enum.
+   The machine token stays in data-state-falsifier for the render
+   tests; the pin test parses the pair from the JS so they cannot
+   drift.   #}
+{% for item in watching_items | default([]) %}
+<li class="fi-falsifier fi-panel2"
+    data-state-falsifier="{{ item.state }}"
+    data-falsifier-id="{{ item.falsifier_id }}">
+  <span class="fi-falsifier-chip"
+        data-state-falsifier="{{ item.state }}"><span class="l-en">Not yet evaluable</span><span class="l-zh">暂无法评估</span></span>
+  <span class="fi-falsifier-statement">
+    <span class="l-en">{{ item.statement }}</span>
+    <span class="l-zh">{{ (shell_statement_zh | default({})).get(item.falsifier_id, '') }}</span>
+  </span>
+  <span class="fi-falsifier-window">
+    <span class="l-en">{{ item.window }}</span>
+    <span class="l-zh">{{ (shell_window_zh | default({})).get(item.falsifier_id, '') }}</span>
+  </span>
+</li>
+{% endfor %}

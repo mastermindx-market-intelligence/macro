@@ -251,16 +251,26 @@ def market_factor_overlap(
 
     Returns ``None`` when either side is a zero vector (no direction signal).
     Missing keys contribute 0.0 to both sides so the union defines the inner
-    product space.
+    product space. A loading that is ``None`` on either side is treated as
+    missing data: its key is skipped entirely; if no comparable key remains
+    the result is ``None`` (never 0.0).
     """
     if a is None or b is None:  # type: ignore[unreachable]
         return None
     keys = set(a) | set(b)
-    norm_a = math.sqrt(sum(float(v) ** 2 for v in a.values()))
-    norm_b = math.sqrt(sum(float(v) ** 2 for v in b.values()))
+    comparable = {
+        k
+        for k in keys
+        if (k not in a or a[k] is not None)
+        and (k not in b or b[k] is not None)
+    }
+    if not comparable:
+        return None
+    norm_a = math.sqrt(sum(float(a[k]) ** 2 for k in comparable if k in a))
+    norm_b = math.sqrt(sum(float(b[k]) ** 2 for k in comparable if k in b))
     if norm_a == 0.0 or norm_b == 0.0:
         return None
-    dot = sum(float(a.get(k, 0.0)) * float(b.get(k, 0.0)) for k in keys)
+    dot = sum(float(a.get(k, 0.0)) * float(b.get(k, 0.0)) for k in comparable)
     return dot / (norm_a * norm_b)
 
 

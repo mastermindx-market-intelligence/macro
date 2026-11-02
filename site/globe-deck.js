@@ -912,9 +912,16 @@
   // ---- frame loop ----------------------------------------------------------
   var raf = null;
   var _lastFrameT = 0;
+  // The mobile nav covers this scene. No canvas or decorative CSS animation
+  // should compete with the user's menu interactions.
+  var _navForPark = document.querySelector('.site-nav');
+  function _navMenuOpen() {
+    return !!(_navForPark && _navForPark.classList.contains('nav-open'));
+  }
   function frame(t) {
     raf = null;
     if (!inView) { _lastFrameT = 0; return; }   // visibility gating: self-stop when off-screen
+    if (_navMenuOpen()) { _park(); return; }  // mobile overlay owns the foreground
     // scroll pause: frozen globe during scroll (imperceptible, kills scroll jank).
     // _lastFrameT resets so the pause gap never lands in the governor's dt window.
     if (t - lastScrollT < 120) { _lastFrameT = 0; raf = requestAnimationFrame(frame); return; }
@@ -1004,6 +1011,7 @@
   }
   // _wake: any real user input — restart the loop and CSS animations, reset the timer.
   function _wake() {
+    if (_navMenuOpen()) return;
     lastInteract = performance.now();
     if (!_parked) return;
     _parked = false;
@@ -1013,6 +1021,18 @@
   ["pointerdown", "keydown", "touchstart"].forEach(function (ev) {
     window.addEventListener(ev, _wake, { passive: true });
   });
+  // Observe only open/closed transitions, not unrelated nav class changes.
+  // This resumes an already loaded globe without rebuilding its canvas.
+  var _navWasOpen = _navMenuOpen();
+  if (_navForPark && typeof MutationObserver === 'function') {
+    new MutationObserver(function () {
+      var open = _navMenuOpen();
+      if (open === _navWasOpen) return;
+      _navWasOpen = open;
+      if (open) _park(); else _wake();
+    }).observe(_navForPark, { attributes: true, attributeFilter: ['class'] });
+    if (_navWasOpen) _park();
+  }
 
   // ---- interaction ---------------------------------------------------------
   var px = 0, py = 0, moved = 0, lastMoveT = 0;

@@ -14,6 +14,8 @@ from pathlib import Path
 import pytest
 import yaml
 
+from engine.fundamental_forensics.detectors import issuer_class_for_sic
+from engine.fundamental_forensics.issuer_sic import resolve_issuer_sic
 from engine.fundamental_forensics.ixbrl_raw_ledger import GOLDEN_AAPL_QUERY_ACCESSIONS
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -122,10 +124,24 @@ def test_five_tickers_in_order_with_exact_ciks(contract: dict) -> None:
         assert issuer["identity_binding_state"] == (
             "golden_committed" if issuer["ticker"] == "AAPL" else "generic_path_only"
         )
-        if issuer["ticker"] == "BAC":
-            assert issuer["issuer_class"] == "bank"
-        else:
-            assert issuer["issuer_class"] == "industrial"
+        # G0-a: D0 issuer_class is a checked projection of the kernel SIC map.
+        # The recorded class must equal issuer_class_for_sic(sic) for every
+        # issuer — SNOW (7372) and GOOGL (7370) are software, BAC (6021) is
+        # bank, AAPL (3571) and CAT (3531) are industrial — and the classes
+        # stay distinct: software is never collapsed into industrial.
+        assert issuer["issuer_class"] == issuer_class_for_sic(issuer["sic"]), (
+            issuer["ticker"],
+            issuer["sic"],
+            issuer["issuer_class"],
+        )
+    classes = {issuer["ticker"]: issuer["issuer_class"] for issuer in contract["issuers"]}
+    assert classes == {
+        "AAPL": "industrial",
+        "SNOW": "software",
+        "CAT": "industrial",
+        "BAC": "bank",
+        "GOOGL": "software",
+    }
 
 
 def test_accessions_match_pattern_and_are_unique(contract: dict) -> None:
@@ -346,3 +362,65 @@ def test_security_master_binding_matches_reference_parquet(contract: dict) -> No
             "effective_at": row["effective_at"].isoformat(),
             "security_master_blob": expected_blob,
         }, issuer["ticker"]
+
+
+# ---------------------------------------------------------------------------
+# Issuer SIC resolver (R1-SIC): the shipped contract is the only source
+# ---------------------------------------------------------------------------
+
+
+def test_issuer_sic_resolver_resolves_members_by_exact_zero_padded_cik(
+    contract: dict,
+) -> None:
+    for issuer in contract["issuers"]:
+        # the exact zero-padded spelling and the integer form are one CIK
+        assert resolve_issuer_sic(issuer["cik"]) == issuer["sic"], issuer["ticker"]
+        assert resolve_issuer_sic(int(issuer["cik"])) == issuer["sic"], issuer["ticker"]
+
+
+def test_issuer_sic_resolver_returns_none_for_absent_or_sicless_cik(
+    tmp_path: Path,
+) -> None:
+    # a CIK with no member record anywhere resolves to None (fail-closed)
+    assert resolve_issuer_sic("0000000000") is None
+    coverage = tmp_path / "config" / "fundamental_forensics" / "coverage"
+    coverage.mkdir(parents=True)
+    (coverage / "synthetic_v1.json").write_text(
+        json.dumps({"issuers": [{"cik": "0000000017"}]}), encoding="utf-8"
+    )
+    # a member record with no sic is the same fail-closed None, never a guess
+    assert resolve_issuer_sic("0000000017", repo_root=tmp_path) is None
+    assert resolve_issuer_sic("0000000099", repo_root=tmp_path) is None
+
+
+def test_issuer_sic_resolver_raises_when_contracts_disagree_on_one_cik(
+    tmp_path: Path,
+) -> None:
+    def _root(name: str) -> Path:
+        coverage = tmp_path / name / "config" / "fundamental_forensics" / "coverage"
+        coverage.mkdir(parents=True)
+        return tmp_path / name
+
+    # two shipped spellings of one CIK carrying different SICs
+    first = _root("disagree-value")
+    (first / "config" / "fundamental_forensics" / "coverage" / "a_v1.json").write_text(
+        json.dumps({"issuers": [{"cik": "0000000017", "sic": "3571"}]}),
+        encoding="utf-8",
+    )
+    (first / "config" / "fundamental_forensics" / "coverage" / "b_v1.json").write_text(
+        json.dumps({"issuers": [{"cik": "17", "sic": "6021"}]}), encoding="utf-8"
+    )
+    with pytest.raises(ValueError, match="disagree on the SIC"):
+        resolve_issuer_sic("0000000017", repo_root=first)
+
+    # present-versus-absent is the same disagreement, never silently resolved
+    second = _root("disagree-presence")
+    (second / "config" / "fundamental_forensics" / "coverage" / "a_v1.json").write_text(
+        json.dumps({"issuers": [{"cik": "0000000017", "sic": "3571"}]}),
+        encoding="utf-8",
+    )
+    (second / "config" / "fundamental_forensics" / "coverage" / "b_v1.json").write_text(
+        json.dumps({"issuers": [{"cik": "0000000017"}]}), encoding="utf-8"
+    )
+    with pytest.raises(ValueError, match="disagree on the SIC"):
+        resolve_issuer_sic("0000000017", repo_root=second)

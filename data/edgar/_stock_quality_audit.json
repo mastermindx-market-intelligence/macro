@@ -1,5 +1,5 @@
 {
-"applied": "2026-10-12T08:02:11.503657+00:00",
+"applied": "2026-11-02T07:25:33.694985+00:00",
 "rows_flagged": 24,
 "tickers_flagged": 14,
 "by_flag": {
@@ -874,6 +874,41 @@
 "col": "assets",
 "panel": 56537933.0,
 "statements": 322205.0
+},
+{
+"ticker": "SATS",
+"fy": 2021,
+"col": "assets",
+"panel": 58731.0,
+"statements": 6045204000.0
+},
+{
+"ticker": "SATS",
+"fy": 2022,
+"col": "assets",
+"panel": 373021.0,
+"statements": 6199003000.0
+},
+{
+"ticker": "SATS",
+"fy": 2023,
+"col": "assets",
+"panel": 3075829.0,
+"statements": 57108894000.0
+},
+{
+"ticker": "SATS",
+"fy": 2024,
+"col": "assets",
+"panel": 28197000.0,
+"statements": 60938687000.0
+},
+{
+"ticker": "SATS",
+"fy": 2025,
+"col": "assets",
+"panel": 745527000.0,
+"statements": 43016355000.0
 },
 {
 "ticker": "SBC",
@@ -1861,6 +1896,41 @@
 "col": "equity",
 "panel": 39007835.0,
 "statements": 16004.0
+},
+{
+"ticker": "SATS",
+"fy": 2021,
+"col": "equity",
+"panel": 43137.0,
+"statements": 3353827000.0
+},
+{
+"ticker": "SATS",
+"fy": 2022,
+"col": "equity",
+"panel": 153783.0,
+"statements": 3502619000.0
+},
+{
+"ticker": "SATS",
+"fy": 2023,
+"col": "equity",
+"panel": 16058000.0,
+"statements": 19880177000.0
+},
+{
+"ticker": "SATS",
+"fy": 2024,
+"col": "equity",
+"panel": 23342000.0,
+"statements": 20191372000.0
+},
+{
+"ticker": "SATS",
+"fy": 2025,
+"col": "equity",
+"panel": 582436000.0,
+"statements": 5765784000.0
 },
 {
 "ticker": "SBH",
@@ -3424,6 +3494,13 @@
 "fy_hi": 2012,
 "col": "assets",
 "med": 480.0
+},
+{
+"ticker": "SATS",
+"fy_lo": 2023,
+"fy_hi": 2025,
+"col": "equity",
+"med": 23342000.0
 },
 {
 "ticker": "SKYT",

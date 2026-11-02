@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-14T20:07:52Z",
+ "accession": "0001493152-26-038339",
+ "cik": "0001540684",
+ "doc_byte_length": 2045275,
+ "doc_sha256": "9b47a17d724efd2ed05a5d34903d4d94e102b1760d4c6932127f0da64812fbd4",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-14",
+ "form": "10-K/A",
+ "period_of_report": "2025-12-31",
+ "primary_document": "form10-ka.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 193923,
+  "byte_start": 193163,
+  "normalized": "This Amendment No. 1 on Form 10-K/A (the “Amendment No. 1”) amends the Annual Report on Form 10-K of Atlas Lithium Corporation (the “Company”) for the fiscal year ended December 31, 2025, as filed with the Securities and Exchange Commission on March 4, 2026 (the “Original Filing” or the “Annual Report”). Other than as set forth below, (i) this Amendment No. 1 does not change any of the information contained in the Original Filing and (ii) except as identified in the next paragraph, we have not updated or amended the disclosures contained in the Original Filing to reflect events that have occurred since the date thereof. Accordingly, Amendment No. 1 should be read in conjunction with our Original Filing.",
+  "normalized_sha256": "80fe5716a4d8aa3793040d8b51d1c98fac579bd629728786cdfe1f5f8810f1e7",
+  "raw": "This\nAmendment No. 1 on Form 10-K/A (the &#8220;Amendment No. 1&#8221;) amends the Annual Report on Form 10-K of Atlas Lithium\nCorporation (the &#8220;Company&#8221;) for the fiscal year ended December 31, 2025, as filed with the Securities and Exchange\nCommission on March 4, 2026 (the &#8220;Original Filing&#8221; or the &#8220;Annual Report&#8221;). Other than as set forth below,\n(i) this Amendment No. 1 does not change any of the information contained in the Original Filing and (ii) except as identified in\nthe next paragraph, we have not updated or amended the disclosures contained in the Original Filing to reflect events that have\noccurred since the date thereof. Accordingly, Amendment No. 1 should be read in conjunction with our Original Filing.",
+  "raw_sha256": "973dc4bc655a75a730a7f4d95a5db9019f2c3f61badb52878d9b038ba0dbc959"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1540684/000149315226038339/form10-ka.htm",
+ "xbrl_contexts": []
+}

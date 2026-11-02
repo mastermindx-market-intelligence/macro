@@ -1,0 +1,150 @@
+{
+  "observed_at": "2026-10-15T06:30:03.254810+00:00",
+  "old": "b1db2fc7510b3121bb9494f7f55a4351e6a48c77",
+  "refreshed": "fea04c414282a29f8f757430c7e1e1b3c52998fe",
+  "incoming_base": "1865cac77212150ea674688eb1dbea1b848fda20",
+  "parents": [
+    "b1db2fc7510b3121bb9494f7f55a4351e6a48c77",
+    "1865cac77212150ea674688eb1dbea1b848fda20"
+  ],
+  "production_files": [
+    {
+      "path": "admin/evidence_findings.py",
+      "old": "89d5d66fec0848d65d973f6f73c4aab7d3bf995c",
+      "new": "89d5d66fec0848d65d973f6f73c4aab7d3bf995c",
+      "base": null,
+      "unchanged": true,
+      "incoming_base_exact": false
+    },
+    {
+      "path": "admin/evidence_status.py",
+      "old": "fc9ccd59e40760f8dc03f0871910bfdfe663e0d0",
+      "new": "fc9ccd59e40760f8dc03f0871910bfdfe663e0d0",
+      "base": null,
+      "unchanged": true,
+      "incoming_base_exact": false
+    },
+    {
+      "path": "admin/intelligence_os.py",
+      "old": "8b755a6cf87b8a765e558b126e31e6a3f21d4b9c",
+      "new": "8b755a6cf87b8a765e558b126e31e6a3f21d4b9c",
+      "base": "d657f8c99b97929937f2bcebc4c3a73a18bb2cb7",
+      "unchanged": true,
+      "incoming_base_exact": false
+    },
+    {
+      "path": "admin/server.py",
+      "old": "067b3520f2c535bb4ba16b1b514d0622f56e3d3b",
+      "new": "067b3520f2c535bb4ba16b1b514d0622f56e3d3b",
+      "base": "599dcb9a89261f9a3d50e50ba8909badad2b9f38",
+      "unchanged": true,
+      "incoming_base_exact": false
+    },
+    {
+      "path": "admin/static/app.js",
+      "old": "4f1f97e033939fefd93cf5bf7476911451aba49a",
+      "new": "4f1f97e033939fefd93cf5bf7476911451aba49a",
+      "base": "399fb05fa6543bac8f7fbe0c59d6b8759cfe3b00",
+      "unchanged": true,
+      "incoming_base_exact": false
+    },
+    {
+      "path": "admin/static/index.html",
+      "old": "5e6a7167d1b6e263e3e3d50868ba570d2413e4e5",
+      "new": "5e6a7167d1b6e263e3e3d50868ba570d2413e4e5",
+      "base": "20289fee3b9e153c278f80581cd55a8f90bab3d1",
+      "unchanged": true,
+      "incoming_base_exact": false
+    },
+    {
+      "path": "admin/static/preferences.js",
+      "old": "bfc523ca16ddb7aa6b7b123df04ea3c926a536f0",
+      "new": "bfc523ca16ddb7aa6b7b123df04ea3c926a536f0",
+      "base": null,
+      "unchanged": true,
+      "incoming_base_exact": false
+    },
+    {
+      "path": "admin/static/styles.css",
+      "old": "a4817dd1554b8002321c966705b3b458a5c48a69",
+      "new": "a4817dd1554b8002321c966705b3b458a5c48a69",
+      "base": "72c12ab0470a693498fa4969f96d11de19784906",
+      "unchanged": true,
+      "incoming_base_exact": false
+    },
+    {
+      "path": "app/deploy/update.sh",
+      "old": "895adf0c38b2c3193e95a344a1409111a7133eda",
+      "new": "895adf0c38b2c3193e95a344a1409111a7133eda",
+      "base": "b4ad722264099b0c7abd73a32905c88104ccc92d",
+      "unchanged": true,
+      "incoming_base_exact": false
+    },
+    {
+      "path": "engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json",
+      "old": "35f98b27b96f8bb07bd72363e6f691302870b5f0",
+      "new": "35f98b27b96f8bb07bd72363e6f691302870b5f0",
+      "base": null,
+      "unchanged": true,
+      "incoming_base_exact": false
+    },
+    {
+      "path": "engine/neuralweb/response_eval.py",
+      "old": "499b1b3a45bad3a89265745c1f9293e674409c0e",
+      "new": "499b1b3a45bad3a89265745c1f9293e674409c0e",
+      "base": "cdc22eacb77de9bac47fc72dea83e7defe769005",
+      "unchanged": true,
+      "incoming_base_exact": false
+    },
+    {
+      "path": "engine/qledger.py",
+      "old": "24dd479b42901b96d062b2e837eeaa0767966b42",
+      "new": "24dd479b42901b96d062b2e837eeaa0767966b42",
+      "base": "3238a6ace134c47cf5ed90bc7e7bd1d4252e00a9",
+      "unchanged": true,
+      "incoming_base_exact": false
+    },
+    {
+      "path": "scripts/build_intelligence_registry.py",
+      "old": "0c104c074c8e7cc2f88eb6f9c76f1c0378aadc09",
+      "new": "0c104c074c8e7cc2f88eb6f9c76f1c0378aadc09",
+      "base": "5527e892cf44b011a747ae0c5ca3b90d0ac2a5f4",
+      "unchanged": true,
+      "incoming_base_exact": false
+    },
+    {
+      "path": "scripts/grade_qledger.py",
+      "old": "2e715c01e3676ca0299a4af6d35b4bb17b68941f",
+      "new": "2e715c01e3676ca0299a4af6d35b4bb17b68941f",
+      "base": "75757393de184c1e9f79f15b64aa58cc48ed2b54",
+      "unchanged": true,
+      "incoming_base_exact": false
+    },
+    {
+      "path": "admin/theme_tokens.py",
+      "old": "75857b658836c043af0e2386325ce6c4cc8be2bc",
+      "new": "75857b658836c043af0e2386325ce6c4cc8be2bc",
+      "base": null,
+      "unchanged": true,
+      "incoming_base_exact": false
+    },
+    {
+      "path": "templates/theme.css",
+      "old": "620895319be7e3f7808439ecbae8c33c2197389f",
+      "new": "620895319be7e3f7808439ecbae8c33c2197389f",
+      "base": "620895319be7e3f7808439ecbae8c33c2197389f",
+      "unchanged": true,
+      "incoming_base_exact": true
+    },
+    {
+      "path": "engine/qledger_desk_adapter.py",
+      "old": "3697d2a35fd7acb3bd3f96b301e474ba421e034d",
+      "new": "3697d2a35fd7acb3bd3f96b301e474ba421e034d",
+      "base": "e8f19e27d24b6424be6b47b572891617b4184ff2",
+      "unchanged": true,
+      "incoming_base_exact": false
+    }
+  ],
+  "changed": [],
+  "qualification": "Source comparison only; hosted current-head proof still required."
+}

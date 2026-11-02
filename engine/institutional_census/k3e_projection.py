@@ -11,6 +11,7 @@ and purpose-specific source-use evidence are supplied by their existing owners.
 """
 from __future__ import annotations
 
+from collections.abc import Mapping
 from datetime import datetime, timezone
 from engine.institutional_census.catalog import (
     Institutional13FCatalogError,
@@ -28,6 +29,7 @@ from lib.institutional_13f_adapter import (
 
 
 SCHEMA = "institutional_13f.k3e_reported_holding_context.v1"
+ACCESSION_SCOPE_SCHEMA = "institutional_13f.reported_holding_accession_context.v1"
 
 
 def _clock(value: object) -> datetime | None:
@@ -58,6 +60,7 @@ def _base() -> dict:
         "generation": None,
         "filing": None,
         "holding": None,
+        "reporting_structure": None,
         "interpretation": {
             "class": "DELAYED_REPORTED_HOLDING_CONTEXT",
             "is_current_ownership": False,
@@ -79,7 +82,7 @@ def _base() -> dict:
 
 def _generation_projection(generation: PublishedCatalogGeneration) -> dict:
     clocks = generation.manifest.clocks
-    return {
+    result = {
         "generation_id": generation.generation_id,
         "report_period": clocks.report_period,
         "source_cutoff_at": clocks.source_cutoff_at,
@@ -87,6 +90,57 @@ def _generation_projection(generation: PublishedCatalogGeneration) -> dict:
         "current_generation_id": generation.current_generation_id,
         "superseded": generation.superseded,
     }
+    if getattr(generation, "validation_scope", None) == "accession_bucket":
+        result["superseded"] = generation.superseded if generation.pointer_read else None
+        result["pointer"] = {
+            "state": "verified" if generation.pointer_read else "not_read",
+        }
+        result["validation_scope"] = {
+            "kind": "accession_bucket",
+            "verified_roles": list(generation.validated_roles),
+            "whole_generation_verified": False,
+        }
+    return result
+
+
+def _reporting_structure(
+    generation: PublishedCatalogGeneration, filing: Mapping[str, object]
+) -> dict:
+    """Preserve filing directions and source ordinals, never economic ownership.
+
+    OTHERMANAGER reports who reports for the filer; OTHERMANAGER2 reports whose
+    holdings the filer includes. Neither identifies a vehicle, strategy or the
+    economic scope of the selected holding. The verified catalog remains the
+    authority for these accession-bound rows and their canonical ordering.
+    """
+    accession = filing.get("accession")
+    rows = [
+        row for row in generation.manager_relationships
+        if row.get("accession") == accession
+    ]
+    structure = {
+        "accession": accession,
+        "report_type": filing.get("report_type"),
+        "form13f_file_number": filing.get("form13f_file_number"),
+        "other_manager_count": filing.get("other_manager_count"),
+        "reported_by_manager": [],
+        "included_manager": [],
+        "limitations": [
+            "REPORTING_STRUCTURE_NOT_ECONOMIC_VEHICLE_OR_STRATEGY",
+            "REPORTED_MANAGER_COUNT_NOT_ECONOMIC_AFFILIATE_COUNT",
+        ],
+    }
+    directions = {
+        ("reported_by_manager", "OTHERMANAGER"),
+        ("included_manager", "OTHERMANAGER2"),
+    }
+    for row in rows:
+        kind = row.get("relationship_kind")
+        if (kind, row.get("source_table")) in directions:
+            structure[kind].append(dict(row))
+        elif "UNCLASSIFIED_REPORTING_RELATIONSHIPS_PRESENT" not in structure["limitations"]:
+            structure["limitations"].append("UNCLASSIFIED_REPORTING_RELATIONSHIPS_PRESENT")
+    return structure
 
 
 def project_reported_holding(
@@ -98,6 +152,7 @@ def project_reported_holding(
     infotable_sk: object,
     decision_cutoff: object,
     generation_id: str | None = None,
+    accession_scope: bool = False,
 ) -> dict:
     """Read and project one owner-verified immutable holding row.
 
@@ -107,6 +162,8 @@ def project_reported_holding(
     institutional 13F read adapter.
     """
     out = _base()
+    if accession_scope:
+        out["schema"] = ACCESSION_SCOPE_SCHEMA
 
     if isinstance(store, PublishedCatalogGeneration) or not callable(
         getattr(store, "get_bytes_strict_bounded", None)
@@ -139,12 +196,25 @@ def project_reported_holding(
         return out
 
     try:
-        generation = resolve_generation(
-            store,
-            report_period=report_period,
-            cutoff=cutoff,
-            generation_id=generation_id,
-        )
+        if accession_scope:
+            from .catalog_scope import (
+                CatalogScopeNotAvailableAtCutoff, load_catalog_accession_scope,
+            )
+            try:
+                generation = load_catalog_accession_scope(
+                    store, report_period=report_period, accession=accession,
+                    generation_id=generation_id, decision_cutoff=decision_cutoff,
+                )
+            except CatalogScopeNotAvailableAtCutoff:
+                out["refusals"].append("GENERATION_NOT_AVAILABLE_AT_CUTOFF")
+                return out
+        else:
+            generation = resolve_generation(
+                store,
+                report_period=report_period,
+                cutoff=cutoff,
+                generation_id=generation_id,
+            )
     except PilotRefusal as refusal:
         if refusal.reason == GENERATION_NOT_KNOWABLE_AT_CUTOFF:
             out["refusals"].append("GENERATION_NOT_AVAILABLE_AT_CUTOFF")
@@ -262,6 +332,7 @@ def project_reported_holding(
         "investment_discretion": holding.get("investment_discretion"),
         "limitations": limitations,
     }
+    out["reporting_structure"] = _reporting_structure(generation, filing)
     out["valid"] = True
     out["state"] = "AVAILABLE_UNQUALIFIED"
     return out

@@ -1,0 +1,14 @@
+{
+  "observed_at": "2026-10-14T00:40:44.226561+00:00",
+  "base_commit": "1da3ad6d46856d90986094d0aa21ce5c59812d58",
+  "patch_sha256": "36e0b1af1c2f75202b33ea3d1277f713f90afbf70b5546ce9c0798704ebe0149",
+  "source_hashes": {
+    "engine/press/writer.py": "2e2cd99d932b77b452c4d817731effcc0d8ed417ae76c337b5730cf628bf2491",
+    "tests/test_press_writer.py": "f62c104458c351607130e0885b4874eabbd14d63e799998a3de82af9dfb1aae7"
+  },
+  "parent_red": "14 failed, 40 passed in 2.55s",
+  "integrated_green": "358 passed in 15.51s",
+  "staged_draft_unchanged": "ec140345fab45fa876fceff6884577ebfead9740876d493afed2e477dfb2d971",
+  "actual_source_prompt_observation": "The retained Research slot now carries (dated 2026-09-23) on the PCE fact; no provider call or stage rewrite.",
+  "acceptance_scope": "Parent deterministic regression and source review only; future distinct eligible draft still required."
+}

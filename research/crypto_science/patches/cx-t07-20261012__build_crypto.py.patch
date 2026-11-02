@@ -1,0 +1,10 @@
+--- a/scripts/build_crypto.py
++++ b/scripts/build_crypto.py
+@@ -502,6 +502,7 @@
+             "listed": len(universe),
+             "requested": universe_snapshot["requested"],
+             "excluded": universe_snapshot["excluded"],
++            "coverage": universe_snapshot.get("coverage"),
+             "breadth": breadth,
+         },
+         "market": {

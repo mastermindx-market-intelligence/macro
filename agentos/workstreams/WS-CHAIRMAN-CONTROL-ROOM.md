@@ -214,6 +214,317 @@ next_action: >
   wire R8 recovery plus bounded continuation into the existing Control Room and implement closed successor
   creation/bootstrap through existing Web-Sol, RuntimeBinding and Capacity owners. Do not create a Session OS,
   transcript store, second recovery database, alternate RuntimeBinding writer, or account-specific project ownership.
+acceptance_contracts:
+- commission_id: meta-ceo-office-r2-20261012
+  execution_commission_refs: []
+  commission_ref: &id001
+    repository: mastermindx-market-intelligence/Mastermind
+    commit: 6b26f69cc040b46c8099a17a7ef94d3242f5386e
+    path: docs/superpowers/specs/2026-10-12-meta-ceo-office-r2-implementation.md
+    content_sha256: f5478e366e1f97eafb4bb0b26f6435944d79fd83223b87ab89f83de0e685509a
+  continuity_ref:
+    repository: mastermindx-market-intelligence/macro
+    commit: 5569baad64b8023e5cb1995c1ce7a30bc8254a7b
+    path: agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-10-12-meta-ceo-r2.md
+    content_sha256: 015582b25fa09214b8f98de73af7065bf8944c9029cf29e0de42e28d347a1e06
+  original_intent_ref: &id002
+    repository: mastermindx-market-intelligence/Mastermind
+    commit: 6b26f69cc040b46c8099a17a7ef94d3242f5386e
+    path: research/mastermind_meta_ceo_master_plan_r2_2026-10-12.md
+    content_sha256: a5c534ddabcd1034372354a1ec645dffe1a2520795035a757e4f7def8300c62d
+  proof_contract_ref: *id001
+  original_proof_contract_ref: *id002
+  current_intent_revision: r2-initial-v1
+  correction_state: NO_CORRECTION_DECLARED_AT_THIS_REVISION
+  correction_chain: []
+  criteria_objective: 'Get this implemented end to end fully: one conversational Mastermind company office
+    preserving the complete R2 vision. [MASTERMIND_ACCEPTANCE_CRITERIA_V1:["One central conversation recovers
+    relevant accepted projects, interprets the original idea without duplicate programmes or routine Chairman
+    message shuttling, and shows current responsibility, freshness and missingness in the app.","Real
+    consecutive office turns recover relevant continuity and the latest correction; the primary remains
+    useful while children work. Actual candidate surfaces are compared with normalized and realistic context/tools,
+    preserved visible mode, held-out cases, refusal accuracy, false acceptance, recovery, review effort
+    and total cost.","A real admitted office loop includes an ordinary worker question, the responsible
+    principal ruling, exact worker consumption and resumed work, independent review of intent and actual
+    artifacts that rejects plausible incompleteness, original-parent disposition consumption, and an honest
+    user-visible outcome.","Eligible native Project Chat uses the intended account, Project, relevant
+    context, observable selected mode, exact continuation and permissible parent-consumed return. Attended-native
+    or core-office-only evidence does not satisfy the full native requirement; no Work, API, Codex or
+    Fabric substitution is concealed.","All original section15 failure/security/rollback rows and section14
+    stage exits are proved at their actual installed boundaries. Every individual required obligation
+    remains unproven until evidenced; zero observed wrong-target writes, duplicate effects, unauthorized
+    disclosure and stale commands require credible enforcement.","Eligible accounts and Secretary capacity
+    preserve ordinary/busy responsiveness and independent review. A genuine seven-day installed campaign
+    measures accepted visible outcomes versus avoidable Chairman interventions, reasoning time, desktop
+    occupancy, queue delay, consumption, review backlog, quota, recovery and total cost. Synthetic time,
+    inferred quota or hidden spending cannot pass."]]'
+  criteria_sources:
+  - criterion_index: 0
+    source_ref: *id002
+    locators:
+    - '13.1: central chat, existing projects, app status'
+  - criterion_index: 1
+    source_ref: *id002
+    locators:
+    - '13.3: normalized and realistic surface comparisons'
+    - '15: consecutive office tasks, foreground question'
+  - criterion_index: 2
+    source_ref: *id002
+    locators:
+    - '14: Stage1 and Stage2'
+    - '15: ordinary question, false completion, reviewer independence'
+  - criterion_index: 3
+    source_ref: *id002
+    locators:
+    - '14: 0B and Stage3'
+    - '13.1: native Chat research'
+  - criterion_index: 4
+    source_ref: *id002
+    locators:
+    - '15: all30 named test rows'
+    - '14: all seven phase obligations'
+  - criterion_index: 5
+    source_ref: *id002
+    locators:
+    - '12: central product measure'
+    - '14: Stage4'
+  original_source_status: AUTHENTIC_USER_INPUT_CANDIDATE
+  proof_obligations:
+  - source_ref: *id002
+    section: '15'
+    label: Ordinary question while a child is working
+    required_outcome: Primary answers without waiting for child completion; no invented progress
+  - source_ref: *id002
+    section: '15'
+    label: Consecutive office tasks with a correction
+    required_outcome: Relevant continuity is recovered; the latest intent wins
+  - source_ref: *id002
+    section: '15'
+    label: Timeout after provider acceptance
+    required_outcome: Original task is inspected; no automatic second submission
+  - source_ref: *id002
+    section: '15'
+    label: Child admitted but Dot answer lost
+    required_outcome: Original Executive command and provider task are reconciled
+  - source_ref: *id002
+    section: '15'
+    label: Direct Slack and app turns overlap
+    required_outcome: Only currently eligible scoped company effects commit
+  - source_ref: *id002
+    section: '15'
+    label: Old Dot responds after relief
+    required_outcome: Late command rejected; predecessor effects remain recoverable
+  - source_ref: *id002
+    section: '15'
+    label: Caller supplies a CEO role string
+    required_outcome: No authority is granted from prompt content
+  - source_ref: *id002
+    section: '15'
+    label: Claimed read-only Dot attempts a connected-app write
+    required_outcome: Receiving permissions block it, or the claimed isolation fails qualification
+  - source_ref: *id002
+    section: '15'
+    label: Callback repeated or out of order
+    required_outcome: No duplicate ruling/effect; newer accepted revision preserved
+  - source_ref: *id002
+    section: '15'
+    label: Subscription expires or event is missed
+    required_outcome: Existing obligation reconciliation restores attention without losing work
+  - source_ref: *id002
+    section: '15'
+    label: Worker asks an ordinary design question
+    required_outcome: Programme owner decides and exact worker consumes the ruling
+  - source_ref: *id002
+    section: '15'
+    label: Worker claims a missing tool without evidence
+    required_outcome: A bounded harmless check is requested, not blind escalation
+  - source_ref: *id002
+    section: '15'
+    label: Explicit provider permission refusal
+    required_outcome: Affected action held; no alternate-account workaround
+  - source_ref: *id002
+    section: '15'
+    label: Real login or new consent is required
+    required_outcome: Exact human-only step surfaced; independent useful work continues
+  - source_ref: *id002
+    section: '15'
+    label: Native Project or selected mode cannot be verified
+    required_outcome: Requested native capability remains unproven
+  - source_ref: *id002
+    section: '15'
+    label: Secretary submits into a wrong target
+    required_outcome: No effect; mismatch detected before submission
+  - source_ref: *id002
+    section: '15'
+    label: UI stream detaches after submission
+    required_outcome: Original interaction reconciled; no blind continuation
+  - source_ref: *id002
+    section: '15'
+    label: Two secretaries seek one desktop
+    required_outcome: One active interaction writer; conversation ownership remains separate
+  - source_ref: *id002
+    section: '15'
+    label: Different data audiences share a programme
+    required_outcome: Retrieval and return respect permissions; no cross-account context leak
+  - source_ref: *id002
+    section: '15'
+    label: External vision would receive private information
+    required_outcome: Data permission checked before disclosure
+  - source_ref: *id002
+    section: '15'
+    label: Secretary quota is exhausted
+    required_outcome: Work remains truthfully pending; no hidden on-demand activation
+  - source_ref: *id002
+    section: '15'
+    label: Reviews accumulate
+    required_outcome: New admissions reduce; review/decision backlog gets priority
+  - source_ref: *id002
+    section: '15'
+    label: Green CI with missing must-have
+    required_outcome: Result rejected with precise repair, not accepted on test count
+  - source_ref: *id002
+    section: '15'
+    label: Spec is internally consistent but misreads original ask
+    required_outcome: Intent-translation review rejects it
+  - source_ref: *id002
+    section: '15'
+    label: Reviewer authored consequential work
+    required_outcome: Independent review assigned without losing existing effects
+  - source_ref: *id002
+    section: '15'
+    label: User logs out during a read
+    required_outcome: Private data cannot appear in a successor identity’s view
+  - source_ref: *id002
+    section: '15'
+    label: Cancellation races with completion
+    required_outcome: Actual terminal effect preserved; no false cancellation claim
+  - source_ref: *id002
+    section: '15'
+    label: Runtime restarts
+    required_outcome: Same request, obligations and pending effects recover
+  - source_ref: *id002
+    section: '15'
+    label: Programme reaches its accepted finish
+    required_outcome: Watches close; no invented successor project
+  - source_ref: *id002
+    section: '15'
+    label: No useful admitted work exists
+    required_outcome: Dots remain idle rather than creating a task treadmill
+  - source_ref: *id002
+    section: '15'
+    label: zero observed violations plus credible enforcement at the relevant boundary
+    required_outcome: For wrong-target writes, duplicate effects, unauthorized disclosure and stale-principal
+      commands, require zero observed violations plus credible enforcement at the relevant boundary. If the
+      enforcement mechanism is missing, a clean small test sample is insufficient.
+  - source_ref: *id002
+    section: '15'
+    label: Rollback
+    required_outcome: Rollback disables new admissions for the affected role/route while preserving in-flight
+      task IDs, effects, results and pending consumption. Uninstalling a UI or stopping a provider does not
+      prove a child stopped. Test administrative pause and exact reconciliation without depending on a responsive
+      Dot.
+  - source_ref: *id002
+    section: '13.1'
+    label: “I speak to one central chat”
+    required_outcome: User never has to select among six Dots to finish the normal journey
+  - source_ref: *id002
+    section: '13.1'
+    label: Main CEO knows existing projects
+    required_outcome: Census identifies relevant accepted work and avoids a duplicate programme
+  - source_ref: *id002
+    section: '13.1'
+    label: Native Chat research, not silent Work replacement
+    required_outcome: Actual eligible Project Chat path or explicit incomplete/attended status
+  - source_ref: *id002
+    section: '13.1'
+    label: Workers do not strand on questions
+    required_outcome: Correct principal rules and the originating worker demonstrably consumes it
+  - source_ref: *id002
+    section: '13.1'
+    label: Autonomous progress
+    required_outcome: An approved event advances useful work without another Chairman kickoff
+  - source_ref: *id002
+    section: '13.1'
+    label: Delivery matches the original idea
+    required_outcome: A deliberately plausible but wrong/incomplete product is rejected
+  - source_ref: *id002
+    section: '13.1'
+    label: App can show the company
+    required_outcome: Displayed status matches qualified owners, with missingness and freshness
+  - source_ref: *id002
+    section: '14'
+    label: '0A: Dot office qualification'
+    required_outcome: 'Establish an eligible principal connection, actual company-tool permissions, one
+      source-grounded turn, continuity into a subsequent corrected turn, foreground/background behavior
+      and recoverability. Preserve the earlier refused credential action; any enrollment proceeds only
+      through an independently established permitted action, not a carrier workaround.
+
+      every critical assumption is observed or explicitly unresolved with an affected capability and reachable
+      next action. Do not describe an untested route as either proven or impossible.'
+  - source_ref: *id002
+    section: '14'
+    label: '0B: Native-Chat feasibility'
+    required_outcome: 'Establish the exact eligible route and demonstrate or explicitly fail the account/Project/mode/context/result/continuation
+      chain. Do not defer this existential question to the fifth build stage. A held native lane does
+      not stop independent 0A/0C work.
+
+      every critical assumption is observed or explicitly unresolved with an affected capability and reachable
+      next action. Do not describe an untested route as either proven or impossible.'
+  - source_ref: *id002
+    section: '14'
+    label: '0C: Principal decision and event seam'
+    required_outcome: 'Map exposed account-specific actions to the actual Executive owners, inspect #1362’s
+      relevant source, and identify the smallest installed callback/ruling/consumption proof. An estate
+      read is not enough.
+
+      every critical assumption is observed or explicitly unresolved with an affected capability and reachable
+      next action. Do not describe an untested route as either proven or impossible.'
+  - source_ref: *id002
+    section: '14'
+    label: Stage 1 — One complete vertical office loop
+    required_outcome: one trace proves useful user capability, not just task transport. No Chairman message
+      shuttling, duplicate admission or unsupported completion claim.
+  - source_ref: *id002
+    section: '14'
+    label: Stage 2 — Programme delegation and independent quality
+    required_outcome: concurrent programmes preserve scope, data audiences, current owners and review
+      capacity; one user voice does not impose one serial decision chain.
+  - source_ref: *id002
+    section: '14'
+    label: Stage 3 — Integrate the qualified native research path
+    required_outcome: the required native experience works through the installed path, or this release
+      remains explicitly core-office-only/attended-native. No substitution is concealed.
+  - source_ref: *id002
+    section: '14'
+    label: Stage 4 — Scale eligible Dots and Secretary capacity
+    required_outcome: no lost decision obligations, wrong-target writes or unaccounted spending in the
+      accepted campaign; measured responsiveness and quota are adequate; original-intent review still
+      works under load. A finite campaign is evidence, not a mathematical guarantee.
+  - source_ref: *id002
+    section: '13.3'
+    label: Evaluate surfaces, not model branding
+    required_outcome: 'Do not assume that the Dot will outperform native Pro or Extra High merely because
+      of its advertised model. Evaluate actual Mastermind work: ambiguous requirements, source contradictions,
+      ordinary blockers, genuine permission boundaries, intentional false-completion examples and Chairman
+      corrections.
+
+
+      Run two comparisons: one with the relevant context normalized to isolate reasoning differences,
+      and one with each proposed surface’s realistic context/tools to assess the delivered system. Preserve
+      visible mode and configuration; served identity remains unknown when not observable.
+
+
+      Judge requirement coverage, supported conclusions, useful rulings, refusal accuracy, false acceptance,
+      recovery, review effort and total cost. Blind model labels where feasible. Include held-out cases
+      not used to tune the playbook. Prefer fewer high-quality independent reviews over several correlated
+      rubber stamps.'
+  - source_ref: *id002
+    section: '12'
+    label: Central product measure
+    required_outcome: The central product measure should be **accepted user-visible outcomes relative
+      to avoidable Chairman interventions**, supported by decision-resolution time, overdue obligations,
+      rework and effective spend. Do not optimize for number of agents, open chats, generated tokens,
+      or issues touched.
 ---
 
 ## Capability state
