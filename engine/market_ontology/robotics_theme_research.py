@@ -41,6 +41,7 @@ from __future__ import annotations
 import copy
 import math
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Any, Mapping, Sequence
 
 from engine.theme_graph.curation_assertion import (
@@ -132,6 +133,8 @@ try:  # pinned to #7870 c6c67c87
     )
     from engine.market_ontology.theme_research_binding import (
         generation_fingerprint,
+        parse_clock as _parse_clock,
+        within as _within,
     )
 
     SHARED_TYPES = True
@@ -173,6 +176,7 @@ except ImportError:  # pragma: no cover - carrier base fallback
             le as _le,
             parse_clock as _parse_clock,
             parse_day as _parse_day,
+            within as _within,
         )
     except ImportError:  # pragma: no cover - base without the shell
         # Type mirror only: ResearchRefusal, generation_fingerprint,
@@ -255,6 +259,19 @@ def _plt_selector(business: str, platform: str) -> str:
 
 def _obj_selector(publisher: str, label: str) -> str:
     return f"obj:{publisher}/{label}"
+
+
+def _utc_instant(value: Any) -> datetime | None:
+    """An owner review clock as an aware-UTC instant, or None when it cannot
+    be read (a non-string, an empty string, or an impossible date such as
+    ``2026-13-45T00:00:00Z``, which the curation pattern alone admits). Parsing
+    is the shell's ``parse_clock``; this only converts and catches."""
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        return _parse_clock(value).astimezone(timezone.utc)
+    except (ValueError, TypeError):
+        return None
 
 
 def _subject_selector(assertion: Mapping[str, Any]) -> tuple[str | None, str | None]:
@@ -421,12 +438,23 @@ class _Selection:
     # review stamp inside the selection — never the wall clock, so a
     # composition is reproducible.
 
+    # The newest stamp is chosen by its aware-UTC instant, never by string
+    # order: "2026-09-20T22:00:00+05:00" (17:00Z) sorts after
+    # "2026-09-20T18:00:00Z" as text but is earlier. The stamp is returned as
+    # written so a date-only due date keeps comparing on the stamp's own day
+    # (the shell ``le`` contract). An unreadable stamp never sets "now"; its
+    # own assertion is withheld as expired by ``_review_excluded``.
+
     def _now_of_query(self) -> str | None:
         if self.query.recorded_cutoff is not None:
             return self.query.recorded_cutoff
-        stamps = [a.get("review", {}).get("reviewed_at") for a in self.assertions]
-        stamps = [s for s in stamps if isinstance(s, str) and s]
-        return max(stamps) if stamps else None
+        newest: tuple[datetime, str] | None = None
+        for assertion in self.assertions:
+            stamp = (assertion.get("review") or {}).get("reviewed_at")
+            moment = _utc_instant(stamp)
+            if moment is not None and (newest is None or (moment, stamp) > newest):
+                newest = (moment, stamp)
+        return newest[1] if newest is not None else None
 
     def _review_excluded(self, assertion: Mapping[str, Any]) -> bool:
         review = assertion.get("review") or {}
@@ -435,9 +463,21 @@ class _Selection:
             self.limitations.add(
                 "held_present" if disposition == "held" else "rejected_present")
             return True
+        # An owner clock this composer cannot read withholds the row (fail
+        # closed): an unreadable ``reviewed_at`` counts as expired, and an
+        # unreadable ``review_due_at`` cannot show the review is still current.
+        reviewed = review.get("reviewed_at")
+        if reviewed is not None and _utc_instant(reviewed) is None:
+            self.limitations.add("review_expired_present")
+            return True
         due = review.get("review_due_at")
+        if due is None:
+            return False
+        if _utc_instant(due) is None:
+            self.limitations.add("review_expired_present")
+            return True
         now = self._now_of_query()
-        if isinstance(due, str) and due and now is not None and _le(due, now):
+        if now is not None and _le(due, now):
             self.limitations.add("review_expired_present")
             return True
         return False
@@ -528,7 +568,7 @@ class _Selection:
             if self.query.time_mode == "system_replay":
                 reviewed = block.get("reviewed_at")
                 if not isinstance(reviewed, str) \
-                        or not _le(reviewed, self.query.recorded_cutoff):
+                        or not _within(reviewed, self.query.recorded_cutoff):
                     continue
             chosen.append(dict(block))
         chosen.sort(key=lambda b: b.get("interpretation_id", ""))
@@ -553,7 +593,7 @@ class _Selection:
             learned = result.get("mapping_learned_at")
             if self.query.time_mode == "system_replay" \
                     and isinstance(learned, str) and learned \
-                    and not _le(learned, self.query.recorded_cutoff):
+                    and not _within(learned, self.query.recorded_cutoff):
                 return {"company_node_id": None,
                         "reason": "identity_not_yet_learned", "security": None}
             node = result.get("company_node_id")
