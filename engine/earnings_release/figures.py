@@ -115,9 +115,11 @@ _CURRENCY_SYMBOL = {"$": "USD", "US$": "USD", "€": "EUR", "£": "GBP", "¥": "
 # folded: a label, a caption, a period header.  A value cell never is, because
 # its literal is replayed against the raw source, and a folded "−1.2" (U+2212)
 # would read as negative while the "-1.2" the receipt cites is not in it.
-# Every other invisible format character is dropped with the soft hyphen: a
-# zero-width space or joiner, a byte-order mark, a direction mark or isolate
-# ("Non\u200b-GAAP", "Non\u200eGAAP"), and the combining grapheme joiner.
+# Every other format (Cf) character in the BMP, the musical-symbol format
+# block and the tag block is dropped with the soft hyphen: a zero-width space
+# or joiner, a byte-order mark, a direction mark or isolate ("Non\u200b-GAAP",
+# "Non\u200eGAAP"), and the combining grapheme joiner.  The few format
+# characters in other supplementary blocks are kept.
 _DASH_FOLD = str.maketrans({
     **{code: None
        for block in (range(0x10000), range(0x1D173, 0x1D17B), range(0xE0000, 0xE0080))
