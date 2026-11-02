@@ -1,12 +1,13 @@
 """One account's change digest (Portfolio §19.5). No scheduler or enrolment.
 
-A future trusted job supplies the previous and current state digests for the
-requested account and day. A book loader returns user_id, asof, previous, current
-and population. Never accept an address or a portfolio from a public request.
+The native nightly capture uses the brief's account-scoped holdings and current
+context. A trusted cursor reader must supply a capture from an earlier night.
+Without that reader the delivery job refuses to infer a prior book. Never accept an address or a portfolio from a public request.
 The script returns only a disposition. It does not log or persist the book.
 """
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import date
 from email.headerregistry import Address
 import json
@@ -15,7 +16,7 @@ from urllib.request import HTTPSHandler, OpenerDirector, Request
 from uuid import UUID
 
 from app import email_segments, mailer, marketing_emails
-from engine.portfolio_changes import MAX_PREVIOUS_NAMES, is_snapshot
+from engine.portfolio_changes import MAX_PREVIOUS_NAMES, SNAPSHOT_SCHEMA, is_snapshot, snapshot_state
 from engine.portfolio_digest import compose_digest
 
 
@@ -60,7 +61,78 @@ def _recipient(user_id):
     return None
 
 
-def deliver_digest(user_id: str, asof: str, *, load_book, enabled=False, send_fn=None) -> str:
+@dataclass(frozen=True)
+class NightlyCapture:
+    """Internal result of a consented night's read. Never accept it from an HTTP client."""
+    user_id: str
+    asof: str
+    population: str
+    snapshot: dict
+
+
+def _nightly_context():
+    # Use the brief's configured repository and the same nightly artifact.
+    from app.main import REPO, _PORTFOLIO_CTX_PATH
+
+    with (REPO / _PORTFOLIO_CTX_PATH).open(encoding="utf-8") as stream:
+        return json.load(stream)
+
+
+def _account_holdings(user_id):
+    from app.main import _portfolio_load_holdings
+    return _portfolio_load_holdings(user_id)
+
+
+def _capture_day():
+    # build_portfolio_ctx.main stamps the host's local calendar date by default.
+    return date.today().isoformat()
+
+
+def capture_digest_night(user_id: str, asof: str, *, enabled=False) -> NightlyCapture:
+    """Capture only the current bake with the account's current book on that night."""
+    if (enabled is not True or not marketing_emails.marketing_enabled()
+            or str(UUID(user_id)) != user_id or date.fromisoformat(asof).isoformat() != asof
+            or asof != _capture_day() or not _consents(user_id)):
+        raise ValueError("capture unavailable")
+    ctx = _nightly_context()
+    if (not isinstance(ctx, dict) or ctx.get("asof") != asof
+            or ctx.get("schema") not in ("portfolio_ctx.v1", "portfolio_ctx.v2")
+            or not isinstance(ctx.get("tickers"), dict)):
+        raise ValueError("nightly context unavailable")
+    holdings, population = _account_holdings(user_id)
+    if population not in ("positions", "watchlist_union") or not isinstance(holdings, list):
+        raise ValueError("account holdings unavailable")
+    tickers = []
+    for holding in holdings:
+        if not isinstance(holding, dict) or not isinstance(holding.get("ticker"), str) or not holding["ticker"].strip():
+            raise ValueError("incomplete account holdings")
+        tickers.append(holding["ticker"])
+    return NightlyCapture(user_id, asof, population, snapshot_state(ctx, tickers))
+
+
+def _nightly_book(user_id, asof, read_previous):
+    """Join the original trusted cursor's capture to this night's native read.
+
+    There is no server cursor in the current schema. A missing cursor or a hash
+    without its source snapshot cannot be used as an empty prior portfolio.
+    """
+    if read_previous is None:
+        raise ValueError("no account cursor source")
+    prior = read_previous(user_id, asof)
+    if (not isinstance(prior, NightlyCapture) or prior.user_id != user_id
+            or date.fromisoformat(prior.asof) >= date.fromisoformat(asof)
+            or prior.population not in ("positions", "watchlist_union")
+            or not is_snapshot(prior.snapshot) or prior.snapshot.get("schema") != SNAPSHOT_SCHEMA
+            or prior.snapshot.get("asof") != prior.asof):
+        raise ValueError("unqualified account cursor")
+    current = capture_digest_night(user_id, asof, enabled=True)
+    if current.population != prior.population:
+        raise ValueError("incomparable portfolio populations")
+    return {"user_id": user_id, "asof": asof, "population": current.population,
+            "previous": prior.snapshot, "current": current.snapshot}
+
+
+def deliver_digest(user_id: str, asof: str, *, load_book=None, read_previous=None, enabled=False, send_fn=None) -> str:
     """Deliver at most one changed-book email per account/day through the marketing ledger.
 
     Both the explicit job switch and the existing marketing master must be on.
@@ -78,7 +150,10 @@ def deliver_digest(user_id: str, asof: str, *, load_book, enabled=False, send_fn
     try:
         if not _consents(user_id):
             return "not_opted_in"
-        book = load_book(user_id, asof)
+        if load_book is not None and read_previous is not None:
+            return "source_unavailable"
+        book = (_nightly_book(user_id, asof, read_previous) if load_book is None
+                else load_book(user_id, asof))
     except Exception:
         return "source_unavailable"
     if not isinstance(book, dict) or book.get("user_id") != user_id or book.get("asof") != asof:

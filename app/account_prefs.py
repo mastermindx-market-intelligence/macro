@@ -27,11 +27,13 @@ the ``email_prefs`` mirror) and gains ``brain_depth`` on the body.
 from __future__ import annotations
 
 import logging
+import os
+from uuid import UUID
 from datetime import datetime, timezone
 from typing import Any
 
-from fastapi import APIRouter, Depends, Header, HTTPException
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Depends, Header, HTTPException, Response
+from pydantic import BaseModel, ConfigDict, Field, StrictBool
 
 from lib import user_prefs
 
@@ -218,3 +220,79 @@ def read_prefs(user: dict = Depends(_current_user)) -> dict:
         "unset": [k for k in user_prefs.PREF_KEYS if k not in stored],
         "categories_available": list(user_prefs.ALERT_CATEGORIES),
     }
+
+# Explicit portfolio-digest consent belongs in email_prefs, apart from display
+# settings and alert mail. The current schema may lack the specific field.
+class PortfolioDigestChoice(BaseModel):
+    enabled: StrictBool
+
+    model_config = ConfigDict(extra="forbid")
+
+
+def _digest_actor(user: dict) -> str:
+    uid = user.get("id")
+    try:
+        if not isinstance(uid, str) or str(UUID(uid)) != uid:
+            raise ValueError
+    except ValueError:
+        raise HTTPException(401, "Authenticated account required") from None
+    return uid
+
+
+def _digest_pref_store(*args, **kwargs):
+    from app import billing
+    return billing._pg(*args, **kwargs)
+
+
+def _digest_pref_state(uid: str, rows: object) -> dict:
+    if rows == []:
+        return {"enabled": False, "marketing_opt_out": None}
+    if not isinstance(rows, list) or len(rows) != 1 or not isinstance(rows[0], dict):
+        raise ValueError("invalid preference response")
+    row = rows[0]
+    if (row.get("user_id") != uid or type(row.get("portfolio_digest_opt_in")) is not bool
+            or type(row.get("marketing_opt_out")) is not bool):
+        raise ValueError("unqualified preference row")
+    enabled = row["portfolio_digest_opt_in"]
+    return {"enabled": enabled, "marketing_opt_out": row["marketing_opt_out"]}
+
+
+_DIGEST_PREF_FIELDS = "user_id,portfolio_digest_opt_in,marketing_opt_out"
+
+
+@router.get("/api/account/prefs/portfolio-digest")
+def get_portfolio_digest_choice(response: Response, user: dict = Depends(_current_user)) -> dict:
+    response.headers["Cache-Control"] = "private, no-store"
+    uid = _digest_actor(user)
+    try:
+        rows = _digest_pref_store("GET", f"email_prefs?user_id=eq.{uid}&select={_DIGEST_PREF_FIELDS}")
+        return _digest_pref_state(uid, rows)
+    except Exception:
+        raise HTTPException(503, "Digest preference unavailable") from None
+
+
+@router.put("/api/account/prefs/portfolio-digest")
+def set_portfolio_digest_choice(body: PortfolioDigestChoice, response: Response,
+                                user: dict = Depends(_current_user)) -> dict:
+    response.headers["Cache-Control"] = "private, no-store"
+    uid = _digest_actor(user)
+    if body.enabled and os.environ.get("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED") != "1":
+        raise HTTPException(503, "Portfolio digest enrollment is off")
+    try:
+        current = _digest_pref_state(uid, _digest_pref_store(
+            "GET", f"email_prefs?user_id=eq.{uid}&select={_DIGEST_PREF_FIELDS}"))
+        if current["enabled"] is body.enabled:
+            return current
+        # Only touch this account's digest choice. A marketing opt-out remains
+        # authoritative. Require the row actually returned by the upsert.
+        rows = _digest_pref_store(
+            "POST", f"email_prefs?on_conflict=user_id&select={_DIGEST_PREF_FIELDS}",
+            body=[{"user_id": uid, "portfolio_digest_opt_in": body.enabled}],
+            prefer="resolution=merge-duplicates,return=representation")
+        state = _digest_pref_state(uid, rows)
+        if not rows or state["enabled"] is not body.enabled:
+            raise ValueError("unconfirmed digest preference write")
+        return state
+    except Exception:
+        # The mutation may have committed. Never retry it here.
+        raise HTTPException(503, "Digest preference change unconfirmed") from None

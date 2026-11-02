@@ -184,3 +184,169 @@ def test_mismatched_snapshot_cannot_reach_another_mailbox(estate, patch):
     _, ledger, smtp = estate
     assert run(loader=lambda uid, day: {**book(uid, day), **patch}) == "source_unavailable"
     assert not ledger.inserts and not smtp.connections
+
+
+def test_authenticated_choice_and_two_account_nights_feed_the_digest(estate, monkeypatch):
+    from fastapi import Response
+    from app import account_prefs
+
+    pref, ledger, smtp = estate
+    pref["portfolio_digest_opt_in"] = False
+    writes = []
+    def store(method, path, body=None, prefer=None):
+        if method == "POST":
+            assert prefer == "resolution=merge-duplicates,return=representation"
+            assert body == [{"user_id": UID, "portfolio_digest_opt_in": body[0]["portfolio_digest_opt_in"]}]
+            pref.update(body[0])
+            writes.append(body[0]["portfolio_digest_opt_in"])
+        else:
+            assert method == "GET" and f"user_id=eq.{UID}" in path
+        return [dict(pref)]
+    monkeypatch.setattr(account_prefs, "_digest_pref_store", store)
+    monkeypatch.setenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", "1")
+    response = Response()
+    def save(value):
+        return account_prefs.set_portfolio_digest_choice(
+            account_prefs.PortfolioDigestChoice(enabled=value), response, {"id": UID})
+    assert save(True) == {"enabled": True, "marketing_opt_out": False}
+    assert response.headers["Cache-Control"] == "private, no-store"
+    assert account_prefs.get_portfolio_digest_choice(response, {"id": UID})["enabled"]
+
+    night = ["2026-10-30"]
+    def context():
+        return {"schema": "portfolio_ctx.v2", "asof": night[0], "tickers": {
+            "SYN": {"stage": {"n": 2 if night[0] < DAY else 3}},
+            "OTHER": {"stage": {"n": 4}}}}
+    def holdings(uid):
+        assert uid == UID
+        return [{"ticker": "SYN", "shares": 1234, "entry_price": 99.9}], "positions"
+    monkeypatch.setattr(job, "_capture_day", lambda: night[0])
+    monkeypatch.setattr(job, "_nightly_context", context)
+    monkeypatch.setattr(job, "_account_holdings", holdings)
+    prior = job.capture_digest_night(UID, night[0], enabled=True)
+    assert set(prior.snapshot["names"]) == {"SYN"}
+    assert "shares" not in json.dumps(prior.snapshot)
+    night[0] = DAY
+    def read_prior(uid, cutoff):
+        assert (uid, cutoff) == (UID, DAY)
+        return prior
+    assert job.deliver_digest(UID, DAY, enabled=True, read_previous=read_prior) == "sent"
+    assert job.deliver_digest(UID, DAY, enabled=True, read_previous=read_prior) == "duplicate"
+    monkeypatch.delenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED")
+    assert save(False)["enabled"] is False
+    assert writes == [True, False]
+    assert job.deliver_digest(UID, DAY, enabled=True, read_previous=read_prior) == "not_opted_in"
+    assert len(ledger.inserts) == 1 and len(smtp.connections) == 1
+
+
+def test_missing_or_foreign_cursor_is_unavailable_before_reading_holdings(estate, monkeypatch):
+    _, ledger, smtp = estate
+    def never(uid):
+        pytest.fail("private holdings read before cursor ownership was established")
+    monkeypatch.setattr(job, "_account_holdings", never)
+    for prior in (None, {}, "a hash without a capture",
+                  job.NightlyCapture("00000000-0000-4000-8000-000000000102", "2026-11-01",
+                                     "positions", {"names": {}})):
+        assert job.deliver_digest(UID, DAY, enabled=True, read_previous=lambda uid, day: prior) == "source_unavailable"
+    assert job.deliver_digest(UID, DAY, enabled=True) == "source_unavailable"
+    assert not ledger.inserts and not smtp.connections
+
+
+def test_capture_cannot_backdate_current_holdings_or_claim_an_unknown_book(estate, monkeypatch):
+    monkeypatch.setattr(job, "_capture_day", lambda: DAY)
+    def never(uid):
+        pytest.fail("backdated holdings read")
+    monkeypatch.setattr(job, "_account_holdings", never)
+    with pytest.raises(ValueError):
+        job.capture_digest_night(UID, "2026-10-30", enabled=True)
+    ctx = {"schema": "portfolio_ctx.v2", "asof": DAY, "tickers": {}}
+    monkeypatch.setattr(job, "_nightly_context", lambda: {**ctx, "asof": "2026-10-30"})
+    with pytest.raises(ValueError):
+        job.capture_digest_night(UID, DAY, enabled=True)
+    monkeypatch.setattr(job, "_nightly_context", lambda: ctx)
+    monkeypatch.setattr(job, "_account_holdings", lambda uid: ([], "unspecified"))
+    with pytest.raises(ValueError):
+        job.capture_digest_night(UID, DAY, enabled=True)
+
+
+def test_choice_fails_closed_on_unauthorized_input_and_unconfirmed_write(monkeypatch):
+    from fastapi import HTTPException, Response
+    from pydantic import ValidationError
+    from app import account_prefs as prefs
+
+    assert any(route.endpoint == prefs.set_portfolio_digest_choice
+               and "PUT" in route.methods for route in prefs.router.routes)
+    assert prefs.set_portfolio_digest_choice.__defaults__[-1].dependency is prefs._current_user
+    for body in ({"enabled": "true"}, {"enabled": True, "user_id": UID}):
+        with pytest.raises(ValidationError):
+            prefs.PortfolioDigestChoice(**body)
+    calls = []
+    def store(method, path, **kwargs):
+        calls.append(method)
+        if method == "GET":
+            return []
+        return [{"user_id": "wrong-user", "portfolio_digest_opt_in": True, "marketing_opt_out": False}]
+    monkeypatch.setattr(prefs, "_digest_pref_store", store)
+    monkeypatch.delenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", raising=False)
+    body = prefs.PortfolioDigestChoice(enabled=True)
+    for user, expected in [({}, 401), ({"id": UID}, 503)]:
+        with pytest.raises(HTTPException) as err:
+            prefs.set_portfolio_digest_choice(body, Response(), user)
+        assert err.value.status_code == expected
+    assert calls == []
+    monkeypatch.setenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", "1")
+    with pytest.raises(HTTPException) as err:
+        prefs.set_portfolio_digest_choice(body, Response(), {"id": UID})
+    assert err.value.status_code == 503 and calls == ["GET", "POST"]
+
+
+def test_consent_readback_is_per_account_and_preserves_global_opt_out(monkeypatch):
+    from fastapi import HTTPException, Response
+    from app import account_prefs as prefs
+
+    other = "00000000-0000-4000-8000-000000000102"
+    rows = {uid: {"user_id": uid, "portfolio_digest_opt_in": True, "marketing_opt_out": uid == other}
+            for uid in (UID, other)}
+    def store(method, path, body=None, **kwargs):
+        if method == "GET":
+            uid = path.split("user_id=eq.", 1)[1].split("&", 1)[0]
+            return [rows[uid].copy()]
+        assert method == "POST" and set(body[0]) == {"user_id", "portfolio_digest_opt_in"}
+        rows[body[0]["user_id"]].update(body[0])
+        return [rows[body[0]["user_id"]].copy()]
+    monkeypatch.setattr(prefs, "_digest_pref_store", store)
+    monkeypatch.delenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", raising=False)
+    assert prefs.set_portfolio_digest_choice(prefs.PortfolioDigestChoice(enabled=False),
+                                             Response(), {"id": UID})["enabled"] is False
+    assert prefs.get_portfolio_digest_choice(Response(), {"id": other}) == {
+        "enabled": True, "marketing_opt_out": True}
+    def schema_missing(*args, **kwargs):
+        raise RuntimeError("column unavailable")
+    monkeypatch.setattr(prefs, "_digest_pref_store", schema_missing)
+    with pytest.raises(HTTPException) as err:
+        prefs.get_portfolio_digest_choice(Response(), {"id": UID})
+    assert err.value.status_code == 503
+
+
+def test_native_capture_uses_configured_nightly_path_and_exact_account(tmp_path, estate, monkeypatch):
+    import sys
+    from types import ModuleType
+
+    # Supply the exact host interfaces used by the already-mounted portfolio
+    # endpoint while isolating the test from the web app's startup and stores.
+    native = ModuleType("app.main")
+    native.REPO = tmp_path
+    native._PORTFOLIO_CTX_PATH = "fixture-ctx.json"
+    path = tmp_path / native._PORTFOLIO_CTX_PATH
+    path.write_text(json.dumps({"schema": "portfolio_ctx.v2", "asof": DAY,
+                                "tickers": {"SYN": {"stage": {"n": 2}}, "FOREIGN": {"stage": {"n": 3}}}}))
+    seen = []
+    def holdings(uid):
+        seen.append(uid)
+        return [{"ticker": "SYN"}], "watchlist_union"
+    native._portfolio_load_holdings = holdings
+    monkeypatch.setitem(sys.modules, "app.main", native)
+    monkeypatch.setattr(job, "_capture_day", lambda: DAY)
+    result = job.capture_digest_night(UID, DAY, enabled=True)
+    assert seen == [UID] and result.user_id == UID and result.population == "watchlist_union"
+    assert set(result.snapshot["names"]) == {"SYN"}
