@@ -1749,3 +1749,30 @@ def test_u1b_router_mount_probe_includes_evaluate() -> None:
 
     mounted = main_mod.app.openapi().get("paths", {})
     assert f"{PREFIX}/issuers/{{issuer_id}}/scenarios/evaluate" in mounted
+
+
+def test_u2_router_mount_probe_includes_changes_saved_and_export() -> None:
+    """Gate 31 (SPEC_U2 §2): every U2-2 route is entitled at declaration,
+    answers its own methods only, and is mounted in the production app."""
+    saved_path = f"{PREFIX}/issuers/{{issuer_id}}/scenarios/saved"
+    expected = (
+        (f"{PREFIX}/issuers/{{issuer_id}}/changes", {"GET"}),
+        (saved_path, {"GET", "POST"}),
+        (f"{saved_path}/{{saved_id}}", {"GET", "DELETE"}),
+        (f"{saved_path}/{{saved_id}}/export.{{fmt}}", {"GET"}),
+        (f"{PREFIX}/issuers/{{issuer_id}}/scenarios/evaluate/export.{{fmt}}", {"POST"}),
+    )
+    by_path: dict[str, set[str]] = {}
+    for route in api.router.routes:
+        by_path.setdefault(route.path, set()).update(route.methods)
+        calls = {dependency.call for dependency in route.dependant.dependencies}
+        assert api.require_site_full_user in calls, route.path
+    for path, methods in expected:
+        assert path in by_path, path
+        assert methods <= by_path[path], (path, methods)
+
+    import app.main as main_mod  # noqa: PLC0415
+
+    mounted = main_mod.app.openapi().get("paths", {})
+    for path, _methods in expected:
+        assert path in mounted, path
