@@ -444,3 +444,19 @@ def test_pending_account_verification_does_not_render_paywall():
     assert 'var presentationChanged = tierChanged || accessResolution !== resolution;' in js
     assert 'if (!tierChanged) return;' in js
     assert (ROOT / "site" / "tier_preview.js").read_text() == js
+
+
+def test_preview_controller_urls_are_stamped_from_current_asset_bytes():
+    """An immutable one-year asset cache must not trap restored admin sessions on old JS.
+
+    The generated public pages all load the preview controller at a stamped URL.
+    New controller bytes without new stamps would make the source patch invisible
+    to returning browsers until their old immutable entry expires.
+    """
+    import hashlib
+
+    expected = hashlib.sha256((ROOT / "site" / "tier_preview.js").read_bytes()).hexdigest()[:8]
+    for page in ("us_stocks.html", "macro.html", "fundamental_forensics.html"):
+        html = (ROOT / "site" / page).read_text()
+        assert html.count('src="tier_preview.js?v=') == 1, page
+        assert f'src="tier_preview.js?v={expected}"' in html, (page, expected)
