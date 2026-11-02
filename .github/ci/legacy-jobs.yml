@@ -2373,9 +2373,25 @@ jobs:
       - "templates/support.html.j2"
       - "tests/fixtures/fundamental_forensics/aapl_10k_2025/**"
       - "tests/fixtures/fundamental_forensics/aapl_10q_2026q3/**"
+      - "tests/test_build_capital_structure_projection.py"
+      - "tests/test_capital_structure_api.py"
+      - "tests/test_capital_structure_capacity.py"
+      - "tests/test_capital_structure_funding.py"
+      - "tests/test_capital_structure_instrument_candidates.py"
+      - "tests/test_capital_structure_instrument_economics.py"
+      - "tests/test_capital_structure_instrument_resolution.py"
+      - "tests/test_capital_structure_issuer_state_contracts.py"
+      - "tests/test_capital_structure_registration_integration.py"
+      - "tests/test_capital_structure_registration_lifecycle.py"
+      - "tests/test_capital_structure_scenario_inputs.py"
+      - "tests/test_capital_structure_state_api.py"
+      - "tests/test_capital_structure_state_bundle.py"
+      - "tests/test_capital_structure_supply_scenarios.py"
+      - "tests/test_capital_structure_term_integration.py"
       - "tests/test_company_theme_exposure.py"
       - "tests/test_integrated_answer_clock.py"
       - "tests/test_integrated_answer_consumer_receipt.py"
+      - "tests/test_integrated_answer_cs_context_leg.py"
       - "tests/test_integrated_answer_v0.py"
       - "tools/**"
       - "worker/**"
@@ -2389,7 +2405,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest fastapi httpx pyyaml requests pandas numpy pyarrow jsonschema
       - name: integrated answer v0 composer
-        run: python -m pytest tests/test_integrated_answer_v0.py tests/test_integrated_answer_clock.py tests/test_integrated_answer_consumer_receipt.py -q
+        run: python -m pytest tests/test_integrated_answer_v0.py tests/test_integrated_answer_clock.py tests/test_integrated_answer_consumer_receipt.py tests/test_integrated_answer_cs_context_leg.py -q
 
   c19-wp19-integrated-answer-pins:
     if: ${{ false }}
@@ -13057,6 +13073,7 @@ jobs:
           tests/test_capital_structure_issuer_state_contracts.py
           tests/test_capital_structure_sec_discovery_clock.py
           tests/test_capital_structure_document_terms.py
+          tests/test_capital_structure_document_terms_v1_3_0.py
           tests/test_capital_structure_instrument_candidates.py
           tests/test_capital_structure_term_integration.py
           tests/test_capital_structure_instrument_resolution.py
@@ -17094,6 +17111,7 @@ jobs:
       - "research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json"
       - "research/theme_graph/gmi_relationships_20261021/m3/describe_premises_v1.json"
       - "research/theme_graph/microtheme_membership_candidates_2026-10-08.json"
+      - "research/theme_graph/micro_owner_dispositions.yml"
       - "templates/gmi*"
       - "templates/theme.css"
       - "templates/landing.css"
@@ -22956,6 +22974,7 @@ jobs:
       - "lib/stooq.py"
       - "research/prophet_v4/d2/D2B3_FROZEN_CONTRACT_2026-08-21.md"
       - "research/theme_graph/GMI_PROGRAM_RECOVERY_2026-10-16.md"
+      - "research/theme_graph/micro_owner_dispositions.yml"
       - "scripts/__init__.py"
       - "scripts/build_company_theme_exposure.py"
       - "scripts/build_dt_contra_state.py"

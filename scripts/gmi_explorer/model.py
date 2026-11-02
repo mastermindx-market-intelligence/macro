@@ -124,23 +124,35 @@ def _display_name(repo_root: Path, ticker: str, asof: str | None) -> tuple[str, 
     return ticker, "ticker"
 
 
-def read_edges(edges_path: Path) -> tuple[list, str]:
-    """(edges, edges_state) from the relationships store, read IF PRESENT.
+EDGES_SCHEMA = "company_intelligence.relationship_edges/v1"
 
-    The pages were built for a bare list of edges. The store now ships the
-    ``company_intelligence.relationship_edges/v1`` envelope (a dict carrying
-    ``adoption_state``, ``counts`` and ``edges``), which the dataset registry
-    holds as proposed and "never serving by itself": publishing its edges
-    needs the envelope printed and ``edge_package`` built from its counts,
-    and neither is wired here. Until then any non-list payload reads as no
-    edges, the same "empty" state the pages show when the file is absent.
+
+def read_edges(edges_path: Path) -> tuple[list, str, dict | None]:
+    """(edges, edges_state, edge_package) from the relationships store, read IF PRESENT.
+
+    The store ships the ``company_intelligence.relationship_edges/v1``
+    envelope: a dict carrying ``schema``, ``package_id``, ``as_of``,
+    ``adoption_state``, ``authority``, ``counts`` and ``edges``. The dataset
+    registry holds it as proposed and "never serving by itself", so the S3
+    page prints the envelope beside the edges at display tier
+    (DEC:GMI-RELATIONSHIP-ENVELOPE-CONTRACT). ``edge_package`` is the
+    envelope minus its ``edges`` list — the page-level receipt and the
+    species strip read it; nothing here ranks, sizes or gates.
+
+    A bare list of edges (the shape the pages were first built for) still
+    reads as present with no package. An absent file or any other shape reads
+    as no edges — the "empty" state — and never raises.
     """
     if not edges_path.exists():
-        return [], "empty"
+        return [], "empty", None
     payload = json.loads(edges_path.read_text(encoding="utf-8"))
-    if not isinstance(payload, list):
-        return [], "empty"
-    return payload, "present"
+    if isinstance(payload, list):
+        return payload, "present", None
+    if (isinstance(payload, dict) and payload.get("schema") == EDGES_SCHEMA
+            and isinstance(payload.get("edges"), list)):
+        package = {k: v for k, v in payload.items() if k != "edges"}
+        return payload["edges"], "present", package
+    return [], "empty", None
 
 
 def edge_party_names(repo_root: Path, edges: list, asof: str | None) -> dict:
@@ -497,7 +509,7 @@ def build_model(report: dict, manifest: dict | None, *, repo_root: Path,
 
     # -- edges / deck: other programs own these; read IF PRESENT -------------
     deck_path = repo_root / DECK_PATH
-    edges, edges_state = read_edges(repo_root / EDGES_PATH)
+    edges, edges_state, edge_package = read_edges(repo_root / EDGES_PATH)
     deck = json.loads(deck_path.read_text(encoding="utf-8")) if deck_path.exists() else None
 
     # -- card payloads -------------------------------------------------------
@@ -578,9 +590,10 @@ def build_model(report: dict, manifest: dict | None, *, repo_root: Path,
         "edges_state": edges_state,
         "party_names": edge_party_names(repo_root, edges, asof),
         "deck": deck,
-        # relationships package manifest (counts by species); none until the
-        # relationships store lands — only the S3 "edges present" branch reads it
-        "edge_package": None,
+        # the relationships envelope minus its edges (package id, as_of,
+        # adoption state, authority, counts by species); None for a bare list
+        # or no store — only the S3 "edges present" branch reads it
+        "edge_package": edge_package,
         "card_payloads": card_payloads,
         "provenance": provenance,
         "theme_parents": theme_parents,
