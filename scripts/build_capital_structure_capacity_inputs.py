@@ -6,7 +6,8 @@ and the verified projection generation through the same verifier the projection
 uses, then binds per issuer exactly what each nightly run can lawfully produce:
 
 * instruments — from ``instrument_candidate_terms.parquet`` when the candidate
-  compiler has materialized rows for the issuer, resolved with an owner
+  compiler has materialized rows for the issuer that are available at the
+  cutoff, resolved with an owner
   decisions ledger when one is admitted (never fuzzy, never invented);
 * share basis — only from admitted share-count observations and corporate
   actions under the root (never from a provider, a publication chain or R2);
@@ -54,6 +55,7 @@ from engine.capital_structure.issuer_state_contracts import (  # noqa: E402
     CorporateActionInputs,
     sha256_of,
 )
+from engine.capital_structure.term_integration import assert_closed_candidate_term  # noqa: E402
 from engine.capital_structure.rule_applicability import (  # noqa: E402
     build_rule_pack,
     load_rule_applicability_pack,
@@ -182,6 +184,34 @@ def _issuer_rows(path: Path, json_column: str, issuer_id: str, label: str) -> tu
     return tuple(rows)
 
 
+def _zoned_instant(value: Any) -> datetime | None:
+    """An ISO instant with a timezone, or None (the resolver refuses it by name)."""
+    if not isinstance(value, str) or not value:
+        return None
+    text = value[:-1] + "+00:00" if value.endswith("Z") else value
+    try:
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo is not None else None
+
+
+def _any_candidate_visible(records: Sequence[Mapping[str, Any]], as_of: str) -> bool:
+    """True when some candidate is available at ``as_of``, or a timestamp is malformed.
+
+    A malformed cutoff or ``available_at`` counts as visible so the resolver,
+    not this pre-check, refuses it.
+    """
+    cutoff = _zoned_instant(as_of)
+    if cutoff is None:
+        return True
+    for row in records:
+        available = _zoned_instant((row.get("point_in_time") or {}).get("available_at"))
+        if available is None or available <= cutoff:
+            return True
+    return False
+
+
 def _bind_instruments(root: Path, issuer_id: str, as_of: str) -> FamilyEntry:
     """Bind the instruments family, or name why nothing is bound (SPEC_U1B §3)."""
     ledger_path = root / CANDIDATE_TERMS_FILENAME
@@ -192,7 +222,16 @@ def _bind_instruments(root: Path, issuer_id: str, as_of: str) -> FamilyEntry:
             reason_codes=("candidate_terms_not_materialized",),
         )
     records = _issuer_rows(ledger_path, "candidate_term_json", issuer_id, "instrument_candidate_terms")
-    if not records:
+    # The nightly compiles candidates after the state step, so a freshly
+    # compiled candidate is stamped available after the state's cutoff.  An
+    # issuer none of whose candidates is visible at the cutoff has no candidate
+    # terms as of it: unavailable, never a resolver refusal.  Carried rows keep
+    # their first available_at, so they bind on the next night's cutoff.  Every
+    # row is first re-proved closed, as the resolver would, so lateness never
+    # hides a tampered row.
+    for row in records:
+        assert_closed_candidate_term(row)
+    if not records or not _any_candidate_visible(records, as_of):
         return FamilyEntry(
             family=INSTRUMENTS_FAMILY,
             support="unavailable",

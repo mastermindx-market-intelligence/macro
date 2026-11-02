@@ -36,7 +36,8 @@ import tests.test_capital_structure_issuer_state_contracts as T
 import tests.test_capital_structure_supply_scenarios as SS
 from engine.capital_structure import rule_applicability as ra
 from engine.capital_structure.funding import project_funding
-from engine.capital_structure.instrument_resolution import resolve_instruments
+from engine.capital_structure.instrument_candidates import candidate_term_id_for
+from engine.capital_structure.instrument_resolution import ResolutionRefusal, resolve_instruments
 from engine.capital_structure.issuer_state_contracts import (
     COMPATIBLE_INPUT_SCHEMAS,
     STATE_CONTRACT_VERSION,
@@ -45,6 +46,7 @@ from engine.capital_structure.issuer_state_contracts import (
     sha256_of,
     stable_id,
 )
+from engine.capital_structure.term_integration import TermIntegrationRefusal
 from engine.capital_structure.scenario_inputs import (
     CAPACITY_INPUTS_FILENAME,
     COMMITMENTS_FAMILY,
@@ -566,6 +568,54 @@ def test_u1b_producer_binds_candidate_terms_when_present(tmp_path: Path) -> None
     assert json.dumps(resolved_set.as_record(), sort_keys=True) == json.dumps(
         resolved_entry["record"], sort_keys=True
     )
+
+
+def test_u1b_producer_reports_candidates_compiled_after_the_cutoff_as_not_materialized(
+    tmp_path: Path,
+) -> None:
+    # The nightly compiles candidates after the state step, so every row is
+    # stamped available after the served cutoff.  As of that cutoff the issuer
+    # has no candidate terms: unavailable, not a refusal of the whole bundle.
+    def stamped(available_at: str) -> list[dict[str, Any]]:
+        rows = []
+        for row in _candidate_ledger_rows():
+            moved = json.loads(json.dumps(row))
+            moved["point_in_time"]["available_at"] = available_at
+            moved["candidate_term_id"] = candidate_term_id_for(moved)
+            rows.append(moved)
+        return rows
+
+    late = "2026-08-10T00:00:00Z"
+    assert producer._zoned_instant(late) > producer._zoned_instant(SERVED_AS_OF)
+    root = _served_root(tmp_path)
+    ledger = root / producer.CANDIDATE_TERMS_FILENAME
+    output = root / producer.CAPACITY_INPUTS_FILENAME
+    _write_parquet(ledger, _to_frame(stamped(late)))
+
+    producer.build_from_disk(root=root)
+    entry = _read_produced_bundle(root)["issuers"][ISSUER][INSTRUMENTS_FAMILY]
+    assert entry == {
+        "support": "unavailable",
+        "reason_codes": ["candidate_terms_not_materialized"],
+        "binding": None,
+        "record": None,
+    }
+    good = output.read_bytes()
+
+    # Lateness never hides a tampered row: it refuses as the resolver would,
+    # and the last good bundle stays byte-identical.
+    tampered = stamped(late)
+    tampered[0]["point_in_time"]["available_at"] = "2026-08-11T00:00:00Z"
+    _write_parquet(ledger, _to_frame(tampered))
+    with pytest.raises(TermIntegrationRefusal, match="not the digest of its record"):
+        producer.build_from_disk(root=root)
+    assert output.read_bytes() == good
+
+    # A malformed timestamp is not "late": the resolver still refuses it.
+    _write_parquet(ledger, _to_frame(stamped("not-a-timestamp")))
+    with pytest.raises(ResolutionRefusal, match="not an ISO timestamp"):
+        producer.build_from_disk(root=root)
+    assert output.read_bytes() == good
 
 
 # ---------------------------------------------------------------------------
