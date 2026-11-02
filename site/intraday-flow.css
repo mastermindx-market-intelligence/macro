@@ -33,7 +33,8 @@ body.page-intraday-flow { margin:0; padding:18px; line-height:1.5; background:va
 .page-intraday-flow .sc-dot,.page-intraday-flow .sp-dot,.page-intraday-flow .gh-dot { width:5px; height:5px; border-radius:var(--r-pill,999px); background:var(--lane,var(--muted)); flex-shrink:0; }
 .page-intraday-flow .sc-count { font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-size:var(--fs-num-lg); font-weight:600; grid-column:2; grid-row:1/3; align-self:center; }
 .page-intraday-flow .sc-sub { font-size:var(--fs-micro); color:var(--muted); line-height:1.4; grid-column:1; }
-.page-intraday-flow .lane-act { --lane:var(--ink-ok,var(--ok)); }
+/* Directional lanes follow the shared locale-specific rising-price token. */
+.page-intraday-flow .lane-act { --lane:var(--ink-up,var(--up)); }
 .page-intraday-flow .lane-ready { --lane:var(--ink-info,var(--info)); }
 .page-intraday-flow .lane-fav { --lane:var(--ink-up,var(--up)); }
 .page-intraday-flow .lane-profit,.page-intraday-flow .lane-watch { --lane:var(--ink-warn,var(--warn)); }
@@ -155,7 +156,7 @@ body.page-intraday-flow { margin:0; padding:18px; line-height:1.5; background:va
 .page-intraday-flow .ift-skel-cell { width:80%; height:14px; }
 .page-intraday-flow .ift-skel-cell.narrow { width:45px; }
 .page-intraday-flow .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
-.page-intraday-flow .ift-workspace :where(button,a,input,summary,[tabindex]):focus-visible { outline:2px solid var(--link); outline-offset:3px; }
+.page-intraday-flow .ift-workspace :where(button,a,input,select,summary,[tabindex]):focus-visible { outline:2px solid var(--link); outline-offset:3px; }
 html[data-theme="light"] .page-intraday-flow .ift-board.panel,
 html[data-theme="light"] .page-intraday-flow .ift-inspector { box-shadow:var(--card-shadow); }
 html[data-theme="light"] .page-intraday-flow .ift-brief { background:var(--panel); }
@@ -368,4 +369,14 @@ body.page-intraday-flow .lens-pop .ift-feed-row + .ift-feed-row { margin-top:0.4
  .page-intraday-flow table.leaders .lead-row .vol-cell { padding-right:var(--sp-8,44px); }
  .page-intraday-flow #ift-stamp { display:block; position:relative; padding-right:22px; }
  .page-intraday-flow #ift-stamp > .lens-q { position:absolute; right:0; top:1px; }
+}
+
+/* Evidence availability is separate from the preserved model result. */
+.page-intraday-flow .ift-no-read { margin:var(--sp-2,8px) 0 0; color:var(--muted); font-size:var(--fs-label); line-height:1.5; }
+.page-intraday-flow .ift-no-read[hidden] { display:none; }
+.page-intraday-flow .ift-evidence-context { grid-column:1 / -1; padding-bottom:var(--sp-3,12px); border-bottom:1px solid var(--line); }
+.page-intraday-flow .ift-evidence-times { display:flex; flex-wrap:wrap; gap:var(--sp-1,4px) var(--sp-5,20px); color:var(--muted); font-size:var(--fs-label); line-height:1.6; }
+.page-intraday-flow .ift-workspace .ift-evidence-overview { display:none; margin-top:var(--sp-3,12px); }
+@media (max-width:1199px) {
+ .page-intraday-flow .ift-workspace .ift-evidence-overview { display:inline-flex; min-height:44px; }
 }

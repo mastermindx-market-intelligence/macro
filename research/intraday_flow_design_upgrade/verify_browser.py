@@ -3,7 +3,7 @@
 Runs against an owned loopback preview, using anonymous isolated browser contexts.
 Scenario responses are explicitly synthetic TEST FIXTURES; they are never written
 to site/ or presented as production market observations. The normal-layout cases
-use committed source snapshots. This is functional proof, not Paper or live proof.
+use the real base snapshot and available feed responses. This is functional proof, not Paper or live proof.
 """
 from __future__ import annotations
 import argparse
@@ -42,6 +42,12 @@ def refresh_focus(context,page,selector,key):
     body=(ROOT/"site/live/quotes.json").read_text()
     context.route("**/live/quotes.json*",lambda route:pending.append(route))
     context.route("**/live/intraday_quotes.json*",lambda route:pending.append(route))
+    if selector=="#ift-see-all":
+        page.evaluate("""() => {
+          window.__countChanges=0;
+          window.__countObserver=new MutationObserver(records=>window.__countChanges+=records.length);
+          window.__countObserver.observe(document.getElementById('count-label'),{childList:true,subtree:true,characterData:true});
+        }""")
     page.locator("#ift-refresh").click()
     page.wait_for_timeout(100)
     page.evaluate("""() => {
@@ -61,6 +67,9 @@ def refresh_focus(context,page,selector,key):
     preserved=page.evaluate("(selector)=>document.activeElement===document.querySelector(selector)",selector)
     detail={} if preserved else page.evaluate("({active:document.activeElement.outerHTML.slice(0,240),trace:window.__focusTrace.slice(-15)})")
     check(key+"/preserved",preserved,**detail)
+    if selector=="#ift-see-all":
+        changes=page.evaluate("() => {window.__countObserver.disconnect();return window.__countChanges;}")
+        check(key+"/unchanged-count-silent",changes==0,mutations=changes)
     context.unroute("**/live/quotes.json*");context.unroute("**/live/intraday_quotes.json*")
 
 def menu_not_clipped(page,key):
@@ -86,6 +95,15 @@ def layout_and_controls(browser, url, theme, locale, width):
     check(key+"/language",page.locator("html").get_attribute("data-lang")==locale)
     check(key+"/theme",page.locator("html").get_attribute("data-theme")==theme)
     check(key+"/cap",visible_count(page)==8,count=visible_count(page))
+    lane_colors=page.evaluate("""() => {
+      const probe=document.createElement('span');probe.style.color='var(--ink-up,var(--up))';document.querySelector('main').appendChild(probe);
+      const result={up:getComputedStyle(probe).color,act:getComputedStyle(document.querySelector('.lane-act .sc-dot')).backgroundColor,
+        favour:getComputedStyle(document.querySelector('.lane-fav .sc-dot')).backgroundColor};
+      probe.remove();return result;
+    }""")
+    check(key+"/localized-direction-colors",lane_colors["act"]==lane_colors["favour"]==lane_colors["up"],**lane_colors)
+    feed_label=page.locator("#ift-stamp .lens-q").get_attribute("aria-label")
+    check(key+"/localized-feed-label",feed_label==("Feed status" if locale=="en" else "数据源状态"),label=feed_label)
     geometry=page.evaluate("""() => {
       const rows=[...document.querySelectorAll('tr.lead-row')].filter(r=>r.getBoundingClientRect().height>0);
       const nav=document.querySelector('.site-nav');
@@ -117,6 +135,10 @@ def layout_and_controls(browser, url, theme, locale, width):
         }""")
         check(key+"/metrics-clear-of-assistant",metric_geometry["maxRight"]<=315,**metric_geometry)
         check(key+"/status-help-attached",metric_geometry["lensTop"] is not None and abs(metric_geometry["lensTop"]-metric_geometry["stampTop"])<=3,**metric_geometry)
+        page.locator("#ift-theme-menu > summary").focus()
+        page.keyboard.press("Tab")
+        select_focus=page.evaluate("() => ({id:document.activeElement.id,width:parseFloat(getComputedStyle(document.activeElement).outlineWidth),style:getComputedStyle(document.activeElement).outlineStyle})")
+        check(key+"/mobile-sort-focus-visible",select_focus["id"]=="ift-mobile-sort" and select_focus["width"]>=2 and select_focus["style"]=="solid",**select_focus)
 
 
     if width>760:
@@ -175,6 +197,14 @@ def layout_and_controls(browser, url, theme, locale, width):
 
     states=page.locator('[data-detail="'+tk+'"] .check-state:visible').all_inner_texts()
     check(key+"/seven-explicit-states",len(states)==7 and all(s.strip() in ("Met","Not met","Unavailable","已满足","未满足","不可用") for s in states),states=states)
+    if width<=760:
+        overview_selector="#ift-evidence-stock-"+tk
+        overview=page.locator(overview_selector)
+        check(key+"/mobile-stock-overview",overview.is_visible() and overview.get_attribute("href")=="stock.html#"+tk and overview.bounding_box()["height"]>=44)
+        refresh_focus(context,page,overview_selector,key+"/refresh-mobile-stock-overview")
+    detail_text=page.locator('[data-detail="'+tk+'"]').inner_text()
+    raw_band_pattern=r"\b(?:very_strong)\b" if locale=="en" else r"\b(?:very_strong|faint|weak|moderate|strong|hard)\b"
+    check(key+"/localized-dealer-bands",not re.search(raw_band_pattern,detail_text),text=detail_text[-1800:])
     for selector in (["#ift-open-evidence","#ift-stock-overview"] if width>760 else [])+["#ift-evidence-"+tk]:
         refresh_focus(context,page,selector,key+"/refresh-"+selector[1:])
 
@@ -283,6 +313,86 @@ def scenario(browser,url,name,width=1440):
     page.wait_for_timeout(100)
     context.close()
 
+
+def evidence_inputs(browser,url,locale):
+    """TEST FIXTURES: exercise missing versus observed rule inputs through real controls."""
+    base=json.loads((ROOT/"site/flowtracker/base.json").read_text())
+    common={"baskets":["mag7"],"built":"2026-10-30","bb_lower_reclaim_days":1,"failed_breakout_trap":False,"prev_close":100}
+    leaders=[
+        {**common,"ticker":"TEST_MISSING","baskets":[]},
+        {**common,"ticker":"TEST_OBSERVED","mtf_upturn_K":0},
+        {**common,"ticker":"TEST_FALLBACK","mtf_upturn_state":"DOWN","adv20_shares":1000000,"vol_share_curve":[0.1]},
+        {**common,"ticker":"TEST_PRESENT","mtf_upturn_state":"UPTURN_CONFIRMED"}]
+    fixture={**base,"leaders":leaders,"n_leaders":len(leaders)}
+    html=(ROOT/"site/intraday_flow.html").read_text()
+    html=re.sub(r"var BASE_DATA = [\s\S]*?;\nvar RVOL_CONFIRM",lambda _: "var BASE_DATA = "+json.dumps(fixture)+";\nvar RVOL_CONFIRM",html,count=1)
+    quotes={
+        "TEST_OBSERVED":{"price":90,"vol":0,"ts":NOW_MS,"tsSynthetic":True},
+        "TEST_FALLBACK":{"price":105,"vol":100000,"ts":NOW_MS,"tsSynthetic":False},
+        "TEST_PRESENT":{"price":110,"vol":100000,"ts":NOW_MS-60000,"tsSynthetic":False}}
+    pulse={"schema":"flow_pulse/v1","as_of":NOW,"stale":True,"tickers":[
+        {"ticker":"TEST_OBSERVED","bars_today":30,"vwap":100,"rvol_tod":0,"vol_durability":0},
+        {"ticker":"TEST_PRESENT","bars_today":30,"vwap":100,"rvol_tod":1.5,"vol_durability":0.75}]}
+    context=source_context(browser,locale=locale,width=390)
+    context.add_init_script("const RealDate=Date;window.Date=class extends RealDate {constructor(...args){super(...(args.length?args:["+json.dumps(NOW)+"]));}static now(){return "+str(NOW_MS)+";}};")
+    def serve(route):
+        path=urlparse(route.request.url).path
+        if path.endswith("/intraday_flow.html"):
+            route.fulfill(status=200,content_type="text/html",body=html)
+        elif path.endswith("/quotes.json") or path.endswith("/intraday_quotes.json"):
+            route.fulfill(status=200,content_type="application/json",body=json.dumps({"quotes":quotes,"meta":{"source_asof":NOW}}))
+        elif path.endswith("/flow_pulse.json"):
+            route.fulfill(status=200,content_type="application/json",body=json.dumps(pulse))
+        elif "live_flow/" in path:
+            route.fulfill(status=503,body="TEST FIXTURE: options unavailable")
+        else:route.continue_()
+    context.route("**/*",serve)
+    page=context.new_page()
+    page.goto(url,wait_until="domcontentloaded");await_board(page)
+    states={"missing":"Unavailable" if locale=="en" else "不可用",
+            "false":"Not met" if locale=="en" else "未满足",
+            "true":"Met" if locale=="en" else "已满足"}
+    expected={
+        "TEST_MISSING":["missing"]*4,
+        "TEST_OBSERVED":["false"]*4,
+        "TEST_FALLBACK":["missing","false","missing","false"],
+        "TEST_PRESENT":["true"]*4}
+    for ticker,wanted in expected.items():
+        page.locator("#ift-search").fill(ticker)
+        before=page.locator("tr.lead-row:visible").evaluate("(row)=>({k:row.dataset.k,stance:row.dataset.stance,rvol:row.dataset.rvol})")
+        page.locator("tr.lead-row:visible .expander").press("Enter")
+        detail=page.locator("#ift-evidence-"+ticker)
+        actual=detail.locator(".check-state").all_inner_texts()
+        key="fixture/evidence/"+locale+"/"+ticker
+        check(key+"/availability",[actual[i] for i in (1,2,3,5)]==[states[x] for x in wanted],states=actual)
+        after=page.locator("tr.lead-row:visible").evaluate("(row)=>({k:row.dataset.k,stance:row.dataset.stance,rvol:row.dataset.rvol})")
+        check(key+"/model-unchanged",after==before)
+        check(key+"/recorded-aligned-count",int(after["k"])==(6 if ticker=="TEST_PRESENT" else 2),observed=after)
+        check(key+"/seven-rules",len(actual)==7)
+        context_text=detail.locator(".ift-evidence-context").inner_text()
+        check(key+"/source-context","2026-10-30" in context_text and ("marked stale" if locale=="en" else "已标记过期") in context_text,context=context_text)
+        if ticker=="TEST_OBSERVED":
+            price=detail.locator(".ift-evidence-times > span").first.inner_text()
+            check(key+"/synthetic-clock-excluded",("time unavailable" if locale=="en" else "时间不可用") in price,price=price)
+        if ticker=="TEST_PRESENT":
+            check(key+"/actual-quote-clock","2026-11-02 15:14 UTC" in context_text,context=context_text)
+        check(key+"/phone-no-overflow",page.evaluate("document.documentElement.scrollWidth<=innerWidth"))
+    summary=page.evaluate("""() => {
+      const rows=[...document.querySelectorAll("tr.lead-row")];
+      return {total:rows.length,noRead:rows.filter(r=>r.dataset.stance==='degraded').length,
+        classified:[...document.querySelectorAll('[data-count]')].reduce((sum,n)=>sum+Number(n.textContent),0)};
+    }""")
+    note=page.locator("#ift-no-read")
+    check("fixture/evidence/"+locale+"/counts-reconcile",summary["noRead"]>0 and summary["classified"]+summary["noRead"]==summary["total"],**summary)
+    check("fixture/evidence/"+locale+"/no-read-visible",note.is_visible() and str(summary["noRead"]) in note.inner_text(),text=note.inner_text())
+    page.locator("#ift-reset").click()
+    page.locator("#ift-theme-menu > summary").click()
+    page.locator('button[data-basket="mag7"]').click()
+    check("fixture/evidence/"+locale+"/untagged-excluded-from-theme",visible_count(page)==3 and not page.locator('tr.lead-row[data-ticker="TEST_MISSING"]').is_visible())
+    page.locator("#ift-reset").click()
+    check("fixture/evidence/"+locale+"/untagged-visible-in-all",visible_count(page)==4 and page.locator('tr.lead-row[data-ticker="TEST_MISSING"]').is_visible())
+    context.close()
+
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("--base-url",default="http://127.0.0.1:8767")
@@ -305,6 +415,9 @@ def main():
                 results.append({"check":"fixture/"+name+"/exception","passed":False,"error":str(e)})
         try:scenario(browser,url,"populated",width=390)
         except Exception as e:results.append({"check":"fixture/populated/mobile/exception","passed":False,"error":str(e)})
+        for locale in ('en','zh'):
+            try:evidence_inputs(browser,url,locale)
+            except Exception as e:results.append({'check':'fixture/evidence/'+locale+'/exception','passed':False,'error':str(e)})
         browser.close()
     out=ROOT/args.output
     out.parent.mkdir(parents=True,exist_ok=True)

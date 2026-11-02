@@ -16,6 +16,18 @@
       "count": 8
     },
     {
+      "check": "1440/light/en/localized-direction-colors",
+      "passed": true,
+      "up": "color(srgb 0.143922 0.459373 0.325882)",
+      "act": "color(srgb 0.143922 0.459373 0.325882)",
+      "favour": "color(srgb 0.143922 0.459373 0.325882)"
+    },
+    {
+      "check": "1440/light/en/localized-feed-label",
+      "passed": true,
+      "label": "Feed status"
+    },
+    {
       "check": "1440/light/en/no-overflow",
       "passed": true,
       "width": 1440,
@@ -156,13 +168,18 @@
       "passed": true,
       "states": [
         "Not met",
-        "Not met",
-        "Not met",
-        "Not met",
         "Unavailable",
+        "Unavailable",
+        "Unavailable",
+        "Not met",
         "Not met",
         "Met"
       ]
+    },
+    {
+      "check": "1440/light/en/localized-dealer-bands",
+      "passed": true,
+      "text": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: time unavailable\nVolume feed: 2026-07-27 22:32 UTC\nOptions feed: 2026-10-30 20:11 UTC\n\nNightly package built: 2026-10-30 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nTape & volume\nRelative volume\n—\nVol durability\n—\nSession VWAP\n—\nPrice vs VWAP\n—\nHigher lows\n—\n~Net call premium\n~+10.5M\n~Net premium (calls+puts)\n~+20.6M\nFlow durability\n48%\nApproximate call lean\n~call buying\nbig block×2\nsize vs open interest×53\nrepeat buyer×244\n1 of 7 recorded checks aligned\n✗\nRecent washout\nNot met\n·\nReclaimed above VWAP\nUnavailable\n·\nVolume elevated\nUnavailable\n·\nVolume holding\nUnavailable\n✗\n~Options leaning in\nNot met\n✗\nTrend turning up\nNot met\n✓\nClean leader (no trap)\nMet\nDealer map (options chains)\nDealer regime\nLong gamma · pins / mean-reverts\nRegime line\n314.08 (+8.9%)\nCeiling (call wall)\n~$360 very strong, hard\nFloor (put wall)\n~$310 weak\nMax pain\n~$300\nExpected move (day)\n±1.8%\nImplied vol\nrich (28.0)\nSkew tone\ndownside fear bid\nEvidence\nthin\n\nLong gamma — dealers dampen moves, so price tends to pin / mean-revert toward the nearby levels; fading extremes beats chasing breakouts, and tighter stops are reasonable.\n\nDaily options chains — a levels + timing map. Context for stops, never a direction call. Single-name regime is a near-constant product trait, not a live signal.\nReference levels\nStop (nightly)\n$329.40\nDealer ceiling\n~$360\nDealer floor\n~$310\nDaily range (ATR)\n0.78%\nBuy zone\n$341.50–$345.00\nReference only — not trade advice."
     },
     {
       "check": "1440/light/en/refresh-ift-open-evidence/requested",
@@ -197,7 +214,7 @@
     {
       "check": "1440/light/en/refresh-ift-evidence-AAPL/focused-before-response",
       "passed": true,
-      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"detail-block\"><h4><span class=\"l-en\">Tape &amp; volume</span><span class=\"l-zh\">盘口与量能</span></h4><div "
+      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"ift-evidence-context\"><p class=\"ift-eyebrow\"><span class=\"l-en\">Recorded evidence · source times</span"
     },
     {
       "check": "1440/light/en/refresh-ift-evidence-AAPL/preserved",
@@ -266,6 +283,11 @@
       "passed": true
     },
     {
+      "check": "1440/light/en/refresh-count-control/unchanged-count-silent",
+      "passed": true,
+      "mutations": 0
+    },
+    {
       "check": "1440/light/en/no-script-errors",
       "passed": true,
       "errors": []
@@ -282,6 +304,18 @@
       "check": "1440/light/zh/cap",
       "passed": true,
       "count": 8
+    },
+    {
+      "check": "1440/light/zh/localized-direction-colors",
+      "passed": true,
+      "up": "color(srgb 0.710745 0.246588 0.26102)",
+      "act": "color(srgb 0.710745 0.246588 0.26102)",
+      "favour": "color(srgb 0.710745 0.246588 0.26102)"
+    },
+    {
+      "check": "1440/light/zh/localized-feed-label",
+      "passed": true,
+      "label": "数据源状态"
     },
     {
       "check": "1440/light/zh/no-overflow",
@@ -424,13 +458,18 @@
       "passed": true,
       "states": [
         "未满足",
-        "未满足",
-        "未满足",
-        "未满足",
         "不可用",
+        "不可用",
+        "不可用",
+        "未满足",
         "未满足",
         "已满足"
       ]
+    },
+    {
+      "check": "1440/light/zh/localized-dealer-bands",
+      "passed": true,
+      "text": "已有依据 · 来源时间\n\n价格：时间不可用\n成交量数据源：2026-07-27 22:32 UTC\n期权数据源：2026-10-30 20:11 UTC\n\n夜间数据包构建于：2026-10-30 · 做市商期权链来源时间不可用。来源时间不代表当前确认。\n\n盘口与量能\n相对成交量\n—\n量能持续\n—\n当日VWAP\n—\n价格对VWAP\n—\n更高低点\n—\n~净看涨权利金\n~+10.5M\n~净权利金（看涨+看跌）\n~+20.6M\n资金持续\n48%\n近似看涨期权倾向\n~买入看涨\n大单×2\n规模对比未平仓×53\n重复买入×244\n7项已有检查中1项一致\n✗\n近期洗盘\n未满足\n·\n收复VWAP上方\n不可用\n·\n放量\n不可用\n·\n量能持稳\n不可用\n✗\n~期权偏多\n未满足\n✗\n趋势转强\n未满足\n✓\n干净领涨（无陷阱）\n已满足\n做市商地图（期权链）\n做市商体制\n多头Gamma · 磁吸/均值回归\n体制分界\n314.08 (+8.9%)\n天花板（看涨墙）\n~$360 很强, 硬\n地板（看跌墙）\n~$310 弱\n最大痛点\n~$300\n预期波动（日）\n±1.8%\n隐含波动\n昂贵 (28.0)\n偏斜\n下行恐慌买盘\n数据质量\n稀薄\n\n多头Gamma —— 做市商抑制波动，价格倾向于在邻近价位附近被钉住/均值回归；逢极端回落优于追突破，止损可更紧。\n\n每日期权链——价位与择时地图。仅作止损背景，非方向判断。单只标的体制为产品近乎恒定的属性，非实时信号。\n参考价位\n止损（夜间）\n$329.40\n做市商天花板\n~$360\n做市商地板\n~$310\n日均波幅(ATR)\n0.78%\n买入区间\n$341.50–$345.00\n仅供参考——不构成交易建议。"
     },
     {
       "check": "1440/light/zh/refresh-ift-open-evidence/requested",
@@ -465,7 +504,7 @@
     {
       "check": "1440/light/zh/refresh-ift-evidence-AAPL/focused-before-response",
       "passed": true,
-      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"detail-block\"><h4><span class=\"l-en\">Tape &amp; volume</span><span class=\"l-zh\">盘口与量能</span></h4><div "
+      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"ift-evidence-context\"><p class=\"ift-eyebrow\"><span class=\"l-en\">Recorded evidence · source times</span"
     },
     {
       "check": "1440/light/zh/refresh-ift-evidence-AAPL/preserved",
@@ -534,6 +573,11 @@
       "passed": true
     },
     {
+      "check": "1440/light/zh/refresh-count-control/unchanged-count-silent",
+      "passed": true,
+      "mutations": 0
+    },
+    {
       "check": "1440/light/zh/no-script-errors",
       "passed": true,
       "errors": []
@@ -550,6 +594,18 @@
       "check": "1440/dark/en/cap",
       "passed": true,
       "count": 8
+    },
+    {
+      "check": "1440/dark/en/localized-direction-colors",
+      "passed": true,
+      "up": "color(srgb 0.270588 0.721569 0.45098)",
+      "act": "color(srgb 0.270588 0.721569 0.45098)",
+      "favour": "color(srgb 0.270588 0.721569 0.45098)"
+    },
+    {
+      "check": "1440/dark/en/localized-feed-label",
+      "passed": true,
+      "label": "Feed status"
     },
     {
       "check": "1440/dark/en/no-overflow",
@@ -692,13 +748,18 @@
       "passed": true,
       "states": [
         "Not met",
-        "Not met",
-        "Not met",
-        "Not met",
         "Unavailable",
+        "Unavailable",
+        "Unavailable",
+        "Not met",
         "Not met",
         "Met"
       ]
+    },
+    {
+      "check": "1440/dark/en/localized-dealer-bands",
+      "passed": true,
+      "text": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: time unavailable\nVolume feed: 2026-07-27 22:32 UTC\nOptions feed: 2026-10-30 20:11 UTC\n\nNightly package built: 2026-10-30 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nTape & volume\nRelative volume\n—\nVol durability\n—\nSession VWAP\n—\nPrice vs VWAP\n—\nHigher lows\n—\n~Net call premium\n~+10.5M\n~Net premium (calls+puts)\n~+20.6M\nFlow durability\n48%\nApproximate call lean\n~call buying\nbig block×2\nsize vs open interest×53\nrepeat buyer×244\n1 of 7 recorded checks aligned\n✗\nRecent washout\nNot met\n·\nReclaimed above VWAP\nUnavailable\n·\nVolume elevated\nUnavailable\n·\nVolume holding\nUnavailable\n✗\n~Options leaning in\nNot met\n✗\nTrend turning up\nNot met\n✓\nClean leader (no trap)\nMet\nDealer map (options chains)\nDealer regime\nLong gamma · pins / mean-reverts\nRegime line\n314.08 (+8.9%)\nCeiling (call wall)\n~$360 very strong, hard\nFloor (put wall)\n~$310 weak\nMax pain\n~$300\nExpected move (day)\n±1.8%\nImplied vol\nrich (28.0)\nSkew tone\ndownside fear bid\nEvidence\nthin\n\nLong gamma — dealers dampen moves, so price tends to pin / mean-revert toward the nearby levels; fading extremes beats chasing breakouts, and tighter stops are reasonable.\n\nDaily options chains — a levels + timing map. Context for stops, never a direction call. Single-name regime is a near-constant product trait, not a live signal.\nReference levels\nStop (nightly)\n$329.40\nDealer ceiling\n~$360\nDealer floor\n~$310\nDaily range (ATR)\n0.78%\nBuy zone\n$341.50–$345.00\nReference only — not trade advice."
     },
     {
       "check": "1440/dark/en/refresh-ift-open-evidence/requested",
@@ -733,7 +794,7 @@
     {
       "check": "1440/dark/en/refresh-ift-evidence-AAPL/focused-before-response",
       "passed": true,
-      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"detail-block\"><h4><span class=\"l-en\">Tape &amp; volume</span><span class=\"l-zh\">盘口与量能</span></h4><div "
+      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"ift-evidence-context\"><p class=\"ift-eyebrow\"><span class=\"l-en\">Recorded evidence · source times</span"
     },
     {
       "check": "1440/dark/en/refresh-ift-evidence-AAPL/preserved",
@@ -802,6 +863,11 @@
       "passed": true
     },
     {
+      "check": "1440/dark/en/refresh-count-control/unchanged-count-silent",
+      "passed": true,
+      "mutations": 0
+    },
+    {
       "check": "1440/dark/en/no-script-errors",
       "passed": true,
       "errors": []
@@ -818,6 +884,18 @@
       "check": "1440/dark/zh/cap",
       "passed": true,
       "count": 8
+    },
+    {
+      "check": "1440/dark/zh/localized-direction-colors",
+      "passed": true,
+      "up": "color(srgb 0.878431 0.392157 0.392157)",
+      "act": "color(srgb 0.878431 0.392157 0.392157)",
+      "favour": "color(srgb 0.878431 0.392157 0.392157)"
+    },
+    {
+      "check": "1440/dark/zh/localized-feed-label",
+      "passed": true,
+      "label": "数据源状态"
     },
     {
       "check": "1440/dark/zh/no-overflow",
@@ -960,13 +1038,18 @@
       "passed": true,
       "states": [
         "未满足",
-        "未满足",
-        "未满足",
-        "未满足",
         "不可用",
+        "不可用",
+        "不可用",
+        "未满足",
         "未满足",
         "已满足"
       ]
+    },
+    {
+      "check": "1440/dark/zh/localized-dealer-bands",
+      "passed": true,
+      "text": "已有依据 · 来源时间\n\n价格：时间不可用\n成交量数据源：2026-07-27 22:32 UTC\n期权数据源：2026-10-30 20:11 UTC\n\n夜间数据包构建于：2026-10-30 · 做市商期权链来源时间不可用。来源时间不代表当前确认。\n\n盘口与量能\n相对成交量\n—\n量能持续\n—\n当日VWAP\n—\n价格对VWAP\n—\n更高低点\n—\n~净看涨权利金\n~+10.5M\n~净权利金（看涨+看跌）\n~+20.6M\n资金持续\n48%\n近似看涨期权倾向\n~买入看涨\n大单×2\n规模对比未平仓×53\n重复买入×244\n7项已有检查中1项一致\n✗\n近期洗盘\n未满足\n·\n收复VWAP上方\n不可用\n·\n放量\n不可用\n·\n量能持稳\n不可用\n✗\n~期权偏多\n未满足\n✗\n趋势转强\n未满足\n✓\n干净领涨（无陷阱）\n已满足\n做市商地图（期权链）\n做市商体制\n多头Gamma · 磁吸/均值回归\n体制分界\n314.08 (+8.9%)\n天花板（看涨墙）\n~$360 很强, 硬\n地板（看跌墙）\n~$310 弱\n最大痛点\n~$300\n预期波动（日）\n±1.8%\n隐含波动\n昂贵 (28.0)\n偏斜\n下行恐慌买盘\n数据质量\n稀薄\n\n多头Gamma —— 做市商抑制波动，价格倾向于在邻近价位附近被钉住/均值回归；逢极端回落优于追突破，止损可更紧。\n\n每日期权链——价位与择时地图。仅作止损背景，非方向判断。单只标的体制为产品近乎恒定的属性，非实时信号。\n参考价位\n止损（夜间）\n$329.40\n做市商天花板\n~$360\n做市商地板\n~$310\n日均波幅(ATR)\n0.78%\n买入区间\n$341.50–$345.00\n仅供参考——不构成交易建议。"
     },
     {
       "check": "1440/dark/zh/refresh-ift-open-evidence/requested",
@@ -1001,7 +1084,7 @@
     {
       "check": "1440/dark/zh/refresh-ift-evidence-AAPL/focused-before-response",
       "passed": true,
-      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"detail-block\"><h4><span class=\"l-en\">Tape &amp; volume</span><span class=\"l-zh\">盘口与量能</span></h4><div "
+      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"ift-evidence-context\"><p class=\"ift-eyebrow\"><span class=\"l-en\">Recorded evidence · source times</span"
     },
     {
       "check": "1440/dark/zh/refresh-ift-evidence-AAPL/preserved",
@@ -1070,6 +1153,11 @@
       "passed": true
     },
     {
+      "check": "1440/dark/zh/refresh-count-control/unchanged-count-silent",
+      "passed": true,
+      "mutations": 0
+    },
+    {
       "check": "1440/dark/zh/no-script-errors",
       "passed": true,
       "errors": []
@@ -1086,6 +1174,18 @@
       "check": "390/light/en/cap",
       "passed": true,
       "count": 8
+    },
+    {
+      "check": "390/light/en/localized-direction-colors",
+      "passed": true,
+      "up": "color(srgb 0.143922 0.459373 0.325882)",
+      "act": "color(srgb 0.143922 0.459373 0.325882)",
+      "favour": "color(srgb 0.143922 0.459373 0.325882)"
+    },
+    {
+      "check": "390/light/en/localized-feed-label",
+      "passed": true,
+      "label": "Feed status"
     },
     {
       "check": "390/light/en/no-overflow",
@@ -1179,6 +1279,13 @@
       "lensTop": 305.390625
     },
     {
+      "check": "390/light/en/mobile-sort-focus-visible",
+      "passed": true,
+      "id": "ift-mobile-sort",
+      "width": 2,
+      "style": "solid"
+    },
+    {
       "check": "390/light/en/empty-filter",
       "passed": true
     },
@@ -1264,13 +1371,35 @@
       "passed": true,
       "states": [
         "Not met",
-        "Not met",
-        "Not met",
-        "Not met",
         "Unavailable",
+        "Unavailable",
+        "Unavailable",
+        "Not met",
         "Not met",
         "Met"
       ]
+    },
+    {
+      "check": "390/light/en/mobile-stock-overview",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/refresh-mobile-stock-overview/requested",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/refresh-mobile-stock-overview/focused-before-response",
+      "passed": true,
+      "active": "<a class=\"gbtn ift-evidence-overview\" id=\"ift-evidence-stock-AAPL\" href=\"stock.html#AAPL\"><span class=\"l-en\">Open AAPL overview</span><span class=\"l-zh\">打开AAPL概览</span> <span aria-hidden=\"true\">↗</span></a>"
+    },
+    {
+      "check": "390/light/en/refresh-mobile-stock-overview/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/localized-dealer-bands",
+      "passed": true,
+      "text": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: time unavailable\nVolume feed: 2026-07-27 22:32 UTC\nOptions feed: 2026-10-30 20:11 UTC\n\nNightly package built: 2026-10-30 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nOpen AAPL overview\n↗\nTape & volume\nRelative volume\n—\nVol durability\n—\nSession VWAP\n—\nPrice vs VWAP\n—\nHigher lows\n—\n~Net call premium\n~+10.5M\n~Net premium (calls+puts)\n~+20.6M\nFlow durability\n48%\nApproximate call lean\n~call buying\nbig block×2\nsize vs open interest×53\nrepeat buyer×244\n1 of 7 recorded checks aligned\n✗\nRecent washout\nNot met\n·\nReclaimed above VWAP\nUnavailable\n·\nVolume elevated\nUnavailable\n·\nVolume holding\nUnavailable\n✗\n~Options leaning in\nNot met\n✗\nTrend turning up\nNot met\n✓\nClean leader (no trap)\nMet\nDealer map (options chains)\nDealer regime\nLong gamma · pins / mean-reverts\nRegime line\n314.08 (+8.9%)\nCeiling (call wall)\n~$360 very strong, hard\nFloor (put wall)\n~$310 weak\nMax pain\n~$300\nExpected move (day)\n±1.8%\nImplied vol\nrich (28.0)\nSkew tone\ndownside fear bid\nEvidence\nthin\n\nLong gamma — dealers dampen moves, so price tends to pin / mean-revert toward the nearby levels; fading extremes beats chasing breakouts, and tighter stops are reasonable.\n\nDaily options chains — a levels + timing map. Context for stops, never a direction call. Single-name regime is a near-constant product trait, not a live signal.\nReference levels\nStop (nightly)\n$329.40\nDealer ceiling\n~$360\nDealer floor\n~$310\nDaily range (ATR)\n0.78%\nBuy zone\n$341.50–$345.00\nReference only — not trade advice."
     },
     {
       "check": "390/light/en/refresh-ift-evidence-AAPL/requested",
@@ -1279,7 +1408,7 @@
     {
       "check": "390/light/en/refresh-ift-evidence-AAPL/focused-before-response",
       "passed": true,
-      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"detail-block\"><h4><span class=\"l-en\">Tape &amp; volume</span><span class=\"l-zh\">盘口与量能</span></h4><div "
+      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"ift-evidence-context\"><p class=\"ift-eyebrow\"><span class=\"l-en\">Recorded evidence · source times</span"
     },
     {
       "check": "390/light/en/refresh-ift-evidence-AAPL/preserved",
@@ -1348,6 +1477,11 @@
       "passed": true
     },
     {
+      "check": "390/light/en/refresh-count-control/unchanged-count-silent",
+      "passed": true,
+      "mutations": 0
+    },
+    {
       "check": "390/light/en/no-script-errors",
       "passed": true,
       "errors": []
@@ -1364,6 +1498,18 @@
       "check": "390/light/zh/cap",
       "passed": true,
       "count": 8
+    },
+    {
+      "check": "390/light/zh/localized-direction-colors",
+      "passed": true,
+      "up": "color(srgb 0.710745 0.246588 0.26102)",
+      "act": "color(srgb 0.710745 0.246588 0.26102)",
+      "favour": "color(srgb 0.710745 0.246588 0.26102)"
+    },
+    {
+      "check": "390/light/zh/localized-feed-label",
+      "passed": true,
+      "label": "数据源状态"
     },
     {
       "check": "390/light/zh/no-overflow",
@@ -1457,6 +1603,13 @@
       "lensTop": 286.640625
     },
     {
+      "check": "390/light/zh/mobile-sort-focus-visible",
+      "passed": true,
+      "id": "ift-mobile-sort",
+      "width": 2,
+      "style": "solid"
+    },
+    {
       "check": "390/light/zh/empty-filter",
       "passed": true
     },
@@ -1542,13 +1695,35 @@
       "passed": true,
       "states": [
         "未满足",
-        "未满足",
-        "未满足",
-        "未满足",
         "不可用",
+        "不可用",
+        "不可用",
+        "未满足",
         "未满足",
         "已满足"
       ]
+    },
+    {
+      "check": "390/light/zh/mobile-stock-overview",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/refresh-mobile-stock-overview/requested",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/refresh-mobile-stock-overview/focused-before-response",
+      "passed": true,
+      "active": "<a class=\"gbtn ift-evidence-overview\" id=\"ift-evidence-stock-AAPL\" href=\"stock.html#AAPL\"><span class=\"l-en\">Open AAPL overview</span><span class=\"l-zh\">打开AAPL概览</span> <span aria-hidden=\"true\">↗</span></a>"
+    },
+    {
+      "check": "390/light/zh/refresh-mobile-stock-overview/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/localized-dealer-bands",
+      "passed": true,
+      "text": "已有依据 · 来源时间\n\n价格：时间不可用\n成交量数据源：2026-07-27 22:32 UTC\n期权数据源：2026-10-30 20:11 UTC\n\n夜间数据包构建于：2026-10-30 · 做市商期权链来源时间不可用。来源时间不代表当前确认。\n\n打开AAPL概览\n↗\n盘口与量能\n相对成交量\n—\n量能持续\n—\n当日VWAP\n—\n价格对VWAP\n—\n更高低点\n—\n~净看涨权利金\n~+10.5M\n~净权利金（看涨+看跌）\n~+20.6M\n资金持续\n48%\n近似看涨期权倾向\n~买入看涨\n大单×2\n规模对比未平仓×53\n重复买入×244\n7项已有检查中1项一致\n✗\n近期洗盘\n未满足\n·\n收复VWAP上方\n不可用\n·\n放量\n不可用\n·\n量能持稳\n不可用\n✗\n~期权偏多\n未满足\n✗\n趋势转强\n未满足\n✓\n干净领涨（无陷阱）\n已满足\n做市商地图（期权链）\n做市商体制\n多头Gamma · 磁吸/均值回归\n体制分界\n314.08 (+8.9%)\n天花板（看涨墙）\n~$360 很强, 硬\n地板（看跌墙）\n~$310 弱\n最大痛点\n~$300\n预期波动（日）\n±1.8%\n隐含波动\n昂贵 (28.0)\n偏斜\n下行恐慌买盘\n数据质量\n稀薄\n\n多头Gamma —— 做市商抑制波动，价格倾向于在邻近价位附近被钉住/均值回归；逢极端回落优于追突破，止损可更紧。\n\n每日期权链——价位与择时地图。仅作止损背景，非方向判断。单只标的体制为产品近乎恒定的属性，非实时信号。\n参考价位\n止损（夜间）\n$329.40\n做市商天花板\n~$360\n做市商地板\n~$310\n日均波幅(ATR)\n0.78%\n买入区间\n$341.50–$345.00\n仅供参考——不构成交易建议。"
     },
     {
       "check": "390/light/zh/refresh-ift-evidence-AAPL/requested",
@@ -1557,7 +1732,7 @@
     {
       "check": "390/light/zh/refresh-ift-evidence-AAPL/focused-before-response",
       "passed": true,
-      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"detail-block\"><h4><span class=\"l-en\">Tape &amp; volume</span><span class=\"l-zh\">盘口与量能</span></h4><div "
+      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"ift-evidence-context\"><p class=\"ift-eyebrow\"><span class=\"l-en\">Recorded evidence · source times</span"
     },
     {
       "check": "390/light/zh/refresh-ift-evidence-AAPL/preserved",
@@ -1626,6 +1801,11 @@
       "passed": true
     },
     {
+      "check": "390/light/zh/refresh-count-control/unchanged-count-silent",
+      "passed": true,
+      "mutations": 0
+    },
+    {
       "check": "390/light/zh/no-script-errors",
       "passed": true,
       "errors": []
@@ -1642,6 +1822,18 @@
       "check": "390/dark/en/cap",
       "passed": true,
       "count": 8
+    },
+    {
+      "check": "390/dark/en/localized-direction-colors",
+      "passed": true,
+      "up": "color(srgb 0.270588 0.721569 0.45098)",
+      "act": "color(srgb 0.270588 0.721569 0.45098)",
+      "favour": "color(srgb 0.270588 0.721569 0.45098)"
+    },
+    {
+      "check": "390/dark/en/localized-feed-label",
+      "passed": true,
+      "label": "Feed status"
     },
     {
       "check": "390/dark/en/no-overflow",
@@ -1735,6 +1927,13 @@
       "lensTop": 305.390625
     },
     {
+      "check": "390/dark/en/mobile-sort-focus-visible",
+      "passed": true,
+      "id": "ift-mobile-sort",
+      "width": 2,
+      "style": "solid"
+    },
+    {
       "check": "390/dark/en/empty-filter",
       "passed": true
     },
@@ -1820,13 +2019,35 @@
       "passed": true,
       "states": [
         "Not met",
-        "Not met",
-        "Not met",
-        "Not met",
         "Unavailable",
+        "Unavailable",
+        "Unavailable",
+        "Not met",
         "Not met",
         "Met"
       ]
+    },
+    {
+      "check": "390/dark/en/mobile-stock-overview",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/refresh-mobile-stock-overview/requested",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/refresh-mobile-stock-overview/focused-before-response",
+      "passed": true,
+      "active": "<a class=\"gbtn ift-evidence-overview\" id=\"ift-evidence-stock-AAPL\" href=\"stock.html#AAPL\"><span class=\"l-en\">Open AAPL overview</span><span class=\"l-zh\">打开AAPL概览</span> <span aria-hidden=\"true\">↗</span></a>"
+    },
+    {
+      "check": "390/dark/en/refresh-mobile-stock-overview/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/localized-dealer-bands",
+      "passed": true,
+      "text": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: time unavailable\nVolume feed: 2026-07-27 22:32 UTC\nOptions feed: 2026-10-30 20:11 UTC\n\nNightly package built: 2026-10-30 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nOpen AAPL overview\n↗\nTape & volume\nRelative volume\n—\nVol durability\n—\nSession VWAP\n—\nPrice vs VWAP\n—\nHigher lows\n—\n~Net call premium\n~+10.5M\n~Net premium (calls+puts)\n~+20.6M\nFlow durability\n48%\nApproximate call lean\n~call buying\nbig block×2\nsize vs open interest×53\nrepeat buyer×244\n1 of 7 recorded checks aligned\n✗\nRecent washout\nNot met\n·\nReclaimed above VWAP\nUnavailable\n·\nVolume elevated\nUnavailable\n·\nVolume holding\nUnavailable\n✗\n~Options leaning in\nNot met\n✗\nTrend turning up\nNot met\n✓\nClean leader (no trap)\nMet\nDealer map (options chains)\nDealer regime\nLong gamma · pins / mean-reverts\nRegime line\n314.08 (+8.9%)\nCeiling (call wall)\n~$360 very strong, hard\nFloor (put wall)\n~$310 weak\nMax pain\n~$300\nExpected move (day)\n±1.8%\nImplied vol\nrich (28.0)\nSkew tone\ndownside fear bid\nEvidence\nthin\n\nLong gamma — dealers dampen moves, so price tends to pin / mean-revert toward the nearby levels; fading extremes beats chasing breakouts, and tighter stops are reasonable.\n\nDaily options chains — a levels + timing map. Context for stops, never a direction call. Single-name regime is a near-constant product trait, not a live signal.\nReference levels\nStop (nightly)\n$329.40\nDealer ceiling\n~$360\nDealer floor\n~$310\nDaily range (ATR)\n0.78%\nBuy zone\n$341.50–$345.00\nReference only — not trade advice."
     },
     {
       "check": "390/dark/en/refresh-ift-evidence-AAPL/requested",
@@ -1835,7 +2056,7 @@
     {
       "check": "390/dark/en/refresh-ift-evidence-AAPL/focused-before-response",
       "passed": true,
-      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"detail-block\"><h4><span class=\"l-en\">Tape &amp; volume</span><span class=\"l-zh\">盘口与量能</span></h4><div "
+      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"ift-evidence-context\"><p class=\"ift-eyebrow\"><span class=\"l-en\">Recorded evidence · source times</span"
     },
     {
       "check": "390/dark/en/refresh-ift-evidence-AAPL/preserved",
@@ -1904,6 +2125,11 @@
       "passed": true
     },
     {
+      "check": "390/dark/en/refresh-count-control/unchanged-count-silent",
+      "passed": true,
+      "mutations": 0
+    },
+    {
       "check": "390/dark/en/no-script-errors",
       "passed": true,
       "errors": []
@@ -1920,6 +2146,18 @@
       "check": "390/dark/zh/cap",
       "passed": true,
       "count": 8
+    },
+    {
+      "check": "390/dark/zh/localized-direction-colors",
+      "passed": true,
+      "up": "color(srgb 0.878431 0.392157 0.392157)",
+      "act": "color(srgb 0.878431 0.392157 0.392157)",
+      "favour": "color(srgb 0.878431 0.392157 0.392157)"
+    },
+    {
+      "check": "390/dark/zh/localized-feed-label",
+      "passed": true,
+      "label": "数据源状态"
     },
     {
       "check": "390/dark/zh/no-overflow",
@@ -2013,6 +2251,13 @@
       "lensTop": 286.640625
     },
     {
+      "check": "390/dark/zh/mobile-sort-focus-visible",
+      "passed": true,
+      "id": "ift-mobile-sort",
+      "width": 2,
+      "style": "solid"
+    },
+    {
       "check": "390/dark/zh/empty-filter",
       "passed": true
     },
@@ -2098,13 +2343,35 @@
       "passed": true,
       "states": [
         "未满足",
-        "未满足",
-        "未满足",
-        "未满足",
         "不可用",
+        "不可用",
+        "不可用",
+        "未满足",
         "未满足",
         "已满足"
       ]
+    },
+    {
+      "check": "390/dark/zh/mobile-stock-overview",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/refresh-mobile-stock-overview/requested",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/refresh-mobile-stock-overview/focused-before-response",
+      "passed": true,
+      "active": "<a class=\"gbtn ift-evidence-overview\" id=\"ift-evidence-stock-AAPL\" href=\"stock.html#AAPL\"><span class=\"l-en\">Open AAPL overview</span><span class=\"l-zh\">打开AAPL概览</span> <span aria-hidden=\"true\">↗</span></a>"
+    },
+    {
+      "check": "390/dark/zh/refresh-mobile-stock-overview/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/localized-dealer-bands",
+      "passed": true,
+      "text": "已有依据 · 来源时间\n\n价格：时间不可用\n成交量数据源：2026-07-27 22:32 UTC\n期权数据源：2026-10-30 20:11 UTC\n\n夜间数据包构建于：2026-10-30 · 做市商期权链来源时间不可用。来源时间不代表当前确认。\n\n打开AAPL概览\n↗\n盘口与量能\n相对成交量\n—\n量能持续\n—\n当日VWAP\n—\n价格对VWAP\n—\n更高低点\n—\n~净看涨权利金\n~+10.5M\n~净权利金（看涨+看跌）\n~+20.6M\n资金持续\n48%\n近似看涨期权倾向\n~买入看涨\n大单×2\n规模对比未平仓×53\n重复买入×244\n7项已有检查中1项一致\n✗\n近期洗盘\n未满足\n·\n收复VWAP上方\n不可用\n·\n放量\n不可用\n·\n量能持稳\n不可用\n✗\n~期权偏多\n未满足\n✗\n趋势转强\n未满足\n✓\n干净领涨（无陷阱）\n已满足\n做市商地图（期权链）\n做市商体制\n多头Gamma · 磁吸/均值回归\n体制分界\n314.08 (+8.9%)\n天花板（看涨墙）\n~$360 很强, 硬\n地板（看跌墙）\n~$310 弱\n最大痛点\n~$300\n预期波动（日）\n±1.8%\n隐含波动\n昂贵 (28.0)\n偏斜\n下行恐慌买盘\n数据质量\n稀薄\n\n多头Gamma —— 做市商抑制波动，价格倾向于在邻近价位附近被钉住/均值回归；逢极端回落优于追突破，止损可更紧。\n\n每日期权链——价位与择时地图。仅作止损背景，非方向判断。单只标的体制为产品近乎恒定的属性，非实时信号。\n参考价位\n止损（夜间）\n$329.40\n做市商天花板\n~$360\n做市商地板\n~$310\n日均波幅(ATR)\n0.78%\n买入区间\n$341.50–$345.00\n仅供参考——不构成交易建议。"
     },
     {
       "check": "390/dark/zh/refresh-ift-evidence-AAPL/requested",
@@ -2113,7 +2380,7 @@
     {
       "check": "390/dark/zh/refresh-ift-evidence-AAPL/focused-before-response",
       "passed": true,
-      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"detail-block\"><h4><span class=\"l-en\">Tape &amp; volume</span><span class=\"l-zh\">盘口与量能</span></h4><div "
+      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"ift-evidence-context\"><p class=\"ift-eyebrow\"><span class=\"l-en\">Recorded evidence · source times</span"
     },
     {
       "check": "390/dark/zh/refresh-ift-evidence-AAPL/preserved",
@@ -2180,6 +2447,11 @@
     {
       "check": "390/dark/zh/refresh-count-control/preserved",
       "passed": true
+    },
+    {
+      "check": "390/dark/zh/refresh-count-control/unchanged-count-silent",
+      "passed": true,
+      "mutations": 0
     },
     {
       "check": "390/dark/zh/no-script-errors",
@@ -2316,6 +2588,378 @@
       "check": "fixture/populated/no-script-errors",
       "passed": true,
       "errors": []
+    },
+    {
+      "check": "fixture/evidence/en/TEST_MISSING/availability",
+      "passed": true,
+      "states": [
+        "Met",
+        "Unavailable",
+        "Unavailable",
+        "Unavailable",
+        "Unavailable",
+        "Unavailable",
+        "Met"
+      ]
+    },
+    {
+      "check": "fixture/evidence/en/TEST_MISSING/model-unchanged",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_MISSING/recorded-aligned-count",
+      "passed": true,
+      "observed": {
+        "k": "2",
+        "stance": "degraded",
+        "rvol": "0"
+      }
+    },
+    {
+      "check": "fixture/evidence/en/TEST_MISSING/seven-rules",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_MISSING/source-context",
+      "passed": true,
+      "context": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: time unavailable\nVolume feed: 2026-11-02 15:15 UTC · marked stale\nOptions feed: time unavailable\n\nNightly package built: 2026-10-30 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nOpen TEST_MISSING overview\n↗"
+    },
+    {
+      "check": "fixture/evidence/en/TEST_MISSING/phone-no-overflow",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_OBSERVED/availability",
+      "passed": true,
+      "states": [
+        "Met",
+        "Not met",
+        "Not met",
+        "Not met",
+        "Unavailable",
+        "Not met",
+        "Met"
+      ]
+    },
+    {
+      "check": "fixture/evidence/en/TEST_OBSERVED/model-unchanged",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_OBSERVED/recorded-aligned-count",
+      "passed": true,
+      "observed": {
+        "k": "2",
+        "stance": "stand_aside",
+        "rvol": "0"
+      }
+    },
+    {
+      "check": "fixture/evidence/en/TEST_OBSERVED/seven-rules",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_OBSERVED/source-context",
+      "passed": true,
+      "context": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: time unavailable\nVolume feed: 2026-11-02 15:15 UTC · marked stale\nOptions feed: time unavailable\n\nNightly package built: 2026-10-30 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nOpen TEST_OBSERVED overview\n↗"
+    },
+    {
+      "check": "fixture/evidence/en/TEST_OBSERVED/synthetic-clock-excluded",
+      "passed": true,
+      "price": "Price: time unavailable"
+    },
+    {
+      "check": "fixture/evidence/en/TEST_OBSERVED/phone-no-overflow",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_FALLBACK/availability",
+      "passed": true,
+      "states": [
+        "Met",
+        "Unavailable",
+        "Not met",
+        "Unavailable",
+        "Unavailable",
+        "Not met",
+        "Met"
+      ]
+    },
+    {
+      "check": "fixture/evidence/en/TEST_FALLBACK/model-unchanged",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_FALLBACK/recorded-aligned-count",
+      "passed": true,
+      "observed": {
+        "k": "2",
+        "stance": "stand_aside",
+        "rvol": "1"
+      }
+    },
+    {
+      "check": "fixture/evidence/en/TEST_FALLBACK/seven-rules",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_FALLBACK/source-context",
+      "passed": true,
+      "context": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: 2026-11-02 15:15 UTC\nVolume feed: 2026-11-02 15:15 UTC · marked stale\nOptions feed: time unavailable\n\nNightly package built: 2026-10-30 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nOpen TEST_FALLBACK overview\n↗"
+    },
+    {
+      "check": "fixture/evidence/en/TEST_FALLBACK/phone-no-overflow",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_PRESENT/availability",
+      "passed": true,
+      "states": [
+        "Met",
+        "Met",
+        "Met",
+        "Met",
+        "Unavailable",
+        "Met",
+        "Met"
+      ]
+    },
+    {
+      "check": "fixture/evidence/en/TEST_PRESENT/model-unchanged",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_PRESENT/recorded-aligned-count",
+      "passed": true,
+      "observed": {
+        "k": "6",
+        "stance": "act",
+        "rvol": "1.5"
+      }
+    },
+    {
+      "check": "fixture/evidence/en/TEST_PRESENT/seven-rules",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_PRESENT/source-context",
+      "passed": true,
+      "context": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: 2026-11-02 15:14 UTC\nVolume feed: 2026-11-02 15:15 UTC · marked stale\nOptions feed: time unavailable\n\nNightly package built: 2026-10-30 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nOpen TEST_PRESENT overview\n↗"
+    },
+    {
+      "check": "fixture/evidence/en/TEST_PRESENT/actual-quote-clock",
+      "passed": true,
+      "context": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: 2026-11-02 15:14 UTC\nVolume feed: 2026-11-02 15:15 UTC · marked stale\nOptions feed: time unavailable\n\nNightly package built: 2026-10-30 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nOpen TEST_PRESENT overview\n↗"
+    },
+    {
+      "check": "fixture/evidence/en/TEST_PRESENT/phone-no-overflow",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/counts-reconcile",
+      "passed": true,
+      "total": 4,
+      "noRead": 1,
+      "classified": 3
+    },
+    {
+      "check": "fixture/evidence/en/no-read-visible",
+      "passed": true,
+      "text": "1 of 4 names have no current read. They remain in the scan."
+    },
+    {
+      "check": "fixture/evidence/en/untagged-excluded-from-theme",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/untagged-visible-in-all",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_MISSING/availability",
+      "passed": true,
+      "states": [
+        "已满足",
+        "不可用",
+        "不可用",
+        "不可用",
+        "不可用",
+        "不可用",
+        "已满足"
+      ]
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_MISSING/model-unchanged",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_MISSING/recorded-aligned-count",
+      "passed": true,
+      "observed": {
+        "k": "2",
+        "stance": "degraded",
+        "rvol": "0"
+      }
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_MISSING/seven-rules",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_MISSING/source-context",
+      "passed": true,
+      "context": "已有依据 · 来源时间\n\n价格：时间不可用\n成交量数据源：2026-11-02 15:15 UTC · 已标记过期\n期权数据源：时间不可用\n\n夜间数据包构建于：2026-10-30 · 做市商期权链来源时间不可用。来源时间不代表当前确认。\n\n打开TEST_MISSING概览\n↗"
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_MISSING/phone-no-overflow",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_OBSERVED/availability",
+      "passed": true,
+      "states": [
+        "已满足",
+        "未满足",
+        "未满足",
+        "未满足",
+        "不可用",
+        "未满足",
+        "已满足"
+      ]
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_OBSERVED/model-unchanged",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_OBSERVED/recorded-aligned-count",
+      "passed": true,
+      "observed": {
+        "k": "2",
+        "stance": "stand_aside",
+        "rvol": "0"
+      }
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_OBSERVED/seven-rules",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_OBSERVED/source-context",
+      "passed": true,
+      "context": "已有依据 · 来源时间\n\n价格：时间不可用\n成交量数据源：2026-11-02 15:15 UTC · 已标记过期\n期权数据源：时间不可用\n\n夜间数据包构建于：2026-10-30 · 做市商期权链来源时间不可用。来源时间不代表当前确认。\n\n打开TEST_OBSERVED概览\n↗"
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_OBSERVED/synthetic-clock-excluded",
+      "passed": true,
+      "price": "价格：时间不可用"
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_OBSERVED/phone-no-overflow",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_FALLBACK/availability",
+      "passed": true,
+      "states": [
+        "已满足",
+        "不可用",
+        "未满足",
+        "不可用",
+        "不可用",
+        "未满足",
+        "已满足"
+      ]
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_FALLBACK/model-unchanged",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_FALLBACK/recorded-aligned-count",
+      "passed": true,
+      "observed": {
+        "k": "2",
+        "stance": "stand_aside",
+        "rvol": "1"
+      }
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_FALLBACK/seven-rules",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_FALLBACK/source-context",
+      "passed": true,
+      "context": "已有依据 · 来源时间\n\n价格：2026-11-02 15:15 UTC\n成交量数据源：2026-11-02 15:15 UTC · 已标记过期\n期权数据源：时间不可用\n\n夜间数据包构建于：2026-10-30 · 做市商期权链来源时间不可用。来源时间不代表当前确认。\n\n打开TEST_FALLBACK概览\n↗"
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_FALLBACK/phone-no-overflow",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_PRESENT/availability",
+      "passed": true,
+      "states": [
+        "已满足",
+        "已满足",
+        "已满足",
+        "已满足",
+        "不可用",
+        "已满足",
+        "已满足"
+      ]
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_PRESENT/model-unchanged",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_PRESENT/recorded-aligned-count",
+      "passed": true,
+      "observed": {
+        "k": "6",
+        "stance": "act",
+        "rvol": "1.5"
+      }
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_PRESENT/seven-rules",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_PRESENT/source-context",
+      "passed": true,
+      "context": "已有依据 · 来源时间\n\n价格：2026-11-02 15:14 UTC\n成交量数据源：2026-11-02 15:15 UTC · 已标记过期\n期权数据源：时间不可用\n\n夜间数据包构建于：2026-10-30 · 做市商期权链来源时间不可用。来源时间不代表当前确认。\n\n打开TEST_PRESENT概览\n↗"
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_PRESENT/actual-quote-clock",
+      "passed": true,
+      "context": "已有依据 · 来源时间\n\n价格：2026-11-02 15:14 UTC\n成交量数据源：2026-11-02 15:15 UTC · 已标记过期\n期权数据源：时间不可用\n\n夜间数据包构建于：2026-10-30 · 做市商期权链来源时间不可用。来源时间不代表当前确认。\n\n打开TEST_PRESENT概览\n↗"
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_PRESENT/phone-no-overflow",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/counts-reconcile",
+      "passed": true,
+      "total": 4,
+      "noRead": 1,
+      "classified": 3
+    },
+    {
+      "check": "fixture/evidence/zh/no-read-visible",
+      "passed": true,
+      "text": "4只标的中，1只暂无当前解读，仍保留在扫描看板中。"
+    },
+    {
+      "check": "fixture/evidence/zh/untagged-excluded-from-theme",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/untagged-visible-in-all",
+      "passed": true
     }
   ]
 }

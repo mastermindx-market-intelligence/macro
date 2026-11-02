@@ -96,6 +96,7 @@
       <span class="sc-sub">{{ t('quiet — no setup', '平静——无布局') }}</span>
     </button>
   </div>
+    <p class="ift-no-read" id="ift-no-read" hidden></p>
   </section>
 
   <div class="ift-desk">
@@ -765,7 +766,7 @@ function updateFlowStamp(asof, meta) {
   }
   var tipHtml = '<div class="lens-body">'+tipRowHtml(tipQ)+tipRowHtml(tipT)+tipRowHtml(tipO)+'</div>';
   stamp.innerHTML = lz('Board built '+asOfEn+' · '+head.en, '看板构建于'+asOfZh+' · '+head.zh)
-    + '<button type="button" class="lens-q" aria-label="Feed status">'
+    + '<button type="button" class="lens-q" aria-label="'+(document.documentElement && document.documentElement.getAttribute('data-lang')==='zh'?'数据源状态':'Feed status')+'">'
     + '?<span class="lens-src" data-lens-kind="define" hidden>'+tipHtml+'</span></button>';
 }
 
@@ -836,6 +837,12 @@ function buildHero(rows, counts) {
   var subEl = document.getElementById('hero-sub'); if (subEl) subEl.innerHTML = sub;
   var mode = document.getElementById('ift-record-mode');
   if (mode) mode.innerHTML = lz('Recorded classifications · select to filter','已有分类 · 点击筛选');
+  var noRead = rows.filter(function(row){ return row.st.key === 'degraded'; }).length;
+  var noReadEl = document.getElementById('ift-no-read');
+  if (noReadEl) {
+    noReadEl.hidden = noRead === 0;
+    noReadEl.innerHTML = lz(noRead+' of '+rows.length+' names have no current read. They remain in the scan.', rows.length+'只标的中，'+noRead+'只暂无当前解读，仍保留在扫描看板中。');
+  }
   iftSkelDone(document.getElementById('ift-hero-copy'));
   updateFlowStamp(flowAsof, flowMeta);
   updateSourceTimes();
@@ -904,7 +911,7 @@ function buildRow(row, language) {
 
   var tr = '<tr class="lead-row" data-ticker="'+tk+'" data-stance="'+stance.key+'"'
     + ' data-rvol="'+(rvol||0)+'" data-k="'+conf.K+'" data-last="'+((quote&&quote.price)||0)+'"'
-    + ' data-stance-order="'+meta.order+'" data-baskets="'+esc((leader.baskets||[]).join(' ')||'all')+'">'
+    + ' data-stance-order="'+meta.order+'" data-baskets="'+esc((leader.baskets||[]).join(' '))+'">'
     + nameCell + stanceCell + priceCell + volCell + tapeCell + dealerCell + expCell + '</tr>';
 
   var detail = '<tr id="ift-evidence-'+esc(tk)+'" class="detail-row'+(openRows[tk]?' open':'')+'" tabindex="-1" data-detail="'+tk+'"><td colspan="7"><div class="detail-inner">'
@@ -970,6 +977,15 @@ function dealerCompact(d, quote) {
 function detailContent(leader, quote, pulse, flow, conf, d) {
   var blocks = [];
   var rvol = computeRvol(leader, quote, pulse), vwapDelta = computeVwapDelta(quote, pulse);
+  var quoteTime = quote && quote.tsSynthetic !== true && typeof quote.ts === 'number' && quote.ts > 0 ? quote.ts : null;
+  var nightlyBuilt = typeof leader.built === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(leader.built) ? esc(leader.built) : displaySourceTime(leader.built);
+  var volumeNote = pulseSourceStale === true ? lz(' · marked stale',' · 已标记过期') : '';
+  blocks.push('<div class="ift-evidence-context"><p class="ift-eyebrow">'+lz('Recorded evidence · source times','已有依据 · 来源时间')+'</p>'
+    + '<div class="ift-evidence-times"><span>'+lz('Price: ','价格：')+displaySourceTime(quoteTime)+'</span>'
+    + '<span>'+lz('Volume feed: ','成交量数据源：')+displaySourceTime(pulseSourceAsof)+volumeNote+'</span>'
+    + '<span>'+lz('Options feed: ','期权数据源：')+displaySourceTime(flowAsof)+'</span></div>'
+    + '<p class="receipt">'+lz('Nightly package built: ','夜间数据包构建于：')+nightlyBuilt+' · '+lz('Dealer-chain source time unavailable. Source clocks do not establish current confirmation.','做市商期权链来源时间不可用。来源时间不代表当前确认。')+'</p>'
+    + '<a class="gbtn ift-evidence-overview" id="ift-evidence-stock-'+esc(leader.ticker)+'" href="stock.html#'+encodeURIComponent(leader.ticker)+'">'+lz('Open '+esc(leader.ticker)+' overview','打开'+esc(leader.ticker)+'概览')+' <span aria-hidden="true">↗</span></a></div>');
   var tapeDl = [];
   tapeDl.push(dlRow(lz('Relative volume','相对成交量'), rvol!=null ? fmtNum(rvol,2)+'×' : '—'));
   tapeDl.push(dlRow(lz('Vol durability','量能持续'), pulse&&pulse.vol_durability!=null ? (pulse.vol_durability*100).toFixed(0)+'%' : '—'));
@@ -995,13 +1011,22 @@ function detailContent(leader, quote, pulse, flow, conf, d) {
     lz('Recent washout','近期洗盘'), lz('Reclaimed above VWAP','收复VWAP上方'), lz('Volume elevated','放量'),
     lz('Volume holding','量能持稳'), lz('~Options leaning in','~期权偏多'), lz('Trend turning up','趋势转强'), lz('Clean leader (no trap)','干净领涨（无陷阱）')
   ];
-  var checks = conf.legs.map(function(on, i){
+  // The legacy model can return false before a comparison was evaluable.
+  // Only the display changes: preserve conf.legs, K and all classification inputs.
+  var displayLegs = conf.legs.map(function(on, i){
+    if (i === 1 && !(quote && quote.price && pulse && pulse.vwap)) return null;
+    if (i === 2 && rvol === null) return null;
+    if (i === 3 && !(pulse && pulse.vol_durability != null)) return null;
+    if (i === 5 && !(leader.mtf_upturn_state || leader.mtf_upturn_K != null)) return null;
+    return on;
+  });
+  var checks = displayLegs.map(function(on, i){
     var cls = on===true ? 'on' : (on===false ? 'off' : 'na');
     var ic = on===true ? '✓' : (on===false ? '✗' : '·');
     var state = on===true ? lz('Met','已满足') : (on===false ? lz('Not met','未满足') : lz('Unavailable','不可用'));
     return '<span class="check '+cls+'"><span class="ic" aria-hidden="true">'+ic+'</span><span class="check-name">'+names[i]+'</span><span class="check-state">'+state+'</span></span>';
   }).join('');
-  blocks.push(detailBlock(lz(conf.K+' of 7 checks aligned','7项中'+conf.K+'项一致'), '<div class="checks">'+checks+'</div>'));
+  blocks.push(detailBlock(lz(conf.K+' of 7 recorded checks aligned','7项已有检查中'+conf.K+'项一致'), '<div class="checks">'+checks+'</div>'));
 
   blocks.push(detailBlock(lz('Dealer map (options chains)','做市商地图（期权链）'), dealerFull(d, quote)));
 
@@ -1031,8 +1056,8 @@ function dealerFull(d, quote) {
     : (d.regime === 'short' ? lz('Short gamma · trends / amplifies','空头Gamma · 趋势/放大') : lz('Neutral','中性'));
   dl.push(dlRow(lz('Dealer regime','做市商体制'), regimeWord));
   if (d.gamma_flip != null) dl.push(dlRow(lz('Regime line','体制分界'), fmtNum(d.gamma_flip,2) + (d.dist_to_flip_pct!=null?' <span class="muted">('+(d.dist_to_flip_pct>=0?'+':'')+fmtNum(d.dist_to_flip_pct,1)+'%)</span>':'')));
-  if (d.call_wall != null) dl.push(dlRow(lz('Ceiling (call wall)','天花板（看涨墙）'), '~$'+fmtNum(d.call_wall,0) + (d.call_wall_band?' <span class="muted">'+esc(d.call_wall_band)+(d.call_wall_hard?', hard':'')+'</span>':'')));
-  if (d.put_wall != null) dl.push(dlRow(lz('Floor (put wall)','地板（看跌墙）'), '~$'+fmtNum(d.put_wall,0) + (d.put_wall_band?' <span class="muted">'+esc(d.put_wall_band)+'</span>':'')));
+  if (d.call_wall != null) dl.push(dlRow(lz('Ceiling (call wall)','天花板（看涨墙）'), '~$'+fmtNum(d.call_wall,0) + (d.call_wall_band?' <span class="muted">'+wallBandWord(d.call_wall_band)+(d.call_wall_hard?', '+lz('hard','硬'):'')+'</span>':'')));
+  if (d.put_wall != null) dl.push(dlRow(lz('Floor (put wall)','地板（看跌墙）'), '~$'+fmtNum(d.put_wall,0) + (d.put_wall_band?' <span class="muted">'+wallBandWord(d.put_wall_band)+'</span>':'')));
   if (d.max_pain != null) dl.push(dlRow(lz('Max pain','最大痛点'), '~$'+fmtNum(d.max_pain,0)));
   if (d.expected_move_daily_pct != null) dl.push(dlRow(lz('Expected move (day)','预期波动（日）'), '±'+fmtNum(d.expected_move_daily_pct,1)+'%'));
   if (d.iv_rank_band) dl.push(dlRow(lz('Implied vol','隐含波动'), ivBandWord(d.iv_rank_band) + (d.iv30!=null?' <span class="muted">('+fmtNum(d.iv30,1)+')</span>':'')));
@@ -1051,6 +1076,7 @@ function dealerFull(d, quote) {
   var caveat = '<div class="receipt">'+lz('Daily options chains — a levels + timing map. Context for stops, never a direction call. Single-name regime is a near-constant product trait, not a live signal.', '每日期权链——价位与择时地图。仅作止损背景，非方向判断。单只标的体制为产品近乎恒定的属性，非实时信号。')+'</div>';
   return '<div class="dl">'+dl.join('')+'</div>'+(posture?'<p class="posture">'+posture+'</p>':'')+pin+caveat;
 }
+function wallBandWord(b){ var m={ faint:lz('faint','微弱'), weak:lz('weak','弱'), moderate:lz('moderate','中等'), strong:lz('strong','强'), very_strong:lz('very strong','很强') }; return m[b]||esc(String(b).replace(/_/g,' ')); }
 function ivBandWord(b){ var m={ very_cheap:lz('very cheap','很便宜'), cheap:lz('cheap','便宜'), normal:lz('normal','正常'), elevated:lz('elevated','偏高'), rich:lz('rich','昂贵') }; return m[b]||esc(b); }
 function skewWord(t){ var m={ fear:lz('downside fear bid','下行恐慌买盘'), greed:lz('upside chased','上行追捧'), balanced:lz('balanced','均衡') }; return m[t]||esc(t); }
 function evidenceWord(q){ var m={ full:lz('full','完整'), partial:lz('partial','部分'), thin:lz('thin','稀薄'), stale:lz('stale','过时') }; return m[q]||lz('—','—'); }
@@ -1119,6 +1145,7 @@ function localizeControls() {
    ['ift-activity-help','Explain activity','查看活跃度说明']].forEach(function(item){
     var el=document.getElementById(item[0]); if(el) el.setAttribute('aria-label',item[zh?2:1]);
   });
+  var feedHelp=document.querySelector('#ift-stamp .lens-q'); if(feedHelp) feedHelp.setAttribute('aria-label',zh?'数据源状态':'Feed status');
   var group=document.querySelector('.basket-scroll'); if(group) group.setAttribute('aria-label',zh?'主题筛选':'Theme filters');
   document.querySelectorAll('#ift-mobile-sort option').forEach(function(option){ option.textContent=option.getAttribute(zh?'data-zh':'data-en'); });
   document.querySelectorAll('.ift-select-name').forEach(function(button){ button.setAttribute('aria-label',button.getAttribute('data-select')+' '+(zh?'查看依据':'inspect evidence')); });
@@ -1183,9 +1210,9 @@ function applyView() {
   var matching = [], curGroup = null, frag = document.createDocumentFragment();
   leadRows.forEach(function(r){
     var tk = r.getAttribute('data-ticker');
-    var st = r.getAttribute('data-stance'), baskets = r.getAttribute('data-baskets')||'all';
+    var st = r.getAttribute('data-stance'), baskets = r.getAttribute('data-baskets')||'';
     var show = true;
-    if (activeBasket !== 'all' && baskets.indexOf(activeBasket) < 0 && baskets !== 'all') show = false;
+    if (activeBasket !== 'all' && baskets.split(/\s+/).indexOf(activeBasket) < 0) show = false;
     if (activeStance !== 'all' && st !== activeStance) show = false;
     if (searchQ && tk.indexOf(searchQ.toUpperCase()) < 0) show = false;
     if (!show) { r.style.display='none'; if (detailByTk[tk]) detailByTk[tk].style.display='none'; return; }
@@ -1222,19 +1249,24 @@ function applyView() {
   syncFilterControls();
   var lbl = document.getElementById('count-label');
   if (lbl) {
+    var countHTML;
     if (total > BOARD_CAP && !boardExpanded) {
-      lbl.innerHTML = lz('Showing '+showN+' of '+total+' leaders', '显示 '+showN+' / '+total+' 只')
+      countHTML = lz('Showing '+showN+' of '+total+' leaders', '显示 '+showN+' / '+total+' 只')
         + '<button type="button" class="ift-see-all" id="ift-see-all">'
         + lz('See all '+total, '查看全部 '+total+' 只')
         + '</button>';
     } else if (total > BOARD_CAP && boardExpanded) {
-      lbl.innerHTML = lz('Showing '+total+' of '+total+' leaders', '显示 '+total+' / '+total+' 只')
+      countHTML = lz('Showing '+total+' of '+total+' leaders', '显示 '+total+' / '+total+' 只')
         + '<button type="button" class="ift-see-all" id="ift-see-all" data-ift-collapse="1">'
         + lz('Show top '+BOARD_CAP, '只看前 '+BOARD_CAP+' 只')
         + '</button>';
     } else {
       var enCount = total === 1 ? '1 leader' : (total+' leaders');
-      lbl.innerHTML = lz(enCount, '共 '+total+' 只');
+      countHTML = lz(enCount, '共 '+total+' 只');
+    }
+    if (lbl._iftCountHTML !== countHTML) {
+      lbl.innerHTML = countHTML;
+      lbl._iftCountHTML = countHTML;
     }
   }
   var ths = document.querySelectorAll('table.leaders th[data-col]');
