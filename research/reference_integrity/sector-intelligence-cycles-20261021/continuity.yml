@@ -7,6 +7,8 @@
 # The closure obligation runs against the NEAREST only: mastermind-xpv2-sector-r3b-2
 # Earlier entries are provenance — the chain is closed link by link.
 # 5 open item(s) derived from mastermind-xpv2-sector-r3b-2/verdict.yml.
+# 2026-11-02 (verdict 9 / approval): the five CARRIED_BLOCK rows re-dispositioned SUPERSEDED by this packet's approval.yml —
+# each re-carried as approval condition SIC-APR-01..05 bound to P19-P23 (RIG §13.1; precedent prophet-board-lab-r5-1). No row deleted.
 schema: mastermind.rig_continuity.v1
 reference_id: sector-intelligence-cycles-20261021
 predecessors:
@@ -16,7 +18,15 @@ predecessors:
   closure:
   - id: R3C-HEATMAP-LEGIBILITY
     kind: condition
-    disposition: CARRIED_BLOCK
+    disposition: SUPERSEDED
+    superseded_by: research/reference_integrity/sector-intelligence-cycles-20261021/approval.yml
+    linkage: >
+      The obligation is not extinguished — it is genuinely re-carried: it now binds as the named condition SIC-APR-01 of this packet's
+      APPROVE_WITH_CONDITIONS approval receipt (the RIG §7 carrier of forward conditions on an approved reference; verdict.yml
+      round 9, SIC-ADJ-07), where it survives this cycle unchanged in substance and binds the P19-P23 production proof: the composited-background contrast determination of the heatmap colour-field glyphs on the LIVE built surface (P19/P20 browser proof, both themes, 1440 and 390, measured on the painted substrate — never a flat-surface substitute); UNMEASURED stays UNMEASURED until that determination exists, and failure blocks release.
+      A continuity CARRIED_BLOCK cannot coexist with approval by §13.1; SUPERSEDED-by-approval-condition is the honest form, because
+      the frozen design artifact (4161d404) cannot discharge a live-surface obligation and no changed file claims to. The
+      carried note below is kept verbatim as the description of the debt; the release gate is the condition, not this row.
     note: >
       CARRIED_BLOCK: the heatmap legibility condition needs a composited-background contrast determination on the LIVE candidate (P19/P20 browser proof); the R3 boards 14-15 redraw the map with a list alternative but a design export cannot discharge a rendered-contrast condition. No D/I/P lane resolved it.
     predecessor_note: Heatmap colour-field glyph legibility remains UNMEASURED, never PASS.
@@ -27,7 +37,15 @@ predecessors:
       authority.
   - id: R3C-AUTH-PREMIUM
     kind: condition
-    disposition: CARRIED_BLOCK
+    disposition: SUPERSEDED
+    superseded_by: research/reference_integrity/sector-intelligence-cycles-20261021/approval.yml
+    linkage: >
+      The obligation is not extinguished — it is genuinely re-carried: it now binds as the named condition SIC-APR-02 of this packet's
+      APPROVE_WITH_CONDITIONS approval receipt (the RIG §7 carrier of forward conditions on an approved reference; verdict.yml
+      round 9, SIC-ADJ-07), where it survives this cycle unchanged in substance and binds the P19-P23 production proof: real auth settlement on the served surface at P19-P21 — free / essential / pro hydrate, /premiumdata/sector_central.json authorization, successful hydrate, preview preservation for the ungated state, and the 401 / 403 / offline / malformed paths, each observed in the browser; the 2026-10-21 anonymous-shell captures (401 on every data asset) do not discharge it.
+      A continuity CARRIED_BLOCK cannot coexist with approval by §13.1; SUPERSEDED-by-approval-condition is the honest form, because
+      the frozen design artifact (4161d404) cannot discharge a live-surface obligation and no changed file claims to. The
+      carried note below is kept verbatim as the description of the debt; the release gate is the condition, not this row.
     note: >
       CARRIED_BLOCK: auth/premium settlement (free / essential / pro hydrate, /premiumdata 401/403/offline) is a P19-P21 live-surface proof; the 2026-10-21 captures are anonymous shells that returned 401 on every data asset, which demonstrates the gate exists but not its settled behaviour. Boards 11 and 20 draw the no-access cells only.
     predecessor_note: R3C must prove real auth settlement, /premiumdata/sector_central.json
@@ -36,7 +54,15 @@ predecessors:
       cannot establish any of these and does not claim to.
   - id: R3C-TIME-MACHINE
     kind: condition
-    disposition: CARRIED_BLOCK
+    disposition: SUPERSEDED
+    superseded_by: research/reference_integrity/sector-intelligence-cycles-20261021/approval.yml
+    linkage: >
+      The obligation is not extinguished — it is genuinely re-carried: it now binds as the named condition SIC-APR-03 of this packet's
+      APPROVE_WITH_CONDITIONS approval receipt (the RIG §7 carrier of forward conditions on an approved reference; verdict.yml
+      round 9, SIC-ADJ-07), where it survives this cycle unchanged in substance and binds the P19-P23 production proof: live Time Machine end to end on the served Dossier Record / Time Machine / Methods home (rows R3A-35/58/89): manifest, episode feed, per-period and per-year chunks, and the empty, missing and failure paths, as the P15 history-depth proof; recorded-not-executed evidence is not production proof.
+      A continuity CARRIED_BLOCK cannot coexist with approval by §13.1; SUPERSEDED-by-approval-condition is the honest form, because
+      the frozen design artifact (4161d404) cannot discharge a live-surface obligation and no changed file claims to. The
+      carried note below is kept verbatim as the description of the debt; the release gate is the condition, not this row.
     note: >
       CARRIED_BLOCK: the live Time Machine condition belongs to the Dossier Record / Time Machine / Methods home (rows R3A-35/58/89) which has no dedicated R3 board (sic-p-rev major) and no production capture beyond the shell; discharge requires the P15 history depth proof on the served surface.
     predecessor_note: 'R3C must prove live Time Machine behavior end to end: manifest, episode
@@ -44,7 +70,15 @@ predecessors:
       evidence is not production proof.'
   - id: R3C-VALIDATED-21D
     kind: condition
-    disposition: CARRIED_BLOCK
+    disposition: SUPERSEDED
+    superseded_by: research/reference_integrity/sector-intelligence-cycles-20261021/approval.yml
+    linkage: >
+      The obligation is not extinguished — it is genuinely re-carried: it now binds as the named condition SIC-APR-04 of this packet's
+      APPROVE_WITH_CONDITIONS approval receipt (the RIG §7 carrier of forward conditions on an approved reference; verdict.yml
+      round 9, SIC-ADJ-07), where it survives this cycle unchanged in substance and binds the P19-P23 production proof: the released build (P21) renders the 21d window without the customer word 'validated' in the forward-track-record wording on the served EN and ZH surfaces, while preserving the narrower disclosure 'Context only · evidence proven at 5d · never sizes decisions', its native ZH twin and the visual separation from explicitly labelled 21d figures.
+      A continuity CARRIED_BLOCK cannot coexist with approval by §13.1; SUPERSEDED-by-approval-condition is the honest form, because
+      the frozen design artifact (4161d404) cannot discharge a live-surface obligation and no changed file claims to. The
+      carried note below is kept verbatim as the description of the debt; the release gate is the condition, not this row.
     note: >
       CARRIED_BLOCK: the banned word is absent from all 22 R3 boards (ORCH-PAPER copy sweep: 0 occurrences) and B13 reframes the grader denominator, but the condition binds the SERVED surface wording; it is discharged only when the released build (P21) renders the 21d window without that word. Not resolved by a design file.
     predecessor_note: 'R3C must resolve the broader production-owned "Forward track record:
@@ -54,7 +88,15 @@ predecessors:
       the visual separation from explicitly labelled 21d figures.'
   - id: R3C-NO-UNSUPPORTED-INVENTION
     kind: condition
-    disposition: CARRIED_BLOCK
+    disposition: SUPERSEDED
+    superseded_by: research/reference_integrity/sector-intelligence-cycles-20261021/approval.yml
+    linkage: >
+      The obligation is not extinguished — it is genuinely re-carried: it now binds as the named condition SIC-APR-05 of this packet's
+      APPROVE_WITH_CONDITIONS approval receipt (the RIG §7 carrier of forward conditions on an approved reference; verdict.yml
+      round 9, SIC-ADJ-07), where it survives this cycle unchanged in substance and binds the P19-P23 production proof: re-judgment at P19 against the build: no invented signal, sizing, correction marker, local rank / state / score, or Baskets thin/gateable disclosure (SC-066 / SC-092 stay BLOCKED_DATA; the Prophet placeholder labels of boards 16-17 remain declared placeholders in the build or are bound to real producer contracts; PARITY_FAILS stays disclosed, not repaired).
+      A continuity CARRIED_BLOCK cannot coexist with approval by §13.1; SUPERSEDED-by-approval-condition is the honest form, because
+      the frozen design artifact (4161d404) cannot discharge a live-surface obligation and no changed file claims to. The
+      carried note below is kept verbatim as the description of the debt; the release gate is the condition, not this row.
     note: >
       CARRIED_BLOCK: no board invents a signal, sizing, correction marker or Baskets disclosure (SC-066 / SC-092 stay BLOCKED_DATA; Prophet labels on boards 16-17 are declared placeholders; PARITY_FAILS is disclosed, not repaired). The condition is re-judged by the two independent reviewers against the frozen artifact and again at P19 against the build.
     predecessor_note: Baskets thin/gateable disclosure and any correction/revision UI remain
