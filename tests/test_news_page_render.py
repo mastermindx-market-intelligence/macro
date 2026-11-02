@@ -1254,3 +1254,106 @@ def test_news_css_contract_accepts_real_externalizer_output(tmp_path, monkeypatc
     assert _canonical_news_css_occurrences(site, html) == (1, [])
     assert externalize(site) == 0
     assert _canonical_news_css_occurrences(site, page.read_text()) == (1, [])
+
+
+# Calendar identity regression coverage adopted from owner-support proposal.
+
+def _calendar_identity_event(label='Policy decision', date='2026-01-30', time='08:30'):
+    return dict(label=label, label_zh='政策决定', date=date, time_et=time,
+                dow='Fri', md='Jan 30')
+
+
+def _calendar_identity_render(catalysts, strip, **extra):
+    vm = _full_vm()
+    vm.update(macro_catalysts=catalysts, event_strip=strip, **extra)
+    html = _env().get_template('news.html.j2').render(**vm)
+    section = html.split('id="ndCalendar"', 1)[1].split('</dialog>', 1)[0]
+    return html, section
+
+
+def test_calendar_identity_exact_duplicate_is_suppressed():
+    event = _calendar_identity_event()
+    _, section = _calendar_identity_render([event], [event.copy()])
+    assert section.count('class="nd-calendar-row"') == 1
+
+
+def test_calendar_identity_later_date_is_not_suppressed():
+    event = _calendar_identity_event()
+    later = dict(event, date='2026-02-27', md='Feb 27')
+    _, section = _calendar_identity_render([event], [later])
+    assert section.count('class="nd-calendar-row"') == 2
+    assert 'Feb 27' in section
+
+
+def test_calendar_identity_later_time_is_not_suppressed():
+    event = _calendar_identity_event()
+    _, section = _calendar_identity_render([event], [dict(event, time_et='14:00')])
+    assert section.count('class="nd-calendar-row"') == 2
+    assert '14:00' in section
+
+
+def test_calendar_identity_unrendered_catalyst_does_not_hide_strip():
+    events = [_calendar_identity_event(label=f'Event {i}') for i in range(16)]
+    _, section = _calendar_identity_render(events, [events[-1]])
+    assert section.count('class="nd-calendar-row"') == 16
+    assert 'Event 15' in section
+
+
+def test_calendar_identity_caps_remain_per_input_slice():
+    cats = [_calendar_identity_event(label=f'Catalyst {i}') for i in range(17)]
+    strip = [_calendar_identity_event(label=f'Strip {i}') for i in range(17)]
+    _, section = _calendar_identity_render(cats, strip)
+    assert section.count('class="nd-calendar-row"') == 30
+    assert 'Catalyst 14' in section and 'Strip 14' in section
+    assert 'Catalyst 15' not in section and 'Strip 15' not in section
+    # Do not backfill a duplicate removed from the first 15 strip records.
+    strip = [cats[0]] + strip
+    _, section = _calendar_identity_render(cats, strip)
+    assert section.count('class="nd-calendar-row"') == 29
+    assert 'Strip 14' not in section
+
+
+def test_calendar_identity_absent_date_or_label_is_not_false_duplicate():
+    for event in ({'label': 'No date'}, {'date': '2026-01-30'}, {}):
+        _, section = _calendar_identity_render([event], [event.copy()])
+        assert section.count('class="nd-calendar-row"') == 2
+
+
+def test_calendar_identity_absent_time_normalizes_to_empty():
+    event = _calendar_identity_event()
+    event.pop('time_et')
+    for time in (None, ''):
+        _, section = _calendar_identity_render([event], [dict(event, time_et=time)])
+        assert section.count('class="nd-calendar-row"') == 1
+
+
+def test_calendar_identity_bilingual_and_fallback_display():
+    event = _calendar_identity_event()
+    _, section = _calendar_identity_render([event], [])
+    assert '<span class="l-en">Policy decision</span>' in section
+    assert '<span class="l-zh">政策决定</span>' in section
+    event.pop('label_zh')
+    _, section = _calendar_identity_render([event], [])
+    assert '<span class="l-zh">Policy decision</span>' in section
+
+
+def test_calendar_identity_empty_and_malformed_inputs_preserve_guards():
+    for cats, strip in (([], []), (None, None), ('bad', 'bad'), ([None, 1, 'bad'], [None, 1, 'bad'])):
+        _, section = _calendar_identity_render(cats, strip)
+        assert section.count('class="nd-calendar-row"') == 0
+        assert 'No scheduled events are available' in section
+        assert '当前版本暂无可用的已排定事件' in section
+
+
+def test_calendar_identity_untrusted_display_is_escaped_full_template():
+    # Full inheritance selects report_base.t (|safe), not child t (|e).
+    payload = '<img src=x onerror=alert(1)>'
+    event = _calendar_identity_event(label=payload, date='<i>date</i>', time='<b>time</b>')
+    event['label_zh'] = '<svg onload=alert(2)>'
+    _, section = _calendar_identity_render([event], [])
+    assert '&lt;i&gt;date&lt;/i&gt;' in section
+    assert '&lt;b&gt;time&lt;/b&gt;' in section
+    assert payload not in section
+    assert '<svg onload=alert(2)>' not in section
+    assert '&lt;img src=x onerror=alert(1)&gt;' in section
+    assert '&lt;svg onload=alert(2)&gt;' in section

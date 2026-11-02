@@ -1,0 +1,155 @@
+{
+  "baseline_count": 37,
+  "observed_count": 41,
+  "added": [
+    "archive_resources",
+    "create_folder",
+    "move_resources",
+    "unarchive_resources"
+  ],
+  "removed": [],
+  "changed": {
+    "create_file": [
+      {
+        "path": "/description",
+        "before": "Create a new Paper file in the user's active team and returns the new file's ID. To start working in the new file, call open_file with the returned ID.",
+        "after": "Create a new Paper file in the user's active team and returns the new file's ID, name, parentId, and URL. Pass parentId to create it inside a folder; otherwise it is created in the active team's top-level folder. To start working in the new file, call open_file with the returned ID."
+      },
+      {
+        "path": "/inputSchema/properties/parentId",
+        "before": null,
+        "after": {
+          "description": "Optional ID of the folder to create the new file in. Defaults to the active team's top-level folder. Use list_resources to find folder IDs.",
+          "type": "string"
+        }
+      }
+    ],
+    "export": [
+      {
+        "path": "/description",
+        "before": "Export nodes as image or video files. Unless the user specifies, do not override the default export settings.",
+        "after": "Export nodes as image or video files. Unless the user specifies, do not override the default export settings. Returns each export's file path, or on Paper's remote MCP server a download link that works for 24 hours. PDF exports require Paper Desktop."
+      }
+    ],
+    "export_combined_pdf": [
+      {
+        "path": "/description",
+        "before": "Export multiple nodes combined into a single PDF file, one page per node. Pages are auto-ordered by canvas position (top-to-bottom, then left-to-right). Use this instead of \"export\" when the user wants the nodes merged into one PDF rather than separate files. The quality and resampling used is the highest of any existing PDF export settings found on individual nodes.",
+        "after": "Requires Paper Desktop. Export multiple nodes combined into a single PDF file, one page per node. Pages are auto-ordered by canvas position (top-to-bottom, then left-to-right). Use this instead of \"export\" when the user wants the nodes merged into one PDF rather than separate files. The quality and resampling used is the highest of any existing PDF export settings found on individual nodes."
+      }
+    ],
+    "get_comment_thread": [
+      {
+        "path": "/description",
+        "before": "Get full details for one visible comment thread, including its open/resolved status, all reply messages, reactions, attachments, page context, and pinned node context. Works for any status. Call list_comment_threads first when you do not already know the commentThreadId. Deleted threads/messages are never returned.",
+        "after": "Get full details for one visible comment thread, including its open/resolved status, all reply messages, reactions, attachments (each with a public URL you can fetch to view the file), page context, and pinned node context. Works for any status. Call list_comment_threads first when you do not already know the commentThreadId. Deleted threads/messages are never returned."
+      }
+    ],
+    "get_jsx": [
+      {
+        "path": "/description",
+        "before": "Get the JSX code representation of a node and its descendants. Supports two styling formats: Tailwind CSS classes (default) or inline styles.",
+        "after": "Get the JSX code representation of a node and its descendants. Supports two styling formats: inline styles (default) or Tailwind CSS classes."
+      },
+      {
+        "path": "/inputSchema/properties/format/description",
+        "before": "Style format: \"tailwind\" (default) uses Tailwind classes with inline fallback, \"inline-styles\" uses pure inline styles",
+        "after": "Style format: \"inline-styles\" (default) uses inline styles, \"tailwind\" uses Tailwind classes with inline fallback"
+      },
+      {
+        "path": "/inputSchema/properties/format/enum",
+        "before": [
+          "tailwind",
+          "inline-styles"
+        ],
+        "after": [
+          "inline-styles",
+          "tailwind"
+        ]
+      }
+    ],
+    "get_node_info": [
+      {
+        "path": "/description",
+        "before": "Get detailed information about a specific node by ID, including its size, visibility, lock state, parent, children IDs, text content (for text nodes), and the node's worldX/worldY (world position) and x/y (relative to parent).\n- When the node has a generated image, also returns imageGeneration.status (processing / ready / error) and imageGeneration.output (raster / svg) \u2014 poll this to know when generation completes.\n- Raster fills are read with get_fill_image; SVG output is read with get_jsx.\n- x/y/worldX/worldY/width/height are null when the size or position depends on layout (e.g. fit-content, flex children) and the node was not measured (i.e. the page is inactive)\n- Returns an error if the node does not exist.",
+        "after": "Get detailed information about a specific node by ID, including its size, visibility, lock state, parent, children IDs, text content (for text nodes), and the node's worldX/worldY (world position) and x/y (relative to parent).\n- When the node has a generated image, also returns imageGeneration.status (processing / ready / error) and imageGeneration.output (raster / svg) \u2014 poll this to know when generation completes.\n- Raster fills are read with get_fill_image; SVG output is read with get_jsx.\n- x/y/worldX/worldY/width/height are null when the size or position depends on layout (e.g. fit-content, flex children) and the node was not measured (i.e. the page is inactive)\n- textContent is plain text only; use get_jsx to view inline text formatting.\n- Returns an error if the node does not exist."
+      }
+    ],
+    "list_resources": [
+      {
+        "path": "/description",
+        "before": "Lists files and folders. Each item has type \"file\" or \"folder\" and parentId, omitted for a top-level folder and for an open file that is not in the active team\u2019s resources. Open files are listed first. `open` means the file is a desktop tab. `active` means that tab is in the foreground. Both apply only to files. `draft` means the item is in the user\u2019s drafts. Then files and folders recently updated in the active team. Timestamps are omitted when an open file is not in the active team\u2019s resources. Pass a higher limit until truncated is absent before treating the list as the whole tree.",
+        "after": "Lists files and folders. Each item has type \"file\" or \"folder\" and parentId, omitted for a top-level folder and for an open file that is not in the active team\u2019s resources. Open files are listed first. `open` means the file is a desktop tab. `active` means that tab is in the foreground. Both apply only to files. `draft` means the item is in the user\u2019s drafts. Then files and folders recently updated in the active team. Timestamps are omitted when an open file is not in the active team\u2019s resources. Pass parentId to list only what is inside one folder. Pass a higher limit until truncated is absent before treating the list as the whole tree."
+      },
+      {
+        "path": "/inputSchema/properties/includeArchived",
+        "before": null,
+        "after": {
+          "description": "Optional. Also list archived files and folders, marked archived. Use to find IDs for unarchive_resources.",
+          "type": "boolean"
+        }
+      },
+      {
+        "path": "/inputSchema/properties/parentId",
+        "before": null,
+        "after": {
+          "description": "Optional folder ID. Only list the files and folders directly inside this folder.",
+          "type": "string"
+        }
+      }
+    ],
+    "set_text_content": [
+      {
+        "path": "/description",
+        "before": "Set the text content of one or more Text nodes. Only works on nodes with component type \"Text\". Use this instead of writeHTML replace when you only need to change text. Supports batch updates in a single call.",
+        "after": "Replace the inner HTML of one or more Text nodes. Omit the node wrapper. The node\u2019s ID and layout are preserved. Inline formatting applied uniformly to all text may become the node\u2019s default styling.\nUse get_jsx first to view current content and node styling context. Inner HTML inherits _only_ from target node, not ancestor layers. Whitespace parsing uses `white-space: pre-wrap`.\nRich text styling via inline styles is supported: text fills (`color`, or `background-color`/`background-image` **only** when combined with `background-clip: text`), font, font-size, letter-spacing, line-height, text-transform, text-decoration, and -webkit-text-stroke. Backgrounds and highlights on individual text spans are not supported. Layout properties such as gap, margins, padding, dimensions, and positioning are ignored.\nUse update_styles to update styles of the whole text node, including styled spans.\nSupports batch updates."
+      },
+      {
+        "path": "/inputSchema/properties/updates/description",
+        "before": "Array of text updates to apply. Each item specifies a node ID and its new text content.",
+        "after": "Array of text updates to apply. Each item specifies a node ID and its new rich text content."
+      },
+      {
+        "path": "/inputSchema/properties/updates/items/properties/html",
+        "before": null,
+        "after": {
+          "type": "string",
+          "description": "The HTML containing the new rich text content."
+        }
+      },
+      {
+        "path": "/inputSchema/properties/updates/items/properties/textContent",
+        "before": {
+          "description": "The new text content.",
+          "type": "string"
+        },
+        "after": null
+      },
+      {
+        "path": "/inputSchema/properties/updates/items/required",
+        "before": [
+          "nodeId",
+          "textContent"
+        ],
+        "after": [
+          "nodeId",
+          "html"
+        ]
+      }
+    ],
+    "update_styles": [
+      {
+        "path": "/description",
+        "before": "Update styles on one or more nodes. Use this for targeted style changes. Supports design tokens as CSS variables. Supports batch updates in a single call.\n- Setting the top / left styles of an artboard changes its position on the canvas.\n- Anywhere urls are accepted, paper-gen:// URLs can be used to generate images with AI. ONLY use when the user explicitly asked for image generation. Read \"image-generation\" guide first via get_guide.\n- Styles you set that are inert in the node's context are dropped rather than applied; their keys are returned under the ignoredStyles property.",
+        "after": "Update styles on one or more nodes. Use this for targeted style changes. Supports design tokens as CSS variables. Supports batch updates in a single call.\n- Setting the top / left styles of an artboard changes its position on the canvas.\n- Anywhere urls are accepted, paper-gen:// URLs can be used to generate images with AI. ONLY use when the user explicitly asked for image generation. Read \"image-generation\" guide first via get_guide.\n- Styles you set that are inert in the node's context are dropped rather than applied; their keys are returned under the ignoredStyles property.\n- On Text nodes, text styles apply to all text, including styled spans. To style only parts of text, read the Text node's content with get_jsx then use set_text_content to replace it."
+      }
+    ],
+    "write_html": [
+      {
+        "path": "/description",
+        "before": "IMPORTANT: Write incrementally. The user sees you write on the canvas in real-time. Show them visual progress every few seconds.\nEach write_html call should create one visual item: a header, a single list row, a button bar, or a paragraph block.\nEven simple components should be incremental: a card = container/header, then each row, then the footer.\nIMPORTANT: Prefer cloning instead of remaking existing Paper nodes using `<x-paper-clone node-id=\"A-01\" style=\"...\" />`.\nFor repeated elements: create the container first, then add each item as a separate write_html call into the container or use the duplicate tool on the first child.\n\nHTML and CSS rules:\n- Always use inline styles (style=\"..\")\n- Enforce consistency with design tokens as CSS variables if available\n- All Google Fonts and locally installed fonts are available in font-family\n- All CSS color formats are supported: hex, rgb(a), hsl(a), oklch, oklab etc\n- Use flex as the primary layout mode. Flexbox, padding, and gap are the core layout tools in Paper's interface\n- Absolute position is fully supported. Use it for decorative elements. Avoid covering the entire artboard with a single absolute element, it blocks cursor interaction underneath\n- Do NOT use: margin, display: inline, display: grid, HTML tables. Use padding and gap for spacing\n- display: block is acceptable for simple elements (text, decorative shapes) but not for layout containers\n- Assume border-box sizing everywhere\n- Use <pre> or white-space: pre for code blocks or indented text\n- Do NOT use emojis as icons. Use SVG icons or images\n- Rich text isn't supported in Paper; code snippets should be a single element with one text color and pre whitespace\n- Use the layer-name attribute to set names on elements in the Paper layer tree, e.g. <div layer-name=\"Hero\">\n- Local images MUST use absolute paths in an img starting with paper-asset:// e.g. <img src=\"paper-asset:///Users/name/image.svg\">\n- paper-gen:// URLs generate AI images. ONLY if the user asked; read the \"image-generation\" guide first",
+        "after": "IMPORTANT: Write incrementally. The user sees you write on the canvas in real-time. Show them visual progress every few seconds.\nEach write_html call should create one visual item: a header, a single list row, a button bar, or a paragraph block.\nEven simple components should be incremental: a card = container/header, then each row, then the footer.\nIMPORTANT: Prefer cloning instead of remaking existing Paper nodes using `<x-paper-clone node-id=\"A-01\" style=\"...\" />`.\nFor repeated elements: create the container first, then add each item as a separate write_html call into the container or use the duplicate tool on the first child.\n\nHTML and CSS rules:\n- Always use inline styles (style=\"..\")\n- Enforce consistency with design tokens as CSS variables if available\n- All Google Fonts and locally installed fonts are available in font-family\n- All CSS color formats are supported: hex, rgb(a), hsl(a), oklch, oklab etc\n- Use flex as the primary layout mode. Flexbox, padding, and gap are the core layout tools in Paper's interface\n- Absolute position is fully supported. Use it for decorative elements. Avoid covering the entire artboard with a single absolute element, it blocks cursor interaction underneath\n- Do NOT use: margin, display: inline, display: grid, HTML tables. Use padding and gap for spacing\n- display: block is acceptable for simple elements (text, decorative shapes) but not for layout containers\n- Assume border-box sizing everywhere\n- Use <pre> or white-space: pre for code blocks or indented text\n- Do NOT use emojis as icons. Use SVG icons or images\n- Text spans support limited rich text formatting. See 'Inline formatting' guide\n- Use the layer-name attribute to set names on elements in the Paper layer tree, e.g. <div layer-name=\"Hero\">\n- Local images MUST use absolute paths in an img starting with paper-asset:// e.g. <img src=\"paper-asset:///Users/name/image.svg\">\n- paper-gen:// URLs generate AI images. ONLY if the user asked; read the \"image-generation\" guide first"
+      }
+    ]
+  }
+}

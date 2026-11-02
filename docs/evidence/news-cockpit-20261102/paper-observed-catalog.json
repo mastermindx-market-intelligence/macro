@@ -1,0 +1,1715 @@
+{
+  "source_pin": "19cb00cfed26b68f0a8a5cdc0f2f1a9463a3feec",
+  "schema_receipt": {
+    "server_name": "paper-desktop",
+    "server_version": "0.5.14",
+    "catalog_sha256": "16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd",
+    "accepted_for_write": false,
+    "expected_server": [
+      "paper-desktop",
+      null
+    ],
+    "server_name_compatible": true,
+    "server_version_compatible": true,
+    "server_version_policy": "OBSERVED_NOT_PINNED",
+    "catalog_compatible": false,
+    "expected_catalog_sha256": "1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db",
+    "additional_reviewed_catalog_sha256": [
+      "f3483e001d4f07f5a49144ca52a4f9e14ba046e35546dda05d6cd37c9d2b4728"
+    ]
+  },
+  "catalog": {
+    "open_file": {
+      "name": "open_file",
+      "description": "Opens a Paper file by its ID or URL. Optional pageId is applied only on the initial open; if the file is already open the page will not switch. Returns a get_basic_info response.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "fileId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The Paper file ID to open. Accepts a bare ID, a /file/<id> route path, or the files URL."
+          },
+          "pageId": {
+            "description": "Optional page ID to open. Only applied when the file is not already open \u2014 if the file is already open the current page is left unchanged so the user is not pulled away from what they are looking at. A page ID in a /file/<id>/<pageId> URL passed as fileId is also accepted.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "list_resources": {
+      "name": "list_resources",
+      "description": "Lists files and folders. Each item has type \"file\" or \"folder\" and parentId, omitted for a top-level folder and for an open file that is not in the active team\u2019s resources. Open files are listed first. `open` means the file is a desktop tab. `active` means that tab is in the foreground. Both apply only to files. `draft` means the item is in the user\u2019s drafts. Then files and folders recently updated in the active team. Timestamps are omitted when an open file is not in the active team\u2019s resources. Pass parentId to list only what is inside one folder. Pass a higher limit until truncated is absent before treating the list as the whole tree.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "limit": {
+            "description": "Maximum number of files and folders to return. Defaults to 50. Sorted by updatedAt, most recent first.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "includeArchived": {
+            "description": "Optional. Also list archived files and folders, marked archived. Use to find IDs for unarchive_resources.",
+            "type": "boolean"
+          },
+          "parentId": {
+            "description": "Optional folder ID. Only list the files and folders directly inside this folder.",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "create_file": {
+      "name": "create_file",
+      "description": "Create a new Paper file in the user's active team and returns the new file's ID, name, parentId, and URL. Pass parentId to create it inside a folder; otherwise it is created in the active team's top-level folder. To start working in the new file, call open_file with the returned ID.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "cloneFileId": {
+            "description": "Optional file ID to clone from. If provided, the new file is a copy of this one.",
+            "type": "string"
+          },
+          "name": {
+            "description": "Optional display name for the new file.",
+            "type": "string"
+          },
+          "parentId": {
+            "description": "Optional ID of the folder to create the new file in. Defaults to the active team's top-level folder. Use list_resources to find folder IDs.",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    },
+    "create_folder": {
+      "name": "create_folder",
+      "description": "Create a new folder in the file browser and returns its ID, name, parentId, and URL. Pass parentId to nest it inside another folder; otherwise it is created in the active team's top-level folder. The stored name is trimmed and capped at 500 characters.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Optional display name for the new folder. Defaults to \"Untitled project\".",
+            "type": "string"
+          },
+          "parentId": {
+            "description": "Optional ID of the folder to create the new folder in. Defaults to the active team's top-level folder. Use list_resources to find folder IDs.",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    },
+    "rename_resource": {
+      "name": "rename_resource",
+      "description": "Rename a file or folder. Sets the display name shown in the file browser. Pass the file or folder ID. The stored name is trimmed and capped at 500 characters. An empty name leaves the current name unchanged. Returns the stored name and whether the resource is a file or a folder.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "resourceId": {
+            "type": "string",
+            "description": "The ID of the file or folder to rename."
+          },
+          "name": {
+            "type": "string",
+            "description": "The new display name for the file or folder."
+          }
+        },
+        "required": [
+          "resourceId",
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    },
+    "archive_resources": {
+      "name": "archive_resources",
+      "description": "Archive files and folders. Archiving a folder also archives everything inside it. Archived items move to the Archive page in the file browser and are only returned by list_resources with includeArchived. Use unarchive_resources to restore them. Every ID is checked first: if any of them cannot be archived, nothing is archived. Team files and the user's drafts are saved separately, so if saving one fails, the error lists the items that were still archived. Returns the archived items.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "resourceIds": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The IDs of the files and folders to archive. Use list_resources to find IDs."
+          }
+        },
+        "required": [
+          "resourceIds"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    },
+    "unarchive_resources": {
+      "name": "unarchive_resources",
+      "description": "Unarchive files and folders. Unarchiving a folder also unarchives everything inside it. An item whose folder is still archived is moved to the top-level folder, unless that folder is also being unarchived. Every ID is checked first: if any of them cannot be unarchived, nothing is unarchived. Team files and the user's drafts are saved separately, so if saving one fails, the error lists the items that were still unarchived. Returns the unarchived items with the parentId each one ended up in.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "resourceIds": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The IDs of the archived files and folders to unarchive. Use list_resources with includeArchived to find IDs."
+          }
+        },
+        "required": [
+          "resourceIds"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    },
+    "move_resources": {
+      "name": "move_resources",
+      "description": "Move files and folders into another folder. A folder moves with everything inside it, so pass a folder or items inside it, not both. Items can only move within the same place: team files stay in the team, drafts stay in the user's drafts. Every ID is checked first: if any of them cannot be moved, nothing is moved. Returns the moved items. Items already in the folder are listed separately and left as they are.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "resourceIds": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The IDs of the files and folders to move. Use list_resources to find IDs."
+          },
+          "parentId": {
+            "type": "string",
+            "description": "The ID of the folder to move them into. Use list_resources to find folder IDs."
+          }
+        },
+        "required": [
+          "resourceIds",
+          "parentId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    },
+    "create_page": {
+      "name": "create_page",
+      "description": "Creates a new page in the file and returns its ID. The page is added after the page the user is viewing; use arrange_pages to move it. To work on the new page use the returned pageId in subsequent tool calls.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Optional display name for the new page (shown in the page list). Defaults to \"Page N\".",
+            "type": "string"
+          },
+          "icon": {
+            "description": "Icon shown in place of the default page icon in the page list. Icons are decorative and do not change page behavior. About some icons: arrow: Depicts a thick arrow pointing to the right. May be used to indicate the key page in a file, as it points towards the page name in the page list, helping it stand out from other pages. design: Depicts a pencil crossed over a ruler. paper: Depicts a piece of crumpled paper. May be used to indicate previous drafts or discarded work that is no longer relevant.",
+            "type": "string",
+            "enum": [
+              "arrow",
+              "padlock",
+              "check",
+              "cross",
+              "info",
+              "question",
+              "design",
+              "vector",
+              "images",
+              "table",
+              "presentation",
+              "blueprint",
+              "swatches",
+              "bar-chart",
+              "line-chart",
+              "pie-chart",
+              "paper"
+            ]
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    },
+    "update_pages": {
+      "name": "update_pages",
+      "description": "Change the name and/or icon of one or more pages in the file. Does not switch which page the user is viewing. Supports batch updates in a single call.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "updates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "pageId": {
+                  "type": "string",
+                  "description": "The ID of the page to update. Use get_basic_info to list pages."
+                },
+                "name": {
+                  "description": "The new display name for the page (shown in the page list). Omit to leave it unchanged.",
+                  "type": "string"
+                },
+                "icon": {
+                  "description": "Icon shown in place of the default page icon in the page list. Icons are decorative and do not change page behavior. About some icons: arrow: Depicts a thick arrow pointing to the right. May be used to indicate the key page in a file, as it points towards the page name in the page list, helping it stand out from other pages. design: Depicts a pencil crossed over a ruler. paper: Depicts a piece of crumpled paper. May be used to indicate previous drafts or discarded work that is no longer relevant. Omit to leave it unchanged, or pass null to restore the default page icon.",
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "arrow",
+                        "padlock",
+                        "check",
+                        "cross",
+                        "info",
+                        "question",
+                        "design",
+                        "vector",
+                        "images",
+                        "table",
+                        "presentation",
+                        "blueprint",
+                        "swatches",
+                        "bar-chart",
+                        "line-chart",
+                        "pie-chart",
+                        "paper"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "pageId"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Array of page updates. Each item specifies a page ID and the fields to change."
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "updates",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    },
+    "arrange_pages": {
+      "name": "arrange_pages",
+      "description": "Reorder the page list and add or remove dividers in one call. Dividers are visual separators between groups of pages. Pass the complete new order; the call is rejected without changes if it misses an item or lists an unknown or repeated ID, which also happens when pages were added or removed since you read the list. Pages are never deleted. Does not switch which page the user is viewing. Returns the resulting page list, including the IDs of new dividers.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "order": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "divider"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "description": "The complete page list in its new order: every page and divider ID from get_basic_info exactly once, except dividers listed in removeDividerIds. Put { \"type\": \"divider\" } where a new divider should go."
+          },
+          "removeDividerIds": {
+            "description": "IDs of existing dividers to remove.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "order",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    },
+    "get_basic_info": {
+      "name": "get_basic_info",
+      "description": "Get essential context about the current design: file name, page name, node count, artboards with their dimensions, font families used, a compact list of design tokens.\nCall get_basic_info first to understand the canvas situation.\n- When no fileId is provided the file the user is viewing is used.\n- Pass pageId to inspect a specific page; omit to use the page the user is viewing.\n- worldX/worldY properties are the world position of the node\n- worldX/worldY/width/height are null when the size or position depends on layout (e.g. fit-content, flex children) and the node was not measured (i.e. the page is inactive)\n- pages lists the page list in display order: pages (type \"page\") and dividers (type \"divider\"), which separate groups of pages and have no canvas, so their IDs cannot be used as pageId\n- the page with isActive is what the user sees and controls, and it can change while you work if the user switches pages\n- you can work on other pages without disrupting the user by passing their pageId to page-scoped tools (create_artboard, export, get_basic_info); tools that take a nodeId act on whichever page the node lives on",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "pageId": {
+            "description": "The page ID that the tool should operate on. When omitted the active page will be used. The active page can change between tool calls, prefer passing explicit page IDs.",
+            "type": "string"
+          },
+          "fileId": {
+            "description": "The file ID that the tool should operate on. When omitted the file the user is viewing is used.",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "get_selection": {
+      "name": "get_selection",
+      "description": "Get detailed information about the currently selected nodes, including IDs, names, component types, size, and which artboard they belong to. When no fileId is provided the file the user is viewing is used.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "fileId": {
+            "description": "The file ID that the tool should operate on. When omitted the file the user is viewing is used.",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "get_node_info": {
+      "name": "get_node_info",
+      "description": "Get detailed information about a specific node by ID, including its size, visibility, lock state, parent, children IDs, text content (for text nodes), and the node's worldX/worldY (world position) and x/y (relative to parent).\n- When the node has a generated image, also returns imageGeneration.status (processing / ready / error) and imageGeneration.output (raster / svg) \u2014 poll this to know when generation completes.\n- Raster fills are read with get_fill_image; SVG output is read with get_jsx.\n- x/y/worldX/worldY/width/height are null when the size or position depends on layout (e.g. fit-content, flex children) and the node was not measured (i.e. the page is inactive)\n- textContent is plain text only; use get_jsx to view inline text formatting.\n- Returns an error if the node does not exist.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "description": "The ID of the node to inspect"
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "nodeId",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "get_children": {
+      "name": "get_children",
+      "description": "Get the direct children of a node.\n- Returns a list of child nodes with their IDs, names, component types, how many children each has, and each child's worldX/worldY (world position) and x/y (relative to parent)\n- x/y/worldX/worldY are null when the size or position depends on layout (e.g. fit-content, flex children) and the node was not measured (i.e. the page is inactive)\n- Returns an error if the node does not exist.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "description": "The ID of the parent node to get children from"
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "nodeId",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "get_screenshot": {
+      "name": "get_screenshot",
+      "description": "Capture a screenshot of a specific node by ID. Returns the image as base64-encoded data. Images are automatically capped to fit API size limits. Defaults to 1x scale which is sufficient for verifying layout, spacing, and visual appearance. Use scale=2 only when you need to read small text or inspect fine visual details. Capture child nodes when needing higher resolution screenshots.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "description": "The ID of the node to capture"
+          },
+          "scale": {
+            "description": "Render scale factor. 1 (default) for layout checks and general visual understanding. 2 for reading small text or inspecting fine details.",
+            "type": "number"
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "nodeId",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "get_jsx": {
+      "name": "get_jsx",
+      "description": "Get the JSX code representation of a node and its descendants. Supports two styling formats: inline styles (default) or Tailwind CSS classes.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "description": "The ID of the node to generate JSX from"
+          },
+          "format": {
+            "description": "Style format: \"inline-styles\" (default) uses inline styles, \"tailwind\" uses Tailwind classes with inline fallback",
+            "type": "string",
+            "enum": [
+              "inline-styles",
+              "tailwind"
+            ]
+          },
+          "includeNodeIds": {
+            "description": "Add an id attribute with the Paper node ID to each element (default true), so you can target nodes for edits. Pass false when exporting clean code for a codebase.",
+            "type": "boolean"
+          },
+          "includeRootPositioning": {
+            "description": "Keep the root element's absolute position from the canvas (position/top/left/right/bottom) (default false). By default these are stripped so the JSX is portable and safe to reuse as a template; use get_node_info for the node's coordinates.",
+            "type": "boolean"
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "nodeId",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "get_tree_summary": {
+      "name": "get_tree_summary",
+      "description": "Get a compact text summary of a node's subtree hierarchy.\n\n- Returns an indented tree showing each node's component type, name, ID, and dimensions\n- Sizes are swapped with a question mark '?' when the size depends on layout and the node is not measured\n- Much cheaper than getJSX for understanding structure \u2014 use this for orientation before diving into specific nodes.\n- Returns an error if the node does not exist.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "description": "The ID of the root node to summarize"
+          },
+          "depth": {
+            "description": "Maximum depth to traverse (default 3, max 10). Nodes beyond this depth show a child count hint instead.",
+            "type": "number"
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "nodeId",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "get_computed_styles": {
+      "name": "get_computed_styles",
+      "description": "Get the computed CSS styles for one or more nodes. Returns a map of nodeId to CSSProperties object. Supports batch requests.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "nodeIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of node IDs to get styles from"
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "nodeIds",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "get_fill_image": {
+      "name": "get_fill_image",
+      "description": "Extract the image data from a node that has an image fill. Returns the image as base64-encoded JPEG data optimized for AI consumption. Large images are automatically resized to fit within API size limits. The original image URL is included in the metadata if you need the full-quality source. Returns an error if the node does not exist, or a message if the node has no image fill, is an SVG (use get_jsx), or the image is still generating (poll get_node_info to know when it completes).",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "description": "The ID of the node containing an image fill"
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "nodeId",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "find_nodes": {
+      "name": "find_nodes",
+      "description": "Find nodes by computed style and/or text content \u2014 useful for locating everything using a given token, literal value, or piece of copy before a bulk update. Searches every page in the file by default. Pass pageId to search a whole page, or nodeId to search a node and its descendants; nodeId takes priority. Pass `filters`, `textValue`, or both (AND).\n`filters` are `{ styleName, styleValue }` matchers combined with AND (color is X AND fontSize is Y). `styleValue` may be a literal (\"#ff0000\", \"16px\") or a token (\"--color-primary\"). Both fields accept \"*\" wildcards and colors match by equivalence. A literal color query also finds token-bound usages (reported as the `var(--token)` reference), so to migrate a raw color to a token you can search the color directly. Omit one field to match any property or any value.\n`textValue` matches Text node content, case-insensitive, with \"*\" wildcards anchored to the whole value (\"Submit\", \"Get *\", \"*started*\").\nEach result has its ID, name, component, and a `matched` array of the `{ styleName, styleValue }` / `{ textValue }` entries that satisfied the query; for a color or token found inside a composite value (gradient/border), `styleValue` is the matched fragment, not the whole value.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "pageId": {
+            "description": "Optional. Search every node on this page. Omit (along with nodeId) to search every page in the file. Use get_basic_info to list the pages.",
+            "type": "string"
+          },
+          "nodeId": {
+            "description": "Optional. Search this node and its descendants instead of a whole page or the whole file. Takes priority over pageId.",
+            "type": "string"
+          },
+          "textValue": {
+            "description": "Match Text node content. Case-insensitive; \"*\" is a wildcard anchored to the whole value (\"foo*\", \"*foo*\", \"foo*bar\"). AND-combined with `filters`.",
+            "type": "string"
+          },
+          "filters": {
+            "description": "Style matchers combined with AND \u2014 a node must satisfy every one (plus `textValue`, if given).",
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "styleName": {
+                  "description": "CSS property to match, e.g. \"background-color\" or \"fontSize\". \"*\" wildcard (\"border-*\"). Omit to match any property.",
+                  "type": "string"
+                },
+                "styleValue": {
+                  "description": "Computed value to match: a literal (\"#ff0000\", \"16px\") or a token (\"--color-primary\" / \"var(--color-primary)\"). \"*\" wildcard; colors match by equivalence (\"#ccc\" == \"rgb(204, 204, 204)\"). A literal color also finds token-bound usages whose token resolves to it, reported as the var reference. Omit to match any value.",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "list_comment_threads": {
+      "name": "list_comment_threads",
+      "description": "List visible comment threads in the open file as compact summaries. A comment thread is a conversation pinned to a node: a first message plus reply messages, each with its own author, and an \"open\" or \"resolved\" workflow status. Lists only open (unresolved) threads by default. Use this first to discover relevant discussion, then call get_comment_thread for full replies. If you are tasked and fully addressing a thread's feedback, mark it done with set_comment_thread_status. Supports page, node, status, author, search, sort, and pagination filters. User ID filters accept \"current-user\" for the signed-in user. Deleted threads/messages are never returned.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "pageId": {
+            "description": "Optional page ID to list comment threads from. Omit to include all pages.",
+            "type": "string"
+          },
+          "currentPageOnly": {
+            "description": "If true, list only comment threads on the current page. Ignored when pageId is provided.",
+            "type": "boolean"
+          },
+          "nodeId": {
+            "description": "Optional node ID to list comment threads pinned to.",
+            "type": "string"
+          },
+          "status": {
+            "description": "Filter by status. Defaults to \"open\": only unresolved comment threads, which are the ones still needing action. Pass \"resolved\" for finished threads or \"all\" for both.",
+            "type": "string",
+            "enum": [
+              "open",
+              "resolved",
+              "all"
+            ]
+          },
+          "search": {
+            "description": "Case-insensitive search over author display names and visible message text.",
+            "type": "string"
+          },
+          "searchScope": {
+            "description": "Search only the first visible message of each comment thread, or all visible messages. Defaults to \"all-messages\".",
+            "type": "string",
+            "enum": [
+              "first-message",
+              "all-messages"
+            ]
+          },
+          "participantUserId": {
+            "description": "Only return comment threads where this user wrote at least one visible message (thread author or replier). Pass \"current-user\" for the signed-in user you are acting on behalf of. For anyone else, use an authorUserId from earlier results; never guess user IDs.",
+            "type": "string"
+          },
+          "threadAuthorUserId": {
+            "description": "Only return comment threads started by this user (replies by them do not count; use participantUserId for that). Pass \"current-user\" for the signed-in user you are acting on behalf of. For anyone else, use an authorUserId from earlier results; never guess user IDs.",
+            "type": "string"
+          },
+          "sortField": {
+            "description": "Field to sort by. Defaults to \"page\", matching the comment panel.",
+            "type": "string",
+            "enum": [
+              "page",
+              "createdAt",
+              "updatedAt"
+            ]
+          },
+          "sortDirection": {
+            "description": "Sort direction. Defaults to \"asc\".",
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ]
+          },
+          "limit": {
+            "description": "Maximum comment threads to return. Defaults to 50.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "offset": {
+            "description": "Number of matching comment threads to skip. Defaults to 0.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "previewLength": {
+            "description": "Maximum characters for each first-message preview. Defaults to 240.",
+            "type": "integer",
+            "minimum": 20,
+            "maximum": 1000
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "get_comment_thread": {
+      "name": "get_comment_thread",
+      "description": "Get full details for one visible comment thread, including its open/resolved status, all reply messages, reactions, attachments (each with a public URL you can fetch to view the file), page context, and pinned node context. Works for any status. Call list_comment_threads first when you do not already know the commentThreadId. Deleted threads/messages are never returned.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "commentThreadId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The ID of the comment thread to read."
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "commentThreadId",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "list_comment_thread_authors": {
+      "name": "list_comment_thread_authors",
+      "description": "List every user who has started a comment thread or written a visible message in the open file, with their user ID, display name, activity counts, and last activity time. Use this to resolve a person's name to a userId before filtering list_comment_threads by participantUserId or threadAuthorUserId. Deleted threads/messages are never counted.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "pageId": {
+            "description": "Optional page ID to only count comment thread activity on that page. Omit to include all pages.",
+            "type": "string"
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "set_comment_thread_status": {
+      "name": "set_comment_thread_status",
+      "description": "Set the workflow status of one comment thread to \"resolved\" or \"open\". Resolve a thread once its feedback has been fully addressed in the design \u2014 this is how you mark review comments as done. Reopen a resolved thread if more work turns out to be needed. Use list_comment_threads or get_comment_thread to find the commentThreadId.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "commentThreadId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The ID of the comment thread to update."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "resolved"
+            ],
+            "description": "The new workflow status. Set \"resolved\" once the feedback is fully addressed; set \"open\" to reopen."
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "commentThreadId",
+          "status",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    },
+    "get_font_family_info": {
+      "name": "get_font_family_info",
+      "description": "Get information about whether a font family is available in a file and detailed information about all weights and styles in the family. This tool looks up fonts on the user's machine and Google Fonts.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "familyNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Names of the font families to look up."
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "familyNames",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "get_guide": {
+      "name": "get_guide",
+      "description": "Read a detailed guide on a specific topic. Call with topic \"paper-mcp-instructions\" before using other Paper tools for best results. Other topics: \"mobile-status-bar\", \"figma-import\", \"image-generation\".",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "topic": {
+            "type": "string",
+            "description": "The guide topic to read. Available topics:\n\"paper-mcp-instructions\" \u2014 Step-by-step guide to using the Paper MCP server to its max power\n\"mobile-status-bar\" \u2014 Paste-ready status bar markup for mobile artboards\n\"figma-import\" \u2014 Step-by-step workflow for bringing Figma designs into Paper\n\"image-generation\" \u2014 How to generate AI images inside write_html, update_styles, and create_artboard via paper-gen:// URLs"
+          }
+        },
+        "required": [
+          "topic"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "export": {
+      "name": "export",
+      "description": "Export nodes as image or video files. Unless the user specifies, do not override the default export settings. Returns each export's file path, or on Paper's remote MCP server a download link that works for 24 hours. PDF exports require Paper Desktop.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "pageId": {
+            "description": "The page ID that the tool should operate on. When omitted the active page will be used. The active page can change between tool calls, prefer passing explicit page IDs.",
+            "type": "string"
+          },
+          "type": {
+            "description": "Export type, defaults to \"image\".",
+            "type": "string",
+            "enum": [
+              "image",
+              "video"
+            ]
+          },
+          "nodes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "nodes-with-exports-only",
+                "description": "Exports all nodes on the target page that already have export settings. Uses pageId when provided, otherwise the page the user is viewing. Ignored when exporting explicit node IDs."
+              },
+              {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "format": {
+                        "type": "string",
+                        "enum": [
+                          "avif",
+                          "jpg",
+                          "mp4",
+                          "pdf",
+                          "png",
+                          "svg",
+                          "webm",
+                          "webp"
+                        ],
+                        "description": "Format to export the node as. SVG exports are only supported for SVG nodes. For video, use \"mp4\" (opaque, page background) or \"webm\" (transparent)."
+                      },
+                      "scale": {
+                        "type": "string",
+                        "pattern": "^\\d+(\\.\\d+)?(x|w|h|p)$",
+                        "description": "Export scale. A number followed by a unit: \"x\" (multiplier, e.g. \"0.5x\", \"1x\", \"2x\"), \"p\" (pixels on shortest side, e.g. \"720p\", \"1440p\"), \"w\" (target width, e.g. \"512w\"), or \"h\" (target height, e.g. \"512h\")"
+                      },
+                      "durationSeconds": {
+                        "description": "Video duration in seconds. Only applicable when type is \"video\".",
+                        "default": 10,
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 300
+                      },
+                      "pdfQuality": {
+                        "description": "PDF image quality for images. Only applicable when format is \"pdf\".",
+                        "default": "high",
+                        "type": "string",
+                        "enum": [
+                          "low",
+                          "medium",
+                          "high"
+                        ]
+                      },
+                      "pdfResampling": {
+                        "description": "PDF image resizing resampling strategy. \"detailed\" preserves fine detail with the Lanczos algorithm, \"basic\" produces smaller files and uses the Hamming algorithm. Only applicable when format is \"pdf\".",
+                        "default": "detailed",
+                        "type": "string",
+                        "enum": [
+                          "detailed",
+                          "basic"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "format",
+                      "scale"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "description": "Used to override the default export settings for the node. Set to an empty array `[]` to export with default settings."
+                },
+                "description": "Record of nodes to export, keyed by nodeId."
+              }
+            ]
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "nodes",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "export_combined_pdf": {
+      "name": "export_combined_pdf",
+      "description": "Requires Paper Desktop. Export multiple nodes combined into a single PDF file, one page per node. Pages are auto-ordered by canvas position (top-to-bottom, then left-to-right). Use this instead of \"export\" when the user wants the nodes merged into one PDF rather than separate files. The quality and resampling used is the highest of any existing PDF export settings found on individual nodes.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "nodeIds": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Node IDs to combine into a single PDF, one page per node. Pages are auto-ordered by top-to-bottom then left-to-right canvas position."
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "nodeIds",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "write_html": {
+      "name": "write_html",
+      "description": "IMPORTANT: Write incrementally. The user sees you write on the canvas in real-time. Show them visual progress every few seconds.\nEach write_html call should create one visual item: a header, a single list row, a button bar, or a paragraph block.\nEven simple components should be incremental: a card = container/header, then each row, then the footer.\nIMPORTANT: Prefer cloning instead of remaking existing Paper nodes using `<x-paper-clone node-id=\"A-01\" style=\"...\" />`.\nFor repeated elements: create the container first, then add each item as a separate write_html call into the container or use the duplicate tool on the first child.\n\nHTML and CSS rules:\n- Always use inline styles (style=\"..\")\n- Enforce consistency with design tokens as CSS variables if available\n- All Google Fonts and locally installed fonts are available in font-family\n- All CSS color formats are supported: hex, rgb(a), hsl(a), oklch, oklab etc\n- Use flex as the primary layout mode. Flexbox, padding, and gap are the core layout tools in Paper's interface\n- Absolute position is fully supported. Use it for decorative elements. Avoid covering the entire artboard with a single absolute element, it blocks cursor interaction underneath\n- Do NOT use: margin, display: inline, display: grid, HTML tables. Use padding and gap for spacing\n- display: block is acceptable for simple elements (text, decorative shapes) but not for layout containers\n- Assume border-box sizing everywhere\n- Use <pre> or white-space: pre for code blocks or indented text\n- Do NOT use emojis as icons. Use SVG icons or images\n- Text spans support limited rich text formatting. See 'Inline formatting' guide\n- Use the layer-name attribute to set names on elements in the Paper layer tree, e.g. <div layer-name=\"Hero\">\n- Local images MUST use absolute paths in an img starting with paper-asset:// e.g. <img src=\"paper-asset:///Users/name/image.svg\">\n- paper-gen:// URLs generate AI images. ONLY if the user asked; read the \"image-generation\" guide first",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "html": {
+            "type": "string",
+            "description": "HTML string to parse into design nodes. Supports standard HTML elements with inline CSS styles."
+          },
+          "targetNodeId": {
+            "type": "string",
+            "description": "The ID of the target node. In \"insert-children\" mode, new nodes are added as children of this node. In \"replace\" mode, this node is removed and replaced by the parsed HTML."
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "insert-children",
+              "replace"
+            ],
+            "description": "\"insert-children\" adds the HTML as children of the target node. \"replace\" removes the target node and puts the parsed HTML in its place."
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "html",
+          "targetNodeId",
+          "mode",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    },
+    "create_artboard": {
+      "name": "create_artboard",
+      "description": "\nCreates a new artboard (top-level frame) on the canvas.\n- Returns the node ID which you can then use with write_html({mode:'insert-children'}) to add content.\n- Use the styles property to set the artboard size and styles.\n- paper-gen:// URLs in styles (e.g. backgroundImage) generate AI images. ONLY if the user asked; read the \"image-generation\" guide first.\n- Artboards default to `display: \"flex\", flexDirection: \"column\"`\n- The artboard will always be placed in the best empty spot on the canvas.\n- Pass pageId to create the artboard on a specific page. Omit to use the page the user is viewing.\n- Use one of the default sizes below unless the user specifies a size.\n\n**Default sizes by device** (when the user doesn't specify a size):\n  - **Desktop**: 1440 x 900px\n  - **Tablet**: 768 x 1024px\n  - **Mobile**: 390 x 844px \u2014 include a status bar at the top. Call `get_guide({ topic: \"mobile-status-bar\" })` for paste-ready markup; do not hand-draw one.\n\nThe suggested device height is just a starting point to set the scene and understand how much space there is for the content above the fold. When wrapping up, if content clips, switch the artboard to `height: \"fit-content\"` via update_styles instead of guessing a new fixed height.\n",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "pageId": {
+            "description": "The page ID that the tool should operate on. When omitted the active page will be used. The active page can change between tool calls, prefer passing explicit page IDs.",
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name for the artboard (shown in the layer tree)."
+          },
+          "styles": {
+            "type": "object",
+            "properties": {
+              "width": {
+                "type": "string",
+                "description": "Width of the artboard as a whole pixel value (e.g. \"1440px\")."
+              },
+              "height": {
+                "type": "string",
+                "description": "Height of the artboard as a whole pixel value (e.g. \"900px\")."
+              }
+            },
+            "required": [
+              "width",
+              "height"
+            ],
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            },
+            "description": "CSS styles for the artboard as a JSON object. Use camelCase property names.\nwidth and height are required \u2014 use whole pixel values.\nWhen positioning an artboard make sure to give 80px of space between artboards to avoid overlaps.\nExample: {\"display\": \"flex\", \"flexDirection\": \"column\", \"width\": \"1440px\", \"height\": \"900px\", \"backgroundColor\": \"#f5f5f5\", \"padding\": \"20px\"}"
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "name",
+          "styles",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    },
+    "delete_nodes": {
+      "name": "delete_nodes",
+      "description": "Delete one or more nodes from the design. Also deletes all descendants of the specified nodes.\nIMPORTANT: Before deleting nodes that you think have an incorrect parent verify using get_node_info first.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "nodeIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of node IDs to delete."
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "nodeIds",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "consequentialHint": true
+      }
+    },
+    "set_text_content": {
+      "name": "set_text_content",
+      "description": "Replace the inner HTML of one or more Text nodes. Omit the node wrapper. The node\u2019s ID and layout are preserved. Inline formatting applied uniformly to all text may become the node\u2019s default styling.\nUse get_jsx first to view current content and node styling context. Inner HTML inherits _only_ from target node, not ancestor layers. Whitespace parsing uses `white-space: pre-wrap`.\nRich text styling via inline styles is supported: text fills (`color`, or `background-color`/`background-image` **only** when combined with `background-clip: text`), font, font-size, letter-spacing, line-height, text-transform, text-decoration, and -webkit-text-stroke. Backgrounds and highlights on individual text spans are not supported. Layout properties such as gap, margins, padding, dimensions, and positioning are ignored.\nUse update_styles to update styles of the whole text node, including styled spans.\nSupports batch updates.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "updates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "nodeId": {
+                  "type": "string",
+                  "description": "The ID of the Text node to update."
+                },
+                "html": {
+                  "type": "string",
+                  "description": "The HTML containing the new rich text content."
+                }
+              },
+              "required": [
+                "nodeId",
+                "html"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Array of text updates to apply. Each item specifies a node ID and its new rich text content."
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "updates",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    },
+    "rename_nodes": {
+      "name": "rename_nodes",
+      "description": "Rename one or more layers in the design. Sets the display name shown in the layer tree. Names longer than 50 characters are automatically truncated. Supports batch renames in a single call.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "updates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "nodeId": {
+                  "type": "string",
+                  "description": "The ID of the node to rename."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The new display name for the layer."
+                }
+              },
+              "required": [
+                "nodeId",
+                "name"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Array of rename updates. Each item specifies a node ID and its new name."
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "updates",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    },
+    "update_styles": {
+      "name": "update_styles",
+      "description": "Update styles on one or more nodes. Use this for targeted style changes. Supports design tokens as CSS variables. Supports batch updates in a single call.\n- Setting the top / left styles of an artboard changes its position on the canvas.\n- Anywhere urls are accepted, paper-gen:// URLs can be used to generate images with AI. ONLY use when the user explicitly asked for image generation. Read \"image-generation\" guide first via get_guide.\n- Styles you set that are inert in the node's context are dropped rather than applied; their keys are returned under the ignoredStyles property.\n- On Text nodes, text styles apply to all text, including styled spans. To style only parts of text, read the Text node's content with get_jsx then use set_text_content to replace it.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "updates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "nodeIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The IDs of the nodes to update."
+                },
+                "styles": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "description": "Styles as a JSON object with camelCase property names (e.g. {\"backgroundColor\": \"#fff\", \"padding\": \"20px\"}), like React.CSSProperties."
+                }
+              },
+              "required": [
+                "nodeIds",
+                "styles"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Array of style updates to apply. Each item specifies node IDs and styles to apply to all of them."
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "updates",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    },
+    "duplicate_nodes": {
+      "name": "duplicate_nodes",
+      "description": "Duplicate one or more nodes in the design. Creates a deep clone of each node (including all descendants). Duplicated artboards are automatically positioned in a blank area to avoid overlap. Returns the source and new node IDs, plus a descendantIdMap that maps every original descendant ID to its cloned equivalent. Since you already know the source tree structure, you can use this map to immediately reference any cloned node (e.g. to call setTextContent) without any intermediate lookups.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "nodes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The ID of the node to duplicate."
+                },
+                "parentId": {
+                  "description": "Optional. The ID of the parent node to place the duplicate under. If omitted, the duplicate is placed under the same parent as the source node.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Array of nodes to duplicate. Each item specifies a node ID and optionally a parent ID for where to place the duplicate. If no parent ID is provided, duplicates are placed under the same parent as their source node."
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "nodes",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    },
+    "move_nodes": {
+      "name": "move_nodes",
+      "description": "Move one or more existing nodes. Preserves node identity (IDs stay the same), so any references you are holding continue to work. Prefer this over duplicate+delete or rewriting HTML when you just want to reposition or reparent existing layers.\n\nEach move uses one of two shapes:\n1. Sibling-relative: { nodeId, before: siblingId } or { nodeId, after: siblingId }. The destination parent is inferred from the sibling.\n2. Parent-absolute: { nodeId, parentId, index? }. The node is placed at the given index under parentId, or appended if index is omitted. index is clamped to [0, childCount] \u2014 use 0 for first. Pass parentId: 'root' as a shortcut for the page root of the page the node currently lives on.\n\nUse shape sibling-relative shape 1 when you already know a neighbor; use parent-absolute shape 2 when you want to move into a specific parent (or to the end of one).\n\nNotes:\n- Moves apply sequentially; later moves in the same batch see earlier changes.\n- For flex/flow parents this changes visual order. For freeform parents this changes stacking (last child renders on top) and does not move the node's world position.\n- When moving to a new parent, Paper may adjust layout-related styles (width/height intents like filling available space) may be adjusted so the node does not collapse to zero size in the new parent.\n- You can move nodes between pages\n- Cannot move the root. Cannot target a node that cannot have children. Cannot move a node under itself or any of its own descendants. For before/after, the sibling cannot be the moved node itself.\nReturns resolved parentId and index for each successful move, plus affectedParents \u2014 the post-batch children list of every parent whose order changed (both sources and destinations, deduplicated). Use affectedParents to refresh your mental model of the tree without a follow-up get_children.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "moves": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "nodeId": {
+                      "type": "string",
+                      "description": "The ID of the node to move."
+                    },
+                    "before": {
+                      "type": "string",
+                      "description": "Place the node immediately before this sibling. The target parent is inferred from the sibling."
+                    }
+                  },
+                  "required": [
+                    "nodeId",
+                    "before"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "nodeId": {
+                      "type": "string",
+                      "description": "The ID of the node to move."
+                    },
+                    "after": {
+                      "type": "string",
+                      "description": "Place the node immediately after this sibling. The target parent is inferred from the sibling."
+                    }
+                  },
+                  "required": [
+                    "nodeId",
+                    "after"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "nodeId": {
+                      "type": "string",
+                      "description": "The ID of the node to move."
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "description": "The ID of the destination parent. Must be able to have children (e.g. Frames). Pass the string `'root'` as a shortcut for the page root of the page the node currently lives on (same as that page's rootNodeId from get_basic_info)."
+                    },
+                    "index": {
+                      "description": "The final index among the destination parent's children. Clamped to [0, childCount]. Use 0 for first, or omit to append at the end.",
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "nodeId",
+                    "parentId"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "description": "Move operations, applied sequentially. Each operation sees the updated tree from prior operations."
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "moves",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    },
+    "finish_working_on_nodes": {
+      "name": "finish_working_on_nodes",
+      "description": "MUST call this when done working.\nRemove the working indicator from artboards you were editing.\n\nCall with no arguments to release all working indicators at once. Pass specific artboard IDs if you want to release only some. Prefer calling with specific artboard IDs so you work better alongside other agents.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "nodeIds": {
+            "description": "Optional. Specific node IDs to release. If omitted, all working indicators are released.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "get_tokens": {
+      "name": "get_tokens",
+      "description": "List the file's design tokens (colors, spacing, typography, etc).",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "types": {
+            "description": "Filter by design token type(s). Omit to include all types.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "breakpoint",
+                "color",
+                "container",
+                "fontFamily",
+                "fontSize",
+                "fontWeight",
+                "letterSpacing",
+                "lineHeight",
+                "opacity",
+                "radius",
+                "spacing"
+              ]
+            }
+          },
+          "namePattern": {
+            "description": "Glob pattern matched against the full CSS variable name (case-insensitive). Use \"*\" as a wildcard. Examples: \"--color-primary\", \"--color-*\", \"*-500\", \"*brand*\". Omit to skip name filtering.",
+            "type": "string"
+          },
+          "format": {
+            "description": "Output format. \"json\" (default) returns structured tokens. \"css\" returns a vanilla `:root { ... }` stylesheet. \"tailwind\" returns a Tailwind v4 `@theme { ... }` block with namespaced variables.",
+            "type": "string",
+            "enum": [
+              "json",
+              "css",
+              "tailwind"
+            ]
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    "create_tokens": {
+      "name": "create_tokens",
+      "description": "Create one or more design tokens. Each entry needs `type`, `name`, and `value`.\nUse `var(--other-token)` as the value to alias another design token.\nReturns one `{name, result: \"created\"}` (or `{result: \"error\", message}`) per input entry.\nOrder is important. For color tokens define semantic colors before palette colors, with neutral colors first, then primary, secondary, and then accent colors. For all other design token types define them based on the size of the value, smallest first.\nPrefer reusing design tokens before creating new ones.\n",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "tokens": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "breakpoint",
+                    "color",
+                    "container",
+                    "fontFamily",
+                    "fontSize",
+                    "fontWeight",
+                    "letterSpacing",
+                    "lineHeight",
+                    "opacity",
+                    "radius",
+                    "spacing"
+                  ],
+                  "description": "Design token type/category."
+                },
+                "name": {
+                  "type": "string",
+                  "pattern": "^--[a-zA-Z0-9_-]+$",
+                  "description": "CSS custom property name. E.g. \"--color-primary\"."
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ],
+                  "description": "Design token value. For colors, use a CSS color string like \"#ff0000\" or \"oklch(...)\". For sizes (spacing, radius, fontSize, container, breakpoint), use a px string like \"8px\". For fontWeight, use a number (e.g. 400). For lineHeight/letterSpacing, use a string (\"1.5px\") or number. For opacity, use a 0\u20131 number (e.g. 0.5) or a percent string (e.g. \"50%\"). To alias another design token, use a CSS variable reference like \"var(--color-red)\"."
+                },
+                "description": {
+                  "description": "Optional human-readable description of what the design token is for and how it should be used. Max 1024 characters.",
+                  "type": "string",
+                  "maxLength": 1024
+                }
+              },
+              "required": [
+                "type",
+                "name",
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Design tokens to create. Each entry creates a new design token; duplicate names are allowed but discouraged."
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "tokens",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    },
+    "set_tokens": {
+      "name": "set_tokens",
+      "description": "Update or delete existing design tokens by their full CSS variable name. Each entry needs `name`; any of `newName`, `value`, `delete` are optional.\n- Rename: set `newName`.\n- Update value: set `value`. Use `var(--other-token)` to alias.\n- Delete the design token: set `delete: true`.\nReturns one result per input entry. Per-entry errors are reported in-band.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "tokens": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "pattern": "^--[a-zA-Z0-9_-]+$",
+                  "description": "Target design token by its full CSS custom property name (e.g. \"--color-primary\")."
+                },
+                "newName": {
+                  "description": "Optional. Rename the design token. Provide the full CSS custom property name (e.g. \"--color-primary-strong\").",
+                  "type": "string",
+                  "pattern": "^--[a-zA-Z0-9_-]+$"
+                },
+                "value": {
+                  "description": "Optional. New value.",
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
+                },
+                "description": {
+                  "description": "Optional human-readable description of what the design token is for and how it should be used. Max 1024 characters. Pass an empty string to clear.",
+                  "type": "string",
+                  "maxLength": 1024
+                },
+                "delete": {
+                  "description": "Optional. If true, deletes the design token entirely.",
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Design tokens to update or delete, applied sequentially."
+          },
+          "fileId": {
+            "type": "string",
+            "description": "The file ID that the tool should operate on."
+          }
+        },
+        "required": [
+          "tokens",
+          "fileId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "destructiveHint": true
+      }
+    }
+  }
+}

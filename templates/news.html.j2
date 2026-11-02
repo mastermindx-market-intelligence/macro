@@ -35,9 +35,9 @@
 <main class="news-desk" id="newsDesk" data-density="compact">
   <header class="nd-header">
     <div><p class="nd-eyebrow">{{ t('Intelligence / Global coverage','情报 / 全球报道') }}</p><h1>{{ t('News intelligence','新闻情报') }}</h1></div>
-    <div class="nd-header-tools">
+    <div class="nd-header-tools" id="ndHeaderTools">
       <span class="nd-status dtp-asof" id="ndConnection" data-state="connecting">{{ t('Connecting','正在连接') }}</span>
-      <button type="button" class="nd-btn nd-btn-quiet nd-mobile-only" id="ndWorkspaceOpen" data-open-panel="ndWorkspace" aria-label="Your workspace" data-label-zh="你的工作台">{{ icon('bookmark') }}<i class="nd-workspace-dot" id="ndWorkspaceUpdates" aria-hidden="true" hidden></i></button>
+      <button type="button" class="nd-btn nd-btn-quiet nd-mobile-only" id="ndWorkspaceOpen" data-open-panel="ndWorkspace" aria-label="Your workspace" data-label-zh="你的工作台">{{ icon('bookmark') }}<span class="nd-workspace-label">{{ t('Workspace','工作台') }}</span><i class="nd-workspace-dot" id="ndWorkspaceUpdates" aria-hidden="true" hidden></i></button>
       <button type="button" class="nd-btn nd-btn-quiet" id="ndCoverageOpen" aria-label="Coverage and freshness" data-label-zh="覆盖范围与时效">{{ icon('globe') }}<span>{{ t('Coverage','覆盖范围') }}</span></button>
       <button type="button" class="nd-btn" id="ndDensity" aria-pressed="false" aria-label="Reading view" data-label-zh="阅读视图">{{ icon('news') }}<span>{{ t('Reading view','阅读视图') }}</span></button>
     </div>
@@ -76,11 +76,11 @@
           <input id="ndSearch" type="search" maxlength="300" autocomplete="off" spellcheck="false" placeholder="Search a story, theme or ticker…" data-placeholder-zh="搜索报道、主题或股票代码…" aria-describedby="ndSearchHint"><kbd class="nd-key">/</kbd>
         </label>
         <span class="nd-sr" id="ndSearchHint">{{ t('Use quoted phrases, OR, -exclude, ticker:NVDA or source:Reuters.','支持引号短语、OR、-排除词、ticker:NVDA 或 source:Reuters。') }}</span>
-        <div class="nd-filter-row">
-          <label class="nd-sr" for="ndTime">{{ t('Time window','时间范围') }}</label>
-          <select id="ndTime" class="nd-select"><option value="24" data-en="Past 24 hours" data-zh="过去24小时">Past 24 hours</option><option value="72" data-en="Past 3 days" data-zh="过去3天">Past 3 days</option><option value="168" selected data-en="Past 7 days" data-zh="过去7天">Past 7 days</option><option value="all" data-en="All loaded" data-zh="全部已载入">All loaded</option></select>
-          <label class="nd-sr" for="ndRegion">{{ t('Region mentioned','提及地区') }}</label>
-          <select id="ndRegion" class="nd-select"><option value="all" data-en="All regions" data-zh="全部地区">All regions</option><option value="americas" data-en="Americas" data-zh="美洲">Americas</option><option value="europe" data-en="Europe" data-zh="欧洲">Europe</option><option value="asia" data-en="Asia Pacific" data-zh="亚太">Asia Pacific</option><option value="middle_east" data-en="Middle East" data-zh="中东">Middle East</option><option value="africa" data-en="Africa" data-zh="非洲">Africa</option></select>
+        <div class="nd-filter-row" id="ndQuickFilters">
+          <div class="nd-filter-field" id="ndTimeField"><label class="nd-filter-label" for="ndTime">{{ t('Time window','时间范围') }}</label>
+          <select id="ndTime" class="nd-select"><option value="24" data-en="Past 24 hours" data-zh="过去24小时">Past 24 hours</option><option value="72" data-en="Past 3 days" data-zh="过去3天">Past 3 days</option><option value="168" selected data-en="Past 7 days" data-zh="过去7天">Past 7 days</option><option value="all" data-en="All loaded" data-zh="全部已载入">All loaded</option></select></div>
+          <div class="nd-filter-field" id="ndRegionField"><label class="nd-filter-label" for="ndRegion">{{ t('Region mentioned','提及地区') }}</label>
+          <select id="ndRegion" class="nd-select"><option value="all" data-en="All regions" data-zh="全部地区">All regions</option><option value="americas" data-en="Americas" data-zh="美洲">Americas</option><option value="europe" data-en="Europe" data-zh="欧洲">Europe</option><option value="asia" data-en="Asia Pacific" data-zh="亚太">Asia Pacific</option><option value="middle_east" data-en="Middle East" data-zh="中东">Middle East</option><option value="africa" data-en="Africa" data-zh="非洲">Africa</option></select></div>
           <button type="button" class="nd-btn" id="ndFilterOpen">{{ icon('filter') }}{{ t('Filters','筛选') }}<span id="ndFilterCount"></span></button>
           <button type="button" class="nd-btn nd-btn-quiet nd-reset" id="ndReset" hidden>{{ t('Reset','重置') }}</button>
         </div>
@@ -114,6 +114,7 @@
 <dialog class="nd-dialog" id="ndFilters" aria-labelledby="ndFiltersTitle">
   <div class="nd-dialog-header"><h2 id="ndFiltersTitle">{{ t('Refine your news','筛选你的新闻') }}</h2><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close filters" data-label-zh="关闭筛选">{{ icon('close') }}</button></div>
   <form id="ndFiltersForm" class="nd-dialog-body">
+    <div class="nd-form-grid nd-filter-primary" id="ndFiltersPrimary" hidden></div>
     <div class="nd-form-grid"><div class="nd-form-row"><label for="ndCategorySelect">{{ t('Coverage','报道领域') }}</label><select id="ndCategorySelect">{% for key,ic,en,zh in CATS %}<option value="{{ key }}" data-en="{{ en|e }}" data-zh="{{ zh|e }}">{{ en|e }}</option>{% endfor %}</select></div>
     <div class="nd-form-row"><label for="ndSourceKind">{{ t('Source type','来源类型') }}</label><select id="ndSourceKind"><option value="all" data-en="All reporting" data-zh="全部报道">All reporting</option><option value="official" data-en="Official sources" data-zh="官方来源">Official sources</option><option value="reporting" data-en="News reporting" data-zh="新闻报道">News reporting</option><option value="social" data-en="Social statements" data-zh="社交声明">Social statements</option></select></div></div>
     <div class="nd-form-row"><label class="nd-form-check"><input type="checkbox" id="ndUnread">{{ t('Unread stories only','仅未读报道') }}</label><label class="nd-form-check"><input type="checkbox" id="ndIncludeSocial">{{ t('Include social statements','包括社交声明') }}</label></div>
@@ -292,9 +293,12 @@
 {% set releases = ((releases if releases is iterable and releases is not string else [])|select('mapping')|list) %}
 <dialog class="nd-dialog" id="ndCalendar" aria-labelledby="ndCalendarTitle"><div class="nd-dialog-header"><h2 id="ndCalendarTitle">{{ t('Economic calendar','经济日历') }}</h2><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close calendar" data-label-zh="关闭日历">{{ icon('close') }}</button></div><div class="nd-dialog-body">
 <h3>{{ t('Calendar ahead','未来日程') }}</h3>
-{% for c in catalysts[:15] %}<div class="nd-calendar-row"><span>{{ (c.date or '')|e }}{% if c.time_et %}<br>{{ c.time_et|e }} ET{% endif %}</span><strong>{{ t(c.label or '',c.label_zh or c.label or '') }}</strong></div>{% endfor %}
-{% set labels=catalysts|map(attribute='label')|list %}
-{% for c in estrip[:15] if c.label not in labels %}<div class="nd-calendar-row"><span>{{ (c.dow or '')|e }} {{ (c.md or '')|e }}</span><strong>{{ t(c.label or '',c.label_zh or c.label or '') }}</strong></div>{% endfor %}
+{% for c in catalysts[:15] %}<div class="nd-calendar-row"><span>{{ (c.date or '')|e }}{% if c.time_et %}<br>{{ c.time_et|e }} ET{% endif %}</span><strong>{{ t((c.label or '')|e,(c.label_zh or c.label or '')|e) }}</strong></div>{% endfor %}
+{% set displayed = namespace(keys=[]) %}
+{% for c in catalysts[:15] if c.date and c.label %}
+{% set displayed.keys = displayed.keys + [(c.date, c.time_et or '', c.label)] %}
+{% endfor %}
+{% for c in estrip[:15] if not c.date or not c.label or (c.date, c.time_et or '', c.label) not in displayed.keys %}<div class="nd-calendar-row"><span>{{ (c.dow or '')|e }} {{ (c.md or '')|e }}{% if c.time_et %}<br>{{ c.time_et|e }} ET{% endif %}</span><strong>{{ t((c.label or '')|e,(c.label_zh or c.label or '')|e) }}</strong></div>{% endfor %}
 {% if not catalysts and not estrip %}<p class="nd-note">{{ t('No scheduled events are available in the current edition.','当前版本暂无可用的已排定事件。') }}</p>{% endif %}
 {% if releases %}<h3>{{ t('Latest releases','最新公布') }}</h3>{% for c in releases[:12] %}<article class="nd-release"><h4>{{ t(c.display_name or c.release or '',c.display_name_zh or c.display_name or c.release or '') }}</h4>{% if c.period %}<p class="nd-note">{{ c.period|e }}</p>{% endif %}{% if c.summary %}<p>{{ t(c.summary,c.summary_zh or c.summary) }}</p>{% endif %}{% if c.unit is string and c.unit and c.actual is number %}<dl><dt>{{ t('Actual','实际') }}</dt><dd>{{ c.actual }} {{ c.unit|e }}</dd>{% if c.prior is number %}<dt>{{ t('Prior','前值') }}</dt><dd>{{ c.prior }} {{ c.unit|e }}</dd>{% endif %}</dl>{% endif %}</article>{% endfor %}{% endif %}
 <p class="nd-note">{{ t('Calendar and release details reflect the latest built edition. Times labelled ET follow US Eastern time.','日程与公布详情反映最近生成的版本，ET表示美国东部时间。') }}</p>
@@ -308,7 +312,7 @@
 <button type="button" class="nd-btn" data-open-panel="ndCalendar">{{ icon('clock') }}{{ t('Economic calendar','经济日历') }}</button>
 <button type="button" class="nd-btn" data-open-panel="ndImpact">{{ icon('chart') }}{{ t('Event impact','事件影响') }}</button>
 <button type="button" class="nd-btn" data-open-panel="ndHelp">{{ icon('keyboard') }}{{ t('Keyboard & search','键盘与搜索') }}</button>
-<div id="ndSavedViewsMobile"></div></div></dialog>
+<div id="ndSavedViewsMobile"></div><div class="nd-workspace-settings" id="ndWorkspaceSettings" hidden></div></div></dialog>
 
 <dialog class="nd-dialog nd-company" id="ndCompany" aria-labelledby="ndCompanyTitle">
   <div class="nd-dialog-header"><div><p class="nd-eyebrow">{{ t('Company intelligence','公司情报') }}</p><h2 id="ndCompanyTitle">{{ t('Company news','公司新闻') }}</h2></div><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close company news" data-label-zh="关闭公司新闻">{{ icon('close') }}</button></div>

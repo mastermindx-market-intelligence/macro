@@ -1,0 +1,28 @@
+{
+  "original_root": "news-cockpit-rebuild-20261018-astra-01",
+  "source_audit": {
+    "run_id": "news-9612-release-audit-20261102-c1-01",
+    "response_sha256": "56392a2afa756a970b15536f87125eca86a32e76c946c6deca1463ba8e4ef303",
+    "disposition": "NOT_ACCEPTED_AS_RELEASE_OR_CUSTODY_AUTHORITY",
+    "usable": "Exact PR head and old CI cancellation findings corroborate prior source records.",
+    "corrections": [
+      "Original M2 workspace was directly observed and remains sole carrier; no fresh replacement workspace is authorized.",
+      "Calendar dedup retains both input caps and compares displayed date/time/label identities.",
+      "This session's direct Paper runtime, not the audit's legacy Studio runtime, is the chosen modifying carrier."
+    ]
+  },
+  "paper_audit": {
+    "run_id": "news-paper-schema-audit-20261102-c2-01",
+    "response_sha256": "e7b57715c9e94f7031e7430a801f4ca38eda6e7ef2ccc3fd6cc2e5e9d0f314cd",
+    "disposition": "NOT_ACCEPTED_AS_SCHEMA_QUALIFICATION",
+    "usable": "Protected source contains no qualification for 16e; full catalog and independent review are required.",
+    "corrections": [
+      "Parent captured all 41 descriptors using the protected adapter's read-only PaperClient.catalog on M2.",
+      "Structural survivors do change: set_text_content updates now require html rather than textContent; create_file and list_resources add optional fields.",
+      "Current direct-app receipt admits 33 tool names and expects 1b9; the audit's 28-tool/ac188 observation belongs to its legacy carrier.",
+      "Do not apply the legacy Studio installer recommendation to the selected direct Paper app."
+    ]
+  },
+  "no_worker_review_approval": true,
+  "no_retry_of_historical_review": true
+}

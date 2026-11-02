@@ -426,3 +426,78 @@ test("a claimed News sign-in never starts a second route after shell refusal or 
  }
  assert.equal(attempts,4);assert.equal(localAuth,0);
 });
+
+
+test("mobile filters stage changes until Apply and count time and region",async t=>{
+ const h=harness(t,{mobile:true});await settle();
+ h.click("ndFilterOpen");
+ const time=h.doc.getElementById("ndTime"),region=h.doc.getElementById("ndRegion");
+ assert.equal(time.closest("dialog").id,"ndFilters");
+ time.value="24";time.dispatchEvent(new h.win.Event("change",{bubbles:true}));
+ region.value="europe";region.dispatchEvent(new h.win.Event("change",{bubbles:true}));
+ assert.equal(h.app.getState().filters.time,"168");
+ assert.equal(h.app.getState().filters.region,"all");
+ h.doc.getElementById("ndFiltersForm").dispatchEvent(new h.win.Event("submit",{bubbles:true,cancelable:true}));
+ assert.equal(h.app.getState().filters.time,"24");
+ assert.equal(h.app.getState().filters.region,"europe");
+ assert.equal(h.doc.getElementById("ndFilterCount").textContent,"(2)");
+ assert.equal(h.doc.getElementById("ndFilters").open,false);
+ assert.equal(h.doc.activeElement.id,"ndFilterOpen");
+ assert.equal(new URL(h.win.location.href).searchParams.get("window"),"24");
+ assert.equal(new URL(h.win.location.href).searchParams.get("region"),"europe");
+});
+
+test("cancelled mobile filter changes do not alter the feed or saved scope",async t=>{
+ const h=harness(t,{mobile:true});await settle();h.click("ndFilterOpen");
+ h.doc.getElementById("ndTime").value="24";
+ h.doc.getElementById("ndTime").dispatchEvent(new h.win.Event("change",{bubbles:true}));
+ h.doc.querySelector("#ndFilters [data-close-dialog]").click();
+ assert.equal(h.app.getState().filters.time,"168");
+ h.click("ndFilterOpen");assert.equal(h.doc.getElementById("ndTime").value,"168");
+ assert.equal(h.doc.getElementById("ndFilterCount").textContent,"");
+});
+
+test("responsive controls preserve applied filters and return focus to a visible trigger",async t=>{
+ const h=harness(t);await settle();h.click("ndDetailClose");
+ const time=h.doc.getElementById("ndTime");
+ time.value="72";time.dispatchEvent(new h.win.Event("change",{bubbles:true}));time.focus();
+ h.resize(true);
+ assert.equal(h.doc.activeElement.id,"ndFilterOpen");
+ assert.equal(h.app.getState().filters.time,"72");
+ assert.equal(time.value,"72");assert.equal(h.doc.querySelectorAll("#ndTime").length,1);
+ h.resize(false);
+ assert.equal(time.closest("#ndQuickFilters").id,"ndQuickFilters");
+ assert.equal(time.value,"72");
+ assert.equal(h.doc.getElementById("ndCoverageOpen").parentNode.id,"ndHeaderTools");
+});
+
+test("mobile workspace keeps coverage and reading density available",async t=>{
+ const h=harness(t,{mobile:true});await settle();h.click("ndWorkspaceOpen");
+ assert.equal(h.doc.getElementById("ndWorkspace").open,true);
+ assert.equal(h.doc.getElementById("ndDensity").closest("dialog").id,"ndWorkspace");
+ h.click("ndDensity");assert.equal(h.doc.getElementById("newsDesk").dataset.density,"reading");
+ h.click("ndCoverageOpen");
+ assert.equal(h.doc.getElementById("ndCoverage").open,true);
+ assert.ok(h.doc.getElementById("ndCoverageBody").textContent.includes("Private publisher"));
+ h.doc.querySelector("#ndCoverage [data-close-dialog]").click();
+ assert.equal(h.doc.getElementById("ndWorkspace").open,true);
+ assert.equal(h.doc.activeElement.id,"ndCoverageOpen");
+});
+
+test("story triggers expose the current reader selection to assistive technology",async t=>{
+ const h=harness(t,{mobile:true});await settle();
+ const trigger=h.doc.querySelector(".nd-row .nd-title");
+ assert.equal(trigger.getAttribute("aria-expanded"),"false");
+ trigger.click();assert.equal(trigger.getAttribute("aria-expanded"),"true");
+ h.click("ndDetailClose");assert.equal(trigger.getAttribute("aria-expanded"),"false");
+});
+
+
+test("resizing an open filter sheet keeps keyboard focus inside its dialog",async t=>{
+ const h=harness(t,{mobile:true});await settle();h.click("ndFilterOpen");
+ h.doc.getElementById("ndTime").focus();h.resize(false);
+ assert.equal(h.doc.getElementById("ndFilters").open,true);
+ assert.equal(h.doc.activeElement.getAttribute("aria-label"),"Close filters");
+ assert.equal(h.doc.activeElement.closest("dialog").id,"ndFilters");
+ h.doc.activeElement.click();assert.equal(h.doc.activeElement.id,"ndFilterOpen");
+});
