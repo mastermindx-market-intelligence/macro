@@ -81,7 +81,8 @@ def _dollars(atom: str) -> Decimal:
     raise ValueError("share operands require explicit currency magnitudes")
 
 
-def _reviewed_context(rows: object, *, root: Path, as_of: date, window_days: int) -> tuple[list[dict], dict]:
+def _reviewed_context(rows: object, *, root: Path, as_of: date, window_days: int,
+                      observation_date: str | None = None) -> tuple[list[dict], dict]:
     """Select reviewed facts from the existing engine extractors and exact bytes.
 
     A relevance note records editorial judgment, not automatic proof of it.
@@ -92,45 +93,58 @@ def _reviewed_context(rows: object, *, root: Path, as_of: date, window_days: int
     Artifact paths, including their parents, may not be symlinks. JSONL must be
     complete object rows: silently skipping damaged evidence is inappropriate
     for a qualification pinned to an exact artifact snapshot.
+
+    ``observation_date`` is the opt-in for the retained Treasury parquet series:
+    it is the only date those files may be read on, and only the market snapshot
+    candidate supplies it. Without it every row keeps its incumbent meaning and
+    the Treasury series stay closed.
     """
     from engine.press import desk_planner as planner
+    from engine.press import treasury_context as treasury
 
     if not isinstance(rows, list) or not 1 <= len(rows) <= 20:
         raise ValueError("bounded reviewed first-party context required")
     extractors = {rel: planner._ARTIFACT_EXTRACTORS[key]
                   for key, rel in planner._ENGINE_ARTIFACTS}
     facts, revisions, seen, snapshots = [], {}, set(), {}
+    treasury_values: dict[str, Decimal] = {}
     root = Path(root).resolve()
     for row in rows:
         if not isinstance(row, dict) or set(row) != {"id", "artifact", "sha256", "relevance"}:
             raise ValueError("reviewed context fields mismatch")
         fid, rel, digest, relevance = (row[k] for k in ("id", "artifact", "sha256", "relevance"))
         if (not isinstance(fid, str) or not fid or fid in seen
-                or not isinstance(rel, str) or rel not in extractors
+                or not isinstance(rel, str) or (rel not in extractors and rel not in treasury.SERIES)
                 or not isinstance(relevance, str) or not 1 <= len(relevance.strip()) <= 500):
             raise ValueError("reviewed context identity or relevance invalid")
         seen.add(fid)
         path = root / rel
         if path.resolve() != path:
             raise ValueError("reviewed context artifact must not traverse a symlink")
-        if rel not in snapshots:
-            raw = _read_bound(path, digest, 8_000_000)
-            try:
-                payload = ([json.loads(line) for line in raw.splitlines() if line.strip()]
-                           if path.suffix == ".jsonl" else json.loads(raw))
-                if path.suffix == ".jsonl" and any(not isinstance(row, dict) for row in payload):
-                    raise ValueError("JSONL evidence requires object rows")
-                candidates = extractors[rel](payload, rel)
-            except Exception as exc:
-                raise ValueError("reviewed context artifact is malformed") from exc
-            snapshots[rel] = (digest, candidates)
-        saved_digest, candidates = snapshots[rel]
-        if saved_digest != digest:
-            raise ValueError("reviewed context has conflicting artifact revisions")
-        matches = [f for f in candidates if f.get("id") == fid]
-        if len(matches) != 1 or matches[0].get("tier") != "first_party":
-            raise ValueError("reviewed context fact is not an existing engine measurement")
-        fact = matches[0]
+        if rel in treasury.SERIES:
+            fact, value = treasury.reviewed_fact(
+                rel, fact_id=fid, path=path, digest=digest,
+                observation_date=observation_date, root=root)
+            treasury_values[fid] = value
+        else:
+            if rel not in snapshots:
+                raw = _read_bound(path, digest, 8_000_000)
+                try:
+                    payload = ([json.loads(line) for line in raw.splitlines() if line.strip()]
+                               if path.suffix == ".jsonl" else json.loads(raw))
+                    if path.suffix == ".jsonl" and any(not isinstance(row, dict) for row in payload):
+                        raise ValueError("JSONL evidence requires object rows")
+                    candidates = extractors[rel](payload, rel)
+                except Exception as exc:
+                    raise ValueError("reviewed context artifact is malformed") from exc
+                snapshots[rel] = (digest, candidates)
+            saved_digest, candidates = snapshots[rel]
+            if saved_digest != digest:
+                raise ValueError("reviewed context has conflicting artifact revisions")
+            matches = [f for f in candidates if f.get("id") == fid]
+            if len(matches) != 1 or matches[0].get("tier") != "first_party":
+                raise ValueError("reviewed context fact is not an existing engine measurement")
+            fact = matches[0]
         dated = fact.get("dated")
         if not isinstance(dated, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", dated):
             raise ValueError("reviewed context requires a calendar date")
@@ -145,6 +159,8 @@ def _reviewed_context(rows: object, *, root: Path, as_of: date, window_days: int
         receipt = "sha256:" + digest
         facts.append({**fact, "receipt": receipt, "context_relevance": relevance.strip()})
         revisions[fact["ref"]] = receipt
+    if treasury_values:
+        treasury.verify_identity(treasury_values)
     return facts, revisions
 
 
