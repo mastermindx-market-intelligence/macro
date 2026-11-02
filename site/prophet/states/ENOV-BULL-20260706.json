@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ENOV-BULL-20260706",
-  "asof": "2026-11-01",
+  "asof": "2026-11-02",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 21.0,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 0.074,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 251.1,
+    "horizon_pct_used": 253.3,
     "p1": -0.617,
     "p2": -0.3085,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-07-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 113,
-  "tau": 2.5111,
+  "days_elapsed": 114,
+  "tau": 2.5333,
   "closed": true,
   "outcome": "EXPIRED"
 }
