@@ -50,7 +50,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css?v=9bd171a6">
-<link rel="stylesheet" href="assets/css/cf679c4a.css?v=cf679c4a">
+<link rel="stylesheet" href="assets/css/2b52a740.css?v=2b52a740">
 
 
 <link rel="stylesheet" href="assets/css/17c15c21.css?v=17c15c21">
@@ -207,6 +207,7 @@
             <span class="ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M10 6.5v4.2M10 13.6v.1"/></svg></span>
             <span>
               <span class="e-generic"><span class="l-en">That didn't send. Check your connection and try again — or write to <a href="mailto:support@mastermind-x.com">support@mastermind-x.com</a>.</span><span class="l-zh">没有发送成功。请检查网络后重试，或发邮件至 <a href="mailto:support@mastermind-x.com">support@mastermind-x.com</a>。</span></span>
+              <span class="e-uncertain"><span class="l-en">We could not confirm receipt. Your request may already be recorded. Before submitting it again, contact <a href="mailto:support@mastermind-x.com">support@mastermind-x.com</a> for help.</span><span class="l-zh">我们无法确认是否已收到请求。请求可能已经记录。再次提交前，请联系 <a href="mailto:support@mastermind-x.com">support@mastermind-x.com</a> 获取帮助。</span></span>
               <span class="e-rate"><span class="l-en">That is a lot of requests from here. Wait a few minutes and send it again — or write to <a href="mailto:support@mastermind-x.com">support@mastermind-x.com</a>.</span><span class="l-zh">这里发出的请求太多了。请过几分钟再发一次，或发邮件至 <a href="mailto:support@mastermind-x.com">support@mastermind-x.com</a>。</span></span>
             </span>
           </div>
@@ -666,7 +667,7 @@
   }
 
   function fail(kind) {
-    H.setAttribute('data-err', kind === 'rate' ? 'rate' : 'generic');
+    H.setAttribute('data-err', kind === 'rate' || kind === 'uncertain' ? kind : 'generic');
     H.setAttribute('data-form', 'error');
   }
 
@@ -750,20 +751,23 @@
     var ctl = window.AbortController ? new window.AbortController() : null;
     var killer = ctl ? setTimeout(function () { try { ctl.abort(); } catch (e2) {} }, POST_MS) : 0;
 
+    var handledHttpResponse = {};
     withAuth({ 'Content-Type': 'application/json' }).then(function (h) {
       var opt = { method: 'POST', headers: h, body: JSON.stringify(payload) };
       if (ctl) opt.signal = ctl.signal;
       return fetch(API + '/api/support/ticket', opt);
     }).then(function (r) {
-      if (r.status === 429) { fail('rate'); return null; }
-      if (!r.ok) { fail('generic'); return null; }
+      if (r.status === 429) { fail('rate'); return handledHttpResponse; }
+      if (r.status >= 500 && r.status <= 599) { fail('uncertain'); return handledHttpResponse; }
+      if (!r.ok) { fail('generic'); return handledHttpResponse; }
       return r.json();
     }).then(function (j) {
-      if (!j) return;                                   /* already handled */
-      if (j.ok && j.ticket_id) succeed(j, payload);
-      else fail('generic');
+      if (j === handledHttpResponse) return;             /* handled HTTP status */
+      if (j && j.ok === true && typeof j.ticket_id === 'string' && j.ticket_id.trim()) {
+        succeed(j, payload);
+      } else fail('uncertain');                         /* no usable receipt */
     }).catch(function () {
-      fail('generic');                                  /* nothing typed is lost */
+      fail('uncertain');                                /* outcome unknown; keep typed text */
     }).then(function () {
       if (killer) clearTimeout(killer);
       setBusy(false);
