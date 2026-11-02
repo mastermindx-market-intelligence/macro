@@ -1,0 +1,246 @@
+{
+  "schema": "mastermind.prophet_journey_reconciliation.v1",
+  "generated_by": "scripts/prophet_journey_reconcile.py",
+  "inputs": {
+    "page": {
+      "path": "/private/tmp/claude-501/-Volumes-Mastermind-2-agent-workspaces-claude-14851c4656838a3b-quizzical-nash-0788e4-e8b383ae5709284c/bcc7e91f-2ceb-46d5-b318-324555c2aaa7/scratchpad/journey/auth_static/us_stocks.html",
+      "sha256": "494a3e73b8ec594d5dcb6da61769fa0a7fec6a8fad7bcdc4946a231a86345311",
+      "bytes": 758330
+    },
+    "standouts": {
+      "path": "/private/tmp/claude-501/-Volumes-Mastermind-2-agent-workspaces-claude-14851c4656838a3b-quizzical-nash-0788e4-e8b383ae5709284c/bcc7e91f-2ceb-46d5-b318-324555c2aaa7/scratchpad/journey/auth_static/us_standouts.json",
+      "sha256": "60a4e0e642ce1765f1b85997f05fdb3537c396e51f4ac300b5488ef05d06f328",
+      "bytes": 2627068
+    },
+    "index": {
+      "path": "/private/tmp/claude-501/-Volumes-Mastermind-2-agent-workspaces-claude-14851c4656838a3b-quizzical-nash-0788e4-e8b383ae5709284c/bcc7e91f-2ceb-46d5-b318-324555c2aaa7/scratchpad/journey/auth_static/index.json",
+      "sha256": "3ff270912b6522ec9edf050a606c4a302403e6f25006b7534d33971d6468d725",
+      "bytes": 11846549
+    },
+    "runtime": {
+      "path": "/private/tmp/claude-501/-Volumes-Mastermind-2-agent-workspaces-claude-14851c4656838a3b-quizzical-nash-0788e4-e8b383ae5709284c/bcc7e91f-2ceb-46d5-b318-324555c2aaa7/scratchpad/journey/auth_static/prophet_live.json",
+      "state": "MISSING"
+    }
+  },
+  "ticker": "CVCO",
+  "locale": "en",
+  "linked_plan_ids": [],
+  "checks": [
+    {
+      "id": "J1",
+      "status": "PASS",
+      "expected": "card present for CVCO in the US board",
+      "observed": {
+        "data_lane": null,
+        "data_stage": "live",
+        "nested_data_mkt": "us"
+      },
+      "where": "#us-standouts .pvcard[data-ticker=T] (templates/_prophet_card.html.j2:608; nested market at :635; templates/_us_board_cards.html.j2:283-285; headings :78, :66)"
+    },
+    {
+      "id": "J2",
+      "status": "PASS",
+      "expected": "data-off-board=false; link stock.html#CVCO",
+      "observed": {
+        "data_off_board": "false",
+        "href_to_stock": true
+      },
+      "where": "#us-candidate-pool[data-view=\"table\"] [data-ticker=T] (templates/_us_candidate_pool_rows.html.j2:27; templates/_us_candidate_pool.html.j2:17)"
+    },
+    {
+      "id": "J3",
+      "status": "PASS",
+      "expected": "data-off-board=false; link stock.html#CVCO",
+      "observed": {
+        "data_off_board": "false",
+        "href_to_stock": true,
+        "view_seen": "table"
+      },
+      "where": "#us-candidate-pool[data-view=\"grid\"] [data-ticker=T] (templates/_us_candidate_pool_rows.html.j2:27; templates/_us_candidate_pool.html.j2:13 CSS view switch)"
+    },
+    {
+      "id": "J4",
+      "status": "PASS",
+      "expected": "CVCO present in ['buy', 'candidate_pool']; lane reconciled",
+      "observed": {
+        "found_in": [
+          "buy",
+          "candidate_pool"
+        ],
+        "board_data_lane": null,
+        "payload_lane": "continuation"
+      },
+      "where": "us_standouts.buy / watch / candidate_pool.rows (engine/us_candidate_lanes.py:1007 candidate_pool shape; scripts/build_site.py:5284 / :5658 consumers)"
+    },
+    {
+      "id": "J5",
+      "status": "N/A",
+      "expected": "detail body present",
+      "observed": "no [data-setup-ticker] wrapper for ticker",
+      "where": "[data-setup-ticker=T] > [data-native-id=T] (templates/_prophet_setup_detail.html.j2:91 wrapper; :27 body; :34 entry-status)"
+    },
+    {
+      "id": "J6",
+      "status": "FAIL",
+      "expected": "displayed selected body",
+      "observed": "no displayed .pv-setup-body for ticker",
+      "where": "selected displayed .pv-setup-body and template.pvs-body-source binding plus rendered source fields"
+    },
+    {
+      "id": "J7",
+      "status": "FAIL",
+      "expected": "displayed fields match the digest source",
+      "observed": {
+        "rendered_reasons": [
+          "cleared_admission",
+          "board_featured"
+        ],
+        "source_reasons": [
+          "cleared_admission",
+          "board_featured"
+        ],
+        "rendered_bindings": [],
+        "source_binding": {
+          "ticker": "CVCO",
+          "entry_status": "buy_now",
+          "signal_asof": "2026-10-29",
+          "price_as_of": "",
+          "plan_relation": "none",
+          "plan_ids": []
+        },
+        "data_as_of": "2026-10-30",
+        "source_as_of": "2026-10-30",
+        "data_total": "172",
+        "source_total": "None",
+        "rendered_source_digest": "369142b6952fd1999ad59e9ec46c21f3c224cd7a93dabbdf45b84ce274c708d1",
+        "source_digest": "",
+        "digest_match": false
+      },
+      "where": "#us-candidate-pool clock, total, selected reasons and digest"
+    },
+    {
+      "id": "J8",
+      "status": "FAIL",
+      "expected": "displayed selected setup body",
+      "observed": "no displayed body for ticker",
+      "where": "selected .pvs-plan-link[data-pvs-plan-target]; page plan card id and ticker; index plan id, asset and closed flag"
+    },
+    {
+      "id": "J9",
+      "status": "FAIL",
+      "expected": "source-bound clocks remain valid without runtime quote evidence",
+      "observed": {
+        "fails": [
+          "assessment clock missing",
+          "#plv-asof state missing or unsupported"
+        ],
+        "runtime": "not supplied"
+      },
+      "where": "#us-plan-book-asof, .pvs-assessment-clock and #plv-asof against index.source_asof, index.asof, signal_asof and runtime meta quote_asof"
+    },
+    {
+      "id": "J10",
+      "status": "PASS",
+      "expected": "no cross-market hrefs; every data-mkt == US",
+      "observed": {
+        "nodes_walked": 2
+      },
+      "where": "journey nodes: #us-standouts, #us-candidate-pool, [data-setup-ticker=T], #pv-<id> (templates/_prophet_card.html.j2:608 for #pv-<id>)"
+    },
+    {
+      "id": "J11",
+      "status": "FAIL",
+      "expected": "no internal enum tokens in displayed text",
+      "observed": [
+        {
+          "token": "cleared_admission",
+          "snippet": "it is here Original source · cleared_admission Target and holding period una",
+          "node": "div"
+        },
+        {
+          "token": "sector_cap_overflow",
+          "snippet": "it is here Original source · sector_cap_overflow Target and holding period una",
+          "node": "div"
+        },
+        {
+          "token": "sector_cap_overflow",
+          "snippet": "it is here Original source · sector_cap_overflow Target and holding period una",
+          "node": "div"
+        },
+        {
+          "token": "delivering",
+          "snippet": "Watch 78 Ready 271 Entered 0 Delivering 0 Overtime 16 Invalidated 467",
+          "node": "div"
+        },
+        {
+          "token": "entered",
+          "snippet": "s number 0 Watch 78 Ready 271 Entered 0 Delivering 0 Overtime 16 In",
+          "node": "div"
+        },
+        {
+          "token": "invalidated",
+          "snippet": "ed 0 Delivering 0 Overtime 16 Invalidated 467 Resolved outside the unre",
+          "node": "div"
+        },
+        {
+          "token": "overtime",
+          "snippet": "dy 271 Entered 0 Delivering 0 Overtime 16 Invalidated 467 Resolved o",
+          "node": "div"
+        },
+        {
+          "token": "ready",
+          "snippet": "up to this number 0 Watch 78 Ready 271 Entered 0 Delivering 0 Ov",
+          "node": "div"
+        },
+        {
+          "token": "resolved",
+          "snippet": "0 Overtime 16 Invalidated 467 Resolved outside the unresolved total",
+          "node": "div"
+        },
+        {
+          "token": "resolved",
+          "snippet": "cells add up to the headline; Resolved sits outside it, because a cl",
+          "node": "div"
+        },
+        {
+          "token": "resolved",
+          "snippet": "n 2026-10-30Older signal only Resolved Plan details System model pla",
+          "node": "div"
+        },
+        {
+          "token": "resolved",
+          "snippet": "tionaryLast screen 2026-10-30 Resolved Plan details System model pla",
+          "node": "div"
+        },
+        {
+          "token": "resolved",
+          "snippet": "EnergyLast screen 2026-10-30 Resolved Plan details System model pla",
+          "node": "div"
+        },
+        {
+          "token": "watch",
+          "snippet": "below add up to this number 0 Watch 78 Ready 271 Entered 0 Delive",
+          "node": "div"
+        },
+        {
+          "token": "watch",
+          "snippet": "e traded twice appears twice. Watch counts names with a live sign",
+          "node": "div"
+        }
+      ],
+      "where": ".ucp-receipt, .pvs-section, .pv-setup-body and #us-plan-block displayed text; raw codes allowed only inside code.ucp-reason-raw"
+    },
+    {
+      "id": "J12",
+      "status": "PASS",
+      "expected": "alert absent or sources genuinely empty",
+      "observed": {
+        "alerts": [],
+        "index_plans_nonempty": true,
+        "standouts_buy_nonempty": true
+      },
+      "where": ".mx-error[role=alert] (templates/_prophet_card.html.j2:120; :123-124 bilingual 'Tracking unavailable' copy)"
+    }
+  ],
+  "verdict": "FAIL"
+}
