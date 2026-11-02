@@ -941,22 +941,52 @@
       return pa !== pb ? pa - pb : a.now.pos - b.now.pos;
     });
   }
-  // US cards only. China shares this file; a name with no row prints nothing.
-  function turnCallLine(s) {
-    if (IS_CN) return "";
-    var book = DATA.turn_record;
-    if (!book || !book.per_instrument) return "";
-    var row = book.per_instrument[s.id];
-    if (!row) return "";
-    var tp = row.tp;
-    var fp = row.fp;
-    var n = row.n_truth_turns;
-    var dated = book.as_of;
-    var en = "Turn calls in the backtest: " + tp + " right, " + fp +
-      " false, against " + n + " real turns. Record dated " + dated + ".";
-    var zh = "回测中的转折判断：正确 " + tp + " 次，错误 " + fp +
-      " 次，实际转折 " + n + " 次。记录日期 " + dated + "。";
-    return '<div class="cc-leg-lab">' + L(en, zh) + "</div>";
+  function turnRecordText(r) {
+    var nFunds = r.funds.length;
+    var nFalse = r["false"];
+    var en = "The turn record dated " + r.as_of
+      + " grades an earlier version of this method,"
+      + " run on a shorter price history."
+      + " It is not a record of the method behind this month's cards."
+      + " Across " + nFunds + " US sector funds it met " + r.met
+      + " of " + r.turns + " real turns. " + r.right
+      + " calls were right and " + nFalse + " were false;"
+      + " right means within " + r.tau_months
+      + " months of a real turn.";
+    var zh = "转折记录（日期 " + r.as_of
+      + "）检验的是本方法的早期版本，所用价格历史较短，"
+      + "并不是本月卡片所用方法的记录。在 " + nFunds
+      + " 只美国行业基金中，它命中了 " + r.turns
+      + " 个实际转折中的 " + r.met + " 个。判断正确 "
+      + r.right + " 次、错误 " + nFalse
+      + " 次；正确指与实际转折相差不超过 " + r.tau_months
+      + " 个月。";
+    return L(en, zh);
+  }
+  function mountTurnRecord(list) {
+    var grid = document.getElementById("sc-cards");
+    if (!grid) return;
+    var p = document.getElementById("sc-turnrec");
+    if (!p) {
+      p = el("p", "sc-prov-text");
+      p.id = "sc-turnrec";
+      grid.insertAdjacentElement("afterend", p);
+    }
+    var rec = DATA.turn_record;
+    var hit = false;
+    var i = 0;
+    if (!IS_CN && rec && rec.funds && list) {
+      for (i = 0; i < list.length; i++) {
+        if (rec.funds.indexOf(list[i].id) >= 0) hit = true;
+      }
+    }
+    if (!hit) {
+      p.hidden = true;
+      p.textContent = "";
+      return;
+    }
+    p.hidden = false;
+    p.textContent = turnRecordText(rec);
   }
   function mountCards() {
     var grid = document.getElementById("sc-cards");
@@ -964,6 +994,7 @@
     Object.keys(sparks).forEach(function (k) { try { sparks[k].destroy(); } catch (e) {} });
     sparks = {};
     grid.innerHTML = "";
+    mountTurnRecord(sortedActive());
     sortedActive().forEach(function (s) {
       var nw = s.now, tilt = tiltOf(s);
       var card = el("article", "cyc-card");
@@ -996,7 +1027,6 @@
             '<span>' + nextTxt + '</span>' +
             '<span class="cc-tilt ' + tilt.cls + '">' + tilt.ar + ' ' + L(tilt.lab[0], tilt.lab[1]) + '</span>' +
             rsTxt + '</div>' +
-          turnCallLine(s) +
           hazardCardChip(s) +
         '</div>';
       card.addEventListener("click", function () { isBasketRec(s) ? toggleBasket(s.id) : toggleFocus(s.id); });

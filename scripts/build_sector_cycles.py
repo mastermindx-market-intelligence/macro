@@ -40,6 +40,86 @@ PAGE_ASSETS = ("sector_cycles.css", "sector_cycles.js")
 SHARED_ASSETS = ("mm_charts.js", "cycle.css")
 
 
+def backtest_turn_record(scorecard_path: Path) -> dict | None:
+    """Pooled BACKTEST turn grades, or None when the file is not that record."""
+    try:
+        raw = json.loads(Path(scorecard_path).read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError, TypeError, ValueError):
+        return None
+    if not isinstance(raw, dict):
+        return None
+    cohorts = raw.get("cohorts")
+    if not isinstance(cohorts, dict):
+        return None
+    back = cohorts.get("BACKTEST")
+    if not isinstance(back, dict) or back.get("cohort") != "BACKTEST":
+        return None
+    turn_pr = back.get("turn_pr")
+    if not isinstance(turn_pr, dict):
+        return None
+    rows = turn_pr.get("per_instrument")
+    if not isinstance(rows, dict) or len(rows) == 0:
+        return None
+    turns = met = right = n_false = 0
+    tau: int | None = None
+    count_keys = ("tp", "fp", "fn", "n_truth_turns", "tau_months")
+    for row in rows.values():
+        if not isinstance(row, dict):
+            return None
+        vals: dict[str, int] = {}
+        for key in count_keys:
+            val = row.get(key)
+            # A bool is an int subclass, and it is not a count.
+            if type(val) is not int or val < 0:
+                return None
+            vals[key] = val
+        if vals["fn"] > vals["n_truth_turns"]:
+            return None
+        if tau is None:
+            tau = vals["tau_months"]
+        elif vals["tau_months"] != tau:
+            return None
+        turns += vals["n_truth_turns"]
+        met += vals["n_truth_turns"] - vals["fn"]
+        right += vals["tp"]
+        n_false += vals["fp"]
+    if type(tau) is not int:
+        return None
+    if "pooled" in turn_pr:
+        pooled = turn_pr.get("pooled")
+        if not isinstance(pooled, dict):
+            return None
+        got = (pooled.get("tp"), pooled.get("fp"), pooled.get("fn"))
+        if got != (right, n_false, turns - met):
+            return None
+    as_of = raw.get("as_of")
+    if not isinstance(as_of, str) or len(as_of) < 10:
+        return None
+    parts = as_of[:10].split("-")
+    if len(parts) != 3:
+        return None
+    if not all(ch in "0123456789" for ch in "".join(parts)):
+        return None
+    if (len(parts[0]), len(parts[1]), len(parts[2])) != (4, 2, 2):
+        return None
+    year = int(parts[0])
+    month = int(parts[1])
+    day = int(parts[2])
+    leap = year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+    month_days = (31, 29 if leap else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+    if month < 1 or month > 12 or day < 1 or day > month_days[month - 1]:
+        return None
+    return {
+        "as_of": as_of[:10],
+        "tau_months": tau,
+        "funds": sorted(rows),
+        "turns": turns,
+        "met": met,
+        "right": right,
+        "false": n_false,
+    }
+
+
 def _load_narratives(root: Path) -> dict:
     """NARR keyed by the chart's series id: sectors by ticker.lower() (xlk…), baskets
     by the engine's "b-"+membership-key (b-mag7…). Merges the file's sectors+baskets.
@@ -66,46 +146,6 @@ def _load_dna(root: Path) -> dict:
         log.warning("sector_cycles: cycle_dna stale-quarantined (epoch %s) — rendering without DNA",
                     res["epoch"])
     return res["map"]
-
-
-def _int_turn_counts(row: dict) -> dict | None:
-    """tp, fp and n_truth_turns when every one is a real int. Else None."""
-    picked: dict = {}
-    for field in ("tp", "fp", "n_truth_turns"):
-        value = row.get(field)
-        if type(value) is not int:  # a bool is not a count
-            return None
-        picked[field] = value
-    return picked
-
-
-def backtest_turn_record(scorecard_path: Path) -> dict | None:
-    """BACKTEST turn counts for the US cards. None if the file cannot be read.
-
-    Reads only cohorts BACKTEST, turn_pr, per_instrument. A non-int count
-    drops that instrument. as_of is cut to its first 10 characters.
-    """
-    try:
-        raw = json.loads(Path(scorecard_path).read_text(encoding="utf-8"))
-        block = raw["cohorts"]["BACKTEST"]
-        if not isinstance(block, dict) or block.get("cohort") != "BACKTEST":
-            return None
-        per = block["turn_pr"]["per_instrument"]
-        as_of = raw["as_of"]
-    except Exception:  # noqa: BLE001 — missing or unreadable: no key, no raise
-        return None
-    if not isinstance(as_of, str) or len(as_of) < 10:
-        return None
-    if not isinstance(per, dict):
-        return None
-    kept: dict = {}
-    for name, row in per.items():
-        if not isinstance(row, dict):
-            continue
-        picked = _int_turn_counts(row)
-        if picked is not None:
-            kept[name] = picked
-    return {"as_of": as_of[:10], "per_instrument": kept}
 
 
 def main() -> int:
@@ -155,11 +195,10 @@ def main() -> int:
     # price everywhere and osc/turns from baskets/nasdaq/russell — see split_cycles_payload.
     from scripts._cycles_payload import split_cycles_payload
     core, series = split_cycles_payload(data)   # does not mutate `data` (features json stays full)
-    record = backtest_turn_record(
-        root / "data" / "sector_cycles" / "scorecards"
-        / "promises_price_v1_zz14_v0.json")
-    if record is not None:
-        core["turn_record"] = record
+    turn_rec = backtest_turn_record(
+        root / "data" / "sector_cycles" / "scorecards" / "promises_price_v1_zz14_v0.json")
+    if turn_rec is not None:
+        core["turn_record"] = turn_rec
     (site / "sector_cycles_data.js").write_text(
         "window.SECTOR_CYCLES=" + json.dumps(core, separators=(",", ":")) + ";\n",
         encoding="utf-8")
