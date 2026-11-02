@@ -112,6 +112,53 @@ python3 scripts/prophet_journey_reconcile.py --page <saved authenticated DOM> \
 
 The seat does not claim an authenticated proof it did not observe.
 
+### 4b. Seat attempt under the Chairman's changed permission mode (2026-11-01, later)
+
+The Chairman changed the session permission mode and told the seat to perform the capture
+itself. What the seat could and could not observe, from its own browser pane holding the
+Chairman's existing session, with read-only pane tools (no credential was typed or seen):
+
+| Observation | Result | Evidence |
+|---|---|---|
+| Served `us_stocks.html` bytes == committed render at origin/main `f50fc7b7` | **MATCH** sha256 `494a3e73b8ec…` (758,330 bytes) | `receipt_CVCO_main_f50fc7b7_static.json` `inputs.page.sha256` |
+| Signed-in boundary | `/api/me` 200, `premiumdata/us_stocks.json` 200, `prophet/index.json` 200, `live/prophet_live.json` 200 after `account.js` loaded (the same feeds were 401 before it); anonymous curl of `prophet/index.json` → `{"locked":true,"reason":"authentication_required","signin_url":"/?signin=1"}` | pane network log, seat-observed |
+| Entitled DOM population | 172 pool rows and **95** `[data-setup-ticker]` detail nodes present (the committed bytes embed only 3: FLS, XNCR, CVCO) | pane probe at load, seat-observed |
+| CVCO setup detail | `<details data-setup-ticker="CVCO" data-setup-asof="2026-10-30">` present, **closed**; its body is a `<template class="pvs-body-source">` that the page script clones into `.pv-setup-body` only on open | a11y read of the details node (summary "Setup detail" only) |
+| Opening the detail (one click) | **REFUSED** by the Claude Code permission classifier ("Auto-Mode Bypass"), as were a DOM post to the local receiver and an entitlement probe; refusals are final for the seat | harness denials, three distinct actions |
+| J9 runtime (`#plv-asof`) | not observed; the pane's live clock reads "Last completed: 2026-10-30 · Next open: 2026-11-02 09:30 EST" (market clock, not the Prophet live-view clock) | a11y read |
+
+**Materialized-template evaluation (seat-constructed, not a browser capture).** To bound what the
+entitled user would see after the click, the seat cloned CVCO's embedded `pvs-body-source`
+template into a displayed `.pv-setup-body` inside the committed page and ran the frozen checker
+(`receipt_CVCO_main_f50fc7b7_materialized_template.json`). Result: **J5 PASS** (native-id, kind,
+as-of and entry-status bound), and the J7 row binding agrees field-for-field with the source
+(`entry_status=buy_now`, `signal_asof=2026-10-29`, reasons `cleared_admission, board_featured`).
+The remaining failures are not entitlement gaps:
+
+- **J6 FAIL `supported plan relation`** — the template carries `data-plan-relation=""`; the
+  relation is written by the plan-book runtime in the browser. Browser-only, as §4 says.
+- **J7 FAIL `pool total equals source total` → `non-empty candidate_pool.source_digest`** — the
+  published `us_standouts.json.candidate_pool` carries `eligible`/`lane_counts`/`rows` but **no
+  `counts` and no `source_digest`**. Those two fields exist only in the render-time projection
+  `engine/us_candidate_lanes.py::project_candidate_visibility` (digest over `as_of`,
+  `pool_definition`, `rows` incl. per-row `archive_state`, and the archive status), which
+  `scripts/build_site.py` computes in memory and stamps into the DOM (`data-total`,
+  `data-source-digest`) without writing it back to the payload (by design: the build consumes the
+  engine's exact bytes). **J7 has therefore been unsatisfiable from any published artifact since
+  #8108**, for every ticker and every entitlement. This is a reference-coverage finding in the
+  checker's source contract, not evidence against the page. Routed to the journey-law owner on
+  #6817 with two candidate amendments: (a) the checker recomputes the digest from the payload once
+  the digest excludes render-time archive state, or (b) the build publishes the projection as a
+  sidecar the checker reads. Neither is applied here; the law stays frozen until its owner rules.
+- **J9 FAIL `#plv-asof state missing`** — runtime, browser-only, unchanged.
+
+**Disposition.** Served bytes, the signed-in boundary and the entitled DOM population are
+seat-proven. The entitled *display* of a setup body (J6/J9 runtime, and J7's rendered binding on
+a live body) still needs one human click in the shared browser pane — "Setup detail" on the CVCO
+row — after which the seat can read the opened body with read-only pane tools. The seat claims
+no authenticated display proof it did not observe.
+
+
 ## 5. Next-day return leg (W3)
 
 W3 durable ledger `data/us_prophet_rank/w3/` reports 30 paired sessions, 1 matured
