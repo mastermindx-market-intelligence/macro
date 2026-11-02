@@ -1,6 +1,6 @@
 {
   "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
-  "generated_at": "2026-11-02T07:50:47Z",
+  "generated_at": "2026-11-02T08:47:42Z",
   "metric_notes": {
     "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
     "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
@@ -60,7 +60,7 @@
           "viewport": "desktop"
         },
         "panel_count": 10,
-        "payload_bytes_total": 1216047,
+        "payload_bytes_total": 1523314,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 34,
@@ -80,9 +80,9 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/prophet-opportunity-system-20261015-5ba805642dd9aece",
-    "resolved_sha_or_none": "90f83d46e6bfe7e56f90872531fe5181c0729455",
+    "resolved_sha_or_none": "285f5909fb7938d0be3df4fc10f166c09aca68cd",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/prophet-opportunity-system-20261015-5ba805642dd9aece (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
-    "site_dir": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/prophet-opportunity-system-20261015-5ba805642dd9aece/site/_tmp/prophet-acceptance-main392f"
+    "site_dir": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/prophet-opportunity-system-20261015-5ba805642dd9aece/site/_tmp/prophet-sources-285f5909"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",

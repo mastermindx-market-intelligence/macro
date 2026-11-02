@@ -4,7 +4,7 @@ The fixture renders the candidate dashboard with the committed October 30 US boa
 
 The canonical material evidence is `manifest.json`. It covers the public stock workspace at 1440, 768, 390 and 320 pixels in English and Chinese, light and dark. Each cell captures the resting page, focus on the first reachable Today card’s View setup control, and hover on the page navigation. `smells.json` retains fixture resource failures and layout measurements. The scope includes the rendered cards, the chart and dated terms, the action footer, and the workspace order ahead of market context. Some cards are obscured by the existing anonymous access rules. The absence of a protected payload and of auxiliary live services is visible in the fixture.
 
-The additional `public-sources/` screenshots use actual public controls to open FLS, select Sources, and open its source disclosure. They record the visible candidate identity, dates, Plan notice, and overflow checks. FLS's related record requires full access. The public journey ends there. These screenshots do not claim an authenticated Plan hop, a live deployment, or approval of the Paper design.
+The additional `public-sources/` screenshots use actual public controls to open FLS and select Sources. That selection reveals the existing disclosure immediately and leaves focus on the tab. The desktop capture checks that the related-record notice sits beside the setup, with its dates immediately below. At 390 and 320 pixels it checks that the setup, notice and dates follow reading order. Each capture records the candidate identity, native source fields, access state and overflow checks. FLS's related record requires full access. The public journey ends there. These screenshots do not claim an authenticated Plan hop, a live deployment, or approval of the Paper design.
 
 The assessed Paper frames are LKU-0 (Setup), 8OM-0 (Evidence), 4U6-0 (Plans) and VBF-0 (R7 Setup) in document `01M3NT5Y3G5HTJHVR0K5W2MDJM`. The production template uses an overlaid Sources disclosure. The Paper studies also show a selected evidence item with an adjacent inspector, or persistent timing and Plan panels. The fixture verifies the actual template layout and interaction states without promoting either design to product acceptance.
 
@@ -12,7 +12,7 @@ Run from the repository root with a fresh local fixture directory. The HTML capt
 
 ```sh
 proof=mockups/evidence/prophet-opportunity-workspace
-fixture=site/_tmp/prophet-acceptance-main392f
+fixture=site/_tmp/prophet-sources-285f5909
 python3 "$proof/render_public_fixture.py" "$fixture" > "$proof/public-inputs.json"
 python3 scripts/capture_page_evidence.py --repo macro --site-dir "$fixture" \
   --routes /us_stocks.html --viewports desktop,mobile,tablet-768,narrow-320 \

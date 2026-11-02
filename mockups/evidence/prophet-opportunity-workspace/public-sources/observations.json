@@ -5,6 +5,7 @@
     "locale": "en",
     "access": "anonymous fixture",
     "candidate": "FLS",
+    "layout": "adjacent",
     "identity": "FLS",
     "source_fields": [
       "lane",
@@ -23,7 +24,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-1440-light-en.png",
-    "sha256": "21bae1dccb85970de309f54810323b8c9d1e585ca519468384addde0c6cd6256",
+    "sha256": "c56ec83ec3d33c9db24b03588057622ccc6bedd2b8c4a5efd033605bcfdc84b4",
     "captured": true
   },
   {
@@ -32,6 +33,7 @@
     "locale": "zh",
     "access": "anonymous fixture",
     "candidate": "FLS",
+    "layout": "adjacent",
     "identity": "FLS",
     "source_fields": [
       "lane",
@@ -50,7 +52,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-1440-light-zh.png",
-    "sha256": "8a333e8e502f7ceb87721e05c6d74f308d698b2c667279f3c0f52dd94a1e3b4c",
+    "sha256": "06fa6cb964e0fe4aee5dee5e7083f7a349d8d73e3cc449881748f38ba47a53cc",
     "captured": true
   },
   {
@@ -59,6 +61,7 @@
     "locale": "en",
     "access": "anonymous fixture",
     "candidate": "FLS",
+    "layout": "adjacent",
     "identity": "FLS",
     "source_fields": [
       "lane",
@@ -77,7 +80,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-1440-dark-en.png",
-    "sha256": "3e8aded5c894e4b80cf3e4d45c918a468e0bb88d6546c78f405c1291130af492",
+    "sha256": "1a3756a044103cc8a2faa51756163594f4caba65d8109ba4dc03a69b51de9528",
     "captured": true
   },
   {
@@ -86,6 +89,7 @@
     "locale": "zh",
     "access": "anonymous fixture",
     "candidate": "FLS",
+    "layout": "adjacent",
     "identity": "FLS",
     "source_fields": [
       "lane",
@@ -104,7 +108,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-1440-dark-zh.png",
-    "sha256": "b35edb9b9c700e40e86ac3abd27a6c139baa96892527834ed8a6176b1f44a1dd",
+    "sha256": "8cd14d75ed0f018a17a355d8df5e2dc60c173bba2e1df8de6e99fe378ebcaf79",
     "captured": true
   },
   {
@@ -113,6 +117,7 @@
     "locale": "en",
     "access": "anonymous fixture",
     "candidate": "FLS",
+    "layout": "stacked",
     "identity": "FLS",
     "source_fields": [
       "lane",
@@ -131,7 +136,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-390-light-en.png",
-    "sha256": "5fbc3f2c54b756e1e910a68f834e38d0a5d3f5539d0ac5fea75036274638e6bc",
+    "sha256": "e590c13c0cbf1fffb038634fb1b0a794d7a8aaf620654f96ea5994b212ebcd8f",
     "captured": true
   },
   {
@@ -140,6 +145,7 @@
     "locale": "zh",
     "access": "anonymous fixture",
     "candidate": "FLS",
+    "layout": "stacked",
     "identity": "FLS",
     "source_fields": [
       "lane",
@@ -158,7 +164,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-390-light-zh.png",
-    "sha256": "41d9b03c93c2ef6afd5329c6443540af38e90af50ae9af6adeacfa48d0ace707",
+    "sha256": "7f22bb99d0f803f452805486e5298fb0f3b063d59ffab4e61949ea3b0bfb9d07",
     "captured": true
   },
   {
@@ -167,6 +173,7 @@
     "locale": "en",
     "access": "anonymous fixture",
     "candidate": "FLS",
+    "layout": "stacked",
     "identity": "FLS",
     "source_fields": [
       "lane",
@@ -185,7 +192,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-390-dark-en.png",
-    "sha256": "93e77ff4aed1f38978efa144e49b92ede4ab94acfc21d58fd941745d7bae32c0",
+    "sha256": "786ddb760cba4bf2ab5d24dc79d59b24dfc5d5857992067b90d793e5b775b429",
     "captured": true
   },
   {
@@ -194,6 +201,7 @@
     "locale": "zh",
     "access": "anonymous fixture",
     "candidate": "FLS",
+    "layout": "stacked",
     "identity": "FLS",
     "source_fields": [
       "lane",
@@ -212,7 +220,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-390-dark-zh.png",
-    "sha256": "91385f6ccd3d1d090c675988a27c8a2e41ec22ebf2ba6dd514516ce8448917ba",
+    "sha256": "abdf255ed9a8bfc3b637ee0c0e12e8051235e10ae24e22ea51849885801c31e4",
     "captured": true
   },
   {
@@ -221,6 +229,7 @@
     "locale": "en",
     "access": "anonymous fixture",
     "candidate": "FLS",
+    "layout": "stacked",
     "identity": "FLS",
     "source_fields": [
       "lane",
@@ -239,7 +248,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-320-light-en.png",
-    "sha256": "e84cf22d1b3f6b80182364e87a96dc6aa48af657f9b44d7bd3f6ca9241a7abb2",
+    "sha256": "180f517f55f200aa213da7f84fbe87810d2463ba0e802bef7a7767308cf67a4a",
     "captured": true
   },
   {
@@ -248,6 +257,7 @@
     "locale": "zh",
     "access": "anonymous fixture",
     "candidate": "FLS",
+    "layout": "stacked",
     "identity": "FLS",
     "source_fields": [
       "lane",
@@ -266,7 +276,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-320-light-zh.png",
-    "sha256": "7f2414e85eac32e60b5be6f1bf5e7baedcb6cee983a4ff4b25666b4baeb9d23f",
+    "sha256": "3ee12411cdecc73f58ce26c595263257b7f40b801b964845adae6c56c998edf7",
     "captured": true
   },
   {
@@ -275,6 +285,7 @@
     "locale": "en",
     "access": "anonymous fixture",
     "candidate": "FLS",
+    "layout": "stacked",
     "identity": "FLS",
     "source_fields": [
       "lane",
@@ -293,7 +304,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-320-dark-en.png",
-    "sha256": "e747d93dc32733e7438f5a860c0c4688f41e82aed3c55f3c655015ffd07404e7",
+    "sha256": "44078193248d00ec9626684b288edd7bbb53cbd0e6217915d480c8f471aaea32",
     "captured": true
   },
   {
@@ -302,6 +313,7 @@
     "locale": "zh",
     "access": "anonymous fixture",
     "candidate": "FLS",
+    "layout": "stacked",
     "identity": "FLS",
     "source_fields": [
       "lane",
@@ -320,7 +332,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-320-dark-zh.png",
-    "sha256": "2a828d757356d93d0e7e5b97623724fb833e2753bfb825d6112c05d4c679ec0a",
+    "sha256": "695942430112565ba219db14ad071fe927ce8f3ac2449f8e66bfce9e2d68bb08",
     "captured": true
   }
 ]
