@@ -1084,7 +1084,7 @@ def test_cold_tracked_source_export_import_is_repeatable_without_bytecode(tmp_pa
     ]
     assert outputs == [outputs[0]] * 3
     assert outputs[0] == (
-        "298 939fb266ac7b94483ba08b54153fbd5f45c49e261cffaaaf6bd2a80eb0fade7a "
+        "311 66916f8f1ae4096f2dcbe9f8f1d2effa7f8df825dbdd83dc3ac73c07c670b1de "
         "35ed9840daf86793736bf62c50a574e2c9005f3a1bd4bd8e3d7cf70c27e24df5 "
         "7adefd79136224d8c0ca0c84cd4ef41bd206690f9ec28622cdf95f682c811b28"
     )
