@@ -304,7 +304,7 @@ def run(out_dir: Path, states=("populated",)) -> dict:
                             shot["table_rows"] = page.eval_on_selector_all(
                                 "#dlg-policy .plm-table tbody tr", "els => els.length")
                             shot["fed_dot_rows"] = page.eval_on_selector_all(
-                                "#dlg-policy .plm-src-table tbody tr", "els => els.length")
+                                "#dlg-policy .plm-dot-table tbody tr", "els => els.length")
                             shot["no_dialog_overflow"] = page.eval_on_selector(
                                 "#dlg-policy .mx5-dlg-body", "el => el.scrollWidth <= el.clientWidth + 1")
                             shot["no_launcher_overlap"] = all(

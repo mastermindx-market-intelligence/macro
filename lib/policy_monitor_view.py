@@ -32,7 +32,7 @@ from __future__ import annotations
 
 import math
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import Any
 
 VIEW_SCHEMA = "policy_monitor_view.v1"
@@ -177,6 +177,20 @@ def _date(v: Any) -> date | None:
 def _date_str(v: Any) -> str | None:
     d = _date(v)
     return d.isoformat() if d else None
+
+
+def _instant(v: Any) -> datetime | None:
+    """A bounded ISO timestamp in UTC, with the producer's naive-UTC convention."""
+    if not isinstance(v, str) or len(v.strip()) > 60:
+        return None
+    s = _text(v, 60)
+    if not s or len(s) <= 10 or s[10] not in ("T", " "):
+        return None
+    try:
+        dt = datetime.fromisoformat(s.replace("Z", "+00:00"))
+        return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt.astimezone(timezone.utc)
+    except (ValueError, TypeError, OverflowError):
+        return None
 
 
 def _months_between(d0: date, d1: date) -> float:
@@ -499,20 +513,37 @@ def _read_activity(pl: dict) -> dict:
     n30 = _int(jw.get("n_30d"))
     n7 = n7 if n7 is not None and n7 >= 0 else None
     n30 = n30 if n30 is not None and n30 >= 0 else None
+    status = _text(jw.get("source_status"), 40)
+    refused = "source_status" in jw and status not in ("usable", "partial", "empty")
+    if refused or (status == "empty" and (n7 not in (None, 0) or n30 not in (None, 0))):
+        n7 = n30 = None
     if n7 is not None and n30 is not None and n7 > n30:
         n7 = n30 = None
-    ts = _text(jw.get("last_alert_ts"), 60)
-    note = _text(jw.get("_note"), MAX_SHORT_TEXT)
+    evaluation = _instant(jw.get("evaluated_at"))
+    window_end = evaluation.date().isoformat() if evaluation else _date_str(jw.get("evaluated_date"))
+    last = _instant(jw.get("last_alert_ts_utc")) or _instant(jw.get("last_alert_ts"))
+    ts = last.isoformat().replace("+00:00", "Z") if last else None
     summary_en = _text(jw.get("last_alert_summary"), MAX_SHORT_TEXT)
     summary_zh = _text(jw.get("last_alert_summary_zh"), MAX_SHORT_TEXT)
-    coverage_en = "Recorded 7-day and 30-day counts; the window end date is unavailable. Feed coverage is not established."
-    coverage_zh = "已记录的7日与30日计数；窗口截止日期不可用，信息源覆盖范围尚未确认。"
-    if note:
-        coverage_en = f"{coverage_en} Source note: {note}"
-        coverage_zh = f"{coverage_zh} 来源说明：{note}"
+    if refused or status == "empty" or (last and evaluation and last > evaluation):
+        ts = summary_en = summary_zh = None
+    coverage_en = "White House alert records. " + (f"7-day and 30-day windows ending {window_end} (UTC). " if window_end
+                   else "Window end date unavailable. ") + "Feed coverage is not established."
+    coverage_zh = "白宫动态记录。" + (f"7日与30日窗口截止于 {window_end}（UTC）。" if window_end
+                   else "窗口截止日期不可用。") + "信息源覆盖范围尚未确认。"
+    if status == "partial":
+        coverage_en += " Counts include valid records only; unusable or future-dated entries were excluded."
+        coverage_zh += "计数仅含有效记录；不可用或日期晚于截止时间的条目已排除。"
+    elif refused:
+        coverage_en += " The source could not establish usable counts."
+        coverage_zh += "来源未能提供可用计数。"
+    elif status == "empty":
+        coverage_en += " No alerts were present in the recorded source."
+        coverage_zh += "记录的来源中没有提醒。"
     return {
         "known_7d": n7 is not None, "n_7d": n7,
         "known_30d": n30 is not None, "n_30d": n30,
+        "window_end": window_end, "source_status": status,
         "count_label_en": "recorded policy alerts", "count_label_zh": "记录的政策提醒",
         "coverage_en": coverage_en, "coverage_zh": coverage_zh,
         "last_alert": {
@@ -894,8 +925,12 @@ def _read_context(pl: dict, latest: dict, evw_snap: Any, flip: Any) -> dict:
     cal = _mapping(pl.get("calendar"))
     cal_note = _text(cal.get("context_note"), MAX_SHORT_TEXT)
     days = _int(cal.get("days_to_midterm"))
-    event_date = _find_date_in_text(cal_note)
-    snapshot = _date_str(cal.get("evaluated_at")) or _date_str(cal.get("as_of"))
+    event_date = _date_str(cal.get("event_date")) or _find_date_in_text(cal_note)
+    evaluation = _instant(cal.get("evaluated_at"))
+    snapshot = (evaluation.date().isoformat() if evaluation else
+                _date_str(cal.get("evaluation_date")) or _date_str(cal.get("as_of")))
+    explicit_calendar = any(k in cal for k in
+                            ("event_date", "event_state", "evaluation_date", "evaluated_at", "days_since_midterm"))
 
     fc = _mapping(flip)
     last_event = _mapping(fc.get("last_event"))
@@ -929,18 +964,51 @@ def _read_context(pl: dict, latest: dict, evw_snap: Any, flip: Any) -> dict:
     td = _int(evw.get("td_to_fomc")) if evw.get("available") else None
 
     calendar_view = {
-        "known": days is not None,
+        "known": False,
         "days": days,
         "event_date": event_date,
         "as_of": snapshot,
         "note_en": cal_note or "",
         "note_zh": _text(cal.get("context_note_zh"), MAX_SHORT_TEXT) or cal_note or "",
-        "label_en": "Midterm election countdown",
-        "label_zh": "中期选举倒计时",
+        "label_en": "Midterm election context",
+        "label_zh": "中期选举背景",
         "countdown_en": "",
         "countdown_zh": "",
+        "state": "unknown",
+        "unknown_en": "Election timing is unavailable in this snapshot.",
+        "unknown_zh": "本次快照的选举时间信息不可用。",
     }
-    if days is not None:
+    if explicit_calendar:
+        event = _date(cal.get("event_date"))
+        evaluated_date = _date(snapshot)
+        if event and evaluated_date:
+            delta = (event - evaluated_date).days
+            expected = "upcoming" if delta > 0 else "today" if delta == 0 else "past"
+            stated_eval = _date(cal.get("evaluation_date"))
+            consistent = (cal.get("event_state") == expected
+                          and (not stated_eval or stated_eval == evaluated_date)
+                          and (days == delta if delta >= 0 else
+                               days is None and _int(cal.get("days_since_midterm")) == -delta))
+            if consistent:
+                calendar_view["known"] = True
+                calendar_view["state"] = expected
+                stamp = f" (evaluated {snapshot}, UTC)."
+                stamp_zh = f"（按 {snapshot} UTC 计算）。"
+                if delta > 0:
+                    calendar_view["countdown_en"] = f"Recorded count: {delta} day{'s' if delta != 1 else ''} to {event_date}" + stamp
+                    calendar_view["countdown_zh"] = f"记录的计数：距 {event_date} 还有{delta}天" + stamp_zh
+                elif delta == 0:
+                    calendar_view["countdown_en"] = f"Scheduled election date: {event_date}" + stamp
+                    calendar_view["countdown_zh"] = f"预定选举日期：{event_date}" + stamp_zh
+                else:
+                    calendar_view["countdown_en"] = f"Scheduled date passed: {event_date} · {-delta} day{'s' if delta != -1 else ''} earlier" + stamp
+                    calendar_view["countdown_zh"] = f"预定日期已过：{event_date} · {-delta}天前" + stamp_zh
+        if not calendar_view["known"] and event_date:
+            calendar_view["unknown_en"] = f"Scheduled date: {event_date}; recorded timing is incomplete or inconsistent."
+            calendar_view["unknown_zh"] = f"预定日期：{event_date}；记录的时间信息不完整或不一致。"
+    elif days is not None and days >= 0:
+        calendar_view["known"] = True
+        calendar_view["state"] = "legacy"
         when = event_date or "the recorded election date"
         when_zh = event_date or "记录的选举日期"
         stamp = f" (counted on {snapshot})" if snapshot else ""

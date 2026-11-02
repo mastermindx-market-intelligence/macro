@@ -429,3 +429,23 @@ class TestScopedStylesheet:
             assert path.exists()
             assert len(path.read_text(encoding="utf-8")) > 2000
 
+
+
+class TestIntegratedProducerRendering:
+    def test_partial_activity_and_past_election_reach_the_real_dialog(self, tmp_path):
+        from datetime import datetime, timezone
+        from scripts.build_policy_lever import _compute_calendar, _compute_jawboning
+        path = tmp_path / 'alerts.jsonl'
+        path.write_text('broken line\n{"published":"2026-11-03T12:00:00Z","summary":"Observed alert"}\n')
+        evaluation = datetime(2026, 11, 4, 12, tzinfo=timezone.utc)
+        pl = _policy_lever(calendar=_compute_calendar(now=evaluation),
+                           jawboning=_compute_jawboning(path, now=evaluation))
+        html = _render(pl, _latest())
+        dlg = _panel(html, 'id="dlg-policy"', '</body>')
+        assert 'valid records only' in dlg
+        assert 'ending 2026-11-04 (UTC)' in dlg
+        assert 'Scheduled date passed: 2026-11-03' in dlg
+        assert '预定日期已过' in dlg
+        assert 'Observed alert' in dlg
+        assert 'Fed guidance' in dlg
+        assert 'Technical observation · 2026-10-30' in dlg

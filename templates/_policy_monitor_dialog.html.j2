@@ -280,7 +280,7 @@
         <details class="plm-details" style="margin-top:10px">
           <summary tabindex="0"><span class="l-en">Fed projections by year</span><span class="l-zh">按年份列出的美联储预测</span></summary>
           <div class="plm-details-body">
-            <table class="plm-src-table">
+            <table class="plm-src-table plm-dot-table">
               <thead>
                 <tr>
                   <th scope="col"><span class="l-en">Year</span><span class="l-zh">年份</span></th>
@@ -409,6 +409,12 @@
             <span class="plm-tx-asset">{{ t.observed.gauge.value|round(0)|int }}/100</span>
             {% endif %}
           </div>
+          {% if t.observed.known and t.observed.as_of %}
+          <div class="plm-note" style="margin-bottom:6px">
+            <span class="l-en">Technical observation · {{ t.observed.as_of }}</span>
+            <span class="l-zh">技术观测日期 · {{ t.observed.as_of }}</span>
+          </div>
+          {% endif %}
           {% if t.observed.reason_en %}
           <div class="plm-note" style="margin-bottom:6px">
             <span class="l-en">{{ t.observed.reason_en }}</span><span class="l-zh">{{ t.observed.reason_zh }}</span>
@@ -471,8 +477,8 @@
               <span class="l-en">{{ pmv.context.calendar.countdown_en }}</span>
               <span class="l-zh">{{ pmv.context.calendar.countdown_zh }}</span>
               {% else %}
-              <span class="l-en">The election countdown is not recorded in this snapshot.</span>
-              <span class="l-zh">本次快照未记录选举倒计时。</span>
+              <span class="l-en">{{ pmv.context.calendar.unknown_en }}</span>
+              <span class="l-zh">{{ pmv.context.calendar.unknown_zh }}</span>
               {% endif %}
             </div>
           </div>

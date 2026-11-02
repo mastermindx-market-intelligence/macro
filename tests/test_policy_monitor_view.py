@@ -841,3 +841,85 @@ class TestReviewedRegressions:
         r = pmv.build_view(_policy_lever(), _latest(fed_path=fp))["rates"]
         assert [p["months"] for p in r["points"]] == [1, 3, 6, 12]
 
+
+
+class TestProducerContractIntegration:
+    @pytest.mark.parametrize('status', ['missing', 'unreadable', 'unusable', 'unexpected', None, []])
+    def test_unusable_source_cannot_masquerade_as_zero(self, status):
+        pl = _policy_lever(jawboning={'source_status': status, 'n_7d': 0, 'n_30d': 0})
+        activity = pmv.build_view(pl, _latest())['activity']
+        assert activity['known_7d'] is activity['known_30d'] is False
+
+    @pytest.mark.parametrize('status', ['usable', 'partial', 'empty'])
+    def test_qualified_zero_survives_without_claiming_feed_freshness(self, status):
+        pl = _policy_lever(jawboning={
+            'source_status': status, 'n_7d': 0, 'n_30d': 0,
+            'evaluated_at': '2026-11-01T23:30:00-02:00',
+            'evaluated_date': '2026-11-02', 'coverage': 'unknown',
+        })
+        activity = pmv.build_view(pl, _latest())['activity']
+        assert activity['n_7d'] == activity['n_30d'] == 0
+        assert activity['window_end'] == '2026-11-02'
+        assert 'Feed coverage is not established' in activity['coverage_en']
+        assert 'UTC' in activity['coverage_en']
+        assert '2026-10-30' not in activity['coverage_en']
+
+    def test_future_last_record_is_withheld_even_with_a_usable_source(self):
+        pl = _policy_lever(jawboning={
+            'source_status': 'usable', 'n_7d': 1, 'n_30d': 1,
+            'evaluated_at': '2026-11-01T12:00:00Z',
+            'last_alert_ts_utc': '2026-11-01T12:00:00.000001Z',
+            'last_alert_summary': 'Future record',
+        })
+        assert pmv.build_view(pl)['activity']['last_alert']['known'] is False
+
+    @pytest.mark.parametrize('day,state,days_to,days_since', [
+        (1, 'upcoming', 2, None), (3, 'today', 0, 0), (4, 'past', None, 1),
+    ])
+    def test_actual_producer_calendar_remains_dated_in_the_view(self, day, state, days_to, days_since):
+        from datetime import datetime, timezone
+        from scripts.build_policy_lever import _compute_calendar
+        calendar = _compute_calendar(now=datetime(2026, 11, day, 12, tzinfo=timezone.utc))
+        view = pmv.build_view(_policy_lever(calendar=calendar))['context']['calendar']
+        assert view['known'] is True and view['state'] == state
+        assert view['days'] == days_to
+        assert '2026-11-03' in view['countdown_en']
+        assert f'evaluated 2026-11-{day:02d}' in view['countdown_en']
+        if state == 'past':
+            assert 'Scheduled date passed' in view['countdown_en']
+            assert '0 days' not in view['countdown_en']
+
+    @pytest.mark.parametrize('change', [
+        {'event_state': 'upcoming'}, {'days_to_midterm': 0}, {'days_since_midterm': 99},
+        {'evaluation_date': '2026-11-03'}, {'event_date': 'invalid'},
+    ])
+    def test_inconsistent_calendar_does_not_synthesize_a_countdown(self, change):
+        from datetime import datetime, timezone
+        from scripts.build_policy_lever import _compute_calendar
+        calendar = _compute_calendar(now=datetime(2026, 11, 4, 12, tzinfo=timezone.utc))
+        calendar.update(change)
+        view = pmv.build_view(_policy_lever(calendar=calendar))['context']['calendar']
+        assert view['known'] is False
+        assert not view['countdown_en']
+
+    @pytest.mark.parametrize('records,expected_status,expected_count', [
+        ([], 'empty', 0),
+        (['not JSON', 'null'], 'unusable', None),
+        ([{'published': '2026-11-02T00:00:00Z'}], 'unusable', None),
+        (['not JSON', {'published': '2026-10-31T12:00:00Z', 'summary': 'Observed'},
+          {'published': '2026-11-02T00:00:00Z', 'summary': 'Future'}], 'partial', 1),
+    ])
+    def test_actual_record_reader_to_view_preserves_zero_unknown_and_partial(self, tmp_path, records, expected_status, expected_count):
+        from datetime import datetime, timezone
+        from scripts.build_policy_lever import _compute_jawboning
+        path = tmp_path / 'alerts.jsonl'
+        path.write_text('\n'.join(r if isinstance(r, str) else json.dumps(r) for r in records))
+        activity = _compute_jawboning(path, now=datetime(2026, 11, 1, 12, tzinfo=timezone.utc))
+        view = pmv.build_view(_policy_lever(jawboning=activity), _latest())
+        assert view['activity']['source_status'] == expected_status
+        assert view['activity']['n_7d'] == expected_count
+        assert view['activity']['known_7d'] is (expected_count is not None)
+        assert view['rates']['available'] is True
+        if expected_status == 'partial':
+            assert 'valid records only' in view['activity']['coverage_en']
+            assert view['activity']['last_alert']['summary_en'] == 'Observed'
