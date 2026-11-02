@@ -812,3 +812,28 @@ def test_unknown_target_never_counts_as_expansion(tmp_path):
     # The tier lookup itself is what keeps the unknown id in the frozen tier.
     assert _tier_map(fixture).get("theme:not_in_hierarchy", gcp.FROZEN_TIER) \
         == gcp.FROZEN_TIER
+
+
+# --- 4c ----------------------------------------------------------------------
+def test_explicit_store_ledger_path_is_not_double_counted(tmp_path):
+    """read_store() already folds the store's own activity ledger into the queue,
+    so passing that same ledger through --activity-proposals used to count every
+    row twice (measured 2026-11-02 on bca436e5: proposals_seen a1 2->4, proposed
+    1->2, ratified 1->2, every gate unchanged). Identical rows now collapse to
+    one and the drop is printed; distinct rows are never merged."""
+    fixture = _build(tmp_path)
+    proposed = _a1_row(fixture.root, "co:us:TXN", "SEC:US-XNAS-TXN",
+                       "ISS:US-XNAS-TXN", MICROS[1])
+    ledger = fixture.store / "probation" / "activity_proposals.jsonl"
+    _write_jsonl(ledger, [proposed])
+    base, _, _ = _run(fixture, out=tmp_path / "out_once")
+    twice, _, _ = _run(fixture, out=tmp_path / "out_twice",
+                       extra=["--activity-proposals", str(ledger)])
+    base_seen = base["activity"]["us"]["proposals_seen"]
+    twice_seen = twice["activity"]["us"]["proposals_seen"]
+    assert base_seen["duplicate_rows_dropped"] == 0
+    assert twice_seen["duplicate_rows_dropped"] == 1
+    assert {k: v for k, v in twice_seen.items() if k != "duplicate_rows_dropped"} == \
+        {k: v for k, v in base_seen.items() if k != "duplicate_rows_dropped"}
+    assert twice["activity"]["us"]["numerator_issuers"] == base["activity"]["us"]["numerator_issuers"]
+    assert twice["gates"] == base["gates"]
