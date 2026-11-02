@@ -114,9 +114,12 @@ _CURRENCY_SYMBOL = {"$": "USD", "US$": "USD", "€": "EUR", "£": "GBP", "¥": "
 # folded: a label, a caption, a period header.  A value cell never is, because
 # its literal is replayed against the raw source, and a folded "−1.2" (U+2212)
 # would read as negative while the "-1.2" the receipt cites is not in it.
+# A zero-width space, joiner or byte-order mark ("Non\u200b-GAAP") is invisible
+# too, and is dropped with the soft hyphen.
 _DASH_FOLD = str.maketrans({
     **{chr(code): "-" for code in range(0x2010, 0x2016)},
     "−": "-", "﹣": "-", "－": "-", "­": None,
+    "\u200b": None, "\u200c": None, "\u200d": None, "\u2060": None, "\ufeff": None,
 })
 
 
@@ -157,7 +160,7 @@ _SENTENCE_PUNCTUATION_RE = re.compile(r";|\.\s*\Z")
 # object is a basis is read this way.
 _BASIS_COMPARISON_RE = re.compile(
     r"(?:\bcompared\s+(?:with|to)|\bversus|\bvs\.?)\s+(?:the\s+)?"
-    r"((?<![a-z])non[\s-]*GAAP|GAAP|adjusted)\b",
+    r"(non[\s-]*GAAP|GAAP|adjusted)\b",
     re.I,
 )
 # A GAAP statement title that is qualified is an adjusted presentation of that
@@ -260,6 +263,12 @@ _TWO_PERIOD_HEADER_RE = re.compile(
     r"\b(?:quarter|Q[1-4]|year|half|months?|weeks?|fiscal|FY(?:\d{2}){0,2})\b",
     re.I,
 )
+# "Q4-FY26" and "Fourth Quarter - Fiscal 2026" name one quarter of a numbered
+# fiscal year, so the dash is a qualifier there; "Fourth Quarter - Fiscal Year"
+# and "Q4 FY26 / FY25" still join two periods.
+_QUARTER_OF_FISCAL_YEAR_RE = re.compile(
+    r"\b(Q[1-4]|quarter)-(FY(?:\d{2}){1,2}|fiscal (?:\d{2}){1,2})\b", re.I
+)
 # A cell that holds a column's place but no value: "—", "n/m", "*".
 _PLACEHOLDER_CELL_RE = re.compile(r"\A(?:[-–—]+|n\.?/?m\.?|n\.?/?a\.?|\*+)\s*%?\Z", re.I)
 # The closing half of a value typeset across cells: "(0.12" + ")", "12.5" + "%".
@@ -333,18 +342,44 @@ _EPS_LABEL_TAIL = (
     + _EPS_BASIS_TAG
     + r"\s*:?\Z"
 )
-# A company the release names by its corporate form: "Walmart Inc.", "The
-# Procter & Gamble Company", "WALMART INC.".  Each trailing run of its words is
-# a name the release may use for it ("Acme Holdings, Inc." is also "Holdings").
+# The company a release reports for, named by its corporate form AND as the
+# reporter: "Walmart Inc. (NYSE: WMT) today reported", "The Procter & Gamble
+# Company (NYSE: PG)", "Microsoft Corp. announced".  The form is a word of its
+# own, set as a company sets it, so "Co-Founder" and "a Delaware corporation"
+# name no company.  Without the exchange ticker or the reports/announces verb a
+# corporate name is anyone the release mentions first: an advisor, a merger
+# partner, a subsidiary.  Each trailing run of the name's words is a name the
+# release may use for it ("Acme Holdings, Inc." is also "Holdings").
+_ISSUER_FORM = (
+    r"(?:Inc|INC|Corp|CORP|Corporation|CORPORATION|Co|CO|Company|COMPANY|plc|PLC|"
+    r"N\.V|Ltd|LTD|LLC|L\.P|S\.A|AG|SE)\.?(?![\w-])"
+)
+_ISSUER_CUE = (
+    r"(?:,?\s*(?:\([^()]{0,40}\)\s*)?\(\s*(?:NYSE|NASDAQ|Nasdaq|Cboe|CBOE|TSX|LSE)\b[^()]{0,40}\)"
+    r"|(?:\s*\([^()]{0,40}\))?\s+(?:today\s+)?(?:reports?|reported|announces?|announced|posts?|posted)\b)"
+)
 _ISSUER_MENTION_RE = re.compile(
-    r"(" + _EPS_NAME + r"),?\s+(?i:inc|corp|corporation|co|company|plc|n\.v|ltd|llc|l\.p|s\.a|ag|se)\b"
+    r"(?<![\w'’&.-])(" + _EPS_NAME + r"),?\s+" + _ISSUER_FORM + _ISSUER_CUE
 )
 _ISSUER_SUFFIX_RE = re.compile(
     r"(?:,?\s+(?:inc|corp|corporation|co|company|plc|n\.v|ltd|llc|l\.p|s\.a|ag|se)\.?)+\Z"
 )
 # A name in an attribution ("attributable to common stockholders of Acme,
-# Inc.") is the one an EPS line claims, so it cannot also name the issuer.
-_ATTRIBUTED_NAME_RE = re.compile(r"(?i:\battributable\s+to\b)[^.;:]{0,80}\Z")
+# Inc.", "Diluted EPS Attributable To Acme Co.") is the one an EPS line claims,
+# so it cannot also name the issuer.  The attribution may sit before the name
+# or inside the words the name pattern takes in ("EPS Attributable To Acme").
+_ATTRIBUTED_NAME_RE = re.compile(r"(?i:\battributable\s+to\b)(?:[^.;:]|\.(?=\S)){0,160}\Z")
+# A per-share scope row ("Earnings per share attributable to Walmart:") is the
+# label its bare "Basic" and "Diluted" rows complete, so it is held to the
+# same closed tail: a component, an exclusion or a pro forma names another number.
+_EPS_SCOPE_COMPONENT_RE = re.compile(
+    r"\b(?:excluding|before|after|from|growth|change|operations|continuing|discontinued|"
+    r"charges|act|tax|pro[\s-]*forma|proforma|restructuring|items|special|non-?controlling|"
+    r"minority|interests?|preferred|participating|securities)\b",
+    re.I,
+)
+_EPS_SCOPE_ATTRIBUTION_RE = re.compile(r"\battributable\s+to\b", re.I)
+_EPS_SCOPE_TAIL_RE = re.compile(_EPS_LABEL_TAIL, re.I)
 # A multi-class issuer reports EPS once per class of common stock: "Class A
 # common stock" rows under a "Basic Earnings Per Share" scope.  No class row is
 # the release's EPS by its label, and the unqualified "Earnings per share" of
@@ -732,26 +767,29 @@ def _names_basis(text: str) -> bool:
 
 
 def _issuer_names(document: DisclosureDocument) -> frozenset[str]:
-    # The issuer is the first company the release names by its corporate form:
+    # The issuer is the first company the release names as its reporter, by
+    # its corporate form with an exchange ticker or a reports/announces verb:
     # a release opens on its own name, in prose or in the layout table some
     # releases set their prose in.  A company named after it (a subsidiary, a
-    # spin-off, an operating company) is not the issuer.  "The Company" names
-    # no one, and a name an attribution gives is what is being checked, so
-    # "Diluted EPS attributable to Goodwill Impairment Co." cannot vouch for
-    # itself.  A release that names some other company first refuses its
-    # attributed EPS lines rather than binding another company's.
+    # spin-off, an operating company) is not the issuer, nor is one named
+    # without that cue.  "The Company" names no one, and a name an attribution
+    # gives is what is being checked, so "Diluted EPS attributable to Goodwill
+    # Impairment Co." cannot vouch for itself.  A release whose first such
+    # company is not the filer would vouch for that company's attributions;
+    # binding the issuer to the filer's CIK name is a recorded residual.
     for block in document.blocks:
         text = _fold_dashes(block.text)
         for mention in _ISSUER_MENTION_RE.finditer(text):
             words = _normalize_issuer(mention.group(1)).split()
-            if not words or _ATTRIBUTED_NAME_RE.search(text, max(0, mention.start() - 120), mention.start()):
+            if not words or _ATTRIBUTED_NAME_RE.search(text, max(0, mention.start() - 160), mention.end(1)):
                 continue
             return frozenset(" ".join(words[start:]) for start in range(len(words)))
     return frozenset()
 
 
 def _normalize_issuer(name: str) -> str:
-    text = " ".join(_fold_dashes(name).lower().replace("’", "'").split())
+    # Every caller passes text whose dashes are already folded.
+    text = " ".join(name.lower().replace("’", "'").split())
     # "JPMorgan Chase & Co." is "JPMorgan Chase", not "JPMorgan Chase &".
     text = _ISSUER_SUFFIX_RE.sub("", text).rstrip(",.& ")
     # "The Company" and "Our Company" are a self-reference, not a name.
@@ -762,6 +800,20 @@ def _attributes_to_another(match: re.Match[str], issuers: frozenset[str]) -> boo
     groups = match.groupdict()
     named = groups.get("parent") or groups.get("holder_parent")
     return bool(named) and _normalize_issuer(named) not in issuers
+
+
+def _scope_names_eps(scope: str, issuers: frozenset[str]) -> bool:
+    """Whether a per-share scope row names the issuer's reported EPS."""
+    per_share = _PER_SHARE_SCOPE_RE.search(scope)
+    if per_share is None:
+        return False
+    head, tail = scope[:per_share.start()], _FOOTNOTE_SUFFIX_RE.sub("", scope[per_share.end():])
+    if _EPS_SCOPE_COMPONENT_RE.search(head) or _EPS_SCOPE_COMPONENT_RE.search(tail):
+        return False
+    if not _EPS_SCOPE_ATTRIBUTION_RE.search(tail):
+        return True
+    attributed = _EPS_SCOPE_TAIL_RE.match(tail)
+    return attributed is not None and not _attributes_to_another(attributed, issuers)
 
 
 _INLINE_CURRENCY_RE = re.compile(r"\A(US\$|\$|€|£|¥)\s*")
@@ -1548,7 +1600,8 @@ def _concept_for(
         if rule.scope_forbidden is not None and rule.scope_forbidden.search(scope):
             return None
         if rule.scope_required is not None and not (
-            rule.scope_required.search(scope) or rule.scope_required.search(label)
+            _scope_names_eps(scope, issuers) if rule.scope_required.search(scope)
+            else rule.scope_required.search(label)
         ):
             return None
         if kind is None:
@@ -1693,6 +1746,7 @@ def _declared_period_months(period_label: str) -> int | None:
     """
     # "Twenty - Six" and "Twenty–Six" are "Twenty-Six": one count, not "Six".
     period_label = re.sub(r"\s*-\s*", "-", " ".join(_fold_dashes(period_label).split()))
+    period_label = _QUARTER_OF_FISCAL_YEAR_RE.sub(r"\1 \2", period_label)
     if _YEAR_TO_DATE_RE.search(period_label) or _TWO_PERIOD_HEADER_RE.search(period_label):
         return None
 

@@ -235,6 +235,31 @@ eps-placeholder) in the binder suite, and
 `test_projection_publishes_no_eps_a_release_does_not_state` in
 `tests/test_catalyst_source_cycle.py` (projects revenue only).
 
+### Fail-closed hardening (fourth review)
+
+The fourth review (of `3a70bd6b81a5`) found that an EPS label could still
+vouch for its own issuer, and that a per-share scope row's attribution was
+never checked. 37 of the new or changed test cases fail on `3a70bd6b81a5`;
+the other 59 selected cases are controls that pass on both.
+
+| Finding | Shape | Now | Test |
+|---|---|---|---|
+| M1 | In Title Case or all caps ("Diluted EPS Attributable To Goodwill Impairment Co.") the label named its own issuer, because the name pattern began at "EPS" and the attribution sat outside the 120-character look-back window. A company named first without being the reporter (an advisor, a merger partner, "Co-Founder", "a Delaware corporation") was also taken as the issuer. | The issuer is the first company named by its corporate form, as a company sets it (no case folding), and named as the reporter. That means an exchange ticker ("(NYSE: WMT)") or a reports/announces/posts verb, optionally after "today". The attribution check now spans the name itself, not only the 120 characters before it. | `test_an_eps_line_in_any_case_cannot_name_its_own_issuer` (4 labels × 2 openings), `test_a_company_named_without_a_ticker_or_reporting_verb_is_not_the_issuer` (advisor, co-founder, Delaware corporation), `test_only_the_first_company_the_release_names_is_the_issuer` (now 3 cases, each opening cued) |
+| M2 (in the base) | A bare "Diluted" row under a scope such as "Earnings per share attributable to discontinued operations:", "… noncontrolling interests:", "… Acme Operating LLC:", "… excluding special items:" or "Pro forma earnings per share:" bound as the issuer's GAAP EPS. | A per-share scope row is held to the same closed tail as a full EPS label. A component, an exclusion or a pro forma names another number. An attribution must name the issuer or its holders. | `test_a_bare_diluted_row_under_a_component_or_foreign_scope_is_not_eps` (7 scopes), `test_a_bare_diluted_row_under_the_issuers_eps_scope_is_eps` (6 controls), `test_a_scope_attributed_to_the_issuer_needs_the_release_to_name_the_issuer` |
+| m1 | The fold kept zero-width characters, so "Non\u200b-GAAP", "Non&#8203;-GAAP" and "Non\ufeffGAAP" read as GAAP, and "Twenty\u200bSix Weeks" read as one month. | The zero-width space, non-joiner, joiner, word joiner and byte-order mark are dropped with the soft hyphen. | 4 captions added to `test_a_non_gaap_caption_spelled_with_any_dash_declares_non_gaap`, 3 headers added to `test_a_header_joining_periods_or_counting_in_an_unread_form_declares_no_span`, `test_a_per_share_line_holding_a_zero_width_character_is_eps` |
+| m2 | "Q4-FY26", "Q4 - Fiscal 2026" and "Fourth Quarter - Fiscal 2026" read as two joined periods, so they declared no span. | A quarter dashed to a numbered fiscal year is one quarter. "Q4 FY26 and FY25", "Q4 FY26 / FY25" and "Fourth Quarter - Fiscal Year 2026" still name two periods and still declare none: they join two periods, so the over-refusal the review listed for them stands by design. | `test_a_quarter_dashed_to_its_numbered_fiscal_year_is_one_quarter` (5), `test_a_quarter_dashed_to_a_second_period_still_names_two` (6), `test_a_quarter_dashed_to_its_fiscal_year_wins_over_the_year` |
+| m3 | Removing the fold from `_basis_for`, `_concept_for`, `_issuer_names`, `_observed_kind` or `_row_is_header`, or the `(?<![a-z])` lookbehind, broke no test. | Each of 12 mutants now fails at least one test: the fold removed from the caption, the issuer block, the header label, the period header, and separately from the label and the scope in `_observed_kind`, `_concept_for` and `_basis_for`; and the `(?<![a-z])` lookbehind removed from the caption and the inline check. Two constructs had no effect and were removed: the lookbehind in `_BASIS_COMPARISON_RE` (its alternative already requires the word "non") and the fold in `_normalize_issuer` (every caller folds first). | `test_a_non_gaap_eps_label_with_a_non_breaking_hyphen_is_non_gaap`, `test_an_issuer_and_its_attribution_match_across_hyphen_spellings`, `test_a_year_valued_row_with_a_hyphenated_roster_label_is_data_not_a_header`, `test_a_non_gaap_scope_row_with_a_non_breaking_hyphen_is_non_gaap`, `test_the_non_of_a_word_ending_in_non_is_not_non_gaap` |
+| m4 | "Co-" in "Co-Founder" read as the suffix "Co", and "a Delaware corporation" as a company named Delaware. | The form must stand as its own word and be followed by the reporter cue. | `co-founder` and `delaware-corporation` cases above |
+
+Every existing test that opened a release on a bare company name now opens
+with `_opening()` ("Acme Holdings, Inc. (NYSE: XYZ) today reported
+results."), because a name without that cue is no longer the issuer.
+
+The census rerun on this head equals the NF baseline exactly: 31 parsed, 54
+projected, 29 with EPS, 25 with revenue, 208 figures bound. No figure changed
+on any of the 40 releases, and every sha256 matched. The live six bind the
+same values.
+
 ## Live releases that production showed UNAVAILABLE
 
 Production bound these six with the binder on `main`. Re-fetched in memory
@@ -324,6 +349,30 @@ Other partial gaps on parsed releases:
 - MSFT …-436122: class G reconciliation splits are still refused by design,
   but no concept is left unbound by them now; revenue and operating income
   bind through segment footing (class T).
+
+Recorded after the fourth review:
+
+- **Issuer cue (fails closed, no census loss).** A release whose reporter
+  sentence carries neither an exchange ticker nor a reports/announces/posts
+  verb names no issuer, so its attributed EPS lines refuse. All 40 census
+  releases bind the same figures as before the cue was required.
+- **First cued company is not the filer (open).** A release whose first
+  company named with a ticker or reporting verb is not the filer (a co-issuer,
+  a partner announcing first) vouches for that company's attributions. Binding
+  the issuer to the filer's CIK name closes this and is a follow-up.
+- **Names the form rule does not read (fails closed).** "UnitedHealth Group"
+  (no suffix), "Johnson & Johnson", "Mastercard Incorporated" and "Bank of
+  America Corporation" name no issuer, so their attributed EPS lines refuse.
+- **Single-quarter joins (open, n1).** A header joining two periods with "+",
+  "·", "•", ":" or "with" still reads as one quarter.
+- **Undated quarter headers (pre-existing).** "Q4 Ended December 28, 2025",
+  "Q4 2025" and "Q4-FY26 Ended …" declare no period end, so their columns
+  refuse as `period_undeclared`. Beside a twelve-month cash-flow statement the
+  annual net income then binds alone for that date, exactly as it does on
+  `3a70bd6b81a5`. Net income is not projected. "Fourth Quarter Ended …" is read.
+- **Removed constructs.** The lookbehind in `_BASIS_COMPARISON_RE` and the
+  fold in `_normalize_issuer` had no effect and were removed. No result
+  changed.
 
 These are follow-ups, not regressions. None of them is fixed by widening a
 pattern; each needs its own evidence, and some need a source other than the
