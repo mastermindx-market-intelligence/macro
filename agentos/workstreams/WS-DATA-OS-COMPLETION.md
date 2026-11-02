@@ -37,6 +37,7 @@ decisions:
   - DEC:DATAOS-D00-SEMANTIC-DECISIONS
   - DEC:DATAOS-D00-A1-VENUE-CLOCK-UNITS-SCOPE
   - DEC:DATAOS-VIEW-CONTRACT-SIDECAR-IS-A-NIGHTLY-EMITTER
+  - DEC:DATAOS-D00-D3-ABSENT-VS-UNRESOLVED
 waves:
   - id: d00-freeze
     title: Freeze the six semantic decisions (D00)
@@ -54,25 +55,20 @@ waves:
     depends_on: [d00-freeze]
   - id: consumers
     title: Retained views, D00.A1 venue clock + declared units, price-ladder opt-in canonical read, coverage, agreement inspector, view-contract sidecar emitter, Terminal / DataWorkspace / basket reads, support matrix (P05, P06, C01-C04, U01-U04, M01)
-    status: in_progress
-    pr: [9179, 9184]
+    status: done
+    pr: [9179, 9184, 9185, 9188, 9210, 9218, 9220, 9226, 9234, 9236, 9237, 9241, 9539, 9555]
     depends_on: [identity-time, math-registry-rights]
   - id: verification-acceptance
     title: Independent oracle, adversarial access, matched workload, end-to-end journey, corrections, recovery, source review, install and cycle plans (Q01-Q03, F01, A01-A03, R01-R03)
-    status: todo
+    status: done
+    pr: [9273, 9275]
     depends_on: [consumers]
   - id: c00-closeout
     title: Live verification on the served product, second nightly cycle, acceptance matrix closeout (C00)
-    status: todo
+    status: in_progress
     depends_on: [verification-acceptance]
 next_action: >-
-  Hand-merge wire-2 #9185 (exact head 69443b58c1ec, exports the P05 + P06 names) on concluded
-  green and prove the landing; consume the second main ci.yml baseline 38486134436 (a
-  descendant of 0d6e05ec49f2; never dispatch another over a live run); consume the rest of the consumer-wave
-  orchestrator return (C01-C03, U03-U04, M01): judge each DRAFT PR by artifact, one watcher
-  per PR, hand-merge at the exact head, verify every landing against freshly fetched
-  origin/main; commission C04 (nightly sidecar emitter) after C01 lands, then commission
-  verification + acceptance (ORCH-4) and run the seat-owned R01-R03 / C00 closeout.
+  (1) R03 / consumer C production proof: after PR #9556 merges, bind ONE bounded watcher (≥150 s) on the next daily.yml nightly and, when its push step succeeds, verify `git show origin/main:data/stocks/_view_contract.json` plus the generation invariants cycle 1 → cycle 2 (same dataset_version lineage, bar_count monotone, no repriced history); never dispatch daily.yml. (2) DONE — Q02-F1 #9654 (b300469398ca) and gap A1 #9709 (fc44c814c192) merged and land-proofed. (3) DONE — main RIG red healed by #7100 (b91514a3); main ci.yml 39245121273 @ff1b80af0f5e completed SUCCESS, clearing the C04 / wire-5 / #9273 CI-authority heads. (4) D00.D5/D6 generation producer (matrix row GEN): owned by Sol operation `rs-pullback-initial-generation-r13-20261013-c1` (WS:LIVE-ENTRY-RADAR; held R25 writer-exclusion DRAFT PR #9617 on `scripts/build_security_master.py` + `tests/verification/test_a03_recovery.py`, cumulative evidence on #8649); consume its landed lineage, never build a competing publisher. Then flip c00-closeout and this workstream to done. Never redeploy Terminal #996; never re-dispatch a concluded baseline.
 landmines:
   - "WS:TIINGO-DATA-OS owns lib/dataos/tiingo_*.py, collectors/tiingo_archive.py, scripts/tiingo_*, docs/tiingo-evidence/ and the twenty PROPOSED Tiingo registry rows; this workstream never touches them."
   - "lib/dataos/__init__.py has exactly one writer per wave (the identity+time orchestrator in wave 1; the seat from the wave-2 wiring #9168 on); parallel export wiring collides on the shared export list."
@@ -87,6 +83,8 @@ do_not_redo:
   - "Identity candidate PR #8637 is adopted by cherry-pick -x in package I01; do not re-author identity continuity or recommission its GMI sidecar changes."
   - "The route proof (G01) is one lane, one round; do not replay a blocked preflight."
 artifacts:
+  - research/data_os_completion/2026-10-13/C00_CLOSEOUT_MATRIX.md
+  - research/data_os_completion/2026-10-13/R02_RECEIPTS.md
   - research/data_os_completion/2026-10-13/D00_SEMANTIC_DECISIONS.md
   - research/data_os_completion/2026-10-13/D00_A1_AMENDMENT.md
   - research/MASTERMIND_DATA_OS_ARCHITECTURE.md

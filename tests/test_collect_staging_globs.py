@@ -1,7 +1,8 @@
 """Staging-glob invariant for collect-lane commit steps (neural-web D7).
 
-The qledger grader runs inside every ``scripts.collect`` invocation
-(scripts/collect.py -> grade_qledger.run_as_collect_step) and rewrites the
+The qledger grader runs during full/region scripts.collect invocations
+(scripts/collect.py -> grade_qledger.run_as_collect_step), not targeted
+--only adapter refreshes, and rewrites the
 TRACKED ``site/qledger/track_record.json`` (un-ignored by #1139).  Left
 unstaged, that tracked modification makes ``git pull --rebase`` refuse with
 "unstaged changes", the push loop dies after 5 attempts with only a swallowed
@@ -47,7 +48,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOWS = ROOT / ".github" / "workflows"
 
-# workflows whose jobs invoke scripts.collect (the qledger grader runs in all of them)
+# workflows whose full/region collect jobs invoke the shared QLedger grader
 COLLECT_WORKFLOWS = ["daily.yml", "asia-close.yml"]
 
 # `steps.<id>.outcome == 'success'` and friends, as written in a workflow `if:`

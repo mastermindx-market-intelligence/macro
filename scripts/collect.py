@@ -117,7 +117,10 @@ def _run_one(key: str, cls, full_history: bool):
         return None
     t0 = time.perf_counter()
     try:
-        res = run_adapter(adapter, full_history=full_history)
+        # The ordinary Yahoo batch already includes CL=F (config.yml fx_commod).
+        # Capture that same returned observation; no extra fetch, ticker or trial.
+        capture_kw = {"capture_wti_receipts": True} if key == "yahoo" else {}
+        res = run_adapter(adapter, full_history=full_history, **capture_kw)
     except Exception as e:  # noqa: BLE001 — degrade, never crash the pass
         # run_adapter's internal except is the per-source boundary, but an
         # exception can still ESCAPE it: its pre-try attribute reads
@@ -628,6 +631,58 @@ def _end_of_collect_quality(args: argparse.Namespace, registry: dict,
         except Exception as e:  # noqa: BLE001 — a safety net's crash must not abort the run
             log.error("[reconcile] membership reconciler crashed (non-fatal): %s", e)
         run_quality_audits()
+
+
+def _run_shared_qledger_postcollect(root, *, only: str) -> None:
+    """Keep shared QLedger issuance out of narrow --only refreshes.
+
+    Weekly, Smart Money, Government Revenue and Intl ETF all invoke collect
+    with --only; those adapter-scoped calls must not implicitly register
+    Intel Hub claims or grade the full ledger. Full/region collection and
+    standalone grading keep their incumbent contracts. This does not fence
+    other explicit producers or qualify native storage activation.
+    """
+    if only:
+        log.info("[qledger] skip shared registrar and grader on partial "
+                 "--only=%s; full/region collection owns this work", only)
+        return
+
+    # qledger adapters — register today's claims from each desk so the nightly
+    # grader can grade them at maturity. Idempotent; non-fatal.
+    try:
+        from scripts.backfill_qledger_intel_hub import run as _hub_backfill
+        _hub_result = _hub_backfill(root)
+        log.info("qledger intel_hub adapter: +%d claims (blocked=%d rejected=%d)",
+                 _hub_result.get("n_registered", 0),
+                 _hub_result.get("n_blocked", 0),
+                 _hub_result.get("n_rejected", 0))
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.warning("qledger intel_hub adapter failed: %s", e)
+
+    # qledger nightly grader — runs after quality audits so the parquet layer is
+    # fully refreshed. Non-fatal: a grader crash must not abort the collection run.
+    from scripts.grade_qledger import run_as_collect_step as _grade_qledger
+    _grade_qledger()
+
+
+def _run_source_registry_postcollect(*, only: str) -> None:
+    """Keep extra narrative QLedger issuance out of targeted --only runs.
+
+    The original source_registry itself checks COLLECT_LANE=nightly, but that
+    clock is not evidence that an explicit --only adapter refresh owns its
+    other QLedger claim families. Preserve full nightly/Asia invocation and
+    the original nonfatal failure semantics; standalone source_registry is
+    unchanged. This is source safety, not full legacy-writer exclusion.
+    """
+    if only:
+        log.info("[qledger] source_registry skipped on scoped --only=%s", only)
+        return
+
+    try:
+        from engine.source_registry import run_as_collect_step as _src_reg_run
+        _src_reg_run()
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.warning("source_registry nightly_run step failed: %s", e)
 
 
 def main() -> int:
@@ -1169,22 +1224,7 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("europe_news_intel ingest step failed: %s", e)
 
-    # qledger adapters — register today's claims from each desk so the nightly
-    # grader can grade them at maturity. Idempotent; non-fatal.
-    try:
-        from scripts.backfill_qledger_intel_hub import run as _hub_backfill
-        _hub_result = _hub_backfill(config.ROOT)
-        log.info("qledger intel_hub adapter: +%d claims (blocked=%d rejected=%d)",
-                 _hub_result.get("n_registered", 0),
-                 _hub_result.get("n_blocked", 0),
-                 _hub_result.get("n_rejected", 0))
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.warning("qledger intel_hub adapter failed: %s", e)
-
-    # qledger nightly grader — runs after quality audits so the parquet layer is
-    # fully refreshed. Non-fatal: a grader crash must not abort the collection run.
-    from scripts.grade_qledger import run_as_collect_step as _grade_qledger
-    _grade_qledger()
+    _run_shared_qledger_postcollect(config.ROOT, only=args.only)
 
     # CCTV 新闻联播 backfill-finalization watcher (W4/D5) — drives a three-state
     # machine (SCRAPING → FINALIZING → FINALIZED) that monitors the long-running
@@ -1387,14 +1427,10 @@ def main() -> int:
                   os.environ.get("COLLECT_LANE"))
 
     # ---- Narrative Ignition W4 — source_registry + qledger claim families (2026-07-10) ----
-    # Registers narrative_source_call + narrative_flare_state claims and resolves matured
-    # source_call claims (Beta-Bernoulli registry update). All writes nightly-gated.
-    # Runs AFTER W2 collectors so first_coverage.parquet is fresh. Non-fatal.
-    try:
-        from engine.source_registry import run_as_collect_step as _src_reg_run
-        _src_reg_run()
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.warning("source_registry nightly_run step failed: %s", e)
+    # Preserve the one nightly/full-collection owner of narrative claims and
+    # matured grading. A --only refresh is adapter-scoped even if COLLECT_LANE
+    # carries "nightly" (operator invocation or reused execution context).
+    _run_source_registry_postcollect(only=args.only)
 
     required_rc = _required_group_health(
         args.group, skip_quality=args.skip_quality, only=args.only)

@@ -1,0 +1,470 @@
+F.FFFFFFFFFFFFFFFF.FFFFFFFF                                              [100%]
+=================================== FAILURES ===================================
+_______ TestObservedSourceClock.test_saved_delay_is_not_a_permanent_age ________
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x106fa4f50>
+
+    def test_saved_delay_is_not_a_permanent_age(self):
+        quote = _make_quote(2.0, age_min=60, delay_min=1, now=self.NOW)
+>       assert bp._quote_delay_min(quote, _now_ms(self.NOW)) == 60
+E       AssertionError: assert 1.0 == 60
+E        +  where 1.0 = <function _quote_delay_min at 0x107c6c880>({'price': 102.0, 'ts': 1791903600000, 'source': 'test', 'basis': 'regular', ...}, 1791907200000)
+E        +    where <function _quote_delay_min at 0x107c6c880> = bp._quote_delay_min
+E        +    and   1791907200000 = _now_ms(datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc))
+E        +      where datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc) = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x106fa4f50>.NOW
+
+tests/test_build_basket_pulse.py:1057: AssertionError
+_ TestObservedSourceClock.test_missing_or_malformed_source_clock_is_unknown[None] _
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x106ebba80>
+stamp = None
+
+    @pytest.mark.parametrize('stamp', [None, True, False, '', 'invalid', -1, 0, float('nan'), float('inf')])
+    def test_missing_or_malformed_source_clock_is_unknown(self, stamp):
+        quote = {'ts': stamp, 'delayMin': 1, 'changePct': 3}
+>       assert bp._quote_delay_min(quote, _now_ms(self.NOW)) is None
+E       AssertionError: assert 1.0 is None
+E        +  where 1.0 = <function _quote_delay_min at 0x107c6c880>({'ts': None, 'delayMin': 1, 'changePct': 3}, 1791907200000)
+E        +    where <function _quote_delay_min at 0x107c6c880> = bp._quote_delay_min
+E        +    and   1791907200000 = _now_ms(datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc))
+E        +      where datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc) = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x106ebba80>.NOW
+
+tests/test_build_basket_pulse.py:1067: AssertionError
+_ TestObservedSourceClock.test_missing_or_malformed_source_clock_is_unknown[True] _
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x106ebbbb0>
+stamp = True
+
+    @pytest.mark.parametrize('stamp', [None, True, False, '', 'invalid', -1, 0, float('nan'), float('inf')])
+    def test_missing_or_malformed_source_clock_is_unknown(self, stamp):
+        quote = {'ts': stamp, 'delayMin': 1, 'changePct': 3}
+>       assert bp._quote_delay_min(quote, _now_ms(self.NOW)) is None
+E       AssertionError: assert 1.0 is None
+E        +  where 1.0 = <function _quote_delay_min at 0x107c6c880>({'ts': True, 'delayMin': 1, 'changePct': 3}, 1791907200000)
+E        +    where <function _quote_delay_min at 0x107c6c880> = bp._quote_delay_min
+E        +    and   1791907200000 = _now_ms(datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc))
+E        +      where datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc) = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x106ebbbb0>.NOW
+
+tests/test_build_basket_pulse.py:1067: AssertionError
+_ TestObservedSourceClock.test_missing_or_malformed_source_clock_is_unknown[False] _
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x10830ee70>
+stamp = False
+
+    @pytest.mark.parametrize('stamp', [None, True, False, '', 'invalid', -1, 0, float('nan'), float('inf')])
+    def test_missing_or_malformed_source_clock_is_unknown(self, stamp):
+        quote = {'ts': stamp, 'delayMin': 1, 'changePct': 3}
+>       assert bp._quote_delay_min(quote, _now_ms(self.NOW)) is None
+E       AssertionError: assert 1.0 is None
+E        +  where 1.0 = <function _quote_delay_min at 0x107c6c880>({'ts': False, 'delayMin': 1, 'changePct': 3}, 1791907200000)
+E        +    where <function _quote_delay_min at 0x107c6c880> = bp._quote_delay_min
+E        +    and   1791907200000 = _now_ms(datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc))
+E        +      where datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc) = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x10830ee70>.NOW
+
+tests/test_build_basket_pulse.py:1067: AssertionError
+_ TestObservedSourceClock.test_missing_or_malformed_source_clock_is_unknown[] __
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x108303ce0>
+stamp = ''
+
+    @pytest.mark.parametrize('stamp', [None, True, False, '', 'invalid', -1, 0, float('nan'), float('inf')])
+    def test_missing_or_malformed_source_clock_is_unknown(self, stamp):
+        quote = {'ts': stamp, 'delayMin': 1, 'changePct': 3}
+>       assert bp._quote_delay_min(quote, _now_ms(self.NOW)) is None
+E       AssertionError: assert 1.0 is None
+E        +  where 1.0 = <function _quote_delay_min at 0x107c6c880>({'ts': '', 'delayMin': 1, 'changePct': 3}, 1791907200000)
+E        +    where <function _quote_delay_min at 0x107c6c880> = bp._quote_delay_min
+E        +    and   1791907200000 = _now_ms(datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc))
+E        +      where datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc) = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x108303ce0>.NOW
+
+tests/test_build_basket_pulse.py:1067: AssertionError
+_ TestObservedSourceClock.test_missing_or_malformed_source_clock_is_unknown[invalid] _
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x108303df0>
+stamp = 'invalid'
+
+    @pytest.mark.parametrize('stamp', [None, True, False, '', 'invalid', -1, 0, float('nan'), float('inf')])
+    def test_missing_or_malformed_source_clock_is_unknown(self, stamp):
+        quote = {'ts': stamp, 'delayMin': 1, 'changePct': 3}
+>       assert bp._quote_delay_min(quote, _now_ms(self.NOW)) is None
+E       AssertionError: assert 1.0 is None
+E        +  where 1.0 = <function _quote_delay_min at 0x107c6c880>({'ts': 'invalid', 'delayMin': 1, 'changePct': 3}, 1791907200000)
+E        +    where <function _quote_delay_min at 0x107c6c880> = bp._quote_delay_min
+E        +    and   1791907200000 = _now_ms(datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc))
+E        +      where datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc) = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x108303df0>.NOW
+
+tests/test_build_basket_pulse.py:1067: AssertionError
+_ TestObservedSourceClock.test_missing_or_malformed_source_clock_is_unknown[-1] _
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x106fe2950>
+stamp = -1
+
+    @pytest.mark.parametrize('stamp', [None, True, False, '', 'invalid', -1, 0, float('nan'), float('inf')])
+    def test_missing_or_malformed_source_clock_is_unknown(self, stamp):
+        quote = {'ts': stamp, 'delayMin': 1, 'changePct': 3}
+>       assert bp._quote_delay_min(quote, _now_ms(self.NOW)) is None
+E       AssertionError: assert 1.0 is None
+E        +  where 1.0 = <function _quote_delay_min at 0x107c6c880>({'ts': -1, 'delayMin': 1, 'changePct': 3}, 1791907200000)
+E        +    where <function _quote_delay_min at 0x107c6c880> = bp._quote_delay_min
+E        +    and   1791907200000 = _now_ms(datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc))
+E        +      where datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc) = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x106fe2950>.NOW
+
+tests/test_build_basket_pulse.py:1067: AssertionError
+_ TestObservedSourceClock.test_missing_or_malformed_source_clock_is_unknown[0] _
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x106fe2b50>
+stamp = 0
+
+    @pytest.mark.parametrize('stamp', [None, True, False, '', 'invalid', -1, 0, float('nan'), float('inf')])
+    def test_missing_or_malformed_source_clock_is_unknown(self, stamp):
+        quote = {'ts': stamp, 'delayMin': 1, 'changePct': 3}
+>       assert bp._quote_delay_min(quote, _now_ms(self.NOW)) is None
+E       AssertionError: assert 1.0 is None
+E        +  where 1.0 = <function _quote_delay_min at 0x107c6c880>({'ts': 0, 'delayMin': 1, 'changePct': 3}, 1791907200000)
+E        +    where <function _quote_delay_min at 0x107c6c880> = bp._quote_delay_min
+E        +    and   1791907200000 = _now_ms(datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc))
+E        +      where datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc) = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x106fe2b50>.NOW
+
+tests/test_build_basket_pulse.py:1067: AssertionError
+_ TestObservedSourceClock.test_missing_or_malformed_source_clock_is_unknown[nan] _
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x10801bf20>
+stamp = nan
+
+    @pytest.mark.parametrize('stamp', [None, True, False, '', 'invalid', -1, 0, float('nan'), float('inf')])
+    def test_missing_or_malformed_source_clock_is_unknown(self, stamp):
+        quote = {'ts': stamp, 'delayMin': 1, 'changePct': 3}
+>       assert bp._quote_delay_min(quote, _now_ms(self.NOW)) is None
+E       AssertionError: assert 1.0 is None
+E        +  where 1.0 = <function _quote_delay_min at 0x107c6c880>({'ts': nan, 'delayMin': 1, 'changePct': 3}, 1791907200000)
+E        +    where <function _quote_delay_min at 0x107c6c880> = bp._quote_delay_min
+E        +    and   1791907200000 = _now_ms(datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc))
+E        +      where datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc) = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x10801bf20>.NOW
+
+tests/test_build_basket_pulse.py:1067: AssertionError
+_ TestObservedSourceClock.test_missing_or_malformed_source_clock_is_unknown[inf] _
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x10801be30>
+stamp = inf
+
+    @pytest.mark.parametrize('stamp', [None, True, False, '', 'invalid', -1, 0, float('nan'), float('inf')])
+    def test_missing_or_malformed_source_clock_is_unknown(self, stamp):
+        quote = {'ts': stamp, 'delayMin': 1, 'changePct': 3}
+>       assert bp._quote_delay_min(quote, _now_ms(self.NOW)) is None
+E       AssertionError: assert 1.0 is None
+E        +  where 1.0 = <function _quote_delay_min at 0x107c6c880>({'ts': inf, 'delayMin': 1, 'changePct': 3}, 1791907200000)
+E        +    where <function _quote_delay_min at 0x107c6c880> = bp._quote_delay_min
+E        +    and   1791907200000 = _now_ms(datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc))
+E        +      where datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc) = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x10801be30>.NOW
+
+tests/test_build_basket_pulse.py:1067: AssertionError
+____ TestObservedSourceClock.test_future_source_clock_is_not_negative_delay ____
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x106f525f0>
+
+    def test_future_source_clock_is_not_negative_delay(self):
+        quote = {'ts': _now_ms(self.NOW) + 1, 'delayMin': 1, 'changePct': 3}
+>       assert bp._quote_delay_min(quote, _now_ms(self.NOW)) is None
+E       AssertionError: assert 1.0 is None
+E        +  where 1.0 = <function _quote_delay_min at 0x107c6c880>({'ts': 1791907200001, 'delayMin': 1, 'changePct': 3}, 1791907200000)
+E        +    where <function _quote_delay_min at 0x107c6c880> = bp._quote_delay_min
+E        +    and   1791907200000 = _now_ms(datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc))
+E        +      where datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc) = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x106f525f0>.NOW
+
+tests/test_build_basket_pulse.py:1072: AssertionError
+_ TestObservedSourceClock.test_synthetic_source_clock_cannot_support_freshness _
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x106f520b0>
+
+    def test_synthetic_source_clock_cannot_support_freshness(self):
+        quote = _make_quote(2, now=self.NOW)
+        quote['tsSynthetic'] = True
+>       assert bp._quote_delay_min(quote, _now_ms(self.NOW)) is None
+E       AssertionError: assert 1.0 is None
+E        +  where 1.0 = <function _quote_delay_min at 0x107c6c880>({'price': 102.0, 'ts': 1791907140000, 'source': 'test', 'basis': 'regular', ...}, 1791907200000)
+E        +    where <function _quote_delay_min at 0x107c6c880> = bp._quote_delay_min
+E        +    and   1791907200000 = _now_ms(datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc))
+E        +      where datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc) = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x106f520b0>.NOW
+
+tests/test_build_basket_pulse.py:1077: AssertionError
+_ TestObservedSourceClock.test_invalid_delay_never_overrides_real_source_age[True] _
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x107f2f1e0>
+delay = True
+
+    @pytest.mark.parametrize('delay', [True, False, -1, float('nan'), float('inf'), 'invalid'])
+    def test_invalid_delay_never_overrides_real_source_age(self, delay):
+        quote = _make_quote(2, age_min=60, now=self.NOW)
+        quote['delayMin'] = delay
+>       assert bp._quote_delay_min(quote, _now_ms(self.NOW)) == 60
+E       AssertionError: assert 1.0 == 60
+E        +  where 1.0 = <function _quote_delay_min at 0x107c6c880>({'price': 102.0, 'ts': 1791903600000, 'source': 'test', 'basis': 'regular', ...}, 1791907200000)
+E        +    where <function _quote_delay_min at 0x107c6c880> = bp._quote_delay_min
+E        +    and   1791907200000 = _now_ms(datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc))
+E        +      where datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc) = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x107f2f1e0>.NOW
+
+tests/test_build_basket_pulse.py:1083: AssertionError
+_ TestObservedSourceClock.test_invalid_delay_never_overrides_real_source_age[False] _
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x107bea450>
+delay = False
+
+    @pytest.mark.parametrize('delay', [True, False, -1, float('nan'), float('inf'), 'invalid'])
+    def test_invalid_delay_never_overrides_real_source_age(self, delay):
+        quote = _make_quote(2, age_min=60, now=self.NOW)
+        quote['delayMin'] = delay
+>       assert bp._quote_delay_min(quote, _now_ms(self.NOW)) == 60
+E       AssertionError: assert 0.0 == 60
+E        +  where 0.0 = <function _quote_delay_min at 0x107c6c880>({'price': 102.0, 'ts': 1791903600000, 'source': 'test', 'basis': 'regular', ...}, 1791907200000)
+E        +    where <function _quote_delay_min at 0x107c6c880> = bp._quote_delay_min
+E        +    and   1791907200000 = _now_ms(datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc))
+E        +      where datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc) = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x107bea450>.NOW
+
+tests/test_build_basket_pulse.py:1083: AssertionError
+_ TestObservedSourceClock.test_invalid_delay_never_overrides_real_source_age[-1] _
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x107bea510>
+delay = -1
+
+    @pytest.mark.parametrize('delay', [True, False, -1, float('nan'), float('inf'), 'invalid'])
+    def test_invalid_delay_never_overrides_real_source_age(self, delay):
+        quote = _make_quote(2, age_min=60, now=self.NOW)
+        quote['delayMin'] = delay
+>       assert bp._quote_delay_min(quote, _now_ms(self.NOW)) == 60
+E       AssertionError: assert -1.0 == 60
+E        +  where -1.0 = <function _quote_delay_min at 0x107c6c880>({'price': 102.0, 'ts': 1791903600000, 'source': 'test', 'basis': 'regular', ...}, 1791907200000)
+E        +    where <function _quote_delay_min at 0x107c6c880> = bp._quote_delay_min
+E        +    and   1791907200000 = _now_ms(datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc))
+E        +      where datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc) = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x107bea510>.NOW
+
+tests/test_build_basket_pulse.py:1083: AssertionError
+_ TestObservedSourceClock.test_invalid_delay_never_overrides_real_source_age[nan] _
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x106f87120>
+delay = nan
+
+    @pytest.mark.parametrize('delay', [True, False, -1, float('nan'), float('inf'), 'invalid'])
+    def test_invalid_delay_never_overrides_real_source_age(self, delay):
+        quote = _make_quote(2, age_min=60, now=self.NOW)
+        quote['delayMin'] = delay
+>       assert bp._quote_delay_min(quote, _now_ms(self.NOW)) == 60
+E       AssertionError: assert nan == 60
+E        +  where nan = <function _quote_delay_min at 0x107c6c880>({'price': 102.0, 'ts': 1791903600000, 'source': 'test', 'basis': 'regular', ...}, 1791907200000)
+E        +    where <function _quote_delay_min at 0x107c6c880> = bp._quote_delay_min
+E        +    and   1791907200000 = _now_ms(datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc))
+E        +      where datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc) = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x106f87120>.NOW
+
+tests/test_build_basket_pulse.py:1083: AssertionError
+_ TestObservedSourceClock.test_invalid_delay_never_overrides_real_source_age[inf] _
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x106f87330>
+delay = inf
+
+    @pytest.mark.parametrize('delay', [True, False, -1, float('nan'), float('inf'), 'invalid'])
+    def test_invalid_delay_never_overrides_real_source_age(self, delay):
+        quote = _make_quote(2, age_min=60, now=self.NOW)
+        quote['delayMin'] = delay
+>       assert bp._quote_delay_min(quote, _now_ms(self.NOW)) == 60
+E       AssertionError: assert inf == 60
+E        +  where inf = <function _quote_delay_min at 0x107c6c880>({'price': 102.0, 'ts': 1791903600000, 'source': 'test', 'basis': 'regular', ...}, 1791907200000)
+E        +    where <function _quote_delay_min at 0x107c6c880> = bp._quote_delay_min
+E        +    and   1791907200000 = _now_ms(datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc))
+E        +      where datetime.datetime(2026, 10, 13, 16, 0, tzinfo=datetime.timezone.utc) = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x106f87330>.NOW
+
+tests/test_build_basket_pulse.py:1083: AssertionError
+_ TestObservedSourceClock.test_unknown_clock_not_smuggled_into_delayed_average _
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x107c79c70>
+
+    def test_unknown_clock_not_smuggled_into_delayed_average(self):
+        quotes = {'A': _make_quote(2, age_min=60, now=self.NOW),
+                  'B': {'changePct': 100, 'delayMin': 1, 'ts': None}}
+        value, quoted, members, stale = bp._ew_chg(
+            ['A', 'B'], quotes, _now_ms(self.NOW), include_delayed=True)
+>       assert value == 2
+E       assert 51.0 == 2
+
+tests/test_build_basket_pulse.py:1090: AssertionError
+____ TestObservedSourceClock.test_invalid_change_cannot_poison_output[True] ____
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x10760fb60>
+change = True
+
+    @pytest.mark.parametrize('change', [True, float('nan'), float('inf'), 'invalid'])
+    def test_invalid_change_cannot_poison_output(self, change):
+        quotes = {'A': _make_quote(0, now=self.NOW)}
+        quotes['A']['changePct'] = change
+        value, _, _, _ = bp._ew_chg(['A'], quotes, _now_ms(self.NOW), include_delayed=True)
+>       assert value is None
+E       assert 1.0 is None
+
+tests/test_build_basket_pulse.py:1098: AssertionError
+____ TestObservedSourceClock.test_invalid_change_cannot_poison_output[nan] _____
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x10801f2d0>
+change = nan
+
+    @pytest.mark.parametrize('change', [True, float('nan'), float('inf'), 'invalid'])
+    def test_invalid_change_cannot_poison_output(self, change):
+        quotes = {'A': _make_quote(0, now=self.NOW)}
+        quotes['A']['changePct'] = change
+        value, _, _, _ = bp._ew_chg(['A'], quotes, _now_ms(self.NOW), include_delayed=True)
+>       assert value is None
+E       assert nan is None
+
+tests/test_build_basket_pulse.py:1098: AssertionError
+____ TestObservedSourceClock.test_invalid_change_cannot_poison_output[inf] _____
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x10801f1d0>
+change = inf
+
+    @pytest.mark.parametrize('change', [True, float('nan'), float('inf'), 'invalid'])
+    def test_invalid_change_cannot_poison_output(self, change):
+        quotes = {'A': _make_quote(0, now=self.NOW)}
+        quotes['A']['changePct'] = change
+        value, _, _, _ = bp._ew_chg(['A'], quotes, _now_ms(self.NOW), include_delayed=True)
+>       assert value is None
+E       assert inf is None
+
+tests/test_build_basket_pulse.py:1098: AssertionError
+__ TestObservedSourceClock.test_invalid_change_cannot_poison_output[invalid] ___
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x107c2d1d0>
+change = 'invalid'
+
+    @pytest.mark.parametrize('change', [True, float('nan'), float('inf'), 'invalid'])
+    def test_invalid_change_cannot_poison_output(self, change):
+        quotes = {'A': _make_quote(0, now=self.NOW)}
+        quotes['A']['changePct'] = change
+>       value, _, _, _ = bp._ew_chg(['A'], quotes, _now_ms(self.NOW), include_delayed=True)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_build_basket_pulse.py:1097: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tickers = ['A']
+quotes = {'A': {'price': 100.0, 'ts': 1791907140000, 'source': 'test', 'basis': 'regular', ...}}
+now_ms = 1791907200000, stale_min = 20, include_delayed = True
+
+    def _ew_chg(tickers: list[str], quotes: dict[str, Any], now_ms: int,
+                 stale_min: int = LIVE_STALE_MIN,
+                 include_delayed: bool = False) -> tuple[float | None, int, int, bool]:
+        """Equal-weight average of changePct across quoted tickers.
+    
+        When include_delayed=False (default, live mode): only fresh quotes (delay <=
+        stale_min) contribute to the EW average. Stale quotes are counted in n_quoted
+        but excluded from changes.
+    
+        When include_delayed=True (delayed mode): ALL present quotes contribute to the
+        EW average regardless of delay. This implements the honest-delay law: a delayed
+        value with its true age beats a null.
+    
+        Returns (ew_chg_pct, n_quoted, n_members, any_stale).
+        If coverage < MIN_COVERAGE returns (None, n_quoted, n_members, any_stale).
+        """
+        changes: list[float] = []
+        n_quoted = 0
+        any_stale = False
+        for tk in tickers:
+            q = quotes.get(tk)
+            if q is None:
+                continue
+            n_quoted += 1
+            is_q_stale = _is_stale(q, now_ms, stale_min)
+            if is_q_stale:
+                any_stale = True
+                if not include_delayed:
+                    continue  # live mode: skip stale
+            chg = q.get("changePct")
+            if chg is not None:
+>               changes.append(float(chg))
+                               ^^^^^^^^^^
+E               ValueError: could not convert string to float: 'invalid'
+
+scripts/build_basket_pulse.py:368: ValueError
+_ TestObservedSourceClock.test_real_builder_degrades_aged_snapshot_and_serializes_source_range _
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x107c2d6a0>
+tmp_path = PosixPath('/private/tmp/rotation-9196-source-clock-red/test_real_builder_degrades_age0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d7e6970>
+
+    def test_real_builder_degrades_aged_snapshot_and_serializes_source_range(self, tmp_path, monkeypatch):
+        quotes = {'A': _make_quote(2, age_min=60, delay_min=1, now=self.NOW),
+                  'B': _make_quote(4, age_min=70, delay_min=1, now=self.NOW),
+                  'C': {'changePct': 99, 'ts': None, 'delayMin': 1},
+                  'UNRELATED': _make_quote(8, age_min=1, now=self.NOW)}
+        result = self._build_from_quotes(tmp_path, monkeypatch, quotes)
+        row = result['baskets'][0]
+>       assert result['mode'] == 'delayed'
+E       AssertionError: assert 'live' == 'delayed'
+E         
+E         - delayed
+E         + live
+
+tests/test_build_basket_pulse.py:1119: AssertionError
+_ TestObservedSourceClock.test_build_source_clock_follows_contributors_not_every_quoted_member _
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x107c286b0>
+tmp_path = PosixPath('/private/tmp/rotation-9196-source-clock-red/test_build_source_clock_follow0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1075a3c40>
+
+    def test_build_source_clock_follows_contributors_not_every_quoted_member(self, tmp_path, monkeypatch):
+        quotes = {'A': _make_quote(2, age_min=1, now=self.NOW),
+                  'B': _make_quote(4, age_min=2, now=self.NOW),
+                  'C': _make_quote(99, age_min=60, now=self.NOW)}
+        result = self._build_from_quotes(tmp_path, monkeypatch, quotes)
+        row = result['baskets'][0]
+        assert result['mode'] == 'live'
+        assert row['live_ew_chg_pct'] == 3
+        assert row['n_quoted'] == 3
+>       assert row['n_priced'] == 2
+               ^^^^^^^^^^^^^^^
+E       KeyError: 'n_priced'
+
+tests/test_build_basket_pulse.py:1144: KeyError
+_ TestObservedSourceClock.test_closed_session_reuse_preserves_original_source_clocks _
+
+self = <tests.test_build_basket_pulse.TestObservedSourceClock object at 0x107c28710>
+tmp_path = PosixPath('/private/tmp/rotation-9196-source-clock-red/test_closed_session_reuse_pres0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x106e97ee0>
+
+    def test_closed_session_reuse_preserves_original_source_clocks(self, tmp_path, monkeypatch):
+        quotes = _make_quotes({'A': 2, 'B': 4, 'C': 6}, self.NOW)
+        first = self._build_from_quotes(tmp_path, monkeypatch, quotes)
+        closed = datetime(2026, 10, 14, 1, 0, tzinfo=timezone.utc)
+        second = self._build_from_quotes(tmp_path, monkeypatch, quotes, now=closed)
+        assert second['mode'] == 'last_rth'
+>       assert second['source_asof'] == first['source_asof']
+               ^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'source_asof'
+
+tests/test_build_basket_pulse.py:1154: KeyError
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_saved_delay_is_not_a_permanent_age
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_missing_or_malformed_source_clock_is_unknown[None]
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_missing_or_malformed_source_clock_is_unknown[True]
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_missing_or_malformed_source_clock_is_unknown[False]
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_missing_or_malformed_source_clock_is_unknown[]
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_missing_or_malformed_source_clock_is_unknown[invalid]
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_missing_or_malformed_source_clock_is_unknown[-1]
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_missing_or_malformed_source_clock_is_unknown[0]
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_missing_or_malformed_source_clock_is_unknown[nan]
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_missing_or_malformed_source_clock_is_unknown[inf]
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_future_source_clock_is_not_negative_delay
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_synthetic_source_clock_cannot_support_freshness
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_invalid_delay_never_overrides_real_source_age[True]
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_invalid_delay_never_overrides_real_source_age[False]
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_invalid_delay_never_overrides_real_source_age[-1]
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_invalid_delay_never_overrides_real_source_age[nan]
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_invalid_delay_never_overrides_real_source_age[inf]
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_unknown_clock_not_smuggled_into_delayed_average
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_invalid_change_cannot_poison_output[True]
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_invalid_change_cannot_poison_output[nan]
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_invalid_change_cannot_poison_output[inf]
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_invalid_change_cannot_poison_output[invalid]
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_real_builder_degrades_aged_snapshot_and_serializes_source_range
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_build_source_clock_follows_contributors_not_every_quoted_member
+FAILED tests/test_build_basket_pulse.py::TestObservedSourceClock::test_closed_session_reuse_preserves_original_source_clocks
+25 failed, 2 passed, 60 deselected in 4.12s

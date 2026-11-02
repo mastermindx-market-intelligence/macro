@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-03T21:07:32Z",
+ "accession": "0001628280-26-013788",
+ "cik": "0000949157",
+ "doc_byte_length": 3845651,
+ "doc_sha256": "6027eaed123148b4beb7146528d579b25457c34fd2a0f2daedbd6e37d3e119f5",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-03",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "cenx-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 399458,
+  "byte_start": 398597,
+  "normalized": "We have historically derived substantially all of our consolidated net sales of primary aluminum from a small number of customers. For the year ended December 31, 2025, we derived approximately 54.0% of our consolidated sales from Glencore plc and its affiliates (together, \"Glencore\"). Glencore purchased aluminum produced at our U.S. smelters at prices based on the LME price for primary aluminum plus the Midwest premium plus any additional market-based product premiums.",
+  "normalized_sha256": "126dfa9871505958cad330b600f88478800a3bea9b0906ff4d922848ce035f74",
+  "raw": "We have historically derived substantially all of our consolidated net sales of primary aluminum from a small number of customers. For the year ended December&#160;31, 2025, we derived approximately </span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">54.0%</span><span style=\"background-color:#ffffff;color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"> of our consolidated sales from Glencore plc and its affiliates (together, \"Glencore\"). </span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">Glencore purchased aluminum produced at our U.S. smelters at prices based on the LME price for primary aluminum plus the Midwest premium plus any additional market-based product premiums.",
+  "raw_sha256": "22cb7128482abf48cb55297d25c3cebdd90f1bf3628a3b6d4636e39dc8b8b875"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/949157/000162828026013788/cenx-20251231.htm",
+ "xbrl_contexts": []
+}

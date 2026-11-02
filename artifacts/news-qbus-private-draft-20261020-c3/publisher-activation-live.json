@@ -1,0 +1,268 @@
+{
+  "schema": "shared_news.publisher_activation_live_proof.v1",
+  "primary_pr": 9846,
+  "merged_head": "1298ed4281362329c682a1f7c038b932e4ccbb64",
+  "operation_sha256": "4f6b515ad32295b3b2ba6a896801cb32afbac5904ed8de9d30585720cda84428",
+  "activation": {
+    "critical_source_pins_verified": 31,
+    "deployed_head": "652fc1ba2c082356c00698d161a70c2add7ab653",
+    "environment_keys_to_add": {
+      "/etc/macro-api.env": [
+        "MM_TICKER_NEWS_ADDITIONAL_RIGHTS"
+      ],
+      "/etc/macro-ticker-news.env": [
+        "MM_TICKER_NEWS_MASSIVE_ENABLED",
+        "MM_TICKER_NEWS_ADDITIONAL_RIGHTS",
+        "POLYGON_API_KEY"
+      ]
+    },
+    "live_coverage_verified": false,
+    "phase_carrier": "/var/lib/macro-ticker-news/news-publisher-activation-20261020-c3/phase.json",
+    "preflight": {
+      "activation_qualified": true,
+      "additional_sources_enabled": true,
+      "additional_sources_qualified": 3,
+      "provider": "alpaca",
+      "schema": "qbus.news_runner_preflight.v1",
+      "universe_count": 503,
+      "universe_revision": "sp500-news-227fff3c795682c6050038698173e170933697968adeabcf1a2bd629a5d79122"
+    },
+    "production_mutated": true,
+    "receipts": [
+      {
+        "path": "/etc/macro-ticker-news-massive-zacks-com-rights.json",
+        "source": "massive:zacks.com",
+        "state": "absent"
+      },
+      {
+        "path": "/etc/macro-ticker-news-massive-fool-com-rights.json",
+        "source": "massive:fool.com",
+        "state": "absent"
+      },
+      {
+        "path": "/etc/macro-ticker-news-massive-globenewswire-com-rights.json",
+        "source": "massive:globenewswire.com",
+        "state": "absent"
+      }
+    ],
+    "services": {
+      "macro-api.service": {
+        "ActiveState": "active",
+        "DropInPaths": "",
+        "EnvironmentFiles": "/etc/macro-api.env (ignore_errors=yes) /etc/macro-ollama.env (ignore_errors=yes)",
+        "ExecMainStartTimestamp": "Tue 2026-10-20 17:10:16 UTC",
+        "FragmentPath": "/etc/systemd/system/macro-api.service",
+        "MainPID": "3217327",
+        "NeedDaemonReload": "no",
+        "SubState": "running"
+      },
+      "macro-ticker-news.service": {
+        "ActiveState": "active",
+        "DropInPaths": "",
+        "EnvironmentFiles": "/etc/macro-ticker-news.env (ignore_errors=no)",
+        "ExecMainStartTimestamp": "Tue 2026-10-20 17:10:38 UTC",
+        "FragmentPath": "/etc/systemd/system/macro-ticker-news.service",
+        "MainPID": "3217613",
+        "NeedDaemonReload": "no",
+        "SubState": "running"
+      }
+    },
+    "services_after": {
+      "macro-api.service": {
+        "ActiveState": "active",
+        "DropInPaths": "",
+        "EnvironmentFiles": "/etc/macro-api.env (ignore_errors=yes) /etc/macro-ollama.env (ignore_errors=yes)",
+        "ExecMainStartTimestamp": "Tue 2026-10-20 17:23:51 UTC",
+        "FragmentPath": "/etc/systemd/system/macro-api.service",
+        "MainPID": "3227091",
+        "NeedDaemonReload": "no",
+        "SubState": "running"
+      },
+      "macro-ticker-news.service": {
+        "ActiveState": "active",
+        "DropInPaths": "",
+        "EnvironmentFiles": "/etc/macro-ticker-news.env (ignore_errors=no)",
+        "ExecMainStartTimestamp": "Tue 2026-10-20 17:23:57 UTC",
+        "FragmentPath": "/etc/systemd/system/macro-ticker-news.service",
+        "MainPID": "3227108",
+        "NeedDaemonReload": "no",
+        "SubState": "running"
+      }
+    },
+    "state": "applied_awaiting_live_proof"
+  },
+  "live_readback": {
+    "utc": "2026-10-20T17:26:29.992029+00:00",
+    "head": "c4856d476954873cf7a11ce08a94b13da309e897",
+    "health": {
+      "additional_sources": [
+        {
+          "accepted_reports": 420,
+          "delivery": "polled",
+          "last_error": null,
+          "last_successful_poll": "2026-10-20T17:25:08.795854+00:00",
+          "provider": "massive",
+          "publishers": [
+            "fool.com",
+            "globenewswire.com",
+            "zacks.com"
+          ],
+          "state": "available"
+        }
+      ],
+      "catchups_failed": 0,
+      "connect_attempts": 1,
+      "disconnects": 0,
+      "gap_unresolved": false,
+      "last_catchup_error": null,
+      "last_stream_error": null,
+      "last_stream_event_at": "2026-10-20T17:25:31.343185+00:00",
+      "last_successful_catchup": "2026-10-20T17:26:00.558374+00:00",
+      "observed_at": "2026-10-20T17:26:00.963455+00:00",
+      "provider": "alpaca",
+      "schema": "qbus.news_health.v1",
+      "source": "benzinga",
+      "state": "live"
+    },
+    "states_by_source": [
+      [
+        "benzinga",
+        "active",
+        6680,
+        7346
+      ],
+      [
+        "massive:fool.com",
+        "active",
+        123,
+        7344
+      ],
+      [
+        "massive:globenewswire.com",
+        "active",
+        96,
+        7339
+      ],
+      [
+        "massive:zacks.com",
+        "active",
+        201,
+        7303
+      ]
+    ],
+    "changes_by_source": [
+      [
+        "benzinga",
+        6926,
+        "2026-10-20T17:25:31.327526+00:00"
+      ],
+      [
+        "massive:fool.com",
+        123,
+        "2026-10-20T17:24:00.201813+00:00"
+      ],
+      [
+        "massive:globenewswire.com",
+        96,
+        "2026-10-20T17:24:00.201813+00:00"
+      ],
+      [
+        "massive:zacks.com",
+        201,
+        "2026-10-20T17:24:00.201813+00:00"
+      ]
+    ],
+    "cluster_policy_counts": [
+      [
+        null,
+        770
+      ],
+      [
+        "qbus_news_cluster.v2",
+        5897
+      ],
+      [
+        "qbus_news_cluster.v3",
+        430
+      ]
+    ],
+    "additional_state_shapes": {
+      "massive:fool.com": [
+        "action_explicit",
+        "body_sha256",
+        "channels",
+        "content_hash",
+        "current_revision_id",
+        "first_received_at",
+        "last_received_at",
+        "provider_tickers",
+        "published_at",
+        "schema",
+        "source",
+        "source_event_at",
+        "source_item_id",
+        "status",
+        "tags",
+        "teaser",
+        "title",
+        "transport",
+        "updated_at",
+        "url",
+        "version_at",
+        "version_clock_domain"
+      ],
+      "massive:globenewswire.com": [
+        "action_explicit",
+        "body_sha256",
+        "channels",
+        "content_hash",
+        "current_revision_id",
+        "first_received_at",
+        "last_received_at",
+        "provider_tickers",
+        "published_at",
+        "schema",
+        "source",
+        "source_event_at",
+        "source_item_id",
+        "status",
+        "tags",
+        "teaser",
+        "title",
+        "transport",
+        "updated_at",
+        "url",
+        "version_at",
+        "version_clock_domain"
+      ],
+      "massive:zacks.com": [
+        "action_explicit",
+        "body_sha256",
+        "channels",
+        "content_hash",
+        "current_revision_id",
+        "first_received_at",
+        "last_received_at",
+        "provider_tickers",
+        "published_at",
+        "schema",
+        "source",
+        "source_event_at",
+        "source_item_id",
+        "status",
+        "tags",
+        "teaser",
+        "title",
+        "transport",
+        "updated_at",
+        "url",
+        "version_at",
+        "version_clock_domain"
+      ]
+    }
+  },
+  "live_coverage_verified": true,
+  "live_coverage_scope": "canonical store admits actual reports from all three publishers; UI and rendered dossiers qualify separately",
+  "private_draft_live_state": "waiting_for_eligible_ordinary_company_slot",
+  "public_publication_authorized": false
+}

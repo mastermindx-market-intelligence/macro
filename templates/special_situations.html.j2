@@ -329,9 +329,14 @@ html[data-lang="zh"] .live-mark{color:var(--ink-act, var(--red));border-color:va
 <div class="wrap">
 
   {# ---- hero ---- #}
+  {% set built_day = (built or '')[:10] %}
   <div class="hero">
     <div class="hero-eyebrow">{{ t('Special Situations · Event-Driven Desk', '特殊事件 · 事件驱动交易台') }}</div>
-    <div class="hero-h1">{{ t('Corporate events in play right now', '当前正在进行中的公司事件') }}</div>
+    {% if built_day %}
+    <div class="hero-h1">{{ t('Corporate events as of ' ~ built_day, built_day ~ ' 的公司事件') }}</div>
+    {% else %}
+    <div class="hero-h1">{{ t('Corporate events', '公司事件') }}</div>
+    {% endif %}
     <div class="hero-sub">{{ t(
       'Activist campaigns, M&A, spin-offs, going-private, tenders, divestitures & restructurings — drawn from SEC filings, digest monitoring, and global sources.',
       '来自 SEC 披露、信息摘要监控与全球来源的维权、并购、分拆、私有化、要约、剥离与重组事件。') }}
@@ -362,7 +367,7 @@ html[data-lang="zh"] .live-mark{color:var(--ink-act, var(--red));border-color:va
       {% if new_today %}
       <div class="hero-stat green">
         <div class="v">{{ new_today }}</div>
-        <div class="k">{{ t('New today', '今日新增') }}</div>
+        <div class="k">{{ t('New since prior snapshot', '较上一快照新增') }}</div>
       </div>
       {% endif %}
       {% if coverage.floor_musd %}
@@ -876,7 +881,7 @@ html[data-lang="zh"] .live-mark{color:var(--ink-act, var(--red));border-color:va
           var a = si.querySelector('[data-act="signin"]');
           if(a) a.addEventListener('click', function(ev){
             ev.preventDefault();
-            try{ window.MDXAuth.open('signin'); }catch(e){ location.href = 'plans.html'; }
+            if (window.MMXSharedShell) { window.MMXSharedShell.openAuth('signin'); return; } try{ window.MDXAuth.open('signin'); }catch(e){ location.href = 'plans.html'; }
           });
         }
       });

@@ -98,3 +98,19 @@ The original controlled browser proof hash is
 7f2e5c6f7fef702446a18039c3222f016a0d65b6d3a1e849046797a321af98c6.
 The component fixture deliberately excludes the separate forecast script;
 its Loading projections text is not a production countdown claim.
+
+### Current source reconciliation
+
+During integration, protected Mastermind advanced once to
+ae3fc6fce8f704b32b01664f1b0d1c0d52a1c8ed. The full delta from the entry pin was
+read: it adds staging-only Fabric parent recovery diagnostics and updates a
+separately bound Claude delegation source pin. It grants no wake, replay,
+acceptance or routing authority. The existing exact-run reconciliation and
+independent review boundaries remain in force.
+
+Macro main at integration is 729fd695836c3f4b0002b72249f80792accb9802.
+The two generated HTML conflicts were resolved from current-main bytes with
+only the owned release-client asset stamp reapplied. Both independently added
+orchestration test groups were retained. Whitespace already present in main's
+generated pages is outside this incident patch; the owned delta is checked
+against the current main parent.

@@ -1,0 +1,585 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--separate-git-dir",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/object-store",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/worktree"
+      ],
+      "cwd": "/tmp/rr-static-scope-v2-8fzwvrfh",
+      "label": "fixture git init",
+      "returncode": 0,
+      "stderr": "hint: Using 'master' as the name for the initial branch. This default branch name\nhint: is subject to change. To configure the initial branch name to use in all\nhint: of your new repositories, which will suppress this warning, call:\nhint:\nhint: \tgit config --global init.defaultBranch <name>\nhint:\nhint: Names commonly chosen instead of 'master' are 'main', 'trunk' and\nhint: 'development'. The just-created branch can be renamed via this command:\nhint:\nhint: \tgit branch -m <name>\nhint:\nhint: Disable this message with \"git config set advice.defaultBranchName false\"\n",
+      "stdout": "Initialized empty Git repository in /tmp/rr-static-scope-v2-8fzwvrfh/object-store/\n"
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=/tmp/rr-static-scope-v2-8fzwvrfh/empty-hooks",
+        "-c",
+        "commit.gpgsign=false",
+        "-c",
+        "user.name=Static scope fixture",
+        "-c",
+        "user.email=fixture@example.invalid",
+        "-C",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/worktree",
+        "add",
+        "--all"
+      ],
+      "cwd": "/tmp/rr-static-scope-v2-8fzwvrfh",
+      "label": "fixture git add",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=/tmp/rr-static-scope-v2-8fzwvrfh/empty-hooks",
+        "-c",
+        "commit.gpgsign=false",
+        "-c",
+        "user.name=Static scope fixture",
+        "-c",
+        "user.email=fixture@example.invalid",
+        "-C",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/worktree",
+        "commit",
+        "-m",
+        "Synthetic predecessor"
+      ],
+      "cwd": "/tmp/rr-static-scope-v2-8fzwvrfh",
+      "label": "fixture git commit",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "[master (root-commit) 7ea15c7] Synthetic predecessor\n 5 files changed, 3 insertions(+)\n create mode 100644 app/__init__.py\n create mode 100644 app/main.py\n create mode 100644 nested/README.md\n create mode 100644 pkg/__init__.py\n create mode 100644 pkg/child.py\n"
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=/tmp/rr-static-scope-v2-8fzwvrfh/empty-hooks",
+        "-c",
+        "commit.gpgsign=false",
+        "-c",
+        "user.name=Static scope fixture",
+        "-c",
+        "user.email=fixture@example.invalid",
+        "-C",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/worktree",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/tmp/rr-static-scope-v2-8fzwvrfh",
+      "label": "fixture git rev-parse",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "7ea15c7bbcd92e02b3c0964dd7d2fbd55706c4f3\n"
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=/tmp/rr-static-scope-v2-8fzwvrfh/empty-hooks",
+        "-c",
+        "commit.gpgsign=false",
+        "-c",
+        "user.name=Static scope fixture",
+        "-c",
+        "user.email=fixture@example.invalid",
+        "-C",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/worktree",
+        "add",
+        "--all"
+      ],
+      "cwd": "/tmp/rr-static-scope-v2-8fzwvrfh",
+      "label": "fixture git add",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=/tmp/rr-static-scope-v2-8fzwvrfh/empty-hooks",
+        "-c",
+        "commit.gpgsign=false",
+        "-c",
+        "user.name=Static scope fixture",
+        "-c",
+        "user.email=fixture@example.invalid",
+        "-C",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/worktree",
+        "commit",
+        "-m",
+        "Synthetic alias collision"
+      ],
+      "cwd": "/tmp/rr-static-scope-v2-8fzwvrfh",
+      "label": "fixture git commit",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "[master 1533214] Synthetic alias collision\n 2 files changed, 8 insertions(+), 2 deletions(-)\n"
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=/tmp/rr-static-scope-v2-8fzwvrfh/empty-hooks",
+        "-c",
+        "commit.gpgsign=false",
+        "-c",
+        "user.name=Static scope fixture",
+        "-c",
+        "user.email=fixture@example.invalid",
+        "-C",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/worktree",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/tmp/rr-static-scope-v2-8fzwvrfh",
+      "label": "fixture git rev-parse",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "15332143d9d6620195486c41e6a02ec6bf00343d\n"
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/da452a3ea08d/release_review/candidate_scope_static.py",
+        "--repo",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/worktree",
+        "--revision",
+        "15332143d9d6620195486c41e6a02ec6bf00343d",
+        "--compare",
+        "7ea15c7bbcd92e02b3c0964dd7d2fbd55706c4f3",
+        "--root",
+        "app.main",
+        "--output",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/original-alias.json"
+      ],
+      "cwd": "/tmp/rr-static-scope-v2-8fzwvrfh",
+      "label": "original F1 counterexample",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\"output\": \"/tmp/rr-static-scope-v2-8fzwvrfh/original-alias.json\", \"root_resolved\": true, \"counts\": {\"changed_paths\": 2, \"changed_python_paths\": 2, \"reached_modules\": 3, \"reached_source_paths\": 3}, \"errors\": 0}\n"
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/da452a3ea08d/release_review/candidate_scope_static_v2.py",
+        "--repo",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/worktree",
+        "--revision",
+        "15332143d9d6620195486c41e6a02ec6bf00343d",
+        "--compare",
+        "7ea15c7bbcd92e02b3c0964dd7d2fbd55706c4f3",
+        "--root",
+        "app.main",
+        "--output",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/v2-alias.json"
+      ],
+      "cwd": "/tmp/rr-static-scope-v2-8fzwvrfh",
+      "label": "v2 F1 union and explicit ambiguity",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\"output\": \"/tmp/rr-static-scope-v2-8fzwvrfh/v2-alias.json\", \"root_resolved\": true, \"counts\": {\"changed_paths\": 2, \"changed_python_paths\": 2, \"reached_modules\": 4, \"reached_source_paths\": 4}, \"errors\": 0}\n"
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/da452a3ea08d/release_review/candidate_scope_static.py",
+        "--repo",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/worktree/nested",
+        "--revision",
+        "15332143d9d6620195486c41e6a02ec6bf00343d",
+        "--compare",
+        "7ea15c7bbcd92e02b3c0964dd7d2fbd55706c4f3",
+        "--root",
+        "app.main",
+        "--output",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/worktree/original-inside-worktree.json"
+      ],
+      "cwd": "/tmp/rr-static-scope-v2-8fzwvrfh",
+      "label": "original F2 nested-root counterexample",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\"output\": \"/tmp/rr-static-scope-v2-8fzwvrfh/worktree/original-inside-worktree.json\", \"root_resolved\": true, \"counts\": {\"changed_paths\": 2, \"changed_python_paths\": 2, \"reached_modules\": 3, \"reached_source_paths\": 3}, \"errors\": 0}\n"
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/da452a3ea08d/release_review/candidate_scope_static_v2.py",
+        "--repo",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/worktree/nested",
+        "--revision",
+        "15332143d9d6620195486c41e6a02ec6bf00343d",
+        "--compare",
+        "7ea15c7bbcd92e02b3c0964dd7d2fbd55706c4f3",
+        "--root",
+        "app.main",
+        "--output",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/worktree/v2-inside-worktree.json"
+      ],
+      "cwd": "/tmp/rr-static-scope-v2-8fzwvrfh",
+      "label": "v2 F2 nested repo refused",
+      "returncode": 2,
+      "stderr": "usage: candidate_scope_static_v2.py [-h] --repo REPO --revision REVISION\n                                    --compare COMPARE [--root ROOT] --output\n                                    OUTPUT\ncandidate_scope_static_v2.py: error: --repo must equal Git's actual worktree root\n",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/da452a3ea08d/release_review/candidate_scope_static_v2.py",
+        "--repo",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/worktree",
+        "--revision",
+        "15332143d9d6620195486c41e6a02ec6bf00343d",
+        "--compare",
+        "7ea15c7bbcd92e02b3c0964dd7d2fbd55706c4f3",
+        "--root",
+        "app.main",
+        "--output",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/object-store/v2-report.json"
+      ],
+      "cwd": "/tmp/rr-static-scope-v2-8fzwvrfh",
+      "label": "v2 F2 external metadata refused",
+      "returncode": 2,
+      "stderr": "usage: candidate_scope_static_v2.py [-h] --repo REPO --revision REVISION\n                                    --compare COMPARE [--root ROOT] --output\n                                    OUTPUT\ncandidate_scope_static_v2.py: error: --output must be outside the actual worktree and its Git metadata\n",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=/tmp/rr-static-scope-v2-8fzwvrfh/empty-hooks",
+        "-c",
+        "commit.gpgsign=false",
+        "-c",
+        "user.name=Static scope fixture",
+        "-c",
+        "user.email=fixture@example.invalid",
+        "-C",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/worktree",
+        "worktree",
+        "add",
+        "--detach",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/linked-worktree",
+        "15332143d9d6620195486c41e6a02ec6bf00343d"
+      ],
+      "cwd": "/tmp/rr-static-scope-v2-8fzwvrfh",
+      "label": "fixture git worktree",
+      "returncode": 0,
+      "stderr": "Preparing worktree (detached HEAD 1533214)\n",
+      "stdout": "HEAD is now at 1533214 Synthetic alias collision\n"
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/da452a3ea08d/release_review/candidate_scope_static_v2.py",
+        "--repo",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/linked-worktree",
+        "--revision",
+        "15332143d9d6620195486c41e6a02ec6bf00343d",
+        "--compare",
+        "7ea15c7bbcd92e02b3c0964dd7d2fbd55706c4f3",
+        "--root",
+        "app.main",
+        "--output",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/v2-linked.json"
+      ],
+      "cwd": "/tmp/rr-static-scope-v2-8fzwvrfh",
+      "label": "v2 F2 linked worktree positive control",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\"output\": \"/tmp/rr-static-scope-v2-8fzwvrfh/v2-linked.json\", \"root_resolved\": true, \"counts\": {\"changed_paths\": 2, \"changed_python_paths\": 2, \"reached_modules\": 4, \"reached_source_paths\": 4}, \"errors\": 0}\n"
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/da452a3ea08d/release_review/candidate_scope_static_v2.py",
+        "--repo",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/linked-worktree",
+        "--revision",
+        "15332143d9d6620195486c41e6a02ec6bf00343d",
+        "--compare",
+        "7ea15c7bbcd92e02b3c0964dd7d2fbd55706c4f3",
+        "--root",
+        "app.main",
+        "--output",
+        "/tmp/rr-static-scope-v2-8fzwvrfh/object-store/v2-linked-report.json"
+      ],
+      "cwd": "/tmp/rr-static-scope-v2-8fzwvrfh",
+      "label": "v2 F2 linked common metadata refused",
+      "returncode": 2,
+      "stderr": "usage: candidate_scope_static_v2.py [-h] --repo REPO --revision REVISION\n                                    --compare COMPARE [--root ROOT] --output\n                                    OUTPUT\ncandidate_scope_static_v2.py: error: --output must be outside the actual worktree and its Git metadata\n",
+      "stdout": ""
+    }
+  ],
+  "environment_overrides": {
+    "GIT_ALLOW_PROTOCOL": "",
+    "GIT_CONFIG_GLOBAL": "/dev/null",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_CONFIG_SYSTEM": "/dev/null",
+    "GIT_TERMINAL_PROMPT": "0"
+  },
+  "execution_mode": "standard-library synthetic fixture assertions; not pytest",
+  "finished_at": "2026-10-18T08:55:38.089657+00:00",
+  "fixture_base_files": {
+    "app/__init__.py": "",
+    "app/main.py": "pass\n",
+    "nested/README.md": "Synthetic fixture.\n",
+    "pkg/__init__.py": "",
+    "pkg/child.py": "VALUE = 'previous'\n"
+  },
+  "fixture_commits": {
+    "compare": "7ea15c7bbcd92e02b3c0964dd7d2fbd55706c4f3",
+    "revision": "15332143d9d6620195486c41e6a02ec6bf00343d"
+  },
+  "fixture_root": "/tmp/rr-static-scope-v2-8fzwvrfh",
+  "fixture_target_files": {
+    "app/main.py": "raise RuntimeError('Synthetic fixture must never execute')\nfrom builtins import __import__ as load\n\ndef unused():\n    from importlib import import_module as load\n\nload('pkg', fromlist=['child'])\n",
+    "pkg/child.py": "VALUE = 'candidate child'\n"
+  },
+  "identities": {
+    "original": {
+      "bytes": 16836,
+      "path": "/workspace/scratch/da452a3ea08d/release_review/candidate_scope_static.py",
+      "sha256": "1ccb858a4f41ee62e909cc651c64d4ecc5aa525051432b45883854f6d0216c17"
+    },
+    "runner": {
+      "bytes": 9643,
+      "path": "/workspace/scratch/da452a3ea08d/release_review/static_scope_v2_fixture_20261018.py",
+      "sha256": "b563134a1ccb51a67031adb2ccbd9b4b8134a4af7888a7dfd569679c76069716"
+    },
+    "successor": {
+      "bytes": 18653,
+      "path": "/workspace/scratch/da452a3ea08d/release_review/candidate_scope_static_v2.py",
+      "sha256": "2f1f78e12cac9f6dfc219ba20c5d61d97bed29d4109cc9fc93eb3eea5123e103"
+    }
+  },
+  "original_counterexamples_reproduced": 2,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "results": [
+    {
+      "case": "original F1 counterexample",
+      "dynamic_sites": [],
+      "outcome": "original undercount reproduced; not an acceptance pass",
+      "output": {
+        "bytes": 6437,
+        "path": "/tmp/rr-static-scope-v2-8fzwvrfh/original-alias.json",
+        "sha256": "467deb84177ca64a40d03dc35710915d23024749f2da95e94e79bfbd0c96daee"
+      },
+      "output_exists": true,
+      "parser_or_object_errors": [],
+      "reached_changed_paths": [
+        "app/main.py"
+      ],
+      "reached_paths": [
+        "app/__init__.py",
+        "app/main.py",
+        "pkg/__init__.py"
+      ],
+      "returncode": 0,
+      "source": {
+        "compare": {
+          "commit": "7ea15c7bbcd92e02b3c0964dd7d2fbd55706c4f3",
+          "commit_bytes_sha256": "5f8e83d0539bd9cbf1852e5b540cdc0f64f720555bcf184d567f3ecef9aa5931",
+          "parents": [],
+          "tree": "601c9f36cb1ba92ca6062ae3859279eb398a7a7a"
+        },
+        "repo": "/tmp/rr-static-scope-v2-8fzwvrfh/worktree",
+        "revision": {
+          "commit": "15332143d9d6620195486c41e6a02ec6bf00343d",
+          "commit_bytes_sha256": "8c151968b431ffff4cd569195de137721dc5af01cb38d239b06f99a3e3999455",
+          "parents": [
+            "7ea15c7bbcd92e02b3c0964dd7d2fbd55706c4f3"
+          ],
+          "tree": "770902b69d12be236d78d2dda042fea36aa9b044"
+        }
+      }
+    },
+    {
+      "case": "v2 F1 union and explicit ambiguity",
+      "dynamic_sites": [
+        {
+          "column": 0,
+          "line": 7,
+          "literal_name": "pkg",
+          "loader_alias": "load",
+          "path": "app/main.py",
+          "possible_loaders": [
+            "__import__",
+            "import_module"
+          ],
+          "reason": "recognized_loader_alias_ambiguous",
+          "source_module": "app.main"
+        }
+      ],
+      "outcome": "pass",
+      "output": {
+        "bytes": 8226,
+        "path": "/tmp/rr-static-scope-v2-8fzwvrfh/v2-alias.json",
+        "sha256": "5a31c99d3a27c90d504062c946adc4307f98631ecca3d69302498b0a8866a278"
+      },
+      "output_exists": true,
+      "parser_or_object_errors": [],
+      "reached_changed_paths": [
+        "app/main.py",
+        "pkg/child.py"
+      ],
+      "reached_paths": [
+        "app/__init__.py",
+        "app/main.py",
+        "pkg/__init__.py",
+        "pkg/child.py"
+      ],
+      "returncode": 0,
+      "source": {
+        "compare": {
+          "commit": "7ea15c7bbcd92e02b3c0964dd7d2fbd55706c4f3",
+          "commit_bytes_sha256": "5f8e83d0539bd9cbf1852e5b540cdc0f64f720555bcf184d567f3ecef9aa5931",
+          "parents": [],
+          "tree": "601c9f36cb1ba92ca6062ae3859279eb398a7a7a"
+        },
+        "repo": "/tmp/rr-static-scope-v2-8fzwvrfh/worktree",
+        "repository_context": {
+          "git_common_directory": "/tmp/rr-static-scope-v2-8fzwvrfh/object-store",
+          "git_directory": "/tmp/rr-static-scope-v2-8fzwvrfh/object-store",
+          "worktree_root": "/tmp/rr-static-scope-v2-8fzwvrfh/worktree"
+        },
+        "revision": {
+          "commit": "15332143d9d6620195486c41e6a02ec6bf00343d",
+          "commit_bytes_sha256": "8c151968b431ffff4cd569195de137721dc5af01cb38d239b06f99a3e3999455",
+          "parents": [
+            "7ea15c7bbcd92e02b3c0964dd7d2fbd55706c4f3"
+          ],
+          "tree": "770902b69d12be236d78d2dda042fea36aa9b044"
+        }
+      }
+    },
+    {
+      "case": "original F2 nested-root counterexample",
+      "dynamic_sites": [],
+      "outcome": "original inside-worktree output reproduced; not an acceptance pass",
+      "output": {
+        "bytes": 6444,
+        "path": "/tmp/rr-static-scope-v2-8fzwvrfh/worktree/original-inside-worktree.json",
+        "sha256": "f64b2ec6825994a390d50273ea5d3ffec4d951f72e842af0f6d948a51964f4d7"
+      },
+      "output_exists": true,
+      "parser_or_object_errors": [],
+      "reached_changed_paths": [
+        "app/main.py"
+      ],
+      "reached_paths": [
+        "app/__init__.py",
+        "app/main.py",
+        "pkg/__init__.py"
+      ],
+      "returncode": 0,
+      "source": {
+        "compare": {
+          "commit": "7ea15c7bbcd92e02b3c0964dd7d2fbd55706c4f3",
+          "commit_bytes_sha256": "5f8e83d0539bd9cbf1852e5b540cdc0f64f720555bcf184d567f3ecef9aa5931",
+          "parents": [],
+          "tree": "601c9f36cb1ba92ca6062ae3859279eb398a7a7a"
+        },
+        "repo": "/tmp/rr-static-scope-v2-8fzwvrfh/worktree/nested",
+        "revision": {
+          "commit": "15332143d9d6620195486c41e6a02ec6bf00343d",
+          "commit_bytes_sha256": "8c151968b431ffff4cd569195de137721dc5af01cb38d239b06f99a3e3999455",
+          "parents": [
+            "7ea15c7bbcd92e02b3c0964dd7d2fbd55706c4f3"
+          ],
+          "tree": "770902b69d12be236d78d2dda042fea36aa9b044"
+        }
+      }
+    },
+    {
+      "case": "v2 F2 nested repo refused",
+      "outcome": "pass",
+      "output_exists": false,
+      "returncode": 2
+    },
+    {
+      "case": "v2 F2 external metadata refused",
+      "outcome": "pass",
+      "output_exists": false,
+      "returncode": 2
+    },
+    {
+      "case": "v2 F2 linked worktree positive control",
+      "dynamic_sites": [
+        {
+          "column": 0,
+          "line": 7,
+          "literal_name": "pkg",
+          "loader_alias": "load",
+          "path": "app/main.py",
+          "possible_loaders": [
+            "__import__",
+            "import_module"
+          ],
+          "reason": "recognized_loader_alias_ambiguous",
+          "source_module": "app.main"
+        }
+      ],
+      "outcome": "pass",
+      "output": {
+        "bytes": 8266,
+        "path": "/tmp/rr-static-scope-v2-8fzwvrfh/v2-linked.json",
+        "sha256": "35c53ecaa13f15f0c92d166842b3ecacfbdcdccc5acc5eaa30e304237bcbc575"
+      },
+      "output_exists": true,
+      "parser_or_object_errors": [],
+      "reached_changed_paths": [
+        "app/main.py",
+        "pkg/child.py"
+      ],
+      "reached_paths": [
+        "app/__init__.py",
+        "app/main.py",
+        "pkg/__init__.py",
+        "pkg/child.py"
+      ],
+      "returncode": 0,
+      "source": {
+        "compare": {
+          "commit": "7ea15c7bbcd92e02b3c0964dd7d2fbd55706c4f3",
+          "commit_bytes_sha256": "5f8e83d0539bd9cbf1852e5b540cdc0f64f720555bcf184d567f3ecef9aa5931",
+          "parents": [],
+          "tree": "601c9f36cb1ba92ca6062ae3859279eb398a7a7a"
+        },
+        "repo": "/tmp/rr-static-scope-v2-8fzwvrfh/linked-worktree",
+        "repository_context": {
+          "git_common_directory": "/tmp/rr-static-scope-v2-8fzwvrfh/object-store",
+          "git_directory": "/tmp/rr-static-scope-v2-8fzwvrfh/object-store/worktrees/linked-worktree",
+          "worktree_root": "/tmp/rr-static-scope-v2-8fzwvrfh/linked-worktree"
+        },
+        "revision": {
+          "commit": "15332143d9d6620195486c41e6a02ec6bf00343d",
+          "commit_bytes_sha256": "8c151968b431ffff4cd569195de137721dc5af01cb38d239b06f99a3e3999455",
+          "parents": [
+            "7ea15c7bbcd92e02b3c0964dd7d2fbd55706c4f3"
+          ],
+          "tree": "770902b69d12be236d78d2dda042fea36aa9b044"
+        }
+      }
+    },
+    {
+      "case": "v2 F2 linked common metadata refused",
+      "outcome": "pass",
+      "output_exists": false,
+      "returncode": 2
+    }
+  ],
+  "scope": "Private synthetic Git fixture only; no native repository, first-party imports or production action",
+  "started_at": "2026-10-18T08:55:37.569985+00:00",
+  "v2_controls_passed": 5
+}

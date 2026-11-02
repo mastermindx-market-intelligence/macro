@@ -1,0 +1,31 @@
+{
+  "observed_at": "2026-10-14T17:38:18.871850+00:00",
+  "browser": "Chrome existing profile1",
+  "tab_id": "1925922380",
+  "url": "https://www.mastermind-x.com/stocks/CAT.html",
+  "installed_head_identity_probe": "4d9d8b731d201be466264266c28e71d41444ad4a",
+  "site_and_site_served_sha256": "16f4ab0c7f9b76ae5493c6f5ee69ae0a2198e9f9de2c40f6bd0ac5ae2f63e965",
+  "stockdata_sha256": "eaf49e39ebfe1c2b07d966ceceb11a6879b847611b25067e97c6a067eb503906",
+  "steps": [
+    "Existing CAT heading link clicked",
+    "Mastermind Terminal overlay opened",
+    "Visible Caterpillar Inc.; CAT \u00b7 NYSE; linked-view status follows CAT",
+    "Actual iframe src selected sym=CAT and return to canonical dossier",
+    "Displayed Escape shortcut via tab.pressKey closed overlay; CAT heading link visible"
+  ],
+  "iframe_url": "https://app.mastermind-x.com/terminal?sym=CAT&from=macro&ret=https%3A%2F%2Fwww.mastermind-x.com%2Fstocks%2FCAT.html&embed=dashboard",
+  "terminal_overlay_visible_after_return": false,
+  "viewport_width": 1728,
+  "document_scroll_width": 1728,
+  "functional_route_verdict": "PASS",
+  "screenshots": "Visible tool screenshot of returned canonical dossier retained in current interaction; no saved local image claimed",
+  "limits": [
+    "Route/issuer identity proof only; no fresh article",
+    "Company intelligence shows April30 2026Q1 although record update is October14",
+    "Quote/header/chart observations differ; no quote parity or causal market-effect claim",
+    "No new signup, follow, design or language-persistence acceptance"
+  ],
+  "signup_writes": 0,
+  "follow_writes": 0,
+  "press_publication": false
+}

@@ -343,6 +343,10 @@ def _collapse_repeated_lead(s: str) -> str:
 def _strip_trailing_calendar_date(s: str) -> str:
     stripped = _TRAILING_DAY_MON_YEAR.sub("", s)
     stripped = _TRAILING_MON_DAY_YEAR.sub("", stripped).strip()
+    if stripped != s:
+        # Date removal can orphan the comma after a weekday. Preserve the
+        # weekday itself and trim only punctuation exposed by this display pass.
+        stripped = stripped.rstrip(" ,")
     if stripped and stripped != s and len(stripped.split()) >= 2:
         return stripped
     return s

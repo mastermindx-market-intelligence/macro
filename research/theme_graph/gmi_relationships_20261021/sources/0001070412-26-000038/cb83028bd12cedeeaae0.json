@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-10T19:00:16Z",
+ "accession": "0001070412-26-000038",
+ "cik": "0001070412",
+ "doc_byte_length": 3388540,
+ "doc_sha256": "e7ed4b7df1c9c022d89e8933072d1ce4bd1b6aa1030355fd8a5326189a7f8485",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-10",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "cnx-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2841754,
+  "byte_start": 2841105,
+  "normalized": "(D) Included in Total Natural Gas, NGLs and Oil Revenue are sales of $134,909 to Citadel Energy Marketing LLC and $132,935 to NRG Business Marketing LLC, each of which comprises over 10% of revenue from contracts with external customers for the period.",
+  "normalized_sha256": "7f86fde3566da292f272beaa804ca4d2b6c4150b465ad9b548619a6819463029",
+  "raw": "(D) Included in Total Natural Gas, NGLs and Oil Revenue are sales of $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-377\" decimals=\"-3\" name=\"us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax\" format=\"ixt:num-dot-decimal\" scale=\"3\" id=\"f-1703\">134,909</ix:nonFraction> to Citadel Energy Marketing LLC and $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-378\" decimals=\"-3\" name=\"us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax\" format=\"ixt:num-dot-decimal\" scale=\"3\" id=\"f-1704\">132,935</ix:nonFraction> to NRG Business Marketing LLC, each of which comprises over 10% of revenue from contracts with external customers for the period. ",
+  "raw_sha256": "cb83028bd12cedeeaae096eeaadb474bc4edc688c334681fa35569e5a5618c2d"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1070412/000107041226000038/cnx-20251231.htm",
+ "xbrl_contexts": []
+}

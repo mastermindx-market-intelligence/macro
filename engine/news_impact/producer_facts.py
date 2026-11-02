@@ -28,7 +28,7 @@ from engine.news_impact import thesis
 from engine.news_impact.cluster import FactObservation, NoveltyError, assign_novelty
 from engine.news_impact.prophet_adapter import ProphetAdapterError, adapt_batch
 
-PRODUCER_FACTS_VERSION = "ni-producer-facts-1"
+PRODUCER_FACTS_VERSION = "ni-producer-facts-2"
 
 T1 = "capital_allocation_event.v1"
 T2 = "demand_guidance_contract_event.v1"
@@ -184,6 +184,7 @@ def leaf_payload(event: Mapping[str, Any], slot: Mapping[str, Any], counts: Coun
     template = event["schema"]
     leaf: dict[str, Any] = {
         "template": template,
+        "quantity_terms": {},
         "commitment_status": event.get("commitment_status"),
         "negated": bool(event.get("negated", False)),
     }
@@ -194,6 +195,9 @@ def leaf_payload(event: Mapping[str, Any], slot: Mapping[str, Any], counts: Coun
         if value is None:
             continue
         leaf[key] = value
+        # Preserve the canonical per-quantity unit, basis, period and evidence.
+        # The scalar and structured term originate from this one quantity.
+        leaf["quantity_terms"][key] = copy.deepcopy(dict(quantity))
         if currency is None and isinstance(quantity, Mapping) and quantity.get("currency"):
             currency = quantity["currency"]
     if currency is not None:
@@ -445,8 +449,8 @@ def run(events_paths: list[Path], out: Path, as_of: str | None = None) -> dict[s
             adapter[f"adapter:{exc.code}"] += 1
             continue
         except (KeyError, TypeError, ValueError) as exc:
-            # An owner crash on a contract-valid event (the range projection reads a
-            # ``bound`` the v1 range shape forbids) is counted by class, never fatal.
+            # An owner crash on a contract-valid event is counted by class, never fatal
+            # (DEC:NEWS-IMPACT-W3-PRODUCER-STAGE2).
             adapter[f"adapter_crash:{type(exc).__name__}"] += 1
             continue
         adapter["ok"] += len(produced)

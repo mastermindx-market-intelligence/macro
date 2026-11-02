@@ -1,0 +1,22 @@
+{
+  "classification": "OPTIONAL_REVIEW_WORDING_CLARIFICATION_ONLY",
+  "review_sha256": "c4bdc9905018a31d7f610213d7e899b6cafd1467934ab37fa03394630adb6f5a",
+  "old": "Systemic escalation uses its existing broad-market confirmation, with actual breadth/funding evidence. SPY price above SMA200 is one observed leg only.",
+  "new": "Systemic escalation remains with the existing broad-market gate and its owner. This snapshot supplies only the SPY price leg; current constituent-breadth and credit/funding evidence are not evaluated here.",
+  "reviewed_map_preserved": "DATED_ACTION_MAP_REVIEWED_VERSION_2026-10-20.md.txt",
+  "numeric_and_chart_changes": false,
+  "files": [
+    {
+      "path": "DATED_ACTION_MAP_2026-10-16.md",
+      "prior_sha256": "783bf218f9b3797cccaf2b0b40a2fe083beac7d4cd10c83be561861cc0df1f04",
+      "bytes": 14943,
+      "sha256": "6eb0fc48c2ee07e665d8d086e0e2d157637ff783b58d266b18c14dfd9b5e2c1f"
+    },
+    {
+      "path": "build_report.py",
+      "prior_sha256": "1c17c0b03d98b268913fdda153e2a2dd21616cc734d185b97f54fea0700ae72b",
+      "bytes": 15872,
+      "sha256": "f4153562f4847465a35f92a7779ae10c9852867a10baa99a82365d8e1698e626"
+    }
+  ]
+}

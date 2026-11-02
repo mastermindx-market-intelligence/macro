@@ -1,0 +1,23 @@
+{
+  "observed_at": "2026-10-21T22:58:24.884649+00:00",
+  "requested_url": "https://www.mastermind-x.com/forex.html",
+  "scope": "Anonymous HTTP observation only; no authenticated/browser CRUD proof.",
+  "status": 200,
+  "final_url": "https://www.mastermind-x.com/forex.html",
+  "html_sha256": "5bd73ec6012299ac185ff3c6869833ace056f9353332f967111bbbe10ca2ee60",
+  "bytes": 353402,
+  "headers": {
+    "ETag": "\"dmaveiqqkqvc7koq\"",
+    "Last-Modified": "Wed, 21 Oct 2026 22:30:27 GMT",
+    "Age": null,
+    "Cache-Control": "public, must-revalidate, max-age=60",
+    "Content-Type": "text/html; charset=utf-8"
+  },
+  "markers": {
+    "page-forex-r26": false,
+    "forex-r26-consumer": false,
+    "data-fxr": false,
+    "save_forex_watch": false,
+    "ForexWatchClient": false
+  }
+}

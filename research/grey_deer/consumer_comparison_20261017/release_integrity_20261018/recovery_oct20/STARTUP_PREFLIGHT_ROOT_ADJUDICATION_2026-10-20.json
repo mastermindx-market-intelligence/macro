@@ -1,0 +1,43 @@
+{
+  "schema": "grey_deer.startup_preflight_review_adjudication.v1",
+  "root_id": "risk-radar-release-qualification-20261018-0304",
+  "run_id": "rr-startup-preflight-review-20261020-r1",
+  "response_sha256": "14383076e5311925f6a2aff524e5e22fff05606b089bb663422269ff09e65d8b",
+  "disposition": "ACCEPT_BOUNDED_REVIEW_WITH_EXPLICIT_CORRECTIONS",
+  "scope": "Completed source advisory on clean established book startup; not production acceptance, not blanket acceptance of every worker statement.",
+  "accepted_findings": [
+    "With no pending target or WAL, clean preflight acquires per-book lock and does not synthesize settlement or model calls.",
+    "Preflight is not universally read-only: it creates lock paths and can replay existing WAL/account/fills/receipt state.",
+    "WAL failure and receipt/queue hash invariants require explicit non-clean-state handling; source code rollback does not undo these effects."
+  ],
+  "corrections": [
+    {
+      "claim": "run_events is in-memory/volatile and not durable",
+      "ruling": "Incorrect. control_plane/run_events.py writes append-only data/governance/run_events.jsonl; the real isolated startup also recorded a write to this path."
+    },
+    {
+      "claim": "Use arbitrary scratch book ID zz_boundary_probe",
+      "ruling": "Invalid under the registry allowlist. Isolated proofs must use allowlisted book IDs under a separate data root, as root's actual rehearsal did."
+    },
+    {
+      "claim": "A second instance or NFS broadly defeats flock",
+      "ruling": "Not established here. The observed data filesystem is ext4; cooperative processes use the same canonical lock. Preserve actual contention and noncooperating-writer limitations without claiming observed lock failure."
+    },
+    {
+      "claim": "Any quarantined non-OK result universally hard-stops startup",
+      "ruling": "Too broad. Actual callers distinguish a successfully quarantined rejected queue from a blocking failure. Current rehearsal used no pending target/WAL, so this branch was not accepted by execution."
+    },
+    {
+      "claim": "No schema migration anywhere in the release",
+      "ruling": "Review scope cannot establish that broad claim. Preserve release-integrity receipt-v2/WAL/outbox refusal boundaries and version-qualified restore behavior."
+    }
+  ],
+  "independent_evidence": {
+    "rehearsal_candidate": "a7553e0a18339c910eef9687c730b06605dd710e",
+    "corrected_startup_completed": true,
+    "registered_jobs": 18,
+    "live_service_mutated": false,
+    "first_harness_failure_preserved": true
+  },
+  "unexecuted_suggestions": "The worker's eight suggested cases were not executed; they are not needed to claim the observed clean-state startup. No provider calls, fits or production mutations were commissioned by this review."
+}

@@ -557,11 +557,26 @@ def _append_update_event(
 
 # ── LLM thesis evaluation (original heat-decay logic) ───────────────────────
 
+def _llm_broken_reasons(opened: dict, heat_now: float, phys_now: bool, n_now: int) -> list[str]:
+    """Which LLM kill condition(s) hold, in fixed order. Verdict-bearing: `_status_llm`
+    delegates its BROKEN test here, so a non-empty list IS the BROKEN verdict."""
+    h0 = opened.get("heat_at_open") or 0.0
+    drop = h0 - (heat_now or 0.0)
+    reasons: list[str] = []
+    if opened.get("physical_at_open") and not phys_now:
+        reasons.append("physical_lost")
+    if n_now < MIN_SURFACES:
+        reasons.append("below_quorum")
+    if drop >= BROKEN_DROP:
+        reasons.append("heat_drop")
+    return reasons
+
+
 def _status_llm(opened: dict, heat_now: float, phys_now: bool, n_now: int) -> str:
     """Original heat-decay logic for LLM theses."""
     h0 = opened.get("heat_at_open") or 0.0
     drop = h0 - (heat_now or 0.0)
-    if (opened.get("physical_at_open") and not phys_now) or n_now < MIN_SURFACES or drop >= BROKEN_DROP:
+    if _llm_broken_reasons(opened, heat_now, phys_now, n_now):
         return "BROKEN"
     n0 = opened.get("n_surfaces_at_open") or 0
     if drop >= WEAKEN_DROP or (n0 - n_now) >= 1:
@@ -669,6 +684,8 @@ def compute_thesis_monitor(convergence: dict | None, write_state: bool = True) -
         phys_now = bool(now.get("physical_confirmed"))
         n_now = now.get("n_signals") or 0
         llm_status = _status_llm(o, heat_now, phys_now, n_now)
+        reasons = (_llm_broken_reasons(o, heat_now, phys_now, n_now)
+                   if llm_status == "BROKEN" else [])
 
         if theme in det_by_theme:
             # B3: fold LLM data as enrichment onto the existing deterministic row
@@ -679,6 +696,7 @@ def compute_thesis_monitor(convergence: dict | None, write_state: bool = True) -
                 "llm_heat_now": round(heat_now, 3),
                 "llm_opened_asof": o.get("asof"),
                 "llm_kill_criteria": o.get("kill_criteria"),
+                "llm_broken_reasons": reasons,
             })
             n_llm_enriched += 1
         else:
@@ -693,6 +711,7 @@ def compute_thesis_monitor(convergence: dict | None, write_state: bool = True) -
                 "physical_now": phys_now,
                 "opened_asof": o.get("asof"),
                 "kill_criteria": o.get("kill_criteria"),
+                "broken_reasons": reasons,
             })
             n_llm_enriched += 1
 

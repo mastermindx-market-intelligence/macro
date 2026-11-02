@@ -1,0 +1,77 @@
+{
+  "schema": "grey_deer.delivered_workspace_evidence.v1",
+  "observed_date_utc": "2026-10-17",
+  "capture_session_identifier": "risk-radar-delivered-1792245439271",
+  "per_capture_time_recorded": false,
+  "url": "https://www.mastermind-x.com/macro.html",
+  "authenticated": true,
+  "capture_scope": "existing desktop Risk Radar overview, odds and sources drawers",
+  "normal_render": {
+    "run_id": 39029743025,
+    "conclusion": "success",
+    "completed_at": "2026-10-17T13:49:09Z"
+  },
+  "served_snapshot": {
+    "observed_at": "2026-10-17T13:51:24.890523Z",
+    "html": {
+      "path": "/opt/macro/site.served/macro.html",
+      "bytes": 681521,
+      "sha256": "29e09b3b5e293e6a81563228156d7df00c9a44d796440ef85025b0490c1085f3"
+    },
+    "workspace_js": {
+      "bytes": 28178,
+      "sha256": "4df5cb03b908c42a673e950094656e56b994f40c715172ee4c765ecf0f4087d5",
+      "dom_script": "risk_radar_workspace.js?v=4df5cb03"
+    }
+  },
+  "files": [
+    {
+      "file": "odds-expanded.txt",
+      "bytes": 568,
+      "sha256": "7bad8bdb57893ed0956235a51a7eb688ddebd46465d8e3c6ac9755a743ec2b40"
+    },
+    {
+      "file": "odds.jpg",
+      "bytes": 94819,
+      "sha256": "bf42e89aa27ae712b9fb2e71ba5d0902d078b7a6b8fa04e5aee04c8aa7492f08"
+    },
+    {
+      "file": "odds.txt",
+      "bytes": 1300,
+      "sha256": "cfe15816534fcb5cbf44ee6aec3b331e43c1c1062bc85d7136cbd8437468d64c"
+    },
+    {
+      "file": "overview.jpg",
+      "bytes": 82480,
+      "sha256": "8c49e4a19fe21a6723cd96100c207aaa9e8a573b187a4c11b34606f14df751f9"
+    },
+    {
+      "file": "overview.txt",
+      "bytes": 913,
+      "sha256": "3967eff964947ed07dd2b2a36bc65d93ad8548efb2804e2549fe0e69a0f4a18a"
+    },
+    {
+      "file": "sources.jpg",
+      "bytes": 93348,
+      "sha256": "aff97362f1cc178177d4178c361d3a4382842f81860e0c72dcdd67970cf013a5"
+    },
+    {
+      "file": "sources.txt",
+      "bytes": 2424,
+      "sha256": "69198ebfe6a97256670b406a507889b7962aec726ce4994d993779faeaa15567"
+    }
+  ],
+  "disposition": {
+    "bounded_desktop_delivery": "ACCEPTED",
+    "complete_forecast_evidence_presentation": "NOT_ACCEPTED",
+    "programme_final_acceptance": false,
+    "forecast_validation_promoted": false,
+    "policy_authority_changed": false,
+    "source_to_publication_latency_measured": false
+  },
+  "limitations": [
+    "Source and browser observations are a bounded delivery chain, not a replay of every user session.",
+    "The screenshot/text disclosure discrepancy is preserved without attributing a polling mechanism.",
+    "No new GD3 four-clock matrix, provider retry or production mutation was performed."
+  ]
+}

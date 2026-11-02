@@ -98,6 +98,13 @@ CAPACITY_KINDS = tuple(kind for kind, owner in OWNERS.items() if owner is None)
 UNMODELLED_KINDS = tuple(
     sorted(kind for kind, owner in OWNERS.items() if owner == "capacity_unmodelled")
 )
+#: SPEC_C2D §0.2 supersedes §2.3 for ONE shape: a fixed CASH PIPE now consumes the
+#: Nasdaq and authorized share pools at ``p_start`` and is modelled.  A registered
+#: direct or equity line stays unmodelled until a path is declared (C2d §0.6), and
+#: a non-cash PIPE stays unmodelled exactly as before (C2d §0.11) -- so this file's
+#: §2.3 unknown-path tests put ``NON_CASH`` on a PIPE.
+C2D_MODELLED_CASH_KINDS = ("pipe",)
+NON_CASH = "physical"
 
 #: §0 item 4: no amount, price, share count or cash field may appear in the record.
 AMOUNT_KEYS = frozenset({"quantity", "usd", "shares", "price", "gross", "net", "amount"})
@@ -373,7 +380,21 @@ def test_c2b_owner_table(kind: str) -> None:
             "conditions_assumed_met": [],
         }
     ]
-    if kind in UNMODELLED_KINDS:
+    if kind in C2D_MODELLED_CASH_KINDS:
+        # SPEC_C2D §0.2: a fixed cash PIPE is modelled -- no named unknown, the
+        # aggregate stays known, a witness is offered and the consumption is
+        # reported in ``outside_consumption`` (never added to the aggregate).
+        assert "unmodelled_consumption" not in evaluation.inputs
+        assert [row["route_id"] for row in evaluation.inputs["outside_consumption"]] == [
+            route_id
+        ]
+        assert not any(
+            item.unknown_id.startswith("action_route_not_modelled:")
+            for item in evaluation.envelope.unknowns
+        )
+        assert evaluation.envelope.aggregate_bound.status == "known"
+        assert evaluation.envelope.feasible_witness is not None
+    elif kind in UNMODELLED_KINDS:
         # §2.3: a FIXED unmodelled action is a named unknown, never a number.
         assert evaluation.inputs["unmodelled_consumption"] == [route_id]
         assert unmodelled_unknown(evaluation, route_id).affects == pool_ids(evaluation)
@@ -392,13 +413,16 @@ def test_c2b_owner_table(kind: str) -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_c2b_fixed_pipe_makes_the_aggregate_unknown() -> None:
-    """The A21 known case (10,000,000) plus a fixed PIPE: a named unknown."""
+def test_c2b_fixed_non_cash_pipe_makes_the_aggregate_unknown() -> None:
+    """The A21 known case (10,000,000) plus a fixed non-cash PIPE: a named unknown.
+
+    A CASH PIPE is modelled from SPEC_C2D on (``test_c2d_pipe_consumes_share_pools_at_p_start``).
+    """
     kwargs = a21_kwargs(outstanding="30000005")
     baseline, _, _ = evaluate(**kwargs)
     assert money(baseline.envelope.aggregate_bound) == Decimal("10000000")
     evaluation, _, _ = evaluate_with_actions(
-        [action(PIPE_ROUTE, "pipe", "cash", "5000000")], **kwargs
+        [action(PIPE_ROUTE, "pipe", NON_CASH, "5000000")], **kwargs
     )
     envelope = evaluation.envelope
     assert envelope.aggregate_bound.status == "unknown"
@@ -538,7 +562,7 @@ def test_c2b_long_unmodelled_route_id_gets_a_digest_unknown_id() -> None:
     kwargs = a21_kwargs(outstanding="30000005")
     long_route = "pipe:" + "x" * 190
     evaluation, _, _ = evaluate_with_actions(
-        [action(long_route, "pipe", "cash", "5000000")], **kwargs
+        [action(long_route, "pipe", NON_CASH, "5000000")], **kwargs
     )
     digest = hashlib.sha256(long_route.encode("utf-8")).hexdigest()[:16]
     named = {item.unknown_id: item for item in evaluation.envelope.unknowns}
@@ -547,7 +571,7 @@ def test_c2b_long_unmodelled_route_id_gets_a_digest_unknown_id() -> None:
     assert evaluation.inputs["unmodelled_consumption"] == [long_route]
     assert evaluation.envelope.aggregate_bound.status == "unknown"
     # A route id that fits keeps the readable form.
-    short = evaluate_with_actions([action(PIPE_ROUTE, "pipe", "cash", "5000000")], **kwargs)[0]
+    short = evaluate_with_actions([action(PIPE_ROUTE, "pipe", NON_CASH, "5000000")], **kwargs)[0]
     assert unmodelled_unknown(short, PIPE_ROUTE).unknown_id == (
         f"action_route_not_modelled:{PIPE_ROUTE}"
     )
@@ -664,7 +688,7 @@ def test_c2b_inputs_record_carries_no_amount() -> None:
         [
             cash(TAKE_A, "shelf_takedown", "3000000"),
             action(WARRANT_ROUTE, "warrant_exercise", "cash", "1200000"),
-            action(PIPE_ROUTE, "pipe", "cash", "5000000"),
+            action(PIPE_ROUTE, "pipe", NON_CASH, "5000000"),
             action(DEBT_ROUTE, "debt_draw", "cash", "900000", conditions=("alpha_first",)),
         ],
         **kwargs,
@@ -734,7 +758,7 @@ def test_c2b_digest_and_order_determinism() -> None:
     actions = [
         cash(TAKE_A, "shelf_takedown", "3000000"),
         action(WARRANT_ROUTE, "warrant_exercise", "cash", "1200000"),
-        action(PIPE_ROUTE, "pipe", "cash", "5000000"),
+        action(PIPE_ROUTE, "pipe", NON_CASH, "5000000"),
         action(DEBT_ROUTE, "debt_draw", "cash", "900000"),
     ]
     first, _, _ = evaluate_with_actions(actions, **kwargs)
@@ -757,8 +781,9 @@ def test_c2b_digest_and_order_determinism() -> None:
         _record(without_record(first, "state_id"))
     )
 
-    # Reversing the ACTION order: both records are sorted, so nothing moves but
-    # the scenario id, which digests the order the operator supplied.
+    # Reversing the ACTION order: both records are sorted and the scenario stores
+    # its actions as a keyed set, so nothing moves, the scenario id included
+    # (masterplan A22: row order does not change results; SPEC_S0 section 11 item 6).
     reordered, _, _ = evaluate_with_actions(list(reversed(actions)), **kwargs)
     assert reordered.inputs["non_capacity_actions"] == first.inputs["non_capacity_actions"]
     assert reordered.inputs["actions_applied"] == first.inputs["actions_applied"]
@@ -770,8 +795,9 @@ def test_c2b_digest_and_order_determinism() -> None:
     assert sha256_of(_record(without_record(reordered))) == sha256_of(
         _record(without_record(first))
     )
-    assert reordered.inputs["scenario_id"] != first.inputs["scenario_id"]
-    assert reordered.envelope.receipt.input_digest != first.envelope.receipt.input_digest
+    assert reordered.inputs["scenario_id"] == first.inputs["scenario_id"]
+    assert reordered.envelope.receipt.input_digest == first.envelope.receipt.input_digest
+    assert reordered.envelope.as_record() == first.envelope.as_record()
 
 
 # ---------------------------------------------------------------------------

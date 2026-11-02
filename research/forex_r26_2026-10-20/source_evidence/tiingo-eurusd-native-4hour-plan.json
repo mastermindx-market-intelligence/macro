@@ -1,0 +1,23 @@
+{
+  "schema": "mastermind.tiingo.offline_plan.v1",
+  "network": false,
+  "execution_authorized": false,
+  "execution_progress": "NOT_OBSERVED",
+  "plan_sha256": "14ecfd1ad7a6c98f5576babfbbff3fdba3accb1a0aa2f22538dcc5eb03369264",
+  "tasks": 1,
+  "total_tasks": 1,
+  "source_counts": {
+    "forex-bars": 1
+  },
+  "offset": 0,
+  "items": [
+    {
+      "ordinal": 0,
+      "source": "forex-bars",
+      "symbol": "eurusd",
+      "request_path": "/tiingo/fx/eurusd/prices?endDate=2026-10-20&resampleFreq=4hour&startDate=2026-10-19"
+    }
+  ],
+  "next_offset": null,
+  "complete_history_proven": false
+}

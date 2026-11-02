@@ -1,0 +1,11 @@
+{
+  "state": "PASS_SHUTDOWN_JOURNAL_REPAIR_ONLY",
+  "request": {
+    "path": "/government_revenue.html",
+    "query": "",
+    "status": 200,
+    "elapsed_ms": 21.687624990590848
+  },
+  "scope": "One separate read-only source-runtime request proves the corrected ASGI shutdown hook retains its journal on SIGTERM. It does not reconstruct the prior batch or change prior browser observations.",
+  "journal_sha256": "9dad1e2c1e1f6233c33238f04873c46fc84e7b97e292c545e23bc99bcf9e8e12"
+}

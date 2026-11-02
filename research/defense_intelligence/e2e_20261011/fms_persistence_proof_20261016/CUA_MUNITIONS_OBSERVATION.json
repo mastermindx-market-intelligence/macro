@@ -1,0 +1,20 @@
+{
+  "observed_at": "2026-10-16T03:51:49.661251+00:00",
+  "source_head": "cec8c3111792adc1002aa4f83566350c96d848d1",
+  "browser": "CUA Chrome Chris profile1; loopback58754 actual ASGI local test principal",
+  "observations": [
+    "English dark and Chinese light both show munitions next-stage condition under partial source coverage",
+    "Both retain Evidence insufficient; no date, observed agreement, issuer attribution or revenue inferred",
+    "Official State Department Norway 155mm M795 literal source link and original fms:transmittal:26-82 source case link visible"
+  ],
+  "condition_en": "Next condition: official evidence of an offered, accepted or implemented letter of offer and acceptance. Invalidation: no qualifying production award or delivery conversion appears, or disclosed costs/charges exceed the ramp benefit. Check contract scope and the next reported sales, margin and cash evidence separately.",
+  "source_url": "https://www.state.gov/releases/bureau-of-political-military-affairs/2026/08/norway-155mm-high-explosive-he-m795-projectile/",
+  "scope": "parent local browser observation, not deployed or independent acceptance",
+  "server": {
+    "pid": 6163,
+    "port": 58754,
+    "launch_handle_lost_at_compaction": true,
+    "recovered_existing_process_and_startup_log": true,
+    "duplicate_launch": false
+  }
+}

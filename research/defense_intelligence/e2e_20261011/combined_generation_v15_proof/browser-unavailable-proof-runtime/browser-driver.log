@@ -1,0 +1,13 @@
+::error title=capture-page-evidence::verifier_unavailable: playwright is not importable: No module named 'playwright'. Install with: python3 -m pip install playwright && python3 -m playwright install chromium
+{
+  "artifacts_written": [],
+  "install": "python3 -m pip install playwright && python3 -m playwright install chromium",
+  "outcome": "verifier_unavailable",
+  "reason": "playwright is not importable: No module named 'playwright'. Install with: python3 -m pip install playwright && python3 -m playwright install chromium"
+}
+Traceback (most recent call last):
+  File "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/performance-priority-build/recovery-o6/capture_final_asgi.py", line 67, in <module>
+    assert rc==0,rc
+           ^^^^^
+AssertionError: 4
+{"capture_exit": 1, "server_stopped": 0, "journal_saved": true}

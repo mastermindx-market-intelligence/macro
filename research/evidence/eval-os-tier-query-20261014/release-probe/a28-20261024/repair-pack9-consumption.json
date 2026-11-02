@@ -1,0 +1,36 @@
+{
+  "run": 40065342017,
+  "attempt": 1,
+  "artifact": 12550320968,
+  "zip_digest": "2376ea5e105173fbcf4b4f6c0a3339a42076dc7d494c4f71d47ed902b4e000d6",
+  "canonical": "exact tested3bbf",
+  "failed_steps": [
+    {
+      "job": "qledger-cluster-honest-ci",
+      "step": "qledger contract regression suite",
+      "signature": {
+        "atoms": [
+          "pytest:failed:tests/test_qledger_remaining_reader_compatibility.py::test_registry_calls_claims_seam_with_incumbent_reader:reason=95cbcb5d635313d37bac6ba75e409bf5c2e4d092f019166295b5a3f379d316a3",
+          "pytest:failed:tests/test_qledger_remaining_reader_compatibility.py::test_registry_parser_matches_frozen_policy[{\"desk\":\"a\",\"horizon_d\":1}\\u2028{\"desk\":\"b\",\"horizon_d\":2}\\x85]:reason=4bd94a9fc34cb83ad6dab5429f1e51995ac217bd41dabb8d45b76a0b97475e86",
+          "pytest:failed:tests/test_qledger_remaining_reader_compatibility.py::test_registry_parser_matches_frozen_policy[{\"desk\":\"retail\",\"horizon_d\":5}\\n{\"desk\":\"retail\",\"horizon_d\":5}\\n{\"desk\":\"retail\",\"horizon_d\":20}\\n{\"desk\":\"tech\",\"horizon_d\":1}\\n]:reason=7a0d5861d888ec1362f9c22c181c83c7781f89c6c2d8ed6aa452194c8409dc94",
+          "pytest:failed:tests/test_qledger_remaining_reader_compatibility.py::test_registry_parser_matches_frozen_policy[{\"desk\":\"x\",\"horizon_d\":true}\\n{\"desk\":\"x\",\"horizon_d\":1.5}\\n{\"desk\":\"x\",\"horizon_d\":\"5\"}\\n{\"desk\":\"\",\"horizon_d\":9}\\n]:reason=7a0d5861d888ec1362f9c22c181c83c7781f89c6c2d8ed6aa452194c8409dc94",
+          "pytest:failed:tests/test_qledger_remaining_reader_compatibility.py::test_registry_parser_matches_frozen_policy[{\"desk\":[\"unhashable\"]}\\n]:reason=e44c4b985e993a9cb24076885c5e0f82ab9accffd76ce710d73bd4ccd1d13655",
+          "pytest:failed:tests/test_qledger_remaining_reader_compatibility.py::test_registry_preserves_source_and_null_vs_empty[-absent]:reason=7b7e41e9ff4ac489870245feec3727887fb5f3064d238788a43e97046d3ee6de",
+          "pytest:failed:tests/test_qledger_remaining_reader_compatibility.py::test_registry_preserves_source_and_null_vs_empty[-git]:reason=7b7e41e9ff4ac489870245feec3727887fb5f3064d238788a43e97046d3ee6de",
+          "pytest:failed:tests/test_qledger_remaining_reader_compatibility.py::test_registry_preserves_source_and_null_vs_empty[-worktree]:reason=7b7e41e9ff4ac489870245feec3727887fb5f3064d238788a43e97046d3ee6de",
+          "pytest:failed:tests/test_qledger_remaining_reader_compatibility.py::test_registry_preserves_source_and_null_vs_empty[None-absent]:reason=2344953243d6b735d19b937187fdd07f87e5c1edc51965d00185a1d514784b4f",
+          "pytest:failed:tests/test_qledger_remaining_reader_compatibility.py::test_registry_preserves_source_and_null_vs_empty[None-git]:reason=7b7e41e9ff4ac489870245feec3727887fb5f3064d238788a43e97046d3ee6de",
+          "pytest:failed:tests/test_qledger_remaining_reader_compatibility.py::test_registry_preserves_source_and_null_vs_empty[None-worktree]:reason=7b7e41e9ff4ac489870245feec3727887fb5f3064d238788a43e97046d3ee6de",
+          "pytest:failed:tests/test_qledger_remaining_reader_compatibility.py::test_registry_unexpected_parser_error_propagates:reason=b51e2e153935b8ff17458880a01f4a07ad3f366bcf88264b8bac24f7bf392644",
+          "pytest:failed:tests/test_qledger_store_integrity.py::test_existing_parser_and_encoding_policies_match_for_identical_complete_bytes[decode-error-registry]:reason=6148d17e0fbcae3b6b73ccedfcccdb2f621d0a67515d100927a9854c9b9f0b02",
+          "pytest:failed:tests/test_qledger_store_integrity.py::test_legacy_missing_and_registry_null_contracts_are_unchanged:reason=c6b71ec7e0febfc0226b0bfc24a137f6d782be9f0869190006ee4a417ec5df27"
+        ],
+        "sha256": "2b01ee89fe0623630c263d6c8f2119970d7f427add9f9f520072b1174383f810"
+      },
+      "base_replay": {
+        "outcome": "passed"
+      }
+    }
+  ],
+  "full_gate": false
+}

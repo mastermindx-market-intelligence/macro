@@ -42,7 +42,7 @@ import json
 import math
 import os
 import sys
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 ADAPTER_SCHEMA = "options.pilot.study.adapter.v1"
 EXPECTED_SPEC_SHA256 = "e30796c158da18cffe1b581463ba6820ff33e9acbe8a4248b3fc068e67f70317"
@@ -500,27 +500,59 @@ def qualify_population_candidate(candidate) -> dict:
     }
 
 
+def _aware_utc(value, name: str) -> datetime:
+    """Require an instant, not an ambiguous local wall-clock value."""
+    if not isinstance(value, datetime):
+        raise Refusal("LABEL_CLOCK_INVALID", f"{name} must be an aware datetime")
+    try:
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise Refusal("LABEL_CLOCK_INVALID", f"{name} must be timezone-aware")
+        return value.astimezone(timezone.utc)
+    except (ValueError, OverflowError) as error:
+        raise Refusal("LABEL_CLOCK_INVALID", f"{name} cannot represent a UTC instant") from error
+
+
+def _validated_sessions(sessions) -> tuple[date, ...]:
+    """Freeze a strictly increasing, unique date sequence; do not certify its venue."""
+    if isinstance(sessions, (str, bytes, dict, set, frozenset)):
+        raise Refusal("LABEL_CALENDAR_INVALID", "sessions must be an ordered date iterable")
+    try:
+        sequence = tuple(sessions)
+    except TypeError as error:
+        raise Refusal("LABEL_CALENDAR_INVALID", "sessions must be an ordered date iterable") from error
+    previous = None
+    for value in sequence:
+        if not isinstance(value, date) or isinstance(value, datetime):
+            raise Refusal("LABEL_CALENDAR_INVALID", "every session must be a date, not a timestamp")
+        if previous is not None and value <= previous:
+            raise Refusal("LABEL_CALENDAR_INVALID", "sessions must be strictly increasing and unique")
+        previous = value
+    return sequence
+
+
 def label_interval(row, *, sessions):
     """Return the actual ``(label_start, label_end)`` for one training row.
 
-    P1 is the next 30 minutes after ``decision_at``. P3 ends 20 sessions after
-    ``formation_session``, counted on ``sessions``. A caller-supplied
-    ``label_end`` is ignored. A holiday omitted from ``sessions`` does not
-    count toward the 20.
+    P1 is 30 elapsed minutes after an aware ``decision_at``, computed in UTC.
+    P3 ends 20 supplied sessions after ``formation_session``. The calendar must
+    be ordered and unique; validation of its venue/coverage remains external.
+    Caller-supplied ``label_end`` is ignored. P3 endpoints remain day-granular:
+    this predicate cannot attest an exchange close or within-session maturity.
     """
     if not isinstance(row, dict):
         raise Refusal("LABEL_PILOT_UNSUPPORTED", "row is not an object")
     pilot = row.get("pilot")
     if pilot == "P1":
-        start = row.get("decision_at")
-        if not isinstance(start, datetime):
-            raise Refusal("LABEL_CLOCK_INVALID", "P1 decision_at must be a datetime")
-        return start, start + timedelta(minutes=P1_LABEL_MINUTES)
+        start = _aware_utc(row.get("decision_at"), "P1 decision_at")
+        try:
+            return start, start + timedelta(minutes=P1_LABEL_MINUTES)
+        except OverflowError as error:
+            raise Refusal("LABEL_CLOCK_INVALID", "P1 label endpoint is outside datetime range") from error
     if pilot == "P3":
         formation = row.get("formation_session")
         if isinstance(formation, datetime) or not isinstance(formation, date):
             raise Refusal("LABEL_SESSION_INVALID", "P3 formation_session must be a date")
-        session_list = list(sessions)
+        session_list = _validated_sessions(sessions)
         try:
             index = session_list.index(formation)
         except ValueError as error:
@@ -538,47 +570,71 @@ def label_interval(row, *, sessions):
     raise Refusal("LABEL_PILOT_UNSUPPORTED", f"pilot {pilot!r} has no guard label interval")
 
 
+def _validation_boundary(value):
+    if isinstance(value, datetime):
+        return _aware_utc(value, "validation_start")
+    if isinstance(value, date):
+        return value
+    raise Refusal("LABEL_CLOCK_INVALID", "validation_start must be a date or aware datetime")
+
+
 def _reaches_validation(label_end, validation_start) -> bool:
-    """True when the label interval reaches ``validation_start`` or later."""
+    """Compare instants when both are supplied, otherwise compare UTC/session dates."""
+    validation_start = _validation_boundary(validation_start)
+    if isinstance(label_end, datetime):
+        label_end = _aware_utc(label_end, "label_end")
+    elif not isinstance(label_end, date):
+        raise Refusal("LABEL_CLOCK_INVALID", "label_end must be a date or aware datetime")
     if isinstance(label_end, datetime) and isinstance(validation_start, datetime):
-        if (label_end.tzinfo is None) != (validation_start.tzinfo is None):
-            raise Refusal(
-                "LABEL_CLOCK_INVALID",
-                "timestamp label and validation_start must share timezone awareness",
-            )
         return label_end >= validation_start
     end_day = label_end.date() if isinstance(label_end, datetime) else label_end
-    start_day = (
-        validation_start.date() if isinstance(validation_start, datetime) else validation_start
-    )
+    start_day = validation_start.date() if isinstance(validation_start, datetime) else validation_start
     return end_day >= start_day
 
 
 def _mature_after_cutoff(row, training_cutoff) -> bool:
-    """True when the row is not yet mature at the training cutoff.
-
-    ``label_mature_at`` equal to the cutoff is still mature. A missing
-    maturity timestamp is not.
-    """
+    """Missing maturity abstains; a supplied maturity must be a UTC-resolvable instant."""
+    cutoff = _aware_utc(training_cutoff, "training_cutoff")
     mature = row.get("label_mature_at")
-    if not isinstance(mature, datetime):
-        return True
-    return mature > training_cutoff
+    return mature is None or _aware_utc(mature, "label_mature_at") > cutoff
 
 
 def purge_training_rows(rows, *, training_cutoff, validation_start, sessions):
-    """Split training rows into ``(kept, purged)``.
+    """Split rows into ``(kept, purged)`` without trusting a premature maturity claim.
 
-    A row is purged when its actual ``[label_start, label_end]`` reaches
-    ``validation_start`` or later, or when ``label_mature_at`` is after
-    ``training_cutoff``. Session horizons are measured on ``sessions``.
-    Intraday horizons are measured by timestamps.
+    A label must have actually ended by fitting, its maturity must be no earlier
+    than the label endpoint and no later than fitting, and it must not reach
+    validation. Missing maturity stays purged. Malformed clocks/calendars refuse.
+    P3 performs only day-level endpoint checks; actual close-time/source receipts
+    and every empirical gate remain required outside this refusal-only adapter.
     """
+    cutoff = _aware_utc(training_cutoff, "training_cutoff")
+    validation = _validation_boundary(validation_start)
+    bad_boundary = (cutoff >= validation if isinstance(validation, datetime)
+                    else cutoff.date() >= validation)
+    if bad_boundary:
+        raise Refusal("SPLIT_OVERLAP", "training_cutoff must precede validation_start")
     kept = []
     purged = []
+    frozen_sessions = None
     for row in rows:
-        _start, end = label_interval(row, sessions=sessions)
-        if _reaches_validation(end, validation_start) or _mature_after_cutoff(row, training_cutoff):
+        if isinstance(row, dict) and row.get("pilot") == "P3":
+            if frozen_sessions is None:
+                frozen_sessions = _validated_sessions(sessions)
+            calendar = frozen_sessions
+        else:
+            calendar = ()
+        _start, end = label_interval(row, sessions=calendar)
+        raw_maturity = row.get("label_mature_at")
+        maturity = None if raw_maturity is None else _aware_utc(raw_maturity, "label_mature_at")
+        if isinstance(end, datetime):
+            ends_after_fit = end > cutoff
+            premature_maturity = maturity is not None and maturity < end
+        else:
+            ends_after_fit = end > cutoff.date()
+            premature_maturity = maturity is not None and maturity.date() < end
+        if (ends_after_fit or premature_maturity or maturity is None or maturity > cutoff
+                or _reaches_validation(end, validation)):
             purged.append(row)
         else:
             kept.append(row)
@@ -609,7 +665,7 @@ def _outcome_hits(obj):
 def _refuse_non_session_boundary(proposal, sessions):
     if not isinstance(proposal, dict):
         raise Refusal("NON_SESSION_BOUNDARY", "proposal is not an object")
-    session_set = set(sessions)
+    session_set = set(_validated_sessions(sessions))
     for name in SPLIT_DATE_FIELDS:
         value = proposal.get(name)
         if not isinstance(value, date) or isinstance(value, datetime) or value not in session_set:

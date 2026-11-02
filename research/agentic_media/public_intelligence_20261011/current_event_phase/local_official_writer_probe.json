@@ -1,0 +1,27 @@
+{
+  "schema": "press.official_writer_installed_probe.v1",
+  "observed_at": "2026-10-14T00:46:34.597480+00:00",
+  "head": "42fd6684097eb5ebe17d10f17f5e5dc934f65daf",
+  "positive_controls": [
+    "historical-OCC-item",
+    "hash-bound-dated-context",
+    "writer-vintage-and-untrusted-label"
+  ],
+  "negative_controls": [
+    "rights",
+    "future-clock",
+    "stale-event",
+    "unrelated-issuer",
+    "wrong-quantity",
+    "stage-flag",
+    "emit-flag",
+    "publication-flag",
+    "UTF16-DTD"
+  ],
+  "inputs_unchanged": true,
+  "provider_calls": 0,
+  "staging_writes": 0,
+  "qualification_scope": "Historical synthetic consumer and prompt proof; not a current article or editorial acceptance",
+  "publication_approved": false,
+  "accepted": true
+}

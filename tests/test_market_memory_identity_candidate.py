@@ -167,3 +167,162 @@ def test_custom_objects_duplicate_records_and_bad_artifact_types_refuse(supplied
     bad = dict(supplied[1]); bad[_OBS_NAMES[0]] = bytearray(b"mutable")
     with pytest.raises(native.IdentityError, match="artifact byte bound"):
         compile_supplied(supplied, artifact_bytes=bad)
+
+
+# R23: physically bind the detached candidate to actual, bounded Parquet bytes.
+# Unlike the existing pure supplied-record helper, these tests may not trust
+# caller-provided semantic row arrays as a substitute for decoding artifacts.
+def _r23_actual_parquet_supplied(supplied):
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+    receipt, _synthetic_artifacts, aliases, master = supplied
+    contents = {
+        "vendor_aliases.parquet": aliases,
+        "security_master.parquet": master,
+        "issuer_master.parquet": [{"issuer_id": "ISS:R23-SYNTHETIC"}],
+        "issuer_migrations.parquet": [{"ref": "fixture"}],
+        "security_migrations.parquet": [{"ref": "fixture"}],
+    }
+    out = {}
+    for name, records in contents.items():
+        buf = pa.BufferOutputStream()
+        pq.write_table(pa.Table.from_pylist(records), buf)
+        out[name] = buf.getvalue().to_pybytes()
+    return _obs_json(receipt), out
+
+
+def test_r23_parquet_bound_candidate_decodes_exact_actual_bytes(supplied):
+    from engine.neuralweb.market_memory_identity_candidate import (
+        build_parquet_bound_initial_candidate,
+    )
+    receipt, artifact_bytes = _r23_actual_parquet_supplied(supplied)
+    files_before = dict(artifact_bytes)
+    prepared = build_parquet_bound_initial_candidate(
+        receipt, artifact_bytes, code_version="3" * 40,
+    )
+    assert artifact_bytes == files_before
+    assert prepared.alias_master_semantics_bound is True
+    assert prepared.all_artifacts_parseable is True
+    assert prepared.records_bound_to_artifacts is False  # other three have no semantic-owner seal
+    assert prepared.source_authenticated is False
+    assert prepared.published is False
+    assert prepared.identity_admitted is False
+    assert prepared.current_read_admitted is False
+    assert prepared.original_receipt_sha256 == hashlib.sha256(receipt).hexdigest()
+    assert prepared.candidate.generation_id == json.loads(prepared.candidate.candidate_receipt_bytes)["publication"]["generation_id"]
+    assert set(prepared.decoded_record_counts) == set(native._ARTIFACT_NAMES)
+    assert prepared.decoded_record_counts["vendor_aliases.parquet"] == len(supplied[2])
+    assert prepared.decoded_record_counts["security_master.parquet"] == len(supplied[3])
+    assert not prepared.candidate.published and not prepared.candidate.identity_admitted
+    assert not prepared.candidate.records_bound_to_artifacts  # existing detached semantics unchanged
+    result = json.loads(prepared.candidate.candidate_receipt_bytes)
+    assert result["prospective_reference"] == supplied[0]["prospective_reference"]
+    assert result["identity_observations"]["attempts"] == []
+
+
+def test_r23_exact_parquet_changes_cannot_be_hidden_by_supplied_rows(supplied):
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+    from engine.neuralweb.market_memory_identity_candidate import (
+        build_parquet_bound_initial_candidate,
+    )
+    receipt, artifacts = _r23_actual_parquet_supplied(supplied)
+    changed = dict(artifacts)
+    altered = copy.deepcopy(supplied[2])
+    altered[1]["vendor_symbol"] = "FUTURE_FAKE"
+    buf = pa.BufferOutputStream()
+    pq.write_table(pa.Table.from_pylist(altered), buf)
+    changed["vendor_aliases.parquet"] = buf.getvalue().to_pybytes()
+    with pytest.raises(native.IdentityError):
+        build_parquet_bound_initial_candidate(receipt, changed, code_version="3" * 40)
+
+
+@pytest.mark.parametrize("name", _OBS_NAMES)
+def test_r23_missing_or_corrupt_source_parquet_refuses(supplied, name):
+    from engine.neuralweb.market_memory_identity_candidate import (
+        build_parquet_bound_initial_candidate,
+    )
+    receipt, artifacts = _r23_actual_parquet_supplied(supplied)
+    changed = dict(artifacts)
+    del changed[name]
+    with pytest.raises(native.IdentityError):
+        build_parquet_bound_initial_candidate(receipt, changed, code_version="3" * 40)
+    changed = dict(artifacts)
+    changed[name] = b"NOT A PARQUET DOCUMENT"
+    with pytest.raises(native.IdentityError):
+        build_parquet_bound_initial_candidate(receipt, changed, code_version="3" * 40)
+
+
+def test_r23_existing_published_receipt_is_not_replaced(supplied):
+    from engine.neuralweb.market_memory_identity_candidate import (
+        build_parquet_bound_initial_candidate,
+    )
+    receipt, artifacts = _r23_actual_parquet_supplied(supplied)
+    parsed = json.loads(receipt)
+    parsed["publication"] = {"old": "must-not-reset"}
+    with pytest.raises(native.IdentityError, match="unpublished initial"):
+        build_parquet_bound_initial_candidate(
+            _obs_json(parsed), artifacts, code_version="3" * 40,
+        )
+
+
+def test_r23_no_caller_semantic_rows_or_clock_override(supplied):
+    import inspect
+    from engine.neuralweb.market_memory_identity_candidate import (
+        build_parquet_bound_initial_candidate,
+    )
+    params = set(inspect.signature(build_parquet_bound_initial_candidate).parameters)
+    assert params == {"receipt_before", "artifact_bytes", "code_version"}
+    assert not params & {"alias_records", "master_records", "known_at", "read_completed_at",
+                         "published", "security_id", "basis_id"}
+
+
+def test_r23_deeply_copies_buffers_and_does_not_touch_local_files(supplied, monkeypatch):
+    from engine.neuralweb.market_memory_identity_candidate import (
+        build_parquet_bound_initial_candidate,
+    )
+    receipt, artifacts = _r23_actual_parquet_supplied(supplied)
+    def forbidden(*_args, **_kwargs):
+        pytest.fail("bound preparation attempted external file I/O")
+    monkeypatch.setattr("builtins.open", forbidden)
+    prepared = build_parquet_bound_initial_candidate(
+        receipt, artifacts, code_version="3" * 40,
+    )
+    old = copy.deepcopy(prepared)
+    artifacts.clear()
+    assert prepared == old
+
+
+def test_r23_existing_reader_reopens_bound_synthetic_candidate_at_actual_clock(
+        supplied, tmp_path):
+    """New binding + existing native reader: no backdate or canonical publisher."""
+    import time
+    from engine.neuralweb.market_memory_identity_candidate import (
+        build_parquet_bound_initial_candidate,
+    )
+    from engine.entry_radar.replay.identity_observation_snapshot import (
+        read_identity_snapshot,
+    )
+    receipt, files = _r23_actual_parquet_supplied(supplied)
+    for name, raw in files.items():
+        (tmp_path / name).write_bytes(raw)
+    (tmp_path / "_receipt.json").write_bytes(receipt)
+    with pytest.raises(native.IdentityError, match="snapshot owner context missing"):
+        read_identity_snapshot(tmp_path)
+
+    bound = build_parquet_bound_initial_candidate(
+        receipt, files, code_version="3" * 40,
+    )
+    (tmp_path / "_receipt.json").write_bytes(bound.candidate.candidate_receipt_bytes)
+    before = time.time_ns()
+    observed = read_identity_snapshot(tmp_path)
+    after = time.time_ns()
+    read = observed.receipt.as_record()
+    assert before <= int(read["read_completed_at_utc_ns"]) <= after
+    assert read["generation_id"] == bound.candidate.generation_id
+    assert observed.snapshot.receipt_bytes == bound.candidate.candidate_receipt_bytes
+    assert observed.alias_table() is not None
+    assert set(x.name for x in tmp_path.iterdir()) == {
+        "_receipt.json", *native._ARTIFACT_NAMES,
+    }
+    assert not bound.published and not bound.identity_admitted

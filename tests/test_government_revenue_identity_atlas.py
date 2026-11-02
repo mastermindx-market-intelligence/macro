@@ -534,11 +534,17 @@ def test_fixC_mint_exercises_every_bwxt_content_assertion_end_to_end_without_the
 
 
 def test_5_committed_defense21_admits_and_preserves_defense19_shape():
-    """The real published graph loads clean and is not defense19 itself."""
+    """The accepted defense21 roster plus qualified JV loads; old defense19 is excluded."""
     graph = json.loads((ROOT / "data/government_revenue/recipient_entity_graph.json").read_text())
     loaded = load_recipient_entity_graph(graph, as_of=graph["graph_known_at"])
     assert loaded["status"] == "ready"
-    assert graph["graph_id"] == "recipient-graph:reviewed:2026-08-19:defense21-v1"
+    assert graph["graph_id"] == "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+    assert len(graph["companies"]) == 20  # Preserve the reviewed defense21 issuer roster.
+    jv = [row for row in graph["ownership_edges"] if row["relationship"] == "joint_venture"]
+    assert len(jv) == 1
+    assert jv[0]["parent_entity_id"] == "legal:lmt:lockheed-martin-corp"
+    assert jv[0]["child_entity_id"] == "legal:ula:united-launch-alliance"
+    assert jv[0]["economic_share"] == 0.5
     assert graph["graph_id"] != "recipient-graph:reviewed:2026-08-08:defense19-v1"
 
 

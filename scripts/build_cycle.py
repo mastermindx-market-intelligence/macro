@@ -385,6 +385,67 @@ def _regime_disagreement(meta: dict, by_id: dict) -> dict | None:
         return None
 
 
+def _watch_census(tripwire_by_cycle: dict) -> dict | None:
+    """W21E-1 — census of the pre-set watch conditions for the page header (F1 + F2).
+    Counts ``results_summary`` rows by state, keeps the WORST hand-review overrun and the
+    producer's own recorded reasons; None when nothing was evaluated: a count derived from
+    an absent artifact must never reach the page."""
+    if not tripwire_by_cycle:
+        return None
+    bucket_of = {"ARMED": "evaluated", "FIRED": "crossed", "MANUAL": "by_hand",
+                 "DATA_MISSING": "not_evaluable"}
+    counts = dict.fromkeys(bucket_of.values(), 0)
+    notes, missing, overdue, overdue_n, ttl_days, reviewed = [], [], 0, 0, None, None
+    for cid, rows in tripwire_by_cycle.items():
+        for row in (r for r in (rows or []) if r.get("state") in bucket_of):
+            bucket = bucket_of[row["state"]]
+            counts[bucket] += 1
+            manual = row.get("manual") or {}
+            if bucket == "by_hand":
+                days = int(row.get("overdue_days") or 0)
+                overdue, overdue_n = max(overdue, days), overdue_n + (days > 0)
+                ttl_days = manual.get("ttl_days") or ttl_days
+                reviewed = manual.get("last_reviewed") or reviewed
+                notes += [f"{cid}: {manual['note']}"] if manual.get("note") else []
+            elif bucket == "not_evaluable":
+                missing += [(cid, leg["series"], leg["error"])
+                            for leg in row.get("legs") or []
+                            if leg.get("error") and leg.get("series")]
+    missing = list(dict.fromkeys(missing))
+    return {**counts, "overdue_days": overdue, "overdue_n": overdue_n, "ttl_days": ttl_days,
+            "last_reviewed": reviewed, "missing_reasons": missing,
+            "title_en": "; ".join(notes + [f"{c}: {e}" for c, _s, e in missing])}
+
+
+def _proxy_evidence(fitness: dict) -> list[dict]:
+    """W21E-3 — the proxy timing grade's stored honesty artifact, as a static note (F6).
+    Keeps the Wilson LOWER BOUND beside the gate it passed and drops ``detail[]`` (rows of
+    per-turn offsets would bloat a static block).  Empty list when no verdict was recorded."""
+    keep = ("ref", "kind", "n_hand", "matched", "match_rate", "match_rate_wilson_lo",
+            "median_offset_months", "gate", "pass", "low_confidence")
+    return [{"cycle": cid, **{k: (v or {}).get(k) for k in keep}}
+            for cid, v in sorted((fitness or {}).items())]
+
+
+def _regime_flip(prior: dict | None = None) -> dict | None:
+    """W21E-4 — how thin the displayed regime read is (F7): the flip margin, its axis and
+    the component closest to its cutoff.  Non-fatal like ``_regime_disagreement``; drops
+    the producer's ``note`` (it carries a banned statistic token) and ``z``."""
+    try:
+        if prior is None:
+            from engine.regime_prior import regime_prior
+            prior = regime_prior()
+        fc = (prior or {}).get("flip_condition") or {}
+        if (fc.get("margin") is None or fc.get("label_unsupported")
+                or fc.get("displayed_quad") != fc.get("raw_quad")):
+            return None     # never show a margin for a quad the engine did not display
+        return {k: fc.get(k) for k in ("axis", "component", "margin", "threshold",
+                                       "label_unsupported", "displayed_quad", "raw_quad")}
+    except Exception as exc:  # noqa: BLE001
+        log.warning("build_cycle: regime flip margin unavailable (non-fatal): %s", exc)
+        return None
+
+
 def compute(root: Path) -> dict:
     """Build the whole ``window.CYCLE_ENGINE`` payload + a tolerance ledger.
 
@@ -492,6 +553,10 @@ def compute(root: Path) -> dict:
         }
         order.append(cid)
 
+    watch_census = _watch_census(tripwire_by_cycle)
+    proxy_evidence = _proxy_evidence(fitness)
+    regime_flip = _regime_flip()
+
     # W4.5 — reconcile curated regime_claim fields against the live engine quad.
     #   narratives = every curated cycle (id + optional regime_claim) + the META regime
     #   block as a synthetic "meta" narrative (the page's headline premise).  The check is
@@ -511,6 +576,9 @@ def compute(root: Path) -> dict:
         "xDomain": meta.get("xDomain"),
         "regime": meta.get("regime"),
         "regime_disagreement": regime_disagreement,
+        "watch_census": watch_census,
+        "proxy_evidence": proxy_evidence,
+        "regime_flip": regime_flip,
         "order": order,
         "cycles": engine,
         "census": {"cards": len(engine),
@@ -599,7 +667,11 @@ def main() -> int:
         env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
     except Exception:  # noqa: BLE001 — degrade to English-only rather than crash the build
         env.globals.update(td=lambda en: en, tr=lambda en: en, t=lambda en, zh="": en)
-    html = env.get_template("cycle.html.j2").render()
+    html = env.get_template("cycle.html.j2").render(
+        cycle_census=payload["census"],
+        watch_census=payload.get("watch_census"),
+        proxy_evidence=payload.get("proxy_evidence"),
+        regime_flip=payload.get("regime_flip"))
     write_page(site / "cycle.html", html, encoding="utf-8")
 
     # 3 · copy the committed shell assets (cycle_data.js stays the curated seed) ─
