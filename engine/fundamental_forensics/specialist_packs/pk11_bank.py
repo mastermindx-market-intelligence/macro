@@ -15,9 +15,10 @@ registry calls after the framework's own envelope passes the contract
 validator; the hook rewrites the affected check rows, appends the conditional
 limitations and re-digests + re-checks the envelope, so a PK11 result never
 bypasses the contract. The ``checks`` tuple below therefore declares the
-closest framework specs for those rows — placeholders the hook replaces —
-while ``cet1_vs_minimum`` needs no hook (reserved table-cell operands are
-already ``not_evaluable`` + ``missing_dependency`` under the framework).
+closest framework specs for those rows — placeholders the hook replaces.
+``cet1_vs_minimum`` is replaced too: the framework would decide it before the
+hook values the disclosed cells (and never again), so the hook re-decides it
+against the valued rows — minimum <= CET1 ratio, same instant, same approach.
 
 The A30 limitation ids and the core ``revenue`` aliases are copied exactly
 from ``config/fundamental_forensics/metrics/v1/`` (metric_catalog.yaml and
@@ -39,7 +40,7 @@ and R-K4' forbids scraping narrative).
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal, ROUND_HALF_EVEN, InvalidOperation
 from hashlib import sha256
 from typing import Any, Mapping
@@ -60,6 +61,7 @@ from .base import (
     Rollforward,
     SpecialistPackError,
     TableMapping,
+    _project_reason,
     _unit_equivalents,
     _unit_measure,
     formula_sum,
@@ -167,11 +169,13 @@ _FIELD_MAPPINGS = {
         _ALLOWANCE_CONCEPTS, duplicate_policy="precision_consistent"
     ),
     "net_write_offs": FactMapping(_NET_WRITE_OFF_CONCEPTS),
+    # Gross carrying amount only: the net spelling already deducts the
+    # allowance this pack values separately, so it would double-count it in
+    # the acl_coverage denominator.
     "loans_held_for_investment": FactMapping(
         (
             "us-gaap:FinancingReceivableExcludingAccruedInterestBeforeAllowanceForCreditLoss",
             "us-gaap:LoansAndLeasesReceivableGrossCarryingAmount",
-            "us-gaap:LoansAndLeasesReceivableNetReportedAmount",
         )
     ),
     "deposits": FactMapping(("us-gaap:Deposits",)),
@@ -204,8 +208,10 @@ _CHECKS = (
         right="loans_held_for_investment",
         relation="left_lte_right",
     ),
-    # Exact under the framework: reserved operands are not_evaluable with
-    # missing_dependency; two valued ratio rows would compare left <= right.
+    # Placeholder only: finalize_result ALWAYS replaces this row (the
+    # framework decides it before the hook values the cells, and this
+    # relation is inverted). The true relation is minimum <= CET1 ratio,
+    # decided only at the same instant and under the same approach.
     CrossStatement(
         check_id="cet1_vs_minimum",
         left="cet1_ratio_disclosed",
@@ -264,14 +270,14 @@ def _duration_days(occurrence: Any) -> int:
     return (context.end - context.start).days + 1
 
 
-def _prior_instant_value(
-    ledger: RawFactLedger, concepts: tuple[str, ...], before: date
+def _instant_value(
+    ledger: RawFactLedger, concepts: tuple[str, ...], instant: date
 ) -> Decimal | None:
-    """Latest undimensioned non-nil instant strictly before ``before``.
+    """Undimensioned non-nil instant value at exactly ``instant``.
 
     Concepts are tried in the field's priority order; conflicting values at
-    the same prior instant leave the opening unresolvable (R-K3: never an
-    implied zero).
+    that instant leave the reading unresolvable (R-K3: never an implied
+    zero).
     """
     for concept in concepts:
         candidates = [
@@ -279,17 +285,14 @@ def _prior_instant_value(
             for occurrence in ledger.events
             if occurrence.concept_qname == concept
             and not occurrence.is_nil
-            and occurrence.context.instant is not None
-            and occurrence.context.instant < before
+            and occurrence.context.instant == instant
             and _undimensioned(occurrence)
         ]
         if not candidates:
             continue
-        latest = max(occurrence.context.instant for occurrence in candidates)
         values = {
             Decimal(str(occurrence.parsed_value))
             for occurrence in candidates
-            if occurrence.context.instant == latest
         }
         if len(values) == 1:
             return values.pop()
@@ -382,10 +385,25 @@ def _acl_coverage_row(
     return _check_row(catalogue_check, status, evidence=evidence)
 
 
+def _row_methodology(row: Mapping[str, Any]) -> str | None:
+    """The row's regulatory-approach member (lowercased local), if any.
+
+    Two rows carrying no approach member count as equal callers.
+    """
+    for dimension in row.get("dimensions") or ():
+        member = _member_local(str(dimension.get("member") or ""))
+        if any(hint in member for hint in _METHODOLOGY_HINTS):
+            return member
+    return None
+
+
 def _capital_ratio_row(
     rows: Mapping[str, Mapping[str, Any]], catalogue_check: Mapping[str, Any]
 ) -> dict[str, Any]:
     evidence = ("cet1_capital", "risk_weighted_assets", "cet1_ratio_disclosed")
+    cet1_row = rows["cet1_capital"]
+    rwa_row = rows["risk_weighted_assets"]
+    disclosed_row = rows["cet1_ratio_disclosed"]
     cet1 = _row_value(rows, "cet1_capital")
     rwa = _row_value(rows, "risk_weighted_assets")
     disclosed = _row_value(rows, "cet1_ratio_disclosed")
@@ -400,6 +418,22 @@ def _capital_ratio_row(
             catalogue_check, "not_evaluable",
             tolerance=_CAPITAL_RATIO_TOLERANCE, evidence=evidence,
             reason="division_by_zero",
+        )
+    # The arithmetic may only mix one date and one regulatory approach: a
+    # ratio disclosed under the advanced approach against standardized RWA
+    # (or a prior-instant operand) is not the same calculation.
+    period_ends = {
+        cet1_row["period"].get("end"),
+        rwa_row["period"].get("end"),
+        disclosed_row["period"].get("end"),
+    }
+    if len(period_ends) > 1 or (
+        _row_methodology(disclosed_row) != _row_methodology(rwa_row)
+    ):
+        return _check_row(
+            catalogue_check, "not_evaluable",
+            tolerance=_CAPITAL_RATIO_TOLERANCE, evidence=evidence,
+            reason="unit_mismatch",
         )
     computed = (cet1 / rwa).quantize(_RATIO_QUANTUM, rounding=ROUND_HALF_EVEN)
     status = (
@@ -430,23 +464,50 @@ def _rollforward_row(
     rows: Mapping[str, Mapping[str, Any]],
     catalogue_check: Mapping[str, Any],
     ledger: RawFactLedger,
-    por: date,
 ) -> dict[str, Any]:
     evidence = (
         "allowance_for_credit_losses",
         "credit_loss_expense_financing_receivables",
         "net_write_offs",
     )
-    opening = _prior_instant_value(ledger, _ALLOWANCE_CONCEPTS, por)
+    provision_row = rows["credit_loss_expense_financing_receivables"]
+    write_offs_row = rows["net_write_offs"]
     provision = _row_value(rows, "credit_loss_expense_financing_receivables")
     write_offs = _row_value(rows, "net_write_offs")
     closing = _row_value(rows, "allowance_for_credit_losses")
-    if (
-        opening is None
-        or provision is None
-        or write_offs is None
-        or closing is None
+    if provision is None or write_offs is None or closing is None:
+        return _check_row(
+            catalogue_check, "not_evaluable", evidence=evidence,
+            reason="missing_dependency",
+        )
+    provision_period = provision_row.get("period") or {}
+    write_offs_period = write_offs_row.get("period") or {}
+    if provision_period.get("kind") != "duration" or not provision_period.get(
+        "start"
     ):
+        return _check_row(
+            catalogue_check, "not_evaluable", evidence=evidence,
+            reason="missing_dependency",
+        )
+    if (write_offs_period.get("start"), write_offs_period.get("end")) != (
+        provision_period.get("start"),
+        provision_period.get("end"),
+    ):
+        # Provision and write-offs must cover the same window or the
+        # rollforward adds unlike flows.
+        return _check_row(
+            catalogue_check, "not_evaluable", evidence=evidence,
+            reason="unit_mismatch",
+        )
+    # The flows are year-to-date, so the opening is the day before the YTD
+    # window opened — the prior fiscal period end. The latest allowance
+    # instant before por would instead open a 10-Q at the prior quarter end
+    # against nine-month flows.
+    opening_instant = date.fromisoformat(
+        str(provision_period["start"])
+    ) - timedelta(days=1)
+    opening = _instant_value(ledger, _ALLOWANCE_CONCEPTS, opening_instant)
+    if opening is None:
         return _check_row(
             catalogue_check, "not_evaluable", evidence=evidence,
             reason="missing_dependency",
@@ -457,6 +518,37 @@ def _rollforward_row(
     return _check_row(
         catalogue_check, status, tolerance=tolerance, evidence=evidence
     )
+
+
+def _cet1_vs_minimum_row(
+    rows: Mapping[str, Mapping[str, Any]], catalogue_check: Mapping[str, Any]
+) -> dict[str, Any]:
+    """Re-decide the placeholder relation after the disclosed rows exist.
+
+    The framework evaluated the placeholder (inverted, and before the cells
+    were valued); the true relation is minimum <= CET1 ratio, decided only
+    when both cells sit at the same instant under the same regulatory
+    approach.
+    """
+    evidence = ("cet1_ratio_disclosed", "regulatory_minimum_disclosed")
+    cet1_row = rows["cet1_ratio_disclosed"]
+    minimum_row = rows["regulatory_minimum_disclosed"]
+    cet1 = _row_value(rows, "cet1_ratio_disclosed")
+    minimum = _row_value(rows, "regulatory_minimum_disclosed")
+    if cet1 is None or minimum is None:
+        return _check_row(
+            catalogue_check, "not_evaluable", evidence=evidence,
+            reason="missing_dependency",
+        )
+    if cet1_row["period"].get("end") != minimum_row["period"].get(
+        "end"
+    ) or _row_methodology(cet1_row) != _row_methodology(minimum_row):
+        return _check_row(
+            catalogue_check, "not_evaluable", evidence=evidence,
+            reason="unit_mismatch",
+        )
+    status = "pass" if minimum <= cet1 else "fail"
+    return _check_row(catalogue_check, status, evidence=evidence)
 
 
 def _nii_row(
@@ -503,12 +595,15 @@ def _nii_row(
 #
 #   methodology rule: when the disclosed cells carry the regulatory-approach
 #   dimension and both a "standardized" and an "advanced" member report
-#   different values, the LOWER ratio is taken (the binding constraint) and a
-#   limitation says so; any other conflicting reads leave the field reserved.
+#   different values, the CET1 ratio takes the LOWER of the two (the binding
+#   constraint) and a limitation says so, while the regulatory minimum instead
+#   follows the approach of the chosen CET1 ratio cell (a minimum belongs to
+#   one approach; a lower-of minimum would splice two regimes); any other
+#   conflicting reads leave the field reserved.
 #
-#   period rule: instant fields at the LATEST disclosed instant on or before
-#   period_of_report — the capital tables display the current period next to
-#   comparative columns, and the row reports the instant actually used.
+#   period rule: instant fields at exactly period_of_report — the capital
+#   tables display the current period next to comparative columns, and a
+#   prior-instant comparative cell is never the current cell.
 # ---------------------------------------------------------------------------
 
 _CET1_RATIO_CONCEPTS = (
@@ -533,6 +628,9 @@ _ENTITY_MEMBER_HINTS = (
     ("bankholdingcompan", 3),
 )
 _METHODOLOGY_HINTS = ("standardized", "advanced")
+_APPROACH_MATCHED_LIMITATION = (
+    "pk11.regulatory_minimum_disclosed: approach matched to cet1_ratio_disclosed"
+)
 _ENTITY_OUT_TIER = 4
 _TABLE_CELL_RULE_SUFFIX = ".table/v1"
 _TABLE_ID_MAX_CHARS = 256
@@ -582,6 +680,14 @@ def _entity_tier(occurrence: Any) -> int:
     return tier
 
 
+def _methodology_of(occurrence: Any) -> str | None:
+    """The occurrence's regulatory-approach member (lowercased local), if any."""
+    for member in _occurrence_members(occurrence):
+        if any(hint in member for hint in _METHODOLOGY_HINTS):
+            return member
+    return None
+
+
 def _numeric_value(occurrence: Any) -> Decimal | None:
     """The occurrence's numeric value; the ledger may carry it as text."""
     if occurrence.is_nil:
@@ -609,13 +715,25 @@ def _resolve_disclosed(
     *,
     catalogue_unit: str | None,
     member_hint: str | None = None,
-) -> tuple[Decimal, Any, bool] | None:
-    """(value, occurrence, lower_of_approaches) for one disclosed cell.
+    follow_cet1_approach: bool = False,
+    cet1_methodology: str | None = None,
+) -> tuple[Decimal, Any, str] | None:
+    """(value, occurrence, rule) for one disclosed cell.
+
+    ``rule`` names the tie-break that produced the value: ``""`` (a single
+    disclosed figure), ``"lower_of_approaches"`` or ``"approach_matched"``.
 
     ``member_hint`` switches the dimension rule from the consolidated-entity
     tiers to a single marker member (the nonperforming-total row): only facts
     whose EVERY member carries the hint (or that are undimensioned) are the
     disclosed total; portfolio-segment members exclude a fact.
+
+    ``follow_cet1_approach`` (the regulatory minimum only): when the
+    period-of-report cells disagree under both regulatory approaches, the
+    occurrence whose methodology member equals ``cet1_methodology`` (the
+    chosen CET1 ratio cell's) wins — a minimum belongs to one approach, so
+    the lower-of splice never applies to it. Without a CET1 methodology to
+    follow, or with no matching cell, the field stays reserved.
     """
     for concept in concepts:
         tiered: dict[int, list[Any]] = {}
@@ -625,8 +743,8 @@ def _resolve_disclosed(
             value = _numeric_value(occurrence)
             if value is None or occurrence.context.instant is None:
                 continue
-            if occurrence.context.instant > por:
-                continue
+            if occurrence.context.instant != por:
+                continue  # only the period-of-report column is the current cell
             if not _unit_admitted(occurrence, catalogue_unit):
                 continue
             if member_hint is not None:
@@ -642,16 +760,14 @@ def _resolve_disclosed(
         if not tiered:
             continue
         candidates = tiered[min(tiered)]
-        latest = max(item.context.instant for item in candidates)
-        at_instant = [item for item in candidates if item.context.instant == latest]
-        values = {_numeric_value(item) for item in at_instant}
+        values = {_numeric_value(item) for item in candidates}
         if len(values) == 1:
-            return values.pop(), at_instant[0], False
+            return values.pop(), candidates[0], ""
         if len(values) > 2:
             continue  # a conflict the approach rule cannot name: stay reserved
         members_at = {
             member
-            for item in at_instant
+            for item in candidates
             for member in _occurrence_members(item)
         }
         approaches = [
@@ -659,10 +775,22 @@ def _resolve_disclosed(
         ]
         if len(approaches) < 2:
             continue  # differing values without both approaches: never guess
+        if follow_cet1_approach:
+            if cet1_methodology is None:
+                continue  # no chosen CET1 approach to follow: stay reserved
+            matched = [
+                item for item in candidates
+                if _methodology_of(item) == cet1_methodology
+            ]
+            matched_values = {_numeric_value(item) for item in matched}
+            if len(matched_values) == 1:
+                winner = min(matched, key=lambda item: item.occurrence_id)
+                return _numeric_value(winner), winner, "approach_matched"
+            continue  # no single cell under the CET1 approach: stay reserved
         # Both regulatory approaches disclosed different figures: the lower
         # ratio is the binding constraint.
-        winner = min(at_instant, key=lambda item: (_numeric_value(item), item.occurrence_id))
-        return _numeric_value(winner), winner, True
+        winner = min(candidates, key=lambda item: (_numeric_value(item), item.occurrence_id))
+        return _numeric_value(winner), winner, "lower_of_approaches"
     return None
 
 
@@ -748,7 +876,7 @@ def _table_cell_digest(concepts: tuple[str, ...], *, member_hint: str | None) ->
         if member_hint is None
         else [member_hint],
         "methodology": "lower_ratio_when_both_approaches_disclosed",
-        "period": "latest_disclosed_instant_on_or_before_period_of_report",
+        "period": "instant_equal_to_period_of_report",
         "table": "presentation_linkbase_first_role_v1",
     }
     return sha256(canonical_json(payload).encode("utf-8")).hexdigest()
@@ -759,10 +887,123 @@ _DISCLOSED_FIELD_RULES = {
     "regulatory_minimum_disclosed": (_REGULATORY_MINIMUM_CONCEPTS, None),
     "npl_or_npa_disclosed": (_NPL_CONCEPTS, _NPL_MEMBER_HINT),
 }
+# cet1_ratio_disclosed is valued first; the minimum's approach-conflict rule
+# consumes the chosen CET1 occurrence, so this iteration order is load-bearing.
+_DISCLOSED_FIELD_ORDER = (
+    "cet1_ratio_disclosed",
+    "regulatory_minimum_disclosed",
+    "npl_or_npa_disclosed",
+)
+_RATIO_RANGE_FIELDS = frozenset({"cet1_ratio_disclosed", "regulatory_minimum_disclosed"})
 _DISCLOSED_FIELD_DIGESTS = {
     field_id: _table_cell_digest(concepts, member_hint=member_hint)
     for field_id, (concepts, member_hint) in _DISCLOSED_FIELD_RULES.items()
 }
+
+
+def _rewrite_one_disclosed_row(
+    row: dict[str, Any],
+    concepts: tuple[str, ...],
+    *,
+    catalogue: Mapping[str, Any],
+    catalogue_field: Mapping[str, Any],
+    ledger: RawFactLedger,
+    por: date,
+    presentation_members: Mapping[str, bytes] | None,
+    limitations: list[str],
+    member_hint: str | None = None,
+    follow_cet1_approach: bool = False,
+    cet1_methodology: str | None = None,
+) -> Any:
+    """Value one disclosed field as a table-cell row.
+
+    Returns the occurrence the row was valued from, or ``None`` when the row
+    stayed reserved (no admissible cell, or no honest table evidence) or was
+    refused as out of range.
+    """
+    field_id = row["field_id"]
+    resolved = _resolve_disclosed(
+        ledger,
+        concepts,
+        por,
+        catalogue_unit=catalogue_field.get("unit"),
+        member_hint=member_hint,
+        follow_cet1_approach=follow_cet1_approach,
+        cet1_methodology=cet1_methodology,
+    )
+    if resolved is None:
+        return None
+    value, occurrence, rule = resolved
+    concept_local = occurrence.concept_qname.rsplit(":", 1)[-1]
+    coordinates = _presentation_table_coordinates(
+        presentation_members, concept_local
+    )
+    column = _concept_instant_column(
+        ledger, occurrence.concept_qname, occurrence.context.instant
+    )
+    if coordinates is None or column is None:
+        return None  # no honest table evidence for this cell: stay reserved
+    if field_id in _RATIO_RANGE_FIELDS and not (
+        Decimal(0) <= value <= Decimal(1)
+    ):
+        # A ratio cell outside 0..1 is a percent or basis-point figure in the
+        # wrong scale; refuse it as a typed absence the way the framework
+        # refuses a fact whose unit does not satisfy the catalogue unit.
+        row.update(
+            {
+                "quality_state": "not_evaluable",
+                "non_value_state": "not_evaluable",
+                "coverage_state": "unmapped",
+                "reason": _project_reason(
+                    "unit_mismatch", catalogue, field_id, limitations
+                ),
+                "concept": occurrence.concept_qname,
+                "source_occurrence_ids": [occurrence.occurrence_id],
+            }
+        )
+        return None
+    table_id, table_row = coordinates
+    row.update(
+        {
+            "quality_state": "valued",
+            "non_value_state": None,
+            "coverage_state": "source_trace_complete",
+            "reason": None,
+            "value": decimal_text(value),
+            "text_value": None,
+            "evidence_kind": "table_cell",
+            "required_evidence_kind": "table_cell",
+            "concept": occurrence.concept_qname,
+            "taxonomy": occurrence.concept_qname.split(":", 1)[0],
+            "source_occurrence_ids": [occurrence.occurrence_id],
+            "dimensions": [
+                {"axis": axis, "member": member}
+                for axis, member in sorted(
+                    _dimension_pairs(occurrence.context.explicit_dimensions)
+                )
+            ],
+            "mapping_rule_id": f"PK11.{field_id}{_TABLE_CELL_RULE_SUFFIX}",
+            "mapping_rule_digest": _DISCLOSED_FIELD_DIGESTS[field_id],
+            "table_cell": {
+                "table_id": table_id,
+                "row": table_row,
+                "column": column,
+            },
+            "period": {
+                "kind": "instant",
+                "end": occurrence.context.instant.isoformat(),
+            },
+            "unit": catalogue_field.get("unit"),
+        }
+    )
+    if rule == "lower_of_approaches":
+        limitations.append(
+            f"pk11.{field_id}: standardized and advanced approaches both "
+            "disclosed; lower ratio taken"
+        )
+    elif rule == "approach_matched":
+        limitations.append(_APPROACH_MATCHED_LIMITATION)
+    return occurrence
 
 
 def _rewrite_disclosed_rows(
@@ -786,69 +1027,32 @@ def _rewrite_disclosed_rows(
             presentation_members = candidate
             break
     rows = {row["field_id"]: row for row in envelope["fields"]}
-    for field_id, (concepts, member_hint) in _DISCLOSED_FIELD_RULES.items():
+    chosen_cet1_occurrence = None
+    for field_id in _DISCLOSED_FIELD_ORDER:
         row = rows.get(field_id)
         if row is None or row["quality_state"] == "valued":
             continue
-        catalogue_field = catalogue_fields[field_id]
-        resolved = _resolve_disclosed(
-            ledger,
+        concepts, member_hint = _DISCLOSED_FIELD_RULES[field_id]
+        follows_cet1 = field_id == "regulatory_minimum_disclosed"
+        chosen = _rewrite_one_disclosed_row(
+            row,
             concepts,
-            por,
-            catalogue_unit=catalogue_field.get("unit"),
+            catalogue=catalogue,
+            catalogue_field=catalogue_fields[field_id],
+            ledger=ledger,
+            por=por,
+            presentation_members=presentation_members,
+            limitations=limitations,
             member_hint=member_hint,
+            follow_cet1_approach=follows_cet1,
+            cet1_methodology=(
+                _methodology_of(chosen_cet1_occurrence)
+                if follows_cet1 and chosen_cet1_occurrence is not None
+                else None
+            ),
         )
-        if resolved is None:
-            continue
-        value, occurrence, lower_of_approaches = resolved
-        concept_local = occurrence.concept_qname.rsplit(":", 1)[-1]
-        coordinates = _presentation_table_coordinates(
-            presentation_members, concept_local
-        )
-        column = _concept_instant_column(
-            ledger, occurrence.concept_qname, occurrence.context.instant
-        )
-        if coordinates is None or column is None:
-            continue  # no honest table evidence for this cell: stay reserved
-        table_id, table_row = coordinates
-        row.update(
-            {
-                "quality_state": "valued",
-                "non_value_state": None,
-                "coverage_state": "source_trace_complete",
-                "reason": None,
-                "value": decimal_text(value),
-                "text_value": None,
-                "evidence_kind": "table_cell",
-                "required_evidence_kind": "table_cell",
-                "concept": occurrence.concept_qname,
-                "taxonomy": occurrence.concept_qname.split(":", 1)[0],
-                "source_occurrence_ids": [occurrence.occurrence_id],
-                "dimensions": [
-                    {"axis": axis, "member": member}
-                    for axis, member in sorted(
-                        _dimension_pairs(occurrence.context.explicit_dimensions)
-                    )
-                ],
-                "mapping_rule_id": f"PK11.{field_id}{_TABLE_CELL_RULE_SUFFIX}",
-                "mapping_rule_digest": _DISCLOSED_FIELD_DIGESTS[field_id],
-                "table_cell": {
-                    "table_id": table_id,
-                    "row": table_row,
-                    "column": column,
-                },
-                "period": {
-                    "kind": "instant",
-                    "end": occurrence.context.instant.isoformat(),
-                },
-                "unit": catalogue_field.get("unit"),
-            }
-        )
-        if lower_of_approaches:
-            limitations.append(
-                f"pk11.{field_id}: standardized and advanced approaches both "
-                "disclosed; lower ratio taken"
-            )
+        if field_id == "cet1_ratio_disclosed":
+            chosen_cet1_occurrence = chosen
 
 
 def _refresh_coverage(envelope: dict[str, Any]) -> None:
@@ -920,8 +1124,13 @@ class Pk11Producer(PackProducer):
             "capital_ratio_arithmetic": _capital_ratio_row(
                 rows, catalogue_checks["capital_ratio_arithmetic"]
             ),
+            # The framework decided the placeholder before the disclosed rows
+            # existed (and never again); re-decide it against the valued rows.
+            "cet1_vs_minimum": _cet1_vs_minimum_row(
+                rows, catalogue_checks["cet1_vs_minimum"]
+            ),
             "provision_vs_acl_rollforward": _rollforward_row(
-                rows, catalogue_checks["provision_vs_acl_rollforward"], ledger, por
+                rows, catalogue_checks["provision_vs_acl_rollforward"], ledger
             ),
             "nii_not_revenue": _nii_row(
                 rows, catalogue_checks["nii_not_revenue"], ledger, por,

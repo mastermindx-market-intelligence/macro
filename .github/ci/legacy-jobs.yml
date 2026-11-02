@@ -2388,6 +2388,7 @@ jobs:
       - "tests/test_capital_structure_api.py"
       - "tests/test_capital_structure_capacity.py"
       - "tests/test_capital_structure_funding.py"
+      - "tests/test_capital_structure_inputs_row_reader.py"
       - "tests/test_capital_structure_instrument_candidates.py"
       - "tests/test_capital_structure_instrument_economics.py"
       - "tests/test_capital_structure_instrument_resolution.py"
@@ -7378,11 +7379,15 @@ jobs:
       - "scripts/_narrative_ttl.py"
       - "scripts/build_sector_cycles.py"
       - "scripts/validate_regime_fwd.py"
+      - "templates/_cycle_locked_slot.html.j2"
+      - "templates/cycle.html.j2"
+      - "templates/markets.html.j2"
       - "templates/country_cycles.html.j2"
       - "templates/sector_cycles.css"
       - "templates/sector_cycles.html.j2"
       - "templates/sector_cycles.js"
       - "templates/sector_cycles_china.html.j2"
+      - "templates/subsectors.html.j2"
       - "tests/__init__.py"
       - "tests/test_sector_cycles.py"
       # SIC 2026-11-02 (#7646): curated-exclusive import closure reached on the merge of main f125051f into the integration branch — widened to cover (tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure)
@@ -13190,6 +13195,7 @@ jobs:
           tests/test_capital_structure_supply_variable.py
           tests/test_capital_structure_scenario_composition.py
           tests/test_capital_structure_scenario_inputs.py
+          tests/test_capital_structure_inputs_row_reader.py
           tests/test_capital_structure_state_changes.py
           tests/test_capital_structure_saved_scenarios.py
           tests/test_capital_structure_saved_scenario_api.py
@@ -45635,6 +45641,8 @@ jobs:
       # Reached through scripts/build_sector_central.py's import chain (closure guard).
       - "app/mailer.py"
       - "scripts/build_sector_holdings_coverage.py"
+      # Read by name in the receipt test since EW-P5 FU2 (site copy of a bound render input).
+      - "site/si_workspace.js"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:

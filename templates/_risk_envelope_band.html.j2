@@ -78,6 +78,12 @@
 {% set _EW_DIGITS = '0123456789' %}
 {% set _EW_SYM_TAIL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.^=-' %}
 {% set _EW_SYM_HEAD = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' %}
+{# Display names for the registered defensive-sector legs; they mirror the name_en / name_zh
+   halves in data/oracle/ratio_pairs.json (parity-tested). An unregistered symbol shows its
+   ticker symbol alone. #}
+{% set _EW_SECTOR_NAMES = {
+  'XLP': ('consumer staples', '必需消费'), 'XLU': ('utilities', '公用事业'),
+  'XLV': ('health care', '医疗保健'), 'XLK': ('technology', '科技'), 'SMH': ('semiconductors', '半导体') } %}
 {% set _EW_STATE_WORDS = {
   'observed': ('Observed', '已观察到'), 'reversal': ('Reversal', '方向反转'),
   'corrected': ('Corrected', '已更正'), 'withdrawn': ('Withdrawn', '已撤回'),
@@ -87,7 +93,7 @@
 {% set _EW_MONTHS_EN = ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec') %}
 {% set _EW_MONTHS_ZH = ('1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月') %}
 {% set _ew_session = _re.get('source_session') if _re.get('source_session') is string else '' %}
-{% set _ew = namespace(has=false, fail=false, kind='', oid='', prev=none, num='', den='', pair='',
+{% set _ew = namespace(has=false, fail=false, kind='', oid='', prev=none, num='', den='', num_en='', num_cap='', num_zh='', den_en='', den_zh='', pair='',
                        event='', obs_at='', not_after='', n=none, d=none, r=none,
                        win=none, win_ok=false, hz=none, hz_ok=false, hz_r=none,
                        avail=none, cov=none, lineage=[], previous=none, basis='dividend_adjusted_close',
@@ -154,6 +160,12 @@
     {% if not _symns.ok or _nm == _dn %}{% set _ew.fail = true %}
     {% else %}
       {% set _ew.num = _nm %}{% set _ew.den = _dn %}
+      {% set _nmn = _EW_SECTOR_NAMES.get(_nm) %}{% set _dnn = _EW_SECTOR_NAMES.get(_dn) %}
+      {% set _ew.num_en = (_nmn[0] ~ ' (' ~ _nm ~ ')') if _nmn else _nm %}
+      {% set _ew.num_zh = (_nmn[1] ~ '（' ~ _nm ~ '）') if _nmn else _nm %}
+      {% set _ew.den_en = (_dnn[0] ~ ' (' ~ _dn ~ ')') if _dnn else _dn %}
+      {% set _ew.den_zh = (_dnn[1] ~ '（' ~ _dn ~ '）') if _dnn else _dn %}
+      {% set _ew.num_cap = _ew.num_en[0]|upper ~ _ew.num_en[1:] %}
       {% set _pid = _n.get('pair_id') %}
       {% if _pid is string and _pid|length >= 1 and _pid|length <= 128 and _pid|trim|length >= 1 %}{% set _ew.pair = _pid %}
       {% else %}{% set _ew.fail = true %}{% endif %}
@@ -309,7 +321,8 @@
     {% elif _ew.kind == 'reversal' %}{% set _ew.state = 'reversal' %}
     {% else %}{% set _ew.state = 'observed' %}{% endif %}
   {% endif %}
-  {% if _ew.fail %}{% set _ew.state = 'unreadable' %}{% set _ew.oid = '' %}{% endif %}
+  {# an unreadable view (including a lib-valid one for a future session) claims no id #}
+  {% if _ew.fail or _ew.state == 'unreadable' %}{% set _ew.state = 'unreadable' %}{% set _ew.oid = '' %}{% endif %}
 {% else %}
   {# no observation: scoped unavailability, never a market verdict; a present
      non-object wrapper fails V1 and is unreadable, not absent (frozen §B.2) #}
@@ -325,27 +338,27 @@
 {% endif %}
 {% if _ew.legs %}
   {% if _ew.r > 0 and _ew.n < 0 and _ew.d < 0 %}
-    {% set _ew.what_en = 'Both fell; ' ~ _ew.num ~ ' fell less than ' ~ _ew.den ~ '.' %}
-    {% set _ew.what_zh = '两者都下跌；' ~ _ew.num ~ '跌幅小于' ~ _ew.den ~ '。' %}
+    {% set _ew.what_en = 'Both sectors fell; ' ~ _ew.num_en ~ ' fell less than ' ~ _ew.den_en ~ '.' %}
+    {% set _ew.what_zh = '两个板块都下跌；' ~ _ew.num_zh ~ '跌幅小于' ~ _ew.den_zh ~ '。' %}
   {% elif _ew.r < 0 and _ew.n > 0 and _ew.d > 0 %}
-    {% set _ew.what_en = 'Both rose; ' ~ _ew.num ~ ' rose less than ' ~ _ew.den ~ '.' %}
-    {% set _ew.what_zh = '两者都上涨；' ~ _ew.num ~ '涨幅小于' ~ _ew.den ~ '。' %}
+    {% set _ew.what_en = 'Both sectors rose; ' ~ _ew.num_en ~ ' rose less than ' ~ _ew.den_en ~ '.' %}
+    {% set _ew.what_zh = '两个板块都上涨；' ~ _ew.num_zh ~ '涨幅小于' ~ _ew.den_zh ~ '。' %}
   {% elif _ew.r > 0 %}
-    {% set _ew.what_en = _ew.num ~ ' outperformed ' ~ _ew.den ~ ' by ' ~ _ew.r_s ~ '% over two sessions.' %}
-    {% set _ew.what_zh = '两个交易日内，' ~ _ew.num ~ '相对' ~ _ew.den ~ '跑赢' ~ _ew.r_s ~ '%。' %}
+    {% set _ew.what_en = _ew.num_cap ~ ' outperformed ' ~ _ew.den_en ~ ' by ' ~ _ew.r_s ~ '% over two sessions.' %}
+    {% set _ew.what_zh = '两个交易日内，' ~ _ew.num_zh ~ '相对' ~ _ew.den_zh ~ '跑赢' ~ _ew.r_s ~ '%。' %}
   {% elif _ew.r < 0 %}
-    {% set _ew.what_en = _ew.num ~ ' trailed ' ~ _ew.den ~ ' by ' ~ _ew.r_abs_s ~ '% over two sessions.' %}
-    {% set _ew.what_zh = '两个交易日内，' ~ _ew.num ~ '相对' ~ _ew.den ~ '落后' ~ _ew.r_abs_s ~ '%。' %}
+    {% set _ew.what_en = _ew.num_cap ~ ' trailed ' ~ _ew.den_en ~ ' by ' ~ _ew.r_abs_s ~ '% over two sessions.' %}
+    {% set _ew.what_zh = '两个交易日内，' ~ _ew.num_zh ~ '相对' ~ _ew.den_zh ~ '落后' ~ _ew.r_abs_s ~ '%。' %}
   {% else %}
-    {% set _ew.what_en = _ew.num ~ ' and ' ~ _ew.den ~ ' moved together over two sessions.' %}
-    {% set _ew.what_zh = '两个交易日内，' ~ _ew.num ~ '与' ~ _ew.den ~ '同步变动。' %}
+    {% set _ew.what_en = _ew.num_cap ~ ' and ' ~ _ew.den_en ~ ' moved together over two sessions.' %}
+    {% set _ew.what_zh = '两个交易日内，' ~ _ew.num_zh ~ '与' ~ _ew.den_zh ~ '同步变动。' %}
   {% endif %}
   {% if _ew.state == 'reversal' %}
     {% set _ew.what_en = 'Reversal: ' ~ _ew.what_en %}{% set _ew.what_zh = '方向反转：' ~ _ew.what_zh %}
   {% endif %}
 {% elif _ew.state == 'withdrawn' %}
-  {% set _ew.what_en = 'Evidence for ' ~ _ew.num ~ ' vs ' ~ _ew.den ~ ' was withdrawn on ' ~ _ew.event_en ~ '.' %}
-  {% set _ew.what_zh = _ew.num ~ '对' ~ _ew.den ~ '的依据已于' ~ _ew.event_zh ~ '撤回。' %}
+  {% set _ew.what_en = 'Evidence for ' ~ _ew.num_en ~ ' vs ' ~ _ew.den_en ~ ' was withdrawn on ' ~ _ew.event_en ~ '.' %}
+  {% set _ew.what_zh = _ew.num_zh ~ '对' ~ _ew.den_zh ~ '的依据已于' ~ _ew.event_zh ~ '撤回。' %}
 {% elif _ew.state == 'stale' and _ew.has and not _ew.fail %}
   {% set _ew.what_en = 'Latest observation is from ' ~ _ew.event_en ~ ', before ' ~ _ew.session_en ~ '.' %}
   {% set _ew.what_zh = '最新观察来自' ~ _ew.event_zh ~ '，早于' ~ _ew.session_zh ~ '。' %}
@@ -356,8 +369,8 @@
   {% set _ew.what_en = 'Rotation record failed checks and is not shown.' %}
   {% set _ew.what_zh = '轮动记录未通过校验，未予显示。' %}
 {% elif _ew.state == 'partial' %}
-  {% set _ew.what_en = 'Partial evidence for ' ~ _ew.num ~ ' vs ' ~ _ew.den ~ '; ratio withheld.' %}
-  {% set _ew.what_zh = _ew.num ~ '对' ~ _ew.den ~ '证据不完整；比值暂不显示。' %}
+  {% set _ew.what_en = 'Partial evidence for ' ~ _ew.num_en ~ ' vs ' ~ _ew.den_en ~ '; ratio withheld.' %}
+  {% set _ew.what_zh = _ew.num_zh ~ '对' ~ _ew.den_zh ~ '证据不完整；比值暂不显示。' %}
 {% else %}
   {% set _ew.what_en = 'Rotation data unavailable — not proof of stability.' %}
   {% set _ew.what_zh = '轮动依据暂不可用，不代表市场稳定。' %}
@@ -504,15 +517,15 @@
               <table class="gde-ew-legs">
                 <caption><span class="l-en">2 sessions, {{ _EW_MONTHS_EN[_ew.win.get('start')[5:7]|int - 1] }} {{ _ew.win.get('start')[8:10]|int }} → {{ _ew.event_en|e }} · US cash sessions</span><span class="l-zh">2个交易日，{{ _ew.win.get('start')[5:7]|int }}月{{ _ew.win.get('start')[8:10]|int }}日 → {{ _ew.event_zh|e }} · 美股交易日</span></caption>
                 <tbody>
-                  <tr><th scope="row"><span class="l-en">Receiver (numerator)</span><span class="l-zh">接收方（分子）</span></th><td class="tnum">{{ _ew.num|e }}</td><td class="tnum">{{ '+' if _ew.n > 0 else '' }}{{ '%.2f'|format(_ew.n) }}%</td></tr>
-                  <tr><th scope="row"><span class="l-en">Donor (denominator)</span><span class="l-zh">出让方（分母）</span></th><td class="tnum">{{ _ew.den|e }}</td><td class="tnum">{{ '+' if _ew.d > 0 else '' }}{{ '%.2f'|format(_ew.d) }}%</td></tr>
-                  <tr><th scope="row"><span class="l-en">Relative ({{ _ew.num|e }} vs {{ _ew.den|e }})</span><span class="l-zh">相对（{{ _ew.num|e }} 对 {{ _ew.den|e }}）</span></th><td class="tnum">—</td><td class="tnum">{{ _ew.r_s|e }}%</td></tr>
+                  <tr><th scope="row"><span class="l-en">Receiver (numerator)</span><span class="l-zh">接收方（分子）</span></th><td><span class="l-en">{{ _ew.num_cap|e }}</span><span class="l-zh">{{ _ew.num_zh|e }}</span></td><td class="tnum">{{ '+' if _ew.n > 0 else '' }}{{ '%.2f'|format(_ew.n) }}%</td></tr>
+                  <tr><th scope="row"><span class="l-en">Donor (denominator)</span><span class="l-zh">出让方（分母）</span></th><td><span class="l-en">{{ (_ew.den_en[0]|upper ~ _ew.den_en[1:])|e }}</span><span class="l-zh">{{ _ew.den_zh|e }}</span></td><td class="tnum">{{ '+' if _ew.d > 0 else '' }}{{ '%.2f'|format(_ew.d) }}%</td></tr>
+                  <tr><th scope="row"><span class="l-en">Relative</span><span class="l-zh">相对</span></th><td><span class="l-en">{{ _ew.num_cap|e }} vs {{ _ew.den_en|e }}</span><span class="l-zh">{{ _ew.num_zh|e }} 对 {{ _ew.den_zh|e }}</span></td><td class="tnum">{{ _ew.r_s|e }}%</td></tr>
                 </tbody>
               </table>
               {% if _ew.r > 0 and _ew.n < 0 and _ew.d < 0 %}
-              <p class="gde-ew-contextline"><span class="l-en">Both fell; {{ _ew.num|e }} fell less than {{ _ew.den|e }}.</span><span class="l-zh">两者都下跌；{{ _ew.num|e }}跌幅小于{{ _ew.den|e }}。</span></p>
+              <p class="gde-ew-contextline"><span class="l-en">Both sectors fell; {{ _ew.num_en|e }} fell less than {{ _ew.den_en|e }}.</span><span class="l-zh">两个板块都下跌；{{ _ew.num_zh|e }}跌幅小于{{ _ew.den_zh|e }}。</span></p>
               {% elif _ew.r < 0 and _ew.n > 0 and _ew.d > 0 %}
-              <p class="gde-ew-contextline"><span class="l-en">Both rose; {{ _ew.num|e }} rose less than {{ _ew.den|e }}.</span><span class="l-zh">两者都上涨；{{ _ew.num|e }}涨幅小于{{ _ew.den|e }}。</span></p>
+              <p class="gde-ew-contextline"><span class="l-en">Both sectors rose; {{ _ew.num_en|e }} rose less than {{ _ew.den_en|e }}.</span><span class="l-zh">两个板块都上涨；{{ _ew.num_zh|e }}涨幅小于{{ _ew.den_zh|e }}。</span></p>
               {% endif %}
             </div>
             {# ── EW-P4 D3: horizons with identical markup; never color-only meaning. #}
@@ -524,7 +537,7 @@
             {# ── EW-P4 D4: what argues against this reading. #}
             <p class="gde-disc-h gde-ew-h"><span class="l-en">What argues against this</span><span class="l-zh">反方证据</span></p>
             <ul class="gde-ew-against">
-              {% if _ew.n is number and _ew.n < 0 and _ew.d is number and _ew.d < 0 %}<li><span class="l-en">Relative shelter only: {{ _ew.num|e }} also fell.</span><span class="l-zh">仅为相对抗跌：{{ _ew.num|e }}同样下跌。</span></li>{% endif %}
+              {% if _ew.n is number and _ew.n < 0 and _ew.d is number and _ew.d < 0 %}<li><span class="l-en">A smaller loss is still a loss: {{ _ew.num_en|e }} also fell.</span><span class="l-zh">较小的跌幅仍是亏损：{{ _ew.num_zh|e }}同样下跌。</span></li>{% endif %}
               {% if _ew.state == 'conflicting' %}<li><span class="l-en">The 20-session trend points the other way.</span><span class="l-zh">20个交易日趋势方向相反。</span></li>{% endif %}
               {% if not _ew.hz_ok %}<li><span class="l-en">No 20-session comparison was supplied.</span><span class="l-zh">未提供20个交易日对比。</span></li>{% endif %}
               <li><span class="l-en">Two sessions are a short window; one session can undo it.</span><span class="l-zh">两个交易日窗口很短，一个交易日即可逆转。</span></li>
@@ -543,7 +556,7 @@
                 {% if _ew.prev %}<div><dt><span class="l-en">Previous ID</span><span class="l-zh">前一编号</span></dt><dd class="tnum gde-ew-id">{{ _ew.prev|e }}</dd></div>{% endif %}
                 <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><span class="l-en">macro.rotation_observation.v1 · notification only · basis {{ _ew.basis|e }}</span><span class="l-zh">macro.rotation_observation.v1 · 仅通知 · 基准 {{ _ew.basis|e }}</span></dd></div>
                 <div><dt><span class="l-en">Calendar</span><span class="l-zh">日历</span></dt><dd><span class="l-en">US cash-equity sessions</span><span class="l-zh">美股现货交易日</span></dd></div>
-                <div><dt><span class="l-en">Pair</span><span class="l-zh">配对</span></dt><dd class="tnum">{{ _ew.num|e }} / {{ _ew.den|e }} · relative = (1+n)/(1+d) − 1</dd></div>
+                <div><dt><span class="l-en">Pair</span><span class="l-zh">配对</span></dt><dd><span class="l-en">{{ _ew.num_cap|e }} / {{ _ew.den_en|e }} · {{ _ew.pair|e }} · relative = (1+n)/(1+d) − 1</span><span class="l-zh">{{ _ew.num_zh|e }} / {{ _ew.den_zh|e }} · {{ _ew.pair|e }} · 相对 = (1+分子)/(1+分母) − 1</span></dd></div>
                 <div><dt><span class="l-en">Close basis</span><span class="l-zh">收盘基准</span></dt><dd><span class="l-en">Dividend-adjusted daily close; adjusted prices can be revised when distributions are restated.</span><span class="l-zh">股息调整后日收盘价；分红数据更正时调整价格可能被修订。</span></dd></div>
                 <div><dt><span class="l-en">Source timestamps</span><span class="l-zh">来源时间戳</span></dt><dd class="tnum"><span class="l-en">source_as_of {{ (_n.get('source_as_of') or '—')|e }} · event_as_of {{ _ew.event|e }} · observed {{ _ew.obs_at[0:16]|replace('T', ' ')|e }} UTC · not_after {{ _ew.not_after[0:16]|replace('T', ' ')|e }} UTC (notification window closes)</span><span class="l-zh">数据源日期 {{ (_n.get('source_as_of') or '—')|e }} · 事件日期 {{ _ew.event|e }} · 观察于 {{ _ew.obs_at[0:16]|replace('T', ' ')|e }} UTC · 通知窗口截止 {{ _ew.not_after[0:16]|replace('T', ' ')|e }} UTC</span></dd></div>
                 <div><dt><span class="l-en">Coverage</span><span class="l-zh">覆盖范围</span></dt><dd><span class="l-en">{{ (_ew.cov.get('evaluable_2s') if _ew.cov else '—')|e }} of {{ (_ew.cov.get('registered_pairs') if _ew.cov else '—')|e }} pairs evaluable; missing: {{ ((_ew.cov.get('missing_pair_ids') or []) | join(', ') | e) if (_ew.cov and (_ew.cov.get('missing_pair_ids') or [])) else 'none' }}</span><span class="l-zh">{{ (_ew.cov.get('evaluable_2s') if _ew.cov else '—')|e }} / {{ (_ew.cov.get('registered_pairs') if _ew.cov else '—')|e }} 个配对可评估；缺失：{{ ((_ew.cov.get('missing_pair_ids') or []) | join(', ') | e) if (_ew.cov and (_ew.cov.get('missing_pair_ids') or [])) else '无' }}</span></dd></div>
@@ -572,20 +585,23 @@
           </div>
           {% endif %}
           <div class="gde-tblwrap">
-            <table class="gde-tbl">
-              <thead><tr>
-                <th><span class="l-en">Source</span><span class="l-zh">来源</span></th>
-                <th><span class="l-en">Its own read</span><span class="l-zh">自身读数</span></th>
-                <th><span class="l-en">As of</span><span class="l-zh">数据日期</span></th>
-                <th><span class="l-en">Freshness</span><span class="l-zh">新鲜度</span></th>
+            {# Explicit table roles: below 481 px the cells become block/grid boxes, which
+               drops the implicit table semantics in WebKit; the header row stays readable. #}
+            <table class="gde-tbl" role="table">
+              <thead role="rowgroup"><tr role="row">
+                <th role="columnheader"><span class="l-en">Source</span><span class="l-zh">来源</span></th>
+                <th role="columnheader"><span class="l-en">Its own read</span><span class="l-zh">自身读数</span></th>
+                <th role="columnheader"><span class="l-en">As of</span><span class="l-zh">数据日期</span></th>
+                <th role="columnheader"><span class="l-en">Freshness</span><span class="l-zh">新鲜度</span></th>
               </tr></thead>
-              <tbody>
+              <tbody role="rowgroup">
               {% for s in _prov %}
-                <tr>
-                  <td class="l">{% if s.label_en %}<span class="l-en">{{ s.label_en }}</span><span class="l-zh">{{ s.label_zh or s.label_en }}</span>{% else %}<span class="tnum">{{ s.source_id }}</span>{% endif %}</td>
-                  <td class="tnum">{% if s.source_id == 'site-marketdata-rotation-events' and s.state in _rotation_labels %}<span class="l-en">{{ _rotation_labels[s.state][0] }}</span><span class="l-zh">{{ _rotation_labels[s.state][1] }}</span>{% else %}{{ s.state if s.state is not none else '—' }}{% endif %}{% if s.score is not none %} · {{ s.score }}{% endif %}</td>
-                  <td class="tnum">{{ s.as_of or '—' }}</td>
-                  <td>
+                <tr role="row">
+                  <td class="l" role="cell" data-label-en="Source" data-label-zh="来源">{% if s.label_en %}<span class="l-en">{{ s.label_en }}</span><span class="l-zh">{{ s.label_zh or s.label_en }}</span>{% else %}<span class="tnum">{{ s.source_id }}</span>{% endif %}</td>
+                  {#- Every cell child is an element: the stacked grid places bare text runs by auto-flow. -#}
+                  <td class="tnum" role="cell" data-label-en="Its own read" data-label-zh="自身读数"><span class="gde-cell">{% if s.source_id == 'site-marketdata-rotation-events' and s.state in _rotation_labels %}<span class="l-en">{{ _rotation_labels[s.state][0] }}</span><span class="l-zh">{{ _rotation_labels[s.state][1] }}</span>{% else %}{{ s.state if s.state is not none else '—' }}{% endif %}{% if s.score is not none %} · {{ s.score }}{% endif %}</span></td>
+                  <td class="tnum" role="cell" data-label-en="As of" data-label-zh="数据日期"><span class="gde-cell">{{ s.as_of or '—' }}</span></td>
+                  <td role="cell" data-label-en="Freshness" data-label-zh="新鲜度">
                     {% if s.coverage == 'FRESH' %}<span class="l-en">This session</span><span class="l-zh">本交易日</span>
                     {% elif s.coverage == 'STALE' %}<span class="gde-warn"><span class="l-en">Older than this session</span><span class="l-zh">早于本交易日</span></span>
                     {% else %}<span class="gde-warn"><span class="l-en">Did not publish</span><span class="l-zh">未发布</span></span>{% endif %}
