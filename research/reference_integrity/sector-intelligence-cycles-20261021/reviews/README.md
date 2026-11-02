@@ -1,7 +1,9 @@
 # Reviews — sector-intelligence-cycles-20261021
 
-Current receipts: the round-3 Full RIG dual review of frozen_sha `5432d5a0b63a7ed3b6f4131270d58d2bec7c293e`
-(boards 0–37; repair wave 2). Earlier rounds are archived in place: `round1_508539c0/` (normalized receipts of the
+Round 4 (re-freeze 2026-11-01 at `1ad748c8e785eda0a3e1f13167a9290c194d07ae`, boards 0–40, repair wave 3 / SIC-ADJ-01)
+is in progress: its receipts replace the files in this directory when the two critics return. Until then the
+files here are the round-3 Full RIG dual review of frozen_sha `5432d5a0b63a7ed3b6f4131270d58d2bec7c293e`
+(boards 0–37; repair wave 2), also archived byte-exact under `round3_5432d5a0/`. Earlier rounds are archived in place: `round1_508539c0/` (normalized receipts of the
 round-1 review at 508539c0; its byte-exact critic returns are in git history at `445b9827^:…/reviews/critic_return/`)
 and `round2_ab1e71ac/` (normalized receipts plus byte-exact `critic_return/` of the round-2 review at ab1e71ac).
 
