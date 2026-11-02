@@ -5,6 +5,21 @@
     Undefined raises, which is exactly the shape that would take the macro page
     down for a variable that page has no use for. -#}
 {%- set pgate = pgate if pgate is defined else none -%}
+{# ── Policy Monitor display model ───────────────────────────────────────────
+   The panel is rendered from ONE normalized view model so an absent reading
+   can never become a zero, a missing arming block can never become "Quiet",
+   and an unqualified Fed-vs-market gap can never become a precise spread.
+   lib/policy_monitor_view.py is PURE and presentation-only; build_site.py
+   wires it in. `pm_view` is that same function, registered as a Jinja global
+   so an env without the pre-built variable still renders the real panel.
+   ────────────────────────────────────────────────────────────────────────── #}
+{%- set _PLV = (policy_lever if policy_lever is defined else none) -%}
+{%- set _LATEST = (latest if latest is defined else none) -%}
+{%- set _EVS = (evw_snap if evw_snap is defined else none) -%}
+{%- set _FLIP = (flip_confirmation if flip_confirmation is defined else none) -%}
+{%- set pmv = (policy_monitor if (policy_monitor is defined and policy_monitor)
+               else (pm_view(_PLV, _LATEST, evw_snap=_EVS, flip_confirmation=_FLIP)
+                     if (pm_view is defined and _PLV) else none)) -%}
 {% import "_prophet_card.html.j2" as pv %}
 {% import "_prophet_receipts.html.j2" as pvr %}
 {% import "_decision_card.html.j2" as dc %}
@@ -6280,63 +6295,11 @@ body.page-macro.mx4-grid .mx5-fed-policy-note{
 [data-theme="light"] body.page-macro.mx4-grid .mx5-fed-policy-note{border-top-color:rgba(0,0,0,.07);}
 body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,255,255,.92));}
 
-/* ── POLICY DIALOG (plx-* classes) ──────────────────────────────── */
-.plx-state-hero{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
-.plx-state-sent{font-size:13px;font-weight:600;line-height:1.45;}
-.plx-asof{font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));margin-top:3px;}
-.plx-framing{font-size:13px;color:var(--ink-2,rgba(255,255,255,.6));line-height:1.65;margin-bottom:16px;padding:10px 14px;background:rgba(255,255,255,.04);border-radius:8px;}
-[data-theme="light"] .plx-framing{background:rgba(0,0,0,.04);}
-/* Rate path chart */
-.plx-chart-wrap{margin-bottom:18px;}
-.plx-chart-svg{display:block;width:100%;height:180px;}
-.plx-chart-caption{font-size:12px;color:var(--ink-2,rgba(255,255,255,.6));line-height:1.5;margin-top:8px;}
-.plx-chart-gap-chip{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;background:rgba(160,112,232,.10);border:1px solid rgba(160,112,232,.22);color:var(--isle-policy);margin-left:8px;}
-[data-theme="light"] .plx-chart-gap-chip{background:rgba(160,112,232,.08);}
-.plx-x-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--ink-3,rgba(255,255,255,.36));margin-top:2px;padding:0 2px;}
-/* Fed stance card */
-.plx-stance-card{padding:12px 14px;background:rgba(255,255,255,.04);border-radius:10px;margin-bottom:14px;}
-[data-theme="light"] .plx-stance-card{background:rgba(0,0,0,.04);}
-.plx-stance-label{font-size:14px;font-weight:700;margin-bottom:4px;}
-.plx-stance-mve{font-size:12px;color:var(--ink-2,rgba(255,255,255,.6));margin-top:5px;}
-.plx-drivers{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-direction:column;gap:3px;}
-.plx-drivers li{font-size:12px;color:var(--ink-3,rgba(255,255,255,.36));padding-left:14px;position:relative;line-height:1.45;}
-.plx-drivers li::before{content:"·";position:absolute;left:4px;color:var(--ink-3,rgba(255,255,255,.36));}
-.plx-drivers-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;}
-.plx-driver-chip{font-size:11px;font-weight:500;padding:3px 9px;border-radius:999px;
-  background:rgba(160,112,232,.08);border:1px solid rgba(160,112,232,.18);color:var(--ink-2,rgba(255,255,255,.66));}
-[data-theme="light"] .plx-driver-chip{background:rgba(160,112,232,.06);color:rgba(40,20,70,.7);}
-/* Jawboning counts */
-.plx-jaw-counts{display:flex;gap:20px;margin-bottom:12px;}
-.plx-jaw-count-box{text-align:center;}
-.plx-jaw-count-num{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ink-1,rgba(255,255,255,.92));}
-.plx-jaw-count-lbl{font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));margin-top:2px;}
-.plx-jaw-bar-track{height:5px;border-radius:3px;background:rgba(255,255,255,.07);margin-bottom:10px;overflow:hidden;}
-[data-theme="light"] .plx-jaw-bar-track{background:rgba(0,0,0,.07);}
-.plx-jaw-bar-fill{height:100%;border-radius:3px;background:var(--isle-policy);}
-.plx-jaw-summary{font-size:12px;color:var(--ink-2,rgba(255,255,255,.6));line-height:1.55;}
-.plx-jaw-ts{font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));margin-bottom:5px;}
-/* Lever board */
-.plx-lever-row{display:grid;grid-template-columns:1fr auto 60px;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);}
-.plx-lever-row:last-child{border-bottom:none;}
-[data-theme="light"] .plx-lever-row{border-bottom-color:rgba(0,0,0,.07);}
-.plx-lever-name{font-size:13px;font-weight:600;}
-.plx-lever-status{font-size:11px;font-weight:600;display:flex;align-items:center;gap:5px;}
-.plx-lever-stoch{height:5px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:4px;}
-[data-theme="light"] .plx-lever-stoch{background:rgba(0,0,0,.07);}
-.plx-lever-stoch-fill{height:100%;border-radius:3px;}
-.plx-lever-watch{font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.45;margin-top:3px;}
-.plx-favored{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
-.plx-basket-chip{font-size:12px;font-weight:700;padding:3px 9px;border-radius:var(--mx5-radius-pill);background:rgba(160,112,232,.11);border:1px solid rgba(160,112,232,.22);color:var(--isle-policy);}
-/* Calendar row */
-.plx-cal-row{display:flex;align-items:center;gap:10px;padding:10px 0;}
-.plx-cal-countdown{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ink-1,rgba(255,255,255,.92));}
-.plx-cal-note{font-size:12px;color:var(--ink-3,rgba(255,255,255,.36));}
-/* Null disclosure */
-.plx-null{font-size:12px;color:var(--ink-3,rgba(255,255,255,.36));padding:10px 0;font-style:italic;}
-/* Outer dots annotation chips */
-.plx-dot-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
-.plx-dot-chip{font-size:11px;padding:2px 8px;border-radius:8px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.18);color:var(--ink-warn, var(--warn,#f59e0b));}
-[data-theme="light"] .plx-dot-chip{background:rgba(245,158,11,.06);}
+{# ── POLICY MONITOR stylesheet (plm-*) — scoped, token-only ───────────
+   Lives in its own include so the 1.4MB dashboard template does not grow
+   with this panel, and so the light art direction is authored beside the
+   dark one instead of being a token swap. ────────────────────────────────── #}
+{% include "_policy_monitor.css.j2" %}
 /* ── AI BRIEF DIALOG — ABX v2: rules live in the shared _aibrief_css.j2 include
    (.aib2-* namespace). Here we only pin the per-surface accent: macro's brief
    green (--isle-brief). The literal #38c472 fallback matches --isle-brief exactly
@@ -11977,112 +11940,22 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {% endif %}{# /market_state #}
 
   {# ── 5. POLICY row + tray (Stage B) ── #}
+  {# Policy Monitor card face — markup and styles live in scoped fragments;
+     the data comes from the normalized view model (pmv) computed above. #}
   {% if policy_lever is defined and policy_lever %}
-  {% set PL = policy_lever %}
-  {% set _pl_state = PL.get('state') or 'QUIET' %}
-  {% set _plc = 'c-down' if _pl_state == 'ARMED' else ('c-warn' if _pl_state == 'ELEVATED' else 'c-muted') %}
-  {% set _plrepr = PL.get('repricing_components') %}
-  {% set _plrepr_count = _plrepr|length if _plrepr else 0 %}
+  {% if pmv %}
+  {% include "_policy_monitor_face.html.j2" %}
+  {% else %}
   <div class="sx" id="sx-policy-v2" style="--isle-color:var(--isle-policy)">
-    {# MX4 face — POLICY (S2 full: plain-word state + last flip + fed-stance + fed-odds path) #}
-    {# Plain-word state mapping (no naked enum chip on card face per spec §2.3) #}
-    {% set _pl_plain_en = 'Quiet — no active jawboning' if _pl_state == 'QUIET' else ('Armed — active policy intervention' if _pl_state == 'ARMED' else 'Elevated — watch for repricing') %}
-    {% set _pl_plain_zh = '平静 — 无官方吹风' if _pl_state == 'QUIET' else ('已触发 — 政策主动干预' if _pl_state == 'ARMED' else '警戒 — 警惕重定价') %}
-    {# Fed stance lookup (reuse same fields as the policy tray COL 1) #}
-    {% set _pl_fed_st = (latest.fed_stance.stance if (latest.fed_stance is defined and latest.fed_stance and latest.fed_stance.stance is defined and latest.fed_stance.stance != 'unknown') else none) %}
-    {% set _pl_fsl = {'hawkish':'Hawkish','very-hawkish':'Very Hawkish','dovish':'Dovish','very-dovish':'Very Dovish','neutral':'Neutral / hold'} %}
-    {% set _pl_fsl_zh = {'hawkish':'鹰派','very-hawkish':'极鹰派','dovish':'鸽派','very-dovish':'极鸽派','neutral':'中性 / 不动'} %}
-    {# v5 face — POLICY MONITOR (revamp: stance dot + sparkline + chip row) #}
-    {# Precompute: fed_path fields (guarded — absent VM must not crash) #}
-    {% set _fp = (latest.fed_path if (latest is defined and latest.fed_path is defined and latest.fed_path) else none) %}
-    {% set _fp_impl = (_fp.implied if (_fp and _fp.implied is defined and _fp.implied) else none) %}
-    {# All 5 implied points must be present for sparkline #}
-    {# is not none, NOT is defined — the engine emits present-but-None horizons on a
-       partial futures strip, and None reaching |min crashes the whole render #}
-    {% set _fp_ok = (_fp_impl and _fp_impl.get('now') is not none and _fp_impl.get('m1') is not none and _fp_impl.get('m3') is not none and _fp_impl.get('m6') is not none and _fp_impl.get('m12') is not none) %}
-    {# Fed stance word for face chip #}
-    {% set _pl_label_en = (latest.fed_stance.label_en if (latest.fed_stance is defined and latest.fed_stance and latest.fed_stance.label_en is defined) else (_pl_fsl.get(_pl_fed_st, _pl_fed_st) if _pl_fed_st else none)) %}
-    {# engine label_zh ("鹰派"/"鸽派"/…) — label_en values are NOT in the i18n LEX, so td() would leak EN into ZH #}
-    {% set _pl_label_zh = (latest.fed_stance.label_zh if (latest.fed_stance is defined and latest.fed_stance and latest.fed_stance.label_zh is defined and latest.fed_stance.label_zh) else (_pl_fsl_zh.get(_pl_fed_st, _pl_fed_st) if _pl_fed_st else none)) %}
-    {# evw_snap td_to_fomc for face chip #}
-    {% set _pl_td_fomc = (evw_snap.get('td_to_fomc') if (evw_snap is defined and evw_snap and evw_snap.get('available')) else none) %}
-    <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-policy')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-policy');}">
+    <div class="sxg-face mx5-card-face">
       <div class="mx5-card-title"><span class="l-en">Policy Monitor</span><span class="l-zh">政策监测</span></div>
-      {# 4a-1: Stance line — colored dot + plain-word state #}
-      {% set _pl_dot_col = 'var(--down)' if _pl_state == 'ARMED' else ('var(--warn)' if _pl_state == 'ELEVATED' else 'color-mix(in srgb,var(--up) 70%,transparent)') %}
-      <div class="plf-stance-row">
-        <svg width="8" height="8" viewBox="0 0 8 8" style="flex-shrink:0;margin-top:2px"><circle cx="4" cy="4" r="4" fill="{{ _pl_dot_col }}"/></svg>
-        <span>
-          <span class="l-en">{{ _pl_plain_en }}</span>
-          <span class="l-zh">{{ _pl_plain_zh }}</span>
-        </span>
-      </div>
-      {# 4a-2: Mini rate-path sparkline (120×36) + headline; only when all 5 implied points present #}
-      {% if _fp_ok %}
-      {% set _fp_vals = [_fp_impl.now, _fp_impl.m1, _fp_impl.m3, _fp_impl.m6, _fp_impl.m12] %}
-      {% set _fp_min = _fp_vals | min %}
-      {% set _fp_max = _fp_vals | max %}
-      {% set _fp_range = (_fp_max - _fp_min) if (_fp_max - _fp_min) > 0.001 else 0.25 %}
-      {# 5 points evenly at x=0,30,60,90,120; y=32*(1-(v-min)/range) #}
-      {% set _fp_pts = [] %}
-      {% for v in _fp_vals %}
-        {% set _fpx = (loop.index0 * 30) | round(1) %}
-        {% set _fpy = (32 * (1 - (v - _fp_min) / _fp_range)) | round(1) %}
-        {% if _fp_pts.append(_fpx ~ ',' ~ _fpy) %}{% endif %}
-      {% endfor %}
-      {# Area path: M first, L rest, then down to y=36, back to x=0 #}
-      {% set _fp_area = 'M' ~ _fp_pts[0] ~ ' L' ~ _fp_pts[1] ~ ' L' ~ _fp_pts[2] ~ ' L' ~ _fp_pts[3] ~ ' L' ~ _fp_pts[4] ~ ' L120,36 L0,36 Z' %}
-      <div class="plf-spark-row">
-        <svg class="plf-spark-svg" viewBox="0 0 120 36" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="plSpkGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="var(--isle-policy)" stop-opacity=".18"/>
-              <stop offset="100%" stop-color="var(--isle-policy)" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-          <path d="{{ _fp_area }}" fill="url(#plSpkGrad)"/>
-          <polyline points="{{ _fp_pts | join(' ') }}" fill="none" stroke="var(--isle-policy)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
-        </svg>
-        <div class="plf-spark-label">
-          {% if _fp.headline_en is defined and _fp.headline_en %}
-          <span class="l-en">{{ _fp.headline_en | truncate(72, True, '…') }}</span>
-          {# ZH: engine headline_zh is the true twin; built line only as last resort #}
-          {% if _fp.headline_zh is defined and _fp.headline_zh %}
-          <span class="l-zh">{{ _fp.headline_zh | truncate(72, True, '…') }}</span>
-          {% else %}
-          {% set _fp_cuts = (_fp.implied_cuts_12m if (_fp.implied_cuts_12m is defined and _fp.implied_cuts_12m is not none) else 0) %}
-          {% set _fp_n_zh = (_fp_cuts | abs) | round(0) | int %}
-          {% set _fp_dir_zh = '加息' if _fp_cuts < 0 else ('降息' if _fp_cuts > 0 else '不变') %}
-          <span class="l-zh">未来12个月市场定价约{{ _fp_n_zh }}次{{ _fp_dir_zh }}</span>
-          {% endif %}
-          {% else %}
-          <span class="l-en">Rate path — open dialog for detail</span>
-          <span class="l-zh">利率路径 — 点击查看详情</span>
-          {% endif %}
-        </div>
-      </div>
-      {% endif %}
-      {# 4a-3: Chip row — Fed stance · FOMC countdown · jawboning (11px) #}
-      <div class="plf-chip-row">
-        {% if _pl_label_en %}
-        <span class="plf-chip"><span class="l-en">{{ _pl_label_en }}</span><span class="l-zh">{{ _pl_label_zh or _pl_label_en }}</span></span>
-        {% endif %}
-        {% if _pl_td_fomc is not none %}
-        <span class="plf-chip">
-          <span class="l-en">FOMC in {{ _pl_td_fomc }} trading days</span>
-          <span class="l-zh">美联储会议还有{{ _pl_td_fomc }}个交易日</span>
-        </span>
-        {% endif %}
-        {% if PL and PL.get('jawboning') and PL.jawboning.get('n_7d') %}
-        {% set _pl_jw_n = PL.jawboning.n_7d %}
-        <span class="plf-chip">
-          <span class="l-en">{{ _pl_jw_n }} speech{{ 'es' if _pl_jw_n != 1 else '' }} this week</span>
-          <span class="l-zh">本周{{ _pl_jw_n }}次政策发声</span>
-        </span>
-        {% endif %}
-      </div>
+      <div class="plm-face-state"><span class="plm-dot plm-dot--unknown"></span><span>
+        <span class="l-en">Policy snapshot unavailable</span>
+        <span class="l-zh">政策快照不可用</span>
+      </span></div>
     </div>
-  </div>{# /sx-policy-v2 #}
+  </div>
+  {% endif %}
   {% endif %}{# /policy_lever #}
 
   {# ── 6. AI BRIEF row + tray (Stage B) ── #}
@@ -13995,409 +13868,13 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {% endif %}{# /market_state — dlg-risk #}
 
 
-  {# dlg-policy: Policy Monitor — full redesign (spec §4b) #}
+  {# dlg-policy — Policy Monitor dialog (scoped fragment; markup and styles
+     live outside this template). The shared mx5OpenDlg / mx5CloseDlg controller
+     still owns open/close, Escape, backdrop, focus trap and focus return. #}
   {% if policy_lever is defined and policy_lever %}
-  {# Precompute shared vars for dialog #}
-  {% set _DPL = policy_lever %}
-  {% set _dpl_s = _DPL.get('state') or 'QUIET' %}
-  {% set _dplc = 'c-down' if _dpl_s == 'ARMED' else ('c-warn' if _dpl_s == 'ELEVATED' else 'c-muted') %}
-  {% set _dpl_sent_en = {'ARMED':'Active repricing in progress','ELEVATED':'Elevated — watch for market repricing','QUIET':'No active policy pressure'}.get(_dpl_s,'') %}
-  {% set _dpl_sent_zh = {'ARMED':'重定价进行中','ELEVATED':'警戒 — 留意市场重定价','QUIET':'当前无积极政策压力'}.get(_dpl_s,'') %}
-  {# Fed stance for dialog #}
-  {% set _dpl_fed = (latest.fed_stance.stance if (latest is defined and latest.fed_stance is defined and latest.fed_stance and latest.fed_stance.stance is defined and latest.fed_stance.stance != 'unknown') else none) %}
-  {% set _dpl_fsl = {'hawkish':'Hawkish','very-hawkish':'Very Hawkish','dovish':'Dovish','very-dovish':'Very Dovish','neutral':'Neutral'} %}
-  {% set _dpl_fsl_zh = {'hawkish':'鹰派','very-hawkish':'超鹰派','dovish':'鸽派','very-dovish':'超鸽派','neutral':'中性'} %}
-  {% set _dpl_guid_en = {'tightening':'leaning tighter','easing':'leaning easier','on_hold':'on hold','mixed':'mixed signals'} %}
-  {% set _dpl_guid_zh = {'tightening':'倾向收紧','easing':'倾向宽松','on_hold':'按兵不动','mixed':'信号混杂'} %}
-  {% set _dpl_guid_v = (latest.fed_stance.guidance if (latest is defined and latest.fed_stance is defined and latest.fed_stance.guidance is defined) else none) %}
-  {# Rate path for dialog chart (all fields guarded) #}
-  {% set _dfp = (latest.fed_path if (latest is defined and latest.fed_path is defined and latest.fed_path) else none) %}
-  {% set _dfp_impl = (_dfp.implied if (_dfp and _dfp.implied is defined and _dfp.implied) else none) %}
-  {# is not none, NOT is defined — see the face-sparkline guard: None horizons crash |min #}
-  {% set _dfp_ok = (_dfp_impl and _dfp_impl.get('now') is not none and _dfp_impl.get('m1') is not none and _dfp_impl.get('m3') is not none and _dfp_impl.get('m6') is not none and _dfp_impl.get('m12') is not none) %}
-  {# Flip confirmation for dialog #}
-  {% set _DFC = (flip_confirmation if (flip_confirmation is defined and flip_confirmation and flip_confirmation.last_event is defined) else none) %}
-  <div class="mx5-dlg" id="dlg-policy" role="dialog" aria-modal="true" tabindex="-1">
-    <div class="mx5-dlg-backdrop" onclick="mx5CloseDlg()"></div>
-    <div class="mx5-dlg-panel">
-      <div class="mx5-dlg-header">
-        <span class="mx5-dlg-title"><span class="l-en">Policy Monitor</span><span class="l-zh">政策监测</span></span>
-        <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
-      </div>
-      <div class="mx5-dlg-body">
-        <div id="dlg-policy-lever-card">
-
-        {# ── §4b-1: State hero ───────────────────────────────────── #}
-        <div class="plx-state-hero">
-          <span class="chip {{ _dplc }}" style="font-size:15px;padding:6px 16px;font-weight:700">
-            <span class="l-en">{{ _dpl_s }}</span>
-            <span class="l-zh">{{ {'ARMED':'已触发','ELEVATED':'警戒','QUIET':'平静'}.get(_dpl_s, _dpl_s) }}</span>
-          </span>
-          <div>
-            <div class="plx-state-sent">
-              <span class="l-en">{{ _dpl_sent_en }}</span>
-              <span class="l-zh">{{ _dpl_sent_zh }}</span>
-            </div>
-            {% if _DPL.get('as_of') %}
-            <div class="plx-asof">
-              <span class="l-en">As of {{ _DPL.as_of }}</span>
-              <span class="l-zh">截至 {{ _DPL.as_of }}</span>
-            </div>
-            {% endif %}
-          </div>
-        </div>
-        {% if _DPL.get('framing') %}
-        <div class="plx-framing">
-          <span class="l-en">{{ _DPL.framing }}</span>
-          <span class="l-zh">{{ _DPL.get('framing_zh') or _DPL.framing }}</span>
-        </div>
-        {% endif %}
-
-        {# ── §4b-2: Rate path chart ──────────────────────────────── #}
-        {% if _dfp_ok %}
-        <div class="mx5-dlg-eyebrow">
-          <span class="l-en">Rate Path</span><span class="l-zh">利率路径</span>
-        </div>
-        <div class="plx-chart-wrap">
-        {# Build 5-point polyline: x positions evenly spaced 0..540 in 640-wide chart (padding 50 left/right)
-           y: rate % auto-scaled over implied ∪ dots (pad 0.15pp each side); chart height inner = 120px (y 30..150) #}
-        {% set _ch_impl = [_dfp_impl.now, _dfp_impl.m1, _dfp_impl.m3, _dfp_impl.m6, _dfp_impl.m12] %}
-        {# Collect dot medians for dots in chart range (year 2026 → m6 horizon slot) #}
-        {% set _ch_dots = (_dfp.dots if (_dfp.dots is defined and _dfp.dots) else []) %}
-        {# All y-values for scaling #}
-        {% set _ch_allvals = _ch_impl[:] %}
-        {% for d in _ch_dots %}{% if _ch_allvals.append(d.median) %}{% endif %}{% endfor %}
-        {% set _ch_min_raw = _ch_allvals | min %}
-        {% set _ch_max_raw = _ch_allvals | max %}
-        {% set _ch_pad = 0.15 %}
-        {% set _ch_ymin = _ch_min_raw - _ch_pad %}
-        {% set _ch_ymax = _ch_max_raw + _ch_pad %}
-        {% set _ch_yrange = (_ch_ymax - _ch_ymin) if (_ch_ymax - _ch_ymin) > 0.01 else 0.5 %}
-        {# Chart geometry: viewBox 0 0 640 180; x 50..590, y 20..150 (inner h=130) #}
-        {% set _ch_xl = 50 %}
-        {% set _ch_xr = 590 %}
-        {% set _ch_yt = 20 %}
-        {% set _ch_yb = 150 %}
-        {% set _ch_w = 540 %}
-        {% set _ch_h = 130 %}
-        {# 5 x positions evenly spaced #}
-        {# parens are load-bearing: `w*0.25|round(1)` parses as `w*(0.25|round(1))` = w*0.2 #}
-        {% set _ch_xs = [_ch_xl, _ch_xl + ((_ch_w*0.25)|round(1)|float), _ch_xl + ((_ch_w*0.5)|round(1)|float), _ch_xl + ((_ch_w*0.75)|round(1)|float), _ch_xr] %}
-        {# Macro to convert rate value → SVG y coordinate #}
-        {# Helper: rate to y #}
-        {% macro ry(v) %}{{ (_ch_yb - _ch_h * (v - _ch_ymin) / _ch_yrange) | round(1) }}{% endmacro %}
-        {# Build polyline points for implied path #}
-        {% set _ch_pts = [] %}
-        {% for i in range(5) %}
-          {% if _ch_pts.append(_ch_xs[i]|string ~ ',' ~ ry(_ch_impl[i])) %}{% endif %}
-        {% endfor %}
-        {# Area fill path #}
-        {% set _ch_area = 'M' ~ _ch_pts[0] ~ ' L' ~ _ch_pts[1] ~ ' L' ~ _ch_pts[2] ~ ' L' ~ _ch_pts[3] ~ ' L' ~ _ch_pts[4] ~ ' L' ~ _ch_xr|string ~ ',' ~ _ch_yb|string ~ ' L' ~ _ch_xl|string ~ ',' ~ _ch_yb|string ~ ' Z' %}
-        {# Target mid dashed line y-coord #}
-        {% set _ch_target_mid = (_dfp.target_mid if (_dfp.target_mid is defined and _dfp.target_mid is not none) else _dfp_impl.now) %}
-        {% set _ch_ydash = ry(_ch_target_mid) %}
-        {# Classify dots: current-year dot → in-chart m6 slot (_ch_xs[3]), outer years = annotation
-           chips only. Year derived from the data date so this survives the calendar rollover. #}
-        {% set _ch_cur_year = (latest.date[:4]|int) if (latest is defined and latest.date is defined and latest.date) else none %}
-        {% set _ch_dots_inner = [] %}
-        {% set _ch_dots_outer = [] %}
-        {% for d in _ch_dots %}
-          {% if d.year is defined and _ch_cur_year is not none and d.year == _ch_cur_year %}
-            {% if _ch_dots_inner.append(d) %}{% endif %}
-          {% else %}
-            {% if _ch_dots_outer.append(d) %}{% endif %}
-          {% endif %}
-        {% endfor %}
-        {# Gap chip values #}
-        {% set _ch_gap = (_dfp.gap if (_dfp.gap is defined and _dfp.gap) else none) %}
-        <svg class="plx-chart-svg" viewBox="0 0 640 180" role="img">
-          <defs>
-            <linearGradient id="plxChartGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="var(--isle-policy)" stop-opacity=".18"/>
-              <stop offset="100%" stop-color="var(--isle-policy)" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-          {# Area fill under implied path #}
-          <path class="fbm-chart-area" d="{{ _ch_area }}" fill="url(#plxChartGrad)"/>
-          {# Dashed hairline at current target mid #}
-          <line x1="{{ _ch_xl }}" y1="{{ _ch_ydash }}" x2="{{ _ch_xr }}" y2="{{ _ch_ydash }}" stroke="rgba(255,255,255,.18)" stroke-width="1" stroke-dasharray="4,4"/>
-          {# Implied path polyline — .fbm-chart-line drives the draw-in reveal on open #}
-          <polyline class="fbm-chart-line" style="--dash:760" points="{{ _ch_pts | join(' ') }}" fill="none" stroke="var(--isle-policy)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-          {# Dots and value labels at each implied point #}
-          {% for i in range(5) %}
-          {% set _px = _ch_xs[i] %}
-          {% set _py = ry(_ch_impl[i]) | float %}
-          <circle class="fbm-chart-node" cx="{{ _px }}" cy="{{ _py }}" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
-          <text class="fbm-chart-node" x="{{ _px }}" y="{{ _py - 8 }}" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">{{ '%.2f'|format(_ch_impl[i]) }}%</text>
-          {% endfor %}
-          {# Inner FOMC dot-plot diamonds (2026 → m6 slot) #}
-          {% for d in _ch_dots_inner %}
-          {% set _dpx = _ch_xs[3] %}
-          {% set _dpy = ry(d.median) | float %}
-          {# Diamond shape via polygon offset ±6,0 and 0,±6 #}
-          <polygon class="fbm-chart-diamond" points="{{ _dpx }},{{ _dpy - 6 }} {{ _dpx + 6 }},{{ _dpy }} {{ _dpx }},{{ _dpy + 6 }} {{ _dpx - 6 }},{{ _dpy }}" fill="var(--warn,#f59e0b)" fill-opacity=".85"/>
-          {% endfor %}
-          {# X-axis labels (EN and ZH via SVG text — bilingual handled via l-en/l-zh CSS;
-             SVG text does NOT support span so we emit two separate SVG text elements
-             per the svg-span-breakout law — EN visible by default, ZH shown on lang switch) #}
-          {% set _ch_xlabels_en = ['Now','1m','3m','6m','12m'] %}
-          {% set _ch_xlabels_zh = ['现在','1月','3月','6月','12月'] %}
-          {% for i in range(5) %}
-          <text class="l-en" x="{{ _ch_xs[i] }}" y="170" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.36)" font-family="inherit">{{ _ch_xlabels_en[i] }}</text>
-          <text class="l-zh" x="{{ _ch_xs[i] }}" y="170" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.36)" font-family="inherit">{{ _ch_xlabels_zh[i] }}</text>
-          {% endfor %}
-        </svg>
-        {# Outer dot-plot year annotations (e.g. '27 3.60%) as chips below chart #}
-        {% if _ch_dots_outer %}
-        <div class="plx-dot-chips">
-          {% for d in _ch_dots_outer %}
-          <span class="plx-dot-chip">
-            <span class="l-en">'{{ (d.year|string)[2:] }} {{ '%.2f'|format(d.median) }}% (Fed dot)</span>
-            <span class="l-zh">'{{ (d.year|string)[2:] }} {{ '%.2f'|format(d.median) }}%（美联储点图）</span>
-          </span>
-          {% endfor %}
-        </div>
-        {% endif %}
-        {# Caption row #}
-        <div class="plx-chart-caption">
-          {% if _dfp.read_en is defined and _dfp.read_en %}
-          <span class="l-en">{{ _dfp.read_en }}</span>
-          {% elif _dfp.headline_en is defined and _dfp.headline_en %}
-          <span class="l-en">{{ _dfp.headline_en }}</span>
-          {% else %}
-          <span class="l-en">Market-implied rate path{% if _dfp.implied_source_en is defined and _dfp.implied_source_en %} ({{ _dfp.implied_source_en }}){% else %} (source not recorded){% endif %}.</span>
-          {% endif %}
-          {# ZH mirrors the EN preference order: read_zh → headline_zh → built line #}
-          {% if _dfp.read_zh is defined and _dfp.read_zh %}
-          <span class="l-zh">{{ _dfp.read_zh }}</span>
-          {% elif _dfp.headline_zh is defined and _dfp.headline_zh %}
-          <span class="l-zh">{{ _dfp.headline_zh }}</span>
-          {% else %}
-          {% set _dfp_cuts = (_dfp.implied_cuts_12m if (_dfp.implied_cuts_12m is defined and _dfp.implied_cuts_12m is number) else none) %}
-          {% set _dfp_n_zh = ((_dfp_cuts | abs) | round(0) | int) if _dfp_cuts is not none else none %}
-          {% set _dfp_dir_zh = none if _dfp_cuts is none else ('加息' if _dfp_cuts < 0 else ('降息' if _dfp_cuts > 0 else '不变')) %}
-          <span class="l-zh">市场隐含利率路径{% if _dfp.implied_source_zh is defined and _dfp.implied_source_zh %}（{{ _dfp.implied_source_zh }}）{% else %}（来源未记录）{% endif %}{% if _dfp_cuts is not none %}：未来12个月定价约{{ _dfp_n_zh }}次{{ _dfp_dir_zh }}{% endif %}。</span>
-          {% endif %}
-          {# Gap chip (Fed vs market divergence) #}
-          {% if _ch_gap and _ch_gap.lean_en is defined and _ch_gap.gap_bp is defined %}
-          <span class="plx-chart-gap-chip"
-            data-tip-en="Fed dot at {{ _ch_gap.horizon_label }}: {{ _ch_gap.fed_dot }}%. Market: {{ _ch_gap.market }}%. Gap {{ _ch_gap.gap_bp }}bp."
-            data-tip-zh="美联储点图{{ _ch_gap.horizon_label }}: {{ _ch_gap.fed_dot }}%，市场定价: {{ _ch_gap.market }}%，差距{{ _ch_gap.gap_bp }}bp。">
-            <span class="l-en">{{ _ch_gap.lean_en }} ({{ _ch_gap.gap_bp }}bp at {{ _ch_gap.horizon_label }})</span>
-            <span class="l-zh">{{ _ch_gap.get('lean_zh') or _ch_gap.lean_en }}（{{ _ch_gap.gap_bp }}bp @ {{ _ch_gap.horizon_label }}）</span>
-          </span>
-          {% endif %}
-        </div>
-        </div>{# /plx-chart-wrap #}
-        {% endif %}{# /_dfp_ok #}
-
-        <div class="mx5-dlg-sep"></div>
-
-        {# ── §4b-3: Fed stance card ──────────────────────────────── #}
-        {% if _dpl_fed %}
-        <div class="mx5-dlg-eyebrow">
-          <span class="l-en">Fed Stance</span><span class="l-zh">美联储立场</span>
-        </div>
-        <div class="plx-stance-card">
-          <div class="plx-stance-label">
-            <span class="l-en">{{ _dpl_fsl.get(_dpl_fed, _dpl_fed) }}{% if _dpl_guid_v %} — {{ _dpl_guid_en.get(_dpl_guid_v, _dpl_guid_v) }}{% endif %}</span>
-            <span class="l-zh">{{ _dpl_fsl_zh.get(_dpl_fed, _dpl_fed) }}{% if _dpl_guid_v %} — {{ _dpl_guid_zh.get(_dpl_guid_v, _dpl_guid_v) }}{% endif %}</span>
-          </div>
-          {% if latest is defined and latest.fed_stance is defined and latest.fed_stance.market_vs_fed_en is defined and latest.fed_stance.market_vs_fed_en %}
-          <div class="plx-stance-mve">
-            <span class="l-en">{{ latest.fed_stance.market_vs_fed_en }}</span>
-            <span class="l-zh">{{ latest.fed_stance.get('market_vs_fed_zh') or latest.fed_stance.market_vs_fed_en }}</span>
-          </div>
-          {% endif %}
-          {% if latest is defined and latest.fed_stance is defined and latest.fed_stance.drivers_en is defined and latest.fed_stance.drivers_en %}
-          {% set _plx_drv_zh = (latest.fed_stance.drivers_zh if (latest.fed_stance.drivers_zh is defined and latest.fed_stance.drivers_zh) else []) %}
-          <div class="plx-drivers-chips">
-            {% for drv in latest.fed_stance.drivers_en[:3] %}
-            <span class="plx-driver-chip"><span class="l-en">{{ drv }}</span><span class="l-zh">{{ _plx_drv_zh[loop.index0] if loop.index0 < _plx_drv_zh|length else drv }}</span></span>
-            {% endfor %}
-          </div>
-          {% endif %}
-        </div>
-        <div class="mx5-dlg-sep"></div>
-        {% endif %}
-
-        {# ── §4b-4: Jawboning activity ───────────────────────────── #}
-        {% if _DPL.get('jawboning') %}
-        {% set _DJW = _DPL.jawboning %}
-        {% if _DJW.get('n_7d') is not none %}
-        <div class="mx5-dlg-eyebrow">
-          <span class="l-en">Jawboning Activity</span><span class="l-zh">政策发声活跃度</span>
-        </div>
-        <div class="plx-jaw-counts">
-          <div class="plx-jaw-count-box">
-            <div class="plx-jaw-count-num">{{ _DJW.n_7d }}</div>
-            <div class="plx-jaw-count-lbl">
-              <span class="l-en">speeches 7d</span><span class="l-zh">7日发声</span>
-            </div>
-          </div>
-          <div class="plx-jaw-count-box">
-            <div class="plx-jaw-count-num">{{ _DJW.get('n_30d') or '—' }}</div>
-            <div class="plx-jaw-count-lbl">
-              <span class="l-en">speeches 30d</span><span class="l-zh">30日发声</span>
-            </div>
-          </div>
-        </div>
-        {# 7d vs 30d proportion bar (guard div/zero) #}
-        {% set _jaw_n7 = _DJW.n_7d | int %}
-        {% set _jaw_n30 = (_DJW.get('n_30d') or 1) | int %}
-        {% set _jaw_pct = ([(_jaw_n7 / _jaw_n30 * 100) | round(0) | int, 100] | min) if _jaw_n30 > 0 else 0 %}
-        <div class="plx-jaw-bar-track"><div class="plx-jaw-bar-fill" style="width:{{ _jaw_pct }}%"></div></div>
-        {% if _DJW.get('last_alert_ts') %}
-        <div class="plx-jaw-ts">
-          <span class="l-en">Last event: {{ _DJW.last_alert_ts[:10] }}</span>
-          <span class="l-zh">最近事件：{{ _DJW.last_alert_ts[:10] }}</span>
-        </div>
-        {% endif %}
-        {% if _DJW.get('last_alert_summary') %}
-        <div class="plx-jaw-summary">
-          <span class="l-en">{{ _DJW.last_alert_summary }}</span>
-          <span class="l-zh">{{ _DJW.get('last_alert_summary_zh') or _DJW.last_alert_summary }}</span>
-        </div>
-        {% endif %}
-        <div class="mx5-dlg-sep"></div>
-        {% endif %}
-        {% endif %}
-
-        {# ── §4b-5: Lever board ──────────────────────────────────── #}
-        {% if _DPL.get('levers') %}
-        <div class="mx5-dlg-eyebrow">
-          <span class="l-en">Lever Board</span><span class="l-zh">杠杆面板</span>
-        </div>
-        <div style="margin-bottom:12px">
-          {% for lv in _DPL.levers %}
-          {% set _lv_armed = (lv.arming.armed if (lv.arming is defined and lv.arming and lv.arming.armed is defined) else false) %}
-          {% set _lv_stk = (lv.arming.stoch_k if (lv.arming is defined and lv.arming and lv.arming.stoch_k is defined and lv.arming.stoch_k is not none) else none) %}
-          <div class="plx-lever-row">
-            <div>
-              <div class="plx-lever-name">
-                <span class="l-en">{{ lv.name if lv.name is defined else '' }}</span>
-                <span class="l-zh">{{ (lv.name_zh if lv.name_zh is defined and lv.name_zh else (lv.name if lv.name is defined else '')) }}</span>
-              </div>
-              {% if _lv_stk is not none %}
-              {# bar carries the LEVEL only; the state colour lives on the armed dot —
-                 a quiet lever with a high oscillator must not read as an alarm #}
-              <div class="plx-lever-stoch"
-                   data-tip-en="Setup gauge (stochastic %K): {{ _lv_stk|round(0)|int }}/100 — how coiled this lever's asset is; state is set by the Armed/Quiet flag, not this bar"
-                   data-tip-zh="蓄势程度（随机指标%K）：{{ _lv_stk|round(0)|int }}/100 — 状态以“已触发/平静”标记为准，非此条形">
-                <div class="plx-lever-stoch-fill" style="width:{{ [_lv_stk|round(0)|int, 100]|min }}%;background:{{ 'var(--down)' if _lv_armed else 'color-mix(in srgb,var(--isle-policy) 55%,transparent)' }}"></div>
-              </div>
-              {% endif %}
-              {% if lv.watch is defined and lv.watch %}
-              <div class="plx-lever-watch">
-                <span class="l-en">{{ lv.watch }}</span>
-                <span class="l-zh">{{ (lv.watch_zh if lv.watch_zh is defined and lv.watch_zh else lv.watch) }}</span>
-              </div>
-              {% endif %}
-              {% if lv.copy_as_of is defined and lv.copy_as_of %}
-              <div style="font-size:10px;color:var(--ink-3,rgba(255,255,255,.36));margin-top:3px">
-                <span class="l-en">caption as of {{ lv.copy_as_of }}{% if lv.copy_stale is defined and lv.copy_stale %} — <em>review due</em>{% endif %}</span>
-                <span class="l-zh">文案更新于 {{ lv.copy_as_of }}{% if lv.copy_stale is defined and lv.copy_stale %} — <em>待复核</em>{% endif %}</span>
-              </div>
-              {% endif %}
-            </div>
-            <div class="plx-lever-status">
-              <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="{{ 'var(--down)' if _lv_armed else 'rgba(255,255,255,.22)' }}"/></svg>
-              <span>
-                <span class="l-en">{{ 'Armed' if _lv_armed else 'Quiet' }}</span>
-                <span class="l-zh">{{ '已触发' if _lv_armed else '平静' }}</span>
-              </span>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-        {# Favored complex chip row #}
-        {% if _DPL.get('favored_complex') and _DPL.favored_complex.get('basket') %}
-        {% set _fc = _DPL.favored_complex %}
-        <div class="plx-favored"
-          data-tip-en="{{ _fc.get('note','') }}"
-          data-tip-zh="{{ _fc.get('note_zh') or _fc.get('note','') }}">
-          {% for b in _fc.basket %}
-          <span class="plx-basket-chip">{{ b }}</span>
-          {% endfor %}
-          {% if _fc.drawdown_pct is defined and _fc.drawdown_pct is not none %}
-          <span style="font-size:12px;color:var(--ink-2,rgba(255,255,255,.6));align-self:center">
-            <span class="l-en">drawdown {{ '%.1f'|format(_fc.drawdown_pct) }}% from 120d peak</span>
-            <span class="l-zh">较120日高点回撤{{ '%.1f'|format(_fc.drawdown_pct) }}%</span>
-          </span>
-          {% endif %}
-        </div>
-        {% endif %}
-        <div class="mx5-dlg-sep"></div>
-        {% endif %}
-
-        {# ── §4b-6: Political runway ─────────────────────────────── #}
-        {% if _DPL.get('calendar') and _DPL.calendar.get('days_to_midterm') is not none %}
-        {% set _dcal = _DPL.calendar %}
-        <div class="plx-cal-row">
-          <span class="plx-cal-countdown">{{ _dcal.days_to_midterm }}</span>
-          <div>
-            <div style="font-size:12px;font-weight:600">
-              <span class="l-en">days to the midterm election</span>
-              <span class="l-zh">距中期选举</span>
-            </div>
-            {% if _dcal.get('context_note') %}
-            <div class="plx-cal-note">
-              <span class="l-en">{{ _dcal.context_note }}</span>
-              <span class="l-zh">{{ _dcal.get('context_note_zh') or _dcal.context_note }}</span>
-            </div>
-            {% endif %}
-          </div>
-        </div>
-        <div class="mx5-dlg-sep"></div>
-        {% endif %}
-
-        {# ── §4b-7: Repricing channels ───────────────────────────── #}
-        <div class="mx5-dlg-eyebrow">
-          <span class="l-en">Active Repricing Channels</span><span class="l-zh">活跃重定价渠道</span>
-        </div>
-        {% set _dplrepr = _DPL.get('repricing_components') %}
-        {% if _dplrepr %}
-        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
-          {% for r in _dplrepr %}
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.14);border-radius:8px">
-            <span style="font-size:12px"><span class="l-en">{{ r.label_en if r.label_en is defined else r.name }}</span><span class="l-zh">{{ r.label_zh if r.label_zh is defined else (r.name_zh if r.name_zh is defined else r.name) }}</span></span>
-            <span class="chip c-warn" style="font-size:11px;padding:2px 8px"><span class="l-en">Active</span><span class="l-zh">活跃</span></span>
-          </div>
-          {% endfor %}
-        </div>
-        {% else %}
-        <div class="plx-null">
-          <span class="l-en">No repricing channels active today.</span>
-          <span class="l-zh">今日无活跃重定价渠道。</span>
-        </div>
-        {% endif %}
-
-        {# ── §4b-8: Last confirmed flip + disclaimer ─────────────── #}
-        {% if _DFC %}
-        <div class="mx5-dlg-sep"></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:rgba(255,255,255,.04);border-radius:8px;margin-bottom:8px">
-          <span style="font-size:12px;color:var(--ink-2,rgba(255,255,255,.6))">
-            <span class="l-en">Last confirmed flip</span><span class="l-zh">最近确认翻转</span>
-          </span>
-          <span style="font-size:12px;font-weight:600;font-variant-numeric:tabular-nums">{{ _DFC.last_event.event_date }}</span>
-        </div>
-        {% if _DFC.last_event.get('description') or _DFC.last_event.get('description_zh') %}
-        <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.6;margin-bottom:8px;padding-left:4px">
-          <span class="l-en">{{ _DFC.last_event.get('description','') }}</span>
-          <span class="l-zh">{{ _DFC.last_event.get('description_zh') or _DFC.last_event.get('description','') }}</span>
-        </div>
-        {% endif %}
-        {% endif %}
-        <div class="mx5-dlg-sep"></div>
-        <div style="font-size:10px;color:var(--ink-3,rgba(255,255,255,.3));line-height:1.6">
-          <span class="l-en">Context only — not a forecast.</span>
-          <span class="l-zh">仅供参考 — 非预测。</span>
-        </div>
-
-        </div>{# /dlg-policy-lever-card #}
-      </div>
-    </div>
-  </div>
+  {% if pmv %}
+  {% include "_policy_monitor_dialog.html.j2" %}
+  {% endif %}
   {% endif %}{# /policy_lever — dlg-policy #}
 
   {# dlg-aibrief: AI Brief synthesis (v5.2 rebuild 1.5) #}
@@ -15594,7 +15071,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
      market_state=None fixture so this fallback must be reachable in macro mode. #}
   {% if (mode != 'macro' or not market_state) and policy_lever is defined and policy_lever %}
   {% set PL = policy_lever %}
-  {% set _pl_state = PL.get('state') or 'QUIET' %}
+  {# An absent or unrecognised state is UNKNOWN, never a silent QUIET — the
+     macro-mode panel (lib/policy_monitor_view.py) holds the same rule. #}
+  {% set _pl_state_raw = PL.get('state') %}
+  {% set _pl_state = _pl_state_raw if (_pl_state_raw in ('ARMED', 'ELEVATED', 'QUIET')) else 'UNKNOWN' %}
   {% set _pl_state_color = 'var(--down)' if _pl_state == 'ARMED' else ('var(--orange)' if _pl_state == 'ELEVATED' else 'var(--muted)') %}
   {# MX POLICY BAND — 3-col layout: col1=Policy Lever state+rows, col2=lever details (repricing-style), col3=flip confirmation summary.
      id="policy-lever-card" is preserved here for deep-link + CI test (tests/test_policy_lever.py checks string presence). #}
@@ -15660,11 +15140,15 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <div class="mx-pcol-label">{{ t('Lever Arming Status','杠杆触发状态') }}</div>
         {% if PL.get('levers') %}
         {% for lv in PL.levers %}
-        {% set _arm = lv.get('arming') %}
-        {% set _is_armed = _arm.get('armed') if _arm is not none else false %}
+        {# A malformed lever row degrades on its own instead of taking the page
+           down — the same independent-degradation rule the macro panel uses. #}
+        {% set _lvm = lv if (lv is mapping) else {} %}
+        {% set _arm_raw = _lvm.get('arming') %}
+        {% set _arm = _arm_raw if (_arm_raw is mapping) else none %}
+        {% set _is_armed = (_arm.get('armed') is true) if _arm is not none else false %}
         <div class="mx-prog-row">
           <div class="mx-prog-label-row">
-            <span class="muted"><span class="l-en">{{ lv.get('name') or '' }}</span><span class="l-zh">{{ lv.get('name_zh') or lv.get('name') or '' }}</span>{% if lv.get('asset') %} <span style="font-size:9.5px">({{ lv.asset }})</span>{% endif %}</span>
+            <span class="muted"><span class="l-en">{{ _lvm.get('name') or '' }}</span><span class="l-zh">{{ _lvm.get('name_zh') or _lvm.get('name') or '' }}</span>{% if _lvm.get('asset') %} <span style="font-size:9.5px">({{ _lvm.get('asset') }})</span>{% endif %}</span>
             {% if _arm is not none %}
             <span class="mx-delta-chip {{ 'mx-delta-dn' if _is_armed else 'mx-delta-mu' }}">
               <span class="l-en">{{ 'ARMED' if _is_armed else 'quiet' }}</span>
@@ -15685,8 +15169,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           </div>
           {% endif %}
           {% endif %}
-          {% if lv.get('watch') %}
-          <div style="font-size:10px;color:var(--muted);margin-top:1px"><span class="l-en">{{ lv.get('watch') or '' }}</span><span class="l-zh">{{ lv.get('watch_zh') or lv.get('watch') or '' }}</span></div>
+          {% if _lvm.get('watch') %}
+          <div style="font-size:10px;color:var(--muted);margin-top:1px"><span class="l-en">{{ _lvm.get('watch') or '' }}</span><span class="l-zh">{{ _lvm.get('watch_zh') or _lvm.get('watch') or '' }}</span></div>
           {% endif %}
         </div>
         {% endfor %}

@@ -6317,6 +6317,12 @@ def main() -> int:
     # and tests (tests/test_p_mp1_shell_stance_projection.py), never a second
     # template-side mapping (MP-1 §8a: "never a second mapping").
     env.globals["us_stance_projection"] = us_stance_projection
+    # Policy Monitor display model (pure, presentation-only). The template
+    # renders the card/dialog from this ONE normalized view model, so an absent
+    # reading can never become a zero and an unqualified Fed-vs-market gap can
+    # never become a precise spread. See lib/policy_monitor_view.py.
+    from lib import policy_monitor_view as _pmv
+    env.globals["pm_view"] = _pmv.build_view
     confirming, contradicting = component_chips(latest)
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
 
@@ -7464,6 +7470,15 @@ def main() -> int:
     _hold_rows, _hold_uni = holdings_panel()
     _acc_rows, _acc_uni = accumulation_panel()
 
+    # Policy Monitor inputs are read ONCE and normalized once: the card, the
+    # dialog and the display model all read the same payloads, so the panel
+    # cannot show one state on the face and another inside the dialog.
+    _pm_policy_lever = _policy_lever_view()          # display-only, PS-R3
+    _pm_evw = _evw_snapshot_view()                   # display-only
+    _pm_flip = _flip_confirmation_view()             # display-only
+    _pm_display = _pmv.build_view(_pm_policy_lever, latest,
+                                  evw_snap=_pm_evw, flip_confirmation=_pm_flip)
+
     vm = dict(
         latest=latest,
         risk_envelope=_risk_envelope,
@@ -7552,11 +7567,12 @@ def main() -> int:
         fear_greed=_fear_greed_view(),    # Fear/Greed composite dial (display-only, P1.2)
         vol_weather=_vol_weather_view(),  # VSB W3: vol weather chips (display-only)
         breadth_split=_breadth_split_view(),  # VSB W4: AI vs non-AI breadth (display-only)
-        evw_snap=_evw_snapshot_view(),  # W4 EVW: event-window phase + collision states (display-only)
+        evw_snap=_pm_evw,  # W4 EVW: event-window phase + collision states (display-only)
         sector_heat=_sector_heat_view(),  # compact sector-heat strip for macro.html (display-only)
         dispersion_regime=_dispersion_regime_view(),  # L3 selection-regime chip (NW Rails W2 PR-4, display-only)
-        policy_lever=_policy_lever_view(),  # Policy-Shock W2-F lever card (display-only, PS-R3)
-        flip_confirmation=_flip_confirmation_view(),  # T+1 sector-flip confirmation lens (Policy-Shock W1-C, display-only)
+        policy_lever=_pm_policy_lever,  # Policy-Shock W2-F lever card (display-only, PS-R3)
+        policy_monitor=_pm_display,  # Policy Monitor normalized display model (display-only)
+        flip_confirmation=_pm_flip,  # T+1 sector-flip confirmation lens (Policy-Shock W1-C, display-only)
         shock_state=_dash_shock_state,  # policy-shock de-escalation (PS-R3, display-only)
         intl_cascade=_intl_cascade,          # B1a: n_alert/n_total/alerts/asof from intl forward logs (display-only)
         intl_spillover=_intl_spillover,      # B1c: two-tier spillover state from intl_risk/latest.json (display-only)

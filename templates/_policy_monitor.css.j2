@@ -1,0 +1,454 @@
+{# ── Policy Monitor (plm-*) — scoped stylesheet ────────────────────────────
+   Included inside the macro dashboard's own <style> block (a governed
+   template include, not a runtime stylesheet injection).
+
+   HOUSE RULES THIS FILE KEEPS:
+     · tokens only — every colour is a templates/theme.css token, every radius
+       is a --r-* token; no hex, no rgba(), no color-mix(), no new token root;
+     · no coloured container edge — hierarchy comes from surface, hairline,
+       spacing and typography, and status carries a LABELLED semantic ink;
+     · DARK reads as graphite (panel/panel2, hairline separation, blue series,
+       labelled amber for the Fed projection);
+       LIGHT reads as a clean white panel on the cool canvas with crisp
+       hairlines — axis and secondary text use --muted, never translucent white;
+     · EN/ZH parity — every visible string ships as a dual .l-en / .l-zh pair.
+   ────────────────────────────────────────────────────────────────────────── #}
+
+/* ══ 1 · Card face (macro grid) ═════════════════════════════════════════ */
+/* the card's identity accent is the shared isle colour — declared here, not
+   as an inline custom property on the element */
+#sx-policy-v2{--isle-color:var(--isle-policy);}
+body.page-macro.mx4-grid .plm-face-state{
+  display:flex;align-items:flex-start;gap:8px;
+  font-size:var(--fs-sm);font-weight:600;color:var(--text);
+  line-height:1.45;margin-bottom:10px;
+}
+body.page-macro.mx4-grid .plm-dot{
+  width:8px;height:8px;border-radius:var(--r-pill,999px);
+  flex-shrink:0;margin-top:5px;background:var(--muted);
+}
+body.page-macro.mx4-grid .plm-dot--armed{background:var(--act);}
+body.page-macro.mx4-grid .plm-dot--elevated{background:var(--warn);}
+body.page-macro.mx4-grid .plm-dot--quiet{background:var(--muted);}
+body.page-macro.mx4-grid .plm-face-path{
+  display:flex;align-items:center;gap:10px;margin-bottom:10px;
+}
+body.page-macro.mx4-grid .plm-spark-svg{
+  width:120px;height:36px;flex-shrink:0;display:block;overflow:visible;
+}
+body.page-macro.mx4-grid .plm-face-pathlabel{
+  font-size:var(--fs-micro);color:var(--muted);line-height:1.5;min-width:0;
+}
+body.page-macro.mx4-grid .plm-face-chips{
+  display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;
+}
+body.page-macro.mx4-grid .plm-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:var(--fs-micro);line-height:1.4;
+  padding:3px 8px;border-radius:var(--r-pill,999px);
+  background:var(--mc-ink-07);border:1px solid var(--mc-ink-12);
+  color:var(--muted);white-space:nowrap;
+}
+body.page-macro.mx4-grid .plm-chip--state{
+  color:var(--text);border-color:var(--mc-ink-18);background:var(--mc-ink-08);
+}
+body.page-macro.mx4-grid .plm-face-asof{
+  font-size:var(--fs-micro);color:var(--muted);letter-spacing:.02em;
+}
+body.page-macro.mx4-grid .plm-face-open{
+  display:inline-flex;align-items:center;gap:4px;margin-top:10px;
+  font-size:var(--fs-micro);font-weight:600;color:var(--info);
+}
+
+/* ══ 2 · Dialog shell ═══════════════════════════════════════════════════ */
+#dlg-policy .mx5-dlg-title{
+  /* the shared shell's title colour resolves to a translucent white, which is
+     invisible on the light panel — the policy dialog names itself in text ink. */
+  color:var(--text);
+}
+#dlg-policy .plm-dlg-headtext{min-width:0;}
+#dlg-policy .plm-dlg-sub{
+  font-size:var(--fs-micro);color:var(--muted);margin-top:4px;line-height:1.5;
+  text-transform:none;letter-spacing:0;font-weight:500;
+}
+#dlg-policy .plm-dlg-body{padding-top:18px;}
+
+/* ══ 3 · Surfaces + section headings ════════════════════════════════════ */
+#dlg-policy .plm-surface{
+  background:var(--mc-ink-05);border:1px solid var(--line-quiet);
+  border-radius:var(--r-card,12px);
+}
+#dlg-policy .plm-eyebrow{
+  font-size:var(--fs-label);font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 12px;
+}
+#dlg-policy .plm-note{
+  font-size:var(--fs-sm);color:var(--muted);line-height:1.6;
+}
+#dlg-policy .plm-null{
+  font-size:var(--fs-sm);color:var(--muted);line-height:1.6;
+  padding:10px 12px;border-radius:var(--r-ctl,8px);
+  background:var(--mc-ink-05);border:1px solid var(--line-quiet);
+}
+#dlg-policy .plm-empty{
+  font-size:var(--fs-sm);color:var(--muted);line-height:1.6;
+}
+
+/* ══ 4 · Assessment band — conditions state vs evidence condition ═══════ */
+#dlg-policy .plm-assess{
+  display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);
+  gap:12px;margin-bottom:8px;
+}
+#dlg-policy .plm-assess-cell{padding:14px 16px;}
+#dlg-policy .plm-assess-top{
+  display:flex;align-items:center;gap:9px;margin-bottom:8px;
+}
+#dlg-policy .plm-assess-state{
+  font-size:var(--fs-md);font-weight:700;color:var(--text);line-height:1.35;
+}
+#dlg-policy .plm-assess-watch{
+  font-size:var(--fs-sm);color:var(--muted);line-height:1.55;margin-bottom:10px;
+}
+#dlg-policy .plm-cond-list{margin:0;padding:0;list-style:none;}
+#dlg-policy .plm-cond{
+  display:grid;grid-template-columns:66px minmax(0,1fr);
+  gap:10px;align-items:start;padding:6px 0;
+  border-top:1px solid var(--line-quiet);
+}
+#dlg-policy .plm-cond:first-child{border-top:none;}
+#dlg-policy .plm-cond-mark{
+  font-size:var(--fs-micro);font-weight:700;line-height:1.5;
+  letter-spacing:.04em;text-transform:uppercase;padding-top:2px;
+}
+/* A met CONDITION is not a price direction: the ink stays neutral so the
+   zh up/down swap cannot turn "met" green. */
+#dlg-policy .plm-cond-mark--met{color:var(--text);}
+#dlg-policy .plm-cond-mark--unmet{color:var(--muted);}
+#dlg-policy .plm-cond-mark--unknown{color:var(--muted);}
+#dlg-policy .plm-cond-label{
+  font-size:var(--fs-sm);color:var(--text);line-height:1.45;font-weight:600;
+}
+#dlg-policy .plm-cond-value{
+  font-size:var(--fs-micro);color:var(--muted);line-height:1.5;margin-top:2px;
+  font-variant-numeric:tabular-nums;
+}
+#dlg-policy .plm-evidence-row{
+  display:flex;align-items:baseline;gap:8px;margin-bottom:8px;
+}
+#dlg-policy .plm-evidence-level{
+  font-size:var(--fs-sm);font-weight:700;color:var(--text);
+}
+#dlg-policy .plm-evidence-note{
+  font-size:var(--fs-micro);color:var(--muted);line-height:1.55;
+}
+#dlg-policy .plm-evidence-list{
+  margin:8px 0 0;padding:0;list-style:none;
+}
+#dlg-policy .plm-evidence-list li{
+  font-size:var(--fs-micro);color:var(--muted);line-height:1.55;
+  padding:4px 0;border-top:1px solid var(--line-quiet);
+}
+
+/* ══ 5 · Rates panel ═══════════════════════════════════════════════════ */
+#dlg-policy .plm-chartwrap{
+  overflow-x:auto;overflow-y:hidden;margin-bottom:14px;
+}
+#dlg-policy .plm-chart-svg{
+  display:block;width:100%;height:auto;min-width:640px;max-width:760px;
+  overflow:visible;
+}
+#dlg-policy .plm-axis-text{
+  fill:var(--muted);font-size:11px;font-variant-numeric:tabular-nums;
+}
+#dlg-policy .plm-axis-title{
+  fill:var(--muted);font-size:11px;font-weight:600;
+}
+#dlg-policy .plm-gridline{stroke:var(--line-quiet);stroke-width:1;}
+#dlg-policy .plm-baseline{stroke:var(--line);stroke-width:1;}
+#dlg-policy .plm-series{fill:none;stroke:var(--info);stroke-width:2.5;
+  stroke-linejoin:round;stroke-linecap:round;
+  /* pathLength="100" on the polyline normalises the dash maths, so the
+     draw-in reveal needs one fixed value instead of a per-segment length */
+  stroke-dasharray:100;stroke-dashoffset:100;}
+#dlg-policy .plm-series-area{fill:var(--info);fill-opacity:.12;}
+#dlg-policy .plm-node{fill:var(--info);stroke:var(--panel);stroke-width:1.5;}
+#dlg-policy .plm-node-label{
+  fill:var(--text);font-size:11px;font-weight:600;
+  font-variant-numeric:tabular-nums;
+}
+#dlg-policy .plm-dot-marker{fill:var(--warn);fill-opacity:.9;
+  stroke:var(--panel);stroke-width:1.5;}
+#dlg-policy .plm-refline{stroke:var(--muted);stroke-width:1;
+  stroke-dasharray:4,4;}
+#dlg-policy .plm-reflabel{fill:var(--muted);font-size:10px;}
+#dlg-policy .plm-gapmark{stroke:var(--warn);stroke-width:1.5;
+  stroke-dasharray:3,3;fill:none;}
+
+#dlg-policy .plm-legend{
+  display:flex;flex-wrap:wrap;gap:14px;margin:10px 0 4px;
+}
+#dlg-policy .plm-legend-item{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:var(--fs-micro);color:var(--muted);line-height:1.4;
+}
+#dlg-policy .plm-legend-key{
+  width:16px;height:0;border-top-width:2px;border-top-style:solid;flex-shrink:0;
+}
+#dlg-policy .plm-legend-key--market{border-top-color:var(--info);}
+#dlg-policy .plm-legend-key--fed{border-top-color:var(--warn);}
+#dlg-policy .plm-legend-key--ref{
+  border-top-color:var(--muted);border-top-style:dashed;
+}
+#dlg-policy .plm-legend-key--gap{
+  border-top-color:var(--warn);border-top-style:dotted;
+}
+
+#dlg-policy .plm-rail{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;margin-bottom:14px;
+}
+#dlg-policy .plm-rail-card{padding:11px 13px;}
+#dlg-policy .plm-rail-label{
+  font-size:var(--fs-micro);color:var(--muted);line-height:1.4;
+  letter-spacing:.03em;text-transform:uppercase;font-weight:600;
+  margin-bottom:5px;
+}
+#dlg-policy .plm-rail-value{
+  font-size:var(--fs-md);font-weight:700;color:var(--text);line-height:1.35;
+  font-variant-numeric:tabular-nums;
+}
+#dlg-policy .plm-rail-sub{
+  font-size:var(--fs-micro);color:var(--muted);line-height:1.5;margin-top:4px;
+}
+
+#dlg-policy .plm-table{
+  width:100%;border-collapse:collapse;margin:4px 0 0;
+  font-size:var(--fs-sm);
+}
+#dlg-policy .plm-table thead th{
+  text-align:left;font-size:var(--fs-micro);font-weight:600;
+  color:var(--muted);letter-spacing:.04em;text-transform:uppercase;
+  padding:7px 10px;border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+#dlg-policy .plm-table tbody th{
+  text-align:left;font-size:var(--fs-sm);font-weight:500;color:var(--muted);
+  letter-spacing:0;text-transform:none;white-space:normal;
+  padding:7px 10px;border-bottom:1px solid var(--line-quiet);
+}
+#dlg-policy .plm-tbl-cap{
+  text-align:left;padding:0 0 6px;font-size:var(--fs-micro);font-weight:600;
+  color:var(--muted);letter-spacing:.04em;text-transform:uppercase;
+}
+#dlg-policy .plm-table td{
+  padding:7px 10px;border-bottom:1px solid var(--line-quiet);
+  color:var(--text);line-height:1.45;vertical-align:top;
+}
+#dlg-policy .plm-table td.num{
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+#dlg-policy .plm-table td.muted{color:var(--muted);font-size:var(--fs-micro);}
+#dlg-policy .plm-table tr:last-child td{border-bottom:none;}
+
+/* ══ 6 · Stance + guidance ══════════════════════════════════════════════ */
+#dlg-policy .plm-split{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;
+}
+#dlg-policy .plm-split-cell{padding:12px 14px;}
+#dlg-policy .plm-split-label{
+  font-size:var(--fs-micro);color:var(--muted);letter-spacing:.04em;
+  text-transform:uppercase;font-weight:600;margin-bottom:5px;
+}
+#dlg-policy .plm-split-value{
+  font-size:var(--fs-md);font-weight:700;color:var(--text);line-height:1.35;
+}
+#dlg-policy .plm-split-sub{
+  font-size:var(--fs-micro);color:var(--muted);line-height:1.55;margin-top:5px;
+}
+
+/* ══ 7 · Recorded activity ══════════════════════════════════════════════ */
+#dlg-policy .plm-counts{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;
+  margin-bottom:10px;
+}
+#dlg-policy .plm-count{padding:11px 13px;}
+#dlg-policy .plm-count-num{
+  font-size:var(--fs-num-lg);font-weight:800;color:var(--text);line-height:1.1;
+  font-variant-numeric:tabular-nums;
+}
+#dlg-policy .plm-count-lbl{
+  font-size:var(--fs-micro);color:var(--muted);line-height:1.45;margin-top:3px;
+}
+#dlg-policy .plm-alert{
+  padding:11px 13px;margin-bottom:8px;
+}
+#dlg-policy .plm-alert-date{
+  font-size:var(--fs-micro);color:var(--muted);letter-spacing:.03em;
+  font-variant-numeric:tabular-nums;margin-bottom:4px;
+}
+#dlg-policy .plm-alert-text{
+  font-size:var(--fs-sm);color:var(--text);line-height:1.55;
+}
+
+/* ══ 8 · Transmission watch rows ════════════════════════════════════════ */
+#dlg-policy .plm-tx{
+  padding:12px 14px;margin-bottom:8px;
+}
+#dlg-policy .plm-tx-head{
+  display:flex;align-items:baseline;justify-content:space-between;
+  gap:10px;flex-wrap:wrap;margin-bottom:6px;
+}
+#dlg-policy .plm-tx-name{
+  font-size:var(--fs-sm);font-weight:700;color:var(--text);line-height:1.4;
+}
+#dlg-policy .plm-tx-asset{
+  font-size:var(--fs-micro);color:var(--muted);font-variant-numeric:tabular-nums;
+}
+#dlg-policy .plm-tx-observed{
+  display:flex;align-items:center;gap:7px;flex-wrap:wrap;
+  font-size:var(--fs-micro);color:var(--muted);margin-bottom:7px;
+}
+#dlg-policy .plm-tx-state{
+  font-weight:700;color:var(--text);
+}
+#dlg-policy .plm-tx-state--armed{color:var(--act);}
+#dlg-policy .plm-tx-state--quiet{color:var(--muted);}
+#dlg-policy .plm-tx-state--unavailable{color:var(--muted);}
+#dlg-policy .plm-tx-gauge{
+  height:4px;border-radius:var(--r-pill,999px);background:var(--mc-ink-12);
+  overflow:hidden;flex:1;min-width:80px;
+}
+/* the gauge carries the LEVEL only — the observed state word carries the
+   meaning, so a quiet lever with a high oscillator never reads as an alarm */
+#dlg-policy .plm-tx-gauge-fill{height:100%;background:var(--muted);}
+#dlg-policy .plm-tx-hyp{
+  font-size:var(--fs-sm);color:var(--text);line-height:1.6;
+}
+#dlg-policy .plm-tx-stale{
+  display:inline-flex;align-items:center;gap:6px;margin-top:7px;
+  font-size:var(--fs-micro);color:var(--warn);line-height:1.5;
+}
+
+/* ══ 9 · Context rows ═══════════════════════════════════════════════════ */
+#dlg-policy .plm-ctx{
+  display:grid;grid-template-columns:minmax(0,1fr);gap:8px;
+}
+#dlg-policy .plm-ctx-row{
+  display:grid;grid-template-columns:minmax(140px,190px) minmax(0,1fr);
+  gap:12px;align-items:start;padding:9px 0;
+  border-top:1px solid var(--line-quiet);
+}
+#dlg-policy .plm-ctx-row:first-child{border-top:none;}
+#dlg-policy .plm-ctx-label{
+  font-size:var(--fs-micro);color:var(--muted);font-weight:600;
+  letter-spacing:.03em;text-transform:uppercase;line-height:1.5;
+}
+#dlg-policy .plm-ctx-value{
+  font-size:var(--fs-sm);color:var(--text);line-height:1.55;
+}
+#dlg-policy .plm-ctx-value .muted{color:var(--muted);}
+
+/* ══ 10 · Sources / methodology disclosure ══════════════════════════════ */
+#dlg-policy details.plm-details{
+  border:1px solid var(--line-quiet);border-radius:var(--r-ctl,8px);
+  padding:9px 13px;background:var(--mc-ink-05);
+}
+#dlg-policy details.plm-details + details.plm-details{margin-top:8px;}
+#dlg-policy details.plm-details > summary{
+  cursor:pointer;font-size:var(--fs-sm);font-weight:600;color:var(--text);
+  list-style:none;display:flex;align-items:center;gap:7px;
+}
+#dlg-policy details.plm-details > summary::-webkit-details-marker{display:none;}
+#dlg-policy details.plm-details > summary::before{
+  content:"+";font-weight:700;color:var(--muted);
+}
+#dlg-policy details.plm-details[open] > summary::before{content:"−";}
+#dlg-policy details.plm-details > summary:focus-visible{
+  outline:2px solid var(--link);outline-offset:3px;
+}
+#dlg-policy .plm-details-body{padding:11px 0 2px;}
+#dlg-policy .plm-src-table{width:100%;border-collapse:collapse;font-size:var(--fs-micro);}
+#dlg-policy .plm-src-table th{
+  text-align:left;font-weight:600;color:var(--muted);padding:5px 8px 5px 0;
+  border-bottom:1px solid var(--line);white-space:nowrap;
+}
+#dlg-policy .plm-src-table td{
+  padding:6px 8px 6px 0;border-bottom:1px solid var(--line-quiet);
+  color:var(--text);line-height:1.5;vertical-align:top;
+}
+#dlg-policy .plm-src-table tr:last-child td{border-bottom:none;}
+#dlg-policy .plm-src-table td.muted{color:var(--muted);}
+
+/* ══ 11 · Footer ════════════════════════════════════════════════════════ */
+#dlg-policy .plm-footer{
+  display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;
+  font-size:var(--fs-micro);color:var(--muted);line-height:1.6;
+}
+#dlg-policy .plm-footer-boundary{color:var(--muted);}
+
+/* ══ 12 · LIGHT art direction — a clean white panel on the cool canvas ════
+   The DARK rules above read as graphite: the inner surfaces sit one step
+   above the glass dialog and the hairlines are quiet. LIGHT is a DESIGN
+   TARGET, not a token swap: the inner surfaces become crisp white sheets
+   with a hairline and the estate's own modest shadow, the chart grid is
+   crisp rather than soft, and the data marks are ringed in white so they
+   read on a pale panel. No new palette — every value is a theme token. */
+[data-theme="light"] #dlg-policy .plm-surface{
+  background:var(--panel);
+  border-color:var(--line);
+  box-shadow:var(--card-shadow);
+}
+[data-theme="light"] #dlg-policy .plm-null,
+[data-theme="light"] #dlg-policy details.plm-details{
+  background:var(--panel2);
+  border-color:var(--line);
+}
+[data-theme="light"] #dlg-policy .plm-gridline{stroke:var(--line-quiet);}
+[data-theme="light"] #dlg-policy .plm-baseline{stroke:var(--line);}
+[data-theme="light"] #dlg-policy .plm-series-area{fill-opacity:.10;}
+[data-theme="light"] #dlg-policy .plm-node,
+[data-theme="light"] #dlg-policy .plm-dot-marker{stroke:var(--panel);}
+[data-theme="light"] #dlg-policy .plm-axis-text,
+[data-theme="light"] #dlg-policy .plm-axis-title,
+[data-theme="light"] #dlg-policy .plm-reflabel{fill:var(--muted);}
+[data-theme="light"] #dlg-policy .plm-node-label{fill:var(--text);}
+[data-theme="light"] #dlg-policy .plm-cond-mark--met{color:var(--text);}
+[data-theme="light"] #dlg-policy .plm-tx-stale{color:var(--warn);}
+[data-theme="light"] body.page-macro.mx4-grid .plm-chip{
+  background:var(--panel2);border-color:var(--line);color:var(--muted);
+}
+[data-theme="light"] body.page-macro.mx4-grid .plm-chip--state{
+  background:var(--panel2);border-color:var(--line);color:var(--text);
+}
+
+/* ══ 13 · Responsive — narrow screens stack the rail below the chart ════ */
+@media(max-width:720px){
+  #dlg-policy .plm-assess{grid-template-columns:minmax(0,1fr);}
+  #dlg-policy .plm-rail{grid-template-columns:minmax(0,1fr);}
+  #dlg-policy .plm-split{grid-template-columns:minmax(0,1fr);}
+  #dlg-policy .plm-counts{grid-template-columns:repeat(2,minmax(0,1fr));}
+  #dlg-policy .plm-ctx-row{grid-template-columns:minmax(0,1fr);gap:3px;}
+}
+@media(max-width:420px){
+  #dlg-policy .plm-counts{grid-template-columns:minmax(0,1fr);}
+  #dlg-policy .plm-table th,#dlg-policy .plm-table td{padding:6px 6px;}
+}
+
+/* ══ 14 · Reduced motion ═══════════════════════════════════════════════ */
+@media(prefers-reduced-motion:no-preference){
+  #dlg-policy .plm-series-area,
+  #dlg-policy .plm-node,
+  #dlg-policy .plm-dot-marker{opacity:0;}
+  #dlg-policy.mx5-dlg-in .plm-series-area,
+  #dlg-policy.mx5-dlg-in .plm-node,
+  #dlg-policy.mx5-dlg-in .plm-dot-marker{
+    transition:opacity .6s ease .7s;opacity:1;}
+  #dlg-policy.mx5-dlg-in .plm-series{
+    transition:stroke-dashoffset 900ms ease .25s;stroke-dashoffset:0;}
+}
+@media(prefers-reduced-motion:reduce){
+  #dlg-policy .plm-series{stroke-dashoffset:0;transition:none;animation:none;}
+  #dlg-policy .plm-series-area,
+  #dlg-policy .plm-node,
+  #dlg-policy .plm-dot-marker{opacity:1;transition:none;animation:none;}
+}

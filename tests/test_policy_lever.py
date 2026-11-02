@@ -466,6 +466,13 @@ class TestTemplateRender:
         )
         env.filters["min"] = lambda seq: min(seq)
         env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)
+        # The macro-mode Policy Monitor card + dialog render from the
+        # normalized display model (lib/policy_monitor_view.py). Registering the
+        # normalizer here exercises the REAL panel in this file's render tests;
+        # the legacy `policy-lever-card` fallback band assertions below are
+        # unchanged.
+        from lib import policy_monitor_view as _pmv
+        env.globals["pm_view"] = _pmv.build_view
         return env
 
     def _base_vm(self, policy_lever=None) -> dict:
@@ -579,6 +586,26 @@ class TestTemplateRender:
         html = env.get_template("dashboard.html.j2").render(**self._base_vm(pl), mode="macro")
         assert "policy-lever-card" in html
         assert "QUIET" in html or "平静" in html
+
+    def test_render_macro_mode_renders_the_normalized_monitor_panel(self):
+        """The macro-mode Policy Monitor card + dialog render from the
+        normalized display model — same ids, same shared dialog controller."""
+        env = self._env()
+        pl = self._policy_lever_fixture("ELEVATED")
+        html = env.get_template("dashboard.html.j2").render(**self._base_vm(pl), mode="macro")
+        assert html.count('id="sx-policy-v2"') == 1
+        assert html.count('id="dlg-policy"') == 1
+        assert html.count('id="dlg-policy-lever-card"') == 1
+        assert "mx5OpenDlg('dlg-policy')" in html
+        # the panel reports the CONDITIONS state in plain words, not a bare enum
+        assert "One condition is met" in html or "一项条件成立" in html
+
+    def test_render_macro_mode_keeps_a_zero_alert_count_visible(self):
+        """n_7d = 0 is a real reading: it must not disappear behind truthiness."""
+        env = self._env()
+        pl = self._policy_lever_fixture("QUIET")
+        html = env.get_template("dashboard.html.j2").render(**self._base_vm(pl), mode="macro")
+        assert "Recorded policy alerts: 0 (7d)" in html
 
     def test_render_macro_mode_with_armed_lever(self):
         """macro mode renders the policy_lever card (ARMED state).

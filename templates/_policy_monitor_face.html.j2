@@ -1,0 +1,92 @@
+{# ── Policy Monitor card face ───────────────────────────────────────────────
+   Consumes the normalized display model `pm` (lib/policy_monitor_view.py).
+   Tier 1 (glance): the plain condition state, the market-pricing move, three
+   labelled facts and ONE as-of stamp. No timeline claim, no trade call, no
+   bare number without its meaning.
+
+   The DOM contract (ids sx-policy-v2, the mx5OpenDlg trigger, the keyboard
+   handler) is preserved exactly — the card still opens the shared dialog.
+   ────────────────────────────────────────────────────────────────────────── #}
+<div class="sx" id="sx-policy-v2">
+  <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog"
+       onclick="mx5OpenDlg('dlg-policy')"
+       onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-policy');}">
+    <div class="mx5-card-title"><span class="l-en">Policy Monitor</span><span class="l-zh">政策监测</span></div>
+
+    {# 1 — the plain condition state (never a default QUIET, never a claim of
+           observed market repricing) #}
+    <div class="plm-face-state">
+      <span class="plm-dot plm-dot--{{ pmv.state.value|lower }}"></span>
+      <span>
+        <span class="l-en">{{ pmv.state.summary_en }}</span>
+        <span class="l-zh">{{ pmv.state.summary_zh }}</span>
+      </span>
+    </div>
+
+    {# 2 — the market-pricing move (a rate change in basis points, never a
+           literal number of hikes) with the mini elapsed-time path #}
+    {% if pmv.rates.spark.markers %}
+    <div class="plm-face-path">
+      <svg class="plm-spark-svg" viewBox="0 0 {{ pmv.rates.spark.width }} {{ pmv.rates.spark.height }}"
+           aria-hidden="true" focusable="false">
+        {% for area in pmv.rates.spark.areas %}
+        <path d="{{ area }}" fill="var(--info)" fill-opacity=".14"></path>
+        {% endfor %}
+        {% for seg in pmv.rates.spark.segments %}
+        <polyline points="{{ seg.points | map('join', ' ') | join(' ') }}" fill="none"
+                  stroke="var(--info)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"></polyline>
+        {% endfor %}
+        {% for mk in pmv.rates.spark.markers %}
+        <circle cx="{{ mk.x }}" cy="{{ mk.y }}" r="2" fill="var(--info)"></circle>
+        {% endfor %}
+      </svg>
+      <div class="plm-face-pathlabel">
+        <span class="l-en">Market pricing: {{ pmv.move_en }}</span>
+        <span class="l-zh">市场定价：{{ pmv.move_zh }}</span>
+      </div>
+    </div>
+    {% else %}
+    <div class="plm-face-path">
+      <div class="plm-face-pathlabel">
+        <span class="l-en">Rate path not recorded in this snapshot.</span>
+        <span class="l-zh">本次快照未记录利率路径。</span>
+      </div>
+    </div>
+    {% endif %}
+
+    {# 3 — three labelled facts. A recorded count of zero stays a zero. #}
+    <div class="plm-face-chips">
+      <span class="plm-chip plm-chip--state">
+        <span class="l-en">{{ pmv.state.stance_en }}</span>
+        <span class="l-zh">{{ pmv.state.stance_zh }}</span>
+      </span>
+      {% if pmv.context.fomc.known %}
+      <span class="plm-chip">
+        <span class="l-en">{{ pmv.context.fomc.label_en | replace('{n}', pmv.context.fomc.trading_days) }}</span>
+        <span class="l-zh">{{ pmv.context.fomc.label_zh | replace('{n}', pmv.context.fomc.trading_days) }}</span>
+      </span>
+      {% endif %}
+      {% if pmv.activity.known_7d %}
+      <span class="plm-chip">
+        <span class="l-en">Recorded policy alerts: {{ pmv.activity.n_7d }} (7d)</span>
+        <span class="l-zh">记录的政策提醒：{{ pmv.activity.n_7d }}（7日）</span>
+      </span>
+      {% endif %}
+      <span class="plm-chip">
+        <span class="l-en">Evidence: {{ pmv.evidence.label_en }}</span>
+        <span class="l-zh">证据：{{ pmv.evidence.label_zh }}</span>
+      </span>
+    </div>
+
+    {# 4 — ONE as-of stamp for the panel #}
+    <div class="plm-face-asof">
+      {% if pmv.snapshot.known %}
+      <span class="l-en">Snapshot {{ pmv.snapshot.date }}</span>
+      <span class="l-zh">快照 {{ pmv.snapshot.date }}</span>
+      {% else %}
+      <span class="l-en">Snapshot date not recorded</span>
+      <span class="l-zh">未记录快照日期</span>
+      {% endif %}
+    </div>
+  </div>
+</div>{# /sx-policy-v2 #}
