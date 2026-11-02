@@ -947,3 +947,13 @@ def test_controls_proposal_binds_to_latest_cross_spine_instant(monkeypatch):
     assert capital["filing"]["primary_document_url"] not in html
     assert "not a number the company gave" in html
     assert "并非公司给出的数字" in html
+
+
+def test_classified_event_cannot_price_an_issuer_with_boolean_shares(monkeypatch):
+    _mock_clock_readers(monkeypatch, [
+        _clock_event("later", "2026-08-03T16:30:00Z"),
+        _clock_event("earlier", "2026-08-03T18:00:00+09:00", "Restructuring"),
+    ])
+    scenario = vs.compute(_rows(shares=True), ticker="AAPL")
+    assert scenario["base"]["share_count"]["reported"] is False
+    assert va.controls_blob(scenario, as_of="2026-08-04") is None

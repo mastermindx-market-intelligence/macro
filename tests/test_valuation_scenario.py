@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 import re
+import json
+
+import pytest
 from pathlib import Path
 
 from engine import valuation_scenario as vs
@@ -393,3 +396,76 @@ def test_sec_filings_zh_uses_disclosure_not_tax_declaration():
     source_row = next(r for r in dialog["panels"][0]["rows"] if r["k_en"] == "Source")
     assert source_row["v_zh"] == expected_zh
     assert banned not in source_row["v_zh"]
+
+
+@pytest.mark.parametrize("field,base_key", [
+    ("revenue", "revenue"), ("op_income", "op_income"),
+    ("ni", "net_income"), ("cash", "net_debt"),
+    ("debt_lt", "net_debt"), ("debt_cur", "net_debt"),
+    ("shares", "share_count"),
+])
+@pytest.mark.parametrize("value", [True, False, float("inf"), float("-inf"),
+    float("nan"), "Infinity", "-Infinity", 10**400],
+    ids=["true", "false", "inf", "negative-inf", "nan", "text-inf", "text-negative-inf", "overflow-int"])
+def test_unusable_financial_values_stay_unreported(field, base_key, value):
+    blob = vs.compute(_rows(**{field: value}), ticker="SYNTHETIC")
+    assert blob["base"][base_key]["value"] is None
+    assert blob["base"][base_key]["reported"] is False
+    # Optional balance-sheet/operating facts never gate the earnings formula.
+    expected_computable = field not in {"revenue", "ni", "shares"}
+    assert all(s["computable"] is expected_computable for s in blob["scenarios"])
+    json.dumps(blob, allow_nan=False)
+
+
+@pytest.mark.parametrize("price", [True, False, float("inf"), float("-inf"), 10**400],
+    ids=["true", "false", "inf", "negative-inf", "overflow-int"])
+def test_unusable_price_is_null_without_disabling_scenarios(price):
+    blob = vs.compute(_rows(), price=price, ticker="SYNTHETIC")
+    assert blob["price"]["value"] is None
+    assert all(s["computable"] for s in blob["scenarios"])
+    json.dumps(blob, allow_nan=False)
+
+
+@pytest.mark.parametrize("overrides,missing", [
+    ({"ni": 1e308, "revenue": 1e308, "shares": 1.0}, "margin_too_thin"),
+    ({"ni": 1e308, "revenue": 1e-308}, "net_margin_base"),
+    ({"shares": 1e-308}, "margin_too_thin"),
+])
+def test_derived_overflow_is_not_a_computable_valuation(overrides, missing):
+    blob = vs.compute(_rows(**overrides), ticker="SYNTHETIC")
+    assert blob["any_computable"] is False
+    for scenario in blob["scenarios"]:
+        assert scenario["computable"] is False
+        assert scenario["per_share"] is None
+        assert missing in scenario["missing"]
+    json.dumps(blob, allow_nan=False)
+
+
+def test_net_debt_overflow_is_unreported_without_gating_scenarios():
+    blob = vs.compute(_rows(debt_lt=1e308, debt_cur=1e308), ticker="SYNTHETIC")
+    assert blob["base"]["net_debt"]["value"] is None
+    assert blob["base"]["net_debt"]["reported"] is False
+    assert all(s["computable"] for s in blob["scenarios"])
+    json.dumps(blob, allow_nan=False)
+
+
+def test_finite_numeric_strings_keep_existing_values():
+    normal = vs.compute(_rows(), price=12.5, ticker="SYNTHETIC")
+    strings = vs.compute(_rows(**{k: str(v) for k, v in FIXTURE_ROW.items()
+                                  if k not in {"fy", "period_end"}}),
+                         price="12.5", ticker="SYNTHETIC")
+    assert strings == normal
+
+
+@pytest.mark.parametrize("overrides", [
+    {"ni": float("inf")}, {"shares": True},
+    {"ni": 1e308, "revenue": 1e308, "shares": 1.0},
+    {"ni": 1e308, "revenue": 1e-308},
+])
+def test_invalid_scenario_cannot_enable_assumption_controls(monkeypatch, overrides):
+    from engine import valuation_assumptions as va
+    # The consumer contract is exercised without reading any issuer/event data.
+    monkeypatch.setattr(va, "_issuer_event_class", lambda blob: None)
+    monkeypatch.setattr(va, "_attach_event_proposal", lambda blob, **kwargs: blob)
+    blob = vs.compute(_rows(**overrides), ticker="SYNTHETIC")
+    assert va.controls_blob(blob) is None
