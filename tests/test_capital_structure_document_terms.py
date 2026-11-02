@@ -501,13 +501,39 @@ def test_unknown_or_phantom_parser_correction_fails_closed_against_retained_byte
         pytest.param("_iso", None, id="_iso"),
         pytest.param("_unique_spans", None, id="_unique_spans"),
         pytest.param("make_stable_span", None, id="make_stable_span"),
-        # Active 1.2.0 extractor graph.
-        pytest.param("_base_record_v1_2_0", None, id="_base_record_v1_2_0"),
-        pytest.param("_records_for_manifest_v1_2_0", None, id="_records_for_manifest_v1_2_0"),
-        pytest.param("_parse_fee_tables_v1_2_0", None, id="_parse_fee_tables_v1_2_0"),
-        pytest.param("_security_header_v1_2_0", None, id="_security_header_v1_2_0"),
-        pytest.param("_term_for_header_v1_2_0", None, id="_term_for_header_v1_2_0"),
-        pytest.param("_total_row_record_v1_2_0", None, id="_total_row_record_v1_2_0"),
+        # Released 1.2.0 graph: still registered, still sealed, exercised
+        # through its own released resolver rather than the active compile.
+        pytest.param(
+            "_base_record_v1_2_0", "capital-structure-document-terms/1.2.0",
+            id="_base_record_v1_2_0",
+        ),
+        pytest.param(
+            "_records_for_manifest_v1_2_0", "capital-structure-document-terms/1.2.0",
+            id="_records_for_manifest_v1_2_0",
+        ),
+        pytest.param(
+            "_parse_fee_tables_v1_2_0", "capital-structure-document-terms/1.2.0",
+            id="_parse_fee_tables_v1_2_0",
+        ),
+        pytest.param(
+            "_security_header_v1_2_0", "capital-structure-document-terms/1.2.0",
+            id="_security_header_v1_2_0",
+        ),
+        pytest.param(
+            "_term_for_header_v1_2_0", "capital-structure-document-terms/1.2.0",
+            id="_term_for_header_v1_2_0",
+        ),
+        pytest.param(
+            "_total_row_record_v1_2_0", "capital-structure-document-terms/1.2.0",
+            id="_total_row_record_v1_2_0",
+        ),
+        # Active 1.3.0 extractor graph.
+        pytest.param("_total_row_value_cell_v1_3_0", None, id="_total_row_value_cell_v1_3_0"),
+        pytest.param("_total_row_record_v1_3_0", None, id="_total_row_record_v1_3_0"),
+        pytest.param("_records_for_manifest_v1_3_0", None, id="_records_for_manifest_v1_3_0"),
+        pytest.param("_parse_fee_tables_v1_3_0", None, id="_parse_fee_tables_v1_3_0"),
+        pytest.param("_security_header_v1_3_0", None, id="_security_header_v1_3_0"),
+        pytest.param("_term_for_header_v1_3_0", None, id="_term_for_header_v1_3_0"),
         # Released 1.1.0 graph: still registered, still sealed, exercised
         # through its own released resolver rather than the active compile.
         pytest.param(
@@ -612,6 +638,7 @@ def test_released_parser_registry_has_closed_golden_semantic_bundle():
     assert tuple(document_terms._PARSER_REGISTRY) == (
         "capital-structure-document-terms/1.1.0",
         "capital-structure-document-terms/1.2.0",
+        "capital-structure-document-terms/1.3.0",
     )
     registration = document_terms._PARSER_REGISTRY[
         "capital-structure-document-terms/1.1.0"
@@ -656,7 +683,44 @@ def test_released_parser_registry_has_closed_golden_semantic_bundle():
     # 1.2.0-only private copies may appear in it.
     for node in manifest:
         assert "v1_2_0" not in node and "V1_2_0" not in node, node
+        assert "v1_3_0" not in node and "V1_3_0" not in node, node
     assert any("._records_for_manifest_v1_2_0" in node for node in manifest_1_2_0)
+    # The 1.3.0 registration mirrors the 1.2.0 entry's shape: same dispatch
+    # roots, its own extractor, its own pins, appended last.
+    v1_3_0 = document_terms._PARSER_REGISTRY["capital-structure-document-terms/1.3.0"]
+    assert v1_3_0.semantic_bundle.dispatch_roots is (
+        registration.semantic_bundle.dispatch_roots
+    )
+    assert v1_3_0.implementation_sha256 == (
+        document_terms._PARSER_V1_3_0_IMPLEMENTATION_SHA256
+    )
+    assert v1_3_0.semantic_bundle.dependency_count == (
+        document_terms._PARSER_V1_3_0_DEPENDENCY_COUNT
+    )
+    assert v1_3_0.semantic_bundle.dependency_manifest_sha256 == (
+        document_terms._PARSER_V1_3_0_DEPENDENCY_MANIFEST_SHA256
+    )
+    assert v1_3_0.extractor is document_terms._records_for_manifest_v1_3_0
+    manifest_1_3_0, manifest_sha256_1_3_0, implementation_sha256_1_3_0 = (
+        document_terms._semantic_closure(
+            v1_3_0.semantic_bundle.entrypoints,
+            v1_3_0.semantic_bundle.dispatch_roots,
+        )
+    )
+    assert len(manifest_1_3_0) == 311
+    assert manifest_sha256_1_3_0 == (
+        "091b886aef8c8f67d01c7c89c22f0a281c23ef2113a64a0676a3dfa14b7411aa"
+    )
+    assert implementation_sha256_1_3_0 == (
+        "66916f8f1ae4096f2dcbe9f8f1d2effa7f8df825dbdd83dc3ac73c07c670b1de"
+    )
+    assert len(manifest_1_3_0) == v1_3_0.semantic_bundle.dependency_count
+    assert manifest_sha256_1_3_0 == v1_3_0.semantic_bundle.dependency_manifest_sha256
+    assert implementation_sha256_1_3_0 == v1_3_0.implementation_sha256
+    # Neither released predecessor's graph may contain a 1.3.0-only copy.
+    for node in manifest_1_2_0:
+        assert "v1_3_0" not in node and "V1_3_0" not in node, node
+    assert any("._records_for_manifest_v1_3_0" in node for node in manifest_1_3_0)
     runtime_manifest, runtime_manifest_sha256, runtime_implementation_sha256 = (
         document_terms._runtime_dispatch_closure(
             registration.semantic_bundle.dispatch_roots,
@@ -2437,14 +2501,23 @@ def _ex107_manifest(raw: bytes) -> dict:
 
 def test_ex107_table_1_yields_security_rows_and_exactly_one_total_under_1_2_0():
     assert len(EX107_FIXTURES) == 6
+    # These goldens pin the released 1.2.0 output: they run through the
+    # registered released parser exactly the way every historical consumer
+    # re-derives a 1.2.0 row (the private compile resolves released versions
+    # through the closed registry), so the active parser version can move
+    # without moving what 1.2.0 means here.
+    _prior_version, lane, capability = _fixture_prior_parser_lane()
     for path in EX107_FIXTURES:
         raw = path.read_bytes()
         accession = _ex107_identity(raw)[0]
         manifest = _ex107_manifest(raw)
-        result = compile_document_term_records(
-            [manifest], source_reader=_reader(raw), generated_at="2026-08-03T00:00:00Z",
-        )
-        rows = result["observations"]
+        rows = document_terms._compile_document_term_records_test_lane(
+            [manifest], source_reader=_reader(raw),
+            generated_at="2026-08-03T00:00:00Z",
+            parser_lane=lane,
+            parser_version="capital-structure-document-terms/1.2.0",
+            capability=capability,
+        )["observations"]
         _schema_validate(rows)
         totals = [
             row for row in rows

@@ -1,0 +1,28 @@
+{
+  "accession": "0001731122-26-000704",
+  "form": "F-3",
+  "url": "https://www.sec.gov/Archives/edgar/data/0001731122-26-000704.txt",
+  "retrieved_at": "2026-11-02T07:36:10Z",
+  "user_agent": "MacroDashboard research longr2512@gmail.com",
+  "full_submission": {
+    "sha256": "28623037a92ce353eeef269908d9d9a351bbdf4c164b07f85b90088ea3bd4e75",
+    "byte_length": 1151009
+  },
+  "fixture": {
+    "sha256": "c35d5f09cd6a3f1c9938278c79cf10ebd5560650e10beac313da05ab0bbcbb3a",
+    "byte_length": 59793
+  },
+  "documents": [
+    {
+      "type": "EX-FILING FEES",
+      "sequence": "6",
+      "filename": "e7618_ex107.htm",
+      "source_byte_offsets": {
+        "document_block_start": 827540,
+        "document_block_end": 886246
+      },
+      "sliced": false
+    }
+  ],
+  "note": "SEC-DOCUMENT/SEC-HEADER block and each included <DOCUMENT> are verbatim EDGAR bytes except where sliced as recorded above"
+}

@@ -1,0 +1,31 @@
+{
+  "accession": "0001171520-26-000115",
+  "form": "S-1/A",
+  "url": "https://www.sec.gov/Archives/edgar/data/0001171520-26-000115.txt",
+  "retrieved_at": "2026-11-02T07:34:56Z",
+  "user_agent": "MacroDashboard research longr2512@gmail.com",
+  "full_submission": {
+    "sha256": "2e2fc667c4f2e926334be639b960b9bc1445d9d954e4d9fdf72be149f283305b",
+    "byte_length": 628952
+  },
+  "fixture": {
+    "sha256": "758e9ebe99d151b006fc16a136a8bbaa057fc0a9aa42190e8621ff9ac29aa766",
+    "byte_length": 5339
+  },
+  "documents": [
+    {
+      "type": "S-1/A",
+      "sequence": "1",
+      "filename": "eps12626_drav.htm",
+      "source_byte_offsets": {
+        "text_start": 1045,
+        "text_end": 510777,
+        "slice_start": 9884,
+        "slice_end": 14141
+      },
+      "sliced": true,
+      "note": "well-formed <DOCUMENT> wrapper around a contiguous byte slice of the child <TEXT> containing the complete fee <table> element"
+    }
+  ],
+  "note": "SEC-DOCUMENT/SEC-HEADER block and each included <DOCUMENT> are verbatim EDGAR bytes except where sliced as recorded above"
+}

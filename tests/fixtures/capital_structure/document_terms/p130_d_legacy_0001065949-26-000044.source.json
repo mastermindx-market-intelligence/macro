@@ -1,0 +1,41 @@
+{
+  "accession": "0001065949-26-000044",
+  "form": "S-1",
+  "url": "https://www.sec.gov/Archives/edgar/data/0001065949-26-000044.txt",
+  "retrieved_at": "2026-11-02T07:34:12Z",
+  "user_agent": "MacroDashboard research longr2512@gmail.com",
+  "full_submission": {
+    "sha256": "71158c560cabab676d0a786eab87c5dea6e406dc335ab72a5c21b96f04a6af0a",
+    "byte_length": 5462748
+  },
+  "fixture": {
+    "sha256": "424fae49c46e8937468d1258c55cf437c25dae453e134bf6b4a46d05a4625326",
+    "byte_length": 32204
+  },
+  "documents": [
+    {
+      "type": "S-1",
+      "sequence": "1",
+      "filename": "yqais1v4.htm",
+      "source_byte_offsets": {
+        "text_start": 1068,
+        "text_end": 1497674,
+        "slice_start": 12581,
+        "slice_end": 20363
+      },
+      "sliced": true,
+      "note": "well-formed <DOCUMENT> wrapper around a contiguous byte slice of the child <TEXT> containing the complete fee <table> element"
+    },
+    {
+      "type": "EX-FILING FEES",
+      "sequence": "28",
+      "filename": "EXFILINGFEES.htm",
+      "source_byte_offsets": {
+        "document_block_start": 2714325,
+        "document_block_end": 2737641
+      },
+      "sliced": false
+    }
+  ],
+  "note": "SEC-DOCUMENT/SEC-HEADER block and each included <DOCUMENT> are verbatim EDGAR bytes except where sliced as recorded above"
+}
