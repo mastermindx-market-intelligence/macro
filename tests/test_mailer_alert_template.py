@@ -266,27 +266,29 @@ def test_the_ceiling_line_disclaims_advice_rather_than_giving_it(lang):
                and "建议" in b["zh"] for b in c_zh["blocks"])
 
 
-# --- direction: both down is relative shelter, never leadership --------------- #
-def test_both_down_is_described_as_relative_shelter_not_relative_strength():
+# --- direction: both down is a smaller loss, never leadership ----------------- #
+def test_both_down_is_described_as_a_smaller_loss_not_relative_strength():
     n, d = -1.20, -3.40
     c = mailer.compose_alert(_obs(values={"sessions": 2, "numerator_return_pct": n,
                                           "denominator_return_pct": d,
                                           "ratio_return_pct": _ratio(n, d)}), lang="en")
     lede = c["blocks"][0]["en"]
     assert "Both fell" in lede
-    assert "relative shelter only, not an absolute gain" in lede
+    assert "a smaller loss is still a loss, not a gain" in lede
+    assert "shelter" not in lede
     assert "stronger" not in lede and "led" not in lede
     assert "XLV -1.20%" in lede and "XLK -3.40%" in lede
 
 
-def test_both_down_in_chinese_is_also_relative_shelter():
+def test_both_down_in_chinese_is_also_a_smaller_loss():
     n, d = -1.20, -3.40
     c = mailer.compose_alert(_obs(values={"sessions": 2, "numerator_return_pct": n,
                                           "denominator_return_pct": d,
                                           "ratio_return_pct": _ratio(n, d)}), lang="zh")
     lede = c["blocks"][0]["zh"]
     assert "两者均下跌" in lede
-    assert "相对抗跌" in lede and "不代表绝对收益为正" in lede
+    assert "较小的跌幅仍是亏损，不是收益" in lede
+    assert "抗跌" not in lede
 
 
 def test_a_positive_absolute_pair_is_plainly_reported_as_relative_strength():
@@ -295,18 +297,18 @@ def test_a_positive_absolute_pair_is_plainly_reported_as_relative_strength():
                                           "denominator_return_pct": d,
                                           "ratio_return_pct": _ratio(n, d)}), lang="en")
     lede = c["blocks"][0]["en"]
-    assert "relative shelter" not in lede
+    assert "shelter" not in lede
     assert "XLV was relatively stronger than XLK" in lede
     assert "XLV returned +3.10%" in lede and "XLK returned +1.20%" in lede
 
 
-def test_a_mixed_pair_reports_plain_numbers_without_a_shelter_claim():
+def test_a_mixed_pair_reports_plain_numbers_without_a_smaller_loss_claim():
     n, d = -0.80, 2.40
     c = mailer.compose_alert(_obs(values={"sessions": 2, "numerator_return_pct": n,
                                           "denominator_return_pct": d,
                                           "ratio_return_pct": _ratio(n, d)}), lang="en")
     lede = c["blocks"][0]["en"]
-    assert "relative shelter" not in lede
+    assert "shelter" not in lede
     assert "XLV was relatively weaker than XLK" in lede
     assert "XLV returned -0.80%" in lede and "XLK returned +2.40%" in lede
 

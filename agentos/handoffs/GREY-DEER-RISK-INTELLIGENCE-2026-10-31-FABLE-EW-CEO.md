@@ -32,7 +32,7 @@ changed:
   - path: research/grey_deer/README.md
     what: Current next action dated 2026-10-31 pointing at the adoption record; the 2026-10-17 section retained as history.
   - path: research/grey_deer/ew_completion_20261031/EW_P5_ACCEPTANCE_RECEIPTS.md
-    what: Records r4 (2026-11-01) - section 7 receipts table for every merged EW wave through EW-P4 #10350; no pack marked PASS.
+    what: Records r4 (2026-11-01) - section 7 receipts table for every merged EW wave through EW-P4 #10350; records r5 added EW-P4-FU #10364 and the first EW-P5 pack census (run ew-p5-packs-20261101T071404Z-518ae7cd); no pack marked PASS; records r6 (2026-11-02) added EW-P4-ACT #10394 (983c6b0798e2) and EW-P5 FU2 #10401 (20a05db07376) and the EW-P1 first-session note.
 verified:
   - claim: data/qledger/claims.jsonl on main is 206 bytes under GitHub's 100 MiB single-file limit.
     command: >-
@@ -60,31 +60,44 @@ verified:
     command: gh run view 41156792292 --json status,conclusion,jobs
     result: >-
       completed/failure; collect success 04:55:23Z, collect_tail failure 05:26:25Z, engine CANCELLED 09:29:59Z (not a GH001 push failure; the job did not reach a commit). origin/main's last engine data commit remains ad6e5a824334.
+  - claim: The first EW-P5 pack census ran at main d3fb043b0f2f with every count read from junit XML and node TAP.
+    command: >-
+      python3 run_packs.py d3fb043b0f2f521f3d37971f19622019b5b041f1 <out_dir>   # seat script: 14 pytest files plus tests/ew_p4_glance_ui.test.cjs, clean tree asserted
+    result: >-
+      ew-p5-packs-20261101T071404Z-518ae7cd: pytest 1069 passed, 17 skipped, 0 failed, 0 errors; node 20 of 20; pytest exit 0, node exit 0.
 unverified:
   - claim: EW-P1 repair restores the nightly engine data commit.
     what_would_verify: >-
-      Two natural nightly sessions after merge in which `engine: regime update <date>` lands on main and data/risk_envelope/latest.json advances; observed by a durable watcher, never polled.
+      Two natural engine sessions after the carve (scheduled daily.yml runs on main, never a seat dispatch) in which `engine: regime update <date>` lands on main and data/risk_envelope/latest.json advances.
+      One of two observed: 2026-11-02 (b0a37dfbaff4, 9d7925b30a01). The second is the next natural engine session; observed by the seat's hourly git-only read, never polled or dispatched.
   - claim: #10219's failing check names.
     what_would_verify: One bounded `gh pr checks 10219` after the CI-wait cooldown (REDUNDANT POLL blocked the second read).
 unresolved:
   - >-
-    EW-P1 acceptance: two natural nightly `engine: regime update` landings on main after the incumbent carve #10255 merges (#10333 closed as superseded 2026-10-31T20:14Z); observed by the seat's hourly git-only watcher, never dispatched or polled.
+    EW-P1 acceptance: two natural engine SESSIONS after the incumbent carve #10255 (merged c2772cc4, 06:29:41Z). The first landed 2026-11-02
+    (b0a37dfbaff4 10:20:35Z, 9d7925b30a01 10:40:00Z; latest.json advanced). A session lands one to five engine commits (census since 2026-10-01), so the earlier
+    commit-counting watcher's exit proved one session, not two; PRODUCTION_PROOF is not recorded. The sessions-counting watcher runs hourly, git-only.
   - >-
     #10221's three engine-script hunks are not taken over; #10221 remains the orphaned carrier for the pair check until a successor is decided. QLedger publication (data/qledger + site/qledger) stays unpublished; owner #10079 (inert/NOT_CUT_OVER).
   - >-
     EW-P3 reader stays NOT_EXECUTABLE until the registered window elapses (earliest first look 2027-12-31) and a receipted issue exists; no scorer is implemented; no outcome row has been read.
   - >-
     EW-P4 #10350 MERGED 2026-11-01T04:36:16Z (886ab694c947, exact head a49a16d5, review r3 APPROVE_WITH_NOTES); rung MERGED only.
-    No producer writes latest_observation, so production renders the unavailable state; review notes F-1..F-3 and the producer
-    gap are tracked as EW-P4-FU. EW-P5 packs S/Q/O/C/U/R are not started; receipts table at
-    research/grey_deer/ew_completion_20261031/EW_P5_ACCEPTANCE_RECEIPTS.md.
+    No producer writes latest_observation, so production renders the unavailable state (EW-P4-ACT). Review notes F-1..F-3
+    are closed by #10364 (squash d3fb043b0f2f, merged 2026-11-01T07:11:16Z). EW-P5 first census ew-p5-packs-20261101T071404Z-518ae7cd: no pack is PASS;
+    defects and gaps are EW-P5-FU; receipts at research/grey_deer/ew_completion_20261031/EW_P5_ACCEPTANCE_RECEIPTS.md.
 next_actions:
   - >-
-    Seat: EW-P4-FU repairs (F-1 whitespace pair_id, F-2 calendar-impossible event_as_of, F-3 selector scan) as one small PR with a fresh non-authoring review; the producer activation needs its own gate and is not a UI fix.
+    Seat: EW-P5-FU repairs (S02/S12 live-overlay precedence merged as #10371 a7628775, O06 publish-before-record, then O01, C05, U02, U09 and the sparse-tree guard), each as its own PR with a fresh non-authoring review. EW-P4-ACT (the latest_observation producer) needs its own activation gate and is not a UI fix.
   - >-
-    Seat: when the EW-P1 watcher reports two engine landings, record PRODUCTION_PROOF for EW-P1 in this workstream (never before; a merge of #10255 is not proof).
+    Seat: when the sessions-counting watcher reports a second natural engine session (a distinct landing date with latest.json advanced),
+    record PRODUCTION_PROOF for EW-P1 in this workstream (never before; neither a merge of #10255 nor two commits from one night is proof).
   - >-
-    Then: EW-P5 acceptance packs per ACCEPTANCE_AND_RELEASE.md; `SESSION END:` line at a genuine stop.
+    Seat: EW-P4-ACT #10394 (983c6b0798e2) and EW-P5 FU2 #10401 (20a05db07376) are MERGED only. Next: FU3 carve-outs as their own PR with a fresh
+    non-authoring review; then the second named EW-P5 pack run at the new main head (adds tests/test_qledger_carve.py, re-maps the stale rows).
+    No flag flip, no live send, no Tier A grant.
+  - >-
+    Then: a second named EW-P5 pack run after the EW-P5-FU merges, per ACCEPTANCE_AND_RELEASE.md; `SESSION END:` line at a genuine stop.
 do_not_redo:
   - >-
     Do not re-ACK, re-START or re-spec the adopted task tree; #10219's tree is the source of truth and this record is an amendment.
@@ -117,3 +130,7 @@ non-authoring review is still required on every PR; the seat never self-merges o
 Adoption decisions D1–D6, the refreshed invalidator table and the wave plan live in
 `research/grey_deer/ew_completion_20261031/ADOPTION_RECORD_2026-10-31.md`. The Chairman packet is retained
 verbatim beside it.
+
+Records r5 (2026-11-01): EW-P4-FU #10364 merged at 2026-11-01T07:11:16Z (squash d3fb043b0f2f). The first EW-P5 pack
+census (ew-p5-packs-20261101T071404Z-518ae7cd) found no pack at PASS; the defects and gaps are EW-P5-FU in the
+workstream, and the producer gap is EW-P4-ACT.

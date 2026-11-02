@@ -73,7 +73,11 @@
         </dl><p class="pvs-note">{{ t('Selection is not entry permission. Setup type is not an assigned strategy.','精选不等于入场许可，形态类别不是已分配的策略。') }}</p></section>
         <section class="pvs-section pvs-plan-relation" data-plan-relation="{{ ((plan_rel.get('state') if plan_rel is mapping else none) or 'none')|e }}" data-plan-exact="unavailable">
           {% set _plan_state = (plan_rel.get('state') if plan_rel is mapping else none) or 'none' %}
-          {% if _plan_state == 'related_security' %}
+          {% set _plan_rows = (plan_rel.get('plans') or []) if plan_rel is mapping else [] %}
+          {% set _one = _plan_rows[0] if _plan_rows|length == 1 else none %}
+          {% set _plan_gated = _plan_state == 'related_security' and _one is mapping
+             and _one.get('shell_state') == 'gated' and not _one.get('id') %}
+          {% if _plan_state == 'related_security' and not _plan_gated %}
           <h3>{{ t('Related model record','相关模型记录') }}</h3>
           {% for plan in (plan_rel.get('plans') or []) %}
           <div class="pvs-plan-rec" data-plan-id="{{ (plan.get('id') or '')|e }}" data-plan-lifecycle="{{ (plan.get('lifecycle_state') or '')|e }}">
@@ -99,6 +103,11 @@
           <p class="pvs-note">{{ t('Dates describe sessions or calendar days. Publication / first-visible time not supplied. A historical signal or record status does not establish current entry availability.','日期表示交易日或日历日。未提供发布／首次可见时间。历史信号或记录状态不代表当前可入场。') }}</p>
           <p class="pvs-note">{{ t("A model record for the same security. It is not this candidate's plan and not a position you hold.",'这是同一证券的模型记录，不是此候选的计划，也不是您持有的仓位。') }}</p>
           <p class="pvs-note">{{ t('Exact plan relation: not available from the source.','精确计划关联：来源未提供。') }}</p>
+          {% elif _plan_gated %}
+          <h3>{{ t('Related model record','相关模型记录') }}</h3>
+          <p class="pvs-note">{{ t(
+            'A related model record is available with full access.',
+            '完整访问权限可查看相关模型记录。') }}</p>
           {% elif _plan_state == 'unknown' %}
           <h3>{{ t('Plan connection','计划关联') }}</h3><p class="pvs-note">{{ t('Plan records could not be read for this candidate.','无法读取此候选的计划记录。') }}</p>
           {% else %}

@@ -640,3 +640,72 @@ def test_t9_unchanged_check_at_later_clock_is_zero_write_like_t8b(
     assert row["observation"]["last_checked_at"] == "2026-10-14T02:35:00Z"
     assert row["observation"]["persisted"] is False
     assert "observation_write" not in row
+
+
+# ---------------------------------------------------------------------------
+# T10: admission_refused exclusion — withheld:identity_unproven
+# ---------------------------------------------------------------------------
+
+
+def test_t10_admission_refused_exclusion_withholds_identity_unproven(
+    tmp_path, offline_collector
+) -> None:
+    lane, contract, store, report_path = _lane(tmp_path)
+    identity = lane["identity"]
+    # The incumbent witness-mismatch shape: every package's manifest form no
+    # longer matches its witness, so admission refuses the issuer.
+    for accession in identity["accessions"]:
+        manifest_path = (
+            lane["archive_root"]
+            / "fif-packages"
+            / identity["cik"]
+            / accession
+            / "package_manifest.json"
+        )
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest["form"] = manifest["form"] + "-X"
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    assert _publish_cli(lane, contract, store, report_path) == 0
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert report["published"] == []
+    (row,) = report["excluded"]
+    assert row["reason"] == "admission_refused:witness_mismatch"
+    # R-A21-STORE-TRACE / A14: the package proved no identity, so no record
+    # lands under the issuer prefix it claimed, and the row says why.
+    assert row["observation_write"] == producer.OBSERVATION_WITHHELD_IDENTITY_UNPROVEN
+    assert "observation" not in row
+    assert not _observation_path(store, identity["entity_id"]).exists()
+    assert not [
+        name for name in _store_files(store) if f"/issuers/{identity['entity_id']}/" in f"/{name}"
+    ]
+
+
+# ---------------------------------------------------------------------------
+# T11: unchanged generation without a prior record — withheld, zero writes
+# ---------------------------------------------------------------------------
+
+
+def test_t11_unchanged_generation_without_prior_record_withholds(
+    tmp_path, offline_collector
+) -> None:
+    lane, contract, store, report_path = _lane(tmp_path)
+    identity = lane["identity"]
+    assert _publish_cli(lane, contract, store, report_path) == 0
+    observation = _observation_path(store, identity["entity_id"])
+    assert observation.is_file()
+    # The generation stays published but its observation record is absent —
+    # the state of an issuer published before A21's record existed.
+    observation.unlink()
+    before = _store_tree(store)
+
+    assert _publish_cli(lane, contract, store, report_path, clock=NEXT_NIGHT_RUN) == 0
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    (row,) = report["published"]
+    assert row["outcome"] == "unchanged"
+    # No prior record and nothing landed this run: no first write under the
+    # issuer prefix (A18 S3); the row names the withheld reason instead.
+    assert row["observation_write"] == producer.OBSERVATION_WITHHELD_UNCHANGED_WITHOUT_PRIOR
+    assert "observation" not in row
+    assert not observation.exists()
+    assert _store_tree(store) == before

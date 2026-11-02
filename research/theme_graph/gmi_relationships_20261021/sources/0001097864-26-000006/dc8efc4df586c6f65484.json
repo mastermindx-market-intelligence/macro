@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-09T21:24:05Z",
+ "accession": "0001097864-26-000006",
+ "cik": "0001097864",
+ "doc_byte_length": 2781990,
+ "doc_sha256": "28b760672ffe0b798bc137892d3a5c7e3acc0d5c4d6e23339916756738ea0cd9",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-09",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "on-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 867972,
+  "byte_start": 867279,
+  "normalized": "The decrease from 2023 to 2024 of $1,170.7 million, or 14.2%, was attributable primarily to lower sales volumes across all segments, which are further explained below. We had one customer, a distributor, whose revenue accounted for approximately 10% of our total revenue for the year ended December 31, 2024, with sales across all reportable segments. There was no customer whose revenue exceeded 10% of total revenue for the year ended December 31, 2023.",
+  "normalized_sha256": "f794fe96da6b7210367dd91335245100bca682e396d3c7868fbb15860ef123a6",
+  "raw": " The decrease from 2023 to 2024 of $1,170.7 million, or 14.2%, </span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:9pt;font-weight:400;line-height:120%\">w</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">as attributable primarily to lower sales volumes across all segments, which are further explained below. We had one customer, a distributor, whose revenue accounted for approximately 10% of our total revenue for the year ended December 31, 2024, with sales across all reportable segments. There was no customer whose revenue exceeded 10% of total revenue for the year ended December 31, 2023.",
+  "raw_sha256": "dc8efc4df586c6f654843b3247b9b47677b1a6adecde3593d4993c1a800fec9a"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1097864/000109786426000006/on-20251231.htm",
+ "xbrl_contexts": []
+}

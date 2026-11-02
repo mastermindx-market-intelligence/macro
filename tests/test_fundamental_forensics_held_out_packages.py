@@ -119,6 +119,9 @@ def _inventory_violations(root: Path) -> list[str]:
 def _inventory_allows(parts: tuple[str, ...]) -> bool:
     if parts in {("README.md",), ("held_out_contract.json",)}:
         return True
+    # Split-3 identity witnesses: one compact submissions JSON per issuer.
+    if len(parts) == 2 and parts[0] == "split3_submissions" and parts[1].endswith(".json"):
+        return True
     if (
         len(parts) == 3
         and parts[0] == "packages"
