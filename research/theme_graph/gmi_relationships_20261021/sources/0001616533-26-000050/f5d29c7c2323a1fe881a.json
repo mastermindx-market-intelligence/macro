@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-10-20T20:38:41Z",
+ "accession": "0001616533-26-000050",
+ "cik": "0001616533",
+ "doc_byte_length": 2706558,
+ "doc_sha256": "e415f3bf752a21e09e8f075648e256805702f3395e4dd0d04a4872a84cf68ae2",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-10-20",
+ "form": "10-K",
+ "period_of_report": "2026-08-28",
+ "primary_document": "peng-20260828.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2426773,
+  "byte_start": 2425855,
+  "normalized": "Net sales to an Advanced Computing customer were approximately $249.6 million and $215.0 million in 2025 and 2024, respectively, representing 18.2% and 18.4% of total net sales. No other customers accounted for more than 10% of our total net sales in 2026, 2025 and 2024.",
+  "normalized_sha256": "fc954e06a6b29e63e6c498456b9f3ed3fafa91709afa5d9f63bd6f47a58258c1",
+  "raw": " Net sales to an Advanced Computing customer were approximately $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-349\" decimals=\"-5\" name=\"us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax\" scale=\"6\" id=\"f-1733\">249.6</ix:nonFraction>&#160;million and $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-350\" decimals=\"-5\" name=\"us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax\" scale=\"6\" id=\"f-1734\">215.0</ix:nonFraction>&#160;million in 2025 and 2024, respectively, representing <ix:nonFraction unitRef=\"number\" contextRef=\"c-349\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1735\">18.2</ix:nonFraction>% and <ix:nonFraction unitRef=\"number\" contextRef=\"c-350\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1736\">18.4</ix:nonFraction>% of total net sales. No other customers accounted for more than 10% of our total net sales in 2026, 2025 and 2024.",
+  "raw_sha256": "f5d29c7c2323a1fe881a9ef66d409b28923d5141fd50925a97385519debbd5fb"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653326000050/peng-20260828.htm",
+ "xbrl_contexts": []
+}

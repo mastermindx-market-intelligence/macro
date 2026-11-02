@@ -18,6 +18,19 @@ from scripts import build_market_memory_page
 ROOT = Path(__file__).resolve().parent.parent
 
 
+def test_market_memory_coverage_copy_has_no_live_or_forecast() -> None:
+    text = (ROOT / "templates" / "market_memory.html.j2").read_text(
+        encoding="utf-8"
+    )
+    assert any(
+        "Available now" in line and "现已可用" in line
+        for line in text.splitlines()
+    )
+    assert "context, not a prediction." in text
+    assert "Live now" not in text
+    assert "forecast" not in text
+
+
 def test_market_memory_shell_renders_without_market_data() -> None:
     html = build_market_memory_page.render(ROOT)
 

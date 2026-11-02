@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-11T18:00:34Z",
+ "accession": "0001104659-26-026310",
+ "cik": "0001429937",
+ "doc_byte_length": 1702157,
+ "doc_sha256": "dfae793d947ae425fd908774448104a8939cdb06afd01dae15b9001c418d6d2d",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-11",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "tm266740d1_ex99-2.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1215021,
+  "byte_start": 1214745,
+  "normalized": "As part of the acquisition of Sabina Gold and Silver Corp (\"Sabina\") in 2023, the Company acquired gold Stream Arrangement (the \"Stream\") with Wheaton Precious Metals (\"WPM\"). WPM is obligated to pay the Company a purchase price for each ounce of refined gold metal equal to:",
+  "normalized_sha256": "4dc1636d5d6e73d66c3b986e9df47dc2c7000313d7c5176a11924e304eedf4af",
+  "raw": "As part of the acquisition of Sabina Gold and Silver Corp (\"Sabina\") in 2023, the Company acquired gold Stream Arrangement (the \"Stream\") with Wheaton Precious Metals (\"WPM\"). WPM is obligated to pay the Company a purchase price for each ounce of refined gold metal equal to: ",
+  "raw_sha256": "f98dcccd7da0f23e916ebe86d0053d6da6d2b78350335d8140423ba25b28ebaa"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1429937/000110465926026310/tm266740d1_ex99-2.htm",
+ "xbrl_contexts": []
+}

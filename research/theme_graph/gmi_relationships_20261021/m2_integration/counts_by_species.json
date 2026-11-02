@@ -1,0 +1,86 @@
+{
+ "ALL": {
+  "coverage_states": {
+   "assessed": 186,
+   "no_supported_result": 95,
+   "not_assessed": 2
+  },
+  "edges": {
+   "component_dependency": 10,
+   "contract_manufacturing": 51,
+   "distribution": 20,
+   "licensing": 50,
+   "supplier_customer": 117
+  },
+  "non_edges": {
+   "component_dependency": 0,
+   "contract_manufacturing": 108,
+   "distribution": 121,
+   "licensing": 182,
+   "supplier_customer": 696
+  },
+  "observations": {
+   "component_dependency": 13,
+   "contract_manufacturing": 234,
+   "distribution": 159,
+   "licensing": 272,
+   "supplier_customer": 911
+  }
+ },
+ "D1": {
+  "coverage_states": {
+   "assessed": 114,
+   "no_supported_result": 31,
+   "not_assessed": 1
+  },
+  "edges": {
+   "component_dependency": 4,
+   "contract_manufacturing": 51,
+   "distribution": 19,
+   "licensing": 41,
+   "supplier_customer": 66
+  },
+  "non_edges": {
+   "component_dependency": 0,
+   "contract_manufacturing": 107,
+   "distribution": 118,
+   "licensing": 166,
+   "supplier_customer": 398
+  },
+  "observations": {
+   "component_dependency": 6,
+   "contract_manufacturing": 233,
+   "distribution": 155,
+   "licensing": 241,
+   "supplier_customer": 527
+  }
+ },
+ "D2": {
+  "coverage_states": {
+   "assessed": 72,
+   "no_supported_result": 64,
+   "not_assessed": 1
+  },
+  "edges": {
+   "component_dependency": 1,
+   "contract_manufacturing": 0,
+   "distribution": 0,
+   "licensing": 7,
+   "supplier_customer": 45
+  },
+  "non_edges": {
+   "component_dependency": 0,
+   "contract_manufacturing": 1,
+   "distribution": 3,
+   "licensing": 16,
+   "supplier_customer": 298
+  },
+  "observations": {
+   "component_dependency": 1,
+   "contract_manufacturing": 1,
+   "distribution": 3,
+   "licensing": 29,
+   "supplier_customer": 376
+  }
+ }
+}

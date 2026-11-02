@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-24T21:12:49Z",
+ "accession": "0001274494-26-000021",
+ "cik": "0001274494",
+ "doc_byte_length": 2523372,
+ "doc_sha256": "ff883aa776a121c56d64e7638751b50bc84338328aa7bb5700bc84875b40f59a",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-24",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "fslr-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1992920,
+  "byte_start": 1992326,
+  "normalized": "During the year ended December 31, 2025, we terminated various master supply agreements with BP Solar Holding, LLC and its affiliate Lightsource Renewable Energy Trading, LLC due to the customers’ failure to cure several breaches of their contractual obligations. These terminations triggered certain contractual termination payment provisions, of which we recognized $61.0 million as revenue for the advance payments previously received.",
+  "normalized_sha256": "8798050539dd188c726bd93bc961d268d583a5bbc5c42ed54a673eaf49020bb2",
+  "raw": "During the year ended December&#160;31, 2025, we terminated various master supply agreements with BP Solar Holding, LLC and its affiliate Lightsource Renewable Energy Trading, LLC due to the customers&#8217; failure to cure several breaches of their contractual obligations. These terminations triggered certain contractual termination payment provisions, of which we recognized $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-244\" decimals=\"-5\" name=\"fslr:ContractLiabilityMovement\" scale=\"6\" id=\"f-1231\">61.0</ix:nonFraction>&#160;million as revenue for the advance payments previously received.",
+  "raw_sha256": "b35e1d72d3748344ce9133d54c1e29eb9fba7acd5555fe494e9b444059e9f506"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1274494/000127449426000021/fslr-20251231.htm",
+ "xbrl_contexts": []
+}
