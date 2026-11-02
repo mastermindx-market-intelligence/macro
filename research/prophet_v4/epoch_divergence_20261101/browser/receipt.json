@@ -2,12 +2,12 @@
   "schema": "prophet_source_epochs.browser_proof.v1",
   "environment": "local candidate; synthetic data; no production or real account",
   "route": "/us_stocks.html",
-  "head": "409c08d0d5df78ffb068db20eb9ded9976c0c4aa",
+  "head": "1bddbb45da5c666359e0d2b6d1710ecaa82d8943",
   "source_sha256": {
     "engine/prophet_source_epochs.py": "c8c3205ab446d3f2a78fbe0246cfffb85c439466844d414bf138aa420bc6bc70",
     "scripts/build_site.py": "4439083de222d4a024fe4de9ea9beaf00b4713750126d4f173b017a287ccab44",
     "templates/dashboard.html.j2": "bc977f2f9181955b37bf1ace9a87720c7848347cbf920e4513418572f3c0ac61",
-    "templates/_prophet_source_epochs.html.j2": "c4d4c599134b540139164d9e090787f06ac2711af4c96a0ebc076c5220a0aa48",
+    "templates/_prophet_source_epochs.html.j2": "de239a22e5e3d0e1d7d3a1ca25e1268dc6faeffdea7277a18ec6595a37ef7612",
     "templates/_prophet_source_epochs.js.j2": "24e096f24f06922c573c3157d53da10df3d5f32028a1759a3b62573a96758dbb"
   },
   "matrix": [
@@ -26,6 +26,7 @@
         "right": 1381,
         "viewport": 1440,
         "summaryHeight": 40,
+        "radius": "8px",
         "theme": "dark",
         "lang": "en",
         "unoccluded": true
@@ -49,6 +50,7 @@
         "right": 1381,
         "viewport": 1440,
         "summaryHeight": 40,
+        "radius": "8px",
         "theme": "dark",
         "lang": "zh",
         "unoccluded": true
@@ -72,6 +74,7 @@
         "right": 1381,
         "viewport": 1440,
         "summaryHeight": 40,
+        "radius": "8px",
         "theme": "light",
         "lang": "en",
         "unoccluded": true
@@ -95,6 +98,7 @@
         "right": 1381,
         "viewport": 1440,
         "summaryHeight": 40,
+        "radius": "8px",
         "theme": "light",
         "lang": "zh",
         "unoccluded": true
@@ -118,6 +122,7 @@
         "right": 353,
         "viewport": 390,
         "summaryHeight": 59,
+        "radius": "8px",
         "theme": "dark",
         "lang": "en",
         "unoccluded": true
@@ -141,6 +146,7 @@
         "right": 353,
         "viewport": 390,
         "summaryHeight": 40,
+        "radius": "8px",
         "theme": "dark",
         "lang": "zh",
         "unoccluded": true
@@ -164,6 +170,7 @@
         "right": 353,
         "viewport": 390,
         "summaryHeight": 59,
+        "radius": "8px",
         "theme": "light",
         "lang": "en",
         "unoccluded": true
@@ -187,6 +194,7 @@
         "right": 353,
         "viewport": 390,
         "summaryHeight": 40,
+        "radius": "8px",
         "theme": "light",
         "lang": "zh",
         "unoccluded": true
@@ -237,7 +245,126 @@
     "/live/risk_state.json",
     "/live_config.js"
   ],
+  "rendered_html_sha256": "0f7b2828f4dc0093d4253dac3b56eac887debf676fd72cbe7db55daa4b94c8b2",
   "origin": "ephemeral loopback HTTP server",
   "browser": "151.0.7922.34",
+  "canonical_visual_evidence": {
+    "manifest": "mockups/evidence/prophet-source-epochs-20261101/manifest.json",
+    "states": [
+      {
+        "cell_id": "macro:us-stocks-prophet-source-epochs|desktop|en|dark|anonymous",
+        "theme": "dark",
+        "locale": "en",
+        "radius": "8px",
+        "focus_visible": false
+      },
+      {
+        "cell_id": "macro:us-stocks-prophet-source-epochs|desktop|en|dark|anonymous|epoch_summary_focus",
+        "theme": "dark",
+        "locale": "en",
+        "radius": "8px",
+        "focus_visible": true
+      },
+      {
+        "cell_id": "macro:us-stocks-prophet-source-epochs|desktop|en|light|anonymous",
+        "theme": "light",
+        "locale": "en",
+        "radius": "8px",
+        "focus_visible": false
+      },
+      {
+        "cell_id": "macro:us-stocks-prophet-source-epochs|desktop|en|light|anonymous|epoch_summary_focus",
+        "theme": "light",
+        "locale": "en",
+        "radius": "8px",
+        "focus_visible": true
+      },
+      {
+        "cell_id": "macro:us-stocks-prophet-source-epochs|desktop|zh|dark|anonymous",
+        "theme": "dark",
+        "locale": "zh",
+        "radius": "8px",
+        "focus_visible": false
+      },
+      {
+        "cell_id": "macro:us-stocks-prophet-source-epochs|desktop|zh|dark|anonymous|epoch_summary_focus",
+        "theme": "dark",
+        "locale": "zh",
+        "radius": "8px",
+        "focus_visible": true
+      },
+      {
+        "cell_id": "macro:us-stocks-prophet-source-epochs|desktop|zh|light|anonymous",
+        "theme": "light",
+        "locale": "zh",
+        "radius": "8px",
+        "focus_visible": false
+      },
+      {
+        "cell_id": "macro:us-stocks-prophet-source-epochs|desktop|zh|light|anonymous|epoch_summary_focus",
+        "theme": "light",
+        "locale": "zh",
+        "radius": "8px",
+        "focus_visible": true
+      },
+      {
+        "cell_id": "macro:us-stocks-prophet-source-epochs|mobile|en|dark|anonymous",
+        "theme": "dark",
+        "locale": "en",
+        "radius": "8px",
+        "focus_visible": false
+      },
+      {
+        "cell_id": "macro:us-stocks-prophet-source-epochs|mobile|en|dark|anonymous|epoch_summary_focus",
+        "theme": "dark",
+        "locale": "en",
+        "radius": "8px",
+        "focus_visible": true
+      },
+      {
+        "cell_id": "macro:us-stocks-prophet-source-epochs|mobile|en|light|anonymous",
+        "theme": "light",
+        "locale": "en",
+        "radius": "8px",
+        "focus_visible": false
+      },
+      {
+        "cell_id": "macro:us-stocks-prophet-source-epochs|mobile|en|light|anonymous|epoch_summary_focus",
+        "theme": "light",
+        "locale": "en",
+        "radius": "8px",
+        "focus_visible": true
+      },
+      {
+        "cell_id": "macro:us-stocks-prophet-source-epochs|mobile|zh|dark|anonymous",
+        "theme": "dark",
+        "locale": "zh",
+        "radius": "8px",
+        "focus_visible": false
+      },
+      {
+        "cell_id": "macro:us-stocks-prophet-source-epochs|mobile|zh|dark|anonymous|epoch_summary_focus",
+        "theme": "dark",
+        "locale": "zh",
+        "radius": "8px",
+        "focus_visible": true
+      },
+      {
+        "cell_id": "macro:us-stocks-prophet-source-epochs|mobile|zh|light|anonymous",
+        "theme": "light",
+        "locale": "zh",
+        "radius": "8px",
+        "focus_visible": false
+      },
+      {
+        "cell_id": "macro:us-stocks-prophet-source-epochs|mobile|zh|light|anonymous|epoch_summary_focus",
+        "theme": "light",
+        "locale": "zh",
+        "radius": "8px",
+        "focus_visible": true
+      }
+    ],
+    "emitter_sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42"
+  },
   "verdict": "PASS"
 }
