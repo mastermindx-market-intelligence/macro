@@ -723,6 +723,7 @@ def _compose_diagnostic_receipts(public, receipts):
             "state", "workload_confirmed", "workload_returncode", "execution_uncertain",
             "reconciliation_required", "cleanup_confirmed")
     attempts, adopted = [], []
+    previous_returned = None
     for attempt, task in zip(outcome.attempts, prepared.decisions):
         require(type(attempt) is prefix_driver.PrefixAttempt
                 and type(task) is bridge.PreparedDecisionInput)
@@ -752,6 +753,16 @@ def _compose_diagnostic_receipts(public, receipts):
                                              if raw.workload_output else None))
         row = {key: getattr(attempt, key) for key in keys}
         row["state"] = row["state"].upper()
+        if attempt.local_observation is not None:
+            row["local_observation"] = prefix_driver.validate_local_observation(
+                attempt.local_observation, prepared.identity, task, attempt)
+            local_doc = bridge._bound(attempt.local_observation)
+            issued = bridge._timestamp(local_doc["issued_at_utc"])
+            require(previous_returned is None or issued >= previous_returned)
+            previous_returned = (bridge._timestamp(local_doc["returned_at_utc"])
+                                 if local_doc["returned_at_utc"] is not None else None)
+            if row["local_observation"]["observation_problem"] is not None:
+                require(not outcome.completed and len(attempts) + 1 == len(outcome.attempts))
         attempts.append(row)
         try:
             adopted.append((task, prefix_driver._adopt(
@@ -860,7 +871,19 @@ def _diagnostic_engineering_evidence(public, evidence):
     states = ("PLANNED", "CREATE_UNCERTAIN", "CLEANED_SUCCESS", "CLEANED_FAILURE",
               "CLEANUP_UNCERTAIN")
     for row in rows:
-        closed(row, attempt_keys)
+        local = row.get("local_observation") if type(row) is dict else None
+        closed(row, (*attempt_keys, "local_observation") if type(row) is dict and "local_observation" in row else attempt_keys)
+        if local is not None:
+            closed(local, ("sha256", "clock_state", "observation_problem",
+                           "accepted_freeze_qualification", "maturity_qualification"))
+            require(all(type(local[key]) is str for key in ("clock_state",
+                        "accepted_freeze_qualification", "maturity_qualification"))
+                    and (local["observation_problem"] is None or type(local["observation_problem"]) is str))
+            require(sha(local["sha256"]) and local["clock_state"] == "LOCAL_CLOCK_UNATTESTED"
+                    and local["accepted_freeze_qualification"] == local["maturity_qualification"] == "UNAVAILABLE"
+                    and local["observation_problem"] in (None, "LOCAL_CLOCK_REGRESSION", "RETURN_CLOCK_UNAVAILABLE"))
+        elif type(row) is dict and "local_observation" in row:
+            require(False)
         require(identifier(row["operation_id"]) and row["operation_id"] not in seen)
         seen.add(row["operation_id"])
         require(sha(row["plan_sha256"]) and sha(row["input_sha256"]))
@@ -884,7 +907,7 @@ def _diagnostic_engineering_evidence(public, evidence):
             require(not row["workload_confirmed"] and code is None
                     and row["output_bytes"] == 0 and row["output_sha256"] is None
                     and not row["cleanup_confirmed"])
-        attempts.append(dict(row))
+        attempts.append({**row, **({"local_observation": dict(local)} if local is not None else {})})
     controls = evidence["controls"]
     expected_controls = ("accounting_declaration", "prefix_schedule", "output_contract",
                          "physical_boundary", "resource_overload")

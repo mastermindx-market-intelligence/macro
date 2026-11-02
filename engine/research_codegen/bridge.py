@@ -176,6 +176,8 @@ class PreparedDecisionInput:
     cutoff: str
     trailing_session_dates: tuple[str, ...]
     complete_trailing: bool
+    # Supplied capture/session evidence identity; never clock qualification.
+    capture_evidence: BoundBytes | None = None
 
 
 @dataclass(frozen=True)
@@ -558,7 +560,7 @@ def prepare_synthetic_inputs(run, *, commission=None):
         prepared.append(PreparedDecisionInput(
             rid[0], decision.node, rid[2], decision.calendar_index, decision.node, decision.request,
             BoundBytes(raw, hashlib.sha256(raw).hexdigest(), len(raw)), request["cutoff"],
-            tuple(trailing), complete))
+            tuple(trailing), complete, _capture_evidence_binding(decision.capture)))
     schedules, schedule_keys = [], set()
     for sb in run.schedules:
         schedule = _bound(sb, contracts.MAX_BYTES)
@@ -583,6 +585,16 @@ def prepare_synthetic_inputs(run, *, commission=None):
              "INCOMPLETE_OWNER_SCHEDULE")
     return PreparedSyntheticInputs(PreparedIdentity(**{k: identity[k] for k in _IDENTITY}),
                                    tuple(prepared), tuple(schedules), run.session_dates)
+
+
+def _capture_evidence_binding(capture):
+    """Retain exact evidence hashes already consumed by _capture_input, no authority."""
+    raw = _canonical_bytes(dict(schema="research_codegen.capture_evidence.v1",
+        receipt_sha256=capture.receipt.sha256, provider_image_sha256=capture.provider_image.sha256,
+        merged_image_sha256=capture.merged_image.sha256,
+        session_clocks_sha256=hashlib.sha256(_canonical_bytes(capture.session_clocks)).hexdigest(),
+        receipt_read_completed_at=capture.receipt_read_completed_at))
+    return BoundBytes(raw, hashlib.sha256(raw).hexdigest(), len(raw))
 
 
 def _restore_result(value):

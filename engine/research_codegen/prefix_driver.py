@@ -18,6 +18,7 @@ source semantics only and is never physical or scientific acceptance.
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
+from datetime import datetime, timezone
 import base64
 import hashlib
 import json
@@ -316,6 +317,7 @@ class PrefixAttempt:
     detail: str
     transport_plan: transport_module.TransportPlan
     transport_attempt: transport_module.TransportAttempt
+    local_observation: BoundBytes | None = None
 
 
 @dataclass(frozen=True)
@@ -409,6 +411,72 @@ def _adopt(attempt, plan, identity, task, cap):
     return envelope["rows"][0]
 
 
+def _local_utc_now():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _observe_clock():
+    # A failed clock is missing evidence, never a reason to replay transport.
+    try:
+        value = _local_utc_now()
+        bridge_module._timestamp(value)
+        return value
+    except Exception:
+        return None
+
+
+def _capture_evidence_digest(task):
+    if task.capture_evidence is None:
+        return None  # Historical preparations have no observation to restamp.
+    doc = bridge_module._bound(task.capture_evidence)
+    bridge_module._closed(doc, ("schema", "receipt_sha256", "provider_image_sha256",
+        "merged_image_sha256", "session_clocks_sha256", "receipt_read_completed_at"))
+    _require(doc["schema"] == "research_codegen.capture_evidence.v1"
+             and all(bridge_module._sha(doc[key]) for key in ("receipt_sha256",
+                 "provider_image_sha256", "merged_image_sha256", "session_clocks_sha256")),
+             "INVALID_CAPTURE_EVIDENCE")
+    bridge_module._timestamp(doc["receipt_read_completed_at"])
+    return task.capture_evidence.sha256
+
+
+def _local_observation_doc(identity, task, record, issued, returned):
+    issued_time = bridge_module._timestamp(issued)
+    problem = "RETURN_CLOCK_UNAVAILABLE" if returned is None else None
+    if returned is not None and bridge_module._timestamp(returned) < issued_time:
+        problem = "LOCAL_CLOCK_REGRESSION"
+    return dict(schema="research_codegen.local_transport_observation.v1",
+        identity={key: getattr(identity, key) for key in bridge_module._IDENTITY},
+        operation_id=record.operation_id, plan_sha256=record.plan_sha256,
+        fold_id=task.fold_id, entity_id=task.entity_id, decision_id=task.decision_id,
+        input_sha256=task.input_bytes.sha256, request_sha256=task.request.sha256,
+        capture_evidence_sha256=_capture_evidence_digest(task), cutoff=task.cutoff,
+        issued_at_utc=issued, returned_at_utc=returned, observation_problem=problem,
+        output_sha256=record.output_sha256, output_bytes=record.output_bytes,
+        state=record.state, workload_confirmed=record.workload_confirmed,
+        workload_returncode=record.workload_returncode, cleanup_confirmed=record.cleanup_confirmed,
+        execution_uncertain=record.execution_uncertain,
+        reconciliation_required=record.reconciliation_required,
+        clock_state="LOCAL_CLOCK_UNATTESTED", accepted_freeze_qualification="UNAVAILABLE",
+        maturity_qualification="UNAVAILABLE", scope="SYNTHETIC_ENGINEERING_ONLY")
+
+
+def validate_local_observation(observation, identity, task, record):
+    """Bind local evidence to an exact native attempt; never authenticate chronology.
+
+    The advisory consumer calls this with independently recomputed preparation.
+    Missing legacy observations stay absent. Invalid/reversed local return clocks
+    retain the actual attempt but cannot support a completed output control.
+    """
+    doc = bridge_module._bound(observation)
+    _require(type(doc) is dict and "issued_at_utc" in doc and "returned_at_utc" in doc,
+             "INVALID_LOCAL_OBSERVATION")
+    rebuilt = _local_observation_doc(identity, task, record, doc["issued_at_utc"], doc["returned_at_utc"])
+    _require(observation.raw == _canonical(rebuilt), "LOCAL_OBSERVATION_MISMATCH")
+    return dict(sha256=observation.sha256, clock_state="LOCAL_CLOCK_UNATTESTED",
+        observation_problem=doc["observation_problem"], accepted_freeze_qualification="UNAVAILABLE",
+        maturity_qualification="UNAVAILABLE")
+
+
 def run_prefix_driver(prepared, *, source, engine, spec, config_sha256=None,
                       output_expectation=None):
     """Run the exact per-decision prefix workload and return grouped owner outputs.
@@ -420,6 +488,10 @@ def run_prefix_driver(prepared, *, source, engine, spec, config_sha256=None,
     attempts stop on any uncertain outcome, permission refusal, budget cap or
     non-adopted receipt, and the exact attempts are retained.  Non-available rows
     keep their original status; nothing is zero-filled, dropped, salvaged or ranked.
+    Local UTC observations bind caller-supplied capture/session evidence hashes
+    but remain LOCAL_CLOCK_UNATTESTED; accepted freeze and label maturity remain
+    UNAVAILABLE. A failed return clock retains the actual transport receipt and
+    stops later attempts. No local timestamp establishes prospective issuance.
     An optional independently declared output expectation is validated before any
     transport and only its immutable digest is retained; it grants no execution.
     """
@@ -466,6 +538,7 @@ def run_prefix_driver(prepared, *, source, engine, spec, config_sha256=None,
         _bytes(task.input_bytes.raw, MAX_INPUT_BYTES, "INPUT")
         _require(task.input_bytes.sha256 == hashlib.sha256(task.input_bytes.raw).hexdigest()
                  and task.input_bytes.size == len(task.input_bytes.raw), "INPUT_DIGEST_MISMATCH")
+        _capture_evidence_digest(task)
         argv, header, carrier = build_carrier(source.raw, task.input_bytes.raw)
         tasks.append((task, argv, header, carrier,
                       decision_operation_id(prepared, task, carrier)))
@@ -473,6 +546,7 @@ def run_prefix_driver(prepared, *, source, engine, spec, config_sha256=None,
                   for task, argv, header, carrier, operation in tasks)
     started = time.monotonic()
     attempts, rows, reasons = [], [], []
+    previous_returned = None
     for task, argv, header, carrier, operation, plan in plans:
         if len(attempts) >= spec.max_attempts:
             reasons.append("ATTEMPT_BUDGET_EXHAUSTED")
@@ -481,18 +555,31 @@ def run_prefix_driver(prepared, *, source, engine, spec, config_sha256=None,
         if (spec.total_wall_seconds - elapsed) < worst_case_attempt_seconds(plan):
             reasons.append("WALL_BUDGET_EXHAUSTED")
             break
+        issued = _observe_clock()
+        if issued is None:
+            reasons.append("ISSUE_CLOCK_UNAVAILABLE")
+            break
+        if previous_returned is not None and bridge_module._timestamp(issued) < previous_returned:
+            reasons.append("LOCAL_CLOCK_REGRESSION")
+            break
         try:
             attempt = transport_module.TransportOrchestrator(engine).execute(
                 transport_module.TransportSession(plan))
         except transport_module.TransportError as exc:
             reasons.append("TRANSPORT_REFUSED:" + type(exc).__name__)
             break
+        returned = _observe_clock()
+        previous_returned = bridge_module._timestamp(returned) if returned is not None else None
+        clock_problem = ("RETURN_CLOCK_UNAVAILABLE" if returned is None else
+                         "LOCAL_CLOCK_REGRESSION" if bridge_module._timestamp(returned) < bridge_module._timestamp(issued) else None)
         adopted = None
         problem = None
         try:
             adopted = _adopt(attempt, plan, identity, task, spec.output_cap_bytes)
         except PrefixDriverRefused as exc:
             problem = str(exc)
+        if clock_problem:
+            adopted, problem = None, clock_problem
         record = PrefixAttempt(
             operation_id=attempt.operation_id, plan_sha256=attempt.plan_sha256,
             container_id=attempt.container_id, state=attempt.state.value,
@@ -508,6 +595,9 @@ def run_prefix_driver(prepared, *, source, engine, spec, config_sha256=None,
             input_sha256=task.input_bytes.sha256,
             detail=(problem or attempt.detail)[:_MAX_REASON_CHARS],
             transport_plan=plan, transport_attempt=attempt)
+        observation_raw = _canonical(_local_observation_doc(identity, task, record, issued, returned))
+        record = replace(record, local_observation=BoundBytes(observation_raw,
+            hashlib.sha256(observation_raw).hexdigest(), len(observation_raw)))
         attempts.append(record)
         if adopted is None:
             reasons.append(record.detail)

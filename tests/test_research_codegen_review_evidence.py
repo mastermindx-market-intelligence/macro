@@ -261,7 +261,7 @@ def test_source_composer_preserves_consistent_uncertain_attempt_without_effects(
                   reconciliation_required=True, execution_uncertain=True)
     uncertain = replace(attempt, transport_attempt=raw, state=state.value,
                         cleanup_confirmed=False, reconciliation_required=True,
-                        execution_uncertain=True)
+                        execution_uncertain=True, local_observation=None)
     changed = {**receipts, "outcome": replace(outcome, attempts=(uncertain,))}
     calls = len(engine.calls)
     packet = diagnostic_review_packet(public, engineering_receipts=changed)
@@ -394,3 +394,137 @@ def test_original_declaration_requires_exact_finite_coverage(connected_case, mut
     with pytest.raises(ValueError):
         oe.freeze_output_expectation(prepared, expected_generation=staged.expected_generation,
             variant_id=doc["variant_id"], control_kind=doc["control_kind"], expected_rows=tuple(rows))
+
+
+# Native local instrumentation is source-only and cannot qualify prospective evidence.
+def test_local_issue_observation_joins_real_preparation_without_new_authority(connected_case):
+    _, outcome, public, _, receipts = execute_case(connected_case)
+    prepared = b.prepare_synthetic_inputs(receipts["run"], commission=receipts["commission"])
+    packet = diagnostic_review_packet(public, engineering_receipts=receipts)
+    for attempt, task, projection in zip(outcome.attempts, prepared.decisions,
+                                         packet["engineering_evidence"]["attempts"]):
+        observation = json.loads(attempt.local_observation.raw)
+        assert observation["identity"] == {key: getattr(prepared.identity, key) for key in b._IDENTITY}
+        assert observation["input_sha256"] == task.input_bytes.sha256
+        assert observation["capture_evidence_sha256"] == task.capture_evidence.sha256
+        assert observation["clock_state"] == "LOCAL_CLOCK_UNATTESTED"
+        assert observation["accepted_freeze_qualification"] == "UNAVAILABLE"
+        assert observation["maturity_qualification"] == "UNAVAILABLE"
+        assert observation["scope"] == "SYNTHETIC_ENGINEERING_ONLY"
+        assert projection["local_observation"]["sha256"] == attempt.local_observation.sha256
+    encoded = json.dumps(packet)
+    assert "issued_at_utc" not in encoded and "returned_at_utc" not in encoded
+    assert packet["engineering_evidence"]["physical_acceptance"] is False
+
+
+@pytest.mark.parametrize("mutation", ["input", "decision", "clock", "qualification", "capture", "extra", "digest"])
+def test_advisory_rejects_changed_local_observation_binding(connected_case, mutation):
+    _, outcome, public, _, receipts = execute_case(connected_case)
+    attempt = outcome.attempts[0]
+    doc = json.loads(attempt.local_observation.raw)
+    if mutation == "input": doc["input_sha256"] = "e" * 64
+    elif mutation == "decision": doc["decision_id"] = "wrong-decision"
+    elif mutation == "clock": doc["returned_at_utc"] = "naive clock"
+    elif mutation == "qualification": doc["accepted_freeze_qualification"] = "ACCEPTED"
+    elif mutation == "capture": doc["capture_evidence_sha256"] = "e" * 64
+    else: doc["unbounded_extra"] = "no"
+    altered = pf.bound(doc)
+    if mutation == "digest": altered = replace(attempt.local_observation, sha256="e" * 64)
+    changed = replace(outcome, attempts=(replace(attempt, local_observation=altered), *outcome.attempts[1:]))
+    with pytest.raises(ValueError):
+        diagnostic_review_packet(public, engineering_receipts={**receipts, "outcome": changed})
+
+
+@pytest.mark.parametrize("return_clock", ["2026-11-01T00:00:00+00:00", "invalid", None])
+def test_return_clock_problem_retains_actual_attempt_and_stops(connected_case, monkeypatch, return_clock):
+    staged = p01._stage(connected_case)
+    run = p01._run_for(connected_case, staged, 0)
+    prepared = b.prepare_synthetic_inputs(run, commission=connected_case[3]["commission"])
+    calls = []
+    def clock():
+        calls.append(1)
+        if len(calls) == 1: return "2026-11-01T00:00:01+00:00"
+        if return_clock is None: raise OSError("clock read unavailable")
+        return return_clock
+    monkeypatch.setattr(pd, "_local_utc_now", clock)
+    engine = p01.AccountingGuardedFakeEngine(connected_case, staged)
+    outcome = pd.run_prefix_driver(prepared, source=connected_case[1][0], engine=engine,
+        spec=pf.spec(), config_sha256=run.identity.config_sha256)
+    assert len(outcome.attempts) == 1 and not outcome.completed and outcome.outputs == ()
+    assert outcome.attempts[0].transport_attempt.cleanup_confirmed
+    assert engine.creates == 1
+    doc = json.loads(outcome.attempts[0].local_observation.raw)
+    assert doc["observation_problem"] in ("LOCAL_CLOCK_REGRESSION", "RETURN_CLOCK_UNAVAILABLE")
+    raw = b.compute_synthetic_diagnostic(run, commission=connected_case[3]["commission"])
+    _, public = p01._decode_public(run, connected_case[3]["commission"], raw)
+    packet = diagnostic_review_packet(public, engineering_receipts=dict(run=run,
+        commission=connected_case[3]["commission"], source=connected_case[1][0], staged=staged, outcome=outcome))
+    assert packet["engineering_evidence"]["controls"][1]["status"] == "NOT_RUN"
+    assert packet["engineering_evidence"]["attempts"][0]["local_observation"]["observation_problem"] == doc["observation_problem"]
+
+
+def test_missing_historical_instrumentation_stays_absent(connected_case):
+    _, outcome, public, _, receipts = execute_case(connected_case)
+    old = replace(outcome, attempts=tuple(replace(a, local_observation=None) for a in outcome.attempts))
+    packet = diagnostic_review_packet(public, engineering_receipts={**receipts, "outcome": old})
+    assert all("local_observation" not in a for a in packet["engineering_evidence"]["attempts"])
+
+
+def test_issue_clock_failure_prevents_effect(connected_case, monkeypatch):
+    parts = _output_expectation_case(connected_case)
+    _, run, prepared, frozen, index = parts
+    def clock(): raise OSError("unavailable")
+    monkeypatch.setattr(pd, "_local_utc_now", clock)
+    engine = pf.ScriptedFakeEngine()
+    outcome = pd.run_prefix_driver(prepared, source=connected_case[1][index], engine=engine,
+        spec=pf.spec(), config_sha256=run.identity.config_sha256, output_expectation=frozen)
+    assert not engine.calls and not outcome.attempts and not outcome.completed
+    assert outcome.refusal_reasons == ("ISSUE_CLOCK_UNAVAILABLE",)
+
+
+@pytest.mark.parametrize("mutation", ["absent", "malformed"])
+def test_capture_evidence_missing_is_absent_and_malformed_refuses_before_transport(connected_case, mutation):
+    _, run, prepared, _, index = _output_expectation_case(connected_case)
+    if mutation == "absent":
+        prepared = replace(prepared, decisions=tuple(replace(t, capture_evidence=None) for t in prepared.decisions))
+    else:
+        prepared = replace(prepared, decisions=(replace(prepared.decisions[0], capture_evidence=pf.bound({})), *prepared.decisions[1:]))
+    engine = pf.ScriptedFakeEngine()
+    if mutation == "malformed":
+        with pytest.raises(ValueError):
+            pd.run_prefix_driver(prepared, source=connected_case[1][index], engine=engine,
+                spec=pf.spec(), config_sha256=run.identity.config_sha256)
+        assert engine.calls == []
+    else:
+        outcome = pd.run_prefix_driver(prepared, source=connected_case[1][index], engine=engine,
+            spec=pf.spec(), config_sha256=run.identity.config_sha256)
+        assert all(json.loads(a.local_observation.raw)["capture_evidence_sha256"] is None for a in outcome.attempts)
+
+
+def test_native_uncertainty_is_retained_in_local_observation(connected_case):
+    staged, run, prepared, _, index = _output_expectation_case(connected_case)
+    engine = p01.AccountingGuardedFakeEngine(connected_case, staged, {"absence": "exists"})
+    outcome = pd.run_prefix_driver(prepared, source=connected_case[1][index], engine=engine,
+        spec=pf.spec(), config_sha256=run.identity.config_sha256)
+    assert len(outcome.attempts) == 1 and not outcome.completed
+    raw = b.compute_synthetic_diagnostic(run, commission=connected_case[3]["commission"])
+    _, public = p01._decode_public(run, connected_case[3]["commission"], raw)
+    packet = diagnostic_review_packet(public, engineering_receipts=dict(run=run,
+        commission=connected_case[3]["commission"], source=connected_case[1][index], staged=staged, outcome=outcome))
+    row = packet["engineering_evidence"]["attempts"][0]
+    assert row["reconciliation_required"] and not row["cleanup_confirmed"]
+    assert json.loads(outcome.attempts[0].local_observation.raw)["reconciliation_required"]
+    assert row["local_observation"]["accepted_freeze_qualification"] == "UNAVAILABLE"
+
+
+def test_clock_regression_before_later_attempt_keeps_first_return(connected_case, monkeypatch):
+    staged, run, prepared, _, index = _output_expectation_case(connected_case)
+    samples = iter(("2026-11-01T00:00:01+00:00", "2026-11-01T00:00:02+00:00", "2026-11-01T00:00:01+00:00"))
+    monkeypatch.setattr(pd, "_local_utc_now", lambda: next(samples))
+    engine = p01.AccountingGuardedFakeEngine(connected_case, staged)
+    outcome = pd.run_prefix_driver(prepared, source=connected_case[1][index], engine=engine,
+        spec=pf.spec(), config_sha256=run.identity.config_sha256)
+    assert engine.creates == 1 and len(outcome.attempts) == 1
+    assert outcome.refusal_reasons == ("LOCAL_CLOCK_REGRESSION",)
+    assert outcome.attempts[0].transport_attempt.cleanup_confirmed
+    assert json.loads(outcome.attempts[0].local_observation.raw)["returned_at_utc"] == "2026-11-01T00:00:02+00:00"
