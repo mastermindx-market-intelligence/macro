@@ -448,4 +448,13 @@ class TestIntegratedProducerRendering:
         assert '预定日期已过' in dlg
         assert 'Observed alert' in dlg
         assert 'Fed guidance' in dlg
-        assert 'Technical observation · 2026-10-30' in dlg
+        assert 'Technical setup is not armed. Observed 2026-10-30.' in dlg
+        assert 'Stochastic %K' in dlg and '随机指标 %K' in dlg
+
+    def test_out_of_range_stochastic_value_is_not_presented_as_a_valid_endpoint(self):
+        pl = _policy_lever()
+        pl['levers'][0]['arming']['stoch_k'] = 150.0
+        html = _render(pl, _latest())
+        dlg = _panel(html, 'id="dlg-policy"', '</body>')
+        assert 'Stochastic reading out of range' in dlg
+        assert '100/100' not in dlg

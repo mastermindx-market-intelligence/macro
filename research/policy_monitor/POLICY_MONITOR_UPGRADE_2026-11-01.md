@@ -413,3 +413,33 @@ Current-base reconciliation: the four pre-existing touched product/test files
 have identical baseline/main blobs at9af0a33e and75c68c5f. The CI manifest was
 also identical before R4. Six intervening main commits therefore do not change
 those owned source baselines; current hosted merge checks still govern release.
+
+## R5 — final lower-panel and render-trigger correction
+
+The real producer was then exercised using the unchanged committed
+CL_F/SMH/SOXX price files and White House alert source. The previously skipped
+W1-B schema case passed (1 passed); every original commodity-engine result was
+also compared directly and preserved. Its own oil observation date is2026-10-30,
+separate from the2026-11-02 UTC activity/calendar evaluation. The view correctly
+qualifies the existing ELEVATED state with both dated predicates. No generated
+site artifact was manually edited or committed.
+
+The root's lower-panel visual pass found a concrete presentation defect: the
+stochastic %K value appeared as an unlabeled x/100 gauge, and the inline fill
+span did not honor its width. R5 labels the actual oscillator in EN/ZH, makes
+the neutral fill a block, refuses to display an out-of-range value as a valid
+endpoint, and removes the duplicate observation-date line added in R4. The
+existing dated technical reason remains visible. Targeted UI suite:51 passed.
+
+A publication-path read proved render.yml already runs build_policy_lever
+before build_site. Its push filter, however, did not include the new helper.
+R5 adds exactly lib/policy_monitor_view.py to that existing filter so future
+helper-only changes start the existing render lane. No permissions, concurrency,
+timeouts, job bodies, region mapping, budgets or release controls are changed.
+
+The independent review remains bound to immutable source19eea495; its original
+run is active, with Grok PID205862 and a child source-checkout process observed
+onubuntu0. No interruption or failover occurred. This bounded R5 delta must be
+adjudicated separately after that original return; it is not silently covered
+by an older review. The final source will receive clean-head regression and
+browser receipts before normal release. No approval or production claim.

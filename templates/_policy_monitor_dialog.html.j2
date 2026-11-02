@@ -404,17 +404,13 @@
               <span class="l-en">Observed: {{ t.observed.label_en }}</span>
               <span class="l-zh">已观测：{{ t.observed.label_zh }}</span>
             </span>
-            {% if t.observed.gauge.known %}
-            <span class="plm-tx-gauge"><span class="plm-tx-gauge-fill" style="width:{{ t.observed.gauge.value }}%"></span></span>
-            <span class="plm-tx-asset">{{ t.observed.gauge.value|round(0)|int }}/100</span>
+            {% if t.observed.gauge.known and not t.observed.gauge.clamped %}
+            <span class="plm-tx-gauge" aria-hidden="true"><span class="plm-tx-gauge-fill" style="width:{{ t.observed.gauge.value }}%"></span></span>
+            <span class="plm-tx-asset"><span class="l-en">Stochastic %K</span><span class="l-zh">随机指标 %K</span> {{ '%.1f'|format(t.observed.gauge.value) }}</span>
+            {% elif t.observed.gauge.clamped %}
+            <span class="plm-tx-asset"><span class="l-en">Stochastic reading out of range</span><span class="l-zh">随机指标读数超出范围</span></span>
             {% endif %}
           </div>
-          {% if t.observed.known and t.observed.as_of %}
-          <div class="plm-note" style="margin-bottom:6px">
-            <span class="l-en">Technical observation · {{ t.observed.as_of }}</span>
-            <span class="l-zh">技术观测日期 · {{ t.observed.as_of }}</span>
-          </div>
-          {% endif %}
           {% if t.observed.reason_en %}
           <div class="plm-note" style="margin-bottom:6px">
             <span class="l-en">{{ t.observed.reason_en }}</span><span class="l-zh">{{ t.observed.reason_zh }}</span>
