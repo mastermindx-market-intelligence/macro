@@ -565,13 +565,26 @@ def _bake_with_pinned_strip(tmp_site: Path, monkeypatch, views: dict[str, dict |
 
 
 def test_fresh_render_byte_matches_committed_markets_html(tmp_path, monkeypatch, _restore_bake_side_effects):
+    from scripts.externalize_css import externalize
+
     committed = PAGE.read_bytes()
     views = _committed_strip_views(committed.decode("utf-8"))
     print(
         "PINNED strip inputs recovered from the committed page: "
         + " ".join(f"{m}={(v or {}).get('verdict')}" for m, v in views.items())
     )
-    fresh = _bake_with_pinned_strip(tmp_path / "site", monkeypatch, views)
+    tmp_site = tmp_path / "site"
+    fresh = _bake_with_pinned_strip(tmp_site, monkeypatch, views)
+    # Standalone builds can ship inline styles. The publication sweep can lift
+    # them into hash-named assets. Compare the complete page in either form.
+    if _without_lane_owned_asset_markup(fresh) != _without_lane_owned_asset_markup(committed):
+        externalize(tmp_site)
+        fresh = (tmp_site / "markets.html").read_bytes()
+        for asset in (tmp_site / "assets").rglob("*"):
+            if asset.is_file():
+                shipped = ROOT / "site" / asset.relative_to(tmp_site)
+                assert shipped.is_file(), f"markets.html references missing asset {shipped}"
+                assert shipped.read_bytes() == asset.read_bytes(), f"published asset differs: {shipped}"
     assert PAGE.read_bytes() == committed, "the bake must not touch the real site/ tree"
     assert _without_lane_owned_asset_markup(fresh) == _without_lane_owned_asset_markup(committed), (
         "site/markets.html is stale against templates/markets.html.j2 (+ partials) or "
