@@ -1,86 +1,80 @@
 {
   "site/macro.html": {
-    "bytes": 627769,
-    "sha256": "43f78af36c384566a350b5c455aa7ee0c69c6c24a7b98813a225f76bd57bccc0",
+    "bytes": 610161,
+    "sha256": "74ea846929ac3547875a55540226a1a934d9abe642adae696eb13986c00f44ed",
     "outside_allowed_regions_byte_identical": true,
     "outside_news_visible_text_identical": true,
-    "preserved_region_sha256": "127be3220fc3ce777edea667e58a00c76adb81c8137643aa74c93a6166febcb2",
+    "preserved_region_sha256": "e520d31599c687af00a59de999ff12aa4347baa4028717ee069328294ae456f1",
     "host_script_replacements": 1,
     "incoming_theme_stamp": {
-      "before": "theme.css?v=655fb67f",
+      "before": "theme.css?v=9bd171a6",
       "after": "theme.css?v=9bd171a6",
       "content_matches_integrated_main": true
     }
   },
   "site/us_stocks.html": {
-    "bytes": 758489,
-    "sha256": "36a1c66bf139aceb83a0d6f73a9608ef53ea19da616fbd6a432bdf3023d2dcbf",
+    "bytes": 758957,
+    "sha256": "43d918c0e1dde83f969928002f7e16a1a848e7150062dfcb5adbdf010e253166",
     "outside_allowed_regions_byte_identical": true,
     "outside_news_visible_text_identical": true,
-    "preserved_region_sha256": "ed2bda37e06b8432b4ab571e21d3ffe3ea8ca6dc28a0c3c8ccb8908f3c4b0e7a",
+    "preserved_region_sha256": "36fd22a437c154eee3b0256fc220073f1c1b5ed85adc2d018f55ee645e0d2807",
     "host_script_replacements": 0,
     "incoming_theme_stamp": {
-      "before": "theme.css?v=655fb67f",
+      "before": "theme.css?v=9bd171a6",
       "after": "theme.css?v=9bd171a6",
       "content_matches_integrated_main": true
     }
   },
-  "main": "729fd695836c3f4b0002b72249f80792accb9802",
-  "candidate_parent": "8fd362f550d929b458e123774b5d33a2f90dfe9e",
+  "main": "5bf1331b6697a1855b66bf53ba36cee85fb2c34c",
+  "candidate_parent": "8ecdc683ce533219057e4d833cf85dd7b9488f23",
   "alerts": [
-    {
-      "rule": "gex_flip_cross",
-      "observation": "GEX: spot crossed the gamma flip (net -71bn, spot vs flip +0.3%) — measured across 4 sessions, not overnight: no chain snapshot exists for 2026-10-27, 2026-10-28, 2026-10-29, so the crossing point inside that span is unobserved",
-      "translation": "GEX：现价穿越 gamma 翻转点（净 -71bn，现价相对翻转点 +0.3%） — 该变化跨越 4 个交易日，并非隔夜发生：2026-10-27, 2026-10-28, 2026-10-29 无期权链快照，其间的穿越时点无法观测",
-      "observed_time_supplied": false
-    },
     {
       "rule": "event_risk",
       "observation": "Event-risk window: Jobs report (nonfarm payrolls) in 5 days — high two-sided volatility expected. Not a sell signal; size for the noise.",
       "translation": "事件风险窗口：非农就业报告（5 天后）—— 预计偏高的两面性波动。非卖出信号；按噪声调整仓位。",
-      "observed_time_supplied": false
-    },
-    {
-      "rule": "sector_holdings_accumulation",
-      "observation": "XLV: LLY weight +1.19pp beyond price (≈+$579M est. rebalance flow) (accumulating), 2026-10-22..2026-10-29 — cycle UPTREND·HOLD",
-      "translation": "XLV：LLY 权重较价格多变动 +1.19pp（≈+$579M 估算再平衡资金流）（增持），2026-10-22..2026-10-29 — 周期 上涨趋势·持有",
-      "observed_time_supplied": false
+      "observed_time_supplied": false,
+      "published_fields_exact": true,
+      "published_field_digest": "25ffd359d8f7523f8cbce34d43330d9e16c8831523bb7fb39654c4602505f489"
     },
     {
       "rule": "sector_rs_cross_high",
       "observation": "XLB RS vs SPY crossed above 90th pctile of 90d (now 92)",
       "translation": "XLB RS 相对 SPY 上穿 90 天第 90 百分位（现为 92）",
-      "observed_time_supplied": false
+      "observed_time_supplied": false,
+      "published_fields_exact": true,
+      "published_field_digest": "c090aa051df4f767f519c784ecd6bec884d5857b1bf90fec6f401c448f56fa36"
     },
     {
       "rule": "sector_rs_cross_high",
       "observation": "XLP RS vs SPY crossed above 90th pctile of 90d (now 99)",
       "translation": "XLP RS 相对 SPY 上穿 90 天第 90 百分位（现为 99）",
-      "observed_time_supplied": false
+      "observed_time_supplied": false,
+      "published_fields_exact": true,
+      "published_field_digest": "b0730b73fe594cb9db468f22c652757aad959bb4d60d8b5517715d3a6a60ff1a"
     },
     {
       "rule": "holdings_active_change",
       "observation": "ARKK: manager cut GOOG by -31% of position (2026-10-14..2026-10-30, flow-normalized)",
       "translation": "ARKK：经理 减仓 GOOG 仓位 -31%（2026-10-14..2026-10-30，已按资金流标准化）",
-      "observed_time_supplied": false
+      "observed_time_supplied": false,
+      "published_fields_exact": true,
+      "published_field_digest": "16a17686b4bcc5abf45df9df7420a87e0451674924f84ea553e7f7d72929c181"
     },
     {
       "rule": "holdings_active_change",
       "observation": "ARKW: manager cut AMD by -31% of position (2026-09-23..2026-10-06, flow-normalized)",
       "translation": "ARKW：经理 减仓 AMD 仓位 -31%（2026-09-23..2026-10-06，已按资金流标准化）",
-      "observed_time_supplied": false
+      "observed_time_supplied": false,
+      "published_fields_exact": true,
+      "published_field_digest": "d3e6a1576462b4792c1481be92fd9cf09cf2caf6697e924e460918ed176b3919"
     },
     {
       "rule": "holdings_active_change",
       "observation": "ARKW: manager added NVDA by +26% of position (2026-09-23..2026-10-06, flow-normalized)",
       "translation": "ARKW：经理 加仓 NVDA 仓位 +26%（2026-09-23..2026-10-06，已按资金流标准化）",
-      "observed_time_supplied": false
-    },
-    {
-      "rule": "sector_holdings_accumulation",
-      "observation": "XLRE: EQIX weight +0.54pp beyond price (≈+$44M est. rebalance flow) (accumulating), 2026-10-22..2026-10-29 — cycle DOWNTREND·AVOID",
-      "translation": "XLRE：EQIX 权重较价格多变动 +0.54pp（≈+$44M 估算再平衡资金流）（增持），2026-10-22..2026-10-29 — 周期 下跌趋势·回避",
-      "observed_time_supplied": false
+      "observed_time_supplied": false,
+      "published_fields_exact": true,
+      "published_field_digest": "ea84f75333d3025d76e395b757b67109b20a750986af4be55bd9f32541895d48"
     }
   ],
   "headlines": [
@@ -96,7 +90,7 @@
     {
       "url": "https://www.cnbc.com/2026/10/29/norwegian-earnings-guidance-shares.html",
       "title": "Norwegian shares surge 13% on earnings beat, guidance raise",
-      "title_zh": "挪威股市因财报超预期并上调指引大涨13%",
+      "title_zh": "挪威股市因盈利超预期及上调指引大涨13%",
       "published_date_label": "Oct 29",
       "recovered_time": "2026-10-29T20:14:15+00:00",
       "clock_matches": 1,
@@ -123,18 +117,9 @@
     {
       "url": "https://seekingalpha.com/news/4660669-quant-snapshot-iovance-biotherapeutics-and-diamondrock-hospitality-company-lead-top-rated-names-as-intact-financial-and-fiserv-payments-lag?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
       "title": "Quant snapshot: Iovance Biotherapeutics and DiamondRock Hospitality Company lead top-rated names as Intact Financial and Fiserv Payments lag",
-      "title_zh": "量化快照：Iovance Biotherapeutics和DiamondRock Hospitality Company领跑高评级股票，Intact Financial和Fiserv Payments落后",
+      "title_zh": "量化快照：Iovance Biotherapeutics和DiamondRock Hospitality Company领跑顶级评级股票，Intact Financial和Fiserv Payments落后",
       "published_date_label": "Nov 2",
       "recovered_time": "2026-11-02T02:57:06+00:00",
-      "clock_matches": 1,
-      "distinct_clock_matches": 1
-    },
-    {
-      "url": "https://seekingalpha.com/news/4661897-johnson-and-johnson-reports-94-percent-success-rate-in-trial-of-coronary-artery-device?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
-      "title": "Johnson & Johnson reports 94% success rate in trial of coronary artery device",
-      "title_zh": "强生公司报告冠状动脉设备试验成功率达94%",
-      "published_date_label": "Nov 1",
-      "recovered_time": "2026-11-01T23:57:52+00:00",
       "clock_matches": 1,
       "distinct_clock_matches": 1
     },
@@ -144,6 +129,15 @@
       "title_zh": "标普因现金流和资本支出担忧下调Meta展望",
       "published_date_label": "Oct 30",
       "recovered_time": "2026-10-30T22:42:26+00:00",
+      "clock_matches": 1,
+      "distinct_clock_matches": 1
+    },
+    {
+      "url": "https://seekingalpha.com/news/4661897-johnson-and-johnson-reports-94-percent-success-rate-in-trial-of-coronary-artery-device?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+      "title": "Johnson & Johnson reports 94% success rate in trial of coronary artery device",
+      "title_zh": "强生报告冠状动脉设备试验成功率达94%",
+      "published_date_label": "Nov 1",
+      "recovered_time": "2026-11-01T23:57:52+00:00",
       "clock_matches": 1,
       "distinct_clock_matches": 1
     },
@@ -159,7 +153,7 @@
     {
       "url": "https://www.cnbc.com/2026/10/30/reddit-stock-q3-earnings.html",
       "title": "Reddit stock plunges 29% after weak outlook, wrapping its worst day ever",
-      "title_zh": "Reddit股价因展望疲弱暴跌29%，创下史上最差单日表现",
+      "title_zh": "Reddit股价因疲弱展望暴跌29%，创下史上最差单日表现",
       "published_date_label": "Oct 30",
       "recovered_time": "2026-10-30T20:11:12+00:00",
       "clock_matches": 1,
@@ -168,7 +162,7 @@
     {
       "url": "https://www.cnbc.com/2026/10/30/trump-tech-allies-swap-ai-for-super-intelligence-in-earnings-calls.html",
       "title": "Musk and Zuckerberg echo Trump's push to rebrand AI as 'super intelligence' on earnings calls. Others do not",
-      "title_zh": "马斯克和扎克伯格在财报电话会上呼应特朗普将AI重新定义为“超级智能”的推动。其他公司则不然",
+      "title_zh": "马斯克和扎克伯格在财报电话会上呼应特朗普将AI重塑为“超级智能”的推动，其他公司则未跟进",
       "published_date_label": "Oct 30",
       "recovered_time": "2026-10-30T15:14:27+00:00",
       "clock_matches": 1,
@@ -176,9 +170,9 @@
     }
   ],
   "counts": {
-    "all": 19,
-    "priority": 2,
-    "context": 7,
+    "all": 16,
+    "priority": 1,
+    "context": 5,
     "headlines": 10,
     "clock_known": 10,
     "clock_unknown": 0
@@ -201,5 +195,22 @@
     "templates/release_publications_live.js": "abc50fec5c19a91b5017ee1092bac3a97da77e3b",
     "scripts/optimize_assets.py": "62d7daf72add439d4880e1f0533b45524d4f141d",
     "lib/pages.py": "db175c463a31828263b57a3287afba661439a765"
+  },
+  "published_main_blobs": {
+    "site/macro.html": "0967b98418fb19c66b0a8e26a545b40e32c26901",
+    "site/us_stocks.html": "9ea4b5ee8289b03ea737f5eaccc3c30cbe9c4171"
+  },
+  "alert_field_comparison": {
+    "normalization": "collapse whitespace after DOM text extraction",
+    "fields": [
+      "plain_en",
+      "plain_zh",
+      "message",
+      "message_zh",
+      "what_en",
+      "what_zh"
+    ],
+    "comparison": "exact equality",
+    "published_badges_exact": true
   }
 }
