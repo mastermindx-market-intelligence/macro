@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "GPCR-BULL-20260604",
-  "asof": "2026-11-01",
+  "asof": "2026-11-02",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.1,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": -0.705,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 191.1,
+    "horizon_pct_used": 193.3,
     "p1": -1.1367,
     "p2": -0.5683,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-12",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 86,
-  "tau": 1.9111,
+  "days_elapsed": 87,
+  "tau": 1.9333,
   "closed": true,
   "outcome": "INVALIDATED"
 }
