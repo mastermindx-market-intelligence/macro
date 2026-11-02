@@ -44768,6 +44768,10 @@ jobs:
       - "lib/tsx_calendar.py"
       - "templates/markets.html.j2"
       - "templates/_market_regime_strip.html.j2"
+      - "templates/_cycle_locked_slot.html.j2"
+      # The publication sweep names extracted stylesheets by their content.
+      - "site/assets/css/*.css"
+      - "scripts/externalize_css.py"
       # Parity test reads the hero stance sentences from this partial.
       - "templates/_unified_dashboard_hero.html.j2"
       - "templates/theme.css"
