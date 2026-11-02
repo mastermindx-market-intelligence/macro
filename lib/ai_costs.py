@@ -38,8 +38,10 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import os
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from pathlib import Path
 from typing import Any
 
@@ -208,33 +210,82 @@ def _load_pricing(root: Path | None = None) -> dict[str, Any]:
 def _resolve_model_rates(
     model: str | None,
     pricing: dict[str, Any],
-) -> tuple[float, float, float, float] | None:
-    """Return (in_rate, out_rate, read_mult, write_mult) per MTok, or None.
+    *,
+    as_of_utc: datetime | None = None,
+) -> tuple[float, float, float, float | None] | None:
+    """Reviewed per-million-token rates; fail closed on unsupported cost time.
 
-    Prefix-match: "claude-haiku-4-5-20251001" matches prefix "claude-haiku-4-5".
-    Longest prefix wins.
+    Historical simple provider prefixes keep their previous behavior.
+    BytePlus DeepSeek V4.1 Flash is *time-variable* in Asia/Shanghai: no
+    timezone-aware observation = UNKNOWN, never an invented flat rate.
+    Explicit cache-read overrides avoid the generic Claude multiplier.
+    Cache-storage/hour cannot be projected from cache-creation tokens.
     """
     if not model:
         return None
-    per_mtok: dict[str, Any] = pricing.get("per_mtok") or {}
     cache: dict[str, Any] = pricing.get("cache") or {}
-
-    read_mult: float = float(cache.get("read_multiplier", 0.10))
-    write_mult: float = float(cache.get("write_5m_multiplier", 1.25))
-
-    best_prefix = ""
-    best_rates: dict[str, float] | None = None
-    for prefix, rates in per_mtok.items():
-        if model.startswith(prefix) and len(prefix) > len(best_prefix):
-            best_prefix = prefix
-            best_rates = rates
-
-    if best_rates is None:
+    read_default = float(cache.get("read_multiplier", 0.10))
+    write_default = float(cache.get("write_5m_multiplier", 1.25))
+    temporal = pricing.get("temporal_per_mtok") or {}
+    if not isinstance(temporal, dict):
         return None
+    if model in temporal:
+        # Only the exact reviewed version/schedule can use this branch.
+        if model != "deepseek-v4-1-flash-261017":
+            return None
+        if (
+            type(as_of_utc) is not datetime
+            or as_of_utc.tzinfo is None
+            or as_of_utc.utcoffset() is None
+        ):
+            return None
+        period = temporal[model]
+        if (
+            type(period) is not dict
+            or set(period) != {"schedule", "peak", "offpeak"}
+            or period["schedule"] != "asia_shanghai_weekday_peak_09_12_14_18_v1"
+        ):
+            return None
+        local = as_of_utc.astimezone(ZoneInfo("Asia/Shanghai"))
+        peak = local.weekday() < 5 and (
+            9 <= local.hour < 12 or 14 <= local.hour < 18
+        )
+        chosen = period["peak" if peak else "offpeak"]
+        if type(chosen) is not dict or set(chosen) != {
+            "input", "output", "cache_read_multiplier", "cache_write_5m_multiplier"
+        }:
+            return None
+        best_rates = chosen
+    else:
+        per_mtok: dict[str, Any] = pricing.get("per_mtok") or {}
+        if not isinstance(per_mtok, dict):
+            return None
+        best_prefix = ""
+        best_rates = None
+        for prefix, rates in per_mtok.items():
+            if model.startswith(prefix) and len(prefix) > len(best_prefix):
+                best_prefix, best_rates = prefix, rates
 
-    in_rate = float(best_rates.get("input", 0.0))
-    out_rate = float(best_rates.get("output", 0.0))
-    return in_rate, out_rate, read_mult, write_mult
+    if not isinstance(best_rates, dict):
+        return None
+    if (
+        model in {"glm-5-3-flash-260828", "dola-seed-2-1-turbo-260628"}
+        and set(best_rates) != {
+            "input", "output", "cache_read_multiplier", "cache_write_5m_multiplier"
+        }
+    ):
+        return None
+    input_usd = float(best_rates.get("input", 0.0))
+    output_usd = float(best_rates.get("output", 0.0))
+    read_mult = float(best_rates.get("cache_read_multiplier", read_default))
+    write_raw = best_rates.get("cache_write_5m_multiplier", write_default)
+    write_mult = None if write_raw is None else float(write_raw)
+    values = (input_usd, output_usd, read_mult)
+    if any(not math.isfinite(v) or v < 0 for v in values):
+        return None
+    if write_mult is not None and (not math.isfinite(write_mult) or write_mult < 0):
+        return None
+    return input_usd, output_usd, read_mult, write_mult
 
 
 def estimate_cost_usd(
@@ -244,6 +295,7 @@ def estimate_cost_usd(
     cache_read_tokens: int = 0,
     cache_creation_tokens: int = 0,
     root: Path | None = None,
+    as_of_utc: datetime | None = None,
 ) -> float | None:
     """Estimate cost in USD for a call using config/ai_pricing.yml rates.
 
@@ -253,20 +305,25 @@ def estimate_cost_usd(
         + cache_read * in_rate * read_multiplier
         + cache_creation * in_rate * write_5m_multiplier
 
-    Returns None when the model is not found in the pricing table.
+    Returns None when the model is unknown or a time-variable rate lacks an
+    explicitly timezone-aware as_of_utc. A cost estimate is not a paid receipt.
     Never raises.
     """
     try:
         pricing = _load_pricing(root)
-        rates = _resolve_model_rates(model, pricing)
+        rates = _resolve_model_rates(model, pricing, as_of_utc=as_of_utc)
         if rates is None:
             return None
         in_rate, out_rate, read_mult, write_mult = rates
+        if cache_creation_tokens and write_mult is None:
+            # Provider cache-storage is time-based, not a write-token fee.
+            return None
         cost = (
             input_tokens * in_rate / 1_000_000
             + output_tokens * out_rate / 1_000_000
             + cache_read_tokens * in_rate * read_mult / 1_000_000
-            + cache_creation_tokens * in_rate * write_mult / 1_000_000
+            + (cache_creation_tokens * in_rate * write_mult / 1_000_000
+               if cache_creation_tokens else 0.0)
         )
         return round(cost, 8)
     except Exception as exc:  # noqa: BLE001
@@ -305,15 +362,17 @@ def record_usage(
     non-POSIX filesystems or large rows).
     """
     try:
+        observed_at = datetime.now(timezone.utc)
         if est_cost_usd is None and model is not None:
             est_cost_usd = estimate_cost_usd(
                 model, input_tokens, output_tokens,
                 cache_read_tokens, cache_creation_tokens, root=root,
+                as_of_utc=observed_at,
             )
 
         row: dict[str, Any] = {
             "schema": SCHEMA,
-            "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "ts": observed_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "lane": lane,
             "provider": provider,
             "model": model,
