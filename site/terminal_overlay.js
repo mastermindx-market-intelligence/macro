@@ -26,6 +26,7 @@
     lastConfig: null,
     closeTimer: 0,
     readyTimer: 0,
+    focusTimer: 0,
     shellFallbackTimer: 0,
     frameLoadFallbackTimer: 0,
     toastTimer: 0,
@@ -40,6 +41,7 @@
     rootScrollBehavior: '',
     activeElement: null,
     returnFocus: null,
+    returnFocusVisible: false,
     bodyStyle: null,
     locked: [],
     historyArmed: false,
@@ -189,7 +191,7 @@
          escape — the compositor applies it to the whole subtree. Both are kept,
          and no child may own the closed state. */
       '#mm-terminal-overlay{--mmto-x:50vw;--mmto-y:18vh;position:fixed;inset:0;z-index:2147483000;',
-        'visibility:hidden;opacity:0;pointer-events:none;isolation:isolate;overflow:hidden;background:#05070b;',
+        'visibility:hidden;opacity:0;pointer-events:none;isolation:isolate;overflow:hidden;background:var(--bg,#05070b);',
         'font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f4f7ff}',
       '#mm-terminal-overlay.is-open{visibility:visible;opacity:1;pointer-events:auto}',
       '#mm-terminal-overlay.is-closing{visibility:visible;opacity:1;pointer-events:none;background:transparent}',
@@ -199,7 +201,7 @@
         'opacity:0;transform:scale(1.04);transition:opacity .32s ease,transform .62s cubic-bezier(.16,1,.3,1)}',
       '#mm-terminal-overlay.is-open::before{opacity:1;transform:none}',
       '#mm-terminal-overlay.is-closing::before{opacity:0;transform:scale(1.025)}',
-      '.mmto-stage{position:absolute;inset:0;z-index:1;overflow:hidden;background:#07090e;',
+      '.mmto-stage{position:absolute;inset:72px 0 0;z-index:1;overflow:hidden;background:#07090e;',
         'opacity:0;transform:translate3d(0,14px,0) scale(.978);transform-origin:var(--mmto-x) var(--mmto-y);',
         'transition:opacity .22s ease,transform .56s cubic-bezier(.16,1,.3,1),clip-path .62s cubic-bezier(.16,1,.3,1)}',
       '#mm-terminal-overlay.is-open .mmto-stage{opacity:1;transform:none}',
@@ -653,7 +655,9 @@
     // A document/shell fallback may be a 503/auth/error page that cannot relay Esc.
     if (state.open && data && data.type === 'terminal:visual-ready') {
       var readyFrame = state.frame;
-      setTimeout(function () {
+      clearTimeout(state.focusTimer);
+      state.focusTimer = setTimeout(function () {
+        state.focusTimer = 0;
         if (!state.open || state.frame !== readyFrame) return;
         try { readyFrame.focus(); } catch (e) {}
       }, 180);
@@ -723,6 +727,8 @@
     }
 
     clearTimeout(state.closeTimer);
+    clearTimeout(state.focusTimer);
+    state.focusTimer = 0;
     var remount = shouldRemountFrame();
     // Every compact/mobile launch gets a genuinely new iframe element. This
     // also covers a rapid reopen before the closing animation completed.
@@ -744,6 +750,10 @@
 
     if (!state.open) {
       state.returnFocus = config.returnFocus || config.trigger || document.activeElement || null;
+      // Preserve keyboard-origin focus on compact devices without introducing
+      // pointer/touch focus scroll jumps. Sample before the host Back takes focus.
+      state.returnFocusVisible = false;
+      try { state.returnFocusVisible = !!(state.returnFocus && state.returnFocus.matches(':focus-visible')); } catch (e) {}
       state.open = true;
       root.setAttribute('aria-hidden', 'false');
       root.classList.remove('is-closing');
@@ -785,6 +795,8 @@
     var remount = shouldRemountFrame();
     state.open = false;
     clearTimeout(state.closeTimer);
+    clearTimeout(state.focusTimer);
+    state.focusTimer = 0;
     clearTimeout(state.toastTimer);
     clearTimeout(state.slowTimer);
     state.toast.classList.remove('show');
@@ -797,7 +809,7 @@
     if (remount) {
       state.overlay.classList.remove('is-closing');
       destroyFrame();
-      unlockDashboard({ restoreFocus: false });
+      unlockDashboard({ restoreFocus: state.returnFocusVisible });
       return;
     }
 
