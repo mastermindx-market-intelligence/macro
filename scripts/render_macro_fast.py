@@ -39,7 +39,13 @@ def main() -> int:
         return 1
     with open(cache, "rb") as fh:
         blob = pickle.load(fh)
+    from lib.fed_forward_board import fed_forward_board
+
     vm = blob["vm"]
+    vm["fed_forward"] = fed_forward_board(
+        vm.get("rates_command"), vm.get("prediction_markets"),
+        bond_file=config.data_dir() / "bonds" / "bond_health.json",
+    )
 
     env = Environment(loader=FileSystemLoader(config.ROOT / "templates"))
     env.filters["min"] = lambda seq: min(seq)

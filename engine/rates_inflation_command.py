@@ -1870,6 +1870,19 @@ def build_board(root=None, *, cutoff=None) -> dict:
         basis_present=basis_present,
         d1_identified=d1_identified,
     )
+    # A matched contract month does not qualify the legacy 12m or SEP gap.
+    # Keep older flat-producer contracts stable; the native nested producer
+    # publishes the per-month comparison, not the legacy aggregate forecast.
+    source_meta = fed_path.get("implied_source_meta") if isinstance(fed_path, dict) else None
+    if isinstance(source_meta, dict) and "effr_meeting_path" in source_meta:
+        if (basis_present and d1_identified and _rp_basis.get("rate_index") == "EFFR"
+                and _rp_basis.get("source") == "rate_futures:ZQ"):
+            pre_artifact["stance"] = {
+                "en": "Inspect monthly futures pricing against the policy midpoint where the contract basis matches.",
+                "zh": "若合约口径匹配，可按月查看期货定价相对政策区间中点的差额。",
+            }
+        else:
+            pre_artifact["stance"] = _c0_basis_safe_stance_pair()
 
     # Final artifact
     artifact = dict(pre_artifact)
@@ -2096,17 +2109,15 @@ def _c0_input_id(prefix: str, *pointers: str) -> str:
     return prefix + ("/" + "/".join(parts) if parts else "")
 
 
-def _c0_ref_d1(data_dir: Path) -> dict:
-    """Provenance stamp for the D1 source bytes (bond_health.json fed_path).
-
-    Returns the dict {input_id, content_ref} the comparison layer embeds on
-    every D1-sourced comparison; either value may be None when the file is
-    unreadable, never raised.
-    """
-    return {
-        "input_id": _C0_D1_INPUT_ID_PREFIX,
-        "content_ref": _c0_sha256_bytes(data_dir / "bonds" / "bond_health.json"),
-    }
+def _c0_d1_source(fed_path: dict) -> tuple[dict | None, str]:
+    """Resolve the producer's actual JSON pointer, preserving older flat artifacts."""
+    meta = fed_path.get("implied_source_meta") if isinstance(fed_path, dict) else None
+    if isinstance(meta, dict) and "effr_meeting_path" in meta:
+        block = meta["effr_meeting_path"]
+        return (block if isinstance(block, dict) else None,
+                "data/bonds/bond_health.json#/fed_path/implied_source_meta/effr_meeting_path")
+    block = fed_path.get("effr_meeting_path") if isinstance(fed_path, dict) else None
+    return block if isinstance(block, dict) else None, _C0_D1_INPUT_ID_PREFIX
 
 
 def _c0_ref_i0(data_dir: Path) -> dict:
@@ -2244,7 +2255,7 @@ def _c0_d1_any_identified(fed_path: dict) -> bool:
     COMPARABLE_AFTER_TRANSFORMATION. With no D1 block, no per-month row, or
     no identified row the function returns False so the §2.6 guard fires.
     """
-    block = fed_path.get("effr_meeting_path") if isinstance(fed_path, dict) else None
+    block, _ = _c0_d1_source(fed_path)
     if not isinstance(block, dict):
         return False
     months = block.get("months")
@@ -2291,6 +2302,34 @@ def _c0_wrap_with_provenance(
     return out
 
 
+def contract_comparison_rows(fed_path: dict, content_ref: str | None, cutoff=None):
+    """Project existing B0 results with their actual pointer, contract and reference interval."""
+    block, pointer = _c0_d1_source(fed_path)
+    block = block or {}
+    source_cutoff = block.get("cutoff_effective") or cutoff
+    stamp = {"input_id": pointer, "content_ref": content_ref, "cutoff": source_cutoff}
+    rows = []
+    months = block.get("months")
+    for index, month in enumerate(months if isinstance(months, list) else []):
+        if not isinstance(month, dict) or not isinstance(month.get("vs_target_midpoint"), dict):
+            continue
+        row = _c0_wrap_with_provenance(
+            month["vs_target_midpoint"], component="d1",
+            input_id=_c0_input_id(pointer, "months", str(index), "vs_target_midpoint"),
+            content_ref=content_ref, cutoff=source_cutoff if isinstance(source_cutoff, str) else None,
+            reference_only=True,
+        )
+        for key in ("contract", "reference_start", "reference_end"):
+            if isinstance(month.get(key), str):
+                row[key] = month[key]
+        observation = month.get("monthly_average")
+        if (isinstance(observation, dict) and observation.get("obs_id")
+                and observation["obs_id"] == row.get("left_ref")):
+            row["quote_observed"] = observation.get("observation_time")
+        rows.append(row)
+    return stamp, rows
+
+
 def _c0_qualified_comparisons(
     *,
     fed_path: dict,
@@ -2317,36 +2356,10 @@ def _c0_qualified_comparisons(
     The list always carries the 14 B0 fields per entry plus provenance
     fields; never raises; never returns None.
     """
-    out: list[dict] = []
-    d1_ref = _c0_ref_d1(data_dir)
+    _, out = contract_comparison_rows(
+        fed_path, _c0_sha256_bytes(data_dir / "bonds" / "bond_health.json"), cutoff
+    )
     i0_ref = _c0_ref_i0(data_dir)
-
-    # --- 1) D1 per-month vs_target_midpoint (referenced, never re-run) ---
-    d1_block = fed_path.get("effr_meeting_path") if isinstance(fed_path, dict) else None
-    if isinstance(d1_block, dict):
-        d1_cutoff = d1_block.get("cutoff_effective") if isinstance(
-            d1_block.get("cutoff_effective"), str
-        ) else (cutoff if isinstance(cutoff, str) else None)
-        months = d1_block.get("months") if isinstance(d1_block, dict) else None
-        if isinstance(months, list):
-            for idx, m in enumerate(months):
-                if not isinstance(m, dict):
-                    continue
-                vt = m.get("vs_target_midpoint")
-                if not isinstance(vt, dict):
-                    continue
-                # Carry every B0 field through verbatim; only add provenance.
-                entry = _c0_wrap_with_provenance(
-                    vt,
-                    component="d1",
-                    input_id=_c0_input_id(
-                        _C0_D1_INPUT_ID_PREFIX, "months", str(idx), "vs_target_midpoint"
-                    ),
-                    content_ref=d1_ref["content_ref"],
-                    cutoff=d1_cutoff,
-                    reference_only=True,
-                )
-                out.append(entry)
 
     # --- 2) I0 matched_lenses.comparisons (referenced, never re-run) ---
     if isinstance(inflation_lenses_block, dict):
@@ -2408,11 +2421,11 @@ def _c0_board_generation(
     incomplete: list[str] = []
 
     # Component D1 (effr_meeting_path).
-    d1_block = fed_path.get("effr_meeting_path") if isinstance(fed_path, dict) else None
+    d1_block, d1_pointer = _c0_d1_source(fed_path)
     d1_cutoff = d1_block.get("cutoff_effective") if isinstance(d1_block, dict) else None
     d1_present = isinstance(d1_block, dict)
     components["d1"] = {
-        "input_id": _C0_D1_INPUT_ID_PREFIX,
+        "input_id": d1_pointer,
         "content_ref": d1_content_ref,
         # Cutoff is the COMPONENT's own cutoff (D1's cutoff_effective);
         # never the user's `cutoff` parameter, which would leak into the
@@ -2459,7 +2472,7 @@ def _c0_board_generation(
             "present" if basis_value_state == "present" else "missing"
         )
     components["t0_rate_path"] = {
-        "input_id": _C0_D1_INPUT_ID_PREFIX,  # the rate_path_basis is qualified
+        "input_id": "data/bonds/bond_health.json#/fed_path/implied/m12",
         "content_ref": d1_content_ref,        # from the bond_health.json bytes.
         # T0's cutoff follows the row basis's own cutoff ONLY when the
         # basis is fully present (value_state=present); missing bases

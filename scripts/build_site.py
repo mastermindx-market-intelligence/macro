@@ -6793,6 +6793,8 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("prediction markets failed: %s", e)
 
+    from lib.fed_forward_board import fed_forward_board
+
     # rates_command: Forward Path board (data/rates_command/latest.json).
     # DISPLAY-ONLY leaf; RIC-R1 compliant.  Missing file -> None (graceful absent).
     rates_command: "dict | None" = None
@@ -7473,6 +7475,8 @@ def main() -> int:
         event_risk=event_risk,
         prediction_markets=prediction_markets,
         rates_command=rates_command,
+        fed_forward=fed_forward_board(rates_command, prediction_markets,
+                                      bond_file=config.data_dir() / "bonds" / "bond_health.json"),
         narrative_regime=narrative_regime,
         ndi=ndi,
         macro_news=macro_news_data,

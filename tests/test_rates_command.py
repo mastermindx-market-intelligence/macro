@@ -500,7 +500,11 @@ def _walk_keys(obj, path="root") -> list[str]:
     keys = []
     if isinstance(obj, dict):
         for k, v in obj.items():
-            keys.append(k)
+            # MRI publishes these two names as source provenance for the CPI
+            # estimate; neither is a Rates Command output or forecasting grant.
+            if (path != "root.board.inflation_row.nearest_cpi"
+                    or k not in {"primary_forecast_basis", "forecast_epoch"}):
+                keys.append(k)
             keys.extend(_walk_keys(v, f"{path}.{k}"))
     elif isinstance(obj, list):
         for item in obj:
@@ -539,6 +543,14 @@ class TestWordBans:
                 assert f not in key.lower(), (
                     f"Naming-law violation: key '{key}' contains banned substring '{f}'"
                 )
+
+    def test_cpi_provenance_exception_is_path_and_field_specific(self):
+        obj = {"board": {"inflation_row": {"nearest_cpi": {
+            "primary_forecast_basis": "house", "forecast_epoch": "experimental",
+            "predicted_return": 9}}}, "other": {"forecast_epoch": "illegal"}}
+        keys = _walk_keys(obj)
+        assert keys.count("forecast_epoch") == 1
+        assert "primary_forecast_basis" not in keys and "predicted_return" in keys
 
     def test_no_consensus_in_empty_root_artifact(self, tmp_path):
         artifact = build_board(root=tmp_path)
@@ -1293,7 +1305,16 @@ class TestT0FixAContract:
         assert "(ZQ fed-funds futures)" not in text
         assert "'Market-implied fed-funds path.'" not in text
         assert "(source not recorded)" in text
-        assert "Path source: not recorded for this read." in text
+        # The extracted dialog withholds pricing when the underlying source is unknown.
+        from lib.fed_forward_board import fed_forward_board
+        board = {"board": {"rate_path_row": {"basis": {"value_state": "present"},
+                                            "implied_path": {"m12": 4.67}}}}
+        view = fed_forward_board(board)
+        from jinja2 import Environment, FileSystemLoader
+        rendered = Environment(loader=FileSystemLoader(Path(__file__).resolve().parents[1] / "templates")).get_template(
+            "_fed_forward_board.html.j2").render(fed_forward=view)
+        assert "Awaiting comparable contracts" in rendered
+        assert "ZQ fed-funds futures" not in rendered and "4.67" not in rendered
 
     # ------------------------------------------------------------------ #
     # 9. BUILDER pin (build-time cutoff wired at the call site)

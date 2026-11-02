@@ -6344,6 +6344,7 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
    (unlike --up, which swaps to red under html[data-lang="zh"]). ──────────────── */
 #dlg-aibrief .aib2{--aib2-acc:var(--isle-brief,#38c472);}
 
+{% include "_fed_forward_board.css.j2" %}
 /* ══ FED FORWARD BOARD — dlg-fed rebuild (fbm-* = Fed Board) ══════════════════
    Signature idiom: a physical balance beam. Hawkish weight tilts it left (down),
    easing weight tilts it right. The tilt IS the stance — a cold reader gets
@@ -14612,211 +14613,23 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     </div>
   </div>
   {# dlg-fed: Fed Probability detail — outcome distribution + upcoming meetings #}
-  <div class="mx5-dlg" id="dlg-fed" role="dialog" aria-modal="true" tabindex="-1">
+  <div class="mx5-dlg" id="dlg-fed" role="dialog" aria-modal="true" aria-labelledby="ff-dialog-name" tabindex="-1">
     <div class="mx5-dlg-backdrop" onclick="mx5CloseDlg()"></div>
     <div class="mx5-dlg-panel">
       <div class="mx5-dlg-header">
-        <span class="mx5-dlg-title"><span class="l-en">Fed Path — Forward Board</span><span class="l-zh">联储路径 — 前瞻看板</span></span>
+        <span class="mx5-dlg-title" id="ff-dialog-name"><span class="l-en">Fed Path — Forward Board</span><span class="l-zh">联储路径 — 前瞻看板</span></span>
         <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
       </div>
       <div class="mx5-dlg-body">
-      {# ── Reuse _rc aliases already computed for the card ── #}
-      {% set _dlgrc = rates_command if (rates_command is defined and rates_command) else none %}
-      {% if _dlgrc %}
-      {% set _dlgrc_ep   = _dlgrc.expectations_pressure %}
-      {% set _dlgrc_brd  = _dlgrc.board %}
-      {% set _dlgrc_rpr  = _dlgrc_brd.rate_path_row %}
-      {% set _dlgrc_inf  = _dlgrc_brd.inflation_row %}
-      {% set _dlgrc_risk = _dlgrc_brd.risk_row %}
-      {% set _dlgrc_pol  = _dlgrc_brd.policy_row %}
-      {% set _dlgrc_mc   = _dlgrc.market_check %}
-      {% set _dlgrc_pl_map_en = {'QUIET':'No active policy pressure.','ELEVATED':'Elevated — watch for repricing.','ARMED':'Active — repricing underway.'} %}
-      {% set _dlgrc_pl_map_zh = {'QUIET':'当前无积极政策压力。','ELEVATED':'警戒 — 留意重定价风险。','ARMED':'已触发 — 重定价进行中。'} %}
-
-      {# ── a. Hero ── #}
-      <div style="margin-bottom:16px">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-          <span style="font-size:13px;font-weight:700;padding:3px 8px;border-radius:4px;background:rgba(255,255,255,.07)">
-            <span class="l-en">{{ _dlgrc_ep.state_label.en }}</span>
-            <span class="l-zh">{{ _dlgrc_ep.state_label.zh }}</span>
-          </span>
-          <span style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36))">{{ _dlgrc.asof }}</span>
-        </div>
-        <div style="font-size:13px;color:var(--ink-2,rgba(255,255,255,.7));line-height:1.6">
-          <span class="l-en">{{ _dlgrc.stance.en }}</span>
-          <span class="l-zh">{{ _dlgrc.stance.zh }}</span>
-        </div>
-      </div>
-      <div class="mx5-dlg-sep"></div>
-
-      {# ── b. Pressure beam — hawkish weight vs easing weight, the beam tilts ── #}
-      {# Plain 1-2 word chip label per leg (mechanic + threshold receipt stays on hover). #}
-      {% set _fbm_leg_lbl = {
-        'H1_path_repricing':      {'en':'Rate futures','zh':'利率期货'},
-        'H2_breakeven_momentum':  {'en':'Breakevens','zh':'盈亏平衡'},
-        'H3_oil_impulse':         {'en':'Oil','zh':'原油'},
-        'H4_inflation_trajectory':{'en':'Inflation path','zh':'通胀路径'},
-        'H5_curve_regime':        {'en':'Yield curve','zh':'收益率曲线'},
-        'H6_anchoring_strain':    {'en':'Expectations','zh':'通胀预期'},
-        'E1_equity_deleveraging': {'en':'Equity risk-off','zh':'股市避险'},
-        'E2_growth_cooling':      {'en':'Growth cooling','zh':'增长放缓'},
-        'E3_dollar_tightening':   {'en':'Strong dollar','zh':'美元走强'},
-        'E4_credit_stress':       {'en':'Credit stress','zh':'信用压力'},
-        'E5_policy_easing_chain': {'en':'Easing chain','zh':'宽松传导'}
-      } %}
-      {% set _fbm_hawk = _dlgrc_ep.hawk_score %}
-      {% set _fbm_ease = _dlgrc_ep.ease_score %}
-      {# Beam tilt: net weight (hawk − ease) mapped to a bounded angle. Hawk-heavy tilts
-         DOWN-LEFT (positive rotate); easing tilts up-left / down-right (negative). Clamp ±9°. #}
-      {% set _fbm_net = _fbm_hawk - _fbm_ease %}
-      {% set _fbm_tilt_raw = (_fbm_net * 3) %}
-      {% set _fbm_tilt = ([[_fbm_tilt_raw, 9] | min, -9] | max) %}
-      {% set _fbm_lean_word_en = 'balanced' if _fbm_net == 0 else ('leaning hawkish' if _fbm_net > 0 else 'leaning easier') %}
-      {% set _fbm_lean_word_zh = '大体制衡' if _fbm_net == 0 else ('偏鹰' if _fbm_net > 0 else '偏宽松') %}
-      {% set _fbm_lean_cls = 'even' if _fbm_net == 0 else ('hawk' if _fbm_net > 0 else 'ease') %}
-      <div class="mx5-dlg-eyebrow"><span class="l-en">Pressure Balance</span><span class="l-zh">压力平衡</span></div>
-      <div class="fbm-beam-wrap">
-        <div class="fbm-beam-heads">
-          <span class="fbm-beam-head hawk"><span class="fbm-wt">{{ _fbm_hawk }}</span><span class="l-en">Hawkish</span><span class="l-zh">鹰派</span></span>
-          <span class="fbm-beam-head ease"><span class="l-en">Easing</span><span class="l-zh">宽松</span><span class="fbm-wt">{{ _fbm_ease }}</span></span>
-        </div>
-        <div class="fbm-beam-stage" style="--tilt:{{ _fbm_tilt }}deg">
-          <div class="fbm-beam-bar"></div>
-          <div class="fbm-fulcrum"></div>
-          <div class="fbm-beam-pans">
-            <div class="fbm-beam-pan hawk">
-              <div class="fbm-beam-chips">
-                {% for leg in _dlgrc_ep.legs %}{% if leg.key[:1] == 'H' %}
-                {% set _ll = _fbm_leg_lbl.get(leg.key, {'en':leg.key,'zh':leg.key}) %}
-                <span class="fbm-leg hawk {{ 'on' if leg.active else '' }}"
-                      data-tip-en="{{ leg.detail_en }}{% if leg.null_reason %} — {{ leg.null_reason }}{% endif %}"
-                      data-tip-zh="{{ leg.detail_zh }}{% if leg.null_reason %} — {{ leg.null_reason }}{% endif %}">
-                  <span class="fbm-dot"></span><span class="l-en">{{ _ll.en }}</span><span class="l-zh">{{ _ll.zh }}</span>
-                </span>
-                {% endif %}{% endfor %}
-              </div>
-            </div>
-            <div class="fbm-beam-pan ease">
-              <div class="fbm-beam-chips">
-                {% for leg in _dlgrc_ep.legs %}{% if leg.key[:1] == 'E' %}
-                {% set _ll = _fbm_leg_lbl.get(leg.key, {'en':leg.key,'zh':leg.key}) %}
-                <span class="fbm-leg ease {{ 'on' if leg.active else '' }}"
-                      data-tip-en="{{ leg.detail_en }}{% if leg.null_reason %} — {{ leg.null_reason }}{% endif %}"
-                      data-tip-zh="{{ leg.detail_zh }}{% if leg.null_reason %} — {{ leg.null_reason }}{% endif %}">
-                  <span class="fbm-dot"></span><span class="l-en">{{ _ll.en }}</span><span class="l-zh">{{ _ll.zh }}</span>
-                </span>
-                {% endif %}{% endfor %}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="fbm-beam-verdict">
-          <span class="l-en">Forces {{ _fbm_hawk }} vs {{ _fbm_ease }} — <span class="fbm-lean {{ _fbm_lean_cls }}">{{ _fbm_lean_word_en }}</span>. Filled chips are live now; hover any for its trigger.</span>
-          <span class="l-zh">力量对比 {{ _fbm_hawk }} 对 {{ _fbm_ease }} — <span class="fbm-lean {{ _fbm_lean_cls }}">{{ _fbm_lean_word_zh }}</span>。实心因素为当前生效；悬停查看触发条件。</span>
-        </div>
-      </div>
-      <div class="mx5-dlg-sep"></div>
-
-      {# ── c. Rate Path — flagship chart (ports dlg-policy's plx idiom, full-width 640×230) ── #}
-      <div class="mx5-dlg-eyebrow"><span class="l-en">Rate Path — Market vs the Fed</span><span class="l-zh">利率路径 — 市场对比美联储</span></div>
-      {% set _dlg_rpr = _dlgrc_rpr %}
-      {% if _dlg_rpr %}
-      {% set _fbc_impl = [_dlg_rpr.policy_rate, _dlg_rpr.implied_path.m1, _dlg_rpr.implied_path.m3, _dlg_rpr.implied_path.m6, _dlg_rpr.implied_path.m12] %}
-      {% set _fbc_ok = (_fbc_impl[0] is not none and _fbc_impl[1] is not none and _fbc_impl[2] is not none and _fbc_impl[3] is not none and _fbc_impl[4] is not none) %}
-      {% if _fbc_ok %}
-      {# ── scale over implied ∪ Fed-dot medians, pad 0.15pp each side (same as plx) ── #}
-      {% set _fbc_dots = (_dlg_rpr.dots if (_dlg_rpr.dots is defined and _dlg_rpr.dots) else []) %}
-      {% set _fbc_allvals = _fbc_impl[:] %}
-      {% for d in _fbc_dots %}{% if d.median is not none and _fbc_allvals.append(d.median) %}{% endif %}{% endfor %}
-      {% set _fbc_ymin = (_fbc_allvals | min) - 0.15 %}
-      {% set _fbc_ymax = (_fbc_allvals | max) + 0.15 %}
-      {% set _fbc_yrange = (_fbc_ymax - _fbc_ymin) if (_fbc_ymax - _fbc_ymin) > 0.01 else 0.5 %}
-      {# geometry: viewBox 0 0 640 230; x 54..586, y 30..176 (labels below) #}
-      {% set _fbc_xl = 54 %}{% set _fbc_xr = 586 %}{% set _fbc_yt = 30 %}{% set _fbc_yb = 176 %}
-      {% set _fbc_w = 532 %}{% set _fbc_h = 146 %}
-      {% set _fbc_xs = [_fbc_xl, _fbc_xl + ((_fbc_w*0.25)|round(1)|float), _fbc_xl + ((_fbc_w*0.5)|round(1)|float), _fbc_xl + ((_fbc_w*0.75)|round(1)|float), _fbc_xr] %}
-      {% macro fry(v) %}{{ (_fbc_yb - _fbc_h * (v - _fbc_ymin) / _fbc_yrange) | round(1) }}{% endmacro %}
-      {% set _fbc_pts = [] %}
-      {% for i in range(5) %}{% if _fbc_pts.append(_fbc_xs[i]|string ~ ',' ~ fry(_fbc_impl[i])) %}{% endif %}{% endfor %}
-      {% set _fbc_area = 'M' ~ _fbc_pts[0] ~ ' L' ~ _fbc_pts[1] ~ ' L' ~ _fbc_pts[2] ~ ' L' ~ _fbc_pts[3] ~ ' L' ~ _fbc_pts[4] ~ ' L' ~ _fbc_xr|string ~ ',' ~ _fbc_yb|string ~ ' L' ~ _fbc_xl|string ~ ',' ~ _fbc_yb|string ~ ' Z' %}
-      {# current-year Fed dot → sits in the 12m slot (end-year); outer years become chips #}
-      {% set _fbc_cur_year = (latest.date[:4]|int) if (latest is defined and latest.date is defined and latest.date) else none %}
-      {% set _fbc_dots_inner = [] %}{% set _fbc_dots_outer = [] %}
-      {% for d in _fbc_dots %}{% if d.year is defined and _fbc_cur_year is not none and d.year == _fbc_cur_year %}{% if _fbc_dots_inner.append(d) %}{% endif %}{% else %}{% if _fbc_dots_outer.append(d) %}{% endif %}{% endif %}{% endfor %}
-      <div class="fbm-chart-wrap">
-        <svg class="fbm-chart-svg" viewBox="0 0 640 230" role="img" aria-label="Market-implied fed funds path versus the Fed projection">
-          <defs>
-            <linearGradient id="fbmChartGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="var(--isle-policy)" stop-opacity=".2"/>
-              <stop offset="100%" stop-color="var(--isle-policy)" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-          {# area fill under implied path #}
-          <path class="fbm-chart-area" d="{{ _fbc_area }}" fill="url(#fbmChartGrad)"/>
-          {# dashed hairline at today's rate #}
-          <line x1="{{ _fbc_xl }}" y1="{{ fry(_fbc_impl[0]) }}" x2="{{ _fbc_xr }}" y2="{{ fry(_fbc_impl[0]) }}" stroke="rgba(255,255,255,.15)" stroke-width="1" stroke-dasharray="4,4"/>
-          {# implied path line (draw-in via dashoffset; --dash ≈ path length upper bound) #}
-          <polyline class="fbm-chart-line" style="--dash:900" points="{{ _fbc_pts | join(' ') }}" fill="none" stroke="var(--isle-policy)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-          {# nodes + % value labels (bilingual is numeric-only here → no lang split needed) #}
-          {% for i in range(5) %}
-          {% set _px = _fbc_xs[i] %}{% set _py = fry(_fbc_impl[i]) | float %}
-          <circle class="fbm-chart-node" cx="{{ _px }}" cy="{{ _py }}" r="4.5" fill="var(--isle-policy)" stroke="rgba(13,17,24,.85)" stroke-width="1.5"/>
-          <text class="fbm-chart-node" x="{{ _px }}" y="{{ _py - 10 }}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--isle-policy)" font-family="Inter,-apple-system,sans-serif" font-variant-numeric="tabular-nums">{{ '%.2f'|format(_fbc_impl[i]) }}%</text>
-          {% endfor %}
-          {# Fed median diamond in the end-year slot #}
-          {% for d in _fbc_dots_inner %}
-          {% set _dpx = _fbc_xs[4] %}{% set _dpy = fry(d.median) | float %}
-          <polygon class="fbm-chart-diamond" points="{{ _dpx }},{{ _dpy - 7 }} {{ _dpx + 7 }},{{ _dpy }} {{ _dpx }},{{ _dpy + 7 }} {{ _dpx - 7 }},{{ _dpy }}" fill="var(--warn,#f59e0b)" fill-opacity=".9" stroke="rgba(13,17,24,.7)" stroke-width="1"/>
-          {% endfor %}
-          {# x-axis labels — SEPARATE l-en / l-zh SVG text elements (svg-span-breakout law), NO M-codes #}
-          {% set _fbc_xlabels_en = ['Now','1m','3m','6m','12m'] %}
-          {% set _fbc_xlabels_zh = ['现在','1月','3月','6月','12月'] %}
-          {% for i in range(5) %}
-          <text class="l-en" x="{{ _fbc_xs[i] }}" y="204" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.4)" font-family="Inter,-apple-system,sans-serif">{{ _fbc_xlabels_en[i] }}</text>
-          <text class="l-zh" x="{{ _fbc_xs[i] }}" y="204" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.4)" font-family="Inter,-apple-system,sans-serif">{{ _fbc_xlabels_zh[i] }}</text>
-          {% endfor %}
-        </svg>
-        {# Fed-diamond key + outer-year dot chips #}
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:2px">
-          {% if _fbc_dots_inner %}
-          <span class="fbm-diamond-key">
-            <svg width="11" height="11" viewBox="0 0 11 11"><polygon points="5.5,0 11,5.5 5.5,11 0,5.5" fill="var(--warn,#f59e0b)"/></svg>
-            <span class="l-en">Fed median dot</span><span class="l-zh">美联储中位点</span>
-          </span>
-          {% endif %}
-          {% for d in _fbc_dots_outer %}
-          <span class="plx-dot-chip">
-            <span class="l-en">'{{ (d.year|string)[2:] }} {{ '%.2f'|format(d.median) }}% (Fed)</span>
-            <span class="l-zh">'{{ (d.year|string)[2:] }} {{ '%.2f'|format(d.median) }}%（美联储）</span>
-          </span>
-          {% endfor %}
-        </div>
-        {# ONE plain takeaway sentence #}
-        <div class="fbm-chart-take">
-          <span class="l-en">{{ _dlg_rpr.read_en if (_dlg_rpr.read_en is defined and _dlg_rpr.read_en) else (_dlg_rpr.headline_en if (_dlg_rpr.headline_en is defined and _dlg_rpr.headline_en) else 'Market-implied policy-rate path.') }}</span>
-          <span class="l-zh">{{ _dlg_rpr.read_zh if (_dlg_rpr.read_zh is defined and _dlg_rpr.read_zh) else (_dlg_rpr.headline_zh if (_dlg_rpr.headline_zh is defined and _dlg_rpr.headline_zh) else '市场隐含政策利率路径。') }}</span>
-          <span class="fbm-tip" data-tip-en="{% if _dlg_rpr.source_en is defined and _dlg_rpr.source_en %}Path source: {{ _dlg_rpr.source_en }}.{% else %}Path source: not recorded for this read.{% endif %} Futures prices carry a risk premium — a market read, not a forecast." data-tip-zh="{% if _dlg_rpr.source_zh is defined and _dlg_rpr.source_zh %}路径来源：{{ _dlg_rpr.source_zh }}。{% else %}路径来源：本次读数未记录。{% endif %}期货价格含风险溢价——是市场定价，不是预测。">?</span>
-        </div>
-        {# delta callout chip — market vs Fed at the horizon #}
-        {% if _dlg_rpr.gap is defined and _dlg_rpr.gap and _dlg_rpr.gap.gap_bp is not none and _dlg_rpr.gap.market is not none and _dlg_rpr.gap.fed_dot is not none %}
-        {% set _fbc_gap = _dlg_rpr.gap %}
-        <div style="margin-top:8px">
-          <span class="fbm-gap-chip"
-            data-tip-en="At {{ _fbc_gap.horizon_label }}: market prices {{ _fbc_gap.market }}%, the Fed projects {{ _fbc_gap.fed_dot }}%. Gap {{ '%+d'|format(_fbc_gap.gap_bp|int) }}bp — small means market and Fed agree on where rates land."
-            data-tip-zh="{{ _fbc_gap.horizon_label }}：市场定价 {{ _fbc_gap.market }}%，美联储预测 {{ _fbc_gap.fed_dot }}%。差距 {{ '%+d'|format(_fbc_gap.gap_bp|int) }}bp — 差距小表示市场与美联储对终点利率看法一致。">
-            <span class="l-en">{{ _fbc_gap.lean_en }} — {{ '%+d'|format(_fbc_gap.gap_bp|int) }}bp at {{ _fbc_gap.horizon_label }}</span>
-            <span class="l-zh">{{ _fbc_gap.lean_zh }} — {{ _fbc_gap.horizon_label }} 相差 {{ '%+d'|format(_fbc_gap.gap_bp|int) }}bp</span>
-          </span>
-        </div>
-        {% endif %}
-      </div>
-      {% endif %}{# /_fbc_ok #}
-      {% endif %}{# /_dlg_rpr #}
-      <div class="mx5-dlg-sep"></div>
-
+      {% include "_fed_forward_board.html.j2" %}
+      {% set _ff_board = rates_command.board if rates_command is defined and rates_command and rates_command.board is mapping else {} %}
+      {% set _dlgrc_inf = _ff_board.get('inflation_row') %}
+      {% set _dlgrc_risk = _ff_board.get('risk_row') %}
+      {% if _dlgrc_inf or _dlgrc_risk %}
+      <details class="ff-context"><summary><span class="l-en">Inflation, real rates &amp; curve detail</span><span class="l-zh">通胀、实际利率与曲线详情</span></summary>
       {# ── d. Inflation Read → glance row: state word + one plain line + ? receipt ── #}
       {# Guard: only render when core inflation values are present (fail-open path leaves them None). #}
-      {% if _dlgrc_inf and _dlgrc_inf.core_pce_yoy is not none %}
+      {% if _dlgrc_inf and _dlgrc_inf.core_pce_yoy is number %}
       {% set _inf_vst = _dlgrc_inf.vs_target_pp if (_dlgrc_inf.vs_target_pp is defined and _dlgrc_inf.vs_target_pp is not none) else none %}
       {# E0-G: the owner's inflation LEVEL token (engine/rate_inflation_transmission.current_state → state.inflation.regime)
          drives the state word + colour; the owner's EXPECTATIONS token (state.expectations.anchoring) drives the second
@@ -14881,11 +14694,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
 
       {# ── e. Risk Indicators → glance rows; percentiles, model names, FRED IDs demoted to ? tips ── #}
       {# Guard: real_speed_pctile / term_premium_chg_bp are None on the fail-open (no yield_curve) path. #}
-      {% if _dlgrc_risk and (_dlgrc_risk.real_speed_pctile is not none or _dlgrc_risk.curve_regime_label_en) %}
+      {% if _dlgrc_risk and (_dlgrc_risk.real_speed_pctile is number or _dlgrc_risk.curve_regime_label_en) %}
       {% set _rsp = _dlgrc_risk.real_speed_pctile %}
       {% set _tpc = _dlgrc_risk.term_premium_chg_bp %}
       <div class="mx5-dlg-eyebrow"><span class="l-en">Risk Indicators</span><span class="l-zh">风险指标</span></div>
-      {% if _rsp is not none %}
+      {% if _rsp is number %}
       {# fast/moderate/slow band from percentile → plain word #}
       {% set _rsp_pct = (_rsp * 100) | round | int %}
       {% set _rsp_fast = _rsp_pct >= 67 %}
@@ -14911,182 +14724,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       <div class="mx5-dlg-sep"></div>
       {% endif %}
 
-      {# ── f. Policy Conditions → chip row (state · chair · comment cadence) ── #}
-      {% if _dlgrc_pol %}
-      {% set _dlg_pl_st = _dlgrc_pol.state %}
-      {% set _pl_st_word_en = {'QUIET':'Quiet','ELEVATED':'Watch','ARMED':'Active'}.get(_dlg_pl_st, 'Watch') %}
-      {% set _pl_st_word_zh = {'QUIET':'平静','ELEVATED':'警戒','ARMED':'已触发'}.get(_dlg_pl_st, '警戒') %}
-      {% set _pl_st_cls = 'armed' if _dlg_pl_st in ('ARMED','ELEVATED') else '' %}
-      <div class="mx5-dlg-eyebrow"><span class="l-en">Policy Conditions</span><span class="l-zh">政策条件</span></div>
-      <div class="fbm-chips">
-        <span class="fbm-chip {{ _pl_st_cls }}"
-          data-tip-en="{{ _dlgrc_pl_map_en.get(_dlg_pl_st, 'Watch for changes.') }}"
-          data-tip-zh="{{ _dlgrc_pl_map_zh.get(_dlg_pl_st, '留意变化。') }}">
-          <span class="fbm-chip-k"><span class="l-en">Stance</span><span class="l-zh">立场</span></span>
-          <span class="l-en">{{ _pl_st_word_en }}</span><span class="l-zh">{{ _pl_st_word_zh }}</span>
-        </span>
-        {% if _dlgrc_pol.chair is defined %}
-        <span class="fbm-chip">
-          <span class="fbm-chip-k"><span class="l-en">Chair</span><span class="l-zh">主席</span></span>
-          <span>{{ _dlgrc_pol.chair }}</span>
-        </span>
-        {% endif %}
-        {% if _dlgrc_pol.jawboning is defined and _dlgrc_pol.jawboning %}
-        <span class="fbm-chip"
-          data-tip-en="Fed officials made {{ _dlgrc_pol.jawboning.n_7d }} public comments in the last 7 days, {{ _dlgrc_pol.jawboning.n_30d }} in the last 30 — more talk often precedes a shift in guidance."
-          data-tip-zh="美联储官员近7天公开发言 {{ _dlgrc_pol.jawboning.n_7d }} 次，近30天 {{ _dlgrc_pol.jawboning.n_30d }} 次 — 发声增多往往先于指引调整。">
-          <span class="fbm-chip-k"><span class="l-en">Comments</span><span class="l-zh">发声</span></span>
-          <span><span class="l-en">{{ _dlgrc_pol.jawboning.n_7d }} this week</span><span class="l-zh">本周 {{ _dlgrc_pol.jawboning.n_7d }} 次</span></span>
-        </span>
-        {% endif %}
-        {% if _dlgrc_pol.intel_staleness_days is defined %}
-        <span class="fbm-chip"
-          data-tip-en="Policy intel is {{ _dlgrc_pol.intel_staleness_days }} days old (as of {{ _dlgrc_pol.intel_as_of if _dlgrc_pol.intel_as_of is defined else 'unknown' }})."
-          data-tip-zh="政策情报为 {{ _dlgrc_pol.intel_staleness_days }} 天前（截至 {{ _dlgrc_pol.intel_as_of if _dlgrc_pol.intel_as_of is defined else '未知' }}）。">
-          <span class="fbm-chip-k"><span class="l-en">Intel</span><span class="l-zh">情报</span></span>
-          <span><span class="l-en">{{ _dlgrc_pol.intel_staleness_days }}d old</span><span class="l-zh">{{ _dlgrc_pol.intel_staleness_days }}天前</span></span>
-        </span>
-        {% endif %}
-      </div>
-      {# Iran/oil: unsigned qualitative display (PS-R4) — kept as one chip, full note on hover #}
-      {% if _dlgrc_pol.iran_context is defined and _dlgrc_pol.iran_context %}
-      {% set _iran = _dlgrc_pol.iran_context %}
-      <div class="fbm-chips">
-        <span class="fbm-chip warn"
-          data-tip-en="{{ _iran.as_of_note_en if _iran.as_of_note_en is defined else '' }} — Conditions only, no direction or probability assigned."
-          data-tip-zh="{{ _iran.as_of_note_zh if _iran.as_of_note_zh is defined else '' }} — 条件性观察，不赋予方向或概率。">
-          <span class="fbm-chip-k"><span class="l-en">Geopolitics</span><span class="l-zh">地缘</span></span>
-          <span><span class="l-en">{{ _iran.title_en }}</span><span class="l-zh">{{ _iran.title_zh }}</span></span>
-        </span>
-      </div>
-      {% endif %}
-      <div class="mx5-dlg-sep"></div>
-      {% endif %}
-
-      {# ── g. What Changes This → direction-tinted glance rows; raw trigger receipt on hover ── #}
-      {% if _dlgrc.conditions %}
-      {# Plain direction word carries the meaning on Tier 1; the machine detail (sigma / raw
-         slugs) lives in the ? tip so the glance line stays doctrine-clean. #}
-      {% set _cond_word_en = {'hawkish':'Pushes rates up','easing':'Pulls rates down','geopolitical':'Wild card'} %}
-      {% set _cond_word_zh = {'hawkish':'推高利率','easing':'拉低利率','geopolitical':'不确定因素'} %}
-      <div class="mx5-dlg-eyebrow"><span class="l-en">What Changes This</span><span class="l-zh">什么会改变现状</span></div>
-      {% for cond in _dlgrc.conditions %}
-      {% set _cond_col = 'var(--down,#ef4444)' if cond.direction == 'hawkish' else ('var(--up,#22d97a)' if cond.direction == 'easing' else 'var(--warn,#f59e0b)') %}
-      <div class="fbm-row">
-        <span class="fbm-row-state" style="color:{{ _cond_col }}"><span class="fbm-row-dot" style="background:{{ _cond_col }}"></span><span class="l-en">{{ _cond_word_en.get(cond.direction,'Watch') }}</span><span class="l-zh">{{ _cond_word_zh.get(cond.direction,'留意') }}</span></span>
-        <span class="fbm-row-line">
-          {% if cond.watch_en is defined and cond.watch_en %}
-          <span class="l-en">{{ cond.watch_en }}</span><span class="l-zh">{{ cond.watch_zh if (cond.watch_zh is defined and cond.watch_zh) else cond.watch_en }}</span>
-          {% else %}
-          <span class="l-en">{{ cond.en }}</span><span class="l-zh">{{ cond.zh }}</span>
-          {% endif %}
-        </span>
-        <span class="fbm-tip"
-          data-tip-en="{{ cond.en }}"
-          data-tip-zh="{{ cond.zh }}">?</span>
-      </div>
-      {% endfor %}
-      <div class="mx5-dlg-sep"></div>
-      {% endif %}
-
-      {# ── h. Market-implied benchmark strip → unified fbm_bench_strip component ── #}
-      {% set _dlg_fed_out_zh = {'No change':'按兵不动','Rate cut':'降息','Rate hike':'加息','25bps cut':'降息25bp','50bps cut':'降息50bp','25bps hike':'加息25bp','25 bps increase':'加息25bp','25 bps decrease':'降息25bp','50+ bps increase':'加息50bp以上','50+ bps decrease':'降息50bp以上'} %}
-      {% if _dlgrc_mc and _dlgrc_mc.prediction_markets is defined and _dlgrc_mc.prediction_markets.events %}
-      {% set _dlg_pm = _dlgrc_mc.prediction_markets %}
-      {% set _fbm_bench_rows = [] %}
-      {% for e in _dlg_pm.events %}
-      {% if _fbm_bench_rows.append({'outcome_en': e.top_outcome, 'outcome_zh': _dlg_fed_out_zh.get(e.top_outcome, e.top_outcome), 'label_en': e.label_en, 'label_zh': e.label_zh, 'prob': e.top_prob, 'chg_pp': (e.chg_pp if e.chg_pp is defined else none)}) %}{% endif %}
-      {% endfor %}
-      {{ fbm_bench_strip(_fbm_bench_rows, (_dlg_pm.source if _dlg_pm.source is defined else 'Polymarket'), (_dlg_pm.as_of if _dlg_pm.as_of is defined else _dlgrc.asof)) }}
-      {% if _dlgrc_mc.benchmark_note_en is defined %}
-      <div style="font-size:10px;color:var(--ink-3,rgba(255,255,255,.3));margin-top:6px;font-style:italic">
-        <span class="l-en">{{ _dlgrc_mc.benchmark_note_en }}</span>
-        <span class="l-zh">{{ _dlgrc_mc.benchmark_note_zh if _dlgrc_mc.benchmark_note_zh is defined else '' }}</span>
-      </div>
-      {% endif %}
-      {% elif prediction_markets and prediction_markets.events %}
-      {# Fallback: legacy prediction_markets module if rates_command.market_check.prediction_markets absent #}
-      {% set _fbm_bench_rows = [] %}
-      {% for e in prediction_markets.events[:4] %}
-      {% set _top = (e.outcomes | sort(attribute='prob', reverse=true)) | first %}
-      {% if _fbm_bench_rows.append({'outcome_en': _top.outcome, 'outcome_zh': _dlg_fed_out_zh.get(_top.outcome, _top.outcome), 'label_en': (e.label_en if e.label_en is defined else e.name), 'label_zh': (e.label_zh if e.label_zh is defined else (e.label_en if e.label_en is defined else e.name)), 'prob': _top.prob, 'chg_pp': (_top.chg_pp if _top.chg_pp is defined else none)}) %}{% endif %}
-      {% endfor %}
-      {{ fbm_bench_strip(_fbm_bench_rows, (prediction_markets.source if prediction_markets.source is defined else 'Polymarket'), none) }}
-      {% endif %}
-
-      {# ── i. Divergence flags ── #}
-      {% if _dlgrc.divergence %}
-      {% set _active_divs = _dlgrc.divergence | selectattr('active') | list %}
-      {% if _active_divs %}
-      <div class="mx5-dlg-sep"></div>
-      <div class="mx5-dlg-eyebrow"><span class="l-en">Divergence Flags</span><span class="l-zh">背离信号</span></div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
-        {% for d in _active_divs %}
-        <span style="font-size:11px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);border-radius:4px;padding:3px 7px;color:var(--ink-down, var(--down,#ef4444))">
-          <span class="l-en">{{ d.detail_en }}</span>
-          <span class="l-zh">{{ d.detail_zh }}</span>
-        </span>
-        {% endfor %}
-      </div>
-      {% endif %}
-      {% endif %}
-
-      {# ── j. Single footer receipt — plain line on Tier 1, raw caveats on hover ── #}
-      {% if _dlgrc.caveats %}
-      {# Join the raw provenance/staleness caveats into ONE hover payload (Law 4: one footnote;
-         Law 2: raw slugs like shock_state.json / policy/intel.json stay off Tier 1). #}
-      {% set _fbm_cav_tip = _dlgrc.caveats | join(' · ') %}
-      <div class="mx5-dlg-sep"></div>
-      <div style="font-size:10.5px;color:var(--ink-3,rgba(255,255,255,.4));line-height:1.6;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-        <span class="l-en">As of {{ _dlgrc.asof }} — a read on conditions, not a forecast. Some inputs are display-only or a few days stale.</span>
-        <span class="l-zh">截至 {{ _dlgrc.asof }} — 对条件的解读，非预测。部分输入仅供展示或略有滞后。</span>
-        <span class="fbm-tip" data-tip-en="Data notes: {{ _fbm_cav_tip }}" data-tip-zh="数据说明：{{ _fbm_cav_tip }}" style="width:14px;height:14px;font-size:9px">?</span>
-      </div>
-      {% endif %}
-
-      {% else %}
-      {# rates_command absent — fall back to legacy Polymarket view #}
-      {% if prediction_markets and prediction_markets.events %}
-      {% for _fed_ev in prediction_markets.events %}
-      {% set _fed_top = _fed_ev.outcomes | sort(attribute='prob',reverse=true) | first %}
-      {# _fed_out_zh outcome→ZH map defined in dlg-events above #}
-      <div style="margin-bottom:24px">
-        <div class="mx5-dlg-eyebrow"><span class="l-en">{{ _fed_ev.label_en }}</span><span class="l-zh">{{ _fed_ev.label_zh }}</span></div>
-        <div class="mx5-dlg-sep"></div>
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-          <div style="font-size:28px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--mx5-accent,#22d97a);line-height:1">{{ _fed_top.prob | int }}<span style="font-size:14px;font-weight:500;color:var(--ink-2,rgba(255,255,255,.6))">%</span></div>
-          <div>
-            <div style="font-size:14px;font-weight:700"><span class="l-en">{{ _fed_top.outcome }}</span><span class="l-zh">{{ _fed_out_zh.get(_fed_top.outcome, _fed_top.outcome) if _fed_out_zh is defined else _fed_top.outcome }}</span></div>
-            <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36))"><span class="l-en">market's top-probability outcome &middot; {{ _fed_ev.title }}</span><span class="l-zh">市场最高概率结果 &middot; {{ _fed_ev.title }}</span></div>
-          </div>
-        </div>
-        {% set _fed_sorted_outs = _fed_ev.outcomes | sort(attribute='prob',reverse=true) %}
-        {% for oc in _fed_sorted_outs %}
-        {% set _ocp = oc.prob | float %}
-        {% set _is_top2 = (oc.outcome == _fed_top.outcome) %}
-        <div style="margin-bottom:8px">
-          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
-            <span style="font-size:12px;font-weight:{{ '700' if _is_top2 else '400' }};color:{{ 'var(--mx5-accent,#22d97a)' if _is_top2 else 'var(--ink-2,rgba(255,255,255,.6))' }}">
-              <span class="l-en">{{ oc.outcome }}</span><span class="l-zh">{{ _fed_out_zh.get(oc.outcome, oc.outcome) if _fed_out_zh is defined else oc.outcome }}</span>
-            </span>
-            <span style="font-size:12px;font-variant-numeric:tabular-nums;font-weight:600;color:{{ 'var(--mx5-accent)' if _is_top2 else 'var(--ink-2,rgba(255,255,255,.6))' }}">{{ _ocp | int }}%</span>
-          </div>
-          <div style="height:5px;border-radius:3px;background:rgba(255,255,255,.06);overflow:hidden">
-            <div style="height:100%;width:{{ _ocp }}%;background:{{ 'var(--mx5-accent,#22d97a)' if _is_top2 else 'rgba(255,255,255,.22)' }};border-radius:3px;transition:width .4s"></div>
-          </div>
-        </div>
-        {% endfor %}
-        {% if prediction_markets.source is defined %}
-        <div style="font-size:10px;color:var(--ink-3,rgba(255,255,255,.3));text-align:right;margin-top:4px"><span class="l-en">Source: {{ prediction_markets.source }}</span><span class="l-zh">来源: {{ prediction_markets.source }}</span></div>
-        {% endif %}
-      </div>
-      {% endfor %}
-      {% else %}
-      <div style="text-align:center;padding:40px 0;color:var(--ink-3,rgba(255,255,255,.36));font-size:13px">
-        <span class="l-en">Fed path data is accruing — check back after the next nightly update.</span>
-        <span class="l-zh">联储路径数据积累中 — 请在下次每晚更新后查看。</span>
-      </div>
-      {% endif %}
+      </details>
       {% endif %}
       </div>
     </div>
@@ -15373,6 +15011,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       if(e.key !== 'Tab') return;
       var focusable = Array.prototype.slice.call(
         dlg.querySelectorAll('button:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])'));
+      if(dlg.id === 'dlg-fed'){
+        focusable = Array.from(dlg.querySelectorAll('button:not([disabled]),select:not([disabled]),a[href],summary,[tabindex]:not([tabindex="-1"])'))
+          .filter(function(el){ return el.getClientRects().length && !el.closest('details:not([open]) > :not(summary)'); });
+      }
       if(!focusable.length) return;
       var first = focusable[0], last = focusable[focusable.length-1];
       if(e.shiftKey){ if(document.activeElement===first){ e.preventDefault(); last.focus(); } }
@@ -15415,6 +15057,30 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       /* One-time hydration happens ONLY after the existing registration gate.
          This keeps the sentiment panel out of the cold DOM; it preserves
          server-rendered metrics and delegated [data-rpop] handlers. */
+      if(id === 'dlg-fed'){
+        var monthSelect = dlg.querySelector('[data-ff-contract]');
+        if(monthSelect && !monthSelect.dataset.bound){
+          monthSelect.addEventListener('change', function(){
+            var opt = this.selectedOptions[0], out = this.parentElement.querySelector('output');
+            out.querySelector('b').textContent = opt.value + ' bp';
+            out.querySelector('small').textContent = opt.dataset.contract;
+          });
+          monthSelect.dataset.bound = 'true';
+        }
+        var stamp = dlg.querySelector('[data-ff-asof]'), age = dlg.querySelector('.ff-age');
+        var day = stamp && stamp.dataset.ffAsof;
+        if(age && /^\d{4}-\d{2}-\d{2}$/.test(day)){
+          var today = new Date();
+          var localDay = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+          var elapsed = (localDay - Date.parse(day+'T00:00:00Z')) / 86400000;
+          if(Number.isInteger(elapsed) && elapsed > 0){
+            var enAge = document.createElement('span'), zhAge = document.createElement('span');
+            enAge.className='l-en'; enAge.textContent=elapsed + (elapsed === 1 ? ' day ago' : ' days ago');
+            zhAge.className='l-zh'; zhAge.textContent=elapsed+' 天前';
+            age.replaceChildren(enAge, zhAge);
+          }
+        }
+      }
       if(id === 'dlg-sentiment'){
         var sentimentBody = dlg.querySelector('.mx5-dlg-body');
         var sentimentFold = sentimentBody && sentimentBody.querySelector(':scope > template[data-sentiment-fold]');
