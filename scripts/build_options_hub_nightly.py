@@ -313,6 +313,31 @@ def _nulled_nonfinite(obj, counter: list[int]):
     return obj
 
 
+def _native_output_destination(path: Path) -> bool:
+    """Bind custody to output, even when another checkout or alias writes it."""
+    native = Path.home() / "optionshub-ops-wt"
+    resolved = path.resolve()
+    # Include resolved incumbent output directories: a native output directory
+    # may itself be a symlink, and another checkout may address its target.
+    roots = (native, native / "data", native / "data/live_flow_out/options_hub",
+             native / "data/options_hub")
+    return path.absolute().is_relative_to(native.absolute()) or any(
+        resolved.is_relative_to(root.resolve()) for root in roots
+    )
+
+
+def _output_dir(args) -> Path:
+    if args.out:
+        return Path(args.out)
+    from lib import config as lib_config
+    return lib_config.data_dir() / "live_flow_out" / "options_hub"
+
+
+def _needs_publication_custody(args) -> bool:
+    return (args.publish or _REPO == (Path.home() / "optionshub-ops-wt").resolve()
+            or _native_output_destination(_output_dir(args)))
+
+
 def _write_json(path: Path, data: dict) -> None:
     from lib.options_publication_custody import (
         publication_custody, has_publication_custody, assert_local_target_available,
@@ -320,11 +345,13 @@ def _write_json(path: Path, data: dict) -> None:
     # Keep private offline builds portable; native canonical execution and any
     # admitted publication interval must protect dated local evidence too.
     native = _REPO == (Path.home() / "optionshub-ops-wt").resolve()
-    dated = path.suffix == ".json" and path.parent.parent.name == "gex_history"
-    if dated and (native or has_publication_custody()):
+    resolved = path.resolve()
+    dated = resolved.suffix == ".json" and resolved.parent.parent.name == "gex_history"
+    if _native_output_destination(path) or (dated and (native or has_publication_custody())):
         with publication_custody():
-            assert_local_target_available(f"options_hub/gex_history/{path.parent.name}/{path.name}")
-            return _write_json_unchecked(path, data)
+            if dated:
+                assert_local_target_available(f"options_hub/gex_history/{resolved.parent.name}/{resolved.name}")
+            return _write_json_unchecked(resolved, data)
     return _write_json_unchecked(path, data)
 
 
@@ -1284,13 +1311,12 @@ def main() -> None:
     args = ap.parse_args()
     from contextlib import nullcontext
     from lib.options_publication_custody import publication_custody
-    native = _REPO == (Path.home() / "optionshub-ops-wt").resolve()
-    with publication_custody() if args.publish or native else nullcontext():
+    with publication_custody() if _needs_publication_custody(args) else nullcontext():
         _run(args)
 
 
 def _run(args) -> None:
-    if args.publish or _REPO == (Path.home() / "optionshub-ops-wt").resolve():
+    if _needs_publication_custody(args):
         from lib.options_publication_custody import require_custody
         require_custody()
     exposure_contexts = load_exposure_contexts(args.exposure_context)
@@ -1314,7 +1340,7 @@ def _run(args) -> None:
     # Output stays on data_root or the explicit --out. The input root cannot move it.
     _repo_root = Path(__file__).resolve().parent.parent
     _reads = resolve_options_hub_read_inputs(data_root, _repo_root)
-    out_dir = Path(args.out) if args.out else (data_root / "live_flow_out" / "options_hub")
+    out_dir = _output_dir(args).resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # CONTRACT v2 data paths (resolved once; graceful-absent throughout)

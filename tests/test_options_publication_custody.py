@@ -306,3 +306,85 @@ def test_native_nightly_no_publish_is_still_an_effectful_writer(state, monkeypat
         assert effects == []
     finally:
         proc.communicate("release\n", timeout=10)
+
+
+@pytest.mark.parametrize("alias", [False, True])
+def test_foreign_checkout_native_destination_is_guarded(state, tmp_path, monkeypatch, alias):
+    from scripts import build_options_hub_nightly as nightly
+    home = tmp_path / "home"
+    native = home / "optionshub-ops-wt"
+    out = native / "data/live_flow_out/options_hub"
+    snapshot = out / "gex_history/SPY/2026-10-16.json"
+    snapshot.parent.mkdir(parents=True)
+    snapshot.write_text("original")
+    monkeypatch.setattr(Path, "home", classmethod(lambda cls: home))
+    monkeypatch.setattr(nightly, "_REPO", tmp_path / "foreign")
+    if alias:
+        link = tmp_path / "output-alias"
+        link.symlink_to(out, target_is_directory=True)
+        out = link
+    target = out / "gex_history/SPY/2026-10-16.json"
+    effects = []
+    monkeypatch.setattr(nightly, "_run", lambda args: effects.append("run"))
+    monkeypatch.setattr(sys, "argv", ["nightly", "--no-publish", "--out", str(out)])
+    proc = child(state, "hold")
+    try:
+        assert proc.stdout.readline().strip() == "HELD"
+        for call in [nightly.main, lambda: nightly._write_json(target, {"changed": True})]:
+            with pytest.raises(custody.PublicationCustodyError, match="publication_busy"):
+                call()
+        assert snapshot.read_text() == "original" and effects == []
+    finally:
+        proc.communicate("release\n", timeout=10)
+    with custody.publication_custody():
+        custody.begin_correction(dict(bucket="test-bucket", key="options_hub/gex_history/SPY/2026-10-16.json",
+                                     input_bytes=1, input_sha256="0"*64))
+    with pytest.raises(custody.PublicationCustodyError, match="local_target_unsettled"):
+        nightly._write_json(target, {"changed": True})
+    assert snapshot.read_text() == "original"
+
+
+def test_foreign_private_output_remains_portable(state, tmp_path, monkeypatch):
+    from scripts import build_options_hub_nightly as nightly
+    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path / "home"))
+    monkeypatch.setattr(nightly, "_REPO", tmp_path / "foreign")
+    out = tmp_path / "private"
+    effects = []
+    monkeypatch.setattr(nightly, "_run", lambda args: effects.append("run"))
+    monkeypatch.setattr(sys, "argv", ["nightly", "--no-publish", "--out", str(out)])
+    proc = child(state, "hold")
+    try:
+        assert proc.stdout.readline().strip() == "HELD"
+        nightly.main()
+        target = out / "gex_history/SPY/2026-10-16.json"
+        nightly._write_json(target, {"private": True})
+        assert target.exists() and effects == ["run"]
+    finally:
+        proc.communicate("release\n", timeout=10)
+
+
+@pytest.mark.parametrize("entry", ["main", "direct"])
+def test_foreign_default_output_binding_precedes_run_effects(state, tmp_path, monkeypatch, entry):
+    import argparse
+    from lib import config
+    from scripts import build_options_hub_nightly as nightly
+    home = tmp_path / "home"
+    monkeypatch.setattr(Path, "home", classmethod(lambda cls: home))
+    monkeypatch.setattr(nightly, "_REPO", tmp_path / "foreign")
+    monkeypatch.setattr(config, "data_dir", lambda: home / "optionshub-ops-wt/data")
+    effects = []
+    monkeypatch.setattr(nightly, "load_exposure_contexts", lambda *a: effects.append("context"))
+    monkeypatch.setattr(sys, "argv", ["nightly", "--no-publish"])
+    if entry == "main":
+        monkeypatch.setattr(nightly, "_run", lambda args: effects.append("run"))
+        proc = child(state, "hold")
+        try:
+            assert proc.stdout.readline().strip() == "HELD"
+            with pytest.raises(custody.PublicationCustodyError, match="publication_busy"):
+                nightly.main()
+        finally:
+            proc.communicate("release\n", timeout=10)
+    else:
+        with pytest.raises(custody.PublicationCustodyError, match="custody_required"):
+            nightly._run(argparse.Namespace(publish=False, out=None))
+    assert effects == [] and not home.exists()
