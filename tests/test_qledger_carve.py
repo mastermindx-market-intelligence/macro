@@ -18,6 +18,7 @@ the carve is proven against the exact rejection it exists to prevent.
 from __future__ import annotations
 
 import os
+import re
 import subprocess
 import textwrap
 from pathlib import Path
@@ -29,6 +30,7 @@ ROOT = Path(__file__).resolve().parents[1]
 HELPER = ROOT / "scripts" / "ci" / "qledger_carve.sh"
 ENGINE = ROOT / "scripts" / "ci" / "daily_engine_commit_outputs.sh"
 DAILY = ROOT / ".github" / "workflows" / "daily.yml"
+WORKFLOWS = ROOT / ".github" / "workflows"
 
 LIMIT = 104857600
 MARGIN = 1048576
@@ -339,6 +341,78 @@ def test_inline_wholesale_committers_carve_before_committing(job, step, stage_li
     call = f"{SOURCE_LINE}; qledger_carve_staged || exit 0"
     assert call in run, f"{job}: the carve must withhold-and-stay-green on a custody failure"
     assert run.index(stage_line) < run.index(call) < run.index(commit_prefix)
+
+
+@pytest.mark.parametrize(
+    "workflow,commit_prefix",
+    [
+        ("whitehouse-sentinel.yml", 'git commit -m "whitehouse: alert update'),
+        ("weekly.yml", 'git commit -m "weekly: deep-dive'),
+        ("backfill.yml", 'git commit -m "data: backfill'),
+    ],
+)
+def test_committers_outside_daily_carve_after_their_last_add(workflow, commit_prefix):
+    wf = yaml.safe_load((WORKFLOWS / workflow).read_text())
+    runs = [
+        str(step.get("run") or "")
+        for job in wf["jobs"].values()
+        for step in job.get("steps", [])
+        if commit_prefix in str(step.get("run") or "")
+    ]
+    assert len(runs) == 1, f"{workflow}: expected one committer step, found {len(runs)}"
+    run = runs[0]
+    commit = run.index(commit_prefix)
+    call = f"{SOURCE_LINE}; qledger_carve_staged || exit 1"
+    assert call in run, f"{workflow}: a withheld commit must red the run"
+    last_add = [m.start() for m in re.finditer(r"(?m)^\s*git add\b", run[:commit])][-1]
+    assert last_add < run.index(call) < commit
+    assert run.index(call) < run.index("git diff --cached --quiet")
+
+
+_LEDGER_PATHSPECS = {".", "data", "data/", "data/qledger", "data/qledger/", "site/qledger", "site/qledger/"}
+
+
+def _stages_the_ledger(line: str) -> bool:
+    """True for a real `git add` whose pathspec covers data/qledger or site/qledger."""
+    line = line.strip()
+    if not line.startswith("git add"):
+        return False
+    words = re.split(r"\s*(?:2>|&&|\|\||;|#)", line, maxsplit=1)[0].split()[2:]
+    paths = [w for w in words if not w.startswith("-")]
+    if not paths:
+        return bool(set(words) & {"-A", "--all"})
+    return bool(_LEDGER_PATHSPECS & set(paths))
+
+
+def test_every_committer_that_can_stage_the_ledger_is_carve_aware():
+    """Run 41285198348: the sentinel staged the ledger with no carve and lost every alert."""
+    sources = [*WORKFLOWS.glob("*.yml"), *(ROOT / "scripts" / "ci").glob("*.sh")]
+    stagers = {
+        path.relative_to(ROOT).as_posix(): path.read_text()
+        for path in sources
+        if any(_stages_the_ledger(line) for line in path.read_text().splitlines())
+    }
+    assert ".github/workflows/daily.yml" in stagers, "the census no longer sees the known committers"
+    assert ".github/workflows/whitehouse-sentinel.yml" in stagers
+    blind = sorted(name for name, text in stagers.items() if "qledger_carve" not in text)
+    assert not blind, f"these stage the ledger with no GH001 carve: {blind}"
+
+
+@pytest.mark.parametrize(
+    "line,expected",
+    [
+        ("git add data/ site/qledger/", True),
+        ("git add data/ reports/ site/", True),
+        ("git add data/ai_costs/usage.d data/whitehouse data/qledger site/wh_banner.json 2>/dev/null || true", True),
+        ("git add -A", True),
+        ("git add -A -- data/smart_money data/openfigi/cusip_ticker.parquet", False),
+        ("git add --ignore-removal site/assets/css 2>/dev/null || true", False),
+        ("git add site/", False),
+        ("# the commit step below (git add data/ site/) lands both", False),
+    ],
+)
+def test_ledger_stage_census_reads_pathspecs(line, expected):
+    assert _stages_the_ledger(line) is expected
 
 
 def test_collect_market_commit_keeps_its_own_accepted_carve():
