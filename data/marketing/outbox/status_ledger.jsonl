@@ -12589,3 +12589,4 @@
 {"id":"ob-2026-11-01-bc28b847cf","from":"posting","to":"posted","at":"2026-11-02T01:00:43Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ae7e0bb01fa08ffbe77c199","external_url":null,"at":"2026-11-02T01:00:37Z","booked_at":"2026-11-02T01:18:37Z"}}
 {"id":"ob-2026-11-01-90f088b0a0","from":"approved","to":"posting","at":"2026-11-02T01:00:44Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-11-01-90f088b0a0","from":"posting","to":"posted","at":"2026-11-02T01:00:45Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ae7e0bc902c3fb1dec89887","external_url":null,"at":"2026-11-02T01:00:37Z","booked_at":"2026-11-02T01:28:37Z"}}
+{"id":"ob-2026-10-31-3496e846f5","from":"queued","to":"quarantined","at":"2026-11-02T01:51:03Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
