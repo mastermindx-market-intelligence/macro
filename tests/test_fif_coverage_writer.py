@@ -1338,3 +1338,169 @@ def test_t8_index_schema_mismatch_and_path_escape_exit_nonzero(tmp_path, capsys)
     )
     assert result.returncode != 0
     assert "schema" in result.stderr
+
+
+def _np_ctx_governed(tmp_path, entries, governed, recorded_at=NP_CLOCK):
+    """An NPContext whose governed alias set is the synthetic registry view."""
+    return w.NPContext(
+        pack=load_not_presented_pack(),
+        linkbases=w.load_np_linkbases(_np_dir(tmp_path, entries)),
+        recorded_at=w._utc_instant(recorded_at),
+        governed_qnames=frozenset(governed),
+    )
+
+
+# T9 (defect 1): an alias fact from another accession at the report date -----
+
+
+def test_t9_other_accession_alias_fact_keeps_the_absent_result(tmp_path):
+    slot = _slot()
+    other = _accn(1, 42)
+    leaked_alias = ("us-gaap", "SyntheticShortTermDebtLine", "USD",
+                    [_fact(other, slot["report_date"], val=5000)])
+    absent = {"status": "absent", "reason_code": "absent_no_alias_fact"}
+
+    # The reviewer's shape: the linkbases say not presented, but another
+    # accession carries a USD alias fact at end == report_date.
+    ctx = _np_ctx(tmp_path, {slot["accession"]: (_NP_CAL, _NP_PRE)})
+    cell = w.evaluate_cell(_ST_DEBT, {"short_term_debt": _ST_DEBT},
+                           _bs_facts(slot, extra=[leaked_alias]), slot,
+                           recorded_at=NP_CLOCK, np_context=ctx)
+    assert cell == absent
+    assert ctx.counters.get("np_alias_fact_other_accession") == 1
+
+    # Without the other-accession fact the same inputs are the T2 not-presented
+    # verdict, so it is the leak that keeps the absent cell.
+    clean = _np_ctx(tmp_path / "clean", {slot["accession"]: (_NP_CAL, _NP_PRE)})
+    cell = w.evaluate_cell(_ST_DEBT, {"short_term_debt": _ST_DEBT}, _bs_facts(slot), slot,
+                           recorded_at=NP_CLOCK, np_context=clean)
+    assert cell["status"] == "not_applicable"
+    assert clean.counters.get("np_alias_fact_other_accession") is None
+
+    # The same metric as a formula operand: the operand is OTHER, so the
+    # formula keeps its existing absent_dependency result.
+    cash_entry = ("us-gaap", "CashAndCashEquivalentsAtCarryingValue", "USD",
+                  [_fact(slot["accession"], slot["report_date"], val=250000)])
+    specs = {
+        "short_term_debt": _ST_DEBT,
+        "long_term_debt_current": _LTD_CURRENT,
+        "long_term_debt": _LTD,
+        "total_debt": _formula_spec(
+            "total_debt",
+            ("short_term_debt", "long_term_debt_current", "long_term_debt"),
+            _TOTAL_DEBT_POLICY,
+        ),
+    }
+    ctx = _np_ctx(tmp_path / "formula", {slot["accession"]: (_NP_CAL, _NP_PRE)})
+    cell = w.evaluate_cell(specs["total_debt"], specs,
+                           _bs_facts(slot, extra=[cash_entry, leaked_alias]), slot,
+                           recorded_at=NP_CLOCK, np_context=ctx)
+    assert cell == {"status": "absent", "reason_code": "absent_dependency"}
+    assert ctx.counters.get("np_alias_fact_other_accession") == 1
+
+
+# T10 (defect 2): a competing governed span changes the census's request ------
+
+
+def test_t10_competing_governed_span_keeps_the_absent_result(tmp_path):
+    # The reviewer's run-proven shape: universe {378d@OTHER, 371d@anchor}.
+    # 371 inclusive days = 53 fiscal weeks (the anchor's own in-class span);
+    # 378 inclusive days is the longer governed span the census requests.
+    annual = _slot()
+    other = _accn(1, 7)
+    own_span = ("2025-06-25", "2026-06-30")
+    longer_span = ("2025-06-18", "2026-06-30")
+    governed = {"us-gaap:Revenues", "us-gaap:OperatingIncomeLoss"}
+    dividends = _np_metric("cash_dividends_paid", "SyntheticDividendsLine", kind="duration")
+    absent = {"status": "absent", "reason_code": "absent_no_alias_fact"}
+
+    facts = _bs_facts(annual, extra=[
+        ("us-gaap", "OperatingIncomeLoss", "USD",
+         [_fact(annual["accession"], "2026-06-30", val=9, start=own_span[0])]),
+        ("us-gaap", "Revenues", "USD",
+         [_fact(other, "2026-06-30", val=11, start=longer_span[0])]),
+    ])
+    # duration_for_slot (annual: the longest span ending at the report date)
+    # requests the other filing's 378-day span, not the anchor's 371-day one.
+    assert w._np_requested_span(facts, annual, frozenset(governed)) == longer_span
+    ctx = _np_ctx_governed(tmp_path, {annual["accession"]: (_NP_CAL, _NP_PRE)}, governed)
+    cell = w.evaluate_cell(dividends, {"cash_dividends_paid": dividends}, facts, annual,
+                           recorded_at=NP_CLOCK, np_context=ctx)
+    assert cell == absent
+    assert ctx.counters.get("np_span_not_requested") == 1
+
+    # Without the competing span the census requests the anchor's own span and
+    # the NP evaluation proceeds to a verdict.
+    alone = _bs_facts(annual, extra=[
+        ("us-gaap", "OperatingIncomeLoss", "USD",
+         [_fact(annual["accession"], "2026-06-30", val=9, start=own_span[0])]),
+    ])
+    assert w._np_requested_span(alone, annual, frozenset(governed)) == own_span
+    ctx = _np_ctx_governed(tmp_path / "alone", {annual["accession"]: (_NP_CAL, _NP_PRE)},
+                           governed)
+    w.evaluate_cell(dividends, {"cash_dividends_paid": dividends}, alone, annual,
+                    recorded_at=NP_CLOCK, np_context=ctx)
+    assert ctx.counters.get("np_span_not_requested") is None
+    assert any(str(key).startswith("np_outcome:") for key in ctx.counters)
+
+    # The interim analogue: duration_for_slot takes the SHORTEST span ending at
+    # the report date, so a shorter competing span (80 days vs the anchor's own
+    # 91-day quarter) is the one that changes the request.
+    interim = _slot(slot_id="I1", n=4, report_date="2026-06-30", filing_date="2026-08-01",
+                    form="10-Q")
+    own_quarter = ("2026-04-01", "2026-06-30")
+    shorter_span = ("2026-04-12", "2026-06-30")
+    facts_i = _bs_facts(interim, extra=[
+        ("us-gaap", "OperatingIncomeLoss", "USD",
+         [_fact(interim["accession"], "2026-06-30", val=9, start=own_quarter[0])]),
+        ("us-gaap", "Revenues", "USD",
+         [_fact(other, "2026-06-30", val=11, start=shorter_span[0])]),
+    ])
+    assert w._np_requested_span(facts_i, interim, frozenset(governed)) == shorter_span
+    ctx = _np_ctx_governed(tmp_path / "interim", {interim["accession"]: (_NP_CAL, _NP_PRE)},
+                           governed)
+    cell = w.evaluate_cell(dividends, {"cash_dividends_paid": dividends}, facts_i, interim,
+                           recorded_at=NP_CLOCK, np_context=ctx)
+    assert cell == absent
+    assert ctx.counters.get("np_span_not_requested") == 1
+
+
+# T11 (regression): the single-accession, single-span verdicts survive --------
+
+
+def test_t11_single_accession_single_span_still_not_applicable(tmp_path):
+    # (a) the T2 shape: one accession, the item not presented.
+    slot = _slot()
+    ctx = _np_ctx(tmp_path, {slot["accession"]: (_NP_CAL, _NP_PRE)})
+    cell = w.evaluate_cell(_ST_DEBT, {"short_term_debt": _ST_DEBT}, _bs_facts(slot), slot,
+                           recorded_at=NP_CLOCK, np_context=ctx)
+    assert cell["status"] == "not_applicable"
+    assert cell["na_basis"] == "not_presented_item"
+    assert cell["np_footing"] == "exact"
+    assert cell["np_parent_concepts"] == ["us-gaap:LiabilitiesCurrent"]
+    assert cell["np_accession"] == slot["accession"]
+    assert ctx.counters.get("np_span_not_requested") is None
+    assert ctx.counters.get("np_alias_fact_other_accession") is None
+    assert ctx.counters.get("np_outcome:not_presented") == 1
+
+    # (b) a duration-period metric whose single own span (371 days = 53 fiscal
+    # weeks) is exactly the span the census requests.
+    governed = {"us-gaap:Revenues"}
+    own_span = ("2025-06-25", "2026-06-30")
+    st_duration = _np_metric("short_term_debt", "SyntheticShortTermDebtLine", kind="duration")
+    facts = _bs_facts(slot, extra=[
+        ("us-gaap", "Revenues", "USD",
+         [_fact(slot["accession"], "2026-06-30", val=9, start=own_span[0])]),
+    ])
+    assert w._np_requested_span(facts, slot, frozenset(governed)) == own_span
+    ctx = _np_ctx_governed(tmp_path / "duration", {slot["accession"]: (_NP_CAL, _NP_PRE)},
+                           governed)
+    cell_b = w.evaluate_cell(st_duration, {"short_term_debt": st_duration}, facts, slot,
+                             recorded_at=NP_CLOCK, np_context=ctx)
+    assert cell_b["status"] == "not_applicable"
+    assert set(cell_b) == set(cell)
+    for key in ("np_rule_id", "np_footing", "np_parent_concepts", "np_cal_sha256",
+                "np_pre_sha256", "np_accession"):
+        assert cell_b[key] == cell[key]
+    assert ctx.counters.get("np_span_not_requested") is None
+    assert ctx.counters.get("np_outcome:not_presented") == 1

@@ -51,8 +51,13 @@ Field rules (ported from the census writer):
   (``total_debt``'s qualified sum; ``net_debt`` / ``cash_to_total_debt``
   inherit).  Every failure - missing or sha-mismatched linkbases, an amended
   slot, mixed durations, conflicting values, no visible rule at the clock -
-  keeps the absent cell.  Without the flag the writer's output is byte for
-  byte the pre-NP writer's.
+  keeps the absent cell.  So do the two served-precondition gates (review
+  2026-11-02): an alias fact of the metric carried by any accession outside
+  the slot's own at the report date (``np_alias_fact_other_accession``), and,
+  for a duration metric, a census-requested span (``duration_for_slot`` over
+  the issuer's governed duration universe) that is not exactly the slot
+  accession's own single span (``np_span_not_requested``).  Without the flag
+  the writer's output is byte for byte the pre-NP writer's.
 
 Issuer rollups (W-R2 M1): ``present_cells``, ``core_pass`` and ``deep_pass``
 are any-basis and count qualified present cells; ``present_cells_strict``,
@@ -83,9 +88,14 @@ from engine.fundamental_forensics.metric_registry import load_core_metric_regist
 # never re-types their strings.  ``_evidence_fields`` / ``split_kernel_reason``
 # are the same objects ``coverage_manifest.map_metric_cell`` applies to a
 # served NOT_APPLICABLE cell, so a key collision raises exactly as served.
+# ``duration_for_slot`` (with the family constants it switches on) is the
+# census's own span choice, imported and called, never re-typed here.
 from engine.fundamental_forensics.coverage_manifest import (  # noqa: E402
+    _FAMILY_ANNUAL,
+    _FAMILY_INTERIM,
     NA_BASIS_KERNEL,
     _evidence_fields,
+    duration_for_slot,
     split_kernel_reason,
 )
 from engine.fundamental_forensics.not_presented import (  # noqa: E402
@@ -569,12 +579,156 @@ class NPContext:
     linkbases: NPLinkbases
     recorded_at: _dt.datetime  # the rewrite rule clock, as visible_rule takes it
     counters: dict[str, int] = field(default_factory=dict)
+    # Every alias qname the governed registry carries, unfiltered by a rule
+    # clock - the set ``governed_duration_universe`` counts its spans from.
+    # The CLI fills it from the registry; the empty default requests no
+    # duration span at all, so every duration-period NP fails closed.
+    governed_qnames: frozenset[str] = field(default_factory=frozenset)
+
+
+# Sentinel for "no census span is bound to this evaluation" (an instant metric,
+# or an NPContext built without the registry's alias set).  A bound span of
+# None is a different fact: the census requests no duration at all for the
+# slot, so no duration fact can sit on the requested span.
+_NP_SPAN_UNBOUND = object()
+
+
+def _governed_alias_qnames(repo_root: str | Path) -> frozenset[str]:
+    """Every alias qname the governed registry carries, unfiltered by a clock.
+
+    ``governed_duration_universe`` (coverage_manifest.py) walks
+    ``registry.contracts`` without a rule clock, so the census's duration
+    universe counts every governed alias; the writer's reconstruction of that
+    universe must not be narrower than the same set.
+    """
+    registry = load_core_metric_registry(repo_root)
+    return frozenset(
+        f"{alias.taxonomy}:{alias.concept}"
+        for contract in registry.contracts
+        for mapping in contract.mappings
+        for alias in mapping.taxonomy_concept_aliases
+    )
+
+
+def _np_alias_fact_other_accession(
+    spec: Mapping[str, Any],
+    facts: Mapping[str, Any],
+    slot: Mapping[str, Any],
+) -> bool:
+    """Defect 1 (review 2026-11-02): True when an accession outside the slot's
+    own carries a USD fact for one of the metric's alias concepts with
+    ``end == report_date``.
+
+    The served precondition (query.py:7159-7167) attempts not-presented only
+    when no alias fact is visible from ANY accession at the period, so such a
+    fact makes served print VALUE (or stay missing) where the writer would
+    have printed ``not_applicable``.  The check is deliberately broader than
+    served - it ignores the span and the duration class - so it can only turn
+    a would-be ``not_applicable`` into the original absent result, never the
+    reverse.  A fact with no accession is treated as outside the slot.
+    """
+    aliases = spec.get("aliases") or []
+    report_date = slot.get("report_date") or ""
+    if not aliases or not report_date:
+        return False
+    own = slot_accessions(slot)
+    wanted = {(taxonomy, concept) for _priority, taxonomy, concept in aliases}
+    for taxonomy, payload in facts.items():
+        if not isinstance(payload, dict):
+            continue
+        for concept, entry in payload.items():
+            if (str(taxonomy), str(concept)) not in wanted or not isinstance(entry, dict):
+                continue
+            units = entry.get("units")
+            if not isinstance(units, dict):
+                continue
+            fact_list = units.get("USD")
+            if not isinstance(fact_list, list):
+                continue
+            for fact in fact_list:
+                if not isinstance(fact, dict) or fact.get("accn") in own:
+                    continue
+                if fact.get("end") == report_date:
+                    return True
+    return False
+
+
+def _np_duration_universe(
+    facts: Mapping[str, Any],
+    governed_qnames: frozenset[str],
+) -> list[tuple[str, str]]:
+    """The issuer's distinct governed duration spans, as the census builds them.
+
+    Mirrors ``governed_duration_universe`` (coverage_manifest.py) over the
+    writer's fact source, companyfacts: every fact of a governed concept with
+    a duration context (a start and an end) contributes its ``(start, end)``,
+    whatever accession or unit filed it.  A divergence from the census's own
+    ledger universe can only change which span ``duration_for_slot`` requests,
+    and the NP gate in ``_np_facts_in_context`` fails closed on any such
+    change.
+    """
+    keys: dict[tuple[str, str], None] = {}
+    for taxonomy, payload in facts.items():
+        if not isinstance(payload, dict):
+            continue
+        for concept, entry in payload.items():
+            if f"{taxonomy}:{concept}" not in governed_qnames or not isinstance(entry, dict):
+                continue
+            units = entry.get("units")
+            if not isinstance(units, dict):
+                continue
+            for fact_list in units.values():
+                if not isinstance(fact_list, list):
+                    continue
+                for fact in fact_list:
+                    if not isinstance(fact, dict):
+                        continue
+                    start, end = fact.get("start"), fact.get("end")
+                    if start and end:
+                        keys.setdefault((str(start), str(end)))
+    return sorted(keys)
+
+
+def _np_slot_family(slot: Mapping[str, Any]) -> str | None:
+    """The census slot family of a period id (``A*`` annual, ``I*`` interim)."""
+    slot_id = str(slot.get("slot_id") or "")
+    if slot_id.startswith("A"):
+        return _FAMILY_ANNUAL
+    if slot_id.startswith("I"):
+        return _FAMILY_INTERIM
+    return None
+
+
+def _np_requested_span(
+    facts: Mapping[str, Any],
+    slot: Mapping[str, Any],
+    governed_qnames: frozenset[str],
+) -> tuple[str, str] | None:
+    """The census's own duration request for this slot, or None.
+
+    The census build (coverage_manifest.py ``_served_metric_cells``) chooses
+    the slot's duration period with ``duration_for_slot(universe,
+    period_of_report, family)`` over ``governed_duration_universe``; the
+    writer reconstructs that universe from companyfacts and calls the same
+    imported chooser, so the span here is the span the served query path
+    matches contexts against (query.py ``_context_matches_period``).  A slot
+    of no known family requests nothing.
+    """
+    family = _np_slot_family(slot)
+    if family is None:
+        return None
+    return duration_for_slot(
+        _np_duration_universe(facts, governed_qnames),
+        str(slot.get("report_date") or ""),
+        family,
+    )
 
 
 def _np_facts_in_context(
     facts: Mapping[str, Any],
     slot: Mapping[str, Any],
     counters: dict[str, int],
+    requested_span: Any = _NP_SPAN_UNBOUND,
 ) -> dict[str, Decimal] | None:
     """The exact slot-context fact map for one NP evaluation, or None.
 
@@ -587,6 +741,16 @@ def _np_facts_in_context(
     non-dimensional fact the served path's ``_np_consolidated_usd`` filter
     would keep; companyfacts has no withdrawal or nil marking either.  The
     anchor here is the slot's own accession (amended slots never reach NP).
+
+    ``requested_span`` (defect 2, review 2026-11-02) binds a duration-period
+    evaluation to the census's own duration request, exactly as served's
+    ``_context_matches_period`` (query.py:5814-5820) admits only the requested
+    span: when bound, the walk still applies the slot-class duration filter
+    and the mixed-span fail-closed, and then every duration fact in the map
+    must sit on exactly that span - none may sit anywhere else, one must sit
+    on it, and a requested span of None (no governed span ends at the report
+    date) admits none.  Any other outcome counts ``np_span_not_requested`` and
+    fails the slot.  Unbound (an instant metric) keeps the plain walk.
     """
     accession = slot.get("accession") or ""
     report_date = slot.get("report_date") or ""
@@ -651,6 +815,14 @@ def _np_facts_in_context(
                     _bump(counters, "np_conflicting_value")
                     return None
                 out[qname] = value
+    if requested_span is not _NP_SPAN_UNBOUND and duration_spans != {requested_span}:
+        # Defect 2: served's slot context holds duration facts only on the
+        # census's requested span.  An empty set (no slot-accession fact on
+        # the span, or no governed span ending at the report date at all) and
+        # any other single span (the census requested a competing filing's
+        # span) both fail closed; a mixed set already failed above.
+        _bump(counters, "np_span_not_requested")
+        return None
     return out
 
 
@@ -671,6 +843,12 @@ def _np_cell_outcome(
     ``na_basis == not_presented_item`` plus the evidence.
     """
     metric_id = spec["metric_id"]
+    if _np_alias_fact_other_accession(spec, facts, slot):
+        # Defect 1: served attempts NP only when no alias fact is visible from
+        # any accession at the period; one filed by another accession makes
+        # the served cell a VALUE (or missing), never a not-presented N/A.
+        _bump(np_context.counters, "np_alias_fact_other_accession")
+        return None
     rule = np_context.pack.visible_rule(metric_id, recorded_at=np_context.recorded_at)
     if rule is None:
         _bump(np_context.counters, "np_outcome:np_no_rule")
@@ -685,7 +863,12 @@ def _np_cell_outcome(
     )
     if linkbases is None:
         return None
-    fact_map = _np_facts_in_context(facts, slot, np_context.counters)
+    requested_span: Any = _NP_SPAN_UNBOUND
+    if spec.get("kind") == "duration":
+        # Defect 2: a duration-period evaluation is bound to the census's own
+        # requested span before any fact is admitted to the context.
+        requested_span = _np_requested_span(facts, slot, np_context.governed_qnames)
+    fact_map = _np_facts_in_context(facts, slot, np_context.counters, requested_span)
     if fact_map is None:
         return None
     try:
@@ -1296,6 +1479,7 @@ def main(argv: list[str] | None = None) -> int:
                 pack=load_not_presented_pack(),
                 linkbases=load_np_linkbases(args.np_linkbases),
                 recorded_at=_utc_instant(args.recorded_at),
+                governed_qnames=_governed_alias_qnames(args.repo_root),
             )
         except ValueError as exc:
             print(f"--np-linkbases: {exc}", file=sys.stderr)
