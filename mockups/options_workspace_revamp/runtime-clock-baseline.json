@@ -1,0 +1,21 @@
+{
+  "fixture": "synthetic",
+  "label": "clock-baseline",
+  "checks": [
+    {
+      "name": "leaders_session_not_build_clock",
+      "pass": false,
+      "observed_dates": [
+        "2026-11-02",
+        "2026-11-02",
+        "2026-11-02"
+      ],
+      "session_date": "2026-08-12",
+      "build_date": "2026-11-02"
+    }
+  ],
+  "passed": 0,
+  "failed": [
+    "leaders_session_not_build_clock"
+  ]
+}

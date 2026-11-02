@@ -30,6 +30,9 @@ with sync_playwright() as p:
                     selected:document.querySelector('.ref-tab[aria-selected=true]')?.dataset.mode})""")
                 name = f"brief-{width}-{theme}-{lang}"
                 page.locator("main.ref").screenshot(path=str(OUT/(name+".png")))
+                if (width,theme,lang) in [(1440,"light","en"),(390,"dark","zh")]:
+                    page.evaluate("window.scrollTo(0,0)")
+                    page.screenshot(path=str(OUT/("shell-"+name+".png")),full_page=False)
                 rows.append({"name":name,**metrics,"overflow":metrics["scroll"]>width+1,"errors":errors,
                     "capture_scope":"main.ref","status":"NOT_APPLIED_TO_PAPER"})
                 if width==1440 and theme=="light" and lang=="en":
@@ -43,5 +46,5 @@ with sync_playwright() as p:
                 context.close()
     browser.close()
 (OUT/"reference-report.json").write_text(json.dumps(rows,indent=2),encoding="utf-8")
-print(json.dumps({"captures":len(rows)+4,"overflow":[r["name"] for r in rows if r["overflow"]],
+print(json.dumps({"captures":len(rows)+6,"overflow":[r["name"] for r in rows if r["overflow"]],
     "errors":[r for r in rows if r["errors"]],"scope":"main.ref; shared shell not accepted","status":"PROVISIONAL_REFERENCE_ONLY"},indent=2))

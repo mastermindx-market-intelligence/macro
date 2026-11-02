@@ -10,7 +10,7 @@ ORIGIN="http://127.0.0.1:8768"
 URL=ORIGIN+"/mockups/options_workspace_revamp/fixtures/workspace-current.html"
 PAYLOADS=json.loads((HERE/"fixtures/payloads.json").read_text())
 async def main():
-    ap=argparse.ArgumentParser();ap.add_argument("--label",default="baseline");args=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument("--label",default="baseline");ap.add_argument("--only",choices=["all","source_clocks"],default="all");args=ap.parse_args()
     report={"fixture":"synthetic","label":args.label,"checks":[]}
     async with async_playwright() as p:
         browser=await p.chromium.launch(headless=True)
@@ -34,7 +34,18 @@ async def main():
             page=await ctx.new_page()
             await page.goto(URL,wait_until="networkidle")
             return ctx,page,calls
+        async def check_leader_clock(page):
+            await page.locator('#tab-leaders').click()
+            await page.locator('#mode-leaders .oew-skel').wait_for(state="detached",timeout=5000)
+            stamps=await page.locator('#mode-leaders .oew-asof').all_text_contents()
+            report["checks"].append({"name":"leaders_session_not_build_clock","pass":bool(stamps) and all(x.strip()=="2026-08-12" for x in stamps),"observed_dates":stamps,"session_date":"2026-08-12","build_date":"2026-11-02"})
         ctx,page,calls=await context()
+        if args.only=="source_clocks":
+            await check_leader_clock(page)
+            await ctx.close();await browser.close()
+            report["passed"]=sum(x["pass"] for x in report["checks"]);report["failed"]=[x["name"] for x in report["checks"] if not x["pass"]]
+            (HERE/("runtime-"+args.label+".json")).write_text(json.dumps(report,indent=2),encoding="utf-8")
+            print(json.dumps(report,indent=2));return
         await page.locator('#tab-brief').focus();await page.keyboard.press("ArrowRight")
         selected=await page.locator('.oew-tab[aria-selected="true"]').get_attribute("data-mode")
         report["checks"].append({"name":"keyboard_tabs","pass":selected=="flow","observed":selected})
@@ -58,6 +69,7 @@ async def main():
             await page.locator('#mode-'+tab+' .oew-skel').wait_for(state="detached",timeout=5000)
             text=await page.locator('#mode-'+tab).inner_text()
             report["checks"].append({"name":tab+"_loads","pass":len(text)>100 and "That data did not load" not in text,"characters":len(text)})
+        await check_leader_clock(page)
         await ctx.close()
         ctx,page,calls=await context("race")
         await page.goto(URL+"#ticker?t=SPY",wait_until="domcontentloaded")

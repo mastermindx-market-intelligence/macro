@@ -20,6 +20,9 @@ def set_fixture_dates(value):
     elif isinstance(value,list):
         for v in value:set_fixture_dates(v)
 set_fixture_dates(stores)
+# Deliberately different clocks: a rebuild must not promote the research session.
+stores["leaders"]["as_of"]="2026-11-02T03:00:00+00:00"
+stores["leaders"]["session_date"]="2026-08-12"
 for sym in stores["gex"]:
     stores["gex"][sym]["meta"]["asof"]="2026-08-12"
 brief=_brief(opportunities=[_card("AAPL",direction="LONG",r=344),_card("QQQ",direction="SHORT",r=278)],

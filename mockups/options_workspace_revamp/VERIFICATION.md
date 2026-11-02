@@ -32,7 +32,7 @@ verify_reference.py produced 12 main-content captures, including Brief at 1440/3
 
 The principal visually inspected V4 desktop light EN, mobile dark EN and mobile light ZH. The compact unavailable notice, genuine source dates, readable two-line mobile level legend, one-day move horizon, five visible task labels, and corrected disclosure row were inspected. These are content-area reference observations, not shared-shell or complete-workflow acceptance. Reference Flow/Scanner/Ticker/Leaders previews demonstrate composition only; all production capabilities must be preserved in implementation.
 
-Known unresolved boundary: the actual shared assistant orb overlaps mobile right-column content. Integrated full-page checks with the real shared shell must establish readable/reachable controls and evidence. Do not hide the assistant or crop away the issue merely to manufacture acceptance.
+Initial risk: the actual shared assistant orb can overlap mobile right-column content at some scroll positions. Integrated full-page checks must establish readable/reachable controls and evidence. Do not hide the assistant or crop away the issue merely to manufacture acceptance.
 
 ## Independent principal risk review
 
@@ -49,3 +49,13 @@ After candidate integration, prioritize:
 - Paper exact catalog qualification and actual editable artboards/screenshot/JSX proof.
 - Integrated source implementation, candidate behavior and full visual matrix.
 - Independent non-author source/reference review, required CI, release receipts and real production journey proof.
+
+## Follow-up verification
+
+The separate clock-baseline check fails as expected: three Leaders research stamps show the fixture build date November 2 instead of its session_date August 12. See runtime-clock-baseline.json. Source provenance is in SOURCE_AUDIT.md.
+
+prepare_published_fixture.py recovered all 17 inputs at e4009c94d75770739844240b22f5fc915668aa9b into the ignored QA fixture tree. capture_published_workspace.py records full viewports including the shared navigation and assistant; its baseline three views pass overflow/page-error checks. The helper can run the full five-task x two-width x two-theme x two-language matrix against the integrated candidate. No production data writes or provider requests occur.
+
+The supporting reference also now has two true initial-viewport captures (scroll reset to zero) with the shared navigation. Independent principal visual review finds all five mobile tasks discoverable and the first current index closes within the initial viewport. This still does not accept other task layouts, expanded states, Paper or the eventual integrated build.
+
+Reference reachability check: 1440 light EN and 390 dark ZH both expose every SPY price/regime/level/move item after normal scroll placement; Source details takes keyboard focus, opens with Enter, and has an unobstructed activation point. The first probe sampled a smooth scroll before it settled; deterministic scroll placement corrected the harness timing, without changing the page or hiding the assistant. See visual/reference-reachability.json and reachable-spy images. No global assistant change is warranted by this reference evidence. Repeat the boundary on the integrated candidate.

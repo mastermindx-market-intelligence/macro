@@ -1,0 +1,286 @@
+{
+  "source_manifest": {
+    "source_pin": "e4009c94d75770739844240b22f5fc915668aa9b",
+    "template_head": "e8b7e8c8f8c0babcec1740bfd1f54645da14c08a",
+    "reads": [
+      {
+        "path": "site/flow_desk.json",
+        "state": "READ",
+        "bytes": 14922,
+        "sha256": "920a87bba60f90cc21347b0f93b802f3a26d15ba778034483b1180146837ccbf"
+      },
+      {
+        "path": "site/screenerdata/rows.json",
+        "state": "READ",
+        "bytes": 250876,
+        "sha256": "d32e3c115fa4bb988b6043605cfa21f0819aab0911ad5958d751e9e75ba7f41b"
+      },
+      {
+        "path": "site/flowleaders/leaders.json",
+        "state": "READ",
+        "bytes": 550063,
+        "sha256": "9f9bc52f23536e738016e3e60eb076580109364d5722b8eee3a4414d848585c1"
+      },
+      {
+        "path": "data/market_structure/latest.json",
+        "state": "READ",
+        "bytes": 153370,
+        "sha256": "1ef7585a35c42f5b93b099f7b3bec56027a8f3d13520a7483d25141a04e5d3a0"
+      },
+      {
+        "path": "site/vol/regime.json",
+        "state": "READ",
+        "bytes": 5732,
+        "sha256": "2ed52051b83a5447538f25474cee16b8d29a614a1af7b8f1ee7c44c71172c82b"
+      },
+      {
+        "path": "site/gex/index.json",
+        "state": "READ",
+        "bytes": 326497,
+        "sha256": "318069700b0383600a9dfa80049e33745c6c90e8286f3939977eaef9894d1c16"
+      },
+      {
+        "path": "site/options_intel_brief.json",
+        "state": "READ",
+        "bytes": 29845,
+        "sha256": "4ed3b846482c7740cb751d88329d5a62cf741437c652c5ff95329fbc93d1b9cf"
+      },
+      {
+        "path": "site/options_payoff_lab/latest.json",
+        "state": "READ",
+        "bytes": 425907,
+        "sha256": "22699f9c6b24da8d081a10933668343e34c204d11d6212e5affdc6e5f0c9b858"
+      },
+      {
+        "path": "site/options_skew/latest.json",
+        "state": "READ",
+        "bytes": 110931,
+        "sha256": "7b002900c1f281c5f8936f8f2557e6d0cf24768943905421c0f5f7cd2cd46853"
+      },
+      {
+        "path": "site/options_catalyst_links/latest.json",
+        "state": "READ",
+        "bytes": 1367,
+        "sha256": "4abd5819220ecfed0ee6af66c01b7c10bcaf11354b7e650dc428458318314175"
+      },
+      {
+        "path": "site/flowdata/cohorts.json",
+        "state": "READ",
+        "bytes": 2331,
+        "sha256": "78ac0e385563eb4cf99001d077ca7e01937d8a0e1f37f431dfd2dbe23574f500"
+      },
+      {
+        "path": "site/gex/SPX.json",
+        "state": "READ",
+        "bytes": 24474,
+        "sha256": "8f88392ab2caba44b47b3240bc34670b5684ee001b58e45f58a5fd9c57b711d6"
+      },
+      {
+        "path": "site/gex/SPY.json",
+        "state": "READ",
+        "bytes": 27039,
+        "sha256": "d7f2a4b8855c90bac017247c7ceb50be7646a3ebfcd6760327809d4e5f35c5d7"
+      },
+      {
+        "path": "site/gex/QQQ.json",
+        "state": "READ",
+        "bytes": 26787,
+        "sha256": "8a7ef90fa235fe985b8756d60ef39e3a78a945fe831a06363a3a9e8e25c5962d"
+      },
+      {
+        "path": "site/gex/IWM.json",
+        "state": "READ",
+        "bytes": 25502,
+        "sha256": "b5b99153fd957a82ca29ed251a0083ed30372861ce368c9c24af004d517d4c6e"
+      },
+      {
+        "path": "site/flow/SPY.json",
+        "state": "READ",
+        "bytes": 5213,
+        "sha256": "d3c194a589eac04f8fa89c104b0534c7e80fc8e53b3716c1c9937bf10e4751b7"
+      },
+      {
+        "path": "site/session/SPY.json",
+        "state": "READ",
+        "bytes": 6978,
+        "sha256": "66b2b3d5379fef75a50b3d7d9abb088d6476b6f756d8bd6287435cb08166b726"
+      }
+    ]
+  },
+  "captures": [
+    {
+      "name": "brief-1440-light-en",
+      "viewport": 1440,
+      "scroll": 1440,
+      "height": 2965,
+      "theme": "light",
+      "lang": "en",
+      "nav": {
+        "x": 16,
+        "y": 36,
+        "w": 1408,
+        "h": 42
+      },
+      "assistant": {
+        "x": 1215.90625,
+        "y": 922,
+        "w": 202.09375,
+        "h": 56
+      },
+      "heading": "Options\nOne workspace for the settled close \u2014 brief, scanner, per-name, leaders.",
+      "selected": "brief",
+      "dates": [
+        "2026-08-19",
+        "2026-08-13",
+        "2026-10-30",
+        "2026-08-13",
+        "2026-08-13",
+        "2026-08-12"
+      ],
+      "panels": [
+        {
+          "id": "mode-brief",
+          "hidden": false
+        },
+        {
+          "id": "mode-flow",
+          "hidden": false
+        },
+        {
+          "id": "mode-scanner",
+          "hidden": false
+        },
+        {
+          "id": "mode-ticker",
+          "hidden": false
+        },
+        {
+          "id": "mode-leaders",
+          "hidden": false
+        }
+      ],
+      "overflow": false,
+      "errors": [],
+      "capture_scope": "full viewport including shared shell",
+      "source_fixture": "published Git snapshot; not live network"
+    },
+    {
+      "name": "scanner-1440-light-en",
+      "viewport": 1440,
+      "scroll": 1440,
+      "height": 14572,
+      "theme": "light",
+      "lang": "en",
+      "nav": {
+        "x": 16,
+        "y": 36,
+        "w": 1408,
+        "h": 42
+      },
+      "assistant": {
+        "x": 1215.90625,
+        "y": 922,
+        "w": 202.09375,
+        "h": 56
+      },
+      "heading": "Options\nOne workspace for the settled close \u2014 brief, scanner, per-name, leaders.",
+      "selected": "scanner",
+      "dates": [
+        "2026-08-19",
+        "2026-08-13",
+        "2026-10-30",
+        "2026-08-13",
+        "2026-08-13",
+        "2026-08-12",
+        "2026-08-13"
+      ],
+      "panels": [
+        {
+          "id": "mode-brief",
+          "hidden": false
+        },
+        {
+          "id": "mode-flow",
+          "hidden": false
+        },
+        {
+          "id": "mode-scanner",
+          "hidden": false
+        },
+        {
+          "id": "mode-ticker",
+          "hidden": false
+        },
+        {
+          "id": "mode-leaders",
+          "hidden": false
+        }
+      ],
+      "overflow": false,
+      "errors": [],
+      "capture_scope": "full viewport including shared shell",
+      "source_fixture": "published Git snapshot; not live network"
+    },
+    {
+      "name": "ticker-390-dark-zh",
+      "viewport": 390,
+      "scroll": 390,
+      "height": 4158,
+      "theme": "dark",
+      "lang": "zh-CN",
+      "nav": {
+        "x": 16,
+        "y": 36,
+        "w": 358,
+        "h": 88
+      },
+      "assistant": {
+        "x": 318,
+        "y": 772,
+        "w": 56,
+        "h": 56
+      },
+      "heading": "\u671f\u6743\u5de5\u4f5c\u53f0\n\u6536\u76d8\u540e\u7684\u7edf\u4e00\u5de5\u4f5c\u53f0 \u2014 \u7b80\u62a5\u3001\u7b5b\u9009\u3001\u4e2a\u80a1\u3001\u9886\u5934\u80a1\u3002",
+      "selected": "ticker",
+      "dates": [
+        "2026-08-19",
+        "2026-08-13",
+        "2026-10-30",
+        "2026-08-13",
+        "2026-08-13",
+        "2026-08-12",
+        "2026-10-16",
+        "2026-10-30",
+        "2026-10-30",
+        "2026-08-13",
+        "2026-08-13"
+      ],
+      "panels": [
+        {
+          "id": "mode-brief",
+          "hidden": false
+        },
+        {
+          "id": "mode-flow",
+          "hidden": false
+        },
+        {
+          "id": "mode-scanner",
+          "hidden": false
+        },
+        {
+          "id": "mode-ticker",
+          "hidden": false
+        },
+        {
+          "id": "mode-leaders",
+          "hidden": false
+        }
+      ],
+      "overflow": false,
+      "errors": [],
+      "capture_scope": "full viewport including shared shell",
+      "source_fixture": "published Git snapshot; not live network"
+    }
+  ]
+}
