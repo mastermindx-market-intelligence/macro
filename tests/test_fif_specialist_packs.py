@@ -1159,15 +1159,19 @@ def test_pk01_envelope_digest_unchanged_by_pk02_edits() -> None:
 
 
 def test_pk02_a2_emits_consolidated_row_then_members() -> None:
+    # R-F1: the probe's stand-in concept is USD-tagged, so the stand-in field
+    # must carry a USD catalogue unit — since the axes resolver enforces the
+    # same unit-equivalence refusal as the plain resolver, a shares-catalogue
+    # field refuses these facts outright (unit_mismatch).
     probe = _pk02_probe(
         {
-            "antidilutive_securities_excluded": pack_base.FactMapping(
+            "sbc_allocated_by_line": pack_base.FactMapping(
                 ("us-gaap:NetIncomeLoss",),
                 optional_axes=("us-gaap:StatementEquityComponentsAxis",),
             )
         }
     )
-    rows = _rows(probe, "antidilutive_securities_excluded")
+    rows = _rows(probe, "sbc_allocated_by_line")
     assert len(rows) == 2
     assert rows[0]["dimensions"] == []  # consolidated row first
     assert rows[0]["value"] == "112010000000"
@@ -1177,28 +1181,29 @@ def test_pk02_a2_emits_consolidated_row_then_members() -> None:
     )
     assert rows[1]["value"] == "112010000000"
     for row in rows:
-        assert row["field_id"] == "antidilutive_securities_excluded"
-        assert row["mapping_rule_id"] == (
-            "PK02.antidilutive_securities_excluded.fact/v1"
-        )
+        assert row["field_id"] == "sbc_allocated_by_line"
+        assert row["mapping_rule_id"] == "PK02.sbc_allocated_by_line.fact/v1"
     # Repeated rows sit at the catalogue position, adjacent.
     produced = [row["field_id"] for row in probe["fields"]]
-    position = produced.index("antidilutive_securities_excluded")
-    assert produced[position + 1] == "antidilutive_securities_excluded"
+    position = produced.index("sbc_allocated_by_line")
+    assert produced[position + 1] == "sbc_allocated_by_line"
     assert contract.validate_pack_result(probe) == []
 
 
 def test_pk02_a2_consolidated_row_false_keeps_members_only() -> None:
+    # R-F1: same USD-catalogue stand-in field as the consolidated-row probe
+    # above; the antidilutive field itself keeps its real FY2025 mapping and
+    # resolves missing on this fixture.
     probe = _pk02_probe(
         {
-            "antidilutive_securities_excluded": pack_base.FactMapping(
+            "sbc_allocated_by_line": pack_base.FactMapping(
                 ("us-gaap:NetIncomeLoss",),
                 optional_axes=("us-gaap:StatementEquityComponentsAxis",),
                 consolidated_row=False,
             )
         }
     )
-    rows = _rows(probe, "antidilutive_securities_excluded")
+    rows = _rows(probe, "sbc_allocated_by_line")
     assert len(rows) == 1
     assert rows[0]["dimensions"]  # the member row, never the consolidated one
     check = _check(probe, "antidilutive_table_total_vs_rows")
@@ -1228,35 +1233,212 @@ def test_pk02_a2_foreign_axis_only_is_disallowed_dimension() -> None:
     assert rows[0]["reason"] == "disallowed_dimension"
 
 
-def test_pk02_a4_total_vs_rows_passes_when_members_sum_to_total() -> None:
-    probe = _pk02_probe(
-        {
-            "antidilutive_securities_excluded": pack_base.FactMapping(
-                ("us-gaap:NetIncomeLoss",),
-                optional_axes=("us-gaap:StatementEquityComponentsAxis",),
-            )
-        }
+# Synthetic full-envelope PK02 probes (the PK11 §TESTS converter pattern).
+# R-F1: the AAPL fixture carries no share-unit duration facts under the
+# antidilutive/class axes, so unit-correct axes probes (A.4 arithmetic, the
+# per-class check and the unit-refusal pins below) run on a synthetic ledger
+# with properly tagged facts instead of stand-in USD concepts.
+_PK02FIX_CIK = "0000000012"
+_PK02FIX_ENTITY = {
+    "entity_id": _PK02FIX_CIK,
+    "cik": _PK02FIX_CIK,
+    "ticker": "TEST",
+    "name": "Test Issuer",
+    "identity_basis": "synthetic_in_test_ledger",
+    "source_entity_id": _PK02FIX_CIK,
+}
+_PK02FIX_SIC = "3571"
+_PK02FIX_CLASS_AXIS = "us-gaap:StatementClassOfStockAxis"
+_PK02FIX_ANTIDILUTIVE_AXIS = (
+    "us-gaap:AntidilutiveSecuritiesExcludedFromComputationOfEarningsPerShare"
+    "ByAntidilutiveSecuritiesAxis"
+)
+_PK02FIX_POR = date(2025, 9, 27)
+_PK02FIX_FY_START = date(2024, 9, 29)
+_PK02FIX_SHARES = FactUnit("shares", ["xbrli:shares"])
+_PK02FIX_USD = FactUnit("USD", ["iso4217:USD"])
+
+
+def _pk02fix_fact(
+    concept: str,
+    *,
+    unit: FactUnit,
+    value: str,
+    key: str,
+    instant=None,
+    start=None,
+    end=None,
+    explicit=(),
+    decimals: str = "-6",
+) -> RawFactOccurrence:
+    filing_row = synthetic_filing(
+        accession="0000000012-25-000001",
+        document_id="testco-20250927.htm",
+        accepted_at="2025-11-01T16:00:00Z",
+        recorded_at="2025-11-01T16:05:00Z",
+        filed_at="2025-11-01",
+        entity_id=_PK02FIX_CIK,
     )
-    check = _check(probe, "antidilutive_table_total_vs_rows")
+    return make_raw_fact(
+        source=filing_row["source"],
+        concept_qname=concept,
+        context=FactContext(
+            context_id=f"ctx-{key}",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=_PK02FIX_CIK,
+            instant=instant,
+            start=start,
+            end=end,
+            explicit_dimensions=explicit,
+        ),
+        recorded_at=filing_row["recorded_at"],
+        accepted_at=filing_row["accepted_at"],
+        unit=unit,
+        raw_token=value,
+        parsed_value=value,
+        decimals=decimals,
+        source_span=(0, len(value)),
+        source_occurrence_key=key,
+    )
+
+
+def _pk02fix_packages() -> tuple:
+    return (
+        _SyntheticPackage(
+            {
+                "cik": _PK02FIX_CIK,  # R-F4: package issuer == packet entity
+                "form": "10-K",
+                "period_of_report": "2025-09-27",
+                "accession": "0000000012-25-000001",
+                "primary_document": "testco-20250927.htm",
+            }
+        ),
+    )
+
+
+def _pk02fix_input(**overrides) -> PackInput:
+    defaults = dict(
+        packages=_pk02fix_packages(),
+        entity=_PK02FIX_ENTITY,
+        query=PK02_QUERY,
+        issuer_sic=_PK02FIX_SIC,
+        sic_source="dei",
+    )
+    defaults.update(overrides)
+    return PackInput(**defaults)
+
+
+def _pk02fix_produce(
+    monkeypatch: pytest.MonkeyPatch, events: tuple
+) -> dict:
+    """Full-envelope PK02 probe over a synthetic in-test ledger."""
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000012-25-000001",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    return produce_pack("PK02", _pk02fix_input())
+
+
+def test_pk02_a4_total_vs_rows_passes_when_members_sum_to_total(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    concept = (
+        "us-gaap:AntidilutiveSecuritiesExcludedFromComputationOf"
+        "EarningsPerShareAmount"
+    )
+    result = _pk02fix_produce(
+        monkeypatch,
+        (
+            _pk02fix_fact(
+                concept,
+                unit=_PK02FIX_SHARES,
+                value="30000000",
+                key="total",
+                start=_PK02FIX_FY_START,
+                end=_PK02FIX_POR,
+            ),
+            _pk02fix_fact(
+                concept,
+                unit=_PK02FIX_SHARES,
+                value="20000000",
+                key="member-options",
+                start=_PK02FIX_FY_START,
+                end=_PK02FIX_POR,
+                explicit=(
+                    (_PK02FIX_ANTIDILUTIVE_AXIS, "testco:OptionAwardsMember"),
+                ),
+            ),
+            _pk02fix_fact(
+                concept,
+                unit=_PK02FIX_SHARES,
+                value="10000000",
+                key="member-rsu",
+                start=_PK02FIX_FY_START,
+                end=_PK02FIX_POR,
+                explicit=(
+                    (_PK02FIX_ANTIDILUTIVE_AXIS, "testco:RSUAwardsMember"),
+                ),
+            ),
+        ),
+    )
+    check = _check(result, "antidilutive_table_total_vs_rows")
     assert check["status"] == "pass"
     assert check["tolerance"] == "1000000"  # min decimals -6 across the rows
+    assert contract.validate_pack_result(result) == []
 
 
-def test_pk02_a4_total_vs_rows_fails_when_members_differ() -> None:
-    probe = _pk02_probe(
-        {
-            "antidilutive_securities_excluded": pack_base.FactMapping(
-                ("us-gaap:StockRepurchasedAndRetiredDuringPeriodValue",),
-                optional_axes=("us-gaap:StatementEquityComponentsAxis",),
-            )
-        }
+def test_pk02_a4_total_vs_rows_fails_when_members_differ(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    concept = (
+        "us-gaap:AntidilutiveSecuritiesExcludedFromComputationOf"
+        "EarningsPerShareAmount"
+    )
+    result = _pk02fix_produce(
+        monkeypatch,
+        (
+            _pk02fix_fact(
+                concept,
+                unit=_PK02FIX_SHARES,
+                value="89300000000",
+                decimals="-8",
+                key="total",
+                start=_PK02FIX_FY_START,
+                end=_PK02FIX_POR,
+            ),
+            _pk02fix_fact(
+                concept,
+                unit=_PK02FIX_SHARES,
+                value="90052000000",
+                key="member-options",
+                start=_PK02FIX_FY_START,
+                end=_PK02FIX_POR,
+                explicit=(
+                    (_PK02FIX_ANTIDILUTIVE_AXIS, "testco:OptionAwardsMember"),
+                ),
+            ),
+        ),
     )
     # Consolidated 89,300,000,000 (dec -8) vs member 90,052,000,000 (dec -6):
     # the 752,000,000 gap exceeds the 100,000,000 tolerance.
-    check = _check(probe, "antidilutive_table_total_vs_rows")
+    check = _check(result, "antidilutive_table_total_vs_rows")
     assert check["status"] == "fail"
     assert check["tolerance"] == "100000000"
-    assert contract.validate_pack_result(probe) == []
+    assert contract.validate_pack_result(result) == []
 
 
 def _share_operand(field_id: str, value: str, decimals: int, rows: list) -> object:
@@ -4877,6 +5059,330 @@ def test_pk02_envelope_digest_unchanged_by_pk04_edits() -> None:
         result, sort_keys=True, separators=(",", ":"), ensure_ascii=False
     )
     assert sha256(payload.encode("utf-8")).hexdigest() == PK02_ENVELOPE_SHA256
+
+
+# 37b. PK02 R-F1 unit equivalence on the axes resolver (per-pack review) -----
+#
+# The independent PK02 review failed the pack because a wrong-unit fact (a
+# USD-tagged share count) on an optional-axes path was emitted as a valued
+# row stamped with the catalogue unit, while the identical fact on a plain
+# mapping was refused. These pins hold the axes resolver to the same R-F1
+# refusal, and hold the per-class check to never comparing the number.
+
+
+def _pk02fix_axes_outcome(
+    field_id: str,
+    events: tuple,
+    *,
+    mapping: pack_base.FactMapping | None = None,
+    filed_at: date | None = None,
+) -> tuple:
+    """Direct axes-resolver call against the real PK02 catalogue field."""
+    limitations: list[str] = []
+    outcome = pack_base._resolve_axes_fact_mapping(
+        pack_id="PK02",
+        catalogue_field=_catalogue_field("PK02", field_id),
+        mapping=mapping or pk02_sbc._FIELD_MAPPINGS[field_id],
+        ledger=RawFactLedger(events=events),
+        por=_PK02FIX_POR,
+        filed_at=filed_at,
+        limitations=limitations,
+    )
+    return outcome, limitations
+
+
+def test_pk02_axes_usd_tagged_parenthetical_fact_is_unit_mismatch() -> None:
+    # T1 (review probe A2): a USD-tagged CommonStockSharesIssued on the
+    # shares_issued_parenthetical axes path is refused exactly like the same
+    # wrong-unit fact on a plain mapping — never a valued row stamped
+    # 'shares'.
+    outcome, limitations = _pk02fix_axes_outcome(
+        "shares_issued_parenthetical",
+        (
+            _pk02fix_fact(
+                "us-gaap:CommonStockSharesIssued",
+                unit=_PK02FIX_USD,
+                value="1000000000",
+                key="parenthetical-usd",
+                instant=_PK02FIX_POR,
+            ),
+        ),
+    )
+    row = outcome.row
+    assert row["quality_state"] == "not_evaluable"
+    assert row["non_value_state"] == "not_evaluable"
+    assert row["coverage_state"] == "unmapped"
+    assert row["reason"] == "unit_mismatch"
+    assert row["value"] is None and row["text_value"] is None
+    assert row["unit"] == "shares"
+    assert row["concept"] == "us-gaap:CommonStockSharesIssued"
+    assert row["mapping_rule_id"] == "PK02.shares_issued_parenthetical.fact/v1"
+    assert len(row["source_occurrence_ids"]) == 1
+    assert outcome.value is None
+    assert outcome.extra_rows == ()
+    assert limitations == [
+        "shares_issued_parenthetical: fact unit USD is not shares"
+    ]
+
+
+def test_pk02_axes_usd_tagged_cover_fact_is_unit_mismatch() -> None:
+    # T2 (review probe A3): the same wrong-unit hole on the
+    # shares_outstanding_cover path (cover instant inside [por, filed_at]).
+    outcome, limitations = _pk02fix_axes_outcome(
+        "shares_outstanding_cover",
+        (
+            _pk02fix_fact(
+                "dei:EntityCommonStockSharesOutstanding",
+                unit=_PK02FIX_USD,
+                value="1000000000",
+                key="cover-usd",
+                instant=date(2025, 10, 17),
+                decimals="0",
+            ),
+        ),
+        filed_at=date(2025, 11, 1),
+    )
+    row = outcome.row
+    assert row["quality_state"] == "not_evaluable"
+    assert row["non_value_state"] == "not_evaluable"
+    assert row["reason"] == "unit_mismatch"
+    assert row["value"] is None
+    assert len(row["source_occurrence_ids"]) == 1
+    assert outcome.value is None
+    assert limitations == [
+        "shares_outstanding_cover: fact unit USD is not shares"
+    ]
+
+
+def test_pk02_per_class_check_never_fails_on_usd_member(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T3 (review probe M): a per-class parenthetical member in USD next to
+    # real share counts. The per-class check must see the absence — the
+    # dollar number is never compared against the cover share counts, so no
+    # nonsense fail is minted.
+    result = _pk02fix_produce(
+        monkeypatch,
+        (
+            _pk02fix_fact(
+                "dei:EntityCommonStockSharesOutstanding",
+                unit=_PK02FIX_SHARES,
+                value="600",
+                key="cover-class-a",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassAMember"),),
+                decimals="3",
+            ),
+            _pk02fix_fact(
+                "dei:EntityCommonStockSharesOutstanding",
+                unit=_PK02FIX_SHARES,
+                value="500",
+                key="cover-class-b",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassBMember"),),
+                decimals="3",
+            ),
+            _pk02fix_fact(
+                "us-gaap:CommonStockSharesIssued",
+                unit=_PK02FIX_SHARES,
+                value="600",
+                key="parenthetical-class-a",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassAMember"),),
+                decimals="3",
+            ),
+            _pk02fix_fact(
+                "us-gaap:CommonStockSharesIssued",
+                unit=_PK02FIX_USD,
+                value="400",
+                key="parenthetical-class-b-usd",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassBMember"),),
+                decimals="3",
+            ),
+        ),
+    )
+    parenthetical = _rows(result, "shares_issued_parenthetical")
+    valued = [row for row in parenthetical if row["quality_state"] == "valued"]
+    refused = [
+        row for row in parenthetical if row["quality_state"] != "valued"
+    ]
+    assert len(valued) == 1
+    assert valued[0]["value"] == "600"
+    assert valued[0]["unit"] == "shares"
+    assert len(refused) == 1
+    assert refused[0]["quality_state"] == "not_evaluable"
+    assert refused[0]["reason"] == "unit_mismatch"
+    check = _check(result, "per_class_shares_vs_cover")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "missing_dependency"
+    assert (
+        "shares_issued_parenthetical: fact unit USD is not shares"
+        in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk02_axes_shares_tagged_facts_valued_as_at_base(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T4 (regression): correctly shares-tagged facts on the same paths are
+    # valued exactly as at the lane base commit 392f59ace3541.
+    outcome, limitations = _pk02fix_axes_outcome(
+        "shares_issued_parenthetical",
+        (
+            _pk02fix_fact(
+                "us-gaap:CommonStockSharesIssued",
+                unit=_PK02FIX_SHARES,
+                value="14773260000",
+                key="parenthetical-shares",
+                instant=_PK02FIX_POR,
+                decimals="-6",
+            ),
+        ),
+    )
+    row = outcome.row
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "14773260000"
+    assert row["unit"] == "shares"
+    assert row["period"] == {"kind": "instant", "end": "2025-09-27"}
+    assert row["concept"] == "us-gaap:CommonStockSharesIssued"
+    assert row["taxonomy"] == "us-gaap"
+    assert row["mapping_rule_id"] == "PK02.shares_issued_parenthetical.fact/v1"
+    assert len(row["source_occurrence_ids"]) == 1
+    assert outcome.value == Decimal("14773260000")
+    assert outcome.decimals == -6
+    assert limitations == []
+    # The fully shares-tagged per-class envelope still passes the check.
+    result = _pk02fix_produce(
+        monkeypatch,
+        (
+            _pk02fix_fact(
+                "dei:EntityCommonStockSharesOutstanding",
+                unit=_PK02FIX_SHARES,
+                value="600",
+                key="cover-class-a",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassAMember"),),
+                decimals="3",
+            ),
+            _pk02fix_fact(
+                "dei:EntityCommonStockSharesOutstanding",
+                unit=_PK02FIX_SHARES,
+                value="500",
+                key="cover-class-b",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassBMember"),),
+                decimals="3",
+            ),
+            _pk02fix_fact(
+                "us-gaap:CommonStockSharesIssued",
+                unit=_PK02FIX_SHARES,
+                value="600",
+                key="parenthetical-class-a",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassAMember"),),
+                decimals="3",
+            ),
+            _pk02fix_fact(
+                "us-gaap:CommonStockSharesIssued",
+                unit=_PK02FIX_SHARES,
+                value="500",
+                key="parenthetical-class-b",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassBMember"),),
+                decimals="3",
+            ),
+        ),
+    )
+    check = _check(result, "per_class_shares_vs_cover")
+    assert check["status"] == "pass"
+    assert all(
+        row["quality_state"] == "valued"
+        for row in _rows(result, "shares_issued_parenthetical")
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk02_axes_usd_member_refused_while_share_siblings_valued() -> None:
+    # T5: a wrong-unit member row is an absence on its own; sibling member
+    # rows with a valid unit are unchanged.
+    outcome, limitations = _pk02fix_axes_outcome(
+        "shares_issued_parenthetical",
+        (
+            _pk02fix_fact(
+                "us-gaap:CommonStockSharesIssued",
+                unit=_PK02FIX_SHARES,
+                value="600",
+                key="parenthetical-class-a",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassAMember"),),
+            ),
+            _pk02fix_fact(
+                "us-gaap:CommonStockSharesIssued",
+                unit=_PK02FIX_USD,
+                value="400",
+                key="parenthetical-class-b-usd",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassBMember"),),
+            ),
+        ),
+    )
+    rows = (outcome.row, *outcome.extra_rows)
+    valued = [row for row in rows if row["quality_state"] == "valued"]
+    refused = [row for row in rows if row["quality_state"] != "valued"]
+    assert len(valued) == 1
+    assert valued[0]["value"] == "600"
+    assert valued[0]["unit"] == "shares"
+    assert valued[0]["dimensions"] == [
+        {"axis": _PK02FIX_CLASS_AXIS, "member": "testco:ClassAMember"}
+    ]
+    assert len(refused) == 1
+    assert refused[0]["quality_state"] == "not_evaluable"
+    assert refused[0]["non_value_state"] == "not_evaluable"
+    assert refused[0]["reason"] == "unit_mismatch"
+    assert outcome.member_values == (None, Decimal("600"))
+    assert outcome.value is None  # the wrong-unit member never sums in
+    assert limitations == [
+        "shares_issued_parenthetical: fact unit USD is not shares"
+    ]
+
+
+def test_pk02_axes_field_without_catalogue_unit_imposes_no_check() -> None:
+    # T6: a catalogue field with no unit imposes no equivalence check —
+    # behaviour is unchanged for both unit spellings, as at the base commit.
+    catalogue_field = {
+        **_catalogue_field("PK02", "shares_issued_parenthetical"),
+        "unit": None,
+    }
+    for unit, stamped in (
+        (_PK02FIX_SHARES, "shares"),
+        (_PK02FIX_USD, "USD"),
+    ):
+        limitations: list[str] = []
+        outcome = pack_base._resolve_axes_fact_mapping(
+            pack_id="PK02",
+            catalogue_field=catalogue_field,
+            mapping=pk02_sbc._FIELD_MAPPINGS["shares_issued_parenthetical"],
+            ledger=RawFactLedger(
+                events=(
+                    _pk02fix_fact(
+                        "us-gaap:CommonStockSharesIssued",
+                        unit=unit,
+                        value="1000000000",
+                        key=f"parenthetical-{stamped}",
+                        instant=_PK02FIX_POR,
+                    ),
+                )
+            ),
+            por=_PK02FIX_POR,
+            filed_at=None,
+            limitations=limitations,
+        )
+        assert outcome.row["quality_state"] == "valued"
+        assert outcome.row["value"] == "1000000000"
+        assert outcome.row["unit"] == stamped  # the fact measure wins
+        assert limitations == []
 
 
 def test_pk04_cli_writes_valid_envelope(tmp_path: Path) -> None:
