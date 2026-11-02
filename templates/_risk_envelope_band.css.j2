@@ -49,9 +49,10 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
   #dlg-risk .gde-tbl td {display:grid; grid-template-columns:minmax(0, 7.5em) minmax(0, 1fr); gap:0 12px; padding:3px 0; border-bottom:0;}
   #dlg-risk .gde-tbl td::before {color:var(--ink-2); font-weight:600; font-size:var(--fs-label); font-family:var(--font-ui); letter-spacing:normal;}
   #dlg-risk .gde-tbl td > * {grid-column:2;}
-  /* The label is visual only (empty alt text): assistive tech still has the header row. */
-  html:not([data-lang="zh"]) #dlg-risk .gde-tbl td::before {content:attr(data-label-en) / "";}
-  html[data-lang="zh"] #dlg-risk .gde-tbl td::before {content:attr(data-label-zh) / "";}
+  /* The label is visual only (empty alt text): assistive tech still has the header row.
+     The plain declaration first is the fallback for engines without the alt-text syntax. */
+  html:not([data-lang="zh"]) #dlg-risk .gde-tbl td::before {content:attr(data-label-en); content:attr(data-label-en) / "";}
+  html[data-lang="zh"] #dlg-risk .gde-tbl td::before {content:attr(data-label-zh); content:attr(data-label-zh) / "";}
 }
 #dlg-risk .gde-warn {color:var(--ink-warn);}
 #dlg-risk .gde-req {color:var(--ink-3);}

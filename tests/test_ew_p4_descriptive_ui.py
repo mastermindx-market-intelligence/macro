@@ -561,8 +561,8 @@ def test_fu2_radar_band_wraps_raises_and_matches_sector_central():
     assert "#dlg-risk .gde-tbl thead {position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;}" in narrow
     assert "#dlg-risk .gde-tbl td {display:grid; grid-template-columns:minmax(0, 7.5em) minmax(0, 1fr);" in narrow
     assert "#dlg-risk .gde-tbl td > * {grid-column:2;}" in narrow  # the required badge stays in the value column
-    assert 'html:not([data-lang="zh"]) #dlg-risk .gde-tbl td::before {content:attr(data-label-en) / "";}' in narrow
-    assert 'html[data-lang="zh"] #dlg-risk .gde-tbl td::before {content:attr(data-label-zh) / "";}' in narrow
+    assert 'html:not([data-lang="zh"]) #dlg-risk .gde-tbl td::before {content:attr(data-label-en); content:attr(data-label-en) / "";}' in narrow
+    assert 'html[data-lang="zh"] #dlg-risk .gde-tbl td::before {content:attr(data-label-zh); content:attr(data-label-zh) / "";}' in narrow
     # Review (FU2): labels and prose read in the UI face on the Radar host, where the
     # page-wide td rule sets the numeric face; the As-of date never splits.
     assert "font-family:var(--font-ui); letter-spacing:normal;}" in narrow.split("td::before {color")[1].split("\n")[0]

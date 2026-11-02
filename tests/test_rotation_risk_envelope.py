@@ -729,7 +729,9 @@ def test_older_or_stale_context_still_carries_its_view_for_the_consumer_to_judge
      "source_not_available"),
     (lambda d: d["early_context"].update(as_of="2026-10-05", produced_at="2026-10-07T13:00:00Z"),
      "future_production_clock"),
-    (lambda d: d.update(as_of="2026-10-05", available_at="2026-10-07T13:00:00Z"), "source_not_available"),
+    # The read's own day comes from the early context; the top-level availability clock still gates it.
+    (lambda d: (d["early_context"].update(as_of="2026-10-05"), d.update(available_at="2026-10-07T13:00:00Z")),
+     "source_not_available"),
     (lambda d: d["early_context"]["latest_observation"]["notification"].update(
         observed_at="2026-10-07T12:00:01+00:00"), "observation_not_available"),
     (lambda d: d["early_context"].update(as_of="2026-10-05")
