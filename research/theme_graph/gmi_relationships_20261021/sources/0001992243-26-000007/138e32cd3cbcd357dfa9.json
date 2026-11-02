@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-31T20:44:53Z",
+ "accession": "0001992243-26-000007",
+ "cik": "0001992243",
+ "doc_byte_length": 2064981,
+ "doc_sha256": "9dcda3888df8da599a4743038ec3357e066ef76f5e6ccb1af7d29cc45123870f",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "t1-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 423119,
+  "byte_start": 422609,
+  "normalized": "As described in Item 3. Legal Proceedings, we are responding to a subpoena from the Department of Justice (“DOJ”), a voluntary document request from the U.S. Securities and Exchange Commission (“SEC”), and we are involved in litigation with RWE Investco EPC MGMT, LLC relating to an offtake contract. It is difficult to predict the outcome or ultimate financial exposure, if any, represented by these matters, and there can be no assurance that any such exposure will not be material.",
+  "normalized_sha256": "b143555a10b9ecfbc623c8de20a85492b0f4ccdae6ce2ecd15c8102ee107fc2d",
+  "raw": " As described in Item 3. Legal Proceedings, we are responding to a subpoena from the Department of Justice (&#8220;DOJ&#8221;), a voluntary document request from the U.S. Securities and Exchange Commission (&#8220;SEC&#8221;), and we are involved in litigation with RWE Investco EPC MGMT, LLC relating to an offtake contract. It is difficult to predict the outcome or ultimate financial exposure, if any, represented by these matters, and there can be no assurance that any such exposure will not be material. ",
+  "raw_sha256": "138e32cd3cbcd357dfa9555abb9e3798d7ae86be6a089008edd54cb72462ca88"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1992243/000199224326000007/t1-20251231.htm",
+ "xbrl_contexts": []
+}

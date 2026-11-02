@@ -445,7 +445,13 @@ class TestUsBoardLandingJob:
         commit = run.index("git commit -m")
         assert heal < hold < commit
         win = run.index("push_won")
-        assert '[ -z "$PUSH_HELD_BACK" ] || exit 1' in run[win:]
+        tail = run[win:run.index("exit 0", win)]
+        assert tail.index("push_hold_settle") < tail.index("if push_hold_red; then exit 1; fi")
+
+    def test_held_rows_are_recovered_before_the_writers_run(self, landing):
+        runs = [str(s.get("run") or "").strip() for s in landing["steps"]]
+        recover = next(i for i, r in enumerate(runs) if r.endswith(f"bash {self.COMMIT_SH} --recover"))
+        assert recover < runs.index(self.ROTATION) < runs.index(self.GRADER)
 
     def test_a_lost_push_goes_red(self, landing):
         run = self._commit_run(landing)

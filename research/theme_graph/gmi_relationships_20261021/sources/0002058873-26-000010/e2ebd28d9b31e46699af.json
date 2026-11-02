@@ -1,0 +1,45 @@
+{
+ "accepted_at": "2026-02-26T21:39:08Z",
+ "accession": "0002058873-26-000010",
+ "cik": "0002058873",
+ "doc_byte_length": 2657938,
+ "doc_sha256": "93b15f7f6a7cf497a0f6275893ac3d4774138d7cae2203edb727f28378332db5",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "q-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1394009,
+  "byte_start": 1392758,
+  "normalized": "Net sales to Samsung Electronics Co., Ltd accounted for 11%, 12%, and 12% of total net sales for each of the years ended December 31, 2025, 2024 and 2023, respectively. Additionally, net sales to Taiwan Semiconductor Manufacturing Company Limited (TSMC) accounted for 8%, 7%, and 6% of total net sales for the years ended December 31, 2025, 2024 and 2023, respectively.",
+  "normalized_sha256": "ab32154d7260f9bbc339542677e9da41ae90e739dfe2ae849904daff68e6ff9e",
+  "raw": "Net sales to Samsung Electronics Co., Ltd accounted for <ix:nonFraction unitRef=\"number\" contextRef=\"c-77\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-486\">11</ix:nonFraction>%, <ix:nonFraction unitRef=\"number\" contextRef=\"c-78\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-487\">12</ix:nonFraction>%, and <ix:nonFraction unitRef=\"number\" contextRef=\"c-79\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-488\">12</ix:nonFraction>% of total net sales for each of the years ended December 31, 2025, 2024 and 2023, respectively. Additionally, net sales to Taiwan Semiconductor Manufacturing Company Limited (TSMC) accounted for <ix:nonFraction unitRef=\"number\" contextRef=\"c-80\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-489\">8</ix:nonFraction>%, <ix:nonFraction unitRef=\"number\" contextRef=\"c-81\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-490\">7</ix:nonFraction>%, and <ix:nonFraction unitRef=\"number\" contextRef=\"c-82\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-491\">6</ix:nonFraction>% of total net sales for the years ended December 31, 2025, 2024 and 2023, respectively.",
+  "raw_sha256": "e2ebd28d9b31e46699af41192eb64af86f53851a0ec0f6938f2f477bfd6cd545"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2058873/000205887326000010/q-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 33691,
+   "byte_start": 33011,
+   "context_ref": "c-77",
+   "raw": "<xbrli:context id=\"c-77\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0002058873</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">q:SamsungElectronicsCompanyLimitedMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "f5e76adee72f6b3d07edf4d287eea3f7713f594864cb3d2e4c60c938eef3ae72"
+  },
+  {
+   "byte_end": 34371,
+   "byte_start": 33691,
+   "context_ref": "c-78",
+   "raw": "<xbrli:context id=\"c-78\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0002058873</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">q:SamsungElectronicsCompanyLimitedMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "0ce032a7540a83e2ed70b8047911eef9d1bf56ec1fc67035f725c5e2a90aef5e"
+  },
+  {
+   "byte_end": 35051,
+   "byte_start": 34371,
+   "context_ref": "c-79",
+   "raw": "<xbrli:context id=\"c-79\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0002058873</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">q:SamsungElectronicsCompanyLimitedMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "e561d26c48a2122822b2d1d6112035bbc5039217c6a9f932b122fe737e250f46"
+  }
+ ]
+}

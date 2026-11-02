@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-27T21:02:59Z",
+ "accession": "0002013745-26-000007",
+ "cik": "0002013745",
+ "doc_byte_length": 4950613,
+ "doc_sha256": "9c222278fdb7b316069aef1075946fab530249989175ae7ffea5507b60a53373",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-27",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "clmt-20251231x10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 752961,
+  "byte_start": 752601,
+  "normalized": "These facilities each receive their base oil feedstocks by railcar and truck under supply agreements or spot purchases with various suppliers, the most significant of which is a supply agreement with Phillips 66. Read “— Our Crude Oil and Feedstock Supply” below for further discussion of the long-term supply agreement with Phillips 66.",
+  "normalized_sha256": "6616ff026c57117f4bf34742a8f7c149236b1d2631925376ad900043e6589e71",
+  "raw": "These facilities each receive their base oil feedstocks by railcar and truck under supply agreements or spot purchases with various suppliers, the most significant of which is a supply agreement with Phillips 66. Read &#8220;&#8212;&#160;Our Crude Oil and Feedstock Supply&#8221; below for further discussion of the long-term supply agreement with Phillips 66.",
+  "raw_sha256": "6e124c146526892e7f64c722e7b52bad49a136d7929170fb75d6969d76c54fb3"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2013745/000201374526000007/clmt-20251231x10k.htm",
+ "xbrl_contexts": []
+}

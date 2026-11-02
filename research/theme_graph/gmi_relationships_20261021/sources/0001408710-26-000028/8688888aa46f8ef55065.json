@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-08-18T11:12:07Z",
+ "accession": "0001408710-26-000028",
+ "cik": "0001408710",
+ "doc_byte_length": 2313986,
+ "doc_sha256": "4bb0e71c182bc0faf56896eca965b6f0fdfaabe886f82264fac889a8b00939c2",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-18",
+ "form": "10-K",
+ "period_of_report": "2026-06-26",
+ "primary_document": "fn-20260626.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2154295,
+  "byte_start": 2152728,
+  "normalized": "Nokia Corporation14.2 %12.0 %",
+  "normalized_sha256": "b9c45e4e0bdaf3191c043ff8cb0f29c0c197ff47d2f72e993643563e799e1009",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#ffffff;padding:1.5pt 1pt;text-align:left;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">Nokia Corporation</span></td><td colspan=\"2\" style=\"background-color:#ffffff;padding:1.5pt 0 1.5pt 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-407\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1507\">14.2</ix:nonFraction>&#160;</span></td><td style=\"background-color:#ffffff;padding:1.5pt 1pt 1.5pt 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">%</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#ffffff;padding:1.5pt 0 1.5pt 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-408\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1508\">12.0</ix:nonFraction>&#160;</span></td><td style=\"background-color:#ffffff;padding:1.5pt 1pt 1.5pt 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">%</span></td></tr>",
+  "raw_sha256": "8688888aa46f8ef550656470f7f894bc29ba5a0f92c0937fc1b77f08c11a9411"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1408710/000140871026000028/fn-20260626.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 183450,
+   "byte_start": 182781,
+   "context_ref": "c-407",
+   "raw": "<xbrli:context id=\"c-407\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001408710</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">fn:NokiaCorporationMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-06-28</xbrli:startDate><xbrli:endDate>2026-06-26</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "2a0dc0fa0d4486726af699b08d89b93a7a0fd1dcddab6f0173366aa9a1fdfc97"
+  },
+  {
+   "byte_end": 184119,
+   "byte_start": 183450,
+   "context_ref": "c-408",
+   "raw": "<xbrli:context id=\"c-408\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001408710</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">fn:NokiaCorporationMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-06-29</xbrli:startDate><xbrli:endDate>2025-06-27</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "04d32e599f6ece30b738073ffcc9c0ba14e7d5c9d8e4e1fd7695f96e61a37396"
+  }
+ ]
+}

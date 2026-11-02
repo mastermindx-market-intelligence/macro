@@ -3,26 +3,52 @@
 # job `us_board_ledgers`, step `commit US board and rotation artifacts`.
 # Kept out of the YAML because of the workflow size budget (tests/test_workflow_file_size.py).
 # Invoked as: bash scripts/ci/us_board_commit.sh
+# `--recover` runs before the writers and restores custody for this job (R-33).
 set -e  # mirror GitHub's default `bash -e {0}` step shell
 
 . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+. "${GITHUB_WORKSPACE:-.}/scripts/ci/push_hold.sh"
+
+# One source tree and its site/ projection are one group (R-33).
+BOARD="data/us_board_ledger site/factordata/us_board_track.json site/factordata/us_board_outcomes.json site/factordata/us_track_ledger.json site/factordata/us_board_track_v2.json"
+ROTATION="data/us_sector_rotation"
+
 git config user.name "dashboard-bot"
 git config user.email "actions@users.noreply.github.com"
+
+if [ "${1:-}" = "--recover" ]; then
+  push_hold_recover "$BOARD" "$ROTATION"
+  exit 0
+fi
+
 git add data/us_board_ledger 2>/dev/null || true
 git add data/us_sector_rotation 2>/dev/null || true
 git add site/factordata/us_board_track.json 2>/dev/null || true
 git add site/factordata/us_board_outcomes.json 2>/dev/null || true
 git add site/factordata/us_track_ledger.json 2>/dev/null || true
 git add site/factordata/us_board_track_v2.json 2>/dev/null || true
-if git diff --cached --quiet; then echo "no US board or rotation changes"; exit 0; fi
+if git diff --cached --quiet; then
+  echo "no US board or rotation changes"
+  if push_hold_red; then exit 1; fi
+  exit 0
+fi
 push_staged_heal data/ site/factordata/ || exit 1
-push_hold_oversize_staged data/ site/factordata/ || exit 1
-if git diff --cached --quiet; then echo "nothing left to land"; [ -z "$PUSH_HELD_BACK" ] || exit 1; exit 0; fi
+rc=0
+push_hold_oversize_staged "$BOARD" "$ROTATION" || rc=$?
+if [ "$rc" -ne 0 ]; then exit 1; fi
+if git diff --cached --quiet; then
+  echo "nothing left to land"
+  push_hold_settle
+  if push_hold_red; then exit 1; fi
+  exit 0
+fi
 git commit -m "us-board: nightly ledger and rotation advance $(date -u +%F)"
 PUSH_ALARM=420
 push_retry_init "US board and rotation artifacts"
 while push_attempt; do
   perl -e 'alarm 120; exec @ARGV or die' -- git fetch origin main || true
+  # Untracked files that already exist on origin/main are removed so the pull
+  # can update them. A held new file is not on main, so this leaves it on disk.
   comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
            <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
     | while IFS= read -r f; do rm -f -- "$f" || true; done
@@ -30,7 +56,8 @@ while push_attempt; do
     if push_do; then
       echo "pushed US board and rotation artifacts on attempt $PUSH_ATTEMPT"
       push_won
-      [ -z "$PUSH_HELD_BACK" ] || exit 1
+      push_hold_settle
+      if push_hold_red; then exit 1; fi
       exit 0
     fi
   fi

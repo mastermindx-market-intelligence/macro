@@ -3035,66 +3035,6 @@ def test_ohlc_delivery_workflow_missing_key_is_visible_before_publish(tmp_path):
     assert not list(tmp_path.iterdir())
 
 
-def _hold_repo(tmp_path: Path) -> Path:
-    repo = tmp_path / "repo"
-    _init_repo(repo)
-    data = repo / "data"
-    data.mkdir()
-    (data / "grows.jsonl").write_text("old\n")
-    (data / "small.jsonl").write_text("old\n")
-    subprocess.run(["git", "-C", str(repo), "add", "."], check=True)
-    subprocess.run(["git", "-C", str(repo), "commit", "-q", "-m", "seed"], check=True)
-    return repo
-
-
-def test_hold_oversize_staged_keeps_the_rest_of_the_commit(tmp_path):
-    repo = _hold_repo(tmp_path)
-    data = repo / "data"
-    (data / "grows.jsonl").write_text("x" * 51)
-    (data / "new_big.jsonl").write_text("x" * 51)
-    (data / "at_limit.jsonl").write_text("x" * 50)
-    (data / "small.jsonl").write_text("new\n")
-    subprocess.run(["git", "-C", str(repo), "add", "data"], check=True)
-
-    result = run_sh(
-        """
-        push_hold_oversize_staged data/
-        echo "held=$PUSH_HELD_BACK"
-        """,
-        env={"PUSH_BLOB_LIMIT": "50"},
-        cwd=repo,
-    )
-
-    assert result.returncode == 0, result.stderr
-    assert "held= data/grows.jsonl data/new_big.jsonl" in result.stdout
-    assert result.stdout.count("::error title=file over GitHub's limit::") == 2
-    staged = _git_output(repo, "diff", "--cached", "--name-only").split()
-    assert staged == ["data/at_limit.jsonl", "data/small.jsonl"]
-    assert (data / "grows.jsonl").read_text() == "old\n"
-    assert not (data / "new_big.jsonl").exists()
-    assert _git_output(repo, "status", "--porcelain", "--", "data/grows.jsonl") == ""
-
-
-def test_hold_oversize_staged_leaves_a_commit_under_the_limit_alone(tmp_path):
-    repo = _hold_repo(tmp_path)
-    (repo / "data" / "small.jsonl").write_text("new\n")
-    subprocess.run(["git", "-C", str(repo), "add", "data"], check=True)
-
-    result = run_sh(
-        """
-        push_hold_oversize_staged data/
-        echo "held=[$PUSH_HELD_BACK]"
-        """,
-        env={"PUSH_BLOB_LIMIT": "50"},
-        cwd=repo,
-    )
-
-    assert result.returncode == 0, result.stderr
-    assert "held=[]" in result.stdout
-    assert "::error" not in result.stdout
-    assert _git_output(repo, "diff", "--cached", "--name-only").split() == ["data/small.jsonl"]
-
-
 def _us_board_clone(tmp_path: Path) -> tuple[Path, Path]:
     bare = tmp_path / "origin.git"
     subprocess.run(["git", "init", "-q", "--bare", "-b", "main", str(bare)], check=True)
@@ -3111,9 +3051,9 @@ def _us_board_clone(tmp_path: Path) -> tuple[Path, Path]:
     return bare, repo
 
 
-def _run_us_board_commit(repo: Path, **env: str) -> subprocess.CompletedProcess:
+def _run_us_board_commit(repo: Path, *args: str, **env: str) -> subprocess.CompletedProcess:
     return subprocess.run(
-        ["bash", str(REPO_ROOT / "scripts" / "ci" / "us_board_commit.sh")],
+        ["bash", str(REPO_ROOT / "scripts" / "ci" / "us_board_commit.sh"), *args],
         capture_output=True,
         text=True,
         cwd=str(repo),
@@ -3149,15 +3089,397 @@ def test_us_board_commit_with_nothing_to_land_is_green_and_pushes_nothing(tmp_pa
     assert _git_output(bare, "rev-parse", "main") == before
 
 
-def test_us_board_commit_lands_the_rest_and_goes_red_when_a_file_is_over_the_limit(tmp_path):
-    bare, repo = _us_board_clone(tmp_path)
-    (repo / "data/us_board_ledger/snapshots.jsonl").write_text("x" * 51)
-    (repo / "data/us_sector_rotation/latest.json").write_text("new\n")
+def _git_bytes(repo: Path, *args: str) -> bytes:
+    return subprocess.run(
+        ["git", "-C", str(repo), *args],
+        check=True,
+        capture_output=True,
+    ).stdout
 
-    result = _run_us_board_commit(repo, PUSH_BLOB_LIMIT="50")
+
+def _hold_env(tmp_path: Path, run_id: str, **extra: str) -> dict[str, str]:
+    rt = tmp_path / "rt"
+    rt.mkdir(exist_ok=True)
+    env = {
+        "PUSH_BLOB_LIMIT": "50",
+        "PUSH_HOLD_PART": "20",
+        "RUNNER_TEMP": str(rt),
+        "GITHUB_RUN_ID": run_id,
+        "GITHUB_RUN_ATTEMPT": "1",
+        "GITHUB_JOB": "us_board_ledgers",
+        "GITHUB_STEP_SUMMARY": str(tmp_path / f"summary-{run_id}.md"),
+        "PUSH_MAX_ATTEMPTS": "1",
+        "PUSH_BUDGET_SECS": "0",
+    }
+    env.update(extra)
+    return env
+
+
+def _hold_refs(bare: Path) -> list[str]:
+    out = _git_output(
+        bare, "for-each-ref", "--format=%(refname)", "refs/heads/push-hold/us_board_ledgers"
+    )
+    return [line for line in out.splitlines() if line]
+
+
+def _manifest(bare: Path, ref: str) -> tuple[list[dict[str, str]], list[str]]:
+    text = _git_bytes(bare, "cat-file", "blob", f"{ref}:MANIFEST").decode()
+    entries: list[dict[str, str]] = []
+    froms: list[str] = []
+    assert text.startswith("push-hold/v1\n")
+    for line in text.splitlines():
+        parts = line.split("\t")
+        if parts[0] == "entry":
+            entries.append(
+                {
+                    "i": parts[1],
+                    "path": parts[2],
+                    "blob": parts[3],
+                    "size": parts[4],
+                    "head": parts[5],
+                    "layout": parts[6],
+                }
+            )
+        elif parts[0] == "from":
+            froms.append(parts[1])
+    return entries, froms
+
+
+def _rebuild(bare: Path, ref: str, entry: dict[str, str]) -> bytes:
+    index = entry["i"]
+    layout = entry["layout"]
+    if layout == "blob":
+        return _git_bytes(bare, "cat-file", "blob", f"{ref}:blobs/{index}")
+    data = b""
+    if layout == "prefix":
+        data = _git_bytes(bare, "cat-file", "blob", f"{ref}:parts/{index}/base")
+    names = _git_output(bare, "ls-tree", "--name-only", f"{ref}:parts/{index}").splitlines()
+    for name in sorted(n for n in names if n and n != "base"):
+        data += _git_bytes(bare, "cat-file", "blob", f"{ref}:parts/{index}/{name}")
+    return data
+
+
+def _clone_of(bare: Path, dest: Path) -> Path:
+    subprocess.run(["git", "clone", "-q", str(bare), str(dest)], check=True)
+    return dest
+
+
+def _reject_ref(bare: Path, pattern: str) -> None:
+    hook = bare / "hooks" / "pre-receive"
+    hook.write_text(
+        "#!/bin/sh\n"
+        "while read old new ref; do\n"
+        "  case \"$ref\" in\n"
+        f"    {pattern})\n"
+        "      echo reject >&2\n"
+        "      exit 1\n"
+        "      ;;\n"
+        "  esac\n"
+        "done\n"
+        "exit 0\n"
+    )
+    hook.chmod(0o755)
+
+
+def test_us_board_hold_keeps_oversize_ledger_rows_and_lands_rotation(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    new = b"old\n" + (b"R" * 60)
+    (repo / "data/us_board_ledger/snapshots.jsonl").write_bytes(new)
+    (repo / "data/us_sector_rotation/latest.json").write_text("rotated\n")
+    env = _hold_env(tmp_path, "101")
+
+    result = _run_us_board_commit(repo, **env)
 
     assert result.returncode == 1, result.stdout + result.stderr
-    assert "::error title=file over GitHub's limit::data/us_board_ledger/snapshots.jsonl" in result.stdout
+    assert "::error title=withheld, not lost::" in result.stdout
     assert _git_output(bare, "diff", "--name-only", "main~1", "main").split() == [
         "data/us_sector_rotation/latest.json",
     ]
+    refs = _hold_refs(bare)
+    assert len(refs) == 1
+    ref = refs[0]
+    assert ref.startswith("refs/heads/push-hold/us_board_ledgers/")
+    entries, _froms = _manifest(bare, ref)
+    assert len(entries) == 1
+    assert entries[0]["path"] == "data/us_board_ledger/snapshots.jsonl"
+    assert entries[0]["layout"] == "prefix"
+    assert _rebuild(bare, ref, entries[0]) == new
+    assert ref in Path(env["GITHUB_STEP_SUMMARY"]).read_text()
+
+
+def test_us_board_hold_keeps_a_new_oversize_ledger_file_on_disk_and_in_custody(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    payload = b"N" * 60
+    path = repo / "data/us_board_ledger/brand_new.jsonl"
+    path.write_bytes(payload)
+    (repo / "data/us_sector_rotation/latest.json").write_text("rotated\n")
+
+    result = _run_us_board_commit(repo, **_hold_env(tmp_path, "102"))
+
+    assert result.returncode == 1, result.stdout + result.stderr
+    assert path.read_bytes() == payload
+    assert _git_output(bare, "diff", "--name-only", "main~1", "main").split() == [
+        "data/us_sector_rotation/latest.json",
+    ]
+    refs = _hold_refs(bare)
+    assert len(refs) == 1
+    entries, _froms = _manifest(bare, refs[0])
+    match = [entry for entry in entries if entry["path"] == "data/us_board_ledger/brand_new.jsonl"]
+    assert len(match) == 1
+    assert match[0]["layout"] == "whole"
+    assert _rebuild(bare, refs[0], match[0]) == payload
+
+
+def test_us_board_recover_lands_held_rows_plus_the_next_row_and_retires_the_ref(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    held = b"old\n" + (b"R" * 60)
+    (repo / "data/us_board_ledger/snapshots.jsonl").write_bytes(held)
+    first = _run_us_board_commit(repo, **_hold_env(tmp_path, "301"))
+    assert first.returncode == 1, first.stdout + first.stderr
+    old_refs = _hold_refs(bare)
+    assert len(old_refs) == 1
+
+    lane2 = _clone_of(bare, tmp_path / "lane2")
+    env2 = _hold_env(tmp_path, "302", PUSH_BLOB_LIMIT="1000000")
+    recovered = _run_us_board_commit(lane2, "--recover", **env2)
+    assert recovered.returncode == 0, recovered.stdout + recovered.stderr
+    snap = lane2 / "data/us_board_ledger/snapshots.jsonl"
+    assert snap.read_bytes() == held
+    row = b"row-2\n"
+    snap.write_bytes(held + row)
+    second = _run_us_board_commit(lane2, **env2)
+
+    assert second.returncode == 0, second.stdout + second.stderr
+    assert _git_bytes(bare, "cat-file", "blob", "main:data/us_board_ledger/snapshots.jsonl") == held + row
+    assert _hold_refs(bare) == []
+
+
+def test_us_board_settle_keeps_a_ref_whose_held_path_did_not_land(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    held = b"old\n" + (b"R" * 60)
+    (repo / "data/us_board_ledger/snapshots.jsonl").write_bytes(held)
+    first = _run_us_board_commit(repo, **_hold_env(tmp_path, "351"))
+    assert first.returncode == 1, first.stdout + first.stderr
+    old_refs = _hold_refs(bare)
+    assert len(old_refs) == 1
+
+    lane2 = _clone_of(bare, tmp_path / "lane2")
+    env2 = _hold_env(tmp_path, "352", PUSH_BLOB_LIMIT="1000000")
+    recovered = _run_us_board_commit(lane2, "--recover", **env2)
+    assert recovered.returncode == 0, recovered.stdout + recovered.stderr
+    snap = lane2 / "data/us_board_ledger/snapshots.jsonl"
+    assert snap.read_bytes() == held
+    # A writer puts the ledger back to main's bytes: the push that wins carries only rotation,
+    # so the held rows are neither landed nor held again and their ref must stay.
+    snap.write_bytes(b"old\n")
+    (lane2 / "data/us_sector_rotation/latest.json").write_text("rotated\n")
+    second = _run_us_board_commit(lane2, **env2)
+
+    out = second.stdout + second.stderr
+    assert _git_output(bare, "diff", "--name-only", "main~1", "main").split() == [
+        "data/us_sector_rotation/latest.json",
+    ], out
+    assert _hold_refs(bare) == old_refs, out
+    assert "::warning title=hold ref kept::" in out
+    entries, _froms = _manifest(bare, old_refs[0])
+    assert _rebuild(bare, old_refs[0], entries[0]) == held
+
+
+def test_us_board_rehold_records_from_the_old_ref_and_retires_it(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    held = b"old\n" + (b"R" * 60)
+    (repo / "data/us_board_ledger/snapshots.jsonl").write_bytes(held)
+    first = _run_us_board_commit(repo, **_hold_env(tmp_path, "401"))
+    assert first.returncode == 1, first.stdout + first.stderr
+    old_ref = _hold_refs(bare)[0]
+
+    lane2 = _clone_of(bare, tmp_path / "lane2")
+    env2 = _hold_env(tmp_path, "402")
+    recovered = _run_us_board_commit(lane2, "--recover", **env2)
+    assert recovered.returncode == 0, recovered.stdout + recovered.stderr
+    snap = lane2 / "data/us_board_ledger/snapshots.jsonl"
+    assert snap.read_bytes() == held
+    longer = held + b"X"
+    snap.write_bytes(longer)
+    second = _run_us_board_commit(lane2, **env2)
+
+    assert second.returncode == 1, second.stdout + second.stderr
+    refs = _hold_refs(bare)
+    assert old_ref not in refs
+    assert len(refs) == 1
+    entries, froms = _manifest(bare, refs[0])
+    assert old_ref in froms
+    assert _rebuild(bare, refs[0], entries[0]) == longer
+
+
+def test_us_board_main_push_rejection_keeps_custody_bytes_and_goes_red(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    before = _git_output(bare, "rev-parse", "main")
+    new = b"old\n" + (b"R" * 60)
+    (repo / "data/us_board_ledger/snapshots.jsonl").write_bytes(new)
+    (repo / "data/us_sector_rotation/latest.json").write_text("rotated\n")
+    _reject_ref(bare, "refs/heads/main")
+
+    result = _run_us_board_commit(repo, **_hold_env(tmp_path, "501"))
+
+    assert result.returncode == 1, result.stdout + result.stderr
+    assert _git_output(bare, "rev-parse", "main") == before
+    refs = _hold_refs(bare)
+    assert len(refs) == 1
+    entries, _froms = _manifest(bare, refs[0])
+    assert _rebuild(bare, refs[0], entries[0]) == new
+
+
+def test_us_board_custody_push_rejection_reverts_nothing(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    before = _git_output(bare, "rev-parse", "main")
+    new = b"old\n" + (b"R" * 60)
+    path = repo / "data/us_board_ledger/snapshots.jsonl"
+    path.write_bytes(new)
+    (repo / "data/us_sector_rotation/latest.json").write_text("rotated\n")
+    _reject_ref(bare, "refs/heads/push-hold/*")
+
+    result = _run_us_board_commit(repo, **_hold_env(tmp_path, "502"))
+
+    assert result.returncode == 1, result.stdout + result.stderr
+    assert "::error title=hold custody failed::" in result.stdout + result.stderr
+    assert _git_output(bare, "rev-parse", "main") == before
+    assert path.read_bytes() == new
+    assert "data/us_board_ledger/snapshots.jsonl" in _git_output(
+        repo, "diff", "--cached", "--name-only"
+    )
+    assert _hold_refs(bare) == []
+
+
+def test_us_board_hold_keeps_the_whole_board_group_and_lands_rotation(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    new = b"old\n" + (b"R" * 60)
+    (repo / "data/us_board_ledger/snapshots.jsonl").write_bytes(new)
+    track = repo / "site/factordata/us_board_track.json"
+    track.parent.mkdir(parents=True)
+    track_bytes = b'{"k":1}\n'
+    track.write_bytes(track_bytes)
+    (repo / "data/us_sector_rotation/latest.json").write_text("rotated\n")
+
+    result = _run_us_board_commit(repo, **_hold_env(tmp_path, "601"))
+
+    assert result.returncode == 1, result.stdout + result.stderr
+    assert _git_output(bare, "diff", "--name-only", "main~1", "main").split() == [
+        "data/us_sector_rotation/latest.json",
+    ]
+    refs = _hold_refs(bare)
+    assert len(refs) == 1
+    entries, _froms = _manifest(bare, refs[0])
+    by_path = {entry["path"]: entry for entry in entries}
+    assert sorted(by_path) == [
+        "data/us_board_ledger/snapshots.jsonl",
+        "site/factordata/us_board_track.json",
+    ]
+    assert by_path["data/us_board_ledger/snapshots.jsonl"]["layout"] == "prefix"
+    assert _rebuild(bare, refs[0], by_path["data/us_board_ledger/snapshots.jsonl"]) == new
+    assert by_path["site/factordata/us_board_track.json"]["layout"] == "blob"
+    assert _rebuild(bare, refs[0], by_path["site/factordata/us_board_track.json"]) == track_bytes
+
+
+def test_hold_membership_not_proved_holds_every_staged_path(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    subprocess.run(["git", "-C", str(repo), "config", "user.email", "t@t"], check=True)
+    subprocess.run(["git", "-C", str(repo), "config", "user.name", "t"], check=True)
+    other = b"Z" * 60
+    (repo / "data/other.jsonl").write_bytes(other)
+    (repo / "data/us_sector_rotation/latest.json").write_text("small-change\n")
+    subprocess.run(
+        ["git", "-C", str(repo), "add", "data/other.jsonl", "data/us_sector_rotation/latest.json"],
+        check=True,
+    )
+    env = _hold_env(tmp_path, "701")
+
+    result = run_sh(
+        f'''
+        . "{REPO_ROOT}/scripts/ci/push_hold.sh"
+        push_hold_oversize_staged "data/us_board_ledger" "data/us_sector_rotation"
+        ''',
+        env=env,
+        cwd=repo,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "hold membership not proved" in result.stdout
+    assert "data/other.jsonl belongs to no declared group" in result.stdout
+    refs = _hold_refs(bare)
+    assert len(refs) == 1
+    entries, _froms = _manifest(bare, refs[0])
+    by_path = {entry["path"]: entry for entry in entries}
+    assert sorted(by_path) == ["data/other.jsonl", "data/us_sector_rotation/latest.json"]
+    assert _rebuild(bare, refs[0], by_path["data/other.jsonl"]) == other
+    assert _rebuild(bare, refs[0], by_path["data/us_sector_rotation/latest.json"]) == b"small-change\n"
+    assert _git_output(repo, "diff", "--cached", "--name-only") == ""
+
+
+def test_us_board_recover_when_base_moved_keeps_the_ref_and_the_commit_step_is_red(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    held = b"old\n" + (b"R" * 60)
+    (repo / "data/us_board_ledger/snapshots.jsonl").write_bytes(held)
+    first = _run_us_board_commit(repo, **_hold_env(tmp_path, "801"))
+    assert first.returncode == 1, first.stdout + first.stderr
+    old_refs = _hold_refs(bare)
+    assert len(old_refs) == 1
+
+    seed = tmp_path / "seed"
+    (seed / "data/us_board_ledger/snapshots.jsonl").write_text("advanced\n")
+    subprocess.run(
+        ["git", "-C", str(seed), "add", "data/us_board_ledger/snapshots.jsonl"], check=True
+    )
+    subprocess.run(["git", "-C", str(seed), "commit", "-q", "-m", "advance"], check=True)
+    _git_output(seed, "push", str(bare), "main")
+
+    lane2 = _clone_of(bare, tmp_path / "lane2")
+    env2 = _hold_env(tmp_path, "802")
+    recovered = _run_us_board_commit(lane2, "--recover", **env2)
+    assert recovered.returncode == 0, recovered.stdout + recovered.stderr
+    assert "held rows not restored" in recovered.stdout + recovered.stderr
+    assert (lane2 / "data/us_board_ledger/snapshots.jsonl").read_text() == "advanced\n"
+    assert _hold_refs(bare) == old_refs
+
+    commit = _run_us_board_commit(lane2, **env2)
+    assert commit.returncode == 1, commit.stdout + commit.stderr
+    assert _hold_refs(bare) == old_refs
+    assert (lane2 / "data/us_board_ledger/snapshots.jsonl").read_text() == "advanced\n"
+
+
+def test_us_board_lineage_applies_only_the_successor_and_a_winning_push_retires_both(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    held = b"old\n" + (b"R" * 60)
+    (repo / "data/us_board_ledger/snapshots.jsonl").write_bytes(held)
+    first = _run_us_board_commit(repo, **_hold_env(tmp_path, "901"))
+    assert first.returncode == 1, first.stdout + first.stderr
+    ref1 = _hold_refs(bare)[0]
+
+    _reject_ref(bare, "refs/heads/main")
+    lane2 = _clone_of(bare, tmp_path / "lane2")
+    env2 = _hold_env(tmp_path, "902")
+    recovered = _run_us_board_commit(lane2, "--recover", **env2)
+    assert recovered.returncode == 0, recovered.stdout + recovered.stderr
+    longer = held + (b"S" * 30)
+    (lane2 / "data/us_board_ledger/snapshots.jsonl").write_bytes(longer)
+    (lane2 / "data/us_sector_rotation/latest.json").write_text("rot2\n")
+    second = _run_us_board_commit(lane2, **env2)
+    assert second.returncode == 1, second.stdout + second.stderr
+    refs = _hold_refs(bare)
+    assert ref1 in refs
+    assert len(refs) == 2
+    ref2 = next(ref for ref in refs if ref != ref1)
+    entries2, froms2 = _manifest(bare, ref2)
+    assert ref1 in froms2
+    assert _rebuild(bare, ref2, entries2[0]) == longer
+
+    (bare / "hooks" / "pre-receive").unlink()
+    lane3 = _clone_of(bare, tmp_path / "lane3")
+    env3 = _hold_env(tmp_path, "903", PUSH_BLOB_LIMIT="1000000")
+    recovered3 = _run_us_board_commit(lane3, "--recover", **env3)
+    assert recovered3.returncode == 0, recovered3.stdout + recovered3.stderr
+    assert (lane3 / "data/us_board_ledger/snapshots.jsonl").read_bytes() == longer
+    third = _run_us_board_commit(lane3, **env3)
+    assert third.returncode == 0, third.stdout + third.stderr
+    assert _git_bytes(bare, "cat-file", "blob", "main:data/us_board_ledger/snapshots.jsonl") == longer
+    assert _hold_refs(bare) == []
