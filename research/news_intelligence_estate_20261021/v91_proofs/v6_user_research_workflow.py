@@ -566,9 +566,10 @@ def p4_save_follow(_scratch: Path, handlers: list[dict]) -> tuple[str, int, str]
 
 
 _THESIS_OWNER_TABLES = ("theses", "thesis_versions")
-# Write verbs only (case-sensitive, word-bounded): a GET that selects `updated_at`
-# next to the table name is a read, not a writer.
-_WRITE_VERB_RE = r"\b(POST|PATCH|PUT|insert|upsert)\b"
+# Write verbs only: REST verbs (`"POST"`, `.post(`), PostgREST/Supabase client
+# writes (`.insert(`, `.upsert(`). A GET that selects `updated_at` next to the
+# table name is a read, not a writer, so bare `update` is deliberately absent.
+_WRITE_VERB_RE = r"(\b(?:POST|PATCH|PUT|insert|upsert)\b|\.(?:post|patch|put|insert|upsert)\()"
 
 
 def p5_propose(_scratch: Path, handlers: list[dict]) -> tuple[str, str]:
