@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-19T20:06:19Z",
+ "accession": "0001874315-26-000013",
+ "cik": "0001874315",
+ "doc_byte_length": 2046832,
+ "doc_sha256": "7291c47d49ebf4d5302d2d24c10299b55908aedf00aa82b37549e53f4bfd5758",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-19",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "satl-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 351121,
+  "byte_start": 350653,
+  "normalized": "By entering into the SpaceX Agreement with a U.S.-based launch provider, we are directly and indirectly subject to the license requirements of the Office of Commercial Space Transportation (“AST”) of the Federal Aviation Administration (“FAA”). The FAA regulates the airspace of the U.S., through which launch vehicles must fly during launch to orbit and through which downlinks of raw data may occur if directed to a U.S.-based ground station.",
+  "normalized_sha256": "06da0eaecf305bd2a8919b4c553ff17eeedd84253b380287d63ec172df80c5ca",
+  "raw": "By entering into the SpaceX Agreement with a U.S.-based launch provider, we are directly and indirectly subject to the license requirements of the Office of Commercial Space Transportation (&#8220;AST&#8221;) of the Federal Aviation Administration (&#8220;FAA&#8221;). The FAA regulates the airspace of the U.S., through which launch vehicles must fly during launch to orbit and through which downlinks of raw data may occur if directed to a U.S.-based ground station.",
+  "raw_sha256": "e38c06dee73cf2b78c7ffca212908964028b5f2dc2141461ae0125111b702b3f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000013/satl-20251231.htm",
+ "xbrl_contexts": []
+}

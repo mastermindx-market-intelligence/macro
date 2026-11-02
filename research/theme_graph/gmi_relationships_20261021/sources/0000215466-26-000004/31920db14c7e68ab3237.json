@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-18T21:55:17Z",
+ "accession": "0000215466-26-000004",
+ "cik": "0000215466",
+ "doc_byte_length": 3547169,
+ "doc_sha256": "cc814e3c24419e09f2864e6f257ae3afcabacd26e94779a7bec9453ab6a4359e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-18",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "cde-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 662580,
+  "byte_start": 661410,
+  "normalized": "(4) Mineral Reserve estimates use the following key input parameters: assumption of conventional longhole underground mining; reported above a variable gold equivalent cut-off grade that ranges from 1.27–2.19 g/tonne AuEq and an incremental development cut-off grade 0.78 g/tonne AuEq; metallurgical recovery assumption of 95.4% for gold and 87.1% for silver; mining dilution assumes 0.4–1.0 meter of hanging/foot wall waste dilution; mining loss of 15% was applied; variable mining costs that range from US$32.29–$43.08/tonne, surface haulage costs of US$4.40/tonne, process costs of US$30.02/tonne, general and administrative costs of US$14.17/tonne, and surface/auxiliary support costs of US$3.52/tonne. Excludes the impact of the Franco-Nevada gold stream agreement at Palmarejo in calculation of Mineral Reserves. No assurances can be given that all mineral reserves will be mined, as mineralized material that may qualify as reserves under applicable standards by virtue of having positive economics may not generate attractive enough returns to be included in our mine plans, due to factors such as the impact of the gold stream at Palmarejo.",
+  "normalized_sha256": "06a7e9e7453e27fdf36e473bdfc1be76caf57f81c57b8da39a3c0b23125f4b9f",
+  "raw": "(4)    Mineral Reserve estimates use the following key input parameters: assumption of conventional longhole underground mining; reported above a variable gold equivalent cut-off grade that ranges from 1.27&#8211;2.19 g/tonne AuEq and an incremental development cut-off grade 0.78 g/tonne AuEq; metallurgical recovery assumption of 95.4% for gold and 87.1% for silver; mining dilution assumes 0.4&#8211;1.0 meter of hanging/foot wall waste dilution; mining loss of 15% was applied; variable mining costs that range from US$32.29&#8211;$43.08/tonne, surface haulage costs of US$4.40/tonne, process costs of US$30.02/tonne, general and administrative costs of US$14.17/tonne, and surface/auxiliary support costs of US$3.52/tonne. Excludes the impact of the Franco-Nevada gold stream agreement at Palmarejo in calculation of Mineral Reserves. No assurances can be given that all mineral reserves will be mined, as mineralized material that may qualify as reserves under applicable standards by virtue of having positive economics may not generate attractive enough returns to be included in our mine plans, due to factors such as the impact of the gold stream at Palmarejo.",
+  "raw_sha256": "31920db14c7e68ab3237058963d805d70029495754c035f796c98b58c249fc0f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/215466/000021546626000004/cde-20251231.htm",
+ "xbrl_contexts": []
+}

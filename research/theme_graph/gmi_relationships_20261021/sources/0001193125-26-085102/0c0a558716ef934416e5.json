@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-02T19:38:13Z",
+ "accession": "0001193125-26-085102",
+ "cik": "0000751978",
+ "doc_byte_length": 3633178,
+ "doc_sha256": "acecbb86bc63e8ccc487b395530b01dbd0260435d1303e260a549eb20403f1a4",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-02",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "vicr-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 261131,
+  "byte_start": 260593,
+  "normalized": "We reach and serve customers through several sales channels: a direct sales force; independent, authorized non-stocking distributors in Europe and Asia; and four authorized stocking distributors world-wide: Arrow Electronics, Inc., Digi-Key Corporation, Avnet Electronics, and Mouser Electronics, Inc. All sales channels are supported by regional TSCs, each offering application engineering and sales support for our channel partners. Domestic TSCs are located in: Andover, Massachusetts; Lombard, Illinois; and Santa Clara, California.",
+  "normalized_sha256": "a5217d5d46c76ed82dc163b86c7c124479169fafd05550cf1ef14bdd3a528823",
+  "raw": "We reach and serve customers through several sales channels: a direct sales force; independent, authorized non-stocking distributors in Europe and Asia; and four authorized stocking distributors world-wide: Arrow Electronics, Inc., Digi-Key Corporation, Avnet Electronics, and Mouser Electronics, Inc.  All sales channels are supported by regional TSCs, each offering application engineering and sales support for our channel partners.  Domestic TSCs are located in: Andover, Massachusetts; Lombard, Illinois; and Santa Clara, California.",
+  "raw_sha256": "0c0a558716ef934416e507534060e110c2bfd102783470e6cb01247e0cb841e6"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/751978/000119312526085102/vicr-20251231.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-01-22T23:43:06Z",
+ "accession": "0000050863-26-000011",
+ "cik": "0000050863",
+ "doc_byte_length": 3320835,
+ "doc_sha256": "1c1fccdaa6ba7111fb85206501dfa9aa064d1d833e731b793026dad2c31f6060",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-01-23",
+ "form": "10-K",
+ "period_of_report": "2025-12-27",
+ "primary_document": "intc-20251227.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 944434,
+  "byte_start": 943569,
+  "normalized": "▪Dependence on Third-Party Foundries. Our products business would, over time, become dependent on third-party foundries, particularly TSMC, as we develop products for nodes beyond Intel 18A and Intel 18A-P. We have no long-term contract with TSMC, and if we are unable to secure and maintain sufficient capacity on favorable pricing terms, we may be unable to manufacture our products in sufficient volume and at a cost that supports the continued success of our products business.",
+  "normalized_sha256": "af9fce3804c0680f7e2b33b02941b61bc0bb3f3c913f120f715ce0a4ad0b0352",
+  "raw": "&#9642;</span><span style=\"color:#026dce;font-family:'Arial',sans-serif;font-size:9pt;font-style:italic;font-weight:400;line-height:120%;padding-left:14.81pt\">Dependence on Third-Party Foundries</span><span style=\"color:#026dce;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:120%\">.</span><span style=\"color:#262626;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:120%\"> Our products business would, over time, become dependent on third-party foundries, particularly TSMC, as we develop products for nodes beyond Intel 18A and Intel 18A-P. We have no long-term contract with TSMC, and if we are unable to secure and maintain sufficient capacity on favorable pricing terms, we may be unable to manufacture our products in sufficient volume and at a cost that supports the continued success of our products business.",
+  "raw_sha256": "9d0f75646948d998188fec3c97308067408680692db1378187d7869ea824acfa"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm",
+ "xbrl_contexts": []
+}
