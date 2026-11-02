@@ -3,8 +3,9 @@
 The candidate setup template already groups its ALREADY SUPPLIED content into
 structure / evidence / research / sources bodies marked ``data-pvs-section``. These
 regressions run the ACTUAL shipped Packet2 owner (sliced verbatim by the existing
-harness module, with explicit mock section markers on the fixture bodies) and hold the
-generated navigation to its contract:
+harness module, with explicit mock section markers and the template's own nested
+source disclosure on the fixture bodies) and hold the generated navigation to its
+contract:
 
   * the tablist, tabs and panel state exist only while the native dialog holds the body;
     in the no-JS inline fallback every group stays visible and untouched;
@@ -12,6 +13,11 @@ generated navigation to its contract:
     ``aria-selected``/``aria-controls``/``aria-labelledby`` and one roving tabindex stop;
   * click, Left/Right/Home/End on the tablist activate and focus the right tab; no other
     key and no arrow outside the tablist is captured;
+  * a panel carrying the collapsed ``details.pvs-audit`` source disclosure (the Sources
+    body) shows it immediately on that panel's first selection of a mount — mouse or
+    keyboard, focus left on the tab, and again on a same-candidate Plan return — exactly
+    once per mount, so an explicit close is respected; on release it goes home in exactly
+    its published state (including a body published with it open);
   * identity and the independent source clock stay outside every panel and stay available;
   * a body without markers — Plan records, legacy and other callers — gains nothing, and
     the existing Previous/Next browsing, Plan hop/return and access invalidation keep
@@ -49,8 +55,11 @@ ROOT = Path(__file__).resolve().parents[1]
 # ── mock section markers on the fixture bodies ─────────────────────────────────
 # The shipped template emits the same four groups over the same content; the fixture
 # marks the harness candidate body explicitly so the owner code under test is the real one.
+# The sources body carries its content the way the template publishes it: ONE collapsed
+# native <details class="pvs-audit"> disclosure (sourced facts and the real Plan-relation
+# control nested inside it, once). ``auditOpen`` lets a fixture publish it already open.
 _SECTIONS_PRE = """
-const sectioned = (c, names) => {
+const sectioned = (c, names, auditOpen) => {
   if (c.groups) return c;                        // marking twice must not duplicate groups
   const order = names || ['structure', 'evidence', 'research', 'sources'];
   const identity = mk('header', 'pvs-opportunity-identity');
@@ -66,13 +75,28 @@ const sectioned = (c, names) => {
     const h3 = mk('h3'); h3.textContent = name;
     section.append(h3);
     if (name === 'structure' && chart) section.append(chart);
-    if (name === 'sources') section.append(c.link);   // the real Plan-relation control
-    group.append(section);
+    if (name === 'sources') {
+      const audit = mk('details', 'pvs-audit', auditOpen ? {open: ''} : null);
+      const summary = mk('summary'); summary.textContent = 'Evidence & source details';
+      audit.append(summary, section, c.link);   // nested once — no duplicate control or content
+      c.audit = audit;
+      group.append(audit);
+    } else {
+      group.append(section);
+    }
     c.body.append(group);
   });
   c.groups = Array.from(c.body.querySelectorAll('[data-pvs-section]'));
   return c;
 };
+/* Platform double: a browser toggles a details through its summary and hides the closed
+   content itself; the DOM double has no native details semantics, so the fixture supplies
+   exactly that one behaviour for the pvs-audit disclosure and nothing else. */
+document.addEventListener('click', (e) => {
+  const s = e.target && e.target.closest ? e.target.closest('summary') : null;
+  const d = s && s.parentNode;
+  if (d && d.classList.contains('pvs-audit')) d[d.hasAttribute('open') ? 'removeAttribute' : 'setAttribute']('open', '');
+});
 """
 _HOOKS = """
 const tabsBar = () => dialogEl() && dialogEl().querySelector('.pvs-section-tabs');
@@ -184,6 +208,80 @@ assert.equal(other.prevented, undefined, 'only Left/Right/Home/End are handled')
 assert.equal(tabs().map(x => x.getAttribute('aria-selected')).join(','), 'false,false,true,false',
              'the tour leaves one selected tab');
 assert.equal(visiblePanels().length, 1);
+""",
+    )
+
+
+def test_first_sources_selection_shows_the_source_disclosure_without_moving_focus():
+    """The reported defect: the Sources body is published as one collapsed native
+    disclosure, so selecting Sources used to show only its summary. Now the first
+    selection — mouse or keyboard — shows the panel's own details.pvs-audit open, with
+    focus left on the tab; panels without a disclosure of their own are never touched."""
+    _run(
+        _PREP + _OPEN
+        + """
+const sourcePanel = panels()[3];
+const audit = sourcePanel.querySelector('details.pvs-audit');
+assert.ok(audit, 'fixture control: the faithful nested disclosure exists');
+assert.equal(sourcePanel.querySelectorAll('details').length, 1, 'no duplicate disclosure');
+assert.equal(sourcePanel.querySelectorAll('.pvs-plan-link').length, 1, 'no duplicate plan control');
+assert.equal(audit.contains(origins.board.link), true, 'the Plan relation lives inside the disclosure');
+assert.equal(audit.hasAttribute('open'), false, 'published collapsed, exactly like the template');
+assert.equal(sectionOf(), 'structure', 'Structure first, the disclosure untouched');
+
+fire(tabs()[3]); await flush();                    // mouse selection of Sources
+assert.equal(sectionOf(), 'sources');
+assert.equal(audit.hasAttribute('open'), true, 'Sources shows the source details immediately');
+assert.equal(document.activeElement, tabs()[3], 'focus stays on the selected tab');
+assert.equal(visiblePanels().length, 1);
+
+tabKeys({key: 'Home', target: tabs()[3]});         // away to Structure, by keyboard
+assert.equal(sectionOf(), 'structure');
+assert.equal(document.activeElement, tabs()[0]);
+assert.equal(audit.hasAttribute('open'), true, 'the open disclosure is not forced back');
+tabKeys({key: 'End', target: tabs()[0]});          // keyboard selection of Sources
+assert.equal(sectionOf(), 'sources');
+assert.equal(audit.hasAttribute('open'), true, 'a keyboard selection shows the details too');
+assert.equal(document.activeElement, tabs()[3], 'focus stays on the tab after the key');
+
+for (const name of ['structure', 'evidence', 'research']) {
+  const panel = panels().find(p => p.getAttribute('data-pvs-section') === name);
+  assert.equal(panel.querySelector('details'), null, name + ' carries no disclosure of its own');
+}
+""",
+    )
+
+
+def test_an_explicit_close_is_respected_for_the_rest_of_this_mount():
+    """Once the first selection has opened the disclosure, the reader's own close stays
+    closed for every repeated Sources selection in this same mount; only a fresh mount
+    offers it open again."""
+    _run(
+        _PREP + _OPEN
+        + """
+fire(tabs()[3]); await flush();                    // first Sources selection: opened for the reader
+const audit = panels()[3].querySelector('details.pvs-audit');
+assert.equal(audit.hasAttribute('open'), true);
+fire(audit.querySelector('summary')); await flush();   // the reader closes it themselves
+assert.equal(audit.hasAttribute('open'), false, 'the native toggle still works in the dialog');
+
+tabKeys({key: 'Home', target: tabs()[3]});         // away to Structure
+assert.equal(sectionOf(), 'structure');
+tabKeys({key: 'End', target: tabs()[3]});          // back to Sources, same mount
+assert.equal(sectionOf(), 'sources');
+assert.equal(audit.hasAttribute('open'), false, 'the explicit close is respected');
+fire(tabs()[0]); await flush();
+fire(tabs()[3]); await flush();                    // repeated selections still respect it
+assert.equal(audit.hasAttribute('open'), false);
+fire(closeBtn()); await flush();
+
+fire(origin.trigger); await flush();               // a fresh mount opens it again, once
+assert.equal(sectionOf(), 'structure');
+const fresh = panels()[3].querySelector('details.pvs-audit');
+assert.equal(fresh, audit, 'the same body came home and went back in');
+assert.equal(fresh.hasAttribute('open'), false, 'released collapsed, as published');
+fire(tabs()[3]); await flush();
+assert.equal(fresh.hasAttribute('open'), true, 'a fresh mount offers the source details again');
 """,
     )
 
@@ -340,9 +438,48 @@ assert.equal(second.body.querySelectorAll('[data-pvs-section][hidden]').length, 
     )
 
 
+def test_release_returns_the_disclosure_to_its_published_state():
+    """Whatever happened inside the dialog — the automatic first-reveal open, or the
+    reader's own toggling — the disclosure returns home exactly as the source published
+    it: a collapsed body goes home collapsed, and a body published with the disclosure
+    open goes home open even if the reader closed it while the dialog held the body."""
+    _run(
+        _SECTIONS_PRE + _HOOKS + """
+await flush();
+const origin = sectioned(origins.board);                       // published collapsed
+const second = sectioned(candidate('board', 'OSHIP', 'OTHER-BULL-20260811'), null, true);
+candGrid.append(second.row); await flush();
+
+fire(origin.trigger); await flush();
+fire(tabs()[3]); await flush();
+const audit = origin.body.querySelector('details.pvs-audit');
+assert.equal(audit.hasAttribute('open'), true, 'first selection opened it');
+fire(audit.querySelector('summary')); await flush();           // reader closes it …
+fire(audit.querySelector('summary')); await flush();           // … and opens it again
+assert.equal(audit.hasAttribute('open'), true, 'the reader can browse the disclosure');
+fire(closeBtn()); await flush();
+assert.equal(audit.hasAttribute('open'), false,
+             'a reader-opened disclosure still goes home collapsed, as published');
+
+fire(second.trigger); await flush();                           // published open
+const audit2 = second.body.querySelector('details.pvs-audit');
+assert.equal(sectionOf(), 'structure');
+assert.equal(audit2.hasAttribute('open'), true, 'fixture control: published open');
+fire(tabs()[3]); await flush();
+assert.equal(audit2.hasAttribute('open'), true, 'already open: the first selection leaves it open');
+fire(audit2.querySelector('summary')); await flush();          // the reader closes it in the dialog
+assert.equal(audit2.hasAttribute('open'), false);
+fire(closeBtn()); await flush();
+assert.equal(audit2.hasAttribute('open'), true, 'an initially open disclosure goes home open');
+""",
+        pre=_PRE["grid"],
+    )
+
+
 def test_plan_relation_stays_operable_from_sources_and_return_restores_section():
     """From the Sources panel the exact Plan hop still works through the shipped owner, and
-    returning to the SAME candidate reopens that body with Sources selected again: one
+    returning to the SAME candidate reopens that body with Sources selected again — with
+    its source disclosure shown immediately, exactly as the first selection did: one
     connected tablist, the tab/panel aria intact, nothing leaked. The restore is bound to
     this one return only — a fresh open of the same row and a Previous/Next step still
     default to Structure. The same return also restores the exact initiating Plan-link
@@ -358,6 +495,8 @@ const sourcePanel = panels().find(p => p.getAttribute('data-pvs-section') === 's
 fire(tabs()[3]); await flush();
 assert.equal(visiblePanels()[0], sourcePanel, 'the Plan relation lives in the Sources panel');
 assert.equal(sourcePanel.contains(origins.board.link), true);
+assert.equal(sourcePanel.querySelector('details.pvs-audit').hasAttribute('open'), true,
+             'the hop starts from a Sources panel whose details are already shown');
 origins.board.link.focus();                      // the reader is on the exact Plan-link control
 dialogEl().scrollTop = 177;                      // ... at their own dialog reading position
 fire(origins.board.link);                        // View in Plans, from inside the panel
@@ -382,6 +521,8 @@ assert.equal(t[3].getAttribute('aria-selected'), 'true', 'Sources is the selecte
 assert.deepEqual(t.slice(0, 3).map(x => x.getAttribute('aria-selected')), ['false', 'false', 'false']);
 assert.deepEqual(t.map(x => x.getAttribute('tabindex')), ['-1', '-1', '-1', '0'], 'one roving stop, on Sources');
 assert.equal(visiblePanels().length, 1);
+assert.equal(ps[3].querySelector('details.pvs-audit').hasAttribute('open'), true,
+             'the restored Sources panel shows its source details again');
 assert.equal(document.activeElement, origins.board.link,
              'the exact initiating Plan-link control is focused again');
 assert.equal(dialogEl().scrollTop, 177, 'the prior dialog scrollTop is restored');

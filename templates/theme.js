@@ -6781,7 +6781,10 @@
      groups; without JS every group stays visible inline. Bodies without the markers — Plan
      records, legacy and other callers — get nothing at all. Generated ids, roles, hidden
      state and the bar itself are removed on release so the exact original nodes return home
-     intact. Nothing here supplies, infers or fetches data, assessments, plans or permission. */
+     intact. A panel's own collapsed pvs-audit disclosure is opened for the reader on that
+     panel's first selection of a mount — once, so an explicit close is respected — and its
+     published open state is restored on release. Nothing here supplies, infers or fetches
+     data, assessments, plans or permission. */
   var SECTION_NAMES = ['structure', 'evidence', 'research', 'sources'];
   var SECTION_LABELS = {structure: ['Structure & timing', '结构与时机'], evidence: ['Evidence', '证据'],
     research: ['Context', '背景'], sources: ['Sources', '来源']};
@@ -6828,13 +6831,15 @@
       tab.setAttribute('role', 'tab');
       tab.id = base + '-' + name;
       tab.setAttribute('aria-controls', base + '-' + name + '-panel');
+      var audit = name === 'sources' ? panel.querySelector('details.pvs-audit') : null;
       var was = {id: panel.getAttribute('id'), role: panel.getAttribute('role'),
-        labelledby: panel.getAttribute('aria-labelledby'), index: panel.getAttribute('tabindex')};
+        labelledby: panel.getAttribute('aria-labelledby'), index: panel.getAttribute('tabindex'),
+        auditOpen: audit ? audit.hasAttribute('open') : null};
       panel.id = base + '-' + name + '-panel';
       panel.setAttribute('role', 'tabpanel');
       panel.setAttribute('aria-labelledby', tab.id);
       panel.setAttribute('tabindex', '0');
-      var ref = {tab: tab, panel: panel, was: was};
+      var ref = {tab: tab, panel: panel, was: was, audit: audit, revealed: false};
       refs.push(ref);
       bar.append(tab);
       tab.addEventListener('click', function () { selectSection(refs.indexOf(ref), true); });
@@ -6845,8 +6850,14 @@
         var on = i === index;
         ref.tab.setAttribute('aria-selected', on ? 'true' : 'false');
         ref.tab.setAttribute('tabindex', on ? '0' : '-1');   // one roving stop on the tablist
-        if (on) ref.panel.removeAttribute('hidden');
-        else ref.panel.setAttribute('hidden', '');
+        if (on) {
+          ref.panel.removeAttribute('hidden');
+          if (ref.audit && !ref.revealed) {
+            // Show Sources on first selection, then respect a reader who collapses it.
+            ref.audit.setAttribute('open', '');
+            ref.revealed = true;
+          }
+        } else ref.panel.setAttribute('hidden', '');
       });
       if (focusTab && refs[index]) refs[index].tab.focus({preventScroll: true});
     }
@@ -6880,6 +6891,10 @@
       if (was.labelledby === null) panel.removeAttribute('aria-labelledby'); else panel.setAttribute('aria-labelledby', was.labelledby);
       if (was.index === null) panel.removeAttribute('tabindex'); else panel.setAttribute('tabindex', was.index);
       panel.removeAttribute('hidden');        // inline fallback shows every group again
+      if (ref.audit) {                        // the disclosure goes home as published, open or not
+        if (was.auditOpen) ref.audit.setAttribute('open', '');
+        else ref.audit.removeAttribute('open');
+      }
     });
   }
   function returnToCandidate() {

@@ -71,8 +71,23 @@ def inspect(site, out):
                                 and panel.is_visible()
                             )
                             audit = panel.locator("details.pvs-audit")
-                            audit.locator("summary").click()
                             assert audit.get_attribute("open") is not None
+                            assert tab.evaluate("el => el === document.activeElement")
+                            assert audit.locator('[data-source-field="price_as_of"]').is_visible()
+                            setup = panel.locator(".pvs-source-setup").bounding_box()
+                            plan = panel.locator(".pvs-plan-relation").bounding_box()
+                            dates = panel.locator(".pvs-source-dates").bounding_box()
+                            assert setup and plan and dates
+                            if width >= 800:
+                                assert plan["x"] >= setup["x"] + setup["width"] - 1
+                                assert abs(setup["y"] - plan["y"]) <= 1
+                                assert abs(dates["x"] - plan["x"]) <= 1
+                                assert dates["y"] >= plan["y"] + plan["height"] - 1
+                                row["layout"] = "adjacent"
+                            else:
+                                assert plan["y"] >= setup["y"] + setup["height"] - 1
+                                assert dates["y"] >= plan["y"] + plan["height"] - 1
+                                row["layout"] = "stacked"
                             row["identity"] = panel.locator(
                                 "xpath=ancestor::*[@data-native-id][1]"
                             ).get_attribute("data-native-id")
@@ -92,6 +107,7 @@ def inspect(site, out):
                             row["plan_controls"] = panel.locator(
                                 ".pvs-plan-link"
                             ).count()
+                            assert row["plan_text"] and row["plan_controls"] == 0
                             row["applied_theme"] = page.locator("html").get_attribute(
                                 "data-theme"
                             )
