@@ -386,3 +386,19 @@ def test_pricing_copy_matches_preview_limits_and_drops_china_pitch():
     assert "6 signals a day" not in combined
     assert "China special situations" not in plans
     assert "The China event desk" not in plans
+
+
+def test_pending_account_verification_does_not_render_paywall():
+    """Pending is a neutral, fail-closed render state, not a denied upsell.
+
+    Keep the summary-row cap in applyGroup even while the gate is hidden.
+    A confirmed/denied/degraded transition must repaint independently of a
+    tier change, while native dialogs only react to actual tier changes.
+    """
+    js = (ROOT / "templates" / "tier_preview.js").read_text()
+    assert 'var accessResolution = "initial";' in js
+    assert 'if (accessResolution !== "pending") placeSurfaceGates(surfaces);' in js
+    assert 'if (!applyGroup(group)) return;' in js
+    assert 'var presentationChanged = tierChanged || accessResolution !== resolution;' in js
+    assert 'if (!tierChanged) return;' in js
+    assert (ROOT / "site" / "tier_preview.js").read_text() == js
