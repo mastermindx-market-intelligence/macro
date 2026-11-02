@@ -74,7 +74,7 @@ def _image_bytes(envelope: dict) -> bytes:
     return raw
 
 
-def _wti_history(root: Path, observation: dict, cutoff: datetime) -> tuple[dict, str, dict, str]:
+def _wti_history(root: Path, observation: dict, cutoff: datetime) -> tuple[dict, str, dict, str, datetime]:
     """Validate and read the same capture image that the exporter checked against parquet."""
     export = json.loads(_read_bound(root, observation))
     if export['schema'] != 'yahoo.wti_observation_export.v1' or export['ticker'] != 'CL=F':
@@ -103,7 +103,7 @@ def _wti_history(root: Path, observation: dict, cutoff: datetime) -> tuple[dict,
     binding = dict(path=_WTI_FILE, bytes=len(parquet), sha256=hashlib.sha256(parquet).hexdigest())
     if export['canonical_parquet'] != binding or store._wti_parquet_image(parquet) != merged:
         raise ValueError('published WTI parquet')
-    return json.loads(merged), generation, binding, receipt['effective_bar_date']
+    return json.loads(merged), generation, binding, receipt['effective_bar_date'], clocks[0]
 
 
 def _wti_txi_generation(root: Path, state_receipt: dict, source: dict, binding: dict, cutoff: datetime) -> str:
@@ -139,7 +139,7 @@ def _load_native_baseline(root: Path, snapshot: dict, assumption: dict, *,
                            'future_owner_sessions', 'native_series_generation_at_cutoff', 'source_use_receipt')
     try:
         cutoff = _stamp(source['built'])
-        image, generation, binding, last_label = _wti_history(root, receipts[_WTI_EXPORT], cutoff)
+        image, generation, binding, last_label, adapter_known_by = _wti_history(root, receipts[_WTI_EXPORT], cutoff)
         txi_generation = _wti_txi_generation(root, receipts[_TXI_STATE], source, binding, cutoff)
         sessions = verified_sessions
         if sessions is None:
@@ -151,6 +151,10 @@ def _load_native_baseline(root: Path, snapshot: dict, assumption: dict, *,
                 or assumption['baseline_effective_at'] != source['asof']
                 or _stamp(assumption['baseline_knowledge_cutoff']) != cutoff):
             raise _unqualified('verified_sessions_at_selected_cutoff')
+        # A later cutoff cannot turn a price captured before the session close
+        # into a completed-session observation.
+        if _stamp(sessions.last_session_completed_at) > adapter_known_by:
+            raise _unqualified('completed_session_at_capture')
         labels = [row[0] for row in image['rows']]
         pairs = sessions.historical_labels
         if (labels != [label for label, _ in pairs] or labels[-1] != last_label

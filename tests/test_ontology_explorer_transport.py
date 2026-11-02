@@ -1058,13 +1058,14 @@ def published_wti(monkeypatch, tmp_path, x2_inputs):
     """Synthetic prices through the real WTI capture/export writer. No acquisition."""
     import hashlib
     import pandas as pd
-    from datetime import datetime
+    from datetime import datetime, timedelta
     from engine import ontology_scenario_runtime as runtime, transmission_chains as txi
     from lib import store
 
     _, chain, historical, assumption = x2_inputs
     cutoff = historical.knowledge_cutoff
     now = datetime.fromisoformat(cutoff.replace('Z', '+00:00'))
+    observed = now - timedelta(minutes=2)
     ids = list(chain['nodes'])
     state = fx.chain_state(slug=chain['chain'])
     mapping = dict(zip(['n1','n2','n3','n4'], ids))
@@ -1081,7 +1082,7 @@ def published_wti(monkeypatch, tmp_path, x2_inputs):
     frame = historical.series.to_frame('close')
     path = yahoo / 'CL_F.parquet'
     frame.to_parquet(path)
-    native = store.capture_yahoo_wti_observation(frame, frame, adapter_return_known_by=now,
+    native = store.capture_yahoo_wti_observation(frame, frame, adapter_return_known_by=observed,
         lineage=dict(provider='yahoo', ticker='CL=F', series_identity='vendor_continuous_CL=F',
                      field='Close', basis='vendor_continuous_close_no_adj_close_returned'))
     export = store.export_yahoo_wti_observation(native, frame, frame)
@@ -1097,7 +1098,7 @@ def published_wti(monkeypatch, tmp_path, x2_inputs):
     snap = runtime.compose_snapshot(tmp_path, chain=chain['chain'], now=now)
     labels = tuple((str(d.date()), str(d.date())) for d in frame.index)
     sessions = runtime.VerifiedWTISessions(export['sha256'], capture['generation_id'],
-        snap['source']['source_manifest_hash'], cutoff, cutoff, cutoff, labels, historical.future_sessions,
+        snap['source']['source_manifest_hash'], cutoff, cutoff, observed.isoformat(), labels, historical.future_sessions,
         historical.calendar_id, historical.calendar_version, historical.rights_ref)
     return tmp_path, assumption, snap, sessions
 
@@ -1121,7 +1122,7 @@ def test_wti_real_adapter_uses_only_server_verified_sessions(monkeypatch, publis
     assert qualified['owner_receipt']['source_manifest_hash'] == manifest
 
 
-@pytest.mark.parametrize('bad', ['late','completion','cutoff','labels','txi','export','parquet'])
+@pytest.mark.parametrize('bad', ['late','completion','preclose','cutoff','labels','txi','export','parquet'])
 def test_wti_baseline_refuses_unbound_or_late_inputs(published_wti, bad):
     from dataclasses import replace
     from engine import ontology_scenario_runtime as runtime
@@ -1132,6 +1133,7 @@ def test_wti_baseline_refuses_unbound_or_late_inputs(published_wti, bad):
     else:
         updates = dict(late={'known_by': '2099-01-01T00:00:00Z'}, cutoff={'knowledge_cutoff':'2020-01-01T00:00:00Z'},
                        completion={'last_session_completed_at':'2099-01-01T00:00:00Z'},
+                       preclose={'last_session_completed_at':sessions.knowledge_cutoff},
                        labels={'historical_labels':sessions.historical_labels[:-1]},
                        txi={'txi_generation':stale}, export={'observation_sha256':'0'*64})
         sessions = replace(sessions, **updates[bad])
@@ -1139,3 +1141,5 @@ def test_wti_baseline_refuses_unbound_or_late_inputs(published_wti, bad):
                                            verified_wti_sessions=sessions)
     assert out['root_evaluation']['status'] == 'UNAVAILABLE'
     assert out['owner_receipt'] is None
+    if bad == 'preclose':
+        assert 'completed_session_at_capture' in out['root_evaluation']['missing_owner_inputs']
