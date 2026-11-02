@@ -4,6 +4,61 @@ Status: active implementation specification; no design acceptance or release cla
 Commission: Chris's rejection of the deployed replacement cards and request for the complete Paper-informed Prophet system. Original root/parent: 01a11e89-b35d-7a81-9404-5fce2c6170cb.
 Canonical programme: macro#6817/comment6107291350. This specification refines the existing R6 mission; it does not replace its research, source, or scientific contracts.
 
+## Current full-page continuation — 2 November 2026
+
+Chris has explicitly commissioned a full Paper redesign and production replacement of
+`us_stocks.html`, with the supplied live-page screenshots as the failure baseline.
+Continue this incumbent specification and PR #9495; original root remains
+01a11e89-b35d-7a81-9404-5fce2c6170cb. Attended continuation:
+`prophet-page-revamp-20261102`. Starting source:
+`38a7f2a5fc69cfbdcea4691a605c083f56e6802b`.
+
+### Frozen composition and acceptance
+
+- Preserve the global navigation and every current data, entitlement, ranking, lifecycle,
+  quote, saved-list and setup-detail owner. This commission changes presentation and
+  connected navigation; it grants no new recommendation authority.
+- First viewport: Prophet identity / US stocks, the dated market briefing, Today /
+  Screener / Plans controls, and the beginning of the actual opportunity cards.
+  Remove the current full-width regime and theme-action panels from ahead of the board.
+- Create clear page-local navigation to Opportunities, Market context, Sector timing,
+  and Track record using real existing destinations. Preserve the existing board
+  controls and URL/return behavior. No decorative controls or dead affordances.
+- Retain four compact rich cards at wide desktop, three / two / one as space requires.
+  Identity, actual quote/chart, plain setup observation, main caution, maturity, dated
+  entry terms and View setup / Compare remain legible. No blank height reservation.
+- Context becomes a deliberate secondary reading area after the core workspace.
+  Retain regime path, theme actions, leaders, breadth, sector setups, turns, and all
+  existing expanded tables. Leaders/early observations must not bury current cards.
+- Light uses white surfaces on the existing cool canvas; dark uses existing graphite
+  depths. Use theme.css tokens, Inter, quiet neutral borders and semantic text/chart
+  marks. Remove colored container accent edges from touched elements. No parallel
+  palette, site header replacement, mock price history, or invented performance.
+- EN and ZH ship together. Preserve source dates and distinguish quote, series,
+  assessment and model-plan times. Missing or stale facts stay explicitly missing or
+  stale. Keep unfavorable historical outcomes and eligibility limits available.
+- Verify at 1440, 768, 390 and 320 widths, both themes and languages; actual DOM order,
+  keyboard reachability/focus return, no page-wide horizontal overflow, existing
+  source tabs, grid/table, detail sections, compare and return. Source checks alone
+  do not establish visual or production acceptance.
+
+### Current effects, boundaries and work tree
+
+| Work | State / next evidence |
+|---|---|
+| Live baseline and incumbent designs | Inspected live US page and Paper SYI-0 / L3E-0; first useful setups remain below oversized context. |
+| Paper redesign | NOT APPLIED. Exact file 01M3NT5Y3G5HTJHVR0K5W2MDJM, new work belongs on p-C-0; p-A-0 preserved. Read succeeds but writes are schema-blocked: observed catalog 16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd is not accepted by the current adapter. Do not bypass its guard or claim canvas completion. |
+| Full-page implementation | Extend this branch with the frozen composition above, preserving existing rich card and setup work. |
+| Bounded source map | Fabric child prophet-page-revamp-20261102-source-map; read-only. Delivery is not START or acceptance. |
+| Render and browser proof | Use the canonical renderer and actual dated repository data; an isolated preview is not a production deployment. |
+| Publication | Source review, CI, actual production bytes and authenticated journeys remain separate release evidence. No self-approval or self-merge. |
+
+The pre-existing untracked `tests/test_prophet_plan_review_integration.py` belongs to
+the held original Plan operation. Preserve it unchanged and exclude it from staging and
+test selection. No other active writer of this incumbent worktree was observed at
+continuation entry. The protected source-law pin used for this continuation is
+`19cb00cfed26b68f0a8a5cdc0f2f1a9463a3feec`.
+
 ## Outcome and failure being corrected
 
 Prophet must help a person discover an opportunity early, understand its business and price evidence, compare alternatives, identify what must happen before acting, follow the original plan, and learn from actual outcomes. Richness means useful detail and working connections, not bigger rectangles.
