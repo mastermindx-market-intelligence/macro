@@ -6,7 +6,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <base href="/site/">
 <title>Options research desk · design reference</title>
-<script>const qp=new URLSearchParams(location.search);document.documentElement.dataset.theme=qp.get('theme')||'dark';document.documentElement.dataset.lang=qp.get('lang')||'en';document.documentElement.lang=qp.get('lang')||'en';</script>
+<script>const qp=new URLSearchParams(location.search);document.documentElement.dataset.theme=qp.get('theme')||'dark';document.documentElement.dataset.lang=qp.get('lang')||'en';document.documentElement.lang=qp.get('lang')||'en';localStorage.setItem('theme',document.documentElement.dataset.theme);localStorage.setItem('lang',document.documentElement.dataset.lang);</script>
 <link rel="stylesheet" href="../templates/theme.css"><link rel="stylesheet" href="../mockups/options_workspace_revamp/reference.css">
 </head>
 <body class="page-options-ref">
@@ -16,7 +16,7 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css">
+    <link rel="stylesheet" href="../templates/navigation-refresh.css">
     <div class="nav-links">
     
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -234,10 +234,10 @@
     </div>
   </div>
   
-  <script src="logo_config.js"></script>
-  <script src="stock-logos.js"></script>
+  <script src="../templates/logo_config.js"></script>
+  <script src="../templates/stock-logos.js"></script>
   <script src="live_config.js"></script>
-  <script src="live.js"></script>
+  <script src="../templates/live.js"></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -264,11 +264,11 @@
 <header class="ref-head">
 <div><div class="ref-k"><span class="l-en">Research desk / US markets</span><span class="l-zh">研究工作台 / 美国市场</span></div><h1 class="ref-title"><span class="l-en">Options</span><span class="l-zh">期权工作台</span></h1><p class="ref-sub"><span class="l-en">The settled close, in perspective.</span><span class="l-zh">看清收盘数据，掌握市场全貌。</span></p></div>
 <div class="ref-head-right">
-<div class="ref-session"><span class="ref-session-icon"><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg></span><div><div class="ref-k"><span class="l-en">Latest completed session</span><span class="l-zh">最近完成场次</span></div><div class="ref-date ref-num">30 Oct 2026 <span style="color:var(--muted);font-weight:400">· 16:00 ET</span></div></div></div>
+<div class="ref-session"><span class="ref-session-icon"><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg></span><div><div class="ref-k"><span class="l-en">Latest completed session</span><span class="l-zh">最近完成场次</span></div><div class="ref-date ref-num"><span class="l-en">30 Oct 2026</span><span class="l-zh">2026年10月30日</span> <span style="color:var(--muted);font-weight:400">· 16:00 ET</span></div></div></div>
 <div class="ref-controls"><button class="ref-ctrl" id="ref-theme" aria-label="Switch color theme" title="Switch color theme"><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14A8 8 0 0 1 10 4a8 8 0 1 0 10 10Z"/></svg></button><button class="ref-ctrl" id="ref-language" aria-label="Switch language" title="Switch language">中 / EN</button></div>
 </div>
 </header>
-<details class="ref-panel ref-context-drawer"><summary><span class="ref-k"><span class="l-en">Market context</span><span class="l-zh">市场背景</span></span><span><span class="l-en">Volatility: Mixed — normalizing</span><span class="l-zh">波动率：混合 — 正在恢复正常</span> <span class="ref-num">· VIX 19.4 · 30 Oct</span></span><span class="ref-source-status"><span class="l-en">Other readings behind</span><span class="l-zh">其他读数落后</span></span><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></summary>
+<details class="ref-panel ref-context-drawer"><summary><span class="ref-k"><span class="l-en">Market context</span><span class="l-zh">市场背景</span></span><span><span class="l-en">Volatility: Mixed — normalizing</span><span class="l-zh">波动率：混合 — 正在恢复正常</span> <span class="ref-num">· VIX 19.4 · <span class="l-en">30 Oct</span><span class="l-zh">10 月 30 日</span></span></span><span class="ref-source-status"><span class="l-en">Other context has earlier dates</span><span class="l-zh">其他背景读数来源日期较早</span></span><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></summary>
 <div class="ref-context">
 
 <section class="ref-reading"><div class="ref-reading-top"><span class="ref-k"><span class="l-en">Whole market</span><span class="l-zh">整体市场</span></span></div><div class="ref-reading-value ref-num"><span class="l-en">Mixed — normalizing</span><span class="l-zh">混合 — 正在恢复正常</span></div><div class="ref-reading-foot"><span><span class="l-en">VIX 19.4</span><span class="l-zh">VIX 19.4</span></span></div><div class="ref-reading-foot"><time class="ref-num">2026-10-30</time><span class="ref-source-status current"><span class="l-en">At target close</span><span class="l-zh">目标收盘</span></span></div></section>
@@ -283,13 +283,13 @@
 
 <button class="ref-tab" role="tab" data-mode="brief" id="ref-tab-brief" aria-controls="ref-mode-brief" aria-selected="true" tabindex="0"><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/></svg><span class="l-en">Daily Brief</span><span class="l-zh">每日简报</span></button>
 
-<button class="ref-tab" role="tab" data-mode="flow" id="ref-tab-flow" aria-controls="ref-mode-flow" aria-selected="false" tabindex="-1"><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v16h16M8 15l4-5 4 3 4-7"/></svg><span class="l-en">Flow</span><span class="l-zh">资金流</span><small class="ref-num">12</small></button>
+<button class="ref-tab" role="tab" data-mode="flow" id="ref-tab-flow" aria-controls="ref-mode-flow" aria-selected="false" tabindex="-1"><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v16h16M8 15l4-5 4 3 4-7"/></svg><span class="l-en">Flow</span><span class="l-zh">资金流</span></button>
 
-<button class="ref-tab" role="tab" data-mode="scanner" id="ref-tab-scanner" aria-controls="ref-mode-scanner" aria-selected="false" tabindex="-1"><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg><span class="l-en">Scanner</span><span class="l-zh">筛选</span><small class="ref-num">408</small></button>
+<button class="ref-tab" role="tab" data-mode="scanner" id="ref-tab-scanner" aria-controls="ref-mode-scanner" aria-selected="false" tabindex="-1"><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg><span class="l-en">Scanner</span><span class="l-zh">筛选</span></button>
 
 <button class="ref-tab" role="tab" data-mode="ticker" id="ref-tab-ticker" aria-controls="ref-mode-ticker" aria-selected="false" tabindex="-1"><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span class="l-en">Ticker</span><span class="l-zh">个股</span><small class="ref-num">SPY</small></button>
 
-<button class="ref-tab" role="tab" data-mode="leaders" id="ref-tab-leaders" aria-controls="ref-mode-leaders" aria-selected="false" tabindex="-1"><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg><span class="l-en">Leaders</span><span class="l-zh">领头股</span><small class="ref-num">2</small></button>
+<button class="ref-tab" role="tab" data-mode="leaders" id="ref-tab-leaders" aria-controls="ref-mode-leaders" aria-selected="false" tabindex="-1"><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg><span class="l-en">Leaders</span><span class="l-zh">领头股</span></button>
 
 </nav>
 <section class="ref-mode" id="ref-mode-brief" role="tabpanel" aria-labelledby="ref-tab-brief">
@@ -306,7 +306,7 @@
 <p class="ref-regime"><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18 9 12l4 3 7-10M15 5h5v5"/></svg><span class="l-en">Jumpy — moves get amplified</span><span class="l-zh">剧烈 — 波动被放大</span></p>
 <div class="ref-map" style="--price:13.345%;--flip:33.238%" role="img" aria-label="SPX close 7,580.07, floor 7,500, flip 7,699.43, ceiling 8,100"><div class="ref-map-line"></div><span class="ref-map-label"><span class="l-en">Flip</span><span class="l-zh">翻转</span></span><span class="ref-map-flip"></span><span class="ref-map-price"></span></div>
 <div class="ref-levels"><div><span class="l-en">Floor</span><span class="l-zh">支撑</span><b class="ref-num">7,500</b></div><div><span class="l-en">Flip</span><span class="l-zh">翻转</span><b class="ref-num">7,699.43</b></div><div><span class="l-en">Ceiling</span><span class="l-zh">阻力</span><b class="ref-num">8,100</b></div></div>
-<div class="ref-index-foot"><span><span class="l-en">1.6% below flip</span><span class="l-zh">低于翻转位 1.6%</span></span><span class="ref-num">±0.97% <span class="l-en">expected</span><span class="l-zh">预期波动</span></span></div>
+<div class="ref-index-foot"><span><span class="l-en">1.6% below flip</span><span class="l-zh">低于翻转位 1.6%</span></span><span class="ref-num"><span class="l-en">1-day move</span><span class="l-zh">1日预期波幅</span> ±0.97%</span></div>
 </a>
 
 <a class="ref-index" href="#ticker?t=SPY" data-open="ticker" aria-label="Explore SPY">
@@ -314,7 +314,7 @@
 <p class="ref-regime"><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18 9 12l4 3 7-10M15 5h5v5"/></svg><span class="l-en">Jumpy — moves get amplified</span><span class="l-zh">剧烈 — 波动被放大</span></p>
 <div class="ref-map" style="--price:11.44%;--flip:45.86%" role="img" aria-label="SPY close 755.72, floor 750, flip 772.93, ceiling 800"><div class="ref-map-line"></div><span class="ref-map-label"><span class="l-en">Flip</span><span class="l-zh">翻转</span></span><span class="ref-map-flip"></span><span class="ref-map-price"></span></div>
 <div class="ref-levels"><div><span class="l-en">Floor</span><span class="l-zh">支撑</span><b class="ref-num">750</b></div><div><span class="l-en">Flip</span><span class="l-zh">翻转</span><b class="ref-num">772.93</b></div><div><span class="l-en">Ceiling</span><span class="l-zh">阻力</span><b class="ref-num">800</b></div></div>
-<div class="ref-index-foot"><span><span class="l-en">2.3% below flip</span><span class="l-zh">低于翻转位 2.3%</span></span><span class="ref-num">±0.97% <span class="l-en">expected</span><span class="l-zh">预期波动</span></span></div>
+<div class="ref-index-foot"><span><span class="l-en">2.3% below flip</span><span class="l-zh">低于翻转位 2.3%</span></span><span class="ref-num"><span class="l-en">1-day move</span><span class="l-zh">1日预期波幅</span> ±0.97%</span></div>
 </a>
 
 <a class="ref-index" href="#ticker?t=QQQ" data-open="ticker" aria-label="Explore QQQ">
@@ -322,7 +322,7 @@
 <p class="ref-regime"><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18 9 12l4 3 7-10M15 5h5v5"/></svg><span class="l-en">Jumpy — moves get amplified</span><span class="l-zh">剧烈 — 波动被放大</span></p>
 <div class="ref-map" style="--price:13.1125%;--flip:59.3125%" role="img" aria-label="QQQ close 690.49, floor 680, flip 727.45, ceiling 760"><div class="ref-map-line"></div><span class="ref-map-label"><span class="l-en">Flip</span><span class="l-zh">翻转</span></span><span class="ref-map-flip"></span><span class="ref-map-price"></span></div>
 <div class="ref-levels"><div><span class="l-en">Floor</span><span class="l-zh">支撑</span><b class="ref-num">680</b></div><div><span class="l-en">Flip</span><span class="l-zh">翻转</span><b class="ref-num">727.45</b></div><div><span class="l-en">Ceiling</span><span class="l-zh">阻力</span><b class="ref-num">760</b></div></div>
-<div class="ref-index-foot"><span><span class="l-en">5.3% below flip</span><span class="l-zh">低于翻转位 5.3%</span></span><span class="ref-num">±1.54% <span class="l-en">expected</span><span class="l-zh">预期波动</span></span></div>
+<div class="ref-index-foot"><span><span class="l-en">5.3% below flip</span><span class="l-zh">低于翻转位 5.3%</span></span><span class="ref-num"><span class="l-en">1-day move</span><span class="l-zh">1日预期波幅</span> ±1.54%</span></div>
 </a>
 
 <a class="ref-index" href="#ticker?t=IWM" data-open="ticker" aria-label="Explore IWM">
@@ -330,14 +330,14 @@
 <p class="ref-regime"><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18 9 12l4 3 7-10M15 5h5v5"/></svg><span class="l-en">Jumpy — moves get amplified</span><span class="l-zh">剧烈 — 波动被放大</span></p>
 <div class="ref-map" style="--price:31.1%;--flip:65.7667%" role="img" aria-label="IWM close 279.33, floor 270, flip 289.73, ceiling 300"><div class="ref-map-line"></div><span class="ref-map-label"><span class="l-en">Flip</span><span class="l-zh">翻转</span></span><span class="ref-map-flip"></span><span class="ref-map-price"></span></div>
 <div class="ref-levels"><div><span class="l-en">Floor</span><span class="l-zh">支撑</span><b class="ref-num">270</b></div><div><span class="l-en">Flip</span><span class="l-zh">翻转</span><b class="ref-num">289.73</b></div><div><span class="l-en">Ceiling</span><span class="l-zh">阻力</span><b class="ref-num">300</b></div></div>
-<div class="ref-index-foot"><span><span class="l-en">3.7% below flip</span><span class="l-zh">低于翻转位 3.7%</span></span><span class="ref-num">±1.25% <span class="l-en">expected</span><span class="l-zh">预期波动</span></span></div>
+<div class="ref-index-foot"><span><span class="l-en">3.7% below flip</span><span class="l-zh">低于翻转位 3.7%</span></span><span class="ref-num"><span class="l-en">1-day move</span><span class="l-zh">1日预期波幅</span> ±1.25%</span></div>
 </a>
 
 </div>
 <p class="ref-legend"><span><i class="ref-dot"></i><span class="l-en">Last close</span><span class="l-zh">收盘价</span></span><span><i class="ref-rule"></i><span class="l-en">Gamma flip</span><span class="l-zh">Gamma 翻转位</span></span><span><span class="l-en">Model estimates. A daily close beyond a level is required; intraday moves do not count.</span><span class="l-zh">模型估算。须以日收盘突破价位为准，盘中突破不计。</span></span></p>
 </section>
 <div class="ref-bottom">
-<details class="ref-panel ref-archive" id="historical-research"><summary><div><div class="ref-archive-title"><span class="l-en">Earlier-session research</span><span class="l-zh">较早场次研究</span></div><div class="ref-archive-sub"><span class="l-en">Retained context, with original dates. None describes the latest close.</span><span class="l-zh">保留原始日期的历史背景，均不代表最新收盘。</span></div><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></summary>
+<details class="ref-panel ref-archive" id="historical-research"><summary><div><div class="ref-archive-title"><span class="l-en">Earlier-session research</span><span class="l-zh">较早场次研究</span></div><div class="ref-archive-sub"><span class="l-en">Brief: 19 Aug · Flow: 13 Aug. None describes the latest close.</span><span class="l-zh">简报：8 月 19 日 · 资金流：8 月 13 日。均不代表最新收盘。</span></div></div><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></summary>
 <div class="ref-archive-content">
 
 <div class="ref-archive-card"><div><h3><span class="l-en">Intelligence brief</span><span class="l-zh">情报简报</span></h3><p><span class="l-en">Data behind · 51 trading days at capture</span><span class="l-zh">数据落后 · 截图时落后 51 个交易日</span></p></div><time class="ref-num">2026-08-19</time></div>
@@ -347,7 +347,7 @@
 <div class="ref-archive-card"><div><h3><span class="l-en">Where the money went</span><span class="l-zh">资金去向</span></h3><p><span class="l-en">Technology and index ETFs accounted for 78% of premium</span><span class="l-zh">科技与指数 ETF 占期权金的 78%</span></p></div><time class="ref-num">2026-08-13</time></div>
 
 </div></details>
-<details class="ref-panel ref-archive" id="source-availability"><summary><div><div class="ref-archive-title"><span class="l-en">Source details</span><span class="l-zh">来源详情</span></div><div class="ref-archive-sub"><span class="l-en">7 sources · original session dates</span><span class="l-zh">7 个来源 · 原始场次日期</span></div><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></summary><div class="ref-archive-content">
+<details class="ref-panel ref-archive" id="source-availability"><summary><div><div class="ref-archive-title"><span class="l-en">Source details</span><span class="l-zh">来源详情</span></div><div class="ref-archive-sub"><span class="l-en">7 sources · 5 dated earlier</span><span class="l-zh">7 个来源 · 5 个来源日期较早</span></div></div><svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></summary><div class="ref-archive-content">
 
 <div class="ref-source-row"><strong><span class="l-en">Dealer positioning</span><span class="l-zh">做市商持仓</span></strong><time class="ref-source-status current ref-num">2026-10-30</time></div>
 <div class="ref-source-row"><strong><span class="l-en">Volatility regime</span><span class="l-zh">波动状态</span></strong><time class="ref-source-status current ref-num">2026-10-30</time></div>
@@ -397,11 +397,11 @@
 function select(mode,focus=false){if(!tabs.some(t=>t.dataset.mode===mode))mode='brief';tabs.forEach(t=>{const yes=t.dataset.mode===mode;t.setAttribute('aria-selected',String(yes));t.tabIndex=yes?0:-1;if(yes&&focus)t.focus()});document.querySelectorAll('.ref-mode').forEach(p=>p.hidden=p.id!=='ref-mode-'+mode)}
 tabs.forEach((t,i)=>{t.addEventListener('click',()=>{select(t.dataset.mode);history.replaceState(null,'','#'+t.dataset.mode)});t.addEventListener('keydown',e=>{let n;if(e.key==='ArrowRight')n=(i+1)%tabs.length;else if(e.key==='ArrowLeft')n=(i+tabs.length-1)%tabs.length;else if(e.key==='Home')n=0;else if(e.key==='End')n=tabs.length-1;else return;e.preventDefault();select(tabs[n].dataset.mode,true);history.replaceState(null,'','#'+tabs[n].dataset.mode)})});
 document.querySelectorAll('[data-open]').forEach(a=>a.addEventListener('click',()=>select(a.dataset.open)));
-document.querySelectorAll('[data-disclose]').forEach(a=>a.addEventListener('click',()=>{const d=document.getElementById(a.dataset.disclose);if(d)d.open=true}));
+document.querySelectorAll('[data-disclose]').forEach(a=>a.addEventListener('click',()=>{const d=document.getElementById(a.dataset.disclose);if(d){d.open=true;d.querySelector('summary').focus()}}));
 document.querySelector('#ref-theme').addEventListener('click',()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'});
 document.querySelector('#ref-language').addEventListener('click',()=>{const l=document.documentElement.dataset.lang==='en'?'zh':'en';document.documentElement.dataset.lang=l;document.documentElement.lang=l});
 document.querySelector('#ref-retry').addEventListener('click',()=>{document.querySelector('#ref-retry-note').textContent=document.documentElement.dataset.lang==='zh'?'这是恢复状态设计示例；真实重试将在实现中验证。':'This is the recovery-state design reference. Real retry behavior is verified in the implementation.'});
 select(location.hash.slice(1).split('?')[0]||'brief');window.addEventListener('hashchange',()=>{const m=location.hash.slice(1).split('?')[0];if(tabs.some(t=>t.dataset.mode===m))select(m)});
 })();
 </script>
-</body></html>
+<script src="../templates/theme.js"></script></body></html>

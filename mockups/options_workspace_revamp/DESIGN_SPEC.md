@@ -83,3 +83,12 @@ Focused baseline: tests/test_build_options_command.py, tests/test_options_intel_
 The source checkout intentionally lacks site/data. Use existing hermetic fixtures and an isolated test output tree.
 Record 1440/390 x light/dark x EN/ZH visual evidence through the project's approved source-test/browser workflow. Do not claim screenshots from HTML source or fabricate a visual approval. Browser policy denied data: URL navigation; do not retry that protocol, alter policies, or bypass it through other browser surfaces.
 Final return must include exact commit/tree, changed paths, retained capabilities, tests and their outputs, artifact locations, remaining limits and release hold. Do not merge, deploy, expand scope, contact outside parties, or dispatch another worker.
+
+## Visual critique correction — second source-reference pass
+Actual main.ref captures were inspected at desktop light EN and 390 dark ZH. This is provisional content-area evidence, not Paper or shared-shell acceptance.
+- Some --sp-*, --r-*, --t-* tokens in the design standard are not globally declared in the current theme.css. Use the standard's exact fallback values in var(), without creating a palette or changing shared global theme.
+- Keep all five mobile task labels visible; move dated counts to the active panel. A stale 408/12 badge must not look like a target-session count. A selected Ticker symbol is selection context, not a current count.
+- Mobile level values and expected move require 12.5px or larger; use a two-line legend if needed. Labels distinguish Floor, Flip, Ceiling and Close. Do not shrink essential evidence into microcopy.
+- Existing build_indexes reads expected_move.daily_pct. Show a one-day expected-move label; do not translate the move into generic implied volatility or invent an expiry.
+- Disclosure summary uses one label/chevron row, real source-date preview, and links open AND focus the actual target disclosure. No duplicate views.
+- The shared assistant floating button overlaps mobile SPY detail in the content capture. Verify the integrated page, controls and scrolling before release; do not hide it merely to pass a screenshot.

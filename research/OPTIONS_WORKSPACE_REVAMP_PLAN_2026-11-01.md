@@ -46,17 +46,17 @@ Interaction: keyboard-operable tabs and disclosures, visible focus, hash/deep-li
 
 | ID | Dependency | Editorial label | Objective / output | Evidence / review gate |
 |---|---|---|---|---|
-| P1 | none | in_progress | Inventory actual source, capabilities, data contracts, routes, tests, generation and live conflicts. | Exact paths/lines, source clocks and preserved capability matrix. |
+| P1 | none | accepted | Inventory actual source, capabilities, data contracts, routes, tests, generation and live conflicts. | Exact paths/lines, source clocks and preserved capability matrix. |
 | P1.T1 | none | accepted | Inspect supplied and live baseline, locate governing workstream and exact Paper file. | Observations above; no claim of engine recovery. |
-| P1.T2 | P1.T1 | ready | Bounded read-only source/feature and freshness audit. | Identify actual defects versus correct fail-closed behavior; propose minimal repair scope. |
+| P1.T2 | P1.T1 | accepted | Bounded read-only source/feature and freshness audit. | Identify actual defects versus correct fail-closed behavior; propose minimal repair scope. |
 | P2 | P1 | proposed | Design and review the complete experience in Paper. | Real editable artboards and screenshots, capability dispositions, both themes/locales and mobile. |
 | P2.T1 | P1.T1 | blocked | Restore exact Paper write qualification through its existing reviewed owner. | Current catalog/accepted-catalog mismatch; no alternate-carrier retry or guard weakening. |
-| P2.T2 | P1.T2 | proposed | Source-bound design reference and explicit state/interaction copy. | May progress independently as NOT_APPLIED_TO_PAPER supporting work while P2.T1 is blocked. |
+| P2.T2 | P1.T2 | in_progress | Source-bound design reference and explicit state/interaction copy. | May progress independently as NOT_APPLIED_TO_PAPER supporting work while P2.T1 is blocked. |
 | P2.T3 | P2.T1,P2.T2 | proposed | Create/refine Paper artboards and extract JSX. | Exact file/page/node IDs, screenshots inspected, no layout clipping. |
-| P2.T4 | P2.T2 | proposed | Independent capability and visual critique; reference-integrity disposition. | Approved reference receipt before any compliance claim. |
+| P2.T4 | P2.T2 | in_progress | Independent capability and visual critique; reference-integrity disposition. | Approved reference receipt before any compliance claim. |
 | P3 | P1.T2,P2.T2 | proposed | Implement the source-bound design in the original options page architecture. | Existing engines, payloads, auth, source identities and navigation preserved. |
-| P3.T1 | P2.T2 | proposed | Freeze migration packet and explicit module dispositions. | Exhaustive owned paths, EN/ZH state copy, rollback, source/test contract. |
-| P3.T2 | P3.T1 | proposed | Build markup/CSS/interaction changes and warranted display-scope repairs. | Focused tests plus real rendered user journeys; pair generated assets when required. |
+| P3.T1 | P2.T2 | accepted | Freeze migration packet and explicit module dispositions. | Exhaustive owned paths, EN/ZH state copy, rollback, source/test contract. |
+| P3.T2 | P3.T1 | queued | Build markup/CSS/interaction changes and warranted display-scope repairs. | Focused tests plus real rendered user journeys; pair generated assets when required. |
 | P3.T3 | P3.T2 | proposed | Validate fresh, historical, partial, empty/error/loading, responsive and keyboard behavior. | Dark/light x EN/ZH x 1440/390 evidence and meaningful functional regressions. |
 | P4 | P2.T3,P2.T4,P3 | proposed | Independent review, hosted CI, normal release and production acceptance. | No self-approval or self-merge. |
 | P4.T1 | P3.T3 | proposed | Review/repair exact source and visual evidence. | Independent reviewer; all material findings adjudicated. |
@@ -81,3 +81,10 @@ P2.T2 supporting reference authored, with a critical reasoning pass applied: com
 P3.T1 concrete implementation packet is DESIGN_SPEC.md. P3.T2 candidate source build may proceed reversibly under RELEASE HOLD while Paper qualification is unavailable. Preserve every capability in SOURCE_AUDIT.md and the packet; no engine/store changes.
 Studio typed Git operations with an explicit repository argument fail NOT_APPLIED / INVALID_ARGUMENT. Read-only source diagnosis plus omission of that optional argument resolved the installed closed-profile selector to this exact macro workspace and branch; it observed head/remote 5a999fbd09aed736c07ca189f273ad9308eb57c9, dirty only reference files. Use this same observed carrier binding for publication.
 Browser can inspect live public options UI. It cannot reach the design host's localhost. A data: URL preview was explicitly denied by browser URL policy; that path is closed, no retries or policy workarounds. Complete source-native testing and authorized HTTP(S) proof without misrepresenting unavailable pixels.
+
+## Source verification checkpoint — 2026-11-02 03:20 UTC
+
+Supporting reference and packet published at 20b3599ba79bd635f49d3dac6a2efb81a2f64f8b. Subsequent V4 reference corrections use canonical token fallbacks, readable mobile labels, source-true tab context and corrected disclosure markup. Three representative actual V4 main-content images were inspected; all 12 generated captures have no horizontal overflow/page errors. Shared-shell and full workflow acceptance remain open, including assistant overlap. See mockups/options_workspace_revamp/VERIFICATION.md and visual/reference-report.json. The reference is still NOT_APPLIED_TO_PAPER.
+Focused original-source baseline: 189 passed, 3 skipped. Independent source-native browser fixtures reproduce four existing defects: keyboard task tabs, out-of-order ticker overwrite, duplicate pending Scanner requests, and hanging request without retry. Filtered CSV/clear and the three other dynamic task loads pass. Synthetic fixtures are isolated under mockups and never replace production data.
+Paid implementation child options-revamp-build-20261101-01 is reserved by its original controller PID 49801 and queued for MiniMax capacity from 02:58 UTC, with no START evidence as of 03:17 UTC. Root/parent are this operation. Retain original custody; no duplicate request, cancellation or carrier switch. Child owns isolated implementation from the published 20b source; principal owns independent reference/acceptance work in this workspace. No production template change, PR, merge or deployment is claimed.
+Principal retained the reference critique and independent acceptance preparation as PRINCIPAL_JUDGMENT / LOWER_TOTAL_OVERHEAD; this did not duplicate the queued implementation assignment. The source audit and implementation remain on paid Fabric.
