@@ -47,7 +47,10 @@ from engine.capital_structure.projection import (
     PROJECTION_SCHEMA,
     validate_projection_bundle,
 )
-from engine.capital_structure.registration_integration import REGISTRATION_FAMILY
+from engine.capital_structure.registration_integration import (
+    REGISTRATION_FAMILY,
+    REGISTRATION_PATH_SCHEMA,
+)
 from engine.capital_structure.rule_applicability import (
     RuleApplicabilityError,
     load_rule_applicability_pack,
@@ -85,6 +88,7 @@ from engine.capital_structure.state_changes import (
     changes_for_issuer,
 )
 from engine.capital_structure.state_bundle import (
+    DOCUMENT_LEDGER_FILENAME,
     STATE_BUNDLE_SCHEMA,
     coverage_for,
     issuer_inputs,
@@ -361,8 +365,15 @@ def _load_inputs() -> dict[str, Any]:
     The bundle is published next to the state bundle it binds, so the path is
     derived from the served ``STATE_PATH`` on every call.  A missing, unreadable
     or contract-invalid file is :data:`_INPUTS_UNAVAILABLE`; a valid bundle that
-    binds another state generation is :data:`_INPUTS_NOT_BOUND`.  A failed check
-    is never cached.
+    binds another state generation is :data:`_INPUTS_NOT_BOUND`.
+
+    Validity and binding are separate facts with separate lifetimes (V0).  The
+    contract check is a property of the file's bytes, so a valid bundle is
+    cached stat-exact and validated once per published file; a file that fails
+    it is never cached.  The binding verdict depends on the state generation
+    served now, so it is re-checked on every call: a cached bundle never
+    outlives the state it binds, and a valid bundle that binds another
+    generation is refused cheaply instead of being re-validated per request.
     """
     path = STATE_PATH.parent / CAPACITY_INPUTS_FILENAME
     try:
@@ -377,30 +388,28 @@ def _load_inputs() -> dict[str, Any]:
             and _INPUTS_CACHE["mtime_ns"] == stat.st_mtime_ns
             and _INPUTS_CACHE["size"] == stat.st_size
         ):
-            return _INPUTS_CACHE["payload"]
-
-        try:
-            value = json.loads(path.read_text(encoding="utf-8"))
-            if not isinstance(value, dict) or value.get("schema") != CAPACITY_INPUTS_SCHEMA:
-                raise ValueError("schema mismatch")
-            validate_capacity_inputs_bundle(value)
-        except Exception as exc:  # noqa: BLE001 — a published bundle is all-or-nothing
-            raise _unavailable(_INPUTS_UNAVAILABLE) from exc
+            value = _INPUTS_CACHE["payload"]
+        else:
+            try:
+                value = json.loads(path.read_text(encoding="utf-8"))
+                if not isinstance(value, dict) or value.get("schema") != CAPACITY_INPUTS_SCHEMA:
+                    raise ValueError("schema mismatch")
+                validate_capacity_inputs_bundle(value)
+            except Exception as exc:  # noqa: BLE001 — a published bundle is all-or-nothing
+                raise _unavailable(_INPUTS_UNAVAILABLE) from exc
+            _INPUTS_CACHE.update(
+                path=str(path),
+                mtime_ns=stat.st_mtime_ns,
+                size=stat.st_size,
+                payload=value,
+            )
 
     # The binding check reads the state bundle through its own loader (which
     # takes the same lock), so it runs outside the block above.
     state = _load_state()
     if value.get("state_generation_id") != state.get("generation_id"):
         raise _unavailable(_INPUTS_NOT_BOUND)
-
-    with _LOCK:
-        _INPUTS_CACHE.update(
-            path=str(path),
-            mtime_ns=stat.st_mtime_ns,
-            size=stat.st_size,
-            payload=value,
-        )
-        return value
+    return value
 
 
 def _changeset_from_record(value: Any) -> StateChangeSet:
@@ -697,9 +706,17 @@ def _registration_family(record: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def _path_rows(family_record: dict[str, Any]) -> list[dict[str, Any]]:
-    """The family's registration paths in the API's stable listing order."""
+    """The family's registration paths in the API's stable listing order.
+
+    The family also carries document-term fee rows (U1C); every listing here is
+    a path listing, so the path schema is matched explicitly.
+    """
     return sorted(
-        (row for row in family_record.get("records") or () if isinstance(row, dict)),
+        (
+            row
+            for row in family_record.get("records") or ()
+            if isinstance(row, dict) and row.get("schema") == REGISTRATION_PATH_SCHEMA
+        ),
         key=lambda row: str(row["path_id"]),
     )
 
@@ -839,7 +856,14 @@ def _state_view(
     else:
         generation = _load_generation()
         try:
-            inputs = issuer_inputs(bundle, generation, issuer_id)
+            # U1C: the fee ledger is re-read and re-verified byte for byte on
+            # every then-known replay, from beside the served bundle itself.
+            inputs = issuer_inputs(
+                bundle,
+                generation,
+                issuer_id,
+                document_terms_ledger=STATE_PATH.parent / DOCUMENT_LEDGER_FILENAME,
+            )
         except (ContractViolation, ValueError) as exc:
             raise _unavailable(str(exc)) from exc
         earliest = _earliest_available_at(inputs)

@@ -36,8 +36,18 @@ AND ``(outcome, generation)`` differs from the row's stored
 same generation is silence, and the alert_outbox UNIQUE(fire_event_id) plus a
 pre-insert SELECT of the ids this run would mint is the FIF producer's
 belt-and-braces dedupe.  ``fire_event_id`` is the FROZEN literal
-concatenation (no hashing), and ``write_outcome`` lands only after that row's
-enqueue actually succeeded, so a failed enqueue is planned again next night.
+concatenation (no hashing), and ``write_outcome`` lands only once that row's
+alert provably sits in the outbox — its own enqueue succeeded, the UNIQUE
+index absorbed it as a duplicate that a re-read of the outbox then finds, or
+the pre-insert SELECT found it — so a failed enqueue is planned again next
+night, a conflict whose row is not in the outbox records nothing, and a
+deduped firing still
+records its pair (a prior night whose enqueue landed but whose write failed
+would otherwise leave ``last_seen`` behind and break the attribution chain).
+That next-night catch covers firings keyed by a served generation.  An
+outage's id carries the UTC day it was planned (``_outage_episode``), so an
+outage alert that landed but went unrecorded is planned again the next night
+under a new id and may be sent once more; nothing here suppresses that repeat.
 
 The stored pair is the row's LAST CLASSIFIED outcome, not its last alert: a
 non-firing outcome whose pair differs is recorded too (no enqueue), so the
@@ -179,7 +189,8 @@ class ProducerPlan:
 
     Each entry pairs the alert_outbox row with the row identity, the outcome
     that minted it and the generation the row's outcome write will name, so
-    the enqueue loop can order ``write_outcome`` after its own success only.
+    the enqueue loop can order ``write_outcome`` after the alert is provably
+    in the outbox only (its own success, or a duplicate of a landed row).
     """
 
     entries: list[tuple[dict, str, str, str]]
@@ -210,6 +221,9 @@ class ProducerResult:
     changes_state: str
     notes: list[str] = field(default_factory=list)
     observed_n: int = 0
+    #: Firing outcome writes that landed: an enqueued row, or a duplicate
+    #: whose alert a read of the outbox found.
+    recorded_n: int = 0
 
 
 # ---------------------------------------------------------------------------
@@ -875,31 +889,61 @@ def enqueue(
 
 def _enqueue_and_record(
     entries: list[tuple[dict, str, str, str]], *, dry_run: bool
-) -> tuple[int, int, int, str | None]:
-    """Enqueue, then ``write_outcome`` for each row whose OWN enqueue
-    succeeded — never before, never for a duplicate, and nothing at all on a
-    dry run.  Returns ``(enqueued, duplicates, written, error_class)``."""
+) -> tuple[int, int, int, str | None, str | None]:
+    """Enqueue, then ``write_outcome`` for each row whose alert is now
+    provably in the outbox — its OWN enqueue succeeded, or the UNIQUE index
+    absorbed it and a re-read of the outbox finds the landed row.  A
+    ``"duplicate"`` status is only the HTTP shape of a conflict (409/23505),
+    so an absorbed id the re-read does not return records nothing, and an
+    unreadable re-read records none of them: the next night's pre-insert
+    SELECT finds whatever did land, except an outage, whose id is day-keyed
+    (see the module docstring).  Never before the POST, never for a
+    failed or unattempted row, and nothing at all on a dry run.
+    Returns ``(enqueued, duplicates, written, error_class, write_error)`` —
+    ``write_error`` names the first reason a provable row went unrecorded."""
     statuses, error_class = enqueue(entries, dry_run=dry_run)
     enqueued = sum(1 for status in statuses if status is None)
     duplicates = sum(1 for status in statuses if status == "duplicate")
     written = 0
+    write_error: str | None = None
     if dry_run:
-        return (enqueued, duplicates, written, error_class)
-    for (_row, saved_id, outcome, generation), status in zip(entries, statuses):
-        if status is not None:
+        return (enqueued, duplicates, written, error_class, write_error)
+    absorbed = [
+        str(row["fire_event_id"])
+        for (row, _saved_id, _outcome, _generation), status in zip(entries, statuses)
+        if status == "duplicate"
+    ]
+    landed: set[str] = set()
+    if absorbed:
+        confirm = read_existing_fire_ids(absorbed)
+        if confirm.state == READ_UNAVAILABLE:
+            write_error = f"duplicate_unconfirmed_{confirm.error_class}"
+        else:
+            landed = {str(row.get("fire_event_id")) for row in confirm.rows or []}
+            if write_error is None and len(landed) < len(set(absorbed)):
+                write_error = "conflict_not_in_outbox"
+    for (row, saved_id, outcome, generation), status in zip(entries, statuses):
+        if status == "duplicate":
+            if str(row["fire_event_id"]) not in landed:
+                continue
+        elif status is not None:
             continue
         write = write_outcome(saved_id, outcome, generation)
         if write.state == "ok":
             written += 1
-    return (enqueued, duplicates, written, error_class)
+        elif write_error is None:
+            write_error = str(getattr(write, "error_class", None) or write.state)
+    return (enqueued, duplicates, written, error_class, write_error)
 
 
 def _record_observed(
     observed: list[tuple[str, str, str]], *, dry_run: bool
 ) -> tuple[int, str | None]:
-    """``write_outcome`` for each non-firing outcome on a new pair — nothing on
-    a dry run.  A failed write leaves the stored pair as it was, so the next
-    night observes the same transition again.  Returns ``(written, error)``."""
+    """``write_outcome`` for each pair that needs no enqueue — a non-firing
+    outcome on a new pair, or a firing one whose alert the pre-insert SELECT
+    already found — nothing on a dry run.  A failed write leaves the stored
+    pair as it was, so the next night observes the same transition again.
+    Returns ``(written, error)``."""
     if dry_run:
         return (0, None)
     written = 0
@@ -962,12 +1006,24 @@ def run(
         for row, saved_id, outcome, generation in probe.entries
         if row["fire_event_id"] not in existing_ids
     ]
+    # A pre-insert dedupe hit is an alert already in the outbox: record its
+    # pair as an absorbed duplicate would be, whatever the enqueue loop does.
+    present = [
+        (saved_id, outcome, generation)
+        for row, saved_id, outcome, generation in probe.entries
+        if row["fire_event_id"] in existing_ids
+    ]
     duplicate_n = len(probe.entries) - len(entries)
-    enqueued_n, enqueue_duplicates, written_n, error_class = _enqueue_and_record(
-        entries, dry_run=dry_run
+    enqueued_n, enqueue_duplicates, written_n, error_class, write_error = (
+        _enqueue_and_record(entries, dry_run=dry_run)
     )
     if error_class is not None:
         notes.append(f"enqueue stopped early ({error_class})")
+    if write_error is not None:
+        notes.append(f"enqueued firing not recorded ({write_error})")
+    present_n, present_error = _record_observed(present, dry_run=dry_run)
+    if present_error is not None:
+        notes.append(f"deduped outcome write failed ({present_error})")
     observed_n, observe_error = _record_observed(probe.observed, dry_run=dry_run)
     if observe_error is not None:
         notes.append(f"observed outcome write failed ({observe_error})")
@@ -986,6 +1042,7 @@ def run(
         changes_state=arts.changes_state,
         notes=notes,
         observed_n=observed_n,
+        recorded_n=written_n + present_n,
     )
 
 
