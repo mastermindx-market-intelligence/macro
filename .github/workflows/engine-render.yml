@@ -80,6 +80,9 @@ jobs:
     # setup-node step below are portable both ways).
     runs-on: ${{ github.event.inputs.runner || 'render-linux' }}
     timeout-minutes: 180
+    # Ephemeral engine recomputes cannot publish a settled risk envelope alone.
+    env:
+      RISK_ENVELOPE_RENDER_READ_ONLY: "1"
     steps:
       # Same workspace-hygiene guard as ci.yml's pack job (#5108) — this lane's DEFAULT
       # runner is on the very pool that broke there. A self-hosted runner REUSES its
