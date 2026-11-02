@@ -1,8 +1,8 @@
 {
   "schema": "fif.a34_pack_proof_ledger.v1",
   "matrix_row": "A34",
-  "base_commit": "1d509666646d27a14a87fed32b59a32a0e957307",
-  "generated_at": "2026-11-02T00:47:47.652170+00:00",
+  "base_commit": "ef6a39c12b97f2fbce10f8f094a6eabd3739162a",
+  "generated_at": "2026-11-02T20:10:49.611518+00:00",
   "protocol_id": "fif-q0-quality-protocol/v1",
   "packs": [
     {
@@ -19,7 +19,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 27,
+          "calibration_tests": 49,
           "calibration_labels": 0
         },
         "held_out": {
@@ -39,8 +39,26 @@
           ]
         },
         "review": {
-          "state": "missing",
-          "evidence": []
+          "state": "present",
+          "evidence": [
+            {
+              "pack_id": "PK01",
+              "verdict": "PASS_WITH_NOTES",
+              "reviewed_commit": "b188d09fcf027f2a6f77a396c9d3e79e4660929d",
+              "review_scope": "domain review: boundary and authority, contract conformance, domain correctness, typed absences and refusal, source trace, no issuer special-casing, tests",
+              "reviewer_kind": "independent fabric review lane (non-authoring)",
+              "review_date": "2026-11-02",
+              "defects": [],
+              "notes": [
+                "pk01_debt.py:207-214 \u2014 the covenant pattern matches compliance wording (\"was in compliance with \u2026 covenants\") and named covenant ratios, but a *bare non-compliance* sentence (\"is not in compliance with its debt covenants\") is not matched; run ADV-5d returned `covenant_term_observation unsupported/missing_dependency`. Honest refusal (typed absence, no invented breach verdict), but a recall gap on the wording domain the field names.",
+                "pk01_debt.py:242-247 + narrative.py:194-201 \u2014 when the covenant sentence is the debt note's first sentence and the heading contains \"Note N. X\", the \". \"-sentence rule stops inside the heading and `text_value` carries a heading fragment prefix (run ADV-5e: `'Debt The credit facility covenants include a maximum leverage ratio of 3.5x.'`). Verbatim source bytes with exact offsets (span provenance stays exact); wording noise, not fabrication.",
+                "pk01_debt.py:73-76 \u2014 `short_term_debt` admits only `us-gaap:ShortTermBorrowings`; issuers tagging `CommercialPaper`/`OtherShortTermBorrowings` type `missing_standard_fact:us-gaap:ShortTermBorrowings` (AAPL fixture run confirms). Deliberate freeze per the module docstring (pinned base envelope), reported here as the recall gap it is.",
+                "base.py:1374-1387 (effect on PK01's by-instrument field) \u2014 when every instrument row is lease-excluded, the field types `missing_standard_fact:us-gaap:DebtInstrumentCarryingAmount` although the concept *is* present at the period; no catalogue reason code names the member-exclusion cause (the exclusion remains auditable via `mapping_rule_digest`, which encodes `exclude_member_substrings`).",
+                "pk01_debt.py:88-91 \u2014 the limitation \"debt_components_vs_total: total_debt is formula-derived from the same addends\" is appended whenever the formula *branch runs*, including when it yields `not_evaluable` (run ITEM2-B: limitation present, total_debt value None) \u2014 nothing was actually derived; slightly over-broad wording.",
+                "base.py:2296-2306 \u2014 the stock Presence check reads `outcome.value`, which is `None` for a valued *text* field, so `covenant_span_present` would be `not_evaluable` even on success; the finalize hook synthesizes the `pass` (pk01_debt.py:290-293). Correct as shipped (the hook always runs for an applicable result), but the pass is hook-owned, not framework-derived."
+              ]
+            }
+          ]
         },
         "live": {
           "state": "missing",
@@ -50,7 +68,6 @@
       "gaps": [
         "gold",
         "held_out",
-        "review",
         "live"
       ]
     },
@@ -68,7 +85,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 32,
+          "calibration_tests": 50,
           "calibration_labels": 0
         },
         "held_out": {
@@ -96,8 +113,24 @@
           ]
         },
         "review": {
-          "state": "missing",
-          "evidence": []
+          "state": "present",
+          "evidence": [
+            {
+              "pack_id": "PK02",
+              "verdict": "PASS_WITH_NOTES",
+              "reviewed_commit": "56dc0f3c11292050b5c7bb79708e1c2fd0520af8",
+              "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+              "reviewer_kind": "independent fabric review lane (non-authoring)",
+              "review_date": "2026-11-02",
+              "defects": [],
+              "notes": [
+                "The shared helper `_rf1_unit_mismatch` applies the R-F1 unit-equivalence check at all three resolver sites; a wrong-unit fact now gives `not_evaluable`/`unit_mismatch` instead of a valued row.",
+                "24 synthetic cases are behaviour-identical apart from the closed defect; the four adapted tests are justified.",
+                "A field with N refused members appends N identical limitation strings, and a refused member row carries `dimensions: []`.",
+                "The members-only-with-valued-members route is no longer pinned by a repo test: the parent pin depended on the defect itself (gate code unchanged)."
+              ]
+            }
+          ]
         },
         "live": {
           "state": "missing",
@@ -107,7 +140,6 @@
       "gaps": [
         "gold",
         "held_out",
-        "review",
         "live"
       ]
     },
@@ -125,7 +157,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 42,
+          "calibration_tests": 45,
           "calibration_labels": 0
         },
         "held_out": {
@@ -141,8 +173,23 @@
           ]
         },
         "review": {
-          "state": "missing",
-          "evidence": []
+          "state": "present",
+          "evidence": [
+            {
+              "pack_id": "PK03",
+              "verdict": "PASS_WITH_NOTES",
+              "reviewed_commit": "1f6de89fbd8831f5b93559f41e5ffcb183873eba",
+              "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+              "reviewer_kind": "independent fabric review lane (non-authoring)",
+              "review_date": "2026-11-02",
+              "defects": [],
+              "notes": [
+                "A Clark-form elimination member that matches two allowlist entries is emitted once; each row cites the source occurrences it uses.",
+                "18 dedup attacks at the repair and its parent: no distinct fact suppressed, no duplicate survived; all 12 packs over the 19 diversified_v1 accessions are byte-identical.",
+                "On self-inconsistent synthetic inputs `fp_internal_revenue_not_double_counted` now fails; it passed before only because the elimination was counted twice."
+              ]
+            }
+          ]
         },
         "live": {
           "state": "missing",
@@ -152,7 +199,6 @@
       "gaps": [
         "gold",
         "held_out",
-        "review",
         "live"
       ]
     },
@@ -170,7 +216,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 25,
+          "calibration_tests": 45,
           "calibration_labels": 0
         },
         "held_out": {
@@ -202,8 +248,22 @@
           ]
         },
         "review": {
-          "state": "missing",
-          "evidence": []
+          "state": "present",
+          "evidence": [
+            {
+              "pack_id": "PK04",
+              "verdict": "PASS",
+              "reviewed_commit": "ab1a790b9bd0a7159254c67b32606bd7c914d589",
+              "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+              "reviewer_kind": "independent fabric review lane (non-authoring)",
+              "review_date": "2026-11-02",
+              "defects": [],
+              "notes": [
+                "`rpo_percentage_next_12m` requires the typed member in `por < date <= por + 92 days`; otherwise the resolver's own typed absence.",
+                "14 window-boundary attacks, none leaks; the golden `por+1` shape and the dev corpus (34/34 assertions) are identical."
+              ]
+            }
+          ]
         },
         "live": {
           "state": "missing",
@@ -213,7 +273,6 @@
       "gaps": [
         "gold",
         "held_out",
-        "review",
         "live"
       ]
     },
@@ -247,8 +306,24 @@
           ]
         },
         "review": {
-          "state": "missing",
-          "evidence": []
+          "state": "present",
+          "evidence": [
+            {
+              "pack_id": "PK05",
+              "verdict": "PASS_WITH_NOTES",
+              "reviewed_commit": "b188d09fcf027f2a6f77a396c9d3e79e4660929d",
+              "review_scope": "domain review: boundary and authority, contract conformance, domain correctness, typed absences and refusal, source trace, no issuer special-casing, tests",
+              "reviewer_kind": "independent fabric review lane (non-authoring)",
+              "review_date": "2026-11-02",
+              "defects": [],
+              "notes": [
+                "engine/fundamental_forensics/specialist_packs/base.py:959 (representative-only unit gate; ids joined at base.py:996\u20131004) \u2014 in a duplicate group with equal values but different units (USD+EUR at the same instant), the R-F1 unit check tests only the `representative` occurrence (chosen by occurrence-id order, base.py:951): when the USD fact is representative the valued row's `source_occurrence_ids` cites the EUR-tagged duplicate as co-evidence with no typed absence for it, and which outcome occurs (valued vs `unit_mismatch`) hinges on id ordering. Demonstrated live (T3c vs T3c-clean). The emitted value itself is never wrong (both duplicates agree numerically; differing values across units hit the `unit_mismatch` conflict branch), so NOTE not DEFECT. Minimal fix: gate the whole `admitted` group (any non-equivalent unit \u2192 `unit_mismatch`) instead of the representative.",
+                "base.py:1883 (`_identity_tolerance`, used by the weighted sum at base.py:2081\u20132097 and rollforward at base.py:2127\u20132140) \u2014 tolerance is one unit of the coarsest stated `decimals`; a 6\u20137-line reconciliation or rollforward whose disclosed lines foot only within accumulated rounding (up to N\u00d70.5 units, e.g. 3M for six decimals=-6 lines against a 1M tolerance) can FAIL an economically tied identity. Conservative direction (false-fail, never false-value). Minimal fix: tolerance = half the sum of operand rounding units (or \u03a3 0.5-unit) for multi-addend identities.",
+                "pk05_tax.py:201\u2013209 (`_decimals_of` fallback) \u2014 a disclosed ETR tagged `decimals=\"INF\"` (claims exactness) falls back to the value's own scale (0.2 \u2192 tolerance 0.1), so `etr_formula_vs_disclosed` can PASS a formula that contradicts an \"exact\" disclosed rate. Rare input (INF on a rate), display-only check. Minimal fix: treat INF as tolerance 0 (or the formula's 6-dp quantum).",
+                "engine/fundamental_forensics/specialist_packs/pk05_tax.py:26\u201336 / calculation_linkbase.py:8\u201312 \u2014 the FX-translation/acquisition UTP movement lines (three standard spellings) map to no catalogue field, so `utp_rollforward` fails on such filings instead of absorbing them; this is a declared, typed limit (the identity goes `not_evaluable`, never invents the line), recorded here because a domain consumer will meet it on real filings."
+              ]
+            }
+          ]
         },
         "live": {
           "state": "missing",
@@ -258,7 +333,6 @@
       "gaps": [
         "gold",
         "held_out",
-        "review",
         "live"
       ]
     },
@@ -287,8 +361,28 @@
           "failed_families": []
         },
         "review": {
-          "state": "missing",
-          "evidence": []
+          "state": "present",
+          "evidence": [
+            {
+              "pack_id": "PK06",
+              "verdict": "PASS_WITH_NOTES",
+              "reviewed_commit": "b188d09fcf027f2a6f77a396c9d3e79e4660929d",
+              "review_scope": "domain review: boundary and authority, contract conformance, domain correctness, typed absences and refusal, source trace, no issuer special-casing, tests",
+              "reviewer_kind": "independent fabric review lane (non-authoring)",
+              "review_date": "2026-11-02",
+              "defects": [],
+              "notes": [
+                "engine/fundamental_forensics/specialist_packs/pk06_leases.py:60-65,81-86,111-119 \u2014 the `undiscounted_minus_imputed_equals_liability` identity structurally fails on internally consistent filings: the first alias of `undiscounted_payments_total`/`lease_imputed_interest` is the operating-only ladder, while the liability side always adds `finance_lease_liability_total`; verified on the golden AAPL fixture (2,235+12,490+1,230=15,955 vs 14,725 \u2192 fail) and synthetic case B (13,100\u22122,100=11,000 \u2713 operating identity holds, yet check=fail), and in case I a filing tagging BOTH ladders resolves to the operating-only one even though the combined alias present would satisfy the identity \u2014 minimal fix: a producer-declared limitation naming the ladder-scope behavior (the honest-fail intent lives only in the code comment, pk06_leases.py:106-110, not in the envelope).",
+                "engine/fundamental_forensics/specialist_packs/pk06_leases.py:57-59 + base.py:62,1026-1030 \u2014 a percent-basis tagged discount rate (`OperatingLeaseWeightedAverageDiscountRatePercent` = 4.1, pure) is emitted as `value=4.1, unit=\"ratio\"` (verified scenario A): the no-rescale pass-through is lawful but the frozen catalogue's \"ratio\" unit mislabels a percent number (4.1 reads as 410%), and no limitation names the basis \u2014 minimal fix: a limitation line declaring the pass-through basis.",
+                "engine/fundamental_forensics/specialist_packs/pk06_leases.py:54-56 \u2014 `weighted_average_remaining_term` can never value at this producer version (string element; the numeric-only converter excludes nonnumeric facts, ixbrl_raw_ledger.py:334-335) \u2014 honest (declared limitation, typed `missing`), but the field is structurally dead.",
+                "base.py:1895-1904 \u2014 the scalar `disjoint` reading (|left\u2212right| > tolerance) treats magnitude equality as double counting: verified 42,000,000 commitments vs coincidentally-equal 42,000,000 PK08 accrual \u2192 `fail`, vs 5,000,000 \u2192 `pass`; equality is neither necessary nor sufficient for overlap, so the check's name promises more than the comparison delivers (conservative direction; no value emitted).",
+                "base.py:2310-2316 \u2014 in the two-spec merged `lease_liability_split_vs_total` row, `not_evaluable` outranks `fail`: a genuinely broken operating split (2.0+9.0\u226012.0, verified) reports `not_evaluable` when the finance half is unresolvable \u2014 masks a real arithmetic break, though never into a `pass`.",
+                "pk06_leases.py:120-125 \u2014 the boundary's \"avoid double counting\" clause has no leases-vs-debt counterpart: finance-lease liabilities that also sit inside PK01 debt are emitted with no cross-pack disjointness check or limitation (only commitments-vs-PK08 has one); the pack itself emits no aggregate so it cannot double count internally \u2014 the exposure is downstream summation, unmarked.",
+                "pk06_leases.py:53,60 \u2014 generic field names over operating-only concepts (`lease_cash_payments`\u2192`OperatingLeasePayments`; `undiscounted_payments_total` whose scope varies by which alias resolves): each row carries its `concept` so the basis stays traceable, but the field name alone overstates scope.",
+                "pk06_leases.py:132-135 \u2014 `undiscounted_payments_by_year` produces only the next-twelve-months row; honestly declared as an envelope limitation (matches catalogue intent; the by-year maturity table is deferred)."
+              ]
+            }
+          ]
         },
         "live": {
           "state": "missing",
@@ -298,7 +392,6 @@
       "gaps": [
         "gold",
         "held_out",
-        "review",
         "live"
       ]
     },
@@ -316,7 +409,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 39,
+          "calibration_tests": 57,
           "calibration_labels": 0
         },
         "held_out": {
@@ -344,8 +437,23 @@
           ]
         },
         "review": {
-          "state": "missing",
-          "evidence": []
+          "state": "present",
+          "evidence": [
+            {
+              "pack_id": "PK07",
+              "verdict": "PASS_WITH_NOTES",
+              "reviewed_commit": "b1cde9afcf2bc944d2d117ec8699c251c292a00e",
+              "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+              "reviewer_kind": "independent fabric review lane (non-authoring)",
+              "review_date": "2026-11-02",
+              "defects": [],
+              "notes": [
+                "The reject alternatives become `\\b(?:re|pre)?payments?\\b` / `\\b(?:re)?financings?\\b`; all five leak shapes give a value on the parent and a typed absence at the repair.",
+                "diversified_v1 is byte-identical (27/27 assertions).",
+                "A genuine completion sentence that also mentions a payment is refused (conservative); a few derived money words (prefinancing, funding, installment) are not rejected."
+              ]
+            }
+          ]
         },
         "live": {
           "state": "missing",
@@ -355,7 +463,6 @@
       "gaps": [
         "gold",
         "held_out",
-        "review",
         "live"
       ]
     },
@@ -373,7 +480,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 31,
+          "calibration_tests": 69,
           "calibration_labels": 0
         },
         "held_out": {
@@ -397,8 +504,23 @@
           ]
         },
         "review": {
-          "state": "missing",
-          "evidence": []
+          "state": "present",
+          "evidence": [
+            {
+              "pack_id": "PK08",
+              "verdict": "PASS_WITH_NOTES",
+              "reviewed_commit": "aecc4749a7f422964b300d949a7b3a647721fbc4",
+              "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+              "reviewer_kind": "independent fabric review lane (non-authoring)",
+              "review_date": "2026-11-02",
+              "defects": [],
+              "notes": [
+                "`_nil_bs_vs_note_row` abstains (`not_evaluable`/`missing_dependency`) when a valued nil balance-sheet line meets an unsupplied governing note section.",
+                "Field rows are byte-identical at the repair and its parent on all 13 litigation_v1 accessions; 181/181 PK08 cases pass.",
+                "The sentence guards can only reject more sentences, so a few genuine sentences become a typed absence, never a wrong value."
+              ]
+            }
+          ]
         },
         "live": {
           "state": "missing",
@@ -408,7 +530,6 @@
       "gaps": [
         "gold",
         "held_out",
-        "review",
         "live"
       ]
     },
@@ -426,7 +547,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 45,
+          "calibration_tests": 80,
           "calibration_labels": 0
         },
         "held_out": {
@@ -450,8 +571,24 @@
           ]
         },
         "review": {
-          "state": "missing",
-          "evidence": []
+          "state": "present",
+          "evidence": [
+            {
+              "pack_id": "PK09",
+              "verdict": "PASS_WITH_NOTES",
+              "reviewed_commit": "37a6c2b54197c3035a6e4f76fa5ff05380d85138",
+              "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+              "reviewer_kind": "independent fabric review lane (non-authoring)",
+              "review_date": "2026-11-02",
+              "defects": [],
+              "notes": [
+                "The repair implements the frozen fix spec exactly and closes both re-review defects (mixed recital, capital negator); each reproduces on the parent as disclosed with check pass and at the repair falls to not_disclosed with check fail or not_evaluable, never pass on a refused match.",
+                "Residual phrasings outside the reviewed shapes stay disclosed: a negated re-mention placed before the match (reversed recital), negators separated from the phrase by words other than any, and all-caps negators; a look-behind re-mention arm would close them.",
+                "Over-refusal in the conservative direction: a genuine current-period doubt is refused when a negated mention about another subject or period is comma-joined within 160 characters.",
+                "Dev identity proven on the two admitted dev corpora through the admitted-package loader (0 diffs); held-out corpora were not read."
+              ]
+            }
+          ]
         },
         "live": {
           "state": "missing",
@@ -461,7 +598,6 @@
       "gaps": [
         "gold",
         "held_out",
-        "review",
         "live"
       ]
     },
@@ -479,7 +615,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 26,
+          "calibration_tests": 46,
           "calibration_labels": 0
         },
         "held_out": {
@@ -490,8 +626,23 @@
           "failed_families": []
         },
         "review": {
-          "state": "missing",
-          "evidence": []
+          "state": "present",
+          "evidence": [
+            {
+              "pack_id": "PK10",
+              "verdict": "PASS_WITH_NOTES",
+              "reviewed_commit": "0e9f2f7b1ee5d27e2ac550656dd78c1df5692bd9",
+              "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+              "reviewer_kind": "independent fabric review lane (non-authoring)",
+              "review_date": "2026-11-02",
+              "defects": [],
+              "notes": [
+                "Both second-round defects close: the vote-context look-ahead matches only real vote terms, and block breaks stop the look-ahead at HTML block boundaries.",
+                "NarrativeText text and offsets are byte-identical to the parent on 25 synthetic documents and 19 admitted real filings; block breaks are derived data only.",
+                "The dev corpus is 10-K/10-Q only, so the supplied proxy path is covered by synthetic documents and unit tests, not real proxy filings."
+              ]
+            }
+          ]
         },
         "live": {
           "state": "missing",
@@ -501,7 +652,6 @@
       "gaps": [
         "gold",
         "held_out",
-        "review",
         "live"
       ]
     },
@@ -519,7 +669,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 15,
+          "calibration_tests": 24,
           "calibration_labels": 0
         },
         "held_out": {
@@ -543,8 +693,23 @@
           ]
         },
         "review": {
-          "state": "missing",
-          "evidence": []
+          "state": "present",
+          "evidence": [
+            {
+              "pack_id": "PK11",
+              "verdict": "PASS_WITH_NOTES",
+              "reviewed_commit": "449fb57174c5d90188d2e829dca5148bad9265e6",
+              "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+              "reviewer_kind": "independent fabric review lane (non-authoring)",
+              "review_date": "2026-11-02",
+              "defects": [],
+              "notes": [
+                "All seven defects (D1-D7) reproduce on the parent and close at the repair; 30+ matching and window attacks pass.",
+                "banks_v1 is byte-identical over 13 filings with 21/23 assertions on both sides (the same two quarterly-window assertions fail before and after).",
+                "Three D7-dependent assertions change under the seat ruling; D1, D3, D4 and D5 are proven on synthetic ledgers only, because the corpus has no filing that values CET1 capital or risk-weighted assets."
+              ]
+            }
+          ]
         },
         "live": {
           "state": "missing",
@@ -554,7 +719,6 @@
       "gaps": [
         "gold",
         "held_out",
-        "review",
         "live"
       ]
     },
@@ -572,7 +736,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 16,
+          "calibration_tests": 22,
           "calibration_labels": 0
         },
         "held_out": {
@@ -600,8 +764,23 @@
           ]
         },
         "review": {
-          "state": "missing",
-          "evidence": []
+          "state": "present",
+          "evidence": [
+            {
+              "pack_id": "PK12",
+              "verdict": "PASS_WITH_NOTES",
+              "reviewed_commit": "114fc6bc290dcb5f562ef53374633bf3cbefb932",
+              "review_scope": "repair re-review: original defects closed on the repair and reproduced on its parent, new-logic attacks, no collateral change, typed absences, no issuer special-casing, no new reason code, dev-corpus identity, tests",
+              "reviewer_kind": "independent fabric review lane (non-authoring)",
+              "review_date": "2026-11-02",
+              "defects": [],
+              "notes": [
+                "The runway requires a full-year operating-cash-flow fact (350-380 days), else `not_evaluable`/`unit_mismatch` and both runway checks abstain; the FCF capex must be USD and annual.",
+                "All four defects close; 34 window and gate attacks, no leak.",
+                "Pre-existing limitations remain: capex and operating-cash-flow windows are not cross-checked, zero cash fails the months check, the capex sign is not gated."
+              ]
+            }
+          ]
         },
         "live": {
           "state": "missing",
@@ -611,7 +790,6 @@
       "gaps": [
         "gold",
         "held_out",
-        "review",
         "live"
       ]
     }
@@ -620,73 +798,61 @@
     "PK01": [
       "gold",
       "held_out",
-      "review",
       "live"
     ],
     "PK02": [
       "gold",
       "held_out",
-      "review",
       "live"
     ],
     "PK03": [
       "gold",
       "held_out",
-      "review",
       "live"
     ],
     "PK04": [
       "gold",
       "held_out",
-      "review",
       "live"
     ],
     "PK05": [
       "gold",
       "held_out",
-      "review",
       "live"
     ],
     "PK06": [
       "gold",
       "held_out",
-      "review",
       "live"
     ],
     "PK07": [
       "gold",
       "held_out",
-      "review",
       "live"
     ],
     "PK08": [
       "gold",
       "held_out",
-      "review",
       "live"
     ],
     "PK09": [
       "gold",
       "held_out",
-      "review",
       "live"
     ],
     "PK10": [
       "gold",
       "held_out",
-      "review",
       "live"
     ],
     "PK11": [
       "gold",
       "held_out",
-      "review",
       "live"
     ],
     "PK12": [
       "gold",
       "held_out",
-      "review",
       "live"
     ]
   },

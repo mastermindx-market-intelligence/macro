@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-01T10:05:49Z",
+ "accession": "0001193125-26-135585",
+ "cik": "0001122411",
+ "doc_byte_length": 10672453,
+ "doc_sha256": "54e7a8d18f45ee907ceb168aeb47634502dd81e9059e41b4ceb5ffac768280af",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-01",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "d50802d20f.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1291631,
+  "byte_start": 1291273,
+  "normalized": "Since 1997, we have maintained a strategic alliance with Taiwan Semiconductor Manufacturing Company Limited, or TSMC, one of the largest dedicated semiconductor foundries in the world. TSMC designates us as its non-exclusive preferred provider of packaging and testing services for semiconductors manufactured by TSMC.",
+  "normalized_sha256": "a873baddfd11d92ef9d91d977ef60ce7884071b58d30a7b0fb57578a8f763cda",
+  "raw": "Since 1997, we have maintained a strategic alliance with Taiwan Semiconductor Manufacturing Company Limited, or TSMC, one of the largest dedicated semiconductor foundries in the world. TSMC designates us as its <span style=\"white-space:nowrap\">non-exclusive</span> preferred provider of packaging and testing services for semiconductors manufactured by TSMC.",
+  "raw_sha256": "ca057f64e3a9bb53aee13c4a03dd649936c9a63fa6377a87074dcd770947979d"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1122411/000119312526135585/d50802d20f.htm",
+ "xbrl_contexts": []
+}

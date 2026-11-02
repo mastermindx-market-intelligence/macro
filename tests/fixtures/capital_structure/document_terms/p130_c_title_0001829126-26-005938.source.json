@@ -1,0 +1,29 @@
+{
+  "accession": "0001829126-26-005938",
+  "form": "S-1/A",
+  "url": "https://www.sec.gov/Archives/edgar/data/0001829126-26-005938.txt",
+  "canonical_url": "https://www.sec.gov/Archives/edgar/data/2116105/000182912626005938/0001829126-26-005938.txt",
+  "retrieved_at": "2026-11-02T07:34:28Z",
+  "user_agent": "MacroDashboard research longr2512@gmail.com",
+  "full_submission": {
+    "sha256": "e9bcadb4f497ad7aba00dc986df399a3d3f872393aa4bc7a202975c3685c9ca3",
+    "byte_length": 3690355
+  },
+  "fixture": {
+    "sha256": "b546ca2d5ddd993d96b1ce26ee131b3a23687be69dba23a697742d6b2f826cb2",
+    "byte_length": 45850
+  },
+  "documents": [
+    {
+      "type": "EX-FILING FEES",
+      "sequence": "11",
+      "filename": "futurewaveacq_ex107.htm",
+      "source_byte_offsets": {
+        "document_block_start": 3352260,
+        "document_block_end": 3397089
+      },
+      "sliced": false
+    }
+  ],
+  "note": "SEC-DOCUMENT/SEC-HEADER block and each included <DOCUMENT> are verbatim EDGAR bytes except where sliced as recorded above"
+}

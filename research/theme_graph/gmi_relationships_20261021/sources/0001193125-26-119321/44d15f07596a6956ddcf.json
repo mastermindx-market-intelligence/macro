@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-03-23T18:15:26Z",
+ "accession": "0001193125-26-119321",
+ "cik": "0001280263",
+ "doc_byte_length": 4117571,
+ "doc_sha256": "deeacde656e445319dba455f66696bc4ccbee30ed2c9ef92dc4a9695c8f83852",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-23",
+ "form": "10-K",
+ "period_of_report": "2026-01-31",
+ "primary_document": "amba-20260131.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3954073,
+  "byte_start": 3952695,
+  "normalized": "The customers representing 10% or more of revenue for the fiscal year ended January 31, 2024 were WT and Chicony, which accounted for approximately 53% and 14% of total revenue, respectively.",
+  "normalized_sha256": "ce22b0f8cc66ad8af8ba9254d87a2a3f5ecfa91bb55c8d8a3613e7761f506157",
+  "raw": " The customers representing 10% or more of revenue for the fiscal year ended January 31, 2024 were WT and Chicony, which accounted for approximately </span><span style=\"font-size:10pt;font-family:Times New Roman;color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_083e952d-e28b-49ed-a563-69ec00a90683\" contextRef=\"C_924b2751-c797-408f-849b-5f0193ac07f9\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">53</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">% and </span><span style=\"font-size:10pt;font-family:Times New Roman;color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_1ce840fb-83f3-4b6d-b3a2-aab7fd186fec\" contextRef=\"C_8ad31174-7069-403b-b3c9-867671ef439e\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">14</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">% of total revenue</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">, respectively.",
+  "raw_sha256": "44d15f07596a6956ddcfed80301bb07ed1618aa227fdbc4d86185f30efe376a4"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1280263/000119312526119321/amba-20260131.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 6016,
+   "byte_start": 5324,
+   "context_ref": "C_8ad31174-7069-403b-b3c9-867671ef439e",
+   "raw": "<xbrli:context id=\"C_8ad31174-7069-403b-b3c9-867671ef439e\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001280263</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">amba:ChiconyMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-02-01</xbrli:startDate><xbrli:endDate>2024-01-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "b9c1361e9640539d265f66e43cbeeb55376bd9c17c77adffce70095684053f27"
+  },
+  {
+   "byte_end": 9317,
+   "byte_start": 8630,
+   "context_ref": "C_924b2751-c797-408f-849b-5f0193ac07f9",
+   "raw": "<xbrli:context id=\"C_924b2751-c797-408f-849b-5f0193ac07f9\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001280263</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">amba:WTMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-02-01</xbrli:startDate><xbrli:endDate>2024-01-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "e7c8ed503ee35b8b3b1267e24174db293f091be5caa23d35ec3f88fa77e8be4a"
+  }
+ ]
+}
