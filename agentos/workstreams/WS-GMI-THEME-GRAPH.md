@@ -416,10 +416,12 @@ next_action: >
   land-checked; the taxonomy owner-disposition contract (#10563 -> d0fed53e, O7) carries
   research/theme_graph/micro_owner_dispositions.yml with zero rows and the coverage
   proof's owner_review block, so remainder (2) below is now a data act for the taxonomy
-  owner, not a missing implementation. PRODUCTION_PROOF of site/gmi*.html waits on the
-  first main render that is not cancelled by coalescing; the post-authority main
-  baseline waits on the foreign pack-7 data-drift red (tests/test_macro_command_panels.py,
-  macro-suite owner). The envelope DEC ratify-or-replace is an EXACT_HUMAN_GATE asked
+  owner, not a missing implementation. PRODUCTION_PROOF is held: the six site/gmi*.html
+  are live on www.mastermind-x.com (render 41445582969; live bytes == main), and #10583
+  (-> f3d4eb62) made /gmi.css and /gmi.js public so the open shells render styled
+  (they sat behind the default-deny asset gate as 401 JSON). The post-authority main
+  baseline waits on two foreign reds (tests/test_macro_command_panels.py data drift,
+  macro-suite owner; tests/test_markets_regime_strip.py render-sync). The envelope DEC ratify-or-replace is an EXACT_HUMAN_GATE asked
   once on #agent-dispatch (ts 1793619136.295869). O5/O6/O7 are consumed: DO_NOT_REDO.
   Earlier 2026-11-02 state: the 2026-10-21 Chairman completion commission has returned all five
   orchestrators. Both integration PRs are merged (#10482 -> 17040f00 relationships; #10099
