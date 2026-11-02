@@ -13,20 +13,20 @@ changed:
 verified:
 - claim: Missing sessions and changing coverage cannot silently create a daily change in the tested examples.
   command: python3 -m pytest -q -p no:cacheprovider tests/test_sp500_heatmap_intraday_clock.py
-  result: 25 passed on producer source 2e302aba8ccff549b68a8b70ef5182954708b51e.
+  result: 25 passed, including mixed primary and GICS fallback sector names and rejection of an unclassified tile.
 - claim: The paired Terminal route ranks the historical producer output, measures velocity and preserves sector drilldown.
   command: npm run test:e2e:responsive -- e2e/sector-breadth.spec.ts --project=desktop --project=tablet --project=mobile --workers=2
-  result: Nine local Chromium cases passed, including an October 22 replay with 497 of 499 names matched across 11 heatmap sectors. Fixture carries source hashes.
+  result: Nine local Chromium cases passed, including an October 22 replay with 501 of all 503 names matched across 11 sectors after mapping the alternate source labels. Fixture carries source hashes.
 - claim: Both Terminal files also touched by live Discover PR 1231 merge textually on the shared base.
   command: git merge-file -p OURS BASE THEIRS for SectorCentralDiscovery.tsx and sectorCentralDiscovery.test.tsx
-  result: Both returned zero for Terminal 088038e5 and 357d1cb5 versus ed2e6338. Combined release testing is still required.
+  result: Both returned zero for the original Terminal board 088038e5 and quote reader 357d1cb5 versus ed2e6338. The replay-only follow-up updates the sector aliases. Combined release testing is still required.
 unverified:
 - claim: Both candidates have shipped and the authenticated production route consumes a naturally published daily observation.
   what_would_verify: Independent protected release, deployed commit, owner payload and signed-in board agreement on the same close and sample.
 - claim: Intraday sector rotation is operational across all eleven sectors.
   what_would_verify: Qualified and entitled per-name observations, comparable same-session endpoints from the existing retention owner, cohort identities, fresh coverage and naturally updating signed-in browser readings.
 unresolved:
-- The old production route showed zero sectors and connection errors in this browser on November 2 after refresh. Earlier user screenshot shows eleven. Cause and scope remain unverified.
+- The old production route showed zero sectors and connection errors in this browser on November 2 after refresh. On the application host, both served source files existed, the heatmap held 503 tiles under 14 incoming labels, both services were active, and the public protected endpoints returned the expected anonymous 401. Cause and scope of the browser failure remain unverified.
 - The independent Fabric review request returned host-temperature admission refusal. No review ran. MastermindX1 was requested through GitHub on both draft PRs.
 next_actions:
 - Review producer PR 10604 and Terminal PR 1232 at the latest heads, qualify required CI, and route protected release to a non-author. Check the production data route before claiming completion.

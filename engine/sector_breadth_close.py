@@ -8,7 +8,7 @@ from datetime import timedelta
 import numpy as np
 import pandas as pd
 
-from engine.sector_central import SPDR_TO_FINVIZ
+from engine.spotlight import GICS_TO_ETF
 from lib.us_cash_calendar import is_session, sessions_between
 
 
@@ -34,9 +34,16 @@ def sector_breadth(closes, tiles, asof):
     symbols = [row["t"] for row in tiles]
     if len(set(symbols)) != len(symbols):
         return None
+    # The heatmap can mix primary and GICS fallback labels in the same snapshot.
+    # Every tile must have exactly one home before any sector is ranked.
+    groups = {ticker: [] for ticker in sorted(set(GICS_TO_ETF.values()))}
+    for tile in tiles:
+        ticker = GICS_TO_ETF.get(tile["sector"])
+        if ticker is None:
+            return None
+        groups[ticker].append(tile["t"])
     rows = {}
-    for ticker, sector in SPDR_TO_FINVIZ.items():
-        members = [row["t"] for row in tiles if row["sector"] == sector]
+    for ticker, members in groups.items():
         values = frame.reindex(columns=members).apply(pd.to_numeric, errors="coerce")
         # Reject bad or absent closes throughout the full comparison window.
         usable = values.loc[:, (np.isfinite(values) & (values > 0)).all(axis=0)]

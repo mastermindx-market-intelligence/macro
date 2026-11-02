@@ -120,7 +120,7 @@ def test_sector_breadth_uses_same_members_exact_sessions_and_closes_only():
     closes = pd.DataFrame({"A": [10, 9, 10, 10, 10, 10, 11, 90],
                            "B": [10, 9, 8, 9, 9, 9, 9, 2],
                            "C": [10, 9, np.nan, 9, 9, 9, 11, 8]}, index=dates)
-    members = pd.DataFrame({"name": ["A", "B", "C"], "sector": ["Technology"] * 3},
+    members = pd.DataFrame({"name": ["A", "B", "C"], "sector": ["Technology", "Information Technology", "Technology"]},
                            index=["A", "B", "C"])
     out = build_heatmap(members, closes, asof=dates[-2], live={"A": {"price": 1, "prev_close": 100}})
     read = out["sector_breadth_close"]
@@ -131,3 +131,7 @@ def test_sector_breadth_uses_same_members_exact_sessions_and_closes_only():
     # Dropping a whole exchange session cannot silently stretch a daily interval.
     gap = build_heatmap(members, closes.drop(dates[2]), asof=dates[-2])["sector_breadth_close"]
     assert gap["sectors"]["XLK"]["matched"] == 0
+
+    unknown = members.copy()
+    unknown.loc["B", "sector"] = "Unclassified"
+    assert build_heatmap(unknown, closes, asof=dates[-2])["sector_breadth_close"] is None
