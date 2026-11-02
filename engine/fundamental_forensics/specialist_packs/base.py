@@ -4189,10 +4189,14 @@ def _resolve_allowlist_dimensioned_fact_mapping(
     declared member order — never canonical. A fact is admitted only when it
     carries the primary axis and no other explicit or typed dimension and its
     member binds an allowlisted qname; facts under other members are ignored
-    silently (they belong to other fields). Zero rows over all concepts emit
-    one ``missing`` row for the first concept; same-member value conflicts
-    follow the FactMapping conflict rule. The outcome's ``value`` is the sum
-    of every valued row when all rows are valued, else ``None``.
+    silently (they belong to other fields). A Clark-form ledger member (any
+    namespace the ledger does not canonicalize) binds by local name, so two
+    declared entries that share that local name would both admit it; the
+    first declared entry to emit an occurrence owns it and later entries
+    never re-emit it. Zero rows over all concepts emit one ``missing`` row
+    for the first concept; same-member value conflicts follow the
+    FactMapping conflict rule. The outcome's ``value`` is the sum of every
+    valued row when all rows are valued, else ``None``.
     """
     field_id = catalogue_field["field_id"]
     period_kind = catalogue_field["period_kind"]
@@ -4202,6 +4206,7 @@ def _resolve_allowlist_dimensioned_fact_mapping(
 
     emitted: list[dict[str, Any]] = []
     decimals_seen: list[int] = []
+    emitted_occurrence_ids: set[str] = set()
     for concept in concepts:
         candidates = [
             occurrence
@@ -4214,12 +4219,18 @@ def _resolve_allowlist_dimensioned_fact_mapping(
             occurrences = [
                 occurrence
                 for occurrence in candidates
-                if _admitted_allowlist_occurrence(
+                if occurrence.occurrence_id not in emitted_occurrence_ids
+                and _admitted_allowlist_occurrence(
                     occurrence, mapping, declared_member
                 )
             ]
             if not occurrences:
                 continue
+            # Every path below emits exactly one row citing all of these
+            # occurrences, so this is the emission edge for them.
+            emitted_occurrence_ids.update(
+                item.occurrence_id for item in occurrences
+            )
             distinct = {str(item.parsed_value) for item in occurrences}
             if len(distinct) > 1:
                 # Same admitted member, different values: the FactMapping
