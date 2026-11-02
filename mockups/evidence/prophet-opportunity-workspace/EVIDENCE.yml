@@ -1,0 +1,9 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/dashboard.html.j2
+  - templates/_prophet_opportunity.css.j2
+  - templates/_prophet_opportunity_card.html.j2
+  - templates/_prophet_page.css.j2
+  - templates/_prophet_workspace.css.j2
+  - templates/_us_act_now_board.html.j2
+manifest: mockups/evidence/prophet-opportunity-workspace/manifest.json

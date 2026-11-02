@@ -1,0 +1,16 @@
+{
+  "fixture": "public dashboard using native board, Plan and panel preview splits",
+  "board_as_of": "2026-10-30",
+  "rows": [
+    "FLS",
+    "XNCR",
+    "CVCO"
+  ],
+  "html_sha256": "a87e42c21379e4929422d718340f9b33d654bc883a9e6d5cdcad633a6ca940aa",
+  "source_sha256": {
+    "site/factordata/us_standouts.json": "e02bd3f3763117c6985778f4c9189e4cd39ad1027aa1905d46a5caa8a263c0d9",
+    "site/basketdata/action_board.json": "4038177973f339a2dc6e269e0e208924986b9ac691f62894d9beaffddf4737ff",
+    "site/prophet/index.json": "3ff270912b6522ec9edf050a606c4a302403e6f25006b7534d33971d6468d725",
+    "site/theme.js": "65ac5e1bdf959356ea117cbb32f2b5a17d3831b20d9b3bc729ca60c3e9e6cc27"
+  }
+}
