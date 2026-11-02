@@ -1140,6 +1140,10 @@
   function hazardLineHTML(s) {
     var hz = s.now && s.now.hazard;
     if (!hz) return "";
+    if (hz.unavailable) {
+      return '<div class="cyc-hazard sc-hazard"><span class="hz-label">' +
+        L("Turn hazard", "转折风险") + '</span>' + esc(_hzWithheld(hz)) + '</div>';
+    }
     function cell(key, label, labelZh) {
       var c = hz[key];
       if (!c || c.p == null) return "";
@@ -1174,9 +1178,26 @@
     if (hz["1m"] && hz["1m"].p != null) return { key: "1m", c: hz["1m"], pass: false };
     return null;
   }
+  function _hzWithheld(hz) {
+    if (!hz || !hz.unavailable) return "";
+    var cdf = hz.unavailable_reason === "non_monotone_cdf";
+    var en = cdf
+      ? ("Unavailable today — the model's short- and long-window reads disagreed, "
+          + "so no clean probability can be shown.")
+      : "Unavailable today — a required input didn't settle cleanly.";
+    var zh = cdf
+      ? "今日暂不可用——模型的短窗与长窗读数不一致，无法给出可靠概率。"
+      : "今日暂不可用——所需输入未能完整结算。";
+    return L(en, zh);
+  }
   function hazardCardChip(s) {
     var hz = s.now && s.now.hazard;
     if (!hz) return "";
+    if (hz.unavailable) {
+      return '<div class="cc-hz hz-muted" title="' + esc(_hzWithheld(hz)) + '">' +
+        '<span class="cc-hz-k">' + L("Turn hazard", "转折风险") + '</span> ' +
+        L("Unavailable today", "今日暂不可用") + '</div>';
+    }
     var pick = _hzPick(hz);
     if (!pick) return "";
     return '<div class="cc-hz' + (pick.pass ? '' : ' hz-muted') + '" title="' + esc(_hzTip(hz, pick.key, pick.pass)) + '">' +
