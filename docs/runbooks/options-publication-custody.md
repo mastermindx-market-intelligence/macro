@@ -16,9 +16,13 @@ Contention fails before client/effect work. Nested calls in the same thread join
 one descriptor; a fork cannot inherit admission. There is no environment-token
 admission, alternate lock path, timeout takeover or lock-file deletion.
 
-Nightly publication holds custody around the entire run. Legacy repair holds it
-around its publication entry, and direct upload also checks custody and the
-pending target. Correction requires an already-held outer publication interval:
+Nightly publication and native canonical no-publish writes hold custody around
+the entire run. Legacy apply (including apply-only) and direct effectful repair
+acquire it before local rewrites; the interval extends through publication.
+Dated local rewrites and direct archive uploads both check the pending target.
+Unrelated aggregate/grades transport callers and private offline builds retain
+their existing behavior. Direct index LIST/heal/publication is one held interval.
+Correction requires an already-held outer publication interval:
 the operator must acquire it BEFORE the separately admitted exact preimage read,
 call the existing correction entry under that same interval, and keep it through
 the one admitted readback. Standalone correction CLI without that interval fails
@@ -49,11 +53,12 @@ installation. Its acquisition does not retroactively exclude a legacy process.
    checkout, wrapper, interpreter or ingress discovered must be included or hold
    adoption. Do not treat an inventory omission as permission.
 2. Prepare the shared guard source and minimal admission-prelude patches for
-   BOTH incumbent modules. They call `assert_admission_open()` after the existing
-   repo-path bootstrap and before engine imports or main. An exclusive durable
+   BOTH incumbent modules. They call `assert_admission_open()` at the existing main/effect
+   entry before account/source/publication work, while preserving read-only and
+   unrelated helper imports. An exclusive durable
    `options-hub-adoption.pending` barrier in the canonical `.git` directory must
    precede interposition. Deploy only reviewed exact guarded hunks with durable
-   originals/preimages. The prelude affects NEW module entries; it does not stop
+   originals/preimages. The prelude affects NEW effect entries; it does not stop
    or reclassify the old interpreter's already-loaded code. Do not apply this
    preparation until the actual native mutation mechanism and ingress coverage
    are independently qualified.

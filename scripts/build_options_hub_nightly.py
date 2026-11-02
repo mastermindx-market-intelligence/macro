@@ -40,7 +40,6 @@ _REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO))
 
 from lib.options_publication_custody import assert_admission_open  # noqa: E402
-assert_admission_open()
 
 
 from engine.thetadata_store import _load_parquets, _normalise_date, store_root, clear_parquet_cache
@@ -257,6 +256,8 @@ def _r2_client(*, single_attempt: bool = False):
 
 
 def _upload_r2(s3, bucket: str, local_path: Path, r2_key: str) -> bool:
+    if not r2_key.startswith("options_hub/gex_history/"):
+        return _upload_r2_locked(s3, bucket, local_path, r2_key)
     from lib.options_publication_custody import publication_custody, assert_target_available
     with publication_custody():
         assert_target_available(bucket, r2_key)
@@ -266,8 +267,9 @@ def _upload_r2(s3, bucket: str, local_path: Path, r2_key: str) -> bool:
 def _upload_r2_locked(s3, bucket: str, local_path: Path, r2_key: str) -> bool:
     """Upload a local file to R2. Returns True on success."""
     from lib.options_publication_custody import require_custody, assert_target_available
-    require_custody()
-    assert_target_available(bucket, r2_key)
+    if r2_key.startswith("options_hub/gex_history/"):
+        require_custody()
+        assert_target_available(bucket, r2_key)
     try:
         s3.upload_file(
             str(local_path),
@@ -312,6 +314,21 @@ def _nulled_nonfinite(obj, counter: list[int]):
 
 
 def _write_json(path: Path, data: dict) -> None:
+    from lib.options_publication_custody import (
+        publication_custody, has_publication_custody, assert_local_target_available,
+    )
+    # Keep private offline builds portable; native canonical execution and any
+    # admitted publication interval must protect dated local evidence too.
+    native = _REPO == (Path.home() / "optionshub-ops-wt").resolve()
+    dated = path.suffix == ".json" and path.parent.parent.name == "gex_history"
+    if dated and (native or has_publication_custody()):
+        with publication_custody():
+            assert_local_target_available(f"options_hub/gex_history/{path.parent.name}/{path.name}")
+            return _write_json_unchecked(path, data)
+    return _write_json_unchecked(path, data)
+
+
+def _write_json_unchecked(path: Path, data: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     counter = [0]
     clean = _nulled_nonfinite(data, counter)
@@ -897,12 +914,20 @@ def is_gex_dates(x: object) -> bool:
 
 
 def _list_gex_history_dates(s3, bucket: str, root: str) -> list[str] | None:
+    from lib.options_publication_custody import publication_custody
+    with publication_custody():
+        return _list_gex_history_dates_locked(s3, bucket, root)
+
+
+def _list_gex_history_dates_locked(s3, bucket: str, root: str) -> list[str] | None:
     """Session dates with a published snapshot under gex_history/{root}/ on R2.
 
     Ground truth by LIST (paginated), not a ledger — dates.json is then a pure
     projection of what exists. Returns None on any listing error so the caller
     skips the index write rather than publishing a lie.
     """
+    from lib.options_publication_custody import require_custody
+    require_custody()
     prefix = f"{R2_PREFIX}gex_history/{root}/"
     dates: set[str] = set()
     token = None
@@ -1012,7 +1037,13 @@ def _heal_gex_history(root: str, missed: list[str], theta_store,
     return healed
 
 
-def publish_gex_history_index(root: str, asof: str, theta_store,
+def publish_gex_history_index(*args, **kwargs):
+    from lib.options_publication_custody import publication_custody
+    with publication_custody():
+        return _publish_gex_history_index_locked(*args, **kwargs)
+
+
+def _publish_gex_history_index_locked(root: str, asof: str, theta_store,
                               polygon_gex_dir: Path | None, out_dir: Path,
                               s3, bucket: str, heal_budget: int,
                               *, outcome: dict | None = None) -> int:
@@ -1033,6 +1064,8 @@ def publish_gex_history_index(root: str, asof: str, theta_store,
     index_attempted=False; an upload exception leaves it True with an unknown
     acknowledgement. The caller may retain this partial report on exceptions.
     """
+    from lib.options_publication_custody import require_custody
+    require_custody()
     # Record each phase BEFORE it can fail. The optional report survives an
     # exception without asserting that an upload was reached when it was not.
     if outcome is not None:
@@ -1228,6 +1261,7 @@ def load_exposure_contexts(path: str | None) -> dict[str, dict]:
 
 
 def main() -> None:
+    assert_admission_open()
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
@@ -1250,12 +1284,13 @@ def main() -> None:
     args = ap.parse_args()
     from contextlib import nullcontext
     from lib.options_publication_custody import publication_custody
-    with publication_custody() if args.publish else nullcontext():
+    native = _REPO == (Path.home() / "optionshub-ops-wt").resolve()
+    with publication_custody() if args.publish or native else nullcontext():
         _run(args)
 
 
 def _run(args) -> None:
-    if args.publish:
+    if args.publish or _REPO == (Path.home() / "optionshub-ops-wt").resolve():
         from lib.options_publication_custody import require_custody
         require_custody()
     exposure_contexts = load_exposure_contexts(args.exposure_context)

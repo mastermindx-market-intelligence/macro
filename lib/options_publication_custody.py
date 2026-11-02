@@ -44,6 +44,13 @@ def assert_admission_open():
         raise PublicationCustodyError("publication_adoption_fenced")
 
 
+def has_publication_custody():
+    if getattr(_held, "lease", None) is None:
+        return False
+    require_custody()
+    return True
+
+
 def require_custody(*, installation=False):
     lease = getattr(_held, "lease", None)
     if lease is None or lease[0] != os.getpid():
@@ -152,6 +159,14 @@ def assert_target_available(bucket, key):
             raise PublicationCustodyError("correction_target_unsettled")
 
 
+def assert_local_target_available(key):
+    # Local archive bytes are shared input evidence regardless of the current
+    # invocation's bucket override (including apply-only/no-publish repairs).
+    claim = _read_claim()
+    if claim is not None and key == claim["binding"]["key"] and claim.get("state") != "READBACK_VERIFIED":
+        raise PublicationCustodyError("correction_local_target_unsettled")
+
+
 def begin_correction(binding):
     directory = _claim_dir()
     try:
@@ -192,4 +207,3 @@ def verify_correction_readback(body):
         raise PublicationCustodyError("correction_readback_mismatch")
     record["state"] = "READBACK_VERIFIED"
     _save_claim(record)
-

@@ -70,7 +70,7 @@ def test_child_holder_excludes_nightly_legacy_and_upload_before_effect(state, mo
     try:
         assert proc.stdout.readline().strip() == "HELD"
         for call in [nightly.main, lambda: repair._publish([("SPY", tmp_path / "x")]),
-                     lambda: nightly._upload_r2(None, "test-bucket", tmp_path / "x", "dated/key")]:
+                     lambda: nightly._upload_r2(None, "test-bucket", tmp_path / "x", "options_hub/gex_history/SPY/2026-10-16.json")]:
             with pytest.raises(custody.PublicationCustodyError, match="publication_busy"):
                 call()
         assert called == []
@@ -198,7 +198,8 @@ from pathlib import Path
 from lib import options_publication_custody as c
 c._native_state_root=lambda:Path(sys.argv[1])
 try:
- importlib.import_module(sys.argv[2])
+ module = importlib.import_module(sys.argv[2])
+ module.main()
 except c.PublicationCustodyError as exc:
  print(str(exc))
  sys.exit(75)
@@ -208,3 +209,100 @@ raise AssertionError('new legacy/module entry crossed barrier')
         env={**os.environ, "PYTHONPATH": str(REPO)}, capture_output=True, text=True, timeout=20)
     assert result.returncode == 75, result.stderr
     assert result.stdout.strip() == "publication_adoption_fenced"
+
+
+def test_unrelated_upload_reuses_transport_without_native_custody(tmp_path, monkeypatch):
+    from scripts import build_options_hub_nightly as nightly
+    monkeypatch.setattr(custody, "_native_state_root", lambda: tmp_path / "absent-native-state")
+    seen = []
+    class Client:
+        def upload_file(self, *args, **kwargs):
+            seen.append(args[2])
+    assert nightly._upload_r2(Client(), "test-bucket", tmp_path / "fixture", "options_hub/agg_greeks/SPY.json")
+    assert seen == ["options_hub/agg_greeks/SPY.json"]
+    with pytest.raises(custody.PublicationCustodyError, match="unavailable"):
+        nightly._upload_r2(Client(), "test-bucket", tmp_path / "fixture", "options_hub/gex_history/SPY/2026-10-16.json")
+    assert len(seen) == 1
+
+
+@pytest.mark.parametrize("publish", [False, True])
+def test_actual_legacy_main_contention_precedes_local_apply(state, tmp_path, monkeypatch, publish):
+    from scripts import repair_gex_history as repair
+    archive = tmp_path / "gex_history"
+    snapshot = archive / "SPY" / "2026-10-16.json"
+    snapshot.parent.mkdir(parents=True)
+    snapshot.write_text("original")
+    monkeypatch.setattr(repair, "HIST_DIR", archive)
+    effects = []
+    def changed_before_lock(*args, **kwargs):
+        effects.append("local-write")
+        snapshot.write_text("changed-before-lock")
+        return dict(n=1, changed=1, impossible=0, skipped=0, paths=[snapshot])
+    monkeypatch.setattr(repair, "repair_root", changed_before_lock)
+    monkeypatch.setattr(repair, "_publish", lambda *a, **kw: effects.append("publish"))
+    proc = child(state, "hold")
+    try:
+        assert proc.stdout.readline().strip() == "HELD"
+        with pytest.raises(custody.PublicationCustodyError, match="publication_busy"):
+            repair.main(["--roots", "SPY", "--apply"] + (["--publish"] if publish else []))
+        assert snapshot.read_text() == "original" and effects == []
+    finally:
+        proc.communicate("release\n", timeout=10)
+
+
+def test_direct_repair_apply_contention_and_dry_run(state, tmp_path, monkeypatch):
+    from scripts import repair_gex_history as repair
+    effects = []
+    def run(*args, apply=False, **kwargs):
+        if apply:
+            effects.append("write")
+        return {"dry_run": not apply}
+    monkeypatch.setattr(repair, "_repair_root_locked", run)
+    proc = child(state, "hold")
+    try:
+        assert proc.stdout.readline().strip() == "HELD"
+        assert repair.repair_root("SPY", None, apply=False) == {"dry_run": True}
+        with pytest.raises(custody.PublicationCustodyError, match="publication_busy"):
+            repair.repair_root("SPY", None, apply=True)
+        assert effects == []
+    finally:
+        proc.communicate("release\n", timeout=10)
+
+
+def test_unsettled_target_blocks_actual_local_repair_and_nightly_write(state, tmp_path, monkeypatch):
+    import pandas as pd
+    from scripts import repair_gex_history as repair, build_options_hub_nightly as nightly
+    archive = tmp_path / "gex_history"
+    snapshot = archive / "SPY" / "2026-10-16.json"
+    snapshot.parent.mkdir(parents=True)
+    snapshot.write_text("original")
+    monkeypatch.setattr(repair, "HIST_DIR", archive)
+    monkeypatch.setattr(repair, "_read_year", lambda *a: pd.DataFrame({"date": ["2026-10-16"]}))
+    binding = dict(bucket="test-bucket", key="options_hub/gex_history/SPY/2026-10-16.json",
+                   input_bytes=1, input_sha256="0"*64)
+    with custody.publication_custody():
+        custody.begin_correction(binding)
+        with pytest.raises(custody.PublicationCustodyError, match="local_target_unsettled"):
+            repair.repair_root("SPY", None, apply=True)
+        with pytest.raises(custody.PublicationCustodyError, match="local_target_unsettled"):
+            nightly._write_json(snapshot, {"would": "overwrite"})
+        assert snapshot.read_text() == "original"
+        other = snapshot.with_name("2026-10-15.json")
+        nightly._write_json(other, {"eligible": True})
+        assert other.exists()
+
+
+def test_native_nightly_no_publish_is_still_an_effectful_writer(state, monkeypatch):
+    from scripts import build_options_hub_nightly as nightly
+    monkeypatch.setattr(nightly, "_REPO", (Path.home() / "optionshub-ops-wt").resolve())
+    effects = []
+    monkeypatch.setattr(nightly, "_run", lambda args: effects.append("local-write"))
+    monkeypatch.setattr(sys, "argv", ["nightly", "--no-publish"])
+    proc = child(state, "hold")
+    try:
+        assert proc.stdout.readline().strip() == "HELD"
+        with pytest.raises(custody.PublicationCustodyError, match="publication_busy"):
+            nightly.main()
+        assert effects == []
+    finally:
+        proc.communicate("release\n", timeout=10)
