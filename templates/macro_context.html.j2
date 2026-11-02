@@ -775,8 +775,8 @@ html[data-theme="light"] {
       {% set val = vm.risk_radar[key] %}
       {% set base = vm.risk_radar[base_key] %}
       <div class="dd-cell"
-           {% if base is not none %}data-tip-en="In a normal week this happens about {{ "%.0f"|format(base * 100) }}% of the time — that is the bar this reading is measured against."
-           data-tip-zh="正常情况下该情形约有 {{ "%.0f"|format(base * 100) }}% 的概率发生——这是本读数的比较基准。"{% endif %}>
+           {% if base is not none %}data-tip-en="For this window, the historical base rate is {{ "%.0f"|format(base * 100) }}% — that is the bar this reading is measured against."
+           data-tip-zh="在该时间窗内，历史基准频率为 {{ "%.0f"|format(base * 100) }}%——这是本读数的比较基准。"{% endif %}>
         <div class="dd-cell-h">{{ t(h_en, h_zh) }}</div>
         <div class="dd-cell-v">{% if val is not none %}{{ "%.0f"|format(val * 100) }}%{% else %}—{% endif %}</div>
         {% if base is not none %}<div class="dd-cell-base"><span class="l-en">normally {{ "%.0f"|format(base * 100) }}%</span><span class="l-zh">通常 {{ "%.0f"|format(base * 100) }}%</span></div>{% endif %}

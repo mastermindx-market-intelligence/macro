@@ -2447,3 +2447,41 @@ def test_bonds_levels_print_each_valid_number_alone(r26_render):
     assert "Levels behind these labels" in section
     assert _r26_levels(section) == ["%.2f%%" % 4.125, "-50 bp", "%+.2f pp" % -0.255]
     assert "2.9" not in _r26_levels(section)
+
+
+@pytest.mark.parametrize("bases", [(0.036, 0.086, 0.178), (0.0, 0.0, 0.0), (None, None, None)])
+def test_drawdown_base_tooltips_describe_each_window_not_a_normal_week(w23_render, bases):
+    """All three ladder cells use their own baseline, not one-week semantics."""
+    from html.parser import HTMLParser
+
+    class Cells(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.rows = []
+
+        def handle_starttag(self, tag, attrs):
+            attrs = dict(attrs)
+            if tag == "div" and attrs.get("class") == "dd-cell":
+                self.rows.append(attrs)
+
+    rr = dict(_W23_DD)
+    rr.update(zip(("dd_base_h5", "dd_base_h10", "dd_base_h21"), bases))
+    fragment = _w23_frag(w23_render(rr=rr), "dd")
+    cells = Cells()
+    cells.feed(fragment)
+    assert len(cells.rows) == 3
+    for attrs, base in zip(cells.rows, bases):
+        if base is None:
+            assert "data-tip-en" not in attrs and "data-tip-zh" not in attrs
+        else:
+            pct = "%.0f" % (base * 100)
+            assert attrs["data-tip-en"] == (
+                "For this window, the historical base rate is " + pct
+                + "% — that is the bar this reading is measured against."
+            )
+            assert attrs["data-tip-zh"] == (
+                "在该时间窗内，历史基准频率为 " + pct + "%——这是本读数的比较基准。"
+            )
+    assert "In a normal week" not in fragment
+    for label in ("Next week", "Next 2 weeks", "Next month", "未来1周", "未来2周", "未来1个月"):
+        assert label in fragment
