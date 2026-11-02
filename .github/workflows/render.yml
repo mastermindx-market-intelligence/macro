@@ -270,6 +270,9 @@ jobs:
     # 180m covers the measured build plus the push loop's explicit 10m contention
     # budget without weakening any guard or publishing a partial tree.
     timeout-minutes: 180
+    # Site-only render is NOT a settled data publisher; do not issue a split mirror.
+    env:
+      RISK_ENVELOPE_RENDER_READ_ONLY: "1"
     steps:
       # Same workspace-hygiene guard as ci.yml's pack job (#5108), and it must run FIRST
       # — ahead of the bound step below, not just ahead of actions/checkout. A self-hosted
