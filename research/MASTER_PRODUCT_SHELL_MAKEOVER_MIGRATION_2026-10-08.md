@@ -1,5 +1,41 @@
 # Mastermind full-site makeover and shared-shell adoption
 
+## Current design-audit wave — 2026-11-02
+
+This dated section updates the historical observations below; it does not grant release authority.
+The Chairman has commissioned a fresh Paper census, production-design assessment, organization plan,
+and ready-to-deliver Astra Pro session briefs. The Chairman will deliver those briefs and return for
+re-audit before product implementation. This wave does not launch those redesign sessions or deploy code.
+
+Source-bound wave: `paper-production-audit-20261102`.
+Protected procedure pin: Mastermind `7f1242bfa90f0f0448e66e400e054bd5aa5fa15a`.
+Macro observation pin: `5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0`.
+Terminal observation pin: `e0ae63e43965ec1d1c93405ee903fd92b63e3470`.
+The existing charter remains the whole-estate task-tree owner. WS:MARKET-OS remains a consumer;
+no whole-estate Agent OS workstream was identified and none is invented by this package.
+
+Current evidence and deliverables: [production design audit package](design_candidates/production_design_20261102/README.md).
+
+| Task | Scope | Dependency | Done when | Current state |
+|---|---|---|---|---|
+| AUD-01 | Live Paper file/page census and content classification | exact direct Paper reads | inspected IDs, coverage limits and lineage recorded | in progress |
+| AUD-02 | Source route/family census and live beta experience | current repo pins; accessible browser | retain contracts and missing coverage mapped | in progress |
+| AUD-03 | Organization, archive and shared-shell design contract | AUD-01/02 | actionable target map and cross-domain rules | in progress |
+| AUD-04 | Bounded manual Astra Pro design-session briefs | AUD-03 | each family has scope, evidence, dependencies, builder requirements and return contract | pending |
+| AUD-05 | Independent completeness review and handoff publication | AUD-01–04 | gaps reconciled; durable package readback | pending |
+
+Observed Paper surface: 29 files (including 1 archived file), 3 folders (including 1 archived folder),
+298 listed pages across those files; page names and counts are not visual approval.
+Paper inspection works. Current direct write qualification is false because the live catalog digest
+`16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd` differs from
+approved `1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db`.
+No Paper edits, moves, archive operations or redesign worker sessions have been performed by this wave.
+Do not bypass that admission gate. Inspect `Refined vase` as real Intelligence Hub work, not disposable test data.
+
+Historical #7949 is now merged; its old hold below is historical, not a current instruction.
+Investor shell references moved back to MASTERMIND PAGES; Mastermind OS is a distinct internal product.
+
+
 Status: CHAIRMAN-SCOPE CORRECTION / DESIGN + IMPLEMENTATION CHARTER / NOT PRODUCTION ACCEPTANCE.
 Date: 2026-10-08.
 Protected procedure: Mastermind master `c7e47c859eb2925c5626931fd511800773ba09ac`,
