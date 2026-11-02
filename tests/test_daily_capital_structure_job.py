@@ -686,6 +686,25 @@ def test_u1b_daily_job_runs_compiler_then_inputs_producer_after_state(steps):
     )
 
 
+def test_candidate_compiler_gets_the_same_source_store_env_as_the_terms_compiler(steps):
+    """cs_candidates resolves sources through build_source_stores(), like cs_terms.
+
+    Without the step-local R2 env no store is admissible, so the compiler refused
+    every night and the instruments family stayed unavailable for every issuer.
+    The env must name exactly the stores cs_terms names, each bound to its own
+    secret, and nothing else (no flag, mode or authority variable rides along).
+    """
+    terms = next(s for s in steps if s.get("id") == "cs_terms")
+    candidates = next(s for s in steps if s.get("id") == "cs_candidates")
+    terms_env = dict(terms.get("env") or {})
+    candidates_env = dict(candidates.get("env") or {})
+    store_keys = {k for k in terms_env if k.startswith("R2_")}
+    assert {"R2_BUCKET", "R2_CAPITAL_STRUCTURE_BUCKET", "R2_RESEARCH_BUCKET"} <= store_keys
+    assert candidates_env == {k: terms_env[k] for k in store_keys}, candidates_env
+    for key, value in candidates_env.items():
+        assert value == "${{ secrets.%s }}" % key, (key, value)
+
+
 # ──────────────────────────────────────────────────────────────────────────────
 # SPEC_U2 §2 gate 38: the U2-3 nightly steps — the previous-generation capture
 # BEFORE the state step overwrites it, the fatal change-ledger derivation
@@ -767,7 +786,11 @@ def test_u2_daily_job_previous_capture_changes_and_monitor_steps_are_ordered_and
     ), changes_run
 
     monitor_step = _step_by_id(steps, _CS_MONITOR_STEP)
-    assert monitor_step.get("if") == "always()", monitor_step.get("if")
+    # Step-level gate: the monitor attributes moved rows against tonight's
+    # change ledger, so it runs only when cs_changes produced one.
+    assert monitor_step.get("if") == (
+        "always() && steps.cs_changes.outcome == 'success'"
+    ), monitor_step.get("if")
     assert monitor_step.get("continue-on-error") is True, (
         "the monitor is fail-soft: a missing table or an unapplied DDL is a "
         "typed unavailable night, never a failed lane"
