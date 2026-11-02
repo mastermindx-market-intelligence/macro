@@ -127,6 +127,28 @@ Claim contradicted: MASTERPLAN §5.3:251 / §9.3:507 "percent versus percentage 
 handling, and :513 "No … materially wrong number may survive" — the adjudication layer
 actively erases the distinction.
 
+**Resolution 2026-11-01 (producer half repaired; grader half contract-mandated).** The
+control is now split in two. **M05b (producer) — HELD:**
+`engine/news_impact/thesis.py` `quantity_fingerprint` now digests each canonical
+quantity together with its structured `quantity_terms` (form, canonical unit, currency,
+basis, bound, period, negation; evidence excluded as provenance). Units canonicalise
+through the contract `UNIT_MAP` for spelling only (`USD`/`$`/`US$` agree), while
+percentage points and basis points keep their own canonical identity, so the three-event
+chain percent -> pp -> "percentage points" now records
+`n_records={'fact_revision': 2, 'manifestation': 1}`. Wording stays out: a fiscal
+period enters as its fact-key token and a typed period absence as one fixed token, so
+rewording an absence's subject, detail or missing_fields is a repeat, not a revision
+(review finding R3 on the first head, repaired with tests). A payload without
+`quantity_terms` keeps the byte-identical pre-repair digest, but producer leaf payloads
+always carry them, so every producer digest changes. That is safe today only because no
+stored digest is compared: no fact log is committed and `producer_facts.run` starts
+each run from an empty log.
+**M05a (grader) — still BROKEN, by contract:** `eval_grade.UNIT_MAP` is verbatim
+`contracts/news_impact/endpoints.v1.json:60` (`"pp": "percent"`), which is frozen; the
+grader keeps grading 5 pp against gold 5 percent as `correct` until a versioned
+endpoints contract separates the two units. This file's tables and raw output below are
+the 2026-10-31 run and are kept as recorded.
+
 **B3 (M06a) — negative USD amounts render with a duplicated sign.**
 Minimal reproduction: `format_amount({'form':'point','value':-1500000,'bound':'exact',
 'unit':'USD','currency':'USD','basis':'total'}, 'en')` → `'-$-1.5 million'` (ranges:
@@ -178,6 +200,46 @@ reference itself (hash-pinned bytes replayed by an owner), not value-in-evidence
 checking; the property "a value that does not appear in its cited evidence is rejected"
 has no mechanism.
 
+**Resolution 2026-11-01 (producer grounding added; the tables above stay as recorded).**
+`engine/news_impact/producer.py` (`ni-producer-2`) now grounds every stated quantity
+before validation. After `bind_span` verifies the span, `_quantity_grounded` reads the
+verified source bytes that span cites, never the labeler excerpt. Each `value`, `low` and
+`high` must equal a numeral written there. Each numeral has one reading. Commas each
+followed by three digits are US grouping (1,234); any other comma is a European decimal
+mark (1,5 and 1.234,5); two or more periods are European grouping (1.234.567); a single
+period is a decimal point, so a European 1.500 meaning 1500 fails closed. That reading may
+be multiplied by a scale word the span uses (`SCALE_WORDS`, imported from the grader,
+unchanged), by a k/m/bn/t suffix directly after it, or by 0.01 when the span states a
+percent or basis points. A numeral longer than 64 characters has no reading.
+Otherwise the case rejects with the producer code `quantity_value_ungrounded`. That code
+is a producer outcome code, so it adds nothing to the contract's closed reason codes, and
+`contracts/news_impact/` is untouched. The control is now behavioural: the stated
+"USD 50m" case emits, and the same agreed span with a fabricated 777 rejects. M04 moves
+to **HELD** for the producer path, giving 17 HELD, 1 BROKEN (M05a) and 3 NO_MECHANISM
+(M07b, M08, M13) of 21. The check is bounded, and these limits remain:
+- **Fails closed:** spelled-out numbers ("fifty million"), derived or summed values,
+  and fractions of a basis point (0.0025 for 25 bps) do not ground and reject.
+- **Residual false accept:** a fabricated value equal to another numeral anywhere in
+  the cited span grounds (for example a year such as 2027 in the same sentence).
+- **No unit or scale consistency:** a scale word from thousand to trillion anywhere in
+  the span applies to every numeral in it, so both 50 and 50000000 ground against
+  "USD 50 million". Unit, currency and basis stay the contract's and the grader's checks.
+- **Span-wide percent and loose suffix matches:** one "%", "per cent" or "bps" anywhere in
+  the span lets every numeral in it ground at one hundredth; "bp" also matches a company
+  named BP; a lone "t" or "m" after a numeral ("3 t of ore", "2 M&A deals") counts as a
+  scale suffix; and a numeral glued to a period ("Rs.50") reads as ".50". Such fabricated
+  values are possible but unlikely.
+- **Signs are not compared;** negation is its own field.
+- **Section 11 registration pins `ni-producer-1`:** `require_registered_implementation`
+  now reports a producer version drift as well as the `producer_facts` drift main already
+  has. Behaviour is unchanged, because main already refuses on `producer_facts`; a Section
+  11 re-registration must account for both.
+- **Real-label refusal rate unmeasured:** the local benchmark copy holds no producer
+  bundles (`bundle.json` with `source.txt`), so how many real agreed labels the check
+  refuses has not been counted. The rate must be measured on the first producer run over
+  real bundles, before the rejection share is read as labeler error.
+- Grading (`eval_grade.py`) is unchanged; value-in-evidence remains a producer property.
+
 **N2 (M07b) — no 52/53-week fiscal-calendar concept, and no claim-vs-evidence period
 check.** Grep: `grep -rn -i -E "52.week|53.week|fiscal.week" contracts/news_impact
 engine/news_impact` → 0 hits. `period_token` emits the same `FY2026` for fiscal years
@@ -185,6 +247,71 @@ ending 2026-09-27 and 2026-12-31 (`producer_facts.py:93-94` ignores `calendar_en
 `fiscal_year`), and a T2 event whose slot period is Q4-2026 while its quantity's own
 period is FY2027 validates `ok=True` — nothing compares the slot token with the
 quantity period (the fingerprint excludes both; `thesis.py:273-296`).
+
+**Resolution 2026-11-02 (validator rule S15 added; the tables above stay as recorded).**
+`engine/news_impact/validate.py` now carries semantic rule S15, claim-versus-evidence
+period: for `demand_guidance_contract_event.v1` the `stated_amount` and `option_ceiling`
+periods must be able to evidence `fiscal_period`; for `capital_allocation_event.v1`
+`incremental_amount.period` must be able to evidence `horizon_period`; for
+`strategic_product_partnership_event.v1` `stated_quantity.period` must be able to evidence
+`horizon_period`. Both sides must be real fiscal periods (a dict with an integer year and a
+contract period kind), otherwise the rule is silent (absence unions and the schema's shape
+refusals). Two tests refuse, with the existing `schema_violation` code at the quantity's
+`period` pointer: label years more than one year apart (no date needed), or, when neither is
+multi-year and both carry a `calendar_end` the calendar can place, calendar ranges that do not
+overlap once each is shrunk by seven days at both ends. A multi-year period takes the label
+test only, bounded below alone when it carries no `end_year` (the contract does not require
+one and the producer drops it, token `FY<year>M`), because the contract never says whether its
+`calendar_end` closes the span or its first year. A date the schema pattern admits but the
+calendar cannot place (`0001-06-30` as a fiscal year) drops that period's date test and nothing else; an
+impossible date such as `2026-02-30` is S6's finding and S15 may report alongside it when the
+label years are also apart. Containment and partial overlap pass; a dateless period within one
+label year passes (a fiscal year straddles two calendar years, so a calendar-labelled quarter
+can sit one label year off). `prior_amount`
+(a timing revision names the period the guidance moved from), `remaining_authorization`
+and `executed_amount` (dated as of a point) and every `baseline.period` are exempt.
+`contracts/news_impact/` is untouched and the reason-code set is unchanged. The control is
+now behavioural: the Q4-2026 slot with an FY2027 stated amount refuses at
+`/stated_amount/period`, the same slot widened to FY2026 keeps its Q4 quantity, and a
+dateless FY2027 quantity is tolerated. M07b moves to **HELD**; the 52/53-week half of the
+original control is now its own control **M07c NO_MECHANISM** (`period_token` still emits one
+`FY2026` for years ending 2026-09-27 and 2026-12-31; no fiscal-week concept in the contract),
+giving 18 HELD, 1 BROKEN (M05a) and 3 NO_MECHANISM (M07c, M08, M13) of 22. The control
+script's synthetic `point_qty` default period was moved from an unrelated half year to the
+T1/T2 slot (Q4-2026) so the fixtures evidence their own slot; no other verdict changed. The
+move was necessary, not cosmetic: with the old half-year default, S15 refused the fixtures'
+own quantity and M08 (whose predicate counts any validator refusal as a mechanism) would have
+read a false HELD, with M01a/M01b picking up a stray `schema_violation` code. Independent
+review of #10480 (2026-11-02) found two blocking defects in the first cut, both repaired on the
+branch before it left draft (the repair diff passed a second independent review with notes): a
+multi-year horizon without `end_year` was read as one year and refused real
+in-horizon amounts, and one unplaceable date raised inside the rule so the per-rule guard
+dropped every S15 finding for that payload.
+Limits:
+- **Period lengths are month arithmetic:** a quarter is three months before its
+  `calendar_end`, a year twelve; the seven-day shrink absorbs a fourteen-week quarter or a
+  fifty-three-week year, so adjacent periods still refuse and a period dated inside another
+  by the same calendar does not, but two real periods overlapping by under fourteen days
+  would be refused (issuer periods tile, so none is expected).
+- **Quarterly versus annual is still open:** S15 refuses disjoint periods only. A quarter's
+  figure filed under the annual slot that contains it (MASTERPLAN 5.3 "quarterly versus
+  annual") passes in both directions, and control M07b deliberately keeps "Q4 inside FY" as
+  the desired result because an annual slot may legitimately quote a quarterly run-rate.
+  Telling the two apart needs a basis the contract does not carry (see M08); follow-up
+  alongside the M08 contract gap, not a validator rule.
+- **Multi-year periods are compared by label only:** a span without `end_year` refuses
+  nothing above it; an `end_year` before `year` is S13's finding and is clamped here. This
+  gives up refusals that would hold under either reading of a multi-year `calendar_end` (a
+  Q4-2026 slot against an FY2027-2029 quantity now passes on the one-year label tolerance);
+  testing against the union of both readings would recover them without reintroducing the
+  open-span false refusal, and is the recorded follow-up if the producer ever emits such pairs.
+- **One label year of tolerance without dates:** FY2026 against a dateless FY2027 passes;
+  only a gap of two or more label years refuses when neither side carries a date.
+- **Sub-year labels are not compared without dates:** Q1 against Q4 of the same label year
+  passes unless both carry a `calendar_end`, because a fiscal quarter number and a calendar
+  quarter number can name the same quarter.
+- **Scope is the three slot pairs above;** `prior_amount`, the as-of amounts and baselines
+  are exempt by design, and an event type without a slot period has no check.
 
 **N3 (M08) — the basis vocabulary cannot express adjusted vs reported.** Grep:
 `grep -rn -i -E "adjusted|non.gAAP|\bGAAP\b|reported_basis" engine/news_impact
@@ -231,7 +358,8 @@ Author tests were mapped, never run, and never counted as F2 evidence.
   only, `prophet_adapter.py:208-209`).
 - M04/N1: value-vs-evidence verification may exist in an owner outside this tree (span
   byte-replay is the designed defence, validate.py:20-21 "defended by span replay");
-  this lane cannot observe it offline.
+  this lane cannot observe it offline. Resolved for the producer path on 2026-11-01: see the N1
+  resolution, which also names the remaining limits.
 - M13/N4 is a tree-scoped absence proof (greps + committed census); a mechanism could
   exist in a repo not in this worktree (Terminal/Mastermind), as the census itself notes.
 - B3/B4 are display-string defects; no control exercised a rendered site page (out of

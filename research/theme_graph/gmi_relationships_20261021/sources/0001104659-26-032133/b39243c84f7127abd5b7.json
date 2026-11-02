@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-19T20:42:18Z",
+ "accession": "0001104659-26-032133",
+ "cik": "0001456346",
+ "doc_byte_length": 4756365,
+ "doc_sha256": "87ebb619af5e6fc7f1cd5fa3c351004ae63195a47b0f964c32558e4c9e803b26",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-19",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "fnv-20251231xex99d1.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3635358,
+  "byte_start": 3635013,
+  "normalized": "On October 6, 2014, LMC Bermuda Ltd., Franco-Nevada and FNBC entered into the Candelaria stream agreement, as amended, to sell to FNBC a gold and silver stream from Candelaria Copper Mining Complex for an upfront deposit of $648.0 million. In addition to the upfront deposit, FNBC will make ongoing payments upon delivery under the stream.",
+  "normalized_sha256": "345d9680f52583f98a893ed9cf9ec7e60023cccee1833ded74f659c9e2368687",
+  "raw": "On October 6, 2014, LMC Bermuda Ltd., Franco-Nevada and FNBC entered into the Candelaria stream agreement, as amended, to sell to FNBC a gold and silver stream from Candelaria Copper Mining Complex &#160;for an upfront deposit of $648.0 million. In addition to the upfront deposit, FNBC will make ongoing payments upon delivery under the stream.",
+  "raw_sha256": "b39243c84f7127abd5b7dded73ab0755d087fd2ab71a31ee77b7979be299c8da"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1456346/000110465926032133/fnv-20251231xex99d1.htm",
+ "xbrl_contexts": []
+}

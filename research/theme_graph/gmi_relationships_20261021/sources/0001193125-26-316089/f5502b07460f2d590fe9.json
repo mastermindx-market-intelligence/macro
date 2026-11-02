@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-24T20:11:07Z",
+ "accession": "0001193125-26-316089",
+ "cik": "0001058811",
+ "doc_byte_length": 4952183,
+ "doc_sha256": "b60bbed4da0988ebcd1239b0716b0573231bfed05825fa8289318415ab3a3f48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-24",
+ "form": "10-K",
+ "period_of_report": "2026-04-30",
+ "primary_document": "immr-20260430.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 4624862,
+  "byte_start": 4624467,
+  "normalized": "On June 12, 2024, the Company entered into a Patent License Agreement (the “Xiaomi License Agreement”) with the Xiaomi Group, pursuant to which the parties agreed to terms for resolving the Xiaomi Litigation and the Xiaomi Group will license, on a non‑exclusive basis, the Company's patent portfolio for use in its products. The Xiaomi Litigation was dismissed in October 2024.",
+  "normalized_sha256": "a7fd5fa579fee619b1990e40837545fff015ef1b490ac3b79f1ac33013e012da",
+  "raw": "On June 12, 2024, the Company entered into a Patent License Agreement (the &#8220;Xiaomi License Agreement&#8221;) with the Xiaomi Group, pursuant to which the parties agreed to terms for resolving the Xiaomi Litigation and the Xiaomi Group will license, on a non&#8209;exclusive basis, the Company's patent portfolio for use in its products. The Xiaomi Litigation was dismissed in October 2024.",
+  "raw_sha256": "f5502b07460f2d590fe9c4971662c4f8c78945997a50c26a0ced3c767061e67c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1058811/000119312526316089/immr-20260430.htm",
+ "xbrl_contexts": []
+}
