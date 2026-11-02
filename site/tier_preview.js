@@ -346,7 +346,9 @@
     // Recheck the native identity even if its notification has not arrived yet.
     requestGeneration += 1;
     clearIdentity();
-    setTier(nativeUserId() || hasSessionCookie() ? "unknown" : "anon", "unconfirmed");
+    // A session can reach getSession before the native INITIAL_SESSION
+    // callback publishes its owner. This is unresolved, not account denial.
+    setTier(nativeUserId() || hasSessionCookie() ? "unknown" : "anon", hasSessionCookie() ? "pending" : "unconfirmed");
     return false;
   }
   function resolveTier() {
@@ -383,7 +385,17 @@
         return;
       }
       var userId = session.user && session.user.id;
-      if (typeof userId !== "string" || !userId || !session.access_token || nativeUserId() !== userId) {
+      if (typeof userId !== "string" || !userId || !session.access_token) {
+        throw new Error("unverified session identity");
+      }
+      if (nativeUserId() !== userId) {
+        // No paid grant without matching native identity. During a real
+        // session-restore race, keep the neutral pending cap rather than
+        // advertising Free or a failed-access paywall before the callback.
+        if (!nativeUserId() && hasSessionCookie()) {
+          setTier("unknown", "pending");
+          return;
+        }
         throw new Error("unverified session identity");
       }
       if (verifiedUserId !== userId) confirmedTier = null;
@@ -443,9 +455,9 @@
           requestGeneration += 1;
           clearIdentity();
           setTier("anon", "signed-out");
-        } else if (user || accessResolution !== "pending") {
-          // An early INITIAL_SESSION without a user is not an actual sign-out.
-          // Keep the restrictive cap while a persisted session is verified.
+        } else if (user || event !== "INITIAL_SESSION") {
+          // A null INITIAL_SESSION with a persisted cookie may precede its
+          // signed-in callback. SDK_FAILED must still resolve to retry UI.
           resolveTier();
         }
       });
