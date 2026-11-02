@@ -11434,6 +11434,241 @@ def test_pk02dev2_negative_allocated_alone_keeps_sign_limitation() -> None:
     assert any(
         line.startswith(_PKQ2_SIGN_LIMITATION) for line in result["limitations"]
     )
+# 45. PK01 covenant text-span search (2026-11-01 repair lane, dev corpus
+# diversified_v1) -----------------------------------------------------------
+#
+# pk01_debt.py wires covenant_term_observation through the PK07-style
+# finalize hook: the mapping stays the reserved form (the PK01 catalogue
+# declares no narrative reason code, so the stock section-scoped resolver's
+# absence codes are unemittable) and Pk01Producer.finalize_result runs the
+# real search over the debt / borrowings / credit-facility note. The hook
+# only upgrades the row when a covenant span is located, so every
+# searched-but-not-found outcome stays byte-identical to the no-hook build
+# (the base-envelope digest pins require that). New-behavior tests fail on
+# the pre-repair pack; the near-miss, no-section, typed-absence and
+# bank-exclusion tests below are pins of behavior the parent already has.
+
+
+from engine.fundamental_forensics.specialist_packs import pk01_debt as pk01_mod  # noqa: E402
+
+
+def _pk01_syn_input(package, sic: str = "3571") -> PackInput:
+    return PackInput(
+        packages=(package,),
+        entity=SYNTHETIC_ENTITY,
+        query=PK01_QUERY,
+        issuer_sic=sic,
+        sic_source="sec_submissions",
+    )
+
+
+def _pk01_covenant_row(result: dict) -> dict:
+    return _row(result, "covenant_term_observation")
+
+
+COVENANT_SENTENCE = (
+    "The 2015 Credit Agreement contains affirmative, negative and financial"
+    " covenants, and events of default customary for facilities of this"
+    " type."
+)
+
+
+def test_pk01_covenant_span_valued_from_debt_note() -> None:
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>The company maintains cash for working capital.</div>"
+        "<div>Note 7. Debt </div>"
+        "<div>The term loan facility matures in 2030."
+        f" {COVENANT_SENTENCE}</div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    assert contract.validate_pack_result(result) == []
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["non_value_state"] is None
+    assert row["coverage_state"] == "source_trace_complete"
+    assert row["reason"] is None
+    assert row["value"] is None
+    assert row["text_value"] == COVENANT_SENTENCE
+    assert row["evidence_kind"] == "text_span"
+    assert row["required_evidence_kind"] == "text_span"
+    assert row["mapping_rule_id"] == "pk01.covenant_term_observation.text_span/v1"
+    assert row["mapping_rule_digest"] == pack_base._text_span_digest(
+        pk01_mod._COVENANT_MAPPING
+    )
+    assert row["source_span"]["document_id"] == "doc.htm"
+    assert isinstance(row["source_span"]["start_offset"], int)
+    check = _check(result, "covenant_span_present")
+    assert check["status"] == "pass"
+    assert check["reason"] is None
+    # The upgrade is visible in coverage: one valued row, none unsupported.
+    assert result["coverage"]["valued_fields"] == 1
+    assert result["coverage"]["unsupported_fields"] == 0
+    assert result["coverage"]["disclosure_coverage_state"] == "present"
+
+
+def test_pk01_covenant_span_matches_financing_note_heading_form() -> None:
+    body = (
+        "<div>NOTE 11. FINANCING As of December 31, 2025, the Company was in"
+        " compliance with all of its debt covenants. The components of the"
+        " Company&#8217;s debt were as follows. </div>"
+        "<div>NOTE 12. COMMITMENTS Unconditional purchase obligations were"
+        " recorded. </div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert (
+        row["text_value"]
+        == "FINANCING As of December 31, 2025, the Company was in compliance"
+        " with all of its debt covenants."
+    )
+    assert _check(result, "covenant_span_present")["status"] == "pass"
+
+
+def test_pk01_covenant_span_pin_lease_note_near_miss_stays_reserved() -> None:
+    # PIN (parent-identical by design): covenant wording outside the
+    # governing debt note must never be captured.
+    body = (
+        "<div>Note 9. Debt </div>"
+        "<div>The notes mature between 2027 and 2035.</div>"
+        "<div>Note 10. Leases </div>"
+        "<div>Our operating lease agreements do not contain any material"
+        " guarantees or restrictive covenants.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    assert contract.validate_pack_result(result) == []
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "unsupported"
+    assert row["non_value_state"] == "unsupported"
+    assert row["reason"] == "missing_dependency"
+    assert row["text_value"] is None
+    check = _check(result, "covenant_span_present")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "missing_dependency"
+
+
+def test_pk01_covenant_pin_no_governing_section_stays_reserved() -> None:
+    # PIN: no debt / borrowings / credit-facility note heading at all.
+    body = (
+        "<div>Note 5. Inventories </div>"
+        "<div>The Company was in compliance with all of its debt"
+        " covenants.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "unsupported"
+    assert row["reason"] == "missing_dependency"
+    assert _check(result, "covenant_span_present")["status"] == "not_evaluable"
+
+
+def _pk01_manifest_only_package() -> "_SyntheticPackage":
+    return _SyntheticPackage(
+        {
+            "cik": "0000000099",  # R-F4: package issuer == packet entity
+            "form": "10-K",
+            "period_of_report": "2026-06-30",
+            "accession": "0000000099-26-000001",
+            "primary_document": "doc.htm",
+        }
+    )
+
+
+def _pk01_instant_context() -> FactContext:
+    return FactContext(
+        context_id="c-i",
+        entity_scheme="http://www.sec.gov/CIK",
+        entity_identifier="0000000099",
+        instant="2026-06-30",
+    )
+
+
+def _pk01_synthetic_filing_row() -> dict:
+    return synthetic_filing(
+        accession="0000000099-26-000001",
+        document_id="doc.htm",
+        accepted_at="2026-07-10T08:00:00Z",
+        recorded_at="2026-07-10T08:05:00Z",
+        filed_at="2026-07-10",
+        entity_id="0000000099",
+    )
+
+
+def _pk01_patch_ledger(
+    monkeypatch: pytest.MonkeyPatch, events: tuple
+) -> None:
+    """Stand in for the golden-package parser on a synthetic PK01 ledger."""
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000099-26-000001",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+
+
+def test_pk01_pin_typed_absence_without_short_term_borrowings(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # PIN: an issuer carrying no short-term-borrowings family concept types
+    # the exact standard-fact absence.
+    _pk01_patch_ledger(monkeypatch, ())
+    result = produce_pack("PK01", _pk01_syn_input(_pk01_manifest_only_package()))
+    row = _row(result, "short_term_debt")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "missing_standard_fact:us-gaap:ShortTermBorrowings"
+    assert row["value"] is None
+
+
+def test_pk01_bank_class_exclusion_pin(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # PIN: the A.1 industrial-basis exclusions keep current_ratio and
+    # working_capital not_applicable for a bank-class issuer while the raw
+    # balance-sheet rows stay valued.
+    filing_row = _pk01_synthetic_filing_row()
+    context = _pk01_instant_context()
+    events = (
+        usd_fact(
+            filing_row,
+            "us-gaap:AssetsCurrent",
+            context,
+            "30387",
+            source_span=(10, 15),
+            source_occurrence_key="ac",
+        ),
+        usd_fact(
+            filing_row,
+            "us-gaap:LiabilitiesCurrent",
+            context,
+            "23414",
+            source_span=(20, 25),
+            source_occurrence_key="lc",
+        ),
+    )
+    _pk01_patch_ledger(monkeypatch, events)
+    result = produce_pack("PK01", _pk01_syn_input(_pk01_manifest_only_package(), sic="6021"))
+    assert result["applicability"]["state"] == "applicable"
+    assert contract.validate_pack_result(result) == []
+    for field_id in ("current_ratio", "working_capital"):
+        row = _row(result, field_id)
+        assert row["quality_state"] == "not_applicable"
+        assert row["reason"] == "industrial_basis_excluded_for_financial_institution"
+    assert _row(result, "current_assets")["value"] == "30387"
+    assert _row(result, "current_liabilities")["value"] == "23414"
 # 50.9 §TESTS 9: diversified_v1 dev-corpus repair (widened B.2 fallbacks) -----
 #
 # The diversified_v1 development corpus (issuers disjoint from the held-out
