@@ -81,3 +81,13 @@ visual-candidate-final/report.json records **40 views** at 1440×1000 and 390×8
 Parent visually reviewed desktop Brief/Scanner/Flow/Ticker/Leaders and mobile Brief/Scanner/Ticker across themes and locales, then tightened mobile header and corrected Ticker search localization. The two dated clocks inside the payoff fold remain visible. Component error/partial-recovery captures are in visual-candidate-states.
 
 **Remaining release gates:** actual editable Paper implementation with screenshot/JSX proof; independent committed-candidate review; exact-head hosted checks; normal narrow Macro publication; production URL interaction/layout proof. These receipts do not claim deployment or upstream data freshness.
+
+## Expanded production-candidate review — 2026-11-02 06:42 UTC
+
+verify_expanded_views.py now records **74/74** checks in visual-candidate-expanded/report.json at desktop light EN and mobile dark ZH / light EN. This checks actual published-data states: source/history keyboard disclosures and focus, dual-date payoff details, full-row mobile payoff layout, index evidence reachability with the shared assistant, real history versus unavailable intraday record, all 21 advanced numeric controls, each of three horizontally scrollable Scanner views, lazy raw-structure SVG rendering, exact selected-symbol Terminal return route, Leaders expansion, document containment and page errors. The report fingerprints the exact template/builder working bytes on d633 plus the final refinement; it is not falsely represented as the untouched d633 tree.
+
+A fresh focused source run after those refinements passed **199 tests, 3 skips** in 31.99s. Five warnings came from pytest cleanup of a pre-existing unrelated temporary-directory tree; the session did not alter that tree.
+
+The principal visually inspected the expanded mobile payoff in Chinese after widening the card and increasing essential numeric/footnote text. Original full-matrix evidence remains as historical proof of the unchanged workspaces; the expanded report proves the subsequently adjusted layout and copy.
+
+extract_paper_samples.py captures actual dated panel text, the first eight visible Scanner rows and four Ticker SVGs from the same 17 exact published JSON blobs. paper_actual_samples.json is design input with provenance, not a new market dataset or a claim that Paper is already applied.

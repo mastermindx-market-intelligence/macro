@@ -1,0 +1,608 @@
+{
+  "manifest": {
+    "source_pin": "e4009c94d75770739844240b22f5fc915668aa9b",
+    "template_head": "d633db51742aed46928d2847bdc5f06acf3235e5",
+    "reads": [
+      {
+        "path": "site/flow_desk.json",
+        "state": "READ",
+        "bytes": 14922,
+        "sha256": "920a87bba60f90cc21347b0f93b802f3a26d15ba778034483b1180146837ccbf"
+      },
+      {
+        "path": "site/screenerdata/rows.json",
+        "state": "READ",
+        "bytes": 250876,
+        "sha256": "d32e3c115fa4bb988b6043605cfa21f0819aab0911ad5958d751e9e75ba7f41b"
+      },
+      {
+        "path": "site/flowleaders/leaders.json",
+        "state": "READ",
+        "bytes": 550063,
+        "sha256": "9f9bc52f23536e738016e3e60eb076580109364d5722b8eee3a4414d848585c1"
+      },
+      {
+        "path": "data/market_structure/latest.json",
+        "state": "READ",
+        "bytes": 153370,
+        "sha256": "1ef7585a35c42f5b93b099f7b3bec56027a8f3d13520a7483d25141a04e5d3a0"
+      },
+      {
+        "path": "site/vol/regime.json",
+        "state": "READ",
+        "bytes": 5732,
+        "sha256": "2ed52051b83a5447538f25474cee16b8d29a614a1af7b8f1ee7c44c71172c82b"
+      },
+      {
+        "path": "site/gex/index.json",
+        "state": "READ",
+        "bytes": 326497,
+        "sha256": "318069700b0383600a9dfa80049e33745c6c90e8286f3939977eaef9894d1c16"
+      },
+      {
+        "path": "site/options_intel_brief.json",
+        "state": "READ",
+        "bytes": 29845,
+        "sha256": "4ed3b846482c7740cb751d88329d5a62cf741437c652c5ff95329fbc93d1b9cf"
+      },
+      {
+        "path": "site/options_payoff_lab/latest.json",
+        "state": "READ",
+        "bytes": 425907,
+        "sha256": "22699f9c6b24da8d081a10933668343e34c204d11d6212e5affdc6e5f0c9b858"
+      },
+      {
+        "path": "site/options_skew/latest.json",
+        "state": "READ",
+        "bytes": 110931,
+        "sha256": "7b002900c1f281c5f8936f8f2557e6d0cf24768943905421c0f5f7cd2cd46853"
+      },
+      {
+        "path": "site/options_catalyst_links/latest.json",
+        "state": "READ",
+        "bytes": 1367,
+        "sha256": "4abd5819220ecfed0ee6af66c01b7c10bcaf11354b7e650dc428458318314175"
+      },
+      {
+        "path": "site/flowdata/cohorts.json",
+        "state": "READ",
+        "bytes": 2331,
+        "sha256": "78ac0e385563eb4cf99001d077ca7e01937d8a0e1f37f431dfd2dbe23574f500"
+      },
+      {
+        "path": "site/gex/SPX.json",
+        "state": "READ",
+        "bytes": 24474,
+        "sha256": "8f88392ab2caba44b47b3240bc34670b5684ee001b58e45f58a5fd9c57b711d6"
+      },
+      {
+        "path": "site/gex/SPY.json",
+        "state": "READ",
+        "bytes": 27039,
+        "sha256": "d7f2a4b8855c90bac017247c7ceb50be7646a3ebfcd6760327809d4e5f35c5d7"
+      },
+      {
+        "path": "site/gex/QQQ.json",
+        "state": "READ",
+        "bytes": 26787,
+        "sha256": "8a7ef90fa235fe985b8756d60ef39e3a78a945fe831a06363a3a9e8e25c5962d"
+      },
+      {
+        "path": "site/gex/IWM.json",
+        "state": "READ",
+        "bytes": 25502,
+        "sha256": "b5b99153fd957a82ca29ed251a0083ed30372861ce368c9c24af004d517d4c6e"
+      },
+      {
+        "path": "site/flow/SPY.json",
+        "state": "READ",
+        "bytes": 5213,
+        "sha256": "d3c194a589eac04f8fa89c104b0534c7e80fc8e53b3716c1c9937bf10e4751b7"
+      },
+      {
+        "path": "site/session/SPY.json",
+        "state": "READ",
+        "bytes": 6978,
+        "sha256": "66b2b3d5379fef75a50b3d7d9abb088d6476b6f756d8bd6287435cb08166b726"
+      }
+    ],
+    "template_sha256": "43dc7e1dd396ff16ab7c017581218eb8efb7064a33d2deb81866764ebe2bc638",
+    "builder_sha256": "6184ebe6ad6fc9249a555e65b402b168131bb54b88ef04ac41561161e6e33b3d"
+  },
+  "scope": "Exact rendered published fixture; historical research, not live quotes",
+  "modes": {
+    "brief": {
+      "panels": [
+        {
+          "title": null,
+          "text": "Brief unavailable for the latest session\n\nLatest brief 2026-08-19. Dealer levels are below. Earlier research is available.\n\nView earlier research\nSource details",
+          "dates": []
+        },
+        {
+          "title": "",
+          "text": "",
+          "dates": [
+            ""
+          ]
+        },
+        {
+          "title": "",
+          "text": "",
+          "dates": []
+        },
+        {
+          "title": "",
+          "text": "",
+          "dates": [
+            ""
+          ]
+        },
+        {
+          "title": "",
+          "text": "",
+          "dates": [
+            ""
+          ]
+        },
+        {
+          "title": "",
+          "text": "",
+          "dates": []
+        }
+      ],
+      "rows": [],
+      "columns": [],
+      "raw": []
+    },
+    "flow": {
+      "panels": [
+        {
+          "title": "Premium by sector — the full desk",
+          "text": "Premium by sector — the full desk\nevery covered sector, shared scale, unusual days flagged\n?\n2026-08-13\nTechnology\n$10.9B\nbuying ~\nIndex ETFs\n$3.9B\nbuying ~\nConsumer Disc.\n$1.6B\nbuying ~\nCommunication\n$1.2B\nselling ~\nHealth Care\n$424M\nselling ~\nIndustrials\n$423M\nbuying ~\nFinancials\n$347M\nmixed\nEnergy\n$115M\nmixed\nStaples\n$92M\nmixed\nUtilities\n$51M\nmixed\n⚑Materials\n$12M\nmixed\nReal Estate\n$500K\nmixed\nA record of where options money went today — not a forecast of where it goes next.\n2026-08-13",
+          "dates": [
+            "2026-08-13"
+          ]
+        },
+        {
+          "title": "Theme groups",
+          "text": "Theme groups\nhow the big themes traded as groups\n?\n\nNo theme-group data for this close. It returns with the next options tape.",
+          "dates": []
+        },
+        {
+          "title": "Sector ETF money",
+          "text": "Sector ETF money\n?\n2026-10-19\nXLV\n~+$621M\n5D ~+$799M · 21D ~+$395M\nXLE\n~+$338M\n5D ~+$1.2B · 21D ~−$6M\nXLF\n~+$153M\n5D ~+$687M · 21D ~+$76M\nXLC\n~+$87M\n5D ~+$757M · 21D ~+$1.3B\nXLRE\n~+$71M\n5D ~+$50M · 21D ~−$50M\nXLI\n~−$92M\n5D ~+$279M · 21D ~−$392M\nXLB\n~−$94M\n5D ~−$34M · 21D ~−$368M\nXLU\n~−$275M\n5D ~+$386M · 21D ~+$2.2B\nXLK\n~−$396M\n5D ~+$1.1B · 21D ~+$1.3B\nXLY\n~−$419M\n5D ~−$286M · 21D ~−$231M\nXLP\n~−$546M\n5D ~+$332M · 21D ~−$198M\nEstimates from share-count changes, not reported fund flows — a background check, not a signal.\n2026-10-19",
+          "dates": [
+            "2026-10-19"
+          ]
+        },
+        {
+          "title": "The tide",
+          "text": "The tide\nthirty sessions of net premium, and how today unfolded\n?\n2026-08-13\nTHIRTY SESSIONS\nTODAY, MINUTE BY MINUTE\nNo intraday record for this session.\nShape only. Direction is approximate ~ and this is never a buy or sell signal.\n2026-08-13",
+          "dates": [
+            "2026-08-13"
+          ]
+        }
+      ],
+      "rows": [],
+      "columns": [],
+      "raw": []
+    },
+    "scanner": {
+      "panels": [
+        {
+          "title": "Screener",
+          "text": "Screener\nAll 408 screened names — sort any column, filter below.\n?\nOverview\nFlow\nPositioning\nExport CSV\n2026-08-13\nMore filters — ranges, sector, text\nNAME\tSPOT\tIV 30D\tIV RANK\tEXPECTED MOVE\tPUT/CALL OI\tVOLUME\tPREMIUM\tTONE\tROW LAG\nMU\n→\n AI & Technology\t$949.83\t57.2%\t0\t±16.4%\t0.79x\t1.2M\t$2.1B\tput-leaning\t\n0d\n\nSNDK\n→\n Semiconductors\t$1,528.11\t94.8%\t12\t±27.2%\t0.90x\t202K\t$1.5B\tcall-leaning\t\n0d\n\nSPY\n→\n ETF / Index\t$777.88\t12.7%\t0\t±3.7%\t1.16x\t9.1M\t$1.4B\tput-leaning\t\n0d\n\nQQQ\n→\n ETF / Index\t$732.07\t19.4%\t0\t±5.6%\t1.05x\t5.2M\t$1.3B\tcall-leaning\t\n0d\n\nNVDA\n→\n AI & Technology\t$225.30\t38.9%\t15\t±11.2%\t0.55x\t3.2M\t$1.1B\tcall-leaning\t\n0d\n\nNBIS\n→\n AI & Technology\t$255.04\t85.8%\t0\t±24.6%\t0.80x\t591K\t$776M\tcall-leaning\t\n0d\n\nTSLA\n→\n AI & Technology\t$339.96\t35.9%\t0\t±10.3%\t0.76x\t2.2M\t$741M\tcall-leaning\t\n0d\n\nMETA\n→\n AI & Technology\t$594.97\t34.6%\t11\t±9.9%\t0.58x\t765K\t$704M\tput-leaning\t\n0d\n\nAMD\n→\n AI & Technology\t$483.01\t51.3%\t0\t±14.7%\t0.69x\t444K\t$626M\tput-leaning\t\n0d\n\nMSFT\n→\n AI & Technology\t$496.88\t26.4%\t0\t±7.6%\t0.86x\t522K\t$498M\tput-leaning\t\n0d\n\nCRWV\n→\n AI & Technology\t$106.29\t74.1%\t4\t±21.2%\t0.67x\t710K\t$475M\tput-leaning\t\n0d\n\nLITE\n→\n AI & Technology\t$880.41\t77.8%\t0\t±22.3%\t0.87x\t96K\t$403M\tput-leaning\t\n0d\n\nAMZN\n→\n AI & Technology\t$265.13\t28.2%\t0\t±8.1%\t0.61x\t680K\t$357M\tput-leaning\t\n0d\n\nAAPL\n→\n AI & Technology\t$305.26\t24.9%\t19\t±7.2%\t0.52x\t1.2M\t$308M\tcall-leaning\t\n0d\n\nPLTR\n→\n AI & Technology\t$179.01\t48.5%\t12\t±13.9%\t0.87x\t446K\t$264M\tcall-leaning\t\n0d\n\nORCL\n→\n AI & Technology\t$156.22\t72.4%\t92\t±20.8%\t0.32x\t363K\t$219M\tput-leaning\t\n0d\n\nSMH\n→\n ETF / Index\t$589.12\t38.0%\t0\t±10.9%\t2.65x\t239K\t$182M\tput-leaning\t\n0d\n\nSMCI\n→\n AI & Technology\t$39.16\t79.1%\t4\t±22.7%\t0.32x\t693K\t$161M\tcall-leaning\t\n0d\n\nDELL\n→\n AI & Technology\t$494.51\t81.2%\t24\t±23.3%\t0.85x\t118K\t$154M\tcall-leaning\t\n0d\n\nAVGO\n→\n AI & Technology\t$417.82\t49.4%\t16\t±14.2%\t0.83x\t172K\t$148M\tput-leaning\t\n0d\n\nSTX\n→\n Semiconductors\t$921.37\t65.5%\t4\t±18.8%\t0.87x\t31K\t$134M\tcall-leaning\t\n0d\n\nGOOGL\n→\n AI & Technology\t$346.36\t28.2%\t0\t±8.1%\t0.47x\t265K\t$133M\tcall-leaning\t\n0d\n\nPANW\n→\n AI & Technology\t$396.00\t60.4%\t48\t±17.3%\t0.63x\t29K\t$126M\tcall-leaning\t\n0d\n\nCBRS\n→\n AI & Te",
+          "dates": [
+            "2026-08-13"
+          ]
+        }
+      ],
+      "rows": [
+        [
+          "MU\n→\n AI & Technology",
+          "$949.83",
+          "57.2%",
+          "0",
+          "±16.4%",
+          "0.79x",
+          "1.2M",
+          "$2.1B",
+          "put-leaning",
+          "0d"
+        ],
+        [
+          "SNDK\n→\n Semiconductors",
+          "$1,528.11",
+          "94.8%",
+          "12",
+          "±27.2%",
+          "0.90x",
+          "202K",
+          "$1.5B",
+          "call-leaning",
+          "0d"
+        ],
+        [
+          "SPY\n→\n ETF / Index",
+          "$777.88",
+          "12.7%",
+          "0",
+          "±3.7%",
+          "1.16x",
+          "9.1M",
+          "$1.4B",
+          "put-leaning",
+          "0d"
+        ],
+        [
+          "QQQ\n→\n ETF / Index",
+          "$732.07",
+          "19.4%",
+          "0",
+          "±5.6%",
+          "1.05x",
+          "5.2M",
+          "$1.3B",
+          "call-leaning",
+          "0d"
+        ],
+        [
+          "NVDA\n→\n AI & Technology",
+          "$225.30",
+          "38.9%",
+          "15",
+          "±11.2%",
+          "0.55x",
+          "3.2M",
+          "$1.1B",
+          "call-leaning",
+          "0d"
+        ],
+        [
+          "NBIS\n→\n AI & Technology",
+          "$255.04",
+          "85.8%",
+          "0",
+          "±24.6%",
+          "0.80x",
+          "591K",
+          "$776M",
+          "call-leaning",
+          "0d"
+        ],
+        [
+          "TSLA\n→\n AI & Technology",
+          "$339.96",
+          "35.9%",
+          "0",
+          "±10.3%",
+          "0.76x",
+          "2.2M",
+          "$741M",
+          "call-leaning",
+          "0d"
+        ],
+        [
+          "META\n→\n AI & Technology",
+          "$594.97",
+          "34.6%",
+          "11",
+          "±9.9%",
+          "0.58x",
+          "765K",
+          "$704M",
+          "put-leaning",
+          "0d"
+        ]
+      ],
+      "columns": [
+        "NAME",
+        "SPOT",
+        "IV 30D",
+        "IV RANK",
+        "EXPECTED MOVE",
+        "PUT/CALL OI",
+        "VOLUME",
+        "PREMIUM",
+        "TONE",
+        "ROW LAG"
+      ],
+      "raw": []
+    },
+    "ticker": {
+      "panels": [
+        {
+          "title": null,
+          "text": "SPY\nS&P 500 ETF\nLAST CLOSE\n755.72\nJumpy — moves get amplified\n\nDealer hedging at this source close trades with the market, so swings run larger and sell-offs can pick up speed. Do not assume dips get bought back the way they do on calm days.\n\nProtect gains\n1-day implied range 748.39–763.05 ±0.97%",
+          "dates": []
+        },
+        {
+          "title": "How the day traded",
+          "text": "How the day traded\n2026-10-16\n09:30\n16:00\nThe intraday record covers only part of the session — Premium built steadily in one direction and stayed.\n2026-10-16",
+          "dates": [
+            "2026-10-16"
+          ]
+        },
+        {
+          "title": "The map — where dealer hedging sits",
+          "text": "The map — where dealer hedging sits\n?\n2026-10-30\n755.72\nlast close\n750\nfloor\n770\nmagnet\n772.93\nflip\n800\nceiling\nCeiling — call wall\nopen interest disagrees\nRallies tend to stall into this wall. Only a daily close above it opens the upside.\n+5.9% from close\n800\nFlip — the regime line\nCalm above this line, jumpy below.\n+2.3% from close\n772.93\nMagnet — max pain\nOn quiet days price tends to drift toward this level into expiry. The pull is weak while the tape is jumpy.\n+1.9% from close\n770\nFloor — put wall\nopen interest disagrees\nSell-offs tend to slow into this wall. A daily close below it pulls that cushion away.\n−0.8% from close\n750\nModel estimates from the source close shown here. Only a daily close beyond a level counts; intraday moves do not confirm it.\n2026-10-30",
+          "dates": [
+            "2026-10-30"
+          ]
+        },
+        {
+          "title": "Rich or cheap?",
+          "text": "Rich or cheap?\n?\n2026-10-30\nVol rich\n\nOptions on SPY cost more than 98% of the last 40 sessions we have on file.\n\nStill building toward a full year of history — read this as a rough placement, not a settled rank.\n2026-10-30",
+          "dates": [
+            "2026-10-30"
+          ]
+        },
+        {
+          "title": "Where positions built",
+          "text": "Where positions built\nopen-interest change between the last two chain snapshots\n?\n2026-08-13\nBUILT\n570P\n+149,684\n670P\n+74,919\n640P\n+74,582\nUNWOUND\n785C\n−16,685\n788C\n−15,847\n755P\n−10,947\nAlso on file: Today's net dealer gamma sits above 15% of this name's own stored daily readings (40 trading days, 2026-08-20 to 2026-10-30). The record is short, so read it as a rough placement.\nA count of contracts opened or closed, not a direction call.\n2026-08-13",
+          "dates": [
+            "2026-08-13"
+          ]
+        },
+        {
+          "title": null,
+          "text": "THE TAPE — CALM OR JUMPY?\nJumpy\nDealer hedging adds to moves — swings and air-pockets run bigger than usual.",
+          "dates": []
+        },
+        {
+          "title": null,
+          "text": "THE MOOD — WHAT OPTIONS COST\n15.4% IV\nWhat the options market charges for 30-day cover on this name.",
+          "dates": []
+        },
+        {
+          "title": null,
+          "text": "THE LEAN — DIRECTION BY TIME WINDOW\nPut-heavy\nWeaker evidence than the tape read — treat this as context, not a signal.",
+          "dates": []
+        },
+        {
+          "title": "What the move is worth",
+          "text": "What the move is worth\n\nThe expected move itself is in the header above. What we don’t yet track is whether that number is usually right — we’re building a nightly record that grades each session’s implied move against what actually happened.\n\nNot measured yet — nothing here to act on.",
+          "dates": []
+        },
+        {
+          "title": "Expiration pressure",
+          "text": "Expiration pressure\n\nNot measured yet. The idea: how much of this name's open interest rolls off in the next few days, and whether that concentration tends to feed on itself into expiry.\n\nNot measured yet — nothing here to act on.",
+          "dates": []
+        },
+        {
+          "title": "Measured options flow",
+          "text": "Measured options flow\nwhat actually traded, before any interpretation\n2026-08-13\nPREMIUM\n$1.8B\nSAME-DAY\n65%\nPUT/CALL\n0.95x\nNET PREMIUM\n+$404M\nSize is a solid read. Direction comes from tick-rule signing and is not reliable enough to read on its own.\n2026-08-13",
+          "dates": [
+            "2026-08-13"
+          ]
+        },
+        {
+          "title": "Under the hood — the raw options structure · charts and the full strike record — for readers who want the plumbing",
+          "text": "Under the hood — the raw options structure · charts and the full strike record — for readers who want the plumbing\nNET GAMMA\n-11.87B\nSTRIKES\n5428\nPUT/CALL OI\n1.71x\nMAX PAIN\n770\nCHAIN DEPTH\nfull\n\nThis shelf is closed by default because it is reference material, not a read. Every figure here is reconstructed from the options chain: real dealer books are unobservable.\n\nDealer gamma by strike\n\nNet dealer gamma summed at each strike. The long bars are the walls the levels above are read from.\n\n684.80\n712.88\n740.96\n769.04\n797.12\n825.20\ncall wall\nflip\nlast close\nput wall\ncall gamma\nput gamma\nNet gamma against price\n\nThe same measure re-evaluated as price moves. Where the curve crosses zero is the flip.\n\n-16.4\n-8.9\n-1.4\n6.1\n13.6\n642.36\n699.04\n755.72\n812.40\n869.08\nlast close\nflip\nThe surface — strikes by expiry\n\nRows are strikes, columns are expiries. The bright cells are where positioning concentrates.\n\n\tNov 02\n1d\tNov 03\n2d\tNov 04\n3d\tNov 05\n4d\tNov 06\n5d\tNov 09\n8d\tNov 13\n12d\tNov 20\n19d\tNov 27\n26d\tNov 30\n29d\tDec 04\n33d\tDec 18\n47d\n810\t\t\t\t\t1\t\t5\t42\t1\t4\t4\t355\n800\t\t\t\t\t4\t\t14\t329\t4\t14\t3\t195\n790\t\t\t\t3\t6\t\t11\t69\t3\t19\t2\t107\n785\t1\t2\t1\t2\t9\t1\t8\t31\t4\t3\t4\t99\n780\t6\t7\t4\t40\t21\t\t34\t67\t11\t21\t4\t109\n775\t-38\t5\t23\t12\t17\t10\t-2\t-19\t11\t-3\t2\t54\n771\t4\t4\t21\t\t-6\t\t-16\t-36\t\t2\t\t2\n770\t14\t15\t11\t2\t-9\t2\t-11\t-101\t-30\t-10\t3\t91\n769\t8\t-5\t\t\t9\t\t7\t-13\t\t-4\t-2\t-7\n768\t\t2\t-11\t\t-12\t\t-11\t-43\t2\t-7\t\t15\n767\t13\t-6\t-502\t\t41\t\t-12\t-7\t-3\t-5\t\t8\n766\t-4\t-15\t\t\t-5\t\t-19\t-10\t-4\t-3\t\t\n765\t-98\t-16\t-18\t-16\t-70\t-8\t-14\t-135\t-1\t3\t\t15\n763\t-19\t-3\t-3\t\t-41\t\t-3\t-19\t-2\t2\t\t9\n762\t-11\t-7\t-18\t\t-71\t\t-15\t-32\t\t-2\t\t19\n760\t-169\t-24\t-38\t-24\t-222\t-17\t-75\t-236\t-10\t-54\t\t-40\n757\t-108\t-7\t-12\t\t-81\t\t-7\t-294\t-2\t-2\t\t-5\n755\t-101\t-61\t-93\t-11\t-67\t-11\t-88\t-96\t-4\t-18\t-1\t5\n750\t-123\t-16\t-17\t-22\t-351\t-20\t-37\t-985\t-8\t-47\t\t3\n745\t-36\t-7\t-15\t-8\t-111\t-5\t-17\t-186\t-5\t-14\t-2\t-2\n740\t-21\t-47\t-12\t-14\t-59\t-12\t-39\t-334\t-12\t-18\t-3\t-120\n735\t-3\t-6\t-3\t-5\t-69\t-5\t-11\t-63\t-7\t-32\t-1\t-244\n730\t-2\t-2\t-6\t-2\t-30\t-5\t-17\t-369\t-11\t-15\t-24\t-81\n725\t-3\t\t-3\t\t-35\t-3\t-41\t-420\t-5\t-22\t-3\t-35\n720\t-2\t-2\t-1\t-1\t-11\t-3\t-15\t-150\t-10\t-24\t-2\t-23\n700\t-1\t\t\t\t-19\t-2\t-10\t-166\t-3\t-23\t\t-119\ncall gamma\nput gamma\noutlined row = the ",
+          "dates": []
+        },
+        {
+          "title": "New to options? Read this first.",
+          "text": "New to options? Read this first.",
+          "dates": []
+        }
+      ],
+      "rows": [
+        [
+          "810",
+          "",
+          "",
+          "",
+          "",
+          "1",
+          "",
+          "5",
+          "42",
+          "1",
+          "4",
+          "4",
+          "355"
+        ],
+        [
+          "800",
+          "",
+          "",
+          "",
+          "",
+          "4",
+          "",
+          "14",
+          "329",
+          "4",
+          "14",
+          "3",
+          "195"
+        ],
+        [
+          "790",
+          "",
+          "",
+          "",
+          "3",
+          "6",
+          "",
+          "11",
+          "69",
+          "3",
+          "19",
+          "2",
+          "107"
+        ],
+        [
+          "785",
+          "1",
+          "2",
+          "1",
+          "2",
+          "9",
+          "1",
+          "8",
+          "31",
+          "4",
+          "3",
+          "4",
+          "99"
+        ],
+        [
+          "780",
+          "6",
+          "7",
+          "4",
+          "40",
+          "21",
+          "",
+          "34",
+          "67",
+          "11",
+          "21",
+          "4",
+          "109"
+        ],
+        [
+          "775",
+          "-38",
+          "5",
+          "23",
+          "12",
+          "17",
+          "10",
+          "-2",
+          "-19",
+          "11",
+          "-3",
+          "2",
+          "54"
+        ],
+        [
+          "771",
+          "4",
+          "4",
+          "21",
+          "",
+          "-6",
+          "",
+          "-16",
+          "-36",
+          "",
+          "2",
+          "",
+          "2"
+        ],
+        [
+          "770",
+          "14",
+          "15",
+          "11",
+          "2",
+          "-9",
+          "2",
+          "-11",
+          "-101",
+          "-30",
+          "-10",
+          "3",
+          "91"
+        ]
+      ],
+      "columns": [
+        "",
+        "Nov 02\n1d",
+        "Nov 03\n2d",
+        "Nov 04\n3d",
+        "Nov 05\n4d",
+        "Nov 06\n5d",
+        "Nov 09\n8d",
+        "Nov 13\n12d",
+        "Nov 20\n19d",
+        "Nov 27\n26d",
+        "Nov 30\n29d",
+        "Dec 04\n33d",
+        "Dec 18\n47d",
+        "EXPIRY",
+        "DAYS",
+        "AT-THE-MONEY IV",
+        "IMPLIED MOVE",
+        "STRADDLE",
+        "MAGNET"
+      ],
+      "raw": [
+        {
+          "title": "Dealer gamma by strike",
+          "text": "Dealer gamma by strike\n\nNet dealer gamma summed at each strike. The long bars are the walls the levels above are read from.\n\n684.80\n712.88\n740.96\n769.04\n797.12\n825.20\ncall wall\nflip\nlast close\nput wall\ncall gamma\nput gamma",
+          "svgs": [
+            "<svg viewBox=\"0 0 540 400\" role=\"img\" aria-label=\"Dealer gamma by strike\"><line x1=\"257\" y1=\"12\" x2=\"257\" y2=\"380\" style=\"stroke:var(--line)\" stroke-width=\"1\"></line><text x=\"46\" y=\"383.0\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">684.80</text><line x1=\"52\" y1=\"380.0\" x2=\"462\" y2=\"380.0\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"46\" y=\"309.4\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">712.88</text><line x1=\"52\" y1=\"306.4\" x2=\"462\" y2=\"306.4\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"46\" y=\"235.8\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">740.96</text><line x1=\"52\" y1=\"232.8\" x2=\"462\" y2=\"232.8\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"46\" y=\"162.2\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">769.04</text><line x1=\"52\" y1=\"159.2\" x2=\"462\" y2=\"159.2\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"46\" y=\"88.6\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">797.12</text><line x1=\"52\" y1=\"85.6\" x2=\"462\" y2=\"85.6\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"46\" y=\"15.0\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">825.20</text><line x1=\"52\" y1=\"12.0\" x2=\"462\" y2=\"12.0\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><rect x=\"257.0\" y=\"22.0\" width=\"18.6\" height=\"7.2\" style=\"fill:var(--up)\" opacity=\"0.82\"></rect><rect x=\"257.0\" y=\"48.3\" width=\"57.7\" height=\"7.2\" style=\"fill:var(--up)\" opacity=\"0.82\"></rect><rect x=\"257.0\" y=\"61.4\" width=\"18.6\" height=\"7.2\" style=\"fill:var(--up)\" opacity=\"0.82\"></rect><rect x=\"257.0\" y=\"74.5\" width=\"89.5\" height=\"7.2\" style=\"fill:var(--up)\" opacity=\"0.82\"></rect><rect x=\"257.0\" y=\"87.6\" width=\"23.8\" height=\"7.2\" style=\"fill:var(--up)\" opacity=\"0.82\"></rect><rect x=\"257.0\" y=\"100.7\" width=\"35.5\" height=\"7.2\" style=\"fill:var(--up)\" opacity=\"0.82\"></rect><rect x=\"257.0\" y=\"113.8\" width=\"23.3\" height=\"7.2\" style=\"fill:var(--up)\" opacity=\"0.82\"></rect><rect x=\"257.0\" y=\"126.9\" width=\"41.7\" height=\"7.2\" style=\"fill:var(--up)\" opacity=\"0.82\"></rect><rect x=\"257.0\" y=\"132.1\" width=\"7.9\" height=\"7.2\" style=\"fill:var(--up)\" opacity=\"0.82\"></rect><rect x=\"257.0\" y=\"140.0\" width=\"18.3\" height=\"7.2\" style=\"fill:var(--up)\" opacity=\"0.82\"></rect><rect x=\"257.0\" y=\"145.2\" width=\"2.4\" height=\"7.2\" style=\"fill:var(--up)\" opacity=\"0.82\"></rect><rect x=\"254.3\" y=\"147.9\" width=\"2.7\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"254.5\" y=\"150.5\" width=\"2.5\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"249.6\" y=\"153.1\" width=\"7.4\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"256.1\" y=\"155.7\" width=\"0.9\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"249.5\" y=\"158.3\" width=\"7.5\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"204.2\" y=\"161.0\" width=\"52.8\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"250.4\" y=\"163.6\" width=\"6.6\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"214.6\" y=\"166.2\" width=\"42.4\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"246.8\" y=\"168.8\" width=\"10.2\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"248.1\" y=\"171.4\" width=\"8.9\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"241.3\" y=\"174.1\" width=\"15.7\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"149.2\" y=\"179.3\" width=\"107.8\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"237.1\" y=\"181.9\" width=\"19.9\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"241.8\" y=\"184.5\" width=\"15.2\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"199.3\" y=\"187.2\" width=\"57.7\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"186.5\" y=\"192.4\" width=\"70.5\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"56.0\" y=\"205.5\" width=\"201.0\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"234.9\" y=\"208.1\" width=\"22.1\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"208.6\" y=\"218.6\" width=\"48.4\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"168.0\" y=\"231.7\" width=\"89.0\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"235.7\" y=\"242.2\" width=\"21.3\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"193.0\" y=\"244.8\" width=\"64.0\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"175.7\" y=\"257.9\" width=\"81.3\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"186.2\" y=\"271.0\" width=\"70.8\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"219.3\" y=\"284.1\" width=\"37.7\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"233.3\" y=\"297.3\" width=\"23.7\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"230.9\" y=\"310.4\" width=\"26.1\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"174.3\" y=\"336.6\" width=\"82.7\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><rect x=\"229.9\" y=\"362.8\" width=\"27.1\" height=\"7.2\" style=\"fill:var(--down)\" opacity=\"0.82\"></rect><line x1=\"52\" y1=\"78.1\" x2=\"462\" y2=\"78.1\" style=\"stroke:var(--up)\" stroke-width=\"1.2\" stroke-dasharray=\"4 3\"></line><line x1=\"52\" y1=\"194.1\" x2=\"462\" y2=\"194.1\" style=\"stroke:var(--text)\" stroke-width=\"1.2\" stroke-dasharray=\"4 3\"></line><line x1=\"52\" y1=\"149.0\" x2=\"462\" y2=\"149.0\" style=\"stroke:var(--oew-accent)\" stroke-width=\"1.2\" stroke-dasharray=\"4 3\"></line><line x1=\"52\" y1=\"209.1\" x2=\"462\" y2=\"209.1\" style=\"stroke:var(--down)\" stroke-width=\"1.2\" stroke-dasharray=\"4 3\"></line><text x=\"467\" y=\"81.1\" font-size=\"10\" style=\"fill:var(--up)\" class=\"l-en\">call wall</text><text x=\"467\" y=\"81.1\" font-size=\"10\" style=\"fill:var(--up)\" class=\"l-zh\">看涨墙</text><text x=\"467\" y=\"152.0\" font-size=\"10\" style=\"fill:var(--oew-accent)\" class=\"l-en\">flip</text><text x=\"467\" y=\"152.0\" font-size=\"10\" style=\"fill:var(--oew-accent)\" class=\"l-zh\">翻转位</text><text x=\"467\" y=\"197.1\" font-size=\"10\" style=\"fill:var(--text)\" class=\"l-en\">last close</text><text x=\"467\" y=\"197.1\" font-size=\"10\" style=\"fill:var(--text)\" class=\"l-zh\">最新收盘</text><text x=\"467\" y=\"212.1\" font-size=\"10\" style=\"fill:var(--down)\" class=\"l-en\">put wall</text><text x=\"467\" y=\"212.1\" font-size=\"10\" style=\"fill:var(--down)\" class=\"l-zh\">看跌墙</text></svg>"
+          ]
+        },
+        {
+          "title": "Net gamma against price",
+          "text": "Net gamma against price\n\nThe same measure re-evaluated as price moves. Where the curve crosses zero is the flip.\n\n-16.4\n-8.9\n-1.4\n6.1\n13.6\n642.36\n699.04\n755.72\n812.40\n869.08\nlast close\nflip",
+          "svgs": [
+            "<svg viewBox=\"0 0 540 300\" role=\"img\" aria-label=\"Net dealer gamma against spot\"><line x1=\"46\" y1=\"274.0\" x2=\"514\" y2=\"274.0\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"41\" y=\"277.0\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">-16.4</text><line x1=\"46\" y1=\"209.0\" x2=\"514\" y2=\"209.0\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"41\" y=\"212.0\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">-8.9</text><line x1=\"46\" y1=\"144.0\" x2=\"514\" y2=\"144.0\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"41\" y=\"147.0\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">-1.4</text><line x1=\"46\" y1=\"79.0\" x2=\"514\" y2=\"79.0\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"41\" y=\"82.0\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">6.1</text><line x1=\"46\" y1=\"14.0\" x2=\"514\" y2=\"14.0\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"41\" y=\"17.0\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">13.6</text><path d=\"M46.0 131.8 L46.0 192.5 L51.9 194.1 L51.9 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M51.9 131.8 L51.9 194.1 L57.7 195.7 L57.7 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M57.7 131.8 L57.7 195.7 L63.5 197.3 L63.5 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M63.5 131.8 L63.5 197.3 L69.4 199.0 L69.4 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M69.4 131.8 L69.4 199.0 L75.2 200.7 L75.2 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M75.2 131.8 L75.2 200.7 L81.1 202.4 L81.1 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M81.1 131.8 L81.1 202.4 L87.0 204.2 L87.0 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M87.0 131.8 L87.0 204.2 L92.8 206.0 L92.8 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M92.8 131.8 L92.8 206.0 L98.7 207.8 L98.7 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M98.7 131.8 L98.7 207.8 L104.5 209.7 L104.5 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M104.5 131.8 L104.5 209.7 L110.4 211.7 L110.4 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M110.4 131.8 L110.4 211.7 L116.2 213.7 L116.2 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M116.2 131.8 L116.2 213.7 L122.0 215.7 L122.0 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M122.0 131.8 L122.0 215.7 L127.9 217.9 L127.9 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M127.9 131.8 L127.9 217.9 L133.7 220.0 L133.7 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M133.7 131.8 L133.7 220.0 L139.6 222.3 L139.6 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M139.6 131.8 L139.6 222.3 L145.5 224.6 L145.5 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M145.5 131.8 L145.5 224.6 L151.3 226.9 L151.3 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M151.3 131.8 L151.3 226.9 L157.2 229.2 L157.2 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M157.2 131.8 L157.2 229.2 L163.0 231.5 L163.0 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M163.0 131.8 L163.0 231.5 L168.8 233.9 L168.8 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M168.8 131.8 L168.8 233.9 L174.7 236.1 L174.7 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M174.7 131.8 L174.7 236.1 L180.5 238.4 L180.5 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M180.5 131.8 L180.5 238.4 L186.4 240.6 L186.4 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M186.4 131.8 L186.4 240.6 L192.3 242.7 L192.3 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M192.3 131.8 L192.3 242.7 L198.1 244.8 L198.1 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M198.1 131.8 L198.1 244.8 L204.0 246.9 L204.0 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M204.0 131.8 L204.0 246.9 L209.8 248.9 L209.8 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M209.8 131.8 L209.8 248.9 L215.7 250.8 L215.7 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M215.7 131.8 L215.7 250.8 L221.5 252.5 L221.5 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M221.5 131.8 L221.5 252.5 L227.3 254.0 L227.3 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M227.3 131.8 L227.3 254.0 L233.2 255.2 L233.2 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M233.2 131.8 L233.2 255.2 L239.0 256.0 L239.0 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M239.0 131.8 L239.0 256.0 L244.9 256.1 L244.9 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M244.9 131.8 L244.9 256.1 L250.7 255.3 L250.7 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M250.7 131.8 L250.7 255.3 L256.6 253.5 L256.6 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M256.6 131.8 L256.6 253.5 L262.5 250.7 L262.5 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M262.5 131.8 L262.5 250.7 L268.3 247.0 L268.3 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M268.3 131.8 L268.3 247.0 L274.2 242.1 L274.2 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M274.2 131.8 L274.2 242.1 L280.0 235.4 L280.0 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M280.0 131.8 L280.0 235.4 L285.8 226.0 L285.8 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M285.8 131.8 L285.8 226.0 L291.7 213.1 L291.7 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M291.7 131.8 L291.7 213.1 L297.5 196.4 L297.5 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M297.5 131.8 L297.5 196.4 L303.4 176.7 L303.4 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M303.4 131.8 L303.4 176.7 L309.2 155.1 L309.2 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M309.2 131.8 L309.2 155.1 L315.1 133.4 L315.1 131.8Z\" style=\"fill:var(--down)\" opacity=\"0.16\"></path><path d=\"M315.1 131.8 L315.1 133.4 L321.0 113.6 L321.0 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M321.0 131.8 L321.0 113.6 L326.8 96.6 L326.8 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M326.8 131.8 L326.8 96.6 L332.7 82.3 L332.7 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M332.7 131.8 L332.7 82.3 L338.5 70.4 L338.5 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M338.5 131.8 L338.5 70.4 L344.3 60.5 L344.3 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M344.3 131.8 L344.3 60.5 L350.2 52.1 L350.2 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M350.2 131.8 L350.2 52.1 L356.0 45.3 L356.0 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M356.0 131.8 L356.0 45.3 L361.9 40.0 L361.9 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M361.9 131.8 L361.9 40.0 L367.7 36.0 L367.7 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M367.7 131.8 L367.7 36.0 L373.6 33.4 L373.6 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M373.6 131.8 L373.6 33.4 L379.5 32.1 L379.5 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M379.5 131.8 L379.5 32.1 L385.3 31.9 L385.3 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M385.3 131.8 L385.3 31.9 L391.2 32.7 L391.2 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M391.2 131.8 L391.2 32.7 L397.0 34.1 L397.0 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M397.0 131.8 L397.0 34.1 L402.8 36.2 L402.8 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M402.8 131.8 L402.8 36.2 L408.7 38.7 L408.7 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M408.7 131.8 L408.7 38.7 L414.5 41.6 L414.5 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M414.5 131.8 L414.5 41.6 L420.4 44.7 L420.4 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M420.4 131.8 L420.4 44.7 L426.3 48.0 L426.3 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M426.3 131.8 L426.3 48.0 L432.1 51.3 L432.1 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M432.1 131.8 L432.1 51.3 L438.0 54.7 L438.0 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M438.0 131.8 L438.0 54.7 L443.8 58.0 L443.8 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M443.8 131.8 L443.8 58.0 L449.6 61.2 L449.6 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M449.6 131.8 L449.6 61.2 L455.5 64.2 L455.5 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M455.5 131.8 L455.5 64.2 L461.3 67.2 L461.3 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M461.3 131.8 L461.3 67.2 L467.2 69.9 L467.2 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M467.2 131.8 L467.2 69.9 L473.0 72.5 L473.0 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M473.0 131.8 L473.0 72.5 L478.9 74.9 L478.9 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M478.9 131.8 L478.9 74.9 L484.7 77.2 L484.7 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M484.7 131.8 L484.7 77.2 L490.6 79.3 L490.6 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M490.6 131.8 L490.6 79.3 L496.5 81.3 L496.5 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M496.5 131.8 L496.5 81.3 L502.3 83.2 L502.3 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M502.3 131.8 L502.3 83.2 L508.1 84.9 L508.1 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><path d=\"M508.1 131.8 L508.1 84.9 L514.0 86.6 L514.0 131.8Z\" style=\"fill:var(--up)\" opacity=\"0.16\"></path><line x1=\"46\" y1=\"131.8\" x2=\"514\" y2=\"131.8\" style=\"stroke:var(--muted)\" stroke-width=\"1\"></line><path d=\"M46.0 192.5 L51.9 194.1 L57.7 195.7 L63.5 197.3 L69.4 199.0 L75.2 200.7 L81.1 202.4 L87.0 204.2 L92.8 206.0 L98.7 207.8 L104.5 209.7 L110.4 211.7 L116.2 213.7 L122.0 215.7 L127.9 217.9 L133.7 220.0 L139.6 222.3 L145.5 224.6 L151.3 226.9 L157.2 229.2 L163.0 231.5 L168.8 233.9 L174.7 236.1 L180.5 238.4 L186.4 240.6 L192.3 242.7 L198.1 244.8 L204.0 246.9 L209.8 248.9 L215.7 250.8 L221.5 252.5 L227.3 254.0 L233.2 255.2 L239.0 256.0 L244.9 256.1 L250.7 255.3 L256.6 253.5 L262.5 250.7 L268.3 247.0 L274.2 242.1 L280.0 235.4 L285.8 226.0 L291.7 213.1 L297.5 196.4 L303.4 176.7 L309.2 155.1 L315.1 133.4 L321.0 113.6 L326.8 96.6 L332.7 82.3 L338.5 70.4 L344.3 60.5 L350.2 52.1 L356.0 45.3 L361.9 40.0 L367.7 36.0 L373.6 33.4 L379.5 32.1 L385.3 31.9 L391.2 32.7 L397.0 34.1 L402.8 36.2 L408.7 38.7 L414.5 41.6 L420.4 44.7 L426.3 48.0 L432.1 51.3 L438.0 54.7 L443.8 58.0 L449.6 61.2 L455.5 64.2 L461.3 67.2 L467.2 69.9 L473.0 72.5 L478.9 74.9 L484.7 77.2 L490.6 79.3 L496.5 81.3 L502.3 83.2 L508.1 84.9 L514.0 86.6\" fill=\"none\" style=\"stroke:var(--text)\" stroke-width=\"1.6\"></path><line x1=\"280.0\" y1=\"14\" x2=\"280.0\" y2=\"274\" style=\"stroke:var(--text)\" stroke-width=\"1\" stroke-dasharray=\"3 3\"></line><line x1=\"315.5\" y1=\"14\" x2=\"315.5\" y2=\"274\" style=\"stroke:var(--oew-accent)\" stroke-width=\"1.2\" stroke-dasharray=\"4 3\"></line><text x=\"46.0\" y=\"288\" text-anchor=\"middle\" font-size=\"9.5\" style=\"fill:var(--muted)\">642.36</text><text x=\"163.0\" y=\"288\" text-anchor=\"middle\" font-size=\"9.5\" style=\"fill:var(--muted)\">699.04</text><text x=\"280.0\" y=\"288\" text-anchor=\"middle\" font-size=\"9.5\" style=\"fill:var(--muted)\">755.72</text><text x=\"397.0\" y=\"288\" text-anchor=\"middle\" font-size=\"9.5\" style=\"fill:var(--muted)\">812.40</text><text x=\"514.0\" y=\"288\" text-anchor=\"middle\" font-size=\"9.5\" style=\"fill:var(--muted)\">869.08</text></svg>"
+          ]
+        },
+        {
+          "title": "The surface — strikes by expiry",
+          "text": "The surface — strikes by expiry\n\nRows are strikes, columns are expiries. The bright cells are where positioning concentrates.\n\n\tNov 02\n1d\tNov 03\n2d\tNov 04\n3d\tNov 05\n4d\tNov 06\n5d\tNov 09\n8d\tNov 13\n12d\tNov 20\n19d\tNov 27\n26d\tNov 30\n29d\tDec 04\n33d\tDec 18\n47d\n810\t\t\t\t\t1\t\t5\t42\t1\t4\t4\t355\n800\t\t\t\t\t4\t\t14\t329\t4\t14\t3\t195\n790\t\t\t\t3\t6\t\t11\t69\t3\t19\t2\t107\n785\t1\t2\t1\t2\t9\t1\t8\t31\t4\t3\t4\t99\n780\t6\t7\t4\t40\t21\t\t34\t67\t11\t21\t4\t109\n775\t-38\t5\t23\t12\t17\t10\t-2\t-19\t11\t-3\t2\t54\n771\t4\t4\t21\t\t-6\t\t-16\t-36\t\t2\t\t2\n770\t14\t15\t11\t2\t-9\t2\t-11\t-101\t-30\t-10\t3\t91\n769\t8\t-5\t\t\t9\t\t7\t-13\t\t-4\t-2\t-7\n768\t\t2\t-11\t\t-12\t\t-11\t-43\t2\t-7\t\t15\n767\t13\t-6\t-502\t\t41\t\t-12\t-7\t-3\t-5\t\t8\n766\t-4\t-15\t\t\t-5\t\t-19\t-10\t-4\t-3\t\t\n765\t-98\t-16\t-18\t-16\t-70\t-8\t-14\t-135\t-1\t3\t\t15\n763\t-19\t-3\t-3\t\t-41\t\t-3\t-19\t-2\t2\t\t9\n762\t-11\t-7\t-18\t\t-71\t\t-15\t-32\t\t-2\t\t19\n760\t-169\t-24\t-38\t-24\t-222\t-17\t-75\t-236\t-10\t-54\t\t-40\n757\t-108\t-7\t-12\t\t-81\t\t-7\t-294\t-2\t-2\t\t-5\n755\t-101\t-61\t-93\t-11\t-67\t-11\t-88\t-96\t-4\t-18\t-1\t5\n750\t-123\t-16\t-17\t-22\t-351\t-20\t-37\t-985\t-8\t-47\t\t3\n745\t-36\t-7\t-15\t-8\t-111\t-5\t-17\t-186\t-5\t-14\t-2\t-2\n740\t-21\t-47\t-12\t-14\t-59\t-12\t-39\t-334\t-12\t-18\t-3\t-120\n735\t-3\t-6\t-3\t-5\t-69\t-5\t-11\t-63\t-7\t-32\t-1\t-244\n730\t-2\t-2\t-6\t-2\t-30\t-5\t-17\t-369\t-11\t-15\t-24\t-81\n725\t-3\t\t-3\t\t-35\t-3\t-41\t-420\t-5\t-22\t-3\t-35\n720\t-2\t-2\t-1\t-1\t-11\t-3\t-15\t-150\t-10\t-24\t-2\t-23\n700\t-1\t\t\t\t-19\t-2\t-10\t-166\t-3\t-23\t\t-119\ncall gamma\nput gamma\noutlined row = the strike nearest the close",
+          "svgs": []
+        },
+        {
+          "title": "What cover costs by strike",
+          "text": "What cover costs by strike\n\nImplied volatility by strike for the front expiry. A steeper put side means downside cover is pricier.\n\n6%\n20%\n34%\n48%\n62%\n645\n700\n755\n810\n865\ncall side\nput side\nNov 03 · 2d",
+          "svgs": [
+            "<svg viewBox=\"0 0 540 280\" role=\"img\" aria-label=\"Implied volatility by strike\"><line x1=\"40\" y1=\"254.0\" x2=\"514\" y2=\"254.0\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"35\" y=\"257.0\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">6%</text><line x1=\"40\" y1=\"197.0\" x2=\"514\" y2=\"197.0\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"35\" y=\"200.0\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">20%</text><line x1=\"40\" y1=\"140.0\" x2=\"514\" y2=\"140.0\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"35\" y=\"143.0\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">34%</text><line x1=\"40\" y1=\"83.0\" x2=\"514\" y2=\"83.0\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"35\" y=\"86.0\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">48%</text><line x1=\"40\" y1=\"26.0\" x2=\"514\" y2=\"26.0\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"35\" y=\"29.0\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">62%</text><path d=\"M40.0 48.1 L50.8 58.2 L61.5 63.8 L72.3 74.1 L83.1 84.3 L93.9 91.0 L104.6 101.4 L115.4 108.9 L126.2 116.8 L137.0 127.3 L147.7 137.8 L158.5 146.4 L169.3 155.5 L180.0 163.4 L190.8 173.3 L201.6 181.3 L212.4 189.6 L214.5 191.3 L216.7 192.6 L218.8 194.4 L221.0 195.7 L223.1 197.2 L225.3 198.6 L227.4 199.9 L229.6 201.3 L231.8 202.6 L233.9 203.8 L236.1 205.0 L238.2 206.1 L240.4 207.2 L242.5 208.2 L244.7 209.4 L246.8 210.3 L249.0 211.2 L251.1 212.1 L253.3 213.1 L255.5 213.9 L257.6 214.7 L259.8 215.5 L261.9 216.3 L264.1 217.0 L266.2 217.8 L268.4 218.4 L270.5 219.0 L272.7 219.7 L274.8 220.4 L277.0 221.0 L279.2 221.7 L281.3 222.2 L283.5 223.0 L285.6 223.8 L287.8 224.5 L289.9 224.8 L292.1 224.4 L294.2 226.8 L296.4 225.6 L298.5 225.8 L300.7 226.1 L302.9 226.3 L305.0 226.2 L307.2 217.9 L309.3 231.9 L311.5 216.3 L313.6 218.6 L315.8 213.9 L317.9 212.5 L320.1 208.3 L322.2 205.5 M326.6 229.4 L328.7 227.4 M333.0 228.4 \" fill=\"none\" style=\"stroke:var(--down)\" stroke-width=\"1.6\" stroke-linejoin=\"round\"></path><path d=\"M61.5 58.8 M93.9 100.9 L104.6 109.1 L115.4 107.0 M137.0 133.6 L147.7 136.1 L158.5 144.3 L169.3 157.8 L180.0 167.8 L190.8 176.6 L201.6 183.2 M240.4 219.9 L242.5 211.6 L244.7 212.4 L246.8 212.8 L249.0 213.5 L251.1 213.9 L253.3 214.5 L255.5 214.1 L257.6 215.9 L259.8 216.5 L261.9 217.2 L264.1 218.5 L266.2 218.5 L268.4 218.9 L270.5 219.3 L272.7 219.7 L274.8 220.9 L277.0 221.4 L279.2 222.0 L281.3 222.6 L283.5 223.2 L285.6 223.7 L287.8 224.3 L289.9 224.8 L292.1 225.4 L294.2 225.8 L296.4 226.3 L298.5 226.6 L300.7 227.0 L302.9 227.4 L305.0 227.5 L307.2 228.0 L309.3 228.1 L311.5 228.3 L313.6 228.5 L315.8 228.8 L317.9 228.6 L320.1 228.5 L322.2 228.7 L324.4 228.1 L326.6 227.9 L328.7 227.1 L330.9 226.4 L333.0 225.9 L335.2 224.9 L337.3 223.7 L339.5 223.0 L341.6 222.4 L343.8 220.6 L345.9 218.9 L348.1 218.7 L350.3 218.8 L352.4 217.2 L354.6 215.5 L356.7 213.9 L358.9 212.2 L361.0 210.6 L363.2 209.0 L365.3 207.4 L367.5 205.7 L369.6 204.2 L371.8 202.6 L374.0 203.9 L376.1 202.4 L378.3 200.8 L380.4 204.0 L382.6 202.6 L384.7 201.1 L386.9 199.7 L389.0 198.2 L391.2 196.8 L393.3 195.3 L395.5 193.9 L406.3 186.8 L417.0 179.8 L427.8 172.8 L438.6 166.0 L449.4 159.2 L460.1 152.5 L470.9 145.8 L481.7 139.3 L492.5 132.7 L503.2 126.2 L514.0 119.8 \" fill=\"none\" style=\"stroke:var(--up)\" stroke-width=\"1.6\" stroke-linejoin=\"round\"></path><line x1=\"278.6\" y1=\"26\" x2=\"278.6\" y2=\"254\" style=\"stroke:var(--text)\" stroke-width=\"1\" stroke-dasharray=\"3 3\"></line><text x=\"40.0\" y=\"268\" text-anchor=\"middle\" font-size=\"9.5\" style=\"fill:var(--muted)\">645</text><text x=\"158.5\" y=\"268\" text-anchor=\"middle\" font-size=\"9.5\" style=\"fill:var(--muted)\">700</text><text x=\"277.0\" y=\"268\" text-anchor=\"middle\" font-size=\"9.5\" style=\"fill:var(--muted)\">755</text><text x=\"395.5\" y=\"268\" text-anchor=\"middle\" font-size=\"9.5\" style=\"fill:var(--muted)\">810</text><text x=\"514.0\" y=\"268\" text-anchor=\"middle\" font-size=\"9.5\" style=\"fill:var(--muted)\">865</text></svg>"
+          ]
+        },
+        {
+          "title": "What cover costs by date",
+          "text": "What cover costs by date\n\nAt-the-money implied volatility by expiry. Rising with time is the calm default; the reverse flags an event.\n\n12%\n13%\n14%\n16%\n17%\n1d\n3d\n5d\n9d\n11d\n19d\n26d",
+          "svgs": [
+            "<svg viewBox=\"0 0 540 280\" role=\"img\" aria-label=\"At-the-money implied volatility by expiry\"><line x1=\"40\" y1=\"254.0\" x2=\"514\" y2=\"254.0\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"35\" y=\"257.0\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">12%</text><line x1=\"40\" y1=\"194.5\" x2=\"514\" y2=\"194.5\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"35\" y=\"197.5\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">13%</text><line x1=\"40\" y1=\"135.0\" x2=\"514\" y2=\"135.0\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"35\" y=\"138.0\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">14%</text><line x1=\"40\" y1=\"75.5\" x2=\"514\" y2=\"75.5\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"35\" y=\"78.5\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">16%</text><line x1=\"40\" y1=\"16.0\" x2=\"514\" y2=\"16.0\" style=\"stroke:var(--line)\" stroke-width=\"0.5\" opacity=\"0.4\"></line><text x=\"35\" y=\"19.0\" text-anchor=\"end\" font-size=\"10\" style=\"fill:var(--muted)\">17%</text><path d=\"M40.0 226.5 L59.0 149.3 L77.9 82.9 L96.9 59.2 L115.8 43.5 L172.7 88.5 L191.7 71.6 L210.6 67.6 L229.6 64.4 L248.6 63.2 L381.3 63.6 L514.0 90.5\" fill=\"none\" style=\"stroke:var(--oew-accent)\" stroke-width=\"1.8\" stroke-linejoin=\"round\"></path><circle cx=\"40.0\" cy=\"226.5\" r=\"2.6\" style=\"fill:var(--oew-accent)\"></circle><circle cx=\"59.0\" cy=\"149.3\" r=\"2.6\" style=\"fill:var(--oew-accent)\"></circle><circle cx=\"77.9\" cy=\"82.9\" r=\"2.6\" style=\"fill:var(--oew-accent)\"></circle><circle cx=\"96.9\" cy=\"59.2\" r=\"2.6\" style=\"fill:var(--oew-accent)\"></circle><circle cx=\"115.8\" cy=\"43.5\" r=\"2.6\" style=\"fill:var(--oew-accent)\"></circle><circle cx=\"172.7\" cy=\"88.5\" r=\"2.6\" style=\"fill:var(--oew-accent)\"></circle><circle cx=\"191.7\" cy=\"71.6\" r=\"2.6\" style=\"fill:var(--oew-accent)\"></circle><circle cx=\"210.6\" cy=\"67.6\" r=\"2.6\" style=\"fill:var(--oew-accent)\"></circle><circle cx=\"229.6\" cy=\"64.4\" r=\"2.6\" style=\"fill:var(--oew-accent)\"></circle><circle cx=\"248.6\" cy=\"63.2\" r=\"2.6\" style=\"fill:var(--oew-accent)\"></circle><circle cx=\"381.3\" cy=\"63.6\" r=\"2.6\" style=\"fill:var(--oew-accent)\"></circle><circle cx=\"514.0\" cy=\"90.5\" r=\"2.6\" style=\"fill:var(--oew-accent)\"></circle><text x=\"40.0\" y=\"268\" text-anchor=\"middle\" font-size=\"9.5\" style=\"fill:var(--muted)\">1d</text><text x=\"77.9\" y=\"268\" text-anchor=\"middle\" font-size=\"9.5\" style=\"fill:var(--muted)\">3d</text><text x=\"115.8\" y=\"268\" text-anchor=\"middle\" font-size=\"9.5\" style=\"fill:var(--muted)\">5d</text><text x=\"191.7\" y=\"268\" text-anchor=\"middle\" font-size=\"9.5\" style=\"fill:var(--muted)\">9d</text><text x=\"229.6\" y=\"268\" text-anchor=\"middle\" font-size=\"9.5\" style=\"fill:var(--muted)\">11d</text><text x=\"381.3\" y=\"268\" text-anchor=\"middle\" font-size=\"9.5\" style=\"fill:var(--muted)\">19d</text><text x=\"514.0\" y=\"268\" text-anchor=\"middle\" font-size=\"9.5\" style=\"fill:var(--muted)\">26d</text></svg>"
+          ]
+        },
+        {
+          "title": "Every expiry on file",
+          "text": "Every expiry on file\n\nThe full record behind the levels above, one row per expiry.\n\nEXPIRY\tDAYS\tAT-THE-MONEY IV\tIMPLIED MOVE\tSTRADDLE\tMAGNET\nNov 02\t1\t12.2%\t±0.6%\t±0.9%\t772\nNov 03\t2\t14.1%\t±1.1%\t±1.2%\t769\nNov 04\t3\t15.8%\t±1.4%\t±1.5%\t769\nNov 05\t4\t16.4%\t±1.7%\t±1.7%\t765\nNov 06\t5\t16.8%\t±2.0%\t±1.9%\t769\nNov 09\t8\t15.7%\t±2.3%\t±2.1%\t770\nNov 10\t9\t16.1%\t±2.5%\t±2.3%\t770\nNov 11\t10\t16.2%\t±2.7%\t±2.4%\t770\nNov 12\t11\t16.3%\t±2.8%\t±2.5%\t770\nNov 13\t12\t16.3%\t±3.0%\t±2.6%\t771\nNov 20\t19\t16.3%\t±3.7%\t±3.2%\t770\nNov 27\t26\t15.6%\t±4.2%\t±3.5%\t770",
+          "svgs": []
+        },
+        {
+          "title": "Positioning greeks",
+          "text": "Positioning greeks\n\nThe chain-wide sensitivities the model reconstructs. Reference material, not a read.\n\nNET DELTA\n+$205.4B\nNET VANNA\n4.30B\nCHARM BIAS\n↓\ndrifts down\nPUT/CALL OI\n1.71x\nPUT/CALL VOLUME\n1.63x\nBUSIEST STRIKE\n700\nSTRIKES\n5428\ndeep chain",
+          "svgs": []
+        }
+      ]
+    },
+    "leaders": {
+      "panels": [
+        {
+          "title": "Money keeps showing up",
+          "text": "Money keeps showing up\ntop 12 of 368, by recurrence\n?\n2026-08-12\n01\nAAL\nIndustrials\nOn the radar\n0/4\nbuilding history\nEarnings soon\nBoth sides\n02\nAAPL\nInformation Technology\nOn the radar\n2/5\nbuilding history\nEarnings soon\nBoth sides\n03\nABNB\nConsumer Discretionary\nOn the radar\n0/4\nbuilding history\nEarnings soon\nBoth sides\n04\nACLS\nInformation Technology\nOn the radar\n0/4\nbuilding history\nEarnings soon\nBoth sides\n05\nADBE\nInformation Technology\nOn the radar\n0/4\nbuilding history\nEarnings soon\nBoth sides\n06\nADI\nInformation Technology\nOn the radar\n2/5\nbuilding history\nEarnings soon\nBoth sides\nFragile tape\n07\nAEIS\nInformation Technology\nOn the radar\n0/4\nbuilding history\nEarnings soon\nBoth sides\nFragile tape\n08\nAEM\nOn the radar\n0/3\nbuilding history\nBoth sides\n09\nAEP\nUtilities\nOn the radar\n2/5\nbuilding history\nEarnings soon\nBoth sides\nFragile tape\n10\nAFRM\nOn the radar\n0/4\nbuilding history\nBoth sides\n11\nAG\nOn the radar\n0/3\nbuilding history\nBoth sides\n12\nAGI\nOn the radar\n0/3\nbuilding history\nBoth sides\nShow all 368\nWatch — don't chase\nRepeated buying marks where attention is, not where the edge is. Names here are a place to start reading, not a queue to buy.\n2026-08-12",
+          "dates": [
+            "2026-08-12"
+          ]
+        },
+        {
+          "title": "Turned back up after a washout",
+          "text": "Turned back up after a washout\ntop 12 of 63, most recent first\n2026-08-12\n01\nADBE\nInformation Technology\nOn the radar\n1/2\nturned up today\nEarnings soon\nBoth sides\n02\nALAB\nOn the radar\n1/2\nturned up today\nBoth sides\n03\nANET\nInformation Technology\nOn the radar\n4/5\nturned up today\nEarnings soon\nBoth sides\n04\nAPLD\nOn the radar\n1/2\nturned up today\nBoth sides\n05\nAPP\nCommunication Services\nOn the radar\n4/5\nturned up today\nEarnings soon\nBoth sides\nFragile tape\n06\nARM\nOn the radar\n1/2\nturned up today\nBoth sides\n07\nBBY\nConsumer Discretionary\nOn the radar\n1/2\nturned up today\nEarnings soon\nBoth sides\n08\nBWXT\nIndustrials\nOn the radar\n1/2\nturned up today\nEarnings soon\nBoth sides\nFragile tape\n09\nCIEN\nInformation Technology\nOn the radar\n1/2\nturned up today\nEarnings soon\nBoth sides\n10\nCLSK\nInformation Technology\nOn the radar\n1/2\nturned up today\nEarnings soon\nBoth sides\nFragile tape\n11\nCORZ\nOn the radar\n1/2\nturned up today\nEarnings soon\nBoth sides\nFragile tape\n12\nCVS\nHealth Care\nOn the radar\n2/3\nturned up today\nEarnings soon\nBoth sides\nShow all 63\nGet ready\nA turn this fresh can fail. Wait for it to hold rather than buying the first green day.\n2026-08-12",
+          "dates": [
+            "2026-08-12"
+          ]
+        },
+        {
+          "title": "Sector ETF flows",
+          "text": "Sector ETF flows\ncreation / redemption estimate\n2026-08-12\nDIA\n−$260K\nnet premium\nIWM\n−$23M\nnet premium\nKRE\n+$2M\nnet premium\nQQQ\n+$192M\nnet premium\nSMH\n−$12M\nnet premium\nSOXX\n−$460K\nnet premium\nSPY\n−$218M\nnet premium\nXBI\n−$4M\nnet premium\nXLB\n−$160K\nnet premium\nXLC\n+$10K\nnet premium\nXLE\n−$6M\nnet premium\nXLF\n+$2M\nnet premium\nXLI\n+$810K\nnet premium\nXLK\n−$2M\nnet premium\nXLP\n−$520K\nnet premium\nXLRE\n+$40K\nnet premium\nXLU\n−$510K\nnet premium\nXLV\n+$3M\nnet premium\nXLY\n−$29M\nnet premium\nIgnore\nThese are estimates, not reported fund flows. Useful as a background check, not as a signal.\n2026-08-12",
+          "dates": [
+            "2026-08-12"
+          ]
+        }
+      ],
+      "rows": [],
+      "columns": [],
+      "raw": []
+    }
+  }
+}

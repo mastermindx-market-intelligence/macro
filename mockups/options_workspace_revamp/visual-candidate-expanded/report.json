@@ -1,0 +1,770 @@
+{
+  "git_head": "d633db51742aed46928d2847bdc5f06acf3235e5",
+  "template_sha256": "43dc7e1dd396ff16ab7c017581218eb8efb7064a33d2deb81866764ebe2bc638",
+  "builder_sha256": "6184ebe6ad6fc9249a555e65b402b168131bb54b88ef04ac41561161e6e33b3d",
+  "fixture_manifest": {
+    "source_pin": "e4009c94d75770739844240b22f5fc915668aa9b",
+    "template_head": "d633db51742aed46928d2847bdc5f06acf3235e5",
+    "reads": [
+      {
+        "path": "site/flow_desk.json",
+        "state": "READ",
+        "bytes": 14922,
+        "sha256": "920a87bba60f90cc21347b0f93b802f3a26d15ba778034483b1180146837ccbf"
+      },
+      {
+        "path": "site/screenerdata/rows.json",
+        "state": "READ",
+        "bytes": 250876,
+        "sha256": "d32e3c115fa4bb988b6043605cfa21f0819aab0911ad5958d751e9e75ba7f41b"
+      },
+      {
+        "path": "site/flowleaders/leaders.json",
+        "state": "READ",
+        "bytes": 550063,
+        "sha256": "9f9bc52f23536e738016e3e60eb076580109364d5722b8eee3a4414d848585c1"
+      },
+      {
+        "path": "data/market_structure/latest.json",
+        "state": "READ",
+        "bytes": 153370,
+        "sha256": "1ef7585a35c42f5b93b099f7b3bec56027a8f3d13520a7483d25141a04e5d3a0"
+      },
+      {
+        "path": "site/vol/regime.json",
+        "state": "READ",
+        "bytes": 5732,
+        "sha256": "2ed52051b83a5447538f25474cee16b8d29a614a1af7b8f1ee7c44c71172c82b"
+      },
+      {
+        "path": "site/gex/index.json",
+        "state": "READ",
+        "bytes": 326497,
+        "sha256": "318069700b0383600a9dfa80049e33745c6c90e8286f3939977eaef9894d1c16"
+      },
+      {
+        "path": "site/options_intel_brief.json",
+        "state": "READ",
+        "bytes": 29845,
+        "sha256": "4ed3b846482c7740cb751d88329d5a62cf741437c652c5ff95329fbc93d1b9cf"
+      },
+      {
+        "path": "site/options_payoff_lab/latest.json",
+        "state": "READ",
+        "bytes": 425907,
+        "sha256": "22699f9c6b24da8d081a10933668343e34c204d11d6212e5affdc6e5f0c9b858"
+      },
+      {
+        "path": "site/options_skew/latest.json",
+        "state": "READ",
+        "bytes": 110931,
+        "sha256": "7b002900c1f281c5f8936f8f2557e6d0cf24768943905421c0f5f7cd2cd46853"
+      },
+      {
+        "path": "site/options_catalyst_links/latest.json",
+        "state": "READ",
+        "bytes": 1367,
+        "sha256": "4abd5819220ecfed0ee6af66c01b7c10bcaf11354b7e650dc428458318314175"
+      },
+      {
+        "path": "site/flowdata/cohorts.json",
+        "state": "READ",
+        "bytes": 2331,
+        "sha256": "78ac0e385563eb4cf99001d077ca7e01937d8a0e1f37f431dfd2dbe23574f500"
+      },
+      {
+        "path": "site/gex/SPX.json",
+        "state": "READ",
+        "bytes": 24474,
+        "sha256": "8f88392ab2caba44b47b3240bc34670b5684ee001b58e45f58a5fd9c57b711d6"
+      },
+      {
+        "path": "site/gex/SPY.json",
+        "state": "READ",
+        "bytes": 27039,
+        "sha256": "d7f2a4b8855c90bac017247c7ceb50be7646a3ebfcd6760327809d4e5f35c5d7"
+      },
+      {
+        "path": "site/gex/QQQ.json",
+        "state": "READ",
+        "bytes": 26787,
+        "sha256": "8a7ef90fa235fe985b8756d60ef39e3a78a945fe831a06363a3a9e8e25c5962d"
+      },
+      {
+        "path": "site/gex/IWM.json",
+        "state": "READ",
+        "bytes": 25502,
+        "sha256": "b5b99153fd957a82ca29ed251a0083ed30372861ce368c9c24af004d517d4c6e"
+      },
+      {
+        "path": "site/flow/SPY.json",
+        "state": "READ",
+        "bytes": 5213,
+        "sha256": "d3c194a589eac04f8fa89c104b0534c7e80fc8e53b3716c1c9937bf10e4751b7"
+      },
+      {
+        "path": "site/session/SPY.json",
+        "state": "READ",
+        "bytes": 6978,
+        "sha256": "66b2b3d5379fef75a50b3d7d9abb088d6476b6f756d8bd6287435cb08166b726"
+      }
+    ],
+    "template_sha256": "43dc7e1dd396ff16ab7c017581218eb8efb7064a33d2deb81866764ebe2bc638",
+    "builder_sha256": "6184ebe6ad6fc9249a555e65b402b168131bb54b88ef04ac41561161e6e33b3d"
+  },
+  "checks": [
+    {
+      "case": "1440-light-en",
+      "name": "sources opens by keyboard",
+      "pass": true,
+      "dates": [
+        "2026-08-13",
+        "2026-08-13",
+        "2026-10-30",
+        "2026-08-12",
+        "2026-10-20",
+        "2026-10-30",
+        "2026-08-19"
+      ]
+    },
+    {
+      "case": "1440-light-en",
+      "name": "sources document containment",
+      "pass": true,
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "case": "1440-light-en",
+      "name": "history action opens and focuses disclosure",
+      "pass": true
+    },
+    {
+      "case": "1440-light-en",
+      "name": "history document containment",
+      "pass": true,
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "case": "1440-light-en",
+      "name": "payoff retains both source dates",
+      "pass": true,
+      "dates": [
+        "2026-10-29",
+        "2026-10-30"
+      ]
+    },
+    {
+      "case": "1440-light-en",
+      "name": "payoff document containment",
+      "pass": true,
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "case": "1440-light-en",
+      "name": "index evidence reachable with shared assistant",
+      "pass": true,
+      "items": [
+        {
+          "text": "755.72",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "Jumpy \u2014 moves get amplified",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "750",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "772.93",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "800",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "1-day move \u00b10.97%",
+          "in_view": true,
+          "covered": false
+        }
+      ],
+      "all_reachable": true
+    },
+    {
+      "case": "1440-light-en",
+      "name": "tide history and honest intraday availability",
+      "pass": true,
+      "canvas_count": 1,
+      "intraday_unavailable": true
+    },
+    {
+      "case": "1440-light-en",
+      "name": "tides document containment",
+      "pass": true,
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "case": "1440-light-en",
+      "name": "advanced ranges remain available",
+      "pass": true,
+      "count": 21
+    },
+    {
+      "case": "1440-light-en",
+      "name": "filters document containment",
+      "pass": true,
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "case": "1440-light-en",
+      "name": "scanner ovr columns reachable",
+      "pass": true,
+      "visible_headers": 10,
+      "width": 1278,
+      "scroll": 1278,
+      "left": 0
+    },
+    {
+      "case": "1440-light-en",
+      "name": "scanner-ovr document containment",
+      "pass": true,
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "case": "1440-light-en",
+      "name": "scanner flow columns reachable",
+      "pass": true,
+      "visible_headers": 7,
+      "width": 1278,
+      "scroll": 1278,
+      "left": 0
+    },
+    {
+      "case": "1440-light-en",
+      "name": "scanner-flow document containment",
+      "pass": true,
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "case": "1440-light-en",
+      "name": "scanner pos columns reachable",
+      "pass": true,
+      "visible_headers": 8,
+      "width": 1278,
+      "scroll": 1278,
+      "left": 0
+    },
+    {
+      "case": "1440-light-en",
+      "name": "scanner-pos document containment",
+      "pass": true,
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "case": "1440-light-en",
+      "name": "raw structure rendered on disclosure",
+      "pass": true,
+      "svg": 4,
+      "sections": [
+        "Dealer gamma by strike\u6309\u884c\u6743\u4ef7\u7684\u505a\u5e02\u5546 Gamma",
+        "Net gamma against price\u51c0 Gamma \u5bf9\u4ef7\u683c",
+        "The surface \u2014 strikes by expiry\u66f2\u9762 \u2014 \u884c\u6743\u4ef7\u4e0e\u5230\u671f\u65e5",
+        "What cover costs by strike\u5404\u884c\u6743\u4ef7\u7684\u4fdd\u62a4\u6210\u672c",
+        "What cover costs by date\u5404\u5230\u671f\u65e5\u7684\u4fdd\u62a4\u6210\u672c",
+        "Every expiry on file\u5168\u90e8\u5230\u671f\u65e5\u8bb0\u5f55",
+        "Positioning greeks\u6301\u4ed3\u5e0c\u814a\u5b57\u6bcd"
+      ]
+    },
+    {
+      "case": "1440-light-en",
+      "name": "structure document containment",
+      "pass": true,
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "case": "1440-light-en",
+      "name": "live terminal has selected symbol and exact return path",
+      "pass": true,
+      "href": "http://127.0.0.1:3100/terminal?sym=SPY&from=macro&ret=http%3A%2F%2F127.0.0.1%3A8768%2Fmockups%2Foptions_workspace_revamp%2Ffixtures%2Fpublished%2Fworkspace.html%3Ftheme%3Dlight%26lang%3Den%23ticker%3Ft%3DSPY"
+    },
+    {
+      "case": "1440-light-en",
+      "name": "leader expansion 0",
+      "pass": true
+    },
+    {
+      "case": "1440-light-en",
+      "name": "leader expansion 1",
+      "pass": true
+    },
+    {
+      "case": "1440-light-en",
+      "name": "leaders document containment",
+      "pass": true,
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "case": "1440-light-en",
+      "name": "expanded-state browser has no page errors",
+      "pass": true,
+      "errors": []
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "sources opens by keyboard",
+      "pass": true,
+      "dates": [
+        "2026-08-13",
+        "2026-08-13",
+        "2026-10-30",
+        "2026-08-12",
+        "2026-10-20",
+        "2026-10-30",
+        "2026-08-19"
+      ]
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "sources document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "history action opens and focuses disclosure",
+      "pass": true
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "history document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "payoff retains both source dates",
+      "pass": true,
+      "dates": [
+        "2026-10-29",
+        "2026-10-30"
+      ]
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "expanded mobile payoff uses full card row",
+      "pass": true,
+      "card": 358,
+      "grid": 358
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "payoff document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "index evidence reachable with shared assistant",
+      "pass": true,
+      "items": [
+        {
+          "text": "755.72",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "\u5267\u70c8 \u2014 \u6ce2\u52a8\u88ab\u653e\u5927",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "750",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "772.93",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "800",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "1\u65e5\u9884\u671f\u6ce2\u5e45\n\u00b10.97%",
+          "in_view": true,
+          "covered": false
+        }
+      ],
+      "all_reachable": true
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "tide history and honest intraday availability",
+      "pass": true,
+      "canvas_count": 1,
+      "intraday_unavailable": true
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "tides document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "advanced ranges remain available",
+      "pass": true,
+      "count": 21
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "filters document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "scanner ovr columns reachable",
+      "pass": true,
+      "visible_headers": 10,
+      "width": 356,
+      "scroll": 973,
+      "left": 617
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "scanner-ovr document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "scanner flow columns reachable",
+      "pass": true,
+      "visible_headers": 7,
+      "width": 356,
+      "scroll": 850,
+      "left": 494
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "scanner-flow document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "scanner pos columns reachable",
+      "pass": true,
+      "visible_headers": 8,
+      "width": 356,
+      "scroll": 850,
+      "left": 494
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "scanner-pos document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "raw structure rendered on disclosure",
+      "pass": true,
+      "svg": 4,
+      "sections": [
+        "Dealer gamma by strike\u6309\u884c\u6743\u4ef7\u7684\u505a\u5e02\u5546 Gamma",
+        "Net gamma against price\u51c0 Gamma \u5bf9\u4ef7\u683c",
+        "The surface \u2014 strikes by expiry\u66f2\u9762 \u2014 \u884c\u6743\u4ef7\u4e0e\u5230\u671f\u65e5",
+        "What cover costs by strike\u5404\u884c\u6743\u4ef7\u7684\u4fdd\u62a4\u6210\u672c",
+        "What cover costs by date\u5404\u5230\u671f\u65e5\u7684\u4fdd\u62a4\u6210\u672c",
+        "Every expiry on file\u5168\u90e8\u5230\u671f\u65e5\u8bb0\u5f55",
+        "Positioning greeks\u6301\u4ed3\u5e0c\u814a\u5b57\u6bcd"
+      ]
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "structure document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "live terminal has selected symbol and exact return path",
+      "pass": true,
+      "href": "http://127.0.0.1:3100/terminal?sym=SPY&from=macro&ret=http%3A%2F%2F127.0.0.1%3A8768%2Fmockups%2Foptions_workspace_revamp%2Ffixtures%2Fpublished%2Fworkspace.html%3Ftheme%3Ddark%26lang%3Dzh%23ticker%3Ft%3DSPY"
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "leader expansion 0",
+      "pass": true
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "leader expansion 1",
+      "pass": true
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "leaders document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-dark-zh",
+      "name": "expanded-state browser has no page errors",
+      "pass": true,
+      "errors": []
+    },
+    {
+      "case": "390-light-en",
+      "name": "sources opens by keyboard",
+      "pass": true,
+      "dates": [
+        "2026-08-13",
+        "2026-08-13",
+        "2026-10-30",
+        "2026-08-12",
+        "2026-10-20",
+        "2026-10-30",
+        "2026-08-19"
+      ]
+    },
+    {
+      "case": "390-light-en",
+      "name": "sources document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-light-en",
+      "name": "history action opens and focuses disclosure",
+      "pass": true
+    },
+    {
+      "case": "390-light-en",
+      "name": "history document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-light-en",
+      "name": "payoff retains both source dates",
+      "pass": true,
+      "dates": [
+        "2026-10-29",
+        "2026-10-30"
+      ]
+    },
+    {
+      "case": "390-light-en",
+      "name": "expanded mobile payoff uses full card row",
+      "pass": true,
+      "card": 358,
+      "grid": 358
+    },
+    {
+      "case": "390-light-en",
+      "name": "payoff document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-light-en",
+      "name": "index evidence reachable with shared assistant",
+      "pass": true,
+      "items": [
+        {
+          "text": "755.72",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "Jumpy \u2014 moves get amplified",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "750",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "772.93",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "800",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "1-day move\n\u00b10.97%",
+          "in_view": true,
+          "covered": false
+        }
+      ],
+      "all_reachable": true
+    },
+    {
+      "case": "390-light-en",
+      "name": "tide history and honest intraday availability",
+      "pass": true,
+      "canvas_count": 1,
+      "intraday_unavailable": true
+    },
+    {
+      "case": "390-light-en",
+      "name": "tides document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-light-en",
+      "name": "advanced ranges remain available",
+      "pass": true,
+      "count": 21
+    },
+    {
+      "case": "390-light-en",
+      "name": "filters document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-light-en",
+      "name": "scanner ovr columns reachable",
+      "pass": true,
+      "visible_headers": 10,
+      "width": 356,
+      "scroll": 1100,
+      "left": 744
+    },
+    {
+      "case": "390-light-en",
+      "name": "scanner-ovr document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-light-en",
+      "name": "scanner flow columns reachable",
+      "pass": true,
+      "visible_headers": 7,
+      "width": 356,
+      "scroll": 865,
+      "left": 509
+    },
+    {
+      "case": "390-light-en",
+      "name": "scanner-flow document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-light-en",
+      "name": "scanner pos columns reachable",
+      "pass": true,
+      "visible_headers": 8,
+      "width": 356,
+      "scroll": 874,
+      "left": 518
+    },
+    {
+      "case": "390-light-en",
+      "name": "scanner-pos document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-light-en",
+      "name": "raw structure rendered on disclosure",
+      "pass": true,
+      "svg": 4,
+      "sections": [
+        "Dealer gamma by strike\u6309\u884c\u6743\u4ef7\u7684\u505a\u5e02\u5546 Gamma",
+        "Net gamma against price\u51c0 Gamma \u5bf9\u4ef7\u683c",
+        "The surface \u2014 strikes by expiry\u66f2\u9762 \u2014 \u884c\u6743\u4ef7\u4e0e\u5230\u671f\u65e5",
+        "What cover costs by strike\u5404\u884c\u6743\u4ef7\u7684\u4fdd\u62a4\u6210\u672c",
+        "What cover costs by date\u5404\u5230\u671f\u65e5\u7684\u4fdd\u62a4\u6210\u672c",
+        "Every expiry on file\u5168\u90e8\u5230\u671f\u65e5\u8bb0\u5f55",
+        "Positioning greeks\u6301\u4ed3\u5e0c\u814a\u5b57\u6bcd"
+      ]
+    },
+    {
+      "case": "390-light-en",
+      "name": "structure document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-light-en",
+      "name": "live terminal has selected symbol and exact return path",
+      "pass": true,
+      "href": "http://127.0.0.1:3100/terminal?sym=SPY&from=macro&ret=http%3A%2F%2F127.0.0.1%3A8768%2Fmockups%2Foptions_workspace_revamp%2Ffixtures%2Fpublished%2Fworkspace.html%3Ftheme%3Dlight%26lang%3Den%23ticker%3Ft%3DSPY"
+    },
+    {
+      "case": "390-light-en",
+      "name": "leader expansion 0",
+      "pass": true
+    },
+    {
+      "case": "390-light-en",
+      "name": "leader expansion 1",
+      "pass": true
+    },
+    {
+      "case": "390-light-en",
+      "name": "leaders document containment",
+      "pass": true,
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "case": "390-light-en",
+      "name": "expanded-state browser has no page errors",
+      "pass": true,
+      "errors": []
+    }
+  ]
+}

@@ -1279,11 +1279,14 @@ html[data-theme="light"] .oew-cta{background:var(--text);color:var(--panel)}
   .oew-ic-line{font-size:12px;min-height:58px}
   .oew-ic-levels{grid-template-columns:1fr;gap:var(--s2)}
   .oew-ic-lv{display:flex;justify-content:space-between;gap:4px;align-items:baseline}
-  .oew-ic-lv .v{font-size:12px;margin:0}
+  .oew-ic-lv .v{font-size:12.5px;margin:0}
   .oew-ic-foot{flex-direction:column;align-items:flex-start}
   .oew-ic .oew-stance{font-size:11px;padding:4px 7px;max-width:100%}
-  .oew-ic .oew-ic-em{font-size:11px;display:flex;flex-wrap:wrap;gap:2px var(--s1)}
-  .oew-ic .oew-lab>summary{font-size:11px;line-height:1.6}
+  .oew-ic .oew-ic-em{font-size:12.5px;display:flex;flex-wrap:wrap;gap:2px var(--s1)}
+  .oew-ic .oew-lab>summary{font-size:12.5px;line-height:1.6}
+  .oew-ic:has(.oew-lab[open]){grid-column:1/-1}
+  .oew-ic .oew-lab[open] .oew-lab-row{font-size:13px;gap:4px}
+  .oew-ic .oew-lab[open] .oew-lab-foot{font-size:12px;line-height:1.5}
   .oew-ic .oew-lab-body{overflow-x:auto}
   .oew-index-legend{font-size:11.5px}
   .oew-history>summary{padding:var(--s4)}
@@ -2299,7 +2302,7 @@ var SC_COLS = [
   ['c-pos','hide-sm','Floor','下方墙','wall_down'],
   ['c-pos','',       'Behaviour','表现','gamma_regime'],
   ['','',            'Tone','方向','net_prem_tone'],
-  ['','',            'Data age','数据新鲜度','asof']
+  ['','',            'Row lag','行数据滞后','asof']
 ];
 /* Preset values are the options_screener page's OWN shipped thresholds — reused,
    never reinvented (templates/options_screener.html.j2 applyPreset). The seventh,
@@ -2463,7 +2466,7 @@ function scBody(){
       + td('c-pos mono hide-sm','Floor','下方墙', lvl(r.wall_down))
       + td('c-pos','Behaviour','表现', r.gamma_regime ? bi(jumpy ? 'jumpy' : 'calm', jumpy ? '剧烈' : '平静') : '—')
       + td('','Tone','方向', '<span class="tone ' + (toneCall ? 'buy' : (toneEn === 'put-leaning' ? 'sell' : '')) + '">' + bi(toneEn, toneZh) + '</span>')
-      + td('','Data age','数据新鲜度', ageCell(r.asof, scAsof))
+      + td('','Row lag','行数据滞后', ageCell(r.asof, scAsof))
       + '</tr>';
   }).join('');
 }
@@ -3469,7 +3472,7 @@ function renderTicker(host, tk, gx, fl, sess){
   + '</details>'
 
   + '<div class="oew-handoff">'
-    + '<div><div class="oew-ho-t">' + bi('These levels are frozen until tomorrow','这些水位在明日前保持不变') + '</div>'
+    + '<div><div class="oew-ho-t">' + bi('Continue in the live Terminal','前往实时交易终端') + '</div>'
       + '<div class="oew-ho-s">' + bi('Walls move during the session as positions change. To watch this name’s structure update live, open it in the Terminal.',
           '墙位会随持仓变化在盘中移动。若要实时观察该标的结构的更新，请在交易终端中打开。')
         + ' ' + bi('Same subscription, two clocks — the Terminal is the live desk (tape, replay, alerts); this workspace is the settled record.',
