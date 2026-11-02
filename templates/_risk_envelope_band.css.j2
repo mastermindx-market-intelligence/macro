@@ -30,9 +30,22 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
 #dlg-risk .gde-disc-body {padding-top:8px; border-top:1px solid var(--line);}
 #dlg-risk .gde-tblwrap {max-width:100%; overflow-x:auto;}
 #dlg-risk .gde-tbl {width:100%; border-collapse:collapse; font-size:var(--fs-label);}
-#dlg-risk .gde-tbl th, #dlg-risk .gde-tbl td {padding:8px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; overflow-wrap:anywhere;}
+#dlg-risk .gde-tbl th, #dlg-risk .gde-tbl td {padding:8px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; overflow-wrap:break-word;}
 #dlg-risk .gde-tbl th {color:var(--ink-2); font-weight:600;}
 #dlg-risk .gde-tbl td {color:var(--ink-1);}
+/* D2 (FU2 recapture): below 481 px four columns cannot hold "Leadership cohort" or
+   the uppercase headers without letter-level breaks, so the table reduces to one
+   stacked card per source: the header row leaves the visual flow (still read by
+   assistive tech) and every cell carries its own column label from data-label-*. */
+@media(max-width:480px) {
+  #dlg-risk .gde-tbl thead {position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;}
+  #dlg-risk .gde-tbl, #dlg-risk .gde-tbl tbody {display:block;}
+  #dlg-risk .gde-tbl tr {display:block; padding:6px 0; border-bottom:1px solid var(--line);}
+  #dlg-risk .gde-tbl td {display:grid; grid-template-columns:minmax(0, 7.5em) minmax(0, 1fr); gap:0 12px; padding:3px 0; border-bottom:0;}
+  #dlg-risk .gde-tbl td::before {color:var(--ink-2); font-weight:600; font-size:var(--fs-label);}
+  html:not([data-lang="zh"]) #dlg-risk .gde-tbl td::before {content:attr(data-label-en);}
+  html[data-lang="zh"] #dlg-risk .gde-tbl td::before {content:attr(data-label-zh);}
+}
 #dlg-risk .gde-warn {color:var(--ink-warn);}
 #dlg-risk .gde-req {color:var(--ink-3);}
 #dlg-risk .gde-disc-h {font-size:var(--fs-sm); font-weight:600; margin:12px 0 4px;}

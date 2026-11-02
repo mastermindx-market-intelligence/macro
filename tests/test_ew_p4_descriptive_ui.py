@@ -10,6 +10,7 @@ research/grey_deer/evidence/EW_P4_DESCRIPTIVE_UI_2026-10-31.md for the mapping.
 """
 from __future__ import annotations
 
+import collections
 import hashlib
 import json
 import re
@@ -527,9 +528,27 @@ def test_review_r1_observation_id_is_selectable_monospace():
 
 def test_fu2_radar_band_wraps_raises_and_matches_sector_central():
     css = re.sub(r"/\*.*?\*/", "", (ROOT / "templates" / "_risk_envelope_band.css.j2").read_text(encoding="utf-8"), flags=re.S)
-    # D2: the sources table wraps at 320 instead of clipping inside a fixed floor
+    # D2: the sources table wraps at 320 instead of clipping inside a fixed floor, and
+    # below 481 px it reduces to stacked labelled rows instead of letter-level breaks
+    # ("SOURC E", "Marke t" in the first FU2 light shots at 390).
     assert "min-width:460px" not in css
-    assert re.search(r"#dlg-risk \.gde-tbl th, #dlg-risk \.gde-tbl td \{[^}]*overflow-wrap:anywhere", css)
+    cell = re.search(r"#dlg-risk \.gde-tbl th, #dlg-risk \.gde-tbl td \{([^}]*)\}", css).group(1)
+    assert "overflow-wrap:break-word" in cell and "anywhere" not in cell
+    narrow = css[css.index("@media(max-width:480px)"):]
+    narrow = narrow[:narrow.index("\n}\n") + 3]
+    assert "#dlg-risk .gde-tbl thead {position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;}" in narrow
+    assert "#dlg-risk .gde-tbl td {display:grid; grid-template-columns:minmax(0, 7.5em) minmax(0, 1fr);" in narrow
+    assert 'html:not([data-lang="zh"]) #dlg-risk .gde-tbl td::before {content:attr(data-label-en);}' in narrow
+    assert 'html[data-lang="zh"] #dlg-risk .gde-tbl td::before {content:attr(data-label-zh);}' in narrow
+    soup = BeautifulSoup(render(envelope(deepcopy(_fixtures()["observed_rise"]))), "html.parser")
+    heads = [th.select_one(".l-en").get_text(strip=True) for th in soup.select(".gde-tbl thead th")]
+    heads_zh = [th.select_one(".l-zh").get_text(strip=True) for th in soup.select(".gde-tbl thead th")]
+    rows = soup.select(".gde-tbl tbody tr")
+    assert rows
+    for row in rows:
+        cells = row.find_all("td")
+        assert [td["data-label-en"] for td in cells] == heads
+        assert [td["data-label-zh"] for td in cells] == heads_zh
     # D6: legs row headers are sentence-case UI labels, as on Sector Central
     legs_th = re.search(r"#dlg-risk \.gde-ew-legs th \{([^}]*)\}", css).group(1)
     for decl in ("text-transform:none", "letter-spacing:normal", "font-family:var(--font-ui)", "font-size:var(--fs-label)"):
@@ -591,23 +610,65 @@ def test_receipt_shots_depict_the_source_under_test():
         assert row["blob_at_source_revision"] == row["blob_on_pr_branch"], row["path"]
         assert _git_blob_id(p) == row["blob_at_source_revision"], row["path"]
 
+    glance = (ROOT / "templates" / "rotation_glance.css").read_bytes()
+    assert rec["glance_css_sha256"] == hashlib.sha256(glance).hexdigest()
+
+    # EW-P5 FU2 recapture: 3 families × EN/ZH × dark/light × 1440/1280/390/320
+    # (48) + 6 Radar states × 2 themes (12) + 4 Sector Central states × 2 themes (8).
     cases = rec["cases"]
-    assert len(cases) == 46
+    assert len(cases) == 68
+    widths = (1440, 1280, 390, 320)
+    themes = ("dark", "light")
+    assert rec["matrix"] == {"widths": list(widths), "themes": list(themes), "langs": ["en", "zh"],
+                             "state_shots": "every degraded state at 390/en in both themes on both hosts"}
     matrix = {(c["surface"], c["state"], c["lang"], c["theme"], c["width"]) for c in cases}
     for surface, state in (("radar", "stale"), ("radar", "observed"), ("sc", "observed")):
         for lang in ("en", "zh"):
-            for theme in ("dark", "light"):
-                for width in (1280, 390, 320):
+            for theme in themes:
+                for width in widths:
                     assert (surface, state, lang, theme, width) in matrix
-    radar_states = {c["state"] for c in cases if c["surface"] == "radar"}
-    sc_states = {c["state"] for c in cases if c["surface"] == "sc"}
-    assert {"partial", "conflicting", "unavailable", "withdrawn", "corrected", "unreadable"} <= radar_states
-    assert {"stale", "withdrawn", "corrected", "unreadable"} <= sc_states
+    # L1: every degraded state is shown in BOTH art directions, not dark only.
+    for state in ("partial", "conflicting", "unavailable", "withdrawn", "corrected", "unreadable"):
+        for theme in themes:
+            assert ("radar", state, "en", theme, 390) in matrix, (state, theme)
+    for state in ("stale", "withdrawn", "corrected", "unreadable"):
+        for theme in themes:
+            assert ("sc", state, "en", theme, 390) in matrix, (state, theme)
+    # L2: real Tab navigation reached the disclosure, a visible focus outline was
+    # measured and Enter opened it — once per (host, width, theme), both themes.
+    keyboard = {}
+    for c in cases:
+        kb = c["keyboard_details"]
+        if kb:
+            assert kb["reached"] is True and kb["opened_by_enter"] is True and kb["focus_outline"] is True, c["screenshot"]
+            assert c["focus_outline"] is True, c["screenshot"]
+            keyboard[(c["surface"], c["width"], c["theme"])] = kb
+    for surface in ("radar", "sc"):
+        for width in widths:
+            for theme in themes:
+                assert (surface, width, theme) in keyboard, (surface, width, theme)
+    # L4: every visible Radar warning run (input caveats + sources-table warn words)
+    # resolved to ONE computed colour and that colour is the theme's --ink-warn token;
+    # the token differs between the two art directions. Sector Central samples nothing.
+    tokens = collections.defaultdict(set)
+    for case in cases:
+        ink = case["warning_ink"]
+        if case["surface"] == "radar":
+            assert ink["consistent"] is True and ink["matches_token"] is True, case["screenshot"]
+            assert ink["caveat"] and ink["warn"], case["screenshot"]
+            assert set(ink["caveat"]) | set(ink["warn"]) == {ink["token_ink_warn"]}, case["screenshot"]
+            tokens[case["theme"]].add(ink["token_ink_warn"])
+        else:
+            assert ink is None, case["screenshot"]
+    assert len(tokens["dark"]) == 1 and len(tokens["light"]) == 1 and tokens["dark"] != tokens["light"]
     for case in cases:
         shot = EVIDENCE / case["screenshot"]
         assert hashlib.sha256(shot.read_bytes()).hexdigest() == case["sha256"], case["screenshot"]
         assert case["no_horizontal_overflow"] is True, case["screenshot"]
         assert case["page_errors"] == [], case["screenshot"]
+    for sheet in ("contact-radar-observed", "contact-radar-stale", "contact-sc-observed",
+                  "contact-sc-states", "contact-radar-states"):
+        assert (EVIDENCE / f"{sheet}.png").exists(), sheet
 
 
 # ---------------------------------------------------------------------------

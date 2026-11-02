@@ -43579,10 +43579,10 @@ jobs:
       - "tests/test_mag7_tape_strip.py"
       - "tests/test_theme_tape.py"
       - "tests/test_us_board_priority_ui.py"
-      # EW-P4.T1 descriptive observation UI (GD-EW-P4-B1): the suite reads the
-      # band templates, the frozen lib contract it mirrors, the Sector Central
-      # glance source it shares CSS discipline with, and shared fixtures.
-      - "tests/test_ew_p4_descriptive_ui.py"
+      # EW-P4.T1 descriptive observation UI: the suite itself runs in its own
+      # job (ew-p4-descriptive-ui, EW-P5 FU2). The band templates, the frozen
+      # lib contract and the shared fixtures stay here because dashboard.html.j2
+      # includes the band and the dialog suites render it.
       - "tests/fixtures/ew_p4_observation/**"
       - "lib/rotation_observation_notification.py"
       - "templates/_risk_envelope_band.html.j2"
@@ -43796,8 +43796,55 @@ jobs:
           tests/test_unified_dashboard_b2w2.py
           tests/test_ud_b2_w1_vw_fold.py
           tests/test_vsb_surface.py
-          tests/test_macro_mtf_sort_key.py
-          tests/test_ew_p4_descriptive_ui.py -q
+          tests/test_macro_mtf_sort_key.py -q
+
+  ew-p4-descriptive-ui:
+    # EW-P4 descriptive observation UI (Grey Deer early-warning). Split out of
+    # dashboard-render-contract on EW-P5 FU2 (2026-11-01): the suite renders
+    # dashboard.html.j2 per distinct envelope and, with the receipt test over the
+    # committed shots, pushed that job past its 15-minute pack budget (run
+    # 41294159225: `dashboard-render-contract: timed out after 15 minutes` at
+    # 95%). It now owns its own budget. Inferred scope (no `scope: exclusive`):
+    # the suite's import closure IS the dashboard render closure through
+    # tests/test_macro_risk_dialog.py, which inference derives; the declared
+    # paths add what the suite reads by name — the band templates, the shared
+    # glance source, the frozen lib contract, the fixtures, the committed shots
+    # and receipt, the probe, the Sector Central router/template/builder, the
+    # pair registry and the published byte copies.
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    paths:
+      - "tests/test_ew_p4_descriptive_ui.py"
+      - "tests/test_macro_risk_dialog.py"
+      - "tests/test_dashboard_template_render.py"
+      - "tests/fixtures/ew_p4_observation/**"
+      - "lib/rotation_observation_notification.py"
+      - "templates/_risk_envelope_band.html.j2"
+      - "templates/_risk_envelope_band.css.j2"
+      - "templates/rotation_events.js"
+      - "templates/rotation_glance.css"
+      - "templates/si_workspace.js"
+      - "templates/sector_central.html.j2"
+      - "scripts/build_sector_central.py"
+      - "site/rotation_events.js"
+      - "site/rotation_glance.css"
+      - "site/sector_central.html"
+      - "data/oracle/ratio_pairs.json"
+      - "research/evidence/ew_p4_descriptive_ui_20261031/**"
+      - "tests/probe_ew_p4_descriptive_ui_browser.py"
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Same fresh-venv set as dashboard-render-contract: the suite imports its
+      # render helper and therefore scripts/build_site.py's import chain.
+      - name: install EW-P4 descriptive UI test dependencies
+        run: pip install pytest pyyaml jinja2 beautifulsoup4 pandas plotly pyarrow requests
+      - name: EW-P4 descriptive observation UI — Radar band, Sector Central glance mirror, shot receipt
+        run: python -m pytest tests/test_ew_p4_descriptive_ui.py -q
 
   options-skew-engine:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
