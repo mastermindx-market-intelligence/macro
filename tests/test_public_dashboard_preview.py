@@ -183,6 +183,8 @@ function harness({ id = 'A', synchronousInitial = false, hints = false, deferSes
       listener(user, event || (next ? 'SIGNED_IN' : 'SIGNED_OUT'));
     },
     silentIdentity(next) { user = next ? { id: next } : null; activeSession = session(next); },
+    nativeOnly(next) { user = next ? { id: next } : null; },
+    notify(next, event) { user = next ? { id: next } : null; listener(user, event); },
     interimNull() { user = null; listener(null, 'INITIAL_SESSION'); },
     failLookup() { lookupFailure = true; },
     tier() { return window.MMXAccessPreview.tier(); },
@@ -259,6 +261,28 @@ test('ambiguous initial auth event with cookie never renders guest access', asyn
   await reply(h.requests[0], 'pro'); expectBounded(h);
   h.change('A', 'SIGNED_IN'); await tick();
   await reply(h.requests[1], 'pro'); expectTier(h, 'pro', Infinity);
+});
+test('session reply before native owner callback remains neutral and grants no paid rows', async () => {
+  const h = harness(); h.nativeOnly(null); await tick();
+  assert.equal(h.requests.length, 0, 'session user cannot grant before native identity binds');
+  assert.equal(h.tier(), 'unknown');
+  assert.equal(h.attrs['data-access-resolution'], 'pending');
+  h.change('A', 'SIGNED_IN'); await tick(); await reply(h.requests[0], 'pro');
+  expectTier(h, 'pro', Infinity);
+});
+test('native owner disappears during pending HTTP: no failed-access banner or paid grant', async () => {
+  const h = harness(); await tick(); h.nativeOnly(null);
+  await reply(h.requests[0], 'pro');
+  assert.equal(h.tier(), 'unknown');
+  assert.equal(h.attrs['data-access-resolution'], 'pending');
+  expectBounded(h);
+});
+test('SDK failure with a persisted cookie offers a real retry instead of endless loading', async () => {
+  const h = harness(); await tick(); h.nativeOnly(null); h.failLookup();
+  h.notify(null, 'SDK_FAILED'); await tick();
+  assert.equal(h.tier(), 'unknown');
+  assert.equal(h.attrs['data-access-resolution'], 'unconfirmed');
+  expectBounded(h);
 });
 test('delayed A cannot overwrite B Free', async () => {
   const h = harness(); await tick(); h.change('B'); await tick();
