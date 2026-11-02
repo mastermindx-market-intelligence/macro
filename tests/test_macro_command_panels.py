@@ -361,14 +361,28 @@ def test_unmapped_metric_on_a_p3_section_raises() -> None:
         builder._move_rows_from_deltas(deltas, href="x.html", show_source=None)
 
 
-@pytest.mark.needs_full_checkout("site")
-def test_not_applicable_is_unstated_not_e1(built: tuple[str, Path]) -> None:
-    html, _ = built
-    rates = _panel(html, "rates")
-    assert 'data-mc-empty="e1"' not in rates
-    policy = _panel(html, "policy")
-    assert 'data-mc-empty="e1"' not in policy
-    assert "No single reading is published here" in policy
+def _compared_snapshot(workspace_id: str) -> dict:
+    path = ROOT / "tests/fixtures/macro_suite_t11/workspaces" / workspace_id / "US/latest.json"
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _policy_chip(html: str) -> str:
+    match = re.search(r'<li [^>]*data-mc-topic="policy"[^>]*>.*?</li>', html, re.S)
+    assert match, "Policy rates chip missing"
+    return unescape(match.group(0))
+
+
+def test_populated_unstated_policy_uses_dated_curve_chip(tmp_path: Path) -> None:
+    snapshots = {wid: _compared_snapshot(wid) for wid in ("rates_curves", "monetary_policy")}
+    html, out = _bake_hub(_fixture_entries(snapshots), tmp_path)
+    for section in ("rates", "policy"):
+        fragment = (out / "macro/fragments" / f"{section}.html").read_text(encoding="utf-8")
+        assert 'data-mc-empty="e1"' not in fragment
+        assert "No single reading is published here" in _panel(html, section)
+    chip = _policy_chip(html)
+    assert "See the curve below" in chip
+    assert "见下方曲线" in chip
+    assert '<time datetime="2026-10-08">' in chip
 
 
 @pytest.mark.needs_full_checkout("site")
@@ -422,17 +436,19 @@ def test_e2_figure_prints_the_e2_stance_not_the_structural_null(
         ), n_deltas
 
 
-@pytest.mark.needs_full_checkout("site")
-def test_populated_unstated_section_uses_see_curve_chip(
-        built: tuple[str, Path]) -> None:
-    """M6 branch 2: #policy has rows + no headline — structural stance,
-    strip chip reads 'See the curve below' and is dated."""
-    html, _ = built
-    policy = _panel(html, "policy")
-    assert 'data-mc-empty="e2"' not in policy
-    assert "No single reading is published here" in policy
-    assert "See the curve below" in html
-    assert "见下方曲线" in html
+@pytest.mark.parametrize("availability", ["STALE_SOURCE", "SOURCE_FAILED"])
+def test_unavailable_policy_suppresses_structural_stance(
+        tmp_path: Path, availability: str) -> None:
+    snapshot = _compared_snapshot("monetary_policy")
+    snapshot["availability"]["state"] = availability
+    html, out = _bake_hub(_fixture_entries({"monetary_policy": snapshot}), tmp_path)
+    fragment = (out / "macro/fragments/policy.html").read_text(encoding="utf-8")
+    assert 'data-mc-empty="e2"' in fragment
+    assert "mc-stance" not in _panel(html, "policy")
+    chip = _policy_chip(html)
+    assert "Not available yet" in chip
+    assert "暂不可用" in chip
+    assert "See the curve below" not in chip
 
 
 def test_hub_raises_on_unmapped_metric() -> None:
