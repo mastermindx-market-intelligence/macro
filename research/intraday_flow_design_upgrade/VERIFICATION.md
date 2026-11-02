@@ -1,6 +1,31 @@
 # Intraday Flow — candidate verification
 
-## Candidate and scope
+## Current publication verification — 2026-11-02
+
+Material source and fresh capture: `d927f82d4efab6f19104f196dfab1cf4e05d34d5`.
+Generated HTML SHA256:
+`3c54090283722829c42dd6068ce4e5362c6d58bc47ee098b97268acb4e1f3fdc`.
+The exact canonical `make_optimizer` transform restores current asset hashes,
+script deferral and matching CSS preloads; idempotence and equality to the transform
+of predecessor0886fff were verified. Template and paired page CSS remain byte-identical
+to independently source-reviewed99b6151530160f1fb432277e48274040f2581660.
+
+- Regression command: `python3 -m pytest tests/test_workflow_file_size.py tests/test_intraday_flow*.py -q --disable-warnings --tb=short` — **283 passed, 12 warnings**,9.61s.
+- Browser command: `python3 research/intraday_flow_design_upgrade/verify_browser.py` — **515/515 passed**, exit0 after same-carrier reconciliation of the interrupted launch.
+- Fresh canonical capture: `mockups/refs/intraday-flow-upgrade/normalized-r5/manifest.json` — **24/24**, all image digests checked, no console errors or failed responses, no document-wide horizontal overflow.
+- Resting phone laboratory CLS0.00994–0.01105; desktop0.67893–0.69153. The shared desktop navigation shift remains unresolved. These are local samples, not field performance or a causal estimate.
+
+The original startup-diagnosis Fabric run is terminal admission-refused for host load
+and temperature, not a completed assessment. Its retry_allowed=false is preserved.
+The current direct Paper app is readable but not write-qualified; the incumbent
+#1011/#1942 v20 release is the existing dependency, not a new runtime task here.
+Qualified visual review, final-head CI, normal release and served journeys remain open.
+
+The containing evidence/record commit must receive its own hosted proof. Predecessor
+0886fff's CI41536140542 and fences41536140124 passed, but are not a later-head pass.
+The sections below retain historical verification at their named revisions.
+
+## Historical candidate and scope
 
 Latest integrated implementation: `d0201df47d889fb50cef04b5aa2fcda251b1a034`.
 Canonical screenshot candidate: `aeff31db0803d75e41881fd566e13f6222d4ca05`.

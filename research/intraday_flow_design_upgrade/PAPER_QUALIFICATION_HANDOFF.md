@@ -1,5 +1,24 @@
 # Paper qualification handoff for Intraday Flow
 
+## Current owner dependency — 2026-11-02
+
+The direct app has recovered read service but still reports accepted_for_write=false
+for Paper0.5.18 catalog16e6b93f. The qualification work described historically below
+already belongs to the active original Mastermind #1011 operation and #1942 v20
+release. **Do not start another catalog repair, queue entry, service cutover or watcher.**
+At source checkpoint #1011 comment6591091462, approved head033deff4ea920234de7ddad85c6decfdd24ccd3a
+remains on its original queue entry; protected-base rebuild is expected behavior.
+The owner retains all seat-specific rollback, activation, scratch proof and reconnect.
+
+After that owner proves the actual protected release and original direct-app cutover,
+re-read this app's selected write contract and the exact target MASTERMIND PAGES
+file01M2WGNCX9475G79JRKJTCM08P. Apply the accepted DESIGN_SPEC with disjoint Intraday
+artboards and fresh per-effect snapshots, then inspect screenshots and JSX.
+The user's foreground PROPHET file is unrelated and must not be edited.
+Current procedure pin is Mastermind@ab93f3ede66486e82e995c88a86e662677973732.
+
+## Historical initial qualification findings
+
 Operation: intraday-flow-design-upgrade-20261101-c2.
 Target: MASTERMIND PAGES, fileId 01M2WGNCX9475G79JRKJTCM08P.
 Product design: DESIGN_SPEC.md and the source candidate in this branch.

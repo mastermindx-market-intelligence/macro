@@ -90,7 +90,7 @@ coverage functions remain the source; preserve #6867's separate timing work.
 | P2.1 | P1 | implementation_complete | DESIGN_SPEC.md and the paired template/CSS reference; NOT_APPLIED_TO_PAPER | Principal design; independent visual critique |
 | P3 | P2.1 | implementation_complete | Real template, paired page stylesheet and rendered page replaced; 15 core regions byte-identical to base | Principal retained: design judgment and critical path while audit admission waited |
 | P3.1 | P3 | implementation_complete | 280 pytest cases; 515 browser checks; 24 canonical screenshots and passing visual receipt | Regression and source-contract evidence; no production claim |
-| P3.2 | P3.1 | implementation_complete | Canonical publication asset normalization; 283 pytest cases and 515 browser assertions pass; fresh capture and final-head release checks remain | Deterministic canonical transform; no shared-navigation source change |
+| P3.2 | P3.1 | implementation_complete | Canonical publication asset normalization; 283 pytest cases and 515 browser assertions pass; normalized-r5 captures 24/24 states at d927f82; final-head checks and release remain | Deterministic canonical transform; no shared-navigation source change |
 | P4 | P3.1 | in_progress | Independent repair follow-up at 99b615153016 returns CODE=PASS; qualified human/Opus visual judgment remains open | Paid reviewer; principal adjudicates |
 | P5 | P2,P4 | blocked | Exact-head CI, permitted integration/release and served desktop/mobile proof | Existing release owner; no premature merge |
 
@@ -248,3 +248,14 @@ the reviewed template/CSS or model. MAIN_INTEGRATION.md contains the exact HTML
 hash, recovered 0886fff CI pass, 283 pytest and 515 browser results, original
 Fabric admission refusal and narrow Paper/visual gates. The normalized artifact
 requires its own final capture/CI; predecessor receipts are not future acceptance.
+
+
+## Fresh evidence and organizational linkage — 2026-11-02
+
+The material correction d927f82d4efab6f19104f196dfab1cf4e05d34d5 now has a fresh
+24-state normalized-r5 capture with verified image digests, zero console/response
+errors and no horizontal overflow. Phone lab CLS is0.00994–0.01105; desktop remains
+0.67893–0.69153. No performance acceptance or independent visual verdict is claimed.
+The original workstream's bounded UI-1 wave and artifact link, plus its single dated
+2026-11-02 handoff, are authored in this same PR and await protected integration.
+CLOSEOUT.md is a pointer to those owners rather than another copied frontier.

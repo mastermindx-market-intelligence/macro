@@ -162,3 +162,15 @@ watcher. Do not duplicate its runtime work. Qualified Claude target discovery
 still returns backend_unavailable / installed Session Bridge owner unavailable.
 Paper artboards, qualified visual acceptance, final-head CI and production proof
 remain open; the previous code review is not relabeled as current visual approval.
+
+
+## Normalized candidate screenshot receipt
+
+Material source d927f82d4efab6f19104f196dfab1cf4e05d34d5 was freshly captured via
+the incumbent capture_page_evidence driver into normalized-r5. All24 states
+completed, all image SHA256 values match the manifest, no console/response errors
+were recorded and neither canonical viewport overflows horizontally. The current
+EVIDENCE.yml now points to that actual capture; prior matrices stay historical.
+Phone resting laboratory CLS0.00994–0.01105 and desktop0.67893–0.69153 are retained
+without a field-performance or independent visual-approval claim. Agent OS records
+in this PR link the same task tree and preserve PR-4's separate live-plane obligations.

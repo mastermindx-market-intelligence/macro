@@ -78,6 +78,19 @@ waves:
       Studio fleet. Keep this wave BUILT_NOT_PROVEN until one genuine current-session
       production receipt proves all three source planes, semantic health, and the served
       desktop+narrow browser journey. On PASS, land a separate records closeout.
+  - id: UI-1
+    title: Intraday Flow scan and evidence redesign
+    status: in_progress
+    pr: 10498
+    depends_on: [PR-1, PR-2]
+    next_action: >
+      Continue original claude/intraday-flow-design-upgrade-20261101-c2 and its
+      task tree research/intraday_flow_design_upgrade/MASTER_PLAN.md. Preserve
+      verified source repairs and the normalized-r5 screenshot identity. Complete
+      the incumbent Paper direct-app release dependency, guarded editable Intraday
+      artboards, qualified independent visual review, final-head CI and normal
+      release with served desktop/phone proof. Keep PR-4 live-plane obligations
+      separate; this UI wave changes no classifier, feed or trade authority.
 decisions:
   - "DEC:INTRADAY-FLOW-PR4-MERGED-PRODUCTION-ACCEPTANCE-OWED"
 discoveries:
@@ -85,6 +98,9 @@ discoveries:
   - "DSC:OPEX-FUTURE-MONTH-LAST-OBS-CLAMP"
   - "DSC:INTRADAY-FLOW-AGE-HEALTH-CAN-HIDE-EMPTY-BOARD"
 next_action: >
+  UI-1/#10498: continue the existing redesign task tree and dated 2026-11-02 handoff;
+  complete Paper, qualified visual, final-head checks and served release proof on
+  the original branch. Preserve the separate current-session obligation below.
   PR-4/#6105 is merged but BUILT_NOT_PROVEN. Execute exactly one genuine current-
   session production dossier: prove board-scoped quote coverage + source freshness;
   current-session pulse mode/coverage; the reviewed com.mastermind.liveflow M1/R2 plane
@@ -125,6 +141,8 @@ do_not_redo:
   - "Manufacturing a notable flow event or replaying later knowledge as current-session proof."
   - "Calling #6105 merge, fixture 116/116, HTTP 200, or green CI production acceptance."
 artifacts:
+  - research/intraday_flow_design_upgrade/MASTER_PLAN.md
+  - agentos/handoffs/INTRADAY-FLOW-P0-RECOVERY-2026-11-02.md
   - templates/intraday_flow.html.j2
   - scripts/build_intraday_flow.py
   - scripts/build_intraday_flow_quotes.py
