@@ -1537,9 +1537,24 @@ jobs:
         # writes only under data/capital_structure/. The step timeout keeps a slow
         # compiler night a RECORDED failure: without it a stall would run into the
         # job's 90-minute timeout and lose tonight's whole capital-structure checkpoint.
+        # build_source_stores() reads the same step-local R2 env as cs_terms; without
+        # it no source store is admissible and every night is a refusal.
         id: cs_candidates
         continue-on-error: true
         timeout-minutes: 20
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_CAPITAL_STRUCTURE_ENDPOINT: ${{ secrets.R2_CAPITAL_STRUCTURE_ENDPOINT }}
+          R2_CAPITAL_STRUCTURE_ACCESS_KEY_ID: ${{ secrets.R2_CAPITAL_STRUCTURE_ACCESS_KEY_ID }}
+          R2_CAPITAL_STRUCTURE_SECRET_ACCESS_KEY: ${{ secrets.R2_CAPITAL_STRUCTURE_SECRET_ACCESS_KEY }}
+          R2_CAPITAL_STRUCTURE_BUCKET: ${{ secrets.R2_CAPITAL_STRUCTURE_BUCKET }}
+          R2_RESEARCH_ENDPOINT: ${{ secrets.R2_RESEARCH_ENDPOINT }}
+          R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
+          R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
+          R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
         run: python -m scripts.compile_capital_structure_instrument_candidate_terms
       - name: build the capital-structure capacity inputs bundle (one generation or nothing)
         id: cs_inputs
@@ -1550,6 +1565,17 @@ jobs:
         # a default, never a zero. Fatal like the state step: a failed validation
         # leaves the previous bundle in place, and a bundle that does not bind the
         # served state generation must not ride this checkpoint (SPEC_U1B §3).
+        # Financials bind from FIF's published production datasets (§13 F0: bind,
+        # never rebuild): the mode is selected for this step only, never as a
+        # default, and the store is the dedicated R2_RESEARCH family the FIF
+        # publisher writes with. A missing or failing store is a typed unavailable
+        # family, never a failed step.
+        env:
+          FIF_FINANCIAL_DATASET_MODE: production
+          R2_RESEARCH_ENDPOINT: ${{ secrets.R2_RESEARCH_ENDPOINT }}
+          R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
+          R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
+          R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
         run: python -m scripts.build_capital_structure_capacity_inputs
       - name: build the capital-structure change ledger (one changeset or nothing)
         # SPEC_U2 U2-3 (b): the typed change desk between the PREVIOUS
