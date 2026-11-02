@@ -24742,7 +24742,7 @@ jobs:
       - name: install deps
         run: pip install pytest fastapi pydantic pandas numpy pyarrow pyyaml requests "stripe>=11,<13" rjsmin==1.2.5
       - name: billing + lifecycle email tests (app/billing_emails.py)
-        run: python -m pytest tests/test_billing_emails.py -v
+        run: python -m pytest tests/test_billing_emails.py tests/test_deliver_portfolio_digest.py -v
       - name: account preference tests (app/account_prefs.py)
         run: python -m pytest tests/test_account_prefs.py tests/test_alert_prefs.py tests/test_frozen_options_account.py -v
       - name: account team-membership tests (lib/team_membership.py)
@@ -28809,7 +28809,7 @@ jobs:
         run: python -m pytest tests/test_portfolio_brief.py -q
       - name: retention spine — change history, digest composer, changes endpoint (W6)
         # engine/portfolio_changes (state digest + diff) and engine/portfolio_digest (the
-        # change-triggered email COMPOSER — the send path is deliberately unwired, and a
+        # change-triggered email composer, with a separate default-off scripts caller; a
         # test in here asserts the module imports no mailer so no build can send). Same
         # install set as the brief suite above; the file pins that set from the AST.
         run: python -m pytest tests/test_portfolio_changes.py -q
