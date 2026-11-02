@@ -41,6 +41,18 @@ Field rules (ported from the census writer):
   forms exactly ``10-K`` or ``10-Q``, and more than one distinct value at the
   selected date (a multi-class cover page) is the typed absence
   ``cover_date_multi_class``, never one present value and never a sum (W-R2 M2).
+* NP (A36) - behind ``--np-linkbases DIR`` the census applies the governed
+  not-presented rules the served query path applies, from linkbases captured
+  for the slot's own accession (``fif.np_linkbases/v1``; the sha256 of each
+  file's uncompressed bytes is verified).  A strict metric whose only verdict
+  is ``absent_no_alias_fact`` may become ``not_applicable`` with
+  ``na_basis: not_presented_item`` and the verdict's ``np_*`` evidence, and a
+  governed formula follows the served not-presented operand policy
+  (``total_debt``'s qualified sum; ``net_debt`` / ``cash_to_total_debt``
+  inherit).  Every failure - missing or sha-mismatched linkbases, an amended
+  slot, mixed durations, conflicting values, no visible rule at the clock -
+  keeps the absent cell.  Without the flag the writer's output is byte for
+  byte the pre-NP writer's.
 
 Issuer rollups (W-R2 M1): ``present_cells``, ``core_pass`` and ``deep_pass``
 are any-basis and count qualified present cells; ``present_cells_strict``,
@@ -57,13 +69,40 @@ import gzip
 import hashlib
 import json
 import sys
-from pathlib import Path
+from dataclasses import dataclass, field
+from decimal import Decimal, InvalidOperation
+from pathlib import Path, PurePosixPath
 from typing import Any, Callable, Iterable, Mapping
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from engine.fundamental_forensics.metric_registry import load_core_metric_registry  # noqa: E402
+
+# NP (A36): the census reuses the served path's own helpers and constants; it
+# never re-types their strings.  ``_evidence_fields`` / ``split_kernel_reason``
+# are the same objects ``coverage_manifest.map_metric_cell`` applies to a
+# served NOT_APPLICABLE cell, so a key collision raises exactly as served.
+from engine.fundamental_forensics.coverage_manifest import (  # noqa: E402
+    NA_BASIS_KERNEL,
+    _evidence_fields,
+    split_kernel_reason,
+)
+from engine.fundamental_forensics.not_presented import (  # noqa: E402
+    NA_BASIS_NOT_PRESENTED_ITEM,
+    NOT_PRESENTED_REASON,
+    NotPresentedError,
+    NotPresentedEvidence,
+    NotPresentedPack,
+    evaluate_not_presented_package,
+    load_not_presented_pack,
+)
+from engine.fundamental_forensics.query import (  # noqa: E402
+    FORMULA_NOT_PRESENTED_PREFIX,
+    FORMULA_NOT_PRESENTED_WITHHELD_PREFIX,
+    FORMULA_QUALIFIED_WITHHELD_PREFIX,
+    QUALIFIED_NOT_PRESENTED_EXPORT_PREFIX,
+)
 
 WRITER_SCHEMA = "fif.coverage_writer/v1"
 
@@ -149,6 +188,11 @@ def metric_specs_at(repo_root: str | Path, recorded_at: str) -> tuple[dict[str, 
     Every mapping entry of a metric contributes its aliases (merged, never
     replaced), sorted by (priority, taxonomy, concept).  The rule clock is the
     registry's own ``governance_bundle_at``.
+
+    A formula metric also carries its governed not-presented operand policy
+    (``np_formula_policy``) exactly as the bundle exposes it at the clock; a
+    formula without one (or whose policy clock has not passed) carries None,
+    which the NP branch reads as the served default ``withhold``.
     """
     registry = load_core_metric_registry(repo_root)
     bundle = registry.governance_bundle_at(recorded_at)
@@ -162,12 +206,27 @@ def metric_specs_at(repo_root: str | Path, recorded_at: str) -> tuple[dict[str, 
             rule_ids.add(mapping.rule.rule_id)
             for alias in mapping.taxonomy_concept_aliases:
                 aliases.append((int(alias.priority), alias.taxonomy, alias.concept))
+        policy = (
+            contract.formula.not_presented_policy
+            if contract.formula is not None
+            else None
+        )
         specs[contract.metric_id] = {
             "metric_id": contract.metric_id,
             "kind": contract.period_constraints.kind,
             "units": tuple(contract.units),
             "formula_dependencies": tuple(contract.declared_formula_dependencies),
             "aliases": sorted(aliases),
+            "np_formula_policy": (
+                None
+                if policy is None
+                else {
+                    "mode": policy.mode,
+                    "qualified_operand": policy.qualified_operand,
+                    "eligible_operands": tuple(policy.eligible_operands),
+                    "all_not_presented": policy.all_not_presented,
+                }
+            ),
         }
     provenance = {
         "mapping_rule_ids": sorted(rule_ids),
@@ -384,6 +443,450 @@ def cover_date_outcome(
     }
 
 
+# --- NP (A36): the not-presented branch behind --np-linkbases -----------------
+#
+# The served query path (engine/fundamental_forensics/query.py) anchors a
+# not-presented verdict to one filing, rebuilds that filing's exact slot
+# context, and evaluates the governed pack against the filing's own
+# calculation and presentation linkbases.  The census mirrors that decision
+# from captured linkbase bytes; nothing here invents a verdict the served path
+# would not print, and every doubt keeps the absent cell.
+
+NP_LINKBASES_SCHEMA = "fif.np_linkbases/v1"
+NP_COUNTERS_KEY = "not_presented"
+
+
+class NPLinkbases:
+    """Lazy, sha-verified view over one captured linkbase directory.
+
+    ``index.json`` maps each accession (with dashes) to its calculation and
+    presentation linkbase: relative gz paths plus the SHA-256 of each file's
+    UNCOMPRESSED bytes.  An accession whose bytes do not reproduce the
+    recorded digest is treated as having no linkbases at all (fail closed,
+    never a guessed verdict); a malformed index refuses the whole run.
+    """
+
+    _FAIL_COUNTERS = {
+        "entry": "np_no_linkbase_entry",
+        "unreadable": "np_linkbase_unreadable",
+        "sha": "np_linkbase_sha_mismatch",
+    }
+
+    def __init__(self, root: Path, entries: Mapping[str, Mapping[str, Any]]) -> None:
+        self._root = root
+        self._entries = dict(entries)
+        self._cache: dict[str, tuple[str, tuple[bytes, bytes] | None]] = {}
+
+    def for_accession(
+        self, accession: str, counters: dict[str, int]
+    ) -> tuple[bytes, bytes] | None:
+        """The (calculation, presentation) bytes for one accession, or None.
+
+        None means the census treats the accession as having no linkbases; the
+        matching counter names why.  Results are memoized per accession; a
+        memoized failure re-bumps its counter so the counts stay per attempt.
+        """
+        cached = self._cache.get(accession)
+        if cached is None:
+            cached = self._load(accession)
+            self._cache[accession] = cached
+        status, payload = cached
+        if status != "ok":
+            _bump(counters, self._FAIL_COUNTERS[status])
+            return None
+        return payload
+
+    def _load(self, accession: str) -> tuple[str, tuple[bytes, bytes] | None]:
+        entry = self._entries.get(accession)
+        if not isinstance(entry, Mapping) or entry.get("status") != "ok":
+            return "entry", None
+        pair: list[bytes] = []
+        for role in ("cal", "pre"):
+            rel = entry.get(role)
+            expected = entry.get(f"{role}_sha256")
+            if not isinstance(rel, str) or not isinstance(expected, str):
+                return "entry", None
+            try:
+                raw = gzip.decompress((self._root / rel).read_bytes())
+            except Exception:
+                return "unreadable", None
+            if hashlib.sha256(raw).hexdigest() != expected:
+                return "sha", None
+            pair.append(raw)
+        return "ok", (pair[0], pair[1])
+
+
+def load_np_linkbases(directory: str | Path) -> NPLinkbases:
+    """Load and validate one ``fif.np_linkbases/v1`` index; refuse drift.
+
+    A missing index, a schema other than ``NP_LINKBASES_SCHEMA``, entries that
+    are not an object, or a linkbase path that is absolute, contains ``..``,
+    or resolves outside the directory raises ``ValueError`` (the CLI turns it
+    into a non-zero exit with the message).
+    """
+    root = Path(directory)
+    index_path = root / "index.json"
+    try:
+        document = json.loads(index_path.read_bytes())
+    except OSError as exc:
+        raise ValueError(f"np-linkbases index is unreadable: {index_path}") from exc
+    except ValueError as exc:
+        raise ValueError(f"np-linkbases index is not valid JSON: {index_path}") from exc
+    if not isinstance(document, dict) or document.get("schema") != NP_LINKBASES_SCHEMA:
+        raise ValueError(
+            f"np-linkbases index schema must equal {NP_LINKBASES_SCHEMA}: {index_path}"
+        )
+    entries = document.get("entries")
+    if not isinstance(entries, dict):
+        raise ValueError(f"np-linkbases index entries must be an object: {index_path}")
+    resolved_root = root.resolve()
+    for accession, entry in entries.items():
+        if not isinstance(entry, dict):
+            continue
+        for role in ("cal", "pre"):
+            rel = entry.get(role)
+            if not isinstance(rel, str):
+                continue
+            candidate = PurePosixPath(rel)
+            if candidate.is_absolute() or ".." in candidate.parts:
+                raise ValueError(
+                    f"np-linkbases entry {accession} {role} path must be relative and "
+                    f"stay inside the directory: {rel!r}"
+                )
+            if not (root / candidate).resolve().is_relative_to(resolved_root):
+                raise ValueError(
+                    f"np-linkbases entry {accession} {role} path resolves outside the "
+                    f"directory: {rel!r}"
+                )
+    return NPLinkbases(root, entries)
+
+
+@dataclass
+class NPContext:
+    """Everything the census needs to mirror the served not-presented branch."""
+
+    pack: NotPresentedPack
+    linkbases: NPLinkbases
+    recorded_at: _dt.datetime  # the rewrite rule clock, as visible_rule takes it
+    counters: dict[str, int] = field(default_factory=dict)
+
+
+def _np_facts_in_context(
+    facts: Mapping[str, Any],
+    slot: Mapping[str, Any],
+    counters: dict[str, int],
+) -> dict[str, Decimal] | None:
+    """The exact slot-context fact map for one NP evaluation, or None.
+
+    Mirrors ``BitemporalMetricQueryEngine._not_presented_slot``'s fact walk
+    (query.py:5937-5959): facts of the anchor accession only, consolidated
+    USD only, the period matched to the slot, ``Decimal(str(value))`` with a
+    non-finite or unparsable value failing the whole slot, and two different
+    values for one concept failing the whole slot.  companyfacts carries no
+    dimensions, so every fact it holds is already the consolidated,
+    non-dimensional fact the served path's ``_np_consolidated_usd`` filter
+    would keep; companyfacts has no withdrawal or nil marking either.  The
+    anchor here is the slot's own accession (amended slots never reach NP).
+    """
+    accession = slot.get("accession") or ""
+    report_date = slot.get("report_date") or ""
+    slot_id = str(slot.get("slot_id") or "")
+    out: dict[str, Decimal] = {}
+    duration_spans: set[tuple[str, str]] = set()
+    for taxonomy, payload in facts.items():
+        if not isinstance(payload, dict):
+            continue
+        for concept, entry in payload.items():
+            if not isinstance(entry, dict):
+                continue
+            units = entry.get("units")
+            if not isinstance(units, dict):
+                continue
+            fact_list = units.get("USD")
+            if not isinstance(fact_list, list):
+                continue
+            for fact in fact_list:
+                if not isinstance(fact, dict) or fact.get("accn") != accession:
+                    continue
+                start = fact.get("start")
+                end = fact.get("end")
+                if end != report_date:
+                    continue
+                if start:
+                    # Duration facts: the slot's own class only.  An annual
+                    # slot (A*) keeps the fiscal-year rule _slot_period_ok
+                    # applies (52/53 inclusive-day weeks); an interim slot
+                    # (I*) keeps one fiscal quarter, 80..100 inclusive days.
+                    # Any other slot id admits no duration at all.
+                    if slot_id.startswith("A"):
+                        if not _slot_period_ok("duration", (report_date, slot_id), start, end):
+                            continue
+                    elif slot_id.startswith("I"):
+                        try:
+                            inclusive_days = (
+                                _dt.date.fromisoformat(end[:10]) - _dt.date.fromisoformat(start[:10])
+                            ).days + 1
+                        except Exception:
+                            continue
+                        if not 80 <= inclusive_days <= 100:
+                            continue
+                    else:
+                        continue
+                    span = (str(start), str(end))
+                    duration_spans.add(span)
+                    if len(duration_spans) > 1:
+                        _bump(counters, "np_mixed_duration")
+                        return None
+                try:
+                    value = Decimal(str(fact.get("val")))
+                except (InvalidOperation, ValueError, TypeError):
+                    _bump(counters, "np_bad_value")
+                    return None
+                if not value.is_finite():
+                    _bump(counters, "np_bad_value")
+                    return None
+                qname = f"{taxonomy}:{concept}"
+                prior = out.get(qname)
+                if prior is not None and prior != value:
+                    _bump(counters, "np_conflicting_value")
+                    return None
+                out[qname] = value
+    return out
+
+
+def _np_cell_outcome(
+    spec: Mapping[str, Any],
+    facts: Mapping[str, Any],
+    slot: Mapping[str, Any],
+    np_context: NPContext,
+) -> dict[str, Any] | None:
+    """The ``not_applicable`` cell for one strict metric, or None (keep absent).
+
+    Only called when ``evaluate_cell`` would return
+    ``{"status": "absent", "reason_code": "absent_no_alias_fact"}``.  A verdict
+    that is not not-presented keeps the absent result and counts its outcome;
+    the served cell for a not-presented verdict is exactly what
+    ``coverage_manifest.map_metric_cell`` emits for a served NOT_APPLICABLE
+    cell whose reason is ``NOT_PRESENTED_REASON`` and whose provenance carries
+    ``na_basis == not_presented_item`` plus the evidence.
+    """
+    metric_id = spec["metric_id"]
+    rule = np_context.pack.visible_rule(metric_id, recorded_at=np_context.recorded_at)
+    if rule is None:
+        _bump(np_context.counters, "np_outcome:np_no_rule")
+        return None
+    if slot.get("amendments"):
+        # The served path anchors NP to one revision basis; an amended slot has
+        # two, so the census never evaluates NP for it.
+        _bump(np_context.counters, "np_skipped_amended_slot")
+        return None
+    linkbases = np_context.linkbases.for_accession(
+        slot.get("accession") or "", np_context.counters
+    )
+    if linkbases is None:
+        return None
+    fact_map = _np_facts_in_context(facts, slot, np_context.counters)
+    if fact_map is None:
+        return None
+    try:
+        verdict = evaluate_not_presented_package(
+            np_context.pack,
+            metric_id,
+            calculation=linkbases[0],
+            presentation=linkbases[1],
+            facts_in_context=fact_map,
+            recorded_at=np_context.recorded_at,
+            accession=slot.get("accession") or "",
+        )
+    except NotPresentedError:
+        # The served path swallows a NotPresentedError the same way and stays
+        # absent (query.py:5992-5993).
+        return None
+    outcome = (
+        verdict.outcome if verdict.is_not_presented else (verdict.reason or verdict.outcome)
+    )
+    _bump(np_context.counters, f"np_outcome:{outcome}")
+    if not verdict.is_not_presented:
+        return None
+    cell: dict[str, Any] = {"status": "not_applicable"}
+    reason_code, kernel_reason = split_kernel_reason(NOT_PRESENTED_REASON)
+    cell["reason_code"] = reason_code
+    cell["kernel_reason"] = kernel_reason
+    cell.update(
+        _evidence_fields(NotPresentedEvidence.from_verdict(verdict), cell)
+    )
+    cell["na_basis"] = NA_BASIS_NOT_PRESENTED_ITEM
+    return cell
+
+
+# Operand classes for the formula NP policy: PRESENT is the writer's strict or
+# labelled (NP-qualified) present, NP is a not-presented verdict (an item's own
+# or a dependent formula's), and OTHER is everything else.  A D1 cover-date
+# qualified operand is deliberately OTHER: the served path has no such VALUE
+# in-period and D1 itself says no formula consumes it, so treating it as
+# PRESENT could emit a cell the served path would not.
+_NP_OPERAND_PRESENT = "present"
+_NP_OPERAND_QUALIFIED = "qualified"
+_NP_OPERAND_NP = "np"
+_NP_OPERAND_OTHER = "other"
+
+
+def _np_absent_cell(reason: str) -> dict[str, Any]:
+    reason_code, kernel_reason = split_kernel_reason(reason)
+    cell: dict[str, Any] = {"status": "absent", "reason_code": reason_code}
+    if kernel_reason:
+        cell["kernel_reason"] = kernel_reason
+    return cell
+
+
+def _np_classify_operand(
+    dep_id: str,
+    specs: Mapping[str, Mapping[str, Any]],
+    facts: Mapping[str, Any],
+    slot: Mapping[str, Any],
+    recorded_at: str | None,
+    np_context: NPContext,
+) -> tuple[str, dict[str, Any] | None, tuple[str, ...]]:
+    """(kind, cell, np_ids) for one formula dependency, served classes only."""
+    dep_spec = specs.get(dep_id)
+    if dep_spec is None:
+        return _NP_OPERAND_OTHER, None, ()
+    if dep_spec["formula_dependencies"]:
+        outcome = _formula_np_outcome(dep_spec, specs, facts, slot, recorded_at, np_context)
+        if outcome is not None:
+            cell, np_ids = outcome
+            if cell["status"] == "present":
+                return _NP_OPERAND_QUALIFIED, None, np_ids
+            if cell["status"] == "not_applicable":
+                return _NP_OPERAND_NP, None, ()
+            return _NP_OPERAND_OTHER, None, ()
+        if _formula_operands_present(
+            dep_spec, specs, facts, slot, frozenset((dep_id,)), False, recorded_at
+        ):
+            return _NP_OPERAND_PRESENT, None, ()
+        return _NP_OPERAND_OTHER, None, ()
+    present, reason, *_rest = check_metric_against_facts(
+        dep_spec,
+        facts,
+        slot_accessions(slot),
+        slot_period=(slot.get("report_date", ""), slot.get("slot_id", "")),
+    )
+    if present:
+        return _NP_OPERAND_PRESENT, None, ()
+    outcome = cover_date_outcome(dep_spec, facts, slot, None, recorded_at=recorded_at)
+    if outcome is not None:
+        # A D1 qualified present or the multi-class absence: never NP input.
+        return _NP_OPERAND_OTHER, None, ()
+    if (
+        reason == "absent_no_alias_fact"
+        and slot.get("slot_status") == "present"
+        and companyfacts_missing_accession(facts, slot.get("accession", ""))
+    ):
+        return _NP_OPERAND_OTHER, None, ()  # stale: not the NP precondition
+    if reason == "absent_no_alias_fact":
+        np_cell = _np_cell_outcome(dep_spec, facts, slot, np_context)
+        if np_cell is not None:
+            return _NP_OPERAND_NP, None, ()
+    return _NP_OPERAND_OTHER, None, ()
+
+
+def _formula_np_outcome(
+    spec: Mapping[str, Any],
+    specs: Mapping[str, Mapping[str, Any]],
+    facts: Mapping[str, Any],
+    slot: Mapping[str, Any],
+    recorded_at: str | None,
+    np_context: NPContext,
+) -> tuple[dict[str, Any], tuple[str, ...]] | None:
+    """The served formula not-presented policy on the writer's operands.
+
+    Mirrors ``_formula_policy_outcome`` (query.py:3462-3582) over the writer's
+    operand outcomes.  Any OTHER operand keeps the existing formula result; a
+    governed ``not_presented`` policy then decides exactly as served: withhold
+    (or no policy) is the absent ``not_presented_dependency`` cell,
+    ``not_applicable`` is the ``formula_not_presented`` N/A cell whose
+    ``na_basis`` is the kernel basis ``map_metric_cell`` stamps on it, and a
+    ``qualified_sum`` with presented operands is the VALUE cell
+    ``map_metric_cell`` writes with the ``qualified_not_presented`` qualifier
+    and the pack's ``pack_id/pack_version`` policy.  The served order of the
+    operand ids is the dependency order for N/A and withheld reasons and the
+    sorted order for the qualifier, exactly as the kernel prints them.
+
+    Revision basis (served: one shared accession across presented operands and
+    every NP evidence accession equal to it): the census skips NP on any
+    amended slot, so inside this branch every NP verdict is bound to the
+    slot's own accession and every presented operand was matched against
+    ``slot_accessions(slot)``, which for an unamended slot contains that
+    accession alone - one shared revision basis by construction.  An amended
+    slot never reaches an NP verdict here, so there is no divergent case to
+    fail closed on; the gate itself is the fail-closed.
+    """
+    deps = spec["formula_dependencies"]
+    outcomes = [
+        _np_classify_operand(dep, specs, facts, slot, recorded_at, np_context)
+        for dep in deps
+    ]
+    if any(kind == _NP_OPERAND_OTHER for kind, _cell, _ids in outcomes):
+        return None
+    np_ops = [dep for dep, (kind, *_rest) in zip(deps, outcomes) if kind == _NP_OPERAND_NP]
+    qualified_ops = [
+        (dep, ids)
+        for dep, (kind, _cell, ids) in zip(deps, outcomes)
+        if kind == _NP_OPERAND_QUALIFIED
+    ]
+    if not np_ops and not qualified_ops:
+        return None
+    policy = spec.get("np_formula_policy") or None
+    mode = policy["mode"] if policy else "withhold"
+    if np_ops and policy is not None and mode == "qualified_sum":
+        eligible = tuple(policy.get("eligible_operands") or ())
+        if any(item not in eligible for item in np_ops):
+            mode = "withhold"
+        elif len(np_ops) == len(deps):
+            mode = policy.get("all_not_presented") or "withhold"
+    if np_ops and mode == "withhold":
+        _bump(np_context.counters, "np_formula_outcome:absent")
+        return _np_absent_cell(
+            FORMULA_NOT_PRESENTED_WITHHELD_PREFIX + ", ".join(np_ops)
+        ), ()
+    if np_ops and mode == "not_applicable":
+        reason = FORMULA_NOT_PRESENTED_PREFIX + ", ".join(np_ops)
+        reason_code, kernel_reason = split_kernel_reason(reason)
+        _bump(np_context.counters, "np_formula_outcome:not_applicable")
+        return (
+            {
+                "status": "not_applicable",
+                "reason_code": reason_code,
+                "kernel_reason": kernel_reason,
+                "na_basis": NA_BASIS_KERNEL,
+            },
+            (),
+        )
+    if qualified_ops and (policy is None or policy.get("qualified_operand") == "withhold"):
+        _bump(np_context.counters, "np_formula_outcome:absent")
+        return (
+            _np_absent_cell(
+                FORMULA_QUALIFIED_WITHHELD_PREFIX
+                + ", ".join(dep for dep, _ids in qualified_ops)
+            ),
+            (),
+        )
+    qualifiers = set(np_ops)
+    for _dep, ids in qualified_ops:
+        qualifiers.update(ids)
+    ordered = tuple(sorted(qualifiers))
+    _bump(np_context.counters, "np_formula_outcome:present")
+    return (
+        {
+            "status": "present",
+            "reason_code": "present",
+            "qualifier": QUALIFIED_NOT_PRESENTED_EXPORT_PREFIX + ", ".join(ordered),
+            "qualifier_policy": f"{np_context.pack.pack_id}/{np_context.pack.pack_version}",
+        },
+        ordered,
+    )
+
+
 def _formula_operands_present(
     spec: Mapping[str, Any],
     specs: Mapping[str, Mapping[str, Any]],
@@ -426,8 +929,9 @@ def evaluate_cell(
     counters: dict[str, int] | None = None,
     *,
     recorded_at: str | None = None,
+    np_context: NPContext | None = None,
 ) -> dict[str, Any]:
-    """Status of one (slot, metric) cell: strict -> D1 fallback -> D2 relabel."""
+    """Status of one (slot, metric) cell: strict -> D1 fallback -> D2 relabel -> NP."""
     slot_status = slot.get("slot_status", "slot_absent")
     if slot_status in ("slot_absent", "fetch_failed"):
         return {"status": slot_status, "reason_code": slot_status}
@@ -439,6 +943,12 @@ def evaluate_cell(
 
     metric_id = spec["metric_id"]
     if spec["formula_dependencies"]:
+        if np_context is not None:
+            outcome = _formula_np_outcome(
+                spec, specs, facts, slot, recorded_at, np_context
+            )
+            if outcome is not None:
+                return outcome[0]
         if _formula_operands_present(spec, specs, facts, slot, frozenset((metric_id,)), False, recorded_at):
             return {"status": "present", "reason_code": "present"}
         if _formula_operands_present(spec, specs, facts, slot, frozenset((metric_id,)), True, recorded_at):
@@ -462,6 +972,13 @@ def evaluate_cell(
         and companyfacts_missing_accession(facts, slot.get("accession", ""))
     ):
         return {"status": "stale", "reason_code": "companyfacts_missing_accession"}
+    if reason == "absent_no_alias_fact" and np_context is not None:
+        # NP (A36) is attempted only on the exact absence the served path may
+        # upgrade: not stale, not a period mismatch, not another taxonomy, not
+        # a cover-date outcome, not a slot-status outcome.
+        np_cell = _np_cell_outcome(spec, facts, slot, np_context)
+        if np_cell is not None:
+            return np_cell
     return {"status": "absent", "reason_code": reason}
 
 
@@ -574,8 +1091,13 @@ def rewrite_manifest(
     specs: Mapping[str, Mapping[str, Any]],
     recorded_at: str,
     provenance: Mapping[str, Any],
+    np_context: NPContext | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    """Re-evaluate the metric cells of ``base_manifest``; return (manifest, counts)."""
+    """Re-evaluate the metric cells of ``base_manifest``; return (manifest, counts).
+
+    ``np_context`` (the ``--np-linkbases`` branch) is None on the plain path,
+    whose output is byte for byte the pre-NP writer's.
+    """
     slots = {(str(row["cik"]), str(row["slot_id"])): dict(row) for row in slot_rows}
     counters: dict[str, int] = {}
     by_reason: dict[str, dict[str, int]] = {"all": {}, "core": {}}
@@ -613,7 +1135,10 @@ def rewrite_manifest(
             unavailable.add(cik)
             cells_out.append(new)
             continue
-        result = evaluate_cell(spec, specs, loaded_facts, slot, counters, recorded_at=recorded_at)
+        result = evaluate_cell(
+            spec, specs, loaded_facts, slot, counters, recorded_at=recorded_at,
+            np_context=np_context,
+        )
         for key in REEVALUATED_KEYS:
             new.pop(key, None)
         new.update(result)
@@ -705,6 +1230,10 @@ def rewrite_manifest(
         "formula_blocked_by_qualified_operand",
     ):
         counts[name] = counters.get(name, 0)
+    if np_context is not None:
+        # NP counters ride under one new key and only when the flag is given;
+        # every existing counter key keeps its name and meaning.
+        counts[NP_COUNTERS_KEY] = dict(np_context.counters)
     return manifest, counts
 
 
@@ -749,7 +1278,28 @@ def main(argv: list[str] | None = None) -> int:
     rewrite.add_argument("--recorded-at", required=True)
     rewrite.add_argument("--out", required=True)
     rewrite.add_argument("--repo-root", default=str(ROOT))
+    rewrite.add_argument(
+        "--np-linkbases",
+        default=None,
+        metavar="DIR",
+        help=(
+            "captured filing linkbases (fif.np_linkbases/v1) that enable the "
+            "not-presented branch; without it the output is the plain census"
+        ),
+    )
     args = parser.parse_args(argv)
+
+    np_context: NPContext | None = None
+    if args.np_linkbases:
+        try:
+            np_context = NPContext(
+                pack=load_not_presented_pack(),
+                linkbases=load_np_linkbases(args.np_linkbases),
+                recorded_at=_utc_instant(args.recorded_at),
+            )
+        except ValueError as exc:
+            print(f"--np-linkbases: {exc}", file=sys.stderr)
+            return 2
 
     base_bytes = Path(args.base_manifest).read_bytes()
     base_manifest = json.loads(base_bytes)
@@ -758,7 +1308,8 @@ def main(argv: list[str] | None = None) -> int:
     specs, provenance = metric_specs_at(args.repo_root, args.recorded_at)
     provenance = dict(provenance, base_manifest_sha256=hashlib.sha256(base_bytes).hexdigest())
     manifest, counts = rewrite_manifest(
-        base_manifest, slot_rows, cached_facts_loader(args.facts_cache), specs, args.recorded_at, provenance
+        base_manifest, slot_rows, cached_facts_loader(args.facts_cache), specs, args.recorded_at,
+        provenance, np_context,
     )
     payload = dump_manifest(manifest)
     Path(args.out).write_bytes(payload)
