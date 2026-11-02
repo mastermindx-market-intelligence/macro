@@ -375,12 +375,12 @@ def _nested(body: Any, *keys: str) -> Any:
 
 
 def _filing_instant(body: Any) -> datetime | None:
-    """A document-term row's FILING clock: its source availability, else
-    the SEC acceptance of its filing.  Never the materialization instant --
-    re-compiling an old filing must not move it later in filing order."""
-    return _utc(_nested(body, "point_in_time", "source_available_at")) or _utc(
-        _nested(body, "filing", "accepted_at")
-    )
+    """A document-term row's FILING clock: the SEC acceptance of its filing.
+    Never an ingestion clock -- ``source_available_at`` is when we first saw
+    the document, so a backfilled original would outrank its own earlier-
+    captured amendment, and one backfill run stamps many filings alike
+    (the ``_filing_chronology_time`` rule of the event spine)."""
+    return _utc(_nested(body, "filing", "accepted_at"))
 
 
 def _text(value: Any) -> str | None:
@@ -1546,10 +1546,13 @@ class _Builder:
         rows: list[tuple[_Observation, str]] = []
         # A total row the compiler found but could not observe (ambiguous or
         # unavailable) still says the filing HAS a stated total, so a lone
-        # per-security row must not stand in for it.  Such rows never join
-        # the filing ordering below: an amendment without its own fee table
-        # is common and must not displace the original's amount.
+        # per-security row must not stand in for it.  Such a filing also
+        # joins the filing ordering below: when it is the latest, its
+        # unreadable total leaves the amount unknown rather than letting an
+        # earlier filing's amount stand.  An amendment with no fee table at
+        # all emits no total row and never displaces the original's amount.
         unobserved_totals: Counter[str] = Counter()
+        stated: list[tuple[str, datetime | None]] = []
         for observation in self.read.fee_rows:  # type: ignore[union-attr]
             body = observation.body
             if _text(_nested(body, "term", "name")) != FEE_TABLE_TERM_NAME:
@@ -1559,6 +1562,7 @@ class _Builder:
                     unobserved = _text(_nested(body, "filing", "accession"))
                     if unobserved is not None and unobserved in path.accessions:
                         unobserved_totals[unobserved] += 1
+                        stated.append((unobserved, _filing_instant(body)))
                 continue
             normalized = body.get("normalized") if isinstance(body.get("normalized"), Mapping) else {}
             currency = _text(normalized.get("currency"))
@@ -1572,6 +1576,7 @@ class _Builder:
             if accession is None or accession not in path.accessions:
                 continue
             rows.append((observation, accession))
+            stated.append((accession, _filing_instant(body)))
 
         def missing(
             note: str,
@@ -1596,17 +1601,16 @@ class _Builder:
                 )
             return _FeeTable(quantity, None, (), None, None, unknowns, blockers)
 
-        if not rows:
+        if not stated:
             return missing("no fee-table row for this registration is then-known")
         # The registered amount is the one stated by the LATEST FILING on the
-        # path, ranked by the filing's own clock -- never by ``available``,
-        # which also carries the materialization instant and so would let a
-        # re-compiled original outrank its own later amendment.  A filing
-        # without a clock, or two filings at one instant, cannot be ordered,
-        # so the amount is unknown rather than picked by accession spelling.
+        # path, ranked by its SEC acceptance -- never by ``available`` (which
+        # also carries the materialization instant) nor by when we first saw
+        # the document.  A filing without an acceptance time, or two filings
+        # accepted at one instant, cannot be ordered, so the amount is
+        # unknown rather than picked by accession spelling.
         filed: dict[str, datetime | None] = {}
-        for observation, row_accession in rows:
-            stamp = _filing_instant(observation.body)
+        for row_accession, stamp in stated:
             if row_accession in filed:
                 previous = filed[row_accession]
                 stamp = None if previous is None or stamp is None else max(previous, stamp)

@@ -2097,3 +2097,70 @@ def test_u1c_an_observed_total_beside_an_unobserved_total_is_two_totals() -> Non
     registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
     assert registered["status"] == "unknown"
     assert f"fee_table_multi_row:{ACC_A}" in evaluation.envelope.blockers
+
+
+def _row_by_id(reg: list[dict[str, Any]], observation_id: str) -> dict[str, Any]:
+    return next(row for row in reg if row.get("observation_id") == observation_id)
+
+
+def _first_seen(row: dict[str, Any], stamp: str) -> None:
+    row["point_in_time"] = {**row["point_in_time"], "source_available_at": stamp}
+
+
+def test_u1c_a_backfilled_original_does_not_outrank_its_earlier_captured_amendment() -> None:
+    # The amendment (accepted 20 days before the sale) was captured live; the
+    # original (accepted 30 days before) was backfilled 5 days before.  We
+    # first SAW the original last, but the SEC accepted it first, so the
+    # amendment's amount is the registered amount.
+    reg, shares = _amended_registration(f"{shift(SALE, 20)}T21:00:00Z")
+    _first_seen(_row_by_id(reg, f"doc:{PATH_A[-6:]}"), f"{shift(SALE, 5)}T21:00:00Z")
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "known"
+    assert path["registered_amount"]["value"] == "30000000"
+    assert path["fee_table_accession"] == ACC_A2
+
+
+def test_u1c_one_backfill_run_does_not_tie_filings_the_sec_accepted_apart() -> None:
+    # Both filings were first seen by one backfill run at one instant; their
+    # SEC acceptances differ, so the amendment is still the latest filing.
+    reg, shares = _amended_registration(f"{shift(SALE, 20)}T21:00:00Z")
+    backfill = f"{shift(SALE, 5)}T21:00:00Z"
+    _first_seen(_row_by_id(reg, f"doc:{PATH_A[-6:]}"), backfill)
+    _first_seen(_row_by_id(reg, "doc:amend"), backfill)
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "known"
+    assert path["registered_amount"]["value"] == "30000000"
+    assert path["fee_table_accession"] == ACC_A2
+    assert not any(b.startswith("fee_table_order_") for b in evaluation.envelope.blockers)
+
+
+def test_u1c_a_filing_without_an_acceptance_time_leaves_the_order_unknown() -> None:
+    reg, shares = _amended_registration(f"{shift(SALE, 20)}T21:00:00Z")
+    amendment = _row_by_id(reg, "doc:amend")
+    amendment["filing"] = {**amendment["filing"], "accepted_at": None}
+    evaluation = _zero_usage_evaluation(reg, shares)
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "unknown"
+    assert registered["value"] is None
+    assert f"fee_table_order_unknown:{PATH_A}" in evaluation.envelope.blockers
+
+
+def test_u1c_a_later_amendment_with_an_unreadable_total_leaves_the_amount_unknown() -> None:
+    # The amendment states a fee-table total the compiler could not read.
+    # It is the latest filing, so the original's amount must not stand.
+    stamp = f"{shift(SALE, 20)}T21:00:00Z"
+    reg, shares = _amended_registration(stamp)
+    reg.remove(_row_by_id(reg, "doc:amend"))
+    reg.append(
+        total_fee_row(
+            ACC_A2, None, available_at=stamp, observation_id="doc:amend-total", disposition="ambiguous"
+        )
+    )
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "unknown"
+    assert path["registered_amount"]["value"] is None
+    assert f"fee_table_total_indeterminate:{ACC_A2}" in evaluation.envelope.blockers
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
