@@ -6088,6 +6088,10 @@ jobs:
       - "templates/ticker_index.html.j2"
       - "tests/test_analyzer_i18n_percentile.py"
       - "tests/test_check_stock_dossier_integrity.py"
+      # The dossier render regression stamps the real controller with the production optimizer.
+      - "scripts/optimize_assets.py"
+      - "scripts/check_template_site_sync.py"
+      - "site/assets/js/dossier-live-quote.js"
       - "tests/test_dossier_identity_end_to_end.py"
       - "tests/test_dossier_numeric_contract.py"
       - "tests/test_stock_dossier.py"
