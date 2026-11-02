@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-26T20:35:23Z",
+ "accession": "0001973239-26-000097",
+ "cik": "0001973239",
+ "doc_byte_length": 3137018,
+ "doc_sha256": "8ab052cc035f9cc93429c0bfd76edf2bc11a686a80f0cc7b568fbd456b2ec815",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-26",
+ "form": "20-F",
+ "period_of_report": "2026-03-31",
+ "primary_document": "arm-20260331.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1954291,
+  "byte_start": 1953663,
+  "normalized": "Arm Technology (China) Co. Limited (“Arm China”) acts as the Company’s exclusive IP distributor in the People’s Republic of China, which, for the purposes of these financial statements, includes the Hong Kong Special Administrative Region and the Macau Special Administrative Region, but excludes Taiwan (collectively referred to as the “PRC”), under the intellectual property licensing arrangement (“IPLA”) and subsequent amendments. Arm China directly contracts with end customers with discretion in establishing pricing to sublicense specified IP and Arm Total Access Packages.",
+  "normalized_sha256": "3f4a0da2ae8198b73a80345b8da8c2dfcf9f9a0feb97f29c8c2e8073ce5e4f2e",
+  "raw": "Arm Technology (China) Co. Limited (&#8220;Arm China&#8221;) acts as the Company&#8217;s exclusive IP distributor in the People&#8217;s Republic of China, which, for the purposes of these financial statements, includes the Hong Kong Special Administrative Region and the Macau Special Administrative Region, but excludes Taiwan (collectively referred to as the &#8220;PRC&#8221;), under the intellectual property licensing arrangement (&#8220;IPLA&#8221;) and subsequent amendments. Arm China directly contracts with end customers with discretion in establishing pricing to sublicense specified IP and Arm Total Access Packages.",
+  "raw_sha256": "cd7bdb11c4990792a4066fbbfb375baab80fcef6f4d82a0a702c677dae51f237"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1973239/000197323926000097/arm-20260331.htm",
+ "xbrl_contexts": []
+}

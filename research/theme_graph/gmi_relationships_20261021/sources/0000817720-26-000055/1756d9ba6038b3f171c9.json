@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-10T21:25:50Z",
+ "accession": "0000817720-26-000055",
+ "cik": "0000817720",
+ "doc_byte_length": 1875971,
+ "doc_sha256": "d8cd914f29821b0d7d4fdc030a185c1d839cbe4f77e078495cc32f50abb2a5bb",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-10",
+ "form": "10-K",
+ "period_of_report": "2026-06-27",
+ "primary_document": "syna-20260627.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 963290,
+  "byte_start": 962166,
+  "normalized": "On January 19, 2025, we entered into definitive asset purchase agreements with Broadcom to acquire certain assets, and obtain non-exclusive licenses relating to, Broadcom’s Wi-Fi Business in the IoT market for an aggregate consideration of $200.3 million in cash, which closed on January 30, 2025 (“Closing Date”). These assets include non-exclusive licenses to three developed technology products, property and equipment and the right to obtain licenses for eight roadmap technology intangible assets (“roadmap IP”) expected to be delivered at various dates through May 2028.",
+  "normalized_sha256": "610a6feb1a38e544d933a22abd985d2f50901dd498eb5a5a1cdc431e5eef49d0",
+  "raw": "On January 19, 2025, we entered into definitive asset purchase agreements with Broadcom to acquire certain assets, and obtain non-exclusive licenses relating to, Broadcom&#8217;s Wi-Fi Business in the IoT market for an aggregate consideration of $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-61\" decimals=\"-5\" name=\"us-gaap:PaymentsToAcquireBusinessesGross\" scale=\"6\" id=\"f-468\">200.3</ix:nonFraction> million in cash, which closed on January 30, 2025 (&#8220;Closing Date&#8221;). These assets include non-exclusive licenses to <ix:nonFraction unitRef=\"developedtechnology\" contextRef=\"c-61\" decimals=\"INF\" name=\"syna:NumberOfDevelopedTechnologyProducts\" format=\"ixt-sec:numwordsen\" id=\"f-469\">three</ix:nonFraction> developed technology products, property and equipment and the right to obtain licenses for <ix:nonFraction unitRef=\"roadmaptechnology\" contextRef=\"c-61\" decimals=\"INF\" name=\"syna:NumberOfRoadmapTechnologyIntangibleAssets\" format=\"ixt-sec:numwordsen\" id=\"f-470\">eight</ix:nonFraction> roadmap technology intangible assets (&#8220;roadmap IP&#8221;) expected to be delivered at various dates through May 2028.",
+  "raw_sha256": "1756d9ba6038b3f171c91bfd5e9762e4581ec4be364d49bdd2c1510774734edc"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/817720/000081772026000055/syna-20260627.htm",
+ "xbrl_contexts": []
+}
