@@ -98,6 +98,16 @@ test('O06: a view counts only with its source-owned ledger receipt', () => {
   assert.ok(h.includes('轮动记录未通过校验，未予显示。'));
 });
 
+test('a lib-valid, receipted view for a later session is unreadable and claims no id', () => {
+  const oid = fixture('malformed_future').notification.observation_id;
+  for (const lang of ['en', 'zh']) {
+    const h = render('malformed_future', lang);
+    assert.equal(stateOf(h), 'unreadable', lang);
+    assert.ok(h.includes('data-observation-id=""'), lang + ' future view claims no id');
+    assert.ok(!h.includes(oid), lang + ' future id never shown');
+  }
+});
+
 test('no observation: missing early_context is unavailable, aged context is stale', () => {
   assert.equal(stateOf(fn(null, null, null, 'en', NOW)), 'unavailable');
   const stale = fn(null, { as_of: '2026-10-20' }, '2026-10-30', 'en', NOW);
@@ -108,10 +118,10 @@ test('no observation: missing early_context is unavailable, aged context is stal
 
 test('legs withheld when the 2-session window mismatches, shown when only 20s is missing', () => {
   const mismatch = render('partial_window_mismatch', 'en');
-  assert.ok(mismatch.includes('Partial evidence for XLP vs XLK; ratio withheld.'));
+  assert.ok(mismatch.includes('Partial evidence for consumer staples (XLP) vs technology (XLK); ratio withheld.'));
   assert.ok(!mismatch.includes('+2.06%'));
   const missing20 = render('partial_missing_20s', 'en');
-  assert.ok(missing20.includes('Both fell; XLP fell less than XLK.'));
+  assert.ok(missing20.includes('Both sectors fell; consumer staples (XLP) fell less than technology (XLK).'));
   assert.ok(missing20.includes('-1.00%') && missing20.includes('-3.00%') && missing20.includes('+2.06%'));
   assert.ok(missing20.includes('Not supplied') && missing20.includes('未提供'));
 });
@@ -165,7 +175,7 @@ test('correction and withdrawal keep the original in history', () => {
   assert.ok(corrected.includes('Original (rotobs_'));
   assert.ok(corrected.includes('Corrected: n -0.50% · d -3.00% · r +2.58%'));
   const withdrawn = render('withdrawn', 'en');
-  assert.ok(withdrawn.includes('Evidence for XLP vs XLK was withdrawn on Oct 30.'));
+  assert.ok(withdrawn.includes('Evidence for consumer staples (XLP) vs technology (XLK) was withdrawn on Oct 30.'));
   const glanceOnly = withdrawn.slice(0, withdrawn.indexOf('<details')); // the study keeps the original
   assert.ok(!glanceOnly.includes('+2.06%'), 'withdrawn glance must not show stale numbers');
   assert.ok(withdrawn.includes('Original (rotobs_') && withdrawn.includes('n -1.00%'), 'study keeps original values');
@@ -223,11 +233,15 @@ test('the glance is prepended to the early-context output and does not alter it'
 test('the pre-existing rc-ec edge stripe is repaired, rc-ew uses even borders', () => {
   assert.ok(src.includes('.rc-ec-stale,.rc-ec-conflict{border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--surface-warn-subtle);'));
   assert.ok(!src.includes('.rc-ec-stale,.rc-ec-conflict{border-left:'));
-  const rcEw = src.slice(src.indexOf('.rc-ew{margin'), src.indexOf("var s=document.createElement"));
+  // B1: no runtime-injected glance styles; the governed stylesheet carries them
+  assert.ok(!src.includes('.rc-ew{') && !/\.rc-ew[\w-]*(?::[\w-]+)?\s*[,{]/.test(src));
+  const rcEw = fs.readFileSync(path.join(path.dirname(target), 'rotation_glance.css'), 'utf8')
+    .replace(/\/\*[\s\S]*?\*\//g, '');
   assert.ok(!/border-(left|right|top|inline-start|inline-end|block-start)\s*:/.test(rcEw));
   assert.ok(!/#[0-9a-fA-F]{3,8}\b/.test(rcEw));
   assert.ok(!rcEw.includes('rgb(') && !rcEw.includes('hsl('));
-  assert.ok(rcEw.includes('.rc-ew-next:focus-visible,.rc-ew-study summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;}'));
+  assert.ok(!/font-size\s*:\s*\d/.test(rcEw));
+  assert.ok(rcEw.includes('.rc-ew-next:focus-visible, .rc-ew-study > summary:focus-visible {outline:2px solid var(--link); outline-offset:2px;'));
 });
 
 test('repair wave B: separator, routes and a single both-fell sentence', () => {
@@ -235,7 +249,7 @@ test('repair wave B: separator, routes and a single both-fell sentence', () => {
   assert.ok(h.includes(' · <span class="rc-ew-built">'), 'quality · built separator');
   assert.ok(!h.includes('#rc-early-context'), 'no unregistered in-page route');
   assert.ok(h.includes('href="#rc-events-mount"'), 'registered SC route');
-  assert.equal(h.split('Both fell; XLP fell less than XLK.').length - 1, 1, 'stated once');
+  assert.equal(h.split('Both sectors fell; consumer staples (XLP) fell less than technology (XLK).').length - 1, 1, 'stated once');
   // JSON.parse makes 2.0 === 2, so the JS glance cannot tell a float session
   // count from an integer one; the Radar (Jinja) path enforces integers.
   assert.equal(JSON.parse('{"s":2.0}').s, 2);
@@ -301,7 +315,8 @@ test('review r1: explicit keys, non-object wrapper, monospace id', () => {
   }
   assert.equal(stateOf(fn(null, null, '2026-10-30', 'en', NOW)), 'unavailable', 'null wrapper stays absent');
   assert.equal(stateOf(fn(undefined, null, '2026-10-30', 'en', NOW)), 'unavailable', 'missing wrapper stays absent');
-  assert.match(src, /\.rc-ew-id\{user-select:all;font-family:var\(--font-mono\);\}/, 'selectable monospace id');
+  const glanceCss = fs.readFileSync(path.join(path.dirname(target), 'rotation_glance.css'), 'utf8');
+  assert.ok(glanceCss.includes('.rc-ew-id {user-select:all; font-family:var(--font-mono);}'), 'selectable monospace id');
 });
 
 test('EW-P4-FU: blank pair_id and calendar-invalid dates are unreadable; real dates pass', () => {
