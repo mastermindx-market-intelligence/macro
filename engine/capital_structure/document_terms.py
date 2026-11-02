@@ -189,6 +189,11 @@ _DOCUMENT_TERM_SCHEMA_PATH = (
     / "contracts"
     / "capital_structure_document_term_observation.schema.json"
 )
+_DOCUMENT_TERM_PARSE_RECEIPT_SCHEMA_PATH = (
+    _SEMANTIC_REPO_ROOT
+    / "contracts"
+    / "capital_structure_document_term_parse_receipt.schema.json"
+)
 # These source files contain the inherited HTML dispatch, character-reference
 # conversion/data, and the regular-expression entrypoint used by that dispatch.
 # Their paths are resolved beneath the active interpreter's stdlib root and
@@ -3916,6 +3921,147 @@ def _make_current_document_terms_as_of(
     return current_document_terms_as_of
 
 
+def _parse_receipt_identity(
+    source_manifest_id: str, content_sha256: str, parser_version: str,
+) -> str:
+    """The receipt primary key: sha256 over the canonical identity triple."""
+    payload = json.dumps(
+        [source_manifest_id, content_sha256, parser_version],
+        sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _parse_receipt_candidate_digests(
+    candidates: Sequence[Mapping[str, Any]],
+) -> tuple[int, str, str]:
+    """Count plus logical-id and semantic digests over a manifest's full candidate list.
+
+    The semantic body intentionally excludes only versioning metadata, so the
+    digest is stable whether a candidate is later materialized as a new
+    correction or counted unchanged.
+    """
+    logical_ids = sorted(str(item["logical_observation_id"]) for item in candidates)
+    semantic_pairs = sorted(
+        (
+            [str(item["logical_observation_id"]), _semantic_body(item)]
+            for item in candidates
+        ),
+        key=lambda pair: pair[0],
+    )
+    return (
+        len(candidates),
+        hashlib.sha256(_canonical_json(logical_ids)).hexdigest(),
+        hashlib.sha256(_canonical_json(semantic_pairs)).hexdigest(),
+    )
+
+
+def _parse_receipt_for_manifest(
+    manifest: Mapping[str, Any],
+    candidates: Sequence[Mapping[str, Any]],
+    *,
+    generated_at: str,
+    parser_registration: ParserRegistration,
+) -> dict[str, Any]:
+    """Build the operational receipt for one materialized manifest."""
+    manifest_id = str(manifest["manifest_id"])
+    content_sha256 = str(
+        (manifest.get("document") or {}).get("content_sha256") or ""
+    ).lower()
+    candidate_count, logical_digest, semantic_digest = (
+        _parse_receipt_candidate_digests(candidates)
+    )
+    return {
+        "schema_version": "capital_structure.document_term_parse_receipt.v1",
+        "receipt_id": _parse_receipt_identity(
+            manifest_id,
+            content_sha256,
+            parser_registration.version,
+        ),
+        "source_manifest_id": manifest_id,
+        "accession": str((manifest.get("filing") or {}).get("accession") or ""),
+        "content_sha256": content_sha256,
+        "parser_version": parser_registration.version,
+        "parser_implementation_sha256": parser_registration.implementation_sha256,
+        "candidate_count": candidate_count,
+        "candidate_logical_ids_sha256": logical_digest,
+        "candidate_semantic_sha256": semantic_digest,
+        "generated_at": generated_at,
+    }
+
+
+def _validate_supplied_parse_receipts(
+    parse_receipts: Sequence[Mapping[str, Any]],
+    *,
+    manifests_by_id: Mapping[str, Mapping[str, Any]],
+    parser_resolver: Callable[[Any], ParserRegistration],
+) -> list[dict[str, Any]]:
+    """Fail closed on every supplied receipt before any source read happens."""
+    if not parse_receipts:
+        return []
+    validator = Draft202012Validator(
+        json.loads(
+            _DOCUMENT_TERM_PARSE_RECEIPT_SCHEMA_PATH.read_text(encoding="utf-8")
+        ),
+        format_checker=FormatChecker(),
+    )
+    receipts: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+    for index, raw in enumerate(parse_receipts):
+        receipt = dict(raw)
+        receipt_id = str(receipt.get("receipt_id") or "")
+        errors = sorted(
+            validator.iter_errors(receipt),
+            key=lambda error: tuple(str(part) for part in error.absolute_path),
+        )
+        if errors:
+            joined = "; ".join(
+                f"{'.'.join(str(part) for part in error.absolute_path) or '<root>'}: "
+                f"{error.message}"
+                for error in errors[:5]
+            )
+            raise ValueError(
+                f"document-term parse receipt {index} ({receipt_id!r}) contract "
+                f"violation: {joined}"
+            )
+        manifest_id = str(receipt["source_manifest_id"])
+        content_sha256 = str(receipt["content_sha256"])
+        parser_version = str(receipt["parser_version"])
+        if receipt_id != _parse_receipt_identity(
+            manifest_id, content_sha256, parser_version,
+        ):
+            raise ValueError(
+                f"document-term parse receipt {receipt_id} does not match its "
+                "recomputed receipt_id"
+            )
+        if receipt_id in seen_ids:
+            raise ValueError(f"duplicate document-term parse receipt {receipt_id}")
+        seen_ids.add(receipt_id)
+        registration = parser_resolver(parser_version)
+        if str(receipt["parser_implementation_sha256"]) != (
+            registration.implementation_sha256
+        ):
+            raise ValueError(
+                f"document-term parse receipt {receipt_id} parser implementation "
+                "digest mismatch"
+            )
+        manifest = manifests_by_id.get(manifest_id)
+        if manifest is None:
+            raise ValueError(
+                f"document-term parse receipt {receipt_id} source manifest is absent"
+            )
+        manifest_content = str(
+            (manifest.get("document") or {}).get("content_sha256") or ""
+        ).lower()
+        if content_sha256.lower() != manifest_content:
+            raise ValueError(
+                f"document-term parse receipt {receipt_id} content_sha256 does "
+                "not match its manifest"
+            )
+        receipts.append(receipt)
+    return receipts
+
+
 def _compile_document_term_records_core(
     manifests: Sequence[Mapping[str, Any]],
     *,
@@ -3923,6 +4069,7 @@ def _compile_document_term_records_core(
     existing_observations: Sequence[Mapping[str, Any]] = (),
     generated_at: str,
     rebuild: bool = False,
+    parse_receipts: Sequence[Mapping[str, Any]] = (),
     parser_resolver: Callable[[Any], ParserRegistration],
     active_parser_version: str,
     policy: _AuthorityPolicy,
@@ -3932,13 +4079,20 @@ def _compile_document_term_records_core(
     All in-scope source reads happen before any candidate is versioned. A missing
     or hash-mismatched object aborts the whole run, preserving the previous
     telemetry-last generation instead of publishing a misleading partial ledger.
+
+    ``parse_receipts`` are operational evidence that a manifest/content/parser
+    triple was already materialized by a completed parse. They never carry or
+    amend facts; they only exempt an unchanged filing from being re-read and
+    re-parsed night after night after a parser release whose rows it leaves
+    semantically identical.
     """
     manifest_rows = [dict(item) for item in manifests]
     policy.manifest_ledger_validator(manifest_rows)
     for manifest in manifest_rows:
         policy.manifest_content_validator(manifest)
     generated = _iso(generated_at, "generated_at")
-    active_parser_version = parser_resolver(active_parser_version).version
+    active_registration = parser_resolver(active_parser_version)
+    active_parser_version = active_registration.version
     existing = [dict(item) for item in existing_observations]
     _validate_document_term_records_contract(
         existing, label="document-term compiler existing history",
@@ -3950,6 +4104,11 @@ def _compile_document_term_records_core(
     manifests_by_id = {
         str(manifest["manifest_id"]): manifest for manifest in manifest_rows
     }
+    supplied_receipts = _validate_supplied_parse_receipts(
+        parse_receipts,
+        manifests_by_id=manifests_by_id,
+        parser_resolver=parser_resolver,
+    )
     for index, source in enumerate(existing):
         manifest_id = str(
             (source.get("document") or {}).get("source_manifest_id") or ""
@@ -3972,15 +4131,37 @@ def _compile_document_term_records_core(
     current_by_manifest: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
     for prior in current_by_logical.values():
         current_by_manifest[str((prior.get("document") or {}).get("source_manifest_id") or "")].append(prior)
-    parser_invalidated_manifest_ids = {
-        str(manifest["manifest_id"])
-        for manifest in selected
-        if current_by_manifest.get(str(manifest["manifest_id"]))
-        and any(
+    active_receipt_pairs = {
+        (str(receipt["source_manifest_id"]), str(receipt["content_sha256"]).lower())
+        for receipt in supplied_receipts
+        if str(receipt["parser_version"]) == active_parser_version
+    }
+
+    def _manifest_receipt_pair(manifest: Mapping[str, Any]) -> tuple[str, str]:
+        return (
+            str(manifest["manifest_id"]),
+            str((manifest.get("document") or {}).get("content_sha256") or "").lower(),
+        )
+
+    def _has_stale_prior(manifest: Mapping[str, Any]) -> bool:
+        priors = current_by_manifest.get(str(manifest["manifest_id"]))
+        return bool(priors) and any(
             str((prior.get("extraction") or {}).get("parser_version") or "")
             != active_parser_version
-            for prior in current_by_manifest[str(manifest["manifest_id"])]
+            for prior in priors
         )
+
+    stale_manifest_pairs: dict[str, tuple[str, str]] = {}
+    for manifest in selected:
+        if _has_stale_prior(manifest):
+            stale_manifest_pairs[str(manifest["manifest_id"])] = (
+                _manifest_receipt_pair(manifest)
+            )
+    stale_manifest_ids = set(stale_manifest_pairs)
+    parser_invalidated_manifest_ids = {
+        manifest_id
+        for manifest_id, receipt_pair in stale_manifest_pairs.items()
+        if receipt_pair not in active_receipt_pairs
     }
     materialize = [
         manifest for manifest in selected
@@ -3988,6 +4169,8 @@ def _compile_document_term_records_core(
         or not current_by_manifest.get(str(manifest["manifest_id"]))
         or str(manifest["manifest_id"]) in parser_invalidated_manifest_ids
     ]
+    materialize_ids = {str(manifest["manifest_id"]) for manifest in materialize}
+    receipt_exempt_manifest_ids = stale_manifest_ids - materialize_ids
     failures: list[dict[str, Any]] = []
     source_bytes: dict[str, bytes] = {}
     for manifest in materialize:
@@ -4011,13 +4194,17 @@ def _compile_document_term_records_core(
 
     incoming: list[dict[str, Any]] = []
     unchanged = 0
+    candidates_by_manifest: dict[str, list[dict[str, Any]]] = {}
     for manifest in materialize:
-        for candidate in _records_for_manifest_with_resolver(
+        manifest_id = str(manifest["manifest_id"])
+        manifest_candidates = _records_for_manifest_with_resolver(
             manifest,
-            source_bytes[str(manifest["manifest_id"])],
+            source_bytes[manifest_id],
             parser_version=active_parser_version,
             parser_resolver=parser_resolver,
-        ):
+        )
+        candidates_by_manifest[manifest_id] = manifest_candidates
+        for candidate in manifest_candidates:
             logical = str(candidate["logical_observation_id"])
             prior = current_by_logical.get(logical)
             if prior is not None and _semantic_body(prior) == _semantic_body(candidate):
@@ -4030,12 +4217,70 @@ def _compile_document_term_records_core(
             _validate_observation_source_binding_core(
                 candidate,
                 manifest,
-                source_bytes[str(manifest["manifest_id"])],
+                source_bytes[manifest_id],
                 parser_resolver=parser_resolver,
                 policy=policy,
             )
             incoming.append(candidate)
             current_by_logical[logical] = candidate
+
+    new_receipts: list[dict[str, Any]] = []
+    emitted_receipts = [dict(receipt) for receipt in supplied_receipts]
+    supplied_receipts_by_id = {
+        str(receipt["receipt_id"]): receipt for receipt in supplied_receipts
+    }
+    for manifest in materialize:
+        manifest_id = str(manifest["manifest_id"])
+        receipt = _parse_receipt_for_manifest(
+            manifest,
+            candidates_by_manifest[manifest_id],
+            generated_at=generated,
+            parser_registration=active_registration,
+        )
+        supplied = supplied_receipts_by_id.get(receipt["receipt_id"])
+        if supplied is not None:
+            if (
+                int(supplied["candidate_count"]) != receipt["candidate_count"]
+                or str(supplied["candidate_logical_ids_sha256"])
+                != receipt["candidate_logical_ids_sha256"]
+                or str(supplied["candidate_semantic_sha256"])
+                != receipt["candidate_semantic_sha256"]
+            ):
+                raise ValueError(
+                    "document-term parse receipt is not reproducible for "
+                    f"{manifest_id}"
+                )
+            continue
+        emitted_receipts.append(receipt)
+        new_receipts.append(receipt)
+    emitted_receipts.sort(key=lambda item: (
+        str(item["source_manifest_id"]), str(item["parser_version"]),
+    ))
+    new_receipts.sort(key=lambda item: (
+        str(item["source_manifest_id"]), str(item["parser_version"]),
+    ))
+
+    orphaned_prior_observations = 0
+    orphaned_examples: list[dict[str, Any]] = []
+    for manifest in materialize:
+        manifest_id = str(manifest["manifest_id"])
+        candidate_logicals = {
+            str(candidate["logical_observation_id"])
+            for candidate in candidates_by_manifest[manifest_id]
+        }
+        for prior in current_by_manifest.get(manifest_id, []):
+            logical = str(prior["logical_observation_id"])
+            if logical in candidate_logicals:
+                continue
+            orphaned_prior_observations += 1
+            if len(orphaned_examples) < 20:
+                orphaned_examples.append({
+                    "source_manifest_id": manifest_id,
+                    "logical_observation_id": logical,
+                })
+    orphaned_examples.sort(key=lambda item: (
+        str(item["source_manifest_id"]), str(item["logical_observation_id"]),
+    ))
 
     output = [*existing, *incoming]
     _validate_document_term_records_contract(
@@ -4059,6 +4304,9 @@ def _compile_document_term_records_core(
     return {
         "observations": output,
         "new_observations": incoming,
+        "receipts": emitted_receipts,
+        "new_receipts": new_receipts,
+        "orphaned_examples": orphaned_examples,
         "counts": {
             "eligible_complete_submissions": len(selected),
             "processed_complete_submissions": len(materialize),
@@ -4069,12 +4317,16 @@ def _compile_document_term_records_core(
                 len(output) if rebuild else len(incoming)
             ),
             "parser_version_invalidations": len(parser_invalidated_manifest_ids),
+            "receipt_exempt_manifests": len(receipt_exempt_manifest_ids),
             "observations": len(output),
             "new_observations": len(incoming),
             "unchanged_observations": unchanged,
             "observed": sum(1 for row in output if (row.get("state") or {}).get("disposition") == "observed"),
             "unavailable": sum(1 for row in output if (row.get("state") or {}).get("disposition") == "unavailable"),
             "ambiguous": sum(1 for row in output if (row.get("state") or {}).get("disposition") == "ambiguous"),
+            "parse_receipts": len(emitted_receipts),
+            "new_parse_receipts": len(new_receipts),
+            "orphaned_prior_observations": orphaned_prior_observations,
         },
     }
 
@@ -4092,6 +4344,7 @@ def _make_compile_document_term_records(
         existing_observations: Sequence[Mapping[str, Any]] = (),
         generated_at: str,
         rebuild: bool = False,
+        parse_receipts: Sequence[Mapping[str, Any]] = (),
     ) -> dict[str, Any]:
         """Compile with only the immutable released parser/policy registries."""
         if globals().get("_validated_authority_policy") is not policy_validator:
@@ -4107,6 +4360,7 @@ def _make_compile_document_term_records(
             existing_observations=existing_observations,
             generated_at=generated_at,
             rebuild=rebuild,
+            parse_receipts=parse_receipts,
             parser_resolver=released_parser_resolver,
             active_parser_version=PARSER_VERSION,
             policy=policy,
@@ -4142,6 +4396,7 @@ def _compile_document_term_records_test_lane(
     existing_observations: Sequence[Mapping[str, Any]] = (),
     generated_at: str,
     rebuild: bool = False,
+    parse_receipts: Sequence[Mapping[str, Any]] = (),
 ) -> dict[str, Any]:
     """Private synthetic-history compiler; never consulted by public APIs."""
     policy = _validated_authority_policy()
@@ -4151,6 +4406,7 @@ def _compile_document_term_records_test_lane(
         existing_observations=existing_observations,
         generated_at=generated_at,
         rebuild=rebuild,
+        parse_receipts=parse_receipts,
         parser_resolver=_test_lane_resolver(parser_lane, capability=capability),
         active_parser_version=parser_version,
         policy=policy,
@@ -4241,12 +4497,12 @@ def _authority_policy_entrypoints() -> tuple[SemanticEntrypoint, ...]:
 #   4. Import the real module to confirm the startup self-check passes, and
 #      re-check the digests on every reviewed runtime -- they are portable
 #      across CPython 3.12 patch releases by design.
-_AUTHORITY_POLICY_DEPENDENCY_COUNT = 432
+_AUTHORITY_POLICY_DEPENDENCY_COUNT = 468
 _AUTHORITY_POLICY_DEPENDENCY_MANIFEST_SHA256 = (
-    "ce4537defd873c1f1406ea8b4e3709ef0e33c8e034c9d6c2b632b3af546c0425"
+    "5f455b19c38aad2f1460a2c4122548176e4bf2f6192a241ef29c01493ccd95b7"
 )
 _AUTHORITY_POLICY_IMPLEMENTATION_SHA256 = (
-    "c9885c435ed0dab8dc1b742efae1ff7d25f131e485275391723fde5dae9fd0fe"
+    "35ed9840daf86793736bf62c50a574e2c9005f3a1bd4bd8e3d7cf70c27e24df5"
 )
 
 _AUTHORITY_POLICY = _AuthorityPolicy(
