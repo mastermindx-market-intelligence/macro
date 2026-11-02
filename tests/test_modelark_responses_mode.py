@@ -262,3 +262,37 @@ def test_null_usage_remains_unknown_without_fabricated_cost(monkeypatch, tmp_pat
     assert receipt.price_state == "unknown"
     assert receipt.input_tokens is None and receipt.output_tokens is None
     assert usages == []
+
+
+@pytest.mark.parametrize("bad_count", [-1, True, "12", 1.5, 2**31, None])
+def test_malformed_provider_usage_does_not_enter_cost_ledger(monkeypatch, tmp_path, bad_count):
+    mode_id = "modelark_glm_flash_api"
+    prepare(monkeypatch, tmp_path, mode_id, qualify=True)
+    spy_http(monkeypatch, model=MODELS[mode_id], input_tokens=bad_count, output_tokens=5)
+    usage_rows = []
+    monkeypatch.setattr(ppm.ai_costs, "record_usage", lambda **kw: usage_rows.append(kw))
+    result = ppm.call_mode(
+        mode_id, "s", "u", max_tokens=15,
+        env={"BYTEPLUS_MODELARK_API_KEY": FAKE_CREDENTIAL},
+    )
+    assert result.ok is True  # Transport is separate from provenance of usage.
+    assert result.price_state == "unknown"
+    assert result.input_tokens is None and result.output_tokens is None
+    assert usage_rows == []
+
+
+@pytest.mark.parametrize("bad_max", [0, -1, True, "32", 513, 10**10])
+def test_invalid_output_ceiling_refuses_before_credential(monkeypatch, tmp_path, bad_max):
+    mode_id = "modelark_glm_flash_api"
+    prepare(monkeypatch, tmp_path, mode_id, qualify=True)
+    monkeypatch.setattr(ppm, "_resolve_credential",
+        lambda *_: pytest.fail("invalid output limit touched commercial credential"))
+    result = ppm.call_mode(
+        mode_id, "s", "u", max_tokens=bad_max,
+        env={"BYTEPLUS_MODELARK_API_KEY": FAKE_CREDENTIAL},
+        transport=lambda **kw: pytest.fail("invalid ceiling sent a request"),
+    )
+    assert result.ok is False
+    assert result.error_class == "unsupported"
+    assert result.fallback == "none"
+
