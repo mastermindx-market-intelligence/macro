@@ -158,3 +158,8 @@ html[data-desk="composite"] .cyc > .cyc-cards{display:none}
 .cyc-capture figcaption{margin-top:8px;font:400 var(--fs-sm)/1.45 var(--font-ui);color:var(--muted)}
 .cyc-desk-cards > .cyc-chips{margin-bottom:8px}
 .cyc-ctx dd code{white-space:nowrap;display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}
+/* wave 4 (SIC-V4-C02/C03, C07/C08, C10): labeled hazard/rhythm mismatch states reuse .cyc-clocks-state; the fixture strip holds
+   two labeled FIXTURE cards; the desk caption carries the clock statement */
+.cyc-fixtures{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-top:16px}
+.cyc-fixtures .cyc-fixture-card{margin-top:0}
+.cyc-desk-clock{display:block;margin-top:6px;color:var(--muted)}

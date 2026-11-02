@@ -154,7 +154,7 @@ BOUNCE → Watch — don't chase (bounce inside a down leg, no chase) · COUNTER
 Watch — don't chase (counter-trend structure only; moved from Stand aside so the ink group
 follows the engine tone) · TRIM → Protect gains (reduce into strength) · SELL → Protect
 gains (exit the leg) · WAIT → Stand aside (no entry condition) · AVOID → Stand aside
-(structure broken). There is no None entry: a null stance (resolve failure,
+(structure broken). SIC-ADJ-01a (wave 4, PRC-037; `engine/cycle_ontology.py:159-164`, the same sentence in COMPONENTS.md): HOLD is stamped on every RALLY ON row — the clean (non-divergent) Recovery/Expansion/Peak cells and the divergent Trough/Downturn cells — and on Recovery × TOP WATCH. The doctrine word is knowingly "Watch — don't chase" in warn ink for all of them: a held position is never a fresh entry, and the chip is not an exit (SIC-ADJ-01a; PRC-037) There is no None entry: a null stance (resolve failure,
 `engine/sector_cycles.py:852-854`) draws the muted `cycles.stance_unavailable` line and no
 chip. The engine stance and tone stay verbatim as the first line of the card's provenance
 drawer; no engine stance word (HOLD, SELL, TRIM, BUY, WAIT, AVOID, GET READY, COUNTERTREND
@@ -180,10 +180,44 @@ the labeled Clocks-disagree state naming both clocks (`cycles.clocks_disagree_pa
 `cycles.read_withheld_face`, with the legacy read verbatim in the drawer. XLF (match,
 divergence) and XLC (mismatch) demonstrate both states on boards 28–31/34–36/39/40.
 
+Wave 4 (SIC-V4-C02/C03) — one family rule for every clock: `build_cycles.py` `leg_family` reads the
+phase_v2 chip's family leg from `LEG_OF` (rising family Recovery/Expansion/Peak → an up leg toward a
+peak, next turn a peak; falling family Trough/Downturn → a down leg toward a trough, next turn a
+trough; `engine/cycle_ontology.py` `classify_phase` :614-629, Peak rising by construction :990-991).
+The hazard leg (`hazard.direction` · `turn_kind`) and the rhythm projection (`rhythm.next_turn`,
+`proj.nextTurn`, the date and the Overdue chip) reach the card face only when they agree with that
+leg; otherwise the row draws the labeled state naming its own clock and the phase clock in plain
+words (`cycles.clocks_hazard_chip` + `hazard_mismatch_pattern`: "hazard clock says an up leg toward a
+peak · phase clock says Rolling over, next turn a trough"; `clocks_rhythm_chip` +
+`rhythm_mismatch_pattern`) and the cells and date move to the provenance drawer (`leg_family` row,
+recorded per sector). The face therefore carries at most three distinct labeled states: Ladder
+disagrees (`clocks_ladder_chip` + `ladder_state_pattern`, the ladder state glossed from
+`engine/cycles.py:653` STATE_DISPLAY — "timing ladder says uptrend", never RALLY ON), Read disagrees
+(`clocks_read_chip`, only when `family_match` is false) and Hazard / Rhythm clock disagrees.
+Specimen cells on boards 28–31/34–36/39–41: XLF (Downturn/Downturn; hazard down·trough agrees;
+rhythm next peak disagrees; ladder RALLY ON) shows Ladder + Rhythm; XLK (hazard unavailable; rhythm
+next peak) shows Rhythm only; XLC (Trough/Downturn; hazard up·peak; rhythm next peak) shows Read +
+Hazard + Rhythm. No study id reaches a face (SIC-V4-C05): the lead-lag method row says "Lead-lag: no
+claim" in plain words and W5.1 stays in the drawer; the ZH hazard heads are the card's production
+转折≤1月 / ≤3月 / ≤6月 (`sector_cycles.js:1132`), not the sidebar's P(转折≤1月). A second labeled
+FIXTURE card (SIC-V4-C10, `_fixtures.null_stance`) draws the null-stance treatment: the muted
+`cycles.stance_unavailable` line and no chip; its drawer glosses the engine tone in ZH
+(`enum_zh.json`: 看涨 / 谨慎 / 看跌 / 中性 / 预期 — new deck copy, no production ZH tone string).
+
 Port note (SIC-V3-C06, wave 3): the production ZH read (`engine/sector_cycles.py:97-101`)
 interpolates the English sector name and the Latin abbreviation `RS` into the zh sentence
 ("Financials下行阶段 … 相对标普RS（63日）"). The specimen draws the zh sector name and
 `相对标普（63日）` on the ZH face; the port should emit that from `read_zh`/`rs_zh` directly.
+
+Port note (SIC-V4-C04, wave 4): on a ZH face every phase word is the chip's production label
+(`templates/sector_cycles.js:602`: 筑底中 / 入场良机 / 上行中 / 见顶 · 晚期 / 回落中, deck
+`phase_*_chip`); the engine `label_zh` / `short_zh` (下行阶段 / 下行) are drawer-only. The specimen
+rewrites the engine read's phase clause to 金融处于回落中阶段 and completes the 200-day clause to
+位于200日均线上方 (`build_cycles.py` `read`, `PHASE_FACE_ZH`); the port should emit both from the
+producer's `read_zh` rather than rewriting. Face-only count of distinct ZH phase words per card on
+boards 30/34/35/36/41 (`capture.log`, wave 4): XLF 1 (回落中), XLK 1 (回落中), XLC 2 (回落中 + 筑底中
+— the Read-disagrees state names both clocks' phases, as SIC-V4-C03 requires), fixtures 0; 下行 on
+no face.
 
 ## R6 — timing & projection (ladder, gate, rhythm, hazard)
 
@@ -201,7 +235,9 @@ PASS/PRIOR badge (`hazardLineHTML:1087-1088`); PRIOR cells render muted
 `sector_cycles.js:1098-1101`). A record whose feature vector fails the scorer's
 schema/epoch guard gets no `now.hazard` (stamp is warn-and-skip,
 `engine/sector_cycles.py:1093-1098`) and the line is omitted (`hazardLineHTML:1082`)
-— that is the current error treatment, not a typed state. C16's
+— that is the current error treatment, not a typed state. Wave 4 (SIC-V4-C02): a stamped
+hazard whose leg disagrees with the phase_v2 family (XLC: up/peak under Downturn) is the
+labeled hazard-mismatch state of R5, cells drawer-only. C16's
 measured phase age is produced by `engine/cycle_phase_age.py` (`forward_log_replay.v2`):
 `phase_v2_age {sessions, status, observed_from, history_rows}` with status one of
 measured / lower_bound / insufficient_history / source_unavailable / unknown_phase /

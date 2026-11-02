@@ -125,13 +125,15 @@ Tokens `templates/theme.css` lacks; listed here, never defined locally:
 - **Tokens:** `--fs-label`, `--font-ui`, `--panel`, `--line`, `--text`, `--ink-ok`,
   `--ink-warn`, `--muted`.
 - **States:** fresh, stale (stale tag rides the row, not a recolor of the stance).
-- **ZH notes:** 行动 / 准备就绪 / 观望——勿追高 / 保护收益 / 暂时回避 / 忽略;
+- **ZH notes:** 行动 / 做好准备 / 观察 —— 别追 / 保护利润 / 暂时观望 / 忽略 — the engine's
+  `DOCTRINE_STANCES` zh strings (`engine/cycle_ontology.py:143-149`, SIC-ADJ-02 / SIC-V4-C01;
+  the production vocabulary, never a specimen-only translation);
   stance is not direction — never flips under 红涨绿跌, never painted `--up/--down`.
 - **Keyboard/touch:** when the chip links to a detail view it is focusable, 44px.
 - **Do not:** never invent a stance outside the six, and never print a stance for an
   abstained call — abstained renders its own tag (see timing-ladder-row).
 
-- **Engine map (SIC-ADJ-01 / SIC-V3-C01, C02, wave 3).** The chip never computes. It prints `now.doctrine_stance_en` / `now.doctrine_stance_zh` and inks by `now.doctrine_ink`, all stamped by the producer: `engine/cycle_ontology.py` `DOCTRINE_STANCE` (:147) through `doctrine_for` (:179), called from `resolve_state` (:948); the specimen dataset is stamped by `cycles_repair/stamp_doctrine.py` from the same function. Its source eyebrow (`cycles.stance_source_eyebrow`) labels the chip as the engine's mapping. Map and per-row rationale: BUY → Act (entry condition confirmed); GET READY → Get ready (setup formed, trigger pending); HOLD → Watch — don't chase (position kept, no add); HIGH-RISK BOUNCE → Watch — don't chase (bounce inside a down leg, no chase); COUNTERTREND ONLY → Watch — don't chase (counter-trend structure only — moved from Stand aside in wave 2 so the ink group follows the engine tone, `_TONE_INK_GROUPS` :164, assertions :171-174); TRIM → Protect gains (reduce into strength); SELL → Protect gains (exit the leg); WAIT → Stand aside (no entry condition); AVOID → Stand aside (structure broken). The map has no entry for a missing stance: the face prints the muted `cycles.stance_unavailable` line and draws no chip (C02). No engine stance word appears outside the provenance drawer, whose first line is the engine stance and tone verbatim. Tests: `tests/test_cycle_ontology.py:979` (every engine stance mapped exactly once), `:991` (doctrine ink never contradicts the engine tone), `:1007` (`resolve_state` stamps every cell), `:1023` (export payload carries the fields without logic).
+- **Engine map (SIC-ADJ-01 / SIC-V3-C01, C02, wave 3).** The chip never computes. It prints `now.doctrine_stance_en` / `now.doctrine_stance_zh` and inks by `now.doctrine_ink`, all stamped by the producer: `engine/cycle_ontology.py` `DOCTRINE_STANCE` (:147) through `doctrine_for` (:179), called from `resolve_state` (:948); the specimen dataset is stamped by `cycles_repair/stamp_doctrine.py` from the same function. Its source eyebrow (`cycles.stance_source_eyebrow`) labels the chip as the engine's mapping. Map and per-row rationale: BUY → Act (entry condition confirmed); GET READY → Get ready (setup formed, trigger pending); HOLD → Watch — don't chase (position kept, no add); HIGH-RISK BOUNCE → Watch — don't chase (bounce inside a down leg, no chase); COUNTERTREND ONLY → Watch — don't chase (counter-trend structure only — moved from Stand aside in wave 2 so the ink group follows the engine tone, `_TONE_INK_GROUPS` :164, assertions :171-174); TRIM → Protect gains (reduce into strength); SELL → Protect gains (exit the leg); WAIT → Stand aside (no entry condition); AVOID → Stand aside (structure broken). The map has no entry for a missing stance: the face prints the muted `cycles.stance_unavailable` line and draws no chip (C02). No engine stance word appears outside the provenance drawer, whose first line is the engine stance and tone verbatim. Tests: `tests/test_cycle_ontology.py:979` (every engine stance mapped exactly once), `:991` (doctrine ink never contradicts the engine tone), `:1007` (`resolve_state` stamps every cell), `:1023` (export payload carries the fields without logic). SIC-ADJ-01a (wave 4, PRC-037; `engine/cycle_ontology.py:159-164`, the same sentence in cycles_ia.md): HOLD is stamped on every RALLY ON row — the clean (non-divergent) Recovery/Expansion/Peak cells and the divergent Trough/Downturn cells — and on Recovery × TOP WATCH. The doctrine word is knowingly "Watch — don't chase" in warn ink for all of them: a held position is never a fresh entry, and the chip is not an exit (SIC-ADJ-01a; PRC-037)
 ## direction-delta
 
 - **Purpose:** a signed change over a stated horizon — the ONLY component whose ink
@@ -343,10 +345,21 @@ Tokens `templates/theme.css` lacks; listed here, never defined locally:
   neutral `--muted` until the teal token lands (gap 2).
 - **Tokens:** `--ink-info`, `--ink-ok`, `--ink-warn`, `--ink-act`, `--muted`,
   `--panel`, `--line`, `--text`, `--fs-label`.
-- **States:** fresh, stale.
+- **States:** fresh, stale; wave 4 (SIC-V4-C02/C03): beside the chip a Cycles card face carries
+  at most three distinct labeled disagree states, each naming its own clock and the phase clock
+  in plain words — **Ladder disagrees** (`cycles.clocks_ladder_chip` + `ladder_state_pattern`,
+  the ladder state glossed from `engine/cycles.py:653` STATE_DISPLAY — "timing ladder says
+  uptrend", never the raw RALLY ON), **Read disagrees** (`clocks_read_chip`, only when
+  `build_cycles.py` `family_match` is false) and **Hazard / Rhythm clock disagrees**
+  (`clocks_hazard_chip` / `clocks_rhythm_chip`, when the hazard leg or the rhythm's next turn
+  names the other family's turn; `leg_family`, families per `engine/cycle_ontology.py:614-629`).
+  The engine note, the raw ladder state and the withheld cells stay in the provenance drawer.
 - **ZH notes:** labels from the engine's PHASE_ZH (筑底阶段 / 复苏阶段 / 扩张阶段 /
   顶部阶段 / 下行阶段); phase is not price direction — never flips, never
-  `--up/--down`.
+  `--up/--down`. Wave 4 (SIC-V4-C04): on a Cycles card the chip and every face sentence
+  that names a phase use the production chip label (`templates/sector_cycles.js:602`: 筑底中 /
+  入场良机 / 上行中 / 见顶 · 晚期 / 回落中, deck `phase_*_chip`); the engine `label_zh` /
+  `short_zh` (下行阶段 / 下行) are drawer-only, so a ZH face names each phase by one word.
 - **Keyboard/touch:** inert; filterable variants are focusable chips with 44px
   targets.
 - **Do not:** never invent a sixth phase or recolor phases per-universe.
@@ -391,10 +404,17 @@ Tokens `templates/theme.css` lacks; listed here, never defined locally:
   `--fs-micro`, `--fs-label`, `--font-ui`.
 - **States:** fresh, stale, incompatible_generation (schema/epoch guard trips →
   ladder suppressed, error-state + state-banner shown instead), loading (skeleton
-  cells, same geometry).
-- **ZH notes:** 下行 / 上行 row labels, 1个月/3个月/6个月 headers; probabilities are
-  not direction ink — no flip; the revision-optimistic caveat stays in the Tier-2
-  tip.
+  cells, same geometry), hazard-mismatch (wave 4, SIC-V4-C02: the open leg
+  `direction` · `turn_kind` reaches the face only when it equals the phase_v2 chip's
+  family leg — `build_cycles.py` `leg_family`, families per
+  `engine/cycle_ontology.py:614-629`; otherwise the row draws the labeled "Hazard clock
+  disagrees" state in plain words and the six cells move to the provenance drawer —
+  XLC on boards 28–30/34–36/39–41).
+- **ZH notes:** 下行 / 上行 row labels, 1个月/3个月/6个月 headers (the Cycles specimen
+  draws the card's production heads 转折≤1月 / ≤3月 / ≤6月, `sector_cycles.js:1132`; the
+  sidebar head P(转折≤1月) at `:1100` carries a Latin probability symbol and is not
+  used on a ZH face — SIC-V4-C05); probabilities are not direction ink — no flip; the
+  revision-optimistic caveat stays in the Tier-2 tip.
 - **Keyboard/touch:** cells may host focusable tips (44px); the grid itself is
   static.
 - **Do not:** never relabel PRIOR cells as qualified, and never summarize the ladder

@@ -29,7 +29,8 @@ class P(HTMLParser):
         if not self.skip: self.text.append(data)
 p = P(); p.feed(open(sys.argv[1], encoding="utf-8").read())
 extra = {l.strip() for l in open(sys.argv[2], encoding="utf-8") if l.strip() and not l.startswith("#")} if len(sys.argv) > 2 else set()
-toks = re.findall(r"[A-Za-z][A-Za-z'’\-]+", " ".join(p.text))
+# SIC-V4-C05: letter-plus-digit and letter-plus-punctuation tokens (W5.1, P(...), GLP-1) are tokens too; a lone letter counts.
+toks = re.findall(r"[A-Za-z][A-Za-z0-9'’\-]*(?:\.[0-9]+)*", " ".join(p.text))
 bad = sorted({t for t in toks if not ALLOW.match(t) and t not in extra})
 print(f"zh-latin={len(bad)}" + (" " + " ".join(bad[:40]) if bad else ""))
 sys.exit(1 if bad else 0)

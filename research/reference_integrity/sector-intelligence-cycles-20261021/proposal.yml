@@ -57,6 +57,7 @@ proposed_artifact:
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/38-brief-mobile-light-zh.png
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/39-cycles-mobile-dark-en.png
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/40-cycles-desk-desktop-dark-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/41-cycles-desk-desktop-light-zh.png
   - design_refs/sector-paper-20261021/components/COMPONENTS.md
   - design_refs/sector-paper-20261021/components/components.css
   - design_refs/sector-paper-20261021/components/specimen.html
@@ -304,6 +305,11 @@ proposed_artifact:
     theme: dark
     locale: EN
     note: 'board 40 R4 · Cycles · composite desk · Desktop · Dark · EN (HTML specimen) (html-specimen-chrome-headless-1x; node_id null; paper_state PAPER_CAPACITY_LIMITED; source design_refs/sector-paper-20261021/cycles_repair/cycles.html?desk=composite; png_px 1440x3348); the production chart instrument capture (site/sector_cycles.html at d86344b93a0b, as of 2026-10-20, design_refs/sector-paper-20261021/cycles_repair/prod_capture.json) labeled Production capture with render source and as-of beside the correction cards; the as-of difference (production chart 2026-10-20 · Cycles dataset 2026-10-20 · Brief 2026-10-19) stated on the face (SIC-V3-C09; cures VTC-017/VTC-026)'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/41-cycles-desk-desktop-light-zh.png
+    viewport: desktop 1440
+    theme: light
+    locale: ZH
+    note: 'board 41 R4 · Cycles · composite desk · Desktop · Light · ZH (HTML specimen) (html-specimen-chrome-headless-1x; node_id null; paper_state PAPER_CAPACITY_LIMITED; source design_refs/sector-paper-20261021/cycles_repair/cycles.html?desk=composite; png_px 1440x3267); SIC-V4-C07: the light/ZH capture of the composite desk with the production crop (site/sector_cycles.html at d86344b93a0b, dark, as of 2026-10-20) declared a dark-theme capture on the board face; the composite desk is a review instrument outside the shipped surface — boards 40/41 are supporting evidence for the chart/card as-of relation, not coverage cells of the 16-cell matrix; SIC-V4-C08: the desk caption states that the chart''s Where they stand counts use the legacy now.phase clock (templates/sector_cycles.js:611) while the specimen cards use phase_v2; zh-latin=0 with page/sha/capture/field identifiers as code elements (capture.log wave 4)'
 dispositions:
 - id: SC-001
   disposition: RETAIN
@@ -1276,6 +1282,19 @@ coverage_matrix:
   wave2_summary: '16 presentation cells for Brief + Cycles: 14 drawn on specimen boards 23-26/28-31/32-37 (board 27 re-rendered as the
     index); 2 declared gaps — Brief mobile/light/zh and Cycles mobile/dark/en — renderable from the specimens via ?theme=&lang= but
     not frozen as boards'
+  wave4_summary: 'wave 4 (SIC-V4-C01..C10): the presentation matrix is unchanged at 16/16 (boards 23-26/28-39); board 41 (composite desk, light/ZH)
+    joins board 40 as supporting evidence — the composite desk is a review instrument outside the shipped surface, not a coverage cell
+    (SIC-V4-C07). SIC-V4-C02 demonstration cells: XLF (Downturn/Downturn: hazard down·trough agrees, rhythm next peak disagrees, ladder
+    RALLY ON) shows Ladder disagrees + Rhythm clock disagrees; XLK (hazard unavailable, rhythm next peak) shows Rhythm clock disagrees;
+    XLC (Trough/Downturn: hazard up·peak, rhythm next peak) shows Read disagrees + Hazard clock disagrees + Rhythm clock disagrees — on
+    boards 28-31/34-36/39-41, each state naming its own clock and the phase clock in plain words (SIC-V4-C03). ZH phase words on a
+    face (SIC-V4-C04, boards 30/34/35/36/41): the production chip labels only — distinct words per card XLF 1 (回落中), XLK 1 (回落中),
+    XLC 2 (回落中 + 筑底中: the Read-disagrees state names both clocks'' phases, as C03 requires), fixtures 0; 下行 on no face. zh-latin=0
+    on every ZH board under the letter+digit/punct tokenizer (SIC-V4-C05; Brief allow file: the GLP- entry re-spelled GLP-1 for the same
+    production term, no entry added or removed; Cycles ZH boards run without an allow file — the ZH hazard heads are the card''s
+    production 转折≤1月 / ≤3月 / ≤6月 and the desk identifiers are code elements). Rows 32/33 states_shown: the lane-title/qualifier and
+    coverage-unavailable bullets removed (SIC-V4-C09). Second labeled FIXTURE card — stance unavailable — on boards 28/34/40/41 and every
+    standard Cycles board (SIC-V4-C10).'
 routing_contract:
   source: 'templates/si_workspace.js (VIEWS = overview, map, moving, money, explore, confluence; LEGACY_ANCHORS; resolveThemeHash;
     #read-<id>; unknown hash -> overview; scrollIntoView block start). Pinned by tests/test_si_workspace_shell.py. China twin:

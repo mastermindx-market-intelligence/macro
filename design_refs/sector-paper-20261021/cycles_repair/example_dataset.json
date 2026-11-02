@@ -697,6 +697,23 @@
   ]
  },
  "_fixtures": {
+  "null_stance": {
+   "label": "FIXTURE",
+   "name": "Fixture sector",
+   "name_zh": "示例板块",
+   "ticker": "FIX",
+   "note": "Not a live sector. A record whose producer stamped no doctrine stance: now.stance is null, so doctrine_for(None) is None and the stance row draws the muted Stance unavailable line and no chip (SIC-V3-C02). Values are illustrative.",
+   "shape_source": "engine/cycle_ontology.py doctrine_for :195 (None for a missing engine stance) · stamp_doctrine.py (a missing stance writes null doctrine fields)",
+   "now": {
+    "stance": null,
+    "stance_zh": null,
+    "doctrine_stance": null,
+    "doctrine_stance_en": null,
+    "doctrine_stance_zh": null,
+    "doctrine_ink": null,
+    "tone": null
+   }
+  },
   "prior_cell": {
    "label": "FIXTURE",
    "note": "Not a live sector. Producer field shape of a hazard horizon that fell back to the KM prior (engine/hazard_score.py:436: source PRIOR, cell_verdict PRIOR); the historical up/3m and up/6m PRIOR cells (W4.2) have this shape. p values are illustrative; the shape is the contract.",

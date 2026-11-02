@@ -769,7 +769,7 @@ boards:
   - resolved stance + tone + clocks-disagree note (XLF)
   - phase age lower_bound (3 rows)
   - hazard MODEL cells + parity_failed muting (XLF)
-  - hazard unavailable gap cells (XLK, XLC)
+  - hazard unavailable gap cells (XLK; XLC's up-leg cells sit behind the labeled Hazard-clock-disagrees state since wave 4)
   - descriptive rhythm window + overdue
   - sizing inert + lead-lag STOP methods
   - grader caption without a number
@@ -779,6 +779,7 @@ boards:
   - "provenance drawers (SIC-V2-C04): producer identifiers, hashes, paths and the full hazard footnote moved off the card face into closed 'How this was measured' drawers"
   - MODEL/PRIOR badge at 11px (SIC-V2-C10); projection window moved into the drawer beside the rhythm method (SIC-V2-C11)
   - "wave 3 (SIC-ADJ-01/SIC-V3-C01..C03, C08, C17): producer-stamped doctrine chip with the Engine mapping eyebrow (XLF/XLK Watch — don't chase, XLC Protect gains); XLF amber Clocks-disagree chip with a face note naming the phase clock and timing ladder only; XLC read section = labeled Clocks-disagree state (cycle read says Bottoming · phase clock says Rolling over) with the legacy read drawer-only; hero names no chart and repeats no title; context card As of / Generation / Hazard epoch; grader eyebrow promises no rate, DEFINITION-labeled caption; labeled FIXTURE card with the KM PRIOR cell shape (33% PRIOR, 50% PRIOR) outside every live card"
+  - "wave 4 (SIC-V4-C01..C05, C10): doctrine chips carry the engine ZH vocabulary (DOCTRINE_STANCES: 做好准备 / 观察 —— 别追 / 保护利润 / 暂时观望, SIC-ADJ-02); one family rule for every clock (build_cycles.py leg_family, families per engine/cycle_ontology.py:614-629): XLF Ladder disagrees + Rhythm clock disagrees, XLK Rhythm clock disagrees (hazard gap cells stay), XLC Read disagrees + Hazard clock disagrees + Rhythm clock disagrees — each state names its own clock and the phase clock in plain words, the ladder state glossed (uptrend, never RALLY ON), withheld cells/dates in the provenance drawer; no study id on a face (Lead-lag: no claim); ZH faces name phases by the production chip label only (回落中 / 筑底中, 下行 drawer-only) and the ZH hazard heads are the card's 转折≤1月 / ≤3月 / ≤6月; second labeled FIXTURE card — stance unavailable (null doctrine_stance, muted line, no chip)"
   capabilities_covered:
   - C14
   - C15
@@ -797,7 +798,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
   png_px:
   - 1440
-  - 2352
+  - 2408
 - board_no: 29
   title: R4 · Cycles · corrections · Desktop · Dark · EN (HTML specimen)
   node_id: null
@@ -814,6 +815,7 @@ boards:
   - "provenance drawers (SIC-V2-C04): producer identifiers, hashes, paths and the full hazard footnote moved off the card face into closed 'How this was measured' drawers"
   - MODEL/PRIOR badge at 11px (SIC-V2-C10); projection window moved into the drawer beside the rhythm method (SIC-V2-C11)
   - "wave 3 (SIC-ADJ-01/SIC-V3-C01..C03, C08, C17): same correction semantics as board 28 — producer-stamped doctrine chip + Engine mapping eyebrow, XLC Clocks-disagree read state, filled context card, rate-free grader eyebrow, labeled FIXTURE PRIOR card"
+  - "wave 4 (SIC-V4-C01..C05, C10): doctrine chips carry the engine ZH vocabulary (DOCTRINE_STANCES: 做好准备 / 观察 —— 别追 / 保护利润 / 暂时观望, SIC-ADJ-02); one family rule for every clock (build_cycles.py leg_family, families per engine/cycle_ontology.py:614-629): XLF Ladder disagrees + Rhythm clock disagrees, XLK Rhythm clock disagrees (hazard gap cells stay), XLC Read disagrees + Hazard clock disagrees + Rhythm clock disagrees — each state names its own clock and the phase clock in plain words, the ladder state glossed (uptrend, never RALLY ON), withheld cells/dates in the provenance drawer; no study id on a face (Lead-lag: no claim); ZH faces name phases by the production chip label only (回落中 / 筑底中, 下行 drawer-only) and the ZH hazard heads are the card's 转折≤1月 / ≤3月 / ≤6月; second labeled FIXTURE card — stance unavailable (null doctrine_stance, muted line, no chip)"
   capabilities_covered:
   - C14
   - C15
@@ -827,7 +829,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
   png_px:
   - 1440
-  - 2352
+  - 2408
 - board_no: 30
   title: R4 · Cycles · corrections · Mobile · Dark · ZH (HTML specimen)
   node_id: null
@@ -848,6 +850,7 @@ boards:
   - ZH nav search placeholder + ZH mono labels (SIC-V2-C04/PRC-031)
   - "six-workflow switcher wraps to a second row at 390 (si_shell.css block 4, proposal); as-of stamp wraps inside the side-foot (block 5, proposal); overflow probe data-w=390 data-ovf=\"\""
   - "wave 3 (SIC-ADJ-01/SIC-V3-C01..C03, C08, C17): same correction semantics as board 28 — producer-stamped doctrine chip + Engine mapping eyebrow, XLC Clocks-disagree read state, filled context card, rate-free grader eyebrow, labeled FIXTURE PRIOR card"
+  - "wave 4 (SIC-V4-C01..C05, C10): doctrine chips carry the engine ZH vocabulary (DOCTRINE_STANCES: 做好准备 / 观察 —— 别追 / 保护利润 / 暂时观望, SIC-ADJ-02); one family rule for every clock (build_cycles.py leg_family, families per engine/cycle_ontology.py:614-629): XLF Ladder disagrees + Rhythm clock disagrees, XLK Rhythm clock disagrees (hazard gap cells stay), XLC Read disagrees + Hazard clock disagrees + Rhythm clock disagrees — each state names its own clock and the phase clock in plain words, the ladder state glossed (uptrend, never RALLY ON), withheld cells/dates in the provenance drawer; no study id on a face (Lead-lag: no claim); ZH faces name phases by the production chip label only (回落中 / 筑底中, 下行 drawer-only) and the ZH hazard heads are the card's 转折≤1月 / ≤3月 / ≤6月; second labeled FIXTURE card — stance unavailable (null doctrine_stance, muted line, no chip)"
   - "ZH face Latin grep = 0 (SIC-V3-C06): zh sector name and 相对标普 drawn in the read; source label 板块周期情报"
   capabilities_covered:
   - C14
@@ -863,7 +866,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
   png_px:
   - 390
-  - 4326
+  - 4639
 - board_no: 31
   title: R4 · Cycles · corrections · Mobile · Light · EN · incompatible_generation fixture (HTML specimen)
   node_id: null
@@ -883,6 +886,7 @@ boards:
   - "banner body wraps; 'aligned' chips muted under the banner and carry the dated qualifier chip (SIC-V2-C06/VTC-018)"
   - "six-workflow switcher wraps to a second row at 390 (si_shell.css block 4, proposal); as-of stamp wraps inside the side-foot (block 5, proposal); overflow probe data-w=390 data-ovf=\"\""
   - "wave 3 (SIC-ADJ-01/SIC-V3-C01..C03, C08, C17): same correction semantics as board 28 — producer-stamped doctrine chip + Engine mapping eyebrow, XLC Clocks-disagree read state, filled context card, rate-free grader eyebrow, labeled FIXTURE PRIOR card"
+  - "wave 4 (SIC-V4-C01..C05, C10): doctrine chips carry the engine ZH vocabulary (DOCTRINE_STANCES: 做好准备 / 观察 —— 别追 / 保护利润 / 暂时观望, SIC-ADJ-02); one family rule for every clock (build_cycles.py leg_family, families per engine/cycle_ontology.py:614-629): XLF Ladder disagrees + Rhythm clock disagrees, XLK Rhythm clock disagrees (hazard gap cells stay), XLC Read disagrees + Hazard clock disagrees + Rhythm clock disagrees — each state names its own clock and the phase clock in plain words, the ladder state glossed (uptrend, never RALLY ON), withheld cells/dates in the provenance drawer; no study id on a face (Lead-lag: no claim); ZH faces name phases by the production chip label only (回落中 / 筑底中, 下行 drawer-only) and the ZH hazard heads are the card's 转折≤1月 / ≤3月 / ≤6月; second labeled FIXTURE card — stance unavailable (null doctrine_stance, muted line, no chip)"
   capabilities_covered:
   - C18
   - C19
@@ -895,7 +899,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
   png_px:
   - 390
-  - 4967
+  - 5258
 - board_no: 32
   title: R4 · Brief · Desktop · Light · ZH (HTML specimen)
   node_id: null
@@ -905,10 +909,9 @@ boards:
   locale: ZH
   states_shown:
   - fresh
-  - ZH deck copy end-to-end (lane titles + production qualifiers, stance chips, legend, as-of 截至 pattern)
   - partial 11 sectors / 49 baskets
+  - "ZH deck copy end-to-end (stance chips in the engine ZH doctrine vocabulary, legend, as-of 截至 pattern; SIC-V4-C01/C09)"
   - bottoming watch 7
-  - coverage unavailable (measured-sector read withheld)
   - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Brief current"
   - "doctrine lane titles (wave 2: production lane qualifier beneath, SIC-V2-C13; wave 3: replaced by non-imperative membership criteria, SIC-V3-C04)"
   - "Brief polish (SIC-V2-C14): singular '1 day in', full-width coverage card, labeled ◆ theme basket / ■ sector ETF legend, stretch-aligned lane grid"
@@ -936,10 +939,9 @@ boards:
   locale: ZH
   states_shown:
   - fresh
-  - ZH deck copy end-to-end (lane titles + production qualifiers, stance chips, legend, as-of 截至 pattern)
   - partial 11 sectors / 49 baskets
+  - "ZH deck copy end-to-end (stance chips in the engine ZH doctrine vocabulary, legend, as-of 截至 pattern; SIC-V4-C01/C09)"
   - bottoming watch 7
-  - coverage unavailable (measured-sector read withheld)
   - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Brief current"
   - "doctrine lane titles (wave 2: production lane qualifier beneath, SIC-V2-C13; wave 3: replaced by non-imperative membership criteria, SIC-V3-C04)"
   - "Brief polish (SIC-V2-C14): singular '1 day in', full-width coverage card, labeled ◆ theme basket / ■ sector ETF legend, stretch-aligned lane grid"
@@ -969,7 +971,7 @@ boards:
   - ZH deck copy + ZH producer enums (顶部/底部, 板块) — desktop mirror of board 30
   - resolved stance chips 立场 from the one doctrine vocabulary
   - hazard MODEL cells 模型 + parity_failed muting (XLF)
-  - hazard unavailable gap cells (XLK, XLC)
+  - hazard unavailable gap cells (XLK; XLC's up-leg cells sit behind the labeled Hazard-clock-disagrees state since wave 4)
   - provenance drawers 测量方式 closed on the face
   - rotation clocks aligned (fresh)
   - "one stance vocabulary (SIC-V2-C01): engine stances bound to the six doctrine stances via the wave-2 STANCE_MAP, moved into the producer DOCTRINE_STANCE by wave 3 / SIC-ADJ-01 (XLF HOLD→Watch — don't chase, XLK HIGH-RISK BOUNCE→Watch — don't chase, XLC SELL→Protect gains); stance ink never --up/--down"
@@ -977,6 +979,7 @@ boards:
   - "provenance drawers (SIC-V2-C04): producer identifiers, hashes, paths and the full hazard footnote moved off the card face into closed 'How this was measured' drawers"
   - MODEL/PRIOR badge at 11px (SIC-V2-C10); projection window moved into the drawer beside the rhythm method (SIC-V2-C11)
   - "wave 3 (SIC-ADJ-01/SIC-V3-C01..C03, C08, C17): same correction semantics as board 28 — producer-stamped doctrine chip + Engine mapping eyebrow, XLC Clocks-disagree read state, filled context card, rate-free grader eyebrow, labeled FIXTURE PRIOR card"
+  - "wave 4 (SIC-V4-C01..C05, C10): doctrine chips carry the engine ZH vocabulary (DOCTRINE_STANCES: 做好准备 / 观察 —— 别追 / 保护利润 / 暂时观望, SIC-ADJ-02); one family rule for every clock (build_cycles.py leg_family, families per engine/cycle_ontology.py:614-629): XLF Ladder disagrees + Rhythm clock disagrees, XLK Rhythm clock disagrees (hazard gap cells stay), XLC Read disagrees + Hazard clock disagrees + Rhythm clock disagrees — each state names its own clock and the phase clock in plain words, the ladder state glossed (uptrend, never RALLY ON), withheld cells/dates in the provenance drawer; no study id on a face (Lead-lag: no claim); ZH faces name phases by the production chip label only (回落中 / 筑底中, 下行 drawer-only) and the ZH hazard heads are the card's 转折≤1月 / ≤3月 / ≤6月; second labeled FIXTURE card — stance unavailable (null doctrine_stance, muted line, no chip)"
   - "ZH face Latin grep = 0 (SIC-V3-C06)"
   capabilities_covered:
   - C14
@@ -992,7 +995,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
   png_px:
   - 1440
-  - 2206
+  - 2228
 - board_no: 35
   title: R4 · Cycles · corrections · Desktop · Dark · ZH (HTML specimen)
   node_id: null
@@ -1004,7 +1007,7 @@ boards:
   - ZH deck copy + ZH producer enums (顶部/底部, 板块) — desktop mirror of board 30
   - resolved stance chips 立场 from the one doctrine vocabulary
   - hazard MODEL cells 模型 + parity_failed muting (XLF)
-  - hazard unavailable gap cells (XLK, XLC)
+  - hazard unavailable gap cells (XLK; XLC's up-leg cells sit behind the labeled Hazard-clock-disagrees state since wave 4)
   - provenance drawers 测量方式 closed on the face
   - rotation clocks aligned (fresh)
   - "one stance vocabulary (SIC-V2-C01): engine stances bound to the six doctrine stances via the wave-2 STANCE_MAP, moved into the producer DOCTRINE_STANCE by wave 3 / SIC-ADJ-01 (XLF HOLD→Watch — don't chase, XLK HIGH-RISK BOUNCE→Watch — don't chase, XLC SELL→Protect gains); stance ink never --up/--down"
@@ -1012,6 +1015,7 @@ boards:
   - "provenance drawers (SIC-V2-C04): producer identifiers, hashes, paths and the full hazard footnote moved off the card face into closed 'How this was measured' drawers"
   - MODEL/PRIOR badge at 11px (SIC-V2-C10); projection window moved into the drawer beside the rhythm method (SIC-V2-C11)
   - "wave 3 (SIC-ADJ-01/SIC-V3-C01..C03, C08, C17): same correction semantics as board 28 — producer-stamped doctrine chip + Engine mapping eyebrow, XLC Clocks-disagree read state, filled context card, rate-free grader eyebrow, labeled FIXTURE PRIOR card"
+  - "wave 4 (SIC-V4-C01..C05, C10): doctrine chips carry the engine ZH vocabulary (DOCTRINE_STANCES: 做好准备 / 观察 —— 别追 / 保护利润 / 暂时观望, SIC-ADJ-02); one family rule for every clock (build_cycles.py leg_family, families per engine/cycle_ontology.py:614-629): XLF Ladder disagrees + Rhythm clock disagrees, XLK Rhythm clock disagrees (hazard gap cells stay), XLC Read disagrees + Hazard clock disagrees + Rhythm clock disagrees — each state names its own clock and the phase clock in plain words, the ladder state glossed (uptrend, never RALLY ON), withheld cells/dates in the provenance drawer; no study id on a face (Lead-lag: no claim); ZH faces name phases by the production chip label only (回落中 / 筑底中, 下行 drawer-only) and the ZH hazard heads are the card's 转折≤1月 / ≤3月 / ≤6月; second labeled FIXTURE card — stance unavailable (null doctrine_stance, muted line, no chip)"
   - "ZH face Latin grep = 0 (SIC-V3-C06)"
   capabilities_covered:
   - C14
@@ -1027,7 +1031,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
   png_px:
   - 1440
-  - 2206
+  - 2228
 - board_no: 36
   title: R4 · Cycles · corrections · Mobile · Light · ZH (HTML specimen)
   node_id: null
@@ -1040,7 +1044,7 @@ boards:
   - ZH deck copy + ZH producer enums (顶部/底部, 板块) — desktop mirror of board 30
   - resolved stance chips 立场 from the one doctrine vocabulary
   - hazard MODEL cells 模型 + parity_failed muting (XLF)
-  - hazard unavailable gap cells (XLK, XLC)
+  - hazard unavailable gap cells (XLK; XLC's up-leg cells sit behind the labeled Hazard-clock-disagrees state since wave 4)
   - provenance drawers 测量方式 closed on the face
   - rotation clocks aligned (fresh)
   - "one stance vocabulary (SIC-V2-C01): engine stances bound to the six doctrine stances via the wave-2 STANCE_MAP, moved into the producer DOCTRINE_STANCE by wave 3 / SIC-ADJ-01 (XLF HOLD→Watch — don't chase, XLK HIGH-RISK BOUNCE→Watch — don't chase, XLC SELL→Protect gains); stance ink never --up/--down"
@@ -1049,6 +1053,7 @@ boards:
   - MODEL/PRIOR badge at 11px (SIC-V2-C10); projection window moved into the drawer beside the rhythm method (SIC-V2-C11)
   - "six-workflow switcher wraps to a second row at 390 (si_shell.css block 4, proposal); as-of stamp wraps inside the side-foot (block 5, proposal); overflow probe data-w=390 data-ovf=\"\""
   - "wave 3 (SIC-ADJ-01/SIC-V3-C01..C03, C08, C17): same correction semantics as board 28 — producer-stamped doctrine chip + Engine mapping eyebrow, XLC Clocks-disagree read state, filled context card, rate-free grader eyebrow, labeled FIXTURE PRIOR card"
+  - "wave 4 (SIC-V4-C01..C05, C10): doctrine chips carry the engine ZH vocabulary (DOCTRINE_STANCES: 做好准备 / 观察 —— 别追 / 保护利润 / 暂时观望, SIC-ADJ-02); one family rule for every clock (build_cycles.py leg_family, families per engine/cycle_ontology.py:614-629): XLF Ladder disagrees + Rhythm clock disagrees, XLK Rhythm clock disagrees (hazard gap cells stay), XLC Read disagrees + Hazard clock disagrees + Rhythm clock disagrees — each state names its own clock and the phase clock in plain words, the ladder state glossed (uptrend, never RALLY ON), withheld cells/dates in the provenance drawer; no study id on a face (Lead-lag: no claim); ZH faces name phases by the production chip label only (回落中 / 筑底中, 下行 drawer-only) and the ZH hazard heads are the card's 转折≤1月 / ≤3月 / ≤6月; second labeled FIXTURE card — stance unavailable (null doctrine_stance, muted line, no chip)"
   - "ZH face Latin grep = 0 (SIC-V3-C06)"
   capabilities_covered:
   - C14
@@ -1064,7 +1069,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
   png_px:
   - 390
-  - 4326
+  - 4639
 - board_no: 37
   title: R4 · Brief · Mobile · Dark · EN (HTML specimen)
   node_id: null
@@ -1141,6 +1146,7 @@ boards:
   - rotation clocks aligned (fresh)
   - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Cycles current; overflow probe data-w=390 data-ovf=\"\""
   - "wave 3 (SIC-ADJ-01/SIC-V3-C01..C03, C08, C17): same correction semantics as board 28 — producer-stamped doctrine chip + Engine mapping eyebrow, XLC Clocks-disagree read state, filled context card (semantic_families schema token on its own line), rate-free grader eyebrow, labeled FIXTURE PRIOR card"
+  - "wave 4 (SIC-V4-C01..C05, C10): doctrine chips carry the engine ZH vocabulary (DOCTRINE_STANCES: 做好准备 / 观察 —— 别追 / 保护利润 / 暂时观望, SIC-ADJ-02); one family rule for every clock (build_cycles.py leg_family, families per engine/cycle_ontology.py:614-629): XLF Ladder disagrees + Rhythm clock disagrees, XLK Rhythm clock disagrees (hazard gap cells stay), XLC Read disagrees + Hazard clock disagrees + Rhythm clock disagrees — each state names its own clock and the phase clock in plain words, the ladder state glossed (uptrend, never RALLY ON), withheld cells/dates in the provenance drawer; no study id on a face (Lead-lag: no claim); ZH faces name phases by the production chip label only (回落中 / 筑底中, 下行 drawer-only) and the ZH hazard heads are the card's 转折≤1月 / ≤3月 / ≤6月; second labeled FIXTURE card — stance unavailable (null doctrine_stance, muted line, no chip)"
   - "former coverage gap cell Cycles · Mobile · Dark · EN, drawn (SIC-V3-C13; coverage matrix 16/16)"
   capabilities_covered:
   - C14
@@ -1156,7 +1162,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
   png_px:
   - 390
-  - 4863
+  - 5154
 - board_no: 40
   title: R4 · Cycles · composite desk · Desktop · Dark · EN (HTML specimen)
   node_id: null
@@ -1169,6 +1175,9 @@ boards:
   - "as-of difference stated on the board face: production chart 2026-10-20 · specimen Cycles dataset 2026-10-20 · Brief specimen 2026-10-19 — the dates differ by design and are not one snapshot"
   - "desk opened by ?desk=composite; the standard card grid is hidden while the desk is shown; the chart instrument (series, scale, zoom, touch) stays production, the cards are the specimen (desk_note)"
   - "wave 3 (SIC-ADJ-01/SIC-V3-C01..C03, C08, C17): same correction semantics as board 29 — producer-stamped doctrine chip + Engine mapping eyebrow, XLC Clocks-disagree read state, filled context card, rate-free grader eyebrow, labeled FIXTURE PRIOR card"
+  - "wave 4 (SIC-V4-C01..C05, C10): doctrine chips carry the engine ZH vocabulary (DOCTRINE_STANCES: 做好准备 / 观察 —— 别追 / 保护利润 / 暂时观望, SIC-ADJ-02); one family rule for every clock (build_cycles.py leg_family, families per engine/cycle_ontology.py:614-629): XLF Ladder disagrees + Rhythm clock disagrees, XLK Rhythm clock disagrees (hazard gap cells stay), XLC Read disagrees + Hazard clock disagrees + Rhythm clock disagrees — each state names its own clock and the phase clock in plain words, the ladder state glossed (uptrend, never RALLY ON), withheld cells/dates in the provenance drawer; no study id on a face (Lead-lag: no claim); ZH faces name phases by the production chip label only (回落中 / 筑底中, 下行 drawer-only) and the ZH hazard heads are the card's 转折≤1月 / ≤3月 / ≤6月; second labeled FIXTURE card — stance unavailable (null doctrine_stance, muted line, no chip)"
+  - "review instrument (SIC-V4-C07): the composite desk is a review instrument outside the shipped surface — boards 40/41 are supporting evidence for the chart/card as-of relation, not coverage cells of the 16-cell matrix; the production crop is declared a dark-theme capture on the board face (Dark-theme capture chip) whatever the board theme"
+  - "desk caption (SIC-V4-C08): the chart's 'Where they stand' counts use the legacy now.phase clock (templates/sector_cycles.js:611) while the specimen cards use phase_v2 — stated in the desk figcaption (cycles.desk_clock_note), so phase membership differs at the same as-of by design"
   - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Cycles current"
   capabilities_covered:
   - C14
@@ -1183,13 +1192,47 @@ boards:
   source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
   png_px:
   - 1440
-  - 3348
+  - 3427
+
+- board_no: 41
+  title: R4 · Cycles · composite desk · Desktop · Light · ZH (HTML specimen)
+  node_id: null
+  page_id: null
+  viewport: desktop 1440
+  theme: light
+  locale: ZH
+  states_shown:
+  - "composite desk (SIC-V3-C09; cures VTC-017/VTC-026): the production chart instrument capture — site/sector_cycles.html at d86344b93a0b, as of 2026-10-20, dark, 1330×818 crop recorded in cycles_repair/prod_capture.json — drawn beside the correction cards, labeled Production capture with render source and as-of on the board face"
+  - "as-of difference stated on the board face: production chart 2026-10-20 · specimen Cycles dataset 2026-10-20 · Brief specimen 2026-10-19 — the dates differ by design and are not one snapshot"
+  - "desk opened by ?desk=composite; the standard card grid is hidden while the desk is shown; the chart instrument (series, scale, zoom, touch) stays production, the cards are the specimen (desk_note)"
+  - "wave 3 (SIC-ADJ-01/SIC-V3-C01..C03, C08, C17): same correction semantics as board 29 — producer-stamped doctrine chip + Engine mapping eyebrow, XLC Clocks-disagree read state, filled context card, rate-free grader eyebrow, labeled FIXTURE PRIOR card"
+  - "wave 4 (SIC-V4-C01..C05, C10): doctrine chips carry the engine ZH vocabulary (DOCTRINE_STANCES: 做好准备 / 观察 —— 别追 / 保护利润 / 暂时观望, SIC-ADJ-02); one family rule for every clock (build_cycles.py leg_family, families per engine/cycle_ontology.py:614-629): XLF Ladder disagrees + Rhythm clock disagrees, XLK Rhythm clock disagrees (hazard gap cells stay), XLC Read disagrees + Hazard clock disagrees + Rhythm clock disagrees — each state names its own clock and the phase clock in plain words, the ladder state glossed (uptrend, never RALLY ON), withheld cells/dates in the provenance drawer; no study id on a face (Lead-lag: no claim); ZH faces name phases by the production chip label only (回落中 / 筑底中, 下行 drawer-only) and the ZH hazard heads are the card's 转折≤1月 / ≤3月 / ≤6月; second labeled FIXTURE card — stance unavailable (null doctrine_stance, muted line, no chip)"
+  - "review instrument (SIC-V4-C07): the composite desk is a review instrument outside the shipped surface — boards 40/41 are supporting evidence for the chart/card as-of relation, not coverage cells of the 16-cell matrix; the production crop is declared a dark-theme capture on the board face (Dark-theme capture chip) whatever the board theme"
+  - "ZH composite desk (SIC-V4-C07): light theme, ZH deck copy end-to-end incl. the desk caption and clock note; the production crop is the same dark capture as board 40 (declared on the face); zh-latin=0 with identifiers as <code> (capture.log wave 4)"
+  - "desk caption (SIC-V4-C08): the chart's 'Where they stand' counts use the legacy now.phase clock (templates/sector_cycles.js:611) while the specimen cards use phase_v2 — stated in the desk figcaption (cycles.desk_clock_note), so phase membership differs at the same as-of by design"
+  - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Cycles current"
+  capabilities_covered:
+  - C14
+  - C15
+  - C16
+  - C18
+  - C19
+  - C27
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/41-cycles-desk-desktop-light-zh.png
+  capture: html-specimen-chrome-headless-1x
+  paper_state: PAPER_CAPACITY_LIMITED
+  source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
+  png_px:
+  - 1440
+  - 3267
 
 # wave 2 (SIC-V2-C12/PRC-030): exactly one NORMATIVE board per Cycles/shared-engine capability. Chart-instrument
 # capabilities (C01-C13, C22, C25, C26, C28) stay homed on the R3 instrument boards 01-08, which are NOT normative for
 # stance/phase/hazard/rhythm/grader/metadata semantics; those (C14-C21, C23, C24, C27) are normative on the R4 correction
 # boards 28-31/34-36. Other boards listing a capability are supporting evidence only.
 # wave 3 (SIC-V3-C09/C13/C17): boards 38-40 are supporting evidence (coverage cells + the labeled composite desk); normative homes are unchanged.
+# wave 4 (SIC-V4-C07): board 41 (composite desk, light/ZH) is supporting evidence like board 40; the composite desk is a review instrument
+# outside the shipped surface, never a coverage cell of the 16-cell presentation matrix.
 capability_boards:
   C01: 1
   C02: 1

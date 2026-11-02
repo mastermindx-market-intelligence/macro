@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Render the Cycles corrections specimen boards 28–31 with headless Chrome at 1x.
+# Render the Cycles corrections specimen boards 28–31, 34–36, 39–41 with headless Chrome at 1x.
 # Usage: ./render.sh [out_dir]   (default: ../../../mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal)
 set -eu
 here="${0:A:h}"
@@ -27,3 +27,5 @@ shot 36-cycles-mobile-light-zh   390 "${H36:-$(measure 390 "$M&theme=light&lang=
 # wave 3 (SIC-V3-C09/C13): the Cycles coverage GAP cell (mobile dark EN) and the labeled composite desk (production chart capture)
 shot 39-cycles-mobile-dark-en    390 "${H39:-$(measure 390 "$M&theme=dark&lang=en")}" "$M&theme=dark&lang=en"
 shot 40-cycles-desk-desktop-dark-en 1440 "${H40:-$(measure 1440 "$B?theme=dark&lang=en&desk=composite")}" "$B?theme=dark&lang=en&desk=composite"
+# wave 4 (SIC-V4-C07): the composite desk in light theme and ZH (the production crop stays the dark capture, declared on the face)
+shot 41-cycles-desk-desktop-light-zh 1440 "${H41:-$(measure 1440 "$B?theme=light&lang=zh&desk=composite")}" "$B?theme=light&lang=zh&desk=composite"

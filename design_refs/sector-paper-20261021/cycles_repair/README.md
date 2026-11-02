@@ -52,15 +52,16 @@ specimen, not production**: the production template remains `templates/sector_cy
 
 | # | File | Viewport | Theme | Locale | Query | Height px |
 |---|---|---|---|---|---|---|
-| 28 | `28-cycles-desktop-light-en.png` | 1440 | light | EN | `?theme=light&lang=en` | 2352 |
-| 29 | `29-cycles-desktop-dark-en.png` | 1440 | dark | EN | `?theme=dark&lang=en` | 2352 |
-| 30 | `30-cycles-mobile-dark-zh.png` | 390 (iframe host) | dark | ZH | `mobile_frame.html?src=cycles.html&theme=dark&lang=zh` | 4326 |
-| 31 | `31-cycles-mobile-light-en.png` | 390 (iframe host) | light | EN | `…&theme=light&lang=en&state=incompatible_generation` (fixture) | 4967 |
-| 34 | `34-cycles-desktop-light-zh.png` | 1440 | light | ZH | `?theme=light&lang=zh` | 2206 |
-| 35 | `35-cycles-desktop-dark-zh.png` | 1440 | dark | ZH | `?theme=dark&lang=zh` | 2206 |
-| 36 | `36-cycles-mobile-light-zh.png` | 390 (iframe host) | light | ZH | `mobile_frame.html?src=cycles.html&theme=light&lang=zh` | 4326 |
-| 39 | `39-cycles-mobile-dark-en.png` | 390 (iframe host) | dark | EN | `mobile_frame.html?src=cycles.html&theme=dark&lang=en` | 4863 |
-| 40 | `40-cycles-desk-desktop-dark-en.png` | 1440 | dark | EN | `?theme=dark&lang=en&desk=composite` (composite desk) | 3348 |
+| 28 | `28-cycles-desktop-light-en.png` | 1440 | light | EN | `?theme=light&lang=en` | 2408 |
+| 29 | `29-cycles-desktop-dark-en.png` | 1440 | dark | EN | `?theme=dark&lang=en` | 2408 |
+| 30 | `30-cycles-mobile-dark-zh.png` | 390 (iframe host) | dark | ZH | `mobile_frame.html?src=cycles.html&theme=dark&lang=zh` | 4639 |
+| 31 | `31-cycles-mobile-light-en.png` | 390 (iframe host) | light | EN | `…&theme=light&lang=en&state=incompatible_generation` (fixture) | 5258 |
+| 34 | `34-cycles-desktop-light-zh.png` | 1440 | light | ZH | `?theme=light&lang=zh` | 2228 |
+| 35 | `35-cycles-desktop-dark-zh.png` | 1440 | dark | ZH | `?theme=dark&lang=zh` | 2228 |
+| 36 | `36-cycles-mobile-light-zh.png` | 390 (iframe host) | light | ZH | `mobile_frame.html?src=cycles.html&theme=light&lang=zh` | 4639 |
+| 39 | `39-cycles-mobile-dark-en.png` | 390 (iframe host) | dark | EN | `mobile_frame.html?src=cycles.html&theme=dark&lang=en` | 5154 |
+| 40 | `40-cycles-desk-desktop-dark-en.png` | 1440 | dark | EN | `?theme=dark&lang=en&desk=composite` (composite desk) | 3427 |
+| 41 | `41-cycles-desk-desktop-light-zh.png` | 1440 | light | ZH | `?theme=light&lang=zh&desk=composite` (composite desk) | 3267 |
 
 Boards 30/31/36/39 are rendered inside `mobile_frame.html` because headless Chrome clamps its
 window width to ≥500 px; the host page copies `data-h`/`data-w`/`data-ovf` from the 390 px
@@ -78,6 +79,19 @@ and as-of beside the correction cards, the as-of difference stated on the board 
 (SIC-V3-C09). Board heights in this table equal `png_px` in `boards_manifest.yml`
 (SIC-V3-C11). Probes: `components/board_probe.py` (theme pixels, 390 overflow, six-link
 switcher) and `components/zh_latin_grep.py` (ZH faces) — lines in `capture.log`.
+
+Wave 4 (SIC-V4, 2026-11-01): the doctrine chips carry the engine's ZH vocabulary (`DOCTRINE_STANCES`,
+SIC-ADJ-02); one family rule decides every clock on a face (`leg_family` in `build_cycles.py`: the hazard
+leg and the rhythm projection reach the face only when they agree with the phase_v2 family, otherwise the
+labeled Hazard / Rhythm clock disagrees state names both clocks in plain words — XLF Ladder + Rhythm, XLK
+Rhythm, XLC Read + Hazard + Rhythm); the ladder state is glossed (uptrend), no study id reaches a face
+(Lead-lag: no claim; `zh_latin_grep.py` now counts letter+digit/punct tokens and lone letters); ZH faces
+name phases by the production chip label only (回落中 / 筑底中; 下行 drawer-only); a second labeled FIXTURE
+card draws the null-stance treatment (Stance unavailable). Board 41 is the light/ZH capture of
+`?desk=composite` with the production crop declared a dark-theme capture on the face. The composite desk
+(boards 40/41) is a review instrument outside the shipped surface: supporting evidence for the chart/card
+as-of relation, not a coverage cell; its caption states that the chart's "Where they stand" counts use
+the legacy `now.phase` clock while the specimen cards use `phase_v2` (SIC-V4-C07/C08).
 
 ## How to render
 
