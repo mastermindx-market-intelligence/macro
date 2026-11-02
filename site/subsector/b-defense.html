@@ -34,94 +34,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Defense & Aerospace — Intelligence Detail</title>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="../theme.css">
-<style>
-*{box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font:14px/1.5 'Inter',-apple-system,"Segoe UI",Roboto,Helvetica,sans-serif;margin:0;padding:18px 0 30px}
-a{text-decoration:none;color:inherit}
-.wrap{padding:14px 16px}
-@media(min-width:1100px){.wrap{padding:16px max(28px,calc((100vw - 1320px)/2))}}
-.back{color:var(--muted);font-size:12.5px;display:inline-block;margin:2px 2px 12px}
-.pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:var(--r-pill,999px);border:1px solid var(--line);background:var(--panel2)}
-.pill.buy{color:var(--ink-up,var(--up));border-color:var(--up)}
-.pill.avoid{color:var(--ink-down,var(--down));border-color:var(--down)}
-.pill.tactical,.pill.late{color:var(--ink-orange,var(--orange))}
-.pill.neutral{color:var(--muted)}
-.tier{display:inline-flex;align-items:center;font-weight:800;font-size:10px;padding:3px 7px;border-radius:var(--r-ctl,8px);color:var(--bg);white-space:nowrap}
-.tier.T1{background:var(--up)}.tier.T2{background:var(--ok)}.tier.T3{background:var(--info)}.tier.T4{background:var(--g-mid)}.tier.none{background:var(--g-mid);color:var(--muted)}
-.action{color:var(--text);font-size:13px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--link);border-radius:var(--r-btn,10px);padding:10px 12px;margin:10px 0}
-.id-hero{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.75fr);gap:12px;margin:4px 0 12px}
-.id-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,14px);padding:18px}
-.id-eyebrow{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--link)}
-.id-title{font-size:30px;line-height:1.08;letter-spacing:-.025em;margin:7px 0 5px;font-weight:800}
-.id-subtitle{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:5px;align-items:center}
-.id-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
-.id-decision{display:flex;flex-direction:column;gap:12px;justify-content:space-between;background:var(--panel2)}
-.id-decision-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.id-decision-label{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
-.id-decision-read{font-size:16px;line-height:1.35;font-weight:750;margin-top:4px}
-.id-badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.id-decision-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
-.id-mini{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:9px}
-.id-mini .k,.id-stat .k,.id-evidence-cell .k{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
-.id-mini .v{font-size:12.5px;font-weight:700;margin-top:2px}
-.id-group-read{display:flex;align-items:center;justify-content:space-between;gap:18px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:14px 16px;margin:0 0 10px}
-.id-group-read-copy{min-width:0}
-.id-group-read h2{margin:0 0 4px;font-size:13px}
-.id-group-read p{margin:0;color:var(--muted);font-size:12.5px;line-height:1.45}
-.id-callout{flex:none;max-width:280px;padding:7px 10px;border-radius:var(--r-pill,999px);background:var(--panel2);font-size:11px;font-weight:700;color:var(--ink-orange,var(--orange));text-align:center}
-.id-nav{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 12px}
-.id-nav a{padding:6px 10px;border-radius:var(--r-pill,999px);background:var(--panel2);border:1px solid var(--line);font-size:11.5px;color:var(--muted)}
-.id-nav a:first-child{background:var(--link);border-color:var(--link);color:var(--bg);font-weight:700}
-.id-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0 0 10px}
-.id-stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-btn,10px);padding:10px}
-.id-stat .v{display:block;margin-top:3px;font-size:15px;font-weight:700}
-.id-structure{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,14px);padding:12px;margin:0 0 16px}
-.id-section-hd{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:2px 2px 9px}
-.id-section-hd h2{margin:0;font-size:15px}
-.id-section-hd p{margin:2px 0 0;color:var(--muted);font-size:11px}
-.chart-card{background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:8px;margin:0}
-#chart-host{width:100%;min-height:420px}
-.members-table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel)}
-  table.tbl { width:100%; border-collapse:collapse; font-size:12.5px; }
-  table.tbl th { text-align:left; color:var(--muted); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.03em; padding:6px 9px; border-bottom:1px solid var(--line); white-space:nowrap; }
-  table.tbl td { padding:7px 9px; border-bottom:1px solid var(--line); white-space:nowrap; }
-  table.tbl tr:hover td { background:var(--panel); }
-  .tk { font-weight:700; } .num { font-variant-numeric:tabular-nums; } .pos{ color:var(--ink-up, var(--up)); } .neg{ color:var(--ink-down, var(--down)); }
-  tr.buyable td { background:color-mix(in srgb,var(--up) 7%,transparent); }
-.member-cards{display:none;gap:8px}
-.member-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:11px}
-.member-card.buyable{border-color:var(--up)}
-.member-card-top,.member-card-foot{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-.member-card-foot{align-items:center;margin-top:8px}
-.member-symbol{font-size:14px;font-weight:800}
-.member-name{font-size:10.5px;color:var(--muted);margin-top:1px}
-.member-return{text-align:right;font-weight:700}
-.member-price{font-size:10.5px;color:var(--muted);font-weight:600;margin-top:2px}
-.member-read{font-size:10.5px;color:var(--muted);text-align:right}
-.id-evidence{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,14px);padding:14px;margin-top:16px}
-.id-evidence-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:9px}
-.id-evidence-cell{background:var(--panel2);border-radius:var(--r-ctl,8px);padding:9px}
-.id-evidence-cell .v{font-size:11.5px;font-weight:700;margin-top:2px}
-.foot{color:var(--muted);font-size:11px;margin:18px 2px 0;line-height:1.6;max-width:108ch;border-top:1px solid var(--line);padding-top:12px}
-@media(max-width:900px){
-  .id-hero{grid-template-columns:1fr}
-  .id-decision-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-  .id-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .id-evidence-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
-@media(max-width:640px){
-  body{padding-top:8px}.wrap{padding:10px 12px 24px}.back{margin-bottom:8px}
-  .id-card{padding:14px}.id-title{font-size:26px}
-  .id-decision-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .id-group-read{align-items:flex-start;flex-direction:column;gap:10px}.id-callout{max-width:none}
-  .id-nav{flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px}.id-nav a{white-space:nowrap}
-  .id-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .members-table-wrap{display:none}.member-cards{display:grid}
-  .id-evidence-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  #chart-host{min-height:310px}
-}
-</style>
+<link rel="stylesheet" href="../theme.css?v=9bd171a6">
+<link rel="stylesheet" href="../assets/css/e89f427d.css?v=e89f427d">
+<link rel="preload" as="style" href="../product-nav-icons.css?v=432f6a45">
+<link rel="preload" as="style" href="../navigation-refresh.css?v=edfd821b">
 </head>
 <body>
 
@@ -131,7 +47,7 @@ a{text-decoration:none;color:inherit}
 
 
 
-    <link rel="stylesheet" href="../navigation-refresh.css">
+    <link rel="stylesheet" href="../navigation-refresh.css?v=edfd821b">
     <div class="nav-links">
     
     <a class="nav-brand" href="../start.html" aria-label="MASTERMINDX — Home">
@@ -350,10 +266,10 @@ a{text-decoration:none;color:inherit}
     </div>
   </div>
   
-  <script src="../logo_config.js"></script>
-  <script src="../stock-logos.js"></script>
-  <script src="../live_config.js"></script>
-  <script src="../live.js"></script>
+  <script src="../logo_config.js?v=b37d33d3" defer></script>
+  <script src="../stock-logos.js?v=cc29be53" defer></script>
+  <script src="../live_config.js?v=52943e92" defer></script>
+  <script src="../live.js?v=f8cda39d" defer></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -387,8 +303,8 @@ a{text-decoration:none;color:inherit}
   <span class="made">© 2026 Mastermind Inc</span>
 </footer>
 
-<script src="../lightweight-charts-v5.js"></script>
-<script src="../chart.js"></script>
+<script src="../lightweight-charts-v5.js?v=c0992580" defer></script>
+<script src="../chart.js?v=a31b8e5a" defer></script>
 <script>
 const DETAIL = {"group":{"key":"defense","kind":"basket","label":"Defense & Aerospace","label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","sector":"Industrials & Defense","sector_zh":null,"n_members":21,"n_priced":21,"reliability":"high","coverage_pct":1.0,"n_live":21,"start":"2014-01-03","as_of":"2026-10-30","price_level":12.7967,"class":"entry_now","entry":{"tier":"T1","weight":0.9,"tier_sub":null,"ticks":1,"bars_to_cross":null,"fresh_bars":1,"eligible":true,"buyable":true,"above200":false,"reason":"buy fired; forward confirmation pending"},"regime":{"state":"BELOW_TREND","side":"avoid","label":"BELOW TREND","label_zh":"\u8d8b\u52bf\u4e0b\u65b9","action":"Below the 200-day \u2014 bottoming buys here are knives; wait for a reclaim.","action_zh":"\u5904\u4e8e200\u65e5\u7ebf\u4e0b\u65b9\u2014\u2014\u6b64\u5904\u6284\u5e95\u5982\u63a5\u98de\u5200\uff1b\u7b49\u5f85\u6536\u590d\u3002","color":"var(--muted)","conviction":1,"rsi_3d":44.0,"stoch_3d":83.0,"rsi_d":55.0,"stoch_d":91.0,"days_to_cross":null,"rs_60d":-13.1,"signal_line":"MACD \u2191, StochRSI \u219120","tailwind":false,"headwind":false,"ok":true},"members":[{"ticker":"DRS","name_zh":null,"price":37.68,"ret_20d":2.4,"vs_basket":1.5,"stock_tier":"T2","stock_weight":1.0,"stock_ticks":2,"stock_bars_to_cross":null,"stock_buyable":true,"stock_state":"long-bias"},{"ticker":"MRCY","name_zh":null,"price":77.54,"ret_20d":-8.6,"vs_basket":-9.6,"stock_tier":"T2","stock_weight":1.0,"stock_ticks":2,"stock_bars_to_cross":null,"stock_buyable":true,"stock_state":"long-bias"},{"ticker":"LMT","name_zh":null,"price":636.95,"ret_20d":26.0,"vs_basket":25.1,"stock_tier":null,"stock_weight":0.0,"stock_ticks":4,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"long-bias","behaves_as":{"home_id":"defense","home_label":"Defense & Aerospace","home_label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","conflict":true,"homes":[{"id":"defense","label":"Defense & Aerospace","label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","class":"entry_now","side":"avoid","corr20":0.417,"corr60":0.498},{"id":"us_sector_industrials","label":"Industrials (Equal-Weight)","label_zh":"\u5de5\u4e1a\uff08\u7b49\u6743\uff09","class":"headwind","side":"avoid","corr20":0.275,"corr60":0.185}]}},{"ticker":"LDOS","name_zh":null,"price":142.98,"ret_20d":21.4,"vs_basket":20.5,"stock_tier":null,"stock_weight":0.0,"stock_ticks":3,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"long-bias","behaves_as":{"home_id":"us_sector_industrials","home_label":"Industrials (Equal-Weight)","home_label_zh":"\u5de5\u4e1a\uff08\u7b49\u6743\uff09","conflict":true,"homes":[{"id":"us_sector_industrials","label":"Industrials (Equal-Weight)","label_zh":"\u5de5\u4e1a\uff08\u7b49\u6743\uff09","class":"headwind","side":"avoid","corr20":0.392,"corr60":0.272},{"id":"defense","label":"Defense & Aerospace","label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","class":"entry_now","side":"avoid","corr20":0.254,"corr60":0.308}]}},{"ticker":"HII","name_zh":null,"price":316.88,"ret_20d":18.0,"vs_basket":17.1,"stock_tier":null,"stock_weight":0.0,"stock_ticks":4,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"long-bias","behaves_as":{"home_id":"defense","home_label":"Defense & Aerospace","home_label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","conflict":true,"homes":[{"id":"defense","label":"Defense & Aerospace","label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","class":"entry_now","side":"avoid","corr20":0.697,"corr60":0.654},{"id":"us_sector_industrials","label":"Industrials (Equal-Weight)","label_zh":"\u5de5\u4e1a\uff08\u7b49\u6743\uff09","class":"headwind","side":"avoid","corr20":0.526,"corr60":0.373}]}},{"ticker":"LHX","name_zh":null,"price":277.61,"ret_20d":17.3,"vs_basket":16.4,"stock_tier":null,"stock_weight":0.0,"stock_ticks":5,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"long-bias","behaves_as":{"home_id":"defense","home_label":"Defense & Aerospace","home_label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","conflict":true,"homes":[{"id":"defense","label":"Defense & Aerospace","label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","class":"entry_now","side":"avoid","corr20":0.738,"corr60":0.614},{"id":"us_sector_industrials","label":"Industrials (Equal-Weight)","label_zh":"\u5de5\u4e1a\uff08\u7b49\u6743\uff09","class":"headwind","side":"avoid","corr20":0.601,"corr60":0.332}]}},{"ticker":"NOC","name_zh":null,"price":557.54,"ret_20d":16.6,"vs_basket":15.7,"stock_tier":null,"stock_weight":0.0,"stock_ticks":4,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"long-bias","behaves_as":{"home_id":"us_sector_industrials","home_label":"Industrials (Equal-Weight)","home_label_zh":"\u5de5\u4e1a\uff08\u7b49\u6743\uff09","conflict":true,"homes":[{"id":"us_sector_industrials","label":"Industrials (Equal-Weight)","label_zh":"\u5de5\u4e1a\uff08\u7b49\u6743\uff09","class":"headwind","side":"avoid","corr20":0.412,"corr60":0.269},{"id":"defense","label":"Defense & Aerospace","label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","class":"entry_now","side":"avoid","corr20":0.322,"corr60":0.389}]}},{"ticker":"GD","name_zh":null,"price":372.59,"ret_20d":13.4,"vs_basket":12.5,"stock_tier":null,"stock_weight":0.0,"stock_ticks":3,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"long-bias","behaves_as":{"home_id":"defense","home_label":"Defense & Aerospace","home_label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","conflict":true,"homes":[{"id":"defense","label":"Defense & Aerospace","label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","class":"entry_now","side":"avoid","corr20":0.717,"corr60":0.617},{"id":"us_sector_industrials","label":"Industrials (Equal-Weight)","label_zh":"\u5de5\u4e1a\uff08\u7b49\u6743\uff09","class":"headwind","side":"avoid","corr20":0.597,"corr60":0.429}]}},{"ticker":"TXT","name_zh":null,"price":85.7,"ret_20d":10.9,"vs_basket":10.0,"stock_tier":null,"stock_weight":0.0,"stock_ticks":4,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"long-bias","behaves_as":{"home_id":"defense","home_label":"Defense & Aerospace","home_label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","conflict":true,"homes":[{"id":"defense","label":"Defense & Aerospace","label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","class":"entry_now","side":"avoid","corr20":0.822,"corr60":0.694},{"id":"us_sector_industrials","label":"Industrials (Equal-Weight)","label_zh":"\u5de5\u4e1a\uff08\u7b49\u6743\uff09","class":"headwind","side":"avoid","corr20":0.665,"corr60":0.547}]}},{"ticker":"RTX","name_zh":null,"price":199.8,"ret_20d":8.2,"vs_basket":7.3,"stock_tier":null,"stock_weight":0.0,"stock_ticks":2,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"long-bias","behaves_as":{"home_id":"defense","home_label":"Defense & Aerospace","home_label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","conflict":true,"homes":[{"id":"defense","label":"Defense & Aerospace","label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","class":"entry_now","side":"avoid","corr20":0.424,"corr60":0.49},{"id":"us_sector_industrials","label":"Industrials (Equal-Weight)","label_zh":"\u5de5\u4e1a\uff08\u7b49\u6743\uff09","class":"headwind","side":"avoid","corr20":0.376,"corr60":0.308}]}},{"ticker":"TDY","name_zh":null,"price":658.23,"ret_20d":6.7,"vs_basket":5.7,"stock_tier":null,"stock_weight":0.0,"stock_ticks":5,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"mixed","behaves_as":{"home_id":"defense","home_label":"Defense & Aerospace","home_label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","conflict":false,"homes":[{"id":"defense","label":"Defense & Aerospace","label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","class":"entry_now","side":"avoid","corr20":0.727,"corr60":0.696},{"id":"us_sector_tech","label":"Technology (Equal-Weight)","label_zh":"\u4fe1\u606f\u6280\u672f\uff08\u7b49\u6743\uff09","class":"tailwind","side":"buy","corr20":0.606,"corr60":0.471}]}},{"ticker":"HEI","name_zh":null,"price":321.36,"ret_20d":6.3,"vs_basket":5.3,"stock_tier":null,"stock_weight":0.0,"stock_ticks":2,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"long-bias"},{"ticker":"TDG","name_zh":null,"price":1146.81,"ret_20d":5.2,"vs_basket":4.3,"stock_tier":null,"stock_weight":0.0,"stock_ticks":5,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"long-bias","behaves_as":{"home_id":"defense","home_label":"Defense & Aerospace","home_label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","conflict":true,"homes":[{"id":"defense","label":"Defense & Aerospace","label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","class":"entry_now","side":"avoid","corr20":0.711,"corr60":0.52},{"id":"us_sector_industrials","label":"Industrials (Equal-Weight)","label_zh":"\u5de5\u4e1a\uff08\u7b49\u6743\uff09","class":"headwind","side":"avoid","corr20":0.657,"corr60":0.611}]}},{"ticker":"GE","name_zh":null,"price":301.8,"ret_20d":-2.4,"vs_basket":-3.3,"stock_tier":null,"stock_weight":0.0,"stock_ticks":21,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"mixed","behaves_as":{"home_id":"defense","home_label":"Defense & Aerospace","home_label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","conflict":true,"homes":[{"id":"defense","label":"Defense & Aerospace","label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","class":"entry_now","side":"avoid","corr20":0.66,"corr60":0.545},{"id":"us_sector_industrials","label":"Industrials (Equal-Weight)","label_zh":"\u5de5\u4e1a\uff08\u7b49\u6743\uff09","class":"headwind","side":"avoid","corr20":0.556,"corr60":0.441}]}},{"ticker":"KTOS","name_zh":null,"price":41.09,"ret_20d":-4.6,"vs_basket":-5.5,"stock_tier":null,"stock_weight":0.0,"stock_ticks":36,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"mixed","behaves_as":{"home_id":"defense","home_label":"Defense & Aerospace","home_label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","conflict":true,"homes":[{"id":"defense","label":"Defense & Aerospace","label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","class":"entry_now","side":"avoid","corr20":0.886,"corr60":0.841},{"id":"space_economy","label":"Space Economy","label_zh":"\u592a\u7a7a\u7ecf\u6d4e","class":"neutral","side":"avoid","corr20":0.681,"corr60":0.656}]}},{"ticker":"AVAV","name_zh":null,"price":126.11,"ret_20d":-10.4,"vs_basket":-11.4,"stock_tier":null,"stock_weight":0.0,"stock_ticks":12,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"mixed"},{"ticker":"BA","name_zh":null,"price":171.55,"ret_20d":-11.4,"vs_basket":-12.3,"stock_tier":null,"stock_weight":0.0,"stock_ticks":21,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"short-bias","behaves_as":{"home_id":"defense","home_label":"Defense & Aerospace","home_label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","conflict":true,"homes":[{"id":"defense","label":"Defense & Aerospace","label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","class":"entry_now","side":"avoid","corr20":0.214,"corr60":0.308},{"id":"us_sector_industrials","label":"Industrials (Equal-Weight)","label_zh":"\u5de5\u4e1a\uff08\u7b49\u6743\uff09","class":"headwind","side":"avoid","corr20":0.09,"corr60":0.31}]}},{"ticker":"CW","name_zh":null,"price":476.01,"ret_20d":-12.8,"vs_basket":-13.7,"stock_tier":null,"stock_weight":0.0,"stock_ticks":33,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"mixed"},{"ticker":"HWM","name_zh":null,"price":199.22,"ret_20d":-13.9,"vs_basket":-14.8,"stock_tier":null,"stock_weight":0.0,"stock_ticks":18,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"mixed","behaves_as":{"home_id":"defense","home_label":"Defense & Aerospace","home_label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","conflict":true,"homes":[{"id":"defense","label":"Defense & Aerospace","label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","class":"entry_now","side":"avoid","corr20":0.686,"corr60":0.374},{"id":"us_sector_industrials","label":"Industrials (Equal-Weight)","label_zh":"\u5de5\u4e1a\uff08\u7b49\u6743\uff09","class":"headwind","side":"avoid","corr20":0.495,"corr60":0.311}]}},{"ticker":"RKLB","name_zh":null,"price":54.73,"ret_20d":-26.0,"vs_basket":-26.9,"stock_tier":null,"stock_weight":0.0,"stock_ticks":10,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"mixed","behaves_as":{"home_id":"space_economy","home_label":"Space Economy","home_label_zh":"\u592a\u7a7a\u7ecf\u6d4e","conflict":true,"homes":[{"id":"space_economy","label":"Space Economy","label_zh":"\u592a\u7a7a\u7ecf\u6d4e","class":"neutral","side":"avoid","corr20":0.819,"corr60":0.87},{"id":"defense","label":"Defense & Aerospace","label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","class":"entry_now","side":"avoid","corr20":0.221,"corr60":0.314}]}},{"ticker":"ASTS","name_zh":null,"price":40.97,"ret_20d":-29.9,"vs_basket":-30.8,"stock_tier":null,"stock_weight":0.0,"stock_ticks":21,"stock_bars_to_cross":null,"stock_buyable":false,"stock_state":"mixed","behaves_as":{"home_id":"space_economy","home_label":"Space Economy","home_label_zh":"\u592a\u7a7a\u7ecf\u6d4e","conflict":true,"homes":[{"id":"space_economy","label":"Space Economy","label_zh":"\u592a\u7a7a\u7ecf\u6d4e","class":"neutral","side":"avoid","corr20":0.729,"corr60":0.772},{"id":"defense","label":"Defense & Aerospace","label_zh":"\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929","class":"entry_now","side":"avoid","corr20":0.238,"corr60":0.2}]}}],"basket_id":"defense","chart_key":"b-defense","has_signals":true},"kind":"basket","as_of":"2026-10-30","ohlc_dir":"subsectorohlc","sig_dir":"subsector_signals","back":"../subsectors.html","stock_base":"../stock.html#","generated_utc":"2026-11-02 10:14 UTC"};
 const CHART_KEY = "b-defense";
@@ -491,6 +407,6 @@ function render() {
 render();
 document.addEventListener('langchange', render);
 </script>
-<script src="../theme.js"></script>
+<script src="../theme.js?v=3c193891" defer></script>
 </body>
 </html>
