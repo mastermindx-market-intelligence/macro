@@ -24,7 +24,7 @@ import re
 import secrets
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Any, Callable, Protocol
+from typing import Any, Callable, Protocol, Sequence
 from urllib.parse import parse_qsl, unquote, urlsplit
 from uuid import UUID
 
@@ -32,6 +32,7 @@ SCOPE = "catalyst_event_updates/v1"
 INTENT_TTL = timedelta(minutes=20)
 # Match the public scan freshness ceiling until the source owner admits a stricter TTL.
 PUBLIC_REVISION_MAX_AGE = timedelta(days=7)
+MAX_CONSOLIDATED_ITEMS = 12  # per-ticker revisions one generation may bundle
 _TOKEN_PREFIX = b"mastermind.catalyst.intent.v1\x00"
 _EMAIL = re.compile(r"^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$")
 _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$")
@@ -175,6 +176,45 @@ class PublicRevision:
 
 
 @dataclass(frozen=True)
+class ConsolidatedRevision:
+    """One event+generation across every per-ticker revision a producer published at once.
+
+    This is the only shape a sender ever receives: a subscriber gets at most ONE
+    message per (user, event, generation) however many followed tickers it covers
+    (docket B04). ``items`` keeps the producer's per-ticker copy, order preserved.
+    """
+
+    event_id: str
+    generation: int
+    items: tuple[PublicRevision, ...]
+
+    @property
+    def tickers(self) -> tuple[str, ...]:
+        return tuple(item.ticker for item in self.items)
+
+    @property
+    def as_of_utc(self) -> str:
+        """The newest evidence clock in the bundle."""
+        return max(self.items, key=lambda item: _timestamp(item.as_of_utc)).as_of_utc
+
+
+def consolidate(revisions: Sequence[PublicRevision] | PublicRevision) -> ConsolidatedRevision:
+    """Validate one generation's per-ticker revisions as a single delivery unit."""
+    items = (revisions,) if isinstance(revisions, PublicRevision) else tuple(revisions)
+    if (not items or len(items) > MAX_CONSOLIDATED_ITEMS
+            or not all(isinstance(item, PublicRevision) for item in items)):
+        raise FunnelGate("INVALID_REVISION_SET", 400)
+    for item in items:
+        _validate_revision(item)
+    head = items[0]
+    if any(item.event_id != head.event_id or item.generation != head.generation for item in items):
+        raise FunnelGate("INVALID_REVISION_SET", 400)
+    if len({item.ticker for item in items}) != len(items):
+        raise FunnelGate("INVALID_REVISION_SET", 400)
+    return ConsolidatedRevision(head.event_id, head.generation, items)
+
+
+@dataclass(frozen=True)
 class SourceDisplayRights:
     """A read-only projection of ONE existing source-rights owner's live grant.
 
@@ -251,7 +291,7 @@ class RevisionAuthority(Protocol):
 
 class DeliveryAuthority(Protocol):
     def permitted(self) -> bool: ...
-    def deliver(self, record: ConsentRecord, revision: PublicRevision, idem_key: str) -> str: ...
+    def deliver(self, record: ConsentRecord, revision: ConsolidatedRevision, idem_key: str) -> str: ...
 
 
 def _email_tag(secret: str, email: str) -> str:
@@ -710,42 +750,68 @@ class FunnelService:
                 "changed": "yes" if changed else "no"}
 
     def deliver(self, revision: PublicRevision, *, limit: int = 50, now: datetime) -> list[dict[str, str]]:
+        """A one-ticker generation. The full contract is deliver_generation.
+
+        The idempotency key never carries a ticker, so a producer that drips one
+        generation ticker by ticker gets ALREADY_CLAIMED from the second call on:
+        the first message stands and nobody is mailed twice. A producer with more
+        than one ticker in a generation must hand them over together.
+        """
+        return self.deliver_generation((revision,), limit=limit, now=now)
+
+    def deliver_generation(self, revisions: Sequence[PublicRevision], *, limit: int = 50,
+                           now: datetime) -> list[dict[str, str]]:
         """Explicit call by existing approved scheduler/producer; NEVER a public route.
 
-        No retry on uncertain sender effects. The incumbent mailer email_log unique
-        idem_key is the only delivery claim, so a restarter cannot double-send.
+        The producer hands over EVERY per-ticker revision of one event+generation
+        at once. Each subscriber receives at most one consolidated message for
+        that (event, generation): the followed tickers whose evidence is newer
+        than the consent (docket B04, one dispatch per user per event+generation).
+        The incumbent mailer email_log unique idem_key
+        ``catalyst:<event>:<generation>:<user>`` is the only delivery claim, so a
+        restarter cannot double-send. No retry on uncertain sender effects.
         """
         now = _utc(now)
-        _validate_revision(revision)
-        revision_as_of = _timestamp(revision.as_of_utc)
-        if revision_as_of > now + timedelta(seconds=30):
-            raise FunnelGate("FUTURE_SOURCE_REVISION", 400)
-        # Latest generation does not imply an observation is recent enough to mail.
-        if now - revision_as_of > PUBLIC_REVISION_MAX_AGE:
-            raise FunnelGate("STALE_SOURCE_REVISION", 409)
+        bundle = consolidate(revisions)
+        for item in bundle.items:
+            item_as_of = _timestamp(item.as_of_utc)
+            if item_as_of > now + timedelta(seconds=30):
+                raise FunnelGate("FUTURE_SOURCE_REVISION", 400)
+            # Latest generation does not imply an observation is recent enough to mail.
+            if now - item_as_of > PUBLIC_REVISION_MAX_AGE:
+                raise FunnelGate("STALE_SOURCE_REVISION", 409)
         if not 1 <= limit <= 100:
             raise FunnelGate("INVALID_BATCH_LIMIT", 400)
         if not self.consent.available():
             raise FunnelGate("CONSENT_OWNER_NOT_READY")
         if not self.sender.permitted():
             raise FunnelGate("SEND_BLOCKED")
+        event_id, generation = bundle.event_id, bundle.generation
         try:
-            if self.revisions.is_current(revision.event_id, revision.generation) is not True:
+            if self.revisions.is_current(event_id, generation) is not True:
                 raise FunnelGate("OUTDATED_OR_UNVERIFIED_REVISION", 409)
-            # Read authoritative public/email rights BEFORE roster retrieval.
-            self._require_live_rights(revision, at_utc=self._rights_now(now))
+            # Read authoritative public/email rights for EVERY item BEFORE roster retrieval.
+            for item in bundle.items:
+                self._require_live_rights(item, at_utc=self._rights_now(now))
             subscribers = self._qualified_roster(
-                self.consent.interested(revision.event_id, limit),
-                revision.event_id, limit)
+                self.consent.interested(event_id, limit), event_id, limit)
         except FunnelGate:
             raise
         except Exception as exc:
             raise FunnelGate("DELIVERY_ROSTER_UNAVAILABLE") from exc
+
+        def fresh_items(consent: ConsentRecord) -> tuple[PublicRevision, ...]:
+            # Followed tickers only, and only evidence newer than the consent:
+            # what the reader saw when they consented is not a second value.
+            verified_at = _timestamp(consent.verified_at_utc)
+            return tuple(item for item in bundle.items
+                         if item.ticker in consent.tickers and verified_at < _timestamp(item.as_of_utc))
+
         out: list[dict[str, str]] = []
         for rec in subscribers[:limit]:
             attempted_sender = False
             try:
-                current = self._current_consent(rec.user_id, revision.event_id)
+                current = self._current_consent(rec.user_id, event_id)
                 if current is _CONSENT_OWNER_UNAVAILABLE:
                     state = "CONSENT_OWNER_UNAVAILABLE"
                 elif current is None:
@@ -753,22 +819,25 @@ class FunnelService:
                 elif not isinstance(current, ConsentRecord):
                     state = "CONSENT_OWNER_PROTOCOL_MISMATCH"
                 elif (current.revoked_at_utc or current.scope != SCOPE or
-                      current.intent_id != rec.intent_id or revision.ticker not in current.tickers):
+                      current.intent_id != rec.intent_id or
+                      not any(item.ticker in current.tickers for item in bundle.items)):
                     state = "SUPPRESSED"
-                elif (current.user_id != rec.user_id or current.event_id != revision.event_id or
+                elif (current.user_id != rec.user_id or current.event_id != event_id or
                       not self._same_email(current.email, rec.email)):
                     state = "CONSENT_OWNER_PROTOCOL_MISMATCH"
-                elif _timestamp(current.verified_at_utc) >= _timestamp(revision.as_of_utc):
+                elif not fresh_items(current):
                     state = "NOT_SECOND_VALUE"
                 elif self.suppression.is_suppressed(normalize_email(current.email), _uuid(current.user_id)):
                     state = "SUPPRESSED"
-                elif self.revisions.is_current(revision.event_id, revision.generation) is not True:
+                elif self.revisions.is_current(event_id, generation) is not True:
                     state = "OUTDATED_OR_UNVERIFIED_REVISION"
                 else:
                     # A grant may be withdrawn AFTER roster selection. Re-read
-                    # immediately before each sender call, not once per batch.
+                    # immediately before each sender call, not once per batch,
+                    # for every item this reader would receive.
                     try:
-                        self._require_live_rights(revision, at_utc=self._rights_now(now))
+                        for item in fresh_items(current):
+                            self._require_live_rights(item, at_utc=self._rights_now(now))
                     except FunnelGate as exc:
                         state = ("SOURCE_RIGHTS_NOT_CURRENT" if exc.status == 403
                                  else "SOURCE_RIGHTS_UNAVAILABLE")
@@ -777,7 +846,7 @@ class FunnelService:
                         # scoped consent owner AFTER it, before transport effects:
                         # a person may unsubscribe while their source is examined.
                         # Never trust an unrelated/mismatched current() reply.
-                        latest = self._current_consent(rec.user_id, revision.event_id)
+                        latest = self._current_consent(rec.user_id, event_id)
                         if latest is _CONSENT_OWNER_UNAVAILABLE:
                             state = "CONSENT_OWNER_UNAVAILABLE"
                         elif latest is None:
@@ -785,21 +854,26 @@ class FunnelService:
                         elif not isinstance(latest, ConsentRecord):
                             state = "CONSENT_OWNER_PROTOCOL_MISMATCH"
                         elif (latest.revoked_at_utc or latest.scope != SCOPE or
-                              revision.ticker not in latest.tickers or
+                              not any(item.ticker in latest.tickers for item in bundle.items) or
                               latest.intent_id != rec.intent_id):
                             state = "SUPPRESSED"
                         elif (latest.user_id != rec.user_id or
-                              latest.event_id != revision.event_id or
+                              latest.event_id != event_id or
                               not self._same_email(latest.email, rec.email)):
                             state = "CONSENT_OWNER_PROTOCOL_MISMATCH"
-                        elif _timestamp(latest.verified_at_utc) >= revision_as_of:
+                        elif not fresh_items(latest):
                             state = "NOT_SECOND_VALUE"
-                        elif self.revisions.is_current(revision.event_id, revision.generation) is not True:
+                        elif self.revisions.is_current(event_id, generation) is not True:
                             state = "OUTDATED_OR_UNVERIFIED_REVISION"
+                        elif any(item not in fresh_items(current) for item in fresh_items(latest)):
+                            # The consent changed between the rights read and now;
+                            # an item without a rights read at this boundary never ships.
+                            state = "CONSENT_OWNER_PROTOCOL_MISMATCH"
                         else:
-                            idem = f"catalyst:{revision.event_id}:{revision.generation}:{revision.ticker}:{latest.user_id}"
+                            message = ConsolidatedRevision(event_id, generation, fresh_items(latest))
+                            idem = f"catalyst:{event_id}:{generation}:{latest.user_id}"
                             attempted_sender = True
-                            raw = self.sender.deliver(latest, revision, idem)
+                            raw = self.sender.deliver(latest, message, idem)
                             state = {"sent": "PROVIDER_ACCEPTED", "duplicate": "ALREADY_CLAIMED",
                                      "suppressed": "SUPPRESSED", "skipped_no_smtp": "SEND_BLOCKED",
                                      "queued": "QUEUED_NOT_SENT", "failed": "SEND_FAILED",
@@ -816,7 +890,7 @@ class FunnelService:
             except Exception:
                 state = "EFFECT_UNKNOWN" if attempted_sender else "DELIVERY_PRECHECK_UNAVAILABLE"
             out.append({"user_ref": analytics_receipt(rec)["user_ref"], "state": state,
-                        "event_id": revision.event_id, "generation": str(revision.generation),
+                        "event_id": event_id, "generation": str(generation),
                         **first_touch(rec.first_touch)})
             if state in ("EFFECT_UNKNOWN", "DELIVERY_PRECHECK_UNAVAILABLE", "QUEUED_NOT_SENT",
                          "SOURCE_RIGHTS_NOT_CURRENT", "SOURCE_RIGHTS_UNAVAILABLE",
@@ -829,23 +903,57 @@ class FunnelService:
                 break
         return out
 
-
-def format_revision(rev: PublicRevision, unsubscribe_url: str) -> tuple[str, str, str]:
-    """Pure rights-qualified copy; correction/retraction never reuses old claims."""
-    _validate_revision(rev)
-    if not unsubscribe_url.startswith("https://"):
-        raise FunnelGate("UNSUBSCRIBE_LINK_UNAVAILABLE")
+def _revision_block(rev: PublicRevision) -> tuple[str, list[str], str]:
+    """Heading, plain-text lines and escaped HTML for ONE per-ticker revision."""
     message = (rev.correction_note if rev.correction == "retracted" else
                f"{rev.correction_note} — {rev.what_changed}" if rev.correction == "corrected"
                else rev.what_changed)
     heading = ("Correction: " if rev.correction != "none" else "Update: ") + rev.headline
     lines = [heading, message, f"Evidence as of {rev.as_of_utc}", "Sources:"]
     lines.extend(rev.source_urls)
-    lines.append("Unsubscribe: " + unsubscribe_url)
-    safe_text = "\n".join(lines)
     links = "".join(f'<li><a href="{html.escape(link, quote=True)}">Source</a></li>'
                     for link in rev.source_urls)
-    safe_html = (f"<h2>{html.escape(heading)}</h2><p>{html.escape(message)}</p>"
-                 f"<p>Evidence as of {html.escape(rev.as_of_utc)}</p><ul>{links}</ul>"
-                 f'<p><a href="{html.escape(unsubscribe_url, quote=True)}">Unsubscribe</a></p>')
-    return heading, safe_html, safe_text
+    block = (f"<h2>{html.escape(heading)}</h2><p>{html.escape(message)}</p>"
+             f"<p>Evidence as of {html.escape(rev.as_of_utc)}</p><ul>{links}</ul>")
+    return heading, lines, block
+
+
+def _unsubscribe(unsubscribe_url: str) -> tuple[str, str]:
+    if not unsubscribe_url.startswith("https://"):
+        raise FunnelGate("UNSUBSCRIBE_LINK_UNAVAILABLE")
+    return ("Unsubscribe: " + unsubscribe_url,
+            f'<p><a href="{html.escape(unsubscribe_url, quote=True)}">Unsubscribe</a></p>')
+
+
+def format_revision(rev: PublicRevision, unsubscribe_url: str) -> tuple[str, str, str]:
+    """Pure rights-qualified copy; correction/retraction never reuses old claims."""
+    _validate_revision(rev)
+    unsub_line, unsub_html = _unsubscribe(unsubscribe_url)
+    heading, lines, block = _revision_block(rev)
+    lines.append(unsub_line)
+    return heading, block + unsub_html, "\n".join(lines)
+
+
+def format_generation(bundle: ConsolidatedRevision | Sequence[PublicRevision],
+                      unsubscribe_url: str) -> tuple[str, str, str]:
+    """ONE message for every followed ticker of one event+generation (docket B04).
+
+    A single item renders exactly as format_revision. Several items keep each
+    ticker's own rights-qualified block, in producer order, under one subject
+    that names the tickers and nothing else; one unsubscribe link closes it.
+    """
+    if not isinstance(bundle, ConsolidatedRevision):
+        bundle = consolidate(bundle)
+    if len(bundle.items) == 1:
+        return format_revision(bundle.items[0], unsubscribe_url)
+    unsub_line, unsub_html = _unsubscribe(unsubscribe_url)
+    blocks = [_revision_block(item) for item in bundle.items]
+    subject = f"{len(bundle.items)} updates: {', '.join(bundle.tickers)}"
+    lines: list[str] = [subject]
+    for _heading, block_lines, _block in blocks:
+        lines.append("")
+        lines.extend(block_lines)
+    lines.extend(("", unsub_line))
+    safe_html = (f"<h1>{html.escape(subject)}</h1>" + "".join(block for _h, _l, block in blocks)
+                 + unsub_html)
+    return subject, safe_html, "\n".join(lines)

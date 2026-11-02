@@ -114,7 +114,20 @@ waves:
       (1) The flag operator (Chris) turns CATALYST_PUBLIC_ENABLED / CATALYST_OPTIN_ENABLED / CATALYST_UX_ENABLED
       on; (2) hosted A2 live-scan proof; (3) B2 opt-in return needs a sender, C2 external cohort a partner
       editor, D1 live conversions the Website/D07 UTM join, E1 the Chairman decision.
+  - id: B2-SENDER
+    title: Consolidated sender — one message per (user, event, generation); B04 passes
+    status: in_progress
+    depends_on: [GAPS]
+    next_action: >
+      Lane claude/ssd-mx-catalyst-b2-sender-0934aa6d20e78b47: FunnelService.deliver_generation,
+      ConsolidatedRevision, format_generation, ledger key catalyst:<event>:<generation>:<user>;
+      deliver_update loads the whole generation (load_public_revisions). The strict xfail B04
+      test passes without its marker. DEC:MX-CATALYST-B2-CONSOLIDATED-SENDER-20261102. After
+      CI + independent review: merge. MAIL_CATALYST_ENABLED stays OFF: docket B2 acceptance
+      needs an SMTP provider on the host and a designated consenting test recipient (Chairman
+      spend, named once).
 decisions:
+  - DEC:MX-CATALYST-B2-CONSOLIDATED-SENDER-20261102
   - DEC:ENTRY-RADAR-CATALYST-LIVE-READ-IS-OPT-IN
   - DEC:MX-CATALYST-SEC-ISSUER-EARNINGS-RELEASE-PUBLIC-FACTS
   - DEC:MX-CATALYST-GAPS-SEAT-RULINGS-20261101
@@ -140,6 +153,7 @@ landmines:
     examples/catalyst_partner_previews/** (fictional packs) and mockups/evidence/** (PNG) from
     #8683 are not adopted; fictional packs are not evidence.
 do_not_redo:
+  - "The consolidated sender contract (DEC:MX-CATALYST-B2-CONSOLIDATED-SENDER-20261102): never put a ticker back into the ledger key or reintroduce a per-ticker drip as a producer contract."
   - "Do not re-verify or re-apply the Stage-A v2 / Stage-B patches; lane/mx-cat-a1-base = 55dc7cab is the verified materialization (eight blob ids checked)."
   - "Do not re-measure the main-vs-55dc7cab conflict set from scratch; it is exactly three single-hunk files with frozen resolution rules."
   - "Do not treat if: ${{ false }} on legacy-jobs.yml jobs as a defect; it is the pack-planner convention."

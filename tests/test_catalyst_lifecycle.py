@@ -551,7 +551,7 @@ def test_rights_rechecked_for_each_recipient_and_remaining_batch_stops_on_withdr
         "PROVIDER_ACCEPTED", "SOURCE_RIGHTS_NOT_CURRENT"]
     assert len(sender.calls) == 1
     assert len(rights.rights_calls) == 3
-    assert sender.calls[0][2] == "catalyst:event-123:2:NVDA:" + UID
+    assert sender.calls[0][2] == "catalyst:event-123:2:" + UID
     assert "second@example.com" not in json.dumps(receipts)
 
 
@@ -725,7 +725,7 @@ def test_send_receipt_idempotency_and_uncertainty_not_claimed_success():
     service, *_parts, sender = make()
     verified(service)
     assert service.deliver(update(), now=NOW + timedelta(hours=2))[0]["state"] == "PROVIDER_ACCEPTED"
-    assert sender.calls[0][2] == "catalyst:event-123:2:NVDA:" + UID
+    assert sender.calls[0][2] == "catalyst:event-123:2:" + UID
     for state, label in (("duplicate", "ALREADY_CLAIMED"), ("failed", "SEND_FAILED"),
                          ("queued", "QUEUED_NOT_SENT"), ("effect_unknown", "EFFECT_UNKNOWN"),
                          ("skipped_no_smtp", "SEND_BLOCKED")):
@@ -745,7 +745,7 @@ def test_parked_catalyst_claim_consumes_ledger_key_and_stops_batch():
     rows = service.deliver(update(), now=NOW + timedelta(hours=2))
     assert len(rows) == len(sender.calls) == 1
     assert rows[0]["state"] == "QUEUED_NOT_SENT"
-    assert sender.calls[0][2] == "catalyst:event-123:2:NVDA:" + UID
+    assert sender.calls[0][2] == "catalyst:event-123:2:" + UID
     assert EMAIL not in json.dumps(rows)
     # DO NOT "retry" the same consumed key. The generic parked drain only
     # rebuilds welcome/campaign, not the source-revised Catalyst message.
@@ -763,20 +763,22 @@ def test_unknown_sender_result_freezes_for_possible_transport_effect(raw_status)
     rows = service.deliver(update(), now=NOW + timedelta(hours=2))
     assert len(rows) == len(sender.calls) == 1
     assert rows[0]["state"] == "EFFECT_UNKNOWN"
-    assert sender.calls[0][2] == "catalyst:event-123:2:NVDA:" + UID
+    assert sender.calls[0][2] == "catalyst:event-123:2:" + UID
 
 
-def test_same_event_different_ticker_delivery_keys_do_not_collide():
-    service, *_rest, sender = make()
+def test_same_event_different_ticker_drip_is_claimed_once():
+    """The idem key is (event, generation, user): a producer that drips one generation
+    ticker by ticker gets ALREADY_CLAIMED from the second call on and nobody is mailed
+    twice (docket B04). Several tickers travel together through deliver_generation."""
+    service, *_rest, _sender = make()
+    service.sender = ledger = _BLedgerSender(_CaptureSender())
     verified(service)
-    assert service.deliver(update(ticker="NVDA"), now=NOW + timedelta(hours=2))[0]["state"] == "PROVIDER_ACCEPTED"
-    assert service.deliver(update(ticker="AMD"), now=NOW + timedelta(hours=2))[0]["state"] == "PROVIDER_ACCEPTED"
-    first_key, second_key = sender.calls[0][2], sender.calls[1][2]
-    assert first_key == "catalyst:event-123:2:NVDA:" + UID
-    assert second_key == "catalyst:event-123:2:AMD:" + UID
-    assert first_key != second_key
-    service.deliver(update(ticker="AMD"), now=NOW + timedelta(hours=2))
-    assert sender.calls[2][2] == second_key
+    first = service.deliver(update(ticker="NVDA"), now=NOW + timedelta(hours=2))
+    second = service.deliver(update(ticker="AMD"), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in first] == ["PROVIDER_ACCEPTED"]
+    assert [row["state"] for row in second] == ["ALREADY_CLAIMED"]
+    assert ledger.invocations == ["catalyst:event-123:2:" + UID] * 2
+    assert len(ledger.sends) == 1 and ledger.sends[0][1] == ("NVDA",)
 
 
 @pytest.mark.parametrize("elapsed_days", [8, 30, 90])
@@ -935,7 +937,7 @@ class _BLedgerSender:
         if key in self.claimed:
             return "duplicate"  # exactly-once ledger refuses a second claim on the key
         self.claimed.add(key)
-        self.sends.append((record.user_id, revision.ticker, key))
+        self.sends.append((record.user_id, revision.tickers, key))
         return self.inner.deliver(record, revision, key)
 
 
@@ -1089,7 +1091,7 @@ def test_b03_grant_revoked_mid_batch_suppresses_rest_and_never_resends_delivered
     first = service.deliver(update(), now=NOW + timedelta(hours=2))
     assert [row["state"] for row in first] == ["PROVIDER_ACCEPTED", "SUPPRESSED"]
     assert [send[0] for send in ledger.sends] == [UID]  # only the still-consenting user
-    assert ledger.sends[0][2] == "catalyst:event-123:2:NVDA:" + UID
+    assert ledger.sends[0][2] == "catalyst:event-123:2:" + UID
     second = service.deliver(update(), now=NOW + timedelta(hours=2))
     assert [row["state"] for row in second] == ["ALREADY_CLAIMED", "SUPPRESSED"]
     assert len(ledger.sends) == 1  # nobody was re-mailed by the rerun
@@ -1157,7 +1159,7 @@ def test_b04_effect_unknown_delivery_is_not_auto_replayed():
     second = service.deliver(update(), now=NOW + timedelta(hours=2))
     assert [row["state"] for row in second] == ["ALREADY_CLAIMED"]  # the ledger key holds
     assert len(ledger.sends) == 1  # NO new send was made for that key
-    assert ledger.sends[0][2] == "catalyst:event-123:2:NVDA:" + UID
+    assert ledger.sends[0][2] == "catalyst:event-123:2:" + UID
     assert all(row["state"] != "PROVIDER_ACCEPTED" for row in first + second)
 
 
@@ -1171,12 +1173,9 @@ def test_b04_repeated_same_ticker_revision_never_dispatches_twice():
     assert [row["state"] for row in first] == ["PROVIDER_ACCEPTED"]
     assert [row["state"] for row in second] == ["ALREADY_CLAIMED"]
     assert len(ledger.sends) == 1  # exactly one real dispatch ever
-    assert ledger.invocations == ["catalyst:event-123:2:NVDA:" + UID] * 2  # same key both times
+    assert ledger.invocations == ["catalyst:event-123:2:" + UID] * 2  # same key both times
 
 
-@pytest.mark.xfail(strict=True, reason="FINDING B04-DEDUP: engine/marketing/catalyst_lifecycle.py:800 "
-                                       "idem key embeds the ticker, so one event+generation across two "
-                                       "tickers one user follows dispatches twice, not once")
 def test_b04_one_dispatch_per_user_per_event_generation_across_tickers():
     """Catches: one event and generation spanning two tickers the user follows mails that user twice."""
     service, *_rest, sender = make()
@@ -1186,3 +1185,131 @@ def test_b04_one_dispatch_per_user_per_event_generation_across_tickers():
         service.deliver(update(ticker=ticker), now=NOW + timedelta(hours=2))
     assert len(ledger.sends) == 1  # docket: ONE dispatch per user per event+generation
     assert all(send[2].rsplit(":", 1)[0] == "catalyst:event-123:2" for send in ledger.sends)
+
+
+# B2 sender wave (2026-11-02): one consolidated message per (user, event, generation).
+# Append-only, like the B-NEG block above.
+
+class _CaptureSender:
+    """A DeliveryAuthority that keeps the exact bundle each user would receive."""
+
+    def __init__(self):
+        self.ready, self.status, self.calls = True, "sent", []
+
+    def permitted(self):
+        return self.ready
+
+    def deliver(self, record, revision, key):
+        self.calls.append((record.user_id, revision.tickers, key, revision))
+        return self.status
+
+
+def _generation(*tickers, **kwargs):
+    return tuple(update(ticker=ticker, **kwargs) for ticker in tickers)
+
+
+def test_b2_one_generation_two_followed_tickers_is_one_consolidated_dispatch():
+    service, *_rest, _sender = make()
+    capture = _CaptureSender()
+    service.sender = ledger = _BLedgerSender(capture)
+    verified(service)  # consent covers NVDA + AMD for event-123
+    receipts = service.deliver_generation(_generation("NVDA", "AMD"), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in receipts] == ["PROVIDER_ACCEPTED"]
+    assert len(ledger.sends) == 1
+    assert capture.calls[0][1] == ("NVDA", "AMD")
+    assert capture.calls[0][2] == "catalyst:event-123:2:" + UID
+    assert capture.calls[0][3].event_id == "event-123" and capture.calls[0][3].generation == 2
+    again = service.deliver_generation(_generation("AMD", "NVDA"), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in again] == ["ALREADY_CLAIMED"]
+    assert len(ledger.sends) == 1  # the ledger, not call order, decides: never twice
+
+
+def test_b2_unfollowed_and_already_seen_tickers_are_left_out_of_the_message():
+    service, *_rest, _sender = make()
+    service.sender = capture = _CaptureSender()
+    verified(service)  # verified at NOW; AMD evidence below predates the consent
+    seen = update(ticker="AMD", as_of_utc="2026-10-09T02:30:00+00:00",
+                  published_at_utc="2026-10-09T02:00:00+00:00")
+    receipts = service.deliver_generation((update(ticker="NVDA"), seen, update(ticker="TSLA")),
+                                          now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in receipts] == ["PROVIDER_ACCEPTED"]
+    assert capture.calls[0][1] == ("NVDA",)
+
+
+def test_b2_all_items_already_seen_at_consent_is_not_a_second_value():
+    service, *_rest, _sender = make()
+    service.sender = capture = _CaptureSender()
+    verified(service)
+    old = dict(as_of_utc="2026-10-09T02:30:00+00:00", published_at_utc="2026-10-09T02:00:00+00:00")
+    receipts = service.deliver_generation(_generation("NVDA", "AMD", **old), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in receipts] == ["NOT_SECOND_VALUE"]
+    assert not capture.calls
+
+
+def test_b2_only_unfollowed_tickers_is_suppressed():
+    service, *_rest, _sender = make()
+    service.sender = capture = _CaptureSender()
+    verified(service)
+    receipts = service.deliver_generation(_generation("TSLA", "MSFT"), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in receipts] == ["SUPPRESSED"]
+    assert not capture.calls
+
+
+@pytest.mark.parametrize("bad", [
+    (),
+    (update(ticker="NVDA"), update(ticker="NVDA")),
+    (update(ticker="NVDA"), update(ticker="AMD", event_id="event-999")),
+    (update(ticker="NVDA"), update(ticker="AMD", generation=3)),
+    tuple(update(ticker=f"T{i}") for i in range(13)),
+    (update(ticker="NVDA"), "not a revision"),
+])
+def test_b2_mixed_duplicate_or_oversized_generation_sets_are_refused(bad):
+    service, *_rest, _sender = make()
+    service.sender = capture = _CaptureSender()
+    verified(service)
+    fails("INVALID_REVISION_SET", lambda: service.deliver_generation(bad, now=NOW + timedelta(hours=2)))
+    assert not capture.calls
+
+
+def test_b2_every_item_needs_live_rights_before_the_roster_is_read():
+    service, _otp, store, _supp, revisions, _sender = make()
+    service.sender = capture = _CaptureSender()
+    verified(service)
+    live = revisions.read_public_rights
+    revisions.read_public_rights = (lambda revision, at_utc:
+                                    None if revision.ticker == "AMD" else live(revision, at_utc))
+    fails("SOURCE_RIGHTS_NOT_CURRENT",
+          lambda: service.deliver_generation(_generation("NVDA", "AMD"), now=NOW + timedelta(hours=2)))
+    assert not capture.calls
+
+
+def test_b2_one_item_losing_rights_after_roster_holds_the_whole_message():
+    service, _otp, _store, _supp, revisions, _sender = make()
+    service.sender = capture = _CaptureSender()
+    verified(service)
+    live, reads = revisions.read_public_rights, []
+
+    def rights(revision, at_utc):
+        reads.append(revision.ticker)
+        # both items pass the pre-roster read; AMD is withdrawn at the per-user boundary
+        return None if (revision.ticker == "AMD" and reads.count("AMD") > 1) else live(revision, at_utc)
+    revisions.read_public_rights = rights
+    receipts = service.deliver_generation(_generation("NVDA", "AMD"), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in receipts] == ["SOURCE_RIGHTS_NOT_CURRENT"]
+    assert reads == ["NVDA", "AMD", "NVDA", "AMD"] and not capture.calls
+
+
+def test_b2_format_generation_keeps_each_ticker_block_and_one_unsubscribe():
+    from engine.marketing.catalyst_lifecycle import format_generation
+    nvda = update(ticker="NVDA")
+    amd = update(ticker="AMD", headline="AMD <b>guides</b> lower", what_changed="<script>x</script>")
+    subject, body, plain = format_generation((nvda, amd), "https://mastermind-x.com/unsubscribe.html?t=token")
+    assert subject == "2 updates: NVDA, AMD"
+    assert body.count("<h2>") == 2 and body.count("Unsubscribe") == 1
+    assert "<script>" not in body and "&lt;script&gt;" in body and "&lt;b&gt;" in body
+    assert plain.count("Update: ") == 2
+    assert plain.rstrip().endswith("Unsubscribe: https://mastermind-x.com/unsubscribe.html?t=token")
+    assert "\r" not in subject and "\n" not in subject
+    assert format_generation((nvda,), "https://mastermind-x.com/u") == format_revision(nvda, "https://mastermind-x.com/u")
+    fails("UNSUBSCRIBE_LINK_UNAVAILABLE", lambda: format_generation((nvda, amd), "http://insecure.example"))
+    fails("INVALID_REVISION_SET", lambda: format_generation((nvda, nvda), "https://mastermind-x.com/u"))
