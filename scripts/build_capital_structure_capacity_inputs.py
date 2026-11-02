@@ -200,7 +200,9 @@ def _bind_instruments(root: Path, issuer_id: str, as_of: str) -> FamilyEntry:
         )
     decisions_path = root / DECISIONS_FILENAME
     if decisions_path.exists():
-        decisions = _read_jsonl_records(decisions_path, "instrument_resolution_decisions")
+        decisions = _issuer_decisions(
+            _read_jsonl_records(decisions_path, "instrument_resolution_decisions"), issuer_id
+        )
         decided_by = DECIDED_BY_LEDGER
         limits: tuple[str, ...] = ()
     else:
@@ -244,6 +246,25 @@ def _bind_instruments(root: Path, issuer_id: str, as_of: str) -> FamilyEntry:
         ),
         record=instrument_set,
     )
+
+
+def _issuer_decisions(
+    decisions: Sequence[Mapping[str, Any]], issuer_id: str
+) -> tuple[Mapping[str, Any], ...]:
+    """The decisions that can bear on one issuer's resolution.
+
+    The ledger holds every issuer's decisions, while the resolver requires
+    exactly one issuer per resolution.  Only a decision naming another issuer
+    is left out; a record without a usable ``issuer_id`` still reaches the
+    resolver, which refuses it as the integrity fault it is.
+    """
+    kept = []
+    for record in decisions:
+        owner = record.get("issuer_id")
+        if isinstance(owner, str) and owner and owner != issuer_id:
+            continue
+        kept.append(record)
+    return tuple(kept)
 
 
 def _bind_share_basis(root: Path, issuer_id: str, as_of: str) -> FamilyEntry:
