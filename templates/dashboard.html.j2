@@ -8447,7 +8447,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           </div>
           <div class="mx5-pop-footer">
             <button class="mx5-pop-footer-link" type="button"
-                    onclick="mx5CloseAllPopovers();mx5OpenDlg('dlg-evidence')">
+                    onclick="mx5CloseAllPopovers();document.getElementById('mx5BtnFactors').focus({preventScroll:true});mx5OpenDlg('dlg-evidence')">
               <span class="l-en">Full breakdown &#8595;</span><span class="l-zh">完整分析 &#8595;</span>
             </button>
           </div>

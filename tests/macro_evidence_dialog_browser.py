@@ -96,6 +96,16 @@ def exercise(output):
         dialog.wait_for(state="hidden")
         assert trigger.evaluate("e => e === document.activeElement")
         assert not page.evaluate("document.documentElement.classList.contains('mx5-dlg-lock')")
+        # The launching link disappears when its popover closes. Return to the visible
+        # Factors button, which owns the popover, after this second entry path.
+        page.set_viewport_size({"width": 1440, "height": 900})
+        factors = page.locator("#mx5BtnFactors")
+        factors.click()
+        page.locator("#mx5PopFactors .mx5-pop-footer-link").click()
+        dialog.wait_for(state="visible")
+        page.keyboard.press("Escape")
+        dialog.wait_for(state="hidden")
+        assert factors.evaluate("e => e === document.activeElement && e.getClientRects().length > 0")
         browser.close()
         return checks
 
