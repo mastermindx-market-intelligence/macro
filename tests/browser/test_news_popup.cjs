@@ -50,6 +50,7 @@ test('light/dark EN/ZH desktop/mobile have no horizontal overflow',async b=>{
    await p.setViewportSize({width,height:width===390?844:1000});await p.evaluate(({theme,lang})=>{document.documentElement.setAttribute('data-theme',theme);document.documentElement.setAttribute('data-lang',lang)}, {theme,lang});
    await p.evaluate(()=>document.querySelector('#dlg-news .mx5-dlg-body').scrollTop=0);
    const dims=await p.locator('#dlg-news .mx5-dlg-body').evaluate(e=>({scroll:e.scrollWidth,client:e.clientWidth}));assert(dims.scroll<=dims.client+1,JSON.stringify({width,theme,lang,dims}));
+   const pageDims=await p.evaluate(()=>({viewport:innerWidth,root:document.documentElement.scrollWidth,body:document.body.scrollWidth}));assert(Math.max(pageDims.root,pageDims.body)<=pageDims.viewport+1,JSON.stringify({width,theme,lang,pageDims}));
    assert(await p.locator('#dlg-news .mx5-dlg-close').isVisible());
    await p.screenshot({path:path.join(root,'.qa',`news-${theme}-${lang}-${width}.png`)});
  }

@@ -13,7 +13,7 @@
 #dlg-news .ni-release{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:12px 18px;background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-card,12px);margin-bottom:16px}
 #dlg-news .ni-release p{font-weight:600;line-height:1.45;margin:4px 0}
 #dlg-news .ni-release .ni-source-link{flex-shrink:0}
-#dlg-news .ni-release[data-state="delayed"] .ni-release-label,#dlg-news .ni-release[data-state="verifying"] .ni-release-label{color:var(--ink-warn,var(--warn))}
+#dlg-news .ni-release:is([data-state="delayed"],[data-state="verifying"],[data-state="uncertain"],[data-state="partial"]) .ni-release-label{color:var(--ink-warn,var(--warn))}
 #dlg-news .ni-notice{padding:12px 16px;margin-bottom:18px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);font-size:13px;background:var(--panel)}
 #dlg-news .ni-tools{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
 #dlg-news .ni-filters{display:flex;gap:4px;flex-wrap:wrap;padding:4px;border-radius:var(--r-card,12px);background:var(--panel2);border:1px solid var(--line)}

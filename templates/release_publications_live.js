@@ -860,6 +860,7 @@
     // Missing and timezone-free clocks are unknown, never synthesize end-of-day.
     if (typeof value !== "string" ||
         !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$/.test(value)) return NaN;
+    if (Number(value.slice(11, 13)) > 23 || Number(value.slice(14, 16)) > 59) return NaN;
     var day = new Date(value.slice(0, 10) + "T12:00:00Z");
     if (isNaN(day.getTime()) || day.toISOString().slice(0, 10) !== value.slice(0, 10)) return NaN;
     return new Date(value).getTime();
@@ -874,13 +875,13 @@
 
   function releaseKey(row) {
     if (!row || typeof row !== "object") return "";
-    if (typeof row.event_id === "string" && row.event_id.trim()) return "event:" + row.event_id;
+    if (typeof row.event_id === "string" && row.event_id.trim()) return "event:" + row.event_id.trim();
     return row.type && /^\d{4}-\d{2}-\d{2}$/.test(row.date || "") ? row.type + ":" + row.date : "";
   }
 
   function publicationVerified(row) {
     var actual = row && row.actual;
-    return Boolean(row && row.data_ready === true && actual && typeof actual === "object" &&
+    return Boolean(row && row.status !== "published_unparsed" && row.data_ready === true && actual && typeof actual === "object" &&
       [actual.summary_en, actual.summary_zh, actual.headline_en, actual.headline_zh].some(function (text) {
         return typeof text === "string" && text.trim();
       }));
@@ -892,19 +893,22 @@
       if (!row || typeof row !== "object" || !releaseKey(row) ||
           ["published", "published_unparsed"].indexOf(row.status) < 0) return false;
       var detected = releaseTimestamp(row.detected_at);
-      return !isNaN(detected) && detected >= cutoff && detected <= now.getTime() + POLL_MS;
+      return !isNaN(detected) && detected >= cutoff && detected <= now.getTime();
     }).sort(function (left, right) {
       return releaseTimestamp(left.detected_at) - releaseTimestamp(right.detected_at);
     });
   }
 
   function awaitingEvents(payload, now, publishedKeys) {
-    var rows = payload.events || payload.due || payload.upcoming || [];
-    rows = Array.isArray(rows) ? rows.slice() : [];
+    var rows = [];
+    ["events", "due", "upcoming"].forEach(function (name) {
+      if (Array.isArray(payload[name])) rows = rows.concat(payload[name]);
+    });
     // An old/unclocked parse failure stays visible as delayed, never as a fresh release.
     (Array.isArray(payload.publications) ? payload.publications : []).forEach(function (row) {
       if (row && row.status === "published_unparsed" && !publishedKeys[releaseKey(row)]) {
-        rows.unshift(Object.assign({}, row, {status: "verification_delayed"}));
+        var matching = rows.filter(function (event) { return releaseKey(event) === releaseKey(row); })[0] || {};
+        rows.unshift(Object.assign({}, matching, row, {status: "verification_delayed"}));
       }
     });
     var seen = {};
@@ -922,20 +926,28 @@
   function payloadIsFresh(payload, now) {
     var built = releaseTimestamp(payload && payload.built);
     var current = (now || new Date()).getTime();
-    return !isNaN(built) && built <= current + POLL_MS && current - built <= STALE_AFTER_MS;
+    return !isNaN(built) && built <= current && current - built <= STALE_AFTER_MS;
   }
 
-  function patchNewsReleaseState(publications, awaiting, payload) {
+  function patchNewsReleaseState(publications, awaiting, payload, coverage) {
+    coverage = coverage || {};
     var strip = document.querySelector("#dlg-news [data-news-release]");
     var pending = publications.filter(function (row) { return !publicationVerified(row); }).length + awaiting.length;
     var verified = publications.length - (pending - awaiting.length);
     var delayed = awaiting.some(function (row) { return row.status === "verification_delayed"; });
-    var state = delayed ? "delayed" : pending ? "verifying" : verified ? "verified" : "empty";
+    var state = delayed ? "delayed" : coverage.clockIssues ? "uncertain" : coverage.partial ? "partial" : pending ? "verifying" : verified ? "verified" : "empty";
     var en = pending ? pending + " release" + (pending === 1 ? "" : "s") + (delayed ? " awaiting verification · delayed" : " awaiting verification") :
       verified ? verified + " official result" + (verified === 1 ? "" : "s") + " verified" : "No recent release status to display";
     var zh = pending ? pending + " 项发布待核验" + (delayed ? " · 核验延迟" : "") :
       verified ? verified + " 项官方结果已核验" : "暂无近期发布状态可显示";
     if (pending && verified) { en += " · " + verified + " verified"; zh += " · " + verified + " 项已核验"; }
+    if (coverage.clockIssues) {
+      var clockEn = coverage.clockIssues + " release time" + (coverage.clockIssues === 1 ? " needs" : "s need") + " checking";
+      var clockZh = coverage.clockIssues + " 项发布时间待核查";
+      en = pending || verified ? en + " · " + clockEn : clockEn;
+      zh = pending || verified ? zh + " · " + clockZh : clockZh;
+    }
+    if (coverage.partial) { en += " · partial coverage"; zh += " · 部分覆盖"; }
     if (strip) {
       strip.setAttribute("data-state", state);
       setPair(strip.querySelector("[data-news-release-summary]"), en, zh);
@@ -943,8 +955,8 @@
       setPair(strip.querySelector("[data-news-release-clock]"), "Source checked " + stamp, "来源检查于 " + stamp);
     }
     var badge = document.querySelector("#sx-news-v2 .mx5-card-badge");
-    if (badge) setPair(badge, pending ? "Verification pending" : verified ? "Official results" : "Snapshot",
-      pending ? "待核验" : verified ? "官方结果" : "快照");
+    if (badge) setPair(badge, delayed ? "Verification delayed" : coverage.clockIssues ? "Time uncertain" : coverage.partial ? "Partial update" : pending ? "Verification pending" : verified ? "Official results" : "Snapshot",
+      delayed ? "核验延迟" : coverage.clockIssues ? "时间待核查" : coverage.partial ? "部分更新" : pending ? "待核验" : verified ? "官方结果" : "快照");
   }
 
   function radarState(publications, awaiting) {
@@ -1122,35 +1134,39 @@
   function render(payload, nowValue) {
     var now = nowValue instanceof Date ? nowValue : new Date();
     if (!payload || !Array.isArray(payload.publications) ||
-        ["events", "due", "upcoming"].some(function (key) {
-          return payload[key] != null && !Array.isArray(payload[key]);
-        }) ||
         !payloadIsFresh(payload, now)) {
       notePollFailure(now);
       return false;
     }
     var built = releaseTimestamp(payload.built);
     if (built < lastAcceptedBuilt) return false;
-    lastSuccessfulPollAt = now.getTime();
-    missedPolls = 0;
-    markFeedFresh();
+    var coverage = {
+      partial: ["events", "due", "upcoming"].some(function (key) {
+        return payload[key] != null && !Array.isArray(payload[key]);
+      }) || payload.publications.some(function (row) { return !releaseKey(row); }),
+      clockIssues: payload.publications.filter(function (row) {
+        if (!row || row.status !== "published") return false;
+        var stamp = releaseTimestamp(row.detected_at);
+        return isNaN(stamp) || stamp > now.getTime();
+      }).length
+    };
     ensureStyles();
     var publications = recentPublications(payload, now).map(function (row) {
       var ready = publicationVerified(row), actual = row.actual || {};
+      function fact(name) { return typeof actual[name] === "string" ? actual[name].trim() : ""; }
       // All consumers share a claim level; missing translation never means a
       // different verification state, and a bare data_ready flag is not evidence.
       if (ready) actual = Object.assign({}, actual, {
-        headline_en: actual.headline_en || actual.headline_zh || actual.summary_en || actual.summary_zh,
-        headline_zh: actual.headline_zh || actual.headline_en || actual.summary_zh || actual.summary_en,
-        summary_en: actual.summary_en || actual.summary_zh || actual.headline_en || actual.headline_zh,
-        summary_zh: actual.summary_zh || actual.summary_en || actual.headline_zh || actual.headline_en
+        headline_en: fact("headline_en") || fact("headline_zh") || fact("summary_en") || fact("summary_zh"),
+        headline_zh: fact("headline_zh") || fact("headline_en") || fact("summary_zh") || fact("summary_en"),
+        summary_en: fact("summary_en") || fact("summary_zh") || fact("headline_en") || fact("headline_zh"),
+        summary_zh: fact("summary_zh") || fact("summary_en") || fact("headline_zh") || fact("headline_en")
       });
       return Object.assign({}, row, {data_ready: ready, actual: actual});
     });
     var publishedKeys = {};
     publications.forEach(function (row) {
-      publishedKeys[row.type + ":" + row.date] = true;
-      if (row.event_id) publishedKeys["event:" + row.event_id] = true;
+      publishedKeys[releaseKey(row)] = true;
     });
     var awaiting = awaitingEvents(payload, now, publishedKeys);
     var panel = ensureOutcomePanel();
@@ -1191,7 +1207,7 @@
       patchWhereNext(primary, isPublished);
     }
     if (trackPrimaryState(Boolean(group || primary))) expireLiveState();
-    patchNewsReleaseState(publications, awaiting, payload);
+    patchNewsReleaseState(publications, awaiting, payload, coverage);
 
     var banner = ensureRadarBanner();
     if (banner) {
@@ -1200,6 +1216,9 @@
       banner.hidden = radar.kind === "empty";
     }
     lastAcceptedBuilt = built;
+    lastSuccessfulPollAt = now.getTime();
+    missedPolls = 0;
+    markFeedFresh();
     return true;
   }
 

@@ -12,12 +12,12 @@ The existing shared modal handler cancels stale close teardown on reopening and 
 
 ## Verified so far
 
-- Original release client: 5/5 targeted counterexamples failed. Modified client: those 5 plus delayed-state, readiness-without-facts, and timeout/late-response checks pass (8/8).
+- Original release client: 5/5 targeted counterexamples failed. Modified client: 11/11 browser regression cases pass, including partial collections, invalid/future clocks, distinct identities, empty-event fallback, contradictory readiness, and a valid newer late response arriving after a timed-out request.
 - Original shared modal: rapid close/reopen and modal-switch focus return failed. Modified source fixture: 6/6 interaction groups pass, including filters/search, preserved evidence, EN/ZH changes, keyboard/reduced motion, desktop/mobile overflow, and those two regressions.
 - Source rendering and available inherited client tests: 14 passed. Two generated-page/hash tests await a qualified generated-site build; they are not counted as passing.
-- Native principal visual review inspected actual light/dark desktop captures and approved the direction with refinements: compact preamble, more visible uncertainty typography, calmer dark close control. Refinements applied; final visual evidence remains in progress.
+- Native principal visual review approved desktop light/dark and mobile EN/light + ZH/dark. The complete first priority card is readable on mobile. Final width investigation identified overflow in the synthetic background tiles, not in the popup; the fixture was corrected and the browser test now checks document/body width as well as dialog content. All eight theme/locale/viewport combinations pass.
 - Paid read-only contract audit: `news-popup-contract-audit-20261101-c2`, response SHA256 `db4cc9ee9e696725c09e19129ab8fc850217f7b683eddfd896d2b9382cce4e00`, reviewed/accepted as static analysis. Full-source review cleared its contingent null-target concern; targeted failures above were reproduced independently.
-- Independent implementation review: `news-popup-implementation-review-20261102-c2`, pending retained return. No acceptance inferred from dispatch.
+- Independent implementation review: `news-popup-implementation-review-20261102-c2`, retained response SHA256 `5da3d336e6c8ba1aabd068a1b9227f6922f5eeea0e04c834ffd04ee1227f7026`, fully read and manually adjudicated. Repaired findings: future build timestamps, malformed optional collections, empty events masking due rows, missing publication clocks, whitespace/missing translated facts, overly broad same-day deduplication, and committing freshness before DOM work succeeds. The contingent claim that `published=true` itself promotes unparsed documents was disproved by the full source: consumers separately inspect normalized `data_ready`. An explicit guard and regression also reject contradictory `published_unparsed` + `data_ready` inputs. Existing non-News surfaces' broader atomic reconciliation is outside this bounded change; it is not claimed repaired.
 
 ## Evidence limits and remaining gates
 
