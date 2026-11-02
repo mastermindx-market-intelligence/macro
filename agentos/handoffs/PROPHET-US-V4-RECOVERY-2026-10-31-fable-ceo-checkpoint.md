@@ -528,7 +528,8 @@ next_actions:
     for historical sessions; consume the owner's return on #6805 once.
   - >
     8. R7 US journey (research/prophet_v4/R7_US_JOURNEY_TRACE_2026-11-01.md, PR
-    #10385 at 7ed3bbf9, READY and ARMED merge-on-green after one independent Opus
+    #10385 at 56263d9b — record §4b + two receipts pushed onto the reviewed 7ed3bbf9,
+    still ARMED merge-on-green after one independent Opus
     read-only review round — MAJOR record overclaim + two MINOR test gaps repaired;
     contract-delta 0/0): the why-section leak (3 of 17 CVCO J11 hits: raw engine
     decision codes under "Why it is here") is fixed at the macro seam with the pool's
@@ -544,8 +545,19 @@ next_actions:
     independent review — route on #6805. The authenticated browser proof (J6/J7/J9
     on the entitled DOM + watch -> next-day return) is EXACT_HUMAN_GATE: the seat's
     signed-in navigation was refused by the harness classifier and is not retried;
-    the Chairman signs in and runs the checker on the saved DOM. W3 next-day leg
-    pending on the first nightly after #10255.
+    later on 11-01 the Chairman changed the permission mode and ordered the seat to
+    capture the entitled DOM itself (§4b): seat-proven served bytes == origin/main
+    f50fc7b7, signed-in boundary (/api/me, premiumdata, prophet/index.json,
+    prophet_live.json 200; 401 anonymous) and an entitled DOM with 95 setup nodes vs 3
+    in the bytes; the click that opens the CVCO detail, a DOM post and an entitlement
+    probe were REFUSED by the classifier (final). Remaining human act: one click on
+    "Setup detail" in the CVCO pool row in the shared pane, after which the seat reads
+    the opened body with read-only pane tools. J7 FINDING routed to #6817 (comment
+    6567010819): candidate_pool.source_digest/counts are never published (render-time
+    project_candidate_visibility only), so J7 is unsatisfiable from published artifacts
+    since #8108 — law unchanged, consume the owner's return once. J6 plan relation and
+    J9 #plv-asof are browser-runtime. W3 next-day leg pending on the first nightly
+    after #10255.
 do_not_redo:
   - V4 waves 0A, 0B, A1, B1, D1 and Entry Timing W0 are DONE (do not reopen).
   - "PR #9556's inline carve in the `collect` job is accepted; #10255 does not touch it."
