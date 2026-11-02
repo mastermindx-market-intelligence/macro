@@ -1161,7 +1161,7 @@ def _periods_disjoint(slot: dict, period: dict) -> str | None:
     Containment and partial overlap pass.  Two tests refuse: label years more
     than ``_S15_LABEL_GAP_YEARS`` apart (no date needed; an open multi-year
     span has no upper label year, so only its lower bound can refuse), or, when
-    both are sub-year periods with a usable ``calendar_end``, calendar ranges
+    neither is multi-year and both carry a usable ``calendar_end``, calendar ranges
     that do not overlap once each is shrunk by ``_S15_EDGE_DAYS`` at both ends.
     A period without a usable date and within the label tolerance is never
     refused here.
