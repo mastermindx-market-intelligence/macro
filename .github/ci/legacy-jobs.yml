@@ -706,6 +706,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -2717,6 +2718,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -3781,6 +3783,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -7754,6 +7757,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -12684,6 +12688,7 @@ jobs:
           tests/test_fundamental_forensics_attestation_admission.py
           tests/test_fundamental_forensics_attested_history_reader.py
           tests/test_fundamental_forensics_attested_query_snapshots.py
+          tests/test_fundamental_forensics_catalog_api.py
           tests/test_fundamental_forensics_companyfacts.py
           tests/test_fundamental_forensics_companyfacts_ledger.py
           tests/test_fundamental_forensics_contract.py
@@ -16029,6 +16034,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -29396,6 +29402,7 @@ jobs:
       - engine/fundamental_forensics/attested_history_credentials.py
       - engine/fundamental_forensics/attested_history_store.py
       - engine/fundamental_forensics/attested_query_snapshots.py
+      - engine/fundamental_forensics/catalog_service.py
       - engine/fundamental_forensics/companyfacts_ledger.py
       - engine/fundamental_forensics/context_projection.py
       - engine/fundamental_forensics/detectors.py
@@ -38242,6 +38249,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -41468,6 +41476,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -43158,6 +43167,7 @@ jobs:
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "engine/fundamental_forensics/__init__.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/detectors.py"
       - "engine/fundamental_forensics/excel_export.py"
       - "engine/fundamental_forensics/issuer_sic.py"
@@ -47423,6 +47433,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
