@@ -46,6 +46,13 @@ def _bench_scorecard(prof_key: str, bt: dict, b6040: dict | None) -> tuple[dict,
     return sc, "S&P 500", "标普500", bt.get("hodl_eq")
 
 
+def _flat_alloc_vm(alloc: list[dict]) -> list[dict]:
+    """Universe assets with no row in the last rebalance, in ``M.ASSETS`` order."""
+    held = {a["asset"] for a in alloc}
+    return [{"asset": a, "label_en": M.ASSET_LABEL[a][0], "label_zh": M.ASSET_LABEL[a][1]}
+            for a in M.ASSETS if a not in held]
+
+
 def _detail_vm(prof_key: str, res: dict, built: str) -> dict:
     prof = M.PROFILES[prof_key]
     bt = res["scorecard"]
@@ -61,6 +68,7 @@ def _detail_vm(prof_key: str, res: dict, built: str) -> dict:
         "as_of": res["asof"], "built": built,
         "exposure_title_en": "Current allocation", "exposure_title_zh": "当前配置",
         "alloc": alloc, "alloc_max": alloc_max, "gross_now": res["gross_now"],
+        "flat_alloc": _flat_alloc_vm(alloc),
         "lev_now": res["gross_now"], "lev_color": C["blue"], "lev_label_en": "", "lev_label_zh": "",
         "factors": [], "sc": sc,
         "bench_label_en": bench_en, "bench_label_zh": bench_zh,
@@ -93,11 +101,64 @@ def _verdict(prof_key: str, oos: dict, sc: dict) -> tuple[str, str]:
         return (f"Robust: beats the benchmark on CAGR in BOTH backtest halves, at ~{sharpe_mult}× its Sharpe "
                 f"and a far shallower drawdown — the edge is not a single-era artifact.",
                 f"稳健：在回测的两个半段均在年化上跑赢基准，夏普约为其 {sharpe_mult} 倍且回撤浅得多——优势并非单一时代的偶然。")
-    return (f"The robust, out-of-sample-stable edge is the SHARPE (~{sharpe_mult}× the benchmark) and the "
-            f"drawdown; the full-sample CAGR also beats here, but that part is era-dependent (it does not win "
-            f"in both halves). This is genuine risk-adjusted alpha, levered — not just more risk.",
-            f"稳健且样本外稳定的优势在于夏普（约为基准 {sharpe_mult} 倍）与回撤；全样本年化在此也跑赢，但该部分取决于时代"
-            f"（并非两个半段都赢）。这是真实的风险调整阿尔法加杠杆——而非单纯承担更高风险。")
+    if sc["cagr"] > sc["hodl_cagr"]:
+        return (f"The robust, out-of-sample-stable edge is the SHARPE (~{sharpe_mult}× the "
+                f"benchmark) and the drawdown; the full-sample CAGR also beats here, but "
+                f"that part is era-dependent (it does not win in both halves). This is "
+                f"genuine risk-adjusted alpha, levered — not just more risk.",
+                f"稳健且样本外稳定的优势在于夏普（约为基准 {sharpe_mult}"
+                f" 倍）与回撤；全样本年化在此也跑赢，但该部分取决于时代"
+                f"（并非两个半段都赢）。这是真实的风险调整阿尔法加杠杆"
+                f"——而非单纯承担更高风险。")
+    return (f"The robust, out-of-sample-stable edge is the SHARPE (~{sharpe_mult}× the "
+            f"benchmark) and the drawdown; the full-sample CAGR does not beat the benchmark "
+            f"here ({sc['cagr']}% vs {sc['hodl_cagr']}%), and it does not win in both halves "
+            f"either. This is genuine risk-adjusted alpha, levered — not just more risk.",
+            f"稳健且样本外稳定的优势在于夏普（约为基准 {sharpe_mult}"
+            f" 倍）与回撤；全样本年化在此未跑赢基准"
+            f"（{sc['cagr']}% 对 {sc['hodl_cagr']}%），两个半段也并非都赢。"
+            f"这是真实的风险调整阿尔法加杠杆——而非单纯承担更高风险。")
+
+
+def _honest_note(cards: list[dict]) -> tuple[str, str]:
+    """The hub note, derived from the cards' own engine oos.robust flags — it names a
+    both-halves winner only for a profile whose flag says so."""
+    mults = sorted({c["sharpe_mult"] for c in cards if c.get("sharpe_mult") is not None})
+    if mults:
+        lo, hi = f"{mults[0]}", f"{mults[-1]}"
+        rng = lo if lo == hi else f"{lo}-{hi}"
+        lead_en = ("Honest framing: the robust, out-of-sample-stable edge is the SHARPE and the "
+                   f"DRAWDOWN (~{rng}x the benchmark Sharpe, far shallower drawdowns). ")
+        lead_zh = (f"诚实说明：稳健且样本外稳定的优势在于夏普与回撤"
+                   f"（约为基准夏普的 {rng} 倍，回撤浅得多）。")
+    else:
+        lead_en = ("Honest framing: the robust, out-of-sample-stable edge is the SHARPE and the "
+                   "DRAWDOWN (far shallower drawdowns). ")
+        lead_zh = ("诚实说明：稳健且样本外稳定的优势在于夏普与回撤"
+                   "（回撤浅得多）。")
+    none_en = ("no profile beats its benchmark in each half of the backtest (see each "
+               "profile's half-by-half table)")
+    none_zh = ("没有任何一档在回测两个半段都跑赢基准"
+               "（见各档的半段对比表）")
+    cl_en = [none_en] if not any(c.get("robust") for c in cards) else []
+    cl_zh = [none_zh] if cl_en else []
+    for c in cards:
+        be, bz = c["bench_en"], c["bench_zh"]
+        pe, pz = c["profile_en"], c["profile_zh"]
+        if c.get("robust"):
+            cl_en.append(f"{pe} beats the {be} on CAGR in both backtest halves")
+            cl_zh.append(f"{pz}档在回测两个半段均跑赢{bz}")
+        elif c["cagr"] > c["hodl_cagr"]:
+            cl_en.append(f"{pe} beats the {be} full-sample only")
+            cl_zh.append(f"{pz}档仅全样本跑赢{bz}")
+        else:
+            cl_en.append(f"{pe} does not beat the {be}: {c['cagr']}% vs {c['hodl_cagr']}%")
+            cl_zh.append(f"{pz}档未跑赢{bz}：{c['cagr']}% 对 {c['hodl_cagr']}%")
+    tail_en = "Net of cost + financing. Benchmarks: the S&P 500 and a 60/40."
+    tail_zh = "扣除成本+融资。基准：标普500 与 60/40。"
+    return (lead_en + "Raw CAGR, profile by profile: " + "; ".join(cl_en) + ". " + tail_en,
+            lead_zh + "原始年化逐档来看：" + "；".join(cl_zh) +
+            "。" + tail_zh)
 
 
 # per-profile accent for the pinned/highlighted UI (conservative→green, moderate→blue,
@@ -166,6 +227,7 @@ def _rich_card(pk: str, res: dict) -> dict:
         "hodl_sharpe": sc["hodl_sharpe"], "maxdd": sc["maxdd"], "hodl_maxdd": sc["hodl_maxdd"],
         "sharpe_mult": round(sc["sharpe"] / sc["hodl_sharpe"], 1) if sc.get("hodl_sharpe") else None,
         "bench_en": bench_en, "bench_zh": bench_zh, "gross_now": res["gross_now"], "years": sc["years"],
+        "robust": bool((res.get("oos") or {}).get("robust")), "asof": res.get("asof"),
     }
 
 
@@ -222,7 +284,9 @@ def build() -> str:
         html = env.get_template("mastermind_detail.html.j2").render(**_detail_vm(pk, res, built), C=C)
         write_page(site / f"strategy_mm_{pk}.html", html)
 
-    hub = env.get_template("masterminds.html.j2").render(cards=cards, built=built, C=C)
+    note_en, note_zh = _honest_note(cards)
+    hub = env.get_template("masterminds.html.j2").render(cards=cards, built=built, C=C,
+                                                         note_en=note_en, note_zh=note_zh)
     write_page(site / "masterminds.html", hub)
 
     snap_dir = config.data_dir() / "regime"

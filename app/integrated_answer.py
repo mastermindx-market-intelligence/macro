@@ -27,6 +27,12 @@ router = APIRouter()
 
 STALE_DAYS = 4
 
+CONSUMER_RECEIPT_VERSION = "c19-wp08-v1"
+CONSUMED_RECEIPTS_HEADER = "X-Integrated-Answer-Consumed-Receipts"
+RECEIPT_FIELDS = ("bytes_sha256", "producer_generation_id", "data_interval", "contract_watermark", "denominator")
+RECEIPT_NULL_REASONS = frozenset({"NOT_EXPOSED_BY_PRODUCER", "NOT_READ_AT_CONSUME", "NOT_APPLICABLE", "DRIFT_AT_CONSUME"})
+RECEIPT_LEGS = ("financial_facts", "earnings_expectation", "publication_seam", "event_workspace", "theme_tape", "company_theme_exposure")
+
 _FY2025_REV = {
     "kind": "duration",
     "start": "2024-09-29",
@@ -189,6 +195,27 @@ def _content_hash(payload: object) -> str:
     return hashlib.sha256(body).hexdigest()
 
 
+class _Ref(dict):
+    """consumed_receipt is an in-process attribute and is never serialized."""
+
+    __slots__ = ("consumed_receipt",)
+
+
+def _consumed_receipt(values: dict, reasons_if_null: dict) -> dict:
+    receipt: dict[str, Any] = {}
+    null_reasons: dict[str, str] = {}
+    for field in RECEIPT_FIELDS:
+        value = values.get(field)
+        receipt[field] = value
+        if value is None:
+            code = reasons_if_null.get(field)
+            if code not in RECEIPT_NULL_REASONS:
+                raise ValueError(f"receipt field {field} is null without a valid reason")
+            null_reasons[field] = code
+    receipt["consumer_version"] = CONSUMER_RECEIPT_VERSION
+    return {"receipt": receipt, "null_reasons": null_reasons}
+
+
 def _make_ref(
     *,
     route: str,
@@ -196,14 +223,60 @@ def _make_ref(
     payload: object,
     generation_id: str | None = None,
     owner_hash: str | None = None,
+    consumed_receipt: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    return {
-        "route": route,
-        "as_of": as_of,
-        "generation_id": generation_id,
-        "owner_hash": owner_hash,
-        "content_hash": _content_hash(payload),
-    }
+    ref = _Ref(
+        {
+            "route": route,
+            "as_of": as_of,
+            "generation_id": generation_id,
+            "owner_hash": owner_hash,
+            "content_hash": _content_hash(payload),
+        }
+    )
+    ref.consumed_receipt = consumed_receipt
+    return ref
+
+
+def _receipt_entries(legs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    by_id = {item["leg"]: item for item in legs}
+    entries: list[dict[str, Any]] = []
+    for leg_id in RECEIPT_LEGS:
+        item = by_id.get(leg_id)
+        ref = item.get("ref") if item is not None else None
+        if not ref:
+            entries.append(
+                {
+                    "leg": leg_id,
+                    "status": "NO_REF",
+                    "ref_content_hash": None,
+                    "receipt": None,
+                    "null_reasons": {},
+                }
+            )
+            continue
+        consumed = getattr(ref, "consumed_receipt", None)
+        if consumed is None:
+            entries.append(
+                {
+                    "leg": leg_id,
+                    "status": "MISSING",
+                    "ref_content_hash": ref["content_hash"],
+                    "receipt": None,
+                    "null_reasons": {},
+                }
+            )
+            continue
+        entries.append(
+            {
+                "leg": leg_id,
+                "status": "RECORDED",
+                "ref_content_hash": ref["content_hash"],
+                "receipt": consumed["receipt"],
+                "null_reasons": consumed["null_reasons"],
+            }
+        )
+    return entries
 
 
 def _leg_shell(leg_id: str) -> dict[str, Any]:
@@ -359,6 +432,7 @@ def _leg_financial_facts(ticker: str, composed_at: str | None = None) -> dict[st
             as_of = max(accepted_clocks)
         else:
             as_of = request_clock
+        bytes_sha256 = result.sha256 if isinstance(result.sha256, str) and result.sha256 else None
         leg["status"] = "ok"
         leg["payload"] = payload
         leg["ref"] = _make_ref(
@@ -367,6 +441,22 @@ def _leg_financial_facts(ticker: str, composed_at: str | None = None) -> dict[st
             payload=payload,
             generation_id=None,
             owner_hash=result.sha256,
+            consumed_receipt=_consumed_receipt(
+                {
+                    "bytes_sha256": bytes_sha256,
+                    "producer_generation_id": None,
+                    "data_interval": None,
+                    "contract_watermark": None,
+                    "denominator": None,
+                },
+                {
+                    "bytes_sha256": "NOT_EXPOSED_BY_PRODUCER",
+                    "producer_generation_id": "NOT_READ_AT_CONSUME",
+                    "data_interval": "NOT_READ_AT_CONSUME",
+                    "contract_watermark": "NOT_READ_AT_CONSUME",
+                    "denominator": "NOT_APPLICABLE",
+                },
+            ),
         )
         _apply_copy(leg)
         return leg
@@ -452,6 +542,22 @@ def _leg_earnings_expectation(ticker: str, composed_at: str) -> dict[str, Any]:
         payload=payload,
         generation_id=None,
         owner_hash=owner_hash if isinstance(owner_hash, str) else None,
+        consumed_receipt=_consumed_receipt(
+            {
+                "bytes_sha256": None,
+                "producer_generation_id": None,
+                "data_interval": None,
+                "contract_watermark": None,
+                "denominator": None,
+            },
+            {
+                "bytes_sha256": "NOT_READ_AT_CONSUME",
+                "producer_generation_id": "NOT_READ_AT_CONSUME",
+                "data_interval": "NOT_READ_AT_CONSUME",
+                "contract_watermark": "NOT_READ_AT_CONSUME",
+                "denominator": "NOT_READ_AT_CONSUME",
+            },
+        ),
     )
     _apply_copy(leg)
     return leg
@@ -476,6 +582,8 @@ def _leg_publication_seam() -> dict[str, Any]:
         as_of = _normalize_clock(payload.get("published_at"))
         if as_of is None:
             raise ValueError("missing published_at")
+        snapshot_id = payload.get("snapshot_id")
+        producer_generation_id = snapshot_id if isinstance(snapshot_id, str) and snapshot_id else None
         leg["status"] = "ok"
         leg["payload"] = payload
         leg["ref"] = _make_ref(
@@ -484,6 +592,22 @@ def _leg_publication_seam() -> dict[str, Any]:
             payload=payload,
             generation_id=payload.get("snapshot_id"),
             owner_hash=payload.get("query_hash"),
+            consumed_receipt=_consumed_receipt(
+                {
+                    "bytes_sha256": None,
+                    "producer_generation_id": producer_generation_id,
+                    "data_interval": None,
+                    "contract_watermark": None,
+                    "denominator": None,
+                },
+                {
+                    "bytes_sha256": "NOT_READ_AT_CONSUME",
+                    "producer_generation_id": "NOT_EXPOSED_BY_PRODUCER",
+                    "data_interval": "NOT_READ_AT_CONSUME",
+                    "contract_watermark": "NOT_READ_AT_CONSUME",
+                    "denominator": "NOT_APPLICABLE",
+                },
+            ),
         )
         _apply_copy(leg)
         return leg
@@ -507,6 +631,8 @@ def _leg_event_workspace(ticker: str, composed_at: str) -> dict[str, Any]:
             as_of = _normalize_clock(as_of_raw)
             if as_of is None:
                 as_of = composed_at
+            payload_gid = payload.get("generation_id")
+            producer_generation_id = payload_gid if isinstance(payload_gid, str) and payload_gid else None
             leg["status"] = "ok"
             leg["payload"] = payload
             leg["ref"] = _make_ref(
@@ -515,6 +641,22 @@ def _leg_event_workspace(ticker: str, composed_at: str) -> dict[str, Any]:
                 payload=payload,
                 generation_id=payload.get("generation_id") if isinstance(payload.get("generation_id"), str) else None,
                 owner_hash=None,
+                consumed_receipt=_consumed_receipt(
+                    {
+                        "bytes_sha256": None,
+                        "producer_generation_id": producer_generation_id,
+                        "data_interval": None,
+                        "contract_watermark": None,
+                        "denominator": None,
+                    },
+                    {
+                        "bytes_sha256": "NOT_READ_AT_CONSUME",
+                        "producer_generation_id": "NOT_EXPOSED_BY_PRODUCER",
+                        "data_interval": "NOT_READ_AT_CONSUME",
+                        "contract_watermark": "NOT_READ_AT_CONSUME",
+                        "denominator": "NOT_APPLICABLE",
+                    },
+                ),
             )
             _apply_copy(leg)
             return leg
@@ -541,6 +683,11 @@ def _leg_theme_tape() -> dict[str, Any]:
             return leg
         payload = {key: ctx.get(key) for key in ("schema", "as_of", "region", "display_only", "leadership")}
         as_of = _normalize_clock(ctx.get("as_of"))
+        ctx_schema = ctx.get("schema")
+        if isinstance(ctx_schema, str) and ctx_schema and as_of is not None:
+            contract_watermark: dict[str, Any] | None = {"contract": ctx_schema, "watermark": as_of}
+        else:
+            contract_watermark = None
         if as_of is None:
             leg["status"] = "stale"
             leg["degraded_reason"] = "no_owner_clock"
@@ -554,6 +701,22 @@ def _leg_theme_tape() -> dict[str, Any]:
             payload=payload,
             generation_id=None,
             owner_hash=None,
+            consumed_receipt=_consumed_receipt(
+                {
+                    "bytes_sha256": None,
+                    "producer_generation_id": None,
+                    "data_interval": None,
+                    "contract_watermark": contract_watermark,
+                    "denominator": None,
+                },
+                {
+                    "bytes_sha256": "NOT_READ_AT_CONSUME",
+                    "producer_generation_id": "NOT_READ_AT_CONSUME",
+                    "data_interval": "NOT_READ_AT_CONSUME",
+                    "contract_watermark": "NOT_EXPOSED_BY_PRODUCER",
+                    "denominator": "NOT_APPLICABLE",
+                },
+            ),
         )
         _apply_copy(leg)
         return leg
@@ -600,7 +763,8 @@ def _leg_company_theme_exposure(ticker: str, composed_at: str) -> dict[str, Any]
             return leg
         raw_path = base / "generations" / gid / rel
         raw = raw_path.read_bytes()
-        if hashlib.sha256(raw).hexdigest() != entry["sha256"] or len(raw) != entry["bytes"]:
+        raw_sha = hashlib.sha256(raw).hexdigest()
+        if raw_sha != entry["sha256"] or len(raw) != entry["bytes"]:
             leg["status"] = "absent"
             leg["degraded_reason"] = "generation_mismatch"
             _apply_copy(leg)
@@ -609,6 +773,18 @@ def _leg_company_theme_exposure(ticker: str, composed_at: str) -> dict[str, Any]
         contracts.validate_exposure(payload)
         owner_clock = (payload.get("theme_state") or {}).get("as_of")
         as_of = _normalize_clock(owner_clock)
+        theme_state = payload.get("theme_state") if isinstance(payload.get("theme_state"), dict) else {}
+        watermark = _normalize_clock(theme_state.get("as_of"))
+        schema = payload.get("schema")
+        if schema is not None and schema != "" and watermark is not None:
+            contract_watermark = {"contract": payload["schema"], "watermark": watermark}
+        else:
+            contract_watermark = None
+        marker_coverage = marker.get("coverage")
+        if immutable.get("coverage") == marker_coverage and marker_coverage is not None:
+            denominator: dict[str, Any] | None = dict(marker["coverage"])
+        else:
+            denominator = None
         leg["status"] = "ok"
         leg["payload"] = payload
         if as_of is None:
@@ -621,6 +797,22 @@ def _leg_company_theme_exposure(ticker: str, composed_at: str) -> dict[str, Any]
             payload=payload,
             generation_id=gid,
             owner_hash=entry.get("sha256"),
+            consumed_receipt=_consumed_receipt(
+                {
+                    "bytes_sha256": raw_sha,
+                    "producer_generation_id": gid,
+                    "data_interval": None,
+                    "contract_watermark": contract_watermark,
+                    "denominator": denominator,
+                },
+                {
+                    "bytes_sha256": "NOT_EXPOSED_BY_PRODUCER",
+                    "producer_generation_id": "NOT_EXPOSED_BY_PRODUCER",
+                    "data_interval": "NOT_EXPOSED_BY_PRODUCER",
+                    "contract_watermark": "NOT_EXPOSED_BY_PRODUCER",
+                    "denominator": "DRIFT_AT_CONSUME",
+                },
+            ),
         )
         _apply_copy(leg)
         return leg
@@ -644,7 +836,7 @@ def _leg_fixed_absent(leg_id: str, degraded_reason: str) -> dict[str, Any]:
     return leg
 
 
-def _compose_page(ticker: str) -> dict[str, Any]:
+def _compose_page_with_receipts(ticker: str) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     composed_at = _utc_now()
     legs = [
         _leg_financial_facts(ticker, composed_at),
@@ -693,7 +885,7 @@ def _compose_page(ticker: str) -> dict[str, Any]:
             "zh": "以下内容并非在所有市场均有发布。",
         }
 
-    return {
+    page = {
         "schema": "integrated_answer.v0",
         "ticker": ticker,
         "as_of": page_as_of,
@@ -704,6 +896,11 @@ def _compose_page(ticker: str) -> dict[str, Any]:
         "coverage_note": coverage_note,
         "legs": legs,
     }
+    return page, _receipt_entries(legs)
+
+
+def _compose_page(ticker: str) -> dict[str, Any]:
+    return _compose_page_with_receipts(ticker)[0]
 
 
 @router.get(
@@ -719,11 +916,20 @@ def integrated_answer_v1(
     except ContractError:
         raise HTTPException(status_code=400, detail="invalid ticker") from None
 
-    page = _compose_page(normalized)
+    page, entries = _compose_page_with_receipts(normalized)
     body_bytes = json.dumps(page, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
     digest = hashlib.sha256(body_bytes).hexdigest()
     return Response(
         content=body_bytes,
         media_type="application/json",
-        headers={**_PRIVATE_HEADERS, "X-Integrated-Answer-SHA256": digest},
+        headers={
+            **_PRIVATE_HEADERS,
+            "X-Integrated-Answer-SHA256": digest,
+            CONSUMED_RECEIPTS_HEADER: json.dumps(
+                {"version": CONSUMER_RECEIPT_VERSION, "page_sha256": digest, "entries": entries},
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=True,
+            ),
+        },
     )

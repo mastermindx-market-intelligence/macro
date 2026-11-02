@@ -1,0 +1,1282 @@
+"""Render Crypto and Vector through their own template paths in four fixtures.
+
+Each case injects a cockpit projection, a market dict, and an in-memory
+signals frame. ``store.read`` is replaced so ``lib.store._path`` cannot create
+``data/`` directories. Asset-state and options readers are the builders' own
+functions with a reader that returns None. ``build_vector.main`` is not called:
+it writes ``vector/signals.parquet``, spawns sibling builders, and publishes
+``config["storage"]["site_dir"]`` (``scripts/build_vector.py``:4425, 5062).
+The Vector HTML below repeats only the Environment, filters, render, and
+whitespace collapse at ``scripts/build_vector.py``:5045-5061.
+
+``CRYPTO_T19P_TEMPLATE_ROOT`` points both renders at another template
+directory (stacked proof or an unpatched copy). Includes still resolve from
+this repository's ``templates/``. The four patch-proof tests skip only when
+that variable is unset and the T19p marker is absent from the repository
+template.
+"""
+from __future__ import annotations
+
+import json
+import os
+import re
+from pathlib import Path
+
+import pandas as pd
+import pytest
+
+from engine.btc_options import build_contract as build_btc_options
+from engine.eth_state import build_states as build_asset_states
+from scripts import build_crypto, build_vector
+
+ROOT = Path(__file__).resolve().parent.parent
+T19P_TEMPLATE_ROOT = "CRYPTO_T19P_TEMPLATE_ROOT"
+AS_OF = "2026-09-26"
+PREV = "2026-09-25"
+_HISTORY = ["2026-09-21", "2026-09-22", "2026-09-23", "2026-09-24", "2026-09-25", AS_OF]
+
+
+def _slice(html: str, start: str, end: str) -> str:
+    i = html.index(start)
+    j = html.index(end, i + len(start))
+    return html[i:j]
+
+
+def _template_roots() -> list[str]:
+    override = os.environ.get(T19P_TEMPLATE_ROOT)
+    roots = [override] if override else []
+    roots.append(str(ROOT / "templates"))
+    return roots
+
+
+def _require_t19p(name: str, marker: str) -> None:
+    """Skip only when the override is unset and the repository template lacks the marker."""
+    if os.environ.get(T19P_TEMPLATE_ROOT):
+        return
+    source = (ROOT / "templates" / name).read_text(encoding="utf-8")
+    if marker not in source:
+        pytest.skip(
+            f"{T19P_TEMPLATE_ROOT} is unset and the T19p patch marker is absent "
+            f"from templates/{name}; this skip becomes a hard assert after integration"
+        )
+
+
+def _bind_crypto_templates(monkeypatch) -> None:
+    if not os.environ.get(T19P_TEMPLATE_ROOT):
+        return
+    real = build_crypto.FileSystemLoader
+    roots = _template_roots()
+    repo = (ROOT / "templates").resolve()
+
+    def loader(searchpath, *args, **kwargs):
+        if Path(str(searchpath)).resolve() == repo:
+            return real(roots, *args, **kwargs)
+        return real(searchpath, *args, **kwargs)
+
+    monkeypatch.setattr(build_crypto, "FileSystemLoader", loader)
+
+
+def _none_reader(*_args, **_kwargs):
+    return None
+
+
+def _sensor(**extra) -> dict:
+    base = {"value": None, "state": "Unavailable", "tone": "neutral", "percentile": None}
+    base.update(extra)
+    return base
+
+
+def _market(*, dates: list[str], vals: list[float]) -> dict:
+    return {
+        "as_of": AS_OF,
+        "stance": "Unavailable",
+        "stance_zh": "暂无",
+        "summary": "Fixture market read.",
+        "summary_zh": "示例市场解读。",
+        "tone": "neutral",
+        "total_market_cap": None,
+        "total_30d_pct": None,
+        "total_state": "Unavailable",
+        "total_tone": "neutral",
+        "btc_dominance": None,
+        "dominance_30d": None,
+        "dominance_state": "Unavailable",
+        "dominance_tone": "neutral",
+        "fear_greed": None,
+        "fear_state": "Unavailable",
+        "fear_tone": "neutral",
+        "history": {"dates": list(dates), "vals": list(vals)},
+        "regimes": [],
+        "flows": {
+            "etf": _sensor(as_of=None),
+            "stablecoins": _sensor(change_30d_pct=None, change_30d_usd=None),
+            "volume": _sensor(proxy="fixture"),
+        },
+        "heat": {
+            "funding": _sensor(),
+            "open_interest": _sensor(),
+            "volatility": _sensor(),
+            "altseason": _sensor(),
+        },
+    }
+
+
+def _projection(exposure: int | None, *, as_of: str, status: str = "ok", integrity_ok: bool = True) -> dict:
+    return {
+        "schema": "btc.decision/v1",
+        "status": status,
+        "as_of": as_of,
+        "integrity_ok": integrity_ok,
+        "final_exposure_pct": exposure,
+        "errors": [],
+        "authority_source": "btc.decision/v1.final.exposure_pct",
+    }
+
+
+def _row(*, price, change_24h) -> dict:
+    return {
+        "id": "bitcoin",
+        "source": "fixture",
+        "symbol": "BTC",
+        "name": "Bitcoin",
+        "rank": 1,
+        "price": price,
+        "change_24h": change_24h,
+        "change_7d": None,
+        "change_30d": None,
+        "state": "Building",
+        "tone": "neutral",
+        "history_days": 0,
+        "history_chip": "Building",
+        "as_of": AS_OF,
+    }
+
+
+def _snapshot(row: dict) -> dict:
+    return {
+        "as_of": AS_OF,
+        "rows": [row],
+        "excluded": [{
+            "symbol": "OLD",
+            "file": "market_old.parquet",
+            "source": "fixture",
+            "as_of": "2026-01-01",
+            "reason": "OLDER_SNAPSHOT",
+        }],
+        "requested": 50,
+        "observed": 1,
+        "sources": ["fixture"],
+    }
+
+
+def _signals(columns: dict[str, list]) -> pd.DataFrame:
+    n = len(next(iter(columns.values())))
+    index = pd.to_datetime(_HISTORY[-n:])
+    return pd.DataFrame(columns, index=index)
+
+
+def _crypto_case(name: str) -> dict:
+    history_vals = [2.1e12, 2.15e12, 2.2e12, 2.12e12, 2.18e12, 2.25e12]
+    if name == "missing_history":
+        return {
+            "projection": _projection(0, as_of=AS_OF),
+            "market": _market(dates=[], vals=[]),
+            "signals": _signals({"close": [100.0]}),
+            "row": _row(price=None, change_24h=None),
+            "hero_price": None,
+            "hero_change": None,
+        }
+    if name == "valid_zero":
+        return {
+            "projection": _projection(0, as_of=AS_OF),
+            "market": _market(dates=_HISTORY, vals=history_vals),
+            "signals": _signals({"close": [100.0]}),
+            "row": _row(price=100.0, change_24h=0.0),
+            "hero_price": 100.0,
+            "hero_change": 0.0,
+        }
+    if name == "stale_budget":
+        return {
+            "projection": _projection(60, as_of=PREV),
+            "market": _market(dates=_HISTORY, vals=history_vals),
+            "signals": _signals({"close": [100.0]}),
+            "row": _row(price=100.0, change_24h=1.0),
+            "hero_price": 100.0,
+            "hero_change": 1.0,
+        }
+    if name == "partial":
+        return {
+            "projection": _projection(40, as_of=AS_OF),
+            "market": _market(dates=_HISTORY, vals=history_vals),
+            "signals": _signals({"open": [1.0]}),
+            "row": _row(price=100.0, change_24h=1.0),
+            "hero_price": 100.0,
+            "hero_change": 1.0,
+        }
+    raise AssertionError(name)
+
+
+def _render_crypto(tmp_path: Path, monkeypatch, case: dict) -> str:
+    import engine.event_calendar as event_calendar
+    import lib.pages as pages
+
+    _bind_crypto_templates(monkeypatch)
+    site = tmp_path / "site"
+    site.mkdir()
+    signals = case["signals"]
+    # us_macro_events(use_fred=False) still calls _fetch_upcoming_auctions,
+    # which mkdirs data/macro/auction_cache and requests TreasuryDirect
+    # (engine/event_calendar.py:297-317, :433). The calendar shelf stays on
+    # the static FOMC/CPI path; the auction fetch does not run.
+    monkeypatch.setattr(event_calendar, "_fetch_upcoming_auctions", lambda _today: [])
+    monkeypatch.setattr(pages, "_ensure_shim_asset", lambda: None)
+
+    def fake_read(group, name):
+        if (group, name) == ("vector", "signals"):
+            return signals.copy()
+        return None
+
+    monkeypatch.setattr(build_crypto.store, "read", fake_read)
+    monkeypatch.setattr(build_crypto, "build_market_state", lambda: case["market"])
+    monkeypatch.setattr(build_crypto, "load_universe_snapshot", lambda *_a, **_k: _snapshot(case["row"]))
+    monkeypatch.setattr(build_crypto, "build_asset_states", lambda: build_asset_states(_none_reader))
+    monkeypatch.setattr(build_crypto, "build_btc_options", lambda: build_btc_options(_none_reader))
+    (site / "crypto_cockpit.json").write_text(json.dumps({
+        "schema": "crypto.cockpit/v1",
+        "display_only": True,
+        "as_of": AS_OF,
+        "decision": case["projection"],
+        "hero": {
+            "price": case["hero_price"],
+            "change_24h_pct": case["hero_change"],
+            "stance_en": "Unavailable",
+            "stance_zh": "暂无",
+            "summary_en": "Fixture lane.",
+            "summary_zh": "示例通道。",
+            "exposure_pct": case["projection"]["final_exposure_pct"],
+            "gate_active": False,
+        },
+        "axes": [],
+    }), encoding="utf-8")
+    data_existed = (ROOT / "data").exists()
+    output = build_crypto.build(site)
+    assert (site / "crypto_class_state.json").is_file()
+    assert (ROOT / "data").exists() == data_existed
+    return output.read_text(encoding="utf-8")
+
+
+def _vector_decision(*, ok: bool, exposure: int | None) -> dict:
+    if not ok:
+        return {
+            "schema": "btc.decision/v1",
+            "status": "unavailable",
+            "integrity": {"ok": False},
+            "final": None,
+            "advisory": {"levels": {}},
+        }
+    return {
+        "schema": "btc.decision/v1",
+        "status": "ok",
+        "integrity": {"ok": True},
+        "final": {
+            "action_code": "STAY_OUT" if exposure == 0 else "SET_EXPOSURE",
+            "action_en": "Hold cash." if exposure == 0 else "Set the recorded target.",
+            "action_zh": "保持现金。" if exposure == 0 else "采用已记录目标。",
+            "exposure_pct": exposure,
+            "change_pp": 0.0,
+        },
+        "advisory": {"levels": {}},
+    }
+
+
+def _flow(kind: str) -> dict:
+    base = dict(
+        ok=True, display_only=True, causally_qualified=False, scope="OKX/BTC/CONTRACTS",
+        asof="2026-09-26 08:00:00", evaluated_at="2026-09-26 09:00:00",
+        n_hours=24, window_24h_complete=True, window_72h_complete=False,
+        stale=False, gap_detected=False, flow_state="buy_dominant", buy_share_24h=0.5,
+        net_flow_24h_native=1.0,
+    )
+    if kind == "unavailable":
+        return build_vector._derivatives_flow_view(None)
+    if kind == "stale":
+        base["stale"] = True
+    elif kind == "no_activity":
+        base.update(flow_state="no_activity", buy_share_24h=None, net_flow_24h_native=0)
+    elif kind == "coverage_gap":
+        base["n_hours"] = 23
+    else:
+        raise AssertionError(kind)
+    return build_vector._derivatives_flow_view({"context_legs": {"intraday_cvd": base}})
+
+
+def _vector_case(name: str) -> dict:
+    if name == "missing_history":
+        frame = _signals({"close": [float("nan")] * 4, "alloc_optimal": [0.0] * 4})
+        decision = _vector_decision(ok=True, exposure=0)
+        flow = _flow("unavailable")
+    elif name == "valid_zero":
+        frame = _signals({"close": [100.0, 101.0, 99.0, 100.0], "alloc_optimal": [0.0, 0.0, 0.0, 0.0]})
+        decision = _vector_decision(ok=True, exposure=0)
+        flow = _flow("no_activity")
+    elif name == "stale_budget":
+        frame = _signals({"close": [100.0, 101.0, 99.0, 100.0], "alloc_optimal": [0.4, 0.4, 0.4, 0.4]})
+        decision = _vector_decision(ok=False, exposure=None)
+        flow = _flow("stale")
+    elif name == "partial":
+        frame = _signals({
+            "close": [100.0, 101.0, 99.0, 100.0],
+            "alloc_optimal": [0.4, float("nan"), 0.4, 0.4],
+        })
+        decision = _vector_decision(ok=True, exposure=40)
+        flow = _flow("coverage_gap")
+    else:
+        raise AssertionError(name)
+    contract = build_vector._risk_strategy_payload(frame)
+    return {"decision": decision, "flow": flow, "contract": contract}
+
+
+def _render_vector(case: dict, *, price: float | None = 100, chg24: float | None = 0.0) -> str:
+    from jinja2 import Environment, FileSystemLoader
+
+    vm = {
+        "as_of": AS_OF,
+        "price": price,
+        "chg24": chg24,
+        "built": "2026-09-26 00:00 UTC",
+        "master": {"ok": False},
+        "decision": case["decision"],
+        "risk_index": None,
+        "risk_label": "Unavailable",
+        "risk_on": False,
+        "chart_contract": case["contract"],
+        "derivatives_flow": case["flow"],
+        "btc_options": build_btc_options(_none_reader),
+        "options": {"dvol": None, "gamma_flip": None},
+        "leverage": {"oi_total": None, "okx_ls_ratio": None},
+        "presentation": {"axes": [], "watch": [], "complex": []},
+        "charts": {"etf_flow": "", "momentum": "", "structure": "", "bfi": ""},
+        "strategy": {"as_of": AS_OF, "strategies": []},
+        "newf": {"holders": {"state": None}, "miner": {"state": None}},
+        "onchain": {"premium_state": None},
+        "valuation": {"mvrv_z": None},
+        "cycle_vintage": {"reserve_risk_asof": None, "vdd_asof": None},
+        "cycle_stage": "—",
+        "cycle_pos": "—",
+        "bfi": None,
+        "calib": {"signals": {}, "meta": {}, "risk_drawdown": None},
+        "timeline": [],
+        "cards": {},
+    }
+    env = Environment(
+        loader=FileSystemLoader(_template_roots()),
+        autoescape=True,
+    )
+    try:
+        from engine import i18n
+        td, tr = i18n.td, i18n.tr
+    except Exception:
+        td = tr = lambda en: en
+    env.globals.update(td=td, tr=tr)
+    env.filters["money"] = lambda v: f"${v:,.0f}" if pd.notna(v) else "—"
+    env.filters["money1"] = lambda v: f"${v / 1000:,.1f}K" if pd.notna(v) else "—"
+    html = env.get_template("vector.html.j2").render(**vm, C=build_vector.C)
+    return re.sub(r">\s+<", "> <", html)
+
+
+def _assert_common(crypto: str, vector: str) -> None:
+    assert "validated" not in crypto.lower()
+    assert "validated" not in vector.lower()
+    assert "9876.5" not in crypto
+    heat = _slice(crypto, 'id="leverage-heat"', 'id="allocation"')
+    assert "Unavailable" in heat
+
+
+def test_missing_history_withholds_curves(tmp_path, monkeypatch):
+    crypto = _render_crypto(tmp_path, monkeypatch, _crypto_case("missing_history"))
+    vector = _render_vector(_vector_case("missing_history"))
+    _assert_common(crypto, vector)
+    overview = _slice(crypto, 'id="crypto-overview"', 'id="universe-snapshot"')
+    board = _slice(crypto, 'id="market-board"', 'id="money-flows"')
+    assert 'data-market-history-state="unavailable"' in overview
+    assert "Market history unavailable" in overview
+    assert "ilx-path" not in overview
+    assert "ilx-null" not in overview
+    assert "<svg" not in overview
+    assert 'data-desk-budget-state="available"' in overview
+    assert "The recorded target is cash—not missing data." in overview
+    assert "Building history" in board
+    assert "<svg" not in board
+    assert ">—<" in board or ">—" in board
+    replay = _slice(vector, 'id="overview"', 'data-shelf="S2"')
+    assert 'data-vector-replay-state="unavailable"' in replay
+    assert "Interactive replay unavailable" in replay
+    assert "Price history is incomplete" in replay
+    assert 'id="vec-risk-chart"' not in replay
+    assert "polyline points=" not in vector
+    assert 'data-flow-state="unavailable"' in vector
+    assert "Activity unavailable" in vector
+
+
+def test_valid_zero_is_cash_not_a_missing_budget(tmp_path, monkeypatch):
+    crypto = _render_crypto(tmp_path, monkeypatch, _crypto_case("valid_zero"))
+    vector = _render_vector(_vector_case("valid_zero"))
+    _assert_common(crypto, vector)
+    overview = _slice(crypto, 'id="crypto-overview"', 'id="universe-snapshot"')
+    board = _slice(crypto, 'id="market-board"', 'id="money-flows"')
+    allocation = _slice(crypto, 'id="allocation"', 'id="asset-lanes"')
+    budget = _slice(overview, 'class="desk-budget"', 'class="desk-next-step"')
+    assert 'data-market-history-state="available"' in overview
+    assert "ilx-path" in overview
+    assert "Budget unavailable" not in budget
+    assert ">0%<" in budget
+    assert ">100%<" in budget
+    assert "The recorded target is cash—not missing data." in budget
+    assert "Model holds cash." in allocation
+    assert "A valid 0% crypto target means 100% cash." in allocation
+    assert "0.0%" in board
+    assert "$100" in board
+    replay = _slice(vector, 'id="overview"', 'data-shelf="S2"')
+    assert 'data-vector-replay-state="valid"' in replay
+    assert 'id="vec-risk-chart"' in replay
+    assert "Interactive replay unavailable" not in replay
+    assert "Decision unavailable" not in replay
+    assert "DECISION TEMPORARILY UNAVAILABLE" not in vector
+    assert 'data-decision-exposure="0"' in vector
+    assert 'data-flow-state="no_activity"' in vector
+    assert "No activity observed" in vector
+    assert "not 0%" in vector
+    flow = _slice(vector, 'data-flow-state="no_activity"', 'id="onchain-lab"')
+    assert ">0.0%<" not in flow.split("flow-share", 1)[-1][:400]
+
+
+def test_stale_budget_is_unavailable_not_cash(tmp_path, monkeypatch):
+    crypto = _render_crypto(tmp_path, monkeypatch, _crypto_case("stale_budget"))
+    vector = _render_vector(_vector_case("stale_budget"))
+    _assert_common(crypto, vector)
+    overview = _slice(crypto, 'id="crypto-overview"', 'id="universe-snapshot"')
+    allocation = _slice(crypto, 'id="allocation"', 'id="asset-lanes"')
+    budget = _slice(overview, 'class="desk-budget"', 'class="desk-next-step"')
+    assert 'data-desk-budget-state="unavailable"' in budget
+    assert "Budget unavailable" in budget
+    assert "An unavailable target is not a cash recommendation." in budget
+    assert "2026-09-25" in budget
+    assert "60%" not in budget
+    assert "60%" not in allocation
+    assert "The decision belongs to a different snapshot. Its old target is not shown as current." in allocation
+    assert ">—<" in allocation or ">—" in allocation
+    assert "DECISION TEMPORARILY UNAVAILABLE" in vector
+    assert 'data-decision-status="unavailable"' in vector
+    assert "data-decision-exposure" not in vector
+    assert 'data-flow-state="stale"' in vector
+    assert "Stale observations" in vector
+    flow = _slice(vector, 'data-flow-state="stale"', "Inspect coverage")
+    assert "%" not in _slice(flow, "flow-share-value", "</div>")
+
+
+def test_partial_keeps_known_budget_and_withholds_the_split(tmp_path, monkeypatch):
+    crypto = _render_crypto(tmp_path, monkeypatch, _crypto_case("partial"))
+    vector = _render_vector(_vector_case("partial"))
+    _assert_common(crypto, vector)
+    overview = _slice(crypto, 'id="crypto-overview"', 'id="universe-snapshot"')
+    allocation = _slice(crypto, 'id="allocation"', 'id="asset-lanes"')
+    assert 'data-allocation-state="breakdown-unavailable"' in allocation
+    assert 'data-desk-budget-state="breakdown-unavailable"' in overview
+    assert "Breakdown unavailable" in allocation
+    assert "Total budget known; asset breakdown unavailable." in overview
+    assert "40%" in allocation
+    assert "60%" in allocation
+    assert "alloc-seg" not in allocation
+    assert "No asset percentages are inferred." in allocation
+    replay = _slice(vector, 'id="overview"', 'data-shelf="S2"')
+    assert 'id="vec-risk-chart"' in replay
+    assert "the chart preserves them as unknown" in replay
+    assert "Allocation simulation unavailable" in vector
+    assert 'data-flow-state="coverage_gap"' in vector
+    assert "Incomplete 24-hour window" in vector
+    assert "Missing observations are not zero" in vector
+    assert 'data-decision-exposure="40"' in vector
+
+
+def test_short_history_does_not_paint_the_null_hairline(tmp_path, monkeypatch):
+    _require_t19p("crypto.html.j2", "market.history.dates|length >= 4")
+    for n in (2, 3):
+        case = _crypto_case("valid_zero")
+        case["market"] = _market(dates=_HISTORY[:n], vals=[2.1e12, 2.15e12, 2.2e12][:n])
+        dest = tmp_path / f"h{n}"
+        dest.mkdir()
+        crypto = _render_crypto(dest, monkeypatch, case)
+        overview = _slice(crypto, 'id="crypto-overview"', 'id="universe-snapshot"')
+        assert "ilx-null" not in overview, f"{n}-point history painted the ilx-null hairline"
+        assert 'data-market-history-state="unavailable"' in overview
+        assert "ilx-path" not in overview
+
+
+def test_altseason_none_does_not_paint_a_zero_rail(tmp_path, monkeypatch):
+    _require_t19p(
+        "crypto.html.j2",
+        'meter-rail"><i{% if market.heat.altseason.value is not none %} style="width:{{ market.heat.altseason.value }}%"',
+    )
+    crypto = _render_crypto(tmp_path, monkeypatch, _crypto_case("valid_zero"))
+    heat = _slice(crypto, 'id="leverage-heat"', 'id="allocation"')
+    rail = _slice(heat, 'class="meter-rail"', ">")
+    assert "--v:0%" not in heat
+    assert "style=" not in rail
+    assert "style=" not in _slice(heat, 'class="meter-rail"', "</div>")
+    assert ">—<" in heat
+
+
+def test_vector_quote_none_renders_without_a_number():
+    _require_t19p(
+        "vector.html.j2",
+        '{% if price is not none %}${{ "{:,.0f}".format(price) }}',
+    )
+    try:
+        html = _render_vector(_vector_case("valid_zero"), price=None, chg24=None)
+    except Exception as exc:
+        pytest.fail(f"vector quote None did not render: {type(exc).__name__}: {exc}")
+    quote = _slice(html, 'class="live-quote"', 'class="asof-chip"')
+    assert "—" in quote
+    assert re.search(r"\d", quote) is None
+    assert "pos" not in quote
+    assert "neg" not in quote
+
+
+def test_s2_withholds_risk_word_when_index_is_none():
+    _require_t19p(
+        "vector.html.j2",
+        "{% if risk_index is not none %}{{ risk_index }}/100{% else %}—{% endif %}",
+    )
+    html = _render_vector(_vector_case("valid_zero"))
+    ctx = _slice(html, 'class="risk-context"', "</div>")
+    assert "高风险" not in ctx
+    assert "低风险" not in ctx
+    assert "/100" not in ctx
+    assert "暂无" in ctx
+    assert "—" in ctx
+
+
+# --- R12 design-review repair: basis words, Tier-2 stale readings, sign before symbol.
+
+_STALE_EN = "Stale — later than this source's cadence"
+_STALE_ZH = "过期 — 晚于该来源的发布节奏"
+
+
+def _reading(lang: str, fragment: str) -> str:
+    """What a reader in one language sees: drop the other language's spans, then all tags."""
+    other = "l-zh" if lang == "en" else "l-en"
+    kept = re.sub(rf'<span class="{other}">.*?</span>', "", fragment, flags=re.S)
+    return re.sub(r"<[^>]+>", "", kept)
+
+
+def _div_text(block: str, cls: str) -> str:
+    return re.sub(r"<[^>]+>", "", _slice(block, f'<div class="{cls}">', "</div>"))
+
+
+def _etf_block(html: str) -> str:
+    return _slice(html, "US spot-BTC ETFs · 5D", "Stablecoin supply · 30D")
+
+
+def _stable_block(html: str) -> str:
+    return _slice(html, "Stablecoin supply · 30D", "Spot participation proxy")
+
+
+def test_splice_line_speaks_words_not_codes(tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["market"]["cap_basis"] = {"splices": [{
+        "date": "2026-08-01", "from_basis": "derived", "to_basis": "direct",
+        "from_label_en": "derived total", "from_label_zh": "推算总量",
+        "to_label_en": "direct total", "to_label_zh": "直接总量",
+        "support_before": 120, "support_after": 40,
+    }]}
+    crypto = _render_crypto(tmp_path, monkeypatch, case)
+    line = _slice(crypto, '<p class="desk-splice">', "</p>")
+    zh = _reading("zh", line)
+    for word in ("derived", "direct", "support"):
+        assert word not in zh.lower()
+    assert "推算总量" in zh and "直接总量" in zh and "在册天数" in zh
+    en = _reading("en", line)
+    assert "derived total" in en and "direct total" in en and "days on file" in en
+    assert "support" not in en.lower()
+    assert "120/40" in en
+
+
+def test_stale_etf_reading_moves_to_receipt(tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["market"]["flows"]["etf"] = {
+        "kind": "subscription", "value": -505.0, "latest": -120.0,
+        "state": "Unavailable", "tone": "neutral", "as_of": "2026-10-09",
+        "observation": "stale", "observation_label_en": _STALE_EN,
+        "observation_label_zh": _STALE_ZH, "percentile": None,
+    }
+    crypto = _render_crypto(tmp_path, monkeypatch, case)
+    etf = _etf_block(crypto)
+    reading = _div_text(etf, "reading")
+    assert reading == "—"
+    assert "505" not in reading
+    receipt = re.sub(r"<[^>]+>", "", etf[etf.index('class="receipt"'):])
+    assert "-$505M" in receipt
+    assert "Last on file" in receipt and "最近在册" in receipt
+    assert "2026-10-09" in receipt
+    assert "$-" not in crypto
+
+
+def test_stale_stablecoin_reading_moves_to_receipt(tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["market"]["flows"]["stablecoins"] = {
+        "kind": "supply", "value": 1.6e11, "change_30d_usd": -2.5e9,
+        "change_30d_pct": -1.6, "state": "Unavailable", "tone": "neutral",
+        "as_of": "2026-10-09", "observation": "stale",
+        "observation_label_en": _STALE_EN, "observation_label_zh": _STALE_ZH,
+        "percentile": None,
+    }
+    crypto = _render_crypto(tmp_path, monkeypatch, case)
+    block = _stable_block(crypto)
+    assert _div_text(block, "reading") == "—"
+    label = _div_text(block, "read-label")
+    assert "·" not in label and "%" not in label
+    receipt = re.sub(r"<[^>]+>", "", block[block.index('class="receipt"'):])
+    assert "-$2.5B" in receipt and "Last on file" in receipt and "2026-10-09" in receipt
+    assert "$-" not in crypto
+
+
+def test_live_negative_flow_puts_sign_before_symbol(tmp_path, monkeypatch):
+    assert build_crypto._signed_musd(-505) == "-$505M"
+    assert build_crypto._signed_musd(505) == "+$505M"
+    assert build_crypto._signed_musd(None) == "—"
+    assert build_crypto._money(-2.5e9, compact=True, signed=True) == "-$2.5B"
+    assert build_crypto._money(2.5e9, compact=True, signed=True) == "+$2.5B"
+    assert build_crypto._money(-2.5e9, compact=True) == "$-2.5B"  # unsigned path unchanged
+    case = _crypto_case("valid_zero")
+    case["market"]["flows"]["etf"] = {
+        "kind": "subscription", "value": -505.0, "latest": -120.0,
+        "state": "Falling", "tone": "bear", "as_of": "2026-10-12",
+        "observation": "current", "observation_label_en": "Current print",
+        "observation_label_zh": "已有最新发布", "percentile": None,
+    }
+    crypto = _render_crypto(tmp_path, monkeypatch, case)
+    etf = _etf_block(crypto)
+    assert _div_text(etf, "reading") == "-$505M"
+    assert "Last on file" not in etf
+    assert "$-" not in crypto
+
+
+# cx-p2-polish: a receipt phrase is one unbreakable unit, never split mid-date or mid-fraction.
+_NOWRAP_OPEN = '<span class="receipt-nowrap">'
+
+
+def _nowrap_units(fragment: str) -> list:
+    """Inner HTML of every receipt-nowrap span, balanced over the nested language spans."""
+    units, pos = [], fragment.find(_NOWRAP_OPEN)
+    while pos != -1:
+        i, depth = pos + len(_NOWRAP_OPEN), 1
+        while depth:
+            nxt_open, nxt_close = fragment.find("<span", i), fragment.find("</span>", i)
+            assert nxt_close != -1, "unbalanced receipt-nowrap span"
+            if nxt_open != -1 and nxt_open < nxt_close:
+                depth, i = depth + 1, nxt_open + len("<span")
+            else:
+                depth, i = depth - 1, nxt_close + len("</span>")
+        units.append(fragment[pos + len(_NOWRAP_OPEN): i - len("</span>")])
+        pos = fragment.find(_NOWRAP_OPEN, i)
+    return units
+
+
+def test_cxp2_polish_stale_etf_value_and_date_are_one_nowrap_unit(tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["market"]["flows"]["etf"] = {
+        "kind": "subscription", "value": -505.0, "latest": -120.0,
+        "state": "Unavailable", "tone": "neutral", "as_of": "2026-10-08",
+        "observation": "stale", "observation_label_en": _STALE_EN,
+        "observation_label_zh": _STALE_ZH, "percentile": None,
+    }
+    etf = _etf_block(_render_crypto(tmp_path, monkeypatch, case))
+    units = _nowrap_units(etf[etf.index('class="receipt"'):])
+    assert len(units) == 1
+    en, zh = _reading("en", units[0]), _reading("zh", units[0])
+    assert "Last on file" in en and "最近在册" in zh
+    for text in (en, zh):
+        assert "-$505M" in text and "2026-10-08" in text
+        assert text.index("-$505M") < text.index("·") < text.index("2026-10-08")
+        assert not text.lstrip().startswith("·")
+    assert _STALE_EN not in units[0] and _STALE_ZH not in units[0]
+
+
+def test_cxp2_polish_stale_stablecoin_value_and_date_are_one_nowrap_unit(tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["market"]["flows"]["stablecoins"] = {
+        "kind": "supply", "value": 1.6e11, "change_30d_usd": -2.5e9,
+        "change_30d_pct": -1.6, "state": "Unavailable", "tone": "neutral",
+        "as_of": "2026-10-09", "observation": "stale",
+        "observation_label_en": _STALE_EN, "observation_label_zh": _STALE_ZH,
+        "percentile": None,
+    }
+    block = _stable_block(_render_crypto(tmp_path, monkeypatch, case))
+    units = _nowrap_units(block[block.index('class="receipt"'):])
+    assert len(units) == 1
+    for lang in ("en", "zh"):
+        text = _reading(lang, units[0])
+        assert "-$2.5B" in text and "2026-10-09" in text
+        assert text.index("-$2.5B") < text.index("·") < text.index("2026-10-09")
+        assert not text.lstrip().startswith("·")
+
+
+def test_cxp2_polish_splice_fraction_sits_inside_nowrap_unit(tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["market"]["cap_basis"] = {"splices": [{
+        "date": "2026-08-01", "from_basis": "derived", "to_basis": "direct",
+        "from_label_en": "derived total", "from_label_zh": "推算总量",
+        "to_label_en": "direct total", "to_label_zh": "直接总量",
+        "support_before": 1, "support_after": 5,
+    }]}
+    line = _slice(_render_crypto(tmp_path, monkeypatch, case), '<p class="desk-splice">', "</p>")
+    units = _nowrap_units(line)
+    assert len(units) == 1
+    en, zh = _reading("en", units[0]), _reading("zh", units[0])
+    assert "days on file" in en and "1/5" in en
+    assert "在册天数" in zh and "1/5" in zh
+    assert "·" not in en and "·" not in zh  # the leading separator stays outside the unit
+
+
+def test_cxp2_polish_nowrap_rule_lives_in_the_receipt_style_owner():
+    from pathlib import Path
+    src = (Path(__file__).resolve().parents[1] / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
+    style = src[src.index("<style>"):src.index("</style>")]
+    assert ".sensor .receipt{" in style
+    assert style.count(".receipt-nowrap{white-space:nowrap}") == 1
+    assert src.count("<style>") == 1
+
+
+# ---- cx-p2-polish-w2 (seat ruling R24): glance-tier plain words, ZH parity, sign colour ----
+
+_W2_BANNED = ("falsif", "refut", "证伪", "thesis", "判断失效")
+
+
+def _w2_vector(monkeypatch, case: dict, **over) -> str:
+    """Render vector.html.j2 through _render_vector with selected view-model keys replaced."""
+    from jinja2.environment import Template
+
+    orig = Template.render
+
+    def render(self, *args, **kwargs):
+        kwargs.update(over)
+        return orig(self, *args, **kwargs)
+
+    monkeypatch.setattr(Template, "render", render)
+    try:
+        return _render_vector(case)
+    finally:
+        monkeypatch.setattr(Template, "render", orig)
+
+
+def _w2_sig(bias: str, n: int = 1200, seed: int = 11) -> pd.DataFrame:
+    """Deterministic signals frame with the columns recommend + forward_cones read.
+
+    Local on purpose: importing another test module's fixture widens this file's CI-pack
+    import closure (test_ci_pack curated-exclusive scope)."""
+    import numpy as np
+
+    rng = np.random.default_rng(seed)
+    idx = pd.date_range("2019-01-01", periods=n, freq="D")
+    close = pd.Series(100 * np.exp(np.cumsum(rng.normal(0.0006, 0.03, n))), index=idx)
+    df = pd.DataFrame({"close": close}, index=idx)
+    k = np.arange(n) % 3
+    df["composite_state"] = np.where(k == 0, "RISK-ON", np.where(k == 1, "DISTRIBUTE", "NEUTRAL"))
+    df["risk_index"] = pd.Series(np.clip(40 + 30 * np.sin(np.arange(n) / 50), 0, 100), index=idx)
+    df["sth_cost_basis"] = close * 1.05
+    df["alloc_optimal"] = 0.3
+    if bias == "bull":
+        df.loc[df.index[-1], ["composite_state"]] = "ACCUMULATE"
+        df["valuation_state"] = "undervalued"; df["market_extreme"] = "capitulation"
+        df["mvrv_z"] = -0.5; df["mayer"] = 0.7; df["reserve_risk"] = 0.001
+        df["risk_regime"] = "low_risk"; df["momentum_state"] = "bull"
+    else:  # "top"
+        df["valuation_state"] = "overvalued"; df["market_extreme"] = "euphoria"
+        df["mvrv_z"] = 4.0; df["mayer"] = 2.6; df["reserve_risk"] = 0.03
+        df["risk_regime"] = "high_risk"; df["momentum_state"] = "bull"
+    return df
+
+
+def _w2_levels(bias: str) -> dict:
+    from engine import btc_recommend as RC
+
+    sig = _w2_sig(bias)
+    if bias == "top":
+        r = RC.recommend(sig, {"score": -10, "drivers_pos": [], "drivers_neg": []},
+                         RC.forward_cones(sig), {"avg": -8.0, "tail": -30.0}, {"size_pct": 40})
+    else:
+        r = RC.recommend(sig, {"score": 40, "drivers_pos": [], "drivers_neg": []},
+                         RC.forward_cones(sig), {"avg": -3.0, "tail": -12.0}, {"size_pct": 30})
+    return r["levels"]
+
+
+@pytest.mark.parametrize("bias", ["bull", "top"])
+def test_cxp2_w2_a_level_labels_carry_no_refutation_vocabulary(bias, monkeypatch):
+    levels = _w2_levels(bias)
+    labels = f'{levels["invalid_label_en"]} {levels["invalid_label_zh"]}'.lower()
+    assert levels["invalid_label_en"] and levels["invalid_label_zh"]
+    for word in _W2_BANNED:
+        assert word not in labels, (bias, word, labels)
+    case = _vector_case("valid_zero")
+    case["decision"]["advisory"] = {"levels": levels}
+    html = _w2_vector(monkeypatch, case)
+    visible = re.sub(r"<(style|script)\b.*?</\1>", "", html, flags=re.S)
+    for lang in ("en", "zh"):
+        text = _reading(lang, visible).lower()
+        for word in ("falsif", "refut", "证伪", "判断失效"):
+            assert word not in text, (bias, lang, word)
+    assert levels["invalid_label_en"] in _reading("en", html)
+    assert levels["invalid_label_zh"] in _reading("zh", html)
+
+
+def _w2_alloc(html: str) -> str:
+    return _slice(html, 'id="allocation"', "</section>")
+
+
+@pytest.mark.parametrize("name", ["valid_zero", "stale_budget"])
+def test_cxp2_w2_b_budget_source_reads_in_plain_words_and_slug_is_a_receipt(name, tmp_path, monkeypatch):
+    alloc = _w2_alloc(_render_crypto(tmp_path, monkeypatch, _crypto_case(name)))
+    dd = _slice(alloc, "Budget source", "</dd>")
+    glance = re.sub(r'<span class="receipt">.*?</span>', "", dd, flags=re.S)
+    assert "btc.decision/v1" not in glance
+    assert '<span class="receipt">btc.decision/v1</span>' in dd
+    assert "Bitcoin decision" in _reading("en", glance)
+    assert "比特币决策" in _reading("zh", glance)
+    assert 'title="btc.decision/v1"' not in alloc
+
+
+def test_cxp2_w2_c_vector_zh_reads_regime_word_and_chinese_date(monkeypatch):
+    html = _w2_vector(
+        monkeypatch, _vector_case("valid_zero"),
+        cycle_stage="Recovery", cycle_pos=74,
+        as_of="Oct 13, 2026", as_of_zh="2026年10月13日",
+        strategy={"as_of": "Oct 13, 2026", "as_of_zh": "2026年10月13日", "strategies": []},
+    )
+    stage = _slice(html, '<span class="fold-stat">', "%</span>")
+    assert "复苏 · 74" in _reading("zh", stage) and "Recovery" not in _reading("zh", stage)
+    assert "Recovery · 74" in _reading("en", stage)
+    chip = _slice(html, '<span class="asof-chip">', "</span></span>")
+    foot = _slice(html, '<div class="page-foot">', "<br>")
+    for block in (chip, foot):
+        zh = _reading("zh", block)
+        assert "2026年10月13日" in zh and "Oct" not in zh, block[:200]
+        assert "Oct 13, 2026" in _reading("en", block)
+    stats = re.findall(r'<span class="fold-stat">(.*?)</span></summary>', html, flags=re.S)
+    assert len(stats) >= 4, stats
+    assert any("2026年10月13日" in _reading("zh", s) for s in stats)
+    for stat in stats:
+        zh = _reading("zh", stat)
+        assert "Oct" not in zh and "Recovery" not in zh, zh
+
+
+def test_cxp2_w2_d_history_chip_building_reads_the_row_state_word_in_zh(tmp_path, monkeypatch):
+    board = _slice(_render_crypto(tmp_path, monkeypatch, _crypto_case("valid_zero")), 'id="market-board"', 'id="money-flows"')
+    chip = _slice(board, '<span class="history-chip">', "</span></span>")
+    # Same ZH word the row's state column already uses (scripts/build_crypto.py _state_zh).
+    assert _reading("zh", chip).strip() == build_crypto._state_zh("Building") == "积累中"
+    assert "Building" in _reading("en", chip)
+
+
+def _w2_volume(html: str) -> tuple[str, str]:
+    block = html[html.index("Spot participation proxy"):]
+    reading = _slice(block, '<div class="reading">', "</div>")
+    receipt = _slice(block, '<div class="receipt">', "</div>")
+    return reading, receipt
+
+
+@pytest.mark.parametrize("pct", [0, 82])
+def test_cxp2_w2_g_volume_percentile_reads_in_words_and_code_moves_to_receipt(pct, tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["market"]["flows"]["volume"] = _sensor(proxy="fixture", percentile=pct, state="Normal")
+    reading, receipt = _w2_volume(_render_crypto(tmp_path, monkeypatch, case))
+    assert f"P{pct}" not in _reading("en", reading) and f"P{pct}" not in _reading("zh", reading)
+    suffix = "th" if pct == 0 else "nd"
+    assert f"{pct}{suffix} percentile" in _reading("en", reading)
+    assert f"第{pct}百分位" in _reading("zh", reading)
+    assert f"P{pct} ·" in _reading("en", receipt)
+
+
+@pytest.mark.parametrize("complex_rows", [[], [{"symbol": "ETH", "name_en": "Ether", "name_zh": "以太坊",
+                                                "value": "$2,400", "chart": "", "tone": "flat",
+                                                "context_en": "", "context_zh": ""}]])
+def test_cxp2_w2_h_empty_market_context_prints_a_muted_null(complex_rows, monkeypatch):
+    html = _w2_vector(monkeypatch, _vector_case("valid_zero"),
+                      presentation={"axes": [], "watch": [], "complex": complex_rows})
+    shelf = _slice(html, 'data-shelf="S5"', 'data-shelf="S6"')
+    assert "No context on file today" in _reading("en", shelf)
+    assert "今日暂无背景" in _reading("zh", shelf)
+    if not complex_rows:
+        assert '<p class="complex-null">' in shelf
+
+
+def test_cxp2_w2_i_one_brain_entry_label_on_both_pages(tmp_path, monkeypatch):
+    crypto = _render_crypto(tmp_path, monkeypatch, _crypto_case("valid_zero"))
+    vector = _render_vector(_vector_case("valid_zero"))
+    c_btn = _slice(crypto, "data-crypto-brain", "</button>")
+    assert "{{ t(BRAIN_ASK_EN, BRAIN_ASK_ZH) }}" in (ROOT / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
+    assert "{{ t(BRAIN_ASK_EN, BRAIN_ASK_ZH) }}" in (ROOT / "templates" / "vector.html.j2").read_text(encoding="utf-8")
+    v_lbl = _slice(vector, '<span class="vector-brain-ready">', "</span></span>") + "</span>"
+    for lang in ("en", "zh"):
+        c = _reading(lang, c_btn[c_btn.index(">") + 1:]).strip()
+        v = _reading(lang, v_lbl).strip()
+        assert c == v, (lang, c, v)
+    assert _reading("zh", v_lbl).strip() == "询问 Mastermind"
+
+
+@pytest.mark.parametrize("chg,tone,expect", [(-4.2, "bull", "down"), (3.1, "bear", "up"), (0.0, "bull", "")])
+def test_cxp2_w2_k_change_colour_follows_sign_not_tone(chg, tone, expect, tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["row"]["change_24h"] = chg
+    case["row"]["tone"] = tone
+    board = _slice(_render_crypto(tmp_path, monkeypatch, case), 'id="market-board"', 'id="money-flows"')
+    got = re.findall(r'class="market-change nb-chg ?([a-z]*)"', board)
+    assert got == [expect], got
+    src = (ROOT / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
+    assert 'style="color:var(--tone)">{{ a.change_label }}' not in src
+    assert "compact-chg {{ chg_sign(a.change_24h) }}" in src
+
+
+# cx-p3-polish-w3 (seat commission R30 W3-A): H' null context carries no tone colour; N1 a 24H move
+# inside the flat cut-off reads as an unsigned 0.0% with no tone class (its live-repaint twin N2 is
+# pinned in tests/test_live_holiday_js.py, whose CI owner covers templates/live.js and has Node).
+def _w3_complex_class(html: str) -> list[str]:
+    shelf = _slice(html, 'data-shelf="S5"', 'data-shelf="S6"')
+    return re.findall(r'class="complex-context ?([a-z]*)"', shelf)
+
+
+def _w3_complex_row(tone: str, context_en: str, context_zh: str) -> dict:
+    return {"symbol": "ETH", "name_en": "Ether", "name_zh": "以太坊", "value": "$2,400", "chart": "",
+            "tone": tone, "context_en": context_en, "context_zh": context_zh}
+
+
+@pytest.mark.parametrize("tone", ["up", "down"])
+def test_cxp3_w3_h_null_context_carries_no_tone_colour(tone, monkeypatch):
+    html = _w2_vector(monkeypatch, _vector_case("valid_zero"),
+                      presentation={"axes": [], "watch": [], "complex": [_w3_complex_row(tone, "", "")]})
+    assert _w3_complex_class(html) == [""]
+    shelf = _slice(html, 'data-shelf="S5"', 'data-shelf="S6"')
+    assert "No context on file today" in _reading("en", shelf)
+    assert "今日暂无背景" in _reading("zh", shelf)
+
+
+# H'' (R33): the context line never carries a tone class — pos/neg painted nothing (the muted rule wins)
+# and a later CSS reorder would colour a whole sentence by one embedded sign.
+@pytest.mark.parametrize("context_en,context_zh", [("", ""), ("Basis firm.", "基差坚挺。")])
+@pytest.mark.parametrize("tone", ["up", "down", "flat"])
+def test_cxp4_h_context_line_never_carries_a_tone_class(tone, context_en, context_zh, monkeypatch):
+    html = _w2_vector(monkeypatch, _vector_case("valid_zero"),
+                      presentation={"axes": [], "watch": [], "complex": [_w3_complex_row(tone, context_en, context_zh)]})
+    assert _w3_complex_class(html) == [""]
+    shelf = _slice(html, 'data-shelf="S5"', 'data-shelf="S6"')
+    assert 'class="complex-context"' in shelf
+    assert "complex-context pos" not in shelf and "complex-context neg" not in shelf
+    if context_en:
+        assert context_en in _reading("en", shelf) and context_zh in _reading("zh", shelf)
+    else:
+        assert "No context on file today" in _reading("en", shelf) and "今日暂无背景" in _reading("zh", shelf)
+
+
+def _w3_board_chip(html: str) -> tuple[str, str, str]:
+    board = _slice(html, 'id="market-board"', 'id="money-flows"')
+    got = re.findall(r'<div class="market-change nb-chg ?([a-z]*)" data-sym="[^"]*" data-flat="([^"]*)">([^<]*)</div>', board)
+    assert len(got) == 1, got
+    return got[0]
+
+
+@pytest.mark.parametrize("chg,label,cls", [(-0.03, "0.0%", ""), (0.03, "0.0%", ""), (-0.06, "-0.1%", "down"), (0.06, "+0.1%", "up")])
+def test_cxp3_w3_n1_flat_24h_chip_reads_unsigned_zero(chg, label, cls, tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["row"]["change_24h"] = chg
+    got_cls, flat, got_label = _w3_board_chip(_render_crypto(tmp_path, monkeypatch, case))
+    assert (got_cls, got_label) == (cls, label)
+    assert flat == "0.05"
+
+
+def test_cxp3_w3_n1_one_flat_cut_off_shared_by_label_and_class():
+    assert build_crypto.FLAT_CHG_PCT == 0.05
+    assert build_crypto._chg_label(-0.03) == "0.0%"
+    assert build_crypto._chg_label(0.0499) == "0.0%"
+    assert build_crypto._chg_label(-0.06) == "-0.1%"
+    assert build_crypto._chg_label(1.25) == "+1.2%" or build_crypto._chg_label(1.25) == "+1.3%"
+    assert build_crypto._chg_label(None) == "—"
+    src = (ROOT / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
+    macro = src[src.index("{% macro chg_sign(v)"):]
+    macro = macro[:macro.index("{%- endmacro %}")]
+    assert "FLAT_CHG_PCT" in macro and "0.05" not in macro
+    assert 'data-flat="{{ FLAT_CHG_PCT }}"' in src
+
+
+# --- wave 4 (cx-p4, TERMINAL) ------------------------------------------------------------------
+# N1 boundary (R33): the flat cut-off is exact at 0.05 — label and class agree on both sides of it.
+@pytest.mark.parametrize("chg,label,cls", [(0.05, "+0.1%", "up"), (-0.05, "-0.1%", "down"),
+                                           (0.0499, "0.0%", ""), (-0.0499, "0.0%", "")])
+def test_cxp4_n1_flat_cut_off_boundary_is_exact(chg, label, cls, tmp_path, monkeypatch):
+    assert build_crypto._chg_label(chg) == label
+    case = _crypto_case("valid_zero")
+    case["row"]["change_24h"] = chg
+    got_cls, flat, got_label = _w3_board_chip(_render_crypto(tmp_path, monkeypatch, case))
+    assert (got_cls, got_label) == (cls, label)
+    assert flat == "0.05"
+
+
+# L' (R32): /crypto methodology receipts live in the canonical LENS tip (`.qm` + data-tip-*), never
+# at rest on a Tier-1 sensor; observation receipts stay at rest; hover never reveals content.
+_CXP4_METHOD = (
+    ("Fund-level net creations and redemptions, in millions of dollars. A bitcoin-ETF "
+     "subscription measurement, not class capitalization.",
+     "基金级净申购与赎回，单位为百万美元。这是比特币 ETF 申购测量，不是全市场市值。"),
+    ("Aggregate circulating supply. A supply change, not a measured ETF subscription.",
+     "汇总流通供应量。这是供应量变化，不是已测量的 ETF 申购。"),
+    ("BTC spot-volume percentile is an honest proxy until full class volume accrues.",
+     "在全市场成交量积累完成前，以 BTC 现货成交量百分位作为明确标注的代理。"),
+    ("An annualized cost needs a qualified interval and source. Predicted funding is not a settled payment.",
+     "年化成本需要明确的结算间隔与来源。预测资金费率并非实际结算支付。"),
+    ("ETH/BTC relative trend plus BTC dominance; display context only.",
+     "ETH/BTC 相对趋势结合 BTC 占比；仅作展示背景。"),
+)
+_CXP4_QM = re.compile(
+    r'<span class="qm" tabindex="0" role="note" data-tip-en="([^"]*)" data-tip-zh="([^"]*)"'
+    r'(?: data-tip-rc-en="[^"]*")?(?: data-tip-rc-zh="[^"]*")?>\?</span>')
+_CXP4_REVEAL = {"display", "opacity", "visibility", "max-height", "height", "content", "clip", "clip-path"}
+
+
+def _cxp4_tips(fragment: str) -> list[tuple[str, str]]:
+    from html import unescape
+
+    return [(unescape(en), unescape(zh)) for en, zh in _CXP4_QM.findall(fragment)]
+
+
+def _cxp4_rules(css: str) -> list[tuple[str, set[str]]]:
+    css = re.sub(r"\{%.*?%\}|\{#.*?#\}|\{\{.*?\}\}|/\*.*?\*/", "", css, flags=re.S)
+    return [(sel.strip(), {d.split(":", 1)[0].strip() for d in body.split(";") if ":" in d})
+            for sel, body in re.findall(r"([^{}]+)\{([^{}]*)\}", css)]
+
+
+def _cxp4_sensors(tmp_path, monkeypatch, case: dict) -> str:
+    return _slice(_render_crypto(tmp_path, monkeypatch, case), 'data-shelf="H3"', 'data-shelf="H5"')
+
+
+def test_cxp4_l_hover_and_focus_rules_never_reveal_content(tmp_path, monkeypatch):
+    src = (ROOT / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
+    own = src[src.index("<style>") + len("<style>"):src.index("</style>")]
+    allowed = {"color", "border-color", "transform", "text-decoration", "outline", "outline-offset",
+               "outline-color", "border-radius"}
+    interactive = [(sel, props) for sel, props in _cxp4_rules(own)
+                   if re.search(r":(hover|focus|focus-visible|focus-within)\b", sel)]
+    assert any(".qm:hover" in sel and ".qm:focus-visible" in sel for sel, _ in interactive)
+    for sel, props in interactive:
+        assert props <= allowed, (sel, props - allowed)
+    # The shared house layer is included at the foot of the page's own <style>; judge it as shipped
+    # (the rendered page), so this job's scope stays the templates it already names.
+    page = _render_crypto(tmp_path, monkeypatch, _crypto_case("valid_zero"))
+    heads = [m.start() for m in re.finditer(r"body\.crypto-page,\s*body\.page-vector\s*\{", page)]
+    assert len(heads) == 1, heads
+    house = page[heads[0]:page.index("</style>", heads[0])]
+    assert ":hover" in house
+    for sel, props in _cxp4_rules(house):
+        if re.search(r":(hover|focus-within)\b", sel):
+            assert not props & _CXP4_REVEAL, (sel, props & _CXP4_REVEAL)
+
+
+def test_cxp4_l_methodology_lives_in_lens_tips_not_at_rest(tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["market"]["flows"]["volume"] = _sensor(proxy="fixture", percentile=82, state="Normal")
+    sensors = _cxp4_sensors(tmp_path, monkeypatch, case)
+    en, zh = _reading("en", sensors), _reading("zh", sensors)
+    for tip_en, tip_zh in _CXP4_METHOD:
+        assert tip_en not in en and tip_zh not in zh
+    assert sorted(_cxp4_tips(sensors)) == sorted(_CXP4_METHOD)
+    assert sensors.count('class="qm"') == len(_CXP4_METHOD)
+
+
+_R39_RC = re.compile(
+    r'<span class="qm" tabindex="0" role="note" data-tip-en="([^"]*)" data-tip-zh="([^"]*)"'
+    r' data-tip-rc-en="([^"]*)" data-tip-rc-zh="([^"]*)">\?</span>')
+
+
+def test_r39_l_source_names_live_in_the_lens_receipt_line(tmp_path, monkeypatch):
+    from html import unescape
+
+    case = _crypto_case("valid_zero")
+    case["market"]["flows"]["volume"] = _sensor(proxy="fixture", percentile=82, state="Normal")
+    sensors = _cxp4_sensors(tmp_path, monkeypatch, case)
+    rc = [tuple(unescape(g) for g in m) for m in _R39_RC.findall(sensors)]
+    assert rc == [
+        (*_CXP4_METHOD[0], "Source: Farside", "来源：Farside"),
+        (*_CXP4_METHOD[1], "Source: DefiLlama", "来源：DefiLlama"),
+    ]
+    assert sensors.count("data-tip-rc-en=") == sensors.count("data-tip-rc-zh=") == 2
+    for en, zh in _cxp4_tips(sensors):
+        for name in ("Farside", "DefiLlama"):
+            assert name not in en and name not in zh, (name, en, zh)
+
+
+def test_cxp4_l_observation_receipts_stay_at_rest(tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    flows, heat = case["market"]["flows"], case["market"]["heat"]
+    flows["etf"] = {
+        "kind": "subscription", "value": -505.0, "latest": -120.0, "state": "Unavailable",
+        "tone": "neutral", "as_of": "2026-10-09", "observation": "stale",
+        "observation_label_en": _STALE_EN, "observation_label_zh": _STALE_ZH, "percentile": None,
+    }
+    flows["stablecoins"] = {
+        "kind": "supply", "value": 1.6e11, "change_30d_usd": -2.5e9, "change_30d_pct": -1.6,
+        "state": "Unavailable", "tone": "neutral", "as_of": "2026-10-09", "observation": "stale",
+        "observation_label_en": _STALE_EN, "observation_label_zh": _STALE_ZH, "percentile": None,
+    }
+    flows["volume"] = _sensor(proxy="fixture", percentile=82, state="Normal")
+    heat["open_interest"] = _sensor(value=0.021, state="Normal", percentile=80)
+    heat["volatility"] = _sensor(value=48, state="Normal", percentile=64)
+    sensors = _cxp4_sensors(tmp_path, monkeypatch, case)
+    import html as _html  # the stale label carries an apostrophe, which autoescape renders as &#39;
+    en, zh = _html.unescape(_reading("en", sensors)), _html.unescape(_reading("zh", sensors))
+    assert en.count(_STALE_EN) == 2 and zh.count(_STALE_ZH) == 2
+    assert en.count("Last on file") == 2 and zh.count("最近在册") == 2
+    assert "-$505M" in en and "-$2.5B" in en and "2026-10-09" in en
+    assert "P82 · BTC spot volume" in en and "P82 · BTC 现货成交量" in zh
+    assert "80th percentile" in en and "80百分位" in zh
+    assert "DVOL · P64" in en and "DVOL · P64" in zh
+
+
+def test_cxp4_l_no_title_attribute_carries_translated_text(tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    html = _render_crypto(tmp_path, monkeypatch, case)
+    titles = re.findall(r'\btitle="([^"]*)"', html)
+    assert not [t for t in titles if re.search(r"[　-〿㐀-鿿＀-￯]", t)], titles
+    assert 'title="' not in _slice(html, 'data-shelf="H3"', 'data-shelf="H5"')
+
+
+# M' (R32/R31): each /vector S3 row describes ONE subject — the spark and the micro figure read the
+# same signals column (derived from the row's spark_source), and the row's LENS tip names which member
+# sets the state and which series the chart + figure follow.
+_CXP4_AXIS_SUBJECT = {
+    "trend_momentum": ("momentum", 0.37, "+0.37"),
+    "cycle_valuation": ("cycle_position", 0.42, "42%"),
+    "liquidity_flows": ("stbl_growth", 3.3, "+3.3%"),
+    "leverage_derivatives": ("leverage_stress", 61.0, "61/100"),
+    "network_miners": ("bfi", 73.0, "73/100"),
+    "macro_backdrop": ("global_m2_yoy", 4.4, "+4.4%"),
+}
+_CXP4_DECOYS = {"mvrv_z": 2.9, "etf_flow_z": 1.7, "oi_mcap_ratio": 0.02, "macro_score": 0.55}
+
+
+def _cxp4_sig(drop: tuple[str, ...] = ()) -> pd.DataFrame:
+    import numpy as np
+
+    idx = pd.date_range("2026-05-01", periods=120, freq="D")
+    sig = pd.DataFrame({"close": np.linspace(100.0, 120.0, 120), "alloc_optimal": 0.3}, index=idx)
+    lasts = [(col, last) for col, last, _micro in _CXP4_AXIS_SUBJECT.values()] + list(_CXP4_DECOYS.items())
+    for i, (col, last) in enumerate(lasts):
+        values = np.linspace(0.0, 1.0, 120) * (i + 1)
+        values[-1] = last
+        sig[col] = values
+    return sig.drop(columns=list(drop))
+
+
+def _cxp4_presentations(monkeypatch, sig: pd.DataFrame) -> tuple[dict, list]:
+    seen: list = []
+    real = build_vector._spark_points
+
+    def spy(series, *args, **kwargs):
+        seen.append(series)
+        return real(series, *args, **kwargs)
+
+    monkeypatch.setattr(build_vector, "_spark_points", spy)
+    monkeypatch.setattr(build_vector.store, "read", _none_reader)
+    pres = build_vector._vector_presentations(sig, {}, {}, {})
+    monkeypatch.setattr(build_vector, "_spark_points", real)
+    return pres, seen[:len(build_vector.COCKPIT_AXIS_PRESENTATION)]
+
+
+def test_cxp4_m_spark_and_micro_describe_one_subject(monkeypatch):
+    pres, seen = _cxp4_presentations(monkeypatch, _cxp4_sig())
+    specs = build_vector.COCKPIT_AXIS_PRESENTATION
+    assert [row["id"] for row in pres["axes"]] == [spec["id"] for spec in specs] == list(_CXP4_AXIS_SUBJECT)
+    for row, spec, series in zip(pres["axes"], specs, seen):
+        col, _last, micro = _CXP4_AXIS_SUBJECT[row["id"]]
+        assert spec["spark_source"] == f"signals.{col}", row["id"]
+        assert isinstance(series, pd.Series) and series.name == col, row["id"]
+        assert row["micro"] == micro, row["id"]
+        assert row["spark"], row["id"]
+
+
+def test_cxp4_m_micro_column_has_one_source_of_truth():
+    import inspect
+
+    body = inspect.getsource(build_vector._vector_presentations)
+    for col, _last, _micro in _CXP4_AXIS_SUBJECT.values():
+        assert f'last.get("{col}")' not in body and f"last.get('{col}')" not in body, col
+    for spec in build_vector.COCKPIT_AXIS_PRESENTATION:
+        assert build_vector._axis_source_column(spec) == spec["spark_source"].split(".", 1)[-1]
+    assert set(build_vector.COCKPIT_AXIS_MICRO) == {spec["id"] for spec in build_vector.COCKPIT_AXIS_PRESENTATION}
+
+
+def test_cxp4_m_absent_column_degrades_to_a_null_spark_and_a_dash(monkeypatch):
+    ids = [spec["id"] for spec in build_vector.COCKPIT_AXIS_PRESENTATION]
+    pres, seen = _cxp4_presentations(monkeypatch, _cxp4_sig(drop=("cycle_position",)))
+    i = ids.index("cycle_valuation")
+    assert isinstance(seen[i], pd.Series) and seen[i].empty
+    assert pres["axes"][i]["spark"] == "" and pres["axes"][i]["micro"] == "—"
+
+
+def test_cxp4_m_s3_tip_names_the_state_member_and_the_charted_series(monkeypatch):
+    pres, _seen = _cxp4_presentations(monkeypatch, _cxp4_sig())
+    html = _w2_vector(monkeypatch, _vector_case("valid_zero"),
+                      presentation={"axes": pres["axes"], "watch": [], "complex": []})
+    tips = _cxp4_tips(_slice(html, 'data-shelf="S3"', 'data-shelf="S4"'))
+    assert len(tips) == len(pres["axes"]) == 6
+    for row, (en, zh) in zip(pres["axes"], tips):
+        _fmt, _micro_en, _micro_zh, series_en, series_zh = build_vector.COCKPIT_AXIS_MICRO[row["id"]]
+        assert en.startswith(f"Primary: {row['primary']['label_en']} — "), en
+        assert "it sets the row state" in en and f"The chart and figure follow {series_en}." in en, en
+        assert zh.startswith(f"主读数：{row['primary']['label_zh']} — "), zh
+        assert "决定本行状态" in zh and f"图表与数字跟随{series_zh}。" in zh, zh
+
+
+# R39 (M' review repair): the figure follows the series the chart draws. When the newest row has no
+# reading the row prints the column's last valid value and dates it; an all-NaN column keeps the dash.
+def _r39_row(pres: dict, row_id: str) -> dict:
+    return next(row for row in pres["axes"] if row["id"] == row_id)
+
+
+def test_r39_m_figure_follows_the_spark_series_when_the_newest_row_has_no_reading(monkeypatch):
+    import numpy as np
+
+    sig = _cxp4_sig()
+    sig.loc[sig.index[-2], "leverage_stress"] = 58.0
+    sig.loc[sig.index[-1], "leverage_stress"] = np.nan
+    pres, seen = _cxp4_presentations(monkeypatch, sig)
+    row = _r39_row(pres, "leverage_derivatives")
+    assert row["micro"] == "58/100"
+    assert row["micro_en"] == "pressure · as of Aug 27"
+    assert row["micro_zh"] == "压力 · 截至8月27日"
+    assert row["spark"]
+    assert row["receipt_en"].endswith(
+        "final allocation. Figure as of Aug 27; the newest row has no reading."), row["receipt_en"]
+    assert row["receipt_zh"].endswith("最终配置。数字截至8月27日；最新一行无读数。"), row["receipt_zh"]
+    ids = [spec["id"] for spec in build_vector.COCKPIT_AXIS_PRESENTATION]
+    assert seen[ids.index("leverage_derivatives")].name == "leverage_stress"
+    for other in pres["axes"]:
+        if other["id"] == "leverage_derivatives":
+            continue
+        _fmt, micro_en, micro_zh, _series_en, _series_zh = build_vector.COCKPIT_AXIS_MICRO[other["id"]]
+        assert (other["micro_en"], other["micro_zh"]) == (micro_en, micro_zh), other["id"]
+        assert "Figure as of" not in other["receipt_en"] and "数字截至" not in other["receipt_zh"], other["id"]
+    html = _w2_vector(monkeypatch, _vector_case("valid_zero"),
+                      presentation={"axes": pres["axes"], "watch": [], "complex": []})
+    s3 = _slice(html, 'data-shelf="S3"', 'data-shelf="S4"')
+    assert "<b>58/100</b>" in s3
+    assert "pressure · as of Aug 27" in _reading("en", s3)
+    assert "压力 · 截至8月27日" in _reading("zh", s3)
+
+
+def test_r39_m_all_nan_column_keeps_the_dash_and_the_null_spark(monkeypatch):
+    import numpy as np
+
+    sig = _cxp4_sig()
+    sig["leverage_stress"] = np.nan
+    pres, _seen = _cxp4_presentations(monkeypatch, sig)
+    row = _r39_row(pres, "leverage_derivatives")
+    assert row["micro"] == "—" and row["spark"] == ""
+    assert (row["micro_en"], row["micro_zh"]) == ("pressure", "压力")
+    assert "Figure as of" not in row["receipt_en"] and "数字截至" not in row["receipt_zh"]

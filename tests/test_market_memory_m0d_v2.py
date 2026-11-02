@@ -1336,7 +1336,7 @@ def test_h7_stable_in_window_results_persisted(tmp_path: Path) -> None:
     }
 
     def fake_fetcher(path: str, params: Any) -> dict[str, Any]:
-        return {"status": "OK", "results": [dict(bar_in_window)]}
+        return {"status": "OK", "ticker": "SPY", "adjusted": False, "results": [dict(bar_in_window)]}
 
     times = [
         window_open + timedelta(seconds=5),
@@ -1529,20 +1529,20 @@ def test_d1_native_cli_preserves_causal_receipt(
         if case == "transport":
             raise RuntimeError(f"Authorization: Bearer {_D1_SECRET}")
         if case == "no_bar":
-            return {"status": "OK", "results": []}
+            return {"status": "OK", "ticker": "SPY", "adjusted": False, "results": []}
         if case == "malformed_envelope":
             return [_D1_SECRET]
         if case == "malformed_results":
-            return {"status": "OK", "results": {"body": _D1_SECRET}}
+            return {"status": "OK", "ticker": "SPY", "adjusted": False, "results": {"body": _D1_SECRET}}
         if case == "malformed_bar":
-            return {"status": "OK", "results": [{"body": _D1_SECRET}]}
+            return {"status": "OK", "ticker": "SPY", "adjusted": False, "results": [{"body": _D1_SECRET}]}
         bar = {
             "T": "SPY", "o": 588, "h": 592, "l": 587,
             "c": 591 if case == "unstable" and calls[0] > 1 else 590,
             "v": 10000000, "n": 150000,
             "t": int(datetime(2026, 8, 21, tzinfo=timezone.utc).timestamp() * 1000),
         }
-        return {"status": "OK", "results": [bar], "request_id": _D1_SECRET}
+        return {"status": "OK", "ticker": "SPY", "adjusted": False, "results": [bar], "request_id": _D1_SECRET}
 
     monkeypatch.setattr(ingest, "datetime", Clock)
     monkeypatch.setattr(ingest, "time_module", SimpleNamespace(sleep=sleep))
@@ -2837,3 +2837,105 @@ def test_binding_original_lineage_still_refuses_tampering(tmp_path, tamper):
     with pytest.raises(tech.TechnicalsV2SourceError, match=reason):
         _binding_capture(source, session)
     assert not (source.parent / "experience-v2" / "records" / f"{session}.json").exists()
+
+
+# Regression for the documented custom-bars response envelope.
+_ENVELOPE_SESSION = date(2026, 10, 9)
+_ENVELOPE_OPEN = datetime(2026, 10, 10, 4, tzinfo=timezone.utc)
+_ENVELOPE_BAR = {"o": 588, "h": 592, "l": 587, "c": 590, "v": 85000000,
+       "n": 600000, "t": 1791518400000, "vw": 589.5}
+
+@pytest.fixture
+def mm_envelope_modules():
+    from engine.neuralweb import market_memory_sources_spy as spy
+    from scripts import ingest_market_memory_sources_spy as owner
+    return spy, owner
+
+
+def _collect_envelope_fixture(owner, payload):
+    now = [_ENVELOPE_OPEN]
+    def sleep(seconds):
+        now[0] += timedelta(seconds=seconds)
+    return owner._collect_seal_observations(
+        _ENVELOPE_SESSION, seal_open=_ENVELOPE_OPEN, seal_close=_ENVELOPE_OPEN + timedelta(minutes=5),
+        fetcher=lambda path, params: copy.deepcopy(payload),
+        clock=lambda: now[0], sleeper=sleep,
+    )
+
+
+def test_documented_response_keeps_exact_results_digest_and_legacy_strictness(mm_envelope_modules):
+    spy, owner = mm_envelope_modules
+    payload = {"status": "OK", "ticker": "SPY", "adjusted": False, "results": [_ENVELOPE_BAR]}
+    before = copy.deepcopy(payload)
+    status, results = owner._fetch_spy_daily_bar(_ENVELOPE_SESSION, lambda path, params: payload)
+    assert status == "ok_results"
+    assert results == [_ENVELOPE_BAR] and payload == before
+    assert "T" not in results[0] and "ticker" not in results[0]
+    assert spy._results_digest(results) == spy._results_digest([_ENVELOPE_BAR])
+    assert spy._validate_single_bar(_ENVELOPE_BAR, session_date=_ENVELOPE_SESSION)[0] is False
+    assert spy._validate_single_bar({**_ENVELOPE_BAR, "T": "SPY"}, session_date=_ENVELOPE_SESSION)[0] is True
+    assert spy._validate_single_bar(_ENVELOPE_BAR, session_date=_ENVELOPE_SESSION, response_ticker="SPY")[0] is True
+
+
+@pytest.mark.parametrize("ticker", [None, "AAPL", ["SPY"], "", 0])
+def test_missing_or_wrong_envelope_identity_cannot_enter_seal(mm_envelope_modules, ticker):
+    spy, owner = mm_envelope_modules
+    payload = {"status": "OK", "adjusted": False, "results": [_ENVELOPE_BAR]}
+    if ticker is not None:
+        payload["ticker"] = ticker
+    assert owner._fetch_spy_daily_bar(_ENVELOPE_SESSION, lambda path, params: payload) == ("malformed", [])
+    observations, cache = _collect_envelope_fixture(owner, payload)
+    assert cache == {} and all(o.status == "malformed" for o in observations)
+    assert not spy.evaluate_seal_predicate(observations, session=_ENVELOPE_SESSION, seal_open=_ENVELOPE_OPEN, seal_close=_ENVELOPE_OPEN + timedelta(minutes=5)).opportunity_eligible
+
+
+@pytest.mark.parametrize("fields", [{"T": "AAPL"}, {"ticker": "AAPL"}, {"T": "SPY", "ticker": "AAPL"}, {"T": None}])
+def test_explicit_row_conflict_is_rejected(mm_envelope_modules, fields):
+    spy, owner = mm_envelope_modules
+    row = {**_ENVELOPE_BAR, **fields}
+    assert not spy._validate_single_bar(row, session_date=_ENVELOPE_SESSION, response_ticker="SPY")[0]
+    observations, cache = _collect_envelope_fixture(owner, {"status": "OK", "ticker": "SPY", "adjusted": False, "results": [row]})
+    assert not cache and all(o.reason == "malformed_bar" for o in observations)
+
+
+@pytest.mark.parametrize("results,status", [([], "no_bar"), ([_ENVELOPE_BAR, _ENVELOPE_BAR], "malformed"), ({}, "malformed")])
+def test_missing_multiple_and_nonarray_results_cannot_seal(mm_envelope_modules, results, status):
+    spy, owner = mm_envelope_modules
+    observations, cache = _collect_envelope_fixture(owner, {"status": "OK", "ticker": "SPY", "adjusted": False, "results": results})
+    assert not cache and all(o.status == status for o in observations)
+    assert not spy.evaluate_seal_predicate(observations, session=_ENVELOPE_SESSION, seal_open=_ENVELOPE_OPEN, seal_close=_ENVELOPE_OPEN + timedelta(minutes=5)).opportunity_eligible
+
+
+@pytest.mark.parametrize("fields", [{"c": float("nan")}, {"t": True}, {"t": 0}, {"n": None}])
+def test_existing_numeric_and_session_guards_stay_closed(mm_envelope_modules, fields):
+    spy, owner = mm_envelope_modules
+    row = {**_ENVELOPE_BAR, **fields}
+    assert not spy._validate_single_bar(row, session_date=_ENVELOPE_SESSION, response_ticker="SPY")[0]
+
+
+def test_stable_cached_seal_and_artifact_keep_exact_results(mm_envelope_modules):
+    spy, owner = mm_envelope_modules
+    payload = {"status": "OK", "ticker": "SPY", "adjusted": False, "results": [_ENVELOPE_BAR]}
+    observations, cache = _collect_envelope_fixture(owner, payload)
+    seal = spy.evaluate_seal_predicate(observations, session=_ENVELOPE_SESSION, seal_open=_ENVELOPE_OPEN, seal_close=_ENVELOPE_OPEN + timedelta(minutes=5))
+    assert seal.opportunity_eligible and seal.bar_digest == spy._results_digest([_ENVELOPE_BAR])
+    assert all(o.status == "valid_bar" for o in observations)
+    artifact = spy._build_spy_rest_artifact(cache[seal.bar_digest], session=_ENVELOPE_SESSION)
+    assert artifact["ticker"] == "SPY" and artifact["results"] == [_ENVELOPE_BAR]
+    assert spy._validate_spy_rest_artifact(artifact, session=_ENVELOPE_SESSION) == artifact
+    assert "T" not in artifact["results"][0]
+    later = spy._build_spy_rest_artifact([{**_ENVELOPE_BAR, "c": 590.5}], session=_ENVELOPE_SESSION)
+    assert artifact["results"] == [_ENVELOPE_BAR]
+    assert later["results"] != artifact["results"]
+    assert spy._results_digest(later["results"]) != seal.bar_digest
+
+
+@pytest.mark.parametrize("adjusted", [None, True, "false", 0, [], {}])
+def test_missing_or_nonfalse_adjustment_cannot_enter_seal(mm_envelope_modules, adjusted):
+    spy, owner = mm_envelope_modules
+    payload = {"status": "OK", "ticker": "SPY", "results": [_ENVELOPE_BAR]}
+    if adjusted is not None:
+        payload["adjusted"] = adjusted
+    assert owner._fetch_spy_daily_bar(_ENVELOPE_SESSION, lambda path, params: payload) == ("malformed", [])
+    observations, cache = _collect_envelope_fixture(owner, payload)
+    assert cache == {} and all(o.status == "malformed" for o in observations)

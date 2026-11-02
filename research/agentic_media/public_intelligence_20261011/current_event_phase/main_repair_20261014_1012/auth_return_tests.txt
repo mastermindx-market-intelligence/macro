@@ -1,0 +1,25 @@
+✔ explicit latest invalid input survives login destination: "" (12.829958ms)
+✔ explicit latest invalid input survives login destination: "a/b" (4.933125ms)
+✔ explicit latest invalid input survives login destination: "A APL" (2.284458ms)
+✔ new valid intent preserves exact raw marker and canonical ticker through 401 and retry (9.114083ms)
+✔ retained reference survives issuer and language changes without recursive ret (3.526667ms)
+✔ oversized intent clears stale ret and refuses old-symbol retry (6.165667ms)
+✔ missing OAuth capsule stops both implicit AAPL and initial private reads (2.240917ms)
+✔ OAuth callback restores invalid issuer before legacy fetch or default fallback (9.571ms)
+✔ actual Google launcher preserves a same-origin exact Market Memory fallback target (6.255ms)
+✔ Google launcher does not propagate an off-origin return target (4.396791ms)
+✔ signin resume waits for incumbent session exchange before leaving the callback (1.522125ms)
+✔ failed provider exchange keeps the callback and exposes signin recovery (4.416209ms)
+✔ failed provider exchange keeps the callback and exposes signin recovery (2.251833ms)
+✔ shared lazy signin error preserves exact Market Memory fallback intent (7.476ms)
+✔ shared lazy signin timeout preserves exact Market Memory fallback intent (1.837875ms)
+✔ shared signin fallback refuses ambiguous or off-origin target: ?ret=https%3A%2F%2Fother.invalid%2F (1.829792ms)
+✔ shared signin fallback refuses ambiguous or off-origin target: ?ret=%2Fone&ret=%2Ftwo (1.299875ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 249.791125

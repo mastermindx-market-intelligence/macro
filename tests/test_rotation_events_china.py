@@ -187,7 +187,7 @@ def test_run_nightly_china_writes_to_china_subdir(tmp_path):
     a, b = _aligned_pair()
     sectors = _cn_sectors(a, b)
     payload = re_.run_nightly(sectors, tmp_path,
-                              generated_utc="test",
+                              generated_utc="2026-10-01 05:00 UTC",
                               data_subdir="rotation_events_china")
     assert payload["schema"] == "rotation_events.v1"
     assert payload["authority"]["may_gate"] is False
@@ -209,7 +209,7 @@ def test_run_nightly_china_does_not_touch_us_state(tmp_path):
     mtime_before = us_state_p.stat().st_mtime
 
     re_.run_nightly(_cn_sectors(a, b), tmp_path,
-                    generated_utc="test",
+                    generated_utc="2026-10-01 05:00 UTC",
                     data_subdir="rotation_events_china")
     assert us_state_p.stat().st_mtime == mtime_before, "US state.json was touched by China builder"
 
@@ -225,7 +225,7 @@ def test_ledger_append_only_never_truncated(tmp_path):
 
     # First run
     re_.run_nightly(sectors, tmp_path,
-                    generated_utc="run1",
+                    generated_utc="2026-10-02 05:00 UTC",
                     data_subdir="rotation_events_china")
     ledger_p = tmp_path / "rotation_events_china" / "events.jsonl"
     lines_after_run1 = ledger_p.read_text().strip().splitlines()
@@ -233,7 +233,7 @@ def test_ledger_append_only_never_truncated(tmp_path):
 
     # Second run — same conditions
     re_.run_nightly(sectors, tmp_path,
-                    generated_utc="run2",
+                    generated_utc="2026-10-03 05:00 UTC",
                     data_subdir="rotation_events_china")
     lines_after_run2 = ledger_p.read_text().strip().splitlines()
 
@@ -250,7 +250,7 @@ def test_ledger_rows_are_valid_json(tmp_path):
     """Every line in the ledger must be parseable JSON with required fields."""
     a, b = _aligned_pair()
     re_.run_nightly(_cn_sectors(a, b), tmp_path,
-                    generated_utc="test",
+                    generated_utc="2026-10-01 05:00 UTC",
                     data_subdir="rotation_events_china")
     ledger_p = tmp_path / "rotation_events_china" / "events.jsonl"
     for line in ledger_p.read_text().strip().splitlines():
@@ -269,7 +269,7 @@ def test_china_detector_fires_on_blowoff_turn_pair(tmp_path):
     a, b = _aligned_pair()
     sectors = _cn_sectors(a, b)
     payload = re_.run_nightly(sectors, tmp_path,
-                              generated_utc="test",
+                              generated_utc="2026-10-01 05:00 UTC",
                               data_subdir="rotation_events_china")
     # Must have at least one active event or coldstart replay
     assert payload["active"] or payload["coldstart"], \
@@ -315,7 +315,7 @@ def test_cn_lane_unarmed_state_written_no_ledger(tmp_path, monkeypatch):
     a, b = _aligned_pair()
     sectors = _cn_sectors(a, b)
     re_.run_nightly(sectors, tmp_path,
-                    generated_utc="test",
+                    generated_utc="2026-10-01 05:00 UTC",
                     data_subdir="rotation_events_china")
     state_p = tmp_path / "rotation_events_china" / "state.json"
     ledger_p = tmp_path / "rotation_events_china" / "events.jsonl"
@@ -331,7 +331,7 @@ def test_cn_lane_armed_ledger_advances(tmp_path, monkeypatch):
     a, b = _aligned_pair()
     sectors = _cn_sectors(a, b)
     re_.run_nightly(sectors, tmp_path,
-                    generated_utc="test",
+                    generated_utc="2026-10-01 05:00 UTC",
                     data_subdir="rotation_events_china")
     ledger_p = tmp_path / "rotation_events_china" / "events.jsonl"
     assert ledger_p.exists(), (
@@ -339,3 +339,92 @@ def test_cn_lane_armed_ledger_advances(tmp_path, monkeypatch):
     )
     # ledger must contain at least one line (created or coldstart rows)
     assert len(ledger_p.read_text().strip().splitlines()) > 0
+
+
+# RC-R14 cross-path isolation: US scratch replay must not contaminate configured alerts.
+
+
+def test_build_art_dir_isolates_shared_rotation_alert_store(tmp_path, monkeypatch):
+    """A scratch/replay build must not write the configured shared alert store."""
+    import json
+
+    from scripts import build_rotation_events as builder
+    from engine import subsector_rotation_alerts as sra
+
+    configured_data = tmp_path / "configured-data"
+    scratch_data = tmp_path / "scratch-data"
+    scratch_site = tmp_path / "scratch-site"
+
+    # Keep all real filesystem effects inside this test's temporary directory.
+    monkeypatch.setattr(builder.config, "ROOT", tmp_path / "repo")
+    monkeypatch.setattr(builder.config, "data_dir", lambda: configured_data)
+    monkeypatch.setattr(sra.config, "data_dir", lambda: configured_data)
+
+    monkeypatch.setattr(builder.sector_legs, "load_registry", lambda: {})
+    monkeypatch.setattr(builder.sector_legs, "sector_closes", lambda _registry: {})
+    monkeypatch.setattr(
+        builder.sector_fragmentation,
+        "compute",
+        lambda _sectors, generated_utc=None: {"n_fragmented": 0, "sectors": []},
+    )
+
+    event = {
+        "id": "xlk:memory->mag7",
+        "sector": "xlk",
+        "sector_name_en": "Technology",
+        "sector_name_zh": "科技",
+        "from_leg": {"key": "memory", "name_en": "Memory", "name_zh": "存储", "tier": 1},
+        "to_leg": {"key": "mag7", "name_en": "Mag 7", "name_zh": "七巨头", "tier": 1},
+        "started": "2026-10-03",
+        "day_n": 1,
+        "asof": "2026-10-03",
+        "severity": "major",
+        "receipts": {},
+        "copy_en": "Memory hands off to Mag 7.",
+        "copy_zh": "存储向七巨头交棒。",
+    }
+    payload = {
+        "schema": "rotation_events.v1",
+        "ok": True,
+        "as_of": "2026-10-03",
+        "generated_utc": "2026-10-04 04:30 UTC",
+        "authority": {
+            "tier": "display",
+            "may_rank": False,
+            "may_gate": False,
+            "may_size": False,
+            "may_escalate": False,
+        },
+        "params": {},
+        "n_pairs_scanned": 1,
+        "active": [event],
+        "created_tonight": [event["id"]],
+        "closed_tonight": [],
+        "coldstart": False,
+    }
+    monkeypatch.setattr(builder.rotation_events, "run_nightly", lambda *_args, **_kwargs: payload)
+
+    builder.build(
+        site=scratch_site,
+        art_dir=scratch_data,
+        generated_utc="2026-10-04 04:30 UTC",
+    )
+
+    configured_alerts = configured_data / "subsector_rotation" / "alerts.jsonl"
+    configured_alerts.parent.mkdir(parents=True, exist_ok=True)
+    sentinel = '{"id":"existing","ts":"2026-10-01","asset":"existing"}\n'
+    configured_alerts.write_text(sentinel)
+
+    # Run once more with an existing configured store: a scratch build must neither
+    # read from nor rewrite the incumbent production/configured alert history.
+    builder.build(
+        site=scratch_site,
+        art_dir=scratch_data,
+        generated_utc="2026-10-04 04:31 UTC",
+    )
+
+    scratch_alerts = scratch_data / "subsector_rotation" / "alerts.jsonl"
+    assert configured_alerts.read_text() == sentinel, "scratch build rewrote configured alert store"
+    assert scratch_alerts.exists(), "scratch build did not retain its generated alerts"
+    rows = [json.loads(line) for line in scratch_alerts.read_text().splitlines() if line.strip()]
+    assert [row["asset"] for row in rows] == [event["id"]]

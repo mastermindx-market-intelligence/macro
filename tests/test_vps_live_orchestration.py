@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import sys
 from datetime import datetime, timedelta, timezone
+from importlib import import_module, util as importlib_util
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -816,7 +817,7 @@ def test_schedule_coverage_is_explicit_and_fails_visible_at_exhaustion():
     assert current["next_by_type"]["NFP"] == "2026-08-07"
     assert current["next_by_type"]["FOMC"] == "2026-09-16"
 
-    exhausted = wrp.schedule_coverage(datetime(2026, 12, 31).date())
+    exhausted = wrp.schedule_coverage(datetime(2027, 12, 31).date())
     assert exhausted["status"] == "incomplete"
     assert {"FOMC", "CPI", "NFP", "GDP", "PCE"}.issubset(
         exhausted["missing_or_too_distant"]
@@ -1187,7 +1188,8 @@ def test_flow_pulse_quality_rejects_age_fresh_no_data(tmp_path: Path):
     }))
     assert "mode=no_data" in (vlo.flow_pulse_error(path, min_coverage=0.8) or "")
     path.write_text(json.dumps({
-        "mode": "fastpath", "n_tickers": 2,
+        "mode": "fastpath", "n_tickers": 2, "n_universe": 2,
+        "source_asof": "2026-10-13T14:10:00+00:00",
         "tickers": [
             {"ticker": "AAPL", "bars_today": 4},
             {"ticker": "AMD", "bars_today": 4},
@@ -1602,6 +1604,19 @@ def _healthy_vps_status() -> dict:
                 "mode": "fastpath",
                 "n_tickers": 116,
                 "with_bars": 116,
+                "n_universe": 116,
+                "source_asof": (
+                    _HEALTHY_STATUS_NOW - timedelta(minutes=40)
+                ).isoformat().replace("+00:00", "Z"),
+            },
+            "intraday_quotes": {
+                "requested": 116,
+                "resolved": 116,
+                "coverage": 1.0,
+                "source_asof": (
+                    _HEALTHY_STATUS_NOW - timedelta(minutes=20)
+                ).isoformat().replace("+00:00", "Z"),
+                "built_at": _fresh,
             },
         },
     }
@@ -2194,3 +2209,464 @@ def test_overdue_source_failure_lineage_survives_then_recovers(monkeypatch) -> N
         if row["event_id"] == "claims:2026-09-10"
     )
     assert publication["status"] == "published"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# D04-A — quote/pulse source clocks, universe-true pulse coverage, ABSENT-OK dead-man
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _epoch_ms(iso: str) -> int:
+    return int(datetime.fromisoformat(iso).timestamp() * 1000)
+
+
+def test_quotes_payload_never_stamps_build_time_as_source_clock():
+    ms = _epoch_ms("2026-10-13T14:00:00+00:00")
+    payload = build_flow_quotes(
+        {"leaders": [{"ticker": "AAA"}, {"ticker": "BBB"}]},
+        {
+            "quotes": {
+                "AAA": {"price": 10.0, "ts": ms},
+                "BBB": {"price": 20.0, "ts": ms + 60_000},
+            },
+            "meta": {},
+        },
+    )
+    assert payload["asof"] is None
+    assert payload["ts"] is None
+    assert payload["meta"]["upstream_asof"] is None
+
+
+def test_quotes_meta_source_asof_is_median_of_real_quote_clocks():
+    leaders = [{"ticker": name} for name in ("AAA", "BBB", "CCC", "DDD", "EEE")]
+    priced = {
+        "AAA": {"price": 10.0, "ts": _epoch_ms("2026-10-13T14:00:00+00:00")},
+        "BBB": {"price": 11.0, "ts": _epoch_ms("2026-10-13T14:10:00+00:00")},
+        "CCC": {"price": 12.0, "ts": _epoch_ms("2026-10-13T14:20:00+00:00")},
+        "DDD": {
+            "price": 13.0,
+            "ts": _epoch_ms("2026-10-13T15:59:00+00:00"),
+            "tsSynthetic": True,
+        },
+        "EEE": {"price": 14.0},
+    }
+    payload = build_flow_quotes(
+        {"leaders": leaders},
+        {"quotes": priced, "meta": {}},
+    )
+    assert payload["meta"]["source_asof"] == "2026-10-13T14:10:00+00:00"
+    assert isinstance(payload["meta"]["built_at"], str) and payload["meta"]["built_at"]
+    datetime.fromisoformat(payload["meta"]["built_at"])
+    assert payload["meta"]["requested"] == 5
+    assert payload["meta"]["resolved"] == 5
+    assert payload["meta"]["coverage"] == 1.0
+
+    synthetic_only = build_flow_quotes(
+        {"leaders": [{"ticker": "DDD"}, {"ticker": "EEE"}]},
+        {
+            "quotes": {
+                "DDD": {
+                    "price": 13.0,
+                    "ts": _epoch_ms("2026-10-13T15:59:00+00:00"),
+                    "tsSynthetic": True,
+                },
+                "EEE": {"price": 14.0},
+            },
+            "meta": {},
+        },
+    )
+    assert synthetic_only["meta"]["source_asof"] is None
+
+
+def test_quote_validator_rejects_board_payload_without_source_clock(tmp_path: Path):
+    import inspect
+
+    path = tmp_path / "intraday_quotes.json"
+    path.write_text(json.dumps({
+        "quotes": {f"S{i}": {"price": float(i + 1)} for i in range(5)},
+        "meta": {"requested": 5, "resolved": 5, "source_asof": None},
+    }))
+    assert vlo.quote_snapshot_error(path, min_resolved=5, min_coverage=0.9) is None
+
+    missing = vlo.quote_snapshot_error(
+        path, min_resolved=5, min_coverage=0.9, require_source_clock=True,
+    )
+    assert isinstance(missing, str) and missing and "source clock" in missing
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["meta"]["source_asof"] = "2026-10-13T14:10:00+00:00"
+    path.write_text(json.dumps(payload))
+    assert vlo.quote_snapshot_error(
+        path, min_resolved=5, min_coverage=0.9, require_source_clock=True,
+    ) is None
+
+    payload["meta"]["source_asof"] = "garbage"
+    path.write_text(json.dumps(payload))
+    garbage = vlo.quote_snapshot_error(
+        path, min_resolved=5, min_coverage=0.9, require_source_clock=True,
+    )
+    assert isinstance(garbage, str) and garbage
+
+    module_src = inspect.getsource(vlo)
+    snapshot_src = inspect.getsource(vlo.Orchestrator.snapshot)
+    assert module_src.count("require_source_clock=True") == 1
+    assert snapshot_src.count("require_source_clock=True") == 1
+
+
+def test_fastpath_stamps_source_clock_from_bars_not_build_time(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    now_et = pd.Timestamp.now(tz="America/New_York").normalize()
+    start_9 = (now_et + pd.Timedelta(hours=9)).tz_convert("UTC")
+    start_10 = (now_et + pd.Timedelta(hours=10)).tz_convert("UTC")
+    index = pd.DatetimeIndex([start_9, start_10], name="ts")
+    frame = pd.DataFrame(
+        {
+            "open": [100.0, 101.0],
+            "high": [102.0, 103.0],
+            "low": [99.0, 100.0],
+            "close": [101.0, 102.0],
+            "volume": [1000.0, 2000.0],
+        },
+        index=index,
+    )
+    intraday = tmp_path / "intraday"
+    intraday.mkdir()
+    (intraday / "AAA.parquet").touch()
+    monkeypatch.setattr(bif.pd, "read_parquet", lambda _: frame.copy())
+    monkeypatch.delenv("MACRO_INTRADAY_DIR", raising=False)
+    monkeypatch.setattr(bif, "_resolve_universe", lambda cfg, data_root: ["AAA"])
+
+    today = datetime.now(timezone.utc).date()
+    as_of = datetime(today.year, today.month, today.day, 16, 0, tzinfo=timezone.utc)
+    site = tmp_path / "site"
+    bif._run_fastpath({}, tmp_path, site, as_of_arg=as_of.isoformat())
+    pulse = json.loads((site / "live" / "flow_pulse.json").read_text(encoding="utf-8"))
+
+    assert datetime.fromisoformat(pulse["source_asof"]) == start_10.to_pydatetime()
+    assert datetime.fromisoformat(pulse["as_of"]) == as_of
+    assert pulse["stale"] is False
+    assert bif._today_bars("AAA", tmp_path)[-1]["ts"]
+
+
+def test_fastpath_failed_ticker_stays_in_denominator_as_unknown(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    def today_bars(ticker: str, data_root: Path) -> list[dict]:
+        if ticker == "BBB":
+            raise RuntimeError("boom")
+        return [
+            {
+                "ts": "2026-10-13T13:00:00+00:00",
+                "open": 1.0, "high": 2.0, "low": 0.5, "close": 1.5, "volume": 100.0,
+            },
+            {
+                "ts": "2026-10-13T14:00:00+00:00",
+                "open": 1.5, "high": 2.5, "low": 1.0, "close": 2.0, "volume": 200.0,
+            },
+        ]
+
+    monkeypatch.setattr(bif, "_resolve_universe", lambda cfg, data_root: ["AAA", "BBB", "CCC"])
+    monkeypatch.setattr(bif, "_today_bars", today_bars)
+    site = tmp_path / "site"
+    bif._run_fastpath({}, tmp_path, site)
+    pulse = json.loads((site / "live" / "flow_pulse.json").read_text(encoding="utf-8"))
+
+    assert pulse["n_tickers"] == 3
+    assert pulse["n_universe"] == 3
+    bbb = next(row for row in pulse["tickers"] if row["ticker"] == "BBB")
+    assert bbb["bars_today"] is None
+    assert bbb["error"] == "RuntimeError"
+    for key in (
+        "vwap", "cum_vol", "vol_durability", "higher_lows", "rvol_tod",
+        "session_high", "session_low", "bars_above_vwap",
+        "last_close", "last_high", "last_low",
+    ):
+        assert bbb.get(key) is None
+    assert pulse["mode"] == "fastpath"
+
+
+def test_flow_pulse_validator_measures_coverage_against_universe(tmp_path: Path):
+    path = tmp_path / "flow_pulse.json"
+    clock = "2026-10-13T14:10:00+00:00"
+
+    def rows(with_bars: int, total: int) -> list[dict]:
+        out = [{"ticker": f"T{i}", "bars_today": 2} for i in range(with_bars)]
+        out.extend(
+            {"ticker": f"E{i}", "bars_today": None, "error": "RuntimeError"}
+            for i in range(total - with_bars)
+        )
+        return out
+
+    path.write_text(json.dumps({
+        "mode": "fastpath",
+        "source_asof": clock,
+        "n_universe": 10,
+        "n_tickers": 8,
+        "tickers": rows(8, 8),
+    }))
+    assert vlo.flow_pulse_error(path, min_coverage=0.80) is not None
+
+    path.write_text(json.dumps({
+        "mode": "fastpath",
+        "source_asof": clock,
+        "n_universe": 10,
+        "n_tickers": 10,
+        "tickers": rows(8, 10),
+    }))
+    assert vlo.flow_pulse_error(path, min_coverage=0.80) is None
+
+    path.write_text(json.dumps({
+        "mode": "fastpath",
+        "source_asof": clock,
+        "n_universe": 10,
+        "n_tickers": 10,
+        "tickers": rows(7, 10),
+    }))
+    assert vlo.flow_pulse_error(path, min_coverage=0.80) is not None
+
+    path.write_text(json.dumps({
+        "mode": "fastpath",
+        "n_universe": 10,
+        "n_tickers": 10,
+        "tickers": rows(8, 10),
+    }))
+    assert vlo.flow_pulse_error(path, min_coverage=0.80) is not None
+
+
+def _no_source_clock_failure(failures: list[str]) -> bool:
+    return not any(
+        failure.startswith("flow_pulse: source")
+        or failure.startswith("flow_pulse: missing source_asof")
+        or failure.startswith("flow_pulse: invalid source_asof")
+        or failure.startswith("intraday_quotes:")
+        for failure in failures
+    )
+
+
+def test_deadman_ages_pulse_and_board_quotes_from_source_clocks():
+    now = _HEALTHY_STATUS_NOW
+    stale = _healthy_vps_status()
+    stale["checks"]["flow_pulse"]["source_asof"] = (
+        now - timedelta(minutes=180)
+    ).isoformat().replace("+00:00", "Z")
+    stale["checks"]["intraday_quotes"] = {
+        "source_asof": (now - timedelta(minutes=120)).isoformat().replace("+00:00", "Z"),
+    }
+    failures = evaluate_live_health(stale, now=now)
+    assert any(failure.startswith("flow_pulse: source stale") for failure in failures), failures
+    assert any(failure.startswith("intraday_quotes: source stale") for failure in failures), failures
+
+    removed = _healthy_vps_status()
+    removed["checks"]["flow_pulse"].pop("source_asof", None)
+    removed["checks"].pop("intraday_quotes", None)
+    failures = evaluate_live_health(removed, now=now)
+    assert "flow_pulse: missing source_asof" in failures, failures
+    assert "intraday_quotes: missing source_asof" in failures, failures
+
+    missing = _healthy_vps_status()
+    missing["checks"]["flow_pulse"].pop("source_asof", None)
+    missing["checks"]["intraday_quotes"] = {"status": "missing"}
+    failures = evaluate_live_health(missing, now=now)
+    assert "flow_pulse: missing source_asof" in failures, failures
+    assert "intraday_quotes: missing source_asof" in failures, failures
+
+    absent = _healthy_vps_status()
+    absent["checks"]["flow_pulse"]["source_asof"] = None
+    absent["checks"]["intraday_quotes"] = {"source_asof": None}
+    failures = evaluate_live_health(absent, now=now)
+    assert "flow_pulse: missing source_asof" in failures, failures
+    assert "intraday_quotes: missing source_asof" in failures, failures
+
+    errored = _healthy_vps_status()
+    errored["checks"]["flow_pulse"].pop("source_asof", None)
+    errored["checks"]["intraday_quotes"] = {"error": "unavailable", "age_min": 3}
+    failures = evaluate_live_health(errored, now=now)
+    assert "flow_pulse: missing source_asof" in failures, failures
+    assert "intraday_quotes: missing source_asof" in failures, failures
+
+    fresh = _healthy_vps_status()
+    fresh["checks"]["flow_pulse"]["source_asof"] = (
+        now - timedelta(minutes=100)
+    ).isoformat().replace("+00:00", "Z")
+    fresh["checks"]["intraday_quotes"] = {
+        "source_asof": (now - timedelta(minutes=20)).isoformat().replace("+00:00", "Z"),
+    }
+    assert _no_source_clock_failure(evaluate_live_health(fresh, now=now))
+
+    unparseable = _healthy_vps_status()
+    unparseable["checks"]["flow_pulse"]["source_asof"] = "not-a-time"
+    unparseable["checks"]["intraday_quotes"] = {"source_asof": "not-a-time"}
+    failures = evaluate_live_health(unparseable, now=now)
+    assert "flow_pulse: invalid source_asof" in failures
+    assert "intraday_quotes: invalid source_asof" in failures
+
+    for when in (
+        datetime(2026, 7, 20, 14, 30, tzinfo=timezone.utc),
+        datetime(2026, 7, 20, 20, 30, tzinfo=timezone.utc),
+        datetime(2026, 7, 19, 15, 0, tzinfo=timezone.utc),
+    ):
+        for variant in (stale, removed):
+            failures = evaluate_live_health(variant, now=when)
+            assert _no_source_clock_failure(failures), (when.isoformat(), variant.get("checks", {}).get("flow_pulse"), failures)
+
+
+def _load_projection() -> "object":
+    """Pull app.live_status_projection in a way that pins the absent-module defect
+    instead of failing collection at PR time (the washout-turn-organ job imports
+    this test file without the serving stack)."""
+    spec = importlib_util.find_spec("app.live_status_projection")
+    assert spec is not None, "projection module absent"
+    return import_module("app.live_status_projection")
+
+
+def test_status_projection_carries_pulse_source_clock_and_universe(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    projection = _load_projection()
+
+    now_et = pd.Timestamp.now(tz="America/New_York").normalize()
+    start_9 = (now_et + pd.Timedelta(hours=9)).tz_convert("UTC")
+    start_10 = (now_et + pd.Timedelta(hours=10)).tz_convert("UTC")
+    index = pd.DatetimeIndex([start_9, start_10], name="ts")
+    frame = pd.DataFrame(
+        {
+            "open": [100.0, 101.0],
+            "high": [102.0, 103.0],
+            "low": [99.0, 100.0],
+            "close": [101.0, 102.0],
+            "volume": [1000.0, 2000.0],
+        },
+        index=index,
+    )
+
+    intraday = tmp_path / "intraday"
+    intraday.mkdir()
+    (intraday / "AAA.parquet").touch()
+    (intraday / "BBB.parquet").touch()
+
+    bars_by_ticker = {"AAA": frame.copy(), "BBB": frame.iloc[0:0].copy()}
+    monkeypatch.setattr(bif.pd, "read_parquet", lambda p: bars_by_ticker[p.name.replace(".parquet", "")].copy())
+    monkeypatch.delenv("MACRO_INTRADAY_DIR", raising=False)
+    monkeypatch.setattr(bif, "_resolve_universe", lambda cfg, data_root: ["AAA", "BBB"])
+
+    today = datetime.now(timezone.utc).date()
+    as_of = datetime(today.year, today.month, today.day, 16, 0, tzinfo=timezone.utc)
+    site = tmp_path / "site"
+    bif._run_fastpath({}, tmp_path, site, as_of_arg=as_of.isoformat())
+    pulse = json.loads((site / "live" / "flow_pulse.json").read_text(encoding="utf-8"))
+
+    expected = {
+        "mode": pulse["mode"],
+        "n_tickers": pulse["n_tickers"],
+        "with_bars": 1,
+        "n_universe": pulse["n_universe"],
+        "source_asof": pulse["source_asof"],
+    }
+    result = projection.flow_pulse_fields(pulse)
+    assert result == expected
+    assert list(result) == [
+        "mode", "n_tickers", "with_bars", "n_universe", "source_asof",
+    ]
+
+    empty = projection.flow_pulse_fields({})
+    assert empty == {"mode": None, "n_tickers": None, "with_bars": 0, "n_universe": None, "source_asof": None}
+
+
+def test_status_projection_carries_board_quote_meta():
+    projection = _load_projection()
+
+    base_iso = "2026-10-13T14:00:00+00:00"
+    leaders = [{"ticker": name} for name in ("AAA", "BBB", "CCC")]
+    priced = {
+        "AAA": {"price": 10.0, "ts": _epoch_ms("2026-10-13T14:00:00+00:00")},
+        "BBB": {"price": 11.0, "ts": _epoch_ms("2026-10-13T14:10:00+00:00")},
+        "CCC": {"price": 12.0, "ts": _epoch_ms("2026-10-13T14:20:00+00:00")},
+    }
+    payload = build_flow_quotes(
+        {"leaders": leaders},
+        {"quotes": priced, "meta": {}},
+    )
+
+    expected = {
+        "requested": payload["meta"]["requested"],
+        "resolved": payload["meta"]["resolved"],
+        "coverage": payload["meta"]["coverage"],
+        "source_asof": payload["meta"]["source_asof"],
+        "built_at": payload["meta"]["built_at"],
+    }
+    result = projection.intraday_quotes_fields(payload)
+    assert result == expected
+    assert list(result) == ["requested", "resolved", "coverage", "source_asof", "built_at"]
+    assert result["source_asof"] == "2026-10-13T14:10:00+00:00"
+
+    assert projection.intraday_quotes_fields({}) == {
+        "requested": None, "resolved": None, "coverage": None, "source_asof": None, "built_at": None,
+    }
+    assert projection.intraday_quotes_fields({"meta": "x"}) == {
+        "requested": None, "resolved": None, "coverage": None, "source_asof": None, "built_at": None,
+    }
+
+
+def test_deadman_composes_real_board_through_status_projection():
+    projection = _load_projection()
+
+    now = _HEALTHY_STATUS_NOW
+    base_iso = (now - timedelta(minutes=20)).isoformat()
+    leaders = [{"ticker": name} for name in ("AAA", "BBB", "CCC")]
+    priced = {
+        "AAA": {"price": 10.0, "ts": _epoch_ms(base_iso)},
+        "BBB": {"price": 11.0, "ts": _epoch_ms(base_iso)},
+        "CCC": {"price": 12.0, "ts": _epoch_ms(base_iso)},
+    }
+    board = build_flow_quotes({"leaders": leaders}, {"quotes": priced, "meta": {}})
+
+    pulse = {
+        "mode": "fastpath",
+        "n_tickers": 116,
+        "n_universe": 116,
+        "source_asof": (now - timedelta(minutes=40)).isoformat().replace("+00:00", "Z"),
+        "tickers": [{"ticker": f"T{i}", "bars_today": 2} for i in range(116)],
+    }
+
+    status = _healthy_vps_status()
+    status["checks"]["intraday_quotes"] = projection.intraday_quotes_fields(board)
+    status["checks"]["flow_pulse"].update(projection.flow_pulse_fields(pulse))
+
+    failures = evaluate_live_health(status, now=now)
+    assert _no_source_clock_failure(failures), failures
+
+    aged_board = build_flow_quotes(
+        {"leaders": leaders},
+        {"quotes": {k: {"price": v["price"], "ts": _epoch_ms((now - timedelta(minutes=120)).isoformat())} for k, v in priced.items()}, "meta": {}},
+    )
+    aged_pulse = dict(pulse, source_asof=(now - timedelta(minutes=180)).isoformat().replace("+00:00", "Z"))
+    status_stale = _healthy_vps_status()
+    status_stale["checks"]["intraday_quotes"] = projection.intraday_quotes_fields(aged_board)
+    status_stale["checks"]["flow_pulse"].update(projection.flow_pulse_fields(aged_pulse))
+    stale_failures = evaluate_live_health(status_stale, now=now)
+    assert any(failure.startswith("flow_pulse: source stale") for failure in stale_failures), stale_failures
+    assert any(failure.startswith("intraday_quotes: source stale") for failure in stale_failures), stale_failures
+
+    clockless_board = build_flow_quotes(
+        {"leaders": [{"ticker": "AAA"}, {"ticker": "BBB"}]},
+        {"quotes": {"AAA": {"price": 10.0}, "BBB": {"price": 11.0}}, "meta": {}},
+    )
+    status_clockless = _healthy_vps_status()
+    status_clockless["checks"]["intraday_quotes"] = projection.intraday_quotes_fields(clockless_board)
+    clockless_failures = evaluate_live_health(status_clockless, now=now)
+    assert "intraday_quotes: missing source_asof" in clockless_failures, clockless_failures
+
+
+def test_projection_module_imports_without_the_serving_stack():
+    """Subprocess import of app.live_status_projection must not pull in fastapi,
+    starlette, or pydantic — the washout-turn-organ job installs none of them."""
+    import subprocess
+
+    completed = subprocess.run(
+        [sys.executable, "-c",
+         "import sys, app.live_status_projection;"
+         "print(sorted(m for m in sys.modules if m.split('.')[0] in ('fastapi','starlette','pydantic')))"],
+        capture_output=True, text=True, cwd=Path(__file__).resolve().parents[1],
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert completed.stdout.strip() == "[]", completed.stdout

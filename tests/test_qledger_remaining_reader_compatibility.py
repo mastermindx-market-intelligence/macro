@@ -168,12 +168,15 @@ def test_us_unexpected_json_error_stays_line_local(claims, monkeypatch):
 
 @pytest.mark.parametrize("source", ["worktree", "git", "absent"])
 @pytest.mark.parametrize("text", [None, "", "\n# comment\n"])
-def test_registry_preserves_source_and_null_vs_empty(tmp_path, monkeypatch, text, source):
+def test_registry_preserves_prior_tracked_source_and_null_vs_empty(tmp_path, monkeypatch, text, source):
     calls = []
     def reader(root, rel):
         calls.append((root, rel))
         return text, source
-    monkeypatch.setattr(registry, "read_tracked", reader)
+    monkeypatch.setattr(registry, "_READ_CACHE", {})
+    monkeypatch.setattr(registry, "_read_tracked_uncached", reader)
+    # An earlier ordinary tracked read is still honored without rereading.
+    registry.read_tracked(tmp_path, registry.CLAIMS_REL)
     assert registry._load_qledger(tmp_path) == _legacy_registry(text, source)
     assert calls == [(tmp_path, registry.CLAIMS_REL)]
 
@@ -188,18 +191,20 @@ def test_registry_preserves_source_and_null_vs_empty(tmp_path, monkeypatch, text
     '{"desk":["unhashable"]}\n',
 ])
 def test_registry_parser_matches_frozen_policy(tmp_path, monkeypatch, text):
-    monkeypatch.setattr(registry, "read_tracked", lambda *args: (text, "git"))
+    path = tmp_path / registry.CLAIMS_REL
+    path.parent.mkdir(parents=True); path.write_text(text, encoding="utf-8")
     assert _outcome(lambda: registry._load_qledger(tmp_path)) == _outcome(
-        lambda: _legacy_registry(text, "git"))
+        lambda: _legacy_registry(text, "worktree"))
 
 
 def test_registry_unexpected_parser_error_propagates(tmp_path, monkeypatch):
-    monkeypatch.setattr(registry, "read_tracked", lambda *args: ("fault\n", "git"))
+    path = tmp_path / registry.CLAIMS_REL
+    path.parent.mkdir(parents=True); path.write_text("fault\n", encoding="utf-8")
     def bad(*args, **kwargs):
         raise RecursionError("synthetic registry parser failure")
     monkeypatch.setattr(json, "loads", bad)
     actual = _outcome(lambda: registry._load_qledger(tmp_path))
-    assert actual == _outcome(lambda: _legacy_registry("fault\n", "git"))
+    assert actual == _outcome(lambda: _legacy_registry("fault\n", "worktree"))
     assert actual[0] == "error"
 
 
@@ -231,15 +236,30 @@ def test_tracked_seam_preserves_callback_exception_identity(tmp_path):
     assert caught.value is failure
 
 
-def test_registry_calls_claims_seam_with_incumbent_reader(tmp_path, monkeypatch):
+def test_registry_calls_selected_stream_once_without_eager_text(tmp_path, monkeypatch):
+    from contextlib import contextmanager
     calls = []
-    incumbent = registry.read_tracked
-    def seam(root, relative_path, *, legacy_reader):
-        calls.append((root, relative_path, legacy_reader))
-        return '{"desk":"x","horizon_d":5}\n', "synthetic-explicit-source"
-    monkeypatch.setattr(store, "read_tracked_claims_text", seam)
+    path = tmp_path / registry.CLAIMS_REL
+    path.parent.mkdir(parents=True); path.touch()
+    @contextmanager
+    def seam(selected_path, **kwargs):
+        calls.append((selected_path, kwargs))
+        yield iter(['{"desk":"x","horizon_d":5}\n'])
+    monkeypatch.setattr(store, "open_raw_lines", seam)
+    monkeypatch.setattr(registry, "read_tracked", lambda *a: pytest.fail("eager claims read"))
     result = registry._load_qledger(tmp_path)
     assert result.rows == {"x": 1}
     assert result.horizons == {"x": [5]}
-    assert result.source == "synthetic-explicit-source"
-    assert calls == [(tmp_path, registry.CLAIMS_REL, incumbent)]
+    assert result.source == "worktree"
+    assert calls == [(path, {})]
+
+
+@pytest.mark.parametrize("raw", [b"", b"{}\n\xff", b'{"desk":"x"}\n', b'{"desk":[]}\n'])
+def test_registry_actual_legacy_transport_matches_frozen_text_policy(tmp_path, raw):
+    path = tmp_path / registry.CLAIMS_REL
+    path.parent.mkdir(parents=True); path.write_bytes(raw)
+    # Real incumbent disk/fallback policy, not a patched callback that bypasses
+    # its Unicode-error-to-Git behavior. This root is deliberately not a Git repo.
+    text, source = registry._read_tracked_uncached(tmp_path, registry.CLAIMS_REL)
+    assert _outcome(lambda: registry._load_qledger(tmp_path)) == _outcome(
+        lambda: _legacy_registry(text, source))

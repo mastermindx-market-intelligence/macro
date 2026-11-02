@@ -206,8 +206,13 @@
 
   var lastDrawT = 0;         // timestamp of last drawStars call (for twinkle throttle)
 
+  var _navForPark = document.querySelector('.site-nav');
+  function _navMenuOpen() {
+    return !!(_navForPark && _navForPark.classList.contains('nav-open'));
+  }
   function frame(t) {
     if (!running) return;                 // ignore any stale/queued callback
+    if (_navMenuOpen()) { running = false; raf = 0; return; }
     if (!lastT) lastT = t;
     var dt = Math.min(60, t - lastT); lastT = t;
     var ka = 1 - Math.pow(0.0015, dt / 1000);   // star opacity easing
@@ -265,10 +270,23 @@
 
   // --- wiring --------------------------------------------------------------
   // thermal wake: any real user input restarts a parked twinkle loop
-  function _activity() { lastActT = nowMs(); if (!running && motionOK && starTarget > 0) run(); }
+  function _activity() { if (_navMenuOpen()) return; lastActT = nowMs(); if (!running && motionOK && starTarget > 0) run(); }
   ['pointerdown', 'keydown', 'touchstart'].forEach(function (ev) {
     window.addEventListener(ev, _activity, { passive: true });
   });
+  var _navWasOpen = _navMenuOpen();
+  if (_navForPark && typeof MutationObserver === 'function') {
+    new MutationObserver(function () {
+      var open = _navMenuOpen();
+      if (open === _navWasOpen) return;
+      _navWasOpen = open;
+      if (open) {
+        if (raf) cancelAnimationFrame(raf);
+        raf = 0; running = false;
+      } else _activity();
+    }).observe(_navForPark, { attributes: true, attributeFilter: ['class'] });
+    if (_navWasOpen) { if (raf) cancelAnimationFrame(raf); raf = 0; running = false; }
+  }
 
   var rz;
   window.addEventListener('resize', function () {

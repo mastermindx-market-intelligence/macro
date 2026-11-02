@@ -1,0 +1,66 @@
+{
+  "benchmark_id": "boj_ycc_band_2022-12-20",
+  "frozen": true,
+  "source": "research/POLICY_AND_CONTRACT_CASES_2020_2022.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2022-12-20",
+    "session_label": "date only",
+    "adjudication_date": "2026-10-15",
+    "historical_source_availability": "unverified",
+    "dependence_group": "japan-ycc-december-2022",
+    "source": {
+      "path": "research/POLICY_AND_CONTRACT_CASES_2020_2022.md",
+      "sha256": "ddcde453e8c828904670f5a5b1017601dbfea7df23f99261285de559f8966113"
+    },
+    "input_facts": [
+      {
+        "event_date": "2022-12-20",
+        "source_lines": [
+          11,
+          13
+        ],
+        "text": "The December 20, 2022 BOJ statement retains minus 0.1% for Policy-Rate Balances and a target around zero for 10-year JGB yields.\nThe permitted 10-year yield fluctuation range expands from about plus/minus 0.25 percentage point to plus/minus 0.5 percentage point. The Bank offers daily fixed-rate purchases at 0.5%, unless bids are highly unlikely.\nThe announced monthly JGB purchases rise from 7.3 trillion yen to about 9 trillion yen. The statement describes the change as improving market functioning while maintaining accommodation.",
+        "sha256": "1e2a04f7fd940f1a5cc10f2651ef4fe79513711b72b81209de79d6da2e21e4bc"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        17,
+        17
+      ],
+      "text": "The upper edge rises 25 basis points; the full interval widens from 50 to 100 basis points. Neither is a 50-basis-point short-rate hike or a new 0.5% central target. Announced purchases are about 1.7 trillion yen higher per month, not an observed purchase total. A stated objective does not establish realized effects, exchange-rate direction or a trade. No later policy change is supplied.",
+      "sha256": "0132b4a89aa4dbc9f3470e66b32fe217058e5c65befa59d2623b3126836c7b19"
+    }
+  },
+  "question_en": "Compare the short-rate setting, long-rate target and permitted range, quantify the changes in the range and monthly purchase plan, and state what the announcement establishes about subsequent outcomes.",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT \u2014 cutoff date 2022-12-20 (date only). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2022-12-20] The December 20, 2022 BOJ statement retains minus 0.1% for Policy-Rate Balances and a target around zero for 10-year JGB yields.\nThe permitted 10-year yield fluctuation range expands from about plus/minus 0.25 percentage point to plus/minus 0.5 percentage point. The Bank offers daily fixed-rate purchases at 0.5%, unless bids are highly unlikely.\nThe announced monthly JGB purchases rise from 7.3 trillion yen to about 9 trillion yen. The statement describes the change as improving market functioning while maintaining accommodation.",
+  "expected_properties": [
+    {
+      "tag": "target_band",
+      "check": "The upper edge of the permitted 10-year yield fluctuation range rises 25 basis points and the full interval widens from 50 to 100 basis points, from about plus/minus 0.25 percentage point to plus/minus 0.5 percentage point."
+    },
+    {
+      "tag": "rate_units",
+      "check": "The band change is neither a 50-basis-point short-rate hike nor a new 0.5% central target: the Policy-Rate Balances rate remains minus 0.1%, the 10-year yield target remains around zero, and 0.5% is the widened upper edge and the daily fixed-rate purchase offer rate."
+    },
+    {
+      "tag": "planned_flow",
+      "check": "Announced monthly JGB purchases rise from 7.3 trillion yen to about 9 trillion yen, about 1.7 trillion yen higher per month; this is an announced purchase plan, not an observed purchase total."
+    },
+    {
+      "tag": "outcome_limits",
+      "check": "The stated objective of improving market functioning while maintaining accommodation does not establish realized effects, exchange-rate direction or a trade, and no later policy change is supplied."
+    }
+  ],
+  "known_failure_modes": [
+    "Describing the band change as a 50-basis-point short-rate hike or a new 0.5% central target instead of an upper edge 25 basis points higher with the full interval widening from 50 to 100 basis points.",
+    "Confusing basis points with percentage points across the widened range, or reading the retained minus 0.1% Policy-Rate Balances setting or the around-zero 10-year yield target as changed by the band move.",
+    "Presenting the announced monthly purchase plan (7.3 trillion yen rising to about 9 trillion yen) as an observed purchase total rather than a plan about 1.7 trillion yen higher per month.",
+    "Treating the stated objective as establishing realized effects, an exchange-rate direction or a trade, or supplying a later policy change that the announcement does not contain."
+  ],
+  "gold_standard_sentence": "The upper edge rises 25 basis points; the full interval widens from 50 to 100 basis points. Neither is a 50-basis-point short-rate hike or a new 0.5% central target. Announced purchases are about 1.7 trillion yen higher per month, not an observed purchase total. A stated objective does not establish realized effects, exchange-rate direction or a trade. No later policy change is supplied.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}

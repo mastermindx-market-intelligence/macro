@@ -32,6 +32,33 @@ def test_only_archived_trade_age_can_qualify_and_quotes_do_not_refresh():
  assert r.snapshot(NOW+timedelta(seconds=31))['quotes']=={}
 
 
+@pytest.mark.parametrize('quote_offset', [1.025, -60])
+def test_quote_clock_failure_cannot_erase_or_refresh_a_valid_trade(quote_offset):
+ r=reducer();consume(r,frame())
+ original=r.snapshot(NOW)['quotes']['AMD'].copy()
+ watermark=r.watermarks['AMD']
+ consume(r,frame('Q',quote_offset),1)
+ assert r.snapshot(NOW+timedelta(seconds=1))['quotes']['AMD']==original
+ assert r.watermarks['AMD']==watermark
+ assert r.snapshot(NOW+timedelta(seconds=31))['quotes']=={}
+
+
+@pytest.mark.parametrize('kind', ['Q', 'T', 'B'])
+def test_invalid_identity_remains_fail_closed_for_every_message_kind(kind):
+ r=reducer();consume(r,frame())
+ obj=json.loads(frame(kind,1));obj['data'][3]=123
+ consume(r,json.dumps(obj),1)
+ assert r.snapshot(NOW+timedelta(seconds=1))['quotes']=={}
+
+
+def test_malformed_quote_clock_does_not_change_last_trade_state():
+ r=reducer();consume(r,frame())
+ original=r.snapshot(NOW)['quotes']['AMD'].copy()
+ quote=json.loads(frame('Q',1));quote['data'][1]='invalid-clock'
+ consume(r,json.dumps(quote),1)
+ assert r.snapshot(NOW+timedelta(seconds=1))['quotes']['AMD']==original
+
+
 def test_break_invalidates_even_without_matching_price_or_size():
  r=reducer();consume(r,frame())
  consume(r,frame('B',1,price=77,size=3),1)
@@ -138,7 +165,7 @@ def test_publishing_failure_is_machine_readable_and_final_invalidation_separate(
  monkeypatch.setattr(builder,'_publish_r2',lambda _:next(delivered))
  result=builder.publish_boats_stream(publish=True)
  assert result['publication_ok'] is False
- assert result['publication']=={'requested':True,'attempted':2,'succeeded':1,'failed':1,'final_invalidation_delivered':False}
+ assert result['publication']=={'requested':True,'attempted':2,'succeeded':1,'failed':1,'final_invalidation_delivered':False,'access_denied':False}
 
 def test_requested_publication_success_requires_terminal_empty_delivery(monkeypatch):
  import scripts.build_ext_quotes as builder
@@ -214,6 +241,53 @@ def test_approved_empty_invalidation_uses_same_object_and_disables_cache(monkeyp
  assert json.loads(writes[0]['Body'])['quotes']=={}
 
 
+@pytest.mark.parametrize('status,code',[(401,'Unauthorized'),(403,'AccessDenied'),
+                                      (400,'InvalidAccessKeyId'),(400,'SignatureDoesNotMatch'),
+                                      (None,'403'),(None,'Forbidden'),(None,'AccessForbidden')])
+def test_storage_denial_blocks_later_callbacks_without_interrupting_cleanup(monkeypatch,caplog,status,code):
+ import scripts.build_ext_quotes as builder
+ import scripts.tiingo_ingest as ing
+ calls=[];settled=[]
+ class Denial(Exception):
+  response={'ResponseMetadata':{'HTTPStatusCode':status},'Error':{'Code':code,'Message':'SECRET_PROVIDER_BODY'}}
+ class Client:
+  def put_object(self,**kw):
+   calls.append(kw)
+   raise Denial('SECRET_PROVIDER_BODY')
+ def stream(**kw):
+  observer=kw['observer']
+  observer('connected',{'connection':1})
+  observer('archived',{'active':True,'connection':1,'frames':[]})
+  observer('tick',{})
+  observer('gap',{})
+  observer('disconnected',{})
+  observer('connected',{'connection':2})
+  observer('ended',{})
+  settled.append(True)
+  return {'raw_messages':0,'segments':0}
+ monkeypatch.setattr(builder,'_r2_client',lambda:Client())
+ monkeypatch.setattr(ing,'boats_stream',stream)
+ result=builder.publish_boats_stream(publish=True)
+ assert settled==[True] and len(calls)==1
+ assert result['publication_ok'] is False
+ assert result['publication']=={'requested':True,'attempted':1,'succeeded':0,'failed':1,
+                               'final_invalidation_delivered':False,'access_denied':True}
+ assert 'publication stopped for this invocation' in caplog.text
+ assert 'SECRET_PROVIDER_BODY' not in caplog.text
+
+
+def test_transient_storage_failure_remains_distinct_from_access_denial(monkeypatch,caplog):
+ import scripts.build_ext_quotes as builder
+ class Transient(Exception):
+  response={'ResponseMetadata':{'HTTPStatusCode':503},'Error':{'Code':'ServiceUnavailable'}}
+ class Client:
+  def put_object(self,**kw):raise Transient('SECRET_PROVIDER_BODY')
+ monkeypatch.setattr(builder,'_r2_client',lambda:Client())
+ r=BoatsLastTrade(['AMD'],'12345678-1234-1234-1234-123456789abc');r.reset('ended',1)
+ assert builder._publish_r2(json.dumps(r.snapshot(datetime.now(timezone.utc)))) is False
+ assert 'SECRET_PROVIDER_BODY' not in caplog.text
+
+
 def test_lowercase_live_vendor_trade_preserves_source_and_public_uppercase_key():
  from collectors.tiingo_archive import decode_boats
  from scripts.build_ext_quotes import public_boats_payload
@@ -271,3 +345,115 @@ def test_invalid_identity_is_refused_before_case_mapping(symbol):
  r=reducer();consume(r,frame())
  consume(r,frame(offset=1,symbol=symbol),1)
  assert r.snapshot(NOW+timedelta(seconds=1))['quotes']=={}
+
+
+@pytest.mark.parametrize('denied', [True, False])
+def test_client_initialization_failure_is_scrubbed_and_denial_stops_callbacks(monkeypatch, caplog, denied):
+ import sys, types
+ import scripts.build_ext_quotes as builder
+ import scripts.tiingo_ingest as ing
+ calls=[]
+ class Failure(Exception):
+  response={'Error':{'Code':'Forbidden' if denied else 'ServiceUnavailable'}}
+ def client(*args,**kwargs):
+  calls.append(True)
+  raise Failure('SECRET_PROVIDER_BODY')
+ monkeypatch.setitem(sys.modules,'boto3',types.SimpleNamespace(client=client))
+ monkeypatch.setitem(sys.modules,'botocore.config',types.SimpleNamespace(Config=lambda **kwargs:object()))
+ for name in ('R2_ENDPOINT','R2_ACCESS_KEY_ID','R2_SECRET_ACCESS_KEY'):
+  monkeypatch.setenv(name,'offline-fixture')
+ if not denied:
+  assert builder._r2_client() is None
+  assert 'R2 client build failed (Failure)' in caplog.text
+ else:
+  def stream(**kwargs):
+   for kind,payload in [('connected',{'connection':1}),('tick',{}),('ended',{})]:
+    kwargs['observer'](kind,payload)
+   return {'raw_messages':0,'segments':0}
+  monkeypatch.setattr(ing,'boats_stream',stream)
+  result=builder.publish_boats_stream(publish=True)
+  assert result['publication']['access_denied'] is True
+  assert result['publication']['final_invalidation_delivered'] is False
+  assert 'publication stopped for this invocation' in caplog.text
+ assert calls==[True]
+ assert 'SECRET_PROVIDER_BODY' not in caplog.text
+
+
+# ── coverage capacity: MAX_BOATS_SYMBOLS raises the 500-symbol display bound ──
+
+def capacity_symbols(count, first=None):
+ symbols=[f"Z{index:05d}" for index in range(count)]
+ if first is not None:
+  symbols[0]=first
+ return symbols
+
+def capacity_reducer(count):
+ r=BoatsLastTrade(capacity_symbols(count,first='AMD'),'12345678-1234-1234-1234-123456789abc')
+ r.reset('connected',1)
+ return r
+
+def test_full_observed_universe_of_15380_valid_covered_names_is_accepted_and_delivered():
+ from scripts.build_ext_quotes import public_boats_payload
+ r=capacity_reducer(15380)
+ assert len(r.symbols)==15380
+ assert r.symbols[0]=='AMD' and r.symbols[-1]=='Z15379'
+ # Stable coverage ordering survives the capacity lift.
+ assert list(r.symbols)==capacity_symbols(15380,first='AMD')
+ consume(r,frame(offset=1),1)
+ consume(r,frame(offset=2,symbol='Z00600',price=101),2)
+ consume(r,frame(offset=3,symbol='z15379',price=102),3)
+ payload=r.snapshot(NOW+timedelta(seconds=3))
+ assert set(payload['quotes'])=={'AMD','Z00600','Z15379'}
+ assert payload['coverage_symbols'][600]=='Z00600' and payload['coverage_symbols'][-1]=='Z15379'
+ # Names above the previous 500-symbol bound are validated and delivered.
+ assert public_boats_payload(payload,NOW+timedelta(seconds=3))==payload
+ assert public_boats_payload(payload,NOW+timedelta(seconds=3))['quotes']['Z15379']['extPrice']==102
+
+def test_hard_boundary_accepts_20000_and_refuses_20001():
+ from scripts.build_ext_quotes import public_boats_payload, MAX_BOATS_SYMBOLS
+ assert capacity_reducer(MAX_BOATS_SYMBOLS).snapshot(NOW)['coverage_symbols'].__len__()==20_000
+ with pytest.raises(ValueError):
+  BoatsLastTrade(capacity_symbols(20_001),'12345678-1234-1234-1234-123456789abc')
+ p=public_snapshot();p['quotes']={};p['stream_status']='ended'
+ exact=dict(p);exact['coverage_symbols']=capacity_symbols(20_000,first='AMD')
+ assert public_boats_payload(exact,NOW)['coverage_symbols'].__len__()==20_000
+ over=dict(p);over['coverage_symbols']=capacity_symbols(20_001,first='AMD')
+ with pytest.raises(ValueError):
+  public_boats_payload(over,NOW)
+
+def test_duplicate_coverage_is_rejected_at_either_bound():
+ from scripts.build_ext_quotes import public_boats_payload
+ with pytest.raises(ValueError):
+  BoatsLastTrade(['AMD','AMD'],'12345678-1234-1234-1234-123456789abc')
+ with pytest.raises(ValueError):
+  BoatsLastTrade(capacity_symbols(20_000,first='AMD')[:-1]+['AMD'],'12345678-1234-1234-1234-123456789abc')
+ p=public_snapshot();p['quotes']={}
+ duplicated=dict(p);duplicated['coverage_symbols']=['AMD','AMD']
+ with pytest.raises(ValueError):
+  public_boats_payload(duplicated,NOW)
+
+def test_uncovered_rows_are_rejected_at_full_universe_coverage():
+ from scripts.build_ext_quotes import public_boats_payload
+ r=capacity_reducer(15380)
+ consume(r,frame(offset=1),1)
+ consume(r,frame(offset=2,symbol='MSFT'),2)  # uncovered vendor symbol
+ payload=r.snapshot(NOW+timedelta(seconds=2))
+ assert set(payload['quotes'])=={'AMD'}
+ stranger=dict(payload);stranger['quotes']={'ZZZZZ':payload['quotes']['AMD']}
+ with pytest.raises(ValueError):
+  public_boats_payload(stranger,NOW+timedelta(seconds=2))
+
+def test_stale_and_gap_invalidation_are_unchanged_at_capacity():
+ r=capacity_reducer(15380)
+ consume(r,frame(offset=1),1)
+ assert r.snapshot(NOW+timedelta(seconds=1))['quotes']
+ # Stale trades still age out at the same 30-second deadline.
+ assert r.snapshot(NOW+timedelta(seconds=32))['quotes']=={}
+ consume(r,frame(offset=2),2)
+ assert 'AMD' in r.snapshot(NOW+timedelta(seconds=2))['quotes']
+ consume(r,frame('B',3,symbol='AMD'),3)
+ assert r.snapshot(NOW+timedelta(seconds=3))['quotes']=={}
+ # A gap still clears every covered symbol without touching coverage.
+ r.reset('gap')
+ assert r.snapshot(NOW+timedelta(seconds=3))['quotes']=={}
+ assert len(r.snapshot(NOW+timedelta(seconds=3))['coverage_symbols'])==15380

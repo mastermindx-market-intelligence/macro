@@ -289,3 +289,249 @@ def test_host_config_rejects_unknown_fields_and_unsafe_bindings(case, mutation):
     case.config.write_text(json.dumps(payload))
     with pytest.raises(ValueError):
         load_workspace_config(case.config)
+
+
+# --- U03 (DATA-OS-COMPLETION): bounded web read under a declared view contract -------------------------------
+from lib.dataos import web_workspace as u03_web_workspace  # noqa: E402
+from lib.dataos.read_contract import READ_CONTRACT_VERSION  # noqa: E402
+
+U03_CUTOFF = "2026-10-07T00:00:00+00:00"
+_U03_DROP = object()
+
+
+def _u03_contract(**changes):
+    contract = {"purpose": "U03 synthetic close read",
+                "identity": {"security_id": "SEC-AMD", "listing_id": "US-XNAS-AMD"},
+                "field_units": {"close": "USD"}, "adjustment_reference": {"basis": "raw"},
+                "coverage": "synthetic fixture rows local to this suite"}
+    for key, value in changes.items():
+        if value is _U03_DROP:
+            contract.pop(key, None)
+        else:
+            contract[key] = value
+    return contract
+
+
+def _u03_view(**changes):
+    view = {"mode": "CURRENT", "contract": _u03_contract()}
+    for key, value in changes.items():
+        if value is _U03_DROP:
+            view.pop(key, None)
+        else:
+            view[key] = value
+    return view
+
+
+def _u03_read(ws, view=None, **changes):
+    kwargs = {"columns": ["Date", "close"], "limit": 10}
+    kwargs.update(changes)
+    return ws.read_view("fixture:prices.parquet", view=_u03_view() if view is None else view, **kwargs)
+
+
+def _u03_refused_before_open(monkeypatch):
+    def _never(*args, **kwargs):
+        raise AssertionError("U03: the source was opened before the view was refused")
+    monkeypatch.setattr(DataWorkspace, "_file", _never)
+
+
+def _u03_ws_with_basis(case, basis):
+    doc = yaml.safe_load(case.registry.read_text())
+    doc["datasets"][0]["basis"] = basis
+    path = case.tmp / f"registry-u03-{basis}.yml"
+    path.write_text(yaml.safe_dump(doc))
+    return DataWorkspace(
+        (RootBinding("fixture", case.root, "research_capture", "Synthetic fixtures; no admission"),),
+        path, source_revision="c" * 40)
+
+
+def test_U03_legacy_read_is_unchanged_and_carries_no_view(case):
+    legacy = case.ws.read("fixture:prices.parquet", columns=["Date", "close"], limit=10)
+    assert legacy["action"] == "read"
+    assert "view" not in legacy and "view_digest_sha256" not in legacy
+    assert legacy["price_basis"] == "PRESERVED_AS_STORED_NOT_REBASED"
+
+
+def test_U03_current_view_read_is_repeatable_and_binds_evidence(case):
+    legacy = case.ws.read("fixture:prices.parquet", columns=["Date", "close"], limit=10)
+    one, two = _u03_read(case.ws), _u03_read(case.ws)
+    assert len(one["view_digest_sha256"]) == 64
+    assert one["view_digest_sha256"] == two["view_digest_sha256"]
+    assert one["action"] == "read_view"
+    assert one["result"] == legacy["result"]
+    assert one["query_receipt_sha256"] == legacy["query_receipt_sha256"]
+    view = one["view"]
+    assert view["mode"] == "CURRENT" and view["label"] == "current"
+    assert view["generation"] == legacy["source"]["file_version"]
+    assert view["generation_basis"] == "statv1_file_version_not_a_producer_generation"
+    assert view["evidence"] == {"source_revision": "c" * 40, "file_version": legacy["source"]["file_version"],
+                                "identity_generation_id": None, "action_revision_set_id": None,
+                                "receipt_sha256s": []}
+    assert "DATASET_NOT_DECLARED" in view["binding_gaps"]
+    assert "IDENTITY_GENERATION_UNBOUND" in view["binding_gaps"]
+    assert view["qualification"] == "VIEW_DECLARED_NOT_PRODUCTION_QUALIFIED"
+    assert view["dataset"] is None
+    assert view["read_contract_version"] == READ_CONTRACT_VERSION
+    assert view["contract"]["identity"] == {"security_id": "SEC-AMD", "listing_id": "US-XNAS-AMD"}
+    assert one["price_basis"] == "PRESERVED_AS_STORED_NOT_REBASED"
+    assert one["implementation_revision"] == "c" * 40
+    json.dumps(one, allow_nan=False)
+
+
+def test_U03_the_view_digest_moves_with_the_declared_view_and_the_query(case):
+    base = _u03_read(case.ws)["view_digest_sha256"]
+    other_view = _u03_read(case.ws, _u03_view(contract=_u03_contract(purpose="U03 another declared purpose")))
+    other_query = _u03_read(case.ws, limit=2)
+    assert len({base, other_view["view_digest_sha256"], other_query["view_digest_sha256"]}) == 3
+
+
+def test_U03_statv1_stays_a_file_version_not_a_content_hash(case):
+    one = _u03_read(case.ws)
+    assert one["source"]["file_version"].startswith("statv1:")
+    assert one["source"]["file_version_basis"] == "device_inode_size_mtime_ctime_not_content_hash"
+    assert one["source"]["content_sha256"] is None
+    assert "CONTENT_HASH_NOT_COMPUTED" in one["view"]["binding_gaps"]
+
+
+def test_U03_a_matching_generation_pin_serves_the_same_read(case):
+    unpinned = _u03_read(case.ws)
+    pinned = _u03_read(case.ws, _u03_view(generation=unpinned["view"]["generation"]))
+    assert pinned["view_digest_sha256"] == unpinned["view_digest_sha256"]
+    assert pinned["result"] == unpinned["result"]
+
+
+def test_U03_a_missing_old_generation_is_GENERATION_UNAVAILABLE_never_the_current_file(case):
+    old = _u03_read(case.ws)["view"]["generation"]
+    os.utime(case.prices, ns=(1_800_000_000_000_000_000,) * 2)
+    new = _u03_read(case.ws)["view"]["generation"]
+    assert new != old
+    for pin in (old, "statv1:" + "0" * 64):
+        with pytest.raises(WorkspaceError) as error:
+            _u03_read(case.ws, _u03_view(generation=pin))
+        assert error.value.code == "GENERATION_UNAVAILABLE"
+
+
+@pytest.mark.parametrize("changes,code", [
+    ({"mode": "RECONSTRUCT", "cutoff": U03_CUTOFF, "clock": "published_at"}, "VIEW_REFUSED_UNBOUND_DEPENDENCY"),
+    ({"mode": "RECONSTRUCT", "cutoff": U03_CUTOFF, "clock": "ingested_at"}, "VIEW_REFUSED_UNBOUND_DEPENDENCY"),
+    ({"mode": "RECONSTRUCT", "cutoff": U03_CUTOFF, "clock": "event_at"}, "VIEW_REFUSED_CLOCK_NOT_DECLARED"),
+    ({"mode": "RECONSTRUCT", "cutoff": U03_CUTOFF, "clock": "bogus"}, "VIEW_REFUSED_UNKNOWN_CLOCK"),
+    ({"mode": "REPLAY", "output_id": "out-1"}, "VIEW_REFUSED_NO_RETAINED_OUTPUT"),
+])
+def test_U03_unprovable_modes_refuse_before_the_source_is_opened(case, monkeypatch, changes, code):
+    _u03_refused_before_open(monkeypatch)
+    with pytest.raises(WorkspaceError) as error:
+        _u03_read(case.ws, _u03_view(**changes))
+    assert error.value.code == code
+
+
+@pytest.mark.parametrize("revision", [None, "c" * 39, "C" * 40, "g" * 40])
+def test_U03_current_without_a_full_lowercase_revision_refuses_MISSING_CURRENT_EVIDENCE(case, monkeypatch, revision):
+    ws = DataWorkspace(
+        (RootBinding("fixture", case.root, "research_capture", "Synthetic fixtures; no admission"),),
+        case.registry, source_revision=revision)
+    _u03_refused_before_open(monkeypatch)
+    with pytest.raises(WorkspaceError) as error:
+        _u03_read(ws)
+    assert error.value.code == "VIEW_REFUSED_MISSING_CURRENT_EVIDENCE"
+
+
+@pytest.mark.parametrize("view", [
+    None, [], "CURRENT",
+    _u03_view(contract=_U03_DROP),
+    _u03_view(extra="x"),
+    _u03_view(contract=[]),
+    _u03_view(mode=1),
+    _u03_view(mode="LIVE"),
+    _u03_view(contract=_u03_contract(coverage=_U03_DROP)),
+    _u03_view(contract=_u03_contract(extra="x")),
+    _u03_view(contract=_u03_contract(identity={"security_id": "SEC-AMD"})),
+    _u03_view(contract=_u03_contract(identity={"security_id": "SEC-AMD", "listing_id": 7})),
+    _u03_view(contract=_u03_contract(field_units=["close"])),
+    _u03_view(contract=_u03_contract(refusal_reasons="STALE")),
+    _u03_view(contract=_u03_contract(purpose="x" * 201)),
+    _u03_view(cutoff=U03_CUTOFF),
+    _u03_view(output_id="out-1"),
+    _u03_view(generation="sha256:" + "0" * 64),
+    _u03_view(generation=7),
+    _u03_view(mode="RECONSTRUCT", cutoff="2026-10-07T00:00:00", clock="published_at"),
+    _u03_view(mode="RECONSTRUCT", clock="published_at"),
+    _u03_view(mode="REPLAY"),
+    _u03_view(contract=_u03_contract(identity={"security_id": "", "listing_id": "x"})),
+])
+def test_U03_a_malformed_view_is_INVALID_VIEW_before_open(case, monkeypatch, view):
+    _u03_refused_before_open(monkeypatch)
+    with pytest.raises(WorkspaceError) as error:
+        case.ws.read_view("fixture:prices.parquet", view=view, columns=["Date", "close"], limit=10)
+    assert error.value.code == "INVALID_VIEW"
+
+
+def test_U03_a_generation_that_conflicts_with_expected_version_is_INVALID_VIEW(case, monkeypatch):
+    current = _u03_read(case.ws)["view"]["generation"]
+    _u03_refused_before_open(monkeypatch)
+    with pytest.raises(WorkspaceError) as error:
+        _u03_read(case.ws, _u03_view(generation=current), expected_version="statv1:" + "0" * 64)
+    assert error.value.code == "INVALID_VIEW"
+
+
+@pytest.mark.parametrize("ref,code", [
+    ("fixture:../outside.csv", "PATH_REFUSED"),
+    ("elsewhere:prices.parquet", "ROOT_NOT_BOUND"),
+])
+def test_U03_a_view_never_widens_roots_or_paths(case, ref, code):
+    with pytest.raises(WorkspaceError) as legacy:
+        case.ws.read(ref)
+    with pytest.raises(WorkspaceError) as viewed:
+        case.ws.read_view(ref, view=_u03_view())
+    assert legacy.value.code == code
+    assert viewed.value.code == legacy.value.code
+
+
+def test_U03_the_response_cap_is_kept_not_widened(case, monkeypatch):
+    assert u03_web_workspace.MAX_RESPONSE_BYTES == 131072
+    legacy = case.ws.read("fixture:prices.parquet", columns=["Date", "close"], limit=10)
+    size = len(json.dumps(legacy, separators=(",", ":"), ensure_ascii=False).encode("utf-8"))
+    monkeypatch.setattr(u03_web_workspace, "MAX_RESPONSE_BYTES", size + 64)
+    case.ws.read("fixture:prices.parquet", columns=["Date", "close"], limit=10)
+    with pytest.raises(WorkspaceError) as error:
+        _u03_read(case.ws)
+    assert error.value.code == "RESULT_TOO_LARGE_REDUCE_COLUMNS_OR_LIMIT"
+
+
+def test_U03_a_declared_dataset_is_named_but_its_storage_binding_is_not_verified(case):
+    out = _u03_read(case.ws, _u03_view(dataset_id="fixture.prices"))
+    assert out["view"]["dataset"] == {"dataset_id": "fixture.prices", "version": "1.0.0", "status": "PROPOSED",
+                                      "registry_basis": None, "storage_binding": "DECLARED_NOT_VERIFIED"}
+    assert "STORAGE_BINDING_DECLARED_NOT_VERIFIED" in out["view"]["binding_gaps"]
+    assert "DATASET_NOT_DECLARED" not in out["view"]["binding_gaps"]
+
+
+def test_U03_an_unregistered_dataset_is_refused_before_open(case, monkeypatch):
+    _u03_refused_before_open(monkeypatch)
+    with pytest.raises(WorkspaceError) as error:
+        _u03_read(case.ws, _u03_view(dataset_id="fixture.unknown"))
+    assert error.value.code == "DATASET_NOT_REGISTERED"
+
+
+def test_U03_a_declared_basis_that_matches_the_registry_row_is_served(case):
+    ws = _u03_ws_with_basis(case, "tradj")
+    view = _u03_view(dataset_id="fixture.prices", contract=_u03_contract(adjustment_reference={"basis": "tradj"}))
+    out = _u03_read(ws, view)
+    assert out["view"]["dataset"]["registry_basis"] == "tradj"
+    assert out["view"]["contract"]["adjustment_reference"] == {"basis": "tradj"}
+
+
+def test_U03_an_undeclared_basis_is_reported_not_guessed(case):
+    ws = _u03_ws_with_basis(case, "tradj")
+    view = _u03_view(dataset_id="fixture.prices",
+                     contract=_u03_contract(adjustment_reference={"vendor": "fixture"}))
+    out = _u03_read(ws, view)
+    assert out["view"]["dataset"]["registry_basis"] == "tradj"
+    assert out["view"]["contract"]["adjustment_reference"] == {"vendor": "fixture"}
+
+
+def test_U03_a_declared_basis_that_disagrees_with_the_registry_row_refuses_BASIS_CHANGED(case, monkeypatch):
+    ws = _u03_ws_with_basis(case, "tradj")
+    _u03_refused_before_open(monkeypatch)
+    with pytest.raises(WorkspaceError) as error:
+        _u03_read(ws, _u03_view(dataset_id="fixture.prices"))
+    assert error.value.code == "VIEW_REFUSED_BASIS_CHANGED"

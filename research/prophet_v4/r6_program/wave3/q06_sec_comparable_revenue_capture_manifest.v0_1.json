@@ -53,7 +53,18 @@
     },
     "value_pct": 16.356501765281383,
     "materialized_by_current_d5": false,
-    "current_d5_state": "current revenue present; prior comparable typed absent"
+    "current_d5_state": "source-qualified D5 consumer built (research/prophet_v4/earnings_semantics_v1/D5_CONSUMER_2026-09-30.md, BUILT_NOT_PROVEN); production materialization unproven",
+    "gate_s_acceptance": {
+      "accepted_by": "Sol (parent)",
+      "record": "research/prophet_v4/earnings_semantics_v1/README.md:81-84",
+      "pr": 8069,
+      "comment_id": "5894923827",
+      "marker": "SOL_Q06_GATE_S_ACCEPTANCE_20260929",
+      "accepted_at": "2026-09-29T17:05:28Z",
+      "accepted_head": "ae9409bca5d81dbf7438ff0037a976b324853bdd",
+      "scope": "factual source field only; Gate E closed",
+      "contract_sha256": "a0790967ad56740fe740e7026e53eda34f3c2529ca75d6dfca64d28b293a177d"
+    }
   },
   "diagnostic_only_context": {
     "field": "FY2026 Q4 revenue growth guidance",
@@ -98,7 +109,7 @@
   ],
   "evidence_class": {
     "registered_value": null,
-    "basis": "D07_OPEN_PR_7856_UNMERGED",
+    "basis": "D07_REGISTER_V1_ADOPTED_R6-D07-01_2026-09-27_509ffb5a6a5c",
     "proposed_diagnostic_class": "PUBLIC_INFO_REPLAY",
     "confirmatory_path": "PROSPECTIVE_ONLY"
   },
@@ -131,7 +142,7 @@
     "packet4_adapter_edits": false,
     "paper_edits": false
   },
-  "next_action": "independent source-method review; on acceptance Packet3 registers one prospective trial",
+  "next_action": "Gate S factual source field accepted by Sol (research/prophet_v4/earnings_semantics_v1/README.md:81-84; PR #8069 comment 5894923827); Gate E remains closed and belongs to Evaluation; next step is prospective registration only",
   "external_primary_checks": {
     "checked_at_utc": "2026-09-27T03:40:01.558619+00:00",
     "scope": "current official source-access and public-use boundary spot check; not a replacement rights grant",

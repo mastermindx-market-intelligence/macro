@@ -1,0 +1,210 @@
+{
+ "class_counterfactual": {
+  "agree_present": 6,
+  "present_value_differs": 3,
+  "present_vs_absent": 2
+ },
+ "n": 11,
+ "rule": "period null read as field_absence.v1 not_stated (diagnostic only)",
+ "slots": [
+  {
+   "case_id": "389a49089309246c",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "present_value_differs",
+   "field": "stated_amount",
+   "fold": "f4",
+   "n": 1,
+   "notes": [
+    "mismatch:form"
+   ],
+   "null_period": {
+    "fam_a": true,
+    "fam_b": false
+   },
+   "outcome_fam_a_graded": "wrong_value",
+   "outcome_fam_b_graded": "wrong_value",
+   "prompt_version": "prompt-v1.0",
+   "template": "T2"
+  },
+  {
+   "case_id": "4d19bce6bd210c8f",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "agree_present",
+   "field": "incremental_amount",
+   "fold": "f5",
+   "n": 2,
+   "notes": [],
+   "null_period": {
+    "fam_a": true,
+    "fam_b": false
+   },
+   "outcome_fam_a_graded": "correct",
+   "outcome_fam_b_graded": "correct",
+   "prompt_version": "prompt-v1.0",
+   "template": "T1"
+  },
+  {
+   "case_id": "69cdff734be8096d",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "agree_present",
+   "field": "stated_quantity",
+   "fold": "f3",
+   "n": 3,
+   "notes": [],
+   "null_period": {
+    "fam_a": true,
+    "fam_b": false
+   },
+   "outcome_fam_a_graded": "correct",
+   "outcome_fam_b_graded": "correct",
+   "prompt_version": "prompt-v1.0",
+   "template": "T3"
+  },
+  {
+   "case_id": "7d848e2e29478686",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "present_vs_absent",
+   "field": "incremental_amount",
+   "fold": "f3",
+   "n": 4,
+   "notes": [
+    "candidate_absent_where_gold_present",
+    "candidate_present_where_gold_absent"
+   ],
+   "null_period": {
+    "fam_a": true,
+    "fam_b": false
+   },
+   "outcome_fam_a_graded": "wrong_absence",
+   "outcome_fam_b_graded": "wrong_value",
+   "prompt_version": "prompt-v1.0",
+   "template": "T1"
+  },
+  {
+   "case_id": "7d848e2e29478686",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "present_vs_absent",
+   "field": "remaining_authorization",
+   "fold": "f3",
+   "n": 5,
+   "notes": [
+    "candidate_absent_where_gold_present",
+    "candidate_present_where_gold_absent"
+   ],
+   "null_period": {
+    "fam_a": true,
+    "fam_b": false
+   },
+   "outcome_fam_a_graded": "wrong_absence",
+   "outcome_fam_b_graded": "wrong_value",
+   "prompt_version": "prompt-v1.0",
+   "template": "T1"
+  },
+  {
+   "case_id": "933e11b4dc2b8cdd",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "present_value_differs",
+   "field": "incremental_amount",
+   "fold": "f4",
+   "n": 6,
+   "notes": [
+    "mismatch:value|unit|currency"
+   ],
+   "null_period": {
+    "fam_a": true,
+    "fam_b": false
+   },
+   "outcome_fam_a_graded": "wrong_value",
+   "outcome_fam_b_graded": "wrong_value",
+   "prompt_version": "prompt-v1.0",
+   "template": "T1"
+  },
+  {
+   "case_id": "942a8b6e282f8f76",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "agree_present",
+   "field": "stated_amount",
+   "fold": "f1",
+   "n": 7,
+   "notes": [],
+   "null_period": {
+    "fam_a": true,
+    "fam_b": false
+   },
+   "outcome_fam_a_graded": "correct",
+   "outcome_fam_b_graded": "correct",
+   "prompt_version": "prompt-v1.0",
+   "template": "T2"
+  },
+  {
+   "case_id": "b0673e2868c44e9f",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "agree_present",
+   "field": "incremental_amount",
+   "fold": "f4",
+   "n": 8,
+   "notes": [],
+   "null_period": {
+    "fam_a": true,
+    "fam_b": false
+   },
+   "outcome_fam_a_graded": "correct",
+   "outcome_fam_b_graded": "correct",
+   "prompt_version": "prompt-v1.0",
+   "template": "T1"
+  },
+  {
+   "case_id": "cda8daa3f5309de6",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "present_value_differs",
+   "field": "stated_quantity",
+   "fold": "f2",
+   "n": 9,
+   "notes": [
+    "mismatch:value"
+   ],
+   "null_period": {
+    "fam_a": true,
+    "fam_b": false
+   },
+   "outcome_fam_a_graded": "wrong_value",
+   "outcome_fam_b_graded": "wrong_value",
+   "prompt_version": "prompt-v1.0",
+   "template": "T3"
+  },
+  {
+   "case_id": "e77a841a1241ab9f",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "agree_present",
+   "field": "executed_amount",
+   "fold": "f3",
+   "n": 10,
+   "notes": [],
+   "null_period": {
+    "fam_a": true,
+    "fam_b": false
+   },
+   "outcome_fam_a_graded": "correct",
+   "outcome_fam_b_graded": "correct",
+   "prompt_version": "prompt-v1.0",
+   "template": "T1"
+  },
+  {
+   "case_id": "e77a841a1241ab9f",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "agree_present",
+   "field": "incremental_amount",
+   "fold": "f3",
+   "n": 11,
+   "notes": [],
+   "null_period": {
+    "fam_a": true,
+    "fam_b": false
+   },
+   "outcome_fam_a_graded": "correct",
+   "outcome_fam_b_graded": "correct",
+   "prompt_version": "prompt-v1.0",
+   "template": "T1"
+  }
+ ]
+}

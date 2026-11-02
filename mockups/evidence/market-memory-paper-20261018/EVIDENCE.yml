@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/market_memory_retained.html.j2
+  - templates/market_memory_retained.css
+  - site/market_memory_retained.css
+  - site/market_memory.html
+manifest: mockups/evidence/market-memory-paper-20261018/manifest.json

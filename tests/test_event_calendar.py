@@ -227,6 +227,57 @@ def test_high_impact_strip_md_zh(monkeypatch):
     assert any(s["type"] == "FOMC" and s["md_zh"] == "6月17日" for s in strip)
 
 
+# --- FOMC27: CY2027 decision days (Fed fomccalendars.htm, read 2026-10-14) -----------------
+
+_FED_2027_DECISION_DAYS = [
+    ("2027-01-27", False), ("2027-03-17", True), ("2027-04-28", False),
+    ("2027-06-09", True), ("2027-07-28", False), ("2027-09-15", True),
+    ("2027-10-27", False), ("2027-12-08", True),
+]
+
+
+def test_fomc27_rows_are_the_fed_published_2027_decision_days():
+    assert [(d, sep) for d, sep in ec._FOMC if d.startswith("2027-")] == _FED_2027_DECISION_DAYS
+
+
+def test_fomc27_calendar_is_sorted_unique_and_keeps_2026():
+    days = [d for d, _sep in ec._FOMC]
+    assert days == sorted(days)
+    assert len(days) == len(set(days))
+    assert [d for d in days if d.startswith("2026-")] == [
+        "2026-01-28", "2026-03-18", "2026-04-29", "2026-06-17",
+        "2026-07-29", "2026-09-16", "2026-10-28", "2026-12-09",
+    ]
+
+
+def test_fomc27_sep_flag_iff_mar_jun_sep_dec():
+    for day, has_sep in ec._FOMC:
+        assert has_sep is (int(day[5:7]) in (3, 6, 9, 12)), day
+
+
+def test_fomc27_decision_dates_cover_2027_and_cross_the_year_boundary():
+    expected = [date.fromisoformat(d) for d, _sep in _FED_2027_DECISION_DAYS]
+    assert ec.fomc_decision_dates(date(2027, 1, 1), date(2027, 12, 31)) == expected
+    assert ec.fomc_decision_dates(date(2026, 12, 10), date(2027, 1, 27)) == [date(2027, 1, 27)]
+    assert ec.fomc_decision_dates(date(2027, 1, 26), date(2027, 1, 26)) == []  # first day is not a decision day
+
+
+def test_fomc27_us_macro_events_sees_the_first_2027_meeting(monkeypatch):
+    _no_auctions(monkeypatch)
+    fomc = [e for e in ec.us_macro_events(date(2026, 12, 20), 40, use_fred=False)
+            if e["type"] == "FOMC"]
+    assert [e["date"] for e in fomc] == ["2027-01-27"]
+    assert "SEP" not in fomc[0]["label"]
+
+
+def test_fomc27_march_2027_meeting_is_labelled_sep(monkeypatch):
+    _no_auctions(monkeypatch)
+    fomc = [e for e in ec.us_macro_events(date(2027, 3, 1), 30, use_fred=False)
+            if e["type"] == "FOMC"]
+    assert [e["date"] for e in fomc] == ["2027-03-17"]
+    assert "SEP" in fomc[0]["label"]
+
+
 if __name__ == "__main__":
     import pytest
     raise SystemExit(pytest.main([__file__, "-q"]))

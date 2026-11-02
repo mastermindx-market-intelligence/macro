@@ -1,0 +1,23 @@
+{
+  "run_at": "2026-10-14T15:59:38Z",
+  "as_of": "2026-10-14",
+  "planned": 1,
+  "passed": 0,
+  "quarantined": 1,
+  "items": [
+    {
+      "id": "press-research_desk-2026-10-14-593acfb87c11",
+      "desk": "research_desk",
+      "status": "quarantined",
+      "reason": "validators: fact_anchor, close_paraphrase"
+    }
+  ],
+  "writer_state": {
+    "calls": 1,
+    "failures": 0,
+    "consecutive_failures": 0,
+    "circuit_open": false,
+    "tokens_used": 4353,
+    "token_budget": 24000
+  }
+}

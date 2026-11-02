@@ -1,0 +1,90 @@
+{
+  "schema": "tiingo.attended_gate_exact_source_review/v1",
+  "recorded_at_utc": "2026-10-13T04:47:06.124303+00:00",
+  "decision": "PASS_SOURCE_AND_INERT_GATES",
+  "original_root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "reviewer_native_thread": "01a13385-9767-7a32-83b2-d216c2c9778d",
+  "run_id": "eod-wave15-original-unadmitted-continuation04-20261013-01a12ab6",
+  "candidate_file": "tiingo-phase04-attended-quota-recovery03.py",
+  "candidate_sha256": "a48d23bb49f16205a57ad46ce22c04a07068dc67eed52fc56e5ebdbe0330296f",
+  "plan_file": "eod-wave15-original-unadmitted-continuation04-20261013-01a12ab6-planned-attended-recovery03.json",
+  "plan_sha256": "eb75c83b6f5de511ea41377844f622a20a1ac5ff5656f81607d1daacb6b92aa5",
+  "architecture_ruling_sha256": "992fb4b4827a1002ff6bf147c62ad11853e4355d78a591a25cb69e4ad27efcd6",
+  "supersedes_for_execution_only": {
+    "candidate_recovery01": "b6440af1c25c9f504d65d7c477c2b79287ef71a9d5f8317c59f932b12f53203e",
+    "held_review_sha256": "18280a3056f78cd537b6b5999d6a9444165be1267ac4180d8eb5e46f4565bcf4",
+    "historical_failure_receipt_preserved": true,
+    "old_candidates_not_authorized_to_launch": true
+  },
+  "resolved_findings": {
+    "R1": "Nonblocking bounded os.read and select loop uses one monotonic deadline, including partial input; READY records the absolute deadline used by the helper. Timeout/EOF/oversize/multiline/invalid UTF8 reject; blocking mode restored.",
+    "R2": "Namespace os.walk now raises on traversal failure; exact pre/post/final namespace equality and symlink/type rejection retained.",
+    "R3": "Dynamic parent and quota proofs are hashed and parsed from the same read bytes. Scope binds supplied, checked digests.",
+    "R4": "Validated method, READY, snapshot, module and canonical acceptance identities are frozen/rechecked. Plan and all listed failure/reservation evidence plus current coverage/accounting/parent/source pins are checked again before quota-last. No changed admission module can silently inherit the earlier acceptance.",
+    "R5": "Exact accepted schemas, strict parent acceptance booleans, strict intended-account/visible-reload booleans, root/RUN/PID/method/plan/READY binding and aware UTC chronology are checked. Quota age and allowances remain last before scope/key."
+  },
+  "passed_control_evidence": [
+    "Original e7d capture AST from admission-module loading through final settlement proof is exactly unchanged. The original outcome handling, no failed-request retry, strict collector/TLS/key behavior and finite rate/error/drain controls are preserved.",
+    "1816 selected never-admitted requests, 34 holds, exclusion of all2576 prior-started pairs, 24478712262 raw-byte stop threshold, four inflight, five-second rolling admission, initial delay and40GiB storage floor remain bound to accepted evidence.",
+    "The complete unchanged historical selection and accounting validation occurs once before READY; full receipt parsing is bracketed by equal complete namespace snapshots.",
+    "Full snapshot covers root, subdirectories and all file names plus device/inode/mode/link count/size/mtime_ns/ctime_ns; atime is excluded. After READY the complete metadata namespace must still match.",
+    "Current root identity is enforced, --attended-one-shot-quota-gate is the sole accepted argument and Python optimization is prohibited so assertions remain active.",
+    "Scope/result remain same RUN and exclusive; READY is stage success with process_terminal_exit_code=null. Original20348 rc0 is not relabelled. Exclusive scope precedes read_key and provider admission.",
+    "All old main-local values needed by the capture body are returned by validation or assigned in the new main; no unresolved old variable was found.",
+    "Historical quota fields retained in the plan do not supply the new dynamic gate; fresh root-bound quota file/hash controls admission.",
+    "No new queue, scheduler, auto-successor, account switch, provider retry or writer-control system introduced."
+  ],
+  "verification": {
+    "source_parses_and_compiles": true,
+    "recovery03_inert_check_count": 35,
+    "recovery03_all_checks_pass": true,
+    "recovery03_checks_file": "tiingo-phase04-attended-quota-recovery03-inert-review-checks.json",
+    "recovery03_checks_sha256": "818c9801e77210f0a8cb8f527f812f58ee495e855293e5c84ff710c55f4e6f68",
+    "reused_recovery02_checks_file": "tiingo-phase04-attended-quota-recovery02-inert-review-checks.json",
+    "reused_recovery02_checks_sha256": "6e64c782b5b94fc770cbe3a53fa2834ea2a33b1cbfb8dc62ce4e1bca4cdbeaf9",
+    "discriminating_negatives": [
+      "partial and empty input deadline",
+      "EOF and partial EOF",
+      "oversize/multiline/invalid UTF8",
+      "unreadable namespace traversal",
+      "changed proof hash and hash/parse race",
+      "expired absolute deadline even with complete queued input",
+      "stale/future/before-READY/naive/nonUTC/bad quota time",
+      "wrong account/schema/string-true/no visible reload",
+      "insufficient hourly/daily/monthly allowance",
+      "wrong parent root/READY/method/plan/PID/schema",
+      "fake terminal-zero and absent revised-gate acceptance"
+    ],
+    "all_fixtures_extracted_AST_only": true,
+    "candidate_main_executed": false,
+    "collector_imported_by_review": false
+  },
+  "remaining_execution_conditions": [
+    "The actual original root accepts the amended stage-success proof contract and consumes this exact-source review before execution.",
+    "Launch only this exact candidate and plan once on the reconciled existing RUN/carrier. Preserve old76884 lost terminal status and the original pre-provider reconciliation; never invent its exit code.",
+    "Consume the actual READY tool session/chunk and exact artifact digest while process remains waiting; preserve process_terminal_exit_code null. Save exclusive parent receipt with specified schema, strict acceptance fields, correct method/plan/PID and actual UTC time.",
+    "After actual READY, reload the legitimate visible Chrome usage page for mastermindx6031 and save exclusive quota evidence; retain credential_or_session_material_copied=false. Submit one bound stdin record within the300second wait.",
+    "Any final source/snapshot/storage/quota/custody failure remains pre-provider. No blind retry, new carrier or automatic successor. Reconcile artifacts and process status on the existing operation.",
+    "Existing scoped custody conclusion is conditional on current reconciled mission facts: no identified competing EOD writer or unresolved effect. Do not treat snapshots/lsof as universal writer absence.",
+    "Actual final capture result and process return must be consumed and QA completed. Existing qualification template d398 requires binding to the newly created actual scope after launch; source review grants no programme acceptance."
+  ],
+  "review_effects": {
+    "provider_calls": 0,
+    "credentials_read": false,
+    "archive_writes": 0,
+    "source_edits": 0,
+    "process_kills": 0,
+    "child_dispatches": 0,
+    "exclusive_review_artifacts_only": true
+  },
+  "limitations": [
+    "This is source and inert-fixture qualification, not a claim that validation READY, fresh browser quota, provider capture or QA occurred.",
+    "Namespace/stat reuse relies on existing immutable receipt source law and bounded incumbent custody, not adversarial filesystem sealing."
+  ],
+  "preserved_holds": [
+    "PR955 approval denial",
+    "Fundamentals provider refusals",
+    "Fabric transport/log permission refusals"
+  ],
+  "programme_acceptance_claimed": false
+}

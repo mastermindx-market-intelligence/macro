@@ -1,0 +1,21 @@
+{
+  "state": "ROOT_ACCEPTED_EXPLICIT_MARKET_REVIEW_V4_BUILD_REQUIRED",
+  "accepted_at": "2026-10-14T03:01:44.658689+00:00",
+  "changed_tokens": [
+    "golden_dome/market_context/0",
+    "munitions_replenishment/market_context/0",
+    "space/market_context/0",
+    "nato_fms_demand/market_context/0",
+    "fleet_sustainment_upgrades/market_context/0",
+    "shipbuilding/market_context/0"
+  ],
+  "preserved_fingerprints": 37,
+  "market_observation_date": "2026-10-08",
+  "freshness_promoted": false,
+  "source_code_normalizer_changed": false,
+  "previous_config_sha256": "87b6c402074eb28765fb6e75dadcbca9e4d311f5178e0be1593bf98a20ce2758",
+  "accepted_config_sha256": "6d00ae51d964cfae955647c3c526b78f0b2e3da0514f97eae0647869b660027b",
+  "v3_financial_prior_review_sha256": "2f10c93138d8de92c47fd33a8ca92fddd5b9d4f5023022b1dbfa7b903fc9a3b2",
+  "public_v3_checkpoint": "same commit retains current data/government_revenue/defense_economics.json for future exact prior-approval replay",
+  "remaining_gap": "financial native owner advanced; preserve newer incumbent five-event owner then normal v4 build, full proof and browser/performance acceptance"
+}

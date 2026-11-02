@@ -1,0 +1,41 @@
+{
+  "schema": "defense.main_integration_adjudication.v1",
+  "original_candidate": "0d25b42aa392199337deeb5f0c8ea1c50b612190",
+  "actual_main": "04028b3030205b6f7508d7f0d16e2a2ecaa6f4c6",
+  "pr_api_base_was_stale": "46cd92e0c213a4ba2c2f1423f147355fe9795983",
+  "same_carrier": 9066,
+  "conflict_resolution": {
+    "base": "04028b3030205b6f7508d7f0d16e2a2ecaa6f4c6",
+    "original_candidate": "0d25b42aa392199337deeb5f0c8ea1c50b612190",
+    "manifest": "union all4 incoming dependency additions with Defense comments and dependencies; incoming LR packing repair retained",
+    "deploy": "union incoming3MarketMemory triggers with existing Defense triggers; no actual restart",
+    "incoming_owner_bytes_preserved": [
+      "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+      "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+      "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+      "site/research_screener.html"
+    ],
+    "pending_generated_resolution": [],
+    "authority": "integration only; no excluded product implementation",
+    "generated_resolved_by_canonical_builders": [
+      "site/government_revenue.html",
+      "site/theme.js",
+      "site/government-revenue-critical-theme.css",
+      "site/research_screener.html"
+    ]
+  },
+  "site_projection": "existing --site-only builder from unchanged canonical generation grw2-7f2937619f11effaad759953; existing screener bake from committed JSON",
+  "critical_css_delta": "142 bytes for two incoming semantic tokens; no Defense style rules authored",
+  "canonical_data_mutated": false,
+  "ci_scope": "incoming LR owner repairs inherited2packing breaches; no ceiling raised",
+  "first_test_attempt": "316tests passed but session exit1 from MM_DATA_GUARD: parent renderer changed3site files during test window; failed result retained, guard not disabled",
+  "new_proof": "required; V12 seal remains truthful to its own earlier checkout",
+  "production_effect": false,
+  "independent_acceptance": false,
+  "final_affected_tests": {
+    "exit": 0,
+    "passed": 316,
+    "warning": 1,
+    "seconds": 55.97
+  }
+}

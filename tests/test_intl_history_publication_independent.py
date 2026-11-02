@@ -155,7 +155,10 @@ def _workspace_fixture():
 def _publication_workspace(monkeypatch, attach_history_fn=attach_history, overviews=None):
     workspace, generation, markets = _workspace_fixture()
     if overviews is None:
-        overviews = lambda closes, workspace_generation=None: deepcopy(workspace)
+        def overviews(closes, *, workspace_generation=None, production_inputs=None):
+            # This History-only fixture supplies no EOD permission or data.
+            assert production_inputs is None
+            return deepcopy(workspace)
 
     fake_inputs = types.ModuleType("engine.intl_inputs")
     fake_inputs.countries = lambda: {
@@ -170,11 +173,17 @@ def _publication_workspace(monkeypatch, attach_history_fn=attach_history, overvi
 
     log = _Log()
     namespace = {
+        "Path": Path,
+        "config": types.SimpleNamespace(load=lambda: {"intl": {}}),
         "uuid4": lambda: generation.split(":", 1)[1],
         "_workspace_overviews": overviews,
         "attach_macros": lambda ws, **kwargs: {**ws, "macros_attached": True},
         "attach_risks": lambda ws, **kwargs: {**ws, "risks_attached": True},
         "attach_history": attach_history_fn,
+        # W2F surveillance seam (scripts/build_intl.py) — stubbed like the sibling mounts;
+        # this file tests History only.
+        "build_observation_set": lambda closes, **kwargs: None,
+        "attach_surveillance": lambda ws, **kwargs: {**ws, "surveillance_attached": True},
         "read_ecb_deposit_materialization": lambda **kwargs: {"status": "missing"},
         "_ecb_publication_measure": lambda *args, **kwargs: {},
         "log": log,

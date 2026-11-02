@@ -71,6 +71,6 @@ jobs:
         with:
           node-version: "22"
       - name: Install public-render dependencies
-        run: python -m pip install --quiet jinja2 pyyaml
+        run: python -m pip install --quiet jinja2 pyyaml rjsmin==1.2.5
       - name: Render and publish public surfaces
         run: bash scripts/ci/public_render.sh

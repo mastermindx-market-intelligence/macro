@@ -38,9 +38,15 @@ three nights and ~99% of a name's §7 markers landed on a candle the engine neve
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
+import os
+import re
+import shutil
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import pandas as pd
@@ -232,31 +238,137 @@ def _build_ticker(t: str, deep_dir: Path, caches: dict[str, pd.DataFrame],
     return None
 
 
+def _daily_ohlc_identity() -> dict | None:
+    """Capture source identity before the daily output commit can rebase HEAD.
+
+    Other workflows and local builds still emit chart data, but do not create a
+    receipt that could authorize delivery through the trusted daily lane.
+    """
+    repository = "mastermindx-market-intelligence/macro"
+    workflow = f"{repository}/.github/workflows/daily.yml@refs/heads/main"
+    if (os.environ.get("GITHUB_REPOSITORY") != repository
+            or os.environ.get("GITHUB_REF") != "refs/heads/main"
+            or os.environ.get("GITHUB_WORKFLOW_REF") != workflow):
+        return None
+    identity = {}
+    for key, variable in (("run_id", "GITHUB_RUN_ID"),
+                          ("run_number", "GITHUB_RUN_NUMBER"),
+                          ("run_attempt", "GITHUB_RUN_ATTEMPT")):
+        value = os.environ.get(variable, "")
+        if not value.isascii() or not value.isdecimal() or int(value) < 1:
+            raise ValueError(f"OHLC build requires a positive {variable}")
+        identity[key] = value if key == "run_id" else int(value)
+    source_sha = subprocess.check_output(
+        ["git", "-C", str(Path(__file__).resolve().parents[1]),
+         "rev-parse", "HEAD"], text=True, timeout=15).strip()
+    if not re.fullmatch(r"[0-9a-f]{40}", source_sha):
+        raise ValueError("OHLC build source identity is invalid")
+    identity["source_sha"] = source_sha
+    return identity
+
+
 def build_us(site: Path) -> tuple[int, int]:
-    """Emit site/ohlc/<T>.json for the whole US stock-library universe.
-    Returns (written, candle_capable)."""
+    """Emit one completed US generation; return (written, candle_capable).
+
+    The old payload survives a failed build. Only a completed trusted daily build
+    receives a delivery receipt; unavailable tickers are recorded explicitly.
+    """
+    outdir = site / "ohlc"
+    if outdir.is_symlink():
+        raise ValueError("OHLC producer refuses a managed publication symlink")
+    if outdir.exists() and not outdir.is_dir():
+        raise ValueError("OHLC producer output must be a directory")
+    temporary = site / "_tmp"
+    if temporary.is_symlink():
+        raise ValueError("OHLC producer temporary directory must not be a symlink")
+    temporary.mkdir(parents=True, exist_ok=True)
+    receipt = temporary / "ohlc-complete.json"
+    if receipt.is_symlink():
+        raise ValueError("OHLC completion receipt must not be a symlink")
+    receipt.unlink(missing_ok=True)
+
+    identity = _daily_ohlc_identity()
     index_file = site / "stockdata" / "index.json"
     if not index_file.exists():
         log.warning("US stock index %s missing — chart data skipped", index_file)
         return (0, 0)
-    universe = json.loads(index_file.read_text())
-    tickers = [row["t"] for row in universe if isinstance(row, dict) and row.get("t")]
+    index_bytes = index_file.read_bytes()
+    universe = json.loads(index_bytes)
+    if not isinstance(universe, list):
+        raise ValueError("US stock index must contain a ticker list")
+    tickers = []
+    filenames = set()
+    for row in universe:
+        if not isinstance(row, dict) or not isinstance(row.get("t"), str):
+            raise ValueError("US stock index contains an invalid ticker")
+        ticker = row["t"]
+        filename = f"{_safe(ticker)}.json"
+        if not re.fullmatch(r"[A-Za-z0-9_][A-Za-z0-9_.-]{0,94}\.json", filename):
+            raise ValueError("US stock index contains an unsafe filename")
+        if filename.casefold() in filenames:
+            raise ValueError("US stock index contains duplicate filename identities")
+        filenames.add(filename.casefold())
+        tickers.append(ticker)
 
-    outdir = site / "ohlc"
-    outdir.mkdir(parents=True, exist_ok=True)
+    # Validate the previous producer-owned directory before replacing it. Never
+    # delete a foreign link, nested directory or unrelated file during cleanup.
+    if outdir.exists():
+        for previous in outdir.iterdir():
+            if (previous.is_symlink() or not previous.is_file()
+                    or not re.fullmatch(
+                        r"[A-Za-z0-9_][A-Za-z0-9_.-]{0,94}\.json", previous.name)):
+                raise ValueError("OHLC previous output contains an unowned entry")
+
+    stage = Path(tempfile.mkdtemp(prefix="ohlc-build-", dir=temporary))
+    draft_receipt = stage.with_name(stage.name + "-manifest.json")
+    backup = stage.with_name(stage.name + "-previous")
     deep_dir = config.data_dir() / "stocks"
-    caches = _load_caches()
-
     written = candles = 0
-    for t in tickers:
-        rec = _build_ticker(t, deep_dir, caches, market="US")
-        if rec is None:
-            continue
-        (outdir / f"{_safe(t)}.json").write_text(
-            json.dumps(rec, separators=(",", ":")))
-        written += 1
-        candles += int(rec["o"] == 1)
-    return (written, candles)
+    unavailable = {}
+    try:
+        caches = _load_caches()
+        for ticker in tickers:
+            rec = _build_ticker(ticker, deep_dir, caches, market="US")
+            if rec is None:
+                unavailable[ticker] = "no_retained_price"
+                continue
+            (stage / f"{_safe(ticker)}.json").write_text(
+                json.dumps(rec, separators=(",", ":")), encoding="utf-8")
+            written += 1
+            candles += int(rec["o"] == 1)
+        if not written:
+            log.warning("US OHLC build produced no usable payload; prior output retained")
+            return (0, 0)
+        if identity is not None:
+            from scripts.publish_ohlc import seal_generation
+            seal_generation(
+                stage, draft_receipt, **identity,
+                index_sha256=hashlib.sha256(index_bytes).hexdigest(),
+                expected_symbols=tickers, unavailable_symbols=unavailable)
+
+        replaced = False
+        try:
+            if outdir.exists():
+                os.replace(outdir, backup)
+            os.replace(stage, outdir)
+            replaced = True
+            if identity is not None:
+                # The receipt is the final authority. Moving it last prevents an
+                # interrupted build from authorizing old or partially moved bytes.
+                os.replace(draft_receipt, receipt)
+        except BaseException:
+            if replaced:
+                os.replace(outdir, stage)
+            if backup.exists():
+                os.replace(backup, outdir)
+            raise
+        if backup.exists():
+            shutil.rmtree(backup)
+        return (written, candles)
+    finally:
+        if stage.exists():
+            shutil.rmtree(stage)
+        draft_receipt.unlink(missing_ok=True)
 
 
 def emit_close_only(index_file: Path, close_path: Path, outdir: Path, src_label: str) -> int:

@@ -1,0 +1,17 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____ test_official_facts_keep_private_guard_when_mutable_labels_are_removed ____
+tests/test_press_official_staging.py:724: in test_official_facts_keep_private_guard_when_mutable_labels_are_removed
+    assert result['emitted'] == 0
+E   assert 1 == 0
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 1 passed, 0 quarantined of 1 planned (tokens 0/240000)
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-d067882437a8 status passed (public article approval: false — no emit path)
+::notice title=press_emit::press emit: 1 article(s) published; 0 file(s) written under site/blog/
+------------------------------ Captured log call -------------------------------
+WARNING  engine.press.desk_planner:desk_planner.py:384 press.desk_planner: canonical earnings-call ledger gap: data/chronicle/earnings_call_events.jsonl absent
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_official_staging.py::test_official_facts_keep_private_guard_when_mutable_labels_are_removed
+1 failed, 44 deselected in 6.18s

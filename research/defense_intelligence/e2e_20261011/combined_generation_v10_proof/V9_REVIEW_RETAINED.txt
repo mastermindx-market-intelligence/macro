@@ -1,0 +1,7 @@
+proof by themselves" — they only demonstrate positive flow. The optional gaps above (sync throw, in-flight orphan across subjects) are not directly challenged by the suite.
+
+**Missing context:**
+- `government-revenue-investor.js`, `government-revenue-briefcase.js`, and the rest of `government-revenue-page.js` beyond the `priorityEpoch`/controller excerpt are not supplied. Correctness of invariants 1, 4, and 5 partly depends on `createGovernmentRevenueInvestor(...).load(true)` honouring the patched `fetch`/`authHeaders` and returning a rejected promise when auth is disabled — visible only via the `'locked'` status assertion, not the patched-`fetch` code path itself.
+- `_onAuth` in `theme.js` (excerpt) sets `_authReady=true` immediately before `_emitAuth`. The investor-start code relies on this order (`onChange` synchronous-callback branch is keyed off `_authReady` at registration). Not contradicted, but worth noting.
+
+**Bottom line:** no correctness findings against the supplied source. The native Codex-authored ordering in `templates/government-revenue-investor-start.js` (settled gate, coalesce clause, `authObserved`/`owned` ownership chain, post-load `modules()`) implements the stated invariants, and the supplied tests in `tests/test_government_revenue_priority.cjs` plus the page-controller excerpt corroborate the boundary. The three improvements above are hardening, not defect.

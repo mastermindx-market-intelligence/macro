@@ -59,19 +59,32 @@ def test_segments_are_the_invariant_text() -> None:
     assert _token_segments("no tokens here", ("<T1>",)) == ["no tokens here"]
 
 
-def test_fallback_accepts_a_healthy_two_token_pair() -> None:
-    """The real committed pair must pass the stdlib path, not only the exact one."""
-    tpl = (TEMPLATES / "theme.js").read_text()
-    site = (SITE / "theme.js").read_text()
-    segs = _token_segments(tpl, _THEME_TOKENS)
-    overlay = TEMPLATES / "terminal_overlay.js"
-    if overlay.is_file():
-        segs[-1] = f"{segs[-1].rstrip()}\n\n{overlay.read_text().lstrip()}"
-    assert len(segs) == 3, "theme.js should carry exactly two bake tokens"
-    assert _matches_around_tokens(site, segs), (
-        "the stdlib fallback rejects the committed, in-sync pair — pages.yml would "
-        "refuse to publish a healthy tree"
-    )
+def test_missing_emitter_fails_theme_verification_closed(tmp_path, monkeypatch, capsys) -> None:
+    from scripts import check_template_site_sync as guard
+    (tmp_path / "templates").mkdir(); (tmp_path / "site").mkdir()
+    source = "window.SUPABASE_CFG = " + _THEME_TOKEN + ";"
+    (tmp_path / "templates" / "theme.js").write_text(source)
+    (tmp_path / "site" / "theme.js").write_text(source)
+    monkeypatch.setattr(guard, "_bake_theme", lambda _path: None)
+    assert guard.check(tmp_path) == ["theme.js"]
+    assert guard.check(tmp_path, fix=True) == ["theme.js"]
+    assert guard.check.unfixed == ["theme.js"]
+    assert "rjsmin==1.2.5" in capsys.readouterr().out
+    assert (tmp_path / "site" / "theme.js").read_text() == source
+
+
+def test_exact_emitter_accepts_minified_pair_and_rejects_changes(tmp_path) -> None:
+    from lib import site_assets
+    from scripts import check_template_site_sync as guard
+    (tmp_path / "templates").mkdir(); (tmp_path / "site").mkdir()
+    theme = tmp_path / "templates" / "theme.js"
+    theme.write_text("window.SUPABASE_CFG = " + _THEME_TOKEN + ";")
+    output = tmp_path / "site" / "theme.js"
+    emitted = site_assets.emit_theme_js(theme); output.write_text(emitted)
+    assert guard.check(tmp_path) == []
+    for broken in (emitted[:len(emitted)//2], emitted + "window.changed=true;", emitted.replace("SUPABASE_CFG","WRONG_CFG")):
+        output.write_text(broken)
+        assert guard.check(tmp_path) == ["theme.js"]
 
 
 def test_fallback_still_rejects_a_real_one_sided_edit() -> None:

@@ -1,0 +1,37 @@
+{
+  "calendar_case": {
+    "call_records": 26,
+    "date": "2020-03-16",
+    "exact_source_row_agreement": true,
+    "generic_reader_receipts": [
+      "6ea6bfb5c8a07ad13eb7452dd5230ae5563e9a673faf544c8e17b298912fe349",
+      "0bcf84874accd60a42c6df46ff9d27d4a870dd8cc4c7f5779b8546f000925134",
+      "9bf1e9cb5e3ffb966a03ba76fbc38fc51937d195feebeea579df8721741fa8f3"
+    ],
+    "price_rows": 25
+  },
+  "candidate_source_head": "e5e84272bc9128e2577f907de4d4960e84950a9b",
+  "candidate_uncommitted_changes": true,
+  "full_corpus_copy": false,
+  "installed_new_action": false,
+  "metadata_projection_sha256": "eb87a1361d1524d0258d626e83efb9f38611644c47a16e981834184fe07b8e2d",
+  "point_in_time_eligible": false,
+  "schema": "market_memory.transcript_live_source_qualification.v1",
+  "source_date_range": {
+    "first": "2005-10-11",
+    "last": "2026-10-14"
+  },
+  "source_mutation": false,
+  "source_provider_requests": 0,
+  "source_ref": "fundamental_history:transcripts/stock_earning_call_transcripts.parquet",
+  "source_rows": 239021,
+  "source_version": "statv1:c1a5ee31a1ea5e2ac65fbfb20c9b67c55c83cbd5db1c3436c2169efa66dea085",
+  "text_case": {
+    "all_text_and_source_order_preserved": true,
+    "pages": 5,
+    "paragraph_count": 73,
+    "record_sha256": "dc2234bab2ba1698f3fe07950a2781a861e2a23bd91f91411ae5f4c917e5163d",
+    "symbol_source_label": "BUKS",
+    "vendor_id": null
+  }
+}

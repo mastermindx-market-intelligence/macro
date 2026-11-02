@@ -1,0 +1,25 @@
+{
+  "scope": "Local immutable candidate-proof acceptance only; protected CI, publication, installation and independent customer acceptance remain distinct.",
+  "source_checkout": "8c1850a47249dd7f5a4f681775962e19684689cb",
+  "receipt_identity": "2a4d4fa0b17c168817083c62c9707e1e4949da44446b2d8c0df3fbc32f20bf2d",
+  "collected": 105,
+  "passed": 104,
+  "skipped": 1,
+  "skip_reason": "no unaccounted rows to exercise",
+  "source_dependencies": 7444,
+  "outputs": 109,
+  "generation": {
+    "ledger_line_count": 642,
+    "projection_generated_at": "2026-10-14T03:12:45.197758+00:00",
+    "queue_content_id": "grcq1-8f1cc489fdf1e14384e038c9",
+    "state_sha256": "2c889096175c738bb09c791f414b5acd08594735848ea0b822a7a7c01e58c9de"
+  },
+  "integrity": "Sealed collection, JUnit and execution log copied byte-exact after verifying producer hashes and sizes.",
+  "ci_closure": {
+    "missing": 0,
+    "unwired": 0,
+    "repaired_exact_path_declarations": 105,
+    "jobs": 21
+  },
+  "effect": "No CAS, production publication or installation performed."
+}

@@ -756,8 +756,10 @@ class TestDeterminism:
         result = bfc._check_mode.__wrapped__ if hasattr(bfc._check_mode, '__wrapped__') else None
         # Run check mode: render to tmp inside the function and compare
         # We directly test that rendered output matches itself by calling render_all twice
-        out2 = tmp_path / "verify"
-        out2.mkdir()
+        # Both roots must be named site: write_page derives depth-aware
+        # shared-shell/data-base asset paths from that documented boundary.
+        out2 = tmp_path / "verify" / "site"
+        out2.mkdir(parents=True)
         bfc.render_all(out2)
         for f in out.rglob("*"):
             if f.is_file():
@@ -862,6 +864,167 @@ class TestHandAuthoredPages:
         )
         for rel in sorted(bfc.HAND_AUTHORED):
             assert f"ORPHAN (not produced by builder): {rel}" not in captured.err
+
+
+# Some content hrefs are accepted only when a file exists under site/.
+# This sparse tree has no site/, so the stand-ins below let render_all run.
+_HREF_STUBS = (
+    "crypto.html",
+    "vector.html",
+    "chat.html",
+    "congress_trades.html",
+    "options.html",
+    "us_stocks.html",
+    "markets.html",
+    "stocks/index.html",
+    "research/index.html",
+)
+
+
+def _published_stamp(val: object) -> str:
+    """YYYY-MM-DD form a hub card prints for a frontmatter date."""
+    stamp = getattr(val, "strftime", None)
+    if stamp is not None:
+        return stamp("%Y-%m-%d")
+    return str(val)
+
+
+def _render_free_estate(tmp_path, monkeypatch):
+    """render_all into tmp. Does not read or write the repo site/ or data/."""
+    import scripts.build_free_content as bfc
+
+    stand_in = tmp_path / "href-stubs"
+    stand_in.mkdir()
+    for rel in _HREF_STUBS:
+        dest = stand_in / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text("", encoding="utf-8")
+    monkeypatch.setattr(bfc, "_LIVE_SITE_DIR", stand_in)
+    out = tmp_path / "site"
+    out.mkdir()
+    bfc.render_all(out)
+    return bfc, out
+
+
+class TestHubRecordCountDatesAndBoundary:
+    """Heading count, card dates, and the access paragraph on the two hubs."""
+
+    @pytest.mark.skipif(
+        not _required_templates_present() or not _any_content_exists(),
+        reason="Designer templates or content .md files not yet present",
+    )
+    def test_products_hub_heading_counts_records(self, tmp_path, monkeypatch):
+        bfc, out = _render_free_estate(tmp_path, monkeypatch)
+        pages, _ = bfc.load_content()
+        count = sum(1 for p in pages if p["fm"]["family"] == "product")
+        html = (out / "products" / "index.html").read_text(encoding="utf-8")
+        match = re.search(
+            r'<h2 id="product-surfaces">(.*?)</h2>', html, re.DOTALL,
+        )
+        assert match, "product-surfaces heading missing"
+        heading = " ".join(re.sub(r"<[^>]+>", "", match.group(1)).split())
+        assert count >= 1
+        assert heading.startswith(f"{count} ")
+        assert "Three connected" not in html
+        assert "三个互联" not in html
+
+    @pytest.mark.skipif(
+        not _required_templates_present() or not _any_content_exists(),
+        reason="Designer templates or content .md files not yet present",
+    )
+    def test_products_hub_heading_follows_the_records(self, tmp_path, monkeypatch):
+        """One record fewer prints one fewer: the number is counted, not typed."""
+        import scripts.build_free_content as bfc
+
+        real = bfc.load_content
+
+        def one_fewer():
+            pages, rest = real()
+            dropped = next(p for p in pages if p["fm"]["family"] == "product")
+            return [p for p in pages if p is not dropped], rest
+
+        monkeypatch.setattr(bfc, "load_content", one_fewer)
+        _bfc, out = _render_free_estate(tmp_path, monkeypatch)
+        pages, _ = real()
+        count = sum(1 for p in pages if p["fm"]["family"] == "product")
+        html = (out / "products" / "index.html").read_text(encoding="utf-8")
+        match = re.search(
+            r'<h2 id="product-surfaces">(.*?)</h2>', html, re.DOTALL,
+        )
+        assert match, "product-surfaces heading missing"
+        heading = " ".join(re.sub(r"<[^>]+>", "", match.group(1)).split())
+        assert count >= 2
+        assert heading.startswith(f"{count - 1} ")
+
+    @pytest.mark.skipif(
+        not _required_templates_present() or not _any_content_exists(),
+        reason="Designer templates or content .md files not yet present",
+    )
+    def test_products_hub_cards_print_published(self, tmp_path, monkeypatch):
+        bfc, out = _render_free_estate(tmp_path, monkeypatch)
+        pages, _ = bfc.load_content()
+        html = (out / "products" / "index.html").read_text(encoding="utf-8")
+        stamps = [
+            _published_stamp(p["fm"]["published"])
+            for p in pages
+            if p["fm"]["family"] == "product"
+        ]
+        assert stamps, "no product records"
+        for stamp in stamps:
+            assert stamp in html
+        assert "2026-07-29" in html
+
+    @pytest.mark.skipif(
+        not _required_templates_present() or not _any_content_exists(),
+        reason="Designer templates or content .md files not yet present",
+    )
+    def test_products_hub_boundary_has_no_real_time_claim(
+        self, tmp_path, monkeypatch,
+    ):
+        _bfc, out = _render_free_estate(tmp_path, monkeypatch)
+        html = (out / "products" / "index.html").read_text(encoding="utf-8")
+        match = re.search(
+            r'<p class="ph-boundary">(.*?)</p>', html, re.DOTALL,
+        )
+        assert match, "ph-boundary paragraph missing"
+        text = match.group(1)
+        assert "实时" not in text
+        assert "Some live" not in text
+        assert "Some intraday" in text
+        assert "部分盘中" in text
+
+    @pytest.mark.skipif(
+        not _required_templates_present() or not _any_content_exists(),
+        reason="Designer templates or content .md files not yet present",
+    )
+    def test_learn_flagship_title_has_zh_twin(self, tmp_path, monkeypatch):
+        _bfc, out = _render_free_estate(tmp_path, monkeypatch)
+        html = (out / "learn" / "index.html").read_text(encoding="utf-8")
+        en = "Gamma Weather — dealer positioning field manual"
+        zh = "Gamma 天气 — 做市商持仓实战手册"
+        assert en in html
+        assert f'<span class="l-zh">{zh}</span>' in html
+
+    @pytest.mark.skipif(
+        not _required_templates_present() or not _any_content_exists(),
+        reason="Designer templates or content .md files not yet present",
+    )
+    def test_learn_hub_cards_print_lesson_published(
+        self, tmp_path, monkeypatch,
+    ):
+        bfc, out = _render_free_estate(tmp_path, monkeypatch)
+        pages, _ = bfc.load_content()
+        html = (out / "learn" / "index.html").read_text(encoding="utf-8")
+        stamps = [
+            _published_stamp(p["fm"]["published"])
+            for p in pages
+            if p["fm"]["family"] == "lesson"
+        ]
+        assert stamps, "no lesson records"
+        for stamp in stamps:
+            assert stamp in html
+        assert "2026-07-20" in html
+        assert "2026-07-25" in html
 
 
 # ─────────────────────────────────────────────────────────────────────────────

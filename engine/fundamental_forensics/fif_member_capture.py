@@ -852,14 +852,24 @@ def _normalized_title(text: str) -> str:
     return re.sub(r"\s+", " ", str(text or "").strip()).upper()
 
 
-def _title_from_definition(text: str) -> str:
-    if _STATEMENT_DEFINITION_SEPARATOR in text:
-        text = text.split(_STATEMENT_DEFINITION_SEPARATOR, 1)[1]
+def _collapsed_definition(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip())
 
 
-def _statement_role_candidates(schema_bytes: bytes) -> list[tuple[str, str]]:
-    """(role_uri, title) pairs in schema order, from ``roleType`` definitions."""
+def _title_from_definition(text: str) -> str:
+    text = _collapsed_definition(text)
+    if _STATEMENT_DEFINITION_SEPARATOR in text:
+        text = text.split(_STATEMENT_DEFINITION_SEPARATOR, 1)[1]
+    return text.strip()
+
+
+def _statement_role_candidates(schema_bytes: bytes) -> list[tuple[str, str, bool]]:
+    """(role_uri, title, is_statement) triples in schema order, from ``roleType``.
+
+    ``is_statement`` is true when the definition carries the XBRL "Statement"
+    category (``"<sort> - Statement - <title>"``); disclosures, policies and
+    details are the other categories.
+    """
     if not schema_bytes or b"\x00" in schema_bytes:
         return []
     if b"<!DOCTYPE" in schema_bytes.upper() or b"<!ENTITY" in schema_bytes.upper():
@@ -868,7 +878,7 @@ def _statement_role_candidates(schema_bytes: bytes) -> list[tuple[str, str]]:
         root = ET.fromstring(schema_bytes)
     except ET.ParseError:
         return []
-    pairs: list[tuple[str, str]] = []
+    pairs: list[tuple[str, str, bool]] = []
     for element in root.iter():
         if not element.tag.endswith("roleType"):
             continue
@@ -883,7 +893,13 @@ def _statement_role_candidates(schema_bytes: bytes) -> list[tuple[str, str]]:
             continue
         title = _title_from_definition(definition)
         if title:
-            pairs.append((role_uri, title))
+            pairs.append(
+                (
+                    role_uri,
+                    title,
+                    _STATEMENT_DEFINITION_SEPARATOR in _collapsed_definition(definition),
+                )
+            )
     return pairs
 
 
@@ -906,15 +922,40 @@ _STATEMENT_NEEDLES: dict[str, tuple[str, ...]] = {
         "CASH FLOW",
     ),
 }
+# Titles some issuers give their primary statements ("Consolidated Results of
+# Operations", "Statement of Financial Position/Condition"). Disclosures reuse
+# the same words ("... in Statement of Financial Position (Details)"), so these
+# are searched over Statement-category roles only, after every needle above.
+_STATEMENT_ONLY_NEEDLES: dict[str, tuple[str, ...]] = {
+    "income_statement": ("RESULTS OF OPERATIONS",),
+    "balance_sheet": ("FINANCIAL POSITION", "FINANCIAL CONDITION"),
+    "cash_flow": (),
+}
 _STATEMENT_TITLE_EXCLUSIONS = ("PARENTHETICAL", "COMPREHENSIVE", "SHAREHOLDERS", "SUPPLEMENTAL")
 
 
 def _pick_statement_role(
-    pairs: list[tuple[str, str]], kind: str
+    pairs: list[tuple[str, str, bool]], kind: str
 ) -> dict[str, str] | None:
-    """First schema-ordered role whose title names one primary statement kind."""
-    for needle in _STATEMENT_NEEDLES[kind]:
-        for role_uri, title in pairs:
+    """First schema-ordered role whose title names one primary statement kind.
+
+    When the schema categorizes any role as a Statement, the search covers
+    Statement-category roles only — a disclosure such as "Income taxes" can
+    never be picked, and a kind no Statement role names is a typed mint
+    failure rather than a guessed disclosure. A pick that was already a
+    Statement role is unchanged: no earlier needle matched any role, so none
+    matched a Statement role either. Only a schema with no Statement category
+    at all falls back to the original needles over every role.
+    """
+    has_statement_category = any(is_statement for _, _, is_statement in pairs)
+    if has_statement_category:
+        needles = _STATEMENT_NEEDLES[kind] + _STATEMENT_ONLY_NEEDLES[kind]
+    else:
+        needles = _STATEMENT_NEEDLES[kind]
+    for needle in needles:
+        for role_uri, title, is_statement in pairs:
+            if has_statement_category and not is_statement:
+                continue
             normalized = _normalized_title(title)
             if needle not in normalized:
                 continue

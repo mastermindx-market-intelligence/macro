@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-19T10:59:08Z",
+ "accession": "0001493152-26-011503",
+ "cik": "0001670061",
+ "doc_byte_length": 451786,
+ "doc_sha256": "b3a6e64db55cba68a852b9ff64d3bc9c255b294b598897cf42986361a0745789",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-19",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ex99-3.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 31955,
+  "byte_start": 31308,
+  "normalized": "On January 29, 2025 Almonty announced that it entered into an exclusive offtake agreement with SeAH M&S Corp. (“SeAH”), the largest processor of molybdenum products in South Korea and the second largest molybdenum oxide smelter in the world, pursuant to which SeAH has agreed to purchase 100% of the material produced from the Sangdong Molybdenum Project for life of mine. SeAH is building a US$110 million metals and fabrication facility in Temple, Texas, that is slated to provide fabricated metal products to Space Exploration Technologies Corp. and to the U.S. defense and civilian aerospace sectors.",
+  "normalized_sha256": "718b6c528d5e7019daca4520654246589c6f3116a135f6ab0267da98f16dac27",
+  "raw": "On\n    January 29, 2025 Almonty announced that it entered into an exclusive offtake agreement with SeAH M&amp;S Corp. (&ldquo;<B>SeAH</B>&rdquo;),\n    the largest processor of molybdenum products in South Korea and the second largest molybdenum oxide smelter in the world, pursuant\n    to which SeAH has agreed to purchase 100% of the material produced from the Sangdong Molybdenum Project for life of mine. SeAH is\n    building a US$110 million metals and fabrication facility in Temple, Texas, that is slated to provide fabricated metal products to\n    Space Exploration Technologies Corp. and to the U.S. defense and civilian aerospace sectors.",
+  "raw_sha256": "62483272339c871a29bfdbb957e7019d7273d07ffa2cf30478114b531eddc93f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1670061/000149315226011503/ex99-3.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,21 @@
+# OCC feed consumer and BAC candidate
+
+This phase consumes a current permitted source without earnings credentials. The sole new supported source is the publisher-documented OCC RSS feed, parsed through the existing wire parser. The consumer is offline and planning-only: it registers no collector, allocates no writer slot, consumes no cadence, invokes no provider and emits nothing. The exact full RSS response is retained; only the complete, untruncated 289-character description for one uniquely matched item is admitted as source evidence. It is not represented as the full press release or consent order.
+
+On October 13 at 20:15 UTC, the feed reports an OCC $750 million assessment against Bank of America, N.A. The candidate preserves that event date and publisher clock. It does not add the amount to FinCEN's separate assessment, infer stock-price causality, or call the enforcement announcement newly committed misconduct. Parent source review maps the named bank to BAC using Bank of America Corporation's subsidiary disclosure. `bac_occ_qualification.json` binds the original factual-reporting scope, exact source and supporting evidence; government-work treatment is not a blanket worldwide license. No imagery, seals, endorsement or third-party expression is licensed by this record. The qualification is candidate-only, never public-article approval.
+
+Five selected existing first-party facts retain their October 12 dates and source hashes. Their only possible use is a pre-event broad-market baseline, not evidence of bank-specific exposure, investor reaction or what caused a BAC price move. The five-receipt floor is not a reason to pad the article with unrelated measurements. A concrete draft still needs relevance and source-fidelity review; no draft has been generated from this candidate.
+
+## Independent review and parent corrections
+
+MiniMax Fabric review `mmx-press-official-feed-review-20261013-001` returned PASS on the supplied bytes. It was a source trace, not independently executed pytest evidence. Its prose contains several small inaccuracies: the original official suite has 27 cases, not 26; the October 8 date is rejected by the freshness window, not the chronology ordering; summaries of exactly 600 characters are accepted when unclipped; the quantity-regex prose has a typo. Parent accepts the useful source review with these corrections and retains the full return.
+
+Parent adversarial review found one additional XML gap: byte-level DOCTYPE matching alone misses UTF-16. A new regression failed on the reviewed code. The parser now rejects DTDs after XML decoding through a TreeBuilder callback. This preserves declared encodings while preventing the bypass. The affected official/external/writer tests then pass; see targeted_validation.txt. Existing data-gated press-lane registers the new suite; no new CI job or gate waiver.
+
+## Live pathway proof, October 14 00:33 UTC
+
+Chrome loaded `https://www.mastermind-x.com/stocks/BAC.html`. The rendered dossier identified Bank of America and showed a dated October 13 page. Clicking its existing Terminal continuation opened the actual embedded `app.mastermind-x.com/terminal?sym=BAC&from=macro&ret=...&embed=dashboard` route. The browser showed BAC selected, its rendered chart, and the existing watchlist including NVDA. The browser screenshot is retained in the active task tool output. No membership, signup or follow write was made. This proves the existing continuation path, not a new release, new design approval, fresh coverage in every panel or a published Press article. Some underlying panels visibly retain older dated data.
+
+## Remaining consumer work
+
+`bac_occ_plan.json` is the real current-source read-only planning result, with unchanged engine inputs. There is deliberately no writer admission. Next implement and test one explicit non-promoting source admission through the existing Press staging/validation rail, with cumulative duplicate/cadence guards and immutable provenance, once these protected source/writer bytes are accepted. Do not turn a planning-only flag into publication authority. Full D14 mixed-desk unedited acceptance, source/editorial approval, protected content release, installation, public article and acquisition checks remain separate.

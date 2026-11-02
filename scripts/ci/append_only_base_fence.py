@@ -93,6 +93,7 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import re
 import subprocess
 import sys
 from dataclasses import dataclass, field
@@ -128,6 +129,17 @@ class Member:
     path: str
     check: str
     identity: tuple[str, ...] = ()
+    # jsonl_prefix only: a full-match regex over repo-relative paths naming the
+    # CONTINUATION PARTS of a ledger sharded byte-exactly across several blobs
+    # (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY). The prefix law then applies
+    # to the logical stream -- ``path`` followed by every matching sibling in
+    # index order -- not to any one file: a new part extends it, a dropped or
+    # rewritten part does not. The first capture group, when present, is the
+    # part index and orders the siblings.
+    siblings_pattern: str = ""
+
+    def sibling_regex(self) -> re.Pattern[str] | None:
+        return re.compile(self.siblings_pattern) if self.siblings_pattern else None
 
 
 @dataclass(frozen=True)
@@ -170,6 +182,7 @@ def load_registry(path: Path) -> list[Family]:
                 path=str(entry["path"]),
                 check=str(entry["check"]),
                 identity=tuple(str(column) for column in entry.get("identity", ())),
+                siblings_pattern=str(entry.get("siblings_pattern", "") or ""),
             )
             for entry in raw.get("members", [])
         )
@@ -178,6 +191,17 @@ def load_registry(path: Path) -> list[Family]:
                 raise ValueError(f"unknown append-only check kind: {member.check}")
             if member.check == "parquet_rows" and not member.identity:
                 raise ValueError(f"parquet_rows member declares no identity: {member.path}")
+            if member.siblings_pattern:
+                if member.check != "jsonl_prefix":
+                    raise ValueError(
+                        f"siblings_pattern is only meaningful on a jsonl_prefix member: {member.path}"
+                    )
+                try:
+                    re.compile(member.siblings_pattern)
+                except re.error as exc:
+                    raise ValueError(
+                        f"siblings_pattern does not compile for {member.path}: {exc}"
+                    ) from exc
         families.append(
             Family(
                 key=str(raw["key"]),
@@ -212,6 +236,60 @@ def blob_at(repo: Path, rev: str, path: str) -> bytes | None:
     if done.returncode != 0:
         return None
     return done.stdout
+
+
+def _sibling_sort_key(pattern: re.Pattern[str], path: str) -> tuple[int, str]:
+    match = pattern.fullmatch(path)
+    if match and match.groups():
+        try:
+            return (int(match.group(1)), path)
+        except (TypeError, ValueError):
+            pass
+    return (0, path)
+
+
+def sibling_paths_at(repo: Path, rev: str, member: Member) -> list[str]:
+    """Repo-relative paths of ``member``'s continuation parts at ``rev``, in part order.
+
+    Listed from the tree (``git ls-tree`` of the member's directory), never from the
+    worktree: the fence judges what the commits carry, and a sparse checkout may not
+    hold the bytes at all. Empty for a member without a ``siblings_pattern``.
+    """
+    pattern = member.sibling_regex()
+    if pattern is None:
+        return []
+    directory = member.path.rsplit("/", 1)[0] if "/" in member.path else ""
+    done = _git(repo, "ls-tree", "--name-only", rev, "--", f"{directory}/" if directory else ".")
+    if done.returncode != 0:
+        return []
+    listed = done.stdout.decode(errors="replace").splitlines()
+    siblings = [line for line in listed if line.strip() and pattern.fullmatch(line)]
+    return sorted(siblings, key=lambda item: _sibling_sort_key(pattern, item))
+
+
+def logical_blob_at(repo: Path, rev: str, member: Member) -> bytes | None:
+    """The member's LOGICAL bytes at ``rev``: ``path`` followed by every continuation part.
+
+    A sharded ledger is one append-only byte stream stored across several blobs, each
+    under GitHub's 100 MiB limit (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY). The
+    prefix law is a statement about the stream, so the verdict compares concatenations.
+    None only when neither the first part nor any continuation exists at ``rev``.
+    """
+    first = blob_at(repo, rev, member.path)
+    parts = [blob_at(repo, rev, path) for path in sibling_paths_at(repo, rev, member)]
+    if first is None and not parts:
+        return None
+    return (first or b"") + b"".join(blob or b"" for blob in parts)
+
+
+def member_touched(member: Member, touched: set[str]) -> bool:
+    """True when the run changed ``member.path`` or any of its continuation parts."""
+    if member.path in touched:
+        return True
+    pattern = member.sibling_regex()
+    if pattern is None:
+        return False
+    return any(pattern.fullmatch(path) for path in touched)
 
 
 def changed_paths(repo: Path, onto: str, head: str) -> set[str]:
@@ -339,13 +417,15 @@ def evaluate_family(
 ) -> FamilyVerdict:
     verdict = FamilyVerdict(family=family)
     for member in family.members:
-        if member.path not in touched:
+        if not member_touched(member, touched):
             continue
-        verdict.members.append(
-            _CHECKS[member.check](
-                member, blob_at(repo, onto, member.path), blob_at(repo, head, member.path)
-            )
-        )
+        if member.siblings_pattern:
+            base = logical_blob_at(repo, onto, member)
+            candidate = logical_blob_at(repo, head, member)
+        else:
+            base = blob_at(repo, onto, member.path)
+            candidate = blob_at(repo, head, member.path)
+        verdict.members.append(_CHECKS[member.check](member, base, candidate))
     return verdict
 
 

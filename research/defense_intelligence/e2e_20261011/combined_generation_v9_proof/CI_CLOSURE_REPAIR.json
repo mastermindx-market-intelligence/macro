@@ -1,0 +1,159 @@
+{
+  "state": "EXACT_CI_PATH_ADDITIONS_ONLY",
+  "old_sha256": "c74a8fea1cc41bac3709d5a2e56a89252531a68ff6a0c8f0d32e70accdc91b1b",
+  "new_sha256": "604b4c5096a9bce17af895bf2fb05e60c025f2b2a5348ed47929b8551730295f",
+  "jobs": 21,
+  "path_entries": 105,
+  "changes": {
+    "biocatalyst-history": [
+      "site/government-revenue-data/research-state.json"
+    ],
+    "biocatalyst-serving": [
+      "site/government-revenue-data/research-state.json"
+    ],
+    "conviction-profile": [
+      "engine/company_intelligence/defense_cash_profiles.py"
+    ],
+    "crypto-assistant-context": [
+      "collectors/dod_budget_live.py",
+      "collectors/sbir_awards.py",
+      "config/government_revenue/program_theme_assignments.v1.json",
+      "engine/company_intelligence/defense_cash_profiles.py",
+      "engine/company_intelligence/defense_profiles.py",
+      "engine/company_intelligence/gd_profile.py",
+      "engine/company_intelligence/issuer_supplements.py",
+      "engine/government_revenue/budget_allocation_context.py",
+      "engine/government_revenue/candidate_grader.py",
+      "engine/government_revenue/defense_economics.py",
+      "engine/government_revenue/defense_interpretation.py",
+      "engine/government_revenue/program_ontology.py",
+      "engine/government_revenue/program_theme_context.py",
+      "engine/government_revenue/program_theme_disclosure.py",
+      "engine/government_revenue/program_theme_publication.py",
+      "engine/government_revenue/research_state.py",
+      "engine/government_revenue/sbir_progression.py",
+      "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md",
+      "site/government-revenue-data/defense-economics.json",
+      "site/government-revenue-data/program-theme-context.json",
+      "site/government-revenue-data/research-state.json",
+      "site/government-revenue-data/sbir-progression.json",
+      "site/government-revenue-data/theme-context.json"
+    ],
+    "defense-rail-laws": [
+      "engine/close_pass/__init__.py",
+      "engine/close_pass/board.py",
+      "engine/close_pass/massive_close.py",
+      "engine/close_pass/massive_split_evidence.py",
+      "engine/close_pass/reconcile.py",
+      "research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md",
+      "research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md",
+      "research/grey_deer/RISK_RADAR_DISPLAYED_PROBABILITY_AUDIT_PREREG_2026-09-22.md",
+      "research/grey_deer/RISK_RADAR_DISPLAYED_PROBABILITY_AUDIT_RESULTS_2026-09-22.md",
+      "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_PREREG_2026-09-21.md",
+      "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_RESULTS_2026-09-21.md",
+      "scripts/check_template_site_sync.py",
+      "scripts/grey_deer_pullback_nightly.py",
+      "scripts/optimize_assets.py",
+      "scripts/research/grey_deer_pullback_stage1.py",
+      "scripts/research/risk_radar_displayed_probability_audit.py",
+      "scripts/research/risk_radar_state_ladder_calibration.py",
+      "site/government-revenue-critical-theme.css",
+      "site/government-revenue-data/research-state.json",
+      "site/government-revenue-data/workspace.json",
+      "site/government-revenue-investor-start.js",
+      "site/government-revenue-page.js",
+      "site/supabase.js",
+      "site/theme.js",
+      "templates/government-revenue-parity.css",
+      "templates/product-nav-icons.css",
+      "templates/supabase.js",
+      "templates/theme.css"
+    ],
+    "earnings-economic-dossier": [
+      "engine/company_intelligence/defense_cash_profiles.py"
+    ],
+    "earnings-economic-source-selection": [
+      "engine/company_intelligence/defense_cash_profiles.py"
+    ],
+    "fif-kernel-guards": [
+      "engine/company_intelligence/defense_cash_profiles.py",
+      "site/government-revenue-data/research-state.json"
+    ],
+    "flow-surface": [
+      "site/government-revenue-data/research-state.json"
+    ],
+    "govrev-program-ontology": [
+      "engine/company_intelligence/defense_cash_profiles.py"
+    ],
+    "industrials-result-cash": [
+      "engine/company_intelligence/defense_cash_profiles.py"
+    ],
+    "mining-economic-dossier": [
+      "engine/company_intelligence/defense_cash_profiles.py",
+      "engine/company_intelligence/defense_profiles.py",
+      "engine/company_intelligence/gd_profile.py",
+      "engine/company_intelligence/issuer_supplements.py"
+    ],
+    "nw-lobe-unfreeze": [
+      "engine/company_intelligence/defense_cash_profiles.py"
+    ],
+    "options-matrix-code": [
+      "engine/company_intelligence/defense_cash_profiles.py",
+      "engine/company_intelligence/defense_profiles.py",
+      "engine/company_intelligence/gd_profile.py",
+      "engine/company_intelligence/issuer_supplements.py"
+    ],
+    "research-price-panel": [
+      "collectors/dod_budget_live.py",
+      "collectors/sbir_awards.py",
+      "config/government_revenue/program_theme_assignments.v1.json",
+      "engine/company_intelligence/defense_cash_profiles.py",
+      "engine/company_intelligence/defense_profiles.py",
+      "engine/company_intelligence/gd_profile.py",
+      "engine/company_intelligence/issuer_supplements.py",
+      "engine/government_revenue/budget_allocation_context.py",
+      "engine/government_revenue/candidate_grader.py",
+      "engine/government_revenue/defense_economics.py",
+      "engine/government_revenue/defense_interpretation.py",
+      "engine/government_revenue/program_ontology.py",
+      "engine/government_revenue/program_theme_context.py",
+      "engine/government_revenue/program_theme_disclosure.py",
+      "engine/government_revenue/program_theme_publication.py",
+      "engine/government_revenue/research_state.py",
+      "engine/government_revenue/sbir_progression.py",
+      "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md",
+      "site/government-revenue-data/defense-economics.json",
+      "site/government-revenue-data/program-theme-context.json",
+      "site/government-revenue-data/research-state.json",
+      "site/government-revenue-data/sbir-progression.json",
+      "site/government-revenue-data/theme-context.json"
+    ],
+    "skew-accrual-lane": [
+      "engine/company_intelligence/defense_cash_profiles.py"
+    ],
+    "ticker-news-qbus": [
+      "engine/company_intelligence/defense_cash_profiles.py",
+      "site/government-revenue-data/research-state.json"
+    ],
+    "unrun-government-revenue-candidate-projection": [
+      "engine/group_pulse.py",
+      "site/basketdata/pulse.json"
+    ],
+    "unrun-government-revenue-grader": [
+      "engine/group_pulse.py",
+      "site/basketdata/pulse.json"
+    ],
+    "unrun-picks-boards": [
+      "engine/company_intelligence/defense_cash_profiles.py"
+    ],
+    "washout-turn-organ": [
+      "engine/company_intelligence/defense_cash_profiles.py",
+      "engine/company_intelligence/defense_profiles.py",
+      "engine/company_intelligence/gd_profile.py",
+      "engine/company_intelligence/issuer_supplements.py"
+    ]
+  },
+  "all_other_job_fields_unchanged": true,
+  "candidate_proof_sealed_paths_unchanged": true,
+  "candidate_proof_in_progress_on": "8c1850a47249"
+}

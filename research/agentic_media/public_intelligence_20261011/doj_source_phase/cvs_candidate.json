@@ -1,0 +1,33 @@
+{
+  "kind": "official_feed_editorial_qualification",
+  "source_key": "doj_news",
+  "feed_url": "https://www.justice.gov/news/rss?m=1",
+  "feed_sha256": "7e3c848cf4b38d9dcde99a8d7ecba4413bb937df06c4cc453e80a3625cd2c6a7",
+  "item_url": "https://www.justice.gov/opa/pr/cvs-agrees-pay-315m-illegally-filling-unlawful-opioid-prescriptions-and-submitting-false",
+  "published_at": "2026-10-13T12:00:00+00:00",
+  "event_date": "2026-10-13",
+  "observed_at": "2026-10-14T03:50:59.521472+00:00",
+  "rights_basis": {
+    "qualification": "government_authored_factual_reporting",
+    "policy_url": "https://www.justice.gov/legalpolicies",
+    "scope": "Government-authored release text and attributed factual reporting only; exclude third-party assets, seals, logos and endorsement. Candidate qualification grants no staging or publication."
+  },
+  "review_result": "accepted_as_editorial_candidate_only",
+  "reviewed_claims": [
+    {
+      "literal": "have agreed to pay $315 million to resolve allegations",
+      "quantity_literal": "$315 million"
+    }
+  ],
+  "reviewed_tickers": {
+    "CVS": "CVS Pharmacy Inc."
+  },
+  "release_sha256": "ad08e9652445dfb628b5b220d21878477eb10efb8605aa04ab0ad326347f3847",
+  "policy_sha256": "dd99df630bfd52d5ba46a8e258198ed20d32518eb042d5163d15c37127982770",
+  "source_qualifiers": [
+    "The claims resolved by the settlement are allegations only and there has been no determination of liability."
+  ],
+  "allow_stage": false,
+  "allow_emit": false,
+  "publication_approved": false
+}

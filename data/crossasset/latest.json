@@ -1,33 +1,32 @@
 {
-  "date": "2026-10-09",
+  "date": "2026-10-21",
   "regime": "mixed / no clear trend",
-  "breadth": 0.15,
+  "breadth": 0.31,
   "favored": [
     "equity_us",
     "copper",
+    "oil",
     "dollar",
-    "equity_em"
+    "crypto"
   ],
-  "correlation": "diversified",
-  "asof": "2026-10-09",
+  "correlation": "converging",
+  "asof": "2026-10-21",
   "flows": {
     "schema": "crossasset_flows.v2",
     "display_only": true,
     "regime": "mixed / no clear trend",
     "correlation": {
-      "verdict": "diversified",
-      "absorption_pctile": 0.4,
+      "verdict": "converging",
+      "absorption_pctile": 0.48,
       "n_markets": 6,
-      "absorption_ratio": 0.355,
-      "mean_abs_corr": 0.222,
+      "absorption_ratio": 0.362,
+      "mean_abs_corr": 0.228,
       "dominant_cluster": [
         "US",
-        "Commodities",
         "Crypto",
-        "Dollar"
+        "Commodities"
       ],
       "spark_w": [
-        0.328,
         0.344,
         0.354,
         0.362,
@@ -130,11 +129,12 @@
         0.352,
         0.337,
         0.351,
-        0.355
+        0.366,
+        0.362
       ],
-      "spark_asof": "2026-10-09"
+      "spark_asof": "2026-10-16"
     },
-    "breadth": 0.15,
+    "breadth": 0.31,
     "trend_top": [
       {
         "asset": "equity_us",
@@ -147,7 +147,17 @@
         "z": 1.0
       },
       {
+        "asset": "oil",
+        "trend": "up",
+        "z": 1.0
+      },
+      {
         "asset": "dollar",
+        "trend": "up",
+        "z": 1.0
+      },
+      {
+        "asset": "crypto",
         "trend": "up",
         "z": 1.0
       },
@@ -155,21 +165,11 @@
         "asset": "equity_em",
         "trend": "up",
         "z": 1.0
-      },
-      {
-        "asset": "equity_sm",
-        "trend": "mixed",
-        "z": 0.33
-      },
-      {
-        "asset": "gold",
-        "trend": "mixed",
-        "z": 0.33
       }
     ],
     "trend_summary": {
       "n": 13,
-      "n_up": 4,
+      "n_up": 6,
       "n_down": 2
     },
     "intermarket": [
@@ -177,25 +177,25 @@
         "pair": "copper_gold",
         "ratio": 0.002,
         "trend": "elevated",
-        "pctile": 88.0
+        "pctile": 90.0
       },
       {
         "pair": "gold_silver",
-        "ratio": 69.507,
+        "ratio": 71.905,
         "trend": "mid",
-        "pctile": 41.0
+        "pctile": 45.0
       },
       {
         "pair": "oil_gold",
-        "ratio": 0.022,
-        "trend": "mid",
-        "pctile": 71.0
+        "ratio": 0.024,
+        "trend": "elevated",
+        "pctile": 85.0
       },
       {
         "pair": "stocks_gold",
-        "ratio": 0.184,
+        "ratio": 0.186,
         "trend": "mid",
-        "pctile": 71.0
+        "pctile": 75.0
       }
     ],
     "carry": {
@@ -204,15 +204,23 @@
           "key": "rates_term",
           "label_en": "Rates term-spread (10y-3m)",
           "label_zh": "\u5229\u7387\u671f\u9650\u5229\u5dee (10\u5e74-3\u6708)",
-          "value": 1.23,
+          "value": 1.05,
           "unit": "%",
           "state": "positive carry"
+        },
+        {
+          "key": "roll_copper",
+          "label_en": "Copper roll yield",
+          "label_zh": "copper \u5c55\u671f\u6536\u76ca",
+          "value": -0.1,
+          "unit": "%/yr",
+          "state": "contango (negative)"
         },
         {
           "key": "roll_oil",
           "label_en": "Oil roll yield",
           "label_zh": "oil \u5c55\u671f\u6536\u76ca",
-          "value": 0.2,
+          "value": 0.1,
           "unit": "%/yr",
           "state": "backwardation (positive)"
         }
@@ -226,49 +234,49 @@
           "leader": "Dollar",
           "follower": "HK",
           "lag": 1,
-          "r": 0.266,
-          "t": 4.288,
+          "r": 0.267,
+          "t": 4.3,
           "q": 0.0
         },
         {
           "leader": "US",
           "follower": "HK",
           "lag": 1,
-          "r": 0.311,
-          "t": 4.114,
+          "r": 0.307,
+          "t": 4.057,
           "q": 0.0
         },
         {
           "leader": "Crypto",
           "follower": "HK",
           "lag": 1,
-          "r": 0.268,
-          "t": 4.097,
-          "q": 0.0
+          "r": 0.267,
+          "t": 4.048,
+          "q": 0.005
         },
         {
           "leader": "US",
           "follower": "China",
           "lag": 1,
-          "r": 0.257,
-          "t": 3.731,
+          "r": 0.258,
+          "t": 3.705,
           "q": 0.0075
         },
         {
           "leader": "Crypto",
           "follower": "China",
           "lag": 1,
-          "r": 0.187,
-          "t": 3.115,
-          "q": 0.054
+          "r": 0.194,
+          "t": 3.204,
+          "q": 0.042
         },
         {
           "leader": "China",
           "follower": "HK",
           "lag": 1,
-          "r": -0.223,
-          "t": -2.917,
-          "q": 0.0875
+          "r": -0.23,
+          "t": -2.998,
+          "q": 0.0675
         }
       ],
       "stable": false,
@@ -287,15 +295,15 @@
       "impulse_13w": null
     },
     "funding_stress": {
-      "asof": "2026-10-07",
+      "asof": "2026-10-19",
       "state": "calm",
-      "score": 34.0,
-      "spread_bp": 0.0
+      "score": 29.0,
+      "spread_bp": -1.0
     },
     "confirm": {
-      "verdict": "diverge",
-      "agree_pct": 0,
-      "n_blind_flags": 3,
+      "verdict": "mixed",
+      "agree_pct": 50,
+      "n_blind_flags": 0,
       "flags_top": [
         {
           "key": "credit",
@@ -304,7 +312,16 @@
           "severity": "medium",
           "owner": "bonds",
           "lead": "leading",
-          "equity_blind": true
+          "equity_blind": false
+        },
+        {
+          "key": "rates_vol",
+          "en": "Rates volatility (MOVE) rising relative to equity vol (VIX) \u2014 a coincident stress configuration (predictive only when both are already elevated).",
+          "zh": "\u5229\u7387\u6ce2\u52a8\u7387\uff08MOVE\uff09\u76f8\u5bf9\u80a1\u7968\u6ce2\u52a8\u7387\uff08VIX\uff09\u4e0a\u5347 \u2014 \u540c\u6b65\u7684\u538b\u529b\u914d\u7f6e\uff08\u4ec5\u5f53\u4e24\u8005\u5747\u5df2\u504f\u9ad8\u65f6\u5177\u9884\u6d4b\u6027\uff09\u3002",
+          "severity": "low",
+          "owner": "bonds",
+          "lead": "coincident",
+          "equity_blind": false
         },
         {
           "key": "sovereign",
@@ -313,47 +330,38 @@
           "severity": "medium",
           "owner": "bonds",
           "lead": "coincident",
-          "equity_blind": true
-        },
-        {
-          "key": "fx_risk_off",
-          "en": "Dollar-smile in risk-off (haven bid for USD/JPY/CHF) \u2014 FX positioning defensive (a coincident global-risk-off read, not a forecaster).",
-          "zh": "\u7f8e\u5143\u5fae\u7b11\u5904\u4e8e\u907f\u9669\u4fa7\uff08\u7f8e\u5143/\u65e5\u5143/\u745e\u90ce\u907f\u9669\u4e70\u76d8\uff09\u2014 \u5916\u6c47\u4ed3\u4f4d\u9632\u5fa1\uff08\u540c\u6b65\u7684\u5168\u7403\u907f\u9669\u8bfb\u6570\uff0c\u975e\u9884\u6d4b\uff09\u3002",
-          "severity": "medium",
-          "owner": "fx",
-          "lead": "coincident",
-          "equity_blind": true
+          "equity_blind": false
         }
       ],
-      "asof": "2026-10-08"
+      "asof": "2026-10-16"
     },
     "dollar": {
-      "usd_dir": "flat",
+      "usd_dir": "strengthening",
       "regime": "Risk-off haven bid",
       "risk": "risk-off",
       "corr_top": [
         {
           "key": "GC=F",
-          "corr": -0.52
+          "corr": -0.53
         },
         {
           "key": "EEM",
-          "corr": -0.47
+          "corr": -0.48
         },
         {
           "key": "SPY",
-          "corr": -0.45
+          "corr": -0.42
         }
       ],
       "unstable_n": 0,
       "fx_stress": {
-        "dominant": "dollar_wrecking_ball",
-        "top_key": "dollar_wrecking_ball",
-        "top_val": 70.4
+        "dominant": "em_crisis_capital_flight",
+        "top_key": "em_crisis_capital_flight",
+        "top_val": 59.9
       }
     },
     "shadow": {
-      "pressure_pctile": 0.4,
+      "pressure_pctile": 0.48,
       "incumbent_state": "caution",
       "shadow_state": "caution",
       "escalated": false

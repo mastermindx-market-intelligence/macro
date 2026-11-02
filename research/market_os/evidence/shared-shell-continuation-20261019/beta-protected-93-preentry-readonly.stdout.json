@@ -1,0 +1,355 @@
+{
+  "Caddy": {
+    "ctime_ns": 1792440191463329649,
+    "dev": 64769,
+    "gid": 0,
+    "ino": 262161,
+    "mode": "0o644",
+    "mtime_ns": 1792440191463329649,
+    "nlink": 1,
+    "path": "/etc/caddy/Caddyfile",
+    "sha256": "6de6d01adbe40a5c71f8d80472f3d0deca5a02a99c4e27779984b3bff4d274b1",
+    "size": 73943,
+    "type": "file",
+    "uid": 0
+  },
+  "beta_BUILD_ID": {
+    "exists": false,
+    "path": "/opt/terminal/beta/terminal/.next/BUILD_ID"
+  },
+  "beta_children": [
+    {
+      "ctime_ns": 1792412828979373497,
+      "dev": 2048,
+      "gid": 0,
+      "ino": 1597724,
+      "mode": "0o700",
+      "mtime_ns": 1792383133000000000,
+      "nlink": 2,
+      "path": "/opt/terminal/beta/config",
+      "size": 4096,
+      "type": "directory",
+      "uid": 0
+    },
+    {
+      "ctime_ns": 1792412829033373731,
+      "dev": 2048,
+      "gid": 0,
+      "ino": 1598346,
+      "mode": "0o700",
+      "mtime_ns": 1792383133000000000,
+      "nlink": 2,
+      "path": "/opt/terminal/beta/scripts",
+      "size": 4096,
+      "type": "directory",
+      "uid": 0
+    },
+    {
+      "ctime_ns": 1792383936443604029,
+      "dev": 2048,
+      "gid": 0,
+      "ino": 1597725,
+      "mode": "0o777",
+      "mtime_ns": 1792383936443604029,
+      "nlink": 1,
+      "path": "/opt/terminal/beta/.source-provisioned",
+      "size": 134,
+      "symlink": "/var/lib/mastermind-terminal-beta/source-provisioned/source-provisioned-e45bde2cac07ac3b29285ff70c40d68900fad62c-efb499b6d0108d69.json",
+      "type": "symlink",
+      "uid": 0
+    },
+    {
+      "ctime_ns": 1792412829036373744,
+      "dev": 2048,
+      "gid": 0,
+      "ino": 1598401,
+      "mode": "0o700",
+      "mtime_ns": 1792383133000000000,
+      "nlink": 2,
+      "path": "/opt/terminal/beta/signal_layer",
+      "size": 4096,
+      "type": "directory",
+      "uid": 0
+    },
+    {
+      "ctime_ns": 1792412828993373558,
+      "dev": 2048,
+      "gid": 0,
+      "ino": 1597729,
+      "mode": "0o700",
+      "mtime_ns": 1792383133000000000,
+      "nlink": 3,
+      "path": "/opt/terminal/beta/contracts",
+      "size": 4096,
+      "type": "directory",
+      "uid": 0
+    },
+    {
+      "ctime_ns": 1792413327866820868,
+      "dev": 2048,
+      "gid": 0,
+      "ino": 1598413,
+      "mode": "0o755",
+      "mtime_ns": 1792413327866820868,
+      "nlink": 16,
+      "path": "/opt/terminal/beta/terminal",
+      "size": 4096,
+      "type": "directory",
+      "uid": 0
+    },
+    {
+      "ctime_ns": 1792412829029373714,
+      "dev": 2048,
+      "gid": 0,
+      "ino": 1597808,
+      "mode": "0o700",
+      "mtime_ns": 1792383133000000000,
+      "nlink": 4,
+      "path": "/opt/terminal/beta/ingest",
+      "size": 4096,
+      "type": "directory",
+      "uid": 0
+    },
+    {
+      "ctime_ns": 1792412829010373632,
+      "dev": 2048,
+      "gid": 0,
+      "ino": 1597742,
+      "mode": "0o700",
+      "mtime_ns": 1792383133000000000,
+      "nlink": 5,
+      "path": "/opt/terminal/beta/hub",
+      "size": 4096,
+      "type": "directory",
+      "uid": 0
+    }
+  ],
+  "beta_deployment": {
+    "ctime_ns": 1792388000709822539,
+    "dev": 2048,
+    "gid": 0,
+    "ino": 1602523,
+    "mode": "0o644",
+    "mtime_ns": 1792388000692822476,
+    "nlink": 1,
+    "path": "/opt/terminal/beta/terminal/.deployment-id",
+    "sha256": "50b75a482303cb7ee99bd439d6d1a002aa0cc9c2d120e210655cf097c7509675",
+    "size": 41,
+    "text": "e45bde2cac07ac3b29285ff70c40d68900fad62c\n",
+    "type": "file",
+    "uid": 0
+  },
+  "beta_source_HEAD": {
+    "exit": 0,
+    "stderr": "",
+    "stdout": "e45bde2cac07ac3b29285ff70c40d68900fad62c"
+  },
+  "dependency_pair": [
+    {
+      "ctime_ns": 1792413323878808069,
+      "dev": 2048,
+      "gid": 0,
+      "ino": 336939,
+      "mode": "0o744",
+      "mtime_ns": 1792388022067901966,
+      "nlink": 1,
+      "path": "/opt/terminal/beta/terminal/node_modules/esbuild/bin/esbuild",
+      "size": 9707520,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "ctime_ns": 1792413325222812380,
+      "dev": 2048,
+      "gid": 0,
+      "ino": 330749,
+      "mode": "0o744",
+      "mtime_ns": 1792388022067901966,
+      "nlink": 1,
+      "path": "/opt/terminal/beta/terminal/node_modules/@esbuild/linux-x64/bin/esbuild",
+      "size": 9707520,
+      "type": "file",
+      "uid": 0
+    }
+  ],
+  "lock": {
+    "ctime_ns": 1792451971605415712,
+    "dev": 2048,
+    "gid": 0,
+    "ino": 1591358,
+    "mode": "0o700",
+    "mtime_ns": 1792451971605415712,
+    "nlink": 2,
+    "path": "/opt/terminal/.terminal-build-resource.lock",
+    "size": 4096,
+    "type": "directory",
+    "uid": 0
+  },
+  "lock_entries": [],
+  "mode": "READ_ONLY_POST_GAP_RECONCILIATION",
+  "observed_at": "2026-10-20T00:51:36.015751+00:00",
+  "owner_processes": {
+    "exit": 1,
+    "stderr": "",
+    "stdout": ""
+  },
+  "policy": {
+    "ctime_ns": 1792383875520296662,
+    "dev": 2048,
+    "gid": 0,
+    "ino": 18270,
+    "mode": "0o600",
+    "mtime_ns": 1792383875520296662,
+    "nlink": 1,
+    "path": "/opt/terminal/.gitsrc-beta/ops/terminal_source_audit.beta.json",
+    "sha256": "9b6c95d2f3134f37640312106fcf10dd2be5a1d4c01002e959ac5cb71614fae9",
+    "size": 3190,
+    "type": "file",
+    "uid": 0
+  },
+  "production_BUILD_ID": {
+    "ctime_ns": 1792451948290879818,
+    "dev": 2048,
+    "gid": 0,
+    "ino": 1606238,
+    "mode": "0o644",
+    "mtime_ns": 1792451948290879818,
+    "nlink": 1,
+    "path": "/opt/terminal/terminal/.next/BUILD_ID",
+    "sha256": "5906afd2adf8c7ee74a5032731fef083ad51f4f690d04a57a116ec5aba7b3230",
+    "size": 20,
+    "text": "build-TfctsWXpff2fKS",
+    "type": "file",
+    "uid": 0
+  },
+  "production_deployment": {
+    "ctime_ns": 1792451950404929142,
+    "dev": 2048,
+    "gid": 0,
+    "ino": 1606277,
+    "mode": "0o644",
+    "mtime_ns": 1792451950399929026,
+    "nlink": 1,
+    "path": "/opt/terminal/terminal/.deployment-id",
+    "sha256": "a1de37a5aa06f0ccc88262e926da53a5825264fa6eccfa56812fc7746a9db241",
+    "size": 41,
+    "text": "50a8c01553ee92731a53dfcff36256308cfb5f0e\n",
+    "type": "file",
+    "uid": 0
+  },
+  "production_owner": {
+    "ctime_ns": 1792451958608119145,
+    "dev": 2048,
+    "gid": 0,
+    "ino": 1605099,
+    "mode": "0o755",
+    "mtime_ns": 1792451958605119076,
+    "nlink": 1,
+    "path": "/opt/terminal/terminal-build.sh",
+    "sha256": "6d05d3d5745e0e0a29262c89ba61cf881c2605201cce5b0fc85a52bde0e42ec8",
+    "size": 196115,
+    "type": "file",
+    "uid": 0
+  },
+  "quarantine": {
+    "ctime_ns": 1792413327866820868,
+    "dev": 2048,
+    "gid": 0,
+    "ino": 359191,
+    "mode": "0o755",
+    "mtime_ns": 1792413316516784512,
+    "nlink": 8,
+    "path": "/opt/terminal/beta/terminal/.next.broken",
+    "size": 4096,
+    "type": "directory",
+    "uid": 0
+  },
+  "quarantine_BUILD_ID": {
+    "ctime_ns": 1792413313886776118,
+    "dev": 2048,
+    "gid": 0,
+    "ino": 361395,
+    "mode": "0o644",
+    "mtime_ns": 1792413313886776118,
+    "nlink": 1,
+    "path": "/opt/terminal/beta/terminal/.next.broken/BUILD_ID",
+    "sha256": "5906afd2adf8c7ee74a5032731fef083ad51f4f690d04a57a116ec5aba7b3230",
+    "size": 20,
+    "text": "build-TfctsWXpff2fKS",
+    "type": "file",
+    "uid": 0
+  },
+  "quarantine_NFT": {
+    "ctime_ns": 1792412993332864529,
+    "dev": 2048,
+    "gid": 0,
+    "ino": 361054,
+    "mode": "0o664",
+    "mtime_ns": 1792412993332864529,
+    "nlink": 1,
+    "path": "/opt/terminal/beta/terminal/.next.broken/next-minimal-server.js.nft.json",
+    "sha256": "ee2a73cb8400562bc5477d002c028da6d362e640925701c4cd4a21312004d544",
+    "size": 5527,
+    "type": "file",
+    "uid": 0
+  },
+  "release_pending": {
+    "exists": false,
+    "path": "/opt/terminal/beta/.release-pending"
+  },
+  "runtime_accepted": {
+    "exists": false,
+    "path": "/opt/terminal/beta/.runtime-accepted"
+  },
+  "services": {
+    "terminal-beta.service": {
+      "exit": 0,
+      "stderr": "",
+      "stdout": "MainPID=0\nExecMainStartTimestampMonotonic=0\nUMask=0022\nWorkingDirectory=/opt/terminal/beta/terminal\nCapabilityBoundingSet=\nAmbientCapabilities=\nUser=terminal-beta\nGroup=terminal-beta\nSupplementaryGroups=\nReadWritePaths=/opt/terminal/beta/terminal/.next/cache\nReadOnlyPaths=/opt/terminal/terminal/public/data\nInaccessiblePaths=\nPrivateTmp=yes\nPrivateDevices=yes\nProtectHome=read-only\nProtectSystem=strict\nNoNewPrivileges=yes\nSystemCallFilter=_llseek _newselect accept accept4 access add_key alarm arch_prctl arm_fadvise64_64 bind brk cacheflush capget capset chdir chmod chown chown32 clock_getres clock_getres_time64 clock_gettime clock_gettime64 clock_nanosleep clock_nanosleep_time64 clone clone3 close close_range connect copy_file_range creat dup dup2 dup3 epoll_create epoll_create1 epoll_ctl epoll_ctl_old epoll_pwait epoll_pwait2 epoll_wait epoll_wait_old eventfd eventfd2 execve execveat exit exit_group faccessat faccessat2 fadvise64 fadvise64_64 fallocate fchdir fchmod fchmodat fchmodat2 fchown fchown32 fchownat fcntl fcntl64 fdatasync fgetxattr flistxattr flock fork fremovexattr fsetxattr fstat fstat64 fstatat64 fstatfs fstatfs64 fsync ftruncate ftruncate64 futex futex_time64 futex_waitv futimesat get_mempolicy get_robust_list get_thread_area getcpu getcwd getdents getdents64 getegid getegid32 geteuid geteuid32 getgid getgid32 getgroups getgroups32 getitimer getpeername getpgid getpgrp getpid getppid getpriority getrandom getresgid getresgid32 getresuid getresuid32 getrlimit getrusage getsid getsockname getsockopt gettid gettimeofday getuid getuid32 getxattr inotify_add_watch inotify_init inotify_init1 inotify_rm_watch io_cancel io_destroy io_getevents io_pgetevents io_pgetevents_time64 io_setup io_submit io_uring_enter io_uring_register io_uring_setup ioctl ioprio_get ioprio_set ipc kcmp keyctl kill lchown lchown32 lgetxattr link linkat listen listxattr llistxattr lremovexattr lseek lsetxattr lstat lstat64 madvise mbind membarrier memfd_create migrate_pages mkdir mkdirat mknod mknodat mlock mlock2 mlockall mmap mmap2 move_pages mprotect mq_getsetattr mq_notify mq_open mq_timedreceive mq_timedreceive_time64 mq_timedsend mq_timedsend_time64 mq_unlink mremap msgctl msgget msgrcv msgsnd msync munlock munlockall munmap name_to_handle_at nanosleep newfstatat nice oldfstat oldlstat oldolduname oldstat olduname open openat openat2 pause personality pidfd_open pidfd_send_signal pipe pipe2 poll ppoll ppoll_time64 prctl pread64 preadv preadv2 prlimit64 process_madvise process_vm_readv process_vm_writev pselect6 pselect6_time64 pwrite64 pwritev pwritev2 read readahead readdir readlink readlinkat readv recv recvfrom recvmmsg recvmmsg_time64 recvmsg remap_file_pages removexattr rename renameat renameat2 request_key restart_syscall riscv_flush_icache rmdir rseq rt_sigaction rt_sigpending rt_sigprocmask rt_sigqueueinfo rt_sigreturn rt_sigsuspend rt_sigtimedwait rt_sigtimedwait_time64 rt_tgsigqueueinfo sched_get_priority_max sched_get_priority_min sched_getaffinity sched_getattr sched_getparam sched_getscheduler sched_rr_get_interval sched_rr_get_interval_time64 sched_setaffinity sched_setattr sched_setparam sched_setscheduler sched_yield select semctl semget semop semtimedop semtimedop_time64 send sendfile sendfile64 sendmmsg sendmsg sendto set_mempolicy set_mempolicy_home_node set_robust_list set_thread_area set_tid_address set_tls setfsgid setfsgid32 setfsuid setfsuid32 setgid setgid32 setgroups setgroups32 setitimer setns setpgid setpriority setregid setregid32 setresgid setresgid32 setresuid setresuid32 setreuid setreuid32 setrlimit setsid setsockopt setuid setuid32 setxattr shmat shmctl shmdt shmget shutdown sigaction sigaltstack signal signalfd signalfd4 sigpending sigprocmask sigreturn sigsuspend socket socketcall socketpair splice stat stat64 statfs statfs64 statx swapcontext symlink symlinkat sync sync_file_range sync_file_range2 syncfs sysinfo tee tgkill time timer_create timer_delete timer_getoverrun timer_gettime timer_gettime64 timer_settime timer_settime64 timerfd_create timerfd_gettime timerfd_gettime64 timerfd_settime timerfd_settime64 times tkill truncate truncate64 ugetrlimit umask uname unlink unlinkat unshare userfaultfd utime utimensat utimensat_time64 utimes vfork vmsplice wait4 waitid waitpid write writev\nRestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX\nRestrictNamespaces=yes\nBindReadOnlyPaths=/opt/terminal/terminal/public/data:/opt/terminal/beta/terminal/public/data:rbind\nActiveState=inactive\nSubState=dead\nFragmentPath=/etc/systemd/system/terminal-beta.service\nDropInPaths=\nUnitFileState=disabled"
+    },
+    "terminal.service": {
+      "exit": 0,
+      "stderr": "",
+      "stdout": "MainPID=2336355\nExecMainStartTimestampMonotonic=7552363880288\nUMask=0022\nWorkingDirectory=/opt/terminal/terminal\nCapabilityBoundingSet=cap_chown cap_dac_override cap_dac_read_search cap_fowner cap_fsetid cap_kill cap_setgid cap_setuid cap_setpcap cap_linux_immutable cap_net_bind_service cap_net_broadcast cap_net_admin cap_net_raw cap_ipc_lock cap_ipc_owner cap_sys_module cap_sys_rawio cap_sys_chroot cap_sys_ptrace cap_sys_pacct cap_sys_admin cap_sys_boot cap_sys_nice cap_sys_resource cap_sys_time cap_sys_tty_config cap_mknod cap_lease cap_audit_write cap_audit_control cap_setfcap cap_mac_override cap_mac_admin cap_syslog cap_wake_alarm cap_block_suspend cap_audit_read cap_perfmon cap_bpf cap_checkpoint_restore\nAmbientCapabilities=\nUser=\nGroup=\nSupplementaryGroups=\nReadWritePaths=\nReadOnlyPaths=\nInaccessiblePaths=\nPrivateTmp=no\nPrivateDevices=no\nProtectHome=no\nProtectSystem=no\nNoNewPrivileges=no\nSystemCallFilter=~\nRestrictAddressFamilies=~\nRestrictNamespaces=no\nBindReadOnlyPaths=\nActiveState=active\nSubState=running\nFragmentPath=/etc/systemd/system/terminal.service\nDropInPaths=/etc/systemd/system/terminal.service.d/boats-history.conf /etc/systemd/system/terminal.service.d/hardening.conf /etc/systemd/system/terminal.service.d/storage.conf /etc/systemd/system/terminal.service.d/ticker-news-rail.conf\nUnitFileState=enabled"
+    }
+  },
+  "source_provisioned": {
+    "ctime_ns": 1792383936443604029,
+    "dev": 2048,
+    "gid": 0,
+    "ino": 1597725,
+    "mode": "0o777",
+    "mtime_ns": 1792383936443604029,
+    "nlink": 1,
+    "path": "/opt/terminal/beta/.source-provisioned",
+    "record": {
+      "ctime_ns": 1792383936443604029,
+      "dev": 64769,
+      "gid": 0,
+      "ino": 3943348,
+      "mode": "0o640",
+      "mtime_ns": 1792383936440604014,
+      "nlink": 1,
+      "path": "/var/lib/mastermind-terminal-beta/source-provisioned/source-provisioned-e45bde2cac07ac3b29285ff70c40d68900fad62c-efb499b6d0108d69.json",
+      "sha256": "9aac8ec8c132eecf4d2664d8f1e18e8a6bffce5f6d7176e4021b15d6d953cfa4",
+      "size": 1841,
+      "text": "{\n  \"accepted_runtime\": false,\n  \"accepted_sha\": \"e45bde2cac07ac3b29285ff70c40d68900fad62c\",\n  \"app_root\": \"/opt/terminal/beta/terminal\",\n  \"canonical_repo\": \"/opt/terminal/.gitsrc-beta\",\n  \"deployment_marker\": \"/opt/terminal/beta/terminal/.deployment-id\",\n  \"generated_at\": \"2026-10-19T04:25:36.437915Z\",\n  \"policy_digest\": \"99f76cb211b086d1f83bb86c10747e2711a4c318fa4bd5dab1b94e84d46fe1d6\",\n  \"policy_path\": \"/opt/terminal/.gitsrc-beta/ops/terminal_source_audit.beta.json\",\n  \"provision_authorized\": true,\n  \"provisioned\": [\n    {\n      \"git_tree\": \"840d6407d68b8f60211cdd734f169d92f12c5555\",\n      \"live_path\": \"/opt/terminal/beta/terminal\",\n      \"repo_path\": \"terminal\"\n    },\n    {\n      \"git_tree\": \"331c5f6a5dd833909ffad53e66d9760ce6b762c1\",\n      \"live_path\": \"/opt/terminal/beta/ingest\",\n      \"repo_path\": \"ingest\"\n    },\n    {\n      \"git_tree\": \"043397cd506a4840728d0c261404c8937a942d2f\",\n      \"live_path\": \"/opt/terminal/beta/scripts\",\n      \"repo_path\": \"scripts\"\n    },\n    {\n      \"git_tree\": \"7893be6de08e09b2e3bbc1558b6eaebae2dee3e1\",\n      \"live_path\": \"/opt/terminal/beta/config\",\n      \"repo_path\": \"config\"\n    },\n    {\n      \"git_tree\": \"6903e776d394e1151b256f9bd897aa3151d8083f\",\n      \"live_path\": \"/opt/terminal/beta/contracts\",\n      \"repo_path\": \"contracts\"\n    },\n    {\n      \"git_tree\": \"a6e912a645929aaf4887593afbbd4e05fc407f73\",\n      \"live_path\": \"/opt/terminal/beta/hub\",\n      \"repo_path\": \"hub\"\n    },\n    {\n      \"git_tree\": \"5395976e3612affe1a8292788209b32b8cd8c8a0\",\n      \"live_path\": \"/opt/terminal/beta/signal_layer\",\n      \"repo_path\": \"signal_layer\"\n    }\n  ],\n  \"record_id\": \"efb499b6d0108d69d3eedba424f7ef6ecea26c957c5378fbef4f9b6b997365d9\",\n  \"rollback_baseline\": false,\n  \"schema\": \"mastermind.terminal.beta_source_provisioned.v1\",\n  \"target\": \"beta\",\n  \"target_root\": \"/opt/terminal/beta\"\n}\n",
+      "type": "file",
+      "uid": 0
+    },
+    "size": 134,
+    "symlink": "/var/lib/mastermind-terminal-beta/source-provisioned/source-provisioned-e45bde2cac07ac3b29285ff70c40d68900fad62c-efb499b6d0108d69.json",
+    "type": "symlink",
+    "uid": 0
+  },
+  "space": {
+    "/": {
+      "available_bytes": 36925825024,
+      "available_inodes": 9678084
+    },
+    "/opt/terminal": {
+      "available_bytes": 16296984576,
+      "available_inodes": 1260155
+    }
+  }
+}

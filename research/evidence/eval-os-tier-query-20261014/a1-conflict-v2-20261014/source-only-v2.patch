@@ -1,0 +1,190 @@
+diff --git a/.github/ci/legacy-jobs.yml b/.github/ci/legacy-jobs.yml
+index dafa699ecc9f..aaa371b33aa3 100644
+--- a/.github/ci/legacy-jobs.yml
++++ b/.github/ci/legacy-jobs.yml
+@@ -3621,9 +3621,6 @@ jobs:
+     # 846 tracked / 127 concrete. Subject packages stay globbed.
+     scope: exclusive
+     paths:
+-      # Recorded-readiness import closure required by the Intelligence OS consumer.
+-      - "engine/k3e_eval1_forward.py"
+-      - "engine/pick_forward_dist.py"
+       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
+       # Native DailyBrief registration/producer import closure (PR #9037).
+       - "engine/prophet_candidate_state.py"
+@@ -4193,6 +4190,9 @@ jobs:
+       - "engine/qbus_news_universe.py"
+       - scripts/publish_company_disclosure.py
+       - engine/company_intelligence/issuer_disclosure_preflight.py
++      # Recorded-readiness import closure required by the Intelligence OS consumer.
++      - "engine/k3e_eval1_forward.py"
++      - "engine/pick_forward_dist.py"
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4
+@@ -5837,10 +5837,6 @@ jobs:
+     # every concrete static import-closure path (curated_exclusive_closure_findings
+     # gates it) plus the measured runtime in-tree reads of every class-A suite.
+     paths:
+-      # Recorded-readiness import closure required by the Intelligence OS consumer.
+-      - "engine/k3e_eval1_forward.py"
+-      - "engine/pick_forward_dist.py"
+-      - "engine/seasonality/multiplicity.py"
+       - config/market_memory_factory_bindings.v1.json
+       - config/market_memory_retained_use.v1.json
+       - engine/neuralweb/market_memory_episode_comparison.py
+@@ -6618,6 +6614,10 @@ jobs:
+       - "site/prophet/index.json"
+       - "site/turn_watch/turn_watch.json"
+       - "site/vol/regime.json"
++      # Recorded-readiness import closure required by the Intelligence OS consumer.
++      - "engine/k3e_eval1_forward.py"
++      - "engine/pick_forward_dist.py"
++      - "engine/seasonality/multiplicity.py"
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4
+@@ -15510,9 +15510,6 @@ jobs:
+     # genuine import edges.
+     scope: exclusive
+     paths:
+-      # Recorded-readiness import closure required by the Intelligence OS consumer.
+-      - "engine/k3e_eval1_forward.py"
+-      - "engine/pick_forward_dist.py"
+       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
+       # Native DailyBrief registration/producer import closure (PR #9037).
+       - "engine/prophet_candidate_state.py"
+@@ -16116,6 +16113,9 @@ jobs:
+       - "site/neuralwebdata/theme_state.json"
+       - scripts/publish_company_disclosure.py
+       - engine/company_intelligence/issuer_disclosure_preflight.py
++      # Recorded-readiness import closure required by the Intelligence OS consumer.
++      - "engine/k3e_eval1_forward.py"
++      - "engine/pick_forward_dist.py"
+     timeout-minutes: 8
+     runs-on: ubuntu-latest
+     steps:
+@@ -16232,9 +16232,6 @@ jobs:
+     # 846 tracked / 74 concrete.
+     scope: exclusive
+     paths:
+-      # Recorded-readiness import closure required by the Intelligence OS consumer.
+-      - "engine/k3e_eval1_forward.py"
+-      - "engine/pick_forward_dist.py"
+       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
+       # Native DailyBrief registration/producer import closure (PR #9037).
+       - "engine/prophet_candidate_state.py"
+@@ -16651,6 +16648,9 @@ jobs:
+       - "site/neuralwebdata/theme_state.json"
+       - scripts/publish_company_disclosure.py
+       - engine/company_intelligence/issuer_disclosure_preflight.py
++      # Recorded-readiness import closure required by the Intelligence OS consumer.
++      - "engine/k3e_eval1_forward.py"
++      - "engine/pick_forward_dist.py"
+     timeout-minutes: 12
+     runs-on: ubuntu-latest
+     steps:
+@@ -18211,9 +18211,6 @@ jobs:
+     gate: code
+     scope: exclusive
+     paths:
+-      - engine/k3e_eval1_forward.py
+-      - engine/pick_forward_dist.py
+-      - engine/seasonality/multiplicity.py
+       - config/market_memory_factory_bindings.v1.json
+       - config/market_memory_retained_use.v1.json
+       - engine/neuralweb/market_memory_episode_comparison.py
+@@ -18939,6 +18936,10 @@ jobs:
+       - templates/methodology.html.j2
+       - templates/support.html.j2
+       - tests/test_crypto_assistant_context.py
++      # Recorded-readiness import closure required by the Intelligence OS consumer.
++      - engine/k3e_eval1_forward.py
++      - engine/pick_forward_dist.py
++      - engine/seasonality/multiplicity.py
+     timeout-minutes: 8
+     runs-on: ubuntu-latest
+     steps:
+@@ -20144,9 +20145,6 @@ jobs:
+     # no named closure file was removed.
+     scope: exclusive
+     paths:
+-      # Recorded-readiness import closure required by the Intelligence OS consumer.
+-      - "engine/k3e_eval1_forward.py"
+-      - "engine/pick_forward_dist.py"
+       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
+       # Native DailyBrief registration/producer import closure (PR #9037).
+       - "engine/prophet_candidate_state.py"
+@@ -20563,6 +20561,9 @@ jobs:
+       - "engine/options_signal_episode_contract.py"
+       - scripts/publish_company_disclosure.py
+       - engine/company_intelligence/issuer_disclosure_preflight.py
++      # Recorded-readiness import closure required by the Intelligence OS consumer.
++      - "engine/k3e_eval1_forward.py"
++      - "engine/pick_forward_dist.py"
+     timeout-minutes: 15
+     runs-on: ubuntu-latest
+     steps:
+@@ -25136,9 +25137,6 @@ jobs:
+     # 846 tracked / 74 concrete. Subject packages stay globbed.
+     scope: exclusive
+     paths:
+-      # Recorded-readiness import closure required by the Intelligence OS consumer.
+-      - "engine/k3e_eval1_forward.py"
+-      - "engine/pick_forward_dist.py"
+       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
+       # Native DailyBrief registration/producer import closure (PR #9037).
+       - "engine/prophet_candidate_state.py"
+@@ -25551,6 +25549,9 @@ jobs:
+       - "engine/options_signal_episode_contract.py"
+       - scripts/publish_company_disclosure.py
+       - engine/company_intelligence/issuer_disclosure_preflight.py
++      # Recorded-readiness import closure required by the Intelligence OS consumer.
++      - "engine/k3e_eval1_forward.py"
++      - "engine/pick_forward_dist.py"
+     timeout-minutes: 15
+     runs-on: ubuntu-latest
+     steps:
+@@ -25615,9 +25616,6 @@ jobs:
+     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
+     scope: exclusive
+     paths:
+-      - engine/k3e_eval1_forward.py
+-      - engine/pick_forward_dist.py
+-      - engine/seasonality/multiplicity.py
+       - config/market_memory_factory_bindings.v1.json
+       - config/market_memory_retained_use.v1.json
+       - engine/neuralweb/market_memory_forward.py
+@@ -26484,6 +26482,10 @@ jobs:
+       - "tests/test_ptse_shadow_outcome.py"
+       - "tests/test_ptse_w3_publication.py"
+       - "tests/test_research_price_panel.py"
++      # Recorded-readiness import closure required by the Intelligence OS consumer.
++      - engine/k3e_eval1_forward.py
++      - engine/pick_forward_dist.py
++      - engine/seasonality/multiplicity.py
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4
+@@ -27697,10 +27699,6 @@ jobs:
+     gate: code
+     scope: exclusive
+     paths:
+-      # Recorded-readiness import closure required by the Intelligence OS consumer.
+-      - "engine/k3e_eval1_forward.py"
+-      - "engine/pick_forward_dist.py"
+-      - "engine/seasonality/multiplicity.py"
+       - config/market_memory_factory_bindings.v1.json
+       - config/market_memory_retained_use.v1.json
+       - engine/neuralweb/market_memory_episode_comparison.py
+@@ -28500,6 +28498,10 @@ jobs:
+       - engine/company_intelligence/issuer_disclosure_publication.py
+       - scripts/publish_company_disclosure.py
+       - engine/company_intelligence/issuer_disclosure_preflight.py
++      # Recorded-readiness import closure required by the Intelligence OS consumer.
++      - "engine/k3e_eval1_forward.py"
++      - "engine/pick_forward_dist.py"
++      - "engine/seasonality/multiplicity.py"
+     timeout-minutes: 12
+     runs-on: ubuntu-latest
+     steps:

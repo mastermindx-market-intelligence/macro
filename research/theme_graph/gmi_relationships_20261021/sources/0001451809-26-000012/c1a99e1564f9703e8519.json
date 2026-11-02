@@ -1,0 +1,45 @@
+{
+ "accepted_at": "2026-02-11T21:06:57Z",
+ "accession": "0001451809-26-000012",
+ "cik": "0001451809",
+ "doc_byte_length": 1797085,
+ "doc_sha256": "568771611c495d5ee81c5aa62e4061177df08c685c30ad77b993be6c0a20008b",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-11",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "sitm-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1031331,
+  "byte_start": 1029807,
+  "normalized": "Arrow Electronics, Inc.26%19%18%",
+  "normalized_sha256": "f438f40e50a41d83ded886bd2bd8d7042154ff665eedb0323c9a336b8d77f0dc",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:left;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">Arrow Electronics, Inc.</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-48\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-374\">26</ix:nonFraction>%</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-49\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-375\">19</ix:nonFraction>%</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-50\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-376\">18</ix:nonFraction>%</span></td></tr>",
+  "raw_sha256": "c1a99e1564f9703e8519f5dc389cb2eedac462644da66d3d82a4ff83c7774ab3"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1451809/000145180926000012/sitm-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 24110,
+   "byte_start": 23448,
+   "context_ref": "c-48",
+   "raw": "<xbrli:context id=\"c-48\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001451809</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">sitm:CustomerOneMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "9cb8c3f13f43b1e700be5fe822d37169a8433e4b59eafd1f51daabeb241e4411"
+  },
+  {
+   "byte_end": 24772,
+   "byte_start": 24110,
+   "context_ref": "c-49",
+   "raw": "<xbrli:context id=\"c-49\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001451809</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">sitm:CustomerOneMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "91a577c70a9fa46b74c2f96997a5c1dd4442222c989f2224d5d8ad289c44ffb8"
+  },
+  {
+   "byte_end": 25434,
+   "byte_start": 24772,
+   "context_ref": "c-50",
+   "raw": "<xbrli:context id=\"c-50\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001451809</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">sitm:CustomerOneMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "b74932d37998cc86511636f89a3002afabc734c958d682f5734f00e7f88f8904"
+  }
+ ]
+}

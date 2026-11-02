@@ -148,6 +148,48 @@ def _run(
     )
 
 
+# WP04 — legacy/null base vs explicit zero (not a probability claim)
+
+def test_management_confidence_default_only_when_missing_or_null():
+    ordinary = _run(_make_plan(confidence=60.0))
+    missing_plan = _make_plan()
+    del missing_plan["confidence"]
+    missing = _run(missing_plan)
+    null_plan = _make_plan()
+    null_plan["confidence"] = None
+    null = _run(null_plan)
+    for key in ("management_confidence", "raw_confidence", "delta_vs_base"):
+        assert missing[key] == ordinary[key]
+        assert null[key] == ordinary[key]
+
+
+def test_management_confidence_explicit_zero_is_not_default_sixty():
+    zero = _run(_make_plan(confidence=0.0))
+    sixty = _run(_make_plan(confidence=60.0))
+    # The input affects the existing management scoring projection, not phase,
+    # recommendation, plan identity, geometry or trading permissions.
+    # Explicit low overrides remain distinct from an absent 60-point baseline,
+    # but a floor-dominated positive delta must never be presented as progress.
+    assert zero["delta_vs_base"] is None
+    assert "floor" in zero["reliability"]["delta_vs_base"]
+    assert sixty["delta_vs_base"] is not None
+    assert zero["phase"] == sixty["phase"]
+    assert zero["recommended_action"] == sixty["recommended_action"]
+
+
+def test_modal_low_score_base_discloses_floor_not_improvement():
+    """Independent WP04 P1: a displayed 25 at base=11 is a floor, not alpha."""
+    low = _run(_make_plan(confidence=11.0, trigger=110.0))
+    sixty = _run(_make_plan(confidence=60.0, trigger=110.0))
+    assert low["phase"] == "pre_trigger"
+    assert low["management_confidence"] == 25.0
+    assert low["delta_vs_base"] is None
+    assert "floor" in low["reliability"]["delta_vs_base"]
+    assert "not evidence of improvement" in low["reliability"]["delta_vs_base"]
+    assert low["phase"] == sixty["phase"]
+    assert low["recommended_action"] == sixty["recommended_action"]
+
+
 # ===========================================================================
 # 1. PHASE_WEIGHTS integrity
 # ===========================================================================
@@ -1062,7 +1104,9 @@ class TestStaleFrameActionSafety:
         # confidence is still stated, narration unchanged.
         assert state["tau"] > 1.0
         assert state["management_confidence"] is not None
-        assert state["human_state"] == "Overtime Stall"
+        # Current canonical copy describes an elapsed window with no recent close;
+        # "Overtime Stall" was an obsolete assertion already failing on main.
+        assert state["human_state"] == "Window Elapsed — Awaiting Close"
         assert "no closing print" in state["reliability"]["recommended_action"]
 
     def test_delisted_long_gap_same_guarantee(self):

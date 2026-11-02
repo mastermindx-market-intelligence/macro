@@ -1,0 +1,13 @@
+{
+  "utc": "2026-10-20T17:14:01.692102+00:00",
+  "head": "b82af8dae3b05e7eaea198cfe49d61fb9b8ce595",
+  "merge": "1298ed4281362329c682a1f7c038b932e4ccbb64",
+  "main": "98c3f0e07885594c24a5884538059293b4750607",
+  "paths": 110,
+  "different_owned_paths_at_merge": [
+    ".github/ci/legacy-jobs.yml"
+  ],
+  "merge_is_main_ancestor": true,
+  "workspace_clean": true,
+  "remote_branch": ""
+}

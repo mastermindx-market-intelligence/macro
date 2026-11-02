@@ -1,0 +1,322 @@
+FFF.FFFF..FFFFFFFFF..F.F                                                 [100%]
+=================================== FAILURES ===================================
+____________________ test_missing_hour_is_two_hours_not_one ____________________
+
+    def test_missing_hour_is_two_hours_not_one():
+        bars = frame(['2026-10-12T14:00Z', '2026-10-12T16:00Z'], [100., 105.])
+>       assert intraday_returns({'X': bars}) == {'X': {'2H': 5.0}}
+E       AssertionError: assert {'X': {'1H': 5.0}} == {'X': {'2H': 5.0}}
+E         
+E         Differing items:
+E         {'X': {'1H': 5.0}} != {'X': {'2H': 5.0}}
+E         Use -v to get more diff
+
+tests/test_sp500_heatmap_intraday_clock.py:17: AssertionError
+_______________________ test_weekend_gap_is_not_intraday _______________________
+
+    def test_weekend_gap_is_not_intraday():
+        bars = frame(['2026-10-09T19:00Z', '2026-10-12T14:00Z'], [100., 105.])
+>       assert intraday_returns({'X': bars}) == {}
+E       AssertionError: assert {'X': {'1H': 5.0}} == {}
+E         
+E         Left contains 1 more item:
+E         {'X': {'1H': 5.0}}
+E         Use -v to get more diff
+
+tests/test_sp500_heatmap_intraday_clock.py:22: AssertionError
+_________________ test_five_minute_rows_do_not_become_an_hour __________________
+
+    def test_five_minute_rows_do_not_become_an_hour():
+        bars = frame(['2026-10-12T14:00Z', '2026-10-12T14:05Z'], [100., 105.])
+>       assert intraday_returns({'X': bars}) == {'X': {'5M': 5.0}}
+E       AssertionError: assert {'X': {'1H': 5.0}} == {'X': {'5M': 5.0}}
+E         
+E         Differing items:
+E         {'X': {'1H': 5.0}} != {'X': {'5M': 5.0}}
+E         Use -v to get more diff
+
+tests/test_sp500_heatmap_intraday_clock.py:27: AssertionError
+_________ test_all_declared_minute_windows_use_their_actual_endpoints __________
+
+    def test_all_declared_minute_windows_use_their_actual_endpoints():
+        bars = pd.DataFrame({'close': np.arange(100., 149.)},
+                            index=pd.date_range('2026-10-12T14:00Z', periods=49, freq='5min'))
+        expected = {k: round((148/(148-m/5)-1)*100, 2)
+                    for k, m in [('5M',5),('10M',10),('15M',15),('30M',30),('1H',60),('2H',120),('4H',240)]}
+>       assert intraday_returns({'X': bars}) == {'X': expected}
+E       AssertionError: assert {'X': {'1H': ..., '4H': 2.78}} == {'X': {'5M': ...': 4.23, ...}}
+E         
+E         Differing items:
+E         {'X': {'1H': 0.68, '2H': 1.37, '4H': 2.78}} != {'X': {'5M': 0.68, '10M': 1.37, '15M': 2.07, '30M': 4.23, ...}}
+E         Use -v to get more diff
+
+tests/test_sp500_heatmap_intraday_clock.py:43: AssertionError
+_______ test_missing_target_does_not_use_nearest_or_forward_filled_price _______
+
+    def test_missing_target_does_not_use_nearest_or_forward_filled_price():
+        bars = frame(['2026-10-12T14:00Z','2026-10-12T14:55Z','2026-10-12T16:00Z'], [100.,103.,105.])
+>       assert intraday_returns({'X': bars}) == {'X': {'2H': 5.0}}
+E       AssertionError: assert {'X': {'1H': 1.94, '2H': 5.0}} == {'X': {'2H': 5.0}}
+E         
+E         Differing items:
+E         {'X': {'1H': 1.94, '2H': 5.0}} != {'X': {'2H': 5.0}}
+E         Use -v to get more diff
+
+tests/test_sp500_heatmap_intraday_clock.py:48: AssertionError
+______ test_missing_interior_does_not_destroy_an_observed_endpoint_return ______
+
+    def test_missing_interior_does_not_destroy_an_observed_endpoint_return():
+        # This is endpoint arithmetic, NOT a certificate of intermediate path coverage.
+        bars = frame(['2026-10-12T14:00Z','2026-10-12T18:00Z'], [100.,104.])
+>       assert intraday_returns({'X': bars}) == {'X': {'4H': 4.0}}
+E       AssertionError: assert {'X': {'1H': 4.0}} == {'X': {'4H': 4.0}}
+E         
+E         Differing items:
+E         {'X': {'1H': 4.0}} != {'X': {'4H': 4.0}}
+E         Use -v to get more diff
+
+tests/test_sp500_heatmap_intraday_clock.py:54: AssertionError
+______ test_invalid_latest_price_cannot_rewind_to_an_older_good_row[nan] _______
+
+bad = nan
+
+    @pytest.mark.parametrize('bad', [np.nan,np.inf,-np.inf,0.,-1.,True,'bad'])
+    def test_invalid_latest_price_cannot_rewind_to_an_older_good_row(bad):
+        bars = frame(['2026-10-12T14:00Z','2026-10-12T15:00Z','2026-10-12T16:00Z'], [100.,102.,bad])
+>       assert intraday_returns({'X': bars}) == {}
+E       AssertionError: assert {'X': {'1H': 2.0}} == {}
+E         
+E         Left contains 1 more item:
+E         {'X': {'1H': 2.0}}
+E         Use -v to get more diff
+
+tests/test_sp500_heatmap_intraday_clock.py:60: AssertionError
+______ test_invalid_latest_price_cannot_rewind_to_an_older_good_row[0.0] _______
+
+bad = 0.0
+
+    @pytest.mark.parametrize('bad', [np.nan,np.inf,-np.inf,0.,-1.,True,'bad'])
+    def test_invalid_latest_price_cannot_rewind_to_an_older_good_row(bad):
+        bars = frame(['2026-10-12T14:00Z','2026-10-12T15:00Z','2026-10-12T16:00Z'], [100.,102.,bad])
+>       assert intraday_returns({'X': bars}) == {}
+E       AssertionError: assert {'X': {'1H': ...'2H': -100.0}} == {}
+E         
+E         Left contains 1 more item:
+E         {'X': {'1H': -100.0, '2H': -100.0}}
+E         Use -v to get more diff
+
+tests/test_sp500_heatmap_intraday_clock.py:60: AssertionError
+______ test_invalid_latest_price_cannot_rewind_to_an_older_good_row[-1.0] ______
+
+bad = -1.0
+
+    @pytest.mark.parametrize('bad', [np.nan,np.inf,-np.inf,0.,-1.,True,'bad'])
+    def test_invalid_latest_price_cannot_rewind_to_an_older_good_row(bad):
+        bars = frame(['2026-10-12T14:00Z','2026-10-12T15:00Z','2026-10-12T16:00Z'], [100.,102.,bad])
+>       assert intraday_returns({'X': bars}) == {}
+E       AssertionError: assert {'X': {'1H': ...'2H': -101.0}} == {}
+E         
+E         Left contains 1 more item:
+E         {'X': {'1H': -100.98, '2H': -101.0}}
+E         Use -v to get more diff
+
+tests/test_sp500_heatmap_intraday_clock.py:60: AssertionError
+______ test_invalid_latest_price_cannot_rewind_to_an_older_good_row[True] ______
+
+bad = True
+
+    @pytest.mark.parametrize('bad', [np.nan,np.inf,-np.inf,0.,-1.,True,'bad'])
+    def test_invalid_latest_price_cannot_rewind_to_an_older_good_row(bad):
+        bars = frame(['2026-10-12T14:00Z','2026-10-12T15:00Z','2026-10-12T16:00Z'], [100.,102.,bad])
+>       assert intraday_returns({'X': bars}) == {}
+E       AssertionError: assert {'X': {'1H': ... '2H': -99.0}} == {}
+E         
+E         Left contains 1 more item:
+E         {'X': {'1H': -99.02, '2H': -99.0}}
+E         Use -v to get more diff
+
+tests/test_sp500_heatmap_intraday_clock.py:60: AssertionError
+______ test_invalid_latest_price_cannot_rewind_to_an_older_good_row[bad] _______
+
+bad = 'bad'
+
+    @pytest.mark.parametrize('bad', [np.nan,np.inf,-np.inf,0.,-1.,True,'bad'])
+    def test_invalid_latest_price_cannot_rewind_to_an_older_good_row(bad):
+        bars = frame(['2026-10-12T14:00Z','2026-10-12T15:00Z','2026-10-12T16:00Z'], [100.,102.,bad])
+>       assert intraday_returns({'X': bars}) == {}
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_sp500_heatmap_intraday_clock.py:60: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+bars = {'X':                            close
+2026-10-12 14:00:00+00:00  100.0
+2026-10-12 15:00:00+00:00  102.0
+2026-10-12 16:00:00+00:00    bad}
+
+    def intraday_returns(bars: Mapping[str, pd.DataFrame]) -> dict[str, dict[str, float]]:
+        """Percent change over the last 1H/2H/4H from per-ticker hourly bars.
+    
+        ``bars`` maps ticker -> DataFrame with a ``close`` column ordered ascending
+        (e.g. ``data/intraday/<T>.parquet``). Sub-hourly windows require minute bars
+        and are intentionally not derived here (they stay null until a finer feed
+        exists). Empty / missing input simply yields no keys for that ticker.
+        """
+        out: dict[str, dict[str, float]] = {}
+        steps = {"1H": 1, "2H": 2, "4H": 4}
+        for tkr, df in (bars or {}).items():
+            if df is None or "close" not in getattr(df, "columns", []):
+                continue
+            c = df["close"].dropna()
+            if len(c) < 2:
+                continue
+>           now = float(c.iloc[-1])
+                  ^^^^^^^^^^^^^^^^^
+E           ValueError: could not convert string to float: 'bad'
+
+engine/sp500_heatmap.py:207: ValueError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+______________ test_absent_or_naive_clock_is_not_assumed[index0] _______________
+
+index = RangeIndex(start=0, stop=2, step=1)
+
+    @pytest.mark.parametrize('index', [pd.RangeIndex(2),pd.date_range('2026-10-12',periods=2,freq='h'),pd.Index(['a','b'])])
+    def test_absent_or_naive_clock_is_not_assumed(index):
+>       assert intraday_returns({'X': pd.DataFrame({'close':[100.,105.]},index=index)}) == {}
+E       AssertionError: assert {'X': {'1H': 5.0}} == {}
+E         
+E         Left contains 1 more item:
+E         {'X': {'1H': 5.0}}
+E         Use -v to get more diff
+
+tests/test_sp500_heatmap_intraday_clock.py:65: AssertionError
+______________ test_absent_or_naive_clock_is_not_assumed[index1] _______________
+
+index = DatetimeIndex(['2026-10-12 00:00:00', '2026-10-12 01:00:00'], dtype='datetime64[us]', freq='h')
+
+    @pytest.mark.parametrize('index', [pd.RangeIndex(2),pd.date_range('2026-10-12',periods=2,freq='h'),pd.Index(['a','b'])])
+    def test_absent_or_naive_clock_is_not_assumed(index):
+>       assert intraday_returns({'X': pd.DataFrame({'close':[100.,105.]},index=index)}) == {}
+E       AssertionError: assert {'X': {'1H': 5.0}} == {}
+E         
+E         Left contains 1 more item:
+E         {'X': {'1H': 5.0}}
+E         Use -v to get more diff
+
+tests/test_sp500_heatmap_intraday_clock.py:65: AssertionError
+______________ test_absent_or_naive_clock_is_not_assumed[index2] _______________
+
+index = Index(['a', 'b'], dtype='str')
+
+    @pytest.mark.parametrize('index', [pd.RangeIndex(2),pd.date_range('2026-10-12',periods=2,freq='h'),pd.Index(['a','b'])])
+    def test_absent_or_naive_clock_is_not_assumed(index):
+>       assert intraday_returns({'X': pd.DataFrame({'close':[100.,105.]},index=index)}) == {}
+E       AssertionError: assert {'X': {'1H': 5.0}} == {}
+E         
+E         Left contains 1 more item:
+E         {'X': {'1H': 5.0}}
+E         Use -v to get more diff
+
+tests/test_sp500_heatmap_intraday_clock.py:65: AssertionError
+___________ test_duplicate_clocks_are_ambiguous_even_if_prices_match ___________
+
+    def test_duplicate_clocks_are_ambiguous_even_if_prices_match():
+        bars = frame(['2026-10-12T14:00Z','2026-10-12T14:00Z','2026-10-12T15:00Z'], [100.,100.,105.])
+>       assert intraday_returns({'X': bars}) == {}
+E       AssertionError: assert {'X': {'1H': 5.0, '2H': 5.0}} == {}
+E         
+E         Left contains 1 more item:
+E         {'X': {'1H': 5.0, '2H': 5.0}}
+E         Use -v to get more diff
+
+tests/test_sp500_heatmap_intraday_clock.py:70: AssertionError
+_______________ test_unordered_input_is_sorted_without_mutation ________________
+
+    def test_unordered_input_is_sorted_without_mutation():
+        bars = frame(['2026-10-12T15:00Z','2026-10-12T14:00Z'], [105.,100.])
+        before = bars.copy(deep=True)
+>       assert intraday_returns({'X': bars}) == {'X': {'1H': 5.0}}
+E       AssertionError: assert {'X': {'1H': -4.76}} == {'X': {'1H': 5.0}}
+E         
+E         Differing items:
+E         {'X': {'1H': -4.76}} != {'X': {'1H': 5.0}}
+E         Use -v to get more diff
+
+tests/test_sp500_heatmap_intraday_clock.py:76: AssertionError
+______________ test_nat_and_duplicate_close_columns_are_unusable _______________
+
+    def test_nat_and_duplicate_close_columns_are_unusable():
+        a = frame(['2026-10-12T14:00Z',None], [100.,105.])
+        b = pd.DataFrame([[100.,101.],[105.,106.]],columns=['close','close'],
+                         index=pd.date_range('2026-10-12T14:00Z',periods=2,freq='h'))
+>       assert intraday_returns({'A':a,'B':b}) == {}
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_sp500_heatmap_intraday_clock.py:95: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+bars = {'A':                            close
+2026-10-12 14:00:00+00:00  100.0
+NaT                        105.0, 'B':                            close  close
+2026-10-12 14:00:00+00:00  100.0  101.0
+2026-10-12 15:00:00+00:00  105.0  106.0}
+
+    def intraday_returns(bars: Mapping[str, pd.DataFrame]) -> dict[str, dict[str, float]]:
+        """Percent change over the last 1H/2H/4H from per-ticker hourly bars.
+    
+        ``bars`` maps ticker -> DataFrame with a ``close`` column ordered ascending
+        (e.g. ``data/intraday/<T>.parquet``). Sub-hourly windows require minute bars
+        and are intentionally not derived here (they stay null until a finer feed
+        exists). Empty / missing input simply yields no keys for that ticker.
+        """
+        out: dict[str, dict[str, float]] = {}
+        steps = {"1H": 1, "2H": 2, "4H": 4}
+        for tkr, df in (bars or {}).items():
+            if df is None or "close" not in getattr(df, "columns", []):
+                continue
+            c = df["close"].dropna()
+            if len(c) < 2:
+                continue
+>           now = float(c.iloc[-1])
+                  ^^^^^^^^^^^^^^^^^
+E           TypeError: float() argument must be a string or a real number, not 'Series'
+
+engine/sp500_heatmap.py:207: TypeError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_real_payload_consumer_enables_only_observed_window_and_preserves_daily __
+
+    def test_real_payload_consumer_enables_only_observed_window_and_preserves_daily():
+        cons = pd.DataFrame({'name':['Example'],'sector':['Technology']},index=['X'])
+        daily = pd.DataFrame({'X':[100.,101.]},index=pd.to_datetime(['2026-10-09','2026-10-12']))
+        bars = frame(['2026-10-12T14:00Z','2026-10-12T14:05Z'], [100.,105.])
+        old = build_heatmap(cons,daily)
+        got = build_heatmap(cons,daily,intraday_bars={'X':bars})
+        available = {r['key']:r['available'] for r in got['timeframes']}
+>       assert available['5M'] is True
+E       assert False is True
+
+tests/test_sp500_heatmap_intraday_clock.py:110: AssertionError
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_sp500_heatmap_intraday_clock.py::test_missing_hour_is_two_hours_not_one
+FAILED tests/test_sp500_heatmap_intraday_clock.py::test_weekend_gap_is_not_intraday
+FAILED tests/test_sp500_heatmap_intraday_clock.py::test_five_minute_rows_do_not_become_an_hour
+FAILED tests/test_sp500_heatmap_intraday_clock.py::test_all_declared_minute_windows_use_their_actual_endpoints
+FAILED tests/test_sp500_heatmap_intraday_clock.py::test_missing_target_does_not_use_nearest_or_forward_filled_price
+FAILED tests/test_sp500_heatmap_intraday_clock.py::test_missing_interior_does_not_destroy_an_observed_endpoint_return
+FAILED tests/test_sp500_heatmap_intraday_clock.py::test_invalid_latest_price_cannot_rewind_to_an_older_good_row[nan]
+FAILED tests/test_sp500_heatmap_intraday_clock.py::test_invalid_latest_price_cannot_rewind_to_an_older_good_row[0.0]
+FAILED tests/test_sp500_heatmap_intraday_clock.py::test_invalid_latest_price_cannot_rewind_to_an_older_good_row[-1.0]
+FAILED tests/test_sp500_heatmap_intraday_clock.py::test_invalid_latest_price_cannot_rewind_to_an_older_good_row[True]
+FAILED tests/test_sp500_heatmap_intraday_clock.py::test_invalid_latest_price_cannot_rewind_to_an_older_good_row[bad]
+FAILED tests/test_sp500_heatmap_intraday_clock.py::test_absent_or_naive_clock_is_not_assumed[index0]
+FAILED tests/test_sp500_heatmap_intraday_clock.py::test_absent_or_naive_clock_is_not_assumed[index1]
+FAILED tests/test_sp500_heatmap_intraday_clock.py::test_absent_or_naive_clock_is_not_assumed[index2]
+FAILED tests/test_sp500_heatmap_intraday_clock.py::test_duplicate_clocks_are_ambiguous_even_if_prices_match
+FAILED tests/test_sp500_heatmap_intraday_clock.py::test_unordered_input_is_sorted_without_mutation
+FAILED tests/test_sp500_heatmap_intraday_clock.py::test_nat_and_duplicate_close_columns_are_unusable
+FAILED tests/test_sp500_heatmap_intraday_clock.py::test_real_payload_consumer_enables_only_observed_window_and_preserves_daily
+18 failed, 6 passed in 4.18s

@@ -33,7 +33,7 @@ HOW IT WORKS
   synthesized. Anonymous mode runs the REAL ``require_site_full_user`` with no
   Authorization header and records the real 401.
 * Populated mode first builds the private state into a TEMP root (outside the
-  repo) that symlinks ONLY the five read-only kernel inputs, calls
+  repo) that symlinks ONLY the six read-only kernel inputs, calls
   ``scripts.build_fundamental_forensics.compose_state``, and copies the
   produced gzip object to the tree's gitignored
   ``data/fundamental_forensics/private/state.json.gz``.
@@ -55,6 +55,16 @@ HOW IT WORKS
   primary-finding control, Enter, then Tab through the open drawer). The force
   is reported applied only when a post-interaction DOM probe confirms it, and
   every receipt lands in ``interactions.json``.
+* A43 Z1 repair: after the drawer_trap trail (and after that cell's screenshot,
+  which must still show the open drawer) a real Escape press closes the drawer
+  and the receipt records ``facts.closed`` — ``focus_restored`` is True only
+  when the drawer is closed AND focus returned to the product's restore target
+  (the trigger, or the selected finding's own button — see the probe script),
+  and it is folded into ``verified``. Keyboard receipts also carry
+  ``facts.disabled_controls``, the None-state record of ``#ff-export-btn`` /
+  ``#ff-saved-save`` (real ``disabled`` property, per-locale visible text,
+  labels, tip); populated-set rest cells get the same record as a
+  ``disabled_controls`` receipt kind in ``interactions.json``.
 * An interaction cell whose screenshot would be taken while the page's modal is
   open (``body.ff-modal-open``) is captured as the first VIEWPORT instead of the
   full page: Chromium's full-page capture resizes the surface and drops or
@@ -146,13 +156,17 @@ CATEGORY_FORENSICS_FORWARD_FAILED = "forensics_forward_failed"
 SCRUB_ENV_PREFIXES = ("R2_", "FF_ATTESTED_", "AWS_")
 SCRUB_ENV_NAMES = ("RESEARCH_LOCAL_STORE", "FIF_FINANCIAL_DATASET_MODE")
 
-# Exactly the five read-only kernel inputs symlinked into the temp build root.
+# Exactly the six read-only kernel inputs symlinked into the temp build root.
+# The committed issuer master is the builder's entity-id join
+# (ISSUER_MASTER_RELATIVE); without it every company carries entity_id=None
+# and no saved view can ever pass the page's issuer-identity check.
 KERNEL_INPUTS: tuple[str, ...] = (
     "data/edgar/statements_quarterly.parquet",
     "data/edgar/statements.parquet",
     "data/edgar/fundamentals.parquet",
     "data/universe/membership.parquet",
     "data/breadth/ticker_sectors.parquet",
+    "data/reference/issuer_master.parquet",
 )
 # A REAL directory in the temp root (never a symlink): the builder writes the
 # public summary + private state under here, and none of that may reach through
@@ -243,6 +257,24 @@ INTERACTION_ATTRIBUTE = "data-ff-evidence-interaction"
 INTERACTION_DRAWER_OPEN = "drawer_open"
 INTERACTION_TAB_KEYS = "tab_keys"
 INTERACTION_DRAWER_TRAP = "drawer_trap"
+INTERACTION_SAVED_RESTORE_PINNED = "saved_restore_pinned"
+INTERACTION_SAVED_OPEN_UNAVAILABLE = "saved_open_unavailable"
+INTERACTION_SAVED_WRITE_FAILURE = "saved_write_failure"
+# A43 Z1 repair: the disabled/unavailable control-text probe. NOT a force-state
+# interaction — a receipt kind this wrapper appends itself for rest cells; it
+# never enters ``_INTERACTIONS`` (``run_interaction`` refuses it as a force).
+INTERACTION_DISABLED_CONTROLS = "disabled_controls"
+# The two keyboard interactions whose receipts carry the None-state probe as
+# ``facts.disabled_controls`` (keeping keyboard interactions.json at 24 rows).
+KEYBOARD_INTERACTIONS = (INTERACTION_TAB_KEYS, INTERACTION_DRAWER_TRAP)
+# templates/fundamental_forensics.html.j2:87-90 and :119-122: the two disabled
+# desk controls masterplan row A43 names.
+DISABLED_CONTROL_SELECTORS = ("#ff-export-btn", "#ff-saved-save")
+DISABLED_CONTROLS_PROBE_INPUT = (
+    "probe: rest-state disabled/unavailable record for #ff-export-btn and "
+    "#ff-saved-save (real disabled property, per-locale visible text, "
+    "data-label-en/zh, data-tip-<locale>, aria-disabled)"
+)
 INTERACTION_INPUTS = {
     INTERACTION_DRAWER_OPEN: "pointer: real click on [data-open-primary-finding]",
     INTERACTION_TAB_KEYS: "keyboard: real Tab presses to the selected tab, then ArrowRight",
@@ -250,7 +282,74 @@ INTERACTION_INPUTS = {
         "keyboard: real Tab presses to [data-open-primary-finding], Enter, then Tab "
         "through the open drawer"
     ),
+    INTERACTION_SAVED_RESTORE_PINNED: (
+        "select: real #ff-saved-select change to the pinned seed row "
+        "(CDEFGHIJKLMNOPQRSTUVWX)"
+    ),
+    INTERACTION_SAVED_OPEN_UNAVAILABLE: (
+        "select: real #ff-saved-select change to the drift seed row "
+        "(EFGHIJKLMNOPQRSTUVWXYZ)"
+    ),
+    INTERACTION_SAVED_WRITE_FAILURE: (
+        "Restore the pinned saved view, make this capture page's browser refuse the "
+        "next write to the saved-views key (localStorage.setItem raises "
+        "QuotaExceededError for that one key only), type the name 'Apple write check' "
+        "and click Rename on the restored view. Shows the write-failure notice; the "
+        "stored saved views and the row's name are unchanged."
+    ),
 }
+
+# X2-s r1 (H2): the saved-views desk selectors and the seed rows the two
+# interactions drive (evidence_briefcase_seed.json rows 1 and 3).
+SAVED_SELECT_SELECTOR = "#ff-saved-select"
+SAVED_BADGE_SELECTOR = "#ff-saved-badge"
+SAVED_NOTICE_SELECTOR = "#ff-saved-notice"
+SAVED_NAME_SELECTOR = "#ff-saved-name"
+# X2-s r2 (C4): the write-failure capture drives Rename on the restored row.
+# The fixture-served capture page never reaches Save's 'ready' phase (no
+# queryable financial payload), so Save stays disabled in every capture flow;
+# Rename writes through the same briefcase store and the same write-failure
+# notice path, and is enabled whenever a saved view is active.
+SAVED_RENAME_SELECTOR = "#ff-saved-rename"
+SAVED_PINNED_ROW_ID = "CDEFGHIJKLMNOPQRSTUVWX"
+SAVED_DRIFT_ROW_ID = "EFGHIJKLMNOPQRSTUVWXYZ"
+
+# X2-s r2 (C1): the setItem patch is KEY-SCOPED — it throws QuotaExceededError
+# only for the one storage key it is handed and delegates every other key to
+# the original untouched, so the refusal can never leak to another feature.
+_SAVED_WRITE_FAILURE_SETITEM_PATCH = (
+    "(key) => { const original = Storage.prototype.setItem; Storage.prototype.setItem"
+    " = function (k, v) { if (k === key) { throw new DOMException('storage refused in"
+    " capture', 'QuotaExceededError'); } return original.call(this, k, v); }; }"
+)
+_SAVED_STORED_BYTES_SCRIPT = "(key) => localStorage.getItem(key)"
+_SAVED_SELECTED_LABEL_SCRIPT = (
+    "(sel) => { const s = document.querySelector(sel); const o = s && s.selectedOptions"
+    " && s.selectedOptions[0]; return o ? String(o.textContent || '') : null; }"
+)
+
+# X2-s r1 (H1): the device-local briefcase key the seed init script plants.
+BRIEFCASE_STORAGE_KEY = "mastermind.filing_forensics.saved_research.v1"
+
+# A0-SE additive hook (SAFE-ENV), opened only by --dataset-store/--state-store;
+# existing modes are unchanged without them.
+PRODUCTION_CAPTURE_ENV_NAMES = (
+    "FIF_FINANCIAL_DATASET_MODE",
+    "FIF_PRODUCTION_DATASET_LOCAL_STORE",
+    "RESEARCH_LOCAL_STORE",
+)
+
+
+def install_state_into_local_store(store_dir: str | Path, blob: bytes) -> Path:
+    """Write the built state object into a LOCAL store at the loader's key."""
+    from engine.fundamental_forensics import private_state  # noqa: PLC0415
+
+    target = Path(store_dir) / private_state.STATE_KEY
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(blob)
+    return target
+
+
 PRIMARY_FINDING_SELECTOR = "[data-open-primary-finding]"
 SELECTED_TAB_SELECTOR = '.ff-tab[aria-selected="true"]'
 EVIDENCE_SELECTOR = "#ff-evidence"
@@ -828,6 +927,66 @@ _TABLIST_PROBE_SCRIPT = """
 }
 """
 
+# A43 Z1 repair: the Escape half of the drawer_trap receipt. A real Escape
+# press must close the drawer and restore focus per the product's own contract
+# (templates/fundamental_forensics.js closeEvidence(restoreFocus) focuses
+# state.lastFocus). For a drawer opened from the primary-finding CTA the
+# recorded target — measured on the live page — is the SELECTED finding's own
+# evidence button (openAnalysisDrawer -> selectedEvidenceButton(), rendered as
+# button.ff-finding[data-finding-id][aria-current="true"]); the CTA itself is
+# the fallback when no finding button matched at open time.
+_DRAWER_CLOSED_PROBE_SCRIPT = """
+(config) => {
+  const evidence = document.querySelector(config.evidence);
+  const active = document.activeElement;
+  const onTrigger = !!(active && active.matches && active.matches(config.trigger));
+  const onFindingButton = !!(active && active.matches && active.matches(
+    'button[data-finding-id][aria-current="true"]'));
+  const open = !!evidence && evidence.classList.contains('is-open');
+  return {
+    open: open,
+    modal: !!evidence && evidence.getAttribute('aria-modal') === 'true',
+    focus_restored: !open && (onTrigger || onFindingButton),
+    focus_matches_trigger: onTrigger,
+    focus_on_finding_button: onFindingButton,
+    focus_id: active && active.id ? active.id : null,
+    focus_tag: active ? active.tagName.toLowerCase() : null,
+  };
+}
+"""
+
+# A43 Z1 repair: the disabled/unavailable control-text probe. ``visible_text``
+# is the applied locale's own text: a rendered control's innerText already
+# shows exactly its .l-<locale> span, but a control behind the closed
+# Desk-tools disclosure has no layout box and innerText falls back to
+# textContent (BOTH locale spans concatenated), so the probe reads that
+# locale's span directly in that case.
+_DISABLED_CONTROLS_SCRIPT = """
+(config) => config.selectors.map(function (selector) {
+  const el = document.querySelector(selector);
+  if (!el) {
+    return {selector: selector, present: false, disabled: null, visible_text: null,
+            label_en: null, label_zh: null, tip: null, aria_disabled: null};
+  }
+  const rendered = el.getClientRects().length > 0;
+  const inner = String(el.innerText || '').trim();
+  const span = el.querySelector('.l-' + config.locale);
+  const visible = rendered && inner !== ''
+    ? inner
+    : (span ? String(span.textContent || '').trim() : inner);
+  return {
+    selector: selector,
+    present: true,
+    disabled: el.disabled === true,
+    visible_text: visible,
+    label_en: el.getAttribute('data-label-en'),
+    label_zh: el.getAttribute('data-label-zh'),
+    tip: el.getAttribute('data-tip-' + config.locale),
+    aria_disabled: el.getAttribute('aria-disabled'),
+  };
+})
+"""
+
 _FOCUS_RESET_SCRIPT = """
 () => {
   const active = document.activeElement;
@@ -849,6 +1008,59 @@ def is_interaction_payload(arg: Any) -> bool:
     )
 
 
+# ---------------------------------------------------------------------------
+# briefcase seed (X2-s r1, H1)
+# ---------------------------------------------------------------------------
+
+
+def build_briefcase_seed_init_script(raw_file_text: str) -> str:
+    """The ONE init script that plants the seed container verbatim.
+
+    Exact shape (frozen by the unit test): the raw file TEXT rides as a JSON
+    string literal, so the stored bytes equal the fixture bytes exactly, and
+    the try/catch keeps a hostile storage implementation from breaking the
+    page load. Only this one key is ever written.
+    """
+    return (
+        "(()=>{try{window.localStorage.setItem(\"" + BRIEFCASE_STORAGE_KEY + "\", "
+        + json.dumps(raw_file_text) + ")}catch(e){}})();"
+    )
+
+
+def resolve_briefcase_seed(raw: str, tree_root: Path) -> dict[str, str]:
+    """Resolve ``--briefcase-seed``: a JSON object under ``<tree>/tests/fixtures``.
+
+    Returns the sidecar fields (repo-relative ``path``, ``sha256`` of the file
+    bytes, ``storage_key``) plus the built ``init_script``. Raises
+    :class:`ValueError` with a plain message otherwise; ``main`` turns that
+    into ``EXIT_USAGE`` before any browser, scrub or kernel work.
+    """
+    candidate = Path(raw).expanduser()
+    if not candidate.is_absolute():
+        candidate = Path.cwd() / candidate
+    resolved = candidate.resolve()
+    fixtures_root = (tree_root / "tests" / "fixtures").resolve()
+    if fixtures_root != resolved and fixtures_root not in resolved.parents:
+        raise ValueError(
+            f"--briefcase-seed must resolve under {fixtures_root}; got {resolved}"
+        )
+    if not resolved.is_file():
+        raise ValueError(f"--briefcase-seed is not a file: {resolved}")
+    raw_text = resolved.read_text(encoding="utf-8")
+    try:
+        parsed = json.loads(raw_text)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"--briefcase-seed is not parseable JSON: {exc}") from exc
+    if not isinstance(parsed, dict):
+        raise ValueError(f"--briefcase-seed must be a JSON object, not {type(parsed).__name__}")
+    return {
+        "path": resolved.relative_to(tree_root).as_posix(),
+        "sha256": hashlib.sha256(resolved.read_bytes()).hexdigest(),
+        "storage_key": BRIEFCASE_STORAGE_KEY,
+        "init_script": build_briefcase_seed_init_script(raw_text),
+    }
+
+
 def _settle(page: Any) -> None:
     try:
         page.wait_for_timeout(INTERACTION_SETTLE_MS)
@@ -859,6 +1071,78 @@ def _settle(page: Any) -> None:
 def _drawer_probe(page: Any) -> dict[str, Any]:
     config = {"evidence": EVIDENCE_SELECTOR, "focusable": FOCUSABLE_PROBE_SELECTOR}
     return dict(page.evaluate(_DRAWER_PROBE_SCRIPT.strip(), config) or {})
+
+
+def close_drawer_and_probe_restore(page: Any) -> dict[str, Any]:
+    """Press Escape, settle, then probe: closed drawer + focus on the trigger."""
+    page.keyboard.press("Escape")
+    _settle(page)
+    config = {"evidence": EVIDENCE_SELECTOR, "trigger": PRIMARY_FINDING_SELECTOR}
+    return dict(page.evaluate(_DRAWER_CLOSED_PROBE_SCRIPT.strip(), config) or {})
+
+
+def fold_closed_into_verified(receipt: dict[str, Any], closed: Mapping[str, Any]) -> None:
+    """Record the ``closed`` fact; a lost focus restore voids the receipt.
+
+    Fail-closed only: a restored close can never un-fail a receipt whose trap
+    verification already failed.
+    """
+    facts = receipt.setdefault("facts", {})
+    facts["closed"] = dict(closed)
+    receipt["verified"] = bool(receipt.get("verified")) and bool(closed.get("focus_restored"))
+
+
+def probe_disabled_controls(page: Any, locale: str | None) -> list[dict[str, Any]]:
+    """The two desk controls' disabled/unavailable record for ``locale``."""
+    config = {"selectors": list(DISABLED_CONTROL_SELECTORS), "locale": str(locale or "en")}
+    values = page.evaluate(_DISABLED_CONTROLS_SCRIPT.strip(), config) or []
+    return [dict(value) for value in values if isinstance(value, dict)]
+
+
+def record_disabled_controls(page: Any, cell: Any) -> dict[str, Any]:
+    """A ``disabled_controls`` receipt for one rest cell; probe failure = gap."""
+    receipt: dict[str, Any] = {
+        "cell_id": getattr(cell, "cell_id", None),
+        "viewport": getattr(cell, "viewport", None),
+        "locale": getattr(cell, "locale", None),
+        "theme": getattr(cell, "theme", None),
+        "force_state": None,
+        "interaction": INTERACTION_DISABLED_CONTROLS,
+        "input": DISABLED_CONTROLS_PROBE_INPUT,
+        "verified": False,
+        "facts": {"controls": []},
+    }
+    try:
+        receipt["facts"]["controls"] = probe_disabled_controls(
+            page, getattr(cell, "locale", None)
+        )
+    except Exception as exc:  # noqa: BLE001 - a failed probe is a recorded gap
+        receipt["error"] = f"{type(exc).__name__}: {exc}"
+        return receipt
+    controls = receipt["facts"]["controls"]
+    seen_selectors = {entry.get("selector") for entry in controls}
+    receipt["verified"] = bool(controls) and seen_selectors == set(
+        DISABLED_CONTROL_SELECTORS
+    ) and all(
+        entry.get("present") and entry.get("disabled") is True and entry.get("visible_text")
+        for entry in controls
+    )
+    return receipt
+
+
+def rest_disabled_controls_probe_wanted(mode: str, force_states: Sequence[str]) -> bool:
+    """Rest-cell ``disabled_controls`` receipts: the populated set only.
+
+    The keyboard set is captured in mode=populated too, but its None-state
+    cells are probed through their own tab_keys/drawer_trap receipts
+    (``facts.disabled_controls``), keeping keyboard interactions.json at
+    3 viewports x 2 interactions x 2 locales x 2 themes = 24 receipts.
+    """
+    if mode != MODE_POPULATED:
+        return False
+    return not any(
+        spec.split(":", 1)[0] in KEYBOARD_INTERACTIONS for spec in force_states
+    )
 
 
 def tab_walk_to(page: Any, selector: str, *, cap: int = TAB_WALK_CAP) -> dict[str, Any]:
@@ -951,10 +1235,138 @@ def _interact_drawer_trap(page: Any) -> tuple[bool, dict[str, Any]]:
     return verified, facts
 
 
+_SAVED_PROBE_SCRIPT = """
+() => {
+  const select = document.querySelector('#ff-saved-select');
+  const badge = document.querySelector('#ff-saved-badge');
+  const notice = document.querySelector('#ff-saved-notice');
+  const visible = (node) => !!(node && node.offsetParent !== null);
+  // X2-s r2 (C2): a read-only measurement of the selected option's text width
+  // against the select's inner width — canvas 2d, the select's computed font
+  // (fallback font string when the shorthand computes empty) plus the
+  // computed left+right padding. Nothing is styled and no style is injected;
+  // the fact is recorded for every saved interaction and gates nothing.
+  let selected_text_fits = null;
+  let selected_text_px = null;
+  let select_inner_px = null;
+  if (select) {
+    const styles = window.getComputedStyle(select);
+    const font = styles.font || (styles.fontWeight + ' ' + styles.fontSize + ' ' + styles.fontFamily);
+    select_inner_px = select.clientWidth;
+    const option = select.selectedOptions && select.selectedOptions[0];
+    const context = document.createElement('canvas').getContext('2d');
+    if (option && context) {
+      context.font = font;
+      selected_text_px = context.measureText(String(option.textContent || '')).width +
+        parseFloat(styles.paddingLeft || '0') + parseFloat(styles.paddingRight || '0');
+      selected_text_fits = selected_text_px <= select_inner_px + 0.5;
+    }
+  }
+  return {
+    value: select ? select.value : null,
+    options: select ? Array.prototype.map.call(select.options, (o) => o.textContent) : [],
+    badge_visible: visible(badge) && !!badge.textContent.trim(),
+    notice_visible: visible(notice),
+    notice_has_strong: !!(notice && notice.querySelector('strong')),
+    notice_newer_generation: !!(notice && notice.querySelector('[data-saved-reresolve]')),
+    notice_text: notice ? String(notice.textContent || '') : '',
+    selected_text_fits: selected_text_fits,
+    selected_text_px: selected_text_px,
+    select_inner_px: select_inner_px,
+  };
+}
+"""
+
+
+def _saved_select(page: Any, row_id: str) -> None:
+    """A REAL select change on the saved-views list, then pointer parked."""
+    page.select_option(SAVED_SELECT_SELECTOR, row_id, timeout=INTERACTION_TIMEOUT_MS)
+    _settle(page)
+    mouse = getattr(page, "mouse", None)
+    if mouse is not None:
+        mouse.move(*POINTER_PARK)
+
+
+def _interact_saved_restore_pinned(page: Any) -> tuple[bool, dict[str, Any]]:
+    _saved_select(page, SAVED_PINNED_ROW_ID)
+    probe = dict(page.evaluate(_SAVED_PROBE_SCRIPT.strip()) or {})
+    notice_state = (
+        "hidden"
+        if not probe.get("notice_visible")
+        else "newer_generation"
+        if probe.get("notice_newer_generation")
+        else "other"
+    )
+    facts: dict[str, Any] = {**probe, "notice_state": notice_state}
+    verified = bool(probe.get("value") == SAVED_PINNED_ROW_ID and probe.get("badge_visible"))
+    return verified, facts
+
+
+def _interact_saved_open_unavailable(page: Any) -> tuple[bool, dict[str, Any]]:
+    _saved_select(page, SAVED_DRIFT_ROW_ID)
+    probe = dict(page.evaluate(_SAVED_PROBE_SCRIPT.strip()) or {})
+    verified = bool(
+        probe.get("notice_visible")
+        and probe.get("notice_has_strong")
+        and not probe.get("badge_visible")
+    )
+    return verified, dict(probe)
+
+
+def _interact_saved_write_failure(page: Any) -> tuple[bool, dict[str, Any]]:
+    _saved_select(page, SAVED_PINNED_ROW_ID)
+    # Refuse the NEXT write to the saved-views key only, then drive a real
+    # write through the briefcase store: Rename on the restored row (C4 — the
+    # capture page never enables Save). The stored bytes and the row label are
+    # read right before the click; the post-click probe plus a second read
+    # prove the refusal left the bytes byte-identical and the name unchanged.
+    page.evaluate(_SAVED_WRITE_FAILURE_SETITEM_PATCH, BRIEFCASE_STORAGE_KEY)
+    page.fill(SAVED_NAME_SELECTOR, "Apple write check", timeout=INTERACTION_TIMEOUT_MS)
+    before = page.evaluate(_SAVED_STORED_BYTES_SCRIPT, BRIEFCASE_STORAGE_KEY)
+    label_before = page.evaluate(_SAVED_SELECTED_LABEL_SCRIPT, SAVED_SELECT_SELECTOR)
+    page.click(SAVED_RENAME_SELECTOR, timeout=INTERACTION_TIMEOUT_MS)
+    _settle(page)
+    mouse = getattr(page, "mouse", None)
+    if mouse is not None:
+        mouse.move(*POINTER_PARK)
+    after = page.evaluate(_SAVED_STORED_BYTES_SCRIPT, BRIEFCASE_STORAGE_KEY)
+    label_after = page.evaluate(_SAVED_SELECTED_LABEL_SCRIPT, SAVED_SELECT_SELECTOR)
+    probe = dict(page.evaluate(_SAVED_PROBE_SCRIPT.strip()) or {})
+    before_sha = hashlib.sha256(str(before or "").encode("utf-8")).hexdigest()
+    after_sha = hashlib.sha256(str(after or "").encode("utf-8")).hexdigest()
+    notice_text = str(probe.get("notice_text") or "")
+    verified = bool(
+        probe.get("notice_visible")
+        and not probe.get("notice_has_strong")
+        and ("did not save this change" in notice_text or "浏览器未保存此更改" in notice_text)
+        and probe.get("value") == SAVED_PINNED_ROW_ID
+        and probe.get("badge_visible")
+        and before is not None
+        and after == before
+        and before_sha == after_sha
+        and label_before is not None
+        and label_after == label_before
+        and "Apple write check" not in str(label_after or "")
+    )
+    facts: dict[str, Any] = {
+        **probe,
+        "write_control": SAVED_RENAME_SELECTOR,
+        "selected_label_before_click": label_before,
+        "selected_label_after": label_after,
+        "stored_sha256_before_click": before_sha,
+        "stored_sha256_after": after_sha,
+        "stored_unchanged": after == before,
+    }
+    return verified, facts
+
+
 _INTERACTIONS: dict[str, Callable[[Any], tuple[bool, dict[str, Any]]]] = {
     INTERACTION_DRAWER_OPEN: _interact_drawer_open,
     INTERACTION_TAB_KEYS: _interact_tab_keys,
     INTERACTION_DRAWER_TRAP: _interact_drawer_trap,
+    INTERACTION_SAVED_RESTORE_PINNED: _interact_saved_restore_pinned,
+    INTERACTION_SAVED_OPEN_UNAVAILABLE: _interact_saved_open_unavailable,
+    INTERACTION_SAVED_WRITE_FAILURE: _interact_saved_write_failure,
 }
 
 
@@ -981,10 +1393,20 @@ def run_interaction(page: Any, payload: Mapping[str, Any], cell: Any) -> dict[st
         receipt["error"] = f"unknown interaction {name!r}; known: {sorted(_INTERACTIONS)}"
         return receipt
     try:
+        pre_facts: dict[str, Any] = {}
+        if name in KEYBOARD_INTERACTIONS:
+            # A43 Z1 repair: this cell's None-state disabled controls, probed
+            # before the walk moves anything (a probe failure is a recorded
+            # gap for the whole receipt — fail closed, like every interaction).
+            pre_facts["disabled_controls"] = probe_disabled_controls(
+                page, getattr(cell, "locale", None)
+            )
         verified, facts = action(page)
     except Exception as exc:  # noqa: BLE001 - a failed interaction is a recorded gap
         receipt["error"] = f"{type(exc).__name__}: {exc}"
         return receipt
+    if pre_facts:
+        facts = {**pre_facts, **facts}
     receipt["verified"] = bool(verified)
     receipt["facts"] = facts
     return receipt
@@ -1010,11 +1432,15 @@ class DriverProxy:
         route_handler_factory: Callable[[], Callable[[Any, Any], None]],
         fold_recorder: Callable[[Any, Any], None],
         interaction_runner: Callable[[Any, Mapping[str, Any], Any], Any] | None = None,
+        init_scripts: Sequence[str] = (),
+        rest_probe: Callable[[Any, Any], Any] | None = None,
     ) -> None:
         self._real = real_driver
         self._route_handler_factory = route_handler_factory
         self._fold_recorder = fold_recorder
         self._interaction_runner = interaction_runner
+        self._init_scripts = tuple(init_scripts)
+        self._rest_probe = rest_probe
         self._current_cell: Any = None
         self._wrapped = False
 
@@ -1031,6 +1457,8 @@ class DriverProxy:
                 fold_recorder=self._fold_recorder,
                 get_cell=lambda: self._current_cell,
                 interaction_runner=self._interaction_runner,
+                init_scripts=self._init_scripts,
+                rest_probe=self._rest_probe,
             )
             self._wrapped = True
         return self._real.capture(url=rewrite_evidence_host(url), cell=cell, timeout_s=timeout_s)
@@ -1050,21 +1478,31 @@ class BrowserProxy:
         fold_recorder: Callable[[Any, Any], None],
         get_cell: Callable[[], Any],
         interaction_runner: Callable[[Any, Mapping[str, Any], Any], Any] | None = None,
+        init_scripts: Sequence[str] = (),
+        rest_probe: Callable[[Any, Any], Any] | None = None,
     ) -> None:
         self._real = real_browser
         self._handler = handler
         self._fold_recorder = fold_recorder
         self._get_cell = get_cell
         self._interaction_runner = interaction_runner
+        self._init_scripts = tuple(init_scripts)
+        self._rest_probe = rest_probe
 
     def new_context(self, **kwargs: Any) -> Any:
         real_context = self._real.new_context(**kwargs)
         real_context.route("**/*", self._handler)
+        # X2-s r1 (H1): init scripts run in every page of the context BEFORE
+        # any page script — installed after routing so a routed request can
+        # never race the seed.
+        for script in self._init_scripts:
+            real_context.add_init_script(script=script)
         return ContextProxy(
             real_context,
             fold_recorder=self._fold_recorder,
             get_cell=self._get_cell,
             interaction_runner=self._interaction_runner,
+            rest_probe=self._rest_probe,
         )
 
     def close(self) -> None:
@@ -1084,11 +1522,13 @@ class ContextProxy:
         fold_recorder: Callable[[Any, Any], None],
         get_cell: Callable[[], Any],
         interaction_runner: Callable[[Any, Mapping[str, Any], Any], Any] | None = None,
+        rest_probe: Callable[[Any, Any], Any] | None = None,
     ) -> None:
         self._real = real_context
         self._fold_recorder = fold_recorder
         self._get_cell = get_cell
         self._interaction_runner = interaction_runner
+        self._rest_probe = rest_probe
 
     def new_page(self) -> Any:
         return PageProxy(
@@ -1096,6 +1536,7 @@ class ContextProxy:
             fold_recorder=self._fold_recorder,
             get_cell=self._get_cell,
             interaction_runner=self._interaction_runner,
+            rest_probe=self._rest_probe,
         )
 
     def __getattr__(self, name: str) -> Any:
@@ -1119,11 +1560,13 @@ class PageProxy:
         fold_recorder: Callable[[Any, Any], None],
         get_cell: Callable[[], Any],
         interaction_runner: Callable[[Any, Mapping[str, Any], Any], Any] | None = None,
+        rest_probe: Callable[[Any, Any], Any] | None = None,
     ) -> None:
         self._real = real_page
         self._fold_recorder = fold_recorder
         self._get_cell = get_cell
         self._interaction_runner = interaction_runner
+        self._rest_probe = rest_probe
         # (cell id at interaction time, the receipt dict the runner returned): the
         # same object the run appended to interaction_rows, so annotating it here
         # lands in interactions.json.
@@ -1157,6 +1600,14 @@ class PageProxy:
                 self._fold_recorder(self._real, cell)
             except Exception:  # noqa: BLE001 - measurement must never kill the shot
                 pass
+            if self._rest_probe is not None and getattr(cell, "force_state", None) is None:
+                # A43 Z1 repair: one disabled_controls receipt per rest cell
+                # (the recorder builds the receipt and appends it to this run's
+                # interaction rows; it records its own gap on probe failure).
+                try:
+                    self._rest_probe(self._real, cell)
+                except Exception:  # noqa: BLE001 - the shot still happens
+                    pass
         receipt = self._receipt_for(cell)
         if receipt is not None and kwargs.get("full_page"):
             if self._modal_open():
@@ -1164,7 +1615,32 @@ class PageProxy:
                 receipt["capture"] = CAPTURE_SCOPE_MODAL_VIEWPORT
             else:
                 receipt["capture"] = CAPTURE_SCOPE_FULL_PAGE
-        return self._real.screenshot(**kwargs)
+        shot = self._real.screenshot(**kwargs)
+        self._close_drawer_after_the_shot(receipt)
+        return shot
+
+    def _close_drawer_after_the_shot(self, receipt: dict[str, Any] | None) -> None:
+        """A43 Z1 repair: the drawer_trap receipt's Escape half, AFTER the shot.
+
+        The drawer_trap screenshot must still show the open, trapped drawer, so
+        the real Escape press (close + focus restore, closeEvidence(restoreFocus))
+        follows the screenshot; the receipt is annotated in place and a failed
+        focus restore voids ``verified``. Once per receipt.
+        """
+        if receipt is None or receipt.get("interaction") != INTERACTION_DRAWER_TRAP:
+            return
+        facts = receipt.get("facts")
+        if isinstance(facts, Mapping) and "closed" in facts:
+            return
+        try:
+            closed = close_drawer_and_probe_restore(self._real)
+        except Exception as exc:  # noqa: BLE001 - fail closed, never kill the shot path
+            closed = {
+                "open": None,
+                "focus_restored": False,
+                "probe_error": f"{type(exc).__name__}: {exc}",
+            }
+        fold_closed_into_verified(receipt, closed)
 
     def _receipt_for(self, cell: Any) -> dict[str, Any] | None:
         """The interaction receipt of THIS cell, or None (non-interaction cells)."""
@@ -1199,7 +1675,7 @@ class KernelStateReceipt:
 
 
 def prepare_kernel_temp_root(tree_root: Path, temp_root: Path) -> list[str]:
-    """Symlink ONLY the five read-only inputs; make the output dir a real dir."""
+    """Symlink ONLY the six read-only inputs; make the output dir a real dir."""
     created: list[str] = []
     for relative in KERNEL_INPUTS:
         source = tree_root / relative
@@ -1489,6 +1965,7 @@ def postprocess_manifest(
     state_receipt: KernelStateReceipt | None,
     interactions: str | None = None,
     mode_verification: Mapping[str, Any] | None = None,
+    briefcase_seed: str | None = None,
 ) -> None:
     """Keep everything the capture tool wrote; add the fixture-backed provenance.
 
@@ -1541,6 +2018,10 @@ def postprocess_manifest(
     evidence_source["fold_measurement"] = "fold_measurement.json"
     if interactions:
         evidence_source["interactions"] = interactions
+    if briefcase_seed:
+        # X2-s r1 (H1): names the sidecar (path/sha256/storage_key) planted
+        # by this run's seed init script; absent without --briefcase-seed.
+        evidence_source["briefcase_seed"] = briefcase_seed
     if mode_verification is not None:
         evidence_source["mode_verification"] = dict(mode_verification)
     manifest["evidence_source"] = evidence_source
@@ -1660,6 +2141,23 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--viewports", default="desktop,mobile")
     parser.add_argument("--locales", default="en,zh")
     parser.add_argument("--themes", default="dark,light")
+    parser.add_argument(
+        "--briefcase-seed",
+        default=None,
+        metavar="PATH",
+        dest="briefcase_seed",
+        help="optional JSON-object fixture under <repo>/tests/fixtures planted as "
+        "the device-local saved-views briefcase (one localStorage key) before any "
+        "page script; a briefcase_seed.json sidecar records path/sha256/storage_key",
+    )
+    parser.add_argument(
+        "--dataset-store", default=None, metavar="DIR", dest="dataset_store",
+        help="A0-SE SAFE-ENV hook: production mode over this LOCAL fixture store",
+    )
+    parser.add_argument(
+        "--state-store", default=None, metavar="DIR", dest="state_store",
+        help="A0-SE SAFE-ENV hook: keep the built private state in this LOCAL store",
+    )
     return parser
 
 
@@ -1671,6 +2169,8 @@ def _wrapped_driver_factory(
     fold_selectors: Sequence[tuple[str, str]],
     mode: str,
     interaction_rows: list[dict[str, Any]] | None = None,
+    init_scripts: Sequence[str] = (),
+    rest_probe_enabled: bool = False,
 ) -> Callable[..., DriverProxy]:
     from scripts.capture_page_evidence import playwright_page_driver  # noqa: PLC0415
 
@@ -1680,6 +2180,13 @@ def _wrapped_driver_factory(
 
     def interaction_runner(page: Any, payload: Mapping[str, Any], cell: Any) -> dict[str, Any]:
         receipt = run_interaction(page, payload, cell)
+        if interaction_rows is not None:
+            interaction_rows.append(receipt)
+        return receipt
+
+    def rest_probe(page: Any, cell: Any) -> dict[str, Any]:
+        # A43 Z1 repair: one disabled_controls receipt per rest cell.
+        receipt = record_disabled_controls(page, cell)
         if interaction_rows is not None:
             interaction_rows.append(receipt)
         return receipt
@@ -1697,6 +2204,8 @@ def _wrapped_driver_factory(
                 page, cell, selectors=fold_selectors, mode=mode, sink=fold_rows
             ),
             interaction_runner=interaction_runner,
+            init_scripts=init_scripts,
+            rest_probe=rest_probe if rest_probe_enabled else None,
         )
         slot[0] = proxy
         return proxy
@@ -1733,6 +2242,17 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"error: {problem}", file=sys.stderr)
             return EXIT_USAGE
 
+    # X2-s r1 (H1): resolve --briefcase-seed BEFORE the render guard, the env
+    # scrub, the kernel build and any browser launch — a bad seed is a usage
+    # error, not a capture failure.
+    seed_info: dict[str, str] | None = None
+    if args.briefcase_seed:
+        try:
+            seed_info = resolve_briefcase_seed(args.briefcase_seed, tree_root)
+        except ValueError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return EXIT_USAGE
+
     try:
         fold_selectors = parse_fold_selectors(args.fold_selector)
     except argparse.ArgumentTypeError as exc:
@@ -1754,6 +2274,15 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     scrub = scrub_process_env()
     prior_macro_repo = os.environ.get("MACRO_REPO")
+    # A0-SE SAFE-ENV hook: opened only by the explicit flags below.
+    prior_production_capture_env = {
+        name: os.environ.get(name) for name in PRODUCTION_CAPTURE_ENV_NAMES
+    }
+    if args.dataset_store is not None:
+        os.environ["FIF_FINANCIAL_DATASET_MODE"] = "production"
+        os.environ["FIF_PRODUCTION_DATASET_LOCAL_STORE"] = str(Path(args.dataset_store).expanduser().resolve())
+    if args.state_store is not None:
+        os.environ["RESEARCH_LOCAL_STORE"] = str(Path(args.state_store).expanduser().resolve())
     try:
         os.environ["MACRO_REPO"] = str(tree_root)
         forensics_api = load_forensics_module()
@@ -1770,10 +2299,21 @@ def main(argv: Sequence[str] | None = None) -> int:
                 stack.callback(clear_private_state_cache)
                 mode_verification = {"local_state_set_aside": set_aside}
             if mode == MODE_POPULATED:
-                state_receipt = build_kernel_state(tree_root, generated_at=args.generated_at)
+                into_local_store = args.state_store is not None
+                state_receipt = build_kernel_state(
+                    tree_root,
+                    generated_at=args.generated_at,
+                    install=not into_local_store,
+                )
+                if into_local_store:
+                    destination = install_state_into_local_store(
+                        args.state_store, state_receipt.blob
+                    )
+                else:
+                    destination = tree_root / LOCAL_STATE_RELATIVE
                 print(
-                    f"kernel state: {state_receipt.bytes} bytes sha256={state_receipt.sha256[:16]} "
-                    f"-> {LOCAL_STATE_RELATIVE}"
+                    f"kernel state: {state_receipt.bytes} bytes "
+                    f"sha256={state_receipt.sha256[:16]} -> {destination}"
                 )
             elif mode == MODE_DEGRADED:
                 state_receipt = build_kernel_state(
@@ -1812,6 +2352,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     fold_rows=fold_rows,
                     fold_selectors=fold_selectors,
                     interaction_rows=interaction_rows,
+                    init_scripts=(seed_info["init_script"],) if seed_info else (),
                 )
         finally:
             try:
@@ -1835,6 +2376,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         else:
             os.environ["MACRO_REPO"] = prior_macro_repo
         restore_process_env(scrub)
+        for name, old in prior_production_capture_env.items():
+            if old is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = old
 
     if capture_rc != 0 and not (out_dir / "manifest.json").is_file():
         print(f"error: wrapped capture failed with exit {capture_rc}; no manifest written")
@@ -1855,12 +2401,25 @@ def main(argv: Sequence[str] | None = None) -> int:
         state_receipt=state_receipt,
         interactions="interactions.json" if interaction_rows else None,
         mode_verification=mode_verification,
+        briefcase_seed="briefcase_seed.json" if seed_info else None,
     )
     manifest_path.write_bytes(canonical_json_bytes(manifest))
     (out_dir / "network_log.json").write_bytes(canonical_json_bytes(network_log.as_payload()))
     (out_dir / "fold_measurement.json").write_bytes(canonical_json_bytes(fold_rows))
     if interaction_rows:
         (out_dir / "interactions.json").write_bytes(canonical_json_bytes(interaction_rows))
+    if seed_info:
+        # X2-s r1 (H1): the sidecar proves exactly which fixture bytes this
+        # run's contexts were seeded with, and under which storage key.
+        (out_dir / "briefcase_seed.json").write_bytes(
+            canonical_json_bytes(
+                {
+                    "path": seed_info["path"],
+                    "sha256": seed_info["sha256"],
+                    "storage_key": seed_info["storage_key"],
+                }
+            )
+        )
 
     if args.changed_path:
         manifest_relative = (
@@ -1915,6 +2474,7 @@ def _run_wrapped_capture(
     fold_rows: list[dict[str, Any]],
     fold_selectors: Sequence[tuple[str, str]],
     interaction_rows: list[dict[str, Any]] | None = None,
+    init_scripts: Sequence[str] = (),
 ) -> int:
     from scripts.capture_page_evidence import main as capture_main  # noqa: PLC0415
 
@@ -1951,6 +2511,8 @@ def _run_wrapped_capture(
         fold_selectors=fold_selectors,
         mode=args.mode,
         interaction_rows=interaction_rows,
+        init_scripts=init_scripts,
+        rest_probe_enabled=rest_disabled_controls_probe_wanted(args.mode, args.force_state),
     )
     return capture_main(capture_argv, driver_factory=factory)
 

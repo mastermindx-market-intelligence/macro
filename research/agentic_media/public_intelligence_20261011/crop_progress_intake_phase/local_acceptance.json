@@ -1,0 +1,209 @@
+{
+  "checks": [
+    "sixteen_pages",
+    "agency_and_release_date",
+    "missing_2025_and_imputation_caveat",
+    "corn_harvest_row",
+    "corn_condition_row",
+    "corn_previous_condition_row",
+    "soybean_harvest_row",
+    "soybean_condition_row",
+    "soybean_previous_condition_row",
+    "iowa_corn_row",
+    "iowa_soybean_row",
+    "coverage_denominators",
+    "methodology_and_revision",
+    "condition_arithmetic",
+    "date_only_publication_no_invented_clock",
+    "no_ticker_or_promotional_priority",
+    "dry_run_one_real_report",
+    "dry_run_store_unchanged",
+    "isolated_publish_completes",
+    "exact_catalog_metadata",
+    "search_index_and_vintage",
+    "one_fulltext_envelope",
+    "fulltext_retains_methodology_and_hash",
+    "same_source_idempotence",
+    "research_candidate_selection",
+    "candidate_has_no_issuer",
+    "held_source_excluded",
+    "future_refused",
+    "stale_refused",
+    "empty_summary_refused",
+    "input_bytes_and_cutover_preserved"
+  ],
+  "checks_passed": 31,
+  "pdf_sha256": "ecdbbb595fb63ce179dbf0aad57541c28aec53e988489a376b2a1d002304968c",
+  "sidecar_sha256": "0ab7784c57118c7f6b7c1f92c9de9f2736c271a1d60c0e27583a46cadd4a5e6d",
+  "candidate_slot": {
+    "id": "press-research_desk-2026-10-14-505a920d05da",
+    "desk": "research_desk",
+    "publication": "mastermind_research",
+    "byline": "Research Desk \u2014 Mastermind Research",
+    "cluster": "research-desk",
+    "as_of": "2026-10-14",
+    "model_key": "press_research",
+    "min_words": 500,
+    "max_words": 900,
+    "min_anchored_receipts": 4,
+    "allowed_links": [
+      "https://www.mastermind-x.com/research/crop-progress-october-13-2026-ogress.html"
+    ],
+    "story": {
+      "kind": "research_report",
+      "title_hint": "Crop Progress, October 13, 2026",
+      "institution": "U.S. Department of Agriculture, National Agricultural Statistics Service",
+      "side": "independent",
+      "published_at": "2026-10-13",
+      "tickers": [],
+      "themes": []
+    },
+    "primary_source": {
+      "kind": "first_party",
+      "name": "Mastermind Research: Crop Progress, October 13, 2026",
+      "url": "https://www.mastermind-x.com/research/crop-progress-october-13-2026-ogress.html",
+      "ref": "research_vault:usda-nass-2026-10-13-crop-progress"
+    },
+    "sources": [
+      "research_vault:usda-nass-2026-10-13-crop-progress"
+    ],
+    "seed_refs": [
+      "research_vault:usda-nass-2026-10-13-crop-progress"
+    ],
+    "facts": [
+      {
+        "id": "vault_point_0",
+        "text": "USDA NASS reports corn harvest at 33% for the week ending 2026-10-11 across 18 selected states, versus 23% a week earlier and a 39% average for 2021-2025. Those states harvested 93% of the 2025 corn acreage.",
+        "ref": "research_vault:usda-nass-2026-10-13-crop-progress",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/crop-progress-october-13-2026-ogress.html",
+        "source_name": "Mastermind Research coverage of U.S. Department of Agriculture, National Agricultural Statistics Service",
+        "dated": "2026-10-13"
+      },
+      {
+        "id": "vault_point_1",
+        "text": "USDA NASS estimates soybean harvest at 46% across 18 selected states, compared with 25% a week earlier and a 50% average for 2021-2025. Those states harvested 96% of the 2025 soybean acreage.",
+        "ref": "research_vault:usda-nass-2026-10-13-crop-progress",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/crop-progress-october-13-2026-ogress.html",
+        "source_name": "Mastermind Research coverage of U.S. Department of Agriculture, National Agricultural Statistics Service",
+        "dated": "2026-10-13"
+      },
+      {
+        "id": "vault_point_2",
+        "text": "Adding the USDA NASS corn condition estimates of 44% good and 12% excellent gives 56%, versus a calculated 54% the previous week. This corn panel covers 18 states that planted 91% of the 2025 corn acreage.",
+        "ref": "research_vault:usda-nass-2026-10-13-crop-progress",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/crop-progress-october-13-2026-ogress.html",
+        "source_name": "Mastermind Research coverage of U.S. Department of Agriculture, National Agricultural Statistics Service",
+        "dated": "2026-10-13"
+      },
+      {
+        "id": "vault_point_3",
+        "text": "Adding the USDA NASS soybean condition estimates of 46% good and 11% excellent gives 57%, unchanged from the previous week. This soybean panel covers 18 states that planted 96% of the 2025 soybean acreage.",
+        "ref": "research_vault:usda-nass-2026-10-13-crop-progress",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/crop-progress-october-13-2026-ogress.html",
+        "source_name": "Mastermind Research coverage of U.S. Department of Agriculture, National Agricultural Statistics Service",
+        "dated": "2026-10-13"
+      },
+      {
+        "id": "vault_point_4",
+        "text": "Iowa corn harvest is 14%, compared with a 34% five-year average; Iowa soybean harvest is 31%, compared with 59%. Harvest completion and condition estimates do not measure yield, prices or company earnings.",
+        "ref": "research_vault:usda-nass-2026-10-13-crop-progress",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/crop-progress-october-13-2026-ogress.html",
+        "source_name": "Mastermind Research coverage of U.S. Department of Agriculture, National Agricultural Statistics Service",
+        "dated": "2026-10-13"
+      },
+      {
+        "id": "vault_point_5",
+        "text": "Publication was 2026-10-13 and observations ended 2026-10-11. Corresponding prior-year estimates are unavailable because reports were cancelled during the October-November 2025 federal funding lapse. All cited 2021-2025 averages combine published 2021-2024 and imputed 2025 estimates.",
+        "ref": "research_vault:usda-nass-2026-10-13-crop-progress",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/crop-progress-october-13-2026-ogress.html",
+        "source_name": "Mastermind Research coverage of U.S. Department of Agriculture, National Agricultural Statistics Service",
+        "dated": "2026-10-13"
+      },
+      {
+        "id": "vault_point_6",
+        "text": "NASS describes a non-probability survey of approximately 3,600 respondents making subjective observations. The estimates are acreage-weighted and subject to revision the following week; early responses may project weekend changes.",
+        "ref": "research_vault:usda-nass-2026-10-13-crop-progress",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/crop-progress-october-13-2026-ogress.html",
+        "source_name": "Mastermind Research coverage of U.S. Department of Agriculture, National Agricultural Statistics Service",
+        "dated": "2026-10-13"
+      },
+      {
+        "id": "vault_point_7",
+        "text": "Corn and soybeans use different 18-state panels. NASS weights harvest progress by average harvested acreage over the preceding three crop years, and condition by average planted acreage; the aggregates are not simple state averages.",
+        "ref": "research_vault:usda-nass-2026-10-13-crop-progress",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/crop-progress-october-13-2026-ogress.html",
+        "source_name": "Mastermind Research coverage of U.S. Department of Agriculture, National Agricultural Statistics Service",
+        "dated": "2026-10-13"
+      },
+      {
+        "id": "vault_meta",
+        "text": "The report is U.S. Department of Agriculture, National Agricultural Statistics Service research published 2026-10-13, 16 pages.",
+        "ref": "research_vault:usda-nass-2026-10-13-crop-progress",
+        "tier": "first_party",
+        "values": [
+          "16"
+        ],
+        "url": "https://www.mastermind-x.com/research/crop-progress-october-13-2026-ogress.html",
+        "source_name": "Mastermind Research vault",
+        "dated": "2026-10-13"
+      }
+    ],
+    "raw_documents": [
+      {
+        "ref": "research_vault:usda-nass-2026-10-13-crop-progress",
+        "text": "USDA NASS reports corn harvest at 33% for the week ending 2026-10-11 across 18 selected states, versus 23% a week earlier and a 39% average for 2021-2025. Those states harvested 93% of the 2025 corn acreage. USDA NASS estimates soybean harvest at 46% across 18 selected states, compared with 25% a week earlier and a 50% average for 2021-2025. Those states harvested 96% of the 2025 soybean acreage. Adding the USDA NASS corn condition estimates of 44% good and 12% excellent gives 56%, versus a calculated 54% the previous week. This corn panel covers 18 states that planted 91% of the 2025 corn acreage. Adding the USDA NASS soybean condition estimates of 46% good and 11% excellent gives 57%, unchanged from the previous week. This soybean panel covers 18 states that planted 96% of the 2025 soybean acreage. Iowa corn harvest is 14%, compared with a 34% five-year average; Iowa soybean harvest is 31%, compared with 59%. Harvest completion and condition estimates do not measure yield, prices or company earnings. Publication was 2026-10-13 and observations ended 2026-10-11. Corresponding prior-year estimates are unavailable because reports were cancelled during the October-November 2025 federal funding lapse. All cited 2021-2025 averages combine published 2021-2024 and imputed 2025 estimates. NASS describes a non-probability survey of approximately 3,600 respondents making subjective observations. The estimates are acreage-weighted and subject to revision the following week; early responses may project weekend changes. Corn and soybeans use different 18-state panels. NASS weights harvest progress by average harvested acreage over the preceding three crop years, and condition by average planted acreage; the aggregates are not simple state averages."
+      }
+    ],
+    "chronicle_context": {
+      "lines": [],
+      "narratives": [],
+      "coverage": {
+        "start": null,
+        "end": null,
+        "note": "chronicle store is empty \u2014 no events have accrued yet"
+      },
+      "budget_used": 0
+    },
+    "slug_hint": "crop-progress-october-13-2026",
+    "triage": {
+      "tier": "flagship",
+      "rank": 1,
+      "w_score": 0.428533,
+      "w_score_pre_veto": 0.428533,
+      "components": {
+        "institution_tier": 0.5,
+        "cluster_density": 0.0,
+        "relevance": 0.0,
+        "extraction_quality": 1.0,
+        "attention_potential": 0.606667,
+        "novelty": 0.5
+      },
+      "veto": null,
+      "scoring_version": "w2r.1",
+      "score_source": "planner-recomputed",
+      "datasketch_present": false,
+      "ordered": true
+    }
+  },
+  "execution_location": "local_isolated_fixtures",
+  "provider_calls": 0,
+  "canonical_writes": 0,
+  "press_staging_writes": 0,
+  "publication": false
+}

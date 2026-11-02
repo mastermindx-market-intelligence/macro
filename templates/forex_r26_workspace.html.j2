@@ -1,0 +1,158 @@
+{# R26 source-backed workspace. Paper Forex page p-N-1; existing site navigation remains canonical. #}
+{% from "_icons.html.j2" import icon %}
+{% set fx_today = r26_view.destinations.today %}
+{% set fx_rows = fx_today.pair_tabs | selectattr('pair_scope', 'eq', 'fx_pair') | list %}
+{% set fx_current = r26_view.current_read %}
+{% set fx_changes = decision_context.changes if decision_context is defined else [] %}
+{% macro fx_lean(row) -%}
+{% if row.model_direction.available %}{% if row.model_direction.pair_direction == 'higher' %}{{ t('Leaning higher', '倾向走高') }}{% elif row.model_direction.pair_direction == 'lower' %}{{ t('Leaning lower', '倾向走低') }}{% else %}{{ t('No clear lean', '无明显倾向') }}{% endif %}{% else %}{{ t('Current lean unavailable', '当前倾向不可用') }}{% endif %}
+{%- endmacro %}
+{% macro fx_price(row) -%}
+{% if row.price is not none and row.status != 'withheld' %}{{ '%.4f'|format(row.price) }}{% else %}—{% endif %}
+{%- endmacro %}
+{% macro fx_change(row) -%}
+{% if row.status != 'withheld' and row.chg_display %}{{ row.chg_display }}{% else %}—{% endif %}
+{%- endmacro %}
+{% macro fx_event(event) -%}
+<li class="fxr-event">
+  <time datetime="{{ event.ts }}">{{ event.ts[:10] }}</time>
+  <div><strong>{{ t(event.display_headline_en or event.headline, event.display_headline_zh or event.headline_zh or event.headline) }}</strong>
+  {% if event.display_basis_en %}<p class="fxr-muted">{{ t(event.display_basis_en, event.display_basis_zh) }}</p>{% endif %}
+  <details class="mx-disc fxr-evidence"><summary>{{ t('Event record', '事件记录') }}</summary><dl><dt>{{ t('Recorded time', '记录时间') }}</dt><dd>{{ event.ts }}</dd><dt>{{ t('Event ID', '事件编号') }}</dt><dd>{{ event.id }}</dd></dl></details></div>
+</li>
+{%- endmacro %}
+{% macro fx_history(history, pair='') -%}
+{% if history and history.status in ('available','partial') %}
+<div class="fxr-history-chart">{{ illus(history.series, height=170, value_fmt='{:,.4f}' if pair else '{:,.1f}', unit_en=(pair[3:] ~ ' per ' ~ pair[:3]) if pair else 'Broad USD', unit_zh=(pair[3:] ~ ' / ' ~ pair[:3]) if pair else '广义美元', aria_en=(pair ~ ' literal quote history') if pair else 'Broad dollar reported index history', aria_zh=(pair ~ ' 实际报价历史') if pair else '广义美元报告指数历史')|safe }}</div>
+<p class="fxr-caption">{{ history.first_date }} — {{ history.last_date }} · {{ history.observations }} {{ t('observations', '次观测') }}{% if history.status == 'partial' %} · {{ t('Partial window; starts after the last missing observation.', '部分窗口；从最近缺失值之后开始。') }}{% endif %}</p>
+{% else %}<div class="mx-empty fxr-chart-empty"><p class="mx-empty-line">{{ t('Price history unavailable', '价格历史不可用') }}</p><p class="mx-empty-why">{{ t('A qualified literal-price series is needed to draw this chart.', '需要经过确认的实际报价序列才能绘制图表。') }}</p></div>{% endif %}
+{%- endmacro %}
+<main class="fxr" id="forex-workspace" aria-label="Forex" data-fxr>
+  <script id="forex-r26-consumer" type="application/json">{{ r26_view|tojson }}</script>
+  <header class="fxr-header">
+    <div><p class="fxr-eyebrow">{{ t('CURRENCIES', '外汇市场') }}</p><h1>Forex</h1><p class="fxr-muted">{{ t('Understand the move. Know what would change your view.', '看清走势，明确什么变化会改变判断。') }}</p></div>
+    <div class="fxr-header-actions"><span class="fxr-stamp">{{ t('Snapshot', '快照') }} {{ fx_today.asof or '—' }}</span><button type="button" class="gbtn" data-fxr-source>{{ icon('clock') }} {{ t('Source & freshness', '来源与时效') }}</button></div>
+  </header>
+  <nav class="mx-tabset fxr-tabs" role="tablist" aria-label="Forex destinations" data-aria-en="Forex destinations" data-aria-zh="外汇页面">
+  {% for key,en,zh in [('today','Today','今日'),('explore','Explore','探索'),('my_watches','My watches','我的关注')] %}
+    <button type="button" role="tab" id="fxr-nav-{{ key }}" aria-controls="fxr-{{ key }}" aria-selected="{{ 'true' if loop.first else 'false' }}" tabindex="{{ '0' if loop.first else '-1' }}" data-fxr-destination="{{ key }}">{{ t(en,zh) }}</button>
+  {% endfor %}
+  </nav>
+  <noscript><p class="fxr-note">{{ t('JavaScript is needed for pair tabs and condition preparation. Today and the full market study remain readable.', '货币对标签及条件准备需要 JavaScript。今日与完整市场研究仍可阅读。') }}</p></noscript>
+  <section id="fxr-today" role="tabpanel" aria-labelledby="fxr-nav-today" data-fxr-view="today">
+    <div class="fxr-hero">
+      <div class="fxr-hero-copy">
+        <p class="fxr-eyebrow">{{ t('THE DOLLAR BACKDROP', '美元背景') }}</p>
+        {% if fx_current.available %}<h2>{{ t((fx_today.stance or {}).get('headline_en') or fx_current.regime, (fx_today.stance or {}).get('headline_zh') or dollar.regime_zh or fx_current.regime) }}</h2><p>{{ t((fx_today.stance or {}).get('sentence_en') or 'Use the dollar backdrop alongside each pair’s own evidence.', (fx_today.stance or {}).get('sentence_zh') or '结合美元背景与各货币对自身证据进行判断。') }}</p>
+        {% else %}<h2>{{ t('A current read needs fresh evidence.', '当前判断需要新的证据。') }}</h2><p>{{ t('Dated observations are available below. The source has not supplied a qualified current dollar and risk read for this snapshot.', '下方保留有日期的观测。来源尚未为本快照提供合格的当前美元与风险判断。') }}</p>{% endif %}
+        <div class="fxr-metrics"><div><span>{{ t('Dollar read date', '美元判断日期') }}</span><strong>{{ fx_current.asof or '—' }}</strong></div><div><span>{{ t('Risk mood', '风险情绪') }}</span><strong>{{ t(dollar.risk_word or 'Unavailable', dollar.risk_word_zh or '不可用') if fx_current.available else t('Unavailable','不可用') }}</strong></div></div>
+        <div class="fxr-actions"><button type="button" class="gbtn gbtn-cta" data-fxr-go="explore">{{ t('Explore pairs', '探索货币对') }}</button><button type="button" class="gbtn gbtn-quiet" data-fxr-source>{{ t('What is available?', '有哪些可用信息？') }}</button></div>
+      </div>
+      <div class="mx-panel fxr-panel fxr-hero-chart"><div class="fxr-section-head"><h3>{{ t('Broad dollar', '广义美元') }}</h3><span class="fxr-muted">{{ t('Daily history', '每日历史') }}</span></div>{{ fx_history(r26_histories.get('broad_dollar')) }}</div>
+    </div>
+    <section class="fxr-section">
+      <div class="fxr-section-head"><div><h2>{{ t('Pairs in focus', '货币对概览') }}</h2><p class="fxr-muted">{{ t('Observed quote moves and qualified model views, side by side.', '并列查看实际报价变化与合格的模型判断。') }}</p></div><button type="button" class="gbtn gbtn-quiet" data-fxr-go="explore">{{ t('View all pairs', '查看全部货币对') }}</button></div>
+      <div class="mx-panel fxr-panel fxr-pair-list">
+      {% for row in fx_rows[:6] %}
+        <button type="button" class="fxr-pair-row" data-fxr-open-pair="{{ row.pair }}">
+          <span class="fxr-pair-symbol"><strong>{{ row.base_ccy }}/{{ row.quote_ccy }}</strong><small>{{ row.asof or '—' }}</small></span>
+          <span class="fxr-number">{{ fx_price(row) }}</span>
+          <span class="fxr-change"><b>{{ fx_change(row) }}</b><small>{{ t('1 month','1个月') if row.chg_horizon == '1m' else t('Reported change','报告变化') }}</small></span>
+          <span class="fxr-lean">{{ fx_lean(row) }}</span><span aria-hidden="true">→</span>
+        </button>
+      {% else %}<div class="mx-empty"><p class="mx-empty-line">{{ t('Pair observations unavailable', '货币对观测不可用') }}</p><p class="mx-empty-why">{{ t('Open source details to review the missing inputs.', '查看来源详情以了解缺失输入。') }}</p></div>{% endfor %}
+      </div>
+    </section>
+    <div class="fxr-two-col fxr-section">
+      <section class="mx-panel fxr-panel"><div class="fxr-section-head"><h2>{{ t('What changed', '发生了什么变化') }}</h2><span class="fxr-muted">{{ t('Recorded evidence', '已记录证据') }}</span></div><ul class="fxr-events">{% for event in fx_changes[:3] %}{{ fx_event(event) }}{% else %}<li class="mx-empty"><p class="mx-empty-line">{{ t('No qualified changes in this snapshot', '本快照没有合格的变化记录') }}</p><p class="mx-empty-why">{{ t('This does not establish that no market events occurred.', '这不代表市场没有发生事件。') }}</p></li>{% endfor %}</ul></section>
+      <section class="mx-panel fxr-panel"><h2>{{ t('Next catalysts', '接下来的催化因素') }}</h2><div class="fxr-empty"><span class="fxr-icon">{{ icon('calendar') }}</span><h3>{{ t('Event calendar unavailable', '事件日历不可用') }}</h3><p class="fxr-muted">{{ t('This publication has no qualified future-event schedule. Event times and forecasts are withheld until the calendar source is available.', '本次发布未提供合格的未来事件日程。在日历来源可用前，不展示事件时间或预测。') }}</p><button type="button" class="gbtn" data-fxr-source>{{ t('Review source coverage', '查看来源覆盖') }}</button></div></section>
+    </div>
+  </section>
+  <section id="fxr-explore" role="tabpanel" aria-labelledby="fxr-nav-explore" data-fxr-view="explore" hidden>
+    <div class="fxr-section-head"><div><h2>{{ t('Explore currencies', '探索外汇') }}</h2><p class="fxr-muted">{{ t('Compare observations in the source’s order. Model views require current evidence.', '按来源顺序比较观测。模型判断需要当前证据。') }}</p></div></div>
+    <div class="fxr-toolbar">
+      <label class="fxr-search">{{ icon('search') }}<span class="fxr-sr">{{ t('Search currency pairs', '搜索货币对') }}</span><input type="search" id="fxr-search" data-placeholder-en="Search pair or currency" data-placeholder-zh="搜索货币对或货币" placeholder="Search pair or currency" autocomplete="off"></label>
+      <label class="fxr-filter">{{ t('Observed move', '已观测变化') }}<select id="fxr-filter"><option value="all" data-en="All" data-zh="全部">All</option><option value="up" data-en="Quote rose" data-zh="报价上涨">Quote rose</option><option value="down" data-en="Quote fell" data-zh="报价下跌">Quote fell</option><option value="unknown" data-en="Unavailable" data-zh="不可用">Unavailable</option></select></label>
+      <button type="button" class="gbtn" id="fxr-compare" disabled>{{ t('Compare selected', '比较所选') }} (<span id="fxr-compare-count">0</span>/2)</button>
+    </div>
+    <p class="fxr-caption" id="fxr-results" role="status" aria-live="polite"></p>
+    <div class="mx-panel fxr-panel fxr-pair-list">
+      {% for row in fx_rows %}
+      <div class="fxr-explore-row" data-fxr-search-row="{{ row.pair }}" data-fxr-search-text="{{ row.pair }} {{ row.label or '' }} {{ row.base_ccy }} {{ row.quote_ccy }}" data-fxr-move="{{ 'unknown' if row.chg is none or row.status == 'withheld' else ('up' if row.chg > 0 else ('down' if row.chg < 0 else 'flat')) }}">
+        <label class="fxr-check"><input type="checkbox" data-fxr-compare-pair="{{ row.pair }}"><span class="fxr-sr">{{ t('Compare', '比较') }} {{ row.base_ccy }}/{{ row.quote_ccy }}</span></label>
+        <button type="button" class="fxr-pair-row" data-fxr-open-pair="{{ row.pair }}"><span class="fxr-pair-symbol"><strong>{{ row.base_ccy }}/{{ row.quote_ccy }}</strong><small>{{ row.asof or '—' }}</small></span><span class="fxr-number">{{ fx_price(row) }}</span><span class="fxr-change"><b>{{ fx_change(row) }}</b><small>{{ t('1 month','1个月') if row.chg_horizon == '1m' else t('Reported change','报告变化') }}</small></span><span class="fxr-lean">{{ fx_lean(row) }}</span><span aria-hidden="true">→</span></button>
+      </div>
+      {% endfor %}
+      <div class="mx-empty" id="fxr-no-results" hidden><p class="mx-empty-line">{{ t('No pairs match these filters', '没有符合筛选条件的货币对') }}</p><button type="button" class="gbtn" id="fxr-reset-filters">{{ t('Clear filters', '清除筛选') }}</button></div>
+    </div>
+  </section>
+  <section id="fxr-my_watches" role="tabpanel" aria-labelledby="fxr-nav-my_watches" data-fxr-view="my_watches" hidden>
+    <div class="fxr-section-head"><div><h2>{{ t('My watches', '我的关注') }}</h2><p class="fxr-muted">{{ t('Track a clear condition when the account service confirms it.', '账户服务确认后，才能跟踪明确的条件。') }}</p></div></div>
+    <div class="mx-panel fxr-panel fxr-empty"><span class="fxr-icon">{{ icon('clock') }}</span><h3 id="fxr-account-title">{{ t('Account watch status unavailable', '账户关注状态不可用') }}</h3><p class="fxr-muted" id="fxr-account-description">{{ t('The account service must confirm saved conditions. Prepared drafts remain in this tab until you explicitly save them.', '已保存条件须由账户服务确认。准备的草稿会保留在当前标签页，直到您明确保存。') }}</p><div class="fxr-actions"><button type="button" class="gbtn gbtn-cta" id="fxr-account-signin" hidden>{{ t('Sign in', '登录') }}</button><button type="button" class="gbtn" id="fxr-account-refresh" hidden>{{ t('Reload watches', '重新载入关注') }}</button><button type="button" class="gbtn" data-fxr-go="explore">{{ t('Choose a pair to prepare a rule', '选择货币对以准备规则') }}</button></div></div>
+    <p id="fxr-account-message" hidden role="status" aria-live="polite" class="fxr-note"></p>
+    <section class="fxr-section" id="fxr-saved-section" hidden><div class="fxr-section-head"><h3>{{ t('Saved inactive', '已保存，未启用') }}</h3></div><div id="fxr-saved-list" class="fxr-prepared-list"></div></section>
+    <section class="fxr-section" id="fxr-pending-section" hidden><div class="fxr-section-head"><h3>{{ t('Awaiting confirmation', '等待确认') }}</h3></div><div id="fxr-pending-list" class="fxr-prepared-list"></div></section>
+    <section class="fxr-section" id="fxr-prepared-section" hidden><div class="fxr-section-head"><h3>{{ t('Prepared in this tab', '已在此标签页准备') }}</h3><span class="fxr-muted">{{ t('Not saved · Not active', '未保存 · 未启用') }}</span></div><div id="fxr-prepared-list" class="fxr-prepared-list"></div></section>
+  </section>
+  <section id="fxr-pair-view" data-fxr-view="pair" hidden>
+    <button type="button" class="gbtn gbtn-quiet fxr-back" id="fxr-back">{{ t('← Back to pairs', '← 返回货币对') }}</button>
+    {% for row in fx_rows %}
+    {% set p = (pairs | selectattr('key','eq',row.pair) | first) | default({}) %}
+    {% set model = row.model_direction %}
+    <article data-fxr-pair="{{ row.pair }}" hidden>
+      <header class="fxr-pair-header"><div><p class="fxr-eyebrow">{{ t('PAIR OUTLOOK', '货币对展望') }}</p><h2 tabindex="-1">{{ row.base_ccy }}/{{ row.quote_ccy }}</h2><p class="fxr-muted">{{ t('Quoted as','报价单位') }} {{ row.quote_ccy }} {{ t('per','/') }} {{ row.base_ccy }} · {{ row.asof or '—' }}</p></div><div class="fxr-price"><strong class="fxr-number">{{ fx_price(row) }}</strong><span>{{ fx_change(row) }} · {{ t('1 month','1个月') if row.chg_horizon == '1m' else t('Reported change','报告变化') }}</span></div><button type="button" class="gbtn gbtn-cta" data-fxr-prepare="{{ row.pair }}">{{ t('Prepare watch', '准备关注') }}</button></header>
+      <nav class="mx-tabset fxr-tabs fxr-pair-tabs" role="tablist" aria-label="{{ row.pair }} views" data-fxr-tablist="{{ row.pair }}">
+      {% for tab,en,zh in [('outlook','Outlook','展望'),('drivers','Drivers','驱动因素'),('history','History','历史'),('impact','Impact','影响')] %}
+        <button type="button" role="tab" id="fxr-tab-{{ row.pair }}-{{ tab }}" aria-controls="fxr-panel-{{ row.pair }}-{{ tab }}" aria-selected="{{ 'true' if loop.first else 'false' }}" tabindex="{{ '0' if loop.first else '-1' }}" data-fxr-pair-tab="{{ tab }}">{{ t(en,zh) }}</button>
+      {% endfor %}
+      </nav>
+      <section role="tabpanel" id="fxr-panel-{{ row.pair }}-outlook" aria-labelledby="fxr-tab-{{ row.pair }}-outlook" data-fxr-panel="outlook">
+        <div class="mx-panel fxr-panel fxr-decision"><div><p class="fxr-eyebrow">{{ t('CURRENT MODEL VIEW', '当前模型判断') }}</p><h3>{{ fx_lean(row) }}</h3><p class="fxr-muted">{% if model.available %}{{ t('The source assesses ' ~ model.assessed_currency ~ '; this view translates that lean to the displayed pair.', '来源评估 ' ~ model.assessed_currency ~ '；此处将该倾向转换为显示货币对的方向。') }}{% else %}{{ t('Current source evidence or the quote convention is incomplete. Dated prices remain separate from the model view.', '当前来源证据或报价约定不完整。有日期的价格与模型判断分别展示。') }}{% endif %}</p></div><button type="button" class="gbtn" data-fxr-source>{{ t('Review evidence', '查看证据') }}</button></div>
+        <div class="fxr-two-col fxr-section">
+          <section class="mx-panel fxr-panel"><div class="fxr-section-head"><h3>{{ t('Price history', '价格历史') }}</h3><span class="fxr-muted">{{ t('Literal quote · Daily', '实际报价 · 每日') }}</span></div>{{ fx_history(r26_histories.get(row.pair),row.pair) }}</section>
+          <section class="mx-panel fxr-panel fxr-reading"><p class="fxr-eyebrow">{{ t('READ THE MOVE', '理解走势') }}</p><h3>{% if row.direction and row.status != 'withheld' %}{{ t(row.base_ccy ~ ' ' ~ row.direction.base_ccy_state ~ ' against ' ~ row.quote_ccy, row.base_ccy ~ ' 相对 ' ~ row.quote_ccy ~ ('走强' if row.direction.base_ccy_state == 'stronger' else ('走弱' if row.direction.base_ccy_state == 'weaker' else '持平'))) }}{% else %}{{ t('Observed direction unavailable', '观测方向不可用') }}{% endif %}</h3><p class="fxr-muted">{{ t('This reads the reported quote change over its stated horizon. It does not forecast the next move.', '该描述对应所注明期间的报价变化，不预测下一步走势。') }}</p><button type="button" class="gbtn gbtn-quiet" data-fxr-jump-tab="drivers">{{ t('See the drivers →', '查看驱动因素 →') }}</button></section>
+        </div>
+        <section class="mx-panel fxr-panel fxr-section"><div class="fxr-section-head"><h3>{{ t('What would change your view?', '什么变化会改变判断？') }}</h3><span class="fxr-muted">{{ t('Conditional planning', '条件规划') }}</span></div><p class="fxr-muted">{{ t('Qualified scenario levels and probabilities are not supplied. You can prepare your own exact price condition for review; it will remain inactive.', '来源未提供合格的情景价位与概率。您可以准备自己的精确价格条件供核对；该条件将保持未启用。') }}</p><div class="fxr-actions"><button type="button" class="gbtn" data-fxr-prepare="{{ row.pair }}">{{ t('Prepare an exact condition', '准备精确条件') }}</button></div></section>
+      </section>
+      <section role="tabpanel" id="fxr-panel-{{ row.pair }}-drivers" aria-labelledby="fxr-tab-{{ row.pair }}-drivers" data-fxr-panel="drivers" hidden>
+        <div class="fxr-section-head"><div><h3>{{ t('Evidence behind the source read', '来源判断背后的证据') }}</h3><p class="fxr-muted">{{ t('Factor contributions describe the assessed currency, not a literal price forecast.', '因子贡献描述受评估货币，不代表实际价格预测。') }} {{ p.get('base','') }}</p></div></div>
+        <div class="fxr-factor-grid">
+          {% for factor in p.get('conviction',{}).get('factors',[]) %}
+          <section class="mx-panel fxr-panel"><h3>{{ t(factor.label, factor.get('label_zh',factor.label)) }}</h3><p class="fxr-factor-value">{% if factor.get('value') is number %}{{ '%+.2f'|format(factor.value) }}{% else %}—{% endif %}</p><p class="fxr-muted">{{ t('Source factor value','来源因子值') }}</p><p class="fxr-caption">{{ t('Contribution','贡献') }}: {{ '%+.2f'|format(factor.contribution) if factor.get('contribution') is number else '—' }}</p></section>
+          {% else %}<div class="mx-empty"><p class="mx-empty-line">{{ t('Factor evidence unavailable', '因子证据不可用') }}</p></div>{% endfor %}
+        </div>
+        <section class="mx-panel fxr-panel fxr-section"><h3>{{ t('Rates and valuation', '利率与估值') }}</h3><dl class="fxr-facts"><dt>{{ t('Assessed currency', '受评估货币') }}</dt><dd>{{ p.get('base') or '—' }}</dd><dt>{{ t('Annualized interest-rate gap', '年化利差') }}</dt><dd>{{ '%+.2f'|format(p.carry_diff) ~ '%' if p.get('carry_diff') is number and not p.get('carry_context') else t('Unavailable','不可用') }}</dd><dt>{{ t('10-year rate gap', '10年期利差') }}</dt><dd>{{ '%+.2f'|format(p.rate_diff_10y) ~ ' pp' if p.get('rate_diff_10y') is number else '—' }}</dd><dt>{{ t('REER gap from history', '实际有效汇率相对历史偏离') }}</dt><dd>{{ '%+.1f'|format(p.reer_gap) ~ '%' if p.get('reer_gap') is number else '—' }}</dd></dl><p class="fxr-caption">{{ t('These source observations are context. The rate gap excludes execution costs and is not a total-return estimate.', '这些来源观测用于背景参考。利差不含执行成本，不是总回报估计。') }}</p></section>
+      </section>
+      <section role="tabpanel" id="fxr-panel-{{ row.pair }}-history" aria-labelledby="fxr-tab-{{ row.pair }}-history" data-fxr-panel="history" hidden>
+        <div class="fxr-section-head"><div><h3>{{ t('What changed for this pair', '该货币对发生的变化') }}</h3><p class="fxr-muted">{{ t('Qualified events from this snapshot. Technical-series direction is labeled separately from the literal quote.', '本快照的合格事件。技术序列方向与实际报价分别标注。') }}</p></div></div>
+        <div class="mx-panel fxr-panel"><ul class="fxr-events">{% for event in fx_changes if event.asset == row.pair %}{{ fx_event(event) }}{% else %}<li class="mx-empty"><p class="mx-empty-line">{{ t('No qualified pair events in this snapshot', '本快照没有该货币对的合格事件') }}</p><p class="mx-empty-why">{{ t('The full market study retains the broader timeline.', '完整市场研究保留更广泛的时间线。') }}</p></li>{% endfor %}</ul></div>
+      </section>
+      <section role="tabpanel" id="fxr-panel-{{ row.pair }}-impact" aria-labelledby="fxr-tab-{{ row.pair }}-impact" data-fxr-panel="impact" hidden>
+        <div class="fxr-section-head"><div><h3>{{ t('The broader dollar context', '更广泛的美元背景') }}</h3><p class="fxr-muted">{{ t('Historical co-movement with the dollar. These relationships do not measure causation by this pair.', '与美元的历史联动。这些关系不衡量该货币对造成的因果影响。') }}</p></div></div>
+        <div class="mx-panel fxr-panel"><dl class="fxr-facts">{% for effect in (transmission.rows if transmission else []) %}<dt>{{ t(effect.label,effect.get('label_zh',effect.label)) }}</dt><dd>{{ t({'headwind':'Headwind','tailwind':'Tailwind'}.get(effect.effect,'No current link'),{'headwind':'阻力','tailwind':'助力'}.get(effect.effect,'暂无联动')) }} · {{ '%+.2f'|format(effect.corr_fast) if effect.corr_fast is number else '—' }}{% if effect.unstable %} · {{ t('Unstable','不稳定') }}{% endif %}</dd>{% else %}<dt>{{ t('Transmission evidence', '传导证据') }}</dt><dd>{{ t('Unavailable in this snapshot', '本快照不可用') }}</dd>{% endfor %}</dl><p class="fxr-caption">{{ t('The detailed transmission study includes horizons and stability checks.', '详细传导研究包含观察周期与稳定性检查。') }}</p></div>
+      </section>
+      <div class="fxr-deeper"><span class="fxr-muted">{{ t('Go deeper', '进一步研究') }}</span><button type="button" class="gbtn gbtn-quiet" data-fxr-study="{{ row.pair }}">{{ t('Full market study', '完整市场研究') }} →</button><button type="button" class="gbtn gbtn-quiet" data-fxr-source>{{ t('Sources and calculation dates', '来源与计算日期') }}</button></div>
+    </article>
+    {% endfor %}
+  </section>
+  <p class="fxr-footnote">{{ t('Market context for research. Observed changes, model views and prepared conditions are distinct. No watch is activated by this page.', '供研究使用的市场背景。已观测变化、模型判断与准备的条件分别展示。本页不会启用任何关注。') }}</p>
+  <dialog class="fxr-dialog" id="fxr-source-dialog" aria-labelledby="fxr-source-title">
+    <div class="fxr-dialog-head"><h2 id="fxr-source-title">{{ t('Sources & freshness', '来源与时效') }}</h2><button type="button" class="gbtn" data-fxr-close>{{ t('Close','关闭') }}</button></div>
+    <p class="fxr-muted">{{ t('Dates describe the reported observations. A new page build does not refresh older market evidence.', '日期描述报告的观测。新构建页面不会让旧市场证据变新。') }}</p>
+    <dl class="fxr-facts"><dt>{{ t('Snapshot date','快照日期') }}</dt><dd>{{ fx_today.asof or '—' }}</dd><dt>{{ t('Dollar / risk date','美元／风险日期') }}</dt><dd>{{ fx_current.asof or '—' }}</dd><dt>{{ t('Built at','构建时间') }}</dt><dd>{{ fx_current.assembled_at or '—' }}</dd><dt>{{ t('Current read','当前判断') }}</dt><dd>{{ t('Available','可用') if fx_current.available else t('Unavailable','不可用') }}</dd><dt>{{ t('Vendor source clocks','供应商来源时钟') }}</dt><dd>{{ t('Not supplied by this daily snapshot','本每日快照未提供') }}</dd><dt>{{ t('Finalized 4H bars','最终4小时报价柱') }}</dt><dd>{{ t('Not admitted for watch activation','尚未获准用于启用关注') }}</dd></dl>
+    <p class="fxr-note">{{ t('Live alerts are unavailable here. Tab drafts disappear on reload unless you explicitly save them to your account and receive confirmation. Saved conditions remain inactive.', '此处暂不支持实时提醒。标签页草稿会在刷新后消失，除非您明确保存到账户并获得确认。已保存条件仍未启用。') }}</p>
+    <details class="mx-disc fxr-evidence"><summary>{{ t('Source record and missing checks','来源记录与缺失检查') }}</summary><dl><dt>{{ t('Snapshot ID','快照编号') }}</dt><dd>{{ fx_current.snapshot_id or '—' }}</dd><dt>{{ t('Qualification gaps','资格缺口') }}</dt><dd>{{ fx_current.gaps|join(', ') or '—' }}</dd><dt>{{ t('Last confirmed historical read','最近确认的历史判断') }}</dt><dd>{{ (fx_current.last_confirmed|tojson) if fx_current.last_confirmed else '—' }}</dd></dl></details>
+  </dialog>
+  <dialog class="fxr-dialog" id="fxr-watch-dialog" aria-labelledby="fxr-watch-title">
+    <div class="fxr-dialog-head"><h2 id="fxr-watch-title">{{ t('Prepare an exact condition','准备精确条件') }}</h2><button type="button" class="gbtn" data-fxr-close>{{ t('Close','关闭') }}</button></div>
+    <p class="fxr-muted">{{ t('Choose the literal pair price and the completed-bar rule you want to review. Preparation does not save or activate it.', '选择要核对的实际货币对价格与收盘报价柱规则。准备不会保存或启用规则。') }}</p>
+    <form id="fxr-rule-form">
+      <input type="hidden" name="pair" id="fxr-rule-pair"><p class="fxr-rule-pair" id="fxr-rule-pair-label"></p>
+      <div class="fxr-form-grid"><label>{{ t('Close condition','收盘条件') }}<select name="operator"><option value="gt" data-en="Above (>)" data-zh="高于（>）">Above (&gt;)</option><option value="gte" data-en="At or above (≥)" data-zh="不低于（≥）">At or above (≥)</option><option value="lt" data-en="Below (<)" data-zh="低于（<）">Below (&lt;)</option><option value="lte" data-en="At or below (≤)" data-zh="不高于（≤）">At or below (≤)</option></select></label><label>{{ t('Price level','价格水平') }}<input type="number" name="threshold" step="any" min="0.00000001" required inputmode="decimal"></label><label>{{ t('Consecutive finalized 4H closes','连续最终4小时收盘次数') }}<input type="number" name="consecutive" min="1" max="10" step="1" value="2" required></label><label>{{ t('Expires at (UTC)','到期时间（UTC）') }}<input type="datetime-local" name="expires_at" required></label></div>
+      <p class="fxr-caption">{{ t('4-hour bars end at 00:00, 04:00, 08:00, 12:00, 16:00 and 20:00 UTC. Only confirmed completed bars can satisfy this rule.', '4小时K线在 UTC 00:00、04:00、08:00、12:00、16:00 与 20:00 收盘。仅已确认完成的K线可满足此规则。') }}</p>
+      <p id="fxr-rule-error" role="alert" class="fxr-error"></p><div class="fxr-actions"><button type="submit" class="gbtn gbtn-cta">{{ t('Review condition','核对条件') }}</button></div>
+    </form>
+    <section id="fxr-rule-review" hidden><h3 id="fxr-rule-status">{{ t('Prepared · not active','已准备 · 未启用') }}</h3><p id="fxr-rule-summary" class="fxr-rule-summary"></p><dl class="fxr-facts"><dt>{{ t('4-hour closing prices','4小时收盘价') }}</dt><dd>{{ t('Unavailable','暂不可用') }}</dd><dt>{{ t('Saved watch','已保存关注') }}</dt><dd id="fxr-rule-persistence">{{ t('Not created','未创建') }}</dd><dt>{{ t('Alerts','提醒') }}</dt><dd>{{ t('Not active','未启用') }}</dd></dl><p class="fxr-note" id="fxr-rule-note">{{ t('No notification will be sent. Keep the draft in this tab, then explicitly save it from My watches to retain it in your account.', '不会发送通知。可先将草稿保留在此标签页，再从“我的关注”明确保存到账户。') }}</p><p id="fxr-rule-save-message" role="status" aria-live="polite"></p><details class="mx-disc fxr-evidence"><summary>{{ t('Exact rule fields','精确规则字段') }}</summary><pre id="fxr-rule-json"></pre></details><div class="fxr-actions"><button type="button" class="gbtn" id="fxr-reload-saved" hidden>{{ t('Reload saved version','重新载入保存版本') }}</button><button type="button" class="gbtn" id="fxr-edit-rule">{{ t('Edit condition','编辑条件') }}</button><button type="button" class="gbtn gbtn-cta" id="fxr-keep-rule">{{ t('Keep prepared in this tab','在此标签页保留已准备条件') }}</button></div></section>
+  </dialog>
+  <dialog class="fxr-dialog" id="fxr-compare-dialog" aria-labelledby="fxr-compare-title"><div class="fxr-dialog-head"><h2 id="fxr-compare-title">{{ t('Compare observations','比较观测') }}</h2><button type="button" class="gbtn" data-fxr-close>{{ t('Close','关闭') }}</button></div><div id="fxr-compare-body" class="fxr-comparison"></div><p class="fxr-caption">{{ t('Each pair retains its own date and quote convention. This comparison does not rank expected returns.', '各货币对保留自身日期与报价约定。此比较不对预期回报进行排名。') }}</p></dialog>
+</main>

@@ -1,0 +1,43 @@
+--- a/engine/btc_inputs.py
++++ b/engine/btc_inputs.py
+@@ -69,7 +69,18 @@
+     px = pd.concat(frames)
+     px.index = pd.to_datetime(px.index).normalize()
+     px = px[~px.index.duplicated(keep="last")].sort_index()  # coinbase wins overlap
+-    return px.dropna(subset=["close"])
++    raw = px["close"]
++    if pd.api.types.is_bool_dtype(raw):
++        numeric = pd.Series(np.nan, index=px.index, dtype="float64")
++    else:
++        if raw.dtype == object:
++            raw = raw.mask(raw.map(lambda v: isinstance(v, (bool, np.bool_))))
++        numeric = pd.to_numeric(raw, errors="coerce")
++    # Non-finite and boolean closes are not prices. Finite negatives stay,
++    # matching the previous dropna (it only removed missing closes).
++    px = px.loc[np.isfinite(numeric)].copy()
++    px["close"] = numeric.loc[px.index].astype(float)
++    return px
+ 
+ 
+ def load_hourly() -> pd.DataFrame | None:
+@@ -80,7 +91,19 @@
+     """Parkinson estimator per calendar day from hourly bars -> daily series."""
+     if hourly is None or hourly.empty:
+         return None
+-    g = hourly.groupby(hourly.index.normalize())
++
++    def _bar(s: pd.Series) -> pd.Series:
++        if pd.api.types.is_bool_dtype(s):
++            return pd.Series(np.nan, index=s.index, dtype="float64")
++        if s.dtype == object:
++            s = s.mask(s.map(lambda v: isinstance(v, (bool, np.bool_))))
++        num = pd.to_numeric(s, errors="coerce")
++        return num.where(np.isfinite(num) & (num > 0))
++
++    hi_s, lo_s = _bar(hourly["high"]), _bar(hourly["low"])
++    ok = hi_s.notna() & lo_s.notna() & (hi_s >= lo_s)
++    frame = pd.DataFrame({"high": hi_s.where(ok), "low": lo_s.where(ok)})
++    g = frame.groupby(frame.index.normalize())
+     hi, lo = g["high"].max(), g["low"].min()
+     pk = np.sqrt(np.log(hi / lo).pow(2) / (4 * np.log(2)))
+     pk.name = "intraday_vol"

@@ -1,0 +1,16 @@
+{
+  "current_manifest": "research/agentic_media/public_intelligence_20261011/validator_integrity_phase/postlanding/mmx-current-expected-hashes.json",
+  "sha256": "6047d6ed2043997a71cad134e4f6404f2c1d595530f086fe32cc6b353bb6a15e",
+  "source_count": 24,
+  "all_current_sources_match": true,
+  "historical_manifest": "research/agentic_media/public_intelligence_20261011/validator_integrity_phase/expected-source-hashes.json",
+  "historical_manifest_preserved_at_HEAD": true,
+  "historical_mismatches": [
+    "engine/press/desk_planner.py",
+    "engine/press/official_feed_candidate.py",
+    "scripts/stage_official_feed_press.py"
+  ],
+  "diagnosis": "Historical b35/558ca manifest predates accepted DOJ/Research/radar repairs. Current postlanding manifest already binds all three reviewed sources. Reverted only this turn's uncommitted writer edit to the historical manifest; no application change and no blind hash rebind.",
+  "runtime_application_commit": "f9ffebd74ed5746a6770638a72f8beb124879bbb",
+  "installed_acceptance": false
+}

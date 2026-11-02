@@ -1026,10 +1026,147 @@ def test_no_advance_and_session_lag_are_one_alert(tmp_path, capsys):
 
 
 def test_risk_radar_and_leadership_crack_opt_in_at_two_sessions():
-    """risk_radar and leadership_crack use a 2-session ceiling; nothing else does."""
+    """risk_radar and leadership_crack use a 2-session ceiling.
+
+    grey_deer_pullback opts in at the same ceiling (asserted on its own
+    test). Every other ledger stays unmeasured, and only the Grey Deer
+    entry may set stall_on_vanish.
+    """
     by_label = {entry["label"]: entry for entry in M._LEDGER_MANIFEST}
     assert by_label["risk_radar"]["max_sessions_behind"] == 2
     assert by_label["leadership_crack"]["max_sessions_behind"] == 2
     for entry in M._LEDGER_MANIFEST:
-        if entry["label"] not in ("risk_radar", "leadership_crack"):
+        if entry["label"] not in ("risk_radar", "leadership_crack", "grey_deer_pullback"):
             assert "max_sessions_behind" not in entry
+        if entry["label"] != "grey_deer_pullback":
+            assert "stall_on_vanish" not in entry
+
+
+# ── Grey Deer pullback: vanished log + 2-session ceiling ────────────────
+
+
+_GD_REL = "data/grey_deer_pullback/forward_log.jsonl"
+
+
+def _gd_entry() -> dict:
+    return next(e for e in M._LEDGER_MANIFEST if e["label"] == "grey_deer_pullback")
+
+
+def test_vanished_grey_deer_log_stalls_once(tmp_path, capsys):
+    """Stored asof + deleted file + render on a trading day is one vanished stall.
+
+    A same-day rerun does not emit a second row, and the stored asof is kept.
+    """
+    entry = _gd_entry()
+    ledger = tmp_path / _GD_REL
+    _write_jsonl(ledger, [{"asof": "2026-07-16", "ticker": "SPY"}])
+    ledger.unlink()
+    assert not ledger.is_file()
+
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    _write_state(state_path, {
+        _GD_REL: {"asof": "2026-07-16", "last_check_date": "2026-07-16",
+                  "stalled_since": None},
+    })
+    friday = datetime(2026, 7, 17, 22, 0, tzinfo=timezone.utc)
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, [entry], now=friday,
+    )
+    assert [s["label"] for s in stalled] == ["grey_deer_pullback"]
+    assert stalled[0]["stall_reasons"] == ["vanished"]
+    assert stalled[0]["stall_reason"] == "vanished"
+    text = M._stall_reason_text(stalled[0])
+    assert text == "The forward log has vanished after a stored asof was recorded."
+    assert len(dispatch.calls) == 1
+    assert text in dispatch.calls[0]["message"]
+    assert dispatch.calls[0]["type_"] == "ledger_stall"
+    M._emit_warning_annotation(stalled)
+    assert text in capsys.readouterr().out
+    assert _load_state(state_path)["ledgers"][_GD_REL]["asof"] == "2026-07-16"
+
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, [entry], now=friday,
+    )
+    assert stalled == []
+    assert dispatch.calls == []
+    assert _load_state(state_path)["ledgers"][_GD_REL]["asof"] == "2026-07-16"
+
+
+def test_missing_file_without_stall_on_vanish_is_silent(tmp_path):
+    """The same deleted-file scenario on a ledger without the opt-in stays quiet."""
+    entry = next(e for e in M._LEDGER_MANIFEST if e["label"] == "market_state")
+    assert entry.get("stall_on_vanish") is not True
+    rel = entry["path"]
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    _write_state(state_path, {
+        rel: {"asof": "2026-07-16", "last_check_date": "2026-07-16",
+              "stalled_since": None},
+    })
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, [entry], now=_D2,
+    )
+    assert stalled == []
+    assert dispatch.calls == []
+    assert _load_state(state_path)["ledgers"][rel]["asof"] == "2026-07-16"
+
+
+def test_vanished_without_stored_asof_is_silent(tmp_path):
+    """A missing Grey Deer log with no stored asof is still not a stall."""
+    entry = _gd_entry()
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    _write_state(state_path, {})
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, [entry], now=_D2,
+    )
+    assert stalled == []
+    assert dispatch.calls == []
+    saved = _load_state(state_path)["ledgers"].get(_GD_REL, {})
+    assert saved.get("asof") is None
+
+
+def test_grey_deer_session_lag_ceiling_is_two(tmp_path):
+    """grey_deer_pullback stalls on session lag once it is more than 2 sessions behind.
+
+    Friday 2026-07-17, asof Monday 2026-07-13 is short of Thursday 2026-07-16
+    by Tue/Wed/Thu — the same session-lag stall the other opted-in ledgers use.
+    """
+    entry = _gd_entry()
+    assert entry["max_sessions_behind"] == 2
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    _write_jsonl(tmp_path / _GD_REL, [{"asof": "2026-07-13"}])
+    _write_state(state_path, {
+        _GD_REL: {"asof": "2026-07-10", "last_check_date": "2026-07-16",
+                  "stalled_since": None},
+    })
+    friday = datetime(2026, 7, 17, 12, 0, tzinfo=timezone.utc)
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, [entry], now=friday,
+    )
+    assert len(stalled) == 1
+    assert stalled[0]["label"] == "grey_deer_pullback"
+    assert stalled[0]["stall_reasons"] == ["session_lag"]
+    assert stalled[0]["stall_reason"] == "session_lag"
+    assert stalled[0]["sessions_behind"] == 3
+    assert stalled[0]["max_sessions_behind"] == 2
+    assert len(dispatch.calls) == 1
+    assert "session_lag" in dispatch.calls[0]["message"]
+
+
+def test_main_returns_zero_when_forward_log_vanished(tmp_path):
+    """main() stays detection-only when the Grey Deer forward log has vanished."""
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    _write_state(state_path, {
+        _GD_REL: {"asof": "2026-07-16", "last_check_date": "2026-07-16",
+                  "stalled_since": None},
+    })
+    dispatch = _Dispatch()
+    with (
+        patch("engine.alert_triage.push_ops_alert", dispatch),
+        patch.object(M, "_is_trading_day", return_value=True),
+    ):
+        rc = M.main([
+            "--root", str(tmp_path),
+            "--state-file", str(state_path),
+            "--render-happened",
+        ])
+    assert rc == 0

@@ -1,0 +1,14 @@
+--- a/tests/test_crypto_wave2.py
++++ b/tests/test_crypto_wave2.py
+@@ -815,7 +815,10 @@
+     assert 'body.crypto-page.crypto-desk-ready #mmb-launch' in source
+     assert "window.MMBrain.open()" in source
+     assert "document.getElementById('mmb-boot')" in source
+-    assert "MM_BRAIN_CFG" not in source and 'src="mm_brain.js"' not in source
++    # The page may read the shared host object and set getAiContext. It must
++    # not replace that object (theme.js anchor/symbol) or load a second widget.
++    assert 'src="mm_brain.js"' not in source
++    assert "window.MM_BRAIN_CFG=" not in source and "window.MM_BRAIN_CFG =" not in source
+     assert 'fetch(' not in source
+     assert "observer.disconnect()" in source
+ 

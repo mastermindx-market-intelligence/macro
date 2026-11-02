@@ -74,20 +74,32 @@ pins the two against each other whenever both are present.
 """
 from __future__ import annotations
 
+import functools
 import hashlib
 import io
+import math
 import os
+import posixpath
+from collections.abc import Mapping
 from dataclasses import asdict, dataclass, field
+from fractions import Fraction
 from pathlib import Path
+from types import MappingProxyType
 
 import pandas as pd
 
+from lib.dataos.identity import IdentityError, parse_listing_key, venue_currency
 from lib.dataos.price import AdjustmentBasis
+from lib.dataos.price_views import RefusalReason
+from lib.dataos.read_contract import ReadMode, ReadRequest, RefusalCode, ViewContract
+from lib.dataos.registry import DatasetStatus, Registry, load_registry
 
 __all__ = [
     "ADJUSTED_SOURCES", "UNADJUSTED_SOURCES", "LADDER", "CACHE_GROUPS",
     "PriceEvidence", "Resolved", "resolve_close", "close_panel", "overlay_adjusted", "is_adjusted",
     "default_data_dir", "make_books",
+    "CanonicalClose", "resolve_close_canonical", "terminal_daily_ohlc_contract_v1",
+    "CANONICAL_READOUT", "TERMINAL_DAILY_OHLC_MICS",
 ]
 
 # ladder order is the contract: adjusted rungs first, cache last, null after that.
@@ -637,3 +649,343 @@ def overlay_adjusted(
     prov["panel_names"] = int(out.shape[1]) if not getattr(out, "empty", True) else 0
     prov["panel_sessions"] = int(out.shape[0]) if not getattr(out, "empty", True) else 0
     return out, prov
+
+
+# ── C01 canonical read seam ──────────────────────────────────────────────────
+# Purely ADDITIVE seam beside resolve_close: the ladder above is byte-unchanged and
+# every existing caller keeps its behaviour.  The seam calls the unchanged ladder,
+# binds the served rung to its dataset-registry row, and either serves exact
+# Fraction values under a ViewContract the SEAM writes, or RETURNS a typed refusal
+# on that same contract shape — refusals are returned, never raised (only a view
+# that is not a ReadRequest, or a registry that is not a Registry, is a TypeError).
+# A path, a hash or an is_adjusted flag alone never qualifies a read.  The legacy
+# defect "yahoo close_price (split-only adjusted) reported as adjusted=True" is
+# named legacy_defect:S10 and flagged on the contract, never silently served as
+# tradj.
+
+_C01_REGISTRY_ROWS = {"data_stocks": "equity.bars.daily.stocks", "yahoo": "equity.bars.daily.yahoo"}
+CANONICAL_READOUT = "vendor-adjusted — not a printed price"
+VIEW_CONTRACT_V1_SCHEMA = "dataos.view_contract.v1"
+TERMINAL_DAILY_OHLC_PURPOSE = "terminal_daily_ohlc"
+TERMINAL_DAILY_OHLC_MICS = ("ARCX", "XASE", "XNAS", "XNYS")
+TERMINAL_DAILY_OHLC_STORE_VENDOR = "yahoo"
+IDENTITY_NAMESPACE_US_LISTING = "US-<MIC>-<CODE>[.N]"
+_C01_UNATTESTED = ("adjustment_asof", "session", "venue_scope", "observed_at", "code_version", "symbol_binding")
+
+
+def _c01_code(member) -> str:
+    """Render one refusal enum MEMBER as its namespaced code string.
+
+    Every refusal string this seam writes is built from an enum member through
+    this function — a hand-typed code string is how a vocabulary silently forks.
+    """
+    if isinstance(member, RefusalCode):
+        return f"read_contract.{member.name}"
+    return f"price_views.{member.name}"
+
+
+@functools.lru_cache(maxsize=1)
+def _default_registry() -> Registry:
+    """The dataset registry, loaded once per process — never per read."""
+    return load_registry()
+
+
+@dataclass(frozen=True)
+class CanonicalClose:
+    """One canonical close read: served Fractions under a seam-written contract, or
+    the same shape with a typed refusal and no values."""
+
+    ticker: str
+    mode: ReadMode
+    contract: ViewContract     # served or refused; refusal_reasons == (code,) when refused, () when served
+    evidence_mode: Mapping[str, object]    # MappingProxyType; ALWAYS the same key set
+    values: tuple[tuple[str, Fraction], ...] | None
+    legacy: Resolved | None
+
+    @property
+    def ok(self) -> bool:
+        return self.values is not None and not self.contract.refusal_reasons
+
+
+def _c01_bind(legacy: Resolved, registry: Registry) -> tuple[object, str | None]:
+    """Bind the served rung to its dataset-registry row — pure, registry-decided.
+
+    Returns ``(row, None)`` when bound, else ``(None, code)`` naming the exact
+    refusal.  A path, hash or ``is_adjusted`` flag alone never qualifies: the
+    served evidence must name a registry row that is PRODUCED, carry an
+    EXACT_ENCODED_OBJECT receipt with a content sha and a source path, and the
+    row's storage must actually be the directory and format the evidence read.
+    """
+    evidence = legacy.evidence
+    if evidence is None:
+        return None, _c01_code(RefusalCode.MISSING_CURRENT_EVIDENCE)
+    dataset_id = _C01_REGISTRY_ROWS.get(evidence.source)
+    if dataset_id is None:
+        return None, _c01_code(RefusalCode.UNBOUND_DEPENDENCY)
+    row = registry.get(dataset_id)
+    if row is None or row.status is not DatasetStatus.PRODUCED:
+        return None, _c01_code(RefusalCode.UNBOUND_DEPENDENCY)
+    if (evidence.receipt_state != "EXACT_ENCODED_OBJECT" or not evidence.content_sha256
+            or evidence.source_path is None):
+        return None, _c01_code(RefusalCode.MISSING_CURRENT_EVIDENCE)
+    if (posixpath.dirname(row.storage)
+            != posixpath.join("data", posixpath.dirname(evidence.source_path))
+            or posixpath.splitext(row.storage)[1] != posixpath.splitext(evidence.source_path)[1]):
+        return None, _c01_code(RefusalCode.UNBOUND_DEPENDENCY)
+    return row, None
+
+
+def _c01_values(series) -> tuple[tuple[tuple[str, Fraction], ...] | None, str | None]:
+    """Series -> exact ``Fraction`` values keyed by ISO date — pure, or a refusal.
+
+    A float is exact only through ``Fraction(float(x))`` of the value actually
+    served; no rounding, no re-basing, no silent coercion of a non-date index.
+    """
+    if series is None:
+        return None, _c01_code(RefusalReason.MISSING_PRICE)
+    try:
+        stamps = pd.to_datetime(pd.Index(series.index))
+    except (TypeError, ValueError):
+        return None, _c01_code(RefusalReason.UNKNOWN_ORDERING)
+    if bool(pd.isna(stamps).any()):
+        return None, _c01_code(RefusalReason.UNKNOWN_ORDERING)
+    if len(series) == 0:
+        return None, _c01_code(RefusalReason.MISSING_PRICE)
+    if bool(series.isna().any()):
+        return None, _c01_code(RefusalReason.MISSING_PRICE)
+    floats = [float(x) for x in series.tolist()]
+    if any(math.isinf(x) or x <= 0 for x in floats):
+        return None, _c01_code(RefusalReason.NON_POSITIVE_VALUE)
+    dates = [str(stamp.date()) for stamp in stamps]
+    if len(set(dates)) != len(dates):
+        return None, _c01_code(RefusalReason.DUPLICATE_ROW_DATE)
+    return tuple(sorted(zip(dates, (Fraction(x) for x in floats)))), None
+
+
+def resolve_close_canonical(
+    ticker: str,
+    *,
+    view: ReadRequest,
+    asof: str | pd.Timestamp | None = None,
+    start: str | pd.Timestamp | None = None,
+    data_dir: str | None = None,
+    registry: Registry | None = None,
+    _book: "_Books | None" = None,
+) -> CanonicalClose:
+    """Resolve one close series under a canonical read contract (C01).
+
+    Calls the UNCHANGED :func:`resolve_close` ladder, binds the served rung to
+    its dataset-registry row, and either serves exact ``Fraction`` values under
+    a ``ViewContract`` written HERE (never by the requester), or returns the
+    same shape carrying a typed refusal.  The requester cannot choose
+    authorization, clock or evidence status: those fields are overwritten or
+    dropped.  Fixed check order — the FIRST failure wins.
+    """
+    if not isinstance(view, ReadRequest):
+        raise TypeError(
+            f"view must be a lib.dataos.read_contract.ReadRequest, got {type(view).__name__}")
+    if registry is not None and not isinstance(registry, Registry):
+        raise TypeError(
+            f"registry must be a lib.dataos.registry.Registry or None, got {type(registry).__name__}")
+    reg = _default_registry() if registry is None else registry
+    t = str(ticker)
+    req_ident = view.contract.identity
+    mic: str | None = None
+    cur: str | None = None
+    legacy: Resolved | None = None
+    row = None
+    values: tuple[tuple[str, Fraction], ...] | None = None
+    code: str | None = None
+    coverage = "not read"
+
+    # 1 — mode: the ladder is NOT read for a mode this seam cannot serve.
+    if view.mode is ReadMode.RECONSTRUCT:
+        code = _c01_code(RefusalCode.MISSING_CLOCK_VALUE)
+    elif view.mode is ReadMode.REPLAY:
+        code = _c01_code(RefusalCode.NO_RETAINED_OUTPUT)
+
+    # 2 — venue (mirrors P06's rule): one listing, one mapped MIC, one currency.
+    if code is None:
+        try:
+            key_mic = parse_listing_key(req_ident["listing_id"]).mic
+        except IdentityError:
+            key_mic = None
+        raw = req_ident.get("mic")
+        id_mic: str | None = None
+        if raw is not None and not isinstance(raw, str):
+            code = _c01_code(RefusalReason.VENUE_CLOCK_UNKNOWN)
+        elif raw is not None:
+            id_mic = raw.strip().upper() or None
+        if code is None:
+            if key_mic is not None and id_mic is not None and key_mic != id_mic:
+                code = _c01_code(RefusalReason.VENUE_CLOCK_UNKNOWN)
+            elif key_mic is None and id_mic is None:
+                code = _c01_code(RefusalReason.VENUE_CLOCK_UNKNOWN)
+            else:
+                mic = key_mic or id_mic
+                try:
+                    cur = venue_currency(mic)
+                except IdentityError:
+                    code = _c01_code(RefusalReason.VENUE_CLOCK_UNKNOWN)
+
+    # 3 — currency: a known-and-different currency refuses, never assumes FX.
+    if code is None:
+        req_cur = view.contract.field_units.get("currency")
+        if req_cur is not None and (not isinstance(req_cur, str)
+                                    or req_cur.strip().upper() != cur):
+            code = _c01_code(RefusalReason.CURRENCY_MISMATCH)
+
+    # 4 — basis request: tradj or sadj, explicitly; anything else is ambiguous.
+    req_basis = view.contract.adjustment_reference.get("basis")
+    if code is None and req_basis not in ("tradj", "sadj"):
+        code = _c01_code(RefusalReason.AMBIGUOUS_BASIS)
+
+    # 5 — the read itself, through the UNCHANGED ladder.
+    if code is None:
+        legacy = resolve_close(t, asof=asof, start=start, data_dir=data_dir,
+                               allow_unadjusted=True, capture_evidence=True, _book=_book)
+        if not legacy.ok:
+            code = _c01_code(RefusalCode.UNBOUND_DEPENDENCY)
+            coverage = "none"
+
+    # 6 — bind the served rung to its dataset-registry row.
+    if code is None:
+        row, bind_code = _c01_bind(legacy, reg)
+        if bind_code is not None:
+            code = bind_code
+            coverage = "withheld"
+
+    # 7 — basis: the served column's registry basis must equal the request's.
+    if code is None:
+        evidence = legacy.evidence
+        if (evidence.basis is None
+                or evidence.column not in row.schema
+                or evidence.basis != row.schema[evidence.column].get("basis")
+                or evidence.basis != req_basis):
+            code = _c01_code(RefusalReason.AMBIGUOUS_BASIS)
+            coverage = "withheld"
+
+    # 8 — values: exact Fractions keyed by ISO date, or a typed refusal.
+    if code is None:
+        values, values_code = _c01_values(legacy.series)
+        if values_code is not None:
+            code = values_code
+            coverage = "withheld"
+
+    # S10 — the legacy defect, flagged even on refusal, never silently served.
+    legacy_defects: tuple[str, ...] = ()
+    if legacy is not None and legacy.adjusted is True and (
+            legacy.evidence is None or legacy.evidence.basis != "tradj"):
+        legacy_defects = ("S10",)
+
+    served = code is None
+    basis_out = (
+        legacy.evidence.basis
+        if served and legacy is not None and legacy.evidence is not None
+        else (req_basis if req_basis in ("tradj", "sadj") else None)
+    )
+    if served:
+        coverage = f"{values[0][0]}..{values[-1][0]} n={len(values)}"
+
+    identity: dict[str, str] = {
+        "security_id": req_ident["security_id"],
+        "listing_id": req_ident["listing_id"],
+        "vendor_symbol": t,
+    }
+    if mic is not None:
+        identity["mic"] = mic
+    if row is not None:
+        identity["registry_row"] = row.dataset_id
+        identity["vendor"] = row.vendor
+
+    adjustment_reference: dict[str, object] = {
+        "basis": basis_out,
+        "action_revision_set_id": None,   # requester values are overwritten, never copied
+        "as_at": None,
+        "vintage": "unattested",
+        "executable": False,
+        "readout": CANONICAL_READOUT,
+    }
+    if legacy_defects:
+        adjustment_reference["legacy_defect"] = "S10"
+
+    evidence = legacy.evidence if legacy is not None else None
+    generation_ids: tuple[str, ...] = ()
+    if (evidence is not None and evidence.receipt_state == "EXACT_ENCODED_OBJECT"
+            and evidence.content_sha256):
+        generation_ids = ("sha256:" + evidence.content_sha256,)
+    evidence_mode = MappingProxyType({
+        "mode": view.mode.value,
+        "clock": row.clocks[0] if row is not None and row.clocks else None,
+        "registry_row": row.dataset_id if row is not None else None,
+        "dependency_generation_ids": generation_ids,
+        "generation_attested": False,
+        "code_version": None,
+        "receipt_state": evidence.receipt_state if evidence is not None else None,
+        "source": evidence.source if evidence is not None else None,
+        "source_path": evidence.source_path if evidence is not None else None,
+        "column": evidence.column if evidence is not None else None,
+        "basis": evidence.basis if evidence is not None else None,
+        "unattested": _C01_UNATTESTED,
+        "legacy_defects": legacy_defects,
+        "refusal": code,
+    })
+
+    contract = ViewContract(
+        purpose=view.contract.purpose,
+        identity=identity,
+        field_units={
+            "currency": cur or None,
+            "close": f"{cur}/share" if cur else None,
+            "share_basis": basis_out,
+        },
+        adjustment_reference=adjustment_reference,
+        coverage=coverage,
+        refusal_reasons=(code,) if code is not None else (),
+    )
+    return CanonicalClose(
+        ticker=t, mode=view.mode, contract=contract, evidence_mode=evidence_mode,
+        values=values if served else None, legacy=legacy)
+
+
+def terminal_daily_ohlc_contract_v1() -> dict:
+    """The contract mapping a later lane emits beside the Terminal daily OHLC files.
+
+    Pure: no IO, no clock, no store read — a fresh JSON-native dict every call,
+    so a consumer mutating one return can never rewrite what the next caller
+    gets.  Every unattested field says so; nothing here authorizes a read.
+    """
+    return {
+        "schema": VIEW_CONTRACT_V1_SCHEMA,
+        "purpose": TERMINAL_DAILY_OHLC_PURPOSE,
+        "identity_namespace": IDENTITY_NAMESPACE_US_LISTING,
+        "venues": list(TERMINAL_DAILY_OHLC_MICS),
+        "field_units": {
+            "currency": "USD",
+            "open": "USD/share",
+            "high": "USD/share",
+            "low": "USD/share",
+            "close": "USD/share",
+            "volume": "shares",
+            "volume_convention": "vendor-reported, unattested",
+            "share_basis": "tradj",
+        },
+        "adjustment_reference": {
+            "basis": "tradj",
+            "action_revision_set_id": None,
+            "as_at": None,
+            "vintage": "unattested",
+            "executable": False,
+            "readout": CANONICAL_READOUT,
+        },
+        "evidence_mode": {
+            "mode": "CURRENT",
+            "clock": "ingested_at",
+            "registry_row": "equity.bars.daily.stocks",
+            "output_registry_row": "terminal.bars.daily.ohlc_json",
+            "dependency_generation_ids": [],
+            "generation_attested": False,
+            "code_version": None,
+        },
+        "store_vendor": TERMINAL_DAILY_OHLC_STORE_VENDOR,
+    }

@@ -148,3 +148,69 @@ print(m.render_international_pages(m.ActualShell(),{'intl_workspace':m.workspace
   });assert.equal(out.state,'comparable');assert.deepEqual(out.slots,out.expected);assert.equal(out.same,true);assert.deepEqual(out.after,out.values);
  }finally{await page.close();}
 });
+
+
+function injectSourceBoundChartFixture(){
+  // Synthetic DOM-only fixture: financial permission and data are tested by
+  // the actual Python owner, not by this reducer interaction harness.
+  document.querySelector('[data-im-compare-panel]').insertAdjacentHTML('beforeend',`
+    <section class="intl-chart" data-im-chart-model="intl-chart-geometry.v1">
+      <details open data-im-chart-cohort="c0">
+        <summary>Comparable source cohort</summary>
+        <svg viewBox="0 0 640 220">
+          <path d="M0,100 L640,80" data-im-chart-series="JP"></path><path d="M0,100 L640,101" data-im-chart-series="GB"></path>
+          <circle cx="640" cy="80" r="3" data-im-chart-series="KR"></circle>
+        </svg>
+        <table><tbody>
+          <tr data-im-chart-table-market="JP"><th>Japan</th></tr>
+          <tr data-im-chart-table-market="KR"><th>Korea</th></tr><tr data-im-chart-table-market="GB"><th>United Kingdom</th></tr>
+        </tbody></table>
+      </details>
+      <details data-im-chart-cohort="c1">
+        <summary>Second group</summary><svg><path d="M0,100 L640,90" data-im-chart-series="AU"></path></svg>
+        <table><tbody><tr data-im-chart-table-market="AU"><th>Australia</th></tr></tbody></table>
+      </details>
+      <p data-im-chart-selection-unavailable hidden>Qualified series not available for all selected markets</p>
+    </section>`);
+}
+
+test('source-bound chart obeys 2–4 native pins without exposing unselected series',async()=>fixture(async p=>{
+  const panel=p.locator(active),group=panel.locator('[data-im-chart-cohort="c0"]');
+  const badge=panel.locator('[data-im-chart-selection-unavailable]');
+  assert.equal(await group.isVisible(),false);
+  assert.equal(await badge.isVisible(),false);
+  await pin(p,'JP');
+  assert.equal(await group.isVisible(),false);
+  await pin(p,'KR');
+  assert.equal(await group.isVisible(),true);
+  assert.equal(await group.locator('[data-im-chart-series="JP"]').isVisible(),true);
+  assert.equal(await group.locator('[data-im-chart-series="KR"]').isVisible(),true);
+  assert.equal(await group.locator('[data-im-chart-series="GB"]').isVisible(),false);
+  assert.equal(await group.locator('[data-im-chart-series="GB"]').getAttribute('hidden'),'');
+  assert.equal(await badge.isVisible(),false);
+  assert.equal(await panel.locator('[data-im-chart-cohort="c1"]').isVisible(),false);
+  await pin(p,'TW');
+  assert.equal(await panel.getAttribute('data-im-compare-reason'),'');
+  assert.equal(await group.isVisible(),false);
+  assert.equal(await badge.isVisible(),true);
+  await pin(p,'AU');
+  assert.equal(await panel.getAttribute('data-im-compare-reason'),'unequal_windows');
+  assert.equal(await group.isVisible(),false);
+  assert.equal(await badge.isVisible(),false);
+},{mutate:injectSourceBoundChartFixture}));
+
+test('chart visibility rolls back on failed history and follows native popstate',async()=>fixture(async p=>{
+  const panel=p.locator(active);
+  await pin(p,'JP');await pin(p,'KR');
+  const before=await panel.locator('[data-im-chart-model]').evaluate(n=>n.outerHTML);
+  const state=await p.evaluate(()=>h.getState());
+  const failed=await p.evaluate(()=>{
+    const push=history.pushState;history.pushState=()=>{throw Error('chart history failure')};
+    try{return h.dispatch({type:'unpin',market_id:'KR'});}finally{history.pushState=push;}
+  });
+  assert.equal(failed.ok,false);
+  assert.deepEqual(await p.evaluate(()=>h.getState()),state);
+  assert.equal(await panel.locator('[data-im-chart-model]').evaluate(n=>n.outerHTML),before);
+  await p.goBack();
+  assert.equal(await panel.locator('[data-im-chart-cohort="c0"]').isVisible(),false);
+},{mutate:injectSourceBoundChartFixture}));
