@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-24T20:40:58Z",
+ "accession": "0001104659-26-086668",
+ "cik": "0001687187",
+ "doc_byte_length": 4368890,
+ "doc_sha256": "6e050438ccda1ee10f3bb86f97c092aeb11f7a8c4a6b0628fb4bec74d5f26250",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-24",
+ "form": "10-K/A",
+ "period_of_report": "2025-12-31",
+ "primary_document": "metc-20251231x10ka.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 289260,
+  "byte_start": 288534,
+  "normalized": "This Amendment No. 1 on Form 10-K/A (this “Amendment”) to the Annual Report on Form 10-K of Ramaco Resources, Inc. (the “Company”) for the fiscal year ended December 31, 2025, filed with the Securities and Exchange Commission (the “Commission”) on February 26, 2026 (the “Original 10-K Filing”), is being filed solely: (i) to revise Parts I and II to clarify that the study prepared by the Fluor Corporation titled “Preliminary Economic Assessment” referenced in the Original 10-K Filing (the “Fluor Study”) was a conceptual study not prepared in accordance with Subpart 1300 of Regulation S-K and to refer to such study as the “Fluor Study”;",
+  "normalized_sha256": "112fa14c0fb75f12d98755138b3780791bd4a5dd5e626380148fdd1f69ec4092",
+  "raw": "This Amendment No. 1 on Form 10-K/A (this &#8220;Amendment&#8221;) to the Annual Report on Form 10-K of Ramaco Resources, Inc. (the &#8220;Company&#8221;) for the fiscal year ended December 31, 2025, filed with the Securities and Exchange Commission (the &#8220;Commission&#8221;) on February 26, 2026 (the &#8220;Original 10-K Filing&#8221;), is being filed solely: (i) to revise Parts I and II to clarify that the study prepared by the Fluor Corporation titled &#8220;Preliminary Economic Assessment&#8221; referenced in the Original 10-K Filing (the &#8220;Fluor Study&#8221;) was a conceptual study not prepared in accordance with Subpart 1300 of Regulation S-K and to refer to such study as the &#8220;Fluor Study&#8221;;",
+  "raw_sha256": "fc19602a21347ca86d0c96e4486698c3734890c3b0d2bc66b81dcd10017945df"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1687187/000110465926086668/metc-20251231x10ka.htm",
+ "xbrl_contexts": []
+}

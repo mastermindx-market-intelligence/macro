@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-31T20:06:52Z",
+ "accession": "0001104659-26-037706",
+ "cik": "0001951222",
+ "doc_byte_length": 5523011,
+ "doc_sha256": "0cce91aa4fda1161c07cc338f0e8a1391b21e40d6de6f3ae380609ef733002e7",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "laes-20251231x20f.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 629382,
+  "byte_start": 628904,
+  "normalized": "the communication process that it shall respect vis-a-vis forecasting / pricing update, such as determination of price reflecting component prices in effect on the date of shipment to Cisco’s authorized contract manufactures (“EMS Providers”), representations and warranties that the product price are, and shall be, no higher than the lowest prices offered by SEALSQ to any customer purchasing the same or lesser total sales or unit volume on an annual basis;",
+  "normalized_sha256": "4c873fe8e6d51af76048376270f8ec99e0b7e0351106625aa535bdb636d59c12",
+  "raw": "the communication process that it shall respect vis-a-vis forecasting / pricing update, such as determination of price reflecting component prices in effect on the date of shipment to Cisco&#8217;s authorized contract manufactures (&#8220;EMS Providers&#8221;), representations and warranties that the product price are, and shall be, no higher than the lowest prices offered by SEALSQ to any customer purchasing the same or lesser total sales or unit volume on an annual basis;",
+  "raw_sha256": "e2e2ff107bacc1f4f820b42617e5dd6a4da3205f4e73d7f0730b5b6e13aa1321"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1951222/000110465926037706/laes-20251231x20f.htm",
+ "xbrl_contexts": []
+}
