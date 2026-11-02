@@ -21,8 +21,11 @@ test('filter and search intersect; no-match and reset states work',async b=>{
 test('evidence and reading position survive release refresh and language switch',async b=>{
  const p=await setup(b);await p.locator('.ni-evidence summary').first().click();
  const before=await p.locator('[data-al-row]').first().innerText();
+ const readingRow=p.locator('[data-al-row]').nth(2);await readingRow.scrollIntoViewIfNeeded();
+ const readingY=(await readingRow.boundingBox()).y;
  await p.evaluate(()=>{const now=new Date();window.__mmReleasePublicationTest.render({built:now.toISOString(),publications:[{event_id:'cpi-test',type:'CPI',date:now.toISOString().slice(0,10),detected_at:now.toISOString(),status:'published_unparsed'}],events:[]},now);});
  assert.equal(await p.locator('[data-al-row]').first().innerText(),before);assert(await p.locator('.ni-evidence').first().evaluate(e=>e.open));
+ assert(Math.abs((await readingRow.boundingBox()).y-readingY)<=1,'release refresh moved the reading anchor');
  assert.equal(await p.locator('[data-news-release]').getAttribute('data-state'),'verifying');
  await p.evaluate(()=>document.documentElement.setAttribute('data-lang','zh'));
  assert(await p.locator('.ni-evidence').first().evaluate(e=>e.open));assert((await p.locator('[data-news-count]').innerText()).includes('条动态'));

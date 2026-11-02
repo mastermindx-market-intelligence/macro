@@ -1,7 +1,7 @@
 {# News-only presentation of existing alert and headline owners. No scorer or feed. #}
 {% autoescape true %}
 {% macro ni_bi(en, zh='') -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh or en }}</span>{%- endmacro %}
-{% set ni = namespace(priority=[], context=[], headlines=[], seen=[], invalid=0, duplicates=0) %}
+{% set ni = namespace(priority=[], context=[], headlines=[], seen=[], invalid=0, duplicates=0, coverage_partial=false) %}
 {% set ni_known = alerts is defined and alerts is sequence and alerts is not string and alerts is not mapping %}
 {% for a in (alerts if ni_known else []) %}
   {% if a is mapping %}
@@ -11,6 +11,16 @@
   {% else %}{% set ni.invalid = ni.invalid + 1 %}{% endif %}
 {% endfor %}
 {% set ni_news = macro_news if macro_news is defined and macro_news is mapping else {} %}
+{# Per-leg producer truth survives even when a working source makes the aggregate reason null. #}
+{% set ni_legs = ni_news.get('leg_status') %}
+{% if ni_legs is mapping %}
+  {% for ni_leg in ni_legs.values() %}
+    {% if ni_leg is mapping %}
+      {% if ni_leg.get('degraded_reason') and ni_leg.get('degraded_reason') != 'no_headlines' %}{% set ni.coverage_partial = true %}{% endif %}
+    {% else %}{% set ni.invalid = ni.invalid + 1 %}{% endif %}
+  {% endfor %}
+{% elif ni_legs is not none %}{% set ni.invalid = ni.invalid + 1 %}{% endif %}
+{% if ni_news.get('degraded_reason') and ni_news.get('degraded_reason') != 'no_headlines' %}{% set ni.coverage_partial = true %}{% endif %}
 {% set ni_raw = ni_news.get('headlines') %}
 {% set ni_news_known = ni_raw is sequence and ni_raw is not string and ni_raw is not mapping %}
 {% for h in (ni_raw if ni_news_known else []) %}
@@ -62,6 +72,8 @@
   </aside>
   {% if ni.invalid or not ni_known or not ni_news_known %}
   <div class="ni-notice" role="status"><strong>{{ ni_bi('Some information is unavailable.', '部分信息暂不可用。') }}</strong> {{ ni_bi('Available items remain below; missing data does not mean a quiet market.', '下方保留可用内容；缺失数据不代表市场平静。') }}</div>
+  {% elif ni.coverage_partial %}
+  <div class="ni-notice" role="status" data-news-coverage="partial"><strong>{{ ni_bi('Headline coverage is partial.', '新闻覆盖不完整。') }}</strong> {{ ni_bi('Some sources are unavailable; available reports remain below.', '部分来源暂不可用；下方保留可用报道。') }}</div>
   {% endif %}
   <div class="ni-tools" data-news-toolbar hidden>
     <div class="ni-filters" role="group" aria-label="Filter developments" data-news-aria-en="Filter developments" data-news-aria-zh="筛选动态">

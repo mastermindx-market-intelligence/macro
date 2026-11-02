@@ -59,6 +59,16 @@ def test_caveat_not_hidden_in_disclosure():
     assert 'Long explanation' in row.select_one('details').text
     assert not row.select_one('details').has_attr('open')
 
+@pytest.mark.parametrize('reason,partial', [('rate_limited',True), ('fetch_error',True), ('no_headlines',False)])
+def test_per_source_coverage_survives_available_headlines(reason, partial):
+    soup = render(macro_news={'headlines':[{'title':'Available official report','url':'https://example.org/report'}],
+                             'degraded_reason':None,
+                             'leg_status':{'gdelt':{'n':0,'degraded_reason':reason},'official_rss':{'n':1,'degraded_reason':None}}})
+    assert bool(soup.select_one('[data-news-coverage="partial"]')) == partial
+    assert len(soup.select('[data-news-item="headlines"]')) == 1
+    if partial:
+        assert '新闻覆盖不完整' in soup.select_one('.ni-notice').text
+
 def test_parent_integration_and_build_asset_contract():
     parent = (ROOT/'templates/dashboard.html.j2').read_text()
     ENV.parse(parent)
