@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-02T17:43:35.201548+00:00",
+  "generated_utc": "2026-11-02T21:03:01.424356+00:00",
   "as_of": "2026-11-02",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -28637,14 +28637,6 @@
           "sellers": 4
         },
         {
-          "ticker": "APCX",
-          "buy_usd": 116087190.0,
-          "sell_usd": 0.0,
-          "net_usd": 116087190.0,
-          "buyers": 31,
-          "sellers": 0
-        },
-        {
           "ticker": "SCTH",
           "buy_usd": 100000000.0,
           "sell_usd": 0.0,
@@ -28659,6 +28651,14 @@
           "net_usd": 98736477.0,
           "buyers": 55,
           "sellers": 10
+        },
+        {
+          "ticker": "UUU",
+          "buy_usd": 93635950.0,
+          "sell_usd": 0.0,
+          "net_usd": 93635950.0,
+          "buyers": 48,
+          "sellers": 0
         }
       ],
       "sells": [

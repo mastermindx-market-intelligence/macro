@@ -1,6 +1,6 @@
 {
   "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
-  "generated_at": "2026-10-31T10:20:33Z",
+  "generated_at": "2026-11-02T23:26:38Z",
   "metric_notes": {
     "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
     "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
@@ -19,23 +19,23 @@
         "asof_present": true,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 1062,
+            "document_height_px": 1101,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 1445,
+            "document_height_px": 1507,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
         },
-        "console_error_count": 1,
-        "document_height_px": 1062,
+        "console_error_count": 0,
+        "document_height_px": 1101,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
           "h1": 0,
-          "h2": 0,
+          "h2": 2,
           "h3": 0,
           "h4": 0,
           "h5": 0,
@@ -49,17 +49,17 @@
           "theme": "dark",
           "viewport": "desktop"
         },
-        "panel_count": 6,
-        "payload_bytes_total": 179712,
+        "panel_count": 5,
+        "payload_bytes_total": 78370,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
-        "request_count": 1,
+        "request_count": 8,
         "screenshot_completion": 1.0,
-        "section_count": 0,
+        "section_count": 5,
         "source_present": true,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 196
+        "visible_word_count": 231
       },
       "page_id": "macro.html",
       "route": "/macro.html"
@@ -72,7 +72,7 @@
     "resolved_gitdir_or_none": null,
     "resolved_sha_or_none": null,
     "resolved_sha_source": "no git directory was found at or above --site-dir; nothing resolved",
-    "site_dir": "/private/tmp/tvs-pr10229-qa-20261031"
+    "site_dir": "/tmp/tvs-pr10229-resume-20261102/site"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",
