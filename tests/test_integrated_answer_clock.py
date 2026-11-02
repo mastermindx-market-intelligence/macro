@@ -42,10 +42,16 @@ from engine.company_theme_exposure.views import build_bundle, write_generation
 from engine.k3e_expectation_surface import ATTEMPTS_PATH, OBSERVATIONS_PATH, QueryRefusal
 from scripts import query_k3e_expectation_surface as qk3e
 from tests.test_company_theme_exposure import _company_tree, _crosswalk, _membership
+from tests.test_integrated_answer_v0 import pin_capital_structure_leg
 
 NOW = "2026-10-11T12:00:00Z"
 FINANCIAL_ROUTE = "/api/forensics/v1/financial/query"
 PUBLICATION_ROUTE = "/api/forensics/v1/attested-history/latest"
+
+
+@pytest.fixture(autouse=True)
+def _pin_capital_structure_leg(monkeypatch: pytest.MonkeyPatch) -> None:
+    pin_capital_structure_leg(monkeypatch)
 
 DEFECT_D1_REASON = (
     "DEFECT C19-WP16-D1: financial leg as_of echoes the literal request cutoff "
@@ -594,7 +600,7 @@ def test_legs_run_concurrently_and_keep_page_order(monkeypatch) -> None:
 
 
 def test_leg_exception_still_propagates(monkeypatch) -> None:
-    def broken():
+    def broken(*_a, **_k):
         raise ValueError("leg bug")
 
     _stub_read_legs(monkeypatch, _leg_capital_structure=broken)
@@ -606,7 +612,7 @@ def test_legs_see_the_request_context(monkeypatch) -> None:
     probe: contextvars.ContextVar[str | None] = contextvars.ContextVar("probe", default=None)
     seen: list[str | None] = []
 
-    def reader():
+    def reader(*_a, **_k):
         seen.append(probe.get())
         return _surfaced_leg("capital_structure", route=PUBLICATION_ROUTE, as_of=NOW, payload={})
 

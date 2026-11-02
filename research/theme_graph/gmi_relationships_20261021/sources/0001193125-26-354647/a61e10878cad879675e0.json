@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-18T10:06:03Z",
+ "accession": "0001193125-26-354647",
+ "cik": "0000811809",
+ "doc_byte_length": 17794676,
+ "doc_sha256": "39f31e930907c4d80973089b79f1721c2985b0ea3d0a0d5020de89676d3e3cba",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-18",
+ "form": "20-F",
+ "period_of_report": "2026-06-30",
+ "primary_document": "bhp-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 15782575,
+  "byte_start": 15782025,
+  "normalized": "Relates to discounting and remeasurement of the other financial liability associated with the Antamina silver streaming agreement with Wheaton Precious Metals International Ltd in accordance with IFRS 9. Refer to note 24 'Financial risk management' for more information.",
+  "normalized_sha256": "17e223bc7cbdee6cce8a10dcf7f0428083990da20c01be34938d890b86caebcc",
+  "raw": "Relates to discounting and remeasurement of the other financial liability associated with the Antamina silver streaming agreement with </span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">Wheaton Precious Metals International Ltd i</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">n accordance with IFRS 9. Refer to note 24 'Financial risk management' for more information.",
+  "raw_sha256": "a61e10878cad879675e01266f97f5937b89d79d7f4661222afd76874ca9ff6cc"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/811809/000119312526354647/bhp-20260630.htm",
+ "xbrl_contexts": []
+}

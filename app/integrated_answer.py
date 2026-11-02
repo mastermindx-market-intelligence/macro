@@ -37,7 +37,7 @@ CONSUMER_RECEIPT_VERSION = "c19-wp08-v1"
 CONSUMED_RECEIPTS_HEADER = "X-Integrated-Answer-Consumed-Receipts"
 RECEIPT_FIELDS = ("bytes_sha256", "producer_generation_id", "data_interval", "contract_watermark", "denominator")
 RECEIPT_NULL_REASONS = frozenset({"NOT_EXPOSED_BY_PRODUCER", "NOT_READ_AT_CONSUME", "NOT_APPLICABLE", "DRIFT_AT_CONSUME"})
-RECEIPT_LEGS = ("financial_facts", "earnings_expectation", "publication_seam", "event_workspace", "theme_tape", "company_theme_exposure")
+RECEIPT_LEGS = ("financial_facts", "earnings_expectation", "capital_structure", "publication_seam", "event_workspace", "theme_tape", "company_theme_exposure")
 
 _FY2025_REV = {
     "kind": "duration",
@@ -91,6 +91,20 @@ _COPY: dict[str, dict[str, dict[str, str]]] = {
         "refused": {
             "en": "Earnings expectation detail isn't available on this view.",
             "zh": "此视图无法提供盈利预期细节。",
+        },
+    },
+    "capital_structure": {
+        "absent": {
+            "en": "Capital-structure context isn't available for this company yet.",
+            "zh": "该公司的资本结构背景暂不可用。",
+        },
+        "stale": {
+            "en": "Capital-structure state is older than this page stamp — check the receipt.",
+            "zh": "资本结构状态早于本页时间戳，请查看来源说明。",
+        },
+        "refused": {
+            "en": "Capital-structure context isn't available on this view.",
+            "zh": "此视图无法提供资本结构背景。",
         },
     },
     "publication_seam": {
@@ -576,14 +590,123 @@ def _leg_earnings_expectation(ticker: str, composed_at: str) -> dict[str, Any]:
     return leg
 
 
-def _leg_capital_structure() -> dict[str, Any]:
+def _leg_capital_structure(ticker: str, composed_at: str) -> dict[str, Any]:
+    from app import capital_structure as cs
+    from engine.company_intelligence.identity import IdentityError, company_id_for_cik
+
     leg = _leg_shell("capital_structure")
-    leg["status"] = "held_unavailable"
-    leg["degraded_reason"] = "held:W4/W6 preserved (Mastermind #1258 F4; WS:CAPITAL-STRUCTURE-INTELLIGENCE-V2)"
-    leg["copy"] = {
-        "en": "Capital-structure context is on hold for this answer.",
-        "zh": "本答复的资本结构背景暂缓提供。",
+
+    def _absent(degraded_reason: str) -> dict[str, Any]:
+        leg["status"] = "absent"
+        leg["degraded_reason"] = degraded_reason
+        _apply_copy(leg)
+        return leg
+
+    try:
+        normalized = ticker.strip().upper()
+        if not cs._TICKER_RE.fullmatch(normalized):
+            return _absent("ticker_not_covered")
+        projection = cs._load()
+        matches = cs._ticker_matches(projection, normalized)
+        if not matches:
+            return _absent("ticker_not_covered")
+        if len(matches) > 1:
+            return _absent("ambiguous_ticker")
+        issuer_id = str(matches[0]["issuer_id"])
+        resolved = cs._state_view(issuer_id, None, None, None)
+        paths = cs._path_rows(resolved.family_record)
+        bundle = resolved.bundle
+    except HTTPException as exc:
+        if exc.status_code == 404:
+            return _absent("issuer_not_covered_by_state")
+        if exc.status_code == 503 and exc.detail == cs._STATE_NOT_BOUND:
+            return _absent("state_not_bound")
+        if exc.status_code == 503:
+            return _absent("state_unavailable")
+        return _absent(f"unavailable:http_{exc.status_code}")
+    except (ContractError, cs.ContractViolation):
+        return _absent("contract_invalid")
+    except Exception as exc:  # noqa: BLE001
+        return _absent(f"unavailable:{type(exc).__name__}")
+
+    try:
+        company_id: str | None = company_id_for_cik(issuer_id.removeprefix("sec:cik:"))
+    except IdentityError:
+        company_id = None
+
+    path_rows = []
+    for path in paths:
+        origin = path.get("origin") or {}
+        registration = path.get("registration") or {}
+        path_rows.append(
+            {
+                "path_id": path.get("path_id"),
+                "form": origin.get("form"),
+                "accession": origin.get("accession"),
+                "sec_accepted_at": origin.get("sec_accepted_at"),
+                "mastermind_available_at": origin.get("mastermind_available_at"),
+                "observed_registration_state": path.get("observed_registration_state"),
+                "registration_family": registration.get("registration_family"),
+                "file_number": registration.get("file_number"),
+            }
+        )
+
+    payload = {
+        "schema": "capital_structure.context_leg.v1",
+        "issuer_id": issuer_id,
+        "company_id": company_id,
+        "identity": resolved.projection_record["identity"],
+        "state_id": resolved.state_record["state_id"],
+        "generation_id": bundle["generation_id"],
+        "projection_generation_id": bundle["projection_generation_id"],
+        "as_of": resolved.view["as_of"],
+        "horizons": bundle["horizons"],
+        "registration": {
+            "path_count": len(paths),
+            "paths": path_rows,
+            "coverage": dict(resolved.coverage),
+            "family_unavailable": list(resolved.family_record.get("unavailable") or []),
+        },
+        "unavailable": list(resolved.state_record["unavailable"]),
+        "capabilities_proven": list(resolved.state_record["capabilities_proven"]),
+        "authority": dict(cs.AUTHORITY),
+        "receipt_id": resolved.state_record["receipt"]["receipt_id"],
+        "evidence_route": f"/api/capital-structure/v1/issuers/{issuer_id}/state",
     }
+
+    owner_clock = _normalize_clock(bundle["as_of"])
+    if owner_clock is None:
+        leg["status"] = "stale"
+        leg["degraded_reason"] = "no_owner_clock"
+        as_of = composed_at
+    else:
+        leg["status"] = "ok"
+        as_of = owner_clock
+    owner_hash = (resolved.family_record.get("provenance") or {}).get("artifact_sha256")
+    leg["ref"] = _make_ref(
+        route="capital_structure:published_state_bundle",
+        as_of=as_of,
+        payload=payload,
+        generation_id=str(bundle["generation_id"]),
+        owner_hash=owner_hash,
+        consumed_receipt=_consumed_receipt(
+            {
+                "bytes_sha256": None,
+                "producer_generation_id": str(bundle["generation_id"]),
+                "data_interval": None,
+                "contract_watermark": {"contract": bundle["schema"], "watermark": owner_clock},
+                "denominator": dict(resolved.coverage) or None,
+            },
+            {
+                "bytes_sha256": "NOT_READ_AT_CONSUME",
+                "data_interval": "NOT_EXPOSED_BY_PRODUCER",
+                # Coverage was read; an empty published coverage has no denominator.
+                "denominator": "NOT_APPLICABLE",
+            },
+        ),
+    )
+    leg["payload"] = payload
+    _apply_copy(leg)
     return leg
 
 
@@ -873,7 +996,7 @@ def _compose_page_with_receipts(ticker: str) -> tuple[dict[str, Any], list[dict[
             [
                 ("financial_facts", _leg_financial_facts, (ticker, composed_at)),
                 ("earnings_expectation", _leg_earnings_expectation, (ticker, composed_at)),
-                ("capital_structure", _leg_capital_structure, ()),
+                ("capital_structure", _leg_capital_structure, (ticker, composed_at)),
                 ("publication_seam", _leg_publication_seam, ()),
                 ("event_workspace", _leg_event_workspace, (ticker, composed_at)),
                 ("theme_tape", _leg_theme_tape, ()),

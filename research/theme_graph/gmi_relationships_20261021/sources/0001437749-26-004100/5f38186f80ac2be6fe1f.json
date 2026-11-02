@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-13T21:03:51Z",
+ "accession": "0001437749-26-004100",
+ "cik": "0000855658",
+ "doc_byte_length": 2133659,
+ "doc_sha256": "17e693d25bd745e0cfc4d5358b65e259eda6606b391713706f638a627adf5477",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-13",
+ "form": "10-K",
+ "period_of_report": "2026-01-03",
+ "primary_document": "lscc20260103_10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 296782,
+  "byte_start": 296484,
+  "normalized": "We source silicon wafers from our foundry partners, UMC, USJC, Samsung, TSMC, and Epson, pursuant to agreements with each company and their respective affiliates. We negotiate wafer volumes, prices, and other terms with our foundry partners and their respective affiliates on a periodic basis.",
+  "normalized_sha256": "9c8ac0ada7d74b5abef9499b3023b1ad814536a2596ef7edfe4779883a18f7ea",
+  "raw": "We source silicon wafers from our foundry partners, UMC, USJC, Samsung, TSMC,&#160;and Epson, pursuant to agreements with each company and their respective affiliates. We negotiate wafer volumes, prices, and other terms with our foundry partners and their respective affiliates on a periodic basis.",
+  "raw_sha256": "5f38186f80ac2be6fe1fc16051622543fc1fa6dfb271cdb4fd98e56e32678df7"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/855658/000143774926004100/lscc20260103_10k.htm",
+ "xbrl_contexts": []
+}
