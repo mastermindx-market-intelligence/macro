@@ -12,6 +12,7 @@ the existing WatchStore.portfolio.list mechanism, not this module.
 """
 from __future__ import annotations
 
+import math
 import re
 from datetime import date, timedelta
 from typing import Any, Mapping
@@ -211,23 +212,24 @@ def _catalyst_for(state: Mapping[str, Any], as_of: date | None) -> dict[str, Any
     }
 
 
-def _assumptions_text(assumptions: Mapping[str, Any] | None) -> dict[str, str]:
-    assumptions = assumptions or {}
-    growth = assumptions.get("sales_growth_pct")
-    margin = assumptions.get("margin_delta_pp")
-    multiple = assumptions.get("earnings_multiple")
+def _finite_value(value: Any) -> float | None:
+    if isinstance(value, bool):
+        return None
     try:
-        growth_n = float(growth)
-    except (TypeError, ValueError):
-        growth_n = 0.0
-    try:
-        margin_n = float(margin)
-    except (TypeError, ValueError):
-        margin_n = 0.0
-    try:
-        multiple_n = float(multiple)
-    except (TypeError, ValueError):
-        multiple_n = 0.0
+        number = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return number if math.isfinite(number) else None
+
+
+def _assumptions_text(assumptions: Mapping[str, Any] | None) -> dict[str, str] | None:
+    if not isinstance(assumptions, Mapping):
+        return None
+    growth_n = _finite_value(assumptions.get("sales_growth_pct"))
+    margin_n = _finite_value(assumptions.get("margin_delta_pp"))
+    multiple_n = _finite_value(assumptions.get("earnings_multiple"))
+    if growth_n is None or margin_n is None or multiple_n is None:
+        return None
     if abs(growth_n) < 1e-9:
         growth_en = "Sales unchanged"
         growth_zh = "销售收入不变"
@@ -267,20 +269,13 @@ def _valuation_for(
         if isinstance(item, Mapping) and item.get("key") == "base":
             base = item
             break
-    if not isinstance(base, Mapping) or not base.get("computable"):
+    if not isinstance(base, Mapping) or base.get("computable") is not True:
         return None
-    per_share = base.get("per_share")
-    try:
-        per_share_n = float(per_share) if per_share is not None else None
-    except (TypeError, ValueError):
-        per_share_n = None
-    price_block = blob.get("price") if isinstance(blob.get("price"), Mapping) else None
-    price = price_block.get("value") if price_block else None
-    try:
-        price_n = float(price) if price is not None else None
-    except (TypeError, ValueError):
-        price_n = None
-    if per_share_n is None or price_n is None:
+    per_share_n = _finite_value(base.get("per_share"))
+    price_block = blob.get("price")
+    price_n = _finite_value(price_block.get("value")) if isinstance(price_block, Mapping) else None
+    assumptions = _assumptions_text(base.get("assumptions"))
+    if per_share_n is None or price_n is None or assumptions is None:
         return None
     if price_n < per_share_n:
         label = _bilingual(VAL_INEXPENSIVE_EN, VAL_INEXPENSIVE_ZH)
@@ -288,10 +283,9 @@ def _valuation_for(
         label = _bilingual(VAL_EXPENSIVE_EN, VAL_EXPENSIVE_ZH)
     else:
         label = _bilingual(VAL_INLINE_EN, VAL_INLINE_ZH)
-    assumptions = base.get("assumptions") if isinstance(base.get("assumptions"), Mapping) else {}
     return {
         "label": label,
-        "assumptions_text": _assumptions_text(assumptions),
+        "assumptions_text": assumptions,
         "owner": _bilingual(VAL_OWNER_EN, VAL_OWNER_ZH),
     }
 

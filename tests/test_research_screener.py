@@ -293,6 +293,40 @@ def test_stock_record_preserves_valuation_listing_identity(tmp_path):
     assert postures["TEST-D"] is None
 
 
+@pytest.mark.parametrize(("field", "bad"), [
+    ("price", "NaN"), ("price", True), ("price", 10**400),
+    ("per_share", float("inf")), ("per_share", False),
+    ("computable", "false"),
+    ("sales_growth_pct", None), ("margin_delta_pp", "-Infinity"),
+    ("earnings_multiple", True),
+])
+def test_unusable_valuation_omits_the_posture_but_keeps_the_catalyst(field, bad):
+    state = _state("TEST-A", "DEMO", window_start="2026-11-05")
+    valuation = _valuation("DEMO", price=20, per_share=20)
+    base = valuation["scenarios"][0]
+    if field == "price":
+        valuation["price"]["value"] = bad
+    elif field in base:
+        base[field] = bad
+    else:
+        base["assumptions"][field] = bad
+    row = compile_research_screener([state], [valuation], as_of="2026-11-02")["rows"][0]
+    assert row["valuation_posture"] is None
+    assert row["catalyst"]["window_start"] == "2026-11-05"
+    assert "reported earnings" not in row["why"]["en"]
+    assert "已披露盈利" not in row["why"]["zh"]
+
+
+def test_finite_equal_values_and_explicit_zero_assumptions_keep_their_meaning():
+    state = _state("TEST-A", "DEMO")
+    valuation = _valuation("DEMO", price="20", per_share=20, growth=0, margin="0", multiple=18)
+    row = compile_research_screener([state], [valuation])["rows"][0]
+    assert "in line" in row["valuation_posture"]["label"]["en"]
+    text = row["valuation_posture"]["assumptions_text"]
+    assert text["en"] == "Sales unchanged, margins unchanged, valued at 18 times reported earnings."
+    assert "销售收入不变，利润率不变" in text["zh"]
+
+
 def test_en_zh_copy_uses_cjk_punctuation():
     payload = compile_research_screener(
         [_state("US-XNAS-AAPL", "AAPL", name="Apple", window_start="2026-09-12")],
