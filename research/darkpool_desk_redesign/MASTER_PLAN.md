@@ -1,0 +1,14 @@
+# Dark Pool research desk redesign
+
+Operation `darkpool-research-desk-20261102-c3` · 2026-11-02 UTC · Macro main `f754bdee6b803b18191841863c35527c0a74571e`. Protected procedure Mastermind `19cb00cfed26b68f0a8a5cdc0f2f1a9463a3feec`. Revision is this file's Git commit.
+
+An analyst should see how much of the covered session traded off-exchange, find a name that departed from its own history, and distinguish its daily tape from the separately reported venue mix. Completion requires an editable Paper design, an integrated replacement at /darkpool.html, independent review, protected release and live desktop/mobile proof.
+
+| Task | Design decision and evidence | Gate |
+| --- | --- | --- |
+| P1 · Design reference | Use the live October 29 settled tape, its actual ranked names and weekly September 21 venue return. Lead with the covered dollar share, exception groups, and current/older/missing counts. Select a stock to compare its observed share, own baseline, 20 observations, price over the past week, and the venue mix. Keep full-universe research and methodology accessible. | Design prototype and browser evidence. |
+| P2 · Editable Paper | MASTERMIND PAGES is readable. Page p-1W-1 belongs to the distinct Macro Dark Flow component, macro #9574. Create a separate Dark Pool desk design target after exact catalog qualification; preserve existing artboards. Capture desktop and mobile, review and extract JSX. | Blocked. Paper Desktop 0.5.14 reports catalog 16e6b93f… against installed 1b9afff4…; accepted_for_write=false. Mastermind #1904 documents the same pre-existing blocker. |
+| P3 · Production integration | After P2, replace the desk composition in templates/darkpool.html.j2 and publish its paired site artifact through the normal build. Retain the site shell, locale/theme controls, accessible CSV/sort/filter UI, static fallbacks, and machine consumers. Keep source-side denominator quarantine in #7990 and the index widget in #9574 under their own custody. | Dependency on a verified Paper design and data-integrity integration proof. |
+| P4 · Proof and release | Test keyboard, pointer, missing/stale/quiet states, mobile ticker identity, full coverage, weekly disclosure, bilingual dark/light and no global overflow. Verify independent review, PR checks, normal deployment and the real URL. | Pending candidate and independent acceptance. |
+
+The public page capture exposed ETHA with 120.1% participation in an older August 4 observation. A physically impossible value must never rank, compare or chart. Historical rows may still be found by ticker with their observation date. A UI check cannot repair historically contaminated baselines. Covered dollar share and per-stock share have different weighting. Registered ATS volume uses a separately dated denominator. Neither share measures net buying or market-wide flow.
