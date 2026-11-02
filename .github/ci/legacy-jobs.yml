@@ -25229,6 +25229,8 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
+      - "engine/company_intelligence/industrials_profiles.py"
 
 
   quant-q12-parity-forward:
