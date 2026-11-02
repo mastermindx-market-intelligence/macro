@@ -466,6 +466,13 @@ def _reassigned_or_mutated(tree: ast.AST, name: str) -> bool:
     return assignments != 1 or stores != 1
 
 
+def _safe_template_name(template: str) -> bool:
+    """One concrete path within templates/, shared by literal bindings."""
+    return bool(re.fullmatch(r"[A-Za-z0-9_./-]+\.html\.j2", template)
+                and not template.startswith("/") and ".." not in template
+                and all(part not in ("", ".") for part in template.split("/")))
+
+
 def _literal_template_pair(value: ast.expr) -> Optional[tuple[str, str]]:
     """A literal ``(template.html.j2, key)`` pair: both strings, no traversal.
 
@@ -479,9 +486,7 @@ def _literal_template_pair(value: ast.expr) -> Optional[tuple[str, str]]:
                     for e in value.elts)):
         return None
     template, key = value.elts[0].value, value.elts[1].value
-    if not re.fullmatch(r"[A-Za-z0-9_./-]+\.html\.j2", template) \
-            or template.startswith("/") or ".." in template \
-            or any(part in ("", ".") for part in template.split("/")) or not key:
+    if not _safe_template_name(template) or not key:
         return None
     return template, key
 
@@ -553,29 +558,21 @@ def _pair_literal(tree: ast.AST, value: ast.expr) -> Optional[tuple[str, str]]:
     return None
 
 
-_LOOP_WRITE_STOP = (ast.For, ast.AsyncFor, ast.While, ast.FunctionDef,
-                    ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)
+def _loop_write_calls(node: ast.For) -> tuple[list[ast.Call], bool]:
+    """Claim all writes, but prove only one direct first write in a plain body.
 
-
-def _loop_write_calls(node: ast.For) -> list[ast.Call]:
-    """``write_page()`` calls whose arguments the loop's target binds.
-
-    The target binds its names for the body it directly encloses: the walk
-    descends into conditionals but stops at a nested loop or function, where
-    the same names are rebound or out of scope.
+    GMI writes first, then records the path with append(). Conditionals,
+    break/continue, assignments and nested scopes are deliberately unsupported;
+    their writes remain gaps instead of falling back to another loop's name.
     """
-    out: list[ast.Call] = []
-    stack: list[ast.AST] = list(node.body) + list(node.orelse)
-    while stack:
-        child = stack.pop()
-        if isinstance(child, _LOOP_WRITE_STOP):
-            continue
-        if isinstance(child, ast.Call) and isinstance(child.func, ast.Name) \
-                and child.func.id == "write_page" and child.args:
-            out.append(child)
-            continue
-        stack.extend(ast.iter_child_nodes(child))
-    return out
+    calls = [child for statement in node.body + node.orelse
+             for child in ast.walk(statement)
+             if isinstance(child, ast.Call) and isinstance(child.func, ast.Name)
+             and child.func.id == "write_page" and child.args]
+    direct = bool(len(calls) == 1 and node.body and not node.orelse
+                  and all(isinstance(statement, ast.Expr) for statement in node.body)
+                  and node.body[0].value is calls[0])
+    return calls, direct
 
 
 def _bound_loop_table(node: ast.For) -> Optional[tuple[str, str, str]]:
@@ -707,11 +704,11 @@ def scan_write_sites(scripts_dir: Path) -> tuple[list[_WriteSite], list[tuple[st
         rendered: dict[str, str] = {}
         for name, expr in names.items():
             found = _TEMPLATE_CALL_RE.search(expr)
-            if found:
+            if found and _safe_template_name(found.group(1)):
                 rendered[name] = found.group(1)
                 continue
             quoted = re.fullmatch(r"""['"]([\w.\-/]+\.html\.j2)['"]""", expr)
-            if quoted:
+            if quoted and _safe_template_name(quoted.group(1)):
                 rendered[name] = quoted.group(1)
         tables = _module_page_tables(tree)
         handled: set[int] = set()
@@ -721,13 +718,14 @@ def scan_write_sites(scripts_dir: Path) -> tuple[list[_WriteSite], list[tuple[st
                 continue
             table_name, page_var, template_var = bound
             table = tables.get(table_name)
-            if node.iter.args or node.iter.keywords or node.orelse or any(
+            calls, direct = _loop_write_calls(node)
+            if not direct or node.iter.args or node.iter.keywords or any(
                     isinstance(child, ast.Name)
                     and isinstance(child.ctx, (ast.Store, ast.Del))
                     and child.id in (page_var, template_var)
                     for statement in node.body for child in ast.walk(statement)):
                 table = None
-            for call in _loop_write_calls(node):
+            for call in calls:
                 handled.add(id(call))
                 if table is None:
                     # The mapping is dynamic, reassigned or mutated: refuse it,
@@ -743,6 +741,8 @@ def scan_write_sites(scripts_dir: Path) -> tuple[list[_WriteSite], list[tuple[st
                     continue
                 call_text = ast.unparse(call)
                 literal = _TEMPLATE_CALL_RE.search(call_text)
+                if literal and not _safe_template_name(literal.group(1)):
+                    literal = None
                 bound_tmpl = re.search(r"get_template\(\s*([A-Za-z_]\w*)\s*\)",
                                        call_text)
                 named_template = bool(bound_tmpl
@@ -767,7 +767,7 @@ def scan_write_sites(scripts_dir: Path) -> tuple[list[_WriteSite], list[tuple[st
             template = None
             call_text = ast.unparse(node)
             found = _TEMPLATE_CALL_RE.search(call_text)
-            if found:
+            if found and _safe_template_name(found.group(1)):
                 template = found.group(1)
             else:
                 for name in re.findall(r"[A-Za-z_][A-Za-z0-9_]*", call_text):

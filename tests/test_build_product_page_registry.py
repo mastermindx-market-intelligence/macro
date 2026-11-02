@@ -1163,6 +1163,9 @@ def test_gmi_real_gmi_builder_binds_all_six_surfaces():
         ("/gmi-states.html", False, "gmi_states.html.j2"),
         ("/gmi-issuer-<lower>.html", True, "gmi_issuer.html.j2"),
     }
+    ontology = [s for s in sites if s.builder == "scripts/build_ontology_explorer.py"]
+    assert [(s.route, s.template) for s in ontology] == [
+        ("/ontology.html", "ontology.html.j2")]
 
 
 @pytest.mark.parametrize("mutation,table,root,iteration,body", [
@@ -1193,3 +1196,52 @@ def render():
     sites, unresolved = reg.scan_write_sites(tmp_path / "scripts")
     assert sites == []
     assert unresolved, "An uncertain lexical binding must remain a reported gap"
+
+
+@pytest.mark.parametrize("absolute", [False, True])
+def test_gmi_literal_template_binding_cannot_escape_the_template_root(tmp_path, absolute):
+    root = tmp_path / "macro"
+    escape = root / "escape.html.j2"
+    _gmi_write_fixture(escape, "<html data-theme='light'>{{ t('Outside', '外部') }}</html>")
+    template = str(escape) if absolute else "../escape.html.j2"
+    _gmi_builder_fixture(root, "build_unsafe.py", f'''TEMPLATE = {template!r}
+def render():
+    write_page(site / "unsafe.html", env.get_template(TEMPLATE).render())
+''')
+    rows, _ = reg.derive_macro(root, git=_gmi_fake_git(["site/unsafe.html"]))
+    unsafe = _gmi_rows_by_id(rows)["macro:unsafe"]
+    assert unsafe["source_template"] == "unknown"
+    assert unsafe["bilingual"] == "unknown"
+    assert unsafe["themes"] == "unknown"
+
+
+@pytest.mark.parametrize("body", [
+    '''        if page == "a.html":
+            write_page(site / page, env.get_template(template).render())
+''',
+    '''        if page != "a.html":
+            continue
+        write_page(site / page, env.get_template(template).render())
+''',
+    '''        if page == "b.html":
+            break
+        write_page(site / page, env.get_template(template).render())
+''',
+    '''        write_page(site / page, env.get_template(template).render())
+        break
+''',
+    '''        write_page(site / page, env.get_template(template).render())
+        if page == "a.html":
+            break
+''',
+])
+def test_gmi_filtered_table_loop_does_not_claim_every_literal_entry(tmp_path, body):
+    source = '''TABLE = {"a.html": ("a.html.j2", "a"),
+         "b.html": ("b.html.j2", "b")}
+def render():
+    for page, (template, key) in TABLE.items():
+''' + body + '    page = "unrelated.html"\n'
+    _gmi_builder_fixture(tmp_path, "build_filtered.py", source)
+    sites, unresolved = reg.scan_write_sites(tmp_path / "scripts")
+    assert sites == []
+    assert unresolved
