@@ -275,12 +275,39 @@ def open_radar_disclosures(page) -> None:
     page.evaluate("() => { const d = document.querySelector('details.gde-ew-study'); if (d) d.setAttribute('open',''); }")
 
 
+WIDTHS = (1440, 1280, 390, 320)
+THEMES = ("dark", "light")
+
+
+def warning_ink(page, label: str) -> dict:
+    """L4: every visible warning run in the Radar band — the input caveats and the
+    sources-table warn words — must resolve to ONE computed colour, and that colour
+    must be the theme's --ink-warn token. Sampled from the live computed style, not
+    judged from pixels."""
+    res = page.evaluate(
+        """() => {
+            const vis = e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+            const pick = sel => [...document.querySelectorAll(sel)].filter(vis).map(e => getComputedStyle(e).color);
+            const t = document.createElement('span'); t.style.color = 'var(--ink-warn)';
+            document.body.appendChild(t); const token = getComputedStyle(t).color; t.remove();
+            return {caveat: pick('#dlg-risk .gde-input-caveat'), warn: pick('#dlg-risk .gde-warn'), token};
+        }""")
+    inks = sorted(set(res["caveat"] + res["warn"]))
+    out = {"caveat": sorted(set(res["caveat"])), "warn": sorted(set(res["warn"])),
+           "token_ink_warn": res["token"], "consistent": len(inks) <= 1,
+           "matches_token": all(c == res["token"] for c in inks)}
+    assert out["consistent"], f"{label}: warning ink is not one colour: {out}"
+    assert out["matches_token"], f"{label}: warning ink is not --ink-warn: {out}"
+    return out
+
+
 def run(output: Path) -> dict:
     output.mkdir(parents=True, exist_ok=True)
     shots = output / "shots"
     shots.mkdir(exist_ok=True)
     band_tmpl = (ROOT / "templates" / "_risk_envelope_band.html.j2").read_bytes()
     rc_js = (ROOT / "templates" / "rotation_events.js").read_bytes()
+    glance_css = (ROOT / "templates" / "rotation_glance.css").read_bytes()
     source_revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT).decode().strip()
     fixtures_sha = {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
                     for p in sorted(FIX.glob("*.json"))}
@@ -293,6 +320,9 @@ def run(output: Path) -> dict:
         "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
         "script_sha256": hashlib.sha256(rc_js).hexdigest(),
         "band_template_sha256": hashlib.sha256(band_tmpl).hexdigest(),
+        "glance_css_sha256": hashlib.sha256(glance_css).hexdigest(),
+        "matrix": {"widths": list(WIDTHS), "themes": list(THEMES), "langs": ["en", "zh"],
+                   "state_shots": "every degraded state at 390/en in both themes on both hosts"},
         "fixtures": fixtures_sha,
         "cases": [], "blocked_requests": [],
     }
@@ -302,7 +332,7 @@ def run(output: Path) -> dict:
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         try:
-            # ── matrix: 3 case-families × lang × theme × width = 36 shots ──
+            # ── matrix: 3 case-families × lang × theme × 4 widths = 48 shots ──
             families = [
                 ("radar", "stale", lambda lang, theme: radar_html(journey_c_env, lang, theme)),
                 ("radar", "observed", lambda lang, theme: radar_html(envelope(journey_b), lang, theme)),
@@ -311,8 +341,8 @@ def run(output: Path) -> dict:
             keyboard_done: dict[tuple, dict] = {}
             for surface, state, pagefn in families:
                 for lang in ("en", "zh"):
-                    for theme in ("dark", "light"):
-                        for width in (1280, 390, 320):
+                    for theme in THEMES:
+                        for width in WIDTHS:
                             page = browser.new_page(viewport={"width": width, "height": 1000})
                             errors: list[str] = []
                             page.on("pageerror", lambda e: errors.append(str(e)))
@@ -342,6 +372,7 @@ def run(output: Path) -> dict:
                                 el.wait_for()
                                 open_radar_disclosures(page)  # P2: every radar case, stale included
                                 assert_band_unclipped(page, f"{surface}/{state}/{lang}/{theme}/{width}")
+                                ink = warning_ink(page, f"{surface}/{state}/{lang}/{theme}/{width}")
                                 target = el
                             else:
                                 page.wait_for_function(
@@ -358,12 +389,14 @@ def run(output: Path) -> dict:
                                     assert "XLP / XLK" in ec_text and "ROW_" not in ec_text, \
                                         f"sc observed {lang}/{theme}/{width}: registered pair row did not render: {ec_text[:400]}"
                                 target = page.locator("#rc-events")
+                                ink = None
                             assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), \
                                 f"horizontal overflow {surface}/{lang}/{theme}/{width}"
                             name = f"{surface}-{state}-{lang}-{theme}-{width}.png"
                             target.screenshot(path=str(shots / name))
                             kb = None
-                            if width in (320, 390, 1280) and (surface, width) not in keyboard_done:
+                            if (surface, width, theme) not in keyboard_done:
+                                # L2: real Tab navigation and a visible focus outline, proven per theme
                                 if surface == "radar":
                                     # close the study first so Enter demonstrably opens it
                                     page.evaluate("() => { const d = document.querySelector('details.gde-ew-study'); if (d) d.removeAttribute('open'); }")
@@ -371,28 +404,30 @@ def run(output: Path) -> dict:
                                 else:
                                     page.evaluate("() => { const d = document.querySelector('details.rc-ew-study'); if (d) d.removeAttribute('open'); }")
                                     kb = tab_to(page, ".rc-ew-study > summary")
-                                if kb.get("reached"):
-                                    keyboard_done[(surface, width)] = kb
+                                assert kb.get("reached") and kb.get("focus_outline") and kb.get("opened_by_enter"), \
+                                    f"keyboard {surface}/{state}/{lang}/{theme}/{width}: {kb}"
+                                keyboard_done[(surface, width, theme)] = kb
                             report["cases"].append({
                                 "surface": surface, "state": state, "lang": lang, "theme": theme,
                                 "width": width, "screenshot": f"shots/{name}",
                                 "sha256": hashlib.sha256((shots / name).read_bytes()).hexdigest(),
                                 "no_horizontal_overflow": True, "page_errors": errors,
-                                "keyboard_details": (keyboard_done.get((surface, width)) if kb else None),
+                                "keyboard_details": (keyboard_done.get((surface, width, theme)) if kb else None),
                                 "focus_outline": bool(kb and kb.get("focus_outline")) if kb else None,
+                                "warning_ink": ink,
                             })
                             assert not errors, errors
                             page.close()
 
-            # ── six extra Radar states at 390/en/dark = 6 shots ──
-            for state in RADAR_STATES:
+            # ── six extra Radar states at 390/en × dark/light = 12 shots (L1) ──
+            for state, theme in ((s, th) for s in RADAR_STATES for th in THEMES):
                 wrapper_name = STATE_FIXTURE[state]
                 env = envelope(fixture(wrapper_name) if wrapper_name else None)
                 page = browser.new_page(viewport={"width": 390, "height": 1000})
                 errors = []
                 page.on("pageerror", lambda e: errors.append(str(e)))
                 page.add_init_script(f"Date.now = () => Date.parse('{CLOCK}');")
-                html_bytes = radar_html(env, "en", "dark").encode("utf-8")
+                html_bytes = radar_html(env, "en", theme).encode("utf-8")
 
                 def route2(r, _request=None, *, body=html_bytes):
                     u = urlparse(r.request.url)
@@ -409,22 +444,23 @@ def run(output: Path) -> dict:
                 rendered_state = page.get_attribute("#gde-ew", "data-ew-state")
                 assert rendered_state == state, f"{state}: rendered {rendered_state}"
                 open_radar_disclosures(page)  # P2: state shots carry their Study rows too
-                assert_band_unclipped(page, f"radar/{state}/en/dark/390")
+                assert_band_unclipped(page, f"radar/{state}/en/{theme}/390")
+                ink = warning_ink(page, f"radar/{state}/en/{theme}/390")
                 assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
-                name = f"radar-{state}-en-dark-390.png"
+                name = f"radar-{state}-en-{theme}-390.png"
                 el.screenshot(path=str(shots / name))
                 report["cases"].append({
-                    "surface": "radar", "state": state, "lang": "en", "theme": "dark", "width": 390,
+                    "surface": "radar", "state": state, "lang": "en", "theme": theme, "width": 390,
                     "screenshot": f"shots/{name}",
                     "sha256": hashlib.sha256((shots / name).read_bytes()).hexdigest(),
                     "no_horizontal_overflow": True, "page_errors": errors,
-                    "keyboard_details": None, "focus_outline": None,
+                    "keyboard_details": None, "focus_outline": None, "warning_ink": ink,
                 })
                 assert not errors, errors
                 page.close()
 
-            # ── P4: four Sector Central states at 390/en/dark = 4 shots ──
-            for state in SC_STATES:
+            # ── P4: four Sector Central states at 390/en × dark/light = 8 shots (L1) ──
+            for state, theme in ((s, th) for s in SC_STATES for th in THEMES):
                 wrapper_name = SC_STATE_FIXTURE[state]
                 payload = (sc_payload(None, early_as_of=SC_STALE_AS_OF) if wrapper_name is None
                            else sc_payload(fixture(wrapper_name)))
@@ -433,7 +469,7 @@ def run(output: Path) -> dict:
                 page.on("pageerror", lambda e: errors.append(str(e)))
                 page.add_init_script(f"Date.now = () => Date.parse('{CLOCK}');")
                 content = {
-                    "/": ("text/html", sc_html("en", "dark").encode("utf-8")),
+                    "/": ("text/html", sc_html("en", theme).encode("utf-8")),
                     "/rotation_events.js": ("text/javascript", rc_js),
                     "/theme.css": ("text/css", b"/* inlined */"),
                     "/marketdata/rotation_events.json": ("application/json", payload),
@@ -458,30 +494,34 @@ def run(output: Path) -> dict:
                 assert rendered_state == state, f"sc {state}: rendered {rendered_state}"
                 page.evaluate("() => { const d = document.querySelector('details.rc-ew-study'); if (d) d.setAttribute('open',''); }")  # P2
                 assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
-                name = f"sc-{state}-en-dark-390.png"
+                name = f"sc-{state}-en-{theme}-390.png"
                 page.locator("#rc-events").screenshot(path=str(shots / name))
                 report["cases"].append({
-                    "surface": "sc", "state": state, "lang": "en", "theme": "dark", "width": 390,
+                    "surface": "sc", "state": state, "lang": "en", "theme": theme, "width": 390,
                     "screenshot": f"shots/{name}",
                     "sha256": hashlib.sha256((shots / name).read_bytes()).hexdigest(),
                     "no_horizontal_overflow": True, "page_errors": errors,
-                    "keyboard_details": None, "focus_outline": None,
+                    "keyboard_details": None, "focus_outline": None, "warning_ink": None,
                 })
                 assert not errors, errors
                 page.close()
 
-            # ── 3 matrix contact sheets + 1 Sector Central state sheet ──
+            # ── 3 matrix contact sheets + Radar and Sector Central state sheets ──
             sheets = {}
             for surface, state, _p in families:
                 pngs = sorted(x.name for x in shots.iterdir()
                               if x.name.startswith(f"{surface}-{state}-") and x.suffix == ".png")
                 sheets[f"{surface}-{state}"] = contact_sheet(
                     output, f"contact-{surface}-{state}.html", pngs,
-                    f"EW-P4 {surface} / {state} — {len(pngs)} shots (en+zh × dark+light × 1280/390/320)")
-            sc_pngs = [f"sc-{s}-en-dark-390.png" for s in SC_STATES]
+                    f"EW-P4 {surface} / {state} — {len(pngs)} shots (en+zh × dark+light × 1440/1280/390/320)")
+            sc_pngs = [f"sc-{s}-en-{th}-390.png" for s in SC_STATES for th in THEMES]
             sheets["sc-states"] = contact_sheet(
                 output, "contact-sc-states.html", sc_pngs,
-                f"EW-P4 sc states — {len(sc_pngs)} shots (stale/withdrawn/corrected/unreadable · en/dark/390)")
+                f"EW-P4 sc states — {len(sc_pngs)} shots (stale/withdrawn/corrected/unreadable · en · dark+light · 390)")
+            radar_pngs = [f"radar-{s}-en-{th}-390.png" for s in RADAR_STATES for th in THEMES]
+            sheets["radar-states"] = contact_sheet(
+                output, "contact-radar-states.html", radar_pngs,
+                f"EW-P4 radar states — {len(radar_pngs)} shots (partial/conflicting/unavailable/withdrawn/corrected/unreadable · en · dark+light · 390)")
             report["contact_sheets"] = sheets
             # screenshot each contact sheet for reviewers who only read PNGs
             for sheet_name in sheets.values():

@@ -62,8 +62,19 @@ def envelope(wrapper: dict | None = None, *, rotation: dict | None = None) -> di
     return env
 
 
+_RENDER_CACHE: dict[str, str] = {}
+
+
 def render(env: dict) -> str:
-    return _dlg(_render(_vm(risk_envelope=env)))
+    """One dashboard render per distinct envelope. The template render is ~3 s and
+    most cases re-render the same fixture, so the suite was render-bound (FU2:
+    ~500 s locally, past the dashboard-render-contract pack budget on CI). The key
+    is the envelope's JSON; the ORIGINAL object is rendered, so odd-typed cases
+    (non-object wrappers, bad timestamps) keep their exact inputs."""
+    key = json.dumps(env, sort_keys=True, default=repr)
+    if key not in _RENDER_CACHE:
+        _RENDER_CACHE[key] = _dlg(_render(_vm(risk_envelope=env)))
+    return _RENDER_CACHE[key]
 
 
 def glance(dlg: str) -> str:
@@ -792,6 +803,7 @@ def _band_sector_names() -> dict:
             re.findall(r"'(\w+)': \('([^']*)', '([^']*)'\)", body)}
 
 
+@pytest.mark.needs_full_checkout("data")
 def test_sector_display_names_mirror_the_registry_in_both_renderers():
     js, band = _js_sector_names(), _band_sector_names()
     assert len(js) == 5 and js == band
