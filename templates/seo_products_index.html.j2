@@ -81,11 +81,15 @@
 </section>
 
 <section class="ph-section" aria-labelledby="product-surfaces">
-  <div class="ph-sech"><span class="n">01</span><h2 id="product-surfaces">{{ t('Three connected product surfaces', '三个互联产品界面') }}</h2></div>
+  <div class="ph-sech"><span class="n">01</span>
+  <h2 id="product-surfaces">{{ items|length }} {{ t('connected product surfaces', '个互联产品界面') }}</h2>
+  </div>
   <div class="ph-grid">
     {% for it in items %}
     <a class="ph-card" href="{{ rel }}{{ it.url_path.lstrip('/') }}">
       <span class="pc-num">0{{ loop.index }} · {{ it.eyebrow }}</span>
+      <br>
+      <span class="pc-num">{{ t('Published', '发布') }} {{ it.published }}</span>
       <h3>{{ it.product_name }}</h3>
       <p>{{ it.description }}</p>
       <ol aria-label="Workflow">
@@ -116,7 +120,11 @@
     <a href="{{ rel }}research/index.html"><strong>{{ t('Institutional research', '机构研报') }}</strong><span>{{ t('Indexed report landing pages and excerpts; complete documents may require account access.', '已索引的研报落地页与节选；完整文档可能需要账户权限。') }}</span></a>
     <a href="{{ rel }}tools/index.html"><strong>{{ t('Calculators &amp; learning', '计算器与学习') }}</strong><span>{{ t('Focused calculators, lessons and articles that answer a real question without an account.', '无需账户即可使用的专注型计算器、课程与文章。') }}</span></a>
   </div>
-  <p class="ph-boundary"><strong>{{ t('Access boundary:', '访问边界：') }}</strong> {{ t('MastermindX is a research and decision-context product, not a broker or investment adviser. Some live, intraday and complete-research surfaces require registration or a paid plan; the pricing page owns the current boundary.',
-    'MastermindX 是研究与决策背景产品，并非券商或投资顾问。部分实时、盘中及完整研报界面需要注册或付费方案；当前权限边界以定价页为准。') }}</p>
+  <p class="ph-boundary"><strong>{{ t('Access boundary:', '访问边界：') }}</strong> {{ t(
+    'MastermindX is a research and decision-context product, not a broker or investment adviser. ' ~
+    'Some intraday and complete-research surfaces require registration or a paid plan; ' ~
+    'the pricing page owns the current boundary.',
+    'MastermindX 是研究与决策背景产品，并非券商或投资顾问。' ~
+    '部分盘中及完整研报界面需要注册或付费方案；当前权限边界以定价页为准。') }}</p>
 </section>
 {% endblock %}

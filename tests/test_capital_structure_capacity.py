@@ -10,9 +10,12 @@ from __future__ import annotations
 import dataclasses
 import inspect
 import json
+import re
 from datetime import date, timedelta
 from decimal import Decimal
 from fractions import Fraction
+from hashlib import sha256
+from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 import pytest
@@ -28,6 +31,7 @@ from engine.capital_structure.capacity import (
     evaluate_capacity,
     explain_capacity,
 )
+from engine.capital_structure.document_terms import compile_document_term_records
 from engine.capital_structure.issuer_state_contracts import (
     COMPATIBLE_INPUT_SCHEMAS,
     FORBIDDEN_PROPERTY_PATTERN,
@@ -48,6 +52,7 @@ from engine.capital_structure.issuer_state_contracts import (
     stable_id,
     validate_state_record,
 )
+from engine.capital_structure.source_identity import manifest_id_for
 
 PACK = ra.load_rule_applicability_pack()
 
@@ -1720,3 +1725,573 @@ def test_c10_unread_schemas_are_listed_and_never_used() -> None:
     assert strip_identity(with_noise.envelope.as_record()) == strip_identity(
         baseline.envelope.as_record()
     )
+
+
+# ---------------------------------------------------------------------------
+# §5 total-scoped fee rows — the filing's own "Total Offering Amounts" row is
+# the registered amount; per-security rows never decide and never sum.
+# ---------------------------------------------------------------------------
+
+
+def total_fee_row(
+    accession: str,
+    value: str | None,
+    *,
+    available_at: str,
+    observation_id: str,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    row = fee_row(
+        accession, value, available_at=available_at, observation_id=observation_id, **kwargs
+    )
+    row["term"] = {
+        "name": c1.FEE_TABLE_TERM_NAME, "scope": "registration_fee_table_total",
+    }
+    return row
+
+
+def test_c10_total_offering_row_is_the_registered_amount_with_span_evidence() -> None:
+    stamp = f"{shift(SALE, 30)}T21:00:00Z"
+    reg, shares = standard_registration(registered="20000000", float_value="300000000")
+    reg.append(total_fee_row(ACC_A, "25000000", available_at=stamp, observation_id="doc:total"))
+    # Extra per-security rows of the same accession are never summed and never
+    # trip the multi-row blocker while exactly one total row decides.
+    reg.append(fee_row(ACC_A, "12000000", available_at=stamp, observation_id="doc:sec-a"))
+    reg.append(fee_row(ACC_A, "13000000", available_at=stamp, observation_id="doc:sec-b"))
+    evaluation, _, _ = evaluate(
+        registration=reg,
+        share_basis=shares,
+        resolutions=[
+            usd(f"shelf_usage:{PATH_A}", "0"),
+            usd(f"continuing_offering:{PATH_A}", "0"),
+        ],
+    )
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "known"
+    assert registered["value"] == "25000000"
+    assert f"fee_table_multi_row:{ACC_A}" not in evaluation.envelope.blockers
+    # Provenance and evidence come from the total row itself.
+    evidence = json.dumps(registered)
+    assert "doc:total" in evidence
+    assert "doc:sec-a" not in evidence
+    assert "doc:sec-b" not in evidence
+    assert evaluation.envelope.aggregate_bound.value == "25000000.00"
+
+
+def test_c10_two_disagreeing_total_rows_leave_the_amount_unknown() -> None:
+    stamp = f"{shift(SALE, 30)}T21:00:00Z"
+    reg, shares = standard_registration(registered="20000000", float_value="300000000")
+    reg.append(total_fee_row(ACC_A, "25000000", available_at=stamp, observation_id="doc:total-1"))
+    reg.append(total_fee_row(ACC_A, "30000000", available_at=stamp, observation_id="doc:total-2"))
+    evaluation, _, _ = evaluate(
+        registration=reg,
+        share_basis=shares,
+        resolutions=[
+            usd(f"shelf_usage:{PATH_A}", "0"),
+            usd(f"continuing_offering:{PATH_A}", "0"),
+        ],
+    )
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "unknown"
+    assert registered["value"] is None
+    assert f"fee_table_multi_row:{ACC_A}" in evaluation.envelope.blockers
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+
+
+def test_c10_fee_row_available_at_after_the_cutoff_is_excluded_despite_earlier_source() -> None:
+    cutoff = f"{SALE}T00:00:00Z"
+    poisoned = {
+        **total_fee_row(
+            ACC_A, "99000000", available_at=cutoff, observation_id="doc:poisoned",
+        ),
+        "point_in_time": {
+            "source_available_at": f"{shift(SALE, 40)}T21:00:00Z",
+            "available_at": f"{shift(SALE, -1)}T21:00:00Z",
+        },
+    }
+    reg, shares = standard_registration(registered="20000000", float_value="300000000")
+    reg.append(poisoned)
+    evaluation, _, _ = evaluate(
+        registration=reg,
+        share_basis=shares,
+        resolutions=[
+            usd(f"shelf_usage:{PATH_A}", "0"),
+            usd(f"continuing_offering:{PATH_A}", "0"),
+        ],
+    )
+    # The row's own available_at is after the cutoff, so it is excluded and
+    # counted even though source_available_at precedes the cutoff.
+    assert evaluation.inputs["excluded_after_as_of"] == {c1.DOCUMENT_TERM_SCHEMA: 1}
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "known"
+    assert registered["value"] == "20000000"
+
+
+# ---------------------------------------------------------------------------
+# §5 indeterminate zeros — a deferred-fee automatic shelf (Rules 456(b)/457(r))
+# files its fee table quoting "$ 0.00".  The document fact stays as filed; the
+# consumer reads it as indeterminate, never as a known $0 registered amount.
+# ---------------------------------------------------------------------------
+
+
+def _ex107_parser_rows(fixture_name: str) -> tuple[str, str, list[dict[str, Any]]]:
+    """Parse one committed EX-107 fixture with the released parser exactly as
+    the document-terms suite does; return (accession, form, observations)."""
+    raw = (
+        Path(__file__).resolve().parents[1]
+        / "tests/fixtures/capital_structure/document_terms"
+        / fixture_name
+    ).read_bytes()
+    accession = re.search(
+        rb"^<SEC-DOCUMENT>([0-9]{10}-[0-9]{2}-[0-9]{6})\.txt", raw, re.MULTILINE,
+    ).group(1).decode("ascii")
+    form = re.search(
+        rb"^CONFORMED SUBMISSION TYPE:\s*(\S+)", raw, re.MULTILINE,
+    ).group(1).decode("ascii")
+    cik = re.search(
+        rb"^[ \t]*CENTRAL INDEX KEY:[ \t]*([0-9]+)", raw, re.MULTILINE,
+    ).group(1).decode("ascii")
+    digest = sha256(raw).hexdigest()
+    manifest = {
+        "schema": "capital_structure.source_manifest/v1",
+        "source_system": "sec_edgar",
+        "source_id": f"{accession}:0:complete-submission.txt",
+        "issuer": {
+            "issuer_id": f"sec:cik:{cik}", "cik": cik, "ticker": "ABC",
+            "aliases": ["ABC Corp"],
+        },
+        "filing": {
+            "accession": accession, "form": form,
+            "filing_date": "2026-08-01", "accepted_at": "2026-08-01T11:00:00Z",
+            "file_number": "333-123456",
+        },
+        "document": {
+            "canonical_url": f"https://www.sec.gov/Archives/edgar/data/{accession}.txt",
+            "document_name": "complete-submission.txt", "document_type": form,
+            "document_role": "complete_submission", "sequence": "0", "media_type": "text/plain",
+            "byte_length": len(raw), "document_version": 1, "content_sha256": digest,
+            "parent_manifest_id": None, "root_locator": f"sha256:{digest}",
+        },
+        "retrieval": {
+            "retrieved_at": "2026-08-02T12:00:00Z", "first_seen_at": "2026-08-02T12:00:00Z",
+            "transport_status": "retrieved",
+        },
+        "storage": {
+            "backend": "r2", "store_id": "r2_shared",
+            "object_key": f"capital_structure/sec/sha256/{digest[:2]}/{digest}",
+            "content_addressed": True, "retention_state": "retained",
+        },
+        "rights": {
+            "redistribution_class": "public_source_link", "attribution_required": True,
+            "license_note": "United States SEC EDGAR public filing",
+        },
+        "privacy": {"classification": "public", "contains_personal_data": False},
+        "parser": {
+            "eligibility": "eligible", "corruption_state": "clean",
+            "parser_version": "sec-source-inspector/1.0.0",
+        },
+        "spans": [{
+            "span_id": f"root:{digest}", "locator_type": "document",
+            "locator": f"bytes:0-{len(raw)}", "text_sha256": digest,
+        }],
+    }
+    manifest["manifest_id"] = manifest_id_for(manifest)
+    result = compile_document_term_records(
+        [manifest], source_reader=lambda _manifest: raw, generated_at="2026-08-03T00:00:00Z",
+    )
+    rows = result["observations"]
+    assert {row["extraction"]["parser_version"] for row in rows} == {
+        "capital-structure-document-terms/1.2.0"
+    }
+    return accession, form, rows
+
+
+def _ex107_capacity(fixture_name: str):
+    """Evaluate capacity for one shelf path whose accession is the fixture's."""
+    accession, form, rows = _ex107_parser_rows(fixture_name)
+    registration: list[dict[str, Any]] = [
+        registration_path(PATH_A, accession=accession, form=form),
+        *rows,
+    ]
+    shares = [
+        public_float(
+            "300000000",
+            period_end=shift(SALE, 14),
+            available_at=f"{shift(SALE, 13)}T00:00:00Z",
+        ),
+        share_basis_result("15000005", as_of=AS_OF),
+    ]
+    evaluation, _, _ = evaluate(
+        registration=registration,
+        share_basis=shares,
+        resolutions=[
+            usd(f"shelf_usage:{PATH_A}", "0"),
+            usd(f"continuing_offering:{PATH_A}", "0"),
+        ],
+    )
+    return evaluation, accession
+
+
+def _assert_no_known_zero_capacity_quantity(evaluation) -> None:
+    """No derived capacity quantity is a known zero.
+
+    The envelope's own quantities are walked.  The LP feasible witness is
+    skipped: its 0.00 is the relaxation's feasible point, the same on every
+    unresolved-limit path, not a capacity claim about the registered amount.
+    """
+    def walk(value: Any, path: str) -> None:
+        if isinstance(value, Mapping):
+            if {"unit", "status", "value"} <= set(value):
+                assert not (
+                    value["status"] == "known" and value["value"] in ("0", "0.00")
+                ), f"{path}: a derived capacity quantity is a known zero"
+            for key, item in value.items():
+                if key == "feasible_witness":
+                    continue
+                walk(item, f"{path}.{key}")
+        elif isinstance(value, (list, tuple)):
+            for index, item in enumerate(value):
+                walk(item, f"{path}[{index}]")
+
+    walk(evaluation.envelope.as_record(), "envelope")
+
+
+def test_a_committed_s3asr_fee_table_quoting_zero_is_indeterminate() -> None:
+    evaluation, accession = _ex107_capacity("ex107_S-3ASR_0001193125-26-326375.txt")
+    assert accession == "0001193125-26-326375"
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "unknown"
+    assert registered["value"] is None
+    assert f"fee_table_total_indeterminate:{accession}" in evaluation.envelope.blockers
+    # The whole derivation stays unknown: the gross amount, its pool bound, the
+    # route limit, the aggregate bound and the ceiling call are never a known 0.
+    assert pools_by_id(evaluation)[f"registered:{PATH_A}"].bound.status == "unknown"
+    assert routes_by_id(evaluation)[f"shelf_takedown:{PATH_A}"].limit.status == "unknown"
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+    assert evaluation.envelope.aggregate_bound.value is None
+    assert evaluation.inputs["ceiling_call"]["value"] is None
+    _assert_no_known_zero_capacity_quantity(evaluation)
+
+
+def test_a_zero_per_security_fee_row_with_no_total_row_is_indeterminate() -> None:
+    reg, shares = standard_registration(registered="0", float_value="300000000")
+    evaluation, _, _ = evaluate(
+        registration=reg,
+        share_basis=shares,
+        resolutions=[
+            usd(f"shelf_usage:{PATH_A}", "0"),
+            usd(f"continuing_offering:{PATH_A}", "0"),
+        ],
+    )
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "unknown"
+    assert registered["value"] is None
+    assert f"fee_table_value_indeterminate:{ACC_A}" in evaluation.envelope.blockers
+    assert f"fee_table_total_indeterminate:{ACC_A}" not in evaluation.envelope.blockers
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+    assert evaluation.envelope.aggregate_bound.value is None
+
+
+def test_a_committed_s3_fee_table_total_is_still_a_known_positive_amount() -> None:
+    evaluation, accession = _ex107_capacity("ex107_S-3_0001493152-26-034585.txt")
+    assert accession == "0001493152-26-034585"
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "known"
+    assert registered["value"] == "1009975"
+    assert f"fee_table_multi_row:{accession}" not in evaluation.envelope.blockers
+    assert evaluation.envelope.aggregate_bound.status == "known"
+    assert evaluation.envelope.aggregate_bound.value == "1009975.00"
+
+
+# ---------------------------------------------------------------------------
+# U1C review F1/F2 -- the latest FILING states the amount; a present but
+# unobserved total is never replaced by a lone per-security row
+# ---------------------------------------------------------------------------
+
+
+def _amended_registration(amend_stamp: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    amendment = {
+        "event_id": "evt:amend-1",
+        "accession": ACC_A2,
+        "form": "S-3",
+        "sec_accepted_at": amend_stamp,
+        "mastermind_available_at": amend_stamp,
+        "correction_version": 1,
+        "relationship": "amended",
+    }
+    return standard_registration(
+        registered="20000000",
+        float_value="300000000",
+        amendments=[amendment],
+        extra_fee_rows=[
+            fee_row(ACC_A2, "30000000", available_at=amend_stamp, observation_id="doc:amend")
+        ],
+    )
+
+
+def _zero_usage_evaluation(reg: list[dict[str, Any]], shares: list[dict[str, Any]]):
+    evaluation, _, _ = evaluate(
+        registration=reg,
+        share_basis=shares,
+        resolutions=[
+            usd(f"shelf_usage:{PATH_A}", "0"),
+            usd(f"continuing_offering:{PATH_A}", "0"),
+        ],
+    )
+    return evaluation
+
+
+def test_u1c_a_recompiled_original_does_not_outrank_its_later_amendment() -> None:
+    # The original was filed 30 days before the sale but re-compiled 5 days
+    # before it; its amendment was filed 20 days before.  Its materialization
+    # instant is the newest, its FILING is not, so the amendment's amount wins.
+    reg, shares = _amended_registration(f"{shift(SALE, 20)}T21:00:00Z")
+    original = next(row for row in reg if row.get("observation_id") == f"doc:{PATH_A[-6:]}")
+    original["point_in_time"] = {
+        **original["point_in_time"],
+        "available_at": f"{shift(SALE, 5)}T21:00:00Z",
+    }
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "known"
+    assert path["registered_amount"]["value"] == "30000000"
+    assert path["fee_table_accession"] == ACC_A2
+
+
+def test_u1c_two_filings_at_one_filing_instant_leave_the_amount_unknown() -> None:
+    reg, shares = _amended_registration(f"{shift(SALE, 30)}T21:00:00Z")
+    evaluation = _zero_usage_evaluation(reg, shares)
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "unknown"
+    assert registered["value"] is None
+    assert f"fee_table_order_tied:{PATH_A}" in evaluation.envelope.blockers
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+
+
+def test_u1c_an_unobserved_total_row_is_not_replaced_by_a_security_row() -> None:
+    stamp = f"{shift(SALE, 30)}T21:00:00Z"
+    reg, shares = standard_registration(registered="20000000", float_value="300000000")
+    reg.append(
+        total_fee_row(
+            ACC_A, None, available_at=stamp, observation_id="doc:total-amb", disposition="ambiguous"
+        )
+    )
+    evaluation = _zero_usage_evaluation(reg, shares)
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "unknown"
+    assert registered["value"] is None
+    assert f"fee_table_total_indeterminate:{ACC_A}" in evaluation.envelope.blockers
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+
+
+def test_u1c_an_observed_total_beside_an_unobserved_total_is_two_totals() -> None:
+    stamp = f"{shift(SALE, 30)}T21:00:00Z"
+    reg, shares = standard_registration(registered="20000000", float_value="300000000")
+    reg.append(total_fee_row(ACC_A, "25000000", available_at=stamp, observation_id="doc:total"))
+    reg.append(
+        total_fee_row(
+            ACC_A, None, available_at=stamp, observation_id="doc:total-amb", disposition="unavailable"
+        )
+    )
+    evaluation = _zero_usage_evaluation(reg, shares)
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "unknown"
+    assert f"fee_table_multi_row:{ACC_A}" in evaluation.envelope.blockers
+
+
+def _row_by_id(reg: list[dict[str, Any]], observation_id: str) -> dict[str, Any]:
+    return next(row for row in reg if row.get("observation_id") == observation_id)
+
+
+def _first_seen(row: dict[str, Any], stamp: str) -> None:
+    row["point_in_time"] = {**row["point_in_time"], "source_available_at": stamp}
+
+
+def test_u1c_a_backfilled_original_does_not_outrank_its_earlier_captured_amendment() -> None:
+    # The amendment (accepted 20 days before the sale) was captured live; the
+    # original (accepted 30 days before) was backfilled 5 days before.  We
+    # first SAW the original last, but the SEC accepted it first, so the
+    # amendment's amount is the registered amount.
+    reg, shares = _amended_registration(f"{shift(SALE, 20)}T21:00:00Z")
+    _first_seen(_row_by_id(reg, f"doc:{PATH_A[-6:]}"), f"{shift(SALE, 5)}T21:00:00Z")
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "known"
+    assert path["registered_amount"]["value"] == "30000000"
+    assert path["fee_table_accession"] == ACC_A2
+
+
+def test_u1c_one_backfill_run_does_not_tie_filings_the_sec_accepted_apart() -> None:
+    # Both filings were first seen by one backfill run at one instant; their
+    # SEC acceptances differ, so the amendment is still the latest filing.
+    reg, shares = _amended_registration(f"{shift(SALE, 20)}T21:00:00Z")
+    backfill = f"{shift(SALE, 5)}T21:00:00Z"
+    _first_seen(_row_by_id(reg, f"doc:{PATH_A[-6:]}"), backfill)
+    _first_seen(_row_by_id(reg, "doc:amend"), backfill)
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "known"
+    assert path["registered_amount"]["value"] == "30000000"
+    assert path["fee_table_accession"] == ACC_A2
+    assert not any(b.startswith("fee_table_order_") for b in evaluation.envelope.blockers)
+
+
+def test_u1c_a_filing_without_an_acceptance_time_leaves_the_order_unknown() -> None:
+    reg, shares = _amended_registration(f"{shift(SALE, 20)}T21:00:00Z")
+    amendment = _row_by_id(reg, "doc:amend")
+    amendment["filing"] = {**amendment["filing"], "accepted_at": None}
+    evaluation = _zero_usage_evaluation(reg, shares)
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "unknown"
+    assert registered["value"] is None
+    assert f"fee_table_order_unknown:{PATH_A}" in evaluation.envelope.blockers
+
+
+def test_u1c_a_later_amendment_with_an_unreadable_total_leaves_the_amount_unknown() -> None:
+    # The amendment states a fee-table total the compiler could not read.
+    # It is the latest filing, so the original's amount must not stand.
+    stamp = f"{shift(SALE, 20)}T21:00:00Z"
+    reg, shares = _amended_registration(stamp)
+    reg.remove(_row_by_id(reg, "doc:amend"))
+    reg.append(
+        total_fee_row(
+            ACC_A2, None, available_at=stamp, observation_id="doc:amend-total", disposition="ambiguous"
+        )
+    )
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "unknown"
+    assert path["registered_amount"]["value"] is None
+    assert f"fee_table_total_indeterminate:{ACC_A2}" in evaluation.envelope.blockers
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+
+
+def test_u1c_a_later_amendment_in_another_currency_leaves_the_amount_unknown() -> None:
+    # The amendment's fee table is stated in euros.  It is still the latest
+    # filing, so the original's dollar amount must not stand for it.
+    reg, shares = _amended_registration(f"{shift(SALE, 20)}T21:00:00Z")
+    amendment = _row_by_id(reg, "doc:amend")
+    amendment["normalized"] = {**amendment["normalized"], "currency": "EUR"}
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "unknown"
+    assert path["registered_amount"]["value"] is None
+    assert f"fee_table_value_unusable:{ACC_A2}" in evaluation.envelope.blockers
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+
+
+def test_u1c_a_later_amendment_in_thousands_leaves_the_amount_unknown() -> None:
+    reg, shares = _amended_registration(f"{shift(SALE, 20)}T21:00:00Z")
+    amendment = _row_by_id(reg, "doc:amend")
+    amendment["normalized"] = {**amendment["normalized"], "scale": "1000"}
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "unknown"
+    assert f"fee_table_value_unusable:{ACC_A2}" in evaluation.envelope.blockers
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+
+
+def test_u1c_a_total_in_another_scale_is_not_replaced_by_a_security_row() -> None:
+    # The amendment carries a dollar security row and a total stated in
+    # thousands.  The total exists but cannot be read here, so the lone
+    # security row must not stand in for it.
+    stamp = f"{shift(SALE, 20)}T21:00:00Z"
+    reg, shares = _amended_registration(stamp)
+    total = total_fee_row(ACC_A2, "30000", available_at=stamp, observation_id="doc:amend-total")
+    total["normalized"] = {**total["normalized"], "scale": "1000"}
+    reg.append(total)
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "unknown"
+    assert f"fee_table_total_indeterminate:{ACC_A2}" in evaluation.envelope.blockers
+
+
+def test_u1c_an_earlier_filing_in_another_currency_does_not_block_a_later_dollar_amount() -> None:
+    reg, shares = _amended_registration(f"{shift(SALE, 20)}T21:00:00Z")
+    original = _row_by_id(reg, f"doc:{PATH_A[-6:]}")
+    original["normalized"] = {**original["normalized"], "currency": "EUR"}
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "known"
+    assert path["registered_amount"]["value"] == "30000000"
+    assert path["fee_table_accession"] == ACC_A2
+
+
+def test_u1c_a_dollar_row_beside_a_row_in_another_currency_is_not_the_total() -> None:
+    # The amendment's table has two security rows, one in dollars and one in
+    # euros.  The dollar row is only part of the table, never its total.
+    stamp = f"{shift(SALE, 20)}T21:00:00Z"
+    reg, shares = _amended_registration(stamp)
+    reg.append(
+        fee_row(ACC_A2, "5000000", available_at=stamp, observation_id="doc:amend-eur", currency="EUR")
+    )
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "unknown"
+    assert path["registered_amount"]["value"] is None
+    assert f"fee_table_multi_row:{ACC_A2}" in evaluation.envelope.blockers
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+
+
+def test_u1c_a_dollar_row_beside_an_unreadable_row_is_not_the_total() -> None:
+    stamp = f"{shift(SALE, 20)}T21:00:00Z"
+    reg, shares = _amended_registration(stamp)
+    reg.append(
+        fee_row(ACC_A2, None, available_at=stamp, observation_id="doc:amend-amb", disposition="ambiguous")
+    )
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "unknown"
+    assert path["registered_amount"]["value"] is None
+    assert f"fee_table_multi_row:{ACC_A2}" in evaluation.envelope.blockers
+
+
+def test_u1c_a_contradicted_row_in_another_currency_is_reported_contradicted() -> None:
+    # SPEC_C1 §5: the latest filing's only row is in euros AND contradicted.
+    # The contradiction is reported, not hidden behind "unusable".
+    reg, shares = _amended_registration(f"{shift(SALE, 20)}T21:00:00Z")
+    amendment = _row_by_id(reg, "doc:amend")
+    amendment["normalized"] = {**amendment["normalized"], "currency": "EUR"}
+    amendment["relationships"] = {
+        **amendment["relationships"], "contradiction_ids": ["contradiction:cs:" + "8" * 24],
+    }
+    evaluation = _zero_usage_evaluation(reg, shares)
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "contradicted"
+    assert registered["value"] is None
+    assert f"fee_table_contradicted:{ACC_A2}" in evaluation.envelope.blockers
+    assert f"fee_table_value_unusable:{ACC_A2}" not in evaluation.envelope.blockers
+
+
+def test_u1c_a_contradicted_unreadable_sibling_is_reported_contradicted() -> None:
+    stamp = f"{shift(SALE, 20)}T21:00:00Z"
+    reg, shares = _amended_registration(stamp)
+    reg.append(
+        fee_row(
+            ACC_A2, None, available_at=stamp, observation_id="doc:amend-amb", disposition="ambiguous",
+            contradiction_ids=["contradiction:cs:" + "7" * 24],
+        )
+    )
+    evaluation = _zero_usage_evaluation(reg, shares)
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "contradicted"
+    assert f"fee_table_contradicted:{ACC_A2}" in evaluation.envelope.blockers
+    assert f"fee_table_multi_row:{ACC_A2}" not in evaluation.envelope.blockers
+
+
+def test_u1c_an_amendment_without_a_fee_table_keeps_the_original_amount() -> None:
+    # The compiler found no fee table in the amendment and emitted only a
+    # document-level "unavailable" row.  That row states no amount, so the
+    # amendment never displaces the original's amount.
+    stamp = f"{shift(SALE, 20)}T21:00:00Z"
+    reg, shares = _amended_registration(stamp)
+    reg.remove(_row_by_id(reg, "doc:amend"))
+    reg.append(
+        fee_row(ACC_A2, None, available_at=stamp, observation_id="doc:amend-nt", disposition="unavailable")
+    )
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "known"
+    assert path["registered_amount"]["value"] == "20000000"
+    assert path["fee_table_accession"] == ACC_A
+    assert not any(b.endswith(f":{ACC_A2}") for b in evaluation.envelope.blockers)

@@ -83,6 +83,8 @@
   html[data-lang="zh"][data-theme="dark"] .wh-dir.benefit { color:#ef6a6a; }
   html[data-lang="zh"][data-theme="dark"] .wh-dir.hurt { color:#3fc07e; }
   .wh-sym { font-weight:700; font-variant-numeric:tabular-nums; }
+  a.wh-sym { color: inherit; text-decoration: underline dotted; text-decoration-thickness: 1px; text-underline-offset: 3px; padding-block: 6px; }
+  a.wh-sym:hover, a.wh-sym:focus-visible { text-decoration-style: solid; }
   .wh-chg { font-variant-numeric:tabular-nums; font-size:12px; }
   .wh-chg.up { color:#1f9a55; } .wh-chg.dn { color:#d23f3f; }
   html[data-theme="dark"] .wh-chg.up { color:#3fc07e; } html[data-theme="dark"] .wh-chg.dn { color:#ef6a6a; }
