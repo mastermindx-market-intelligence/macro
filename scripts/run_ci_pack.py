@@ -5048,6 +5048,13 @@ def _run_exact_base_replays(
                     "RUNNER_TOOL_CACHE",
                     "ImageOS",
                     "ImageVersion",
+                    # pytest's running_on_ci() set. Without it the replay's
+                    # short summary trims or drops the ` - <reason>` that the
+                    # head printed, so an identical main-owned failure hashes
+                    # to a different `:reason=` atom and never classifies as
+                    # inherited_base. Repo tests also branch on CI.
+                    "CI",
+                    "BUILD_NUMBER",
                 }
                 child_env = {
                     key: value

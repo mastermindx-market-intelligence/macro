@@ -1978,6 +1978,161 @@ def test_base_replay_uses_base_runner_and_is_serial_without_matrix_fanout(
     )
 
 
+def _base_replay_child_env(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> dict[str, str]:
+    """Run one exact-base replay against a stub base runner; return its env."""
+    # Loader derivation has its own test; keep the running interpreter's so a
+    # child re-exec of sys.executable can start on a shared-library build.
+    monkeypatch.setattr(
+        PACK,
+        "_selected_python_loader_environment",
+        lambda: {
+            key: os.environ[key] for key in ("LD_LIBRARY_PATH",) if key in os.environ
+        },
+    )
+    job = _job("alpha", [{"name": "proof alpha", "run": "false"}])
+    plan = _plan([job], changed=["engine/example.py"])
+    base_root = tmp_path / "exact-base-worktree"
+    (base_root / "scripts").mkdir(parents=True)
+    (base_root / ".github" / "ci").mkdir(parents=True)
+
+    @contextlib.contextmanager
+    def base_worktree(*_args: object, **_kwargs: object) -> Iterator[Path]:
+        yield base_root
+
+    monkeypatch.setattr(PACK, "_exact_base_worktree", base_worktree)
+    seen: list[dict[str, str]] = []
+
+    def stream(
+        command: list[str], *, cwd: Path, env: dict[str, str], deadline: float
+    ) -> tuple[int, bool]:
+        seen.append(dict(env))
+        output = Path(command[command.index("--emit-semantic-fragment") + 1])
+        output.write_text(
+            json.dumps(
+                {
+                    "schema": PACK.FRAGMENT_SCHEMA,
+                    "tested_tree_sha": SHA_BASE,
+                    "subject_head_sha": SHA_BASE,
+                    "base_sha": SHA_BASE,
+                    "role": "main",
+                    "jobs": [
+                        {
+                            "logical_job_id": "alpha",
+                            "job_exec_sha256": "a" * 64,
+                            "infrastructure": {"outcome": "passed"},
+                            "steps": [],
+                        }
+                    ],
+                }
+            )
+        )
+        return 0, False
+
+    monkeypatch.setattr(PACK, "_stream_process_with_deadline", stream)
+    records = [
+        {
+            "logical_job_id": job.job_id,
+            "job_exec_sha256": PACK.semantic_job_digest(job),
+            "infrastructure": {"outcome": "passed"},
+            "steps": [
+                {
+                    **PACK.semantic_step_specs(job)[0].plan_dict(),
+                    "outcome": "failed",
+                    "failure_signature": {"sha256": "c" * 64, "atoms": ["x"]},
+                }
+            ],
+        }
+    ]
+    PACK._run_exact_base_replays(
+        root=tmp_path, plan=plan, records=records, budget_seconds=60
+    )
+    assert len(seen) == 1
+    return seen[0]
+
+
+@pytest.mark.parametrize("parent_on_ci", [True, False])
+def test_base_replay_carries_pytest_ci_mode_only_when_the_head_runner_has_it(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, parent_on_ci: bool
+) -> None:
+    for name in ("CI", "BUILD_NUMBER"):
+        monkeypatch.delenv(name, raising=False)
+    if parent_on_ci:
+        monkeypatch.setenv("CI", "true")
+        monkeypatch.setenv("BUILD_NUMBER", "4242")
+
+    env = _base_replay_child_env(tmp_path, monkeypatch)
+
+    if parent_on_ci:
+        assert env["CI"] == "true"
+        assert env["BUILD_NUMBER"] == "4242"
+    else:
+        assert "CI" not in env
+        assert "BUILD_NUMBER" not in env
+
+
+def test_base_replay_reproduces_head_pytest_failure_atoms_for_a_long_nodeid(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """PR #8721, ci-gate job 125436597721: the head FAILED line kept
+    ` - AssertionError: ...` while the base replay, run without CI, dropped it
+    because `FAILED <nodeid>` alone outgrew pytest's 80-column trim. The atoms
+    then differed only in `:reason=` and the red never read as inherited_base.
+    """
+    for name in (
+        "CI",
+        "BUILD_NUMBER",
+        "COLUMNS",
+        "PY_COLORS",
+        "PYTEST_ADDOPTS",
+        "PYTEST_PLUGINS",
+    ):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("CI", "true")
+    suite = tmp_path / "suite"
+    (suite / "tests").mkdir(parents=True)
+    (suite / "pytest.ini").write_text("[pytest]\n")
+    (suite / "tests" / "test_markets_regime_strip.py").write_text(
+        "def test_fresh_render_byte_matches_committed_markets_html():\n"
+        "    assert False, 'site/markets.html is stale'\n"
+    )
+    command = f"cd {shlex.quote(str(suite))} && " + shlex.join(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "-p",
+            "no:cacheprovider",
+            "-c",
+            "pytest.ini",
+            "tests/test_markets_regime_strip.py",
+        ]
+    )
+    # The replay redirects HOME, which hides a user-site pytest on developer
+    # machines; both sides get the same import path and no plugin autoload.
+    hermetic = {
+        "PYTHONPATH": str(Path(pytest.__file__).resolve().parents[1]),
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    }
+    head_env = {**PACK._child_environment(), **hermetic}
+    replay_env = {**_base_replay_child_env(tmp_path / "replay", monkeypatch), **hermetic}
+
+    head = PACK._stream_command(command, env=head_env, timeout_seconds=120)
+    replay = PACK._stream_command(command, env=replay_env, timeout_seconds=120)
+
+    assert head.outcome == replay.outcome == "failed"
+    assert head.failure_signature is not None
+    assert any(
+        atom.startswith(
+            "pytest:failed:tests/test_markets_regime_strip.py::"
+            "test_fresh_render_byte_matches_committed_markets_html:reason="
+        )
+        for atom in head.failure_signature["atoms"]
+    )
+    assert replay.failure_signature == head.failure_signature
+
+
 def test_selected_python_loader_environment_is_derived_from_the_interpreter(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
