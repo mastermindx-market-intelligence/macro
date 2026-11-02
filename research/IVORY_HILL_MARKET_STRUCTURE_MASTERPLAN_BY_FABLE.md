@@ -246,3 +246,68 @@ span; W2 charts must join honestly (series-birth disclosure on Tier 2, no silent
 Appended to `research/DO_NOT_REBUILD.md` §1 in this PR (per append convention, with regenerated
 compiled blocklists): Ivory-Hill-style composite market-regime scorecard + tactical ETF allocation
 surface — REJECT-REDUNDANT + forbidden fusion path (MSP-R2).
+
+---
+
+## 9. W2 production redesign — Chairman request, 2026-11-01 (C2)
+
+**Intent and owner.** Ryan Long / ChatGPT2 requested a complete Paper redesign and replacement of
+`market_structure.html` on 2026-11-01. This is a continuation of W2 in this plan, not a new
+market model, workstream, or runtime registry. Source base:
+`f754bdee6b803b18191841863c35527c0a74571e`; governing protected Mastermind:
+`19cb00cfed26b68f0a8a5cdc0f2f1a9463a3feec`. The current attended source carrier is
+`sol/web-market-structure-revamp-20261101-c2`, operation
+`market-structure-revamp-20261101-c2`, isolated from canonical checkouts.
+No exact organizational W2 workstream link was found in the bounded active-map/workstream/handoff
+search: **PLAN_NOT_ORG_LINKED**. Do not invent a workstream or claim organizational acceptance.
+
+**User journey / quality bar.** A reader must immediately identify the market (SPX), the observed
+date and any limitations, how dealer hedging may affect swings, and the level that would change
+that reading. A second pass explains modelled fund positioning, stock-picker conditions,
+realized volatility and the locked weekly range. Each measure remains independent. Detail,
+assumptions and exact observations must be available with keyboard and touch, without burying
+the first useful answer. Advanced presentation must improve comprehension, not add an
+unsupported score or suggest trade instructions.
+
+**Current rulings.** MSP-R1..R10 remain binding. Current `MASTER_PRODUCT_DESIGN_SYSTEM_V1`,
+`DESIGN_DOCTRINE`, `ILLUSTRATIONS` and shared theme/component contracts supersede the historical
+aurora-glass and ad hoc chart styling described above. Preserve the shared navigation, dual
+EN/ZH content, deliberate light/dark themes and read-only renderer. No collector, source-store,
+scheduler, Theta or risk-authoritative model changes are in this assignment.
+
+### W2.R task tree (editorial implementation specification)
+
+| Node | Dependency | Input → reviewable output | Acceptance / evidence |
+|---|---|---|---|
+| W2.R1 — Audit and contract | Existing W2 | User screenshots + pinned template/producer → defect and preservation inventory | Preserve five independent dimensions, comparison semantics, missing-session disclosure and model-only fund terminology. Repository already fixes correlation threshold wording: preserve at-or-below. |
+| W2.R2 — Design and Paper | R1 | Canonical tokens + archetype D → desktop/mobile composition, EN/ZH and light/dark states | Compact headline on canvas; at most two supporting modules above fold; no colored card edges, parallel token system or composite risk score. Editable Paper nodes and screenshot/JSX receipt required for Paper acceptance. |
+| W2.R3 — Presentation build | R1, R2 composition | Existing Jinja renderer + source data → replacement template/assets | Accessible headings, focus, 40px targets, responsive layouts, real range controls, explicit units and observation dates. Canonical illustration reuse; readable exact-data access. No fabricated observations or zero substitution. |
+| W2.R4 — Data honesty | R1 | Existing model outputs → finite-value/gap handling and per-source observation metadata | Null is unavailable, never zero; gaps are disclosed; missing observations are not continuous durations; comparison dates are checked; an expired weekly band is not described as current. No freshness claim inferred from build time. |
+| W2.R5 — Verification | R3, R4 | Production-shaped and missing/stale fixtures → focused automated and visual evidence | Preserve renderer publication shim; meaningful data-contract regressions; desktop/mobile × EN/ZH × light/dark screenshots; keyboard, range selection, disclosure, console and overflow checks. Fixture screenshots explicitly labelled. |
+| W2.R6 — Review and delivery | R2, R5 | Exact reviewed commit + evidence → draft PR and normal independent review/release | No self approval/merge. Production replacement needs accepted review, CI and live page/deployment proof. Do not equate a source PR, preview or cached search result with a deployed page. |
+
+**Paper gate (observed, no write effect).** The intended existing file is MASTERMIND PAGES
+`01M2WGNCX9475G79JRKJTCM08P`. Exact-target read succeeds. Paper Desktop 0.5.14 returns catalog
+`16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd`; the guarded adapter expects
+`1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db`.
+`accepted_for_write=false`, `catalog_compatible=false`: **EXACT_TARGET_READABLE /
+WRITE_SCHEMA_NOT_QUALIFIED / EFFECT_NONE**. Do not bypass the private Paper adapter, update an
+acceptance digest opportunistically, or modify an unrelated page. A code preview is
+**NOT_APPLIED_TO_PAPER** until the owning approved adapter release qualifies writes and exact
+Paper node readback succeeds.
+
+**Execution routing.** Principal composition, data-contract judgment and source integration
+remain attended. Paid Fabric capabilities are exposed, but this session has no verified
+trusted root/parent binding; no caller-created identity or worker dispatch is allowed.
+`PRINCIPAL_JUDGMENT` and `NO_ELIGIBLE_PRE_EFFECT_WORKER` explain direct work. The existing native
+agent supplied independent screenshot critique only, not routine implementation labor.
+No live source writer or uncertain source effect was found in the acquired isolated workspace.
+
+**Known falsifiers / recovery frontier.** False zero chart points; unlabelled scales; a stale
+observation called live/current; an expired week presented as upcoming; identical treatment
+of model estimates and observed transactions; broken Chinese/theme/mobile interaction; failing
+focused regressions; unreviewed release; or claiming Paper/deployment without receipts each
+falsifies completion. Browser navigation to the live URL currently times out through the
+authorized plugin. Reconcile that surface rather than switching control carriers silently.
+Continue R3/R4 in the registered workspace, retain R2's exact gate, then attach R5/R6 evidence
+to this same section. This task tree records specification and evidence, not Executive Job state.
