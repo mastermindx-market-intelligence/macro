@@ -29,6 +29,7 @@ SCHEMA = "mastermind.shared_shell_routes.v1"
 # The canonical registry path inside the Macro repo: an opt-in inventory commit
 # must carry the caller's registry bytes at exactly this path.
 CANONICAL_REGISTRY = "data/product_experience/page_registry.json"
+WITHHELD_CONTRACT = "shared_shell:admission_withheld"
 PARAM = re.compile(r"<[^/<>]+>")
 ANCHOR = re.compile(r"<a\b[^>]*\bhref=[\"']([^\"']+)[\"'][^>]*>(.*?)</a>", re.S)
 TRANSLATION = re.compile(r"t\(\s*(['\"])(.*?)\1\s*,\s*(['\"])(.*?)\3\s*\)", re.S)
@@ -128,6 +129,9 @@ def derive_projection(registry: dict[str, Any], tracked_html: list[str],
             reason = "lifecycle_" + row["lifecycle"]
         elif row["access_shell"] != "anonymous" or row["payload_tier"] == "internal":
             reason = "not_a_public_document_shell"
+        elif (isinstance(row.get("known_contracts"), list)
+              and WITHHELD_CONTRACT in row["known_contracts"]):
+            reason = "consumer_admission_withheld"
         if reason:
             excluded.append({"path": path, "reason": reason})
             continue

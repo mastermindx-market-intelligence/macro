@@ -91,6 +91,29 @@ a fixed order, so a diff of the file is a diff of facts.
 | `source_evidence` | `path` or `path:line` strings backing the derived facts. Every row has at least one. |
 | `notes` | Free text: caveats, counts, why a fact is missing. |
 
+### Shared Shell consumer admission
+
+The exact, case-sensitive `known_contracts` list element
+`shared_shell:admission_withheld` withholds a Macro row from the Shared Shell
+consumer. It does not change the document's standalone `lifecycle`, `access_shell`,
+or `payload_tier`. A public, anonymously readable document may still need its
+specific Shared Shell consumer purpose qualified before adoption.
+
+`scripts/export_shared_shell_routes.py` records `consumer_admission_withheld` for
+otherwise eligible documents selected by a marked canonical row, excluding them
+from `legacyPaths`, the directory, and admitted family-member counts. Existing
+serving-policy, fragment, unregistered, lifecycle, and access/payload exclusions
+retain precedence and their existing reasons. Native Terminal routes retain their
+native owner. Unmarked rows retain ordinary eligibility.
+
+Existing exact-before-family matching applies: a marked exact row affects only
+that row; a marked family affects its selected concrete members. A marker on one
+concrete page does not qualify or withhold future rows. There are no brand or
+path-name heuristics. Preserve other source-derived contracts when adding this
+marker through the existing override layer. The source owner removes the marker
+only after the exact Shared Shell consumer purpose is qualified; standalone
+availability alone does not supply that qualification.
+
 ### `payload_tier`, precisely
 
 Every macro `*.html` **shell** has been anonymous since 2026-08-04

@@ -519,3 +519,95 @@ def test_cli_positive_source_metadata_preserves_projection_and_check(
     checked, _ = run_exporter(tmp_path, fx, *flags, "--check")
     assert checked.returncode == 0, checked.stderr
     assert output.read_bytes() == before
+
+
+@pytest.mark.parametrize("inventory", [False, True])
+@pytest.mark.parametrize("marked_family", [False, True])
+def test_cli_withholds_only_the_marked_consumer_row(
+        tmp_path, inventory_fixture, inventory, marked_family):
+    fx = inventory_fixture
+    selected = fx.registry["pages"][int(marked_family)]
+    selected["known_contracts"].append("shared_shell:admission_withheld")
+    # Source serving facts remain truthful and the canonical row stays valid.
+    assert selected["lifecycle"] == "live"
+    assert selected["access_shell"] == "anonymous"
+    assert registry_owner.validate(fx.registry) == []
+    fx.registry_bytes = (json.dumps(fx.registry, ensure_ascii=False, indent=2) + "\n").encode()
+    fx.registry_path.write_bytes(fx.registry_bytes)
+    flags = []
+    if inventory:
+        _write(fx.repo, REGISTRY_PATH_IN_REPO, fx.registry_bytes.decode())
+        tip = _commit(fx.repo, "canonical consumer withholding contract")
+        _git(fx.repo, "update-ref", "refs/remotes/origin/main", tip)
+        flags = ["--inventory-ref", tip]
+    done, output = run_exporter(tmp_path, fx, *flags)
+    assert done.returncode == 0, done.stderr
+    result = json.loads(output.read_text())
+    family_paths = ["/stocks/Alpha.html"]
+    if inventory:
+        family_paths += [f"/stocks/earnings/member-{n:03}.html" for n in range(104)]
+    withheld = family_paths if marked_family else ["/macro.html"]
+    assert result["legacyPaths"] == (["/macro.html"] if marked_family else family_paths)
+    assert [x["href"] for x in result["directory"]] == (["/macro.html"] if marked_family else [])
+    assert result["coverage"]["familyMembers"] == (
+        {"macro:stocks_family": 105} if inventory and not marked_family else {})
+    assert {x["path"] for x in result["coverage"]["excluded"]
+            if x["reason"] == "consumer_admission_withheld"} == set(withheld)
+    assert result["nativePaths"] == []
+    checked, _ = run_exporter(tmp_path, fx, *flags, "--check")
+    assert checked.returncode == 0, checked.stderr
+
+
+def test_exact_consumer_marker_does_not_spread_to_other_family_members():
+    family = row("/stocks/<id>.html", kind="family", page_id="macro:stocks_family")
+    blocked = row("/stocks/held.html")
+    blocked["known_contracts"] = ["shared_shell:admission_withheld"]
+    native = row("/terminal", repo="terminal")
+    doc = catalog(family, blocked, native)
+    paths = ["/stocks/Alpha.html", "/stocks/Beta.html", "/stocks/held.html"]
+    result = project(doc, paths)
+    assert result["legacyPaths"] == paths[:2]
+    assert result["nativePaths"] == ["/terminal"]
+    assert result["coverage"]["familyMembers"] == {"macro:stocks_family": 2}
+    assert result["coverage"]["excluded"] == [
+        {"path": "/stocks/held.html", "reason": "consumer_admission_withheld"}]
+    assert not any(x["href"] == "/stocks/held.html" for x in result["directory"])
+    # Removing the exact source-owned marker restores ordinary eligibility.
+    blocked["known_contracts"] = []
+    assert project(doc, paths)["legacyPaths"] == paths
+
+
+@pytest.mark.parametrize("contracts", [[], "unknown", ["site_access.v1:public"],
+                                      ["shared_shell:admission_withheld_extra"],
+                                      ["SHARED_SHELL:admission_withheld"]])
+def test_unmarked_or_near_marker_contracts_preserve_ordinary_projection(contracts):
+    ordinary = row("/macro.html")
+    ordinary["known_contracts"] = contracts
+    result = project(catalog(ordinary), ["/macro.html"])
+    assert result["legacyPaths"] == ["/macro.html"]
+    assert [x["href"] for x in result["directory"]] == ["/macro.html"]
+    assert result["coverage"]["excluded"] == []
+
+
+@pytest.mark.parametrize("stronger", ["serving_policy_denied", "html_fragment",
+                                      "lifecycle_lab", "not_a_public_document_shell"])
+def test_consumer_marker_keeps_stronger_exclusion_reasons(stronger):
+    marked = row("/macro.html")
+    marked["known_contracts"] = ["shared_shell:admission_withheld"]
+    deny = {"exact": set(), "prefixes": ()}
+    documents = {"/macro.html"}
+    if stronger == "serving_policy_denied":
+        deny["exact"].add("/macro.html")
+    elif stronger == "html_fragment":
+        documents.clear()
+    elif stronger == "lifecycle_lab":
+        marked["lifecycle"] = "lab"
+    else:
+        marked["access_shell"] = "signed_in"
+    result = derive_projection(catalog(marked), ["/macro.html"], deny, {},
+                               registry_digest="digest", inventory_ref=PIN,
+                               document_paths=documents)
+    assert result["legacyPaths"] == []
+    assert result["directory"] == []
+    assert result["coverage"]["familyMembers"] == {}
+    assert result["coverage"]["excluded"] == [{"path": "/macro.html", "reason": stronger}]
