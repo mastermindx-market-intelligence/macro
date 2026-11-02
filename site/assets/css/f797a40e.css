@@ -108,6 +108,7 @@ html[data-lang="zh"] .band h2{letter-spacing:0}
  box-shadow:0 16px 36px -16px color-mix(in srgb,var(--accent) 40%,transparent),inset 0 1px 0 color-mix(in srgb,#fff 6%,transparent)}
 .card:hover.acc::before,.card:focus-within.acc::before{transform:scaleX(1)} .card:hover.acc::after{opacity:1}
 .card-top{display:flex;align-items:center;flex-wrap:wrap;gap:6px 9px;margin-bottom:9px}
+.card-status{margin:-2px 0 10px;font-size:12px;line-height:1.35;color:var(--muted)}
 .ico{width:32px;height:32px;flex:none;display:flex;align-items:center;justify-content:center;font-size:17px;border-radius:9px;
  background:color-mix(in srgb,var(--accent) 15%,var(--panel2));border:1px solid color-mix(in srgb,var(--accent) 24%,var(--line));
  transition:transform .18s cubic-bezier(.2,.7,.3,1)}
