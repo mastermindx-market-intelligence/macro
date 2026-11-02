@@ -89,8 +89,8 @@ coverage functions remain the source; preserve #6867's separate timing work.
 | P2 | P1 | blocked | Editable Paper light/dark desktop/mobile and meaningful states; exact file/page/node IDs, screenshots and JSX | Principal designer; Paper schema qualification required |
 | P2.1 | P1 | implementation_complete | DESIGN_SPEC.md and the paired template/CSS reference; NOT_APPLIED_TO_PAPER | Principal design; independent visual critique |
 | P3 | P2.1 | implementation_complete | Real template, paired page stylesheet and rendered page replaced; 15 core regions byte-identical to base | Principal retained: design judgment and critical path while audit admission waited |
-| P3.1 | P3 | verification_in_progress | 395 browser checks pass across eight cells and six explicit synthetic transport scenarios; final canonical visual evidence pending | Regression and source-contract evidence; no production claim |
-| P4 | P3.1 | ready_after_visual_evidence | Independent exact-head code/visual review and bounded repair | Separate paid reviewer; principal adjudicates |
+| P3.1 | P3 | implementation_complete | 280 pytest cases; 395 browser checks; 24 canonical screenshots and passing visual receipt | Regression and source-contract evidence; no production claim |
+| P4 | P3.1 | ready | Independent exact-head code/visual review and bounded repair | Separate paid reviewer; principal adjudicates |
 | P5 | P2,P4 | blocked | Exact-head CI, permitted integration/release and served desktop/mobile proof | Existing release owner; no premature merge |
 
 The Paper gate blocks canvas effects and final acceptance; independent design-reference
@@ -169,11 +169,12 @@ The latest read-only compatibility check against main
 the scoped Intraday template/page/tests, shared navigation/theme, producer,
 `lib/pages.py`, or product-experience configuration. No merge/rebase is claimed.
 
-The first canonical capture on `43c31bf5888bdeb71c56873e8064d5d43254ce51`
-completed 24/24 states with no console errors or failed responses. Principal visual
-critique found two phone defects: launcher overlap with metrics and an orphaned
-feed-help trigger. Page-local spacing now corrects both; the 395-check harness also
-covers populated phone metrics. The final matrix must be recaptured on this refinement.
+The final canonical capture on `9e1af791c76f1694f07ed82f44e9e8f49a99e0d6`
+completed 24/24 states with no console errors or failed responses. The two phone
+findings from principal visual critique are repaired: metrics remain left of x315
+(the measured right edge is x311), and the feed-help trigger stays beside its status.
+The matrix and receipt are in `mockups/refs/intraday-flow-upgrade/`.
+The visual-receipt guard passed against the material source diff.
 
 Initial-load traces identify substantial existing shared-navigation/search movement.
 Baseline and candidate measurements are in `layout_stability.json`; these are lab
@@ -183,8 +184,7 @@ order was changed. Global startup performance remains an explicit review limitat
 A fresh Paper catalog read observed version 0.5.18 with the same unqualified catalog
 hash and `accepted_for_write=false`; a newer app version did not clear the gate.
 
-Next: capture the canonical eight-cell resting plus
-hover/focus matrix, obtain independent exact-head review, resolve relevant CI,
+Next: obtain independent exact-head review, resolve relevant CI,
 and finish the normal integration path once the Paper gate is qualified. See
 `PAPER_QUALIFICATION_HANDOFF.md` for the bounded owner remedy. No Paper canvas effect,
 source merge, production deployment, live-page proof or final acceptance has occurred.
