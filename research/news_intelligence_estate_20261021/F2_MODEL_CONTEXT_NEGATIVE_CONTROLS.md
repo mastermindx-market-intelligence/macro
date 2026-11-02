@@ -248,6 +248,44 @@ ending 2026-09-27 and 2026-12-31 (`producer_facts.py:93-94` ignores `calendar_en
 period is FY2027 validates `ok=True` — nothing compares the slot token with the
 quantity period (the fingerprint excludes both; `thesis.py:273-296`).
 
+**Resolution 2026-11-02 (validator rule S15 added; the tables above stay as recorded).**
+`engine/news_impact/validate.py` now carries semantic rule S15, claim-versus-evidence
+period: for `demand_guidance_contract_event.v1` the `stated_amount` and `option_ceiling`
+periods must be able to evidence `fiscal_period`; for `capital_allocation_event.v1`
+`incremental_amount.period` must be able to evidence `horizon_period`; for
+`strategic_product_partnership_event.v1` `stated_quantity.period` must be able to evidence
+`horizon_period`. Both sides must be real fiscal periods, otherwise the rule is silent
+(absence unions, malformed dates the schema or S6 already refuse). Two tests refuse, with
+the existing `schema_violation` code at the quantity's `period` pointer: label years more
+than one year apart (no date needed), or, when both carry a `calendar_end`, calendar ranges
+that do not overlap once each is shrunk by seven days at both ends. Containment and partial
+overlap pass; a dateless period within one label year passes (a fiscal year straddles two
+calendar years, so a calendar-labelled quarter can sit one label year off). `prior_amount`
+(a timing revision names the period the guidance moved from), `remaining_authorization`
+and `executed_amount` (dated as of a point) and every `baseline.period` are exempt.
+`contracts/news_impact/` is untouched and the reason-code set is unchanged. The control is
+now behavioural: the Q4-2026 slot with an FY2027 stated amount refuses at
+`/stated_amount/period`, the same slot widened to FY2026 keeps its Q4 quantity, and a
+dateless FY2027 quantity is tolerated. M07b moves to **HELD**; the 52/53-week half of the
+original control is now its own control **M07c NO_MECHANISM** (`period_token` still emits one
+`FY2026` for years ending 2026-09-27 and 2026-12-31; no fiscal-week concept in the contract),
+giving 18 HELD, 1 BROKEN (M05a) and 3 NO_MECHANISM (M07c, M08, M13) of 22. The control
+script's synthetic `point_qty` default period was moved from an unrelated half year to the
+T1/T2 slot (Q4-2026) so the fixtures evidence their own slot; no other verdict changed.
+Limits:
+- **Period lengths are month arithmetic:** a quarter is three months before its
+  `calendar_end`, a year twelve; the seven-day shrink absorbs a fourteen-week quarter or a
+  fifty-three-week year, so adjacent periods still refuse and contained ones never do, but
+  two real periods overlapping by under fourteen days would be refused (issuer periods tile,
+  so none is expected).
+- **One label year of tolerance without dates:** FY2026 against a dateless FY2027 passes;
+  only a gap of two or more label years refuses when neither side carries a date.
+- **Sub-year labels are not compared without dates:** Q1 against Q4 of the same label year
+  passes unless both carry a `calendar_end`, because a fiscal quarter number and a calendar
+  quarter number can name the same quarter.
+- **Scope is the three slot pairs above;** `prior_amount`, the as-of amounts and baselines
+  are exempt by design, and an event type without a slot period has no check.
+
 **N3 (M08) — the basis vocabulary cannot express adjusted vs reported.** Grep:
 `grep -rn -i -E "adjusted|non.gAAP|\bGAAP\b|reported_basis" engine/news_impact
 contracts/news_impact` → 0 hits. `quantity_basis` is the closed enum

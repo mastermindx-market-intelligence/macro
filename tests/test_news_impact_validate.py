@@ -594,7 +594,7 @@ def test_cli_usage_errors_exit_2(tmp_path):
 
 
 # =========================================================================
-# Lane B5_semantic (Wave 3): the semantic layer S1-S13, the strict raw-text
+# Lane B5_semantic (Wave 3): the semantic layer S1-S13 (S14 M01c, S15 M07b appended), the strict raw-text
 # loader, validate_text, and a consolidated no-verdict-change regression.
 # Every kill test below fails when its rule is deleted from validate.py.
 # =========================================================================
@@ -726,6 +726,105 @@ def test_s13_end_year_before_year_rejected():
     payload["fiscal_period"]["end_year"] = payload["fiscal_period"]["year"] - 1
     _one_code_path(V.validate_event(payload, contract=CONTRACT),
                    V.SCHEMA_VIOLATION, "/fiscal_period/end_year")
+
+
+# S15 (F2 control M07b): a quantity's own period must be able to evidence the
+# event's claim slot.  Kill tests: delete _s15_claim_evidence_period and the
+# three "rejected" tests below fail; the "accepted" tests pin the tolerance.
+
+def _s15_period(kind, year, end=None, quarter=None, end_year=None):
+    period = {"year": year, "quarter": quarter, "calendar_end": end, "period_kind": kind}
+    if end_year is not None:
+        period["end_year"] = end_year
+    return period
+
+
+def test_s15_quantity_period_disjoint_by_dates_rejected():
+    payload = _w3()
+    payload["fiscal_period"] = _s15_period("quarter", 2026, "2026-12-31", quarter=4)
+    payload["stated_amount"]["period"] = _s15_period("fiscal_year", 2027, "2027-12-31")
+    report = V.validate_event(payload, contract=CONTRACT)
+    _one_code_path(report, V.SCHEMA_VIOLATION, "/stated_amount/period")
+    assert any("rule S15" in i.message and "FY2027" in i.message for i in report.issues)
+    # S15 reports once and no other rule reports the same defect.
+    assert [i.path for i in report.issues] == ["/stated_amount/period"]
+
+
+def test_s15_label_gap_without_dates():
+    payload = _w3()  # slot FY2026, calendar_end null; stated_amount.period FY2026
+    payload["stated_amount"]["period"] = _s15_period("fiscal_year", 2028)
+    _one_code_path(V.validate_event(payload, contract=CONTRACT),
+                   V.SCHEMA_VIOLATION, "/stated_amount/period")
+    # One label year apart without dates is the fiscal-versus-calendar tolerance.
+    payload["stated_amount"]["period"] = _s15_period("fiscal_year", 2027)
+    assert V.validate_event(payload, contract=CONTRACT).ok
+    payload["stated_amount"]["period"] = _s15_period("quarter", 2025, quarter=4)
+    assert V.validate_event(payload, contract=CONTRACT).ok
+
+
+def test_s15_contained_and_overlapping_periods_accepted():
+    payload = _w3()
+    payload["fiscal_period"] = _s15_period("fiscal_year", 2026, "2026-09-27")  # 52/53-week year
+    payload["stated_amount"]["period"] = _s15_period("quarter", 2026, "2026-09-27", quarter=4)
+    assert V.validate_event(payload, contract=CONTRACT).ok  # a 14-week Q4 inside its year
+    payload["stated_amount"]["period"] = _s15_period("half_year", 2026, "2026-12-27")
+    assert V.validate_event(payload, contract=CONTRACT).ok  # straddles the year end: overlap
+    payload["stated_amount"]["period"] = _s15_period("multi_year", 2025, "2027-12-31", end_year=2027)
+    assert V.validate_event(payload, contract=CONTRACT).ok  # the slot inside the quantity's span
+
+
+def test_s15_adjacent_periods_rejected():
+    payload = _w3()
+    payload["fiscal_period"] = _s15_period("fiscal_year", 2026, "2026-09-27")
+    # Q1 FY2027 begins 2026-09-28: adjacent, never overlapping, one label year apart.
+    payload["stated_amount"]["period"] = _s15_period("quarter", 2027, "2026-12-27", quarter=1)
+    _one_code_path(V.validate_event(payload, contract=CONTRACT),
+                   V.SCHEMA_VIOLATION, "/stated_amount/period")
+    # Same label year: nine months to September against the fourth quarter.
+    payload["fiscal_period"] = _s15_period("nine_months", 2026, "2026-09-30")
+    payload["stated_amount"]["period"] = _s15_period("quarter", 2026, "2026-12-31", quarter=4)
+    _one_code_path(V.validate_event(payload, contract=CONTRACT),
+                   V.SCHEMA_VIOLATION, "/stated_amount/period")
+
+
+def test_s15_exempt_fields_and_absences_are_silent():
+    payload = _w3()
+    # prior_amount: a timing revision names the period the guidance moved from.
+    payload["prior_amount"]["period"] = _s15_period("fiscal_year", 2023, "2023-12-31")
+    assert V.validate_event(payload, contract=CONTRACT).ok
+    # An absent slot (W4's field_absence.v1) has nothing to evidence.
+    cases = {r["id"]: r["instance"] for r in load_cases("worked_cases.json")}
+    payload["fiscal_period"] = copy.deepcopy(cases["W4"]["fiscal_period"])
+    payload["stated_amount"]["period"] = _s15_period("fiscal_year", 2031, "2031-12-31")
+    assert V.validate_event(payload, contract=CONTRACT).ok
+    # A malformed calendar_end is S6's finding; S15 adds nothing.
+    payload = _w3()
+    payload["fiscal_period"] = _s15_period("fiscal_year", 2026, "2026-02-30")
+    payload["stated_amount"]["period"] = _s15_period("fiscal_year", 2027, "2027-12-31")
+    report = V.validate_event(payload, contract=CONTRACT)
+    assert not report.ok
+    assert not any("rule S15" in i.message for i in report.issues)
+
+
+def test_s15_capital_allocation_incremental_amount_against_horizon():
+    payload = _w1()
+    payload["horizon_period"] = _s15_period("multi_year", 2026, "2028-12-31", end_year=2028)
+    payload["incremental_amount"]["period"] = _s15_period("fiscal_year", 2027, "2027-12-31")
+    assert V.validate_event(payload, contract=CONTRACT).ok  # inside the horizon
+    payload["incremental_amount"]["period"] = _s15_period("fiscal_year", 2024, "2024-12-31")
+    _one_code_path(V.validate_event(payload, contract=CONTRACT),
+                   V.SCHEMA_VIOLATION, "/incremental_amount/period")
+    # remaining_authorization is dated as of a point, not over the horizon: exempt.
+    payload["incremental_amount"]["period"] = _s15_period("fiscal_year", 2027, "2027-12-31")
+    payload["remaining_authorization"]["period"] = _s15_period("fiscal_year", 2024, "2024-12-31")
+    assert V.validate_event(payload, contract=CONTRACT).ok
+
+
+def test_s15_frozen_cases_keep_their_verdicts():
+    # Every frozen worked case pairs its quantities with the slot period already.
+    for case in load_cases("worked_cases.json"):
+        report = V.validate_event(copy.deepcopy(case["instance"]), contract=CONTRACT)
+        assert not any("rule S15" in i.message for i in report.issues), case["id"]
 
 
 # ------------------------------------------------------------ strict loading
