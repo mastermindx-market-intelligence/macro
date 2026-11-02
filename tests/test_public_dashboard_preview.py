@@ -183,6 +183,7 @@ function harness({ id = 'A', synchronousInitial = false, hints = false, deferSes
       listener(user, event || (next ? 'SIGNED_IN' : 'SIGNED_OUT'));
     },
     silentIdentity(next) { user = next ? { id: next } : null; activeSession = session(next); },
+    interimNull() { user = null; listener(null, 'INITIAL_SESSION'); },
     failLookup() { lookupFailure = true; },
     tier() { return window.MMXAccessPreview.tier(); },
     cap() { return window.MMXAccessPreview.cap(); }
@@ -250,6 +251,14 @@ test('signout invalidates pending session lookup before any entitlement fetch', 
 test('A to B clears prior paid before a failed B response', async () => {
   const h = harness(); await tick(); await reply(h.requests[0], 'pro'); h.change('B');
   expectBounded(h); await tick(); h.requests[1].reject(new Error('offline')); await tick(); expectBounded(h);
+});
+test('ambiguous initial auth event with cookie never renders guest access', async () => {
+  const h = harness(); await tick(); h.interimNull();
+  assert.equal(h.tier(), 'unknown');
+  assert.notEqual(h.attrs['data-access-resolution'], 'signed-out');
+  await reply(h.requests[0], 'pro'); expectBounded(h);
+  h.change('A', 'SIGNED_IN'); await tick();
+  await reply(h.requests[1], 'pro'); expectTier(h, 'pro', Infinity);
 });
 test('delayed A cannot overwrite B Free', async () => {
   const h = harness(); await tick(); h.change('B'); await tick();
@@ -358,11 +367,20 @@ vm.runInNewContext(source, { window, document, Promise, Date, JSON, Array, Strin
   fetch: () => new Promise(resolve => requests.push(resolve)), CustomEvent: function() {}, location: {},
   sessionStorage: {getItem: () => null}, localStorage: {getItem: () => null} });
 (async () => {
-  await tick(); requests[0]({ok:false,status:503}); await tick();
+  // Auth has a persisted cookie; while /api/me is pending we keep the limited
+  // rows protected but mount NO paywall. This asserts rendered DOM, not source text.
+  assert.equal(window.MMXAccessPreview.tier(),'unknown');
+  assert.equal(document.documentElement.attrs['data-access-resolution'],'pending');
+  assert.equal(gates.length,0,'no paywall while entitlement is pending');
+  assert.equal(root.children[1].attrs['aria-hidden'],'true','extra rows remain restricted');
+  await tick(); assert.equal(gates.length,0);
+  requests[0]({ok:false,status:503}); await tick();
   assert.equal(gates.length,1); assert.equal(window.MMXAccessPreview.tier(),'unknown');
   assert.match(gates[0].innerHTML, /Check access/); assert.match(gates[0].innerHTML, /检查访问权限/);
   assert.doesNotMatch(gates[0].innerHTML, /signup|Expand the Prophet shortlist|Unlock full Prophet/);
-  gates[0].button.listeners.click(); await tick(); assert.equal(requests.length,2);
+  gates[0].button.listeners.click();
+  assert.equal(gates.length,0,'retry restores neutral pending state before the HTTP reply');
+  await tick(); assert.equal(requests.length,2);
   console.log('PASS: unconfirmed native gate offers bilingual access retry without signup/upgrade or a paid grant');
 })().catch(e => { console.error(e); process.exitCode=1; });
 
