@@ -124,6 +124,25 @@ def _display_name(repo_root: Path, ticker: str, asof: str | None) -> tuple[str, 
     return ticker, "ticker"
 
 
+def read_edges(edges_path: Path) -> tuple[list, str]:
+    """(edges, edges_state) from the relationships store, read IF PRESENT.
+
+    The pages were built for a bare list of edges. The store now ships the
+    ``company_intelligence.relationship_edges/v1`` envelope (a dict carrying
+    ``adoption_state``, ``counts`` and ``edges``), which the dataset registry
+    holds as proposed and "never serving by itself": publishing its edges
+    needs the envelope printed and ``edge_package`` built from its counts,
+    and neither is wired here. Until then any non-list payload reads as no
+    edges, the same "empty" state the pages show when the file is absent.
+    """
+    if not edges_path.exists():
+        return [], "empty"
+    payload = json.loads(edges_path.read_text(encoding="utf-8"))
+    if not isinstance(payload, list):
+        return [], "empty"
+    return payload, "present"
+
+
 def edge_party_names(repo_root: Path, edges: list, asof: str | None) -> dict:
     """issuer_id -> display name for every edge party (seat GAP 21).
 
@@ -477,9 +496,8 @@ def build_model(report: dict, manifest: dict | None, *, repo_root: Path,
     extended_on = extended_dates[-1] if extended_dates else None
 
     # -- edges / deck: other programs own these; read IF PRESENT -------------
-    edges_path = repo_root / EDGES_PATH
     deck_path = repo_root / DECK_PATH
-    edges = json.loads(edges_path.read_text(encoding="utf-8")) if edges_path.exists() else []
+    edges, edges_state = read_edges(repo_root / EDGES_PATH)
     deck = json.loads(deck_path.read_text(encoding="utf-8")) if deck_path.exists() else None
 
     # -- card payloads -------------------------------------------------------
@@ -557,7 +575,7 @@ def build_model(report: dict, manifest: dict | None, *, repo_root: Path,
         "states": [{"key": key, "en": en, "zh": zh} for key, en, zh in STATE_KEYS],
         "issuers": issuers,
         "edges": edges,
-        "edges_state": "present" if edges_path.exists() else "empty",
+        "edges_state": edges_state,
         "party_names": edge_party_names(repo_root, edges, asof),
         "deck": deck,
         # relationships package manifest (counts by species); none until the

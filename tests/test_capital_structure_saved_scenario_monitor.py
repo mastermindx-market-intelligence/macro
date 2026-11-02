@@ -23,6 +23,7 @@ import os
 import re
 import subprocess
 import sys
+import types
 import urllib.error
 import urllib.parse
 from pathlib import Path
@@ -870,8 +871,8 @@ def test_u2_monitor_dedupes_against_outbox_and_writes_outcome_only_on_ok(
     assert _store.patch_count() == 0
 
     # A field where the outbox already holds both ids: deduped before the
-    # plan, nothing enqueued, NO firing outcome write.  The three non-firing
-    # observations are recorded — they never depended on an enqueue.
+    # plan, nothing enqueued — the alerts provably sit in the outbox, so both
+    # firing pairs are recorded alongside the three non-firing observations.
     _store, outbox = _install(
         monkeypatch, fixture_rows, world=world, root=tmp_path, seeded=both_fids
     )
@@ -879,35 +880,228 @@ def test_u2_monitor_dedupes_against_outbox_and_writes_outcome_only_on_ok(
     assert armed.planned_n == 0 and armed.duplicate_n == 2
     assert armed.enqueued_n == 0
     assert outbox.posts() == []
-    assert armed.observed_n == 3 and _store.patch_count() == 3
+    assert armed.observed_n == 3 and armed.recorded_n == 2
+    assert _store.patch_count() == 5
     written = _store.written()
-    assert all(written[saved_id] == (None, None) for saved_id in firing_ids)
+    assert written[fixture_rows.correction.saved_id] == ("correction", served_gen)
+    assert written[fixture_rows.new_events.saved_id] == ("new_events", served_gen)
     assert written[fixture_rows.no_change.saved_id] == ("no_change", served_gen)
 
-    # With the dedupe probe blinded, the UNIQUE index absorbs both replays
-    # and an absorbed row still writes no outcome — only an enqueued row does;
-    # the already-recorded observations repeat their pair and stay unwritten.
-    monkeypatch.setattr(
-        monitor,
-        "read_existing_fire_ids",
-        lambda ids: monitor.TypedRead(monitor.READ_OK_ZERO, []),
+    # Recorded, the pairs repeat the next night: nothing plans, nothing writes.
+    again = monitor.run(root=tmp_path, dry_run=False)
+    assert again.planned_n == 0 and again.duplicate_n == 0
+    assert again.recorded_n == 0 and again.observed_n == 0
+    assert _store.patch_count() == 5
+
+    # With the pre-insert probe blinded on a fresh store, the UNIQUE index
+    # absorbs both replays; the re-read of the absorbed ids finds both alerts
+    # in the outbox, so each absorbed duplicate records its pair too.
+    _store, outbox = _install(
+        monkeypatch, fixture_rows, world=world, root=tmp_path, seeded=both_fids
     )
+    real_read = monitor.read_existing_fire_ids
+    reads: list[list[str]] = []
+
+    def _blind_first_read(ids):
+        reads.append(list(ids))
+        if len(reads) == 1:
+            return monitor.TypedRead(monitor.READ_OK_ZERO, [])
+        return real_read(ids)
+
+    monkeypatch.setattr(monitor, "read_existing_fire_ids", _blind_first_read)
     blinded = monitor.run(root=tmp_path, dry_run=False)
     assert blinded.enqueued_n == 0 and blinded.duplicate_n == 2
-    assert blinded.observed_n == 0
+    assert blinded.recorded_n == 2 and blinded.observed_n == 3
     assert len(outbox.posts()) == 2
-    assert _store.patch_count() == 3
+    assert len(reads) == 2 and sorted(reads[1]) == sorted(both_fids), reads
+    assert not any(
+        "not recorded" in note or "outcome write failed" in note
+        for note in blinded.notes
+    ), blinded.notes
+    written = _store.written()
+    assert all(
+        written[saved_id][1] == served_gen for saved_id in firing_ids
+    ), written
+
+    # The same absorbed replays with the re-read unavailable: nothing proves
+    # the alerts landed, so no pair is recorded and the run says why.  The
+    # next night's pre-insert SELECT records whatever did land.
+    _store, outbox = _install(
+        monkeypatch, fixture_rows, world=world, root=tmp_path, seeded=both_fids
+    )
+    reads.clear()
+
+    def _blind_then_unavailable(ids):
+        reads.append(list(ids))
+        if len(reads) == 1:
+            return monitor.TypedRead(monitor.READ_OK_ZERO, [])
+        return monitor.TypedRead(monitor.READ_UNAVAILABLE, None, "http_503")
+
+    monkeypatch.setattr(monitor, "read_existing_fire_ids", _blind_then_unavailable)
+    unconfirmed = monitor.run(root=tmp_path, dry_run=False)
+    assert unconfirmed.enqueued_n == 0 and unconfirmed.duplicate_n == 2
+    assert unconfirmed.recorded_n == 0
+    assert (
+        "enqueued firing not recorded (duplicate_unconfirmed_http_503)"
+        in unconfirmed.notes
+    ), unconfirmed.notes
+    written = _store.written()
+    assert all(written[saved_id] == (None, None) for saved_id in firing_ids)
+    monkeypatch.setattr(monitor, "read_existing_fire_ids", real_read)
 
     # A clean field for one row: it enqueues and its outcome write follows;
-    # the still-deduped sibling stays unwritten.
+    # the deduped sibling is recorded without a second POST.
     _store, outbox = _install(
         monkeypatch, fixture_rows, world=world, root=tmp_path, seeded=both_fids[:1]
     )
     clean = monitor.run(root=tmp_path, dry_run=False)
     assert clean.enqueued_n == 1 and clean.duplicate_n == 1
+    assert clean.recorded_n == 2
+    assert [post["fire_event_id"] for post in outbox.posts()] == both_fids[1:]
     written = _store.written()
     assert written[fixture_rows.new_events.saved_id] == ("new_events", served_gen)
-    assert written[fixture_rows.correction.saved_id] == (None, None)
+    assert written[fixture_rows.correction.saved_id] == ("correction", served_gen)
+
+    # A failed enqueue writes nothing for its row: it plans again next night.
+    _store, outbox = _install(
+        monkeypatch, fixture_rows, world=world, root=tmp_path, seeded=[]
+    )
+    monkeypatch.setattr(
+        monitor,
+        "enqueue",
+        lambda entries, *, dry_run: (["http_500"], "http_500"),
+    )
+    failed = monitor.run(root=tmp_path, dry_run=False)
+    assert failed.outcome == "partial" and failed.recorded_n == 0
+    written = _store.written()
+    assert all(written[saved_id] == (None, None) for saved_id in firing_ids)
+
+
+# ---------------------------------------------------------------------------
+# A landed alert whose outcome write failed is recorded by the next night's
+# dedupe, so last_seen follows the served generation and the chain holds
+# ---------------------------------------------------------------------------
+def test_u2_monitor_records_a_landed_alert_whose_write_failed_on_the_next_night(
+    world: _World, fixture_rows: _Fixture, tmp_path, monkeypatch
+):
+    served_gen = world.current["generation_id"]
+    firing_ids = (fixture_rows.correction.saved_id, fixture_rows.new_events.saved_id)
+    store_fake, outbox = _install(
+        monkeypatch, fixture_rows, world=world, root=tmp_path, seeded=[]
+    )
+    real_write = monitor.write_outcome
+
+    def _firing_write_fails(saved_id, outcome, generation_id):
+        if outcome in monitor.FIRING_OUTCOMES:
+            return types.SimpleNamespace(state="unavailable", error_class="http_503")
+        return real_write(saved_id, outcome, generation_id)
+
+    # Night one: both alerts land, both outcome writes fail, and the run
+    # names the failure instead of dropping it.
+    monkeypatch.setattr(monitor, "write_outcome", _firing_write_fails)
+    first = monitor.run(root=tmp_path, dry_run=False)
+    assert first.enqueued_n == 2 and first.recorded_n == 0
+    assert "enqueued firing not recorded (http_503)" in first.notes, first.notes
+    written = store_fake.written()
+    assert all(written[saved_id] == (None, None) for saved_id in firing_ids)
+
+    # Night two: the same pairs plan again, the pre-insert SELECT finds both
+    # alerts, nothing is posted twice — and both pairs are now recorded.
+    monkeypatch.setattr(monitor, "write_outcome", real_write)
+    second = monitor.run(root=tmp_path, dry_run=False)
+    assert second.planned_n == 0 and second.duplicate_n == 2
+    assert second.enqueued_n == 0 and second.recorded_n == 2
+    assert len(outbox.posts()) == 2
+    written = store_fake.written()
+    assert written[fixture_rows.correction.saved_id] == ("correction", served_gen)
+    assert written[fixture_rows.new_events.saved_id] == ("new_events", served_gen)
+
+    # Night three: the recorded pairs repeat — silence.
+    third = monitor.run(root=tmp_path, dry_run=False)
+    assert third.planned_n == 0 and third.duplicate_n == 0
+    assert third.recorded_n == 0 and len(outbox.posts()) == 2
+
+
+class _ConflictOutbox(_FakeOutbox):
+    """A POST that conflicts without landing: the 409 shape a foreign-key
+    or other constraint can return, so the outbox never holds the row."""
+
+    def __call__(self, method: str, path: str, body: Any = None, prefer: str | None = None, timeout: int = 6) -> Any:
+        if method == "POST":
+            self.calls.append((method, path, body))
+            raise _Http409()
+        return super().__call__(method, path, body, prefer, timeout)
+
+
+# ---------------------------------------------------------------------------
+# A conflict whose alert is not in the outbox records nothing and plans again
+# ---------------------------------------------------------------------------
+def test_u2_monitor_records_nothing_for_a_conflict_whose_alert_is_not_in_the_outbox(
+    world: _World, fixture_rows: _Fixture, tmp_path, monkeypatch
+):
+    firing_ids = (fixture_rows.correction.saved_id, fixture_rows.new_events.saved_id)
+    store_fake, _seeded = _install(
+        monkeypatch, fixture_rows, world=world, root=tmp_path, seeded=[]
+    )
+    outbox = _ConflictOutbox()
+    monkeypatch.setattr(monitor, "_pg", outbox)
+
+    first = monitor.run(root=tmp_path, dry_run=False)
+    assert first.enqueued_n == 0 and first.duplicate_n == 2
+    assert first.recorded_n == 0
+    assert (
+        "enqueued firing not recorded (conflict_not_in_outbox)" in first.notes
+    ), first.notes
+    assert outbox.fids() == []
+    written = store_fake.written()
+    assert all(written[saved_id] == (None, None) for saved_id in firing_ids)
+
+    # Nothing landed, so the next night plans both pairs again.
+    second = monitor.run(root=tmp_path, dry_run=False)
+    assert second.planned_n == 2 and second.recorded_n == 0
+    assert len(outbox.posts()) == 4
+
+
+# ---------------------------------------------------------------------------
+# A mixed absorbed batch records only the ids the re-read returns
+# ---------------------------------------------------------------------------
+def test_u2_monitor_mixed_absorbed_batch_records_only_the_landed_id(
+    world: _World, fixture_rows: _Fixture, tmp_path, monkeypatch
+):
+    served_gen = world.current["generation_id"]
+    landed_fid = monitor.fire_event_id(
+        saved_id=fixture_rows.correction.saved_id,
+        outcome="correction",
+        to_generation_id=served_gen,
+        user_id=USER,
+    )
+    store_fake, _seeded = _install(
+        monkeypatch, fixture_rows, world=world, root=tmp_path, seeded=[]
+    )
+    # The correction alert sits in the outbox; the new_events POST conflicts
+    # without landing.  Both come back 409.
+    outbox = _ConflictOutbox(fire_event_ids=[landed_fid])
+    monkeypatch.setattr(monitor, "_pg", outbox)
+    real_read = monitor.read_existing_fire_ids
+    reads: list[list[str]] = []
+
+    def _blind_first_read(ids):
+        reads.append(list(ids))
+        if len(reads) == 1:
+            return monitor.TypedRead(monitor.READ_OK_ZERO, [])
+        return real_read(ids)
+
+    monkeypatch.setattr(monitor, "read_existing_fire_ids", _blind_first_read)
+    first = monitor.run(root=tmp_path, dry_run=False)
+    assert first.enqueued_n == 0 and first.duplicate_n == 2
+    assert first.recorded_n == 1
+    assert len(outbox.posts()) == 2 and len(reads) == 2
+    assert (
+        "enqueued firing not recorded (conflict_not_in_outbox)" in first.notes
+    ), first.notes
+    written = store_fake.written()
+    assert written[fixture_rows.correction.saved_id] == ("correction", served_gen)
+    assert written[fixture_rows.new_events.saved_id] == (None, None)
 
 
 # ---------------------------------------------------------------------------
