@@ -31,6 +31,14 @@ Light `--warn` must resolve to `#7d5922` where the rail renders on white (the sh
 light value fails 3:1); if the shared shell does not already supply it, set it on `.board`
 for light only. Doctrine: no accent edge on any container, any side.
 
+> **Amendment 2026-11-02 (seat ruling, build repair round 1).** The light `--warn` carve-out is
+> NOT shipped. The terminal's enforced product law D-W1 (`lib/__tests__/newsFlowTokens.test.ts`:
+> "dark ships, light is specimen-only", no owned news-flow file may contain `data-theme`) outranks
+> this frozen value; `#7d5922` remains specimen documentation for the Paper board and any future
+> light release, and no selector for it lives in `TickerNewsPanel.module.css`. Second amendment from
+> the same round: the persistent ladder underline sits on `.ladder .step` (and `.ladder:hover .step`),
+> never on the `›` separators. Every other value in this spec stands.
+
 ## 2. Row anatomy (TickerNewsPanel.tsx; content and order unchanged from R2 §3)
 
 1. **meta** — tag · publisher · topic · time, left to right, `flex-wrap:wrap`, gap 7 px, 9.5 px caps
