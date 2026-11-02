@@ -266,3 +266,66 @@ def test_shipped_payload_declares_the_required_tier():
     if payload.get("gated"):
         assert payload["required_tier"] == "essential"
         assert payload["locked"] > 0
+
+
+# ------------------------------------------------- build-day hero and filing mark
+
+
+def test_hero_says_the_change_count_compares_snapshots_not_a_day():
+    """The heading carries the build day; the count says what it compares."""
+    shell = _env().get_template("special_situations.html.j2").render(
+        rows=[], groups=[], cat_chips=[], cat_chips_more=[], sector_opts=[],
+        theme_opts=[], total=2, n_cats=1, counts={}, coverage={},
+        built="2031-02-03 07:25 UTC", top_setups=[], grade_a=0,
+        new_today=41, intel_cov={}, gate=None, C=C_STUB)
+    assert "Corporate events as of 2031-02-03" in shell
+    assert "2031-02-03 的公司事件" in shell
+    assert "New since prior snapshot" in shell
+    assert "New on " not in shell
+    assert "较上一快照新增" in shell
+    assert "新增于" not in shell
+    assert '<div class="v">41</div>' in shell
+    assert "Corporate events in play right now" not in shell
+    assert "当前正在进行中的公司事件" not in shell
+    assert "New today" not in shell
+    assert "今日新增" not in shell
+
+
+def test_hero_without_a_build_day_names_events_without_a_clock():
+    """An empty build stamp keeps a title and a count, with no day attached."""
+    shell = _env().get_template("special_situations.html.j2").render(
+        rows=[], groups=[], cat_chips=[], cat_chips_more=[], sector_opts=[],
+        theme_opts=[], total=2, n_cats=1, counts={}, coverage={},
+        built="", top_setups=[], grade_a=0, new_today=7, intel_cov={},
+        gate=None, C=C_STUB)
+    assert '<span class="l-en">Corporate events</span>' in shell
+    assert '<span class="l-zh">公司事件</span>' in shell
+    assert "New since prior snapshot" in shell
+    assert "较上一快照新增" in shell
+    assert '<div class="v">7</div>' in shell
+    assert "Corporate events as of" not in shell
+    assert "New on " not in shell
+    assert "新增于" not in shell
+    assert "New today" not in shell
+    assert "今日新增" not in shell
+    assert "in play right now" not in shell
+
+
+def test_filing_lane_mark_reads_in_filings_when_the_row_is_live():
+    """The filing-lane check stays on r.live and no longer reads live copy."""
+    row = _row("ZZZ", 1)
+    row["live"] = True
+    html = _env().get_template("_special_situations_rows.html.j2").render(
+        rows=[row])
+    assert "In filings" in html
+    assert "披露中" in html
+    assert "实时" not in html
+    assert 'class="live-mark"' in html
+    assert 'title="Confirmed in our EDGAR feed"' in html
+    quiet = _row("QQQ", 2)
+    quiet["live"] = False
+    hidden = _env().get_template("_special_situations_rows.html.j2").render(
+        rows=[quiet])
+    assert "In filings" not in hidden
+    assert "披露中" not in hidden
+    assert 'class="live-mark"' not in hidden

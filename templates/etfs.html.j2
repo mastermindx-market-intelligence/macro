@@ -393,6 +393,9 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 .fu i{font-style:normal;font-size:10.5px;color:var(--faint);font-variant-numeric:tabular-nums;flex:none}
 .fu u{text-decoration:none;font-size:9.5px;font-weight:700;color:var(--faint);
   border:1px solid var(--grid);border-radius:5px;padding:0 4px;flex:none}
+/* holdings date wraps under the chip: .fu itself does not wrap */
+.fu{flex-wrap:wrap}
+.fu time{display:block;flex-basis:100%;min-width:0;color:var(--muted)}
 .fl-foot{margin-top:16px;font-size:11.5px;color:var(--faint);line-height:1.55}
 
 /* ═══ disclosure ═══ */
@@ -538,7 +541,8 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
       <span class="dtp-token"><span class="dtp-dot"></span>{{ t('Filing cycle', '披露周期') }}</span>
       {% if board and board.coverage %}<span class="dtp-chip">{{ t('tracking', '追踪') }}&nbsp;<b>{{ board.coverage.funds }}</b>&nbsp;{{ t('curated & active funds', '精选与主动基金') }}</span>{% endif %}
       <span class="dtp-chip">{{ t('one full holdings read per fund, per day', '每只基金每日一次完整持仓读取') }}</span>
-      <span class="dtp-asof">{{ generated_utc }} UTC
+      <span class="dtp-asof">{{ t('page built', '页面生成于') }}
+        {{ generated_utc }} UTC
       {{ help("Universe = curated THEMATIC / industry funds (SPDR sector, Global X, VanEck, First Trust, Sprott, Amplify, Defiance, Bitwise, Invesco, Roundhill) plus ACTIVELY managed funds (ARK). Broad-index trackers (SPY/QQQ) are excluded — their moves are reconstitution noise, not a curated read. We diff each fund's daily holdings, strip out mechanical creation/redemption flow AND the price move, and keep the manager's actual conviction per name, measured in percentage POINTS of fund weight committed. Cash & money-market lines are excluded. Lagged filing data — context, never a buy list.",
       "范围 = 精选主题／行业基金（SPDR 板块、Global X、VanEck、First Trust、Sprott、Amplify、Defiance、Bitwise、Invesco、Roundhill）加主动管理基金（ARK）。宽基指数基金（SPY/QQQ）已排除——其动作是再平衡噪音而非精选解读。我们比对每只基金的每日持仓，剔除机械性申购／赎回资金流及价格变动，留下经理人对每只个股的真实信念，以投入的基金权重百分点衡量。现金与货币市场科目已排除。此为滞后的披露数据——仅供参考，非买入清单。") }}
       </span>
@@ -794,7 +798,13 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
           {%- for c in grp.rows|sort(attribute='fund') -%}
           {#- a fund whose registry name IS its ticker (the ARK feeds) prints the
               ticker once, not twice -#}
-          <span class="fu {% if not c.n_snapshots %}s0{% elif c.stale_days is not none and c.stale_days <= 3 %}s1{% elif c.stale_days is not none and c.stale_days <= 10 %}s2{% else %}s3{% endif %}"><b>{{ c.fund }}</b><span>{% if c.fund_name and c.fund_name != c.fund %}{{ c.fund_name }}{% endif %}</span>{% if c.unofficial %}<u>{{ t('3rd', '第三方') }}</u>{% endif %}{% if c.stale_days and c.stale_days > 3 %}<u>{{ c.stale_days }}d</u>{% endif %}<i>{{ c.n_snapshots }}</i></span>
+          <span class="fu {% if not c.n_snapshots %}s0{% elif c.stale_days is not none and c.stale_days <= 3 %}s1{% elif c.stale_days is not none and c.stale_days <= 10 %}s2{% else %}s3{% endif %}"><b>{{ c.fund }}</b><span>{% if c.fund_name and c.fund_name != c.fund %}{{ c.fund_name }}{% endif %}</span>{% if c.unofficial %}<u>{{ t('3rd', '第三方') }}</u>{% endif %}{% if c.stale_days and c.stale_days > 3 %}<u>{{ c.stale_days }}d</u>{% endif %}<i>{{ c.n_snapshots }}</i>
+          {% if c.latest_asof %}
+          <time datetime="{{ c.latest_asof }}">
+          {{ t('holdings through', '持仓截至') }} {{ c.latest_asof }}
+          </time>
+          {% endif %}
+          </span>
           {%- endfor -%}
           </div>
         </div>
@@ -812,8 +822,8 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
   <p class="disc">{{ t(
     "How to read this: fund managers accumulating a name is context on a lagged filing cadence — where curated & active money is going, not a timed buy signal. The stance answers “so what do I do?” in plain words; the honest default is “watch — don’t chase” until a name has both broad backing and a forming setup.",
     "如何解读：基金经理人增持某只个股属于滞后披露节奏下的背景信息——反映精选与主动资金的去向，而非择时买入信号。“如何应对”以平实用语回答“那我该怎么做”；在个股同时具备广泛支持与正在形成的形态之前，诚实的默认立场是“观望——勿追”。") }}
-    {{ t("Coverage: SPDR, Global X, VanEck, First Trust, Sprott, Amplify, Defiance, Bitwise, ARK, Invesco and Roundhill are verified daily holdings feeds (with shares). iShares and Schwab are blocked at source but reachable via a labelled third-party feed; Vanguard publishes no free daily feed. A fund missing here failed today’s fetch and is skipped, never crashing the page.",
-    "覆盖范围：SPDR、Global X、VanEck、First Trust、Sprott、Amplify、Defiance、Bitwise、ARK、Invesco 与 Roundhill 为已验证的每日持仓数据（含份额）。iShares 与嘉信在源头被屏蔽，但可通过带标注的第三方数据源触达；Vanguard 无免费每日数据。此处缺失的基金为今日抓取失败并被跳过，绝不会使页面崩溃。") }}</p>
+    {{ t("Coverage: SPDR, Global X, VanEck, First Trust, Sprott, Amplify, Defiance, Bitwise, ARK, Invesco and Roundhill are daily holdings feeds we read (with shares). iShares and Schwab are blocked at source but reachable via a labelled third-party feed; Vanguard publishes no free daily feed. A fund missing here failed today’s fetch and is skipped, never crashing the page.",
+    "覆盖范围：SPDR、Global X、VanEck、First Trust、Sprott、Amplify、Defiance、Bitwise、ARK、Invesco 与 Roundhill 为我们读取的每日持仓数据（含份额）。iShares 与嘉信在源头被屏蔽，但可通过带标注的第三方数据源触达；Vanguard 无免费每日数据。此处缺失的基金为今日抓取失败并被跳过，绝不会使页面崩溃。") }}</p>
 
 </div>
 
@@ -911,7 +921,7 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
         var a = si.querySelector('[data-act="signin"]');
         if(a) a.addEventListener('click', function(ev){
           ev.preventDefault();
-          try{ window.MDXAuth.open('signin'); }catch(e){ location.href = 'plans.html'; }
+          if (window.MMXSharedShell) { window.MMXSharedShell.openAuth('signin'); return; } try{ window.MDXAuth.open('signin'); }catch(e){ location.href = 'plans.html'; }
         });
       }
     });

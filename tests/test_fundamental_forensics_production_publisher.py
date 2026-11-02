@@ -61,6 +61,16 @@ from engine.fundamental_forensics.query_service import CanonicalEntityBinding
 import scripts.publish_fif_production_datasets as producer
 
 ROOT = Path(__file__).resolve().parents[1]
+# Seat ruling R-9761-CLK (b): publisher-family runs use a byte-identical copy of
+# the metric registry 1.0.0 YAML (catalog / mappings / formulas as on main before
+# #9761) as --repo-root. The publisher reads --repo-root only for the registry
+# (snapshot_core_registry_payload + load_core_registry), and its CLOCK RULE
+# folds every registry available_at into admitted_at, so the live registry's
+# later rule clocks would refuse these 2026-10-13 fixture runs. These tests pin
+# publisher mechanics; registry drift is detected by the golden pins in
+# test_fundamental_forensics_admitted_filing_package.py and
+# test_fundamental_forensics_statement_grid.py, which stay on the live registry.
+PINNED_REGISTRY_ROOT = ROOT / "tests" / "fixtures" / "fundamental_forensics_registry_v1_0_0"
 
 FIRST_ACCEPTED_AT = "2025-10-31T10:01:26.000Z"   # real-shaped: accepted 2025
 SECOND_ACCEPTED_AT = "2024-07-31T10:01:26.000Z"  # real-shaped: accepted 2024
@@ -394,7 +404,7 @@ def _publish_cli(lane: dict, contract: Path, store: Path, report: Path, clock: s
             "--archive-root", str(lane["archive_root"]),
             "--recorded-at", clock,
             "--store-dir", str(store),
-            "--repo-root", str(ROOT),
+            "--repo-root", str(PINNED_REGISTRY_ROOT),
             "--report-path", str(report),
         ]
     )
@@ -986,7 +996,7 @@ def test_fixture_tree_inputs_are_refused(tmp_path, monkeypatch, offline_collecto
         if subcommand == "capture-members":
             argv += ["--user-agent", USER_AGENT]
         else:
-            argv += ["--store-dir", str(tmp_path / "store"), "--repo-root", str(ROOT)]
+            argv += ["--store-dir", str(tmp_path / "store"), "--repo-root", str(PINNED_REGISTRY_ROOT)]
         rc = producer.main(argv)
         assert rc == 1
         assert any(
@@ -1617,7 +1627,7 @@ def test_d6_capture_report_files_member_capture_failure_not_no_retained_package(
             "--archive-root", str(lane["archive_root"]),
             "--recorded-at", RUN_CLOCK,
             "--store-dir", str(store),
-            "--repo-root", str(ROOT),
+            "--repo-root", str(PINNED_REGISTRY_ROOT),
             "--report-path", str(report_path),
             "--capture-report", str(capture_report),
         ]
@@ -2362,7 +2372,7 @@ def test_d13_t6_publish_report_carries_contract_acquire_block_and_moves_no_byte(
             "--archive-root", str(lane["archive_root"]),
             "--recorded-at", RUN_CLOCK,
             "--store-dir", str(store),
-            "--repo-root", str(ROOT),
+            "--repo-root", str(PINNED_REGISTRY_ROOT),
             "--report-path", str(report_path),
             "--capture-report", str(capture_report),
         ]
@@ -3621,9 +3631,10 @@ def test_c0c_t8g_first_publish_eight_k_captured_after_ten_q_keeps_content_clock(
     assert row["outcome"] == "published"
     assert row["clock_basis"] == "content"
     # The content clock over the 10-Q's T1 plus the rule + registry clocks —
-    # nothing derived from the 8-K's later T2.
+    # nothing derived from the 8-K's later T2. The registry is the one this
+    # publish run read (--repo-root, R-9761-CLK (b)).
     registry_clocks = producer._registry_available_clocks(
-        producer.snapshot_core_registry_payload(ROOT)
+        producer.snapshot_core_registry_payload(PINNED_REGISTRY_ROOT)
     )
     t1 = producer.parse_utc(CAPTURE_CLOCK, field="capture clock")
     expected = producer.utc_text(producer._content_clock([t1], registry_clocks))
@@ -3751,7 +3762,7 @@ def test_c0c_t8d_coverage_row_for_eight_k_captured_admitted_not_served(
             "--archive-root", str(lane["archive_root"]),
             "--recorded-at", RUN_CLOCK,
             "--store-dir", str(tmp_path / "store"),
-            "--repo-root", str(ROOT),
+            "--repo-root", str(PINNED_REGISTRY_ROOT),
             "--capture-report", str(capture_report),
             "--report-path", str(report_path),
         ]
@@ -3918,7 +3929,7 @@ def test_c0c_p8_coverage_row_reports_shortfall_with_typed_codes(
             "--archive-root", str(lane["archive_root"]),
             "--recorded-at", RUN_CLOCK,
             "--store-dir", str(tmp_path / "store"),
-            "--repo-root", str(ROOT),
+            "--repo-root", str(PINNED_REGISTRY_ROOT),
             "--capture-report", str(capture_report),
             "--report-path", str(report_path),
         ]

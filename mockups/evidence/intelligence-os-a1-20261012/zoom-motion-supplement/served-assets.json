@@ -1,0 +1,20 @@
+{
+  "app.js": {
+    "status": 200,
+    "bytes": 1021692,
+    "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+  },
+  "styles.css": {
+    "status": 200,
+    "bytes": 231367,
+    "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+  },
+  "preferences.js": {
+    "status": 200,
+    "bytes": 3173,
+    "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f"
+  },
+  "theme-tokens.css": {
+    "error": "HTTP Error 401: Unauthorized"
+  }
+}

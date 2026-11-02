@@ -1079,6 +1079,99 @@ def test_allowlist_never_gates_adoption_of_an_already_established_group() -> Non
     assert by_id["SEC:US-XNAS-JOINER"]["issuer_id"] == "ISS:US-XNAS-ANCHOR"
 
 
+def _refused_row(code: str, cik: str, issuer: str | None) -> dict:
+    """An existing row the FIX 5 gate already refused: EVIDENCE_CONFLICT, CIK stamped."""
+    return {
+        "security_id": f"SEC:US-XNAS-{code}", "issuer_id": issuer,
+        "issuer_state": "EVIDENCE_CONFLICT", "issuer_cik": cik,
+        "issuer_evidence_snapshot": "2026-10-05",
+        "listing_key": f"US-XNAS-{code}", "mic": "XNAS", "inception_code": code,
+        "_existed_before": True,
+    }
+
+
+def test_a_refused_null_issuer_group_forms_once_its_cik_is_ratified() -> None:
+    """#9570: CENT/CENTA were refused into EVIDENCE_CONFLICT with issuer_id NULL.  The
+    allowlist ratification is the review the gate asked for, and with no committed
+    value there is nothing for mint-once to protect, so the group forms."""
+    cik = "0000887733"
+    rows = [_refused_row("CENT", cik, None), _refused_row("CENTA", cik, None)]
+    cik_map = {"CENT": (cik, "CENTRAL GARDEN & PET CO"), "CENTA": (cik, "CENTRAL GARDEN & PET CO")}
+    out_rows, migrations = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    by_id = {r["security_id"]: r for r in out_rows}
+    assert {r["issuer_state"] for r in out_rows} == {"RESOLVED"}
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_id"] == by_id["SEC:US-XNAS-CENTA"]["issuer_id"]
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_id"] is not None
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_evidence_snapshot"] == "2026-10-15"
+    assert {m["old_issuer_id"] for m in migrations} == {None}
+    # Idempotent: the second pass sees RESOLVED rows and changes nothing.
+    again, again_m = BUILD.apply_issuer_correction(
+        out_rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    assert again == out_rows and again_m == []
+
+
+def test_the_real_allowlist_ratifies_central_garden() -> None:
+    assert "0000887733" in BUILD._load_issuer_group_allowlist()
+
+
+def test_a_refused_group_stays_conflicted_without_ratification() -> None:
+    cik = "0000887733"
+    rows = [_refused_row("CENT", cik, None), _refused_row("CENTA", cik, None)]
+    cik_map = {"CENT": (cik, "X"), "CENTA": (cik, "X")}
+    out_rows, migrations = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset())
+    assert {r["issuer_state"] for r in out_rows} == {"EVIDENCE_CONFLICT"}
+    assert all(r["issuer_id"] is None for r in out_rows)
+    assert all(r["issuer_evidence_snapshot"] == "2026-10-05" for r in out_rows), "untouched"
+    assert migrations == []
+
+
+def test_a_conflict_carrying_a_committed_issuer_never_reopens_even_when_ratified() -> None:
+    """Mint-once still binds: a conflict row with a committed issuer_id is never
+    revisited by a ratification, because forming the group would rewrite that value."""
+    cik = "0009999997"
+    rows = [_refused_row("LEGA", cik, "ISS:US-XNAS-LEGA"), _refused_row("LEGB", cik, "ISS:US-XNAS-LEGB")]
+    before = [dict(r) for r in rows]
+    cik_map = {"LEGA": (cik, "X"), "LEGB": (cik, "X")}
+    out_rows, migrations = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    assert out_rows == before
+    assert migrations == []
+
+
+def test_a_mixed_refused_group_never_reopens_partially() -> None:
+    """Review finding 2: when one conflicted sibling carries a committed issuer_id, a
+    reopen of only the null members would mint a SECOND issuer_id for one CIK (the
+    committed sibling is not RESOLVED, so adoption never sees it).  All stay put."""
+    cik = "0009999996"
+    rows = [_refused_row("MIXA", cik, "ISS:US-XNAS-MIXA"),
+            _refused_row("MIXB", cik, None), _refused_row("MIXC", cik, None)]
+    before = [dict(r) for r in rows]
+    cik_map = {c: (cik, "X") for c in ("MIXA", "MIXB", "MIXC")}
+    out_rows, migrations = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    assert out_rows == before
+    assert migrations == []
+
+
+def test_a_ratified_reopen_whose_sibling_left_the_map_resolves_alone() -> None:
+    """Review finding 3: a reopened row missing from the weekly map goes to
+    NO_ISSUER_EVIDENCE (CIK cleared); the remaining member resolves as a single-member
+    group, which the allowlist never gates."""
+    cik = "0000887733"
+    rows = [_refused_row("CENT", cik, None), _refused_row("CENTA", cik, None)]
+    cik_map = {"CENT": (cik, "CENTRAL GARDEN & PET CO")}
+    out_rows, _m = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    by_id = {r["security_id"]: r for r in out_rows}
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_state"] == "RESOLVED"
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_id"] is not None
+    assert by_id["SEC:US-XNAS-CENTA"]["issuer_state"] == "NO_ISSUER_EVIDENCE"
+    assert by_id["SEC:US-XNAS-CENTA"]["issuer_id"] is None
+    assert not by_id["SEC:US-XNAS-CENTA"]["issuer_cik"]
+
+
 # ── V4-D2B1-R1: VMRK duplicate-mint supersession + pending-transition fence ────
 # research/prophet_v4/d2/D2B1_R1_FROZEN_CONTRACT_2026-08-20.md — the EQR->VMRK rename
 # (SEC EDGAR CIK 0000906107, 8-K accession 0001140361-26-033377, Item 5.03) produced a
@@ -1201,14 +1294,33 @@ def test_receipt_carries_the_security_axis_block(receipt: dict, master: pd.DataF
         lost = row["lost_rows"]
         assert lost and len(lost) == len(set(lost))
         assert set(lost) <= set(by_id)
-        assert {by_id[sec]["inception_code"] for sec in lost} == set(plain)
+        # The receipt reports CURRENT symbols while immutable IDs retain their
+        # inception codes (e.g. DOMO→HUCK and YYGH→YFOR). Compare the same
+        # naming domain without removing any member from the lost-row fence.
+        assert {BUILD._current_symbol_of_row(by_id[sec]) for sec in lost} == set(plain)
         assert all(pd.isna(by_id[sec]["security_state"]) for sec in lost)
     for probe in receipt.get("prospective_reference", {}).get("probes", {}).values():
         if probe.get("code") == "canonical_identity_refused":
             assert probe["owner_refusals"]
             # Original dated probe refusals remain evidence even when no new
             # reference mint is attempted on an ordinary rerun.
+            # A later BOUND direct-registrant observation (#9465, SPY) is the
+            # independent evidence the refusal asked for; it may mint the key,
+            # and the dated refusal stays recorded beside it.
+            bound = {
+                obs["listing_key"]: obs.get("observed_on", "")
+                for obs in receipt.get("direct_registrant_intake", {}).get("observations", {}).values()
+                if obs.get("status") == "BOUND"
+            }
             for row in probe["owner_refusals"]:
+                observed_on = bound.get(row["listing_key"], "")
+                if observed_on > row.get("snapshot_date", "9999"):
+                    minted = active[active["listing_key"] == row["listing_key"]]
+                    assert len(minted) == 1
+                    # The mint must come from that observation, not an
+                    # earlier ordinary path.
+                    assert str(minted.iloc[0]["ingested_at"])[:10] >= observed_on
+                    continue
                 assert row["listing_key"] not in set(active["listing_key"])
                 if "lost_rows" in row:
                     assert row["reason"].startswith("pending-transition fence:")
@@ -1397,7 +1509,7 @@ def test_h8_a_resolution_hitting_a_tombstone_is_a_typed_refusal_not_a_resurrecti
 # registry; a RenameEvent-implied bare-code match on a DIFFERENT venue must NEVER
 # auto-tombstone (the reviewer's cross-MIC scenario) — it is disclosed instead.
 def test_m3_the_registry_matches_the_committed_vmrk_entry_exactly() -> None:
-    assert len(BUILD.SECURITY_SUPERSESSIONS) == 2  # + US-XNYS-PSKY (2026-10-11)
+    assert len(BUILD.SECURITY_SUPERSESSIONS) == 4  # + PSKY (10-11), KHC/ET transfers (10-18)
     entry = next(
         e for e in BUILD.SECURITY_SUPERSESSIONS if e.listing_key == "US-XNYS-VMRK"
     )
@@ -3924,11 +4036,14 @@ def test_gmi_us_accounting_completeness_real_data(receipt: dict) -> None:
         )
     # AMENDMENT R13 — every resolved_not_rederivable entry names a code and a
     # real, currently-active security_id (a staleness fact, never a fabricated
-    # or dangling reference); WBS and SATS are the known real-data instances.
+    # or dangling reference); SATS is the known real-data instance. WBS left
+    # this bucket when its 2026-08-20 acquisition exit was ledgered
+    # (config/delisted_symbols.yml): an exited listing is no longer a target.
     not_rederivable_codes = {d["code"] for d in block["resolved_not_rederivable"]}
     for d in block["resolved_not_rederivable"]:
         assert d["code"] and d["security_id"]
-    assert {"WBS", "SATS"} <= not_rederivable_codes
+    assert "SATS" in not_rederivable_codes
+    assert "WBS" not in not_rederivable_codes
     # A code can never appear in more than one of the four buckets.
     refused_codes = {r["symbol"] for r in block["refusals_this_run"]}
     disclosed_codes = {d["symbol"] for d in block["disclosed_exclusions"]}
@@ -4296,3 +4411,64 @@ def test_a_notation_variant_key_no_rename_mentions_keeps_its_open_current_catalo
             "SEC:US-XNYS-MOG.A", None, None),
     }
     VendorAliasTable(rows)  # and the fixture table is unambiguous
+
+
+# ── SAME-SYMBOL VENUE TRANSFERS (KHC Nasdaq->NYSE 2026-09-14, ET NYSE->TXSE 2026-10-05)
+# A transfer re-derives US-{to}-{sym} while the committed row keeps its inception
+# venue; the exact-key SECURITY_SUPERSESSIONS pair joins it onto the ONE canonical
+# row (no mint, no fence-lost entry), exactly as the PSKY cross-venue rename does.
+def test_txse_exchange_code_f_resolves_to_txse_mic() -> None:
+    assert BUILD.EXCHANGE_MIC["F"] == "TXSE"
+    rows = BUILD.resolve_universe({"TXS": {}}, {}, {"TXS": "F"}, "2026-10-05")
+    assert len(rows) == 1
+    assert rows[0].reason is None
+    assert rows[0].listing_key is not None
+    assert rows[0].listing_key.render() == "US-TXSE-TXS"
+
+
+def _active_row(mic: str, code: str, cik: str) -> dict:
+    return {
+        "security_id": f"SEC:US-{mic}-{code}", "issuer_id": f"ISS:US-{mic}-{code}",
+        "issuer_state": "RESOLVED", "issuer_cik": cik,
+        "issuer_evidence_snapshot": "2026-08-18", "listing_key": f"US-{mic}-{code}",
+        "country": "US", "mic": mic, "inception_code": code,
+        "effective_at": "2023-05-09T00:00:00", "ingested_at": "2026-08-13T00:00:00",
+        "security_state": None, "superseded_by": None,
+    }
+
+
+@pytest.mark.parametrize(
+    ("sym", "from_mic", "to_mic", "cik"),
+    [("ET", "XNYS", "TXSE", "0001276187"), ("KHC", "XNAS", "XNYS", "0001637459")],
+)
+def test_venue_transfer_joins_the_canonical_row_never_mints(
+    sym: str, from_mic: str, to_mic: str, cik: str,
+) -> None:
+    canonical = f"SEC:US-{from_mic}-{sym}"
+    existing = [_active_row(from_mic, sym, cik)]
+    resolutions = [_res(sym, to_mic, sym)]
+    rows, ids, notes, refusals, pending, lost, exc_lost, gmi_refusals = BUILD.mint_master_rows(
+        resolutions, existing, "2026-10-18T00:00:00", cik_map={sym: (cik, sym)},
+    )
+    assert ids.get(sym) == canonical, "the transfer joins the ONE canonical row"
+    assert not any(r["security_id"] == f"SEC:US-{to_mic}-{sym}" for r in rows)
+    assert lost == [] and exc_lost == [] and pending == [] and refusals == []
+    entry = next(e for e in BUILD.SECURITY_SUPERSESSIONS
+                 if e.listing_key == f"US-{to_mic}-{sym}")
+    assert entry.canonical_id == canonical
+
+
+def test_unpaired_venue_transfer_raises(monkeypatch: pytest.MonkeyPatch) -> None:
+    bad = BUILD.VenueTransfer(symbol="ZZZT", from_mic="XNYS", to_mic="TXSE",
+                              on=date(2026, 10, 5), evidence="fixture")
+    monkeypatch.setattr(BUILD, "VENUE_TRANSFERS", BUILD.VENUE_TRANSFERS + (bad,))
+    with pytest.raises(ValueError, match="ZZZT"):
+        BUILD._venue_transfer_covered_keys()
+
+
+def test_huck_and_yfor_renames_are_modelled() -> None:
+    pairs = {(e.old, e.new): e.on for e in BUILD.RENAME_EVENTS}
+    assert pairs[("DOMO", "HUCK")] == date(2026, 9, 24)
+    assert pairs[("YYGH", "YFOR")] == date(2026, 9, 2)
+    fixups, migrations = BUILD.load_config_maps()
+    assert BUILD.unmodelled_renames(fixups, migrations) == []

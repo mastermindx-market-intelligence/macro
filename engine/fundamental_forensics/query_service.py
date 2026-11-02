@@ -227,6 +227,13 @@ class FinancialQueryDataset:
     # bitemporal leak the acceptance matrix forbids. Absent keeps the
     # golden/FIP1 behavior byte-identical.
     dataset_admitted_at: Any = None
+    # FIF A01/A11: the source's original Clark namespace per (accession,
+    # source_occurrence_key), when the provider still holds the filings.
+    # The kernel then binds each lineage receipt's taxonomy URI pair to the
+    # source instead of trusting the receipt's attestation.  Absent keeps the
+    # policy-gated attestation (production generations carry no per-fact
+    # namespace; their receipts are minted from source by the single writer).
+    source_taxonomy_uris: Any = None
 
 
 def enforce_dataset_admission_floor(policy: Any, dataset: Any) -> None:
@@ -681,6 +688,7 @@ def execute_financial_query(
                 max_cells=_MAX_CELLS,
             ),
             lineage_evidence=getattr(dataset, "lineage_evidence", ()) or (),
+            source_taxonomy_uris=getattr(dataset, "source_taxonomy_uris", None),
         )
         matrix = engine.query_matrix(
             tickers=[binding.ticker],

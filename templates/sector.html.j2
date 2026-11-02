@@ -250,6 +250,13 @@
     <p class="muted" style="margin:4px 0 0;font-size:11px">{{ t(dc.note_en, dc.note_zh) }} — {{ t('context only, not sized', '仅供参考，不用于仓位') }}</p>
     {% endif %}
     {% if s.ladder.age_line %}<p class="agewhen">{{ t(s.ladder.age_line, s.ladder.age_line_zh) }}</p>{% endif %}
+    {# sector-basket-links: the group pages a holder of this fund's retail or mining names opens next. #}
+    {% if s.fund == 'XLY' %}
+    <p class="muted" style="margin:6px 0 0;font-size:12.5px"><a href="../basket/retail.html">{{ t('Retail basket', '零售篮子') }}</a> — {{ t('retail names scored as a group.', '零售公司的分组评分。') }}</p>
+    {% elif s.fund == 'XLB' %}
+    <p class="muted" style="margin:6px 0 0;font-size:12.5px"><a href="../basket/gold_miners.html">{{ t('Gold Miners basket', '黄金矿业篮子') }}</a> · <a href="../basket/critical_minerals.html">{{ t('Critical Minerals basket', '关键矿产与稀土篮子') }}</a> — {{ t('mining names scored as a group.', '矿业公司的分组评分。') }}</p>
+    {% endif %}
+    {# /sector-basket-links #}
     {% if s.ladder.early_note %}<p class="early">{{ t(s.ladder.early_note, s.ladder.early_note_zh) }}</p>{% endif %}
     {% if s.ladder.macro_line %}<p class="macro-caution">⚠ {{ t(s.ladder.macro_line, s.ladder.macro_line_zh) }}</p>{% endif %}
     <ul class="points">
@@ -263,7 +270,7 @@
         {{ help("The WEEKLY (investor) cycle is the bigger rhythm — ~16-26 weeks, containing several daily cycles. It sets the tide the daily cycles swim in; early weeks = more upside room, late weeks = treat rallies cautiously.", "周线（投资者）周期是更大的节奏 — 约 16-26 周，包含数个日线周期。它决定了日线周期所处的大势；早期周次=上行空间更大，晚期周次=对反弹保持谨慎。") }}</div>{% endif %}
       {% if cp.translation %}<div class="muted">{{ t(cp.translation, cp.translation_zh) }}</div>{% endif %}
     </div>
-    {% if s.cycle.failed_cycle %}<p class="neg" style="margin:6px 0 0">⚠ {{ t('Failed cycle: price is below the low that started this cycle — historically the larger trend is rolling over in ~80% of such cases.', '周期失败：价格已跌破启动本周期的低点 — 历史上约 80% 的此类情形中，更大的趋势正在转向。') }}</p>{% endif %}
+    {% if s.cycle.failed_cycle %}<p class="neg" style="margin:6px 0 0">⚠ {{ t('Failed cycle: price is below the low that started this cycle. How often the larger trend then rolls over has not been measured here.', '周期失败：价格已跌破启动本周期的低点。此后更大趋势掉头向下的频率，本站尚未测算。') }}</p>{% endif %}
     <details style="margin-top:8px"><summary>{{ t('full reasoning', '完整推理') }}</summary>
       <p class="muted" style="margin:6px 0">{{ t(s.ladder.why, s.ladder.why_zh) }} {{ t('Next:', '下一步：') }} {{ t(s.ladder.next, s.ladder.next_zh) }}</p>
     </details>

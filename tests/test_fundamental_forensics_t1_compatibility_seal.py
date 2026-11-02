@@ -621,3 +621,26 @@ def test_api_transport_header_sha_equals_body_sha(monkeypatch):
         ),
     )
     assert direct.sha256 == values["direct_service_response_sha256"] == body_sha
+
+
+# ---------------------------------------------------------------------------
+# Golden statement pins run on the committed byte-copy of the 1.0.0 registry.
+# Appended at the end of the module so no pinned line moves. The live-registry
+# statement bytes are pinned in test_fundamental_forensics_financial_statement_api.py,
+# which also proves the 1.0.0 registry re-derives the pins in this module.
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(autouse=True, scope="module")
+def _golden_statement_pins_on_registry_v1_0_0():
+    import engine.fundamental_forensics.statement_service as statement_service
+    from engine.fundamental_forensics.financial_intelligence_packet import load_core_registry
+
+    registry_root = ROOT / "tests" / "fixtures" / "fundamental_forensics_registry_v1_0_0"
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(
+            statement_service,
+            "load_core_registry",
+            lambda _repo_root: load_core_registry(registry_root),
+        )
+        yield

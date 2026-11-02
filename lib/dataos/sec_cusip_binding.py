@@ -41,10 +41,20 @@ def _name(value: str) -> str:
     return " ".join(value.replace(".", "").casefold().split())
 
 
-def _registration(raw: bytes, issuer_cik: str, share_class: str, issuer_name: str):
-    # Deliberately support the evidenced unqualified common-stock class only.
-    # Class A/B, ordinary shares and depositary receipts require their own evidence.
-    if share_class.casefold() != "common stock":
+def _registration(raw: bytes, issuer_cik: str, share_class: str, issuer_name: str,
+                  *, structured_13d: bool = False):
+    # Preserve the original unqualified-common 13G scope. The separate 13D
+    # path additionally supports evidenced Class A; never collapse classes.
+    class_name = "Common Stock"
+    if structured_13d:
+        match = re.fullmatch(
+            r"(Class A Common Stock|Common Stock)(?:, (?:par value \$[0-9]+(?:\.[0-9]+)? per share|\$[0-9]+(?:\.[0-9]+)? par value per share))?",
+            share_class, re.I)
+        if match:
+            class_name = match.group(1)
+        else:
+            raise IdentityError("SEC class not supported by this bounded binding")
+    elif share_class.casefold() != "common stock":
         raise IdentityError("SEC class not supported by this bounded binding")
     if re.search(br"<!\s*(?:DOCTYPE|ENTITY)\b", raw, re.I):
         raise IdentityError("SEC registration entity declarations forbidden")
@@ -63,9 +73,20 @@ def _registration(raw: bytes, issuer_cik: str, share_class: str, issuer_name: st
     name = _text(_one(facts.get("EntityRegistrantName", []), "registrant name"))
     if cik != issuer_cik or _name(name) != _name(issuer_name):
         raise IdentityError("SEC registration issuer mismatch")
-    titles = [e for e in facts.get("Security12bTitle", []) if re.fullmatch(
-        r"Common Stock(?:, par value \$[0-9]+(?:\.[0-9]+)? per share)?", _text(e), re.I)]
+    title_pattern = re.escape(class_name) + (
+        r"(?:, (?:par value \$[0-9]+(?:\.[0-9]+)? per share|\$[0-9]+(?:\.[0-9]+)? par value per share))?"
+        if structured_13d else r"(?:, par value \$[0-9]+(?:\.[0-9]+)? per share)?")
+    titles = [e for e in facts.get("Security12bTitle", [])
+              if re.fullmatch(title_pattern, _text(e), re.I)]
     title = _one(titles, "common-stock registration class")
+    if structured_13d:
+        filing_par = re.search(r"\$([0-9]+(?:\.[0-9]+)?)", share_class)
+        registration_par = re.search(r"\$([0-9]+(?:\.[0-9]+)?)", _text(title))
+        if filing_par:
+            from decimal import Decimal
+            if (not registration_par or
+                    Decimal(filing_par.group(1)) != Decimal(registration_par.group(1))):
+                raise IdentityError("SEC registration par value mismatch")
     context = title.get("contextRef")
     if not context:
         raise IdentityError("SEC registration class context required")
@@ -100,9 +121,12 @@ def _registration(raw: bytes, issuer_cik: str, share_class: str, issuer_name: st
     def fact(key):
         return _text(_one([e for e in facts.get(key, []) if e.get("contextRef") == context], key))
     symbol, exchange = fact("TradingSymbol"), fact("SecurityExchangeName")
-    if not re.fullmatch(r"[A-Z][A-Z0-9.-]{0,14}", symbol) or exchange != "NYSE":
+    exchanges = {"NYSE": "XNYS"}
+    if structured_13d:
+        exchanges["NASDAQ"] = "XNAS"
+    if not re.fullmatch(r"[A-Z][A-Z0-9.-]{0,14}", symbol) or exchange not in exchanges:
         raise IdentityError("unsupported SEC registration listing")
-    return symbol, "XNYS", reference_date
+    return symbol, exchanges[exchange], reference_date
 
 
 def build_sec_cusip_alias(
@@ -118,17 +142,54 @@ def build_sec_cusip_alias(
     strategy. Integrity checks do not independently authenticate caller read clocks;
     source-owner acquisition qualification remains required before publication.
     """
+    return _build_sec_alias(
+        filing_raw, filing_sha256=filing_sha256, filing_retained_at=filing_retained_at,
+        registration_raw=registration_raw, registration_sha256=registration_sha256,
+        registration_retained_at=registration_retained_at,
+        master_raw=master_raw, master_sha256=master_sha256,
+        master_retained_at=master_retained_at, structured_13d=False)
+
+
+def build_sec13d_cusip_alias(
+    filing_raw: bytes, *, filing_sha256: str, filing_retained_at: datetime,
+    registration_raw: bytes, registration_sha256: str, registration_retained_at: datetime,
+    master_raw: bytes, master_sha256: str, master_retained_at: datetime,
+) -> AliasRow:
+    """Bind a structured 13D's explicit common-stock class for its assertion day.
+
+    Class A remains distinct from unqualified common stock. This extends the
+    evidenced registration route to Nasdaq; it establishes neither continuous
+    CUSIP history nor economic ownership, intent, or a quarterly 13F binding.
+    """
+    return _build_sec_alias(
+        filing_raw, filing_sha256=filing_sha256, filing_retained_at=filing_retained_at,
+        registration_raw=registration_raw, registration_sha256=registration_sha256,
+        registration_retained_at=registration_retained_at,
+        master_raw=master_raw, master_sha256=master_sha256,
+        master_retained_at=master_retained_at, structured_13d=True)
+
+
+def _build_sec_alias(
+    filing_raw: bytes, *, filing_sha256: str, filing_retained_at: datetime,
+    registration_raw: bytes, registration_sha256: str, registration_retained_at: datetime,
+    master_raw: bytes, master_sha256: str, master_retained_at: datetime,
+    structured_13d: bool,
+) -> AliasRow:
     _checked(filing_raw, filing_sha256, 2 * 1024 * 1024)
     _checked(registration_raw, registration_sha256, 8 * 1024 * 1024)
     _checked(master_raw, master_sha256, 16 * 1024 * 1024)
     filing_clock = _aware_utc(filing_retained_at, "known_at")
     reg_clock = _aware_utc(registration_retained_at, "known_at")
     master_clock = _aware_utc(master_retained_at, "known_at")
-    from lib.dataos.sec_filing_identity import parse_schedule13g_evidence
-    evidence = parse_schedule13g_evidence(filing_raw, expected_sha256=filing_sha256,
-                                         retained_at=filing_clock)
+    if structured_13d:
+        from lib.dataos.sec_schedule13d import parse_schedule13d_evidence as parse_evidence
+    else:
+        from lib.dataos.sec_filing_identity import parse_schedule13g_evidence as parse_evidence
+    evidence = parse_evidence(filing_raw, expected_sha256=filing_sha256,
+                              retained_at=filing_clock)
     symbol, mic, reference_date = _registration(registration_raw, evidence.issuer_cik,
-                                               evidence.share_class, evidence.issuer_name)
+                                               evidence.share_class, evidence.issuer_name,
+                                               structured_13d=structured_13d)
     # The ownership event date is not the start of a CUSIP identity interval.
     # Use only the day this retained filing actually asserted the identity.
     observed_day = evidence.accepted_at.astimezone(ZoneInfo("America/New_York")).date()

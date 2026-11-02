@@ -883,6 +883,91 @@ def test_forged_evidence_field_is_refused_at_runtime_and_admission(
     assert REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE in str(excinfo.value)
 
 
+def test_both_uris_swapped_to_another_approved_namespace_need_the_source_map(
+    golden_receipts, golden_lineage_dataset
+):
+    """A01/A11: a two-sided swap to a real, prefix-matching namespace.
+
+    ``us-gaap/2019`` is policy-approved and carries the ``us-gaap`` prefix, so
+    the receipt-only attestation cannot tell it from the genuine 2025
+    namespace.  The source namespace map can: with it, the forgery fails
+    closed at both gates while the genuine receipt still proves.
+    """
+    from engine.fundamental_forensics.lineage_evidence import (
+        REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE,
+    )
+    from engine.fundamental_forensics.query import (
+        BitemporalMetricQueryEngine,
+        QueryPolicy,
+    )
+
+    source_map = golden_lineage_dataset.source_taxonomy_uris
+    assert source_map, "the golden provider must carry its source namespace map"
+    genuine = _t1_assets_confirmation(golden_receipts)
+    assert genuine.positive_evidence["parent_taxonomy_uri"] == "http://fasb.org/us-gaap/2025"
+    evidence = dict(genuine.positive_evidence)
+    evidence["parent_taxonomy_uri"] = "http://fasb.org/us-gaap/2019"
+    evidence["child_taxonomy_uri"] = "http://fasb.org/us-gaap/2019"
+    forged = LineageEvidenceReceipt(
+        parent_occurrence_id=genuine.parent_occurrence_id,
+        child_occurrence_id=genuine.child_occurrence_id,
+        logical_key=genuine.logical_key,
+        source_known_at=genuine.source_known_at,
+        system_available_at=genuine.system_available_at,
+        positive_evidence=evidence,
+    )
+    assert forged.receipt_id != genuine.receipt_id
+    policy = QueryPolicy(
+        source_snapshot_at=_A4_SOURCE,
+        recorded_at=_A4_RECORDED,
+        selection="latest_known_as_of",
+    )
+
+    def engine(bundle, uris):
+        return BitemporalMetricQueryEngine(
+            golden_lineage_dataset.ledger,
+            golden_lineage_dataset.registry,
+            entities={"AAPL": "0000320193"},
+            lineage_evidence=bundle,
+            source_taxonomy_uris=uris,
+        )
+
+    # Attestation alone: the swap is indistinguishable (the residual the
+    # source map closes wherever the provider still holds the filings).
+    assert engine((), None)._receipt_still_proves_confirmation(forged, policy) is None
+
+    bound = engine((), source_map)
+    assert bound._receipt_still_proves_confirmation(genuine, policy) is None
+    assert (
+        bound._receipt_still_proves_confirmation(forged, policy)
+        == REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+    )
+    with pytest.raises(LineageEvidenceError) as excinfo:
+        engine((forged,), source_map)
+    assert REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE in str(excinfo.value)
+    # The genuine bundle still admits under the bound map.
+    engine(tuple(golden_receipts), source_map)
+
+    # A map that lacks the representatives' keys proves nothing: fail closed.
+    with pytest.raises(LineageEvidenceError):
+        engine((genuine,), {})
+    assert (
+        engine((), {})._receipt_still_proves_confirmation(genuine, policy)
+        == REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+    )
+    # A source whose two filings disagree is not one namespace (guard 11).
+    split = dict(source_map)
+    for key in split:
+        if key[0] == genuine.positive_evidence["child_accession"]:
+            split[key] = "http://fasb.org/us-gaap/2024"
+    assert (
+        engine((), split)._receipt_still_proves_confirmation(genuine, policy)
+        == REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+    )
+    with pytest.raises(LineageEvidenceError):
+        engine((), {("acc", 1): "http://fasb.org/us-gaap/2025"})
+
+
 def test_valid_policy_responses_stay_byte_identical_after_the_t1_repair():
     """A02: the four valid policy cases keep their pristine response hashes."""
     assert _T1_VALID_CASE_PINS[("latest_known_as_of", _A3_SOURCE, _A3_RECORDED)] == (

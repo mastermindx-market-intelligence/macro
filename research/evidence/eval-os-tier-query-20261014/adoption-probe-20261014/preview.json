@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-14T11:58:37.338479+00:00",
+  "a1": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+  "main": "a5a5482b1d64b8a064a0355189d90c428660a850",
+  "merge_tree_rc": 1,
+  "source_mutated": false,
+  "result": "cd6f699b1f63d01e59711209870a282cebd6de1c\n100644 f51e50c15cafc6d28646e43e34f67cb626e782d1 1\t.github/ci/legacy-jobs.yml\n100644 dafa699ecc9f6a8d180979ca21668cb8ce4b75cd 2\t.github/ci/legacy-jobs.yml\n100644 de256693c4aa7d3e60dbf46e541ad384a51820ef 3\t.github/ci/legacy-jobs.yml\n\nAuto-merging .github/ci/legacy-jobs.yml\nCONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml\nAuto-merging app/deploy/update.sh\nAuto-merging tests/test_ci_pack.py\nAuto-merging tests/test_deploy_update_self_heal.py\n"
+}

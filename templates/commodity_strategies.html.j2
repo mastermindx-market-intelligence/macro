@@ -97,7 +97,7 @@ html[data-theme="dark"] .stance{background:var(--grid)}
 <div class="wrap">
 
   <div class="h1">🛢 {{ t('Commodity Strategy Scorecards','商品策略记分卡') }}</div>
-  <div class="intro">{{ t('Per-commodity tactical strategies. Each commodity rises and falls for different reasons — gold on real yields and the dollar, copper on global growth, oil on inventories and the futures curve — so each gets its own factor model. Toggle a commodity below to see its strategies; each pairs a simple risk on/off trend swap with a deeper, commodity-specific multi-factor model.','分品种战术策略。每种商品的涨跌逻辑各异——黄金看实际收益率与美元、铜看全球增长、原油看库存与期货曲线——因此各有其因子模型。点击下方切换品种查看其策略；每个品种都包含一个简单的风险开关趋势策略与一个更深入的、品种特定的多因子模型。') }}</div>
+  <div class="intro">{{ t('Per-commodity tactical strategies. Each commodity rises and falls for different reasons — gold on real yields and the dollar, copper on global growth, oil on the dollar and the futures curve (inventories were tested and dropped, with no forward edge) — so each gets its own factor model. Toggle a commodity below to see its strategies; each pairs a simple risk on/off trend swap with a deeper, commodity-specific multi-factor model.','分品种战术策略。每种商品的涨跌逻辑各异——黄金看实际收益率与美元、铜看全球增长、原油看美元与期货曲线（库存经检验后剔除，无前瞻性）——因此各有其因子模型。点击下方切换品种查看其策略；每个品种都包含一个简单的风险开关趋势策略与一个更深入的、品种特定的多因子模型。') }}</div>
   <div class="note">{{ t('Goal: not just winning strategies, but understanding what makes each commodity move — so the allocation can anticipate the turns, raising CAGR and Sharpe while lowering drawdown. Each card shows whether it beats buy-&-hold the same commodity, computed not asserted. Backtests are net of cost; the de-risked sleeve earns the T-bill yield.','目标：不只是寻找制胜策略，更是理解每种商品的驱动因素——使配置能够预判拐点，在降低回撤的同时提升年化与夏普。每张卡片显示其是否跑赢同品种买入持有，均为计算所得。回测扣除成本；降险时空仓腿赚取短期国债收益。') }}</div>
 
   <div class="cmdy-toggle" role="tablist">
@@ -119,10 +119,24 @@ html[data-theme="dark"] .stance{background:var(--grid)}
         <div><span class="m-k">CAGR</span><span class="m-v {{ 'win' if c.cagr >= c.hodl_cagr else 'lose' }}">{{ c.cagr }}%</span><span class="m-sub">{{ t('B&H','买持') }} {{ c.hodl_cagr }}%</span></div>
         <div><span class="m-k">Sharpe</span><span class="m-v {{ 'win' if c.sharpe >= c.hodl_sharpe else 'lose' }}">{{ c.sharpe }}</span><span class="m-sub">{{ t('B&H','买持') }} {{ c.hodl_sharpe }}</span></div>
         <div><span class="m-k">{{ t('Max DD','最大回撤') }}</span><span class="m-v {{ 'win' if c.maxdd >= c.hodl_maxdd else 'lose' }}">{{ c.maxdd }}%</span><span class="m-sub">{{ t('B&H','买持') }} {{ c.hodl_maxdd }}%</span></div>
-        <div><span class="m-k">{{ t('Income','票息') }}</span><span class="m-v">{{ c.income }}%</span><span class="m-sub">{{ c.years }}y</span></div>
+        {%- if c.avg_lev is number %}
+        <div><span class="m-k">{{ t('Avg leverage','平均杠杆') }}</span>{#
+        #}<span class="m-v">{{ '%.2f'|format(c.avg_lev) }}x</span>{#
+        #}<span class="m-sub">{{ c.years }}y</span></div>
+        {%- else %}
+        <div><span class="m-k">{{ t('Income','票息') }}</span>{#
+        #}<span class="m-v">{{ c.income }}%</span>{#
+        #}<span class="m-sub">{{ c.years }}y</span></div>
+        {%- endif %}
       </div>
+      {%- if c.as_of %}
+      <span class="m-sub">{{ t('As of','截至') }} {{ c.as_of }}</span>
+      {%- endif %}
       <div class="scard-foot">
         <span class="stance">{{ t(c.stance_en, c.stance_zh) }}</span>
+        {%- if c.oos_en %}
+        <span class="stance" data-split-half>{{ t(c.oos_en, c.oos_zh) }}</span>
+        {%- endif %}
         <span class="go">{{ t('Open →','打开 →') }}</span>
       </div>
     </a>

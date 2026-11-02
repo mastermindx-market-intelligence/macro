@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!-- mmx-shared-shell:start --><meta name="mmx-shell-document" content="20261018.1"><meta name="mmx-shell-response" content="content"><link rel="stylesheet" data-mmx-shared-shell-styles="20261018.1" href="shared_shell.css?v=b1918cca"><script data-sync data-mmx-shared-shell-bridge="20261018.1" src="shared_shell_bridge.js?v=071ef720"></script><!-- mmx-shared-shell:end -->
 <meta charset="utf-8">
 <script data-dbase>(function () {
   window.DATA_BASE = window.DATA_BASE || "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev";  // R2 public data plane (flip: clear to revert to Pages)
@@ -33,9 +33,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>White House Watch</title>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=2e861147">
+<link rel="stylesheet" href="theme.css?v=29ec9caa">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
-<link rel="preload" as="style" href="navigation-refresh.css?v=ef068fe1">
+<link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
 <link rel="stylesheet" href="assets/css/75824a42.css?v=75824a42">
 
 
@@ -63,7 +63,7 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=ef068fe1">
+    <link rel="stylesheet" href="navigation-refresh.css?v=edfd821b">
     <div class="nav-links">
     
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -310,7 +310,9 @@
 <header class="wh-hero">
   <p class="wh-kick">🏛️ <span class="l-en">White House Watch</span><span class="l-zh">白宫快讯</span></p>
   <h1><span class="l-en">Policy alerts, market-read</span><span class="l-zh">政策快讯 · 市场解读</span></h1>
-  <p class="sub"><span class="l-en">Every White House announcement is monitored. When one is judged market-moving, Claude Opus writes the read below — implications, sector head/tailwinds, and the names most exposed. Banners surface the live ones across the site.</span><span class="l-zh">持续监控白宫的每一条公告。当某条被判定为可能影响市场时，Claude Opus 在下方给出解读——影响、行业的顺逆风，以及最受影响的标的。横幅会在全站推送仍然有效的快讯。</span>
+  <p class="sub"><span class="l-en">Every White House announcement is monitored. When one is judged market-moving, an AI model writes the read below — implications, sector head/tailwinds, and the names most exposed. Banners surface the live ones across the site.</span><span class="l-zh">持续监控白宫的每一条公告。当某条被判定为可能影响市场时，AI 模型在下方给出解读——影响、行业的顺逆风，以及最受影响的标的。横幅会在全站推送仍然有效的快讯。</span>
+    <span class="l-en">The configured model is asked first; when it is unavailable a fallback model writes the read, and the card names that model wherever the pipeline recorded the fallback.</span><span class="l-zh">首先调用配置的模型；当其不可用时由备用模型撰写解读，凡流程记录了备用情况的卡片都会注明该模型。</span>
+    <span class="l-en">52 of the 74 reads below were written by a fallback model.</span><span class="l-zh">下方 74 条解读中有 52 条由备用模型撰写。</span>
     <span class="l-en">Major Treasury cash-flow moves — the TGA account at the Fed — are tracked the same way.</span><span class="l-zh">财政部的重大现金流动（联储的 TGA 账户）也以同样方式跟踪。</span></p>
 </header>
 
@@ -330,16 +332,17 @@
   
   <div class="wh-stats">
     <div class="wh-stat">
-      <div class="lab"><span class="l-en">TGA balance</span><span class="l-zh">TGA 余额</span> · 2026-10-15</div>
-      <div class="val">$935<span class="u">bn</span></div>
-      <div class="delta up">+48.9 <span class="l-en">1d</span><span class="l-zh">单日</span></div>
+      <div class="lab"><span class="l-en">TGA balance</span><span class="l-zh">TGA 余额</span> · 2026-10-16</div>
+      <div class="val">$948<span class="u">bn</span></div>
+      <div class="delta up">+13.8 <span class="l-en">1d</span><span class="l-zh">单日</span></div>
+      <div class="delta dn">-24 <span class="l-en">20d</span><span class="l-zh">20日</span></div>
     </div>
 
     
     
     <div class="wh-stat">
       <div class="lab"><span class="l-en">Δ since quarter-end</span><span class="l-zh">较季末</span> (09-30)</div>
-      <div class="val dn">-49<span class="u">bn</span></div>
+      <div class="val dn">-36<span class="u">bn</span></div>
     </div>
     
 
@@ -353,7 +356,7 @@
 
     
     <div class="wh-stat">
-      <div class="lab"><span class="l-en">RRP buffer</span><span class="l-zh">逆回购缓冲</span></div>
+      <div class="lab"><span class="l-en">RRP buffer</span><span class="l-zh">逆回购缓冲</span> · $0.2bn</div>
       <div class="val" style="font-size:15px">exhausted</div>
       <div class="delta"><span class="l-en">reserves</span><span class="l-zh">准备金</span>: tightening</div>
     </div>
@@ -369,12 +372,16 @@
   
 
   
+  <div class="impulse"><span class="l-en">Net liquidity is neutral but RRP exhausted or composition is mechanical — buffer is hollow; net-neutral read with limited downside cushion. RRP buffer is empty — the next liquidity drain hits bank reserves directly.</span><span class="l-zh">Net liquidity is neutral but RRP exhausted or composition is mechanical — buffer is hollow; net-neutral read with limited downside cushion. RRP buffer is empty — the next liquidity drain hits bank reserves directly.</span></div>
+  
+
+  
 
   
   <div class="sparkwrap">
-    <div class="sparkcap"><span><span class="l-en">TGA · last 60 sessions</span><span class="l-zh">TGA · 近60个交易日</span></span><span>2026-07-22 → 2026-10-15</span></div>
+    <div class="sparkcap"><span><span class="l-en">TGA · last 60 sessions</span><span class="l-zh">TGA · 近60个交易日</span></span><span>2026-07-23 → 2026-10-16</span></div>
     <svg class="wh-spark" viewBox="0 0 560 64" preserveAspectRatio="none" aria-hidden="true">
-      <polyline fill="none" stroke="var(--link)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="0.0,55.3 9.5,43.9 19.0,41.4 28.5,36.9 38.0,19.7 47.5,18.5 56.9,11.0 66.4,44.1 75.9,45.8 85.4,31.1 94.9,29.7 104.4,20.9 113.9,22.9 123.4,19.5 132.9,11.1 142.4,21.5 151.9,19.5 161.4,21.5 170.8,28.7 180.3,20.8 189.8,27.8 199.3,28.1 208.8,28.6 218.3,19.5 227.8,12.0 237.3,21.5 246.8,23.8 256.3,18.2 265.8,4.0 275.3,26.0 284.7,25.6 294.2,36.6 303.7,40.7 313.2,43.1 322.7,53.0 332.2,60.0 341.7,58.9 351.2,45.5 360.7,12.7 370.2,12.7 379.7,17.9 389.2,14.3 398.6,9.2 408.1,22.0 417.6,24.8 427.1,31.0 436.6,25.3 446.1,21.4 455.6,27.7 465.1,14.8 474.6,39.4 484.1,45.5 493.6,42.2 503.1,41.7 512.5,41.6 522.0,41.1 531.5,45.2 541.0,32.2 550.5,41.5 560.0,28.2"></polyline>
+      <polyline fill="none" stroke="var(--link)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="0.0,43.9 9.5,41.4 19.0,36.9 28.5,19.7 38.0,18.5 47.5,11.0 56.9,44.1 66.4,45.8 75.9,31.1 85.4,29.7 94.9,20.9 104.4,22.9 113.9,19.5 123.4,11.1 132.9,21.5 142.4,19.5 151.9,21.5 161.4,28.7 170.8,20.8 180.3,27.8 189.8,28.1 199.3,28.6 208.8,19.5 218.3,12.0 227.8,21.5 237.3,23.8 246.8,18.2 256.3,4.0 265.8,26.0 275.3,25.6 284.7,36.6 294.2,40.7 303.7,43.1 313.2,53.0 322.7,60.0 332.2,58.9 341.7,45.5 351.2,12.7 360.7,12.7 370.2,17.9 379.7,14.3 389.2,9.2 398.6,22.0 408.1,24.8 417.6,31.0 427.1,25.3 436.6,21.4 446.1,27.7 455.6,14.8 465.1,39.4 474.6,45.5 484.1,42.2 493.6,41.7 503.1,41.6 512.5,41.1 522.0,45.2 531.5,32.2 541.0,41.5 550.5,28.2 560.0,24.5"></polyline>
     </svg>
   </div>
   
@@ -395,7 +402,10 @@
           
         </span>
         <span class="wh-when">🗓 Oct 17, 2026 · news</span>
+        <span class="wh-when">· <span class="l-en">banner live until</span><span class="l-zh">横幅有效至</span> Oct 22, 2026</span>
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Trump signs Russia sanctions law then waives virtually all of it — commodity risk fades, enforcement threat stays</span><span class="l-zh">特朗普签署对俄制裁法案后几乎全部豁免——大宗商品风险消退，执法威慑仍在</span></h2>
@@ -523,7 +533,10 @@
           
         </span>
         <span class="wh-when">🗓 Oct 13, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Alaska energy unlock accelerates — ANWR, NPR-A, Ambler Road &amp; $54B gas pipeline</span><span class="l-zh">阿拉斯加能源开发加速——ANWR、NPR-A、Ambler Road及540亿美元天然气管线</span></h2>
@@ -655,7 +668,10 @@
           
         </span>
         <span class="wh-when">🗓 Oct 8, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Trump touts $15B steel plant, $200B Korea energy deal, defense shipyard surge — reshoring tailwinds</span><span class="l-zh">特朗普力推150亿美元钢厂、2000亿美元韩资能源协议及防务船厂扩张——本土化浪潮</span></h2>
@@ -793,7 +809,10 @@
           
         </span>
         <span class="wh-when">🗓 Oct 8, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">$6B+ federal-AI/compute push — NVIDIA, AMD, OpenAI lead; quantum, fusion, space-nuclear funded</span><span class="l-zh">联邦AI/算力计划超60亿美元——英伟达、AMD、OpenAI领投；量子、聚变、太空核能获资助</span></h2>
@@ -925,7 +944,10 @@
           
         </span>
         <span class="wh-when">🗓 Oct 8, 2026 · news</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Oct 9, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">White House targets Fed Governor Cook — Fed independence under fire, policy volatility up</span><span class="l-zh">白宫剑指美联储理事库克——美联储独立性承压，政策波动性上升</span></h2>
@@ -1009,7 +1031,10 @@
           
         </span>
         <span class="wh-when">🗓 Oct 8, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">70M kid investment accounts funded with $4.5B — structural tailwind for asset managers, brokers</span><span class="l-zh">7000万儿童投资账户已注资45亿美元——资管与券商迎结构性利好</span></h2>
@@ -1111,7 +1136,10 @@
           
         </span>
         <span class="wh-when">🗓 Oct 7, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Trump touts Venezuela oil majority control — 65B barrels reshapes supply, squeezes global prices</span><span class="l-zh">特朗普宣称掌控委内瑞拉650亿桶石油——供应格局重塑，压制全球油价</span></h2>
@@ -1257,7 +1285,10 @@
           
         </span>
         <span class="wh-when">🗓 Oct 6, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Federal diesel tax deferred through year-end — freight, ag costs drop; highway trust fund hit</span><span class="l-zh">联邦柴油税延迟至年底——货运与农业成本下降；公路信托基金承压</span></h2>
@@ -1397,7 +1428,10 @@
           
         </span>
         <span class="wh-when">🗓 Oct 6, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Trump defers federal diesel excise taxes Q4 2026 — freight, agri margins get breathing room</span><span class="l-zh">特朗普宣布2026年Q4暂缓征收联邦柴油消费税——货运和农业利润率获得喘息空间</span></h2>
@@ -1513,7 +1547,10 @@
           
         </span>
         <span class="wh-when">🗓 Oct 6, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Trump suspends federal diesel tax via red-dye loophole — truckers gain, refiners face demand shift</span><span class="l-zh">特朗普暂停联邦柴油税——卡车司机受益，炼油商面临需求结构变化</span></h2>
@@ -1647,7 +1684,10 @@
           
         </span>
         <span class="wh-when">🗓 Oct 6, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Trump allows dyed diesel on highways with tax deferral — trucking &amp; farm costs drop, refiners&#39; on-road premium erodes</span><span class="l-zh">特朗普允许染色柴油上路并缓征燃油税——卡车与农业成本下降，炼厂在路柴油溢价受挤压</span></h2>
@@ -1787,7 +1827,10 @@
           
         </span>
         <span class="wh-when">🗓 Oct 3, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">$1.8B Medicare rebate to 20M seniors — modest consumer tailwind, insurer optics negative</span><span class="l-zh">联邦向2000万老年人发放18亿美元医保返还——消费端小幅利好，保险商形象承压</span></h2>
@@ -1909,7 +1952,10 @@
           
         </span>
         <span class="wh-when">🗓 Oct 2, 2026 · treasury</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Oct 5, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Treasury injects $113bn quarter-end cash — reserves hit directly with RRP exhausted</span><span class="l-zh">财政部季末释放1130亿美元现金——RRP耗尽，准备金直接受益</span></h2>
@@ -2005,7 +2051,10 @@
           
         </span>
         <span class="wh-when">🗓 Oct 1, 2026 · treasury</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Oct 2, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: high</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Treasury injects ~$111bn into an exhausted-RRP system — reserves hit the banking system directly</span><span class="l-zh">财政部向准备金耗竭的体系注入约1110亿美元——流动性直接进入银行系统</span></h2>
@@ -2113,7 +2162,10 @@
           
         </span>
         <span class="wh-when">🗓 Sep 30, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">$15B Mesabi steel plant in Iowa — domestic capacity jump, steel names react</span><span class="l-zh">梅萨比15亿美元爱荷华钢厂——美国本土产能跃升，钢铁股波动</span></h2>
@@ -2247,7 +2299,10 @@
           
         </span>
         <span class="wh-when">🗓 Sep 28, 2026 · news</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Sep 29, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">$15B Mesabi Metallics steel mega-mill announced — US steel capacity surges, importers squeezed</span><span class="l-zh">特朗普宣布150亿美元Mesabi Metallics钢铁超级工厂——美国钢铁产能激增，进口商承压</span></h2>
@@ -2369,7 +2424,10 @@
           
         </span>
         <span class="wh-when">🗓 Sep 28, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">U.S.-China &#39;30-for-30&#39; tariff reduction lists — trade-exposed industrials and ags reprice</span><span class="l-zh">美中「30对30」关税减免清单——贸易敏感工业与农产品重新定价</span></h2>
@@ -2483,7 +2541,10 @@
           
         </span>
         <span class="wh-when">🗓 Sep 26, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: Codex</span>
       </div>
 
       <h2><span class="l-en">U.S.-China tariff thaw opens $60B trade channel; coal exports locked in</span><span class="l-zh">美中关税缓和开启600亿美元贸易通道，并锁定美国煤炭出口</span></h2>
@@ -2603,7 +2664,10 @@
           
         </span>
         <span class="wh-when">🗓 Sep 16, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">US bars Canadian goods from federal procurement — Canadian suppliers hit, US industrial winners</span><span class="l-zh">美国禁止加拿大商品进入联邦采购——加拿大供应商受挫，美国本土工业受益</span></h2>
@@ -2717,7 +2781,10 @@
           
         </span>
         <span class="wh-when">🗓 Sep 16, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        
       </div>
 
       <h2><span class="l-en">US bars Canadian goods from federal procurement — domestic suppliers win, Canada-linked contractors hit</span><span class="l-zh">美国联邦采购排除加拿大产品——本土供应商受益，涉加承包商受损</span></h2>
@@ -2819,7 +2886,10 @@
           
         </span>
         <span class="wh-when">🗓 Sep 15, 2026 · treasury</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Sep 16, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: high</span>
+        
       </div>
 
       <h2><span class="l-en">Treasury rebuilt TGA by $173bn in 3 days — reserves drain tightens the tape</span><span class="l-zh">财政部三天重建TGA 1730亿美元——准备金流失收紧市场流动性</span></h2>
@@ -2935,7 +3005,10 @@
           
         </span>
         <span class="wh-when">🗓 Sep 9, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: high</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">US bans Canadian alcohol &amp; dairy, expands tariffs — trade war escalation hits both sides</span><span class="l-zh">美国禁止加拿大酒类与乳制品进口并扩大关税——贸易战升级双向冲击</span></h2>
@@ -3069,7 +3142,10 @@
           
         </span>
         <span class="wh-when">🗓 Sep 3, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: Codex</span>
       </div>
 
       <h2><span class="l-en">U.S. takes control of 65B Venezuelan oil barrels — refiners gain, crude faces pressure</span><span class="l-zh">美国控制委内瑞拉650亿桶石油——炼油商受益，油价承压</span></h2>
@@ -3191,7 +3267,10 @@
           
         </span>
         <span class="wh-when">🗓 Sep 1, 2026 · treasury</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Sep 2, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        
       </div>
 
       <h2><span class="l-en">$81bn TGA drawdown hits reserves directly, briefly backstopping risk assets</span><span class="l-zh">TGA下降810亿美元直接注入准备金，短期支撑风险资产</span></h2>
@@ -3307,7 +3386,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 31, 2026 · news</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Sep 1, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: Codex</span>
       </div>
 
       <h2><span class="l-en">U.S. Venezuela oil pact unlocks vast supply — refiners win, crude faces pressure</span><span class="l-zh">美委石油协议释放巨量供应——炼油商受益，油价承压</span></h2>
@@ -3441,7 +3523,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 31, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: Codex</span>
       </div>
 
       <h2><span class="l-en">MFN drug pricing now covers 89% of branded market — pharma margins pressured</span><span class="l-zh">最惠国药价现覆盖89%的品牌药市场——制药企业利润率承压</span></h2>
@@ -3525,7 +3610,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 29, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: high</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: Codex</span>
       </div>
 
       <h2><span class="l-en">U.S. Hormuz blockade restores Gulf oil flows while eliminating Iranian exports</span><span class="l-zh">美国封锁霍尔木兹海峡：海湾石油运输恢复，伊朗出口归零</span></h2>
@@ -3633,7 +3721,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 26, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: Codex</span>
       </div>
 
       <h2><span class="l-en">Beef import quota expands for 90 days — food costs ease, cattle prices pressured</span><span class="l-zh">美国扩大90天牛肉进口配额——食品成本缓解，牛价承压</span></h2>
@@ -3735,7 +3826,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 26, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        
       </div>
 
       <h2><span class="l-en">Beef import quota jumps 300,000 tons — food costs ease, ranchers pressured</span><span class="l-zh">牛肉进口配额增加30万吨——食品成本缓解，牧场主承压</span></h2>
@@ -3831,7 +3925,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 26, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        
       </div>
 
       <h2><span class="l-en">Grid-equipment restrictions favor U.S. suppliers, raise utility replacement costs</span><span class="l-zh">电网设备限制利好美国供应商，但推高公用事业更换成本</span></h2>
@@ -3947,7 +4044,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 26, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        
       </div>
 
       <h2><span class="l-en">Power-grid security order favors US equipment, raises utility replacement costs</span><span class="l-zh">电网安全令利好美国设备商，但推高公用事业更换成本</span></h2>
@@ -4069,7 +4169,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 24, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: high</span>
+        
       </div>
 
       <h2><span class="l-en">U.S. seeks total Iran isolation — oil risk premium and sanctions exposure surge</span><span class="l-zh">美国寻求全面孤立伊朗——石油风险溢价与制裁风险飙升</span></h2>
@@ -4197,7 +4300,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 20, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: Codex</span>
       </div>
 
       <h2><span class="l-en">U.S. targets 1,000 annual space missions — launch industry gets policy tailwind</span><span class="l-zh">美国瞄准每年千次太空任务——发射产业迎来政策利好</span></h2>
@@ -4299,7 +4405,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 20, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: high</span>
+        
       </div>
 
       <h2><span class="l-en">U.S. targets 1,000 annual space launches, favoring domestic launch suppliers</span><span class="l-zh">美国瞄准年均千次太空发射，利好本土发射供应商</span></h2>
@@ -4407,7 +4516,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 19, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Auto reshoring wave accelerates — Detroit &amp; Southern plants win, Mexican/Chinese supply chains lose</span><span class="l-zh">汽车制造业回流加速——底特律及南方工厂受益，墨西哥/中国供应链受损</span></h2>
@@ -4521,7 +4633,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 19, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Trump suspends Canada tariffs 3 days — dairy, auto, alcohol relief rally likely</span><span class="l-zh">特朗普暂停对加关税3天——乳制品、汽车、酒类或迎喘息反弹</span></h2>
@@ -4635,7 +4750,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 17, 2026 · news</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Aug 18, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: high</span>
+        
       </div>
 
       <h2><span class="l-en">Trump confirms 60-year record Rx price drop — pharma margins compressed, PBMs squeezed</span><span class="l-zh">特朗普确认处方药价格创60年最大跌幅——药企利润承压，PBM受挤压</span></h2>
@@ -4775,7 +4893,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 13, 2026 · news</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Aug 14, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        
       </div>
 
       <h2><span class="l-en">Navy shipyard expansion boosts defense builders; carrier redesign adds execution risk</span><span class="l-zh">海军造船厂扩张利好国防造船商，航母改型增加执行风险</span></h2>
@@ -4871,7 +4992,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 13, 2026 · news</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Aug 14, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        
       </div>
 
       <h2><span class="l-en">Drone tariffs up to 100% shield U.S. makers, raise costs for import-dependent users</span><span class="l-zh">无人机最高关税达100%：保护美国制造商，进口依赖型用户成本上升</span></h2>
@@ -4973,7 +5097,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 13, 2026 · news</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Aug 14, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: high</span>
+        
       </div>
 
       <h2><span class="l-en">U.S. slaps 25%-100% drone tariffs — domestic makers gain protection</span><span class="l-zh">美国对无人机加征25%-100%关税——本土制造商获保护</span></h2>
@@ -5063,7 +5190,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 13, 2026 · news</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Aug 14, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        
       </div>
 
       <h2><span class="l-en">Navy shipbuilding overhaul unlocks yard investment but invites foreign competition</span><span class="l-zh">美国海军造船改革释放船厂投资，同时引入外国竞争</span></h2>
@@ -5165,7 +5295,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 12, 2026 · presidential-actions</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: Codex</span>
       </div>
 
       <h2><span class="l-en">U.S. opens offensive cyber operations to vetted private contractors</span><span class="l-zh">美国向经审查的私营承包商开放进攻性网络行动</span></h2>
@@ -5261,7 +5394,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 10, 2026 · treasury</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Aug 11, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: high</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: Codex</span>
       </div>
 
       <h2><span class="l-en">Treasury’s $131bn TGA rebuild drains reserves, tightening the tape</span><span class="l-zh">财政部重建TGA达1310亿美元，抽走准备金并收紧市场流动性</span></h2>
@@ -5357,7 +5493,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 10, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Trump narrows childhood vaccine schedule — MMR split, fewer mandates roil pharma</span><span class="l-zh">特朗普缩小儿童疫苗清单——拆分麻腮风疫苗、减少强制令搅动制药板块</span></h2>
@@ -5467,7 +5606,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 10, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        
       </div>
 
       <h2><span class="l-en">Trump pushes single-dose vaccines, parental opt-outs — vaccine makers face margin, liability shifts</span><span class="l-zh">特朗普推动单剂疫苗及父母选择退出机制——疫苗制造商面临利润率和责任风险变化</span></h2>
@@ -5557,7 +5699,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 7, 2026 · treasury</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Aug 10, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        
       </div>
 
       <h2><span class="l-en">Treasury drains $126bn into TGA rebuild, reserves hit with RRP buffer exhausted</span><span class="l-zh">财政部TGA账户重建吸收1260亿美元，RRP缓冲耗尽，准备金受冲击</span></h2>
@@ -5667,7 +5812,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 7, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">$2B+ defense &amp; EXIM push into US mining — domestic battery, magnet, alloy supply chains reshaped</span><span class="l-zh">超20亿美元国防与进出口银行资金注入美国矿业 — 本土电池、磁材、合金供应链重塑</span></h2>
@@ -5775,7 +5923,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 6, 2026 · news</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Aug 7, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        
       </div>
 
       <h2><span class="l-en">Trump restricts birthright citizenship for terrorists, foreign officials &amp; &#39;birth tourism&#39; — immigration, healthcare, fertility sectors ratt</span><span class="l-zh">特朗普限制恐怖分子、外国官员及“生育旅游”者的出生公民权——移民、医疗、辅助生殖板块震荡</span></h2>
@@ -5897,7 +6048,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 6, 2026 · news</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Aug 7, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        
       </div>
 
       <h2><span class="l-en">Trump imposes polysilicon tariff &amp; minimum price — domestic producers shielded, solar &amp; semi supply chains face margin squeeze</span><span class="l-zh">特朗普对多晶硅实施关税和最低限价——本土生产商受保护，太阳能与半导体供应链利润承压</span></h2>
@@ -6001,7 +6155,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 6, 2026 · news</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Aug 7, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: high</span>
+        
       </div>
 
       <h2><span class="l-en">Trump imposes MIPs and 15% tariff on polysilicon, ingots, wafers, cells, modules — solar costs up, domestic producers shielded</span><span class="l-zh">特朗普对多晶硅、硅锭、晶圆、电池片及组件施加最低进口价和15%关税——太阳能成本上升，国内生产商获保护</span></h2>
@@ -6123,7 +6280,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 6, 2026 · news</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Aug 7, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">White House touts sweeping corporate price cuts — disinflationary pulse hits pharma, grocers, autos</span><span class="l-zh">白宫宣传企业大范围降价 — 通缩脉冲冲击制药、食品杂货与汽车业</span></h2>
@@ -6255,7 +6415,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 6, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Trump admin escalates fraud crackdown — hospice, Medicare, Medicaid providers under direct pressure</span><span class="l-zh">特朗普政府升级反欺诈行动——临终关怀、医疗保险、医疗补助供应商面临直接压力</span></h2>
@@ -6365,7 +6528,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 5, 2026 · treasury</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Aug 7, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: high</span>
+        
       </div>
 
       <h2><span class="l-en">Treasury drains $114bn into TGA rebuild — reserves tighten in an already-contracting regime</span><span class="l-zh">财政部TGA重建吸走1140亿美元——在本就收缩的环境中进一步收紧银行储备</span></h2>
@@ -6468,7 +6634,10 @@
           <span class="l-en">Neutral</span><span class="l-zh">中性</span>
         </span>
         <span class="wh-when">🗓 Aug 4, 2026 · news</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Aug 5, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: high</span>
+        
       </div>
 
       <h2><span class="l-en">White House touts $345B+ in foreign manufacturing pledges — sentiment boost, no new policy</span><span class="l-zh">白宫宣扬超3450亿美元外资制造业承诺——提振情绪，无新政策</span></h2>
@@ -6558,7 +6727,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 4, 2026 · treasury</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Aug 5, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: high</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Treasury rebuilt TGA by $128bn with RRP exhausted — a mechanical reserves drain tightens the tape</span><span class="l-zh">财政部在逆回购耗尽时重建TGA 1280亿美元——准备金遭机械性抽取，市场承压</span></h2>
@@ -6662,7 +6834,10 @@
           
         </span>
         <span class="wh-when">🗓 Aug 3, 2026 · treasury</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Aug 5, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: high</span>
+        
       </div>
 
       <h2><span class="l-en">Treasury injects $128bn into an RRP-exhausted system — reserves backstop the tape</span><span class="l-zh">财政部向RRP已耗尽的市场注入1280亿美元——准备金释放为大盘提供支撑</span></h2>
@@ -6760,7 +6935,10 @@
           
         </span>
         <span class="wh-when">🗓 Jul 31, 2026 · presidential-actions</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: high</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Trump imposes 4-year quartz tariff-rate quota — homebuilders face cost headwinds, domestic miners shielded</span><span class="l-zh">特朗普实施四年期石英关税配额——房屋建筑商面临成本压力，本土矿商获保护</span></h2>
@@ -6862,7 +7040,10 @@
           
         </span>
         <span class="wh-when">🗓 Jul 31, 2026 · treasury</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Aug 3, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        
       </div>
 
       <h2><span class="l-en">Treasury rebuilt TGA by $126bn since mid-July, draining reserves into an exhausted RRP buffer</span><span class="l-zh">财政部自7月中以来重建TGA $1260亿，在RRP耗尽背景下抽走准备金</span></h2>
@@ -6966,7 +7147,10 @@
           
         </span>
         <span class="wh-when">🗓 Jul 30, 2026 · presidential-actions</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">DPA invoked for critical mineral recycling — tailwind for US battery scrap &amp; rare-earth reclaimers</span><span class="l-zh">动用《国防生产法》推动关键矿物回收——利好美国电池废料和稀土回收商</span></h2>
@@ -7050,7 +7234,10 @@
           
         </span>
         <span class="wh-when">🗓 Jul 28, 2026 · news</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Jul 29, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: high</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: Codex</span>
       </div>
 
       <h2><span class="l-en">U.S. blockade of Iran raises Hormuz disruption risk and oil-price pressure</span><span class="l-zh">美国封锁伊朗，加剧霍尔木兹海峡中断风险与油价压力</span></h2>
@@ -7184,7 +7371,10 @@
           
         </span>
         <span class="wh-when">🗓 Jul 23, 2026 · presidential-actions</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">US slaps 10-12.5% forced-labor tariffs on 60 nations — broad supply-chain cost shock, exemptions obscure net hit</span><span class="l-zh">美国对60国加征10%-12.5%强迫劳动关税——广泛供应链成本冲击，豁免条款令净影响不确定</span></h2>
@@ -7292,7 +7482,10 @@
           
         </span>
         <span class="wh-when">🗓 Jul 22, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">$5B+ Genesis Mission AI science push: lifts semis, biotech, energy R&amp;D</span><span class="l-zh">逾50亿美元“创世使命”AI科学计划：利好半导体、生物科技和能源研发</span></h2>
@@ -7418,7 +7611,10 @@
           
         </span>
         <span class="wh-when">🗓 Jul 21, 2026 · treasury</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Jul 22, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Treasury&#39;s $137bn rebuild drains reserves directly — liquidity headwind as RRP buffer zeroed</span><span class="l-zh">美国财政部$1370亿现金重建直接抽走准备金——逆风，因RRP缓冲已耗尽</span></h2>
@@ -7516,7 +7712,10 @@
           
         </span>
         <span class="wh-when">🗓 Jul 20, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Trump imposes 50% tariff on Canadian goods in retaliation for alcohol bans — target list unknown</span><span class="l-zh">特朗普对加商品征50%关税报复酒精禁令，目标清单未明</span></h2>
@@ -7580,7 +7779,10 @@
           
         </span>
         <span class="wh-when">🗓 Jul 20, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Trump halves aluminum tariff for onshoring smelter investments — shift in U.S. primary aluminum supply</span><span class="l-zh">特朗普对投资美国铝冶炼厂企业减半关税，推动本土原铝产能</span></h2>
@@ -7676,7 +7878,10 @@
           
         </span>
         <span class="wh-when">🗓 Jul 20, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Trump defense supply chain order: domestic miners benefit, import-reliant contractors hurt</span><span class="l-zh">特朗普国防供应链行政令：本土矿企受益，依赖进口的承包商受损</span></h2>
@@ -7786,7 +7991,10 @@
           
         </span>
         <span class="wh-when">🗓 Jul 13, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Trump delays costly EPA chemical emissions rule by 2 years — domestic producers&#39; margins shielded</span><span class="l-zh">特朗普推迟EPA化学品排放新规2年，本土化工厂利润率受保护</span></h2>
@@ -7870,7 +8078,10 @@
           
         </span>
         <span class="wh-when">🗓 Jul 13, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Bears Ears Monument cut by 1.2M acres — uranium, copper, silver miners gain access to Utah federal lands</span><span class="l-zh">熊耳国家纪念碑缩编，美国铀铜银矿企获准进入联邦土地</span></h2>
@@ -7954,7 +8165,10 @@
           
         </span>
         <span class="wh-when">🗓 Jul 13, 2026 · news</span>
+        
+        
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Trump shrinks Grand Staircase-Escalante 90%, unleashing critical mineral mining</span><span class="l-zh">特朗普将大阶梯-埃斯卡兰特纪念地缩减90%，释放关键矿产开采</span></h2>
@@ -8044,7 +8258,10 @@
           
         </span>
         <span class="wh-when">🗓 Jul 9, 2026 · treasury</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Jul 12, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: high</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Treasury injects $175bn quarter-end cash, RRP exhausted — reserves flood banks, backstopping the tape</span><span class="l-zh">财政部季度末释放1750亿美元现金，RRP枯竭，准备金注入为市场提供支撑</span></h2>
@@ -8128,7 +8345,10 @@
           
         </span>
         <span class="wh-when">🗓 Jun 30, 2026 · news</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Jul 3, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Trump&#39;s NEPA overhaul unlocks federal land &amp; permits — tailwind for energy, construction, defense &amp; data centers</span><span class="l-zh">特朗普NEPA改革放开联邦土地和许可——能源、建筑、国防和数据中心获提振</span></h2>
@@ -8260,7 +8480,10 @@
           
         </span>
         <span class="wh-when">🗓 Jun 29, 2026 · news</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Jul 3, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Trump duty-free Moroccan phosphate — US producers squeezed, farmers get cost relief</span><span class="l-zh">特朗普对摩洛哥磷肥关税豁免——美国生产商受压，农户获成本缓解</span></h2>
@@ -8332,7 +8555,10 @@
           
         </span>
         <span class="wh-when">🗓 Jun 29, 2026 · news</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Jul 3, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: high</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Trump lifts phosphate duties from Morocco — farm relief, domestic producers hit</span><span class="l-zh">特朗普暂停摩洛哥磷酸盐关税——农场受益，国内生产商受损</span></h2>
@@ -8404,7 +8630,10 @@
           
         </span>
         <span class="wh-when">🗓 Jun 29, 2026 · news</span>
+        
+        <span class="wh-when">· <span class="l-en">read written</span><span class="l-zh">解读撰写于</span> Jul 3, 2026</span>
         <span class="wh-when">· <span class="l-en">confidence</span><span class="l-zh">置信度</span>: medium</span>
+        <span class="wh-when">· <span class="l-en">read by fallback</span><span class="l-zh">备用模型撰写</span>: DeepSeek</span>
       </div>
 
       <h2><span class="l-en">Aftermarket-parts deregulation: EPA to bypass CARB bottleneck, ease tampering rules — repair cost tailwind</span><span class="l-zh">售后零件松绑：EPA绕开加州认证瓶颈，放宽防篡改执法 — 维修成本利好</span></h2>
@@ -8502,7 +8731,7 @@
 
 <div class="wh-pagedisc">
   <span class="l-en">Sources: the White House public RSS feeds and the U.S. Treasury Daily Treasury Statement (fiscaldata.treasury.gov, primary). Significance, titles and analysis are generated by</span><span class="l-zh">来源：白宫公开 RSS 与美国财政部每日报表（fiscaldata.treasury.gov，一手）。重要性、标题与分析由</span>
-  Claude claude-opus-4-8 (subscription)
+  Claude claude-opus-4-8 (subscription) <span class="l-en">(or by the fallback model named on a card)</span><span class="l-zh">（或卡片上注明的备用模型）</span>
   <span class="l-en">— context only, not investment advice. The tickers named are illustrative of plausible exposure, not recommendations, and feed no score or allocation.</span><span class="l-zh">生成——仅供参考，不构成投资建议。所列标的仅为可能受影响的示例，并非推荐，且不参与任何评分或配置。</span>
 </div>
 
@@ -8519,7 +8748,7 @@
   
 </footer>
 
-<script src="theme.js?v=46939917" defer></script>
+<script src="theme.js?v=2454e0ca" defer></script>
 <script defer data-whb data-root="" src="wh_banner.js?v=b1207f44"></script>
 </body>
 </html>

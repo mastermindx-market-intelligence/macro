@@ -7,6 +7,7 @@ import logging
 import os
 import re
 import threading
+import time
 from bisect import bisect_right
 from collections.abc import Mapping, Sequence
 from datetime import datetime, timezone
@@ -15,11 +16,72 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from fastapi.responses import JSONResponse, Response
+from fastapi.routing import APIRoute
 
 from engine.fundamental_forensics.health import evaluate_health
+from engine.fundamental_forensics.latency import RECORDER, evaluate_slo, load_slo_config
 from engine.fundamental_forensics.private_state import load_state_blob
 
-router = APIRouter()
+
+class _TimedRoute(APIRoute):
+    """FIF V0-a: time each real route's work and record the distribution.
+
+    The timed span is the whole route handler — dependency solving included
+    (FastAPI solves dependencies inside the handler), so an auth rejection is
+    timed too. Only success responses (2xx/3xx) enter the percentile window:
+    4xx responses raise the route template's ``client_error_n`` and 5xx
+    responses its ``error_n``, both outside the window, so a burst of fast
+    401/403/400 rejections can never drag p95 down to a stale green. The
+    dedicated method-not-allowed handlers never reach real handler work and
+    are not recorded at all. The ``Server-Timing`` header rides success
+    responses only, and never the file exports: A54 pins identical export
+    posts to byte-identical responses, headers included, so an export is
+    recorded but carries no per-request duration. An ``HTTPException`` (the
+    router's expected failure boundary) is counted under its own status and
+    re-raised unchanged, any
+    other exception is counted as a 500 and re-raised unchanged. Recording
+    itself can never alter a status, body or existing header: it sits inside
+    its own ``try/except Exception: pass``.
+    """
+
+    def get_route_handler(self):
+        original = super().get_route_handler()
+
+        async def timed_route_handler(request: Request) -> Response:
+            if self.endpoint in _METHOD_NOT_ALLOWED_ENDPOINTS:
+                # A private 405 answers before any real handler work runs:
+                # not a latency sample, not a client-error count.
+                return await original(request)
+            t0 = time.perf_counter()
+            try:
+                response = await original(request)
+            except HTTPException as exc:
+                duration_ms = (time.perf_counter() - t0) * 1000.0
+                try:
+                    RECORDER.record(self.path, duration_ms, exc.status_code)
+                except Exception:  # noqa: BLE001 - timing must never fail a request
+                    pass
+                raise
+            except Exception:
+                duration_ms = (time.perf_counter() - t0) * 1000.0
+                try:
+                    RECORDER.record(self.path, duration_ms, 500)
+                except Exception:  # noqa: BLE001 - timing must never fail a request
+                    pass
+                raise
+            duration_ms = (time.perf_counter() - t0) * 1000.0
+            if self.path not in _BYTE_IDENTICAL_EXPORT_PATHS:
+                response.headers["Server-Timing"] = f"fif;dur={duration_ms:.1f}"
+            try:
+                RECORDER.record(self.path, duration_ms, response.status_code)
+            except Exception:  # noqa: BLE001 - timing must never fail a request
+                pass
+            return response
+
+        return timed_route_handler
+
+
+router = APIRouter(route_class=_TimedRoute)
 log = logging.getLogger("fundamental_forensics.api")
 REPO = Path(os.environ.get("MACRO_REPO", "/opt/macro"))
 
@@ -281,6 +343,56 @@ def forensics_health(
                 )
     payload = evaluate_health(REPO, now=datetime.now(timezone.utc))
     return JSONResponse(payload, headers=headers)
+
+
+# ---------------------------------------------------------------------------
+# FIF V0-a: the entitled latency report — measured distributions judged
+# against the DECLARED budgets in config/fundamental_forensics/slo.v1.json.
+# ---------------------------------------------------------------------------
+
+_SLO_CONFIG_LOCK = threading.Lock()
+_SLO_CONFIG_CACHE: dict | None = None
+
+
+@router.get("/api/forensics/slo")
+def forensics_slo(_user: dict = Depends(require_site_full_user)) -> JSONResponse:
+    """Report measured per-route latency distributions against the SLO config.
+
+    Entitled exactly like health. The payload carries route templates and
+    measured aggregates only — never an issuer, tenant, query or user
+    identifier. The config is loaded once, at first use, from the repo path;
+    a config that cannot be read or parsed is a 503, never a fabricated
+    "within" — the report exists only against the real declared budgets. The
+    reported ``window`` is the recorder's actual sample window, not the
+    config's declared one, and the response carries the full private header
+    set with ``Cache-Control: no-store``.
+    """
+    global _SLO_CONFIG_CACHE
+    try:
+        with _SLO_CONFIG_LOCK:
+            if _SLO_CONFIG_CACHE is None:
+                _SLO_CONFIG_CACHE = load_slo_config(
+                    REPO / "config" / "fundamental_forensics" / "slo.v1.json"
+                )
+            config = _SLO_CONFIG_CACHE
+    except Exception as exc:  # noqa: BLE001 - names-only; never leak the cause
+        log.warning("forensics SLO config unavailable (%s)", type(exc).__name__)
+        return JSONResponse(
+            {"error": "slo_config_unavailable"},
+            status_code=503,
+            headers={**_PRIVATE_HEADERS, "Cache-Control": "no-store"},
+        )
+    evaluation = evaluate_slo(RECORDER.snapshot(), config)
+    return JSONResponse(
+        {
+            "schema": "fif_slo_report.v1",
+            "config_status": config["status"],
+            "window": RECORDER.window,
+            "routes": evaluation["routes"],
+            "unbudgeted": evaluation["unbudgeted"],
+        },
+        headers={**_PRIVATE_HEADERS, "Cache-Control": "no-store"},
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1383,6 +1495,32 @@ async def financial_statements(
             "X-FIF-Response-SHA256": result.sha256,
         },
     )
+
+
+# FIF V0-a MAJOR-1 fix: these handlers answer with the private 405 before any
+# real handler work runs, so the timed route does not record them at all — a
+# 405 is neither a latency sample nor a client-error count on the real route
+# template. (The alternative, keying the recorder by (method, path), would
+# break the SLO config's path-template keys.)
+_BYTE_IDENTICAL_EXPORT_PATHS = frozenset(
+    {
+        "/api/forensics/v1/financial/query.xlsx",
+        "/api/forensics/v1/financial/query.csv",
+        "/api/forensics/v1/financial/query.parquet",
+    }
+)
+
+_METHOD_NOT_ALLOWED_ENDPOINTS = frozenset(
+    {
+        financial_query_method_not_allowed,
+        financial_query_xlsx_method_not_allowed,
+        financial_query_csv_method_not_allowed,
+        financial_query_parquet_method_not_allowed,
+        financial_revisions_method_not_allowed,
+        financial_packet_method_not_allowed,
+        financial_statements_method_not_allowed,
+    }
+)
 
 
 __all__ = ["router", "require_site_full_user"]

@@ -55,6 +55,16 @@ HOW IT WORKS
   primary-finding control, Enter, then Tab through the open drawer). The force
   is reported applied only when a post-interaction DOM probe confirms it, and
   every receipt lands in ``interactions.json``.
+* A43 Z1 repair: after the drawer_trap trail (and after that cell's screenshot,
+  which must still show the open drawer) a real Escape press closes the drawer
+  and the receipt records ``facts.closed`` — ``focus_restored`` is True only
+  when the drawer is closed AND focus returned to the product's restore target
+  (the trigger, or the selected finding's own button — see the probe script),
+  and it is folded into ``verified``. Keyboard receipts also carry
+  ``facts.disabled_controls``, the None-state record of ``#ff-export-btn`` /
+  ``#ff-saved-save`` (real ``disabled`` property, per-locale visible text,
+  labels, tip); populated-set rest cells get the same record as a
+  ``disabled_controls`` receipt kind in ``interactions.json``.
 * An interaction cell whose screenshot would be taken while the page's modal is
   open (``body.ff-modal-open``) is captured as the first VIEWPORT instead of the
   full page: Chromium's full-page capture resizes the surface and drops or
@@ -250,6 +260,21 @@ INTERACTION_DRAWER_TRAP = "drawer_trap"
 INTERACTION_SAVED_RESTORE_PINNED = "saved_restore_pinned"
 INTERACTION_SAVED_OPEN_UNAVAILABLE = "saved_open_unavailable"
 INTERACTION_SAVED_WRITE_FAILURE = "saved_write_failure"
+# A43 Z1 repair: the disabled/unavailable control-text probe. NOT a force-state
+# interaction — a receipt kind this wrapper appends itself for rest cells; it
+# never enters ``_INTERACTIONS`` (``run_interaction`` refuses it as a force).
+INTERACTION_DISABLED_CONTROLS = "disabled_controls"
+# The two keyboard interactions whose receipts carry the None-state probe as
+# ``facts.disabled_controls`` (keeping keyboard interactions.json at 24 rows).
+KEYBOARD_INTERACTIONS = (INTERACTION_TAB_KEYS, INTERACTION_DRAWER_TRAP)
+# templates/fundamental_forensics.html.j2:87-90 and :119-122: the two disabled
+# desk controls masterplan row A43 names.
+DISABLED_CONTROL_SELECTORS = ("#ff-export-btn", "#ff-saved-save")
+DISABLED_CONTROLS_PROBE_INPUT = (
+    "probe: rest-state disabled/unavailable record for #ff-export-btn and "
+    "#ff-saved-save (real disabled property, per-locale visible text, "
+    "data-label-en/zh, data-tip-<locale>, aria-disabled)"
+)
 INTERACTION_INPUTS = {
     INTERACTION_DRAWER_OPEN: "pointer: real click on [data-open-primary-finding]",
     INTERACTION_TAB_KEYS: "keyboard: real Tab presses to the selected tab, then ArrowRight",
@@ -902,6 +927,66 @@ _TABLIST_PROBE_SCRIPT = """
 }
 """
 
+# A43 Z1 repair: the Escape half of the drawer_trap receipt. A real Escape
+# press must close the drawer and restore focus per the product's own contract
+# (templates/fundamental_forensics.js closeEvidence(restoreFocus) focuses
+# state.lastFocus). For a drawer opened from the primary-finding CTA the
+# recorded target — measured on the live page — is the SELECTED finding's own
+# evidence button (openAnalysisDrawer -> selectedEvidenceButton(), rendered as
+# button.ff-finding[data-finding-id][aria-current="true"]); the CTA itself is
+# the fallback when no finding button matched at open time.
+_DRAWER_CLOSED_PROBE_SCRIPT = """
+(config) => {
+  const evidence = document.querySelector(config.evidence);
+  const active = document.activeElement;
+  const onTrigger = !!(active && active.matches && active.matches(config.trigger));
+  const onFindingButton = !!(active && active.matches && active.matches(
+    'button[data-finding-id][aria-current="true"]'));
+  const open = !!evidence && evidence.classList.contains('is-open');
+  return {
+    open: open,
+    modal: !!evidence && evidence.getAttribute('aria-modal') === 'true',
+    focus_restored: !open && (onTrigger || onFindingButton),
+    focus_matches_trigger: onTrigger,
+    focus_on_finding_button: onFindingButton,
+    focus_id: active && active.id ? active.id : null,
+    focus_tag: active ? active.tagName.toLowerCase() : null,
+  };
+}
+"""
+
+# A43 Z1 repair: the disabled/unavailable control-text probe. ``visible_text``
+# is the applied locale's own text: a rendered control's innerText already
+# shows exactly its .l-<locale> span, but a control behind the closed
+# Desk-tools disclosure has no layout box and innerText falls back to
+# textContent (BOTH locale spans concatenated), so the probe reads that
+# locale's span directly in that case.
+_DISABLED_CONTROLS_SCRIPT = """
+(config) => config.selectors.map(function (selector) {
+  const el = document.querySelector(selector);
+  if (!el) {
+    return {selector: selector, present: false, disabled: null, visible_text: null,
+            label_en: null, label_zh: null, tip: null, aria_disabled: null};
+  }
+  const rendered = el.getClientRects().length > 0;
+  const inner = String(el.innerText || '').trim();
+  const span = el.querySelector('.l-' + config.locale);
+  const visible = rendered && inner !== ''
+    ? inner
+    : (span ? String(span.textContent || '').trim() : inner);
+  return {
+    selector: selector,
+    present: true,
+    disabled: el.disabled === true,
+    visible_text: visible,
+    label_en: el.getAttribute('data-label-en'),
+    label_zh: el.getAttribute('data-label-zh'),
+    tip: el.getAttribute('data-tip-' + config.locale),
+    aria_disabled: el.getAttribute('aria-disabled'),
+  };
+})
+"""
+
 _FOCUS_RESET_SCRIPT = """
 () => {
   const active = document.activeElement;
@@ -986,6 +1071,78 @@ def _settle(page: Any) -> None:
 def _drawer_probe(page: Any) -> dict[str, Any]:
     config = {"evidence": EVIDENCE_SELECTOR, "focusable": FOCUSABLE_PROBE_SELECTOR}
     return dict(page.evaluate(_DRAWER_PROBE_SCRIPT.strip(), config) or {})
+
+
+def close_drawer_and_probe_restore(page: Any) -> dict[str, Any]:
+    """Press Escape, settle, then probe: closed drawer + focus on the trigger."""
+    page.keyboard.press("Escape")
+    _settle(page)
+    config = {"evidence": EVIDENCE_SELECTOR, "trigger": PRIMARY_FINDING_SELECTOR}
+    return dict(page.evaluate(_DRAWER_CLOSED_PROBE_SCRIPT.strip(), config) or {})
+
+
+def fold_closed_into_verified(receipt: dict[str, Any], closed: Mapping[str, Any]) -> None:
+    """Record the ``closed`` fact; a lost focus restore voids the receipt.
+
+    Fail-closed only: a restored close can never un-fail a receipt whose trap
+    verification already failed.
+    """
+    facts = receipt.setdefault("facts", {})
+    facts["closed"] = dict(closed)
+    receipt["verified"] = bool(receipt.get("verified")) and bool(closed.get("focus_restored"))
+
+
+def probe_disabled_controls(page: Any, locale: str | None) -> list[dict[str, Any]]:
+    """The two desk controls' disabled/unavailable record for ``locale``."""
+    config = {"selectors": list(DISABLED_CONTROL_SELECTORS), "locale": str(locale or "en")}
+    values = page.evaluate(_DISABLED_CONTROLS_SCRIPT.strip(), config) or []
+    return [dict(value) for value in values if isinstance(value, dict)]
+
+
+def record_disabled_controls(page: Any, cell: Any) -> dict[str, Any]:
+    """A ``disabled_controls`` receipt for one rest cell; probe failure = gap."""
+    receipt: dict[str, Any] = {
+        "cell_id": getattr(cell, "cell_id", None),
+        "viewport": getattr(cell, "viewport", None),
+        "locale": getattr(cell, "locale", None),
+        "theme": getattr(cell, "theme", None),
+        "force_state": None,
+        "interaction": INTERACTION_DISABLED_CONTROLS,
+        "input": DISABLED_CONTROLS_PROBE_INPUT,
+        "verified": False,
+        "facts": {"controls": []},
+    }
+    try:
+        receipt["facts"]["controls"] = probe_disabled_controls(
+            page, getattr(cell, "locale", None)
+        )
+    except Exception as exc:  # noqa: BLE001 - a failed probe is a recorded gap
+        receipt["error"] = f"{type(exc).__name__}: {exc}"
+        return receipt
+    controls = receipt["facts"]["controls"]
+    seen_selectors = {entry.get("selector") for entry in controls}
+    receipt["verified"] = bool(controls) and seen_selectors == set(
+        DISABLED_CONTROL_SELECTORS
+    ) and all(
+        entry.get("present") and entry.get("disabled") is True and entry.get("visible_text")
+        for entry in controls
+    )
+    return receipt
+
+
+def rest_disabled_controls_probe_wanted(mode: str, force_states: Sequence[str]) -> bool:
+    """Rest-cell ``disabled_controls`` receipts: the populated set only.
+
+    The keyboard set is captured in mode=populated too, but its None-state
+    cells are probed through their own tab_keys/drawer_trap receipts
+    (``facts.disabled_controls``), keeping keyboard interactions.json at
+    3 viewports x 2 interactions x 2 locales x 2 themes = 24 receipts.
+    """
+    if mode != MODE_POPULATED:
+        return False
+    return not any(
+        spec.split(":", 1)[0] in KEYBOARD_INTERACTIONS for spec in force_states
+    )
 
 
 def tab_walk_to(page: Any, selector: str, *, cap: int = TAB_WALK_CAP) -> dict[str, Any]:
@@ -1236,10 +1393,20 @@ def run_interaction(page: Any, payload: Mapping[str, Any], cell: Any) -> dict[st
         receipt["error"] = f"unknown interaction {name!r}; known: {sorted(_INTERACTIONS)}"
         return receipt
     try:
+        pre_facts: dict[str, Any] = {}
+        if name in KEYBOARD_INTERACTIONS:
+            # A43 Z1 repair: this cell's None-state disabled controls, probed
+            # before the walk moves anything (a probe failure is a recorded
+            # gap for the whole receipt — fail closed, like every interaction).
+            pre_facts["disabled_controls"] = probe_disabled_controls(
+                page, getattr(cell, "locale", None)
+            )
         verified, facts = action(page)
     except Exception as exc:  # noqa: BLE001 - a failed interaction is a recorded gap
         receipt["error"] = f"{type(exc).__name__}: {exc}"
         return receipt
+    if pre_facts:
+        facts = {**pre_facts, **facts}
     receipt["verified"] = bool(verified)
     receipt["facts"] = facts
     return receipt
@@ -1266,12 +1433,14 @@ class DriverProxy:
         fold_recorder: Callable[[Any, Any], None],
         interaction_runner: Callable[[Any, Mapping[str, Any], Any], Any] | None = None,
         init_scripts: Sequence[str] = (),
+        rest_probe: Callable[[Any, Any], Any] | None = None,
     ) -> None:
         self._real = real_driver
         self._route_handler_factory = route_handler_factory
         self._fold_recorder = fold_recorder
         self._interaction_runner = interaction_runner
         self._init_scripts = tuple(init_scripts)
+        self._rest_probe = rest_probe
         self._current_cell: Any = None
         self._wrapped = False
 
@@ -1289,6 +1458,7 @@ class DriverProxy:
                 get_cell=lambda: self._current_cell,
                 interaction_runner=self._interaction_runner,
                 init_scripts=self._init_scripts,
+                rest_probe=self._rest_probe,
             )
             self._wrapped = True
         return self._real.capture(url=rewrite_evidence_host(url), cell=cell, timeout_s=timeout_s)
@@ -1309,6 +1479,7 @@ class BrowserProxy:
         get_cell: Callable[[], Any],
         interaction_runner: Callable[[Any, Mapping[str, Any], Any], Any] | None = None,
         init_scripts: Sequence[str] = (),
+        rest_probe: Callable[[Any, Any], Any] | None = None,
     ) -> None:
         self._real = real_browser
         self._handler = handler
@@ -1316,6 +1487,7 @@ class BrowserProxy:
         self._get_cell = get_cell
         self._interaction_runner = interaction_runner
         self._init_scripts = tuple(init_scripts)
+        self._rest_probe = rest_probe
 
     def new_context(self, **kwargs: Any) -> Any:
         real_context = self._real.new_context(**kwargs)
@@ -1330,6 +1502,7 @@ class BrowserProxy:
             fold_recorder=self._fold_recorder,
             get_cell=self._get_cell,
             interaction_runner=self._interaction_runner,
+            rest_probe=self._rest_probe,
         )
 
     def close(self) -> None:
@@ -1349,11 +1522,13 @@ class ContextProxy:
         fold_recorder: Callable[[Any, Any], None],
         get_cell: Callable[[], Any],
         interaction_runner: Callable[[Any, Mapping[str, Any], Any], Any] | None = None,
+        rest_probe: Callable[[Any, Any], Any] | None = None,
     ) -> None:
         self._real = real_context
         self._fold_recorder = fold_recorder
         self._get_cell = get_cell
         self._interaction_runner = interaction_runner
+        self._rest_probe = rest_probe
 
     def new_page(self) -> Any:
         return PageProxy(
@@ -1361,6 +1536,7 @@ class ContextProxy:
             fold_recorder=self._fold_recorder,
             get_cell=self._get_cell,
             interaction_runner=self._interaction_runner,
+            rest_probe=self._rest_probe,
         )
 
     def __getattr__(self, name: str) -> Any:
@@ -1384,11 +1560,13 @@ class PageProxy:
         fold_recorder: Callable[[Any, Any], None],
         get_cell: Callable[[], Any],
         interaction_runner: Callable[[Any, Mapping[str, Any], Any], Any] | None = None,
+        rest_probe: Callable[[Any, Any], Any] | None = None,
     ) -> None:
         self._real = real_page
         self._fold_recorder = fold_recorder
         self._get_cell = get_cell
         self._interaction_runner = interaction_runner
+        self._rest_probe = rest_probe
         # (cell id at interaction time, the receipt dict the runner returned): the
         # same object the run appended to interaction_rows, so annotating it here
         # lands in interactions.json.
@@ -1422,6 +1600,14 @@ class PageProxy:
                 self._fold_recorder(self._real, cell)
             except Exception:  # noqa: BLE001 - measurement must never kill the shot
                 pass
+            if self._rest_probe is not None and getattr(cell, "force_state", None) is None:
+                # A43 Z1 repair: one disabled_controls receipt per rest cell
+                # (the recorder builds the receipt and appends it to this run's
+                # interaction rows; it records its own gap on probe failure).
+                try:
+                    self._rest_probe(self._real, cell)
+                except Exception:  # noqa: BLE001 - the shot still happens
+                    pass
         receipt = self._receipt_for(cell)
         if receipt is not None and kwargs.get("full_page"):
             if self._modal_open():
@@ -1429,7 +1615,32 @@ class PageProxy:
                 receipt["capture"] = CAPTURE_SCOPE_MODAL_VIEWPORT
             else:
                 receipt["capture"] = CAPTURE_SCOPE_FULL_PAGE
-        return self._real.screenshot(**kwargs)
+        shot = self._real.screenshot(**kwargs)
+        self._close_drawer_after_the_shot(receipt)
+        return shot
+
+    def _close_drawer_after_the_shot(self, receipt: dict[str, Any] | None) -> None:
+        """A43 Z1 repair: the drawer_trap receipt's Escape half, AFTER the shot.
+
+        The drawer_trap screenshot must still show the open, trapped drawer, so
+        the real Escape press (close + focus restore, closeEvidence(restoreFocus))
+        follows the screenshot; the receipt is annotated in place and a failed
+        focus restore voids ``verified``. Once per receipt.
+        """
+        if receipt is None or receipt.get("interaction") != INTERACTION_DRAWER_TRAP:
+            return
+        facts = receipt.get("facts")
+        if isinstance(facts, Mapping) and "closed" in facts:
+            return
+        try:
+            closed = close_drawer_and_probe_restore(self._real)
+        except Exception as exc:  # noqa: BLE001 - fail closed, never kill the shot path
+            closed = {
+                "open": None,
+                "focus_restored": False,
+                "probe_error": f"{type(exc).__name__}: {exc}",
+            }
+        fold_closed_into_verified(receipt, closed)
 
     def _receipt_for(self, cell: Any) -> dict[str, Any] | None:
         """The interaction receipt of THIS cell, or None (non-interaction cells)."""
@@ -1959,6 +2170,7 @@ def _wrapped_driver_factory(
     mode: str,
     interaction_rows: list[dict[str, Any]] | None = None,
     init_scripts: Sequence[str] = (),
+    rest_probe_enabled: bool = False,
 ) -> Callable[..., DriverProxy]:
     from scripts.capture_page_evidence import playwright_page_driver  # noqa: PLC0415
 
@@ -1968,6 +2180,13 @@ def _wrapped_driver_factory(
 
     def interaction_runner(page: Any, payload: Mapping[str, Any], cell: Any) -> dict[str, Any]:
         receipt = run_interaction(page, payload, cell)
+        if interaction_rows is not None:
+            interaction_rows.append(receipt)
+        return receipt
+
+    def rest_probe(page: Any, cell: Any) -> dict[str, Any]:
+        # A43 Z1 repair: one disabled_controls receipt per rest cell.
+        receipt = record_disabled_controls(page, cell)
         if interaction_rows is not None:
             interaction_rows.append(receipt)
         return receipt
@@ -1986,6 +2205,7 @@ def _wrapped_driver_factory(
             ),
             interaction_runner=interaction_runner,
             init_scripts=init_scripts,
+            rest_probe=rest_probe if rest_probe_enabled else None,
         )
         slot[0] = proxy
         return proxy
@@ -2292,6 +2512,7 @@ def _run_wrapped_capture(
         mode=args.mode,
         interaction_rows=interaction_rows,
         init_scripts=init_scripts,
+        rest_probe_enabled=rest_disabled_controls_probe_wanted(args.mode, args.force_state),
     )
     return capture_main(capture_argv, driver_factory=factory)
 

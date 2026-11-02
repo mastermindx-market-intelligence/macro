@@ -1,0 +1,60 @@
+{
+  "candidate_replays": {
+    "9880": {
+      "head": "28db6b2898e0ad41e0e3ad68b039a43dede1e37b",
+      "path_count": 9,
+      "isolated_commit_verdict": [
+        false,
+        "main took 1 commit(s) since the proof, none inside this pull request's tested surface"
+      ]
+    },
+    "9862": {
+      "head": "7b1c819082d59cefd6a5f8f82f821ae56b8d7555",
+      "path_count": 25,
+      "isolated_commit_verdict": [
+        true,
+        "main touched site/** since the proof was computed \u2014 inside this pull request's tested surface"
+      ]
+    },
+    "9662": {
+      "head": "2c0483341da0b2d8437443e4a842ec3f81a5e42c",
+      "path_count": 278,
+      "isolated_commit_verdict": [
+        true,
+        "main touched data/**, site/** since the proof was computed \u2014 inside this pull request's tested surface"
+      ]
+    },
+    "9639": {
+      "head": "14438b744de098458f8ec550a7a98f63eb44cf3b",
+      "path_count": 493,
+      "isolated_commit_verdict": [
+        true,
+        "main touched site/** since the proof was computed \u2014 inside this pull request's tested surface"
+      ]
+    },
+    "9948": {
+      "head": "eea69d1c011a835cff1c725577d9c04683aa4963",
+      "path_count": 3,
+      "isolated_commit_verdict": [
+        false,
+        "main took 1 commit(s) since the proof, none inside this pull request's tested surface"
+      ]
+    }
+  },
+  "commit": "ad6e5a824334d14859495fc017605ebf76e64e93",
+  "files": 580,
+  "truncated": false,
+  "full_inventory_equal": true,
+  "requests": 7,
+  "isolated_surface_verdicts": {
+    "engine/group_flow.py": [
+      false,
+      "main took 1 commit(s) since the proof, none inside this pull request's tested surface"
+    ],
+    "site/index.html": [
+      true,
+      "main touched site/** since the proof was computed \u2014 inside this pull request's tested surface"
+    ]
+  },
+  "limitation": "Retained immutable commit, gate patterns and local candidate path inventories; proof metadata is synthetic to isolate one commit. Not current proof, readiness or live PR admission"
+}

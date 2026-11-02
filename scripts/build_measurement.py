@@ -1279,6 +1279,24 @@ def _dash_if_none(value):
     return "—" if value is None else value
 
 
+def _reason_list(value) -> list:
+    """The producer's recorded reason codes: non-empty strings, file order, else []."""
+    if not isinstance(value, list):
+        return []
+    return [r for r in value if isinstance(r, str) and r]
+
+
+def _llm_overlay(entry: dict) -> dict:
+    """The AI overlay keys the producer folds onto a deterministic row, when written."""
+    out = {}
+    for key in ("llm_status", "llm_heat_at_open", "llm_heat_now"):
+        if key in entry:
+            out[key] = _dash_if_none(entry[key])
+    if "llm_broken_reasons" in entry:
+        out["llm_broken_reasons"] = _reason_list(entry["llm_broken_reasons"])
+    return out
+
+
 def build_thesis_monitor_broken() -> dict:
     """Load thesis_monitor.json: BROKEN rows plus an INTACT sibling list.
 
@@ -1287,9 +1305,10 @@ def build_thesis_monitor_broken() -> dict:
     through verbatim and rows keep file order.  `fired` pairs a criterion
     status with the kill_criteria entry AT THE SAME INDEX; an index missing
     from either parallel list is skipped, never invented.  An LLM-only thesis
-    (source "llm") has no per-criterion statuses and the producer does not
-    record which of its conditions fired, so its row carries the neutral kind
-    "llm_inputs" and shows every input it was judged on.
+    (source "llm") has no per-criterion statuses; each code the producer
+    recorded in "broken_reasons" becomes a fired row whose detail is the
+    input that code names; a row without that record keeps the neutral kind
+    "llm_inputs" with every input it was judged on.
     Absent-safe: returns {available: False} if the file is missing/unreadable,
     is not a JSON object, or if "monitored" is not a list.  A malformed entry
     (non-list criteria or statuses, null fields) degrades and never raises.
@@ -1326,29 +1345,32 @@ def build_thesis_monitor_broken() -> dict:
                 # deterministic rows write "opened"; LLM-only rows "opened_asof"
                 "opened": entry.get("opened") or entry.get("opened_asof") or "",
                 "stage_at_open": entry.get("stage_at_open") or "",
+                **_llm_overlay(entry),
             })
             continue
         if status != "BROKEN":
             continue
         fired: list[dict] = []
         if entry.get("source") == "llm":
-            # An LLM-only thesis has text criteria and no per-criterion
-            # statuses.  The producer breaks it on ANY of: physical
-            # confirmation lost, too few surfaces, or a heat drop
-            # (engine/thesis_monitor.py _status_llm) and does not say which,
-            # so the kind stays neutral and all inputs show as written —
-            # nothing is re-judged here.
+            # The producer records which condition held
+            # (engine/thesis_monitor.py _llm_broken_reasons); the reader only
+            # relays that record and re-judges nothing here.
             physical = entry.get("physical_now")
-            fired.append({
-                "kind": "llm_inputs",
-                "detail": "heat {} → {} · {} surface(s) now · physical now: {}".format(
-                    _or_dash(entry.get("heat_at_open")),
-                    _or_dash(entry.get("heat_now")),
-                    _or_dash(entry.get("n_surfaces_now")),
-                    "yes" if physical is True else "no" if physical is False
-                    else _or_dash(physical),
-                ),
-            })
+            heat = "heat {} → {}".format(
+                _or_dash(entry.get("heat_at_open")), _or_dash(entry.get("heat_now")))
+            surfaces = "{} surface(s) now".format(_or_dash(entry.get("n_surfaces_now")))
+            physical_txt = "physical now: {}".format(
+                "yes" if physical is True else "no" if physical is False
+                else _or_dash(physical))
+            inputs = " · ".join((heat, surfaces, physical_txt))
+            reasons = _reason_list(entry.get("broken_reasons"))
+            by_reason = {"physical_lost": physical_txt, "below_quorum": surfaces,
+                         "heat_drop": heat}
+            if reasons:
+                fired.extend({"kind": r, "detail": by_reason.get(r, inputs)}
+                             for r in reasons)
+            else:
+                fired.append({"kind": "llm_inputs", "detail": inputs})
         else:
             criteria = entry.get("kill_criteria")
             statuses = entry.get("criterion_statuses")
@@ -1373,13 +1395,7 @@ def build_thesis_monitor_broken() -> dict:
             "stage_at_open": entry.get("stage_at_open") or "",
             "fired": fired,
         }
-        # the producer folds an LLM overlay onto some deterministic rows
-        # (engine/thesis_monitor.py:673-682) without recording which LLM
-        # condition fired: pass the written keys through when present and
-        # add no cause label (design D3).
-        for key in ("llm_status", "llm_heat_at_open", "llm_heat_now"):
-            if key in entry:
-                row[key] = _dash_if_none(entry[key])
+        row.update(_llm_overlay(entry))
         rows.append(row)
 
     # a present-but-null value must not render as the literal "None"; counts

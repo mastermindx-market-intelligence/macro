@@ -50,6 +50,7 @@
     queryNodes: null,
     cellEvidence: null,
     financialToken: 0,
+    statementsToken: 0,
     financial: { phase: 'idle' },
     statementColumns: [],
     statements: { phase: 'idle' },
@@ -907,6 +908,7 @@
       window.MMOnboard.open('upgrade', { plan: 'essential', period: 'annual' });
       return;
     }
+    if (window.MMXSharedShell) { window.MMXSharedShell.openAuth('billing'); return; }
     window.location.href = '/plans.html';
   }
 
@@ -919,6 +921,7 @@
       window.MDXAuth.open('signin');
       return;
     }
+    if (window.MMXSharedShell) { window.MMXSharedShell.openAuth('signin'); return; }
     window.location.href = '/?signin=1';
   }
 
@@ -1733,25 +1736,71 @@
       '<span class="ff-compact tnum">' + compact + '</span></button>';
   }
 
-  // §2.3.4 — a finding value with no attached occurrence is matched to a query
-  // node by metric id plus period label; no match stays disabled (AM1).
-  function queryNodeForValue(value) {
+  function isoDay(text) {
+    var match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(text || ''));
+    return match ? Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])) / 86400000 : null;
+  }
+
+  // A state period is a fiscal-quarter duration bucket. A query node answers
+  // it only for the same metric, the same period end, the same start (or, when
+  // the panel row carries no start, a node interval no longer than one fiscal
+  // quarter), a value state with a source span, and the very number the page
+  // shows (AM1). Anything else stays disabled; no node is borrowed from
+  // another period.
+  function queryNodeForPeriod(metricId, period, expected) {
     var nodes = state.queryNodes;
-    if (!Array.isArray(nodes) || !objectValue(value)) return null;
-    var wantedKey = String(value.metric_id || value.key || '');
-    var wantedPeriod = String(value.period_label || value.period || '');
+    if (!Array.isArray(nodes) || !metricId || !objectValue(period)) return null;
+    var wantedEnd = String(period.end || period.period_end || '');
+    var wantedStart = period.start ? String(period.start) : '';
+    var wantedNumber = numberValue(expected);
+    if (!wantedEnd || wantedNumber == null) return null;
     for (var index = 0; index < nodes.length; index += 1) {
       var node = objectValue(nodes[index]);
-      if (!node) continue;
-      if (wantedKey && String(node.metric_id || '') !== wantedKey) continue;
-      if (wantedPeriod && String(node.period_label || node.period || '') !== wantedPeriod) continue;
+      if (!node || String(node.metric_id || '') !== metricId) continue;
+      if (node.state != null && node.state !== 'value') continue;
+      if (typeof node.value !== 'string' || numberValue(node.value) !== wantedNumber) continue;
+      var nodePeriod = objectValue(node.period) || {};
+      if (String(nodePeriod.end || '') !== wantedEnd) continue;
+      var nodeStart = nodePeriod.start ? String(nodePeriod.start) : '';
+      if (wantedStart) {
+        if (nodeStart !== wantedStart) continue;
+      } else {
+        var startDay = isoDay(nodeStart);
+        var endDay = isoDay(nodePeriod.end);
+        if (startDay == null || endDay == null || endDay - startDay > 100) continue;
+      }
+      if (!spanOk(controlFromQueryNode(node, ''))) continue;
       return node;
     }
     return null;
   }
 
-  function valueControlOpts(value, which) {
-    var node = queryNodeForValue(value);
+  function statePeriodByLabel(label) {
+    var target = company();
+    var periods = target && Array.isArray(target.periods) ? target.periods : [];
+    var wanted = String(label || '');
+    if (!wanted) return null;
+    for (var index = 0; index < periods.length; index += 1) {
+      var period = objectValue(periods[index]);
+      if (period && (String(period.label || '') === wanted || periodLabel(period) === wanted)) return period;
+    }
+    return null;
+  }
+
+  // §2.3.4 — a finding value with no attached occurrence is matched to a query
+  // node by metric id plus the finding's own period (current or prior); no
+  // match stays disabled (AM1).
+  function queryNodeForValue(value, label, expected) {
+    if (!objectValue(value)) return null;
+    var metricId = String(value.metric_id || METRIC_ID_BY_KEY[value.key] || '');
+    return queryNodeForPeriod(metricId, statePeriodByLabel(label), expected);
+  }
+
+  function valueControlOpts(value, which, finding) {
+    finding = objectValue(finding) || {};
+    var node = which === 'prior'
+      ? queryNodeForValue(value, finding.period_prior, value.prior)
+      : queryNodeForValue(value, finding.period_current, value.current);
     var text = which === 'prior' ? value.prior : which === 'delta' ? value.delta : value.current;
     var shown = which === 'delta' ? formatChange(text, value.format, lang()) : formatValue(text, value.format);
     if (node) {
@@ -1839,7 +1888,8 @@
       titlePair: '',
       exactText: '',
       unit: '',
-      excerpt: ''
+      excerpt: '',
+      negatedLabel: false
     };
     // Exact facts attach only when this control backs onto a query node whose
     // value is canonical decimal text; a JSON number is a contract break and
@@ -1872,6 +1922,7 @@
         cell.titlePair = entry.label ? pair(entry.label, entry.label) : '';
         cell.exactText = entry.value;
         cell.unit = entry.unit;
+        cell.negatedLabel = entry.negatedLabel === true;
         break;
       }
     }
@@ -2231,6 +2282,9 @@
       };
       state.queryNodes = state.financial.latest;
       renderRevisions();
+      // The compare cards drew before the nodes arrived; redraw them so each
+      // card binds its own period's source span.
+      if (company()) renderCompare(company());
       // X2-b+c r3 R3-3b: reconcile FIRST — a view another tab unpinned,
       // changed or deleted while this tab's pinned fetch was in flight must
       // be refused before the backfill can write anything against it.
@@ -2451,6 +2505,7 @@
   }
 
   function resetStatementsState() {
+    state.statementsToken += 1;
     state.statements = { phase: 'idle' };
     state.statementCells = [];
     state.statementColumns = [];
@@ -2468,8 +2523,8 @@
       renderStatementTree();
       return;
     }
-    var token = state.financialToken + 1;
-    state.financialToken = token;
+    var token = state.statementsToken + 1;
+    state.statementsToken = token;
     state.statements = { phase: 'loading' };
     renderStatementTree();
     financialPost(FINANCIAL_STATEMENTS_URL, {
@@ -2477,7 +2532,7 @@
       entity_id: entityId,
       accession: accession
     }).then(function (payload) {
-      if (token !== state.financialToken) return;
+      if (token !== state.statementsToken) return;
       var statements = Array.isArray(payload && payload.statements) ? payload.statements.filter(objectValue) : [];
       state.statements = { phase: statements.length ? 'ready' : 'empty', statements: statements };
       state.statementCells = [];
@@ -2504,7 +2559,7 @@
       state.statementColumns = columns;
       renderStatementTree();
     }).catch(function (error) {
-      if (token !== state.financialToken) return;
+      if (token !== state.statementsToken) return;
       if (error && (error.status === 401 || error.status === 403)) {
         showLoadError(error);
         return;
@@ -2512,6 +2567,23 @@
       state.statements = { phase: 'error' };
       renderStatementTree();
     });
+  }
+
+  // Defect (c): a presentation arc whose preferred label is in the XBRL
+  // negated-label family tells the reader to show the reported fact with
+  // its sign reversed. "Purchases of marketable securities" is a positive
+  // PaymentsToAcquire fact that the filing prints as (24,407). Only the
+  // compact text follows the filing; the exact value and its receipt keep
+  // the reported bytes (A38/AM1).
+  function isNegatedLabelRole(role) {
+    return /\/role\/negated[A-Za-z]*Label$/.test(String(role || ''));
+  }
+
+  function negatedDecimalText(text) {
+    var value = String(text || '');
+    if (value.charAt(0) === '-') return value.slice(1);
+    if (!/[1-9]/.test(value)) return value;
+    return '-' + value;
   }
 
   function statementCellControl(cell, row) {
@@ -2523,7 +2595,8 @@
     if (quality !== 'available' || !exact) {
       return sourceControlHtml({ kind: 'statement' });
     }
-    var control = controlFromStatementCell(cell, formatValue(cell.value, 'currency'));
+    var negated = isNegatedLabelRole(row.preferred_label_role);
+    var control = controlFromStatementCell(cell, formatValue(negated ? negatedDecimalText(exact) : exact, 'currency'));
     control.metricId = String(row.standardized_metric_id || '');
     state.statementCells.push({
       occurrenceId: control.occurrenceId,
@@ -2532,7 +2605,8 @@
       metricId: control.metricId,
       value: exact,
       unit: cell.unit == null ? '' : String(cell.unit),
-      accession: control.accession
+      accession: control.accession,
+      negatedLabel: negated
     });
     return sourceControlHtml(control);
   }
@@ -2635,7 +2709,12 @@
     'A35-B1': ['This metric does not apply', '该指标不适用'],
     'A35-W1': ['Statement not rebuilt from this filing', '未能从该财报重建此报表'],
     'A35-P1': ['Reporting period does not line up', '报告期未对齐'],
-    'A35-P2': ['Shifted period', '期间已平移']
+    'A35-P2': ['Shifted period', '期间已平移'],
+    'A35-R1': ['No comparable reference for this company', '本公司无可比基准'],
+    'A35-K1': ['Period type differs from the reference', '期间类型与基准不同'],
+    'A35-U1': ['Unit differs from the reference', '单位与基准不同'],
+    'A35-D1': ['Period length differs from the reference', '期间长度与基准不同'],
+    'A35-V1': ['Metric definition version differs', '指标定义版本不同']
   };
 
   function peerExclusionCopy(code) {
@@ -2723,6 +2802,12 @@
         'Not enough peers to rank', '同业数量不足以排名',
         'The qualifying group is smaller than the minimum, so no rank or average is computed.',
         '符合条件的公司数量低于最小值，因此不计算排名或平均值。', '▦'
+      );
+    } else if (String(emission.emission_state || '') === 'anchor_unavailable') {
+      includedNode.innerHTML = selector + emptyState(
+        'No comparable reference for this company', '本公司无可比基准',
+        'This company has no usable value for this metric, so peers are not ranked against it.',
+        '本公司在此指标上没有可用数值，因此不对同业排名。', '▦'
       );
     } else {
       var anchorId = anchorIssuerId(cohort);
@@ -3420,7 +3505,8 @@
       '<section class="ff-proof-section"><h3>' + pair('Exact value', '精确数值') + '</h3>' +
       (exact ? '<code class="ff-exact">' + esc(exact) + '</code>' +
         '<p class="ff-proof-compact-line"><b>' + pair('Compact', '简写') + '</b> ' + esc(cell.compactText || '—') + '</p>' +
-        (cell.unit ? '<p class="ff-proof-compact-line"><b>' + pair('Unit', '单位') + '</b> ' + esc(cell.unit) + '</p>' : '')
+        (cell.unit ? '<p class="ff-proof-compact-line"><b>' + pair('Unit', '单位') + '</b> ' + esc(cell.unit) + '</p>' : '') +
+        (cell.negatedLabel ? '<p class="ff-proof-compact-line">' + pair('The filing shows this line with its sign reversed; the exact value is the reported fact.', '财报以相反符号列示此项；精确数值为所报告的原始数值。') + '</p>' : '')
         : '<p class="ff-proof-compact-line">' + pair('Exact value unavailable for this cell.', '该单元格的精确数值不可用。') + '</p>') +
       '</section>' +
       '<section class="ff-proof-section"><h3>' + pair('Source span', '来源片段') + '</h3>' +
@@ -3815,6 +3901,11 @@
     }
     var current = periods[state.currentPeriod] || periods[0];
     var prior = periods[state.priorPeriod] || periods[0];
+    function cellControl(period, metric) {
+      var shown = formatValue(period[metric.key], metric.format);
+      var node = queryNodeForPeriod(METRIC_ID_BY_KEY[metric.key] || '', period, period[metric.key]);
+      return node ? controlFromQueryNode(node, shown) : { kind: 'cell', compactText: shown };
+    }
     ui.compareGrid.innerHTML = METRICS.map(function (metric) {
       var currentNumber = numberValue(current[metric.key]);
       var priorNumber = numberValue(prior[metric.key]);
@@ -3824,9 +3915,9 @@
       if (pct != null) deltaText += ' · ' + formatSigned(pct, 'percent');
       return '<article class="ff-compare-card"><h3>' + pair(metric.en, metric.zh) + '</h3>' +
         '<div class="ff-compare-values"><div class="ff-compare-value"><span>' + pair('Current · ' + periodLabel(current), '本期 · ' + periodLabel(current)) +
-        '</span>' + sourceControlHtml({ kind: 'cell', compactText: formatValue(current[metric.key], metric.format) }) + '</div>' +
+        '</span>' + sourceControlHtml(cellControl(current, metric)) + '</div>' +
         '<div class="ff-compare-value"><span>' + pair('Prior · ' + periodLabel(prior), '上期 · ' + periodLabel(prior)) +
-        '</span>' + sourceControlHtml({ kind: 'cell', compactText: formatValue(prior[metric.key], metric.format) }) + '</div></div>' +
+        '</span>' + sourceControlHtml(cellControl(prior, metric)) + '</div></div>' +
         '<div class="ff-compare-delta">' + pair('Change ' + deltaText, '变化 ' + deltaText) + '</div></article>';
     }).join('');
   }
@@ -4985,7 +5076,7 @@
     ui.evidenceTitle.innerHTML = fieldPair(finding, 'title', 'Untitled finding');
     var values = Array.isArray(finding.values) ? finding.values : [];
     var valueRows = values.length ? values.map(function (value) {
-      var cellOpts = [valueControlOpts(value, 'current'), valueControlOpts(value, 'prior'), valueControlOpts(value, 'delta')];
+      var cellOpts = [valueControlOpts(value, 'current', finding), valueControlOpts(value, 'prior', finding), valueControlOpts(value, 'delta', finding)];
       // Item 2 (§2.1): an unavailable span is shown, not dimmed — the number
       // keeps full ink, the control takes a dashed hairline, and the row
       // prints the visible .ff-source-unavail label once under its metric
@@ -5873,7 +5964,15 @@
       peerExclusionCopy: peerExclusionCopy,
       financialPost: financialPost,
       renderRevisions: renderRevisions,
-      setAsofControlsFromState: setAsofControlsFromState
+      setAsofControlsFromState: setAsofControlsFromState,
+      // Defect (g) seams: period-bound source links on compare cards and
+      // finding values.
+      renderCompare: renderCompare,
+      renderEvidence: renderEvidence,
+      queryNodeForPeriod: queryNodeForPeriod,
+      queryNodeForValue: queryNodeForValue,
+      valueControlOpts: valueControlOpts,
+      resetStatementsState: resetStatementsState
     };
   } else if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init, { once: true });

@@ -1,0 +1,336 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "e0_evaluation_spec.v1.schema.json",
+  "title": "E0 evaluation specification (declarative metrics and outcome definition kinds)",
+  "description": "Closed Draft 2020-12 schema for exactly two pure E0 declaration kinds: research_factory.market_memory_e0_metrics.v1 and research_factory.market_memory_e0_outcome_definition.v1. These documents are frozen declarative registrations only; no observations, results, computed metrics, confidence intervals, effective sample sizes, estimator qualification, actual labels, or permissions are expressible through them.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/e0_metrics"
+    },
+    {
+      "$ref": "#/$defs/e0_outcome_definition"
+    }
+  ],
+  "$defs": {
+    "id_string": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+      "maxLength": 128
+    },
+    "sha256_hex": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "immutable_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "object_id",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "schema": {
+          "$ref": "#/$defs/id_string"
+        },
+        "object_id": {
+          "$ref": "#/$defs/id_string"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256_hex"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4194304
+        }
+      }
+    },
+    "authority_display_only": {
+      "const": "display_only"
+    },
+    "protocol_sha256": {
+      "const": "5821074f0ad1564780759a7e5d7ca6595cd8d411f119629f31ee431f2a481ca6"
+    },
+    "membership_sha256": {
+      "const": "76de9522d40c65c33de0dcde59f581a5c493f4be218df3221adb9c3af1495c8f"
+    },
+    "annotation_guide_sha256": {
+      "const": "4efc664f6c86f5af6a62ac4fd8b98ae37ae130fa18ecfa7bdf0a88b399a71696"
+    },
+    "e0_metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Frozen declarative criteria, NOT computed metrics, NOT confidence intervals or effective N, NOT estimator qualification, and NOT study or science acceptance or permission. The existing descriptive reducer stays unchanged and never becomes an inferential scorer.",
+      "required": [
+        "schema",
+        "object_id",
+        "authority",
+        "study_id",
+        "protocol_sha256",
+        "membership_sha256",
+        "annotation_guide_sha256",
+        "tasks_ref",
+        "reviewer_plan_ref",
+        "outcome_definition_ref",
+        "accounting_source_ref",
+        "accounting_input_schema",
+        "accounting_output_schema",
+        "conditions",
+        "observation_states",
+        "maximum_k",
+        "margin_encoding",
+        "material_support_precision_floor",
+        "paired_relevance_gain_floor",
+        "paired_relevance_contrast",
+        "paired_relevance_clustered_lower_bound",
+        "support_difference_clustered_lower_bound_floor",
+        "confidence_level",
+        "primary_unit",
+        "inference_requires_qualified_clusters_and_estimator",
+        "insufficient_evidence_when_unqualified",
+        "critical_unsupported_claim_blocks_positive",
+        "preserve_all_registered_tasks",
+        "secondary_utility_after_correctness"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "research_factory.market_memory_e0_metrics.v1"
+        },
+        "object_id": {
+          "$ref": "#/$defs/id_string"
+        },
+        "authority": {
+          "$ref": "#/$defs/authority_display_only"
+        },
+        "study_id": {
+          "$ref": "#/$defs/id_string"
+        },
+        "protocol_sha256": {
+          "$ref": "#/$defs/protocol_sha256"
+        },
+        "membership_sha256": {
+          "$ref": "#/$defs/membership_sha256"
+        },
+        "annotation_guide_sha256": {
+          "$ref": "#/$defs/annotation_guide_sha256"
+        },
+        "tasks_ref": {
+          "$ref": "#/$defs/immutable_ref"
+        },
+        "reviewer_plan_ref": {
+          "$ref": "#/$defs/immutable_ref"
+        },
+        "outcome_definition_ref": {
+          "$ref": "#/$defs/immutable_ref"
+        },
+        "accounting_source_ref": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/immutable_ref"
+            },
+            {
+              "const": {
+                "schema": "python.source.v1",
+                "object_id": "market_memory_evidence_accounting_py",
+                "sha256": "e809fb094baeaab6ec5686ae9f51f0ffe41f7978ed8e8205aacc81bef17e7baf",
+                "bytes": 26812
+              }
+            }
+          ]
+        },
+        "accounting_input_schema": {
+          "const": "market_memory.evidence_accounting_input.v1"
+        },
+        "accounting_output_schema": {
+          "const": "market_memory.evidence_accounting_summary.v1"
+        },
+        "conditions": {
+          "const": [
+            "no_memory",
+            "recency",
+            "fixed_l1"
+          ]
+        },
+        "observation_states": {
+          "const": [
+            "answered",
+            "abstained",
+            "missing",
+            "source_unavailable",
+            "pending",
+            "censored"
+          ]
+        },
+        "maximum_k": {
+          "const": 8
+        },
+        "margin_encoding": {
+          "const": "exact_decimal_proportions.v1"
+        },
+        "material_support_precision_floor": {
+          "const": "0.95"
+        },
+        "paired_relevance_gain_floor": {
+          "const": "0.10"
+        },
+        "paired_relevance_contrast": {
+          "const": [
+            "fixed_l1",
+            "recency"
+          ]
+        },
+        "paired_relevance_clustered_lower_bound": {
+          "const": "strictly_greater_than_zero"
+        },
+        "support_difference_clustered_lower_bound_floor": {
+          "const": "-0.02"
+        },
+        "confidence_level": {
+          "const": "0.95"
+        },
+        "primary_unit": {
+          "const": "query_task_nested_in_economic_episode"
+        },
+        "inference_requires_qualified_clusters_and_estimator": {
+          "const": true
+        },
+        "insufficient_evidence_when_unqualified": {
+          "const": true
+        },
+        "critical_unsupported_claim_blocks_positive": {
+          "const": true
+        },
+        "preserve_all_registered_tasks": {
+          "const": true
+        },
+        "secondary_utility_after_correctness": {
+          "const": true
+        }
+      }
+    },
+    "e0_outcome_definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Outcome declaration kind. H3-disabled means no financial forward-outcome horizon, NEVER absence or qualification of actual annotation exposure time, actual labels or L0 financial outcome coverage. Human judgments and their independence remain unauthenticated. There is no automatic mapping from task wording or guide scope disposition to accounting answerability.",
+      "required": [
+        "schema",
+        "object_id",
+        "authority",
+        "study_id",
+        "protocol_sha256",
+        "membership_sha256",
+        "annotation_guide_sha256",
+        "tasks_ref",
+        "reviewer_plan_ref",
+        "access_rules_ref",
+        "hypotheses",
+        "annotation_scope",
+        "financial_forward_outcomes_enabled",
+        "financial_label_horizon",
+        "annotation_exposure_span",
+        "later_outcomes_as_then_known_support",
+        "citation_validity_implies_entailment",
+        "guide_scope_dispositions",
+        "accounting_answerability",
+        "material_claim_verdicts",
+        "relevance_ordinals",
+        "primary_relevance_ordinal"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "research_factory.market_memory_e0_outcome_definition.v1"
+        },
+        "object_id": {
+          "$ref": "#/$defs/id_string"
+        },
+        "authority": {
+          "$ref": "#/$defs/authority_display_only"
+        },
+        "study_id": {
+          "$ref": "#/$defs/id_string"
+        },
+        "protocol_sha256": {
+          "$ref": "#/$defs/protocol_sha256"
+        },
+        "membership_sha256": {
+          "$ref": "#/$defs/membership_sha256"
+        },
+        "annotation_guide_sha256": {
+          "$ref": "#/$defs/annotation_guide_sha256"
+        },
+        "tasks_ref": {
+          "$ref": "#/$defs/immutable_ref"
+        },
+        "reviewer_plan_ref": {
+          "$ref": "#/$defs/immutable_ref"
+        },
+        "access_rules_ref": {
+          "$ref": "#/$defs/immutable_ref"
+        },
+        "hypotheses": {
+          "const": [
+            "H1",
+            "H2"
+          ]
+        },
+        "annotation_scope": {
+          "const": "permitted_decision_time_evidence"
+        },
+        "financial_forward_outcomes_enabled": {
+          "const": false
+        },
+        "financial_label_horizon": {
+          "const": "not_applicable_H3_disabled"
+        },
+        "annotation_exposure_span": {
+          "const": "not_established"
+        },
+        "later_outcomes_as_then_known_support": {
+          "const": false
+        },
+        "citation_validity_implies_entailment": {
+          "const": false
+        },
+        "guide_scope_dispositions": {
+          "const": [
+            "supported_original_house_output",
+            "supported_registered_comparison",
+            "requires_missing_exact_source_or_clock",
+            "requires_unavailable_or_immature_outcome",
+            "unsupported_causal_or_forecast_request"
+          ]
+        },
+        "accounting_answerability": {
+          "const": [
+            "answerable",
+            "unanswerable",
+            "unknown"
+          ]
+        },
+        "material_claim_verdicts": {
+          "const": [
+            "supported",
+            "contradicted",
+            "unsupported",
+            "attributed_inference",
+            "unresolved"
+          ]
+        },
+        "relevance_ordinals": {
+          "const": [
+            0,
+            1,
+            2
+          ]
+        },
+        "primary_relevance_ordinal": {
+          "const": 2
+        }
+      }
+    }
+  }
+}

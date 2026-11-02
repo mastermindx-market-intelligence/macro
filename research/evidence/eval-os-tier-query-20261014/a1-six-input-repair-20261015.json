@@ -1,0 +1,273 @@
+{
+  "schema": "eval_os.a1_six_input_repair.v1",
+  "recorded_at": "2026-10-15T12:55:03.120861+00:00",
+  "source": "3f34040de3a5e9cce0f7798185835e6dda360a7a",
+  "parent": "1bb4b0c394aa3dac5f0381345a95d6aa4c737dab",
+  "binding_failure": {
+    "run": 38733137011,
+    "job": 116415618432,
+    "conclusion": "failure",
+    "annotations_file": "contract-delta-38733137011.json"
+  },
+  "original_failure_annotations": [
+    "eval-os-a1: import closure now reaches lib/intl_chart_publication.py, which .github/ci/legacy-jobs.yml's declared `paths:` for eval-os-a1 does not cover \u2014 widen eval-os-a1's `paths:` to include lib/intl_chart_publication.py (widening is always the safe direction)",
+    "eval-os-a1: import closure now reaches lib/intl_chart_mount.py, which .github/ci/legacy-jobs.yml's declared `paths:` for eval-os-a1 does not cover \u2014 widen eval-os-a1's `paths:` to include lib/intl_chart_mount.py (widening is always the safe direction)",
+    "eval-os-a1: import closure now reaches lib/intl_chart_geometry.py, which .github/ci/legacy-jobs.yml's declared `paths:` for eval-os-a1 does not cover \u2014 widen eval-os-a1's `paths:` to include lib/intl_chart_geometry.py (widening is always the safe direction)",
+    "eval-os-a1: import closure now reaches engine/intl_performance_charts.py, which .github/ci/legacy-jobs.yml's declared `paths:` for eval-os-a1 does not cover \u2014 widen eval-os-a1's `paths:` to include engine/intl_performance_charts.py (widening is always the safe direction)"
+  ],
+  "paths_added": [
+    "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json",
+    "engine/intl_performance_charts.py",
+    "lib/intl_chart_geometry.py",
+    "lib/intl_chart_mount.py",
+    "lib/intl_chart_publication.py",
+    "lib/symbol_directory_receipts.py"
+  ],
+  "current_main_extra_edge": {
+    "observed_main": "1ac6197054aab3bb7b5ff6dc0bdb83ec0c307b53",
+    "source": "scripts/build_security_master.py",
+    "new_import": "lib/symbol_directory_receipts.py",
+    "imported_blob": "0fbbc96c0aff23f639ded960b7031da02b4ffaf7",
+    "imported_blob_same_on_candidate_hosted_and_current_main": true,
+    "canonical_imported_closure": {
+      "files": [
+        "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json",
+        "lib/symbol_directory_receipts.py"
+      ],
+      "ambiguities": []
+    }
+  },
+  "preservation": {
+    "job_definitions_preserved": 319,
+    "prior_path_memberships_preserved": true,
+    "limits_preserved": true,
+    "product_files_unchanged": true,
+    "ordinary_source_commits_only": true,
+    "source_patch_sha256": "685581f4354e23dc12b474ae151843c1bc5152a9aa88727a4df3857fb9d6916a"
+  },
+  "qualification": {
+    "schema": "eval_os.intl_closure_repair_qualification.v1",
+    "observed_at": "2026-10-15T12:50:39.234494+00:00",
+    "mode": "preview",
+    "head": "8b3938ce2c0e336ee20cb698197b213d8faa2280",
+    "manifest_sha256": "024623b8c66b13e4fef38fdde947d2fbb79abe9448f4f1adeb18af67dca2e696",
+    "patch_sha256": "685581f4354e23dc12b474ae151843c1bc5152a9aa88727a4df3857fb9d6916a",
+    "focused_exit": 0,
+    "closure_misses": {},
+    "strict_breaches": [],
+    "elapsed_seconds": 195.99,
+    "source_candidate": "3f34040de3a5e9cce0f7798185835e6dda360a7a",
+    "preview_main": "1ac6197054aab3bb7b5ff6dc0bdb83ec0c307b53",
+    "scope": "Canonical source-only preview at the recorded tree, with exact tracked inventory and unchanged ancestor-init bytes. Data/site projections intentionally omitted. No carrier base integration, hosted acceptance or production proof."
+  },
+  "strict_packing": [
+    {
+      "probe": "templates/index.html",
+      "jobs": 136,
+      "weight": 5706,
+      "packs": 10,
+      "max_jobs": 136,
+      "max_weight": 5803,
+      "max_packs": 10,
+      "reason": "scoped to 1 changed file(s): 136/320 jobs (2 unscoped always-on, 134 scoped matches)"
+    },
+    {
+      "probe": "scripts/build_free_content.py",
+      "jobs": 135,
+      "weight": 5514,
+      "packs": 10,
+      "max_jobs": 135,
+      "max_weight": 5600,
+      "max_packs": 10,
+      "reason": "scoped to 1 changed file(s): 135/320 jobs (2 unscoped always-on, 133 scoped matches)"
+    },
+    {
+      "probe": "engine/prophet/plan_book.py",
+      "jobs": 129,
+      "weight": 5457,
+      "packs": 10,
+      "max_jobs": 130,
+      "max_weight": 5600,
+      "max_packs": 10,
+      "reason": "scoped to 1 changed file(s): 129/320 jobs (2 unscoped always-on, 127 scoped matches)"
+    }
+  ],
+  "preview": {
+    "observed_at": "2026-10-15T12:52:16.167850+00:00",
+    "head": "3f34040de3a5e9cce0f7798185835e6dda360a7a",
+    "main": "9c37ad0a3ecb9f90f1d1163c31719a5c7da821ab",
+    "preview_tree": "2f90626bc1ad4049a953c6dcebdaebdce73b7ddf",
+    "previous_qualified_main": "1ac6197054aab3bb7b5ff6dc0bdb83ec0c307b53",
+    "admission": "closure-admission-125113.json",
+    "base_integrated": false,
+    "new_main_change_count": 4965,
+    "new_main_change_roots": {
+      "data": 158,
+      "site": 4807
+    },
+    "non_data_site_changes": [],
+    "qualification_reused_reason": "Only data/site paths changed since qualified preview; all source, CI, commands and limits identical. No data/outcome contents inspected.",
+    "qualified_source_tree_unchanged": true,
+    "checked_at": "2026-10-15T12:52:47.908667+00:00"
+  },
+  "publication": {
+    "published_at": "2026-10-15T12:53:44.291045+00:00",
+    "remote_head": "3f34040de3a5e9cce0f7798185835e6dda360a7a",
+    "pr_number": 6651,
+    "pr_state": "open",
+    "body_matches": true,
+    "body_sha256": "45e3764ede1216f7b21ecadc6e1b84141b517df2fc563e2f8a40d06e92a79e01",
+    "admission": "closure-admission-125113.json",
+    "preview": "intl-admitted-main-preview.json",
+    "ordinary_push": true,
+    "base_integrated": false,
+    "merge_dispatched": false,
+    "fresh_checks_required": true
+  },
+  "retained_raw_records": {
+    "intl-source-qualification.json": "4613d580a31dc1f2faa84d6884acee4ae9d5f785e043a174825ec8fdb5c1e493",
+    "intl-hosted-qualification.json": "34ddac89bc217af1167bc01b8a764af44844e90c9a153b5a2f8dee5533255309",
+    "intl-preview-qualification.json": "5647e1153e05db9006e6283281d2bfea248182ffee272fa10daf05ac9eacd21c",
+    "intl-preview-projection.json": "c2aa70f85858a92f8b6b589c23e0d31caf6db92f188eb17a4e22227536c06b7d",
+    "intl-six-path-preview.json": "524f826b95a9ad5742dd5fdb6c932ded9bc2a8f5934ef2d438805ea7beb81e19",
+    "intl-six-path-source.patch": "685581f4354e23dc12b474ae151843c1bc5152a9aa88727a4df3857fb9d6916a",
+    "closure-admission-125113.json": "b84d72cb01e4a167156b6fcf902dcbfbae6a50f28a1e4406458c09c115688bc8",
+    "contract-delta-38733137011.json": "88397dba96c8cfb9d24e9e7f02391bf0c6ca78024a7fe1993456ff9bb32df7df"
+  },
+  "claim_limit": "Source correction and local qualification only. The parentless local snapshot is not a release commit or a second carrier base integration. Fresh hosted binding checks, incumbent merge, installation and production acceptance remain required.",
+  "production_proven": false,
+  "programme_complete": false,
+  "current_hosted_plan": {
+    "workflow_run_id": "38738100398",
+    "subject_head_sha": "3f34040de3a5e9cce0f7798185835e6dda360a7a",
+    "tested_tree_sha": "7010debbe3c395f4e5929900d61deecaa49a5a79",
+    "base_sha": "9c37ad0a3ecb9f90f1d1163c31719a5c7da821ab",
+    "plan_sha256": "89f5ee79cd1a78e9f6c3bfbe2938014b6f615baa238778b92d7fdcfb85288dbc",
+    "eligible_job_count": 127,
+    "observed_at": "2026-10-15T13:03:39.748929+00:00",
+    "artifact_id": 11974109451,
+    "zip_sha256": "c9344f38485e3c5dc5b7c769ae66fb60e6eb570c2bc8fc95dee13af6a98416b5",
+    "verified_at": "2026-10-15T13:05:25.648648+00:00",
+    "tested_parents": [
+      "9c37ad0a3ecb9f90f1d1163c31719a5c7da821ab",
+      "3f34040de3a5e9cce0f7798185835e6dda360a7a"
+    ],
+    "tested_git_tree": "2f90626bc1ad4049a953c6dcebdaebdce73b7ddf",
+    "admitted_preview_tree": "2f90626bc1ad4049a953c6dcebdaebdce73b7ddf",
+    "preview_matches": true,
+    "a1_job": {
+      "logical_job_id": "eval-os-a1",
+      "pack_index": 9,
+      "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
+      "steps": [
+        {
+          "proof_id": "require Node for actual renderer contracts",
+          "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06"
+        },
+        {
+          "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
+          "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb"
+        }
+      ]
+    },
+    "production_paths": [
+      "admin/evidence_findings.py",
+      "admin/evidence_status.py",
+      "admin/intelligence_os.py",
+      "admin/server.py",
+      "admin/static/app.js",
+      "admin/static/index.html",
+      "admin/static/preferences.js",
+      "admin/static/styles.css",
+      "app/deploy/update.sh",
+      "engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json",
+      "engine/neuralweb/response_eval.py",
+      "engine/qledger.py",
+      "scripts/build_intelligence_registry.py",
+      "scripts/grade_qledger.py",
+      "admin/theme_tokens.py",
+      "templates/theme.css",
+      "engine/qledger_desk_adapter.py"
+    ],
+    "production_paths_match": true,
+    "a1_execution_identity_unchanged": true,
+    "contract_delta_conclusion": "success",
+    "terminal_checks_pending": true
+  },
+  "prior_browser_failure": {
+    "run": 38733137011,
+    "head": "1bb4b0c394aa3dac5f0381345a95d6aa4c737dab",
+    "artifact_id": 11974726563,
+    "zip_sha256": "9e428703f7142d21fce3afd2119fe997ff17ec054b0fa20ba8c8c58f5efc686c",
+    "canonical_job": {
+      "logical_job_id": "international-workspace-browser",
+      "pack_index": 6,
+      "job_exec_sha256": "11c1c92cb9780468281833fdb611f587a63965c8062716c4babc2a8c23d23bc3",
+      "infrastructure": {
+        "outcome": "passed"
+      },
+      "steps": [
+        {
+          "proof_id": "install browser test dependencies",
+          "step_spec_sha256": "508913a3cefdcb59c3c1947c3e4022cb1a36ebd7720d8742bd7b6a542e2f93aa",
+          "outcome": "passed",
+          "failure_signature": null,
+          "classification": "passed"
+        },
+        {
+          "proof_id": "Actual International builder and template contracts",
+          "step_spec_sha256": "e46afb6572758f70ed462e6f6cf0f582bcc36f7237e4ad956b5327e35ddf15b6",
+          "outcome": "passed",
+          "failure_signature": null,
+          "classification": "passed"
+        },
+        {
+          "proof_id": "Actual DOM controller and page entry in Chromium",
+          "step_spec_sha256": "ffe15e55c5f0caf1abc8e0830ce3ecf3fdbe65146095020c43c8c1930386e671",
+          "outcome": "failed",
+          "failure_signature": null,
+          "detail": "same semantic proof passes on exact base",
+          "classification": "pr_regression"
+        },
+        {
+          "proof_id": "Generic table sort/filter in Chromium (templates/tablesort.js)",
+          "step_spec_sha256": "741fda588c631d3cc550c64373506d721173ce495c64f72efa93a0d0274a05bb",
+          "outcome": "not_run_prior_failure",
+          "failure_signature": null,
+          "detail": "an earlier semantic step did not pass",
+          "classification": "unknown"
+        }
+      ]
+    },
+    "changed_declared_inputs": [
+      "engine/qledger.py"
+    ],
+    "safe_annotations": "step exited1; no failed test identity supplied",
+    "local_diagnosis": {
+      "started_at": "2026-10-15T13:03:03.913676+00:00",
+      "head": "24b30fc1de55b1239be752e60620013f64a9516f",
+      "node": "v20.20.2",
+      "python": "Python 3.12.13",
+      "playwright": "1.63.0",
+      "platform": "macOS arm64; hosted runner is Linux",
+      "command": "node --test tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs tests/intl_workspace_history_controller.test.cjs tests/intl_workspace_history_independent.test.cjs",
+      "manual_install_script_approval": false,
+      "status": "completed",
+      "returncode": 0,
+      "completed_at": "2026-10-15T13:03:32.043791+00:00",
+      "tests": 180,
+      "passed": 180,
+      "failed": 0,
+      "skipped": 0,
+      "log_sha256": "3e105d47567b921a6f49319ddfeb2edc28e89a4152e7e1a98befb9f04fe42d54"
+    },
+    "claim_limit": "Original canonical classification remains pr_regression. The exact test command passes locally on original hosted commit with macOS arm64; this does not waive or reclassify Linux CI. Fresh run38738100398 pack6/browser result remains required. No runtime or test change was made for this diagnosis."
+  },
+  "current_hosted_status": {
+    "observed_at": "2026-10-15T13:03:39.748929+00:00",
+    "contract_delta": "success",
+    "ci_plan": "success",
+    "packs": "12 in_progress",
+    "all_binding_checks_passed": false
+  }
+}

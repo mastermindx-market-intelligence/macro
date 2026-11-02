@@ -35,8 +35,10 @@ Run: python3 scripts/gmi_coverage_proof.py --master ... --receipt ... \
 from __future__ import annotations
 
 import argparse
+import datetime
 import hashlib
 import json
+import re
 import sys
 from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
@@ -49,9 +51,15 @@ from engine.theme_graph import probation, store  # noqa: E402
 from engine.theme_graph.membership_evidence import _activity_target_definition  # noqa: E402
 
 REPORT_DIRNAME = "gmi_coverage_proof"
+_ISO_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}\Z")
 MANIFEST_SCHEMA = "gmi.coverage_universe_manifest/v1"
 REPORT_SCHEMA = "gmi.coverage_report/v1"
 DECLARED_MICRO_COUNT = 68
+# The frozen acceptance tier is every micro asserted BEFORE this date; micros at or
+# after it are display-tier expansion and never enter an acceptance denominator.
+FROZEN_TIER_CUTOFF = "2026-10-21"
+FROZEN_TIER = "FROZEN_ACCEPTANCE"
+EXPANSION_TIER = "DISPLAY_EXPANSION"
 ACTIVITY_GATE_PCT = 95
 
 CORE_MARKETS = ("us", "cn")
@@ -81,6 +89,9 @@ REASON_REJECTED = "ACTIVITY_REJECTED_BY_CURATOR"
 REASON_PROPOSED = "PROPOSED_NOT_ADMITTED"
 REASON_VENDOR_ONLY = "VENDOR_MEMBERSHIP_ONLY"
 REASON_NO_ACTIVITY = "NO_ACTIVITY_EVIDENCE"
+# A QUALIFIED issuer whose only current activity targets a display-expansion micro:
+# reported on the expansion line, never summed into the acceptance numerator.
+REASON_EXPANSION_TIER_ONLY = "ACTIVITY_EXPANSION_TIER_ONLY"
 REASON_CN_LISTED_COUNTS = "CN_LISTED_COUNTS_NOT_AVAILABLE"
 ACTIVITY_REASONS = (REASON_IDENTITY_NOT_QUALIFIED, REASON_SCOPE_STALE, REASON_REJECTED,
                     REASON_PROPOSED, REASON_VENDOR_ONLY, REASON_NO_ACTIVITY)
@@ -178,6 +189,10 @@ REASON_OWNER_ROWS = (
      ("engine.company_intelligence.issuer_disclosure_owner + named GMI curator",
       "native fact -> build_activity_membership_evidence -> "
       "make_activity_membership_proposal -> named curator ratification")),
+    (REASON_EXPANSION_TIER_ONLY, "*",
+     ("GMI taxonomy seat (DEC:GMI-MICRO-EXPANSION-2026-10-21-ADDITIVE-FROZEN-68)",
+      "display-tier activity only: a frozen-tier (asserted_on < 2026-10-21) "
+      "ratified activity row is needed to count for acceptance")),
     (REASON_REJECTED, "*",
      ("engine.company_intelligence.issuer_disclosure_owner + named GMI curator",
       "native fact -> build_activity_membership_evidence -> "
@@ -328,6 +343,16 @@ def read_store(store_dir: Path) -> dict:
     proposals_path = store_dir / "probation" / "proposals.jsonl"
     queue = (probation.read_proposals(proposals_path)
              if proposals_path.exists() else [])
+    # The activity ledger (scripts/propose_activity_membership.py's default,
+    # probation.ACTIVITY_PROPOSALS_PATH) lives beside the hierarchy queue. It is
+    # read by default so the proof's remainder reasons and the micro disposition
+    # ledger see real PROPOSED/RATIFIED rows without an operator remembering
+    # --activity-proposals (measured 2026-10-22: the M3 proof reported no
+    # proposals while one sat in the ledger). It never enters the numerator by
+    # itself: the same tiering and ratification owners judge every row.
+    activity_ledger_path = store_dir / "probation" / "activity_proposals.jsonl"
+    if activity_ledger_path.exists():
+        queue = list(queue) + list(probation.read_proposals(activity_ledger_path, strict=True))
     return {
         "nodes_raw": nodes,
         "lifecycle_latest": _latest_by_node(lifecycle),
@@ -343,6 +368,7 @@ def read_store(store_dir: Path) -> dict:
             "node_lifecycle": store_dir / "node_lifecycle.parquet",
             "meta": meta_path,
             "probation_proposals": proposals_path,
+            "probation_activity_proposals": activity_ledger_path,
         },
     }
 
@@ -847,7 +873,7 @@ def _vendor_view(market: str, graph: _GraphContext, eligible_by_security: dict) 
 
 
 def _activity_view(market: str, entries: list[dict], activity: dict, graph: _GraphContext,
-                   repo_root: Path) -> dict:
+                   repo_root: Path, tier_by_micro: dict | None = None) -> dict:
     eligible = [entry for entry in entries if entry["eligibility"] == ELIGIBLE]
     by_security = {}
     for entry in eligible:
@@ -862,20 +888,33 @@ def _activity_view(market: str, entries: list[dict], activity: dict, graph: _Gra
     for security_id, info in sorted(by_security.items()):
         if info["issuer_state"] == "RESOLVED":
             slot = issuers.setdefault(info["issuer_id"], {
-                "qualified": False, "current": 0, "stale": 0, "rejected": 0, "proposed": 0})
+                "qualified": False, "current": 0, "stale": 0, "rejected": 0, "proposed": 0,
+                "expansion_current": 0})
             slot["qualified"] = slot["qualified"] or info["identity_status"] == ID_QUALIFIED
         else:
             unresolved.append(security_id)
     scope_stale = 0
+    expansion_rows_excluded = 0
     for row in activity["ratified"]:
         security_id = _row_security_id(row)
         info = by_security.get(security_id)
         if info is None or info["issuer_state"] != "RESOLVED":
             continue  # a row outside the eligible core denominator attributes to no slot
         theme_id = _row_target(row)
+        # An id the hierarchy does not hold stays FROZEN (fail-closed): a row can
+        # never leave the acceptance scope check by naming an unknown target.
+        tier = tier_by_micro.get(theme_id, FROZEN_TIER) if tier_by_micro is not None \
+            else FROZEN_TIER
         current = _current_scope(repo_root, theme_id)
         is_current = current is not None and current == _row_definition_hash(row)
         slot = issuers[info["issuer_id"]]
+        if tier == EXPANSION_TIER:
+            # Display-tier row: never touches the acceptance numerator, the stale
+            # counter or scope_stale; reported on the expansion line instead.
+            expansion_rows_excluded += 1
+            if is_current:
+                slot["expansion_current"] += 1
+            continue
         if is_current:
             slot["current"] += 1
         else:
@@ -903,6 +942,8 @@ def _activity_view(market: str, entries: list[dict], activity: dict, graph: _Gra
             continue
         elif slot["stale"] >= 1:
             reason = REASON_SCOPE_STALE
+        elif slot["expansion_current"] >= 1:
+            reason = REASON_EXPANSION_TIER_ONLY
         elif slot["rejected"] >= 1:
             reason = REASON_REJECTED
         elif slot["proposed"] >= 1:
@@ -919,8 +960,11 @@ def _activity_view(market: str, entries: list[dict], activity: dict, graph: _Gra
     m = len(unresolved)
     lower = n + (1 if m else 0)
     upper = n + m
+    expansion_issuers = sum(1 for slot in issuers.values()
+                            if slot["qualified"] and slot["expansion_current"] >= 1)
     seen = dict(activity["seen"])
     seen["scope_stale"] = scope_stale
+    seen["expansion_tier_rows_excluded"] = expansion_rows_excluded
     return {
         "numerator_issuers": numerator,
         "denominator": {"eligible_issuers_resolved": n,
@@ -930,6 +974,15 @@ def _activity_view(market: str, entries: list[dict], activity: dict, graph: _Gra
         "ratio_upper_bound_denominator": _ratio(numerator, lower),
         "remainder_by_reason": dict(sorted(remainder.items())),
         "proposals_seen": seen,
+        # Display tier only: never an acceptance numerator, denominator or gate input.
+        "expansion_tier": {
+            "label": "DISPLAY_TIER_NOT_ACCEPTANCE",
+            "tier_cutoff": FROZEN_TIER_CUTOFF,
+            "issuers_with_current_expansion_activity": expansion_issuers,
+            "ratio_lower_bound_denominator": _ratio(expansion_issuers, upper),
+            "ratio_upper_bound_denominator": _ratio(expansion_issuers, lower),
+            "ratified_rows_excluded_from_acceptance": expansion_rows_excluded,
+        },
     }
 
 
@@ -1033,7 +1086,10 @@ def _taxonomy_gate(taxonomy: dict) -> dict:
                          "declared_micro_count": DECLARED_MICRO_COUNT,
                          "discrepancy": taxonomy["discrepancy"],
                          "micros_without_scope_version": missing_scope,
-                         "owner_reviewed": reviewed},
+                         "owner_reviewed": reviewed,
+                         "tier_cutoff": FROZEN_TIER_CUTOFF,
+                         "expansion_micro_count": taxonomy["expansion_micro_count"],
+                         "owner_review_gap": taxonomy["owner_review"]["gap"]},
             "verdict": "PASS" if ok else "FAIL"}
 
 
@@ -1051,6 +1107,27 @@ def _gates(market_views: dict, activity_by_market: dict, taxonomy: dict) -> list
 # ---------------------------------------------------------------------------
 # Taxonomy view
 # ---------------------------------------------------------------------------
+
+def _micro_tier(entry: dict) -> str:
+    """The acceptance tier of one crosswalk micro (fail-closed on purpose).
+
+    DISPLAY_EXPANSION only for a well-formed ``YYYY-MM-DD`` ``asserted_on`` at or
+    after FROZEN_TIER_CUTOFF; everything else — earlier date, missing, empty,
+    malformed — stays FROZEN_ACCEPTANCE, so a row can never leave the acceptance
+    gate by omitting or garbling its date. YAML may parse an unquoted date into a
+    ``datetime.date``; such values are normalised through ``.isoformat()`` first.
+    """
+    value = entry.get("asserted_on")
+    if hasattr(value, "isoformat") and not isinstance(value, str):
+        value = value.isoformat()
+    if not isinstance(value, str) or not _ISO_DATE_RE.match(value):
+        return FROZEN_TIER
+    try:
+        parsed = datetime.date.fromisoformat(value)
+    except ValueError:
+        return FROZEN_TIER
+    return EXPANSION_TIER if parsed.isoformat() >= FROZEN_TIER_CUTOFF else FROZEN_TIER
+
 
 def _taxonomy(hierarchy_path: Path, research_paths: list[Path], activity: dict,
               graph: _GraphContext, repo_root: Path) -> dict:
@@ -1090,7 +1167,8 @@ def _taxonomy(hierarchy_path: Path, research_paths: list[Path], activity: dict,
         dst = str(row.get("dst"))
         for theme_id in sorted(expressing.get(dst, ())):
             vendor_companies.setdefault(theme_id, set()).add(str(row.get("src")))
-    micros = []
+    micros: list[dict] = []
+    expansion_micros: list[dict] = []
     for micro_id in sorted(hierarchy["micros"]):
         entry = hierarchy["micros"][micro_id]
         admitted = admitted_by_theme.get(micro_id, 0)
@@ -1108,7 +1186,7 @@ def _taxonomy(hierarchy_path: Path, research_paths: list[Path], activity: dict,
             disposition = "VENDOR_ONLY"
         else:
             disposition = "EMPTY"
-        micros.append({
+        record = {
             "id": micro_id,
             "name_en": _s(entry.get("name_en")),
             "scope_version": _entry_scope_version(entry),
@@ -1121,8 +1199,10 @@ def _taxonomy(hierarchy_path: Path, research_paths: list[Path], activity: dict,
                        "vendor_member_companies": len(vendor_companies.get(micro_id, ()))},
             "disposition": disposition,
             "owner_reviewed": False,
-        })
-    observed = len(hierarchy["micros"])
+            "tier": _micro_tier(entry),
+        }
+        (micros if record["tier"] == FROZEN_TIER else expansion_micros).append(record)
+    observed = len(micros)  # the frozen acceptance tier is the only denominator
     return {
         "observed_micro_count": observed,
         "declared_micro_count": DECLARED_MICRO_COUNT,
@@ -1130,6 +1210,15 @@ def _taxonomy(hierarchy_path: Path, research_paths: list[Path], activity: dict,
                         else f"observed {observed} != declared {DECLARED_MICRO_COUNT}"),
         "micros": micros,
         "unknown_research_micro_ids": sorted(unknown_ids),
+        "tier_cutoff": FROZEN_TIER_CUTOFF,
+        "total_micro_count": len(micros) + len(expansion_micros),
+        "expansion_micro_count": len(expansion_micros),
+        "expansion_admitted_total": sum(record["counts"]["admitted"]
+                                        for record in expansion_micros),
+        "frozen_micro_ids_sha256": hashlib.sha256(
+            "\n".join(record["id"] for record in micros).encode("utf-8")).hexdigest(),
+        "owner_review": {"source": None, "gap": "NO_OWNER_DISPOSITION_CONTRACT"},
+        "expansion_micros": expansion_micros,
     }
 
 
@@ -1233,6 +1322,19 @@ def render_markdown(report: dict, manifest: dict) -> str:
         lines.append(f"| {_cell(gate['dimension'])} | {_cell(gate['threshold'])} "
                      f"| {_cell(gate['measured'])} | {_cell(gate['verdict'])} |")
     lines.append("")
+    lines.append("## Expansion-tier coverage (display tier, not acceptance)")
+    lines.append("")
+    lines.append("| market | issuers with current expansion-tier activity "
+                 "| ratio (lower-bound denominator) "
+                 "| ratified rows excluded from the acceptance numerator |")
+    lines.append("| --- | --- | --- | --- |")
+    for market in CORE_MARKETS:
+        expansion = report["activity"][market]["expansion_tier"]
+        lines.append(f"| {_cell(market)} "
+                     f"| {_cell(expansion['issuers_with_current_expansion_activity'])} "
+                     f"| {_cell(expansion['ratio_lower_bound_denominator']['ratio'])} "
+                     f"| {_cell(expansion['ratified_rows_excluded_from_acceptance'])} |")
+    lines.append("")
     lines.append("## Remainders (every one has a named owner; no OTHER)")
     lines.append("")
     lines.append("| market | reason | count | owner | next step |")
@@ -1261,7 +1363,27 @@ def render_markdown(report: dict, manifest: dict) -> str:
                      f"| {counts['proposed']} "
                      f"| {sum(counts['research_records'].values())} "
                      f"| {counts['vendor_expressing_routes']} |")
+    lines.append(f"Frozen acceptance tier: {taxonomy['observed_micro_count']} micros "
+                 f"(asserted_on before {taxonomy['tier_cutoff']}); display expansion: "
+                 f"{taxonomy['expansion_micro_count']} micros (not an acceptance "
+                 f"denominator).")
+    lines.append(f"Owner review: {taxonomy['owner_review']['gap']} "
+                 f"(owner_reviewed is false for every micro).")
     lines.append("")
+    if taxonomy["expansion_micro_count"] > 0:
+        lines.append("### Display-expansion micros (not an acceptance denominator)")
+        lines.append("")
+        lines.append("| id | scope_version | disposition | admitted | proposed | research "
+                     "| vendor routes |")
+        lines.append("| --- | --- | --- | --- | --- | --- | --- |")
+        for micro in taxonomy["expansion_micros"]:
+            counts = micro["counts"]
+            lines.append(f"| {_cell(micro['id'])} | {_cell(micro['scope_version'][:12])} "
+                         f"| {_cell(micro['disposition'])} | {counts['admitted']} "
+                         f"| {counts['proposed']} "
+                         f"| {sum(counts['research_records'].values())} "
+                         f"| {counts['vendor_expressing_routes']} |")
+        lines.append("")
     lines.append("## Wider-market ledger (not a denominator)")
     lines.append("")
     lines.append("| market | graph company nodes | by resolution state | master securities "
@@ -1346,6 +1468,10 @@ def build(args) -> tuple[dict, dict]:
                        ("store_meta", store_view["files"]["meta"])):
         if Path(path).exists():
             loaded["inputs"].append(_input_record(role, Path(path), repo_root))
+    if store_view["files"]["probation_activity_proposals"].exists():
+        loaded["inputs"].append(_input_record(
+            "store_probation_activity_proposals",
+            store_view["files"]["probation_activity_proposals"], repo_root))
     if store_view["files"]["probation_proposals"].exists():
         loaded["inputs"].append(_input_record(
             "store_probation_proposals", store_view["files"]["probation_proposals"], repo_root))
@@ -1395,8 +1521,13 @@ def build(args) -> tuple[dict, dict]:
         proposal_rows.extend(probation.read_proposals(path, strict=True))
 
     activity_rows = _activity_market_rows(store_view["queue"], proposal_rows)
+    # The acceptance tier of each micro per the same hierarchy _taxonomy reads: a
+    # ratified row targeting a display-expansion micro never enters the numerator.
+    tier_by_micro = {micro_id: _micro_tier(entry)
+                     for micro_id, entry
+                     in _hierarchy(loaded["hierarchy_path"])["micros"].items()}
     activity_by_market = {market: _activity_view(market, core[market], activity_rows, graph,
-                                                 repo_root)
+                                                 repo_root, tier_by_micro=tier_by_micro)
                           for market in CORE_MARKETS}
 
     vendor_by_market = {market: _vendor_view(market, graph, eligible_by_security)

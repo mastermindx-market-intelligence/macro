@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000320193-24-000006",
+    "expected_period_end": "2023-12-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": null,
+    "fiscal_year": 2024,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "AAPL",
+    "label_class": "extract_absent",
+    "pack_id": "PK07",
+    "polarity": "negative",
+    "reason": "aapl-20231230.htm | untagged | Non-current assets: Marketable securities 99,475 100,544 Property, plant and equipment, net 43,666 43,715 Other non-current assets 66,681 64,758 Total non-current assets 209,822 209,017 | The consolidated balance sheets state no goodwill line (quoted non-current-assets section is complete, and the current-assets section lists only cash, marketable securities, accounts receivable, vendor non-trade receivables, inventories and other current assets). 10-Q concept enumeration: no ix concept containing 'goodwill' or 'intangible' exists; grepped 'goodwill' and 'intangible' over the whole 10-Q: 0 hits each.",
+    "section_family": "goodwill_intangibles",
+    "split": "held_out",
+    "target_id": "goodwill",
+    "target_kind": "extract",
+    "trial_id": "PK07|0000320193-24-000006|extract|goodwill"
+  },
+  {
+    "accession": "0000320193-24-000006",
+    "expected_period_end": "2023-12-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": null,
+    "fiscal_year": 2024,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "AAPL",
+    "label_class": "extract_absent",
+    "pack_id": "PK07",
+    "polarity": "negative",
+    "reason": "aapl-20231230.htm | untagged | Non-current assets: Marketable securities 99,475 100,544 Property, plant and equipment, net 43,666 43,715 Other non-current assets 66,681 64,758 Total non-current assets 209,822 209,017 | No intangible-asset balance exists: the balance sheets carry no such caption and no intangibles note is presented. 10-Q concept enumeration: no ix concept containing 'goodwill' or 'intangible' exists; grepped 'goodwill' and 'intangible' over the whole 10-Q: 0 hits each; no 'intangible' text hit concerns intangible assets",
+    "section_family": "goodwill_intangibles",
+    "split": "held_out",
+    "target_id": "intangible_assets_net",
+    "target_kind": "extract",
+    "trial_id": "PK07|0000320193-24-000006|extract|intangible_assets_net"
+  }
+]

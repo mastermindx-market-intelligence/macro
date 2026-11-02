@@ -52,7 +52,12 @@ def test_shell_is_bilingual_shared_navigation_only_and_data_free():
     assert html.count('class="l-zh"') >= 20
     assert "Finance Intelligence" in html
     assert "金融情报" in html
-    assert "research context, not a trade call" in html
+    # Ruling F-5 flip: the plain render (no fi_read_url) is an unbuilt page —
+    # its meta description may not promise research context it does not have.
+    assert "research context, not a trade call" not in html
+    assert ("A planned dossier on how the financial system moves money, "
+            "settles trades and prices assets. Not built yet; it shows no "
+            "readings.") in html
 
     # The static shell explains the product but cannot disclose any read-model
     # payload: no slice identifier, no company exposure row, no valuation
@@ -983,3 +988,47 @@ def test_hint_chip_copy_matches_the_runtime_label_map():
     assert roster_tag is not None, "roster <ul> tag missing"
     assert f'data-aria-en="{en}"' in roster_tag.group(0)
     assert f'data-aria-zh="{zh}"' in roster_tag.group(0)
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# W20-A Spec 1 — the not_connected notice keeps the two committed lists shown.
+# ──────────────────────────────────────────────────────────────────────────
+
+def _w20a_render_notice_body() -> str:
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    start = js.index("function renderNotice(")
+    end = js.index("\n  function ", start + 1)
+    return js[start:end]
+
+
+def _w20a_section_slice(html: str, section_id: str) -> str:
+    start = html.index(f'id="{section_id}"')
+    nxt = html.find("<section", start)
+    return html[start:nxt if nxt > -1 else len(html)]
+
+
+def test_w20a_not_connected_notice_keeps_the_committed_lists() -> None:
+    """Ruling F-5 flip: the not_connected keep list holds ONLY
+    #company-exposure, and its keepSel keeps the section head plus the hint
+    lede and roster — no rerating-map section, no fi-falsifiers list."""
+    body = _w20a_render_notice_body()
+    for token in ("not_connected", "company-exposure",
+                  "fi-hint-lede", "fi-hint-roster"):
+        assert token in body, f"renderNotice must mention {token}"
+    assert "'rerating-map'" not in body, (
+        "rerating-map must leave the not_connected keep list"
+    )
+    assert "fi-falsifiers" not in body, (
+        "the falsifiers list must leave the not_connected keepSel"
+    )
+
+
+def test_w20a_committed_lists_live_in_the_kept_sections() -> None:
+    html = _render()
+    assert 'class="fi-falsifiers"' in _w20a_section_slice(html, "rerating-map")
+    assert 'class="fi-hint-roster"' in _w20a_section_slice(html, "company-exposure")
+    for other in ("what-changed", "system-map", "subtheme-atlas",
+                  "macro-matrix", "constraint-map"):
+        slice_html = _w20a_section_slice(html, other)
+        assert 'class="fi-falsifiers"' not in slice_html
+        assert 'class="fi-hint-roster"' not in slice_html

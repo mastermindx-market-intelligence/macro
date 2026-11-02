@@ -92,7 +92,7 @@
     if(!button||signedIn)return;
     button.hidden=false;
     button.addEventListener('click',function(){
-      try{window.MDXAuth.open('signin');}catch(e){location.href='../../plans.html';}
+      if(window.MMXSharedShell){window.MMXSharedShell.openAuth('signin');return;}try{window.MDXAuth.open('signin');}catch(e){location.href='../../plans.html';}
     },{once:true});
   }
   whenAuthSettled()

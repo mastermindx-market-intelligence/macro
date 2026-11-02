@@ -1,0 +1,157 @@
+schema: fundamental_forensics.not_presented_rules/v1
+pack_id: fundamental_forensics_core_not_presented
+pack_version: 1.0.0
+available_at: "2026-10-21T00:00:00Z"
+na_basis: not_presented_item
+child_taxonomy_prefix: us-gaap
+pre_role_exclude: "(?i)(details|tables|policies|narrative|textblock)"
+pre_ignore_suffix: "(Abstract|TextBlock|Policy|Table|LineItems|Axis|Domain)$"
+source_rules_sha256: e0fabd4516c584036c74d840c8d5b5660afbfac972454dda09f9c9f12329be11
+content_sha256: e491c95cbff3d270f64609a13a4f6bbfffd5b619087f4bfa9a2d5fc3538c7569
+
+rules:
+  - metric_id: income_tax_expense_benefit
+    rule: {rule_id: not_presented.income_tax_expense_benefit/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:IncomeLossFromContinuingOperations"]
+      - ["us-gaap:ProfitLoss", "us-gaap:NetIncomeLoss"]
+    family_pattern: "(IncomeTax|IncomeTaxes)"
+    containers: null
+  - metric_id: cost_of_revenue
+    rule: {rule_id: not_presented.cost_of_revenue/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:GrossProfit"]
+      - ["us-gaap:CostsAndExpenses", "us-gaap:OperatingCostsAndExpenses", "us-gaap:BenefitsLossesAndExpenses"]
+      - ["us-gaap:OperatingIncomeLoss"]
+      - ["us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest", "us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments"]
+    family_pattern: "^Cost(Of|Direct)"
+    containers: "^(CostsAndExpenses|OperatingCostsAndExpenses|BenefitsLossesAndExpenses)$"
+  - metric_id: research_and_development_expense
+    rule: {rule_id: not_presented.research_and_development_expense/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:OperatingExpenses", "us-gaap:CostsAndExpenses", "us-gaap:OperatingCostsAndExpenses", "us-gaap:BenefitsLossesAndExpenses", "us-gaap:NoninterestExpense"]
+      - ["us-gaap:OperatingIncomeLoss"]
+      - ["us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest", "us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments"]
+    family_pattern: "(ResearchAndDevelopment|ResearchDevelopment|InProcessResearch|ResearchAndExperimental|^Research|Development(Cost|Expense))"
+    containers: "^(OperatingExpenses|CostsAndExpenses|OperatingCostsAndExpenses|BenefitsLossesAndExpenses|NoninterestExpense)$"
+  - metric_id: share_based_compensation_expense
+    rule: {rule_id: not_presented.share_based_compensation_expense/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:NetCashProvidedByUsedInOperatingActivities", "us-gaap:NetCashProvidedByUsedInOperatingActivitiesContinuingOperations"]
+    family_pattern: "(ShareBased|StockBased|StockCompensation|StockOption|RestrictedStock|EmployeeStockOwnership|EmployeeBenefitsAndShareBasedCompensation)"
+    containers: null
+  - metric_id: depreciation_depletion_amortization
+    rule: {rule_id: not_presented.depreciation_depletion_amortization/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:NetCashProvidedByUsedInOperatingActivities", "us-gaap:NetCashProvidedByUsedInOperatingActivitiesContinuingOperations"]
+    family_pattern: "(Depreciation|Depletion|AmortizationOfIntangibleAssets|^Amortization$|AmortizationOfDeferredCharges|AmortizationOfAcquisitionCosts|AccretionAndAmortization|AmortizationOfAcquired)"
+    containers: null
+  - metric_id: capital_expenditures
+    rule: {rule_id: not_presented.capital_expenditures/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:NetCashProvidedByUsedInInvestingActivities", "us-gaap:NetCashProvidedByUsedInInvestingActivitiesContinuingOperations"]
+    family_pattern: "(PaymentsToAcquire(PropertyPlant|ProductiveAssets|OtherPropertyPlant|Machinery|Buildings|Land|Equipment|RealEstate|OilAndGas|Software|Mining|Timber|Furniture|Vessels|Aircraft|Water|Intangible)|PaymentsForCapitalImprovements|PaymentsToDevelop|PaymentsForSoftware|PaymentsToExplore|CapitalExpenditure|PaymentsForConstruction|PropertyPlantAndEquipmentAdditions)"
+    containers: null
+  - metric_id: cash_dividends_paid
+    rule: {rule_id: not_presented.cash_dividends_paid/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:NetCashProvidedByUsedInFinancingActivities", "us-gaap:NetCashProvidedByUsedInFinancingActivitiesContinuingOperations"]
+    family_pattern: "(PaymentsOfDividends|PaymentsOfOrdinaryDividends|PaymentsOfDistributions|PaymentsOfCapitalDistribution|DividendsPaid|DistributionsMade|DistributionMade|DividendsCommonStock|DividendsCash|CommonStockDividendsPerShare|DividendsPayable|DividendsDeclared|^Dividends$)"
+    containers: null
+  - metric_id: common_stock_repurchases
+    rule: {rule_id: not_presented.common_stock_repurchases/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:NetCashProvidedByUsedInFinancingActivities", "us-gaap:NetCashProvidedByUsedInFinancingActivitiesContinuingOperations"]
+    family_pattern: "(PaymentsForRepurchase|PaymentsToRepurchase|RepurchaseOfCommonStock|StockRepurchasedDuringPeriod|StockRepurchasedAndRetiredDuringPeriod|TreasuryStockValueAcquired|TreasuryStockAcquired|TreasuryStockSharesAcquired)"
+    containers: null
+  - metric_id: short_term_investments
+    rule: {rule_id: not_presented.short_term_investments/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:AssetsCurrent"]
+    family_pattern: "(Investment|MarketableSecurit|AvailableForSale|HeldToMaturity|TradingSecurit|DebtSecurit|EquitySecurit|TimeDeposit|CertificatesOfDeposit)"
+    containers: null
+  - metric_id: accounts_receivable_net
+    rule: {rule_id: not_presented.accounts_receivable_net/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:AssetsCurrent"]
+    family_pattern: "Receivable"
+    containers: null
+  - metric_id: inventory_net
+    rule: {rule_id: not_presented.inventory_net/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:AssetsCurrent"]
+    family_pattern: "(Inventor|LIFO|Merchandise|FinishedGoods|RawMaterial|WorkInProcess|Supplies)"
+    containers: null
+  - metric_id: accounts_payable
+    rule: {rule_id: not_presented.accounts_payable/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:LiabilitiesCurrent"]
+    family_pattern: "(AccountsPayable|TradePayable|TradeAccountsPayable)"
+    containers: null
+  - metric_id: property_plant_equipment_net
+    rule: {rule_id: not_presented.property_plant_equipment_net/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:AssetsNoncurrent"]
+      - ["us-gaap:Assets"]
+    family_pattern: "(PropertyPlantAndEquipment|PropertyPlantEquipment|PublicUtilitiesPropertyPlantAndEquipment|OilAndGasProperty|MineralProperties|MachineryAndEquipment|LeaseholdImprovements|ConstructionInProgress|FixedAssets)"
+    containers: null
+  - metric_id: operating_lease_right_of_use_asset
+    rule: {rule_id: not_presented.operating_lease_right_of_use_asset/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:AssetsNoncurrent"]
+      - ["us-gaap:Assets"]
+    family_pattern: "(RightOfUse|OperatingLease)"
+    containers: null
+  - metric_id: goodwill
+    rule: {rule_id: not_presented.goodwill/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:AssetsNoncurrent"]
+      - ["us-gaap:Assets"]
+    family_pattern: "Goodwill"
+    containers: null
+  - metric_id: intangible_assets_net
+    rule: {rule_id: not_presented.intangible_assets_net/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:AssetsNoncurrent"]
+      - ["us-gaap:Assets"]
+    family_pattern: "^(?!.*IndefiniteLived).*(Intangible|Trademark|TradeName|CustomerRelationship|Patent|License|Franchise|CoreDeposit|ServicingAsset|Copyright|DevelopedTechnology|Noncompete)"
+    containers: null
+  - metric_id: short_term_debt
+    rule: {rule_id: not_presented.short_term_debt/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:LiabilitiesCurrent"]
+    family_pattern: "(ShortTerm(Borrowing|Debt|BankLoans|Loan|Notes|NonBankLoans)|CommercialPaper|Overdraft|LineOfCredit|LinesOfCredit|^NotesPayable|^LoansPayable|OtherShortTermBorrowings|^OtherBorrowings|FederalFundsPurchased|SoldUnderAgreementsToRepurchase|SecuredDebtCurrent|UnsecuredDebtCurrent|ConvertibleDebtCurrent|ConvertibleNotesPayableCurrent|BridgeLoan|Borrowings$)"
+    containers: "^(DebtCurrent|DebtAndCapitalLeaseObligationsCurrent|DebtAndFinanceLeaseObligationsCurrent)$"
+  - metric_id: long_term_debt
+    rule: {rule_id: not_presented.long_term_debt/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:LiabilitiesNoncurrent"]
+      - ["us-gaap:Liabilities"]
+      - ["us-gaap:LiabilitiesAndStockholdersEquity"]
+    family_pattern: "(LongTermDebt(?!.*Current)|LongTermNotesPayable(?!.*Current)|LongTermLoansPayable(?!.*Current)|SeniorNotes(?!.*Current)|SeniorLongTermNotes|ConvertibleNotesPayable(?!.*Current)|ConvertibleDebtNoncurrent|ConvertibleSubordinatedDebt|SecuredDebt(?!.*Current)|UnsecuredDebt(?!.*Current)|Debenture|Bonds|^NotesPayable(?!.*Current)|^LoansPayable(?!.*Current)|OtherLongTermDebt(?!.*Current)|SubordinatedDebt|JuniorSubordinated|TrustPreferred|FederalHomeLoanBank|AdvancesFromFederalHomeLoanBanks|SecuredLongTermDebt|LineOfCredit(?!.*Current)|LongTermLineOfCredit|^OtherBorrowings|Borrowings$|DebtNoncurrent)"
+    containers: "^(LongTermDebtAndCapitalLeaseObligations|DebtAndCapitalLeaseObligations|LongTermDebtAndFinanceLeaseObligations|DebtAndFinanceLeaseObligations|DebtLongtermAndShorttermCombinedAmount)$"
+  - metric_id: long_term_debt_current
+    rule: {rule_id: not_presented.long_term_debt_current/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
+    np_kind: item_not_in_composition
+    parent_tiers:
+      - ["us-gaap:LiabilitiesCurrent"]
+    family_pattern: "(LongTermDebt.*Current|LongTermNotesPayableCurrent|LongTermLoansPayableCurrent|NotesPayableCurrent|LoansPayableCurrent|SeniorNotesCurrent|ConvertibleNotesPayableCurrent|ConvertibleDebtCurrent|SecuredDebtCurrent|UnsecuredDebtCurrent|CurrentPortion|CurrentMaturit|OtherLongTermDebtCurrent)"
+    containers: "^(DebtCurrent|LongTermDebtAndCapitalLeaseObligationsCurrent|DebtAndCapitalLeaseObligationsCurrent|DebtAndFinanceLeaseObligationsCurrent|LongTermDebtAndFinanceLeaseObligationsCurrent)$"

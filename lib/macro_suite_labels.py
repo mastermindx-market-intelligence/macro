@@ -63,6 +63,32 @@ FIGURE_SCALE: dict[str, dict[str, str]] = {
 }
 FIGURE_SCALE_FALLBACK = _pair("index reading", "指数读数")
 
+def prior_claims_note(day: Mapping[str, str],
+                      value: Mapping[str, str]) -> dict[str, str]:
+    """What the page's previous version showed on one claims card."""
+    return _pair(
+        f"This page's previous version, dated {day['en']}, showed {value['en']} persons.",
+        f"本页上一版（{day['zh']}）显示 {value['zh']} 人。",
+    )
+
+
+# Leave-one-recession-out catch rate. The view shows this only when the
+# producer recorded ~3 and a tiny sample on that one metric.
+CATCH_RATE_SAMPLE_NOTE = _pair(
+    "About 3 modern recessions, leave-one-out. The sample is small.",
+    "约 3 次现代衰退，留一法。样本很小。",
+)
+
+# Treasury cash balance. Shown only when that metric's transformation
+# records both DRAINS and INJECTS.
+TGA_RESERVES_NOTE = _pair(
+    "When this balance rises, Treasury is pulling cash into its own "
+    "account and bank reserves fall. When it falls, Treasury is "
+    "spending it down and reserves rise.",
+    "余额上升时，财政部把现金抽入自有账户，银行准备金随之减少；"
+    "余额下降时，财政部花出这笔现金，银行准备金随之增加。",
+)
+
 
 # --- section 7.6 freshness vocabulary ---------------------------------------
 FRESHNESS: dict[str, dict[str, str]] = {
@@ -1813,6 +1839,17 @@ def producer_trips_copy_guard(text: str) -> bool:
     return bool(machine_text_hits(text))
 
 PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
+    (
+        "US labor-market state cannot be classified: axis coverage is below the "
+        "disclosed floor. No quadrant is asserted rather than defaulting to a "
+        "neutral state.",
+        _pair(
+            "Labor-market data coverage is below the required minimum, so no "
+            "overall reading is shown. Missing data is not treated as a neutral reading.",
+            "劳动力市场数据覆盖未达到所需下限，因此不展示总体读数。"
+            "缺失数据不会被当作中性读数。",
+        ),
+    ),
     (
         "This page publishes no dual-axis state and no headline quadrant: the "
         "frozen Market Ontology architecture document defines twelve macro "

@@ -547,7 +547,10 @@ class BoatsLastTrade:
             if not 0 <= age <= BOATS_MAX_AGE_S or boats_session_date(stamp) != boats_session_date(arrival) or boats_session_date(stamp) is None:
                 raise ValueError("outside current overnight session or age budget")
         except (ValueError, TypeError, OverflowError, TiingoArchiveError):
-            self.quotes.pop(symbol, None)
+            # An unusable quote clock carries no trade fact. T/B stay
+            # fail-closed; a Q must neither erase nor refresh a last trade.
+            if data[0] != "Q":
+                self.quotes.pop(symbol, None)
             return
         if event["kind"] == "Q":
             return  # A quote cannot advance or refresh a last-trade clock.

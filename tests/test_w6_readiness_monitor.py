@@ -535,3 +535,37 @@ class TestRunReadinessPostStep:
             assert rel.startswith("data/qledger/") or rel.startswith("site/qledger/"), (
                 f"Unexpected file modified outside qledger stores: {rel}"
             )
+
+
+def test_readiness_receipt_guard_preserves_previous_and_never_alerts_on_mutation(root,monkeypatch):
+    path=root/'site/qledger/track_record.json'
+    path.write_text(json.dumps({'promotion_readiness':{'incumbent':{'5':{'n_dates':0,'needed':25,'ready':False}}},'promotion_readiness_at':'2026-01-01T00:00:00+00:00'}))
+    before=path.read_bytes();calls=[]
+    def changing(*args,**kwargs):
+        (root/'data/qledger/grades.jsonl').write_text('\n')
+        return {'altdata':{'5':{'n_dates':30,'needed':25,'ready':True,'wilson_ci_low':.9}}}
+    monkeypatch.setattr(grader,'compute_promotion_readiness',changing)
+    monkeypatch.setattr(grader,'_fire_readiness_alert',lambda *a,**k:calls.append(a))
+    result=grader.run_readiness_post_step(root,25,100,today='2026-10-12')
+    assert result['error_code']=='changed_during_read' and result['publication']=='retained_previous'
+    assert path.read_bytes()==before and not calls
+
+
+def test_readiness_receipt_normal_and_dry_run_preserve_alert_semantics(root,monkeypatch):
+    # Same owner payload, no mathematical evaluator replacement in source; this isolates publication/alerts.
+    payload={'altdata':{'5':{'n_dates':30,'needed':25,'ready':True,'wilson_ci_low':.9}}}
+    monkeypatch.setattr(grader,'compute_promotion_readiness',lambda *a,**k:payload)
+    calls=[];monkeypatch.setattr(grader,'_fire_readiness_alert',lambda *a,**k:calls.append(a))
+    path=root/'site/qledger/track_record.json';path.unlink(missing_ok=True)
+    grader.run_readiness_post_step(root,25,100,dry_run=True,today='2026-10-12')
+    assert not path.exists() and not calls
+    grader.run_readiness_post_step(root,25,100,today='2026-10-12')
+    assert len(calls)==1
+    doc=json.loads(path.read_text());receipt=doc['promotion_readiness_receipt']
+    assert receipt['schema']==grader.READINESS_RECEIPT_SCHEMA
+    assert receipt['payload_digest']==grader.readiness_payload_digest(payload)
+    assert receipt['source_generation']['all_inputs_qualification']=='unavailable'
+    assert receipt['source_generation']['portability']=='host_local_metadata'
+    assert str(root) not in json.dumps(receipt)
+    grader.run_readiness_post_step(root,25,100,today='2026-10-12')
+    assert len(calls)==1

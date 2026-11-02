@@ -631,7 +631,7 @@ _FAST_EVIDENCE_FAMILY_WITNESSES: dict[str, tuple[str, ...]] = {
     "single_name_current": (
         "get_symbol_context", "get_quote", "get_symbol_intel",
         "read_company_intelligence", "get_fundamentals", "get_earnings",
-        "get_house_view", "query_spine",
+        "get_house_view", "query_spine", "render_financial_widget",
     ),
     "macro_rates": (
         "read_world_state", "get_curve_detail", "read_mechanism_pathways",
