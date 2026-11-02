@@ -13073,6 +13073,7 @@ jobs:
           tests/test_capital_structure_issuer_state_contracts.py
           tests/test_capital_structure_sec_discovery_clock.py
           tests/test_capital_structure_document_terms.py
+          tests/test_capital_structure_document_terms_v1_3_0.py
           tests/test_capital_structure_instrument_candidates.py
           tests/test_capital_structure_term_integration.py
           tests/test_capital_structure_instrument_resolution.py
