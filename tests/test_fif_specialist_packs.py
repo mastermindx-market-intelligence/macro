@@ -2694,9 +2694,21 @@ def test_pk12_biotech_checks_and_limitations(pk12_biotech_result: dict) -> None:
     financing_check = _check(result, "financing_disclosed_not_forecast")
     assert financing_check["status"] == "pass"
     assert financing_check["kind"] == "qualitative_presence"
-    # 200 / (108 / 12) and 60 / 120, quantized 6 dp, ride the limitations.
-    assert "pk12.runway_months_fcf: 22.222222" in result["limitations"]
+    # 60 / 120, quantized 6 dp, rides the limitations; the FCF month count
+    # itself is withheld (D3) and the capex operand is cited by provenance.
+    assert not any(
+        item.startswith("pk12.runway_months_fcf:")
+        for item in result["limitations"]
+    )
     assert "pk12.rd_to_cash: 0.500000" in result["limitations"]
+    assert any(
+        item.startswith(
+            "runway_months_annual_fcf_div_12: capex operand"
+            " us-gaap:PaymentsToAcquirePropertyPlantAndEquipment"
+        )
+        and "period 2025-01-01..2025-12-31 unit USD" in item
+        for item in result["limitations"]
+    )
     assert any(
         item.startswith("runway_months_annual_fcf_div_12:")
         for item in result["limitations"]
@@ -2930,6 +2942,314 @@ def test_pk12_capital_raise_line_outranks_stock_plan_line() -> None:
     assert row["quality_state"] == "valued"
     assert row["value"] == "150"
     assert row["concept"] == "us-gaap:ProceedsFromIssuanceOfCommonStock"
+    assert contract.validate_pack_result(result) == []
+
+
+# 28c. PK12 runway period/unit gates (per-pack review D1-D4) -------------------
+#
+# The independent per-pack review FAILED this pack's runway arithmetic: the
+# runway row divided operating cash flow by 4 without checking that the opCF
+# fact covers a full fiscal year (a Q4-only opCF of -25 minted 32 quarters
+# and the recomputation check still passed), and the FCF month count consumed
+# a capex operand with no unit or period test (EUR, share-count and
+# quarter-only capex each produced a confident wrong number). The tests below
+# pin the refusal edges: a non-annual opCF row retracts the runway row and
+# both runway checks as unit_mismatch (D1); a capex operand that is not
+# annual USD makes the FCF check unit_mismatch while a missing alias stays
+# missing_dependency (D2); the month count is withheld in favour of capex
+# provenance (D3); and a valued runway row carries its static assumptions
+# (D4). Facts here are 5-tuples (qname, context, value, sign, unitRef) over
+# the same strict-parser document template as _biotech_document.
+
+_SYN_CONTEXT_Q4 = (
+    '<xbrli:context id="c-q4"><xbrli:entity><xbrli:identifier'
+    ' scheme="http://www.sec.gov/CIK">'
+    f'{SYN_BIO_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>'
+    "<xbrli:startDate>2025-10-02</xbrli:startDate>"
+    "<xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>"
+)
+_SYN_UNIT_EUR = (
+    '<xbrli:unit id="eur"><xbrli:measure>iso4217:EUR</xbrli:measure>'
+    "</xbrli:unit>"
+)
+_SYN_UNIT_SHARES = (
+    '<xbrli:unit id="shr"><xbrli:measure>xbrli:shares</xbrli:measure>'
+    "</xbrli:unit>"
+)
+
+
+def _biotech_rich_document(
+    facts: tuple[tuple[str, str, str, str, str], ...],
+    extra_contexts: str = "",
+    extra_units: str = "",
+) -> bytes:
+    rows = "\n".join(
+        f"<tr><td>item {index}</td><td>"
+        f'<ix:nonFraction id="f-{index}" name="{qname}"'
+        f' contextRef="{context}" unitRef="{unit}" decimals="0"{sign}>{value}'
+        "</ix:nonFraction></td></tr>"
+        for index, (qname, context, value, sign, unit) in enumerate(facts, start=1)
+    )
+    template = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<html xmlns="http://www.w3.org/1999/xhtml"'
+        ' xmlns:ix="http://www.xbrl.org/2013/inlineXBRL"'
+        ' xmlns:xbrli="http://www.xbrl.org/2003/instance"'
+        ' xmlns:iso4217="http://www.xbrl.org/2003/iso4217"'
+        ' xmlns:us-gaap="http://fasb.org/us-gaap/2025">\n'
+        "<head><title>TESTBIO 10-K</title></head>\n<body>\n"
+        '<div style="display:none"><ix:header><ix:resources>\n'
+        f"{_SYN_CONTEXT_INST}\n{_SYN_CONTEXT_FY}\n{extra_contexts}\n"
+        '<xbrli:unit id="usd"><xbrli:measure>iso4217:USD</xbrli:measure>'
+        f"</xbrli:unit>\n{extra_units}\n</ix:resources></ix:header></div>\n"
+        "<p>The registrant maintains an at-the-market offering program and"
+        " believes existing resources are sufficient to fund operations for"
+        " the next twelve months.</p>\n"
+        f"<table>\n{rows}\n</table>\n</body></html>\n"
+    )
+    return template.encode("utf-8")
+
+
+def _biotech_rich_package(
+    facts: tuple[tuple[str, str, str, str, str], ...],
+    extra_contexts: str = "",
+    extra_units: str = "",
+) -> GoldenFilingPackage:
+    document = _biotech_rich_document(facts, extra_contexts, extra_units)
+    manifest = {
+        "entity_id": SYN_BIO_CIK,
+        "cik": SYN_BIO_CIK,
+        "legal_name": "TESTBIO CORP",
+        "form": "10-K",
+        "period_of_report": "2025-12-31",
+        "filing_date": "2026-02-15",
+        "accession": "0000000003-26-000010",
+        "primary_document": SYN_BIO_DOC,
+        "source_accepted_at": "2026-02-15T16:00:00Z",
+        "fixture_recorded_at": "2026-02-15T16:05:00Z",
+        "members": [
+            {
+                "name": SYN_BIO_DOC,
+                "state": "stored",
+                "content_sha256": sha256(document).hexdigest(),
+            }
+        ],
+    }
+    return GoldenFilingPackage(
+        manifest=manifest, members={SYN_BIO_DOC: document}
+    )
+
+
+def _rich_facts(
+    *,
+    opcf_context: str = "c-fy",
+    opcf_value: str = "100",
+    capex_context: str = "c-fy",
+    capex_value: str = "8",
+    capex_unit: str = "usd",
+    capex: bool = True,
+) -> tuple[tuple[str, str, str, str, str], ...]:
+    """_SYN_BIO_FACTS as 5-tuples with the opCF period and the capex operand
+    (context, value, unit — or presence) overridable per test."""
+    facts = [
+        ("us-gaap:CashAndCashEquivalentsAtCarryingValue", "c-inst", "120", "", "usd"),
+        ("us-gaap:ShortTermInvestments", "c-inst", "80", "", "usd"),
+        ("us-gaap:ResearchAndDevelopmentExpense", "c-fy", "60", "", "usd"),
+        (
+            "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+            opcf_context,
+            opcf_value,
+            ' sign="-"',
+            "usd",
+        ),
+        ("us-gaap:NetCashProvidedByUsedInFinancingActivities", "c-fy", "150", "", "usd"),
+    ]
+    if capex:
+        facts.append(
+            (
+                "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+                capex_context,
+                capex_value,
+                "",
+                capex_unit,
+            )
+        )
+    facts.append(
+        ("us-gaap:ProceedsFromIssuanceOfCommonStock", "c-fy", "150", "", "usd")
+    )
+    return tuple(facts)
+
+
+def test_pk12_quarter_only_opcf_retracts_runway_as_unit_mismatch() -> None:
+    # D1: the opCF fact covers one 91-day quarter (2025-10-02..2025-12-31),
+    # so the /4 burn basis is a period-basis unit_mismatch: the runway row is
+    # a typed absence and both runway checks follow, never a 4x runway.
+    result = produce_pack(
+        "PK12",
+        _pk12_input(
+            packages=(
+                _biotech_rich_package(
+                    _rich_facts(opcf_context="c-q4", opcf_value="25"),
+                    extra_contexts=_SYN_CONTEXT_Q4,
+                ),
+            )
+        ),
+    )
+    opcf = _row(result, "net_cash_from_operating_activities")
+    assert opcf["quality_state"] == "valued"
+    assert opcf["value"] == "-25"
+    assert opcf["period"] == {
+        "kind": "duration",
+        "start": "2025-10-02",
+        "end": "2025-12-31",
+    }
+    runway = _row(result, "cash_runway_quarters")
+    assert runway["quality_state"] == "not_evaluable"
+    assert runway["non_value_state"] == "not_evaluable"
+    assert runway["coverage_state"] == "unmapped"
+    assert runway["reason"] == "unit_mismatch"
+    assert runway["value"] is None
+    assert runway["formula_rule_id"] == "pk12.cash_runway_quarters/v1"
+    assert runway["dependency_field_ids"] == [
+        "cash_and_cash_equivalents",
+        "short_term_investments",
+        "net_cash_from_operating_activities",
+    ]
+    for check_id in ("cash_runway_quarters", "runway_months_annual_fcf_div_12"):
+        check = _check(result, check_id)
+        assert check["status"] == "not_evaluable"
+        assert check["reason"] == "unit_mismatch"
+    assert result["coverage"]["valued_fields"] == 6
+    assert result["coverage"]["not_evaluable_fields"] == 1
+    # D4's assumptions limitation is withdrawn with the retracted row.
+    assert not any(
+        item.startswith("cash_runway_quarters: static formula")
+        for item in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk12_eur_capex_is_not_an_fcf_operand() -> None:
+    # D2: a EUR capex fact fails the R-F1 USD test, so the FCF check refuses
+    # as unit_mismatch instead of minting months from a mixed-currency burn.
+    result = produce_pack(
+        "PK12",
+        _pk12_input(
+            packages=(
+                _biotech_rich_package(
+                    _rich_facts(capex_unit="eur"), extra_units=_SYN_UNIT_EUR
+                ),
+            )
+        ),
+    )
+    assert _row(result, "cash_runway_quarters")["quality_state"] == "valued"
+    assert _check(result, "cash_runway_quarters")["status"] == "pass"
+    fcf = _check(result, "runway_months_annual_fcf_div_12")
+    assert fcf["status"] == "not_evaluable"
+    assert fcf["reason"] == "unit_mismatch"
+    assert not any(
+        item.startswith("pk12.runway_months_fcf:") for item in result["limitations"]
+    )
+    assert not any("capex operand" in item for item in result["limitations"])
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk12_share_count_capex_is_not_an_fcf_operand() -> None:
+    # D2: a share-count capex fact is a unit_mismatch, never a near-zero
+    # payments figure.
+    result = produce_pack(
+        "PK12",
+        _pk12_input(
+            packages=(
+                _biotech_rich_package(
+                    _rich_facts(capex_unit="shr"), extra_units=_SYN_UNIT_SHARES
+                ),
+            )
+        ),
+    )
+    assert _row(result, "cash_runway_quarters")["quality_state"] == "valued"
+    assert _check(result, "cash_runway_quarters")["status"] == "pass"
+    fcf = _check(result, "runway_months_annual_fcf_div_12")
+    assert fcf["status"] == "not_evaluable"
+    assert fcf["reason"] == "unit_mismatch"
+    assert not any(
+        item.startswith("pk12.runway_months_fcf:") for item in result["limitations"]
+    )
+    assert not any("capex operand" in item for item in result["limitations"])
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk12_quarter_only_capex_is_not_an_fcf_operand() -> None:
+    # D2: a USD capex fact that covers only the 91-day final quarter is a
+    # period-basis unit_mismatch, never a 4x-understated burn.
+    result = produce_pack(
+        "PK12",
+        _pk12_input(
+            packages=(
+                _biotech_rich_package(
+                    _rich_facts(capex_context="c-q4"),
+                    extra_contexts=_SYN_CONTEXT_Q4,
+                ),
+            )
+        ),
+    )
+    assert _row(result, "cash_runway_quarters")["quality_state"] == "valued"
+    assert _check(result, "cash_runway_quarters")["status"] == "pass"
+    fcf = _check(result, "runway_months_annual_fcf_div_12")
+    assert fcf["status"] == "not_evaluable"
+    assert fcf["reason"] == "unit_mismatch"
+    assert not any(
+        item.startswith("pk12.runway_months_fcf:") for item in result["limitations"]
+    )
+    assert not any("capex operand" in item for item in result["limitations"])
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk12_annual_usd_operands_keep_runway_and_cite_provenance() -> None:
+    # T5 pin: annual USD opCF and annual USD capex keep the parent envelope's
+    # runway row and both check statuses; D4's assumptions limitation and
+    # D3's capex provenance ride along, and the month count is withheld.
+    result = produce_pack(
+        "PK12", _pk12_input(packages=(_biotech_rich_package(_rich_facts()),))
+    )
+    runway = _row(result, "cash_runway_quarters")
+    assert runway["quality_state"] == "valued"
+    assert runway["value"] == "8"
+    assert _check(result, "cash_runway_quarters")["status"] == "pass"
+    assert _check(result, "runway_months_annual_fcf_div_12")["status"] == "pass"
+    assert _check(result, "runway_months_annual_fcf_div_12")["reason"] is None
+    assert not any(
+        item.startswith("pk12.runway_months_fcf:") for item in result["limitations"]
+    )
+    assert any(
+        item.startswith("cash_runway_quarters: static formula")
+        for item in result["limitations"]
+    )
+    assert any(
+        item.startswith(
+            "runway_months_annual_fcf_div_12: capex operand"
+            " us-gaap:PaymentsToAcquirePropertyPlantAndEquipment"
+        )
+        and "period 2025-01-01..2025-12-31 unit USD" in item
+        for item in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk12_absent_capex_alias_stays_missing_dependency() -> None:
+    # D2 pin: with no capex alias fact at all, the FCF check keeps the honest
+    # missing_dependency (passes before and after the gate).
+    result = produce_pack(
+        "PK12", _pk12_input(packages=(_biotech_rich_package(_rich_facts(capex=False)),))
+    )
+    assert _row(result, "cash_runway_quarters")["quality_state"] == "valued"
+    assert _check(result, "cash_runway_quarters")["status"] == "pass"
+    fcf = _check(result, "runway_months_annual_fcf_div_12")
+    assert fcf["status"] == "not_evaluable"
+    assert fcf["reason"] == "missing_dependency"
+    assert not any(
+        item.startswith("pk12.runway_months_fcf:") for item in result["limitations"]
+    )
     assert contract.validate_pack_result(result) == []
 
 
