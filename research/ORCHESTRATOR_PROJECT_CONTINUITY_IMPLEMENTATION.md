@@ -773,3 +773,18 @@ delivery and synthetic PREPARE tests must never substitute for those receipts.
 The held subscribed Stop definition C and its selected-generation dependency
 must be reconciled through the existing D4 owner before relying on its returns.
 No W4 canary has been newly launched by this receiver.
+
+
+## November 2, 2026 source-release reconciliation
+
+Source implementation milestones previously awaiting release are now verified:
+Mastermind #656 merged on October 25 at
+`6d7f652ca1de478a1732c4829063baa220062352`; #1289 merged on November 2 at
+`e522c26b96c0323db0740f0dee1a27c800bab792`. Their published implementation is
+not a proof that the installed/selected runtime or capsule consumer uses it.
+Preserve the engineering acceptance sequence and the unbound native-evidence
+brief; do not rebuild either implementation or create another ACK owner.
+
+The wave states, current next action and effect fences remain solely on the
+workstream and November 2 dated handoff. Earlier source-status prose in this
+plan is historical where superseded by these exact GitHub merge receipts.

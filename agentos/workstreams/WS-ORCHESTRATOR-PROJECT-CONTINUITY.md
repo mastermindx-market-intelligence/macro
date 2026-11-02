@@ -55,11 +55,12 @@ waves:
     title: Compose and qualify full semantic continuation through existing owners
     status: in_progress
     next_action: >
-      PR 1673 is incorporated and closed. PR 656 passed fresh review and entered
-      the protected queue; consume its final release readback. PR 1676 passed
-      independent composition review and merged into PR 1289 as 0b0eac4f.
-      Correct the existing source-status docs and qualify native input evidence
-      before a capsule ACK connection; keep PR 1289 Draft/production HOLD.
+      Reuse protected source: PR 656 merged as 6d7f652ca1de478a1732c4829063baa220062352
+      on October 25; PR 1289 merged as e522c26b96c0323db0740f0dee1a27c800bab792
+      on November 2, retaining the PR 1676 composition. Do not reopen, re-review or
+      re-enqueue these source deliveries. Reconcile installed and selected build,
+      actual native input evidence and original capsule delivery/ACK through their
+      existing owners before claiming live semantic continuation.
   - id: W4
     title: Prove normal and interrupted long-project execution across providers
     status: todo
@@ -87,12 +88,13 @@ artifacts:
   - research/ORCHESTRATOR_PROJECT_CONTINUITY_W3_NATIVE_EVIDENCE_BRIEF.md
   - mastermind:integrations/session_bridge/AGENTOS_SESSION_START.md
 next_action: >
-  PR 1700 merged through the protected queue at 2026-10-25T12:08:55Z.
-  Consume PR 656's protected-queue result and advance the integrated PR 1289
-  source/evidence frontier on its existing carrier. Keep W1's real changed-decision
-  proof open. Obtain changed-head review and independent merge-on-green release
-  for Macro PR 10181. Exact-thread return watchers are verified; W4 retains its
-  source, delivery, runtime arming and admission gates.
+  Read the November 2 handoff, reuse merged 656/1289 and the earlier accepted
+  source, and reconcile the installed/selected W3 build and original native-input
+  and capsule ACK evidence through existing owners. Obtain current-head independent
+  review and normal Macro release of this records correction without restarting
+  old source work. W1 genuine changed-decision proof and W4 live normal/interrupted
+  acceptance remain open. Prior watch configuration is historical, not current wake
+  or retry authority; current Executive observation is unavailable, not zero work.
 ---
 
 ## Scope
@@ -106,7 +108,7 @@ The outcome is continued, goal-directed execution with evidence. A source PR,
 a generated context bundle or a session claiming to remember its goal is an
 intermediate fact. The implementation plan records the exact acceptance ladder.
 
-## Leadership and current evidence — 2026-10-25
+## Historical leadership and evidence — 2026-10-25
 
 The Chairman assigned current leadership to the receiving ChatGPT3 principal.
 The accountable role is now Sol; this changes no live source lease, native session,
@@ -161,3 +163,14 @@ this workstream and its dated handoff carry the current organizational frontier.
 
 The complete latest recovery record is
 [the 2026-10-25 handoff](../handoffs/WS-ORCHESTRATOR-PROJECT-CONTINUITY-2026-10-25.md).
+
+## Current recovery delta - 2026-11-02
+
+The active Chairman-assigned turnaround principal continues the original #10181
+carrier; actual native workers, leases, watches and uncertain effects are not
+transferred. GitHub source readback proves #656 and #1289 are merged at the exact
+SHAs above. Source qualification is no longer their next action. Installation,
+selection, original-input evidence, capsule ACK and W4 acceptance remain separate.
+Use `agentos/handoffs/WS-ORCHESTRATOR-PROJECT-CONTINUITY-2026-11-02.md` for the
+cumulative current frontier. The October 25 evidence below is retained history,
+not current installed/runtime truth. No denied operation is retried.
