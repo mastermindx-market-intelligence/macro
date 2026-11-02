@@ -259,6 +259,19 @@ def test_ambiguous_ticker_cannot_supply_a_missing_listing_posture():
     assert by_key["TEST-B"] is None
 
 
+@pytest.mark.parametrize(
+    ("identity", "expected_listing"),
+    [({"ticker": "DEMO"}, "TEST-B"), ({"listing_key": "DEMO"}, "DEMO"), ({}, None)],
+)
+def test_mapping_key_can_be_one_listing_and_another_listings_ticker(identity, expected_listing):
+    states = [_state("DEMO", "OTHER"), _state("TEST-B", "DEMO")]
+    value = _valuation("", price=20, per_share=40)
+    value.update(identity)
+    rows = compile_research_screener(states, {"DEMO": value})["rows"]
+    matches = [r["listing_key"] for r in rows if r["valuation_posture"] is not None]
+    assert matches == ([expected_listing] if expected_listing else [])
+
+
 def test_stock_record_preserves_valuation_listing_identity(tmp_path):
     from scripts.build_research_screener import build_payload
 

@@ -408,30 +408,26 @@ def _index_postures(
             continue
         listing = str(blob.get("listing_key") or "")
         ticker = str(blob.get("ticker") or "")
-        if key in tickers_by_listing:
-            if listing and listing != key:
-                continue
-            listing = key
-        elif key is not None:
-            if ticker and ticker != key:
-                continue
-            ticker = key
-
-        target = exact
-        if listing:
-            if listing not in tickers_by_listing:
-                continue
+        if key is not None:
+            # The mapping API accepts either namespace. A single token can
+            # name one listing and also be a different listing's ticker.
+            candidates = listings_by_ticker.get(key, set()) | ({key} if key in tickers_by_listing else set())
+        elif listing:
+            candidates = {listing} if listing in tickers_by_listing else set()
         else:
             candidates = listings_by_ticker.get(ticker, set())
-            if len(candidates) != 1:
-                continue
-            listing = next(iter(candidates))
-            target = fallback
-        known_tickers = tickers_by_listing[listing]
-        if len(known_tickers) > 1 or (ticker and known_tickers and ticker not in known_tickers):
+
+        matches = [
+            candidate for candidate in candidates
+            if (not listing or candidate == listing)
+            and (not ticker or not tickers_by_listing[candidate] or ticker in tickers_by_listing[candidate])
+        ]
+        if len(matches) != 1 or len(tickers_by_listing[matches[0]]) > 1:
             continue
+        bound_listing = matches[0]
+        target = exact if listing or key == bound_listing else fallback
         # Conflicting evidence at the same specificity cannot select a posture.
-        target[listing] = blob if listing not in target or target[listing] == blob else None
+        target[bound_listing] = blob if bound_listing not in target or target[bound_listing] == blob else None
     return fallback | exact
 
 
