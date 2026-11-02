@@ -114,3 +114,72 @@ Presentation branch claude/policy-monitor-upgrade-20261101 remains exclusively a
 - Existing complete, partial-basket, stale-copy, arming and PS-R9 state regressions retain their current semantics.
 
 R2 is a source-bound extension for P2.T1/P2.T2 and P4.T1; P1 acceptance and P2/P3 design semantics are preserved. No worker START, implementation completion, independent acceptance or release is claimed by this revision.
+
+## Revision R3 — P2.T1/P2.T2 producer implementation (2026-11-01 America/Chicago)
+
+Producer branch: `claude/policy-monitor-integrity-20261101`. Implementation commit: `a7761c6aa11`. Base of this revision: `3fc5105db74beef4e04069bf6d4970981e72b065` (the R2 plan revision). Common source baseline unchanged: `9af0a33eb38b08d902c3e593cb0e276d3f0d6a18`.
+Changed paths: `scripts/build_policy_lever.py`, `tests/test_policy_lever.py`, and this plan. No template, no `scripts/build_site.py`, no normalizer, no generated output, no feed collection, no scoring threshold, no auth, no CI policy or budget was touched. The presentation branch `claude/policy-monitor-upgrade-20261101` was not read-modified-pushed and remains exclusively assigned to its own writer.
+
+### What was implemented
+
+P2.T1 — the existing jawboning reader (`scripts/build_policy_lever.py::_compute_jawboning`):
+- Strict per-record validation. A line must decode to a JSON **object**. JSON scalars, arrays and null are rejected as `invalid_structure` and never reach `.get`.
+- Strict timestamp validation. `published` then `generated_at`, string only. A wrong type, a missing field and an unparseable string are classified and rejected; they never raise. Naive source timestamps keep the established UTC convention; offset timestamps are converted to UTC before any comparison.
+- **One evaluation instant** for the whole build (`_utc_now()`, threaded through `now=`). Both windows are exactly `[cutoff, evaluation]` on both ends. A record is observed only when `published <= evaluation`, so a future-dated record no longer enters either window and no longer becomes the last observed event.
+- Honest counts. Absent, unreadable, wholly unusable and all-future sources expose **unavailable counts** (`None`), not a confident zero. A readable empty file still reports 0 recorded events.
+- Source-quality metadata: `source_status` (`missing` / `unreadable` / `empty` / `unusable` / `partial` / `usable`), `coverage` (always `"unknown"`), and `diagnostics` classifying malformed JSON, invalid structure, invalid timestamp (with missing / wrong_type / unparseable sub-reasons), future records and eligible observed records.
+- Display copy is string-typed and bounded to 140 chars. A list / dict / number summary is rejected rather than sliced or injected; bilingual `banner_title`/`summary` and `banner_title_zh`/`summary_zh` behaviour is preserved for valid input.
+
+P2.T2 — the existing calendar (`_compute_calendar`): the event is dated. `event_date` `2026-11-03`, `evaluation_date`, `evaluated_at`, and an explicit `event_state` of `upcoming` / `today` / `past`. After the event there is no permanent live zero-day countdown: `days_to_midterm` becomes `null` and `days_since_midterm` carries the elapsed days; the legacy key stays present for consumers that key on it.
+
+P2.T2 — genuine timestamps: `computed_at` (top level and `favored_complex`) and `evaluated_at` (`jawboning`, `calendar`) are UTC generation/evaluation instants, distinct from evidence time. Top-level `as_of` keeps its price-date meaning; `as_of_basis` records whether it is the price date or the build-date fallback.
+
+Unchanged and asserted by test: the frozen PS-R9 scoring rule, the `-15%` drawdown threshold, the technical-arming owner, the stale-copy rules, source collection, and every existing output key for valid input.
+
+### Defect receipts — same fixture, same injected instant (2026-11-01T12:00:00Z)
+
+Baseline read from a detached worktree at `3fc5105db74`; this branch from `a7761c6aa11`. Both were given the identical fixture file and the identical evaluation instant.
+
+| Fixture | Baseline `3fc5105db74` | This branch `a7761c6aa11` |
+|---|---|---|
+| mixed: valid + future + JSON array + garbage + wrong-type ts + no ts + naive ts | `AttributeError: 'list' object has no attribute 'get'` | `n_7d=1, n_30d=2`, last = the valid record, `source_status=partial`, `_skipped_lines=4` |
+| valid record + future record | `n_7d=2, n_30d=2`, last = the **future** record | `n_7d=1, n_30d=1`, last = the valid record, `source_status=partial` |
+| all malformed (garbage lines only) | `n_7d=0, n_30d=0` — a confident zero | `n_7d=null, n_30d=null`, `source_status=unusable` |
+| JSON array line only | `AttributeError` | `invalid_structure=1`, counts unavailable, no raise |
+| committed `data/whitehouse/alerts.jsonl` (81 records) | `n_7d=0, n_30d=11`, last `2026-10-17T00:34:24+00:00` | **identical** `n_7d=0, n_30d=11`, last `2026-10-17T00:34:24+00:00`; 81 read / 81 eligible / 0 rejected |
+
+The last row is the compatibility proof: for valid input the counts and the last observed event are byte-identical to the baseline. The calendar defect is likewise structural — the baseline clamped `days_to_midterm` to 0 forever after 2026-11-03; this branch returns `null` plus `event_state="past"` and `days_since_midterm`.
+
+### Additive output schema and nullability migration notes
+
+Every addition is **additive**. No key was removed or renamed, and the artifact schema string stays `policy_lever.v1`.
+
+- `jawboning.n_7d`, `jawboning.n_30d`: `int` → `int | None`. `null` already existed for an absent file and both consumers already null-guard it (`templates/dashboard.html.j2:14227` dialog, `:15633` card). The new null states are: unreadable source, wholly unusable source, all-invalid-time source, all-future source.
+- `calendar.days_to_midterm`: `int` → `int | None`. The consumer already null-guards it (`templates/dashboard.html.j2:14334`). The new null state is "the 2026-11-03 event has passed"; `days_since_midterm` and `event_state` carry the truth instead.
+- `jawboning.last_alert_ts`, `last_alert_summary`, `last_alert_summary_zh`: still `str | None`, now guaranteed to be a **string** when present (the baseline could emit a non-string timestamp or summary). `last_alert_ts` keeps the raw source string; `last_alert_ts_utc` is the normalised UTC instant.
+- New keys: top-level `computed_at`, `as_of_basis`; `favored_complex.computed_at`; `jawboning.last_alert_ts_utc`, `source_status`, `coverage`, `evaluated_at`, `evaluated_date`, `diagnostics`; `calendar.days_since_midterm`, `event_date`, `event_state`, `evaluation_date`, `evaluated_at`, `computed_at`.
+- Consumer contracts re-read before the change and preserved: `templates/dashboard.html.j2` (jawboning counts, `last_alert_ts[:10]`, `last_alert_summary`, `days_to_midterm`), `templates/basket_detail.html.j2`, `templates/allocation.html.j2`, `templates/sector_central.html.j2` (these three read `state` / `framing` / `framing_zh` only), and `scripts/build_site.py::_policy_lever_view` (schema check `policy_lever.v1`, unchanged).
+
+### Test and gate receipt (actual commands, actual results)
+
+- `python3 -m pytest tests/test_policy_lever.py -q -p no:randomly` at base `3fc5105db74` → **68 passed** (baseline).
+- `python3 -m pytest tests/test_policy_lever.py -q` at `a7761c6aa11` → **125 passed**. The suite grows from 68 to 125 cases: scalar/list/null JSON, invalid/missing/wrong-type timestamps, UTC/offset/naive dates, exact window boundaries at ±1 microsecond, future-only, mixed valid+future, all-invalid, empty vs absent vs unreadable, malformed summary values, independent valid record retention, before/on/after calendar date, and unchanged scoring/basket/arming/stale-copy regressions. The clock is injected through the producer's own `now=` argument, so the production default is untouched.
+- `python3 -m pytest tests/test_policy_lever.py tests/test_whitehouse_build.py -q` → **161 passed, 2 failed, 1 skipped**. The 2 failures are `tests/test_whitehouse_build.py::test_render_page_emits_current_asset_stamps` and `::test_source_capture_refuses_permissive_existing_directory`; both fail **identically at base `3fc5105db74`** in this environment (they need committed `site/` artifacts that the sparse session profile excludes). They are not a regression of this change.
+- Consumer suites `tests/test_whitehouse_build.py tests/test_dashboard_template_render.py tests/test_ftr_w1_template_markup.py tests/test_mag7_panel.py tests/test_ts_u3_dashboard_surfaces.py tests/test_mag7_tape_strip.py -q` → **5 failed, 201 passed, 1 skipped**; the same 5 fail identically at base `3fc5105db74` in a detached base worktree, so they are pre-existing environment failures, not this change.
+- `python3 -m scripts.build_policy_lever` → wrote `site/policy_lever.json` (`state=ELEVATED`, `as_of=2026-10-30`, `as_of_basis=price_date`, 81 records read / 81 eligible, `source_status=usable`, `coverage=unknown`, `event_state=upcoming`, `days_to_midterm=1`). The generated site artifact was restored afterwards and is **not** in the commit.
+- Gates: `scripts/check_conflict_markers.py` → OK; `scripts/check_ci_trigger_closure.py` → OK, 0 trigger gaps; `scripts/audit_unrun_tests.py` → exit 0, `tests/test_policy_lever.py` not flagged (already enrolled in the `commodities / forex / rates / news / policy panels` CI step); `scripts/check_dag_conformance.py`, `scripts/check_trial_registration.py`, `scripts/check_reliability_contract.py` → exit 0. CI path coverage confirmed: `scripts/build_policy_lever.py` and `tests/test_policy_lever.py` are both in `ci.yml`'s `on.pull_request.paths`, so this change starts the workflow that runs the suite.
+
+### Unresolved integration requirement (P4.T1)
+
+The producer change does **not** change the rendered dashboard on its own: the live surface still reads the artifact with the legacy semantics until the presentation result and this producer result are reconciled by the sole authorized integration writer. Reconciliation points the producer now makes available:
+
+1. The jawboning count row must read unavailable (not an em dash and not 0) when `source_status` is `missing` / `unreadable` / `unusable`; `coverage` is `"unknown"` in every case and the disclosure must say so.
+2. The countdown must not present a live zero after 2026-11-03. `days_to_midterm` is `null` past the event and the current template's political-runway row is guarded by `is not none`, so that row will simply disappear; the new surface may prefer the past-tense `context_note` plus `days_since_midterm`.
+3. `computed_at` / `evaluated_at` are generation instants, not feed freshness. Nothing may present them as "as of" source recency; `as_of` remains the price date and `as_of_basis` says which basis was used.
+4. `event_state` and `event_date` are the calendar's truth; the surface should stop inferring countdown semantics from a date it does not own.
+
+The only path shared with the presentation branch is this plan file, and it is consolidated deliberately by the later integration writer.
+
+### Not claimed by this revision
+
+No PR, no merge, no approval, no ready state, no release, no deployment, no hosted-CI result, no independent source review, no production proof and no acceptance is claimed. The producer result is a source result on its own branch; source custody stays with this operation until the root reconciles it under normal law. No presentation branch, template, generated output, feed writer, scoring threshold, auth path or CI budget was altered.
