@@ -20,10 +20,15 @@
 # round 5 with SIC-V5-C01..C13 and the zh-latin probe adjudication SIC-ADJ-03; repair wave 5 → re-freeze → round 6. Seat-disclosed SIC-V5-C13:
 # proposed_artifact.frozen_sha below was stale at 1ad748c8 (the 66829d17 re-freeze moved the manifest field only); the checker's stale-review-receipt rule
 # exposed it against the round-5 receipts and it is corrected to 66829d17 in the round-5 ledger commit; the re-freeze script now asserts the two fields agree.
+# Re-frozen 2026-11-02 at 204500aa (repair wave 5, seat-direct, one tree commit 204500aa: zh-latin probe scope SIC-ADJ-03 with scope-stating lines, identifiers off the
+# ZH faces, one Clocks block per card with neutral-outline disagrees chips (doctrine chip the only warn chip), 先验 fixture wording, EN-interface capture chip +
+# prod_capture.json locale, Watch-stance drift census + apostrophe record, test-asserted HOLD sentence, boards_manifest rows 23-41 per board, png_px current;
+# boards 0-41; round 6 dual review). SIC-V5-C13: proposed_artifact.frozen_sha and manifest.yml frozen_sha both read 204500aa — asserted equal by the seat's
+# refreeze5.py before it finishes (revision_mandate_round5 at the end of this file).
 schema: mastermind.rig_proposal.v1
 reference_id: sector-intelligence-cycles-20261021
 proposed_artifact:
-  frozen_sha: 66829d178798f9226be7f668e82fe7c15e38b5e4
+  frozen_sha: 204500aa619c95677eee8f3bb2133f454847f792
   paths:
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/boards_manifest.yml
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/00-components-desktop-both-en.png
@@ -2068,3 +2073,85 @@ revision_mandate_round4:
   disposition: cure_in_repair_commit
   cure: 'Filed as nit; carried as minor. Cure folded into SIC-V4-C10: the ZH read says 位于200日均线上方; the drawer tone carries a ZH gloss.'
   proof: 'wave 4 at 66829d17 (packet A 46160ab4, packet B d9de99cc, packet C 66829d17): a second labeled FIXTURE card (''Fixture — stance unavailable'' / ''示例——立场不可用'', deck fixture_null_h2 / fixture_null_body copy_deck.json:185; build_cycles.py:339 fixture_null) demonstrates the Stance-unavailable rendering (no chip, muted line, SIC-V3-C02) on the fixture strip of every Cycles board (28-31/34-36/39-41; SIC-V4-C10 names 28/34/40/41); the ZH read says 位于200日均线上方 where the EN says above its 200-day (XLF/XLK, face_check probe); the drawer tone line carries the ZH gloss from enum_zh.json (语气 看涨 / 谨慎 / 看跌 / 中性 / 预期).'
+# Round-5 mandate (verdict.yml round 5, REVISE, SIC-ADJ-03, SIC-V5-C01..C13; blocking findings in verdict order; severity = the critic's final pass-2 severity
+# with nit recorded as minor; cure = the authority's verdict note verbatim; proof = the wave-5 tree at 204500aa). SIC-V5-C13 (seat-disclosed, no finding id):
+# proposed_artifact.frozen_sha and manifest.yml frozen_sha both read 204500aa at this re-freeze, asserted equal by refreeze5.py.
+revision_mandate_round5:
+- id: VTC-035
+  severity: minor
+  condition: SIC-V5-C05 + SIC-V5-C06
+  disposition: cure_in_repair_commit
+  cure: 'Minor, reworded by the critic after rationale: a stated exemption suffices for drawers only; SIC-V4-C05 bars a letter-plus-digit id on a face whether or not it sits in <code>. Cure SIC-V5-C05 + SIC-V5-C06 (Reviewer A''s SIC-V5-C04 binds the same identifiers; scope adjudicated in SIC-ADJ-03).'
+  proof: 'wave 5 at 204500aa (one seat-direct tree commit): components/zh_latin_grep.py:21 SKIP_TAGS = nav, details, script, style, svg, title, head (no code — a <code> on the face counts), :28 skips hidden elements and l-en spans, :22 ALLOW unchanged (XL?, FIX, SPY, MODEL, PRIOR), :41-42 every output line states its scope and exempted tokens (''zh-latin=<n> skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR[+<allow-file tokens>]''), docstring :2-17 states the SIC-ADJ-03 rule; capture.log wave-5 blocks: Cycles boards 30/34/35/36/41 zh-latin=0 under that scope with no allow-file, Brief boards 25/32/33/38 zh-latin=0 with brief_repair/zh_face_latin_allow.txt exempting AI, GLP-1, ETF; identifiers a face must reference moved into the drawers: the ZH context card points to the page foot for the schema and epoch (copy_deck.json cycles.context_schema / context_epoch_value zh pointers, build_cycles.py DH2 per-locale fills; the EN face keeps them as code), the desk caption is plain ZH (cycles.capture_body zh) with page / render sha / capture tool as desk drawer rows (prod_capture.json, capture) and the clock note names both clocks in plain words (cycles.desk_clock_note filled with clock_read 周期读数 / clock_phase_v2 阶段时钟) with now.phase / phase_v2 and templates/sector_cycles.js:611 in the desk drawer clocks row; zh-latin=0 on board 41 under the scope proves no sector_cycles.semantic_families.v2, price_c4414dcb, site/sector_cycles.html, d86344b93a0b, chrome-headless-1x, now.phase or phase_v2 sits on a ZH face outside a drawer.'
+- id: VTC-036
+  severity: minor
+  condition: SIC-V5-C07
+  disposition: cure_in_repair_commit
+  cure: 'Minor, reworded: outline-neutral chips with an even all-round neutral border, never warn ink or fill and never a one-sided rule; Live parity unproven takes the same treatment; the Ladder-disagrees chip leaves cyc-stance-row. Cure SIC-V5-C07.'
+  proof: 'wave 5 at 204500aa (one seat-direct tree commit): cycles.css .cyc-outline — muted ink, transparent background, 1px even all-round border (color-mix of --muted and --line), no edge accent — carried by the Ladder / Hazard / Rhythm / Read disagrees chips (build_cycles.py clocks_block chip class ''cyc-clocks cyc-outline''), the hazard parity chip, the overdue chip and the methods parity chip (''Live parity unproven'' outlined); .cyc-clocks keeps weight only, the former warn --c rule and .cyc-div-note are removed; the Ladder-disagrees line lives in the card''s Clocks block (clock_lines → clocks_block), never inside cyc-stance-row (stance_row returns the row alone); build_cycles.py __main__ asserts ''cyc-warn'' absent from every card''s HTML and exactly one cyc-warn class in the page (the board-31 fixture banner''s dated qualifier chip), so the doctrine chip is the only warn-ink chip on a card; boards 28/29/34/35/41 (and 30/31/36/39/40) re-rendered.'
+- id: VTC-037
+  severity: minor
+  condition: SIC-V5-C08
+  disposition: cure_in_repair_commit
+  cure: 'Minor, upheld. Cure SIC-V5-C08.'
+  proof: 'wave 5 at 204500aa (one seat-direct tree commit): build_cycles.py clocks_block draws one <section class=''cyc-sec cyc-clocks-sec''> per card with one cyc-clocks-state line per disagreeing clock, each naming both clocks via the deck patterns (ladder_state_pattern, hazard_mismatch_pattern, rhythm_mismatch_pattern, clocks_disagree_pattern; title cycles.clocks_h3 ''Clocks'' / ''时钟'', foot cycles.clocks_foot) — XLF Ladder + Rhythm, XLK Rhythm, XLC Hazard + Rhythm + Read (asserted in __main__: cl[''XLF''] == [ladder, rhythm], cl[''XLC''] == [hazard, rhythm, read]); the rendered cycles.html holds 6 cyc-clocks-sec (3 cards × live grid + desk copy) and 12 lines; the withheld sentences (*_withheld_face) are drawer rows prepended by card_prov once per card (ZH 逾期标记保留于来源抽屉 appears 3 times in the page = once per card, inside <details>); hazard()/rhythm()/read() return '''' on a disagreeing clock, so the Descriptive rhythm chip is drawn only beside a face window (0 occurrences at this dataset, every live card''s rhythm disagrees).'
+- id: VTC-038
+  severity: minor
+  condition: SIC-V5-C09
+  disposition: cure_in_repair_commit
+  cure: 'Minor, upheld. Cure SIC-V5-C09.'
+  proof: 'wave 5 at 204500aa (one seat-direct tree commit): copy_deck.json cycles.fixture_prior_h2 zh 示例——风险先验单元格形态 and fixture_prior_body zh names 来源先验、单元判定先验 (matching the 先验 cell badges); fixture_null_body en reads ''(the stance field is null; the record is in the drawer)'' — the string doctrine_stance appears on no EN or ZH face outside a drawer (rendered cycles.html, boards 34/35/41 and every other board).'
+- id: VTC-039
+  severity: minor
+  condition: SIC-V5-C10
+  disposition: cure_in_repair_commit
+  cure: 'Minor, reworded: the locale declaration is bound in three places (face chip, boards_manifest row 41, proposal.yml screenshots entry 41); keeping the d86344b93a0b crop is accepted. Cure SIC-V5-C10 (Reviewer A''s SIC-V5-C03 binds the same declaration).'
+  proof: 'wave 5 at 204500aa (one seat-direct tree commit): deck cycles.capture_locale_chip ''EN-interface capture'' / ''英文界面截图'' drawn on the desk capture figure beside the Production capture / Dark-theme capture / as-of chips (build_cycles.py desk figure chips); prod_capture.json carries locale: en with locale_note (html[data-lang=en], no ?lang query); boards_manifest.yml row 41 states_shown declares the crop locale EN / theme dark and limits the ''ZH deck copy'' claim to the specimen deck (cards, desk caption and clock note, Fixture cards); proposal.yml screenshots entry 41 declares the same; board 41 re-rendered (41-cycles-desk-desktop-light-zh.png 1440×3262).'
+- id: VTC-040
+  severity: minor
+  condition: SIC-V5-C11
+  disposition: cure_in_repair_commit
+  cure: 'Minor, upheld (SIC-V2-C07 class). Cure SIC-V5-C11.'
+  proof: 'wave 5 at 204500aa (one seat-direct tree commit): boards_manifest.yml states_shown rows 23-41 rewritten per board (seat script records_w5.py, assertions run on the written file): every Cycles row lists only the doctrine stances its PNG draws — ''Watch — don''t chase (XLF, XLK) · Protect gains (XLC)'' on the EN rows, ''观察 —— 别追 (XLF, XLK) · 保护利润 (XLC)'' on the ZH rows (做好准备 / 暂时观望 / 忽略 appear on no Cycles row); EN rows 28/29/31/39/40 contain no CJK character; rows 25/32/33/38 spell the allow entry GLP-1 and state the probe scope; no bullet longer than 80 characters or carrying a wave / SIC / VTC / PRC / board reference is shared verbatim across rows (shared history is cited by reference to proposal.yml revision_mandate_round2..5, cycles_ia.md, COMPONENTS.md and the READMEs).'
+- id: VTC-042
+  severity: minor
+  condition: SIC-V5-C12
+  disposition: cure_in_repair_commit
+  cure: 'Minor, new in pass 2 from the opened proposal.yml (source: rationale): stale png_px for boards 39/40 and a round-3 board-39 note. Cure SIC-V5-C12.'
+  proof: 'wave 5 at 204500aa (one seat-direct tree commit): proposal.yml screenshots png_px for boards 23-41 equal the capture.log wave-5 sizes (28/29 1440x2343, 30/36 390x4327, 31 390x4879, 34/35 1440x2225, 39 390x4775, 40 1440x3400, 41 1440x3262; Brief 23/24 1440x2752, 25/38 390x4604, 26 390x4625, 27 1440x1026, 32/33 1440x2777, 37 390x4860 — the stale 37 note 390x4903 corrected too); the board-39 note names the SIC-V4-C03 disagree states as one Clocks block per card (XLF Ladder disagrees + Rhythm clock disagrees, XLK Rhythm clock disagrees, XLC Hazard clock disagrees + Rhythm clock disagrees + Read disagrees); boards_manifest.yml png_px and the cycles_repair/README.md Boards table carry the same heights (SIC-V3-C11).'
+- id: PRC-042
+  severity: major
+  condition: SIC-V5-C01
+  disposition: cure_in_repair_commit
+  cure: 'Major, blocking, upheld after rationale; the bounded-scope census statement is accepted as the cure under the critic''s four stated requirements. Cure SIC-V5-C01 verbatim.'
+  proof: 'wave 5 at 204500aa (one seat-direct tree commit): design_refs/sector-paper-20261021/components/COMPONENTS.md:132-152 Production drift record (PRC-036 / PRC-042, SIC-V5-C01): states the candidate census command (git grep -n -e 观望 -e 观察 66829d17… -- templates | grep -i watch) and its count (298 lines at 66829d17, the same 298 at 964e4aa7 whose templates/ tree is unchanged since — and unchanged by this wave), states its bounded scope (a ZH 观望/观察 and an EN watch on the same line; split pairs, ZH-only renderings and JS-built strings are not counted; the list is a subset read from that output, not an inventory), lists the confirmed Watch-stance renderings by file:line with the ZH string (rotation_events.js:200, _ignition_radar_card.html.j2:170, _mag7_tape_strip.html.j2:227, market_structure.html.j2:563, _prophet_receipts.html.j2:137, china_altdata.html.j2:227, dashboard.html.j2:7852, stage_analysis.html.j2:1497), and names the fork (观望 renders Watch on live surfaces while the engine''s Stand aside is 暂时观望) as owned by those surfaces and outside this reference; no production template is changed by this set.'
+- id: PRC-037
+  severity: minor
+  condition: SIC-V5-C02
+  disposition: cure_in_repair_commit
+  cure: 'Minor residual of the round-4 row, reworded: the wave-4 proof in revision_mandate_round4 overclaims the cure as well as the comment omitting the cell. Cure SIC-V5-C02.'
+  proof: 'wave 5 at 204500aa (one seat-direct tree commit): the one HOLD sentence now names the Peak extended-uptrend override (trend_up × Peak × ladder in BOTTOM WATCH / TURN SIGNALED / FRESH BUY, note_key extended_uptrend, engine/cycle_ontology.py:1060-1063) in all three places — engine/cycle_ontology.py:159-164 (the DOCTRINE_STANCE HOLD comment), design_refs/sector-paper-20261021/cycles_ia.md:157 and components/COMPONENTS.md:163; tests/test_cycle_ontology.py test_hold_sentence_is_identical_and_true asserts the three copies are identical after whitespace folding, that the cited engine lines hold the override, and that the cells the sentence names are exactly the cells resolve_state stamps HOLD (every RALLY ON row, Recovery × TOP WATCH, Peak × BOTTOM WATCH / TURN SIGNALED / FRESH BUY under trend_up; no other cell) — 51 passed; the round-4 PRC-037 proof above is annotated with its round-5 residual rather than rewritten; the mapping row itself is unchanged.'
+- id: PRC-043
+  severity: minor
+  condition: SIC-V5-C03
+  disposition: cure_in_repair_commit
+  cure: 'Minor, upheld; a ZH re-capture is not required. Cure SIC-V5-C03.'
+  proof: 'wave 5 at 204500aa (one seat-direct tree commit): board 41 face shows the chip 英文界面截图 beside 生产截图 and 深色主题截图 (deck capture_locale_chip, build_cycles.py desk figure chips; 41-cycles-desk-desktop-light-zh.png 1440×3262); boards_manifest.yml row 41 states_shown and proposal.yml screenshots entry 41 both declare the production crop''s locale as EN and its theme as dark (prod_capture.json theme dark / locale en); no ZH re-capture was made (accepted by the critic).'
+- id: PRC-044
+  severity: minor
+  condition: none (nit; record note, verdict round 5)
+  disposition: cure_in_repair_commit
+  cure: 'Nit, upheld with no condition: the cure is a record note in the COMPONENTS stance rows that production spells the apostrophe both ways (stage_analysis.html.j2:1497 curly); bound into wave 5 as a record note.'
+  proof: 'wave 5 at 204500aa (one seat-direct tree commit): nit, no condition: COMPONENTS.md:153-158 Apostrophe record (PRC-044, wave 5) states that production spells the EN Watch stance with the straight apostrophe (stage_analysis.html.j2:815 Jinja-escaped, rotation_events.js:200, _ignition_radar_card.html.j2:170, market_structure.html.j2:563, _prophet_receipts.html.j2:137, china_altdata.html.j2:227) and the curly one (stage_analysis.html.j2:1497, dashboard.html.j2:7852, macro_signals.html.j2:1017-1020, _unified_dashboard_hero.html.j2:123, _market_regime_strip.html.j2:5), that the engine EN string (docs/DESIGN_DOCTRINE.md:44) and the deck use the straight form, and that the deck test normalizes both (tests/test_sector_paper_copy_deck.py norm).'
+- id: PRC-045
+  severity: minor
+  condition: SIC-V5-C04
+  disposition: cure_in_repair_commit
+  cure: 'Nit, reworded: closing the C09 gap found boards_manifest rows 32/33 still describing the allowlist entry as GLP-. Cure SIC-V5-C04.'
+  proof: 'wave 5 at 204500aa (one seat-direct tree commit): boards_manifest.yml rows 25/32/33/38 describe the allow entry as GLP-1 (brief_repair/zh_face_latin_allow.txt: AI, GLP-1, ETF) and state the probe scope on every zh-latin=0 bullet (skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR+AI,ETF,GLP-1); the Cycles ZH rows 30/34/35/36/41 state the same scope with no allow-file; components/zh_latin_grep.py:21 SKIP_TAGS = nav, details, script, style, svg, title, head (no code — a <code> on the face counts), :28 skips hidden elements and l-en spans, :22 ALLOW unchanged (XL?, FIX, SPY, MODEL, PRIOR), :41-42 every output line states its scope and exempted tokens (''zh-latin=<n> skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR[+<allow-file tokens>]''), docstring :2-17 states the SIC-ADJ-03 rule; capture.log wave-5 blocks: Cycles boards 30/34/35/36/41 zh-latin=0 under that scope with no allow-file, Brief boards 25/32/33/38 zh-latin=0 with brief_repair/zh_face_latin_allow.txt exempting AI, GLP-1, ETF; the board 41 caption is plain ZH with now.phase / phase_v2 only as code inside the desk drawer.'
+- id: PRC-027
+  severity: minor
+  condition: none (re-disposed cured in round-5 pass 2)
+  disposition: cure_in_repair_commit
+  cure: 'Re-disposed cured by the critic in pass 2 against its own round-4 second pass (board 27: 16 drawn, 0 gaps; png_px checked); no regression on boards 28/34/41.'
+  proof: 'wave 5 at 204500aa (one seat-direct tree commit): re-disposed cured by the critic in round-5 pass 2 (board 27: 16 drawn, 0 gaps; png_px checked); wave 5 leaves board 27 unchanged (27-coverage-matrix-desktop-light-en.png 1440x1026, boards_manifest row 27 untouched) and coverage_matrix.wave5_summary records the matrix unchanged at 16/16 with boards 40/41 outside it; boards 28/34/41 re-rendered without regression of the coverage claim.'

@@ -43,3 +43,11 @@ packets A 46160ab4 / B d9de99cc / C 66829d17): the round-4 receipts listed above
 (`critic_return/` plus the normalized `visual_taste.yml` / `product_regression.yml`, same sha256 as the table). The round-5 critics (same two
 identities, r5, same quarantine) returned against `66829d17` on 2026-11-02 and their receipts are the top-level files listed in the table
 (review_round 5); the round-4 files were archived unchanged. `manifest.yml` carried `in_review` from this re-freeze and carries `revise` after the round-5 verdict; `proposal.yml` carries `revision_mandate_round4`.
+
+Re-freeze 2026-11-02 at `204500aa619c95677eee8f3bb2133f454847f792` (repair wave 5: SIC-ADJ-03, SIC-V5-C01..C13; boards 0–41, one seat-direct tree
+commit 204500aa): the round-5 receipts listed above are archived byte-exact under `round5_66829d17/` (`critic_return/` plus the normalized
+`visual_taste.yml` / `product_regression.yml`, same sha256 as the table). The top-level `critic_return/`, `visual_taste.yml` and
+`product_regression.yml` remain the round-5 receipts until the round-6 critics (same two identities, r6, same quarantine, which now also
+covers `round5_66829d17/*<other role>*`) return against `204500aa`; the round-6 receipts then replace them (review_round 6) and the
+header above is rewritten. `manifest.yml` carries `in_review` from this re-freeze; `proposal.yml` carries `revision_mandate_round5` and its
+`proposed_artifact.frozen_sha` moves with the manifest field (SIC-V5-C13, asserted by the re-freeze script).
