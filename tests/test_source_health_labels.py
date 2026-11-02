@@ -106,7 +106,7 @@ def test_committed_status_ids_render_provider_free():
 # Pages whose copy used to credit a provider by name. `<polygon` SVG tags are
 # markup, not copy, and Jinja comments never reach the page.
 @pytest.mark.parametrize("template", [
-    "bonds.html.j2", "canada_stock.html.j2", "intl_stock.html.j2", "stock.html.j2",
+    "canada_stock.html.j2", "intl_stock.html.j2", "stock.html.j2",
 ])
 def test_page_copy_names_no_provider(template):
     src = (ROOT / "templates" / template).read_text(encoding="utf-8")

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-20T13:39:45Z",
+ "accession": "0001652535-26-000012",
+ "cik": "0001652535",
+ "doc_byte_length": 1626154,
+ "doc_sha256": "98470118276c3c81461545eab8705a2bc6da818216de8364b63db95c7625238e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-20",
+ "form": "10-K",
+ "period_of_report": "2025-12-26",
+ "primary_document": "ichr-20251226.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 213054,
+  "byte_start": 212511,
+  "normalized": "We are dependent upon a small number of customers, as the semiconductor equipment manufacturer market is highly concentrated with five companies accounting for over 70% of all semiconductor wafer fabrication equipment revenues. For 2025, two customers with individual sales over 10%, Lam Research and Applied Materials, accounted for a combined 76% of total sales. We do not have long-term contracts that require customers to place orders with us in fixed or minimum volumes, and we generally operate on a purchase order basis with customers.",
+  "normalized_sha256": "3151bd7cb46a5687a29c7345c0ee4c5e74e9c7f62d73eb6293598add884bcf40",
+  "raw": " We are dependent upon a small number of customers, as the semiconductor equipment manufacturer market is highly concentrated with five companies accounting for over 70% of all semiconductor wafer fabrication equipment revenues. For 2025, two customers with individual sales over 10%, Lam Research and Applied Materials, accounted for a combined 76% of total sales. We do not have long-term contracts that require customers to place orders with us in fixed or minimum volumes, and we generally operate on a purchase order basis with customers.",
+  "raw_sha256": "ffae79dd3f10fd3a7b4683fa36f03b663c0f1e48e338dc1f43f12e2b7c462824"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1652535/000165253526000012/ichr-20251226.htm",
+ "xbrl_contexts": []
+}
