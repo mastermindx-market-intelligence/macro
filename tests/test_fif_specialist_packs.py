@@ -6094,7 +6094,7 @@ BASE_AAPL_ENVELOPE_SHA256 = {
     "PK02": "8d868ce982fff7c5e45693d4a81df9e07afee166df4f4996c3a4e141b2790869",
     "PK11": "f425680270c2a267d8dca5f44e6a1e3c2ac708b124e2d2a7723c0674056d9b2f",
     "PK12": "da96915b1d81f0f4417e6cb4d5acbc551f5fbfcc5975dc37091adfec9be5cceb",
-    "PK09": "34d66e0a7e71f9d649d05c6ed11bbf4ee66637f24838c03af57fba19ace65e8d",
+    "PK09": "c99bfbe2e14ad5e025d1b02106176303311384a80c0dc4a96b0f91d57cc3535c",
 }
 _BASE_PACK_METRICS = {
     "PK06": "leases",
@@ -7287,7 +7287,7 @@ BASE_PACK_ENVELOPE_SHA256 = {
         "b26d48b769b9be642b5deaeafbe2f853b5d6155eb2f079f4953642c417062629"
     ),
     "PK09": (
-        "372cdeb46c6f1dd7ebfe3ec63ea78b89c1ff055a90e7c4d30004ed6717d5f4b5"
+        "780783174a271d0bb216e235fe726aeab0c89eea9b27405f5bb0fc8a36bd200c"
     ),
     "PK11": (
         "9660c82e6d14e70e9302b2dc2cdf2468da416886422892d5201cea0ff88a744d"
@@ -8234,7 +8234,7 @@ PK05_BASE_PACK_ENVELOPE_SHA256 = {
     "PK03": "17a26aa6d276414927f9c68ddbd37595e79bc6120a289abcb254f83f4095057d",
     "PK04": "e4746fbf9126b233d759caeb235dfec72d1895b20b6a6b13a20dd6d16802d5dd",
     "PK06": "2126d42b4a608ad2a9f8e9a48b8692fe8c11c8ed187d5beb33e27df68182df17",
-    "PK09": "c14439eb092bb790aaeb031126b8031ec9194f026988e7e8c45931ff2ca8214d",
+    "PK09": "89b775cd466718080b16d5184afc286217c700af0e39b86d04b4eaf9c097dae4",
     "PK10": "217702f0bb51ac1686a796422e72118655584064fd8b6585eb8f5aa640c230e1",
     "PK11": "1e8d160a7fb3402fd82c698333cd2d87ad3622fca5d70437800c692c3fb63620",
     "PK12": "d6bfa668b1a77819f0a2e8ff1d77fd75e8cacce96dbeba49b430d861fca9591d",
@@ -10167,7 +10167,7 @@ PK07_BASE_PACK_ENVELOPE_SHA256 = {
     "PK04": "281d84d196751caca6ac23a217004766fb1483e2d5fc729309eb1bc30f64dc8f",
     "PK05": "3628a5ddde284650978617bcd7ae7ff922dd32ac0bbb8ab6e8f35ad2545967ac",
     "PK06": "84f9aad2836afa5b397253ff27807345d6245edf8f765b60b6e21d68449890f5",
-    "PK09": "4715019c65a4def8021cc72be66ff304f05b33136b3e83bb4891ec0c51328c6b",
+    "PK09": "b26b3f42704baa77f35f14a0ebf1b32a6d057d8c56637fe16829090fe28d4aae",
     "PK10": "2ef05add8be8db7f9cb32a6fd55b47eab26fafdc2e603a2b7cbae9e074b234d0",
     "PK11": "140b630622b5e1ab49dd1743ad8eafb91be8872e7a20e9cfc72d2d59ffddaefc",
     "PK12": "4915af8ff2a916dd788d219de2329c6fc7703df5dfc3ac7a4e8dc7265f4ab48b",
@@ -10823,7 +10823,7 @@ PK08_BASE_PACK_ENVELOPE_SHA256 = {
     "PK05": "ac0cf6c6d5fb655b622d57317c376602ac357a7e3c075b60c8ef4fa7e6679740",
     "PK06": "1f78880eba88a185421ccc943e8e227bf7d264e5fea6ac8af1c96d75a793e229",
     "PK07": "0ff8a0e0ed118c716d3417e3765a131e94054fa57ab8eb9a2b0ade02fb89a153",
-    "PK09": "277b6d051b91c168adecc4072b482d8a55b2cf806a0473eb9bc64e48af88917c",
+    "PK09": "6480a97c534e559b9ad0fb3fd545986514234a0984260126a7781e8eba140499",
     "PK10": "655d3ff540c539e2f2b2a20104f286d68baaa6a18990e1ec46d52cc7cd6f32ba",
     "PK11": "58e1c524a82210daffc392c855309c73b5d4ca55732c100c3a3a6babe7d41ba4",
     "PK12": "e3578db64f6e41c5ec5633b5b529fc87ca742a2857639bbaf2ba28ec4480f830",
@@ -15059,6 +15059,391 @@ def test_pk09_single_conformed_signature_resolves_unchanged() -> None:
     )
     result = _pk09_synthetic("10-K", body)
     assert _row(result, "auditor_firm")["text_value"] == "Northgate Audit LLP"
+    assert contract.validate_pack_result(result) == []
+
+
+# 45b. PK09 per-pack review repair (2026-11-02 lane fif-pk09fix-u3) ---------
+#
+# Three defects an independent per-pack review found in the reviewed commit
+# (392f59ace3541): a negated or hypothetical going-concern sentence valued
+# 'disclosed' (D1), an acquired-subsidiary exclusion clause winning the ICFR
+# conclusion purely by leftmost order (D2), and a confident
+# material_weakness_present 'false' asserted over an Item 9A that only
+# incorporates Management's Item 8 report by reference (D3). Every D-test
+# below fails on the pre-repair pack; the control tests pin the positives
+# that must not move.
+
+
+def test_pk09_negated_going_concern_doubt_is_not_disclosed() -> None:
+    # D1, run A1: "no substantial doubt ..." is a negated sentence, not a
+    # disclosed doubt; the field falls through to the valued not_disclosed
+    # absence exactly as a filing with no phrase does.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>After evaluating the Company&#8217;s liquidity and capital "
+        "resources, management concluded that there was no substantial doubt "
+        "about the Company&#8217;s ability to continue as a going "
+        "concern.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "not_disclosed"
+    assert _row(result, "going_concern_management_plan")["reason"] == (
+        "missing_dependency"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_hypothetical_going_concern_doubt_is_not_disclosed() -> None:
+    # D1, run A2: a hypothetical "may arise" sentence is conditionality,
+    # not a disclosure.
+    body = (
+        "<div>If the product launch is delayed further, substantial doubt "
+        "about our ability to continue as a going concern may arise.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "not_disclosed"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_negated_doubt_sentences_do_not_pass_going_concern_check() -> None:
+    # D1, run A1b: management's negated sentence plus the auditor's own
+    # negated sentence repeating the phrase. The pre-repair pack valued the
+    # field 'disclosed' and corroborated the false positive with the
+    # auditor's refused mention; neither may carry the check to pass now.
+    body = (
+        "<div>Management concluded that there was no substantial doubt about "
+        "the Company&#8217;s ability to continue as a going concern.</div>"
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026. The financial statements have been "
+        "prepared assuming the Company will continue as a going concern; "
+        "management&#8217;s evaluation identified no substantial doubt about "
+        "the Company&#8217;s ability to continue as a going concern.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "going_concern_substantial_doubt")["text_value"] == (
+        "not_disclosed"
+    )
+    check = _check(result, "going_concern_vs_opinion")
+    assert check["status"] != "pass"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_affirmative_going_concern_doubt_still_disclosed() -> None:
+    # D1 control: the affirmative disclosure keeps its value. This pin
+    # holds on the pre-repair pack as well.
+    body = (
+        "<div>Management concluded that substantial doubt about the "
+        "Company&#8217;s ability to continue as a going concern exists.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "disclosed"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_acquired_subsidiary_exclusion_before_conclusion_is_effective() -> None:
+    # D2, run B1: the SEC-guidance acquired-subsidiary exclusion wording
+    # placed before management's period-end conclusion. The clause whose
+    # sentence is dated to the period of report governs; leftmost order
+    # never does.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management determined that the internal control over financial "
+        "reporting of Testco Acquired Inc was not effective as of the "
+        "acquisition date.</div>"
+        "<div>Management concluded that the Company&#8217;s internal control "
+        "over financial reporting was effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_acquired_subsidiary_exclusion_after_conclusion_is_effective() -> None:
+    # D2, run B1-reversed: the same two sentences in the opposite order
+    # resolve the same way — the read is order-independent. This pin holds
+    # on the pre-repair pack as well.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that the Company&#8217;s internal control "
+        "over financial reporting was effective as of June 30, 2026.</div>"
+        "<div>Management determined that the internal control over financial "
+        "reporting of Testco Acquired Inc was not effective as of the "
+        "acquisition date.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_single_not_effective_conclusion_stays_ineffective() -> None:
+    # D2 control: a single not-effective conclusion dated to the period
+    # keeps its value. This pin holds on the pre-repair pack as well.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that the Company&#8217;s internal control "
+        "over financial reporting was not effective as of June 30, 2026."
+        "</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "ineffective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_management_report_weakness_not_confirmed_false_over_9a() -> None:
+    # D3, run D1b: Management's Item 8 report discloses a material weakness
+    # and concludes not effective; Item 9A only incorporates the report by
+    # reference. The confident false over the incorporation sentence alone
+    # is gone: the weakness boolean is valued from the management report.
+    body = (
+        "<div>MANAGEMENT&#8217;S REPORT ON INTERNAL CONTROL OVER FINANCIAL "
+        "REPORTING Under Section 404 of the Sarbanes-Oxley Act of 2002, "
+        "management is required to assess the effectiveness of the "
+        "Company&#8217;s internal control over financial reporting and "
+        "report, based on that assessment, whether the Company&#8217;s "
+        "internal control over financial reporting is effective.</div>"
+        "<div>Management identified a material weakness in the "
+        "Company&#8217;s revenue cycle as of June 30, 2026.</div>"
+        "<div>Based on that assessment, management concluded that the "
+        "Company&#8217;s internal control over financial reporting was "
+        "not effective as of June 30, 2026.</div>"
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the Company did not maintain "
+        "effective internal control over financial reporting as of June 30, "
+        "2026.</div>"
+        "<div>Item 9A. Controls and Procedures The information required by "
+        "this Item is incorporated herein by reference. Item 9B. Other "
+        "Information None.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert _row(result, "icfr_management_conclusion")["text_value"] == (
+        "ineffective"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_item9a_weakness_disclosure_still_true() -> None:
+    # D3 control: a weakness disclosed inside Item 9A keeps its value. This
+    # pin holds on the pre-repair pack as well.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management identified a material weakness in the "
+        "Company&#8217;s revenue recognition process as of June 30, 2026. "
+        "Management concluded that the Company&#8217;s internal control "
+        "over financial reporting was not effective as of June 30, 2026."
+        "</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
+# 45c. PK09 going-concern re-review repair (2026-11-02 lane fif-pk09fix3-r1) --
+#
+# Two shapes the independent re-review still failed on f962c5d: a mixed
+# recital whose first, unnegated occurrence ("considered whether there was
+# substantial doubt ...") is answered inside the same clause run by a
+# directly negated conclusion (E1), and a sentence-initial capital negator
+# ("No substantial doubt ..." / "Without substantial doubt ...") the
+# lowercase-only look-behinds never refused (E2). V1-V4 fail on the
+# pre-repair pack; V6-V8 pin the positives that must not move.
+
+
+def test_pk09_mixed_recital_doubt_answered_negated_is_not_disclosed() -> None:
+    # E1, run V1: the recital's first, unnegated occurrence is followed in
+    # the same clause run by the directly negated conclusion, so the whole
+    # sentence is a no-doubt conclusion, not a disclosure.
+    body = (
+        "<div>We considered whether there was substantial doubt about the "
+        "Company&#8217;s ability to continue as a going concern, and we "
+        "concluded no substantial doubt about the Company&#8217;s ability "
+        "to continue as a going concern existed.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "not_disclosed"
+    assert _row(result, "going_concern_management_plan")["reason"] == (
+        "missing_dependency"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_mixed_recital_in_mgmt_and_audit_never_passes_check() -> None:
+    # E1, run V2: the V1 sentence in management's text and again in the
+    # auditor's report. Neither the refused field match nor the auditor's
+    # refused repetition may carry the check to pass.
+    body = (
+        "<div>We considered whether there was substantial doubt about the "
+        "Company&#8217;s ability to continue as a going concern, and we "
+        "concluded no substantial doubt about the Company&#8217;s ability "
+        "to continue as a going concern existed.</div>"
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026. We considered whether there was "
+        "substantial doubt about the Company&#8217;s ability to continue as "
+        "a going concern, and we concluded no substantial doubt about the "
+        "Company&#8217;s ability to continue as a going concern "
+        "existed.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "going_concern_substantial_doubt")["text_value"] == (
+        "not_disclosed"
+    )
+    check = _check(result, "going_concern_vs_opinion")
+    assert check["status"] != "pass"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_sentence_initial_no_doubt_is_not_disclosed() -> None:
+    # E2, run V3: a sentence-initial "No substantial doubt ..." is the same
+    # negation as the lowercase "no substantial doubt ..." of D1/A1.
+    body = (
+        "<div>No substantial doubt about the Company&#8217;s ability to "
+        "continue as a going concern exists.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "not_disclosed"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_capital_no_doubt_repeated_in_audit_never_passes_check() -> None:
+    # E2, run V4: the V3 sentence in management's text and repeated in the
+    # auditor's report — the capital-negator repetition is still the
+    # refused-only corroboration channel D1 closed.
+    body = (
+        "<div>No substantial doubt about the Company&#8217;s ability to "
+        "continue as a going concern exists.</div>"
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026. No substantial doubt about the "
+        "Company&#8217;s ability to continue as a going concern "
+        "exists.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "going_concern_substantial_doubt")["text_value"] == (
+        "not_disclosed"
+    )
+    check = _check(result, "going_concern_vs_opinion")
+    assert check["status"] != "pass"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_sentence_initial_without_doubt_is_not_disclosed() -> None:
+    # E2, run V5: the capital "Without ..." opening gets the same refusal
+    # the lowercase "without substantial doubt ..." already had.
+    body = (
+        "<div>Without substantial doubt about our ability to continue as a "
+        "going concern, we expanded production.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "not_disclosed"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_negated_plan_sentence_keeps_doubt_disclosed() -> None:
+    # V6 control (E1): the refusal demands the negator directly before the
+    # re-mentioned "substantial doubt"; "have not alleviated this
+    # substantial doubt" is a genuine unresolved disclosure. This pin
+    # holds on the pre-repair pack as well.
+    body = (
+        "<div>These conditions raise substantial doubt about the "
+        "Company&#8217;s ability to continue as a going concern, and "
+        "management&#8217;s plans have not alleviated this substantial "
+        "doubt.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "disclosed"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_no_assurance_tail_keeps_doubt_disclosed() -> None:
+    # V7 control: "there can be no assurance" negates the assurance, not
+    # the doubt itself. This pin holds on the pre-repair pack as well.
+    body = (
+        "<div>These conditions raise substantial doubt about our ability to "
+        "continue as a going concern, and there can be no assurance that we "
+        "will obtain additional financing.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "disclosed"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_affirmative_doubt_in_mgmt_and_audit_still_passes() -> None:
+    # V8 control: a genuine disclosed doubt corroborated affirmatively by
+    # the auditor's report keeps the check at pass. This pin holds on the
+    # pre-repair pack as well.
+    body = (
+        "<div>Management concluded that substantial doubt about the "
+        "Company&#8217;s ability to continue as a going concern exists.</div>"
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026. Management&#8217;s evaluation "
+        "identified substantial doubt about the Company&#8217;s ability to "
+        "continue as a going concern.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "disclosed"
+    assert _check(result, "going_concern_vs_opinion")["status"] == "pass"
     assert contract.validate_pack_result(result) == []
 
 
