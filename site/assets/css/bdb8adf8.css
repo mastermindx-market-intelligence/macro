@@ -398,7 +398,8 @@ html[data-lang="zh"] .est-title{letter-spacing:-.01em;}
   /* Lessons keep labeled semantic ink, with even neutral container borders. */
   .fam-lesson .est-prose .callout,
   .fam-lesson .est-prose .formula,
-  .fam-lesson .est-prose .worked{border:1px solid var(--hair-strong);}
+  .fam-lesson .est-prose .worked,
+  .fam-lesson .est-prose .sig-stage{border:1px solid var(--hair-strong);}
   .fam-lesson .est-prose h2::before{display:none;}
   .fam-lesson .est-prose blockquote{border:1px solid var(--hair-strong); padding:var(--sp-3) var(--sp-4);}
 
