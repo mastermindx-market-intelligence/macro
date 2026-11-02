@@ -19,6 +19,11 @@ generated navigation to its contract:
     candidate on the section the reader left from (recorded as a semantic name before
     dismiss), while every fresh open and every Previous/Next step — and any return whose
     recorded group is no longer a visible panel — still lands on Structure;
+  * a valid same-candidate return also hands the reader back the exact initiating
+    Plan-link focus and the prior dialog scrollTop, and only while that link is still
+    this journey's own live, enabled, same-plan, in-body, visible button: a missing,
+    hidden, replaced or retargeted link, a lost section or lost access degrade to the
+    fresh-open behaviour (Close focused, the dialog at the top);
   * close/release removes the generated bar, ids, roles and hidden state so the exact
     original nodes return home intact.
 
@@ -340,7 +345,9 @@ def test_plan_relation_stays_operable_from_sources_and_return_restores_section()
     returning to the SAME candidate reopens that body with Sources selected again: one
     connected tablist, the tab/panel aria intact, nothing leaked. The restore is bound to
     this one return only — a fresh open of the same row and a Previous/Next step still
-    default to Structure."""
+    default to Structure. The same return also restores the exact initiating Plan-link
+    focus and the dialog scrollTop the reader left from (177 here); fresh opens and
+    Previous/Next keep the normal Close/browse focus and start at the top."""
     _run(
         _PREP + """
 const second = sectioned(candidate('board', 'SECOND', 'OTHER-BULL-20260811'));
@@ -351,6 +358,8 @@ const sourcePanel = panels().find(p => p.getAttribute('data-pvs-section') === 's
 fire(tabs()[3]); await flush();
 assert.equal(visiblePanels()[0], sourcePanel, 'the Plan relation lives in the Sources panel');
 assert.equal(sourcePanel.contains(origins.board.link), true);
+origins.board.link.focus();                      // the reader is on the exact Plan-link control
+dialogEl().scrollTop = 177;                      // ... at their own dialog reading position
 fire(origins.board.link);                        // View in Plans, from inside the panel
 assert.equal(document.body.dataset.pvsPlanLinkResult, 'ok');
 assert.equal(window.USProphetSource.get(), 'plans');
@@ -373,6 +382,9 @@ assert.equal(t[3].getAttribute('aria-selected'), 'true', 'Sources is the selecte
 assert.deepEqual(t.slice(0, 3).map(x => x.getAttribute('aria-selected')), ['false', 'false', 'false']);
 assert.deepEqual(t.map(x => x.getAttribute('tabindex')), ['-1', '-1', '-1', '0'], 'one roving stop, on Sources');
 assert.equal(visiblePanels().length, 1);
+assert.equal(document.activeElement, origins.board.link,
+             'the exact initiating Plan-link control is focused again');
+assert.equal(dialogEl().scrollTop, 177, 'the prior dialog scrollTop is restored');
 const controls = document.getElementById(t[3].getAttribute('aria-controls'));
 assert.equal(controls, ps[3], 'the selected tab is connected to its own panel');
 assert.equal(controls.getAttribute('data-pvs-section'), 'sources');
@@ -384,12 +396,16 @@ assert.equal(document.activeElement, origins.board.trigger);
 
 fire(origins.board.trigger); await flush();      // an explicit fresh open of the same row
 assert.equal(sectionOf(), 'structure', 'a fresh open still defaults to Structure');
+assert.equal(document.activeElement, closeBtn(), 'a fresh open keeps the normal focus');
+assert.equal(dialogEl().scrollTop, 0, 'a fresh open still starts at the top');
 fire(document.querySelector('[data-pvs-browse="next"]')); await flush();   // while the dialog is open
 assert.equal(dialogEl().querySelector('#pvs-dialog-title').textContent, 'SECOND');
 assert.equal(sectionOf(), 'structure', 'the next candidate still opens on Structure');
+assert.equal(dialogEl().scrollTop, 0, 'stepping candidates still starts at the top');
 fire(document.querySelector('[data-pvs-browse="previous"]')); await flush();
 assert.equal(dialogEl().querySelector('#pvs-dialog-title').textContent, 'BOAR');
 assert.equal(sectionOf(), 'structure', 'stepping back carries no restore either');
+assert.equal(dialogEl().scrollTop, 0, 'stepping back still starts at the top');
 fire(closeBtn()); await flush();
 """,
     )
@@ -398,11 +414,14 @@ fire(closeBtn()); await flush();
 def test_return_falls_back_to_structure_when_the_section_is_gone():
     """The recorded name is a hint, never an authority: if the recorded group is no longer
     a visible panel of this same body when the reader comes back, the detail opens on
-    Structure instead of a dangling or failed selection."""
+    Structure instead of a dangling or failed selection — and with it the position
+    restore degrades too: Close focus, the dialog at the top."""
     _run(
         _PREP + _OPEN
         + """
 fire(tabs()[3]); await flush();                  // leave from Sources, as the panel invites
+origins.board.link.focus();
+dialogEl().scrollTop = 177;
 fire(origins.board.link); await flush();
 assert.equal(window.PVSetupReturn.available(), true);
 origins.board.groups.find(p => p.getAttribute('data-pvs-section') === 'sources').remove();
@@ -421,6 +440,79 @@ assert.equal(t[0].getAttribute('aria-selected'), 'true');
 assert.equal(visiblePanels().length, 1);
 assert.equal(t.every(x => document.getElementById(x.getAttribute('aria-controls'))), true,
              'every surviving tab is still connected');
+assert.equal(document.activeElement, closeBtn(),
+             'a return whose section is gone keeps the fresh-open focus');
+assert.equal(dialogEl().scrollTop, 0, 'a return whose section is gone opens at the top');
+""",
+    )
+
+
+def test_return_position_degrades_when_the_link_is_hidden_retargeted_or_replaced():
+    """The focus/scroll restore is bound to the exact same-plan, visible, in-body link the
+    reader left from. Hidden or retargeted while in Plans, the return still reopens the
+    SAME candidate on its restored section, but keeps the fresh-open behaviour: Close
+    focused, the dialog at the top — never a stale, moved-out or moved-into control."""
+    _run(
+        _PREP + """
+const second = sectioned(candidate('board', 'SECOND', 'OTHER-BULL-20260811'));
+candGrid.append(second.row); await flush();
+""" + _OPEN
+        + """
+fire(tabs()[3]); await flush();
+origins.board.link.focus();
+dialogEl().scrollTop = 177;
+fire(origins.board.link); await flush();
+assert.equal(document.body.dataset.pvsPlanLinkResult, 'ok');
+assert.equal(window.PVSetupReturn.available(), true);
+
+origins.board.link.setAttribute('hidden', '');   // hidden while in Plans
+assert.equal(window.PVSetupReturn.available(), true, 'the link is not row custody');
+assert.equal(window.PVSetupReturn.run(), true);
+await flush();
+assert.equal(sectionOf(), 'sources', 'the section restore keeps its own contract');
+assert.equal(document.activeElement, closeBtn(), 'a hidden link is never focused');
+assert.equal(dialogEl().scrollTop, 0, 'a hidden link leaves the dialog at the top');
+origins.board.link.removeAttribute('hidden');
+fire(closeBtn()); await flush();
+assert.equal(document.activeElement, origins.board.trigger);
+
+fire(origins.board.trigger); await flush();      // again, from a live, visible, same-plan link
+fire(tabs()[3]); await flush();
+origins.board.link.focus();
+dialogEl().scrollTop = 88;
+fire(origins.board.link); await flush();
+assert.equal(document.body.dataset.pvsPlanLinkResult, 'ok');
+assert.equal(window.PVSetupReturn.available(), true);
+origins.board.link.setAttribute('data-pvs-plan-target', 'pv-OTHER-PLAN');   // retargeted
+assert.equal(window.PVSetupReturn.run(), true);
+await flush();
+assert.equal(sectionOf(), 'sources');
+assert.equal(document.activeElement, closeBtn(), 'a retargeted link is never focused');
+assert.equal(dialogEl().scrollTop, 0, 'a retargeted link leaves the dialog at the top');
+fire(closeBtn()); await flush();
+""",
+    )
+
+
+def test_access_loss_while_in_plans_ends_the_journey_and_restores_nothing():
+    """A tier/access turn while the reader is in Plans ends the journey outright: the run
+    reports failure, no dialog is reopened and no focus or scroll is restored anywhere."""
+    _run(
+        _PREP + _OPEN
+        + """
+fire(tabs()[3]); await flush();
+origins.board.link.focus();
+dialogEl().scrollTop = 177;
+fire(origins.board.link); await flush();
+assert.equal(window.PVSetupReturn.available(), true);
+origins.board.row.classList.add('mx-tier-hidden');
+await flush();
+assert.equal(window.PVSetupReturn.available(), false, 'access loss clears the journey');
+assert.equal(window.PVSetupReturn.run(), false);
+await flush();
+assert.equal(dialogEl().open, false, 'no dialog is reopened');
+assert.equal(sectionOf(), null, 'no panel is shown');
+assert.equal(document.querySelectorAll('.pvs-section-tabs').length, 0, 'no generated layer at all');
 """,
     )
 

@@ -6903,8 +6903,21 @@
     // Home again on the SAME candidate: hand the section the reader left from back to
     // its own body. Any other open path (trigger, Previous/Next) passes nothing.
     if (open(j.trigger, j.details, j.row, j.section) !== true) { clearJourney(); return false; }
+    restorePosition(j);                       // same reader, same dialog reading position
     clearJourney();                           // home again: nothing left to return from
     return true;
+  }
+  // Restore the original Plan control only while it is reachable in the returned section.
+  function restorePosition(j) {
+    var link = j.link, body = active && active.moved.length === 1 ? active.moved[0].node : null;
+    if (j.section !== 'sources' || currentSectionName() !== j.section) return;
+    if (!link || !body || j.dialogScrollTop === null) return;
+    if (!link.isConnected || link.disabled || !body.contains(link)) return;
+    if (link.closest('[hidden],[aria-hidden="true"],.mx-tier-hidden,.mx-tier-blurred')) return;
+    if (link.getAttribute('data-pvs-plan-target') !== j.targetId) return;
+    if (!link.getClientRects().length) return;
+    link.focus({preventScroll: true});
+    dialog.scrollTop = j.dialogScrollTop;
   }
   function open(trigger, details, row, restoreSection) {
     if (!row.isConnected || !row.getClientRects().length || !trigger.getClientRects().length ||
@@ -7014,7 +7027,9 @@
         return {trigger: active.trigger, details: active.details, row: active.row,
           stamp: active.sourceStamp, href: active.href, ticker: active.ticker,
           x: active.x, y: active.y, mode: origin && origin.mode, view: origin && origin.view,
-          section: currentSectionName()};
+          section: currentSectionName(),
+          link: (origin && origin.link) || null,          // the exact Plan-link control, or none
+          dialogScrollTop: dialog && dialog.open ? dialog.scrollTop : null};   // the dialog's reading position
       }
       // Re-clicking the same candidate's link (a double click, or coming back for the
       // same record) has no live detail to snapshot; the bound origin has not changed,
@@ -7037,7 +7052,8 @@
       journey = {trigger: snap.trigger, details: snap.details, row: snap.row, stamp: snap.stamp,
         href: snap.href, ticker: snap.ticker, x: snap.x, y: snap.y,
         mode: snap.mode || 'candidates', view: snap.view || 'grid', targetId: targetId, planCard: planCard,
-        section: snap.section || null};
+        section: snap.section || null, link: snap.link || null,
+        dialogScrollTop: typeof snap.dialogScrollTop === 'number' && snap.dialogScrollTop >= 0 ? snap.dialogScrollTop : null};
       mountJourney();
       return true;
     },

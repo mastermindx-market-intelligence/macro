@@ -20728,7 +20728,8 @@ if (document.readyState === 'loading') {
        nothing is claimed until the exact target is confirmed further down. */
     var pending = window.PVSetupReturn ? window.PVSetupReturn.snapshot({
       mode: window.USProphetSource ? window.USProphetSource.get() : null,
-      view: window.USStockTable && window.USStockTable._getView ? window.USStockTable._getView() : null}) : null;
+      view: window.USStockTable && window.USStockTable._getView ? window.USStockTable._getView() : null,
+      link: button}) : null;
     if (dialog && dialog.open) {
       var close = dialog.querySelector('.pvs-close');
       if (close) close.click();
