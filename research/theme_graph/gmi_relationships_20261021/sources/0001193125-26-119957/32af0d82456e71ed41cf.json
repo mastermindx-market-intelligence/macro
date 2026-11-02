@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-23T21:04:45Z",
+ "accession": "0001193125-26-119957",
+ "cik": "0001836833",
+ "doc_byte_length": 5134238,
+ "doc_sha256": "c5e0baac3207f49902112b4d45c345456e5353ce413e032aa573ded5160068d8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-23",
+ "form": "10-K",
+ "period_of_report": "2026-01-31",
+ "primary_document": "pl-20260131.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1355095,
+  "byte_start": 1354684,
+  "normalized": "As of January 31, 2026, our principal contractual obligations and commitments include lease obligations for real estate and ground stations, convertible note repayment requirements, and minimum purchase commitments for hosting services from Google, LLC. Refer to Notes 8, 10, 13, and 14 to our consolidated financial statements in Part 8 of this Form 10-K for more information regarding these cash requirements.",
+  "normalized_sha256": "32af0d82456e71ed41cfd19432cde205fb90c9a7b45d2b422fe49a1e5b61cce7",
+  "raw": "As of January 31, 2026, our principal contractual obligations and commitments include lease obligations for real estate and ground stations, convertible note repayment requirements, and minimum purchase commitments for hosting services from Google, LLC. Refer to Notes 8, 10, 13, and 14 to our consolidated financial statements in Part 8 of this Form 10-K for more information regarding these cash requirements.",
+  "raw_sha256": "32af0d82456e71ed41cfd19432cde205fb90c9a7b45d2b422fe49a1e5b61cce7"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1836833/000119312526119957/pl-20260131.htm",
+ "xbrl_contexts": []
+}
