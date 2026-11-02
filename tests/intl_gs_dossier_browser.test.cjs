@@ -272,3 +272,36 @@ test('GB1 graph-boundary chip present, non-empty value and text, member + out-of
     await browser.close();
   }
 });
+
+test('F12 graph-boundary chip shares the Typed-edges head row, never a card-wide row', async () => {
+  // pin1: the chip span is the trailing element of ONE head row
+  // (.intl-gs__edges__head), so its top must sit within that row's box and
+  // its width must stay a chip, not the card-wide line-box row it was as a
+  // sibling of the band head.
+  const browser = await chromium.launch({headless: true});
+  try {
+    const context = await browser.newContext({viewport: {width: 1440, height: 900}});
+    const page = await context.newPage();
+    await page.route('**/*', route => serveRoute(route, new URL(route.request().url()).pathname));
+    await page.goto('http://fixture.local/intl.html?view=dossier&market=JP', {waitUntil: 'load'});
+    await page.waitForTimeout(300);
+    const chip = activeScope(page).locator('article:not([hidden]) [data-graph-boundary]').first();
+    assert.ok(await chip.count() >= 1, 'JP: chip present on the visible article');
+    const layout = await chip.evaluate(el => {
+      const head = el.closest('.intl-gs__edges__head');
+      const card = el.closest('.intl-gs__card');
+      return {chipTop: el.getBoundingClientRect().top,
+              headBottom: head ? head.getBoundingClientRect().bottom : null,
+              chipWidth: el.getBoundingClientRect().width,
+              cardWidth: card ? card.getBoundingClientRect().width : null};
+    });
+    assert.ok(layout.headBottom !== null, 'head row wrapper .intl-gs__edges__head present');
+    assert.ok(layout.chipTop < layout.headBottom,
+      `chip top ${layout.chipTop} must sit within the head row (bottom ${layout.headBottom})`);
+    assert.ok(layout.chipWidth < layout.cardWidth * 0.5,
+      `chip width ${layout.chipWidth} must stay under 50% of the card (${layout.cardWidth})`);
+    await context.close();
+  } finally {
+    await browser.close();
+  }
+});

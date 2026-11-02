@@ -448,6 +448,26 @@ def test_a7_specimen_isolation(tmp_path):
                         and any(isinstance(value, _ast.Constant) and value.value is True
                                 for value in node.values)):
                     hits.append(f"{path.relative_to(REPO)}:{node.lineno} dict")
+                elif isinstance(node, (_ast.FunctionDef, _ast.AsyncFunctionDef)):
+                    # W2A r4b R-09 (b8 parity): a ``specimen=True`` FUNCTION
+                    # DEFAULT is the same defect — walk args.defaults
+                    # (right-aligned over posonly+positional) and kw_defaults
+                    # so the default form cannot hide on any lib/ module.
+                    params = [*node.args.posonlyargs, *node.args.args]
+                    named = params[len(params) - len(node.args.defaults):]
+                    for arg, default in zip(named, node.args.defaults):
+                        if (arg.arg == "specimen"
+                                and isinstance(default, _ast.Constant)
+                                and default.value is True):
+                            hits.append(
+                                f"{path.relative_to(REPO)}:{default.lineno} default")
+                    for arg, default in zip(node.args.kwonlyargs,
+                                            node.args.kw_defaults):
+                        if (arg.arg == "specimen" and default is not None
+                                and isinstance(default, _ast.Constant)
+                                and default.value is True):
+                            hits.append(
+                                f"{path.relative_to(REPO)}:{default.lineno} default")
         return hits
 
     assert not _python_specimen_hits(), _python_specimen_hits()

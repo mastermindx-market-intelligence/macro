@@ -247,7 +247,15 @@
             "SNOW",
             "CAT",
             "BAC",
-            "GOOGL"
+            "GOOGL",
+            "AMGN",
+            "ARWR",
+            "GILD",
+            "NBIX",
+            "EXEL",
+            "FATE",
+            "NTLA",
+            "CRSP"
           ]
         },
         "form_type": {
@@ -385,7 +393,15 @@
             "SNOW",
             "CAT",
             "BAC",
-            "GOOGL"
+            "GOOGL",
+            "AMGN",
+            "ARWR",
+            "GILD",
+            "NBIX",
+            "EXEL",
+            "FATE",
+            "NTLA",
+            "CRSP"
           ]
         },
         "form_type": {

@@ -33,12 +33,12 @@
       <p class="cyc-sub"><span class="l-en">{% if _n %}{{ _n }} boom-bust cycles on one clock —
         {{ _m }} measured from their own backing tape, {{ _f }} curated frames.{%- else -%}
         Boom-bust cycles on one clock. {% endif %}<b>MEASURED</b> cards plot the engine's own
-        oscillator, turns and projection from the live backing tape; <b>FRAME</b> cards show only the curated turning-point
+        oscillator, turns and projection from the dated backing tape; <b>FRAME</b> cards show only the curated turning-point
         history — structural clocks, never a hand-typed position. So you can see exactly where each measurable asset sits,
         and how the long clocks line up beside them. Projections here are windows, not certainties — re-drawn nightly as new
         data lands.</span><span class="l-zh">{% if _n %}{{ _n }} 个繁荣—萧条周期同处一张时钟之上{#
         #}——其中 {{ _m }} 个由自身底层数据带测量，{{ _f }} 个为人工整理的框架。{%- else -%}{#
-        #}繁荣—萧条周期同处一张时钟之上。{% endif %}<b>已测量</b>卡片由底层数据计算引擎自身的振{#
+        #}繁荣—萧条周期同处一张时钟之上。{% endif %}<b>已测量</b>卡片由带日期的底层数据计算引擎自身的振{#
         #}荡指标、拐点与投影；<b>框架</b>卡片仅展示人工整理的拐点历史——结构性时钟，绝无人工录入的位置。让你清楚看到每类可测量资产的位置，以及长周期时钟如何在旁排布。这里的预测是{#
         #}时间窗口，而非确定性结论——每晚随新数据重新计算。</span></p>
     </div>
@@ -46,6 +46,17 @@
       <span class="cyc-asof"><span class="l-en">As of</span><span class="l-zh">截至</span> <span id="cyc-asof">…</span></span>
     </div>
   </header>
+
+  {% with lock_renderer='cycle_app.js', lock_fill='cyc-cards',
+    lock_hide='.cyc-hero-hd,#cyc-stale-banner,#cyc-groups,'
+    ~ '#cyc-chips,#cyc-chart,#cyc-detail,'
+    ~ '.cyc-cards-hd>h2,.cyc-cards-hd>.sub,#cyc-cards,.cyc-asof',
+    lock_en="Members get where each cycle sits on one clock, "
+    ~ "each cycle's scorecard, and the projection drawn "
+    ~ "from its backing tape.",
+    lock_zh='会员可查看各周期在同一张时钟上的位置、每个周期的记分卡，以及由其底层数据得出的推算。' %}
+  {% include "_cycle_locked_slot.html.j2" %}
+  {% endwith %}
 
   <section class="cyc-stage">
     <div class="cyc-hero">

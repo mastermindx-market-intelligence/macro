@@ -288,3 +288,137 @@ All PR facts below verified 2026-10-31 via `gh pr view <n> --json state,mergeCom
   cycle, both-themes browser proof) remain PARTIAL pending the nightly render + served-journey proof; row 16
   correction propagation moved off GAP but its §14 acceptance rides IM18 completion; #10341 raised the
   international-dislocation-explorer CI budget 8→15 (20:08:34Z) separately from the W2A budget raise.
+
+## Addendum 2026-11-01 — §14 closure after gb1/pin1
+
+Appended by the seat (Fable Meta-CEO d7c4f490, records r8, seat-direct after the fabric refused admission on
+every host — ubuntu0 `host_disk_below_staging_reserve`, a capacity wait under the 2026-10-31 no-disk-reclaim
+law). The measured body and the post-census section above are untouched. PR facts verified 2026-11-01 04:4xZ in
+ONE batched read (`gh api graphql`, aliases per PR → state, headRefOid, mergeCommit.oid, mergedAt):
+
+| PR | head | main | mergedAt (UTC) |
+|---|---|---|---|
+| #10288 W2A IM13 scanner + coverage | 74e28ce960bfe2608de1aeeeba8221f75a73e4a2 | 92881169bb888435ab84b40740212a1fb0876a77 | 2026-10-31T21:54:40Z |
+| #10353 records r7 | ed9b641d62ab35ef997307a34a31a6d555ce6905 | 83a77d8533c6f885f6b061207d017f27cf485a78 | 2026-10-31T22:57:30Z |
+| #10354 W2B gb1 graph-boundary label | ecbd01fb8cfb36b4972fca4b1b183249a0759d50 | aba326f385ea19672e1a87f47e97c25e01c3b6d1 | 2026-11-01T01:03:18Z |
+| #10355 pin1 polish | 89d7be656c772cd051f31269a749df9b2a11684f | 4e1ae041040e638028f9b189fe6dfe932f4eb5b1 | 2026-11-01T02:32:05Z |
+| #10341 dislocation-explorer budget 8→15 (other author) | 51b16608d57592b52d6c4b93877d65b2590a7c95 | dbaf1e07bcccf689a740ad3f1281c59ff1b9d946 | 2026-10-31T20:08:34Z |
+
+**Served proof (seat curl 2026-11-01 04:4xZ, independent of any CI watcher):** `https://www.mastermind-x.com/intl.html`
+HTTP/2 200, `Last-Modified: Sun, 01 Nov 2026 03:12:25 GMT`, etag `dmjjnurxkzx7dhgu2`, content-length 22649978;
+served `<span data-graph-boundary="…">` chips = **640** (530 `structural_research` + 110 `structural_graph_member`,
+0 `qualified_candidate` — correct, since production passes `edges=[]` / `edge_basis: "no_admitted_edge_set"` and no
+qualified candidate can exist without an admitted edge producer). The pin1 head-row wrapper `intl-gs__edges__head`
+counted **0** at probe time: the 4e1ae041 render was still queued behind render run 41259434450 (in_progress since
+02:3xZ), so the pin1 layout polish is MERGED but **not yet served**. The served page carries no commit stamp;
+attribution to aba326f3 is by content (gb1 chip present, pin1 wrapper absent). This is a content-level
+PRODUCTION_PROOF for row 4, not the entitled-browser journey proof row 18 requires.
+
+### Rows whose status changes
+
+| # | Test | Was | Now | Citation |
+|---|---|---|---|---|
+| 4 | Graph boundary | PARTIAL | **DONE** | Engine label path `engine/intl_global_graph_boundary.py` (#10286 → d444ae67, gh-verified in the rec7 #10353 record); display: W2B dossier Typed-edges chip + EN/ZH footnote under DEC:INTL-GS-GB1-GRAPH-BOUNDARY-CHIP, gb1 #10354 → aba326f385ea19672e1a87f47e97c25e01c3b6d1 (tests T1–T7 in `tests/test_intl_global_graph_boundary.py` + `tests/test_intl_gs_dossier.py`, `[data-graph-boundary]` browser assertion in `tests/intl_gs_dossier_browser.test.cjs`, 64/64 evidence cells + 8 crops both themes); head-row placement pin1 #10355 → 4e1ae041040e638028f9b189fe6dfe932f4eb5b1; served: 640 labelled chips on the live page (above). Masterplan test: "an out-of-graph market displays structural research or a qualified candidate label, never an invented graph score" — 530 structural-research labels served, no score drawn, no edge implied. |
+| 16 | Correction propagation | GAP | **PARTIAL** | `engine/intl_global_correction.py` on main via #10276 → cd195298c0748e06c80c11614c7b47c78a7e2835 (2026-10-31T09:34:28Z, gh-verified in the rec7 #10353 record): corrected source → dependent invalidation → visible revision, saved evidence never erased, at engine level. Missing for DONE: the surface/saved-investigation integration (rides IM18 + IM08/IM09 custody #8754). |
+
+Rows re-examined and left unchanged (no cited PR closes the "Missing for DONE" column): 14 Cross-surface consistency
+(PARTIAL — #10286 added the cross-surface identity test; the unified identity/first-qualified/revision contract
+across International + country + US stays with the Terminal/US + ontology owners, ORCH-5 F4); 18 Served-path proof
+(PARTIAL — the seat curl is anonymous HTTP 200 + content; "HTTP 200 alone fails", entitled-browser initialise /
+navigate / state-preserve on the served URL is still unproven); 19 Publication retention (PARTIAL — the push-render
+lane published the gb1 chip once at 03:12:25Z; the normal *subsequent* publisher cycle retaining it has not yet
+run); 20 Legacy continuity (PARTIAL — `tests/intl_workspace_legacy_navigation.test.cjs` is CI-owned; a green-run
+quote is the remaining step, no navlink was touched by any merged PR); 21 Bilingual/theme semantics (PARTIAL — the
+W2B dossier board has both-theme, EN/ZH, 1440/390 evidence at gb1b/pin1 (`mockups/evidence/intl-gs-w2b/`); the
+other GS boards' served both-themes/narrow proof is not yet recorded).
+
+### Recount
+
+Original table: **14 DONE / 6 PARTIAL / 1 GAP** (PARTIAL rows 4, 14, 18, 19, 20, 21; GAP row 16).
+After this addendum: **15 DONE / 6 PARTIAL / 0 GAP** — row 4 → DONE; row 16 GAP → PARTIAL; PARTIAL set is now
+rows 14, 16, 18, 19, 20, 21.
+
+### Rows that stay PARTIAL — owner
+
+- 14 Cross-surface consistency — Terminal/US + ontology owners (ORCH-5 F4); IM18.
+- 16 Correction propagation — IM18 surface + IM08/IM09 custody #8754 (never touched by this programme).
+- 18 Served-path proof — entitled-browser journey on the served URL (seat/records; needs a playwright-capable
+  host or the CI browser job pointed at the live URL).
+- 19 Publication retention — the next normal publisher cycle (nightly) retaining the GS views; records.
+- 20 Legacy continuity — one CI-green quote of the legacy navigation suite; records.
+- 21 Bilingual/theme semantics — served both-themes/narrow proof for Scanner / Dislocations boards; records.
+- Deferred, not §14 rows: R2-01 scanner-abstain focus-state evidence cell; F10 structural CI-budget fetch fix (both
+  international jobs do a full checkout AND a separate ~4-min `git fetch origin main` on hosted runners — shallow /
+  base-only fetch, own PR); Transmission tab `not_built` BY DESIGN (no emission-permitted candidate source).
+
+## Addendum 2026-11-01 (r9) — pin1 served, legend basis, F10
+
+- **pin1 served (PRODUCTION_PROOF for row 4 placement).** Seat probe 2026-11-01 06:1xZ of
+  `https://www.mastermind-x.com/intl.html`: HTTP/2 200, `Last-Modified: Sun, 01 Nov 2026 05:21:32 GMT`,
+  etag `dmjmeq11txpydibom`; `intl-gs__edges__head` wrappers = **640**, `data-graph-boundary` chips = **640**.
+  The chip now sits in the Typed-edges head row (pin1 #10355 → 4e1ae041); deferred F12 is closed in production.
+  Row 4 is therefore served in full (engine #10286, display #10354, placement #10355). Counts unchanged:
+  15 DONE / 6 PARTIAL / 0 GAP.
+- **Legend basis for the 2026-11-01 row-4 flip (review INTL-GS-REC8 F-2).** The 2026-10-31 legend defines DONE as a
+  test that ran green in this worktree with its tail quoted. The row-4 flip in the first 2026-11-01 addendum rests
+  instead on tests merged through CI (gb1/pin1 suites in #10354/#10355, CI green at merge) plus the served chips;
+  no local green tail was quoted. The basis is disclosed here; the count is unaffected.
+- **records r8 merged.** #10362 → main `f2a7fe7436a755f47c584a1fcfb37b7ef6a85ba1` (2026-11-01T06:03:02Z), squash
+  pinned to 8dbc2d5c after review INTL-GS-REC8 `PASS_WITH_NOTES` (native Opus read-only auditor; fabric refused).
+- **F10 (structural CI-budget fetch fix, own PR).** PR #10367 OPEN (draft) on claude/intl-gs-f10-canonical-main: head 5ac89fd395432d688e13e583d1c15591adba58b8 (follow-up to the reviewed 8f1b1d5e; review INTL-GS-F10 PASS_WITH_NOTES with one SHOULD-FIX fixed in the follow-up; re-read INTL-GS-F10-AUDIT-2 PASS_WITH_NOTES at 5ac89fd3 with two test-hygiene NITs N5/N6 deferred to a later test PR), CI rollup pending at 06:4xZ; merge seat-only pinned to 5ac89fd3 after a green rollup including the international-dislocation-explorer check. Design: the `international-dislocation-explorer` legacy
+  job acquires canonical main through `scripts/run_ci_pack.prepare_canonical_main` (blob-filtered, tag-free, fail
+  closed) with a new validated `frozen_paths` keyword naming the three objects its guard compares, instead of an
+  unrestricted post-checkout base fetch (~4 min on hosted runners). Budgets 15 / 20 unchanged. Not a §14 row.
+- **GB1A ruling date (review F-3).** `DEC-INTL-GS-GB1A-CLOSURE-WIDENING-ACCEPTED` records `decided_at: 2026-10-31`;
+  the ruling was made in the seat's 2026-10-31 local session and applied before the #10354 merge at
+  2026-11-01T01:03:18Z; the exact UTC minute is not recorded, so the UTC calendar date may be 2026-11-01.
+
+## Addendum 2026-11-01 (r10) — F10 merged, test-hygiene follow-up merged, R2-01 merged, §14 rows 20/21 closed, row 19 stays PARTIAL
+
+- **F10 (structural CI-budget fetch fix).** PR #10367 MERGED → main c133b698b4960f5a2a8b4540e6b164c3c7c23e1b at 2026-11-01T07:40:51Z (squash pinned 5ac89fd3; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed). Reviews: INTL-GS-F10 `PASS_WITH_NOTES` at 8f1b1d5e (one
+  SHOULD-FIX fixed in the follow-up) and INTL-GS-F10-AUDIT-2 `PASS_WITH_NOTES` at 5ac89fd3 (native Opus read-only
+  auditors; fabric refused on every host). The `international-dislocation-explorer` legacy job now acquires canonical
+  main through `prepare_canonical_main(..., frozen_paths=...)`; budgets 15 / 20 unchanged; the job's PR-side time is
+  to be re-measured before any budget change (on 2026-11-01 one read of the F10 ci run's job list was deferred by the
+  CI read cooldown and a paginated read was refused by the shared-quota guard; not retried; next receiver: the F10 `ci` run 41280629630 (pull_request, success, #10367 head 5ac89fd3): read its job list in ONE unpaginated page (`per_page=100`, no `--paginate`), outside the read cooldown; the paginated shape was refused by the shared-quota guard and is not to be repeated). Not a §14 row.
+- **F10 test hygiene (AUDIT-2 NITs N5/N6).** PR #10376 MERGED → main bacc2d765488de853291dc0f8d7c545d3b3ca29a at 2026-11-01T09:29:37Z (squash pinned d50f5839; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed). The first PR (#10370) was based on F10's branch and was
+  auto-closed by GitHub three seconds after the F10 squash merge deleted that branch (not retargeted); the identical
+  reviewed blobs were re-homed onto main as a fresh commit. Review INTL-GS-F10-HYGIENE: AUDIT-1 `FAIL` at db8183ef
+  (`monkeypatch.delenv` records no undo for an absent key, so the first isolation attempt moved the leak to module
+  end) → repaired with explicit snapshot/restore yield fixtures in both pack test modules → AUDIT-2 `PASS` at
+  7eae154c (auditor's own leak probe clean); carries by content identity. Two tests now prove `execute_pack`
+  publishes the plan tree to the legacy step environment and never overrides an explicit `TESTED_TREE_SHA`
+  (mutant-discriminating). Runtime unchanged.
+- **R2-01 (W2A NIT — scanner-abstain focus crop).** PR #10384 MERGED → main 3d8ad3eb4c027126174fc2bf9f75c74f5bb04709 at 2026-11-01T09:36:34Z (squash pinned ee5ce58a; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed; review INTL-GS-R2-01 PASS). Sibling pack
+  `mockups/evidence/intl-gs-w2a/scanner-abstain-focus/` (8 rest + 8 real focus cells, tool 1.4.0, fixture site,
+  `--as-of 2026-11-01T08:00:00Z`). Focus target = the scanner panel's no-data disclosure
+  `details.intl-gs__nodata > summary.intl-gs__disclosure` (`tabindex=0`), the only focusable element in the
+  abstain-state scanner panel; the scanner pack's `a[data-gs-select-market]` exists on the abstain page only inside
+  the hidden dossier panel, so a first run with it was refused by the driver on all 8 cells and discarded. Second run:
+  force gaps `[]`, console errors `[]`, failed responses `[]`. Review INTL-GS-R2-01 (native Opus read-only auditor)
+  `PASS` with notes: ring present on all 8 focus cells, absent on all 8 rest cells; scroll-induced background /
+  floating-button deltas identical to the accepted scanner pack; the selector matches 40 summaries but the ring landed
+  on the visible one. Evidence only; the reviewed `scanner-abstain` pack is untouched. Not a §14 row.
+- **§14 row 20 (Legacy continuity) → DONE.** The CI-owned browser suites ran on a playwright-capable host (seat Mac,
+  Node playwright@1.63.0 = the same playwright version CI pins at `.github/ci/legacy-jobs.yml:10665`; `PLAYWRIGHT_CHROMIUM_CHANNEL=chrome` = the system Chrome channel, NOT CI's bundled Chromium from `npx playwright install --with-deps chromium`): `tests/intl_workspace_legacy_navigation.test.cjs`
+  **14 pass / 0 fail** (12.4 s) and `tests/intl_workspace_library_controller.test.cjs` **18 pass / 0 fail** (60.5 s), on
+  top of the 11 green `tests/test_intl_workspace_integration.py` cases already recorded; navlinks untouched. This is
+  the exact gap the row named ("a green run quote of the cjs suite (CI or a playwright-capable host)").
+- **§14 row 21 (Bilingual/theme semantics) → DONE.** Records r8 had tightened the open gap to **served** both-themes/narrow proof for the Scanner / Dislocations boards; this closes it on a served pack: `mockups/evidence/intl-gs-r21-served/` — `scripts/capture_page_evidence.py` 1.4.0 with `--base-url https://mastermind-x.com` (`target.kind=base_url`; a live origin does not disclose the revision it serves), routes `/intl.html?view=scanner&market=JP` and `/intl.html?view=dislocations`, **16/16 cells** = dark+light × desktop(1440×900)+mobile(390×844) × en+zh, anonymous access, `--as-of 2026-11-01T10:00:00Z`, console errors `[]`, failed responses `[]`, page-level horizontal overflow `false` at both viewports, while the manifest's heuristic `metrics.by_viewport.mobile.elements_wider_than_viewport` is 37 on both pages (elements wider than 390 px without page-level overflow; recorded, not interpreted). `crops/` (8 PNGs + `crops.json` recording route, selector, visible index and bounding box): the scanner market table at 1440 (`table.intl-gs__table--scanner`, 794×1134) and the phone market cards at 390 (`.intl-gs__mcards`; the table is `display:none` at ≤900 by design), plus the dislocation ranking table (`table.intl-dislocations__table`, 1210×472 at 1440, 234×2162 at 390), each in dark and light. Seat read of the crops (corrected after AUDIT-2): signed direction keeps its sign across both themes and **follows the locale colour convention** — en up = green / down = red, zh up = red / down = green (Australia +2.42 % local / +4.33 % USD; Japan −6.23 % / −6.40 %; in the zh 390 cards Euro area USD +0.57 % and local +2.24 % are red, FX −1.63 % is green) — and that mapping is identical in dark and light, so severity does not flip between themes. At 390 the Qualified / Display-permitted / Delayed-end-of-day qualifiers render as chips, column-level abstain renders as 未准入 labels, and the price-level abstain row (India, "Incumbent qualification withheld") sits behind the 展开全部 7 expand control, so it is not inside the narrow crop (it is in the 1440 crops). Disclosed bar change: the fixture-site packs `intl-gs-w3u/` (`site_dir`, crops present) and `intl-gs-w4b/` (`site_dir`, **no crops directory**) remain design-time evidence; the served pack is what closes the row. Vocabulary tests unchanged (98 + 11 green).
+- **§14 row 19 (Publication retention) stays PARTIAL.** Correction of the premise: `render.yml` is NOT the only publisher of `site/` — it is triggered by `workflow_dispatch` and by pushes to main **filtered to `templates/**` with exclusions** (the top-level `templates/*.html|css|js|json|txt|svg`, the public-chrome partials, plans/seo_base/support/unsubscribe) plus the builder and post-render sweep script paths the file lists, while `daily.yml` (nightly cron 22:30 / 23:30 UTC) commits `site/` paths, `closing-bell.yml` (weekday cron 20:05 / 21:05 UTC) commits a provisional `site/`, `asia-close.yml` runs morning crons, `public-render.yml` renders the public/marketing pages on `workflow_dispatch` AND on pushes to main touching `config/plans.yml`, `config/brain.yml`, the public builders and the top-level / public-chrome templates that render.yml excludes (the fast lane render.yml hands those paths to), and `engine-render.yml` renders on `engine/**` pushes. No `.github/workflows/pages.yml` exists at bacc2d76 — the render.yml comment naming it is stale (AUDIT-2 correction). The gb1 chip was served at 2026-11-01T03:12:25Z (640 spans, 530 `structural_research` + 110 `structural_graph_member`) and the pin1 render served 640 head-row wrappers at 05:21:32Z — but pin1 shipped a change to the same feature, so it is not the "normal *subsequent* publisher cycle" r8 named, and the 530/110 split was not re-measured at 05:21. Missing for DONE: one probe of `mastermind-x.com/intl.html` after the next nightly (`daily.yml`) or an unrelated render showing the Graph-boundary chip with its source-qualification split and the GS views (scanner / dislocations / coverage) retained. R2-01 #10384 (merged 09:36:34Z) touched only `mockups/evidence/`, so it triggered no publisher.
+- **§14 row 18 (Served-path proof) stays PARTIAL.** `tests/intl_gs_foundation_browser.test.cjs` **18 pass / 0 fail**
+  (194.7 s) on the same host covers the anonymous browser half; the entitled-browser journey still requires a human
+  sign-in (Chris) and is not claimed.
+- **§14 recount after this addendum: 17 DONE / 4 PARTIAL (rows 14, 16, 18, 19) / 0 GAP.** Rung reached: MERGED for every
+  lane including R2-01 (#10384 at 09:36:34Z), PRODUCTION_PROOF for row 4 content, not ACCEPTANCE by the commissioning authority.
+- **Audit trail.** Independent read-only review INTL-GS-REC10 AUDIT-1 returned `FAIL` on the first r10 commit dd66d75d (3 major: stale workstream Remaining list; "MERGED for every lane" while #10384 was open; row 19 closed on a wrong publisher premise without a re-measured split; 4 minor: row 21 fixture-not-served + W4B without crops; row 20 CI-parity wording; F10 workstream clause dropped review facts; the dislocation re-measure named no run id). Every finding is applied in the first pinned follow-up (c63896bc); the first commit was never merged. AUDIT-2 on c63896bc returned `FAIL` on wording only (major: the crop reading said colour was kept across locales when the crops show the locale convention inverting it; minor: a non-existent `pages.yml` and an under-stated render.yml filter; the 390 abstain / 37-wide-elements nuance). Those three are applied in the second pinned follow-up (8cfd3acd); the artifacts, numstat, recount and the row-21 closure itself were PASS in AUDIT-2. AUDIT-3 on 8cfd3acd: deviations 1 and 3 PASS, numstat and audit trail PASS, one new minor false clause ("public-render.yml is dispatch-only" — it also runs on filtered main pushes) → corrected in this third pinned follow-up with the auditor's own wording, re-confirmed by the same auditor.
+
+## Addendum 2026-11-01 (r11) — records r10 merged, §14 row 19 DONE, dislocation job re-measured; programme checkpoint
+
+- **Records r10.** PR #10388 MERGED → main 24cea4f7dc48e33c6b103567c7813160b093d110 (GitHub mergedAt 2026-11-01T09:28:14Z; squash pinned d2ac0c56; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed; review chain INTL-GS-REC10 AUDIT-1 `FAIL` → AUDIT-2 `FAIL` (wording) → AUDIT-3 `FAIL` (one clause) → confirmation `PASS` at d2ac0c56, all read-only and non-authoring). It carries the served row-21 pack `mockups/evidence/intl-gs-r21-served/` and the r10 addendum (17/4/0).
+- **§14 row 19 (Publication retention) → DONE.** Render run 41273744480 on the unrelated main push 886ab694 (Grey Deer risk-radar EW-P4; no intl paths; a scope=all re-render that landed as commits d3ed8141 + a68544cd) completed `success`; the served `https://www.mastermind-x.com/intl.html` (HTTP 200, Last-Modified Sun, 01 Nov 2026 09:27:22 GMT, 22,689,745 bytes) retains the Graph-boundary chip with its source-qualification split — `data-graph-boundary` 640 = 530 `structural_research` + 110 `structural_graph_member`, `intl-gs__edges__head` 640, the same figures as the 03:12:25Z proof — and the GS views: scanner (`intl-gs__table--scanner` ×10, `intl-gs__mcards` ×20), dislocations (`intl-dislocations__table` ×1) and coverage (`view=coverage` links ×60). This is the "normal subsequent publisher cycle" r8 named (a publisher run that shipped no change to the feature), so the row reads DONE. Probe: one read after run completion by the seat watcher `seat_served_proof_watch.sh` (marker `data-graph-boundary`), counts taken from the saved response.
+- **Dislocation job re-measure.** Re-measured on the F10 `ci` run 41280629630 (pull_request, success, #10367 head 5ac89fd3; tested tree 92c10bd5 = that head merged into c31b2526; canonical main dd24759e), job `ci-pack-11` (id 124772193350; the entry sits in pack 11 of the plan — confirmed by a local `--plan-only` re-plan of the same manifest and by the job log). Within the pack the entry ran 06:58:09.7Z → 07:07:21.2Z = 9 min 11 s (its last group, the Chromium TAP, closes at 07:07:21.2; the dependency-environment group that follows, 07:07:24.5 → 07:07:36.0, belongs to the next entry, `international-workspace-foundation` — in this log a dependency-environment group always precedes its own entry): install browser test dependencies 13 s; the F10 canonical-main step (blob-filtered `prepare_canonical_main`) 06:58:22.9 → 06:58:52.5 = 30 s, replacing the ~4-min unrestricted fetch measured on 2026-10-31; pytest "Dislocation explorer view contracts" 27 passed in 256.84 s (4 min 17 s); Chromium "DOM and selection" TAP 10 tests / 10 pass / 0 fail, 07:03:09 → 07:07:21 (4 min 12 s). Against the entry's `timeout-minutes: 15` (raised from 8 on 2026-10-31, "kept until the job's PR-side time is re-measured") the measured PR-side time is ≈9.2 min: 15 holds with margin, 8 would still not; no budget change is proposed here. Read discipline: the job list came in ONE unpaginated page and the pack log in ONE read, both saved to the seat scratchpad; the paginated shape refused by the shared-quota guard was not repeated.
+- **Recount: 18 DONE / 3 PARTIAL (rows 14, 16, 18) / 0 GAP.** Rung reached: MERGED for every lane; PRODUCTION_PROOF for row 4 content and for publication retention
+  where row 19 reads DONE above; not ACCEPTANCE by the commissioning authority. No §14 table row is edited; this addendum
+  is the status record (2026-11-01T09:4xZ).
+- **Erratum (merge times in the r9/r10 addenda; found by the r11 review, INTL-GS-REC11 D3).** The #10376 and #10384 merge times above are copied from GitHub's `mergedAt` field (09:29:37Z and 09:36:34Z). The squash commits themselves are stamped 2026-11-01T08:29:37Z (bacc2d76) and 08:36:34Z (3d8ad3eb), and main's chronology proves the commit times: both are ancestors of the 09:24Z render commits d3ed8141/a68544cd and of the r10 merge 24cea4f7 (09:28:14Z, where `mergedAt` and the commit agree), so a 09:36:34Z merge of #10384 would postdate its own descendant. Read 08:29:37Z and 08:36:34Z; the two `mergedAt` values are one hour late (both merges fell in the repeated 01:xx Pacific hour of the 2026-11-01 DST change). c133b698 (07:40:51Z) and 24cea4f7 (09:28:14Z) are consistent in both sources. Earlier addenda are not edited (append-only).

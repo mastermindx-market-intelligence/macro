@@ -1,0 +1,40 @@
+{
+  "cik": "0000939767",
+  "filings_10k": [
+    {
+      "accessionNumber": "0000939767-22-000026",
+      "filingDate": "2022-02-18",
+      "form": "10-K",
+      "primaryDocument": "exel-20211231.htm",
+      "reportDate": "2021-12-31"
+    },
+    {
+      "accessionNumber": "0000939767-23-000019",
+      "filingDate": "2023-02-07",
+      "form": "10-K",
+      "primaryDocument": "exel-20221230.htm",
+      "reportDate": "2022-12-30"
+    },
+    {
+      "accessionNumber": "0000939767-24-000028",
+      "filingDate": "2024-02-06",
+      "form": "10-K",
+      "primaryDocument": "exel-20231229.htm",
+      "reportDate": "2023-12-29"
+    }
+  ],
+  "fiscalYearEnd": "0101",
+  "name": "EXELIXIS, INC.",
+  "response_sha256": {
+    "https://data.sec.gov/submissions/CIK0000939767.json": "5dfb4657570fac038fe0ebaccd30b307bbf8d50a5aa7413225c5d1aad82361d8"
+  },
+  "retrieved_at": "2026-11-01T20:23:05Z",
+  "sic": "2836",
+  "sicDescription": "Biological Products, (No Diagnostic Substances)",
+  "source_urls": [
+    "https://data.sec.gov/submissions/CIK0000939767.json"
+  ],
+  "tickers": [
+    "EXEL"
+  ]
+}
