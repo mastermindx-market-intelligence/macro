@@ -1,8 +1,9 @@
 """FIF V0-a: no forensics route reaches SEC or R2 while it serves.
 
-A46 acceptance: measured latency SLOs with NO request-time SEC. The five
+A46 acceptance: measured latency SLOs with NO request-time SEC. The six
 production-backed routes (health, financial/query, financial/packet,
-financial/statements, financial/revisions) are served in-process over a
+financial/statements, financial/revisions, financial/catalog) are served
+in-process over a
 publisher-built local store — the fixture pattern of
 tests/test_fundamental_forensics_production_api_chain.py, copied here in
 minimal form rather than imported — while ``socket.socket.connect``,
@@ -430,6 +431,15 @@ def test_no_forensics_route_opens_a_socket_while_serving(
             "POST",
             "/api/forensics/v1/financial/revisions",
             _policy_body(_REVISION_SCHEMA, identity),
+        ),
+        (
+            "financial/catalog",
+            "POST",
+            "/api/forensics/v1/financial/catalog",
+            json.dumps(
+                {"schema": "fundamental_forensics.financial_catalog_request/v1", "entity_id": identity["entity_id"]},
+                separators=(",", ":"),
+            ).encode("utf-8"),
         ),
     ]
     for name, method, path, body in calls:

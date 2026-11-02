@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-31T20:19:56Z",
+ "accession": "0001193125-26-134641",
+ "cik": "0001643303",
+ "doc_byte_length": 5593819,
+ "doc_sha256": "374e645d9bf09ac2aaebd6f46c40bcbb7e51f089a9750b219f3154753b1627d7",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "nndm-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2224692,
+  "byte_start": 2224427,
+  "normalized": "Settlement and Patent License Agreement, dated September 20, 2024, by and between Markforged and Continuous Composites Inc., filed as Exhibit 10.1 to Markforged’s Current Report on Form 8‑K filed September 23, 2024, and incorporated herein by reference.",
+  "normalized_sha256": "b191828f120f41cd49136237134e5ab2a81c8125ba0dae9588d5840151896302",
+  "raw": "Settlement and Patent License Agreement, dated September 20, 2024, by and between Markforged and Continuous Composites Inc., filed as Exhibit 10.1 to Markforged&#8217;s Current Report on Form 8&#8209;K filed September 23, 2024, and incorporated herein by reference.",
+  "raw_sha256": "6cbf02bf92cf657230d7981d83dcc93d37aa749ecb2ce7a5aa71c7f000f16d2f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1643303/000119312526134641/nndm-20251231.htm",
+ "xbrl_contexts": []
+}
