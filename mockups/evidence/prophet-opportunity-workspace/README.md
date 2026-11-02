@@ -10,17 +10,17 @@ The assessed Paper frames are LKU-0 (Setup), 8OM-0 (Evidence), 4U6-0 (Plans) and
 
 Run from the repository root with a fresh local fixture directory. The HTML capture input is separate from production output.
 
-\x60\x60\x60sh
+```sh
 proof=mockups/evidence/prophet-opportunity-workspace
-fixture=site/_tmp/prophet-acceptance-89dcceeb
+fixture=site/_tmp/prophet-acceptance-main392f
 python3 "$proof/render_public_fixture.py" "$fixture" > "$proof/public-inputs.json"
-python3 scripts/capture_page_evidence.py --repo macro --site-dir "$fixture" \\
-  --routes /us_stocks.html --viewports desktop,mobile,tablet-768,narrow-320 \\
-  --locales en,zh --themes light,dark \\
-  --force-state 'setup-focus:focus(#us-today-grid .po-card summary.po-setup)' \\
-  --force-state 'nav-hover:hover(.prophet-section-nav a)' \\
+python3 scripts/capture_page_evidence.py --repo macro --site-dir "$fixture" \
+  --routes /us_stocks.html --viewports desktop,mobile,tablet-768,narrow-320 \
+  --locales en,zh --themes light,dark \
+  --force-state 'setup-focus:focus(#us-today-grid .po-card summary.po-setup)' \
+  --force-state 'nav-hover:hover(.prophet-section-nav a)' \
   --output-dir "$proof/cells" --manifest "$proof/manifest.json" --smells "$proof/smells.json"
 python3 "$proof/inspect_public_sources.py" "$fixture" "$proof/public-sources"
-\x60\x60\x60
+```
 
 The HK/Canada P0B receipts are separate. Their pinned recipe, executable, fixture assets and historical baseline are derived from `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout*.json` by `scripts/check_p0b_receipt_closure.py`.

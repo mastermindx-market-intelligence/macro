@@ -23,7 +23,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-1440-light-en.png",
-    "sha256": "a25ae3b93ee225681a7b32826489113c2aedcdd905bb9dd9b177f3bc9155775e",
+    "sha256": "21bae1dccb85970de309f54810323b8c9d1e585ca519468384addde0c6cd6256",
     "captured": true
   },
   {
@@ -50,7 +50,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-1440-light-zh.png",
-    "sha256": "1496ba96d0f3da1c6af5a806f5270a93da5e8ea15a3cc68d23391b1f7ac602c2",
+    "sha256": "8a333e8e502f7ceb87721e05c6d74f308d698b2c667279f3c0f52dd94a1e3b4c",
     "captured": true
   },
   {
@@ -77,7 +77,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-1440-dark-en.png",
-    "sha256": "d998351cc3222c56d6f3188cc02cd8702b70e2a28ff6c66ea904a73c0028118d",
+    "sha256": "3e8aded5c894e4b80cf3e4d45c918a468e0bb88d6546c78f405c1291130af492",
     "captured": true
   },
   {
@@ -104,7 +104,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-1440-dark-zh.png",
-    "sha256": "feb2e0678672d3b52ce42c7519ff539ea227b197b5c325373b65e004c3b2fb42",
+    "sha256": "b35edb9b9c700e40e86ac3abd27a6c139baa96892527834ed8a6176b1f44a1dd",
     "captured": true
   },
   {
@@ -131,7 +131,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-390-light-en.png",
-    "sha256": "cde4072c8b3f84e3c91602419038d5f1f74bcdad6b47c7840411732e86b83488",
+    "sha256": "5fbc3f2c54b756e1e910a68f834e38d0a5d3f5539d0ac5fea75036274638e6bc",
     "captured": true
   },
   {
@@ -239,7 +239,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-320-light-en.png",
-    "sha256": "1fc901a9227f91a189cf091d9dae6d73cd0642b3e7e0385e60d156f0bee9608f",
+    "sha256": "e84cf22d1b3f6b80182364e87a96dc6aa48af657f9b44d7bd3f6ca9241a7abb2",
     "captured": true
   },
   {
@@ -266,7 +266,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-320-light-zh.png",
-    "sha256": "5bc2891fe2fd5b4fff4b32eacd9fca8ed437aaf61ff2c19b75d634d518e97fc5",
+    "sha256": "7f2414e85eac32e60b5be6f1bf5e7baedcb6cee983a4ff4b25666b4baeb9d23f",
     "captured": true
   },
   {
@@ -293,7 +293,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-320-dark-en.png",
-    "sha256": "b88330edcf345ad4a1a330631871983980d9ac084819512aa575be5c23c61aed",
+    "sha256": "e747d93dc32733e7438f5a860c0c4688f41e82aed3c55f3c655015ffd07404e7",
     "captured": true
   },
   {
@@ -320,7 +320,7 @@
     "overflow": false,
     "dialog_overflow": false,
     "file": "sources-320-dark-zh.png",
-    "sha256": "14b056221247174e64ecbad6a85b7b38319e0dd005c7583650ba3f28108d2032",
+    "sha256": "2a828d757356d93d0e7e5b97623724fb833e2753bfb825d6112c05d4c679ec0a",
     "captured": true
   }
 ]

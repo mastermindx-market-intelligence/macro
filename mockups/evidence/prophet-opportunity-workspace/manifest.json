@@ -47,7 +47,7 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-11-02T07:37:41Z",
+  "generated_at": "2026-11-02T07:50:47Z",
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
@@ -59,454 +59,454 @@
     {
       "console_errors": [
         {
-          "source_url": "http://127.0.0.1:54739/live/basket_pulse.json",
+          "source_url": "http://127.0.0.1:62256/stockdata/mtf_upturn.json",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/stockdata/mtf_upturn.json",
+          "source_url": "http://127.0.0.1:62256/live/prophet_live.json",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/basketdata/baskets.json",
+          "source_url": "http://127.0.0.1:62256/live/basket_pulse.json",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/prophet_live.json",
+          "source_url": "http://127.0.0.1:62256/basketdata/baskets.json",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/premiumdata/us_stocks.json",
+          "source_url": "http://127.0.0.1:62256/premiumdata/us_stocks.json",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/quotes.json",
+          "source_url": "http://127.0.0.1:62256/live/quotes.json",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/overlay.json",
+          "source_url": "http://127.0.0.1:62256/live/overlay.json",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/release_publications.json",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605848222",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605061559",
+          "source_url": "http://127.0.0.1:62256/live/release_publications.json",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605064774",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605851421",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605068321",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605855041",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605071880",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605858622",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605075022",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605861735",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605078529",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605865309",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605082218",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605868902",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605085373",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605872039",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605088962",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605875590",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605092555",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605879214",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605095689",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605882378",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605099266",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605885944",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605102807",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605889490",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605105777",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605892465",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605109145",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605895841",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605112563",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605899221",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605115512",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605902153",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605118894",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605905510",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605122304",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605908911",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605125289",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605911864",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605128663",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605915253",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605132052",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605918659",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605134989",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605921620",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605138339",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605924990",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605142114",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605928380",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605145187",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605931417",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605148630",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605934840",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605152073",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605938297",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605155056",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605941315",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605158476",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605944750",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605161957",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605948233",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605165041",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605951289",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605168543",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605954712",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605172044",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605958221",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605175096",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605961249",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605178536",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605964658",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605182036",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605968116",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605185047",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605971069",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605188438",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605974408",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605191854",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605977805",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605194784",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605980738",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605198164",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605984076",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605201628",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605987477",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605204573",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605990413",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605207903",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605993765",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605211288",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605997133",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605214234",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793606000047",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605217579",
+          "source_url": "http://127.0.0.1:62256/live/risk_state.json?t=1793606003385",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         }
       ],
       "failed_responses": [
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/basket_pulse.json"
+          "url": "http://127.0.0.1:62256/stockdata/mtf_upturn.json"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/stockdata/mtf_upturn.json"
+          "url": "http://127.0.0.1:62256/live/prophet_live.json"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/basketdata/baskets.json"
+          "url": "http://127.0.0.1:62256/live/basket_pulse.json"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/prophet_live.json"
+          "url": "http://127.0.0.1:62256/basketdata/baskets.json"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/premiumdata/us_stocks.json"
+          "url": "http://127.0.0.1:62256/premiumdata/us_stocks.json"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/quotes.json"
+          "url": "http://127.0.0.1:62256/live/quotes.json"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/overlay.json"
+          "url": "http://127.0.0.1:62256/live/overlay.json"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/release_publications.json"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605848222"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605061559"
+          "url": "http://127.0.0.1:62256/live/release_publications.json"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605064774"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605851421"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605068321"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605855041"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605071880"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605858622"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605075022"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605861735"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605078529"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605865309"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605082218"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605868902"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605085373"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605872039"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605088962"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605875590"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605092555"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605879214"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605095689"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605882378"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605099266"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605885944"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605102807"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605889490"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605105777"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605892465"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605109145"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605895841"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605112563"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605899221"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605115512"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605902153"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605118894"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605905510"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605122304"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605908911"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605125289"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605911864"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605128663"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605915253"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605132052"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605918659"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605134989"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605921620"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605138339"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605924990"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605142114"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605928380"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605145187"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605931417"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605148630"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605934840"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605152073"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605938297"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605155056"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605941315"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605158476"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605944750"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605161957"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605948233"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605165041"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605951289"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605168543"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605954712"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605172044"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605958221"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605175096"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605961249"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605178536"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605964658"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605182036"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605968116"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605185047"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605971069"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605188438"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605974408"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605191854"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605977805"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605194784"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605980738"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605198164"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605984076"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605201628"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605987477"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605204573"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605990413"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605207903"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605993765"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605211288"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793605997133"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605214234"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793606000047"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:54739/live/risk_state.json?t=1793605217579"
+          "url": "http://127.0.0.1:62256/live/risk_state.json?t=1793606003385"
         }
       ],
       "gaps": [
@@ -598,7 +598,7 @@
           "viewport": "desktop"
         },
         "panel_count": 10,
-        "payload_bytes_total": 1584166,
+        "payload_bytes_total": 1216047,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 34,
@@ -618,21 +618,21 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 843002,
+          "bytes": 841456,
           "captured": true,
-          "file": "cells/911df3214a5b3048.png",
+          "file": "cells/f0a0d923c480908a.png",
           "force_state": null,
           "height": 3319,
           "locale": "en",
-          "sha256": "911df3214a5b3048b9fe329ee01bf9ecb0fc5a91386e8a2cdde5bc856c3b2ac1",
+          "sha256": "f0a0d923c480908a06f08b7b06f8531d998a655ba51951149bbf40a64edd301a",
           "theme": "light",
           "timing": {
-            "cls": 0.6856859131277997,
+            "cls": 0.6989731731064198,
             "inp_proxy_ms": null,
-            "lcp_ms": 320,
+            "lcp_ms": 304,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "desktop",
           "viewport_height": 900,
@@ -644,21 +644,21 @@
           "applied_force_state": "setup-focus",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 782108,
+          "bytes": 782086,
           "captured": true,
-          "file": "cells/fdbb82765e9801da--setup-focus.png",
+          "file": "cells/861b7b237ba3ffea--setup-focus.png",
           "force_state": "setup-focus",
           "height": 3319,
           "locale": "en",
-          "sha256": "fdbb82765e9801da719940f82563e8ed6d65c4a7370f550c0a4349557ad05565",
+          "sha256": "861b7b237ba3ffea4ca26169f5e23237a88836e107f9de80bd2b7a0af4940b13",
           "theme": "light",
           "timing": {
-            "cls": 0.6989790941026475,
+            "cls": 0.6856858199256928,
             "inp_proxy_ms": null,
-            "lcp_ms": 308,
+            "lcp_ms": 284,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "desktop",
           "viewport_height": 900,
@@ -670,21 +670,21 @@
           "applied_force_state": "nav-hover",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 788846,
+          "bytes": 788763,
           "captured": true,
-          "file": "cells/f88555e265e2dbc8--nav-hover.png",
+          "file": "cells/4299bb31c65807c7--nav-hover.png",
           "force_state": "nav-hover",
           "height": 3319,
           "locale": "en",
-          "sha256": "f88555e265e2dbc88bb919e7cfa93d0d8a6d496a4cc60be6dd5aeab766ff25b2",
+          "sha256": "4299bb31c65807c74736f10f7c3de4e94aa2eaa7a0742c33b8530cc7b821bae6",
           "theme": "light",
           "timing": {
-            "cls": 0.6856862594123075,
+            "cls": 0.6856861899712121,
             "inp_proxy_ms": null,
-            "lcp_ms": 248,
+            "lcp_ms": 268,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "desktop",
           "viewport_height": 900,
@@ -695,21 +695,21 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 821278,
+          "bytes": 807583,
           "captured": true,
-          "file": "cells/582ca5d0edaf0660.png",
+          "file": "cells/6e2da7758c423ba6.png",
           "force_state": null,
           "height": 3319,
           "locale": "en",
-          "sha256": "582ca5d0edaf0660aefea683ab1ca35ea978bedbae483d5ebbb4237121602209",
+          "sha256": "6e2da7758c423ba6ad9acd5d7c6d450198ad273ec76e47b3602bd1e6ba011978",
           "theme": "dark",
           "timing": {
             "cls": 0.6548989708417727,
             "inp_proxy_ms": null,
-            "lcp_ms": 228,
+            "lcp_ms": 260,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "desktop",
           "viewport_height": 900,
@@ -721,21 +721,21 @@
           "applied_force_state": "setup-focus",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 748289,
+          "bytes": 744684,
           "captured": true,
-          "file": "cells/1f842f26d9511085--setup-focus.png",
+          "file": "cells/23be88b858d8ae6c--setup-focus.png",
           "force_state": "setup-focus",
           "height": 3319,
           "locale": "en",
-          "sha256": "1f842f26d95110858e28ed9b1e71bf8ff9b2707330eebfd58f44d7924c76f0fc",
+          "sha256": "23be88b858d8ae6c198b10f3961a0aaec6a189c5efd8bda05a898acc5da77b1c",
           "theme": "dark",
           "timing": {
             "cls": 0.6548989708417727,
             "inp_proxy_ms": null,
-            "lcp_ms": 240,
+            "lcp_ms": 224,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "desktop",
           "viewport_height": 900,
@@ -747,21 +747,21 @@
           "applied_force_state": "nav-hover",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 756098,
+          "bytes": 760060,
           "captured": true,
-          "file": "cells/515cc363dd4ed620--nav-hover.png",
+          "file": "cells/d32674868b2c3d92--nav-hover.png",
           "force_state": "nav-hover",
           "height": 3319,
           "locale": "en",
-          "sha256": "515cc363dd4ed620ecc37199bc37011bbd35219760808db06113bbf0731f48f7",
+          "sha256": "d32674868b2c3d92b0d77f4ce9e6ae532911e59a92c792d6f37b02dd8f24eed9",
           "theme": "dark",
           "timing": {
-            "cls": 0.6548994103283875,
+            "cls": 0.6548993408872921,
             "inp_proxy_ms": null,
-            "lcp_ms": 240,
+            "lcp_ms": 280,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "desktop",
           "viewport_height": 900,
@@ -772,39 +772,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 835122,
+          "bytes": 831349,
           "captured": true,
-          "file": "cells/29b507a96a52cbbc.png",
+          "file": "cells/b1bd005fffd97e3e.png",
           "force_state": null,
           "height": 3267,
           "locale": "zh",
-          "sha256": "29b507a96a52cbbcefbf17a0be137d522260dc922466f5246b181708fdab1163",
-          "theme": "light",
-          "timing": {
-            "cls": 0.7121035662532016,
-            "inp_proxy_ms": null,
-            "lcp_ms": 320,
-            "resource_count": 35,
-            "server_timing": [],
-            "transfer_bytes": 1280038
-          },
-          "viewport": "desktop",
-          "viewport_height": 900,
-          "viewport_width": 1440,
-          "width": 1440
-        },
-        {
-          "access": "anonymous",
-          "applied_force_state": "setup-focus",
-          "applied_locale": "zh",
-          "applied_theme": "light",
-          "bytes": 769521,
-          "captured": true,
-          "file": "cells/2e6740cce630ff95--setup-focus.png",
-          "force_state": "setup-focus",
-          "height": 3267,
-          "locale": "zh",
-          "sha256": "2e6740cce630ff95108bd78ea316a73147e2124a8bd6ad5a3a525daccb56aaa6",
+          "sha256": "b1bd005fffd97e3e8362117468b91770b760c1a0292a62bf2ac591c872fdee3f",
           "theme": "light",
           "timing": {
             "cls": 0.6988102920762469,
@@ -812,7 +786,7 @@
             "lcp_ms": 264,
             "resource_count": 35,
             "server_timing": [],
-            "transfer_bytes": 1280038
+            "transfer_bytes": 1283672
           },
           "viewport": "desktop",
           "viewport_height": 900,
@@ -821,49 +795,75 @@
         },
         {
           "access": "anonymous",
-          "applied_force_state": "nav-hover",
+          "applied_force_state": "setup-focus",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 785788,
+          "bytes": 772141,
           "captured": true,
-          "file": "cells/0e7b369c4756fe0f--nav-hover.png",
-          "force_state": "nav-hover",
+          "file": "cells/4edad9232917907d--setup-focus.png",
+          "force_state": "setup-focus",
           "height": 3267,
           "locale": "zh",
-          "sha256": "0e7b369c4756fe0f6982e54275af9662cedb5bb4952ec6a40f30992ad191ade9",
+          "sha256": "4edad9232917907dff02bf51e2510e88aff680773814c575bbf85f660656963f",
           "theme": "light",
           "timing": {
-            "cls": 0.6988106621217662,
-            "inp_proxy_ms": null,
-            "lcp_ms": 296,
-            "resource_count": 35,
-            "server_timing": [],
-            "transfer_bytes": 1280038
-          },
-          "viewport": "desktop",
-          "viewport_height": 900,
-          "viewport_width": 1440,
-          "width": 1440
-        },
-        {
-          "access": "anonymous",
-          "applied_locale": "zh",
-          "applied_theme": "dark",
-          "bytes": 804850,
-          "captured": true,
-          "file": "cells/1c43ef0674592fb7.png",
-          "force_state": null,
-          "height": 3267,
-          "locale": "zh",
-          "sha256": "1c43ef0674592fb72553e7051de0c6e854e98611066b5465f5b2e0ad73d51fae",
-          "theme": "dark",
-          "timing": {
-            "cls": 0.667158778128081,
+            "cls": 0.6988102920762469,
             "inp_proxy_ms": null,
             "lcp_ms": 256,
             "resource_count": 35,
             "server_timing": [],
-            "transfer_bytes": 1280038
+            "transfer_bytes": 1283672
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nav-hover",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 781815,
+          "captured": true,
+          "file": "cells/c08c14f620b1dafe--nav-hover.png",
+          "force_state": "nav-hover",
+          "height": 3267,
+          "locale": "zh",
+          "sha256": "c08c14f620b1dafeb83756c2cd47c49a0b334cd84c1336e731da0ec68386a9e1",
+          "theme": "light",
+          "timing": {
+            "cls": 0.6988107315628617,
+            "inp_proxy_ms": null,
+            "lcp_ms": 276,
+            "resource_count": 35,
+            "server_timing": [],
+            "transfer_bytes": 1283672
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 829324,
+          "captured": true,
+          "file": "cells/e06f735a6918bfcb.png",
+          "force_state": null,
+          "height": 3267,
+          "locale": "zh",
+          "sha256": "e06f735a6918bfcbfbb24bb4e66ab4f23a6a54a9b8390264a36eebfee838ef15",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.6800738372844596,
+            "inp_proxy_ms": null,
+            "lcp_ms": 296,
+            "resource_count": 35,
+            "server_timing": [],
+            "transfer_bytes": 1283672
           },
           "viewport": "desktop",
           "viewport_height": 900,
@@ -875,21 +875,21 @@
           "applied_force_state": "setup-focus",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 730362,
+          "bytes": 728702,
           "captured": true,
-          "file": "cells/433450de5fa45cb6--setup-focus.png",
+          "file": "cells/779e928aa8396c83--setup-focus.png",
           "force_state": "setup-focus",
           "height": 3267,
           "locale": "zh",
-          "sha256": "433450de5fa45cb6b0a6d8b9bef9e0c316b25ad5e0f62bcbaacf88cb893444bd",
+          "sha256": "779e928aa8396c8394c21fdbd20c9df33c4ba57aee918225a4ac1c889eddc486",
           "theme": "dark",
           "timing": {
             "cls": 0.667158778128081,
             "inp_proxy_ms": null,
-            "lcp_ms": 272,
+            "lcp_ms": 264,
             "resource_count": 35,
             "server_timing": [],
-            "transfer_bytes": 1280038
+            "transfer_bytes": 1283672
           },
           "viewport": "desktop",
           "viewport_height": 900,
@@ -901,21 +901,21 @@
           "applied_force_state": "nav-hover",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 756099,
+          "bytes": 755626,
           "captured": true,
-          "file": "cells/9540a43d56f1693d--nav-hover.png",
+          "file": "cells/f86921f9bb39102d--nav-hover.png",
           "force_state": "nav-hover",
           "height": 3267,
           "locale": "zh",
-          "sha256": "9540a43d56f1693d280ce73670a32ad34b81e76e0bc4ab01f07ccc79630b3c85",
+          "sha256": "f86921f9bb39102d0f33774ebf2365ff93714f47062ed5a6a7b6d5a2085cfb58",
           "theme": "dark",
           "timing": {
             "cls": 0.6671591481736003,
             "inp_proxy_ms": null,
-            "lcp_ms": 280,
+            "lcp_ms": 264,
             "resource_count": 35,
             "server_timing": [],
-            "transfer_bytes": 1280038
+            "transfer_bytes": 1283672
           },
           "viewport": "desktop",
           "viewport_height": 900,
@@ -926,39 +926,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 621811,
+          "bytes": 624553,
           "captured": true,
-          "file": "cells/928303441a18fa67.png",
+          "file": "cells/ec668eb6511e7de9.png",
           "force_state": null,
           "height": 5969,
           "locale": "en",
-          "sha256": "928303441a18fa6740dab93d36bb5a2d111adda0de1110d9faf174a089185c6d",
-          "theme": "light",
-          "timing": {
-            "cls": 0.41920013566145536,
-            "inp_proxy_ms": null,
-            "lcp_ms": 220,
-            "resource_count": 33,
-            "server_timing": [],
-            "transfer_bytes": 1230766
-          },
-          "viewport": "mobile",
-          "viewport_height": 844,
-          "viewport_width": 390,
-          "width": 390
-        },
-        {
-          "access": "anonymous",
-          "applied_force_state": "setup-focus",
-          "applied_locale": "en",
-          "applied_theme": "light",
-          "bytes": 571527,
-          "captured": true,
-          "file": "cells/9bc49d300a1e22cb--setup-focus.png",
-          "force_state": "setup-focus",
-          "height": 5969,
-          "locale": "en",
-          "sha256": "9bc49d300a1e22cb03c30cbadd0c8540875f9caf9fe8b3e83c090a6be389dd2c",
+          "sha256": "ec668eb6511e7de9848caeea18990fa3101de3413721bdb1eff48a19ea647ceb",
           "theme": "light",
           "timing": {
             "cls": 0.41920013566145536,
@@ -966,7 +940,33 @@
             "lcp_ms": 216,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "setup-focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 570860,
+          "captured": true,
+          "file": "cells/2d778d353c791cd0--setup-focus.png",
+          "force_state": "setup-focus",
+          "height": 5969,
+          "locale": "en",
+          "sha256": "2d778d353c791cd0dfe0fdb11f6ca563f1ca1db889d38ac252129ee6062dd31d",
+          "theme": "light",
+          "timing": {
+            "cls": 0.36771694046518094,
+            "inp_proxy_ms": null,
+            "lcp_ms": 216,
+            "resource_count": 33,
+            "server_timing": [],
+            "transfer_bytes": 1234400
           },
           "viewport": "mobile",
           "viewport_height": 844,
@@ -978,21 +978,21 @@
           "applied_force_state": "nav-hover",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 600356,
+          "bytes": 600370,
           "captured": true,
-          "file": "cells/caa8d83943e9f37a--nav-hover.png",
+          "file": "cells/e2ba752180182916--nav-hover.png",
           "force_state": "nav-hover",
           "height": 5969,
           "locale": "en",
-          "sha256": "caa8d83943e9f37a136db35dd968e25c22c585975c85371acda30f5a2c3bcfa2",
+          "sha256": "e2ba75218018291601ae7dcbccf7b66fe6bb40d6f995984752c72df67199f8a4",
           "theme": "light",
           "timing": {
             "cls": 0.41920262150129095,
             "inp_proxy_ms": null,
-            "lcp_ms": 204,
+            "lcp_ms": 216,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "mobile",
           "viewport_height": 844,
@@ -1003,21 +1003,21 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 594651,
+          "bytes": 587461,
           "captured": true,
-          "file": "cells/0686c638d3bb7ad8.png",
+          "file": "cells/949d93702e205a2e.png",
           "force_state": null,
           "height": 5969,
           "locale": "en",
-          "sha256": "0686c638d3bb7ad828bb2012d3267b5765d98d612b6e44f367aa0c73bdf2ed04",
+          "sha256": "949d93702e205a2e9edae50a2f83dd317e7b190b8538d822f1bbb0e5ff93c791",
           "theme": "dark",
           "timing": {
             "cls": 0.3835070023000166,
             "inp_proxy_ms": null,
-            "lcp_ms": 204,
+            "lcp_ms": 208,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "mobile",
           "viewport_height": 844,
@@ -1029,21 +1029,21 @@
           "applied_force_state": "setup-focus",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 545929,
+          "bytes": 546187,
           "captured": true,
-          "file": "cells/c734fcc5b24a255a--setup-focus.png",
+          "file": "cells/4ee8e9f8f3685e1c--setup-focus.png",
           "force_state": "setup-focus",
           "height": 5969,
           "locale": "en",
-          "sha256": "c734fcc5b24a255ad407a57917decff2c74d59158653ff99c2fdb4e154ef4232",
+          "sha256": "4ee8e9f8f3685e1c4c6023485048c6a8c2c07ce254ea97aa483d77407e43ff61",
           "theme": "dark",
           "timing": {
             "cls": 0.3835070023000166,
             "inp_proxy_ms": null,
-            "lcp_ms": 196,
+            "lcp_ms": 204,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "mobile",
           "viewport_height": 844,
@@ -1055,21 +1055,21 @@
           "applied_force_state": "nav-hover",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 581694,
+          "bytes": 581399,
           "captured": true,
-          "file": "cells/841af42a70232b65--nav-hover.png",
+          "file": "cells/b2688aa9db4d01bc--nav-hover.png",
           "force_state": "nav-hover",
           "height": 5969,
           "locale": "en",
-          "sha256": "841af42a70232b65330511375235189e8ddc9dc475a20dd6623b85371c9aad1b",
+          "sha256": "b2688aa9db4d01bce01355ff12a0afe07299064cf0642b70a9ece0350049aeea",
           "theme": "dark",
           "timing": {
             "cls": 0.3835094881398522,
             "inp_proxy_ms": null,
-            "lcp_ms": 236,
+            "lcp_ms": 212,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "mobile",
           "viewport_height": 844,
@@ -1080,73 +1080,73 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 609554,
+          "bytes": 609690,
           "captured": true,
-          "file": "cells/50c76c8ea30e633e.png",
+          "file": "cells/507873d49171f4c0.png",
           "force_state": null,
           "height": 5558,
           "locale": "zh",
-          "sha256": "50c76c8ea30e633ec57feeb58e8d99a4e9cbefe1612986b49662e36261da3bae",
+          "sha256": "507873d49171f4c00e1ae8ffce93178b80fef39b27b7788cac61ed0fea42bdfb",
           "theme": "light",
           "timing": {
             "cls": 0.45098743196094726,
-            "inp_proxy_ms": null,
-            "lcp_ms": 228,
-            "resource_count": 34,
-            "server_timing": [],
-            "transfer_bytes": 1255466
-          },
-          "viewport": "mobile",
-          "viewport_height": 844,
-          "viewport_width": 390,
-          "width": 390
-        },
-        {
-          "access": "anonymous",
-          "applied_force_state": "setup-focus",
-          "applied_locale": "zh",
-          "applied_theme": "light",
-          "bytes": 558713,
-          "captured": true,
-          "file": "cells/549edef75db9ec07--setup-focus.png",
-          "force_state": "setup-focus",
-          "height": 5558,
-          "locale": "zh",
-          "sha256": "549edef75db9ec0766adab4421aa480233c19fd858d0a484822f7d2bcad2a7c2",
-          "theme": "light",
-          "timing": {
-            "cls": 0.45098743196094726,
-            "inp_proxy_ms": null,
-            "lcp_ms": 240,
-            "resource_count": 34,
-            "server_timing": [],
-            "transfer_bytes": 1255466
-          },
-          "viewport": "mobile",
-          "viewport_height": 844,
-          "viewport_width": 390,
-          "width": 390
-        },
-        {
-          "access": "anonymous",
-          "applied_force_state": "nav-hover",
-          "applied_locale": "zh",
-          "applied_theme": "light",
-          "bytes": 584031,
-          "captured": true,
-          "file": "cells/a909d44a2a49e94f--nav-hover.png",
-          "force_state": "nav-hover",
-          "height": 5558,
-          "locale": "zh",
-          "sha256": "a909d44a2a49e94fc69978a5d569ec00de23ceba0cea34e142adedd887a90a7e",
-          "theme": "light",
-          "timing": {
-            "cls": 0.45098991780078285,
             "inp_proxy_ms": null,
             "lcp_ms": 212,
             "resource_count": 34,
             "server_timing": [],
-            "transfer_bytes": 1255466
+            "transfer_bytes": 1259100
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "setup-focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 559200,
+          "captured": true,
+          "file": "cells/4be0eb6a8d4b3883--setup-focus.png",
+          "force_state": "setup-focus",
+          "height": 5558,
+          "locale": "zh",
+          "sha256": "4be0eb6a8d4b3883162f4694e6c7b019b7d1dd0874c062c1b94f4e52800c0328",
+          "theme": "light",
+          "timing": {
+            "cls": 0.45098743196094726,
+            "inp_proxy_ms": null,
+            "lcp_ms": 216,
+            "resource_count": 34,
+            "server_timing": [],
+            "transfer_bytes": 1259100
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nav-hover",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 584040,
+          "captured": true,
+          "file": "cells/cf887cd90653596f--nav-hover.png",
+          "force_state": "nav-hover",
+          "height": 5558,
+          "locale": "zh",
+          "sha256": "cf887cd90653596f00252b2ccd2d6089c11f7c318ab4ba22ccbc7fde47dcf973",
+          "theme": "light",
+          "timing": {
+            "cls": 0.39967986187212,
+            "inp_proxy_ms": null,
+            "lcp_ms": 248,
+            "resource_count": 34,
+            "server_timing": [],
+            "transfer_bytes": 1259100
           },
           "viewport": "mobile",
           "viewport_height": 844,
@@ -1157,21 +1157,21 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 579855,
+          "bytes": 573308,
           "captured": true,
-          "file": "cells/c3f1ae0c7bb56f6e.png",
+          "file": "cells/473dfa4c183e0636.png",
           "force_state": null,
           "height": 5558,
           "locale": "zh",
-          "sha256": "c3f1ae0c7bb56f6e05d073d2cfd96087b552ca39084cd061aeadc940d8263e40",
+          "sha256": "473dfa4c183e0636ec24f1bc96975dedcd8bfe298e86e785ccaf2f7237da83ed",
           "theme": "dark",
           "timing": {
             "cls": 0.412618648992495,
             "inp_proxy_ms": null,
-            "lcp_ms": 236,
+            "lcp_ms": 228,
             "resource_count": 34,
             "server_timing": [],
-            "transfer_bytes": 1255466
+            "transfer_bytes": 1259100
           },
           "viewport": "mobile",
           "viewport_height": 844,
@@ -1183,21 +1183,21 @@
           "applied_force_state": "setup-focus",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 536680,
+          "bytes": 537017,
           "captured": true,
-          "file": "cells/a06c6ac7e89d7ae7--setup-focus.png",
+          "file": "cells/a9bf77b5e9713cb9--setup-focus.png",
           "force_state": "setup-focus",
           "height": 5558,
           "locale": "zh",
-          "sha256": "a06c6ac7e89d7ae7cbd854c36bbd39eaaabd72fd2de31a522d8deccd5f2a7abd",
+          "sha256": "a9bf77b5e9713cb912fbdeab88520860cda57d07a532a5902ff9946401e053c6",
           "theme": "dark",
           "timing": {
             "cls": 0.412618648992495,
             "inp_proxy_ms": null,
-            "lcp_ms": 220,
+            "lcp_ms": 224,
             "resource_count": 34,
             "server_timing": [],
-            "transfer_bytes": 1255466
+            "transfer_bytes": 1259100
           },
           "viewport": "mobile",
           "viewport_height": 844,
@@ -1209,21 +1209,21 @@
           "applied_force_state": "nav-hover",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 564335,
+          "bytes": 566100,
           "captured": true,
-          "file": "cells/0122c56a78989eeb--nav-hover.png",
+          "file": "cells/2d05602211b9137d--nav-hover.png",
           "force_state": "nav-hover",
           "height": 5558,
           "locale": "zh",
-          "sha256": "0122c56a78989eeb136f31565b9bc0bf21f9792e79295667cae1facd2df4476c",
+          "sha256": "2d05602211b9137ddedb6494e515601627aab2d66f9bd7d7ef022af5eaaf2094",
           "theme": "dark",
           "timing": {
-            "cls": 0.41262160131397224,
+            "cls": 0.4126211348323306,
             "inp_proxy_ms": null,
-            "lcp_ms": 220,
+            "lcp_ms": 224,
             "resource_count": 34,
             "server_timing": [],
-            "transfer_bytes": 1255466
+            "transfer_bytes": 1259100
           },
           "viewport": "mobile",
           "viewport_height": 844,
@@ -1234,21 +1234,21 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 732269,
+          "bytes": 727919,
           "captured": true,
-          "file": "cells/4f6d3e4a42a2f2ad.png",
+          "file": "cells/a198fe8574b38ba5.png",
           "force_state": null,
           "height": 4641,
           "locale": "en",
-          "sha256": "4f6d3e4a42a2f2ad979912fe831d781e3ed131a859abea96b547e1b529f6addd",
+          "sha256": "a198fe8574b38ba555d485f63e7be7081450ca0475e8c8203232f0c6e336a4d6",
           "theme": "light",
           "timing": {
-            "cls": 0.11913595651276408,
+            "cls": 0.11913574052353698,
             "inp_proxy_ms": null,
-            "lcp_ms": 336,
+            "lcp_ms": 224,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "tablet-768",
           "viewport_height": 1024,
@@ -1260,13 +1260,13 @@
           "applied_force_state": "setup-focus",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 703505,
+          "bytes": 703635,
           "captured": true,
-          "file": "cells/866e891d7304f386--setup-focus.png",
+          "file": "cells/6df7dcbff77ea085--setup-focus.png",
           "force_state": "setup-focus",
           "height": 4641,
           "locale": "en",
-          "sha256": "866e891d7304f38650e9ae8c2cd324db6c19ead2f99232f706b59dad5d40b9ae",
+          "sha256": "6df7dcbff77ea085fb48d9e48aabd078d4c52796c6589438f02a73c97b8ebd4a",
           "theme": "light",
           "timing": {
             "cls": 0.11913574052353698,
@@ -1274,7 +1274,7 @@
             "lcp_ms": 220,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "tablet-768",
           "viewport_height": 1024,
@@ -1286,21 +1286,21 @@
           "applied_force_state": "nav-hover",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 689003,
+          "bytes": 691184,
           "captured": true,
-          "file": "cells/d5de4c2ea3cdb7bf--nav-hover.png",
+          "file": "cells/8da50c224a06f2b0--nav-hover.png",
           "force_state": "nav-hover",
           "height": 4641,
           "locale": "en",
-          "sha256": "d5de4c2ea3cdb7bff8b8cec1a91641eac5b45993c6fc0f387d12d77ad385818c",
+          "sha256": "8da50c224a06f2b09b9491e1f0fb3fb2dcfd4902f459437ed6d08586cacb0ed3",
           "theme": "light",
           "timing": {
-            "cls": 0.09794624347705394,
+            "cls": 0.11913659807760268,
             "inp_proxy_ms": null,
-            "lcp_ms": 244,
+            "lcp_ms": 220,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "tablet-768",
           "viewport_height": 1024,
@@ -1311,21 +1311,21 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 694526,
+          "bytes": 707708,
           "captured": true,
-          "file": "cells/f56fefebeef1f71b.png",
+          "file": "cells/57933ed820dc1ca0.png",
           "force_state": null,
           "height": 4641,
           "locale": "en",
-          "sha256": "f56fefebeef1f71b28ccfd3244ec2aad52874142c9b4ddd9176ebecb036b8020",
+          "sha256": "57933ed820dc1ca0fc7e638e654fdb2fbb553908b67cab38ec138f82fbcf34ff",
           "theme": "dark",
           "timing": {
             "cls": 0.11388048840065795,
             "inp_proxy_ms": null,
-            "lcp_ms": 212,
+            "lcp_ms": 228,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "tablet-768",
           "viewport_height": 1024,
@@ -1337,21 +1337,21 @@
           "applied_force_state": "setup-focus",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 679367,
+          "bytes": 678302,
           "captured": true,
-          "file": "cells/99de01add33d7e0d--setup-focus.png",
+          "file": "cells/c811d4e0a5d7d5c0--setup-focus.png",
           "force_state": "setup-focus",
           "height": 4641,
           "locale": "en",
-          "sha256": "99de01add33d7e0d287119adf8236b1a00d2e45c1338514cda3f1b037e350421",
+          "sha256": "c811d4e0a5d7d5c0e6d702fdba1877cfde38cd1dba0865ecaab7300bc3ad95ec",
           "theme": "dark",
           "timing": {
             "cls": 0.11388048840065795,
             "inp_proxy_ms": null,
-            "lcp_ms": 200,
+            "lcp_ms": 216,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "tablet-768",
           "viewport_height": 1024,
@@ -1363,21 +1363,21 @@
           "applied_force_state": "nav-hover",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 671249,
+          "bytes": 667557,
           "captured": true,
-          "file": "cells/43336c7e3b058c5c--nav-hover.png",
+          "file": "cells/714e2c34622584cf--nav-hover.png",
           "force_state": "nav-hover",
           "height": 4641,
           "locale": "en",
-          "sha256": "43336c7e3b058c5c7d06e494a0ec287805d509a1bcc0015165293feab84f7546",
+          "sha256": "714e2c34622584cf49295e12c28fa1f70dfc79565399bb61c002510a5f61f820",
           "theme": "dark",
           "timing": {
             "cls": 0.11388134595472366,
             "inp_proxy_ms": null,
-            "lcp_ms": 208,
+            "lcp_ms": 204,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "tablet-768",
           "viewport_height": 1024,
@@ -1388,21 +1388,21 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 723803,
+          "bytes": 723203,
           "captured": true,
-          "file": "cells/6f1e322efb44dc9a.png",
+          "file": "cells/633161f5c35e3788.png",
           "force_state": null,
           "height": 4515,
           "locale": "zh",
-          "sha256": "6f1e322efb44dc9ac5c6a4ef4e4b3ad2779f984a3ae9de5d78b0d04c608ae10b",
+          "sha256": "633161f5c35e37882751a112ebb0d970807770e09de968fa23c6918dcea979bb",
           "theme": "light",
           "timing": {
             "cls": 0.11873103988667327,
             "inp_proxy_ms": null,
-            "lcp_ms": 236,
+            "lcp_ms": 240,
             "resource_count": 34,
             "server_timing": [],
-            "transfer_bytes": 1255466
+            "transfer_bytes": 1259100
           },
           "viewport": "tablet-768",
           "viewport_height": 1024,
@@ -1414,21 +1414,21 @@
           "applied_force_state": "setup-focus",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 694639,
+          "bytes": 695695,
           "captured": true,
-          "file": "cells/416c2d060fdd5adc--setup-focus.png",
+          "file": "cells/7128597430b0fde5--setup-focus.png",
           "force_state": "setup-focus",
           "height": 4515,
           "locale": "zh",
-          "sha256": "416c2d060fdd5adcf2ce355f3fd7602dfc62d07b7a7a39b17afcba559037d39f",
+          "sha256": "7128597430b0fde5b8aef274acfdc8d472ac97ca71774f679ee1fced2e260cd7",
           "theme": "light",
           "timing": {
-            "cls": 0.11873103988667327,
+            "cls": 0.09761689230799672,
             "inp_proxy_ms": null,
-            "lcp_ms": 264,
+            "lcp_ms": 256,
             "resource_count": 34,
             "server_timing": [],
-            "transfer_bytes": 1255466
+            "transfer_bytes": 1259100
           },
           "viewport": "tablet-768",
           "viewport_height": 1024,
@@ -1440,21 +1440,21 @@
           "applied_force_state": "nav-hover",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 684343,
+          "bytes": 683310,
           "captured": true,
-          "file": "cells/7a1debab1d9ea9c3--nav-hover.png",
+          "file": "cells/d9be3ef4951faf76--nav-hover.png",
           "force_state": "nav-hover",
           "height": 4515,
           "locale": "zh",
-          "sha256": "7a1debab1d9ea9c3b7b0fedb40899ea2fea5a11391a1664e7a0f1a7abd4900d0",
+          "sha256": "d9be3ef4951faf767cc2068cfd8b07f1553b7e3637136d1b1594cf835bdd0e96",
           "theme": "light",
           "timing": {
-            "cls": 0.11873189744073898,
+            "cls": 0.11873205836551885,
             "inp_proxy_ms": null,
-            "lcp_ms": 252,
+            "lcp_ms": 228,
             "resource_count": 34,
             "server_timing": [],
-            "transfer_bytes": 1255466
+            "transfer_bytes": 1259100
           },
           "viewport": "tablet-768",
           "viewport_height": 1024,
@@ -1465,21 +1465,21 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 701782,
+          "bytes": 694557,
           "captured": true,
-          "file": "cells/a63cfaa5e3887f3b.png",
+          "file": "cells/f32cef8667d11032.png",
           "force_state": null,
           "height": 4515,
           "locale": "zh",
-          "sha256": "a63cfaa5e3887f3bd31be7e36fdba57345bf6aec11a916271f72b91cad557d3a",
+          "sha256": "f32cef8667d11032c6e840c1490673b81b4a765b764a34e9325310f529db725b",
           "theme": "dark",
           "timing": {
-            "cls": 0.11347600375302135,
+            "cls": 0.11347578776379424,
             "inp_proxy_ms": null,
-            "lcp_ms": 264,
+            "lcp_ms": 256,
             "resource_count": 34,
             "server_timing": [],
-            "transfer_bytes": 1255466
+            "transfer_bytes": 1259100
           },
           "viewport": "tablet-768",
           "viewport_height": 1024,
@@ -1491,13 +1491,13 @@
           "applied_force_state": "setup-focus",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 672846,
+          "bytes": 673072,
           "captured": true,
-          "file": "cells/6a5d4a926c948ea4--setup-focus.png",
+          "file": "cells/2444882e06286115--setup-focus.png",
           "force_state": "setup-focus",
           "height": 4515,
           "locale": "zh",
-          "sha256": "6a5d4a926c948ea493d14c300932f96b10bac757abf4e301fb79e0728d26805d",
+          "sha256": "2444882e062861151cde68e4d649b314ad3850c1099ccb668de0edf233ddcb8d",
           "theme": "dark",
           "timing": {
             "cls": 0.11347578776379424,
@@ -1505,7 +1505,7 @@
             "lcp_ms": 244,
             "resource_count": 34,
             "server_timing": [],
-            "transfer_bytes": 1255466
+            "transfer_bytes": 1259100
           },
           "viewport": "tablet-768",
           "viewport_height": 1024,
@@ -1517,21 +1517,21 @@
           "applied_force_state": "nav-hover",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 663358,
+          "bytes": 662766,
           "captured": true,
-          "file": "cells/c3bafda6b547d92f--nav-hover.png",
+          "file": "cells/31377482c77e448b--nav-hover.png",
           "force_state": "nav-hover",
           "height": 4515,
           "locale": "zh",
-          "sha256": "c3bafda6b547d92f3e3b9eacea3aa64c5733369b839f58f02053d599ee2c3c70",
+          "sha256": "31377482c77e448b31a1de20573d773facbf769db3806d0f4f9f95237925d762",
           "theme": "dark",
           "timing": {
-            "cls": 0.11347680624263982,
+            "cls": 0.11347664531785995,
             "inp_proxy_ms": null,
-            "lcp_ms": 240,
+            "lcp_ms": 224,
             "resource_count": 34,
             "server_timing": [],
-            "transfer_bytes": 1255466
+            "transfer_bytes": 1259100
           },
           "viewport": "tablet-768",
           "viewport_height": 1024,
@@ -1542,21 +1542,21 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 586106,
+          "bytes": 584732,
           "captured": true,
-          "file": "cells/2330f697cebfd036.png",
+          "file": "cells/4bc5a52e2a827250.png",
           "force_state": null,
           "height": 6426,
           "locale": "en",
-          "sha256": "2330f697cebfd036cba3bba2307dbdbad1bc96aa7fe19aac3e9457d0ee10efb3",
+          "sha256": "4bc5a52e2a8272504039f1b59986b159be7167e86096b251a4c0cd09c8c37787",
           "theme": "light",
           "timing": {
             "cls": 0.4244183449450834,
             "inp_proxy_ms": null,
-            "lcp_ms": 224,
+            "lcp_ms": 228,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "narrow-320",
           "viewport_height": 720,
@@ -1568,21 +1568,21 @@
           "applied_force_state": "setup-focus",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 548081,
+          "bytes": 546888,
           "captured": true,
-          "file": "cells/892811f2cb275ab3--setup-focus.png",
+          "file": "cells/1a753efe2bbfae63--setup-focus.png",
           "force_state": "setup-focus",
           "height": 6426,
           "locale": "en",
-          "sha256": "892811f2cb275ab330def44b830fe7420419b53295476c463c9b754f1405c0e3",
+          "sha256": "1a753efe2bbfae636ebecd5e8af6fc680d4dd5dbef91e662f7a54799877b8965",
           "theme": "light",
           "timing": {
             "cls": 0.3200278827055001,
             "inp_proxy_ms": null,
-            "lcp_ms": 272,
+            "lcp_ms": 216,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "narrow-320",
           "viewport_height": 720,
@@ -1594,21 +1594,21 @@
           "applied_force_state": "nav-hover",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 575952,
+          "bytes": 576156,
           "captured": true,
-          "file": "cells/7d966e5c5704f599--nav-hover.png",
+          "file": "cells/e25662b56f50d116--nav-hover.png",
           "force_state": "nav-hover",
           "height": 6426,
           "locale": "en",
-          "sha256": "7d966e5c5704f5997380b546df58277beb88372c9158e9470b0b7dd2322fac17",
+          "sha256": "e25662b56f50d116eb4ddf16de30ee6561679e063b3421d5b0d6cb098062c4a3",
           "theme": "light",
           "timing": {
             "cls": 0.42442250795717595,
             "inp_proxy_ms": null,
-            "lcp_ms": 236,
+            "lcp_ms": 204,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "narrow-320",
           "viewport_height": 720,
@@ -1619,21 +1619,21 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 562129,
+          "bytes": 562662,
           "captured": true,
-          "file": "cells/ef3058c1fdd54e13.png",
+          "file": "cells/867c57fc3706b8e3.png",
           "force_state": null,
           "height": 6426,
           "locale": "en",
-          "sha256": "ef3058c1fdd54e13d7d529c98332032c1068bf981e542d751baaf6d2a9a5fefd",
+          "sha256": "867c57fc3706b8e3967f00d1d79085203974508bf736d347dbb876bcd9df314f",
           "theme": "dark",
           "timing": {
             "cls": 0.3808041549494237,
             "inp_proxy_ms": null,
-            "lcp_ms": 228,
+            "lcp_ms": 224,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "narrow-320",
           "viewport_height": 720,
@@ -1645,21 +1645,21 @@
           "applied_force_state": "setup-focus",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 528246,
+          "bytes": 528925,
           "captured": true,
-          "file": "cells/8f8bb9c6dcbc31ff--setup-focus.png",
+          "file": "cells/65dde10ec0f5dc09--setup-focus.png",
           "force_state": "setup-focus",
           "height": 6426,
           "locale": "en",
-          "sha256": "8f8bb9c6dcbc31ff5c5ff95ca086f78291fe800dc7371f1355afd54b4306bf97",
+          "sha256": "65dde10ec0f5dc09ca4cf30f375fbb33ed9720ef5c169ff486825be7a7e79acd",
           "theme": "dark",
           "timing": {
             "cls": 0.3808041549494237,
             "inp_proxy_ms": null,
-            "lcp_ms": 192,
+            "lcp_ms": 208,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "narrow-320",
           "viewport_height": 720,
@@ -1671,21 +1671,21 @@
           "applied_force_state": "nav-hover",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 557349,
+          "bytes": 558628,
           "captured": true,
-          "file": "cells/4f2746ba940d1c85--nav-hover.png",
+          "file": "cells/3238d2b73c0a52f7--nav-hover.png",
           "force_state": "nav-hover",
           "height": 6426,
           "locale": "en",
-          "sha256": "4f2746ba940d1c85e08cbe88d11522b18168a10632d5eebbb76d385d038612e7",
+          "sha256": "3238d2b73c0a52f73ee3e1e0706f3c521833a36fd0c22d8d1099a93311f3feb5",
           "theme": "dark",
           "timing": {
-            "cls": 0.38080909917384026,
+            "cls": 0.38080831796151626,
             "inp_proxy_ms": null,
-            "lcp_ms": 248,
+            "lcp_ms": 216,
             "resource_count": 33,
             "server_timing": [],
-            "transfer_bytes": 1230766
+            "transfer_bytes": 1234400
           },
           "viewport": "narrow-320",
           "viewport_height": 720,
@@ -1696,21 +1696,21 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 574476,
+          "bytes": 573985,
           "captured": true,
-          "file": "cells/7fc811d58e1573da.png",
+          "file": "cells/91bd662f607fa19c.png",
           "force_state": null,
           "height": 5897,
           "locale": "zh",
-          "sha256": "7fc811d58e1573da798aba5fc720f2cddd0699ea06cd97f3893b9740a10517b5",
+          "sha256": "91bd662f607fa19c7c451f51c6dd4988c156cd3af0bac2c681059e3fd6f749ed",
           "theme": "light",
           "timing": {
-            "cls": 0.43184069824218746,
+            "cls": 0.36097185902536644,
             "inp_proxy_ms": null,
             "lcp_ms": 232,
             "resource_count": 34,
             "server_timing": [],
-            "transfer_bytes": 1255466
+            "transfer_bytes": 1259100
           },
           "viewport": "narrow-320",
           "viewport_height": 720,
@@ -1722,21 +1722,21 @@
           "applied_force_state": "setup-focus",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 540937,
+          "bytes": 540251,
           "captured": true,
-          "file": "cells/02211285e47f3f51--setup-focus.png",
+          "file": "cells/b4c47a0d202e24d9--setup-focus.png",
           "force_state": "setup-focus",
           "height": 5897,
           "locale": "zh",
-          "sha256": "02211285e47f3f519535f3482327e1cd208ee50c4d027c6759cd0526e32a907c",
+          "sha256": "b4c47a0d202e24d98f3da214544c8fd501dc5f8ed606d8f6af46cbc9d042261e",
           "theme": "light",
           "timing": {
             "cls": 0.43184069824218746,
             "inp_proxy_ms": null,
-            "lcp_ms": 216,
+            "lcp_ms": 224,
             "resource_count": 34,
             "server_timing": [],
-            "transfer_bytes": 1255466
+            "transfer_bytes": 1259100
           },
           "viewport": "narrow-320",
           "viewport_height": 720,
@@ -1748,21 +1748,21 @@
           "applied_force_state": "nav-hover",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 562564,
+          "bytes": 561817,
           "captured": true,
-          "file": "cells/80f8b33de4eec5da--nav-hover.png",
+          "file": "cells/c8d8ea606ff6a10f--nav-hover.png",
           "force_state": "nav-hover",
           "height": 5897,
           "locale": "zh",
-          "sha256": "80f8b33de4eec5da3480a9d75424ee1b1a16312d16c2433f7b0e680cd25f9635",
+          "sha256": "c8d8ea606ff6a10f6846075b9612d842c95f99f480d561503c981935486d705d",
           "theme": "light",
           "timing": {
             "cls": 0.43184486125428,
             "inp_proxy_ms": null,
-            "lcp_ms": 208,
+            "lcp_ms": 216,
             "resource_count": 34,
             "server_timing": [],
-            "transfer_bytes": 1255466
+            "transfer_bytes": 1259100
           },
           "viewport": "narrow-320",
           "viewport_height": 720,
@@ -1773,21 +1773,21 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 548346,
+          "bytes": 554155,
           "captured": true,
-          "file": "cells/e559eadb6efef3da.png",
+          "file": "cells/b8bf0b4d091cd927.png",
           "force_state": null,
           "height": 5897,
           "locale": "zh",
-          "sha256": "e559eadb6efef3da55c85af2dcee83f0e7563457d158878e49f5e56eea58a89b",
+          "sha256": "b8bf0b4d091cd92747f796374cada2420e40bfc9b6429961dacf4cf6d872dfd7",
           "theme": "dark",
           "timing": {
             "cls": 0.38757947229456013,
             "inp_proxy_ms": null,
-            "lcp_ms": 216,
+            "lcp_ms": 224,
             "resource_count": 34,
             "server_timing": [],
-            "transfer_bytes": 1255466
+            "transfer_bytes": 1259100
           },
           "viewport": "narrow-320",
           "viewport_height": 720,
@@ -1799,21 +1799,21 @@
           "applied_force_state": "setup-focus",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 519689,
+          "bytes": 519277,
           "captured": true,
-          "file": "cells/c963e35a6cb998e8--setup-focus.png",
+          "file": "cells/330e46d3032ff0ef--setup-focus.png",
           "force_state": "setup-focus",
           "height": 5897,
           "locale": "zh",
-          "sha256": "c963e35a6cb998e87cc42d02d15367dc243bd657870d683c4baed432312cfc31",
+          "sha256": "330e46d3032ff0efadcf2e1a79ce0b99661503660217e1126abad1dd35638b62",
           "theme": "dark",
           "timing": {
             "cls": 0.38757947229456013,
             "inp_proxy_ms": null,
-            "lcp_ms": 232,
+            "lcp_ms": 224,
             "resource_count": 34,
             "server_timing": [],
-            "transfer_bytes": 1255466
+            "transfer_bytes": 1259100
           },
           "viewport": "narrow-320",
           "viewport_height": 720,
@@ -1825,21 +1825,21 @@
           "applied_force_state": "nav-hover",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 542979,
+          "bytes": 543089,
           "captured": true,
-          "file": "cells/33b97dea1726207b--nav-hover.png",
+          "file": "cells/3c5b9a664e5f7676--nav-hover.png",
           "force_state": "nav-hover",
           "height": 5897,
           "locale": "zh",
-          "sha256": "33b97dea1726207bec5db7869e8d195068a9360abc572440d18494e432d2f087",
+          "sha256": "3c5b9a664e5f76763c93a54cd8041d20e002cb5c15e1803b69a44055310bf4c8",
           "theme": "dark",
           "timing": {
             "cls": 0.3875844165189767,
             "inp_proxy_ms": null,
-            "lcp_ms": 244,
+            "lcp_ms": 232,
             "resource_count": 34,
             "server_timing": [],
-            "transfer_bytes": 1255466
+            "transfer_bytes": 1259100
           },
           "viewport": "narrow-320",
           "viewport_height": 720,
@@ -1867,9 +1867,9 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/prophet-opportunity-system-20261015-5ba805642dd9aece",
-    "resolved_sha_or_none": "89dcceeb9baa2882338467adc30bc39aa411ab15",
+    "resolved_sha_or_none": "90f83d46e6bfe7e56f90872531fe5181c0729455",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/prophet-opportunity-system-20261015-5ba805642dd9aece (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
-    "site_dir": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/prophet-opportunity-system-20261015-5ba805642dd9aece/site/_tmp/prophet-acceptance-89dcceeb"
+    "site_dir": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/prophet-opportunity-system-20261015-5ba805642dd9aece/site/_tmp/prophet-acceptance-main392f"
   },
   "timing_basis": "lab",
   "tool": {
