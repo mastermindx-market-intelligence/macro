@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-24T10:51:59Z",
+ "accession": "0001628280-26-026991",
+ "cik": "0001786909",
+ "doc_byte_length": 17263150,
+ "doc_sha256": "d7cc679b2a248cba7860d9fafa396859d4c941e2e5aa0a4bd63afe52fbad8da8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-24",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "sbsw-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 17204930,
+  "byte_start": 17204402,
+  "normalized": "Precious Metals Purchase Agreement between Wheaton Precious Metals International Ltd. and Sibanye Gold Limited, dated",
+  "normalized_sha256": "d7ba66ad60eaa9d461743629e5ebdb79f89c1af6673de7d8ff46bf7adf362f12",
+  "raw": "Precious Metals Purchase Agreement between Wheaton Precious Metals International Ltd. and Sibanye Gold Limited, dated</a></span><span style=\"color:#0000ff;font-family:'Century Gothic', sans-serif;font-size:7.5pt;font-style:normal;font-weight:normal;left:457.09pt;position:var(--position);text-decoration:underline;white-space:pre;width:2.07pt\"><a style=\"-sec-extract:exhibit;color:inherit;text-decoration:inherit;z-index:1\" href=\"https://www.sec.gov/Archives/edgar/data/1561694/000155837019002873/sbgl-20181231ex4471202c5.htm\"> ",
+  "raw_sha256": "da5a9e8d9fb1bc57b382fe31aa2a46877d9c21aeb79546954d0e21d6d412c7d7"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1786909/000162828026026991/sbsw-20251231.htm",
+ "xbrl_contexts": []
+}

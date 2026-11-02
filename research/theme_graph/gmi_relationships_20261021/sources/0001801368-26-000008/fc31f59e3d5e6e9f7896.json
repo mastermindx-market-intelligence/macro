@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T21:45:35Z",
+ "accession": "0001801368-26-000008",
+ "cik": "0001801368",
+ "doc_byte_length": 3138683,
+ "doc_sha256": "5a886ef2e336b6b374b630f95ccc340e0abb6f4d652c6e0d313897d17e4f4048",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mp-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2535552,
+  "byte_start": 2534791,
+  "normalized": "In July 2025, the Company entered into a definitive, long-term supply agreement with Apple for the development, manufacture, and supply of magnets from the Company’s Independence Facility, as well as the development and installation of scaled recycling capabilities at Mountain Pass to produce the contained rare earths from post-industrial and post-consumer recycled rare earth feedstocks. In connection with the agreement, and subject to achieving specified milestones, Apple agreed to make prepayments in the aggregate amount of $200.0 million for the purchase of magnets from the Company.",
+  "normalized_sha256": "ea88c14c53edad0d79d276593724d3c009ef78218addc455165999df992a0a81",
+  "raw": "In July 2025, the Company entered into a definitive, long-term supply agreement with Apple for the development, manufacture, and supply of magnets from the Company&#8217;s Independence Facility, as well as the development and installation of scaled recycling capabilities at Mountain Pass to produce the contained rare earths from post-industrial and post-consumer recycled rare earth feedstocks. In connection with the agreement, and subject to achieving specified milestones, Apple agreed to make prepayments in the aggregate amount of $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-213\" decimals=\"-5\" name=\"mp:LongTermSupplyAgreementAgreedPrepaymentAmount\" scale=\"6\" id=\"f-1350\">200.0</ix:nonFraction>&#160;million for the purchase of magnets from the Company.",
+  "raw_sha256": "fc31f59e3d5e6e9f7896a8f8df2615992ddf06d96f80db57bd623fe74e7ab247"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1801368/000180136826000008/mp-20251231.htm",
+ "xbrl_contexts": []
+}

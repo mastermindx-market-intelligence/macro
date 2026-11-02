@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-30T10:04:15Z",
+ "accession": "0001193125-26-193757",
+ "cik": "0001033767",
+ "doc_byte_length": 5417002,
+ "doc_sha256": "b2a2f75bc31f2aed98ca636c2929b0420cd4f307d5ebfea0c48fe198bd6cd8c5",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-30",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "d91630d20f.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 948838,
+  "byte_start": 948354,
+  "normalized": "Our primary customers, in terms of our sales revenues, include premier integrated device manufacturers, such as Texas Instruments and Intel, plus leading fabless design companies, such as MediaTek, Realtek and Novatek. In 2025, our company’s top ten customers accounted for 57.0% of our operating revenues. We believe our success in attracting these customers is a direct result of our commitment to high quality service and our intense focus on customer needs and performance.",
+  "normalized_sha256": "55ea71b7bb12e5010f8e155f4db31d5993491fcd4bc182d0d00d3b6a8a314634",
+  "raw": "Our primary customers, in terms of our sales revenues, include premier integrated device manufacturers, such as Texas Instruments and Intel, plus leading fabless design companies, such as MediaTek, Realtek and Novatek. In 2025, our company&#8217;s top ten customers accounted for 57.0% of our operating revenues. We believe our success in attracting these customers is a direct result of our commitment to high quality service and our intense focus on customer needs and performance. ",
+  "raw_sha256": "2b5c3c78ac72d70ee9f7bfe3886bebb64a3ebc79334a8016ca0a0c62a4634668"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1033767/000119312526193757/d91630d20f.htm",
+ "xbrl_contexts": []
+}

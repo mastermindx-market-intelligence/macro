@@ -61,6 +61,10 @@ from lib import config, store
 
 log = logging.getLogger(__name__)
 
+# Re-check verdicts on which a leg scores zero on the gauge and prints as background on the
+# alert log (engine/btc_alerts._apply_leg_gate).
+GATED_STATUSES = ("demoted", "insufficient_n")
+
 # Ladder thresholds (score -> state). Shared by both gauges.
 _LADDER = (("quiet", 0, 15), ("coiled", 15, 35), ("warning", 35, 60), ("trigger", 60, 101))
 
@@ -292,7 +296,7 @@ def compute(sig_df: pd.DataFrame | None = None) -> dict:
             both zero the leg — a thin sample cannot award act-tier weight.
             """
             status = gate_legs.get(key, {}).get("status")
-            if status in ("demoted", "insufficient_n"):
+            if status in GATED_STATUSES:
                 return {"points": 0.0, "fired_today": False, "days_since": None, "demoted": True}
             return pts
 

@@ -4,7 +4,7 @@ Governing documents
 -------------------
 - Preregistration: ``research/C19_WP31_INCREMENTAL_INFORMATION_PREREG.md``,
   registered as PREREG_COMMIT ``8e1950932b29f89a89da94c50ccef4ef5f2d8d1c``
-  (amendments A1-A4 in its §10).  The prereg wins any conflict with the build
+  (amendments A1-A5 in its §10).  The prereg wins any conflict with the build
   spec; never redesign, never widen.
 - Frozen wave-2 build spec: ``WP31_WAVE2_SPEC.md`` (seat stage), sha256
   ``bb0ad59a0671da03c940b1c7f1a97f037146c12e42207bf5d4a7bf96d5de4a17``.
