@@ -1004,3 +1004,94 @@ def test_contract_changes_only_contract_dependent_keys(tmp_path):
     assert with_contract["packs"]["PK12"]["violations"] == {}
     assert with_contract["conforming"] is True
 
+
+# (29) a non-scalar split-decision id, a non-scalar split_decision on a
+# pack_scope row, and mutually incomparable split_decision values on one
+# issuer's pack_scope rows each exit 2 through the error path: no traceback,
+# no contract value echoed.
+def two_scoped_rows(first_split, second_split):
+    return {
+        "ticker": "T",
+        "accessions": [
+            {
+                "accession": CONTRACT_SENTINEL + "-1",
+                "split_decision": first_split,
+                "pack_scope": ["PK12"],
+            },
+            {
+                "accession": CONTRACT_SENTINEL + "-2",
+                "split_decision": second_split,
+                "pack_scope": ["PK12"],
+            },
+        ],
+    }
+
+
+TYPE_MALFORMED_CONTRACTS = {
+    "split_decisions_id_not_scalar": {
+        "split_decisions": [{"id": SPLIT_ID}, {"id": [CONTRACT_SENTINEL]}],
+        "issuers": [],
+    },
+    "pack_scope_split_decision_not_scalar": {
+        "split_decisions": [{"id": SPLIT_ID}],
+        "issuers": [
+            {
+                "ticker": "T",
+                "accessions": [
+                    {
+                        "accession": CONTRACT_SENTINEL,
+                        "split_decision": {"id": CONTRACT_SENTINEL},
+                        "pack_scope": ["PK12"],
+                    }
+                ],
+            }
+        ],
+    },
+    "pack_scope_split_decisions_int_and_str": {
+        "split_decisions": [{"id": SPLIT_ID}, {"id": CONTRACT_SENTINEL}],
+        "issuers": [two_scoped_rows(SPLIT_ID, CONTRACT_SENTINEL)],
+    },
+    "pack_scope_split_decisions_null_and_int": {
+        "split_decisions": [{"id": None}, {"id": SPLIT_ID}],
+        "issuers": [two_scoped_rows(None, SPLIT_ID)],
+    },
+}
+
+
+@pytest.mark.parametrize(
+    "case", sorted(TYPE_MALFORMED_CONTRACTS), ids=sorted(TYPE_MALFORMED_CONTRACTS)
+)
+def test_contract_type_malformed_exits_two_cleanly(case, tmp_path):
+    root = tmp_path / "root"
+    root.mkdir()
+    contract = contract_path(tmp_path, TYPE_MALFORMED_CONTRACTS[case])
+    result = run_tool(root, "--packs", "PK12", "--contract", str(contract))
+    assert result.returncode == 2
+    assert "Traceback" not in result.stderr
+    assert "fif_q0_label_conformance: error: contract file" in result.stderr
+    assert CONTRACT_SENTINEL not in result.stderr
+    assert CONTRACT_SENTINEL not in result.stdout
+
+
+# (30) one issuer's pack_scope rows under two comparable ids are still admitted
+# under the smaller id: the comparability check rejects nothing valid.
+def test_comparable_split_decisions_still_admitted(tmp_path):
+    synb1 = scoped_rows(SYNB1, [syn_accession(n) for n in (1, 2, 3)])
+    synb1["accessions"][1]["split_decision"] = 1
+    contract = contract_path(
+        tmp_path,
+        {
+            "split_decisions": [{"id": 1}, {"id": SPLIT_ID}],
+            "issuers": [
+                synb1,
+                scoped_rows(SYNB2, [syn_accession(n) for n in (4, 5)]),
+            ],
+        },
+    )
+    write_labels(tmp_path, "PK12", synb_conforming_records())
+    result = run_tool(tmp_path, "--packs", "PK12", "--contract", str(contract))
+    assert result.returncode == 0, result.stderr
+    report = report_of(result)
+    assert report["packs"]["PK12"]["by_issuer"][SYNB1]["split_decision"] == 1
+    assert report["packs"]["PK12"]["by_issuer"][SYNB2]["split_decision"] == SPLIT_ID
+

@@ -197,6 +197,15 @@ def _load_protocol(path: Path) -> dict:
     return protocol
 
 
+def _hashable(value) -> bool:
+    """True when ``value`` can be a set member (every JSON scalar can)."""
+    try:
+        hash(value)
+    except TypeError:
+        return False
+    return True
+
+
 def _load_contract(path: Path, packs_by_id: dict, protocol_issuers: set) -> dict:
     """Load and validate a held-out split contract (exit 2 on any bad key).
 
@@ -225,6 +234,11 @@ def _load_contract(path: Path, packs_by_id: dict, protocol_issuers: set) -> dict
     if isinstance(decisions, list):
         for entry in decisions:
             if isinstance(entry, dict) and "id" in entry:
+                if not _hashable(entry["id"]):
+                    _fail(
+                        f"contract file {path}: split_decisions entry key id "
+                        "is not a scalar"
+                    )
                 decision_ids.add(entry["id"])
     for issuer_entry in contract["issuers"]:
         if not isinstance(issuer_entry, dict) or not isinstance(
@@ -255,11 +269,27 @@ def _load_contract(path: Path, packs_by_id: dict, protocol_issuers: set) -> dict
                         f"contract file {path}: pack_scope is not a non-empty "
                         "list of protocol pack ids"
                     )
-                if row["split_decision"] not in decision_ids:
+                if (
+                    not _hashable(row["split_decision"])
+                    or row["split_decision"] not in decision_ids
+                ):
                     _fail(
                         f"contract file {path}: split_decision is not an id in "
                         "split_decisions"
                     )
+        # _contract_model takes min() over these; mixed types would raise.
+        scoped_decisions = [
+            row["split_decision"]
+            for row in issuer_entry["accessions"]
+            if "pack_scope" in row
+        ]
+        try:
+            min(scoped_decisions, default=None)
+        except TypeError:
+            _fail(
+                f"contract file {path}: split_decision values on one issuer's "
+                "pack_scope rows are not mutually comparable"
+            )
     return _contract_model(contract, packs_by_id, protocol_issuers)
 
 
