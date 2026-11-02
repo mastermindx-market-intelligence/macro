@@ -112,3 +112,53 @@ edit, qualified visual acceptance, merge to main or production deployment is cla
 The startup-layout assessment remains active in this continuation. A new final
 capture/CI receipt will identify its actual source revision; the final-r3 matrix
 is retained at its real historical capture revision.
+
+
+## Connection recovery and publication correction — 2026-11-02
+
+The original C2 Studio connection is responding again. Original source head and
+remote PR remain 0886fff3dbbe46445ba253758c2d873e1973c945. Its hosted CI
+41536140542 concluded SUCCESS, including all 12 packs and ci-gate; fences
+41536140124 also passed. Those receipts belong to that predecessor only.
+
+The interrupted normalized-browser launch produced no retained log, no matching
+process and no change to the committed browser_verification.json. After that
+same-carrier reconciliation, the exact requested recheck ran once to completion:
+515/515 browser assertions passed, controller PID75307, exit0. The normalized
+artifact also passes all 280 Intraday pytest cases plus three workflow-size
+contracts (283 passed in the retained regression log).
+
+The only product delta is the canonical make_optimizer transform of the
+predecessor's generated HTML: asset content hashes, normal deferred scripts and
+matching CSS preload URLs. Exact transform equality and idempotence were checked.
+Normalized HTML SHA256:
+3c54090283722829c42dd6068ce4e5362c6d58bc47ee098b97268acb4e1f3fdc.
+The Intraday template and both CSS copies are byte-identical to source-reviewed
+99b6151530160f1fb432277e48274040f2581660. No producer, model, shared navigation,
+feed, data, authentication, scheduler or infrastructure source was edited.
+
+Original Fabric run intraday-startup-diagnosis-20261102-c2 is reconciled through
+its existing status/result owner: root verified, TERMINAL rc75, acceptance
+EXECUTION_NOT_ELIGIBLE / UNVERIFIED, retry_allowed=false. Its entire 272-byte
+return is REMOTE_SUB_ADMISSION_REFUSED for host load and temperature, not a
+worker diagnosis or approval; response SHA256
+50f599612da988dea98cbfae66307d2731fdb31c480401df75cdf82ca3f45f95.
+No replacement or acceptance was submitted. Execution-absence metadata remains
+false; no stronger runtime claim is inferred. The original CI observer ended
+on a network error and is no longer running; the current CI result was recovered
+from GitHub, not attributed to that observer.
+
+The exact 24-state resume-r4 matrix records 0886fff BEFORE normalization and is
+retained as an intermediate control. startup_geometry_resume.json binds the
+normalized HTML hash and records the unresolved shared-navigation layout shift;
+no performance pass is claimed. A fresh normalized capture is the next evidence
+action. This correction is retained directly for LOWER_TOTAL_OVERHEAD: it is the
+canonical deterministic publication transform, with source custody unchanged.
+
+Mastermind Paper reads have recovered but its current direct app still reports
+accepted_for_write=false for catalog16e6b93f. The incumbent #1011/#1942 owner
+retains the v20 protected release, original merge queue, seat cutovers and sole
+watcher. Do not duplicate its runtime work. Qualified Claude target discovery
+still returns backend_unavailable / installed Session Bridge owner unavailable.
+Paper artboards, qualified visual acceptance, final-head CI and production proof
+remain open; the previous code review is not relabeled as current visual approval.

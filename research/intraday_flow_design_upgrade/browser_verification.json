@@ -171,7 +171,7 @@
         "Unavailable",
         "Unavailable",
         "Unavailable",
-        "Not met",
+        "Unavailable",
         "Not met",
         "Met"
       ]
@@ -179,7 +179,7 @@
     {
       "check": "1440/light/en/localized-dealer-bands",
       "passed": true,
-      "text": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: time unavailable\nVolume feed: 2026-07-27 22:32 UTC\nOptions feed: 2026-10-30 20:11 UTC\n\nNightly package built: 2026-11-02 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nTape & volume\nRelative volume\n—\nVol durability\n—\nSession VWAP\n—\nPrice vs VWAP\n—\nHigher lows\n—\n~Net call premium\n~+10.5M\n~Net premium (calls+puts)\n~+20.6M\nFlow durability\n48%\nApproximate call lean\n~call buying\nbig block×2\nsize vs open interest×53\nrepeat buyer×244\n1 of 7 recorded checks aligned\n✗\nRecent washout\nNot met\n·\nReclaimed above VWAP\nUnavailable\n·\nVolume elevated\nUnavailable\n·\nVolume holding\nUnavailable\n✗\n~Options leaning in\nNot met\n✗\nTrend turning up\nNot met\n✓\nClean leader (no trap)\nMet\nDealer map (options chains)\nDealer regime\nLong gamma · pins / mean-reverts\nRegime line\n317.95 (+7.7%)\nCeiling (call wall)\n~$360 very strong, hard\nFloor (put wall)\n~$310 weak\nMax pain\n~$300\nExpected move (day)\n±1.7%\nImplied vol\nrich (27.4)\nSkew tone\ndownside fear bid\nEvidence\nstale\n\nLong gamma — dealers dampen moves, so price tends to pin / mean-revert toward the nearby levels; fading extremes beats chasing breakouts, and tighter stops are reasonable.\n\nDaily options chains — a levels + timing map. Context for stops, never a direction call. Single-name regime is a near-constant product trait, not a live signal.\nReference levels\nStop (nightly)\n$329.40\nDealer ceiling\n~$360\nDealer floor\n~$310\nDaily range (ATR)\n0.77%\nBuy zone\n$342.10–$342.10\nReference only — not trade advice."
+      "text": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: time unavailable\nVolume feed: 2026-07-27 22:32 UTC\nOptions feed: time unavailable\n\nNightly package built: 2026-11-02 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nTape & volume\nRelative volume\n—\nVol durability\n—\nSession VWAP\n—\nPrice vs VWAP\n—\nHigher lows\n—\n~Net call premium\n—\n~Net premium (calls+puts)\n—\nFlow durability\n—\nApproximate call lean\nUnavailable\n1 of 7 recorded checks aligned\n✗\nRecent washout\nNot met\n·\nReclaimed above VWAP\nUnavailable\n·\nVolume elevated\nUnavailable\n·\nVolume holding\nUnavailable\n·\n~Options leaning in\nUnavailable\n✗\nTrend turning up\nNot met\n✓\nClean leader (no trap)\nMet\nDealer map (options chains)\nDealer regime\nLong gamma · pins / mean-reverts\nRegime line\n317.95 (+7.7%)\nCeiling (call wall)\n~$360 very strong, hard\nFloor (put wall)\n~$310 weak\nMax pain\n~$300\nExpected move (day)\n±1.7%\nImplied vol\nrich (27.4)\nSkew tone\ndownside fear bid\nEvidence\nstale\n\nLong gamma — dealers dampen moves, so price tends to pin / mean-revert toward the nearby levels; fading extremes beats chasing breakouts, and tighter stops are reasonable.\n\nDaily options chains — a levels + timing map. Context for stops, never a direction call. Single-name regime is a near-constant product trait, not a live signal.\nReference levels\nStop (nightly)\n$329.40\nDealer ceiling\n~$360\nDealer floor\n~$310\nDaily range (ATR)\n0.77%\nBuy zone\n$342.10–$342.10\nReference only — not trade advice."
     },
     {
       "check": "1440/light/en/refresh-ift-open-evidence/requested",

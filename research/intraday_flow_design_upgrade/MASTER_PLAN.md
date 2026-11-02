@@ -90,6 +90,7 @@ coverage functions remain the source; preserve #6867's separate timing work.
 | P2.1 | P1 | implementation_complete | DESIGN_SPEC.md and the paired template/CSS reference; NOT_APPLIED_TO_PAPER | Principal design; independent visual critique |
 | P3 | P2.1 | implementation_complete | Real template, paired page stylesheet and rendered page replaced; 15 core regions byte-identical to base | Principal retained: design judgment and critical path while audit admission waited |
 | P3.1 | P3 | implementation_complete | 280 pytest cases; 515 browser checks; 24 canonical screenshots and passing visual receipt | Regression and source-contract evidence; no production claim |
+| P3.2 | P3.1 | implementation_complete | Canonical publication asset normalization; 283 pytest cases and 515 browser assertions pass; fresh capture and final-head release checks remain | Deterministic canonical transform; no shared-navigation source change |
 | P4 | P3.1 | in_progress | Independent repair follow-up at 99b615153016 returns CODE=PASS; qualified human/Opus visual judgment remains open | Paid reviewer; principal adjudicates |
 | P5 | P2,P4 | blocked | Exact-head CI, permitted integration/release and served desktop/mobile proof | Existing release owner; no premature merge |
 
@@ -238,3 +239,12 @@ design-system, runtime-style and visual-receipt guards. The existing canonical
 matrix is carried forward with explicit source/geometry proof, not relabeled as a
 new capture. Qualified visual/Paper gates and served production acceptance remain
 open. Final-head CI belongs in the PR receipt after this proof update is pushed.
+
+
+## Recovery delta — 2026-11-02
+
+P3.2 restores canonical generated asset hashes, defer and preload without changing
+the reviewed template/CSS or model. MAIN_INTEGRATION.md contains the exact HTML
+hash, recovered 0886fff CI pass, 283 pytest and 515 browser results, original
+Fabric admission refusal and narrow Paper/visual gates. The normalized artifact
+requires its own final capture/CI; predecessor receipts are not future acceptance.
