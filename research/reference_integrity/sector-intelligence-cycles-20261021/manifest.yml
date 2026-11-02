@@ -1,7 +1,7 @@
 schema: mastermind.rig_manifest.v1
 reference_id: sector-intelligence-cycles-20261021
 scope: full
-status: revise
+status: in_review
 surface:
   route: sector_central.html
   registry_row: "macro:sector_central"
@@ -21,11 +21,11 @@ lineage:
     - mastermind-xpv2-sector-r3b-2
 reference_files:            # frozen at the commit that lands the exports + specs (set at freeze; never pre-filled)
   - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/
-    frozen_sha: 1ad748c8e785eda0a3e1f13167a9290c194d07ae
-    note: "Paper R3 page p-24-0 board exports (PNG 1x, boards 0-40: Paper exports 0-22 + HTML specimen captures 23-40) + boards_manifest.yml; file 01M2WGNCX9475G79JRKJTCM08P; re-frozen 2026-10-22 at ab1e71ac after repair wave 1 (round-2 dual review BLOCK/BLOCK → revise); re-frozen 2026-10-22 at 5432d5a0 after repair wave 2 (SIC-V2-C01..C16) for the round-3 dual review"
+    frozen_sha: 66829d178798f9226be7f668e82fe7c15e38b5e4
+    note: "Paper R3 page p-24-0 board exports (PNG 1x, boards 0-41: Paper exports 0-22 + HTML specimen captures 23-41) + boards_manifest.yml; file 01M2WGNCX9475G79JRKJTCM08P; re-frozen 2026-10-22 at ab1e71ac after repair wave 1 (round-2 dual review BLOCK/BLOCK → revise); re-frozen 2026-10-22 at 5432d5a0 after repair wave 2 (SIC-V2-C01..C16) for the round-3 dual review; re-frozen 2026-11-01 at 1ad748c8 after repair wave 3 (SIC-V3-C01..C17, SIC-ADJ-01; boards 38-40) for the round-4 dual review; re-frozen 2026-11-01 at 66829d17 after repair wave 4 (SIC-ADJ-02, SIC-V4-C01..C10; board 41) for the round-5 dual review"
   - path: design_refs/sector-paper-20261021/
-    frozen_sha: 1ad748c8e785eda0a3e1f13167a9290c194d07ae
-    note: "components.css/specimen.html/COMPONENTS.md, copy_deck, cycles_ia, state_matrix (sic-p refs); wave 2: components/si_shell.css + si_shell.py, brief_repair/ and cycles_repair/ specimens with README, capture.log, enum_zh.json; wave 3 (SIC-V3): cycles_repair/stamp_doctrine.py + prod_capture.json + prod_chart_capture_20261020.png, components/board_probe.py + zh_latin_grep.py, brief_repair/zh_face_latin_allow.txt, boards 38-40"
+    frozen_sha: 66829d178798f9226be7f668e82fe7c15e38b5e4
+    note: "components.css/specimen.html/COMPONENTS.md, copy_deck, cycles_ia, state_matrix (sic-p refs); wave 2: components/si_shell.css + si_shell.py, brief_repair/ and cycles_repair/ specimens with README, capture.log, enum_zh.json; wave 3 (SIC-V3): cycles_repair/stamp_doctrine.py + prod_capture.json + prod_chart_capture_20261020.png, components/board_probe.py + zh_latin_grep.py, brief_repair/zh_face_latin_allow.txt, boards 38-40; wave 4 (SIC-V4): engine ZH doctrine vocabulary in copy_deck stance rows (= engine DOCTRINE_STANCES), leg-family clock rule + three labeled disagree states in cycles_repair/build_cycles.py, ZH phase words from the production chip labels, zh_latin_grep.py letter-plus-digit tokenizer, board 41 composite desk light/ZH, PRC-036 production-drift record in COMPONENTS.md"
 files:
   baseline: baseline.yml
   proposal: proposal.yml

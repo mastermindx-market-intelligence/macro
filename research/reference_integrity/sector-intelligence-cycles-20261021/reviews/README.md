@@ -35,3 +35,10 @@ records REVISE with every pass-2 row as `upheld_revise` (VTC-008 `resolved_by_ch
 the stance-face adjudication SIC-ADJ-01 (the two critics' cures conflicted) and conditions SIC-V3-C01..C17;
 `proposal.yml` carries the matching `revision_mandate_round3`. Repair wave 3 re-freezes under a new sha and both
 critics re-ran against it (round 4); the round-4 receipts are the files in this directory (first/second pass per critic, normalized `<role>.yml`, review_round 4); both critics returned BLOCK/BLOCK — see verdict.yml (round 4, REVISE, SIC-V4-C01..C10, SIC-ADJ-02).
+
+Re-freeze 2026-11-01 at `66829d178798f9226be7f668e82fe7c15e38b5e4` (repair wave 4: SIC-ADJ-02, SIC-V4-C01..C10; boards 0–41;
+packets A 46160ab4 / B d9de99cc / C 66829d17): the round-4 receipts listed above are archived byte-exact under `round4_1ad748c8/`
+(`critic_return/` plus the normalized `visual_taste.yml` / `product_regression.yml`, same sha256 as the table). The top-level
+`critic_return/`, `visual_taste.yml` and `product_regression.yml` remain the round-4 receipts until the round-5 critics (same two
+identities, r5, same quarantine) return against `66829d17`; the round-5 receipts then replace them (review_round 5) and the header
+above is rewritten. `manifest.yml` carries `in_review` from this re-freeze; `proposal.yml` carries `revision_mandate_round4`.

@@ -10,6 +10,11 @@
 # SIC-V3-C01..C17 and the stance adjudication SIC-ADJ-01 (revision_mandate_round3); repair wave 3 → re-freeze → round 4.
 # Re-frozen 2026-11-01 at 1ad748c8 (repair wave 3, seat-direct: producer-stamped doctrine chip (SIC-ADJ-01), family-match read, context card,
 # FIXTURE PRIOR card, composite desk board 40, Brief lane criteria + drawers, boards 38-40, coverage 16/16; round 4 dual review).
+# Round 4 at 1ad748c8: BLOCK/BLOCK (Reviewer B VTC-028..034, VTC-033 withdrawn; Reviewer A PRC-036..041) → verdict REVISE round 4 with
+# SIC-V4-C01..C10 and the ZH doctrine-vocabulary adjudication SIC-ADJ-02 (revision_mandate_round4 at the end of this file).
+# Re-frozen 2026-11-01 at 66829d17 (repair wave 4, seat-direct, packets A 46160ab4 / B d9de99cc / C 66829d17: engine ZH doctrine vocabulary = deck,
+# leg-family clock rule + three labeled disagree states, one ZH phase word per face, no study ids on faces, HOLD rationale (SIC-ADJ-01a),
+# board 41 composite desk light/ZH, desk clock caption, manifest truth, null-stance FIXTURE card; boards 0-41; round 5 dual review).
 schema: mastermind.rig_proposal.v1
 reference_id: sector-intelligence-cycles-20261021
 proposed_artifact:
@@ -1970,3 +1975,90 @@ revision_mandate_round3:
     and the 38%-of-41 Abstained card as illustrative and superseded by the R4 hazard cells; the board 16 note extended
     to name the placeholder phase ages and the ''Slow cycle MODEL'' label as superseded by boards 28/34 (SIC-V3-C16).'
   proof: 'wave 3 at 1ad748c8: boards_manifest.yml rows 1/6 notes name the PRIOR 33% cell and the Abstained card as illustrative and superseded by boards 28/34 (the PRIOR shape lives on the labeled FIXTURE card, SIC-V3-C17); the row 16 note names the placeholder phase ages and the Slow cycle MODEL label as superseded by 28/34 (SIC-V3-C16); round-4 dual review pending'
+# Round-4 mandate (verdict.yml round 4, REVISE, SIC-ADJ-02, SIC-V4-C01..C10; blocking findings in verdict order; severity = the critic's final pass-2 severity,
+# VTC-021/VTC-024 carried from revision_mandate_round3; cure = the authority's verdict note verbatim; proof = the wave-4 tree at 66829d17).
+revision_mandate_round4:
+- id: VTC-029
+  severity: blocker
+  condition: SIC-V4-C01
+  disposition: cure_in_repair_commit
+  cure: 'Upheld as a blocker (both passes). Cure adjudicated in SIC-ADJ-02 and bound as SIC-V4-C01: the engine DOCTRINE_STANCES zh strings become the production strings, the deck equals the engine, no doctrine ZH equals any STANCES[*].zh and the Watch string contains no 观望; boards 30/34/35/36 and 38 re-rendered. Reconciled with PRC-036.'
+  proof: 'wave 4 at 66829d17 (packet A 46160ab4, packet B d9de99cc, packet C 66829d17): engine/cycle_ontology.py:143-149 DOCTRINE_STANCES zh = 行动 / 做好准备 / 观察 —— 别追 / 保护利润 / 暂时观望 / 忽略, the production strings cited per row in copy_deck.json components.stance_* sources (china_altdata.html.j2:227, stage_analysis.html.j2:1497 / :1499 / :1500, options.html.j2:3630; stance_act is the doctrine form docs/DESIGN_DOCTRINE.md:44 with no production t()); collision assertions in the engine module (no doctrine zh equals any STANCES[*].zh; Watch carries no 观望) and tests/test_cycle_ontology.py:1043 test_doctrine_vocabulary_is_the_production_vocabulary; the deck stance rows equal the engine string for string under tests/test_sector_paper_copy_deck.py:292 test_stance_rows_equal_the_engine_doctrine_vocabulary; site/cycle_ontology.js and cycles_repair/example_dataset.json regenerated with the new strings (packet A); Cycles ZH boards 30/34/35/36 and Brief boards 23-26/32/33/37/38 re-rendered, zh-latin=0 on every ZH board (capture.log wave-4 blocks).'
+- id: PRC-036
+  severity: major
+  condition: SIC-V4-C01
+  disposition: cure_in_repair_commit
+  cure: 'Upheld after rationale as the blocking major. Same cure as VTC-029 (SIC-ADJ-02 / SIC-V4-C01) plus: each deck stance_* source line must contain the exact string (copy_deck.json:239 cites stage_analysis.html.j2:1497, whose string is ''观察 —— 别追'', not ''观察，别追''); a test pins copy_deck stance_* == DOCTRINE_STANCES and the citation contents; the EN split (''Watch — don''t chase'' vs ''Watch, don''t chase'') closes on the doctrine form docs/DESIGN_DOCTRINE.md:44. The production variants outside this reference (rotation_events.js:200, _ignition_radar_card.html.j2:170, _mag7_tape_strip.html.j2:227) are recorded as declared production drift, not changed by the reference.'
+  proof: 'wave 4 at 66829d17 (packet A 46160ab4, packet B d9de99cc, packet C 66829d17): engine/cycle_ontology.py:143-149 DOCTRINE_STANCES zh = 行动 / 做好准备 / 观察 —— 别追 / 保护利润 / 暂时观望 / 忽略, the production strings cited per row in copy_deck.json components.stance_* sources (china_altdata.html.j2:227, stage_analysis.html.j2:1497 / :1499 / :1500, options.html.j2:3630; stance_act is the doctrine form docs/DESIGN_DOCTRINE.md:44 with no production t()); collision assertions in the engine module (no doctrine zh equals any STANCES[*].zh; Watch carries no 观望) and tests/test_cycle_ontology.py:1043 test_doctrine_vocabulary_is_the_production_vocabulary; the deck stance rows equal the engine string for string under tests/test_sector_paper_copy_deck.py:292 test_stance_rows_equal_the_engine_doctrine_vocabulary; site/cycle_ontology.js and cycles_repair/example_dataset.json regenerated with the new strings (packet A); Cycles ZH boards 30/34/35/36 and Brief boards 23-26/32/33/37/38 re-rendered, zh-latin=0 on every ZH board (capture.log wave-4 blocks). PRC-036 specifics: each deck stance_* source line contains the exact string (components.stance_watch cites stage_analysis.html.j2:1497 ''观察 —— 别追''); the test at tests/test_sector_paper_copy_deck.py:292 pins deck == engine and the citation contents; the EN form is ''Watch — don''t chase'' (docs/DESIGN_DOCTRINE.md:44). Declared production drift, not changed by this reference: templates/rotation_events.js:200 观望，不要追高, templates/_ignition_radar_card.html.j2:170 观望 — 勿追高, templates/_mag7_tape_strip.html.j2:227 观望，勿追高 — three surface-local ZH renderings of the Watch stance on the rotation, ignition and Mag-7 surfaces, recorded in design_refs/sector-paper-20261021/components/COMPONENTS.md stance-chip ZH notes (packet C) and here; unifying them is a production change owned by those surfaces, outside the sector_central / sector_cycles scope of this set.'
+- id: VTC-028
+  severity: major
+  condition: SIC-V4-C02
+  disposition: cure_in_repair_commit
+  cure: 'Upheld (major). Cure SIC-V4-C02: the hazard leg (direction · turn_kind) and the rhythm projection (next_turn) reach a face only when they agree with the phase_v2 chip''s family (rising family expects an up leg toward a peak; falling family expects a down leg toward a trough); otherwise the row shows a labeled disagree state naming its own clock and the phase clock, or moves to the drawer. XLF/XLK (next peak vs down·trough) and XLC (up·peak vs Rolling over) demonstrate it. Reconciled with PRC-039.'
+  proof: 'wave 4 at 66829d17 (packet A 46160ab4, packet B d9de99cc, packet C 66829d17): cycles_repair/build_cycles.py:89-96 LEG_OF / leg_family — the phase_v2 family fixes the expected leg (Recovery/Expansion/Peak: up leg toward a peak, next turn peak; Downturn/Trough: down leg toward a trough, next turn trough); hazard_agrees decides the hazard row at :151-152 and rhythm_agrees the rhythm row at :181-182; a disagreeing clock draws the labeled state naming its own clock and the phase clock in plain words (deck clocks_hazard_chip ''Hazard clock disagrees'' / ''风险时钟分歧'', clocks_rhythm_chip ''Rhythm clock disagrees'' / ''节律时钟分歧'', hazard_mismatch_pattern / rhythm_mismatch_pattern, copy_deck.json:164-165) with the cells drawer-only; the per-sector provenance drawer records the rule (leg_family row, build_cycles.py:232). Demonstrated on boards 28-31/34-36/39-41: XLF (Downturn family; hazard down·trough agrees, rhythm next peak disagrees → Rhythm clock disagrees), XLK (hazard unavailable; rhythm next peak → Rhythm clock disagrees), XLC (phase_v2 Downturn family; hazard up·peak → Hazard clock disagrees, rhythm → Rhythm clock disagrees).'
+- id: PRC-039
+  severity: minor
+  condition: SIC-V4-C02
+  disposition: cure_in_repair_commit
+  cure: 'Upheld (minor). Folded into SIC-V4-C02: when family_match is false the hazard direction is labeled with its clock or drawer-only.'
+  proof: 'wave 4 at 66829d17 (packet A 46160ab4, packet B d9de99cc, packet C 66829d17): folded into SIC-V4-C02: XLC''s hazard direction (up·peak, from the hazard ladder beside the Rolling-over chip) never reaches the face when family_match / leg_family disagree; the row is the labeled Hazard-clock-disagrees state with the cells drawer-only (build_cycles.py:151-152; boards 28/30/34/39/40/41).'
+- id: VTC-030
+  severity: major
+  condition: SIC-V4-C03
+  disposition: cure_in_repair_commit
+  cure: 'Raised to major by the critic after rationale and upheld by the authority: SIC-V3-C03 excludes clocks.agree as the face input, so the XLF chip driven by the engine ladder divergence does not demonstrate C03, and the one label carries two contracts. Cure SIC-V4-C03: three distinct labeled states, each naming both clocks in plain words — ladder divergence (phase clock vs timing ladder), read mismatch (cycle read vs phase clock), hazard/rhythm mismatch (hazard ladder or rhythm projection vs phase clock); XLF on a family match shows no read-mismatch state. Reconciled with PRC-040.'
+  proof: 'wave 4 at 66829d17 (packet A 46160ab4, packet B d9de99cc, packet C 66829d17): three distinct labeled states, each naming both clocks in plain words: ''Ladder disagrees'' / ''阶梯分歧'' (phase clock vs timing ladder; the ladder state glossed from the engine STATE_DISPLAY, never the raw enum — deck clocks_ladder_chip + ladder_state_pattern, copy_deck.json:162), ''Read disagrees'' / ''读数分歧'' (cycle read vs phase clock; family_match build_cycles.py:80; deck clocks_read_chip :163; drawn only when family_match is false → XLC) and the hazard/rhythm clock states of SIC-V4-C02. XLF on a family match shows Ladder disagrees + Rhythm clock disagrees and no Read-disagrees state; XLC shows Read disagrees + Hazard clock disagrees + Rhythm clock disagrees (boards 28/29/34/35/39/40/41; the states are enumerated in cycles_ia.md R5 wave-4 paragraph and COMPONENTS.md phase-chip States). clocks.agree is never a face input.'
+- id: PRC-040
+  severity: minor
+  condition: SIC-V4-C03
+  disposition: cure_in_repair_commit
+  cure: 'Upheld (minor). Folded into SIC-V4-C03.'
+  proof: 'wave 4 at 66829d17 (packet A 46160ab4, packet B d9de99cc, packet C 66829d17): folded into SIC-V4-C03: the one label ''Clocks disagree / 时钟分歧'' is gone; the four labels ''阶梯分歧'' / ''读数分歧'' / ''风险时钟分歧'' / ''节律时钟分歧'' (copy_deck.json:162-165) each name one contract and both clocks.'
+- id: VTC-021
+  severity: blocker
+  condition: SIC-V4-C04
+  disposition: cure_in_repair_commit
+  cure: 'Partially cured (EN cured; ZH not). Cure SIC-V4-C04: the ZH face uses the chip''s production phase label (回落中, sector_cycles.js:602) wherever the EN face says Rolling over — read, note and disagree states — and the engine short_zh (下行) stays drawer-only; face-only ZH count of the phase word is one per card. Reconciled with PRC-038.'
+  proof: 'wave 4 at 66829d17 (packet A 46160ab4, packet B d9de99cc, packet C 66829d17): the ZH face uses the chip''s production phase label (PHASE_FACE_ZH build_cycles.py:99 from the deck phase-chip rows, sourced templates/sector_cycles.js:602 — 回落中 for Rolling over) in the read, the notes and every disagree state (phase_pair :106); the engine short_zh (下行) is drawer-only. Face-only ZH phase-word counts (face_check probe, capture.log wave-4 block): XLF 回落中 ×4 → one distinct phase word; XLK 回落中 ×3 → one; XLC 回落中 ×4 + 筑底中 ×1 → two distinct words because the labeled Read-disagrees state names both clocks'' phases, as SIC-V4-C03 requires; fixture cards none; 下行 on no face (boards 30/34/35/36).'
+- id: PRC-038
+  severity: minor
+  condition: SIC-V4-C04
+  disposition: cure_in_repair_commit
+  cure: 'Upheld (minor). Folded into SIC-V4-C04.'
+  proof: 'wave 4 at 66829d17 (packet A 46160ab4, packet B d9de99cc, packet C 66829d17): folded into SIC-V4-C04: no ZH card names the same phase two ways — 回落中 is the only face word for Rolling over (chip, read, notes, disagree states); 下行 lives in the provenance drawer only (build_cycles.py:99 / :106; boards 30/34/35/36).'
+- id: VTC-024
+  severity: major
+  condition: SIC-V4-C05
+  disposition: cure_in_repair_commit
+  cure: 'Partially cured; VTC-016 stays tied. Cure SIC-V4-C05: no internal study id (W5.1 or any letter-plus-digit identifier) on either face — the lead-lag STOP is stated in plain words with the study id in the methods drawer (copy_deck leadlag_stop + build_cycles.py); zh_latin_grep.py tokenizes letter-plus-digit tokens (W5.1, P(...)) and the capture.log re-proves zh-latin=0 with the new tokenizer.'
+  proof: 'wave 4 at 66829d17 (packet A 46160ab4, packet B d9de99cc, packet C 66829d17): the lead-lag STOP is stated in plain words on both faces (deck leadlag_stop copy_deck.json:235, rendered on the methods card) with the study id W5.1 in the methods drawer only; components/zh_latin_grep.py:32 tokenizes letter-plus-digit and letter-plus-punctuation tokens and lone letters (W5.1, P(…), GLP-1); capture.log wave-4 blocks re-prove zh-latin=0 on every ZH board (Cycles 30/34/35/36/41, Brief 25/32/33/38) under the new tokenizer; the built-in allow set is unchanged (XL?, FIX, SPY, MODEL, PRIOR; zh_latin_grep.py:16); the Brief face allow file re-spells its basket entry GLP- → GLP-1 for the new tokenizer (same term, no entry added or removed; brief_repair/zh_face_latin_allow.txt); the ZH card hazard heads use the production 转折≤1月 (templates/sector_cycles.js:1132, deck hz_1m_chip :216) so no P(…) token sits on a ZH face; desk identifiers (page, sha, capture id, now.phase / phase_v2) are <code> elements the grep exempts (build_cycles.py:47 DH). VTC-016 (tied) is cured by the same change.'
+- id: PRC-037
+  severity: minor
+  condition: SIC-V4-C06
+  disposition: cure_in_repair_commit
+  cure: 'Upheld (minor, reworded by the critic). Cure SIC-V4-C06: the comment at cycle_ontology.py:150-151 names the HOLD cells truthfully (non-divergent Recovery/Expansion/Peak × RALLY ON at :245-247, Recovery × TOP WATCH at :252, the Peak extended-uptrend override at :1035-1041, the divergent Trough/Downturn × RALLY ON cells); SIC-ADJ-01a below records that clean-rally HOLD knowingly carries Watch — don''t chase in warn ink. The mapping row itself stands (SIC-ADJ-01).'
+  proof: 'wave 4 at 66829d17 (packet A 46160ab4, packet B d9de99cc, packet C 66829d17): engine/cycle_ontology.py:159-164 — the HOLD comment names the HOLD cells truthfully (every RALLY ON row: the clean Recovery/Expansion/Peak cells and the divergent Trough/Downturn cells; Recovery × TOP WATCH) and states that ''Watch — don''t chase'' in warn ink is intended for all of them (SIC-ADJ-01a; a held position is never a fresh entry, the chip is not an exit); the same sentence in cycles_ia.md:157 and the COMPONENTS.md Engine map bullet; the mapping row itself is unchanged (tests/test_cycle_ontology.py:979 / :991 pass).'
+- id: PRC-041
+  severity: minor
+  condition: SIC-V4-C07
+  disposition: cure_in_repair_commit
+  cure: 'Upheld (minor). Cure SIC-V4-C07: one light/ZH capture of ?desk=composite (board 41) with the production crop declared as captured in dark theme, and the composite desk declared a review instrument outside the shipped surface in boards_manifest, README and proposal.yml.'
+  proof: 'wave 4 at 66829d17 (packet A 46160ab4, packet B d9de99cc, packet C 66829d17): board 41 (41-cycles-desk-desktop-light-zh.png, 1440×3267) captures ?theme=light&lang=zh&desk=composite with the production crop declared as captured in dark theme (deck capture_theme_chip ''Dark-theme capture'' / ''深色主题截图'', copy_deck.json:170, drawn as a chip on the capture figure, build_cycles.py:364); boards_manifest.yml row 41 + the capability_boards comment, cycles_repair/README.md Boards table row 41 + wave-4 paragraph and proposal.yml (screenshots entry, wave4_summary) declare the composite desk a review instrument outside the shipped surface — boards 40/41 are supporting evidence, never coverage cells; zh-latin=0 on board 41.'
+- id: VTC-031
+  severity: minor
+  condition: SIC-V4-C08
+  disposition: cure_in_repair_commit
+  cure: 'Upheld (minor). Verified by the authority: the production chart''s ''Where they stand'' counts use now.phase, the legacy clock (templates/sector_cycles.js:611). Cure SIC-V4-C08: the board-40/41 desk caption states that the chart counts the legacy phase clock while the cards use the phase_v2 clock, so membership differs at the same as-of by design.'
+  proof: 'wave 4 at 66829d17 (packet A 46160ab4, packet B d9de99cc, packet C 66829d17): the desk caption (deck desk_clock_note copy_deck.json:182; build_cycles.py:366 figcaption) states that the production chart''s ''Where they stand'' counts use the legacy now.phase clock (templates/sector_cycles.js:611) while the specimen cards use the phase_v2 clock, so phase membership differs at the same as-of by design; drawn on boards 40/41; boards_manifest.yml rows 40/41 ''desk caption (SIC-V4-C08)'' bullets.'
+- id: VTC-032
+  severity: minor
+  condition: SIC-V4-C09
+  disposition: cure_in_repair_commit
+  cure: 'Upheld (minor, reworded by the critic under SIC-V2-C07). Cure SIC-V4-C09: boards_manifest rows 32/33 states_shown describe only what the wave-3 PNGs draw; the stale bullets are removed.'
+  proof: 'wave 4 at 66829d17 (packet A 46160ab4, packet B d9de99cc, packet C 66829d17): boards_manifest.yml rows 32/33 states_shown list only what the wave-3 PNGs draw: the ''lane titles + production qualifiers'' and ''coverage unavailable (measured-sector read withheld)'' bullets are removed and the stance-chip bullet is restated in the engine ZH doctrine vocabulary (SIC-V4-C01/C09); the Brief PNGs 32/33 are the re-rendered wave-4 captures (1440×2777).'
+- id: VTC-034
+  severity: minor
+  condition: SIC-V4-C10
+  disposition: cure_in_repair_commit
+  cure: 'Filed as nit; carried as minor. Cure folded into SIC-V4-C10: the ZH read says 位于200日均线上方; the drawer tone carries a ZH gloss.'
+  proof: 'wave 4 at 66829d17 (packet A 46160ab4, packet B d9de99cc, packet C 66829d17): a second labeled FIXTURE card (''Fixture — stance unavailable'' / ''示例——立场不可用'', deck fixture_null_h2 / fixture_null_body copy_deck.json:185; build_cycles.py:339 fixture_null) demonstrates the Stance-unavailable rendering (no chip, muted line, SIC-V3-C02) on the fixture strip of every Cycles board (28-31/34-36/39-41; SIC-V4-C10 names 28/34/40/41); the ZH read says 位于200日均线上方 where the EN says above its 200-day (XLF/XLK, face_check probe); the drawer tone line carries the ZH gloss from enum_zh.json (语气 看涨 / 谨慎 / 看跌 / 中性 / 预期).'
