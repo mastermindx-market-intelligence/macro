@@ -8349,6 +8349,7 @@ jobs:
       - "lib/hk_calendar.py"
       - "lib/market_observations.py"
       - "lib/market_session.py"
+      - "lib/options_publication_custody.py"
       - "lib/options_source_receipts.py"
       - "lib/stooq.py"
       - "lib/symbol_directory_receipts.py"
