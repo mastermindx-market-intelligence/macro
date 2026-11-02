@@ -4935,7 +4935,7 @@ BASE_AAPL_ENVELOPE_SHA256 = {
     "PK02": "8d868ce982fff7c5e45693d4a81df9e07afee166df4f4996c3a4e141b2790869",
     "PK11": "f425680270c2a267d8dca5f44e6a1e3c2ac708b124e2d2a7723c0674056d9b2f",
     "PK12": "da96915b1d81f0f4417e6cb4d5acbc551f5fbfcc5975dc37091adfec9be5cceb",
-    "PK09": "69ad83052dcb482b8f96b9b070174f419222d23c0ca5981534c62734a3b4d062",
+    "PK09": "3d9130f6de6cc0c4b89760a14102dec6986f24c74b174c066d4aef10fddf81d3",
 }
 _BASE_PACK_METRICS = {
     "PK06": "leases",
@@ -5648,7 +5648,7 @@ BASE_PACK_ENVELOPE_SHA256 = {
         "b26d48b769b9be642b5deaeafbe2f853b5d6155eb2f079f4953642c417062629"
     ),
     "PK09": (
-        "2187281554bab6b0a6f55beb79c71d55097d8a00a431c3d0c28a8c12a16de3fc"
+        "c4b994c45080380e4166a2d4381f6a310588617a6c7d4db366f5661f59c1175d"
     ),
     "PK11": (
         "9660c82e6d14e70e9302b2dc2cdf2468da416886422892d5201cea0ff88a744d"
@@ -6595,7 +6595,7 @@ PK05_BASE_PACK_ENVELOPE_SHA256 = {
     "PK03": "17a26aa6d276414927f9c68ddbd37595e79bc6120a289abcb254f83f4095057d",
     "PK04": "e4746fbf9126b233d759caeb235dfec72d1895b20b6a6b13a20dd6d16802d5dd",
     "PK06": "2126d42b4a608ad2a9f8e9a48b8692fe8c11c8ed187d5beb33e27df68182df17",
-    "PK09": "23f8812b86ab91d92be553ca7e39bac0db6facbac4cc0eb05c62ccb19b7e5ff6",
+    "PK09": "1c75cbbe03fc59fac67f92f3f1532d7b3c83f4f33452765ce1b4309f645715b0",
     "PK10": "217702f0bb51ac1686a796422e72118655584064fd8b6585eb8f5aa640c230e1",
     "PK11": "1e8d160a7fb3402fd82c698333cd2d87ad3622fca5d70437800c692c3fb63620",
     "PK12": "d6bfa668b1a77819f0a2e8ff1d77fd75e8cacce96dbeba49b430d861fca9591d",
@@ -8382,7 +8382,7 @@ PK07_BASE_PACK_ENVELOPE_SHA256 = {
     "PK04": "281d84d196751caca6ac23a217004766fb1483e2d5fc729309eb1bc30f64dc8f",
     "PK05": "3628a5ddde284650978617bcd7ae7ff922dd32ac0bbb8ab6e8f35ad2545967ac",
     "PK06": "84f9aad2836afa5b397253ff27807345d6245edf8f765b60b6e21d68449890f5",
-    "PK09": "b1ce551426abeb83041f1bd9abcfe5e228cdb85096198de7346f3d235e1f8724",
+    "PK09": "c58d7263e4156f4c7f8acfa56aa9ed1a3b63402b5b9f6400960a460282a314b7",
     "PK10": "2ef05add8be8db7f9cb32a6fd55b47eab26fafdc2e603a2b7cbae9e074b234d0",
     "PK11": "140b630622b5e1ab49dd1743ad8eafb91be8872e7a20e9cfc72d2d59ffddaefc",
     "PK12": "4915af8ff2a916dd788d219de2329c6fc7703df5dfc3ac7a4e8dc7265f4ab48b",
@@ -9038,7 +9038,7 @@ PK08_BASE_PACK_ENVELOPE_SHA256 = {
     "PK05": "ac0cf6c6d5fb655b622d57317c376602ac357a7e3c075b60c8ef4fa7e6679740",
     "PK06": "1f78880eba88a185421ccc943e8e227bf7d264e5fea6ac8af1c96d75a793e229",
     "PK07": "0ff8a0e0ed118c716d3417e3765a131e94054fa57ab8eb9a2b0ade02fb89a153",
-    "PK09": "07cb38090c2ef76a29e49301e9192547e7dfbdf8324c25586e1604a524aebb5e",
+    "PK09": "d2f04e7e866f870b7e6e3e19af46a536d3c0b0d34ea77b15507154c006dba3b9",
     "PK10": "655d3ff540c539e2f2b2a20104f286d68baaa6a18990e1ec46d52cc7cd6f32ba",
     "PK11": "58e1c524a82210daffc392c855309c73b5d4ca55732c100c3a3a6babe7d41ba4",
     "PK12": "e3578db64f6e41c5ec5633b5b529fc87ca742a2857639bbaf2ba28ec4480f830",
@@ -12390,3 +12390,393 @@ def test_pk07_guard_completion_after_the_fiscal_period_is_typed_absence() -> Non
     row = _row(result, "acquisition_date")
     assert row["quality_state"] != "valued"
     assert row["text_value"] is None
+
+
+# 31b. PK09 dev-corpus recall repairs (diversified_v1 + litigation_v1) --------
+# Synthetic probes for the 2026-11-01 repair lane fif-pk09dev-20261101-r1:
+# heading variants, the financial-statement index TOC line, the report's own
+# "under Item 9A" cross-reference, signature-block forms, the management
+# conclusion wordings, the Item 8 management-report fallback, and the
+# precision guards. Each behavior test fails on the pre-repair pack; the
+# going-concern case is a labeled pin.
+
+
+def test_pk09_item9a_title_only_heading_locates_controls() -> None:
+    # Heading variant (title-only shape): the real section carries only the
+    # all-caps title; the item number never reaches the heading text.
+    body = (
+        "<div>Table of contents Item 9A. Controls and Procedures 124 "
+        "Item 9B. Other Information 125</div>"
+        "<div>CONTROLS AND PROCEDURES Management concluded that the "
+        "Company&#8217;s internal control over financial reporting was "
+        "effective as of June 30, 2026.</div>"
+        "<div>Our disclosure controls and procedures were effective as of "
+        "June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "icfr_management_conclusion")["text_value"] == (
+        "effective"
+    )
+    assert _row(result, "disclosure_controls_effective")["text_value"] == (
+        "effective"
+    )
+    assert _row(result, "material_weakness_present")["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_item4_em_dash_heading_with_toc_page_number() -> None:
+    # Heading variant (10-Q em-dash shape): an em-dash between the item number
+    # and the title, with a contents line carrying the trailing page number.
+    body = (
+        "<div>Item 4 Controls and procedures 46 Part II Other information "
+        "47 Item 1 Legal proceedings 47</div>"
+        "<div>Item 4 &#8212; Controls and procedures Disclosure controls and "
+        "procedures. Based on an evaluation, the Company&#8217;s disclosure "
+        "controls and procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-Q", body)
+    row = _row(result, "disclosure_controls_effective")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "effective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_audit_index_line_and_item9a_cross_reference() -> None:
+    # Multi-heading audit section (multi-form shape): the financial-statement
+    # index lists the report heading with a trailing page number, and the
+    # report's own scope paragraph says "appearing under Item 9A" — the
+    # section must still reach the signature block.
+    body = (
+        "<div>Index of financial statements Report of Independent Registered "
+        "Public Accounting Firm 42 Consolidated Balance Sheets 45</div>"
+        "<div>Item 8. Financial Statements and Supplementary Data Report of "
+        "Independent Registered Public Accounting Firm To the Board of "
+        "Directors Opinion In our opinion, the consolidated financial "
+        "statements present fairly, in all material respects, the financial "
+        "position of the Company as of June 30, 2026.</div>"
+        "<div>We also have audited the Company&#8217;s internal control over "
+        "financial reporting appearing under Item 9A. Our responsibility is "
+        "to express opinions on the financial statements and on internal "
+        "control. In our opinion, the Company maintained, in all material "
+        "respects, effective internal control over financial reporting as of "
+        "June 30, 2026.</div>"
+        "<div>Critical Audit Matters The critical audit matter communicated "
+        "below is a matter arising from the current period audit.</div>"
+        "<div>/s/ Audit Partners LLP Springfield, Illinois February 1, "
+        "2027</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "Audit Partners LLP"
+    assert _row(result, "auditor_opinion_fs")["text_value"] == "unqualified"
+    assert _row(result, "auditor_opinion_icfr")["text_value"] == "effective"
+    assert _row(result, "critical_audit_matters")["quality_state"] == "valued"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_firm_signature_block_without_conformed_signature() -> None:
+    # Firm-name form (bare-office shape): the report signs with the bare office
+    # signature block and no conformed "/s/" prefix at all.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>Audit Partners LLP Springfield, Illinois February 1, 2027</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "Audit Partners LLP"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_uppercase_conformed_signature_names_the_firm() -> None:
+    # Firm-name form (conformed-signature shape): the conformed signature and the
+    # are set in capitals.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>/S/ AUDIT PARTNERS LLP Springfield, Illinois February 1, "
+        "2027</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "AUDIT PARTNERS LLP"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_icfr_conclusion_issuer_named_copula() -> None:
+    # Conclusion wording (issuer-copula shape): the issuer name sits between the
+    # phrase and the copula.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Based on this assessment, management believes that the internal "
+        "control over financial reporting of TestCo is effective as of June "
+        "30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_icfr_conclusion_adjective_first_maintained() -> None:
+    # Conclusion wording (adjective-first shape): the conclusion puts the
+    # front of the noun phrase.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Based on this assessment, management determined that the "
+        "Company maintained effective internal control over financial "
+        "reporting as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_icfr_conclusion_falls_back_to_management_report() -> None:
+    # Conclusion-sentence selection (Item 8 fallback shape): the conclusion lives
+    # in Management's own report inside Item 8, Item 9A only incorporates it
+    # by reference, and the report also carries the Section 404 requirement
+    # boilerplate ("... whether the Company's internal control over financial
+    # reporting is effective") that must not satisfy the field.
+    body = (
+        "<div>MANAGEMENT&#8217;S REPORT ON INTERNAL CONTROL OVER FINANCIAL "
+        "REPORTING Under Section 404 of the Sarbanes-Oxley Act of 2002, "
+        "management is required to assess the effectiveness of the "
+        "Company&#8217;s internal control over financial reporting and "
+        "report, based on that assessment, whether the Company&#8217;s "
+        "internal control over financial reporting is effective.</div>"
+        "<div>Based on the Company&#8217;s processes and assessment, "
+        "management has concluded that, as of June 30, 2026, the "
+        "Company&#8217;s internal control over financial reporting was "
+        "effective.</div>"
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the Company maintained, in all "
+        "material respects, effective internal control over financial "
+        "reporting as of June 30, 2026.</div>"
+        "<div>Item 9A. Controls and Procedures The information required by "
+        "this Item is incorporated herein by reference. Item 9B. Other "
+        "Information None.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert conclusion["mapping_rule_id"] == (
+        "PK09.icfr_management_conclusion.text_span/v1"
+    )
+    check = _check(result, "management_vs_auditor_icfr")
+    assert check["status"] == "pass"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_negated_adjective_conclusion_is_ineffective() -> None:
+    # Precision guard: a negated conclusion never resolves to effective.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Based on this assessment, management concluded that the Company "
+        "did not maintain effective internal control over financial reporting "
+        "as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "ineffective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_except_for_opinion_stays_typed_absent() -> None:
+    # Precision guard: an except-for qualified opinion phrase never resolves
+    # to unqualified/effective; the fields stay typed-absent.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, except for the effects of the "
+        "material weakness described above.</div>"
+        "<div>In our opinion, the Company maintained, in all material "
+        "respects, effective internal control over financial reporting as of "
+        "June 30, 2026, except for the effects of the material weakness "
+        "described above.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were not effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    fs = _row(result, "auditor_opinion_fs")
+    assert fs["quality_state"] == "missing"
+    assert fs["reason"] == "narrative_span_not_located"
+    icfr = _row(result, "auditor_opinion_icfr")
+    assert icfr["quality_state"] == "missing"
+    assert icfr["reason"] == "narrative_span_not_located"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_fs_only_report_leaves_icfr_opinion_typed_absent() -> None:
+    # Typed absence: a report carrying only the financial-statement opinion
+    # never mints an ICFR opinion; the field reports a located section with
+    # no matching span, not a missing section.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    icfr = _row(result, "auditor_opinion_icfr")
+    assert icfr["quality_state"] == "missing"
+    assert icfr["reason"] == "narrative_span_not_located"
+    assert _row(result, "auditor_opinion_fs")["text_value"] == "unqualified"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_icfr_change_capitalized_possessive() -> None:
+    # Change-sentence variant (capitalized-possessive shape): the possessive is
+    # own name or a lowercase "the company's".
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There were no changes in TestCo&#8217;s internal control over "
+        "financial reporting during the fourth quarter that have materially "
+        "affected, or are reasonably likely to materially affect, the "
+        "company&#8217;s internal control over financial reporting.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    change = _row(result, "icfr_change_in_period")
+    assert change["quality_state"] == "valued"
+    assert "no changes in TestCo" in change["text_value"]
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_going_concern_clean_report_stays_not_disclosed() -> None:
+    # PIN (going-concern family is not a repair target): a clean report with
+    # no substantial-doubt sentence keeps the valued absence. This pin holds
+    # on the pre-repair pack as well.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "not_disclosed"
+    assert _row(result, "going_concern_management_plan")["reason"] == (
+        "missing_dependency"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+# 31c. PK09 auditor-firm precedence repair (review follow-up, 2026-11-01) ----
+# The framework resolves a text-span selector with a single leftmost search,
+# so a predecessor auditor's bare dated signature block placed before the
+# incumbent's conformed block used to win auditor_firm. The resolver now
+# prefers the conformed-signature arm across the whole audit span and never
+# values a span whose chosen arm names two distinct firms.
+
+
+def test_pk09_predecessor_bare_block_never_wins_auditor_firm() -> None:
+    # Behavior: the predecessor's bare dated signature block precedes the
+    # incumbent's conformed block; the incumbent signs the report.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>Prior Auditor LLP Springfield, Illinois February 24, 2025</div>"
+        "<div>/s/ Current Auditor LLP Springfield, Illinois March 1, "
+        "2026</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "Current Auditor LLP"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_two_bare_blocks_from_different_firms_stay_typed_absent() -> None:
+    # Behavior: two bare dated signature blocks from two different firms and
+    # no conformed signature — never guess between two firms.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>Prior Auditor LLP Springfield, Illinois February 24, 2025</div>"
+        "<div>Northgate Audit LLP Capital City, New York March 1, 2026</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    firm = _row(result, "auditor_firm")
+    assert firm["quality_state"] == "missing"
+    assert firm["text_value"] is None
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_single_bare_block_still_names_the_firm() -> None:
+    # Pin: one bare dated signature block with no conformed signature still
+    # resolves to that firm. This pin holds on the pre-repair pack as well.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>Northgate Audit LLP Capital City, New York March 1, 2026</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "Northgate Audit LLP"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_predecessor_named_in_prose_never_displaces_incumbent() -> None:
+    # Pin: the predecessor appears only in report prose; the incumbent's
+    # conformed block still signs. This pin holds on the pre-repair pack.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors The consolidated financial statements as of "
+        "June 30, 2025 were audited by Prior Auditor LLP, our predecessor "
+        "auditor, whose report dated February 24, 2025 expressed an "
+        "unqualified opinion.</div>"
+        "<div>In our opinion, the financial statements present fairly, in "
+        "all material respects, the financial position of the Company as of "
+        "June 30, 2026.</div>"
+        "<div>/s/ Current Auditor LLP Springfield, Illinois March 1, "
+        "2026</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "Current Auditor LLP"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_single_conformed_signature_resolves_unchanged() -> None:
+    # Pin: a single conformed signature resolves exactly as before the
+    # repair. This pin holds on the pre-repair pack as well.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>/s/ Northgate Audit LLP Springfield, Illinois March 1, "
+        "2026</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "Northgate Audit LLP"
+    assert contract.validate_pack_result(result) == []
