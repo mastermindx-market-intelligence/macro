@@ -10308,6 +10308,8 @@ jobs:
           python -m pytest tests/test_prophet_daily_brief_evidence_sources.py
           tests/test_prophet_today_provenance.py
           tests/test_prophet_daily_brief_api.py -q
+      - name: Prophet V4-A2 settlement preflight — issuer-side population inventory and NOT_SETTLED receipt (non-fatal alarm)
+        run: python -m pytest tests/test_prophet_settlement_preflight.py -q
       - name: install observation browser
         run: python -m playwright install --with-deps chromium
       - name: Prophet observation discovery — full-population search, access failure and theme geometry

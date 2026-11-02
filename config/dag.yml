@@ -868,6 +868,19 @@ lanes:
           build_prophet's early band is fragile publication machinery. engine/seasonality/
           program_watch.py reads this token as the decision record; deleting it re-opens the
           daily-order tripwire, which is the intended behaviour if the decision is ever revisited.
+      - id: prophet_settlement_preflight
+        module: scripts.prophet_settlement_preflight
+        note: >
+          V4-A2 issuer-side source qualification preflight (2026-10-31) —
+          non-fatal alarm, never a gate, run inside the Prophet nightly step
+          after the delta manifest succeeds. Binds the FULL build-owned
+          population inventory (not the changed-only delta TSV), the frozen
+          board bytes, the final computed_at index bytes and the incumbent GMI
+          ThemeState accepted-generation receipt. Emits a typed NOT_SETTLED
+          receipt (bundle_id stays null; no publication, no private payload)
+          until every leg — including separately qualified GMI production use —
+          is qualified. Declared so dag-conformance does not treat the nightly
+          invocation as undeclared lane drift.
       - id: prophet_board_acceptance
         module: scripts.prophet_board_acceptance
         note: >

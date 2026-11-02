@@ -3766,6 +3766,10 @@ on:
       # Hermetic receipt compatibility also runs in the prophet-lab code gate.
       - "tests/test_prophet_today_provenance.py"
       - "tests/test_prophet_miss_audit.py"
+      # V4-A2 settlement preflight (2026-10-31): nightly non-fatal alarm + its suite run in prophet-lab.
+      - "tests/test_prophet_settlement_preflight.py"
+      - "scripts/prophet_settlement_preflight.py"
+      - "scripts/prophet_output_inventory.py"
       - "scripts/grade_us_prophet_candidates.py"
       # Archetype coverage pipeline (2026-08): the candidates-stamp heal script and
       # the suite pinning fac-less classification + store freshness + fill-null-only
