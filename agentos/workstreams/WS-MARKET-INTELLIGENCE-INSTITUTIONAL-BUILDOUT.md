@@ -134,6 +134,7 @@ landmines:
   - "us_board_provisional staleness over a weekend is producer-side (the VPS mirror timer runs Mon..Fri 20..23:02/5:00 UTC with Persistent=false; the GitHub backstop published after the mirror's last tick): the next tick heals it; nothing to patch on the VPS."
   - "The Alpaca receipt caps every consumer of alpaca-rest rows at headline/teaser/source-link display; body_display and image_display are FALSE. A surface that renders body or image needs a NEW receipt with a basis that supports it, never an edit of config/ticker_news_rights_alpaca_benzinga.json."
 do_not_redo:
+  - "2026-11-02 P2 polish: terminal #1211 (master 70ebc639) merged, deployed 2026-11-02T08:5xZ with readback match; S1-S7 of pkt_r3p2 closed; lane news-r3-p2 consumed (admission refused rc=75, seat executed directly)"
   - "R3 rail terminal #1209 (squash 82a8cd89c0925f68301034f9b47d94261b88a82a), L4 #1129 (35a03ca3), design #1130 and macro #10479/#10500 are MERGED; review news-r3-rev and repair rounds news-r3-l2/l3 are consumed; the D-W1 ruling is in the spec amendment. Never re-review, re-land, re-home the light carve-out or re-prove them without a material invalidator."
   - "ACK on Mastermind #1202 exists once (comment 6009097528, 2026-10-06 04:05Z) — never re-ACK or re-START."
   - "N0/E0/L0/V0/I0/S0 censuses and the L2 review are ACCEPTED by artifact (seat re-showed every path:line claim on the pinned heads); do not re-census the same questions."

@@ -131,6 +131,11 @@ Build lane owns: `components/news/TickerNewsPanel.module.css`, `components/news/
 `lib/__tests__/tickerNewsPanel.test.tsx`, `lib/__tests__/tickerNewsA11y.test.tsx`,
 `e2e/news-flow-responsive.spec.ts`, `docs/pr-crops/news-r2/`. Nothing else.
 
+> **Amendment 2026-11-02 (seat grant, P2 polish).** `components/news/NewsCatchup.module.css` `.change`
+> is added to the owned set so the §2.4 review-change ink could ship; `lib/newsValidation.ts`
+> (`parseAnnotation` only) and `lib/__tests__/newsFlowContract.test.ts` were owned for the one P2
+> annotation-trim change. Shipped as terminal master 70ebc639 ([#1211](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1211)).
+
 ## 7. NOT DONE UNLESS
 
 STEP-0 recorded; §2 items 1–8 implemented with the stated numbers; §3 untouched classes untouched
