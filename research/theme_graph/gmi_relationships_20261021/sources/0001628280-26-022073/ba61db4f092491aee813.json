@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-30T21:43:24Z",
+ "accession": "0001628280-26-022073",
+ "cik": "0001853860",
+ "doc_byte_length": 1893842,
+ "doc_sha256": "4e8d402a4ebc2d91d3ef4595d4b01d1d40c85c450e599067fe251aedea533a3d",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-30",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "a991-2026aif.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 199536,
+  "byte_start": 198936,
+  "normalized": "During the year ended December 31, 2025, the Caraíba Operations processed 3,656,240 tonnes of material, producing 36,035 tonnes of copper; the Tucumã Operation, where production continues to ramp-up, processed 1,805,300 tonnes of material, producing 28,272 tonnes of copper; and, the Xavantina Operations processed 172,178 tonnes of material, producing 37,291 ounces of gold. An additional 14,999 ounces of gold in concentrates were sold from the Xavantina Operations during the fourth quarter of 2025, net of 2,245 ounces deliverable to RG AG under the NX Gold Stream Agreements.",
+  "normalized_sha256": "921c30e05df2f33713a76f29df65b8b59ac9af62531bab9bf1e373c573b1ed60",
+  "raw": " During the year ended December 31, 2025, the Cara&#237;ba Operations processed 3,656,240 tonnes of material, producing 36,035 tonnes of copper&#59; the Tucum&#227; Operation, where production continues to ramp-up, processed 1,805,300 tonnes of material, producing 28,272 tonnes of copper&#59; and, the Xavantina Operations processed 172,178 tonnes of material, producing 37,291 ounces of gold. An additional 14,999 ounces of gold in concentrates were sold from the Xavantina Operations during the fourth quarter of 2025, net of 2,245 ounces deliverable to RG AG under the NX Gold Stream Agreements. ",
+  "raw_sha256": "ba61db4f092491aee81355ac10531c543c2992006e5db0563cefa19aefd63434"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1853860/000162828026022073/a991-2026aif.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-01-29T21:10:25Z",
+ "accession": "0001288469-26-000011",
+ "cik": "0001288469",
+ "doc_byte_length": 2532450,
+ "doc_sha256": "8db122043350e872a91eeb4fe300cb56df88d6805324dbf3b1e641b2d69eafb0",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-01-29",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mxl-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1035229,
+  "byte_start": 1034978,
+  "normalized": "Intellectual Property License Agreement, dated June 18, 2009, between the Registrant and Intel Corporation (incorporated by reference to Exhibit 10.7 of the Registrant’s Annual Report on Form 10-K filed on January 31, 2024 (File No. 001-34666)).",
+  "normalized_sha256": "c9ba39d46eb075d58318724e156486e40e3277d8939c53d9873160059b2215a6",
+  "raw": "Intellectual Property License Agreement, dated June 18, 2009, between the Registrant and Intel Corporation (incorporated by reference to Exhibit 10.7 of the Registrant&#8217;s Annual Report on Form 10-K filed on January 31, 2024 (File No. 001-34666)).",
+  "raw_sha256": "93f0a7ed293addad7ad2ff5605755d3044a0ed35533913745387f2e703514815"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1288469/000128846926000011/mxl-20251231.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-18T10:06:03Z",
+ "accession": "0001193125-26-354647",
+ "cik": "0000811809",
+ "doc_byte_length": 17794676,
+ "doc_sha256": "39f31e930907c4d80973089b79f1721c2985b0ea3d0a0d5020de89676d3e3cba",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-18",
+ "form": "20-F",
+ "period_of_report": "2026-06-30",
+ "primary_document": "bhp-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1902955,
+  "byte_start": 1902336,
+  "normalized": "Net financing cash outflows of US$3.3 billion decreased by US$2.7 billion reflecting proceeds of US$4.3 billion from the Antamina silver streaming agreement with Wheaton Precious Metals International Ltd, partially offset by higher dividends paid of US$0.8 billion, and higher repayments of interest bearing liabilities of US$0.7 billion.",
+  "normalized_sha256": "7977b96b524d606138bb89e498b5ba465794ba73ca6e1168ac58b55dfc021045",
+  "raw": "Net financing cash outflows </span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">of US$3.3 billion decreased by US$2.7 billion reflecting proceeds of US$4.3 billion from the Antamina silver streaming agreement with Wheaton Precious Metals International Ltd, partially offset by higher dividends paid of US$0.8 billion, and higher repayments of interest bearing liabilities of US$0.7 billion.</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\"> ",
+  "raw_sha256": "58299291861855877c62c56049ce6d1f675e7d5d198e29b729c748e5507d3ff2"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/811809/000119312526354647/bhp-20260630.htm",
+ "xbrl_contexts": []
+}

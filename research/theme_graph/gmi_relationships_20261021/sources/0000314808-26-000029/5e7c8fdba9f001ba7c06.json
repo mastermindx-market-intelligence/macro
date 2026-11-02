@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-20T20:08:24Z",
+ "accession": "0000314808-26-000029",
+ "cik": "0000314808",
+ "doc_byte_length": 3088003,
+ "doc_sha256": "6f64ff5e9f81e44c7098e14689547b4c471e61b444d631d7a7cf9a5b3cb71b7c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-20",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "val-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2417759,
+  "byte_start": 2416850,
+  "normalized": "In December 2022, a subsidiary of Transocean Ltd. commenced an arbitration proceeding against us alleging breach of a license agreement related to certain dual-activity drilling patents. In July 2025, the arbitration tribunal rendered a final decision awarding Transocean Ltd. $7.9 million in damages, including interest, and awarded Valaris $7.4 million as reimbursement for legal fees incurred in connection with this matter.",
+  "normalized_sha256": "4eef18e82ff5120bc398fc3b409696fe7c40309237c0f8b1e4a0bf70bd3d372e",
+  "raw": "In December 2022, a subsidiary of Transocean Ltd. commenced an arbitration proceeding against us alleging breach of a license agreement related to certain dual-activity drilling patents. </span><span style=\"background-color:#ffffff;color:#000000;font-family:'Times New Roman',serif;font-size:11pt;font-weight:400;line-height:120%\">In July 2025, the arbitration tribunal rendered a final decision awarding Transocean Ltd. $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-294\" decimals=\"-5\" name=\"us-gaap:LitigationSettlementAmountAwardedToOtherParty\" scale=\"6\" id=\"f-1223\">7.9</ix:nonFraction>&#160;million in damages, including interest, and awarded Valaris $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-294\" decimals=\"-5\" name=\"us-gaap:LitigationSettlementAmountAwardedFromOtherParty\" scale=\"6\" id=\"f-1224\">7.4</ix:nonFraction>&#160;million as reimbursement for legal fees incurred in connection with this matter.",
+  "raw_sha256": "5e7c8fdba9f001ba7c06e337cc6dd854a36d7b1071808bdec74e62f24750bfb7"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/314808/000031480826000029/val-20251231.htm",
+ "xbrl_contexts": []
+}
