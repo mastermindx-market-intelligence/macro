@@ -67,7 +67,7 @@ import sys
 import tempfile
 import threading
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Iterator, NamedTuple
 
@@ -426,12 +426,27 @@ def _real_corpus(work: Path, data_root: Path) -> dict[str, Any]:
         )
     import tests.test_capital_structure_state_api as state_suite  # noqa: PLC0415
 
+    # The fixture scenario is dated for the fixture's cutoff; the route refuses
+    # any scenario whose as_of is not the served state's (422). Re-date it to the
+    # evaluated issuer's cutoff and keep the fixture's horizon length, so a real
+    # corpus measures the evaluation rather than that refusal.
+    cutoff = str(bundle["issuers"][0]["request"]["as_of"])
+    start = datetime.fromisoformat(cutoff.replace("Z", "+00:00")).date()
+    fixture_days = (
+        datetime.fromisoformat(state_suite.HORIZON_END) - datetime.fromisoformat(state_suite.HORIZON_START)
+    ).days
+    scenario = state_suite._test_scenario(
+        as_of=cutoff,
+        horizon_start=start.isoformat(),
+        horizon_end=(start + timedelta(days=fixture_days)).isoformat(),
+    )
+
     return {
         "generation": None,
         "bundle": bundle,
         "issuer_ids": issuer_rows,
         "issuer_id": issuer_rows[0],
-        "evaluate_body": state_suite._scenario_body(),
+        "evaluate_body": state_suite._scenario_body(scenario),
         "event_count": event_count,
         "event_count_source": event_count_source,
         "state_path": copy / "state_bundle.json",
