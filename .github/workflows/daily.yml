@@ -1537,9 +1537,24 @@ jobs:
         # writes only under data/capital_structure/. The step timeout keeps a slow
         # compiler night a RECORDED failure: without it a stall would run into the
         # job's 90-minute timeout and lose tonight's whole capital-structure checkpoint.
+        # build_source_stores() reads the same step-local R2 env as cs_terms; without
+        # it no source store is admissible and every night is a refusal.
         id: cs_candidates
         continue-on-error: true
         timeout-minutes: 20
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_CAPITAL_STRUCTURE_ENDPOINT: ${{ secrets.R2_CAPITAL_STRUCTURE_ENDPOINT }}
+          R2_CAPITAL_STRUCTURE_ACCESS_KEY_ID: ${{ secrets.R2_CAPITAL_STRUCTURE_ACCESS_KEY_ID }}
+          R2_CAPITAL_STRUCTURE_SECRET_ACCESS_KEY: ${{ secrets.R2_CAPITAL_STRUCTURE_SECRET_ACCESS_KEY }}
+          R2_CAPITAL_STRUCTURE_BUCKET: ${{ secrets.R2_CAPITAL_STRUCTURE_BUCKET }}
+          R2_RESEARCH_ENDPOINT: ${{ secrets.R2_RESEARCH_ENDPOINT }}
+          R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
+          R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
+          R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
         run: python -m scripts.compile_capital_structure_instrument_candidate_terms
       - name: build the capital-structure capacity inputs bundle (one generation or nothing)
         id: cs_inputs

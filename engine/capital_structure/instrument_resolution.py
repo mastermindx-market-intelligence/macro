@@ -95,6 +95,7 @@ __all__ = [
     "instrument_id_for",
     "resolve_instrument_trace",
     "resolve_instruments",
+    "visible_candidate_count",
 ]
 
 INSTRUMENT_RESOLUTION_VERSION = "capital-structure-instrument-resolution/1.0.0"
@@ -521,6 +522,17 @@ def _visible_candidates(bundle: CandidateBundle, as_of: datetime) -> dict[str, _
             raise ResolutionRefusal(f"{logical_id}: correction history has a gap after v{latest}")
         visible[logical_id] = by_version[latest]
     return visible
+
+
+def visible_candidate_count(candidate_bundle: CandidateBundle, as_of: str) -> int:
+    """How many occurrences are visible at ``as_of``, after every row check resolution runs.
+
+    Lets a caller tell "no candidate is visible yet" from a refusal: a tampered
+    row, a malformed timestamp or an incomplete history still refuses here.
+    """
+    if not isinstance(candidate_bundle, CandidateBundle):
+        raise ResolutionRefusal("candidate_bundle: CandidateBundle required")
+    return len(_visible_candidates(candidate_bundle, _instant(as_of, "as_of")))
 
 
 # ---------------------------------------------------------------------------
