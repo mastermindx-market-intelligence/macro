@@ -246,4 +246,9 @@ jobs:
           # Self-dispatch recovery must ignore the run currently making the
           # decision while still coalescing with any different pending successor.
           CURRENT_RUN_ID: ${{ github.run_id }}
+          # The same expression ci.yml's `plan the CI packs once` step plans with.
+          # Only `active` lets a job-local legacy-manifest edit leave a green
+          # current: with scoping off every pull request runs every job, so any
+          # changed job is one its next proof would run.
+          MERGE_ON_GREEN_CI_SCOPE_MODE: ${{ vars.CI_SCOPE_MODE == 'off' && 'off' || 'active' }}
         run: python3 scripts/merge_on_green.py
