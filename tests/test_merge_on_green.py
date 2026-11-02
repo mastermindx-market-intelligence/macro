@@ -10074,3 +10074,53 @@ def test_authority_lookup_cost_and_pagination_fit_the_admitted_budget():
             + admitted * MOG.MAX_REQUESTS_PER_PULL
             + MOG.MAX_REFRESHES_PER_SWEEP
             + MOG.RATE_LIMIT_RESERVE) <= MOG.RATE_LIMIT_FLOOR
+
+
+@pytest.mark.parametrize(
+    ("writers", "verdict", "put_count"),
+    [
+        ([{"id": 12345, "login": "eligible-test-user", "type": "User"}] * 3, "merged", 2),
+        ([{"id": 333722846, "login": "renamed-author", "type": "User"}], "writer-ineligible", 0),
+        ([{"id": 292968551, "login": "renamed-account", "type": "User"}], "writer-ineligible", 0),
+        ([{"id": 54321, "login": "ChrisWong6031-Creator", "type": "User"}], "writer-ineligible", 0),
+        ([{"id": 54321, "login": "MastermindXryan", "type": "User"}], "writer-ineligible", 0),
+        ([{"id": True, "login": "ambiguous", "type": "User"}], "writer-ineligible", 0),
+        ([None], "writer-ineligible", 0),
+        ([ConnectionResetError()], "writer-ineligible", 0),
+        ([{"id": 12345, "login": "eligible-test-user", "type": "User"}] * 2 + [None],
+         "writer-ineligible", 1),
+    ],
+)
+def test_prophet_merge_requires_the_selected_writer(monkeypatch, writers, verdict, put_count):
+    author = {"id": 333722846, "login": "mastermindxryan"}
+    pull = {**_pull(9495), "user": author}
+    _fake_api(
+        monkeypatch,
+        check_pages={1: {"total_count": 1, "check_runs": [_run("ci-pack-1", conclusion="success", pr_numbers=(9495,))]}},
+        pull_payload={"user": author}, merge_status=(409, 200),
+    )
+    transport = MOG._request
+    observed = []
+    answers = iter(writers)
+
+    def request(method, url, token, payload=None):
+        if url == f"{MOG.GITHUB_API}/user":
+            assert method == "GET" and token == "write"
+            observed.append("identity")
+            answer = next(answers)
+            if isinstance(answer, Exception):
+                raise answer
+            return (200, answer) if answer else (403, {})
+        if method == "PUT":
+            assert url.endswith("/pulls/9495/merge") and token == "write"
+            assert payload == {"merge_method": "squash", "sha": pull["head"]["sha"]}
+            assert observed[-1] == "identity"
+            observed.append("merge")
+        return transport(method, url, token, payload)
+
+    monkeypatch.setattr(MOG, "_request", request)
+    monkeypatch.setattr(MOG, "is_retryable_base_tick", lambda *_: True)
+    assert MOG.sweep_pull("mastermindx-market-intelligence/macro", pull, "read", "write",
+                          _freshness()) == verdict
+    assert observed.count("merge") == put_count
+    assert list(answers) == []

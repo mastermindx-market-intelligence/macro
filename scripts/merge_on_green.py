@@ -6732,6 +6732,34 @@ def reprove(
     return "conflict"
 
 
+def prophet_writer_allowed(repo: str, pull: dict[str, Any], merge_token: str) -> bool:
+    """Check the identity GitHub authenticates with the actual #9495 write token."""
+    if repo.casefold() != "mastermindx-market-intelligence/macro" or str(pull.get("number")) != "9495":
+        return True
+    try:
+        status, writer = _request("GET", f"{GITHUB_API}/user", merge_token)
+    except Exception:
+        status, writer = None, None
+    author = pull.get("user")
+    if status != 200 or not isinstance(writer, dict) or not isinstance(author, dict):
+        _annotate("warning", "Prophet writer", "PR #9495: writer or author identity unavailable.")
+        return False
+    for account in (writer, author):
+        if (type(account.get("id")) is not int or account["id"] <= 0
+                or not isinstance(account.get("login"), str)
+                or not re.fullmatch(r"[a-zA-Z0-9-]+(?:\[bot\])?", account["login"])):
+            _annotate("warning", "Prophet writer", "PR #9495: incomplete GitHub account identity.")
+            return False
+    # Preserve both the immutable account exclusion and the named-login exclusion.
+    if (writer.get("type") not in {"User", "Bot"}
+            or writer["id"] in {author["id"], 292968551}
+            or writer["login"].casefold() in {author["login"].casefold(), "chriswong6031-creator"}):
+        _annotate("warning", "Prophet writer", "PR #9495: selected writer is ineligible.")
+        return False
+    print(f"PR #9495: GitHub authenticated the selected writer as {writer['login']} ({writer['id']}).")
+    return True
+
+
 def sweep_pull(
     repo: str,
     pull: dict[str, Any],
@@ -6877,6 +6905,8 @@ def sweep_pull(
             # durable workload reservation can settle/expire; it must never turn
             # ordinary PR proof into permission to merge through a red baseline.
             return "baseline-blocked"
+    if not prophet_writer_allowed(repo, pull, merge_token):
+        return "writer-ineligible"
     verdict, names = decide_verdict(runs)
     if verdict == "clean":
         if anchor_verdict != "clean":
@@ -7411,7 +7441,9 @@ def sweep_pull(
 
     merge_payload = {"merge_method": "squash", "sha": head_sha}
 
-    def put_squash_merge() -> tuple[int, Any]:
+    def put_squash_merge() -> tuple[int | None, Any]:
+        if not prophet_writer_allowed(repo, pull, merge_token):
+            return None, None
         return _request(
             "PUT",
             f"{GITHUB_API}/repos/{repo}/pulls/{number}/merge",
@@ -7427,6 +7459,8 @@ def sweep_pull(
     # GitHub or an intermediary can emit a server response after the merge write
     # was accepted. A 5xx is therefore not affirmative refusal evidence; classify
     # it exactly like a truncated connection and never keep using this base snapshot.
+    if status is None:
+        return "writer-ineligible"
     if 500 <= status < 600:
         message = str((body or {}).get("message") or f"HTTP {status}")
         return finish_ambiguous_merge(f"HTTP {status}: {message}")
@@ -7452,6 +7486,8 @@ def sweep_pull(
             status, body = put_squash_merge()
         except Exception as exc:
             return finish_ambiguous_merge(f"transport error on base-modified retry: {exc}")
+        if status is None:
+            return "writer-ineligible"
         if 500 <= status < 600:
             message = str((body or {}).get("message") or f"HTTP {status}")
             return finish_ambiguous_merge(f"HTTP {status} on base-modified retry: {message}")
@@ -7819,6 +7855,8 @@ def mark_only_pass(
     tally: dict[str, int] = {}
     semantic_clear_needs_sweep = False
     for pull in matching:
+        if not prophet_writer_allowed(repo, pull, merge_token):
+            continue
         number = pull.get("number")
         head_sha = str((pull.get("head") or {}).get("sha") or "")
         try:
