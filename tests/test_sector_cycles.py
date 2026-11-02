@@ -26,6 +26,21 @@ def _saw(ampl=0.5, period=180, n=900, trend=0.0003):
 
 # ── ZigZag swing detection ───────────────────────────────────────────────────
 
+def test_cycle_tabs_wrap_on_a_phone() -> None:
+    # A string pin cannot prove layout. The 375 browser read in the PR carries that.
+    root = Path(__file__).resolve().parent.parent
+    rule = "@media (max-width: 560px) { .sc-tabs { flex-wrap: wrap; } }"
+    assert rule in (root / "templates" / "sector_cycles.css").read_text(encoding="utf-8")
+
+
+def test_cycle_cards_keep_a_readable_width_on_a_phone() -> None:
+    # Two narrow columns squeeze a name to one letter a line beside its tags.
+    # A string pin cannot prove layout. The browser read in the PR carries that.
+    root = Path(__file__).resolve().parent.parent
+    rule = "@media (max-width: 880px) { .sc-page .cyc-cards { grid-template-columns: repeat(auto-fill, minmax(258px, 1fr)); } }"
+    assert rule in (root / "templates" / "sector_cycles.css").read_text(encoding="utf-8")
+
+
 def test_zigzag_alternates_and_is_significant():
     s = _saw(ampl=0.5, period=180)
     turns = sc._detect_swings(s, pct=12.0)
@@ -274,6 +289,167 @@ def test_broad_sector_cycles_builder_keeps_last_good_when_engine_has_no_session(
 
 # ── Leadership Migration W3A: truthful reconstructed daily RS history ────────
 
+def _extract_js_fn(text, name):
+    token = "function " + name + "("
+    start = text.find(token)
+    assert start != -1, name + " missing from sector_cycles.js"
+    i = text.find("{", start)
+    depth = 0
+    for j, ch in enumerate(text[i:], i):
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return text[start:j + 1]
+    raise AssertionError("unbalanced " + name)
+
+
+def _hz_fns(text):
+    names = (
+        "esc",
+        "_hzPass",
+        "_hzTip",
+        "_hzBadge",
+        "_hzPick",
+        "_hzWithheld",
+        "hazardLineHTML",
+        "hazardCardChip",
+    )
+    chunks = []
+    for name in names:
+        if name == "_hzWithheld" and "function _hzWithheld(" not in text:
+            continue
+        chunks.append(_extract_js_fn(text, name))
+    return "\n".join(chunks)
+
+
+def _eval_hz_fn(fn_name, sector, lang):
+    import json
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed")
+    text = _template_text("sector_cycles.js")
+    source = "\n".join([
+        "function curLang() { return " + json.dumps(lang) + "; }",
+        'function L(en, zh) { return curLang() === "zh" ? (zh || en) : en; }',
+        _hz_fns(text),
+        "console.log(" + fn_name + "(" + json.dumps(sector) + "));",
+    ])
+    done = subprocess.run(
+        [node, "-e", source],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=True,
+    )
+    return done.stdout.strip()
+
+
+def test_sector_card_says_when_hazard_withheld():
+    en_a = "Unavailable today — the model's short- and long-window reads disagreed, "
+    en_b = "so no clean probability can be shown."
+    en_cdf = en_a + en_b
+    zh_cdf = (
+        "今日暂不可用——模型的短窗与长窗读数不一致，无法给出可靠概率。"
+    )
+    en_def = "Unavailable today — a required input didn't settle cleanly."
+    zh_def = "今日暂不可用——所需输入未能完整结算。"
+    text = _template_text("sector_cycles.js")
+    start = text.find("function hazardLineHTML")
+    end = text.find("function forecastCardHTML")
+    assert start != -1 and end > start
+    hz_block = text[start:end]
+    chip = _extract_js_fn(text, "hazardCardChip")
+    line = _extract_js_fn(text, "hazardLineHTML")
+    why = _extract_js_fn(text, "_hzWithheld")
+    assert en_a in hz_block and en_b in hz_block
+    assert zh_cdf in hz_block
+    assert en_a in why and en_b in why
+    assert zh_cdf in why
+    assert en_def in why and zh_def in why
+    assert "if (hz.unavailable)" in chip
+    assert "if (hz.unavailable)" in line
+    assert "_hzWithheld" in chip and "_hzWithheld" in line
+    assert "non_monotone_cdf" not in chip
+    assert "non_monotone_cdf" not in line
+    assert "unavailable_reason" not in chip
+    assert "unavailable_reason" not in line
+    chip_head = chip.split("var pick = _hzPick")[0]
+    line_head = line.split("function cell")[0]
+    assert "%" not in chip_head and "_hzPick" not in chip_head
+    assert "%" not in line_head and "_hzPick" not in line_head
+    assert "_hzTip" not in chip_head and "_hzTip" not in line_head
+    assert "cc-hz hz-muted" in chip_head
+    assert "cyc-hazard sc-hazard" in line_head
+    assert "Turn hazard unavailable" not in why
+    assert "转折风险暂不可用" not in why
+    withheld = {
+        "now": {
+            "hazard": {
+                "unavailable": True,
+                "unavailable_reason": "non_monotone_cdf",
+            }
+        }
+    }
+    other = {
+        "now": {
+            "hazard": {
+                "unavailable": True,
+                "unavailable_reason": "unknown_phase",
+            }
+        }
+    }
+    figures = {
+        "now": {
+            "hazard": {
+                "direction": "down",
+                "3m": {
+                    "p": 0.25,
+                    "cell_verdict": "PASS",
+                    "source": "MODEL",
+                },
+            }
+        }
+    }
+    chip_en = _eval_hz_fn("hazardCardChip", withheld, "en")
+    chip_zh = _eval_hz_fn("hazardCardChip", withheld, "zh")
+    assert '<span class="cc-hz-k">Turn hazard</span> Unavailable today</div>' in chip_en
+    assert '<span class="cc-hz-k">转折风险</span> 今日暂不可用</div>' in chip_zh
+    assert 'title="' + en_cdf + '"' in chip_en
+    assert 'title="' + zh_cdf + '"' in chip_zh
+    line_en = _eval_hz_fn("hazardLineHTML", withheld, "en")
+    line_zh = _eval_hz_fn("hazardLineHTML", withheld, "zh")
+    assert '<span class="hz-label">Turn hazard</span>' + en_cdf + "</div>" in line_en
+    assert '<span class="hz-label">转折风险</span>' + zh_cdf + "</div>" in line_zh
+    for fn in ("hazardCardChip", "hazardLineHTML"):
+        en = _eval_hz_fn(fn, withheld, "en")
+        zh = _eval_hz_fn(fn, withheld, "zh")
+        assert en_cdf in en and zh_cdf not in en
+        assert zh_cdf in zh and en_cdf not in zh
+        assert "non_monotone_cdf" not in en
+        assert "non_monotone_cdf" not in zh
+        assert "%" not in en and "%" not in zh
+        assert "unavailable_reason" not in en
+        assert "unavailable_reason" not in zh
+        assert _eval_hz_fn(fn, {}, "en") == ""
+        assert _eval_hz_fn(fn, {"now": {}}, "zh") == ""
+        fig_en = _eval_hz_fn(fn, figures, "en")
+        fig_zh = _eval_hz_fn(fn, figures, "zh")
+        assert en_cdf not in fig_en and zh_cdf not in fig_zh
+        assert "Unavailable today" not in fig_en
+        assert "今日暂不可用" not in fig_zh
+        o_en = _eval_hz_fn(fn, other, "en")
+        o_zh = _eval_hz_fn(fn, other, "zh")
+        assert en_def in o_en and zh_def in o_zh
+        assert en_cdf not in o_en and zh_cdf not in o_zh
+        assert "non_monotone_cdf" not in o_en
+        assert "%" not in o_en and "%" not in o_zh
+
+
 def _rs_history_panel(n: int = 520) -> pd.DataFrame:
     idx = pd.bdate_range("2024-01-02", periods=n)
     # A non-linear benchmark plus a smoothly accelerating sector-relative ratio
@@ -517,6 +693,469 @@ def test_cycle_page_prints_its_date_after_the_deferred_data(template):
     assert out["atParse"] == "PARSED"
     assert out["date"] == "2026-10-30"
     assert out["kids"] == []
+
+
+def _two_fund_scorecard():
+    """Two funds whose met turns (5) are not the same number as right calls (6)."""
+    return {
+        "as_of": "2026-07-02T18:59:30.481487+00:00",
+        "cohorts": {
+            "BACKTEST": {
+                "cohort": "BACKTEST",
+                "turn_pr": {
+                    "per_instrument": {
+                        "xlk": {
+                            "tp": 2,
+                            "fp": 32,
+                            "fn": 13,
+                            "n_truth_turns": 15,
+                            "tau_months": 3,
+                        },
+                        "xle": {
+                            "tp": 4,
+                            "fp": 42,
+                            "fn": 10,
+                            "n_truth_turns": 13,
+                            "tau_months": 3,
+                        },
+                    },
+                    "pooled": {"tp": 6, "fp": 74, "fn": 23},
+                },
+            }
+        },
+    }
+
+
+def _scorecard_path(tmp_path, payload):
+    import json
+
+    path = tmp_path / "score.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return path
+
+
+def test_backtest_turn_record_pools_met_apart_from_right(tmp_path):
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    path = _scorecard_path(tmp_path, _two_fund_scorecard())
+    got = backtest_turn_record(path)
+    assert got == {
+        "as_of": "2026-07-02",
+        "tau_months": 3,
+        "funds": ["xle", "xlk"],
+        "turns": 28,
+        "met": 5,
+        "right": 6,
+        "false": 74,
+    }
+
+
+def test_backtest_turn_record_missing_path_is_none(tmp_path):
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    missing = tmp_path / "missing.json"
+    assert backtest_turn_record(missing) is None
+
+
+@pytest.mark.parametrize(
+    "kind",
+    ["bool", "fn_over", "tau", "pooled", "as_of", "empty", "cohort"],
+)
+def test_backtest_turn_record_rejects_a_bad_file(tmp_path, kind):
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    payload = _two_fund_scorecard()
+    cohort = payload["cohorts"]["BACKTEST"]
+    turn = cohort["turn_pr"]
+    rows = turn["per_instrument"]
+    if kind == "bool":
+        rows["xle"]["tp"] = True
+    elif kind == "fn_over":
+        rows["xle"]["fn"] = 14
+    elif kind == "tau":
+        rows["xlk"]["tau_months"] = 4
+    elif kind == "pooled":
+        turn["pooled"]["tp"] = 7
+    elif kind == "as_of":
+        payload["as_of"] = "July 2"
+    elif kind == "empty":
+        turn["per_instrument"] = {}
+    elif kind == "cohort":
+        cohort["cohort"] = "PAPER"
+    else:
+        raise AssertionError(kind)
+    path = _scorecard_path(tmp_path, payload)
+    assert backtest_turn_record(path) is None
+
+
+def test_committed_turn_record_matches_its_pooled_counts():
+    import json
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    root = Path(__file__).resolve().parents[1]
+    path = root / "data" / "sector_cycles" / "scorecards"
+    path = path / "promises_price_v1_zz14_v0.json"
+    if not path.is_file():
+        pytest.skip("scorecard promises_price_v1_zz14_v0.json is absent")
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    got = backtest_turn_record(path)
+    pooled = raw["cohorts"]["BACKTEST"]["turn_pr"]["pooled"]
+    assert got["right"] == pooled["tp"]
+    assert got["false"] == pooled["fp"]
+    assert got["turns"] - got["met"] == pooled["fn"]
+    assert got["as_of"] == raw["as_of"][:10]
+
+
+def test_sector_cycles_template_has_no_per_card_turn_count():
+    text = _template_text("sector_cycles.js")
+    assert "function turnRecordText(" in text
+    assert "function mountTurnRecord(" in text
+    assert "mountTurnRecord(sortedActive())" in text
+    assert "turnCallLine" not in text
+    assert "per_instrument" not in text
+    assert "17 of 98" not in text
+    assert "409" not in text
+
+
+_TURN_BANNED = (
+    "verdict",
+    "falsified",
+    "failed",
+    "passed",
+    "proven",
+    "validated",
+    "已验证",
+    "live",
+    "实时",
+    "forecast",
+    "falsifier",
+    "refuted",
+    "申报",
+    "z-score",
+    "percentile rank",
+    "证伪",
+)
+
+
+def _turn_record_sentence(record, lang):
+    """Run shipped turnRecordText in node, same pattern as _hz_tip."""
+    import json
+    import re
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed")
+    text = _template_text("sector_cycles.js")
+    pattern = r"\n  function turnRecordText\(r\) \{\n(?:.*\n)*?  \}\n"
+    match = re.search(pattern, text)
+    assert match is not None
+    header = (
+        "function L(en, zh) { return "
+        + json.dumps(lang)
+        + ' === "zh" ? zh : en; }'
+    )
+    call = "console.log(turnRecordText(" + json.dumps(record) + "));"
+    source = "\n".join([header, match.group(0), call])
+    done = subprocess.run(
+        [node, "-e", source],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=True,
+    )
+    return done.stdout.strip()
+
+
+def _assert_no_turn_ban(text):
+    folded = text.lower()
+    for word in _TURN_BANNED:
+        assert word.lower() not in folded
+
+
+def test_turn_record_text_reads_the_record_in_both_languages():
+    sample = {
+        "as_of": "2026-07-02",
+        "tau_months": 3,
+        "funds": ["a", "b"],
+        "turns": 28,
+        "met": 5,
+        "right": 6,
+        "false": 74,
+    }
+    en = _turn_record_sentence(sample, "en")
+    zh = _turn_record_sentence(sample, "zh")
+    for bit in (
+        "2026-07-02",
+        "earlier version",
+        "not a record of the method behind this month",
+        "met 5 of 28 real turns",
+        "6 calls were right and 74 were false",
+        "within 3 months",
+    ):
+        assert bit in en
+    for bit in (
+        "2026-07-02",
+        "早期版本",
+        "28 个实际转折中的 5 个",
+        "正确 6 次",
+        "错误 74 次",
+        "3 个月",
+    ):
+        assert bit in zh
+    other = {
+        "as_of": "2025-01-31",
+        "tau_months": 4,
+        "funds": ["a", "b", "c"],
+        "turns": 40,
+        "met": 9,
+        "right": 11,
+        "false": 2,
+    }
+    en2 = _turn_record_sentence(other, "en")
+    zh2 = _turn_record_sentence(other, "zh")
+    assert "2025-01-31" in en2
+    assert "met 9 of 40 real turns" in en2
+    assert "11 calls were right and 2 were false" in en2
+    assert "within 4 months" in en2
+    assert "2025-01-31" in zh2
+    assert "40 个实际转折中的 9 个" in zh2
+    assert "正确 11 次" in zh2
+    assert "错误 2 次" in zh2
+    assert "4 个月" in zh2
+    _assert_no_turn_ban(en)
+    _assert_no_turn_ban(zh)
+    _assert_no_turn_ban(en2)
+    _assert_no_turn_ban(zh2)
+
+
+def test_backtest_turn_record_rejects_a_bool_fn_when_pooled_matches(tmp_path):
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    payload = _two_fund_scorecard()
+    turn = payload["cohorts"]["BACKTEST"]["turn_pr"]
+    rows = turn["per_instrument"]
+    # False is a bool. As a count it would add like 0 and still match pooled.
+    rows["xle"]["fn"] = False
+    turn["pooled"] = {"tp": 6, "fp": 74, "fn": 13}
+    path = _scorecard_path(tmp_path, payload)
+    assert backtest_turn_record(path) is None
+
+
+def test_backtest_turn_record_rejects_fn_above_truth_when_pooled_matches(tmp_path):
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    payload = _two_fund_scorecard()
+    turn = payload["cohorts"]["BACKTEST"]["turn_pr"]
+    rows = turn["per_instrument"]
+    rows["xle"]["fn"] = 14
+    turn["pooled"]["fn"] = 27
+    path = _scorecard_path(tmp_path, payload)
+    assert backtest_turn_record(path) is None
+
+
+def test_backtest_turn_record_empty_rows_without_pooled_is_none(tmp_path):
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    payload = _two_fund_scorecard()
+    turn = payload["cohorts"]["BACKTEST"]["turn_pr"]
+    turn["per_instrument"] = {}
+    del turn["pooled"]
+    path = _scorecard_path(tmp_path, payload)
+    assert backtest_turn_record(path) is None
+
+
+def test_backtest_turn_record_as_of_lacking_three_parts_is_none(tmp_path):
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    payload = _two_fund_scorecard()
+    # Ten characters, one hyphen, all digits: a missing part check must not raise.
+    payload["as_of"] = "2026-07021"
+    path = _scorecard_path(tmp_path, payload)
+    assert backtest_turn_record(path) is None
+
+
+def test_main_writes_turn_record_into_the_core_file(monkeypatch, tmp_path):
+    import json
+    from scripts import build_sector_cycles
+
+    root = tmp_path
+    folder = root / "data" / "sector_cycles" / "scorecards"
+    folder.mkdir(parents=True)
+    name = "promises_price_v1_zz14_v0.json"
+    payload = _two_fund_scorecard()
+    (folder / name).write_text(json.dumps(payload), encoding="utf-8")
+    templates = root / "templates"
+    templates.mkdir()
+    page = templates / "sector_cycles.html.j2"
+    page.write_text("ok\n", encoding="utf-8")
+    monkeypatch.setattr(build_sector_cycles.config, "ROOT", root)
+    monkeypatch.setattr(
+        build_sector_cycles.config,
+        "load",
+        lambda: {"storage": {"site_dir": "site"}},
+    )
+    monkeypatch.setattr(sc, "compute", lambda: {"sectors": [{"id": "xlk"}]})
+    assert build_sector_cycles.main() == 0
+    path = root / "site" / "sector_cycles_data.js"
+    text = path.read_text(encoding="utf-8")
+    body = text.split("=", 1)[1]
+    assert body.endswith(";\n")
+    core = json.loads(body[:-2])
+    got = core["turn_record"]
+    assert got["funds"] == ["xle", "xlk"]
+    assert got["turns"] == 28
+    assert got["met"] == 5
+    assert got["right"] == 6
+    assert got["false"] == 74
+    assert got["as_of"] == "2026-07-02"
+    assert got["tau_months"] == 3
+
+
+def _shown_turn_record():
+    return {
+        "as_of": "2026-07-02",
+        "tau_months": 3,
+        "funds": ["xle", "xlk"],
+        "turns": 28,
+        "met": 5,
+        "right": 6,
+        "false": 74,
+    }
+
+
+def _js_fn(name):
+    import re
+
+    text = _template_text("sector_cycles.js")
+    head = "\n  function " + name + r"\("
+    pattern = head + r"[^)]*\) \{\n(?:.*\n)*?  \}\n"
+    found = re.search(pattern, text)
+    assert found is not None
+    return found.group(0)
+
+
+def _mount_shots(lang, is_cn, record, lists):
+    import json
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed")
+    flag = "true" if is_cn else "false"
+    prelude = "\n".join([
+        "function L(en, zh) { return " + json.dumps(lang) + ' === "zh" ? zh : en; }',
+        "var IS_CN = " + flag + ";",
+        "var DATA = { turn_record: " + json.dumps(record) + " };",
+        "var created = [];",
+        "var calls = [];",
+        "var byId = {};",
+        "var grid = {",
+        "  insertAdjacentElement: function (where, node) {",
+        '    calls.push({ op: "insertAdjacentElement", where: where });',
+        "    if (node.id) byId[node.id] = node;",
+        "  },",
+        "  appendChild: function (node) {",
+        '    calls.push({ op: "appendChild" });',
+        "    if (node.id) byId[node.id] = node;",
+        "  }",
+        "};",
+        "var document = {",
+        "  createElement: function (tag) {",
+        "    var node = {",
+        "      tagName: tag,",
+        '      id: "",',
+        '      className: "",',
+        "      hidden: false,",
+        '      textContent: ""',
+        "    };",
+        "    created.push(node);",
+        "    return node;",
+        "  },",
+        "  getElementById: function (id) {",
+        '    if (id === "sc-cards") return grid;',
+        "    return byId[id] || null;",
+        "  }",
+        "};",
+        "function el(tag, cls) {",
+        "  var node = document.createElement(tag);",
+        "  if (cls) node.className = cls;",
+        "  return node;",
+        "}",
+        _js_fn("turnRecordText"),
+        _js_fn("mountTurnRecord"),
+        "var lists = " + json.dumps(lists) + ";",
+        "var shots = [];",
+        "for (var n = 0; n < lists.length; n++) {",
+        "  mountTurnRecord(lists[n]);",
+        '  var node = byId["sc-turnrec"] || null;',
+        "  var expect = turnRecordText(DATA.turn_record);",
+        "  var ops = calls.map(function (c) {",
+        '    return c.where ? c.op + ":" + c.where : c.op;',
+        "  });",
+        "  shots.push({",
+        "    created: created.length,",
+        "    hidden: node ? node.hidden : null,",
+        '    text: node ? node.textContent : "",',
+        "    match: !!(node && node.textContent === expect),",
+        "    ops: ops",
+        "  });",
+        "}",
+        "console.log(JSON.stringify(shots));",
+    ])
+    done = subprocess.run(
+        [node, "-e", prelude],
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert done.returncode == 0, done.stderr
+    return json.loads(done.stdout)
+
+
+def test_mount_turn_record_hides_matching_funds_when_is_cn():
+    lists = [[{"id": "xle"}, {"id": "xlk"}]]
+    shots = _mount_shots("en", True, _shown_turn_record(), lists)
+    assert shots[0]["hidden"] is True
+    assert shots[0]["text"] == ""
+
+
+def test_mount_turn_record_hides_when_ids_miss_the_fund_list():
+    # Shenwan ids from the China page, not the US funds on the record.
+    lists = [[{"id": "801080"}, {"id": "801750"}]]
+    shots = _mount_shots("en", False, _shown_turn_record(), lists)
+    assert shots[0]["hidden"] is True
+    assert shots[0]["text"] == ""
+
+
+def test_mount_turn_record_places_the_note_after_the_grid():
+    lists = [[{"id": "xlk"}]]
+    shots = _mount_shots("en", False, _shown_turn_record(), lists)
+    ops = shots[0]["ops"]
+    assert "insertAdjacentElement:afterend" in ops
+    assert "appendChild" not in "".join(ops)
+
+
+def test_mount_turn_record_hides_same_element_after_the_match_goes():
+    lists = [[{"id": "xlk"}], []]
+    shots = _mount_shots("en", False, _shown_turn_record(), lists)
+    assert shots[0]["hidden"] is False
+    assert shots[0]["match"] is True
+    assert shots[1]["hidden"] is True
+    assert shots[1]["text"] == ""
+    assert shots[0]["created"] == 1
+    assert shots[1]["created"] == 1
+
+
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_mount_turn_record_shows_the_sentence_for_a_matching_fund(lang):
+    lists = [[{"id": "xlk"}]]
+    shots = _mount_shots(lang, False, _shown_turn_record(), lists)
+    assert shots[0]["hidden"] is False
+    assert shots[0]["match"] is True
+    assert shots[0]["text"] != ""
 
 
 def test_sector_page_prints_the_rs_sentence_from_the_record():
