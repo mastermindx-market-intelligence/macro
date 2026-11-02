@@ -981,7 +981,7 @@ def test_pk02_sbc_expense_total(pk02_result: dict) -> None:
     row = _row(pk02_result, "sbc_expense_total")
     assert row["quality_state"] == "valued"
     assert row["value"] == "12863000000"
-    assert row["concept"] == "us-gaap:AllocatedShareBasedCompensationExpense"
+    assert row["concept"] == "us-gaap:ShareBasedCompensation"
     assert row["unit"] == "USD"
     assert row["evidence_kind"] == "xbrl_fact"
     assert row["mapping_rule_id"] == "PK02.sbc_expense_total.fact/v1"
@@ -4075,7 +4075,7 @@ PK04_QUERY = {**QUERY, "requested_metrics": ["revenue"]}
 # the PK04 lane base; PK04 edits must not move it (PK06/PK01 have their own
 # pins above).
 PK02_ENVELOPE_SHA256 = (
-    "9f621f9e750b1c9df6731eae1f9e0c8c2094006214d37b29066c08ea7e51d981"
+    "8d868ce982fff7c5e45693d4a81df9e07afee166df4f4996c3a4e141b2790869"
 )
 PRODUCT_OR_SERVICE_LEDGER_AXIS = "{http://fasb.org/srt/2025}ProductOrServiceAxis"
 GEOGRAPHICAL_LEDGER_AXIS = "{http://fasb.org/srt/2025}StatementGeographicalAxis"
@@ -4932,10 +4932,10 @@ PK10_QUERY = {**QUERY, "requested_metrics": ["proxy"]}
 BASE_AAPL_ENVELOPE_SHA256 = {
     "PK06": "64b2d42f2148bdf4c9aaf69aae562e53aae26d54bc9386264ce485f80a322c05",
     "PK01": "c40156a18aafe50874476dd7354a0cf8eb9dc90cb25afe88d409dd3320f56310",
-    "PK02": "9f621f9e750b1c9df6731eae1f9e0c8c2094006214d37b29066c08ea7e51d981",
+    "PK02": "8d868ce982fff7c5e45693d4a81df9e07afee166df4f4996c3a4e141b2790869",
     "PK11": "f425680270c2a267d8dca5f44e6a1e3c2ac708b124e2d2a7723c0674056d9b2f",
     "PK12": "da96915b1d81f0f4417e6cb4d5acbc551f5fbfcc5975dc37091adfec9be5cceb",
-    "PK09": "69ad83052dcb482b8f96b9b070174f419222d23c0ca5981534c62734a3b4d062",
+    "PK09": "3d9130f6de6cc0c4b89760a14102dec6986f24c74b174c066d4aef10fddf81d3",
 }
 _BASE_PACK_METRICS = {
     "PK06": "leases",
@@ -5639,7 +5639,7 @@ BASE_PACK_ENVELOPE_SHA256 = {
         "4799c1a1554c8ee9fc939a0461cc30d13192d01e1c16a48b561c884f0a5d998f"
     ),
     "PK02": (
-        "e6f4536ff6867f71b95693247c72e01eee0671fe1870b3be85b727c511a28464"
+        "0df0ded90c1347aea68031a6e715edf6c19a6d735de2188d1257da45df218998"
     ),
     "PK04": (
         "cbbf83b3f9e4e258095c8428b8e5f343bf96ac93e05c512566ca5463e9a92227"
@@ -5648,7 +5648,7 @@ BASE_PACK_ENVELOPE_SHA256 = {
         "b26d48b769b9be642b5deaeafbe2f853b5d6155eb2f079f4953642c417062629"
     ),
     "PK09": (
-        "2187281554bab6b0a6f55beb79c71d55097d8a00a431c3d0c28a8c12a16de3fc"
+        "c4b994c45080380e4166a2d4381f6a310588617a6c7d4db366f5661f59c1175d"
     ),
     "PK11": (
         "9660c82e6d14e70e9302b2dc2cdf2468da416886422892d5201cea0ff88a744d"
@@ -6591,11 +6591,11 @@ PK05_QUERY = {**QUERY, "requested_metrics": ["tax"]}
 # edits; PK05 registration must not move any of them.
 PK05_BASE_PACK_ENVELOPE_SHA256 = {
     "PK01": "c9a96b80e29f59bb529572103e3512375a09feef52ef00b233452275ca573447",
-    "PK02": "3ca4ca2886034b783be63a5aa8b2be3e763b004511f94163664fc022307e6fc1",
+    "PK02": "101b6e2613bb7c893195c7a06e3ee81e63222ffa3a655a25e00dab36d1fb32c4",
     "PK03": "17a26aa6d276414927f9c68ddbd37595e79bc6120a289abcb254f83f4095057d",
     "PK04": "e4746fbf9126b233d759caeb235dfec72d1895b20b6a6b13a20dd6d16802d5dd",
     "PK06": "2126d42b4a608ad2a9f8e9a48b8692fe8c11c8ed187d5beb33e27df68182df17",
-    "PK09": "23f8812b86ab91d92be553ca7e39bac0db6facbac4cc0eb05c62ccb19b7e5ff6",
+    "PK09": "1c75cbbe03fc59fac67f92f3f1532d7b3c83f4f33452765ce1b4309f645715b0",
     "PK10": "217702f0bb51ac1686a796422e72118655584064fd8b6585eb8f5aa640c230e1",
     "PK11": "1e8d160a7fb3402fd82c698333cd2d87ad3622fca5d70437800c692c3fb63620",
     "PK12": "d6bfa668b1a77819f0a2e8ff1d77fd75e8cacce96dbeba49b430d861fca9591d",
@@ -8377,12 +8377,12 @@ PK07_QUERY = {**QUERY, "requested_metrics": ["mna"]}
 # pack's AAPL envelope.
 PK07_BASE_PACK_ENVELOPE_SHA256 = {
     "PK01": "520237dee6613f84f1900a051bc3ffb26db88fe5724b9ca466f9334ac09d8c92",
-    "PK02": "453b9dd1b547953d761436ac8c99aeca1ef42a66cf2a91e339b60ca83d70ce31",
+    "PK02": "ca09d9a5aeef2863c2d2ebd945f2c4bd6da7a5e234aa0d6100a24d2944218183",
     "PK03": "0f62a747724035a233b1db209b34d5cf2bcd3920fb0e994b99543cf7d955bd6e",
     "PK04": "281d84d196751caca6ac23a217004766fb1483e2d5fc729309eb1bc30f64dc8f",
     "PK05": "3628a5ddde284650978617bcd7ae7ff922dd32ac0bbb8ab6e8f35ad2545967ac",
     "PK06": "84f9aad2836afa5b397253ff27807345d6245edf8f765b60b6e21d68449890f5",
-    "PK09": "b1ce551426abeb83041f1bd9abcfe5e228cdb85096198de7346f3d235e1f8724",
+    "PK09": "c58d7263e4156f4c7f8acfa56aa9ed1a3b63402b5b9f6400960a460282a314b7",
     "PK10": "2ef05add8be8db7f9cb32a6fd55b47eab26fafdc2e603a2b7cbae9e074b234d0",
     "PK11": "140b630622b5e1ab49dd1743ad8eafb91be8872e7a20e9cfc72d2d59ffddaefc",
     "PK12": "4915af8ff2a916dd788d219de2329c6fc7703df5dfc3ac7a4e8dc7265f4ab48b",
@@ -9032,13 +9032,13 @@ PK08_QUERY = {**QUERY, "requested_metrics": ["contingencies"]}
 # pack's AAPL envelope.
 PK08_BASE_PACK_ENVELOPE_SHA256 = {
     "PK01": "b08df45a24f9a59a5c319f67b0cd998d75a9424e676e606691a5245fcee2e194",
-    "PK02": "a89bea23867fd4f80ac651546b4d51308a675e75354b9ef2961d4f88bfd5aef3",
+    "PK02": "00b145057234ba9489bfaed3a49c9a79f1da7f7b1f66ee21132ce64ccd583400",
     "PK03": "a7939783be7a12f1454287af7a5ba124a079d80d33a14ff1f127276f03807684",
     "PK04": "74782c242d506963311af36d6b5be35b5513963e78c706259f1ed3c648e32825",
     "PK05": "ac0cf6c6d5fb655b622d57317c376602ac357a7e3c075b60c8ef4fa7e6679740",
     "PK06": "1f78880eba88a185421ccc943e8e227bf7d264e5fea6ac8af1c96d75a793e229",
     "PK07": "0ff8a0e0ed118c716d3417e3765a131e94054fa57ab8eb9a2b0ade02fb89a153",
-    "PK09": "07cb38090c2ef76a29e49301e9192547e7dfbdf8324c25586e1604a524aebb5e",
+    "PK09": "d2f04e7e866f870b7e6e3e19af46a536d3c0b0d34ea77b15507154c006dba3b9",
     "PK10": "655d3ff540c539e2f2b2a20104f286d68baaa6a18990e1ec46d52cc7cd6f32ba",
     "PK11": "58e1c524a82210daffc392c855309c73b5d4ca55732c100c3a3a6babe7d41ba4",
     "PK12": "e3578db64f6e41c5ec5633b5b529fc87ca742a2857639bbaf2ba28ec4480f830",
@@ -10925,6 +10925,750 @@ def test_pk03_widened_near_misses_never_resolve(
     # outside-group diagnostic is dropped with the rest of its rows.
     assert "outside every definition group" not in " ".join(result["limitations"])
     assert contract.validate_pack_result(result) == []
+
+
+# 99. PK02 dev-corpus lane: duration contract, duplicates, aliases, guard ------
+#
+# Synthetic inline-XBRL 10-Q shapes built inside the tests (no filing bytes),
+# pinned to the behaviors the dev corpora (diversified_v1, litigation_v1)
+# verified on the staged filings:
+#   * a duration field carries the primary fiscal duration ending at the
+#     period of report (base.py keeps the longest context), so a 10-Q row is
+#     the year-to-date figure and the row period reports 2026-01-01..2026-09-30;
+#   * identical duplicate facts are not a conflict; differing values at the
+#     same concept/period stay not_evaluable (A.6) with the R-F9 limitation;
+#   * sbc_expense_total falls back to the cash-flow alias when the allocated
+#     alias is absent, and dimensioned-only facts stay disallowed_dimension;
+#   * a negative AllocatedShareBasedCompensationExpense resolution (the dev
+#     finding: issuers tag that element for sign-flipped reconciliation rows
+#     where the cash-flow add-back carries the positive total) names a
+#     sign-conflict limitation. Since the section-100 alias repair the
+#     cash-flow add-back is tried first, so the limitation fires only when
+#     the negative value resolves through the allocated fallback.
+
+PKQ2_CIK = "0000000002"
+PKQ2_SIC = "3571"
+PKQ2_DOC = "pkq2-20260930.htm"
+PKQ2_ENTITY = {
+    "entity_id": PKQ2_CIK,
+    "cik": PKQ2_CIK,
+    "ticker": "PKQ2",
+    "name": "PKQ2 CORP",
+    "identity_basis": "golden_filing_package_fixture_v1",
+    "source_entity_id": PKQ2_CIK,
+}
+PKQ2_QUERY = {
+    "policy": "as_reported",
+    "source_event_cutoff": "2026-12-31T23:59:59Z",
+    "system_recorded_cutoff": "2026-12-31T23:59:59Z",
+    "requested_metrics": ["stock_compensation"],
+    "requested_periods": ["2026-09-30"],
+    "evaluation_mode": "historical_replay",
+}
+_PKQ2_CONTEXTS = {
+    "c-q": (
+        "<xbrli:context id=\"c-q\"><xbrli:entity><xbrli:identifier"
+        " scheme=\"http://www.sec.gov/CIK\">"
+        f"{PKQ2_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:startDate>2026-07-01</xbrli:startDate>"
+        "<xbrli:endDate>2026-09-30</xbrli:endDate></xbrli:period>"
+        "</xbrli:context>"
+    ),
+    "c-ytd": (
+        "<xbrli:context id=\"c-ytd\"><xbrli:entity><xbrli:identifier"
+        " scheme=\"http://www.sec.gov/CIK\">"
+        f"{PKQ2_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:startDate>2026-01-01</xbrli:startDate>"
+        "<xbrli:endDate>2026-09-30</xbrli:endDate></xbrli:period>"
+        "</xbrli:context>"
+    ),
+    "c-aw": (
+        "<xbrli:context id=\"c-aw\"><xbrli:entity><xbrli:identifier"
+        " scheme=\"http://www.sec.gov/CIK\">"
+        f"{PKQ2_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:startDate>2026-01-01</xbrli:startDate>"
+        "<xbrli:endDate>2026-09-30</xbrli:endDate></xbrli:period>"
+        "<xbrli:scenario><xbrldi:explicitMember dimension=\"us-gaap:"
+        "ShareBasedCompensationArrangementByShareBasedPaymentAwardTypeAxis\">"
+        "us-gaap:RestrictedStockUnitsMember</xbrldi:explicitMember>"
+        "</xbrli:scenario></xbrli:context>"
+    ),
+}
+_PKQ2_UNITS = {
+    "usd": (
+        '<xbrli:unit id="usd"><xbrli:measure>iso4217:USD</xbrli:measure>'
+        "</xbrli:unit>"
+    ),
+    "shares": (
+        '<xbrli:unit id="shares"><xbrli:measure>xbrli:shares</xbrli:measure>'
+        "</xbrli:unit>"
+    ),
+    "ps": (
+        '<xbrli:unit id="ps"><xbrli:divide><xbrli:unitNumerator>'
+        "<xbrli:measure>iso4217:USD</xbrli:measure></xbrli:unitNumerator>"
+        "<xbrli:unitDenominator><xbrli:measure>xbrli:shares</xbrli:measure>"
+        "</xbrli:unitDenominator></xbrli:divide></xbrli:unit>"
+    ),
+}
+
+
+def _pkq2_document(
+    facts: tuple[tuple[str, str, str, str, str] | tuple[str, str, str, str, str, str], ...],
+) -> bytes:
+    """A minimal inline-XBRL PKQ2 10-Q.
+
+    Each fact is (qname, context, value, unit, decimals) with an optional
+    sixth field carrying the iXBRL sign attribute ("-").
+    """
+
+    def sign_of(item: tuple) -> str:
+        return f' sign="{item[5]}"' if len(item) > 5 else ""
+
+    rows = "\n".join(
+        f"<tr><td>item {index}</td><td>"
+        f'<ix:nonFraction id="f-{index}" name="{qname}"'
+        f' contextRef="{context}" unitRef="{unit}" decimals="{decimals}"'
+        f"{sign_of(item)}>{value}</ix:nonFraction></td></tr>"
+        for index, item in enumerate(facts, start=1)
+        for qname, context, value, unit, decimals in (item[:5],)
+    )
+    wanted_contexts = {item[1] for item in facts}
+    wanted_units = {item[3] for item in facts}
+    contexts = "\n".join(
+        _PKQ2_CONTEXTS[context_id]
+        for context_id in ("c-q", "c-ytd", "c-aw")
+        if context_id in wanted_contexts
+    )
+    units = "\n".join(
+        _PKQ2_UNITS[unit_id]
+        for unit_id in ("usd", "shares", "ps")
+        if unit_id in wanted_units
+    )
+    template = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<html xmlns="http://www.w3.org/1999/xhtml"'
+        ' xmlns:ix="http://www.xbrl.org/2013/inlineXBRL"'
+        ' xmlns:xbrli="http://www.xbrl.org/2003/instance"'
+        ' xmlns:xbrldi="http://xbrl.org/2005/xbrldi"'
+        ' xmlns:iso4217="http://www.xbrl.org/2003/iso4217"'
+        ' xmlns:us-gaap="http://fasb.org/us-gaap/2025">\n'
+        "<head><title>PKQ2 10-Q</title></head>\n<body>\n"
+        '<div style="display:none"><ix:header><ix:resources>\n'
+        f"{contexts}\n{units}\n</ix:resources></ix:header></div>\n"
+        f"<table>\n{rows}\n</table>\n</body></html>\n"
+    )
+    return template.encode("utf-8")
+
+
+def _pkq2_result(
+    facts: tuple[tuple[str, str, str, str, str] | tuple[str, str, str, str, str, str], ...],
+) -> dict:
+    document = _pkq2_document(facts)
+    manifest = {
+        "entity_id": PKQ2_CIK,
+        "cik": PKQ2_CIK,
+        "legal_name": "PKQ2 CORP",
+        "form": "10-Q",
+        "period_of_report": "2026-09-30",
+        "filing_date": "2026-11-01",
+        "accession": "0000000002-26-000001",
+        "primary_document": PKQ2_DOC,
+        "source_accepted_at": "2026-11-01T16:00:00Z",
+        "fixture_recorded_at": "2026-11-01T16:05:00Z",
+        "members": [
+            {
+                "name": PKQ2_DOC,
+                "state": "stored",
+                "content_sha256": sha256(document).hexdigest(),
+            }
+        ],
+    }
+    package = GoldenFilingPackage(
+        manifest=manifest, members={PKQ2_DOC: document}
+    )
+    return produce_pack(
+        "PK02",
+        PackInput(
+            packages=(package,),
+            entity=PKQ2_ENTITY,
+            query=PKQ2_QUERY,
+            issuer_sic=PKQ2_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+
+
+_PKQ2_SIGN_LIMITATION = (
+    "sbc_expense_total: AllocatedShareBasedCompensationExpense resolved"
+    " negative"
+)
+
+
+def test_pk02dev_10q_duration_fields_take_primary_fiscal_duration() -> None:
+    # PIN (passes at the lane base): the longest context ending at the period
+    # of report wins, so every duration row is the year-to-date figure.
+    result = _pkq2_result(
+        (
+            ("us-gaap:EarningsPerShareBasic", "c-q", "2.09", "ps", "2"),
+            ("us-gaap:EarningsPerShareBasic", "c-ytd", "22.59", "ps", "2"),
+            ("us-gaap:EarningsPerShareDiluted", "c-q", "2.08", "ps", "2"),
+            ("us-gaap:EarningsPerShareDiluted", "c-ytd", "22.46", "ps", "2"),
+            (
+                "us-gaap:WeightedAverageNumberOfSharesOutstandingBasic",
+                "c-q",
+                "317500000",
+                "shares",
+                "-5",
+            ),
+            (
+                "us-gaap:WeightedAverageNumberOfSharesOutstandingBasic",
+                "c-ytd",
+                "317300000",
+                "shares",
+                "-5",
+            ),
+            (
+                "us-gaap:PaymentsForRepurchaseOfCommonStock",
+                "c-q",
+                "300000000",
+                "usd",
+                "-6",
+            ),
+            (
+                "us-gaap:PaymentsForRepurchaseOfCommonStock",
+                "c-ytd",
+                "1000000000",
+                "usd",
+                "-6",
+            ),
+            (
+                "us-gaap:ShareBasedCompensation",
+                "c-ytd",
+                "182000000",
+                "usd",
+                "-6",
+            ),
+        )
+    )
+    assert contract.validate_pack_result(result) == []
+    eps_basic = _row(result, "eps_basic")
+    assert eps_basic["quality_state"] == "valued"
+    assert eps_basic["value"] == "22.59"
+    assert eps_basic["period"] == {
+        "kind": "duration",
+        "start": "2026-01-01",
+        "end": "2026-09-30",
+    }
+    assert _row(result, "eps_diluted")["value"] == "22.46"
+    assert _row(result, "weighted_average_shares_basic")["value"] == "317300000"
+    repurchase = _row(result, "share_repurchase_amount")
+    assert repurchase["value"] == "1000000000"
+    assert repurchase["period"]["start"] == "2026-01-01"
+    # The allocated alias is absent, so the cash-flow alias resolves.
+    sbc = _row(result, "sbc_expense_total")
+    assert sbc["value"] == "182000000"
+    assert sbc["concept"] == "us-gaap:ShareBasedCompensation"
+
+
+def test_pk02dev_conflicting_duplicates_are_not_evaluable() -> None:
+    # PIN: same concept and period, different values -> A.6 not_evaluable with
+    # the R-F9 limitation naming both occurrences.
+    result = _pkq2_result(
+        (
+            ("us-gaap:EarningsPerShareBasic", "c-ytd", "2.09", "ps", "2"),
+            ("us-gaap:EarningsPerShareBasic", "c-ytd", "2.10", "ps", "2"),
+        )
+    )
+    row = _row(result, "eps_basic")
+    assert row["quality_state"] == "not_evaluable"
+    assert row["reason"] == "missing_dependency"
+    assert row["value"] is None
+    assert any(
+        "eps_basic: conflicting duplicate facts" in line
+        for line in result["limitations"]
+    )
+
+
+def test_pk02dev_identical_duplicate_eps_valued_with_both_ids() -> None:
+    # PIN: identical duplicates are not a conflict (the AAPL fixture pins the
+    # same rule; this is the synthetic 10-Q shape).
+    result = _pkq2_result(
+        (
+            ("us-gaap:EarningsPerShareBasic", "c-ytd", "22.59", "ps", "2"),
+            ("us-gaap:EarningsPerShareBasic", "c-ytd", "22.59", "ps", "2"),
+        )
+    )
+    row = _row(result, "eps_basic")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "22.59"
+    assert len(row["source_occurrence_ids"]) == 2
+
+
+def test_pk02dev_dimensioned_sbc_only_is_disallowed_dimension() -> None:
+    # PIN (a 10-K dev shape): facts only under an award-type axis member
+    # never stand in for the undimensioned total.
+    result = _pkq2_result(
+        (
+            (
+                "us-gaap:AllocatedShareBasedCompensationExpense",
+                "c-aw",
+                "815000000",
+                "usd",
+                "-6",
+            ),
+        )
+    )
+    row = _row(result, "sbc_expense_total")
+    assert row["quality_state"] == "missing"
+    assert row["non_value_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+
+
+def test_pk02dev_absent_sbc_is_missing_standard_fact() -> None:
+    # PIN (typed absence): no SBC concept anywhere names the first alias.
+    # 2026-11-01 alias repair: the first alias is now the cash-flow total.
+    result = _pkq2_result(
+        (
+            ("us-gaap:EarningsPerShareBasic", "c-ytd", "22.59", "ps", "2"),
+        )
+    )
+    row = _row(result, "sbc_expense_total")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == (
+        "missing_standard_fact:us-gaap:ShareBasedCompensation"
+    )
+
+
+def test_pk02dev_cashflow_total_outranks_negative_allocated() -> None:
+    # UPDATED by the 2026-11-01 alias repair (fails at the lane base): the
+    # 2026 10-Q dev shape — the filing tags the allocated element
+    # negative for its reconciliation note while its cash-flow statement
+    # tags the positive add-back. The cash-flow total is the company-wide
+    # expense total the field names, so it wins and the sign-conflict
+    # limitation does not fire.
+    result = _pkq2_result(
+        (
+            (
+                "us-gaap:AllocatedShareBasedCompensationExpense",
+                "c-ytd",
+                "182000000",
+                "usd",
+                "-6",
+                "-",
+            ),
+            (
+                "us-gaap:ShareBasedCompensation",
+                "c-ytd",
+                "182000000",
+                "usd",
+                "-6",
+            ),
+        )
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "sbc_expense_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "182000000"
+    assert row["concept"] == "us-gaap:ShareBasedCompensation"
+    assert not any(
+        line.startswith(_PKQ2_SIGN_LIMITATION) for line in result["limitations"]
+    )
+
+
+def test_pk02dev_positive_allocated_sbc_adds_no_sign_limitation() -> None:
+    # NEW guard (passes at the lane base too): a positive allocated total —
+    # the AAPL-golden shape — must not mint the sign-conflict limitation.
+    result = _pkq2_result(
+        (
+            (
+                "us-gaap:AllocatedShareBasedCompensationExpense",
+                "c-ytd",
+                "196000000",
+                "usd",
+                "-6",
+            ),
+        )
+    )
+    row = _row(result, "sbc_expense_total")
+    assert row["value"] == "196000000"
+    assert not any(
+        line.startswith(_PKQ2_SIGN_LIMITATION) for line in result["limitations"]
+    )
+
+
+# 100. PK02 alias repair (2026-11-01): cash-flow total first ------------------
+#
+# DEC-FIF-PACK-MAPPING-DIGEST-PIN-RE-RECORD re-recorded the PK02 AAPL pins so
+# sbc_expense_total could try the cash-flow add-back
+# (us-gaap:ShareBasedCompensation) before the plan-scoped
+# us-gaap:AllocatedShareBasedCompensationExpense: the dev corpora proved the
+# allocated element resolves to the wrong quantity (plan-scoped or
+# allocation-total note rows) and to sign-flipped 10-Q reconciliation
+# rows. Synthetic
+# shapes below pin the repaired resolution order; (a) and (c) fail at the
+# repair's parent commit 9171964fb4ed3c66f4bf2d1028baa261b9fc1bf8.
+
+
+def test_pk02dev2_cashflow_total_preferred_when_both_present() -> None:
+    # (a) Both concepts tagged undimensioned on the primary duration with
+    # different values: the cash-flow total is the company-wide expense the
+    # field names, so it wins over the plan-scoped allocated figure.
+    result = _pkq2_result(
+        (
+            (
+                "us-gaap:AllocatedShareBasedCompensationExpense",
+                "c-ytd",
+                "741000000",
+                "usd",
+                "-6",
+            ),
+            (
+                "us-gaap:ShareBasedCompensation",
+                "c-ytd",
+                "730000000",
+                "usd",
+                "-6",
+            ),
+        )
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "sbc_expense_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "730000000"
+    assert row["concept"] == "us-gaap:ShareBasedCompensation"
+    assert row["unit"] == "USD"
+
+
+def test_pk02dev2_allocated_fallback_when_cashflow_absent() -> None:
+    # (b) Only the allocated element tagged: the fallback still values it, so
+    # issuers whose cash-flow statement omits the add-back keep a row.
+    result = _pkq2_result(
+        (
+            (
+                "us-gaap:AllocatedShareBasedCompensationExpense",
+                "c-ytd",
+                "196000000",
+                "usd",
+                "-6",
+            ),
+        )
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "sbc_expense_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "196000000"
+    assert row["concept"] == "us-gaap:AllocatedShareBasedCompensationExpense"
+
+
+def test_pk02dev2_cashflow_total_wins_over_negative_allocated() -> None:
+    # (c) The 2026 10-Q dev shape: the reconciliation note tags the
+    # allocated element sign-flipped while the cash-flow statement carries the
+    # positive add-back. The positive cash-flow total is chosen; the
+    # sign-conflict limitation does not fire.
+    result = _pkq2_result(
+        (
+            (
+                "us-gaap:AllocatedShareBasedCompensationExpense",
+                "c-ytd",
+                "182000000",
+                "usd",
+                "-6",
+                "-",
+            ),
+            (
+                "us-gaap:ShareBasedCompensation",
+                "c-ytd",
+                "182000000",
+                "usd",
+                "-6",
+            ),
+        )
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "sbc_expense_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "182000000"
+    assert row["concept"] == "us-gaap:ShareBasedCompensation"
+    assert not any(
+        line.startswith(_PKQ2_SIGN_LIMITATION) for line in result["limitations"]
+    )
+
+
+def test_pk02dev2_absence_names_cashflow_alias() -> None:
+    # (d) Neither concept tagged: the typed absence keeps the pack convention
+    # of naming the mapping's first alias.
+    result = _pkq2_result(
+        (
+            ("us-gaap:EarningsPerShareBasic", "c-ytd", "22.59", "ps", "2"),
+        )
+    )
+    row = _row(result, "sbc_expense_total")
+    assert row["quality_state"] == "missing"
+    assert row["non_value_state"] == "missing"
+    assert row["value"] is None and row["text_value"] is None
+    assert row["reason"] == "missing_standard_fact:us-gaap:ShareBasedCompensation"
+
+
+def test_pk02dev2_negative_allocated_alone_keeps_sign_limitation() -> None:
+    # Guard: the sign-conflict limitation code is byte-identical to the parent
+    # commit and still fires where it should — when the cash-flow total is
+    # absent and the allocated fallback alone resolves negative.
+    result = _pkq2_result(
+        (
+            (
+                "us-gaap:AllocatedShareBasedCompensationExpense",
+                "c-ytd",
+                "182000000",
+                "usd",
+                "-6",
+                "-",
+            ),
+        )
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "sbc_expense_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "-182000000"
+    assert row["concept"] == "us-gaap:AllocatedShareBasedCompensationExpense"
+    assert any(
+        line.startswith(_PKQ2_SIGN_LIMITATION) for line in result["limitations"]
+    )
+# 45. PK01 covenant text-span search (2026-11-01 repair lane, dev corpus
+# diversified_v1) -----------------------------------------------------------
+#
+# pk01_debt.py wires covenant_term_observation through the PK07-style
+# finalize hook: the mapping stays the reserved form (the PK01 catalogue
+# declares no narrative reason code, so the stock section-scoped resolver's
+# absence codes are unemittable) and Pk01Producer.finalize_result runs the
+# real search over the debt / borrowings / credit-facility note. The hook
+# only upgrades the row when a covenant span is located, so every
+# searched-but-not-found outcome stays byte-identical to the no-hook build
+# (the base-envelope digest pins require that). New-behavior tests fail on
+# the pre-repair pack; the near-miss, no-section, typed-absence and
+# bank-exclusion tests below are pins of behavior the parent already has.
+
+
+from engine.fundamental_forensics.specialist_packs import pk01_debt as pk01_mod  # noqa: E402
+
+
+def _pk01_syn_input(package, sic: str = "3571") -> PackInput:
+    return PackInput(
+        packages=(package,),
+        entity=SYNTHETIC_ENTITY,
+        query=PK01_QUERY,
+        issuer_sic=sic,
+        sic_source="sec_submissions",
+    )
+
+
+def _pk01_covenant_row(result: dict) -> dict:
+    return _row(result, "covenant_term_observation")
+
+
+COVENANT_SENTENCE = (
+    "The 2015 Credit Agreement contains affirmative, negative and financial"
+    " covenants, and events of default customary for facilities of this"
+    " type."
+)
+
+
+def test_pk01_covenant_span_valued_from_debt_note() -> None:
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>The company maintains cash for working capital.</div>"
+        "<div>Note 7. Debt </div>"
+        "<div>The term loan facility matures in 2030."
+        f" {COVENANT_SENTENCE}</div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    assert contract.validate_pack_result(result) == []
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["non_value_state"] is None
+    assert row["coverage_state"] == "source_trace_complete"
+    assert row["reason"] is None
+    assert row["value"] is None
+    assert row["text_value"] == COVENANT_SENTENCE
+    assert row["evidence_kind"] == "text_span"
+    assert row["required_evidence_kind"] == "text_span"
+    assert row["mapping_rule_id"] == "pk01.covenant_term_observation.text_span/v1"
+    assert row["mapping_rule_digest"] == pack_base._text_span_digest(
+        pk01_mod._COVENANT_MAPPING
+    )
+    assert row["source_span"]["document_id"] == "doc.htm"
+    assert isinstance(row["source_span"]["start_offset"], int)
+    check = _check(result, "covenant_span_present")
+    assert check["status"] == "pass"
+    assert check["reason"] is None
+    # The upgrade is visible in coverage: one valued row, none unsupported.
+    assert result["coverage"]["valued_fields"] == 1
+    assert result["coverage"]["unsupported_fields"] == 0
+    assert result["coverage"]["disclosure_coverage_state"] == "present"
+
+
+def test_pk01_covenant_span_matches_financing_note_heading_form() -> None:
+    body = (
+        "<div>NOTE 11. FINANCING As of December 31, 2025, the Company was in"
+        " compliance with all of its debt covenants. The components of the"
+        " Company&#8217;s debt were as follows. </div>"
+        "<div>NOTE 12. COMMITMENTS Unconditional purchase obligations were"
+        " recorded. </div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert (
+        row["text_value"]
+        == "FINANCING As of December 31, 2025, the Company was in compliance"
+        " with all of its debt covenants."
+    )
+    assert _check(result, "covenant_span_present")["status"] == "pass"
+
+
+def test_pk01_covenant_span_pin_lease_note_near_miss_stays_reserved() -> None:
+    # PIN (parent-identical by design): covenant wording outside the
+    # governing debt note must never be captured.
+    body = (
+        "<div>Note 9. Debt </div>"
+        "<div>The notes mature between 2027 and 2035.</div>"
+        "<div>Note 10. Leases </div>"
+        "<div>Our operating lease agreements do not contain any material"
+        " guarantees or restrictive covenants.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    assert contract.validate_pack_result(result) == []
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "unsupported"
+    assert row["non_value_state"] == "unsupported"
+    assert row["reason"] == "missing_dependency"
+    assert row["text_value"] is None
+    check = _check(result, "covenant_span_present")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "missing_dependency"
+
+
+def test_pk01_covenant_pin_no_governing_section_stays_reserved() -> None:
+    # PIN: no debt / borrowings / credit-facility note heading at all.
+    body = (
+        "<div>Note 5. Inventories </div>"
+        "<div>The Company was in compliance with all of its debt"
+        " covenants.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "unsupported"
+    assert row["reason"] == "missing_dependency"
+    assert _check(result, "covenant_span_present")["status"] == "not_evaluable"
+
+
+def _pk01_manifest_only_package() -> "_SyntheticPackage":
+    return _SyntheticPackage(
+        {
+            "cik": "0000000099",  # R-F4: package issuer == packet entity
+            "form": "10-K",
+            "period_of_report": "2026-06-30",
+            "accession": "0000000099-26-000001",
+            "primary_document": "doc.htm",
+        }
+    )
+
+
+def _pk01_instant_context() -> FactContext:
+    return FactContext(
+        context_id="c-i",
+        entity_scheme="http://www.sec.gov/CIK",
+        entity_identifier="0000000099",
+        instant="2026-06-30",
+    )
+
+
+def _pk01_synthetic_filing_row() -> dict:
+    return synthetic_filing(
+        accession="0000000099-26-000001",
+        document_id="doc.htm",
+        accepted_at="2026-07-10T08:00:00Z",
+        recorded_at="2026-07-10T08:05:00Z",
+        filed_at="2026-07-10",
+        entity_id="0000000099",
+    )
+
+
+def _pk01_patch_ledger(
+    monkeypatch: pytest.MonkeyPatch, events: tuple
+) -> None:
+    """Stand in for the golden-package parser on a synthetic PK01 ledger."""
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000099-26-000001",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+
+
+def test_pk01_pin_typed_absence_without_short_term_borrowings(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # PIN: an issuer carrying no short-term-borrowings family concept types
+    # the exact standard-fact absence.
+    _pk01_patch_ledger(monkeypatch, ())
+    result = produce_pack("PK01", _pk01_syn_input(_pk01_manifest_only_package()))
+    row = _row(result, "short_term_debt")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "missing_standard_fact:us-gaap:ShortTermBorrowings"
+    assert row["value"] is None
+
+
+def test_pk01_bank_class_exclusion_pin(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # PIN: the A.1 industrial-basis exclusions keep current_ratio and
+    # working_capital not_applicable for a bank-class issuer while the raw
+    # balance-sheet rows stay valued.
+    filing_row = _pk01_synthetic_filing_row()
+    context = _pk01_instant_context()
+    events = (
+        usd_fact(
+            filing_row,
+            "us-gaap:AssetsCurrent",
+            context,
+            "30387",
+            source_span=(10, 15),
+            source_occurrence_key="ac",
+        ),
+        usd_fact(
+            filing_row,
+            "us-gaap:LiabilitiesCurrent",
+            context,
+            "23414",
+            source_span=(20, 25),
+            source_occurrence_key="lc",
+        ),
+    )
+    _pk01_patch_ledger(monkeypatch, events)
+    result = produce_pack("PK01", _pk01_syn_input(_pk01_manifest_only_package(), sic="6021"))
+    assert result["applicability"]["state"] == "applicable"
+    assert contract.validate_pack_result(result) == []
+    for field_id in ("current_ratio", "working_capital"):
+        row = _row(result, field_id)
+        assert row["quality_state"] == "not_applicable"
+        assert row["reason"] == "industrial_basis_excluded_for_financial_institution"
+    assert _row(result, "current_assets")["value"] == "30387"
+    assert _row(result, "current_liabilities")["value"] == "23414"
 # 50.9 §TESTS 9: diversified_v1 dev-corpus repair (widened B.2 fallbacks) -----
 #
 # The diversified_v1 development corpus (issuers disjoint from the held-out
@@ -11646,3 +12390,393 @@ def test_pk07_guard_completion_after_the_fiscal_period_is_typed_absence() -> Non
     row = _row(result, "acquisition_date")
     assert row["quality_state"] != "valued"
     assert row["text_value"] is None
+
+
+# 31b. PK09 dev-corpus recall repairs (diversified_v1 + litigation_v1) --------
+# Synthetic probes for the 2026-11-01 repair lane fif-pk09dev-20261101-r1:
+# heading variants, the financial-statement index TOC line, the report's own
+# "under Item 9A" cross-reference, signature-block forms, the management
+# conclusion wordings, the Item 8 management-report fallback, and the
+# precision guards. Each behavior test fails on the pre-repair pack; the
+# going-concern case is a labeled pin.
+
+
+def test_pk09_item9a_title_only_heading_locates_controls() -> None:
+    # Heading variant (title-only shape): the real section carries only the
+    # all-caps title; the item number never reaches the heading text.
+    body = (
+        "<div>Table of contents Item 9A. Controls and Procedures 124 "
+        "Item 9B. Other Information 125</div>"
+        "<div>CONTROLS AND PROCEDURES Management concluded that the "
+        "Company&#8217;s internal control over financial reporting was "
+        "effective as of June 30, 2026.</div>"
+        "<div>Our disclosure controls and procedures were effective as of "
+        "June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "icfr_management_conclusion")["text_value"] == (
+        "effective"
+    )
+    assert _row(result, "disclosure_controls_effective")["text_value"] == (
+        "effective"
+    )
+    assert _row(result, "material_weakness_present")["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_item4_em_dash_heading_with_toc_page_number() -> None:
+    # Heading variant (10-Q em-dash shape): an em-dash between the item number
+    # and the title, with a contents line carrying the trailing page number.
+    body = (
+        "<div>Item 4 Controls and procedures 46 Part II Other information "
+        "47 Item 1 Legal proceedings 47</div>"
+        "<div>Item 4 &#8212; Controls and procedures Disclosure controls and "
+        "procedures. Based on an evaluation, the Company&#8217;s disclosure "
+        "controls and procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-Q", body)
+    row = _row(result, "disclosure_controls_effective")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "effective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_audit_index_line_and_item9a_cross_reference() -> None:
+    # Multi-heading audit section (multi-form shape): the financial-statement
+    # index lists the report heading with a trailing page number, and the
+    # report's own scope paragraph says "appearing under Item 9A" — the
+    # section must still reach the signature block.
+    body = (
+        "<div>Index of financial statements Report of Independent Registered "
+        "Public Accounting Firm 42 Consolidated Balance Sheets 45</div>"
+        "<div>Item 8. Financial Statements and Supplementary Data Report of "
+        "Independent Registered Public Accounting Firm To the Board of "
+        "Directors Opinion In our opinion, the consolidated financial "
+        "statements present fairly, in all material respects, the financial "
+        "position of the Company as of June 30, 2026.</div>"
+        "<div>We also have audited the Company&#8217;s internal control over "
+        "financial reporting appearing under Item 9A. Our responsibility is "
+        "to express opinions on the financial statements and on internal "
+        "control. In our opinion, the Company maintained, in all material "
+        "respects, effective internal control over financial reporting as of "
+        "June 30, 2026.</div>"
+        "<div>Critical Audit Matters The critical audit matter communicated "
+        "below is a matter arising from the current period audit.</div>"
+        "<div>/s/ Audit Partners LLP Springfield, Illinois February 1, "
+        "2027</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "Audit Partners LLP"
+    assert _row(result, "auditor_opinion_fs")["text_value"] == "unqualified"
+    assert _row(result, "auditor_opinion_icfr")["text_value"] == "effective"
+    assert _row(result, "critical_audit_matters")["quality_state"] == "valued"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_firm_signature_block_without_conformed_signature() -> None:
+    # Firm-name form (bare-office shape): the report signs with the bare office
+    # signature block and no conformed "/s/" prefix at all.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>Audit Partners LLP Springfield, Illinois February 1, 2027</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "Audit Partners LLP"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_uppercase_conformed_signature_names_the_firm() -> None:
+    # Firm-name form (conformed-signature shape): the conformed signature and the
+    # are set in capitals.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>/S/ AUDIT PARTNERS LLP Springfield, Illinois February 1, "
+        "2027</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "AUDIT PARTNERS LLP"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_icfr_conclusion_issuer_named_copula() -> None:
+    # Conclusion wording (issuer-copula shape): the issuer name sits between the
+    # phrase and the copula.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Based on this assessment, management believes that the internal "
+        "control over financial reporting of TestCo is effective as of June "
+        "30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_icfr_conclusion_adjective_first_maintained() -> None:
+    # Conclusion wording (adjective-first shape): the conclusion puts the
+    # front of the noun phrase.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Based on this assessment, management determined that the "
+        "Company maintained effective internal control over financial "
+        "reporting as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_icfr_conclusion_falls_back_to_management_report() -> None:
+    # Conclusion-sentence selection (Item 8 fallback shape): the conclusion lives
+    # in Management's own report inside Item 8, Item 9A only incorporates it
+    # by reference, and the report also carries the Section 404 requirement
+    # boilerplate ("... whether the Company's internal control over financial
+    # reporting is effective") that must not satisfy the field.
+    body = (
+        "<div>MANAGEMENT&#8217;S REPORT ON INTERNAL CONTROL OVER FINANCIAL "
+        "REPORTING Under Section 404 of the Sarbanes-Oxley Act of 2002, "
+        "management is required to assess the effectiveness of the "
+        "Company&#8217;s internal control over financial reporting and "
+        "report, based on that assessment, whether the Company&#8217;s "
+        "internal control over financial reporting is effective.</div>"
+        "<div>Based on the Company&#8217;s processes and assessment, "
+        "management has concluded that, as of June 30, 2026, the "
+        "Company&#8217;s internal control over financial reporting was "
+        "effective.</div>"
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the Company maintained, in all "
+        "material respects, effective internal control over financial "
+        "reporting as of June 30, 2026.</div>"
+        "<div>Item 9A. Controls and Procedures The information required by "
+        "this Item is incorporated herein by reference. Item 9B. Other "
+        "Information None.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert conclusion["mapping_rule_id"] == (
+        "PK09.icfr_management_conclusion.text_span/v1"
+    )
+    check = _check(result, "management_vs_auditor_icfr")
+    assert check["status"] == "pass"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_negated_adjective_conclusion_is_ineffective() -> None:
+    # Precision guard: a negated conclusion never resolves to effective.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Based on this assessment, management concluded that the Company "
+        "did not maintain effective internal control over financial reporting "
+        "as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "ineffective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_except_for_opinion_stays_typed_absent() -> None:
+    # Precision guard: an except-for qualified opinion phrase never resolves
+    # to unqualified/effective; the fields stay typed-absent.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, except for the effects of the "
+        "material weakness described above.</div>"
+        "<div>In our opinion, the Company maintained, in all material "
+        "respects, effective internal control over financial reporting as of "
+        "June 30, 2026, except for the effects of the material weakness "
+        "described above.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were not effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    fs = _row(result, "auditor_opinion_fs")
+    assert fs["quality_state"] == "missing"
+    assert fs["reason"] == "narrative_span_not_located"
+    icfr = _row(result, "auditor_opinion_icfr")
+    assert icfr["quality_state"] == "missing"
+    assert icfr["reason"] == "narrative_span_not_located"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_fs_only_report_leaves_icfr_opinion_typed_absent() -> None:
+    # Typed absence: a report carrying only the financial-statement opinion
+    # never mints an ICFR opinion; the field reports a located section with
+    # no matching span, not a missing section.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    icfr = _row(result, "auditor_opinion_icfr")
+    assert icfr["quality_state"] == "missing"
+    assert icfr["reason"] == "narrative_span_not_located"
+    assert _row(result, "auditor_opinion_fs")["text_value"] == "unqualified"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_icfr_change_capitalized_possessive() -> None:
+    # Change-sentence variant (capitalized-possessive shape): the possessive is
+    # own name or a lowercase "the company's".
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There were no changes in TestCo&#8217;s internal control over "
+        "financial reporting during the fourth quarter that have materially "
+        "affected, or are reasonably likely to materially affect, the "
+        "company&#8217;s internal control over financial reporting.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    change = _row(result, "icfr_change_in_period")
+    assert change["quality_state"] == "valued"
+    assert "no changes in TestCo" in change["text_value"]
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_going_concern_clean_report_stays_not_disclosed() -> None:
+    # PIN (going-concern family is not a repair target): a clean report with
+    # no substantial-doubt sentence keeps the valued absence. This pin holds
+    # on the pre-repair pack as well.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "not_disclosed"
+    assert _row(result, "going_concern_management_plan")["reason"] == (
+        "missing_dependency"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+# 31c. PK09 auditor-firm precedence repair (review follow-up, 2026-11-01) ----
+# The framework resolves a text-span selector with a single leftmost search,
+# so a predecessor auditor's bare dated signature block placed before the
+# incumbent's conformed block used to win auditor_firm. The resolver now
+# prefers the conformed-signature arm across the whole audit span and never
+# values a span whose chosen arm names two distinct firms.
+
+
+def test_pk09_predecessor_bare_block_never_wins_auditor_firm() -> None:
+    # Behavior: the predecessor's bare dated signature block precedes the
+    # incumbent's conformed block; the incumbent signs the report.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>Prior Auditor LLP Springfield, Illinois February 24, 2025</div>"
+        "<div>/s/ Current Auditor LLP Springfield, Illinois March 1, "
+        "2026</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "Current Auditor LLP"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_two_bare_blocks_from_different_firms_stay_typed_absent() -> None:
+    # Behavior: two bare dated signature blocks from two different firms and
+    # no conformed signature — never guess between two firms.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>Prior Auditor LLP Springfield, Illinois February 24, 2025</div>"
+        "<div>Northgate Audit LLP Capital City, New York March 1, 2026</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    firm = _row(result, "auditor_firm")
+    assert firm["quality_state"] == "missing"
+    assert firm["text_value"] is None
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_single_bare_block_still_names_the_firm() -> None:
+    # Pin: one bare dated signature block with no conformed signature still
+    # resolves to that firm. This pin holds on the pre-repair pack as well.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>Northgate Audit LLP Capital City, New York March 1, 2026</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "Northgate Audit LLP"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_predecessor_named_in_prose_never_displaces_incumbent() -> None:
+    # Pin: the predecessor appears only in report prose; the incumbent's
+    # conformed block still signs. This pin holds on the pre-repair pack.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors The consolidated financial statements as of "
+        "June 30, 2025 were audited by Prior Auditor LLP, our predecessor "
+        "auditor, whose report dated February 24, 2025 expressed an "
+        "unqualified opinion.</div>"
+        "<div>In our opinion, the financial statements present fairly, in "
+        "all material respects, the financial position of the Company as of "
+        "June 30, 2026.</div>"
+        "<div>/s/ Current Auditor LLP Springfield, Illinois March 1, "
+        "2026</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "Current Auditor LLP"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_single_conformed_signature_resolves_unchanged() -> None:
+    # Pin: a single conformed signature resolves exactly as before the
+    # repair. This pin holds on the pre-repair pack as well.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>/s/ Northgate Audit LLP Springfield, Illinois March 1, "
+        "2026</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "Northgate Audit LLP"
+    assert contract.validate_pack_result(result) == []
