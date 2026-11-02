@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-30T20:15:52Z",
+ "accession": "0001968487-26-000026",
+ "cik": "0001968487",
+ "doc_byte_length": 8484612,
+ "doc_sha256": "83a3ff19bcc31c89ed98d6ea2d3d5ec825ebd528f52bbd6668f5e64031384b79",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-30",
+ "form": "10-K",
+ "period_of_report": "2026-05-31",
+ "primary_document": "ws-20260531.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 753383,
+  "byte_start": 752792,
+  "normalized": "Significant reductions in sales to any of the Detroit Three automakers, or to our automotive-related customers in general, could have a negative impact on our business. For fiscal 2026, approximately 55% of our net sales were to automotive-related customers. Although we do sell to the domestic operations of foreign automakers and their suppliers, a significant portion of our automotive sales are to the Detroit Three automakers and their suppliers.",
+  "normalized_sha256": "2a04192b45869f9e30860e2bddfe22d2ee351c22aa5f7ae9c6a4943e97d53db8",
+  "raw": "Significant reductions in sales to any of the Detroit Three automakers, or to our automotive-related customers in general, could have a negative impact on our business. </span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">For fiscal 2026, approximately 55% of our net sales were to automotive-related customers. Although we do sell to the domestic operations of foreign automakers and their suppliers, a significant portion of our automotive sales are to the Detroit Three automakers and their suppliers.",
+  "raw_sha256": "b9f8d5ea06268a92431d7537f72db5b6be8c62a98f0355f101f88f9f592e8dfc"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1968487/000196848726000026/ws-20260531.htm",
+ "xbrl_contexts": []
+}

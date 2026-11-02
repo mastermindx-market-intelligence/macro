@@ -8024,7 +8024,10 @@ artifacts:
       Schema: ticker, fiscal_year (int), fiscal_quarter (int 1-4), period_end (date str),
       filed (date str — real SEC filed date), as_of, revenue, cogs, gross_profit,
       op_income, ni, cfo, capex, shares, repurchases, long_term_debt, current_debt,
-      cash, net_debt, receivables, inventory, payables, contract_liabilities.
+      cash, net_debt, receivables, inventory, payables, contract_liabilities,
+      period_start (companyfacts duration start of the first flow series; ISO day
+      str or null — appended append-only by --enrich-period-start, FIF A44 2026-11-01;
+      null for instant-only rows and rows written before the enrichment).
       Producer: scripts/backfill_edgar_quarterly.py (on-demand backfill).
       Pre-existing consumers: engine/stock_fundamentals.py (capital-allocation-delta
       artifact) and engine/event_landmine.py (event-windows artifact, PR #1782 columns).
@@ -18531,6 +18534,32 @@ artifacts:
       calculation and grants no capacity, overhang, runway, risk, probability, rank, entry,
       sizing, or Prophet authority. The first later consumer must be registered here before
       using this artifact.
+
+  capital-structure-document-term-parse-receipts:
+    path: data/capital_structure/document_term_parse_receipts.jsonl
+    format: jsonl
+    producer: scripts/compile_capital_structure_document_terms.py
+    known_extra_writers: []
+    owner_program: capital-structure-intelligence
+    cadence: collect
+    storage: git
+    asof_field: generated_at
+    freshness_sla_hours: 30
+    schema: capital_structure.document_term_parse_receipt.v1
+    tier: infrastructure
+    horizon_role: context
+    weights: none
+    scored_path_surfaces: []
+    consumers: []
+    external_consumers: []
+    notes: >
+      Operational parse receipts, not facts. Each receipt records that one
+      manifest/content/parser-version triple was already materialized by a completed
+      document-term parse, so a parser version bump re-reads each filing once instead of
+      re-reading every unchanged filing every night. Receipts only exempt an already-parsed
+      filing from re-reading; they never amend, retract, or re-version the append-only
+      observation ledger and grant no capacity, signal, sizing, or Prophet authority. The
+      first later consumer must be registered here before using this artifact.
 
   capital-structure-event-versions:
     path: data/capital_structure/event_versions.parquet
