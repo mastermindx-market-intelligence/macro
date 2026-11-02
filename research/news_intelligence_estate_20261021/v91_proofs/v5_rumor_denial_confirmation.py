@@ -446,8 +446,10 @@ def p2_independent_confirmation_recognised(scratch: Path) -> str:
     pos_fired = "new_independent_source" in pos["material_delta_triggers"]
     neg_silent = neg["material_delta_triggers"] == []
     shaped_silent = "new_independent_source" not in shaped["material_delta_triggers"]
-    # An unrecognised producer provenance shape cannot evidence the reprint case.
-    if pos_fired and neg_silent and shaped_silent and producer["origin_found"]:
+    # Fail closed: PROVEN needs the producer to write its own document as the
+    # origin (the shape the reprint case models); a missing or unrecognised
+    # origin value cannot evidence it.
+    if pos_fired and neg_silent and shaped_silent and producer["own_document"]:
         verdict = "PROVEN"
     elif pos_fired:
         verdict = "PARTIAL"
@@ -601,7 +603,7 @@ def p3_copied_wires_do_not_inflate(scratch: Path) -> str:
     )
     store_ok = copied_one_source and independent_two
     thesis_copy_one = len(copy_view["provenance_group_ids"]) == 1
-    if store_ok and edited_sources == 1 and thesis_copy_one and producer["origin_found"]:
+    if store_ok and edited_sources == 1 and thesis_copy_one and producer["own_document"]:
         verdict = "PROVEN"
     elif store_ok:
         verdict = "PARTIAL"
