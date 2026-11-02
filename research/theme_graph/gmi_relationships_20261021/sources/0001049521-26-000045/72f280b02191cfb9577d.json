@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-08-18T21:05:10Z",
+ "accession": "0001049521-26-000045",
+ "cik": "0001049521",
+ "doc_byte_length": 2182366,
+ "doc_sha256": "763b48fcf45a9a588a2eabc819e67c38a19dabe746b4eb1c914b6bdb97a9bb2e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-18",
+ "form": "10-K",
+ "period_of_report": "2026-07-03",
+ "primary_document": "mrcy-20260703.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1979622,
+  "byte_start": 1978129,
+  "normalized": "L3Harris**12 %",
+  "normalized_sha256": "779ad05bc56781ea83bd38562ae0d3695aa0b9dccb0c68079320edb35955879c",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#cceeff;padding:2.62pt 1pt 1.5pt 1pt;text-align:left;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">L3Harris</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:2.62pt 1pt 1.5pt 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">*</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#cceeff;padding:2.62pt 1pt 1.5pt 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">*</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#cceeff;padding:2.62pt 0 1.5pt 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-280\" decimals=\"4\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1281\">12</ix:nonFraction>&#160;</span></td><td style=\"background-color:#cceeff;padding:2.62pt 1pt 1.5pt 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">%</span></td></tr>",
+  "raw_sha256": "72f280b02191cfb9577d96c2a6d243099b225928e44709fe368c6d98d329b18f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1049521/000104952126000045/mrcy-20260703.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 129939,
+   "byte_start": 129279,
+   "context_ref": "c-280",
+   "raw": "<xbrli:context id=\"c-280\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001049521</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mrcy:L3HarrisMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-07-01</xbrli:startDate><xbrli:endDate>2024-06-28</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "4e8d0eb3c5463b31878df3356d6db9a032e53e396f60531b85d34ecba3c25ff6"
+  }
+ ]
+}

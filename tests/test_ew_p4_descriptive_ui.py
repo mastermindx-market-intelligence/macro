@@ -14,13 +14,15 @@ import hashlib
 import json
 import re
 from copy import deepcopy
+from functools import lru_cache
 from pathlib import Path
 
 import pytest
 from bs4 import BeautifulSoup
 
 from lib.rotation_observation_notification import validate as lib_validate
-from tests.test_macro_risk_dialog import _dlg, _render, _vm
+from tests.test_dashboard_template_render import _env
+from tests.test_macro_risk_dialog import _dlg, _vm
 
 ROOT = Path(__file__).resolve().parents[1]
 FIX = ROOT / "tests" / "fixtures" / "ew_p4_observation"
@@ -62,8 +64,17 @@ def envelope(wrapper: dict | None = None, *, rotation: dict | None = None) -> di
     return env
 
 
+@lru_cache(maxsize=1)
+def _dashboard_template():
+    """Compile once per process. Building the Environment and compiling the dashboard and
+    its includes cost about 1.2 s on every call, 143 times over, and that took the
+    dashboard-render-contract job past its 15-minute limit. Only the compile is shared:
+    render() below still runs the template against each test's own envelope."""
+    return _env().get_template("dashboard.html.j2")
+
+
 def render(env: dict) -> str:
-    return _dlg(_render(_vm(risk_envelope=env)))
+    return _dlg(_dashboard_template().render(**_vm(risk_envelope=env), mode="macro"))
 
 
 def glance(dlg: str) -> str:

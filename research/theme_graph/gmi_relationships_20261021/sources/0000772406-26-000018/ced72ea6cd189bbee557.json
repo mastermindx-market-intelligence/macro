@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-21T20:11:56Z",
+ "accession": "0000772406-26-000018",
+ "cik": "0000772406",
+ "doc_byte_length": 1688324,
+ "doc_sha256": "38603376827b247d3b9116ab5efe18c85aac83feddcf709371908d03fc7895e6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-28",
+ "primary_document": "crus-20260328.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 228590,
+  "byte_start": 228345,
+  "normalized": "•Risks related to our long-term capacity reservation and wafer supply agreement with GlobalFoundries",
+  "normalized_sha256": "ff06c98192c2905ac610f4ef176b5304a8402751085851d62a94413fbe065023",
+  "raw": "&#8226;</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;padding-left:14.5pt\">Risks related to our long-term capacity reservation and wafer supply agreement with GlobalFoundries",
+  "raw_sha256": "ced72ea6cd189bbee55746ff2e2c051228d1896df191ae0b7e849995bd582443"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/772406/000077240626000018/crus-20260328.htm",
+ "xbrl_contexts": []
+}

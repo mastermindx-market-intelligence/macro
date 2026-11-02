@@ -5694,6 +5694,37 @@ def _plan_relations_for(
     return "none", by_ticker
 
 
+def _plan_relations_for_shell(full, locked_plans):
+    """Open plans the free shell may print, keyed by ticker.
+
+    ``full`` is ``(state, by_ticker)`` from ``_plan_relations_for``.
+    ``locked_plans`` is the plan-book remainder. A plan whose id is in
+    that remainder is dropped. A ticker left with no open plan gets one
+    gated marker, not an empty list: empty is the copy that says no
+    record exists. The caller's full map is not mutated.
+    """
+    if not full or full[0] == "unknown":
+        return {}
+    by_ticker = full[1] if isinstance(full[1], dict) else {}
+    locked_ids = set()
+    for row in locked_plans or []:
+        if not isinstance(row, dict):
+            continue
+        plan_id = row.get("id")
+        if isinstance(plan_id, str) and plan_id:
+            locked_ids.add(plan_id)
+    shell = {}
+    for ticker, plans in by_ticker.items():
+        if not isinstance(plans, list):
+            continue
+        kept = [plan for plan in plans if plan.get("id") not in locked_ids]
+        if kept:
+            shell[ticker] = kept
+        elif plans:
+            shell[ticker] = [{"shell_state": "gated"}]
+    return shell
+
+
 def _plan_relation_for_row(
     plan_relations: "tuple[str, dict[str, list[dict]]] | None", row: dict
 ) -> dict:
@@ -5730,6 +5761,9 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
     `cards_html` is rendered from the SAME partial the shell includes
     (_us_board_cards.html.j2) for the LEGACY candidate-board locked remainder
     (kept, unused by the current hydrate() JS, for payload-shape stability).
+
+    `preview_cards_html` is that same partial for the free buy prefix, with
+    the full plan map, so hydrate can replace a shell card in place.
 
     `plan_cards_html` (P-MP1-SHELL §8b) is the CENTRAL ACT's own locked
     remainder — rendered from the SAME partial the shell includes
@@ -5768,6 +5802,7 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
         payload = {"schema": "tier_payload.v1", "page": "us_stocks", "gated": False,
                    "built": built, "cards_html": "", "rows": [],
                    "today_cards_html": "", "today_preview": 0, "today_total": 0,
+                   "preview_cards_html": "",
                    # Honest empty remainder — the protected native binding above
                    # is what still permits Today native context for the unchanged
                    # server-rendered shelf.
@@ -5834,12 +5869,32 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
             # honest empty card block rather than aborting the whole build.
             log.error("us_stocks: locked card render failed (%s)", e)
             cards_html = ""
+        preview_buy = full_buy[:gate["preview"]]
+        preview_items = _us_board_group_items(
+            preview_buy, sg_any, gate["stage_counts"])
+        try:
+            preview_cards_html = env.get_template(
+                "_us_board_cards.html.j2").render(
+                items=preview_items, sg_any=sg_any, bs_adj=bs_adj,
+                xu_allfeat=xu_allfeat, trg_map=trg_map,
+                rw_en=rw_en, rw_zh=rw_zh,
+                setup_as_of=(us_standouts or {}).get("as_of"),
+                plan_rel={
+                    "state": plan_relations[0] if plan_relations else "none",
+                    "plans": [],
+                },
+                plan_rel_by_ticker=(
+                    plan_relations[1] if plan_relations else {}))
+        except Exception as e:  # noqa: BLE001 — preview cards fail soft
+            log.error("us_stocks: preview card render failed (%s)", e)
+            preview_cards_html = ""
         payload = {
             "schema": "tier_payload.v1", "page": "us_stocks", "gated": True,
             "required_tier": gate["tier"], "built": built,
             "total": gate["total"], "preview": gate["preview"],
             "locked": gate["locked"], "as_of": (us_standouts or {}).get("as_of") or "",
             "cards_html": cards_html,
+            "preview_cards_html": preview_cards_html,
             "rows": [_table_row(n) for n in locked_rows],
             "today_cards_html": today_cards_html,
             "today_preview": len(today_rows),
@@ -7786,7 +7841,8 @@ def main() -> int:
         vm, _us_shell_su, _us_life_repair, _us_pov, _us_gate_cfg["preview_rows"])
     _us_plan_state, _us_plan_by_ticker = _plan_relations_for(
         vm.get("us_prophet_book"), vm.get("us_prophet_book_error"))
-    vm["plan_rel_by_ticker"] = _us_plan_by_ticker
+    vm["plan_rel_by_ticker"] = _plan_relations_for_shell(
+        (_us_plan_state, _us_plan_by_ticker), _us_life_locked)
     vm["plan_rel"] = {"state": _us_plan_state, "plans": []}
     _write_us_payload(env, site, _us_gate, locked_rows=_us_locked,
                        us_standouts=vm.get("us_standouts"),
@@ -8063,22 +8119,13 @@ def main() -> int:
         log.error("experiments registry build failed: %s", e)
 
     # --- history page: the longer-window charts + lifespan base rates ----------
-    from engine.playbook import QUAD_SHORT, next_quads_line, transition_stats
-    trans = transition_stats(hist["quad"])
-    lifespan_rows = []
-    for q in ("Q1", "Q2", "Q3", "Q4"):
-        nxt = trans["matrix"].get(q, {})
-        lifespan_rows.append({"name": QUAD_SHORT[q],
-                              "n": trans["n_by_quad"].get(q, "—"),
-                              "median": trans["median_days"].get(q, "—"),
-                              "next": next_quads_line(nxt),
-                              "next_zh": next_quads_line(nxt, zh=True)})
+    from engine.playbook import finished_lifespan_rows
     hist_html = env.get_template("history.html.j2").render(
         latest=latest,
         generated_utc=generated,
         chart_regime=chart_regime(f, hist, days=1095),
         chart_axes=chart_axes(hist, days=1095),
-        lifespan_rows=lifespan_rows,
+        lifespan_rows=finished_lifespan_rows(hist["quad"]),
     )
     out2 = site / "history.html"
     write_page(out2, hist_html)
@@ -8282,7 +8329,8 @@ def main() -> int:
                     vm, _us_shell_su2, _us_life_repair2, _us_pov2, _us_gate_cfg["preview_rows"])
                 _us_plan_state2, _us_plan_by_ticker2 = _plan_relations_for(
                     vm.get("us_prophet_book"), vm.get("us_prophet_book_error"))
-                vm["plan_rel_by_ticker"] = _us_plan_by_ticker2
+                vm["plan_rel_by_ticker"] = _plan_relations_for_shell(
+                    (_us_plan_state2, _us_plan_by_ticker2), _us_life_locked2)
                 vm["plan_rel"] = {"state": _us_plan_state2, "plans": []}
                 _write_us_payload(env, site, _us_gate2, locked_rows=_us_locked2,
                                    us_standouts=vm.get("us_standouts"),

@@ -2591,6 +2591,24 @@ def _isolate_pack_runner_planner_env(monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv(name, raising=False)
 
 
+@pytest.fixture(autouse=True)
+def _isolate_tested_tree_sha():
+    """F10 #10367: ``execute_pack`` publishes the plan tree into the runner's own
+    ``os.environ`` as ``TESTED_TREE_SHA`` (never overriding). Keep it out of the
+    ambient env between tests (review INTL-GS-F10-AUDIT-2, N5) with an explicit
+    snapshot/restore: ``monkeypatch.delenv`` records no undo for an absent key, so
+    a value set during the test would survive teardown (INTL-GS-F10-HYGIENE-AUDIT).
+    """
+    before = os.environ.pop("TESTED_TREE_SHA", None)
+    try:
+        yield
+    finally:
+        if before is None:
+            os.environ.pop("TESTED_TREE_SHA", None)
+        else:
+            os.environ["TESTED_TREE_SHA"] = before
+
+
 def _stub_planner_paths(
     monkeypatch: pytest.MonkeyPatch, paths: list[str] | None
 ) -> None:
@@ -4395,6 +4413,9 @@ CURATED_EXCLUSIVE = {
     # F09 petroleum: native builder imports have opaque whole-root fallbacks.
     # Keep its complete measured closure; do not widen ordinary packing probes.
     "market-ontology-f09-petroleum-flow",
+    # R-28: a public link to an admin-only page fails before merge. Every template is
+    # walked, and naming the tree would wake the job on every template edit.
+    "admin-research-tools",
     # F04 exact import/read closure; all suites retained, no homepage fallback.
     "ontology-explorer",
     # DR3: exact closure isolates the observation consumer; no packing ceiling change.
@@ -4420,6 +4441,9 @@ CURATED_EXCLUSIVE = {
     # F04 real-Git acquisition reads three deploy scripts. Its dedicated job
     # preserves the broader self-heal owner without widening unrelated probes.
     "deploy-git-history",
+    # 2026-10-19/11-01 root-disk refills: the bounded store-maintenance job reads
+    # its script, units and the update.sh/setup.sh stanzas that self-arm them.
+    "deploy-git-store-maintenance",
     # PR #7861: Options matrix source/session/retention checks are hermetic.
     # The exclusive manifest scope retains both suites, their concrete import
     # closure, config.yml fallback and the retention-fixture wildcard. This
@@ -4427,6 +4451,7 @@ CURATED_EXCLUSIVE = {
     # the code gate, closure audit and packing ceilings remain unchanged.
     "options-matrix-code",
     "push-retry-policy",
+    "sector-cycles-page",  # measured literal closure of its one suite
     # 2026-10-14 LR T17: the measured-group-read suite is pure-synthetic; the
     # exclusive scope is its measured literal closure (no fallback smear).
     "leadership-measured-read",
@@ -4550,6 +4575,10 @@ CURATED_EXCLUSIVE = {
     # public documents test_public_pages_fetch_nothing_under_paid_prefixes
     # actually reads; the other two probes are unmoved.
     "regwall-boundary",
+    # 2026-11-01, R-28. Same class as regwall-boundary: the static serving
+    # boundary moved onto the merge gate. Curated for coverage, and so that a
+    # bake does not wake it on an unrelated pull request.
+    "site-access-boundary",
     "quant-q11-episode-duration",  # Q11 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-08-19 wave 5. #6027 moved #5984's three dossier suites into
     # conviction-profile — the right call, because their #6023 home
@@ -4702,6 +4731,7 @@ CURATED_EXCLUSIVE = {
     "covenant-headroom",
     "cycle-consistency",
     "ftr-tape-surfaces",
+    "sector-basket-links",  # renders two template blocks alone, no bake input
     "market-ontology-f09-usgs-mcs",
     "research-screener",
     "sanctions-map-page",
@@ -4909,6 +4939,11 @@ CURATED_EXCLUSIVE = {
     # build_free_content / plan_book packing probes. scope: exclusive pins it
     # to its measured closure, so it must be listed here.
     "gmi-classification-axes",
+    # 2026-10-22 GMI explorer (W3): the identity reader names
+    # scripts/build_security_master.py by path, so inference smeared the
+    # gmi-explorer job onto the templates/index.html, build_free_content and
+    # plan_book packing probes. scope: exclusive pins it to its measured closure.
+    "gmi-explorer",
     # GovRev dependency changes must not select GR3 on unrelated page templates.
     "group-linked-outsiders",
     "govrev-program-ontology",
@@ -5046,6 +5081,11 @@ CURATED_EXCLUSIVE = {
     # inferred scope would ride the shared template packing probes; scope:
     # exclusive pins the template closure, both suites and the tests inits.
     "narrative-radar-display",
+    # 2026-10-21 W33-LD: the regime-history reader repairs (US basis, HK segment
+    # in force, Canada today marker, China 120d analogs). Its own exclusive job
+    # pins the four page templates, build_hk's static import closure and the
+    # suites instead of adding test paths to a shared job; ceilings stay fixed.
+    "regime-history-surfaces",
     # 2026-10-20 W28D-L33: the commodity strategies grid suite renders the page
     # template and its six includes with jinja2 and the new pure helper alone. As an
     # ordinary job its inferred scope would ride the shared template packing probes;
@@ -5098,6 +5138,12 @@ CURATED_EXCLUSIVE = {
     # single-suite owner. Its explicit paths cover the static import closure
     # and package ancestor init, without accepting unrelated render probes.
     "aibrief-countdown-pr",
+    # 2026-11-01 GMI relationships (ORCH-REL M1/M2/M3): the eleven relationship
+    # suites get one gate:code exclusive home with their measured import/read
+    # closure (package v2, edges, SEC source packets, m2 extraction samples).
+    # Registered from the lanes' ci_registration_proposal*.yml; no pack
+    # ceiling is loosened and no unrelated render probe is selected.
+    "company-intelligence-relationships",
     # EW-P4 descriptive UI (Grey Deer early-warning, EW-P5 FU2 split from
     # dashboard-render-contract): the suite's import closure IS the dashboard render
     # closure through tests/test_macro_risk_dialog.py, declared verbatim plus what the
@@ -5388,8 +5434,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_886),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_877),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 137, 5_886),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_877),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_636),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5398,6 +5444,24 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-01 main-red repair after #10294 (ee5cd3e1a8a8), which split the
+    ``gate: data`` job ``tier-gate`` into ``tier-gate``, ``paywall-contracts``
+    and ``site-access-boundary``. Both new jobs infer tier-gate's closure, so
+    every probe selects two more jobs while the steps only move. Canonical
+    measurement on main fc36c6c03b1f, against the same tree with the
+    pre-#10294 manifest:
+
+        templates/index.html          135 -> 137 jobs, 5,833 -> 5,835 weight
+        scripts/build_free_content.py 136 -> 138 jobs, 5,853 -> 5,855 weight
+        engine/prophet/plan_book.py   128 -> 130 jobs, 5,583 -> 5,585 weight
+
+    Ten packs each. The two split jobs are the only entrants and no job
+    leaves. Both are ``gate: data`` and ci.yml packs ``--gate code``, so an
+    ordinary code PR runs neither: no runner cost moves. Only the two
+    breached job ceilings move, to their measured values (index 136 -> 137,
+    free-content 136 -> 138). Plan-book sits exactly at its 130 ceiling and
+    stays. Weight and pack ceilings, selectors and suites stay unchanged.
 
     2026-10-24 frozen-node canonical account reader (#10145): enroll the
     two-test suite once in incumbent CODE billing-emails/account-preferences,
@@ -5508,6 +5572,21 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     closure and all old execution. Actual compiler93.59s measures selected
     index136/5868, free135/5840, Prophet128/5612, all ten packs. Fund only
     six added estimator units per probe; no job/pack/runtime limit changes.
+
+    2026-10-22 Expectation Surface nav row (ITP-ES wave 2, #10077) adds
+    tests/test_expectation_surface_nav.py as one run: step of the existing
+    `unrun-nav-chrome` navigation owner (contract-delta's unrun-suite gate;
+    no new job, no second navigation owner). Composed on protected main
+    d81eb778: index 136 jobs / 5,867, free-content 135 / 5,839, plan-book
+    128 / 5,611, all ten packs with identical selected IDs versus main
+    (136/5,864, 135/5,836, 128/5,608); newly selected: none. The +3 per
+    probe is the new step's estimator weight on the already-selected job.
+    Fund only 5,867/5,839/5,611; job ceilings 136/136/130, the ten-pack
+    limit and every other bound stay unchanged.
+    2026-11-01 merge of main d08e0da7765c into #10077: the post-#10294
+    ceilings above (137/5,886, 138/5,877, 130/5,636) already cover this
+    composition (measured 136/5,836, 137/5,863, 129/5,586, ten packs,
+    no breach), so the 10-22 funding is absorbed and no ceiling moves.
 
     2026-10-22 visual-evidence correction composes protected8c23f6 and
     native-plan Brief coverage without removing any suite. Actual compiler

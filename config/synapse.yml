@@ -8024,7 +8024,10 @@ artifacts:
       Schema: ticker, fiscal_year (int), fiscal_quarter (int 1-4), period_end (date str),
       filed (date str — real SEC filed date), as_of, revenue, cogs, gross_profit,
       op_income, ni, cfo, capex, shares, repurchases, long_term_debt, current_debt,
-      cash, net_debt, receivables, inventory, payables, contract_liabilities.
+      cash, net_debt, receivables, inventory, payables, contract_liabilities,
+      period_start (companyfacts duration start of the first flow series; ISO day
+      str or null — appended append-only by --enrich-period-start, FIF A44 2026-11-01;
+      null for instant-only rows and rows written before the enrichment).
       Producer: scripts/backfill_edgar_quarterly.py (on-demand backfill).
       Pre-existing consumers: engine/stock_fundamentals.py (capital-allocation-delta
       artifact) and engine/event_landmine.py (event-windows artifact, PR #1782 columns).

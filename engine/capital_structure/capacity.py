@@ -161,6 +161,12 @@ BRANCHES = ("pessimistic", "optimistic")
 #: The ``other_assumptions`` key that declares mutually exclusive route groups.
 ROUTE_EXCLUSIVITY_KEY = "route_exclusivity"
 
+#: SPEC_V0 §1: the envelope blocker prefix for a joint solve the kernel refused.
+#: ``solve_joint`` refuses, evaluating nothing, when the exclusive groups give
+#: more branches than ``capacity_joint.MAX_BRANCHES``; the kernel's own text
+#: follows the prefix so the served body names the refusal verbatim.
+JOINT_SOLVE_REFUSED_PREFIX = "joint_solve_refused"
+
 #: SPEC_C2D §2.2: the ``other_assumptions`` key that binds an OUTSIDE registered
 #: route to a registration path of this envelope, as
 #: ``"<route_id>=<path_id>;<route_id>=<path_id>"`` -- ``;`` separates bindings,
@@ -817,6 +823,17 @@ class _RoutePlan:
     evidence: tuple[EvidenceRef, ...]
 
 
+def _refusals(*solutions: JointSolution | None) -> tuple[str, ...]:
+    """The kernel refusal texts of the given solves, sorted and distinct.
+
+    ``solve_joint`` sets ``blockers`` only when it refuses to enumerate (SPEC_V0 §1),
+    so any blocker means that solve evaluated no branch at all.
+    """
+    return tuple(sorted({
+        text for solution in solutions if solution is not None for text in solution.blockers
+    }))
+
+
 def _unknown_bound(unit: str, note: str, share_basis: str | None = None) -> Quantity:
     if unit == "shares":
         return Quantity.unknown(unit, share_basis=share_basis or "issued_and_outstanding", note=note)
@@ -1054,6 +1071,8 @@ class _Builder:
         self._exclusive_groups()
         self._apply_actions()
         pessimistic, optimistic, ceiling = self._solve()
+        for text in _refusals(pessimistic, optimistic, ceiling):
+            self.blockers.append(f"{JOINT_SOLVE_REFUSED_PREFIX}:{text}")
         active = tuple(sorted(
             plan.route_id for plan in self.route_plans if plan.status in ACTIVE_ROUTE_STATUSES
         ))
@@ -4060,6 +4079,14 @@ class _Builder:
         """§2.7: one aggregate.  Fixed actions are added; branch optima never are."""
         if self.contradiction is not None:
             return Quantity(unit="usd", status="contradicted", note=self.contradiction)
+        refused = _refusals(pessimistic, optimistic, ceiling)
+        if refused:
+            # SPEC_V0 §1: a refused solve evaluated no branch, so its zero floor
+            # and absent ceiling are placeholders, never a bound to quote.
+            return _unknown_bound(
+                "usd",
+                "joint solve refused (" + "; ".join(refused) + "); floor and ceiling unstated",
+            )
         fixed_pessimistic = self.fixed_totals["pessimistic"]
         fixed_optimistic = self.fixed_totals["optimistic"]
         ceiling_text = self._ceiling_text(ceiling)
@@ -4108,7 +4135,13 @@ class _Builder:
         )
 
     def _ceiling_text(self, ceiling: JointSolution) -> str:
-        """§2.7: the ceiling-call text an aggregate note quotes (``unbounded`` if none)."""
+        """§2.7: the ceiling-call text an aggregate note quotes (``unbounded`` if none).
+
+        A ceiling call the kernel refused evaluated nothing: it is ``unstated``,
+        never ``unbounded`` (SPEC_V0 §1).
+        """
+        if ceiling.blockers:
+            return "unstated"
         ceiling_raw = (
             ceiling.value if ceiling.determined else ceiling.ceiling_when_unknowns_relaxed
         )
