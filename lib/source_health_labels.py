@@ -52,13 +52,19 @@ _LIBRARY_RE = re.compile(
     + "|".join(re.escape(t) for t in CLIENT_LIBRARY_TOKENS)
     + r")(?![A-Za-z0-9])"
 )
-_URL_RE = re.compile(r"https?://[^\s;,|)]+")
-_HOST_ARG_RE = re.compile(r"host='[^']*'")
-# Lowercase on purpose: tickers ("0700.HK") and attribute paths ("Ticker.info")
-# carry capitals. A short country or tech suffix also needs two labels in front
-# of it, so "0700.hk" and "pandas.io" stay readable while "api.example.io" does not.
+# Any scheme in any case ("HTTPS://", "ftp://"). Quotes and brackets end a URL
+# so the text around it stays intact.
+_URL_RE = re.compile(r"(?i)[a-z][a-z0-9+.-]*://[^\s;,|)'\"<>]+")
+# host='…', host="…" and host=… as client libraries print them.
+_HOST_ARG_RE = re.compile(
+    r"(?i)(?<![A-Za-z0-9_])((?:server_)?host(?:name)?)\s*=\s*(?:'[^']*'|\"[^\"]*\"|[^\s,;)'\"]+)"
+)
+# Case-insensitive, because an error can print a host in capitals. Tickers
+# ("0700.HK") and attribute paths ("Ticker.info") stay readable through the
+# suffix rules instead: a short country or tech suffix needs two labels in front
+# of it, so "0700.HK" and "pandas.io" survive while "API.EXAMPLE.IO" does not.
 _DOMAIN_RE = re.compile(
-    r"(?<![A-Za-z0-9@.-])(?:"
+    r"(?i)(?<![A-Za-z0-9@.-])(?:"
     r"(?:[a-z0-9-]+\.)+(?:com|net|org|gov|edu)"
     r"|(?:[a-z0-9-]+\.){2,}(?:io|ai|dev|app|co|cn|hk|ca|uk|jp|space)"
     r")(?![A-Za-z0-9-]|\.[a-z0-9])"
@@ -285,15 +291,17 @@ _PROVIDER_ID_RE = re.compile(
 def neutral_note(text: str) -> str:
     """Strip provider names, hosts and URLs from a health note.
 
-    URLs, ``host='...'`` arguments and bare domains become neutral placeholders
-    first, so a provider name inside a host can never leave a fragment behind.
-    Then provider-named collector ids become their reviewed label, client
-    libraries become "client library" and remaining provider names "provider".
+    URLs, ``host=`` arguments and bare domains, in any case, become neutral
+    placeholders first, so a provider name inside a host can never leave a
+    fragment behind. Then provider-named collector ids become their reviewed
+    label, client libraries become "client library" and remaining provider names
+    "provider". Callers clip the result, never the raw note, so a clip can't cut
+    a host in half before it is scrubbed.
     """
     if not text:
         return ""
     out = _URL_RE.sub("remote file", text)
-    out = _HOST_ARG_RE.sub("host=remote", out)
+    out = _HOST_ARG_RE.sub(lambda m: m.group(1) + "=remote", out)
     out = _DOMAIN_RE.sub("remote host", out)
     out = _PROVIDER_ID_RE.sub(lambda m: LABELS[m.group(0)]["en"], out)
     out = _LIBRARY_RE.sub("client library", out)
