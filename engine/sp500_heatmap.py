@@ -29,6 +29,8 @@ from typing import Mapping, Sequence
 import numpy as np
 import pandas as pd
 
+from engine.sector_breadth_close import sector_breadth
+
 # --- timeframe catalogue (shared contract: engine, builder, frontend, tests) --
 # group: 'daily' computable from the close matrix today; 'intraday'/'session'
 # populated only when intraday/after-hours data is present.
@@ -399,6 +401,7 @@ def build_heatmap(
     source = "polygon-live" if live else "daily-close"
     return {
         "asof": asof_date,
+        "sector_breadth_close": sector_breadth(closes, tiles, asof_date),
         "generated_utc": generated_utc or "",
         "source": source,
         "delay_min": 15,

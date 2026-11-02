@@ -112,3 +112,22 @@ def test_real_payload_consumer_enables_only_observed_window_and_preserves_daily(
     assert got['tiles'][0]['perf']['1D'] == old['tiles'][0]['perf']['1D']
     assert got['tiles'][0]['perf']['5M'] == 5.0
     json.dumps(got,allow_nan=False)
+
+
+def test_sector_breadth_uses_same_members_exact_sessions_and_closes_only():
+    dates = pd.to_datetime(["2026-10-22", "2026-10-23", "2026-10-26", "2026-10-27",
+                            "2026-10-28", "2026-10-29", "2026-10-30", "2026-11-02"])
+    closes = pd.DataFrame({"A": [10, 9, 10, 10, 10, 10, 11, 90],
+                           "B": [10, 9, 8, 9, 9, 9, 9, 2],
+                           "C": [10, 9, np.nan, 9, 9, 9, 11, 8]}, index=dates)
+    members = pd.DataFrame({"name": ["A", "B", "C"], "sector": ["Technology"] * 3},
+                           index=["A", "B", "C"])
+    out = build_heatmap(members, closes, asof=dates[-2], live={"A": {"price": 1, "prev_close": 100}})
+    read = out["sector_breadth_close"]
+    assert read["dates"] == [d.date().isoformat() for d in dates[1:-1]]
+    assert read["sectors"]["XLK"] == {"eligible": 3, "matched": 2,
+                                     "advancing": [0, 1, 1, 0, 0, 1], "declining": [2, 1, 0, 0, 0, 0]}
+    assert read["sectors"]["XLE"]["matched"] == 0
+    # Dropping a whole exchange session cannot silently stretch a daily interval.
+    gap = build_heatmap(members, closes.drop(dates[2]), asof=dates[-2])["sector_breadth_close"]
+    assert gap["sectors"]["XLK"]["matched"] == 0
