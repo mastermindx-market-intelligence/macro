@@ -149,24 +149,24 @@ del _b, _q
 
 # Missing-value policy per hf field: training (panel/build_design) vs live (stamp/scorer).
 MISSING_VALUE_POLICY: list[dict[str, str]] = [
-    {"field": "pos (pos_osc_s)", "training": "NaN → column median fill (build_design)",
+    {"field": "pos (pos_osc_s)", "training": "missing → column median fill (build_design)",
      "live": "now.pos or 50.0 in _stamp_hazard; scorer refuses only on None"},
-    {"field": "osc_slope (osc_slope_s)", "training": "NaN → column median fill (build_design)",
+    {"field": "osc_slope (osc_slope_s)", "training": "missing → column median fill (build_design)",
      "live": "now.osc_slope or 0.0 in _stamp_hazard"},
-    {"field": "amp_leg_pct (amp_proxy)", "training": "NaN → column median fill (build_design)",
+    {"field": "amp_leg_pct (amp_proxy)", "training": "missing → column median fill (build_design)",
      "live": "None → scorer constant 0.42 (model mu)"},
-    {"field": "mom_score", "training": "NaN → column median fill (build_design)",
+    {"field": "mom_score", "training": "missing → column median fill (build_design)",
      "live": "None → 0.0 (scorer `or 0.0`)"},
-    {"field": "rs_63d", "training": "NaN → column median fill (build_design)",
+    {"field": "rs_63d", "training": "missing → column median fill (build_design)",
      "live": "None → 0.0 (scorer `or 0.0`)"},
-    {"field": "vol_pctile", "training": "NaN → column median fill (build_design)",
+    {"field": "vol_pctile", "training": "missing → column median fill (build_design)",
      "live": "always None live → constant 0.42 (IMPUTED_CONSTANT)"},
-    {"field": "trend_pass", "training": "NaN → column median fill (build_design fill list)",
+    {"field": "trend_pass", "training": "missing → column median fill (build_design fill list)",
      "live": "now.above200d or 0.0 (scorer `or 0.0`)"},
     {"field": "age / median_half_yrs (age buckets, log_age_ratio)",
-     "training": "log_age_ratio NaN → b_unknown (all dummies 0) + median fill of the ratio",
+     "training": "log_age_ratio missing → b_unknown (all dummies 0) + median fill of the ratio",
      "live": "age_since_turn_bars None or median_half_yrs ≤ 0 → scorer REFUSES to score (returns None)"},
-    {"field": "quad / liquidity dummies", "training": "NaN regime → 0 via == comparison",
+    {"field": "quad / liquidity dummies", "training": "missing regime → 0 via == comparison",
      "live": "None → 0 (ABSENT_LIVE)"},
 ]
 
@@ -714,47 +714,47 @@ LIVE_HAZARD_PARITY: dict = {
         "missing_value_policy": [
             {
                 "field": "pos (pos_osc_s)",
-                "training": "NaN → column median fill (build_design)",
+                "training": "missing → column median fill (build_design)",
                 "live": "now.pos or 50.0 in _stamp_hazard; scorer refuses only on None"
             },
             {
                 "field": "osc_slope (osc_slope_s)",
-                "training": "NaN → column median fill (build_design)",
+                "training": "missing → column median fill (build_design)",
                 "live": "now.osc_slope or 0.0 in _stamp_hazard"
             },
             {
                 "field": "amp_leg_pct (amp_proxy)",
-                "training": "NaN → column median fill (build_design)",
+                "training": "missing → column median fill (build_design)",
                 "live": "None → scorer constant 0.42 (model mu)"
             },
             {
                 "field": "mom_score",
-                "training": "NaN → column median fill (build_design)",
+                "training": "missing → column median fill (build_design)",
                 "live": "None → 0.0 (scorer `or 0.0`)"
             },
             {
                 "field": "rs_63d",
-                "training": "NaN → column median fill (build_design)",
+                "training": "missing → column median fill (build_design)",
                 "live": "None → 0.0 (scorer `or 0.0`)"
             },
             {
                 "field": "vol_pctile",
-                "training": "NaN → column median fill (build_design)",
+                "training": "missing → column median fill (build_design)",
                 "live": "always None live → constant 0.42 (IMPUTED_CONSTANT)"
             },
             {
                 "field": "trend_pass",
-                "training": "NaN → column median fill (build_design fill list)",
+                "training": "missing → column median fill (build_design fill list)",
                 "live": "now.above200d or 0.0 (scorer `or 0.0`)"
             },
             {
                 "field": "age / median_half_yrs (age buckets, log_age_ratio)",
-                "training": "log_age_ratio NaN → b_unknown (all dummies 0) + median fill of the ratio",
+                "training": "log_age_ratio missing → b_unknown (all dummies 0) + median fill of the ratio",
                 "live": "age_since_turn_bars None or median_half_yrs ≤ 0 → scorer REFUSES to score (returns None)"
             },
             {
                 "field": "quad / liquidity dummies",
-                "training": "NaN regime → 0 via == comparison",
+                "training": "missing regime → 0 via == comparison",
                 "live": "None → 0 (ABSENT_LIVE)"
             }
         ],

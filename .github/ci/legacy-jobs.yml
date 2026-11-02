@@ -7079,15 +7079,19 @@ jobs:
     # family (US sectors + country cycles).  Hard gate: the keep-FIRST invariant and
     # proj_lo/hi columns are structural contracts for W2.3+ measurement.
     runs-on: ubuntu-latest
+    # P21 (#7646): this suite finishes in ~1 min locally; a 10-minute job bound plus the
+    # pytest faulthandler dump at 8 minutes turns a wedged run into a readable stack.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # test_sector_cycles.py imports scripts/build_sector_cycles.py, which needs jinja2.
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: forward-log writer contract tests (keep-FIRST, cone edges, never-raise)
-        run: python -m pytest tests/test_cycle_forward_log.py tests/test_cycle_phase_age.py tests/test_sector_cycles.py tests/test_cycle_rhythm_disclosure.py tests/test_hazard_parity.py tests/test_hazard_score.py -q
+        run: python -m pytest tests/test_cycle_forward_log.py tests/test_cycle_phase_age.py tests/test_sector_cycles.py tests/test_cycle_rhythm_disclosure.py tests/test_hazard_parity.py tests/test_hazard_score.py -q -o faulthandler_timeout=480
 
   tier-gate:
     if: ${{ false }}

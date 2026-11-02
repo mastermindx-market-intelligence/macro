@@ -86,15 +86,15 @@ a repair decision.
 
 | field | training (panel/build_design) | live (_live_hazard_inputs / scorer) |
 |---|---|---|
-| pos | NaN → column median fill | `now.pos or 50.0`; scorer refuses only on None |
-| osc_slope | NaN → column median fill | `now.osc_slope or 0.0` |
-| amp_leg_pct | NaN → column median fill | None → scorer constant 0.42 |
-| mom_score | NaN → column median fill | None → 0.0 (`or 0.0`) |
-| rs_63d | NaN → column median fill | None → 0.0 |
-| vol_pctile | NaN → column median fill | always None live → constant 0.42 |
-| trend_pass | NaN → median fill (fill list) | `above200d or 0.0` |
-| age / median_half_yrs | NaN ratio → b_unknown (all dummies 0) + median fill | missing age or median ≤0 → scorer REFUSES to score |
-| quad / liquidity | NaN → 0 via `==` | None → 0 |
+| pos | missing → column median fill | `now.pos or 50.0`; scorer refuses only on None |
+| osc_slope | missing → column median fill | `now.osc_slope or 0.0` |
+| amp_leg_pct | missing → column median fill | None → scorer constant 0.42 |
+| mom_score | missing → column median fill | None → 0.0 (`or 0.0`) |
+| rs_63d | missing → column median fill | None → 0.0 |
+| vol_pctile | missing → column median fill | always None live → constant 0.42 |
+| trend_pass | missing → median fill (fill list) | `above200d or 0.0` |
+| age / median_half_yrs | missing ratio → b_unknown (all dummies 0) + median fill | missing age or median ≤0 → scorer REFUSES to score |
+| quad / liquidity | missing → 0 via `==` | None → 0 |
 
 Policies disagree on every row except the dummies: training median-fills from the
 panel distribution; live substitutes constants (0.42/0.0/50.0) or refuses.
