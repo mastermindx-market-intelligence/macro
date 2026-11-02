@@ -7,10 +7,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
+from functools import lru_cache
 from hashlib import sha256
 from io import BytesIO
 import json
 import re
+from threading import RLock
 from typing import Protocol
 
 from lib.dataos.identity import IssuerMaster, VendorAliasTable, parse_id, parse_listing_key, security_id, issuer_id as render_issuer_id
@@ -100,16 +102,34 @@ def _unique(rows: list[dict], key: str) -> dict[str, dict]:
     return dict(zip(values, rows, strict=True))
 
 
+_REFERENCE_PARSE_LOCK = RLock()
+
+
+@lru_cache(maxsize=1)
+def _reference_indexes(bundle: IdentityBundle):
+    """Parse one immutable bundle; never cache current authority or a query.
+
+    The complete frozen bundle, including all bytes and source generation, is
+    the key. Keep just the latest parsed generation. These indexes are private
+    and read-only in use; no index or stored row is returned to a caller.
+    """
+    rows = _rows(bundle.security_master)
+    return (_unique(rows, 'security_id'),
+            _unique(_rows(bundle.issuer_master), 'issuer_id'),
+            IssuerMaster.from_records(rows),
+            VendorAliasTable.from_records(_rows(bundle.vendor_aliases)))
+
+
 def resolve_current_company(bundle: IdentityBundle, symbol: str, *, today: date) -> dict:
     """Current store-alias query; never ticker-to-ISS derivation or PIT evidence."""
     bundle.validate()
     _require(type(symbol) is str and bool(_SYMBOL.fullmatch(symbol)) and type(today) is date)
     try:
-        rows = _rows(bundle.security_master)
-        securities = _unique(rows, 'security_id')
-        issuers = _unique(_rows(bundle.issuer_master), 'issuer_id')
-        master = IssuerMaster.from_records(rows)
-        aliases = VendorAliasTable.from_records(_rows(bundle.vendor_aliases))
+        # Serialize cold parsing as well as lookup: concurrent first requests
+        # must not each decode the same bundle. All date/symbol checks below
+        # and every owner qualification around this function still run.
+        with _REFERENCE_PARSE_LOCK:
+            securities, issuers, master, aliases = _reference_indexes(bundle)
         sid = aliases.resolve(NAMESPACE, symbol, today)
         _require(sid is not None and sid in securities)
         _require(aliases.vendor_symbol_for(NAMESPACE, sid, today) == symbol)

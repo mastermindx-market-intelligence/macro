@@ -571,6 +571,8 @@ def test_no_multi_security_or_sorted_flow_route():
             assert {param.name for param in route.dependant.query_params} == {
                 "limit",
                 "cursor",
+                "view",
+                "view_revision",
             }
 
 

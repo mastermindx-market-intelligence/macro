@@ -41,6 +41,13 @@ decisions:
   - DEC:SCOPED-REFLEX-CONSTRAINTS-NOT-FUSED-SHIELD
   - DEC:AUTO-EXIT-NOT-IN-GREY-DEER-V1
 artifacts:
+  - research/grey_deer/serving_freshness_20261021/AMZN_ADJUDICATION.md
+  - research/grey_deer/serving_freshness_20261021/amzn_historical_execution_20261021.json
+  - research/grey_deer/serving_freshness_20261021/mtf_history_candidates_20261021.json
+  - research/grey_deer/serving_freshness_20261021/CONTINUATION.md
+  - research/grey_deer/serving_freshness_20261021/QUALIFICATION.md
+  - research/grey_deer/serving_freshness_20261021/PUBLISHER_CONTRACT.md
+  - agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-21-SOL-SERVING.md
   - research/grey_deer/RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md
   - research/grey_deer/risk_radar_source_consumer_audit_20261017.md
   - research/grey_deer/risk_radar_architecture_contract_20261017.md
@@ -426,7 +433,8 @@ waves:
     status: done
     pr: 9128
     # MERGED 2026-10-14T02:07:20Z, squash af468522ab6e (head 3e4fecb7fa24); FWDREVIEW's 10 findings repaired on the head (FWDFIX, FWDAUDIT) before merge.
-    # PRODUCTION_PROOF pending: the first daily.yml run whose head descends from af468522ab6e must write SPY rows to data/grey_deer_pullback/forward_log.jsonl with no grey-deer-pullback-*-error annotation.
+    # PRODUCTION_PROOF (accepted with scope 2026-10-20): scheduled daily.yml run 39081858131, engine job 117575031870, checkout 5e3e1e9d2d97 (descends from af468522ab6e), issued the first 30 SPY rows (asof 2026-10-16, issued_at 2026-10-18T06:24:18Z, prereg_blob 49a68b5e9c65, 10 configs x h5/h10/h21, all GENUINELY_ISSUED, 30 immature / 0 graded) into data/grey_deer_pullback/forward_log.jsonl, first retained in commit e35e04468075; the complete engine log and all 50 check annotations carry no grey-deer-pullback error. Evidence: research/grey_deer/w5_natural_issuance_20261018/oct20_lineage/ROOT_OPERATIONAL_ACCEPTANCE_2026-10-20.md with the independent PASS WITH SCOPE review beside it. The engine job was later cancelled and the nightly failed on unrelated jobs; that neither erases the issuance nor makes the nightly green. The 2026-10-15 scheduled readback had returned NOT_YET (rows landed three nights later); this line closed by seat da1ad7ad on 2026-10-30 against origin/main.
+    # Cadence, not diagnosed here: every other night 2026-10-14..10-21 was refused by the writer's own gates (BACKFILL_ASOF when the engine's asof was one session behind the writer's clock, CLOCK on late dispatches, one expected OBSERVER_NOT_ON_MAIN for P-active); the accepted batch was the Saturday run where Friday's asof was still current. No forward_log or refusal write is recorded after 2026-10-21 as of 2026-10-30. The lane accrues no rows while the asof lags; outcomes remain immature and are not independent episodes.
     depends_on: [GD-PB-W4-DOCS, GD-PB-W4-S1B]
   - id: GD-PB-W7
     title: W7 Grok fan-out - power-floor projection, episode-rule options v1.2, T12 episode samples, T13/T14/T19 prereg drafts, prospective panel addendum, W5 review, GD-4C, GD-9A census
@@ -455,38 +463,122 @@ waves:
     # Continuation evidence 9573 merged 1ed4b870 at 2026-10-18T02:37:11Z; all 44 artifacts separately verified.
     # Subsequent helper qualification and proposed all-date baseline admission remain open; zero new fits/promotions.
     depends_on: [GD-PB-W7, GD-PB-W8]
+  - id: EW-P0
+    title: EW-P0 records - adopt the 2026-10-31 Chairman packet as an amendment to the #10219 task tree; takeover record; refreshed invalidators
+    status: done
+    pr: 10249
+    # MERGED 2026-10-31T16:09:14Z, squash 1d937d7e2b36 (head 5db467300b63 after review GD-EW-P0-R2 repair). Seat 00dea969 (Fable CEO).
+    # Adoption record research/grey_deer/ew_completion_20261031/ADOPTION_RECORD_2026-10-31.md; handoff GREY-DEER-RISK-INTELLIGENCE-2026-10-31-FABLE-EW-CEO.md.
+    depends_on: [GD-RR-CENSUS-20261017]
+  - id: EW-P1
+    title: EW-P1 nightly publication repair - GH001 diagnosis (T1, done) and QLedger oversize carve-out parity for the engine and collect-tail commit paths (T2); acceptance = two natural sessions landing engine data
+    status: in_progress
+    # T1 DONE by the seat 2026-10-31: claims.jsonl 104,857,394 B (206 B under 100 MiB); engine script and commit-tail step carry no carve-out; run 40803269874 engine job 123688873047 + collect_tail job 123688869633 GH001; last landed engine data commit ad6e5a824334 (10-21; a050d2c71647 22 min earlier last landed claims.jsonl).
+    # T2 PR #10333 (head f095c641, two fabric APPROVEs) CLOSED 2026-10-31T20:14Z as SUPERSEDED by incumbent #10255 (two Opus review rounds, APPROVED, merge-on-green, superset scope). Seat ruling in #10333's closing comment; one note on #10255. Diagnosis retained at research/grey_deer/evidence/EW_P1_ENGINE_TAIL_GH001_DIAGNOSIS_2026-10-31.md.
+    # Acceptance unchanged: two natural nightly `engine: regime update` landings on main after #10255 (merged c2772cc4, 2026-11-01T06:29:41Z); seat watcher (hourly git fetch, never dispatch). CI budget #10341 merged dbaf1e07 (intl job 8->15 min).
+    depends_on: [EW-P0]
+  - id: EW-P2
+    title: EW-P2 rotation observation continuity - successor of orphaned #10104 rebased onto main, six conflicts resolved both-sides, recording stays default-off (T1)
+    status: done
+    pr: 10325
+    # MERGED 2026-10-31T18:3xZ squash b38935afc1a5 (exact head 697b90ab after P0B receipt re-mint + main merge). Draft #10325 head f2532edbaa2d (parent main f2efb8baf983) by ORCH-P2 (Opus orchestrator, fabric lanes) on claude/gd-ew-p2-rotation-continuity-20261031; review lane gd-ew-p2-r1 APPROVE (R1-R11 hold); flag gate ROTATION_OBSERVATION_RECORDING_ENABLED != "1" keeps recording off.
+    # #10104 (head a324b7fc, merge-base c9608be2) left open; successor pointer comment posted once 2026-10-31. Activation (T2+) needs its own gate.
+    depends_on: [EW-P0]
+  - id: EW-P3
+    title: EW-P3 forecast-science prereg lane (product B) per the masterplan - own blob pin, size/power before any read
+    status: done
+    pr: 10340
+    # MERGED 2026-10-31 squash 11e6c98eb8c3 (reviewed head c5f00584 r3 ACCEPT_WITH_FINDINGS + seat sys.path pin repair 3c986e24). Contract v1 frozen blob 5270e309; prereg dated by records r3 (merge 2026-10-31, start 2026-11-02, L0 2027-12-31; registered blob f6d411e379c3); budgets 3+3 appended to data/trial_ledger.jsonl; zero outcome rows read; reader NOT_EXECUTABLE until window + receipted issue.
+    # Census lane GD-EW-P3-C1 done 2026-10-31 (10 RISK_RADAR preregs; no named claim/evidence ledger file; LR V2 reserves the V3 name). ORCH-P3 drafts CLAIM_EVIDENCE_CONTRACT_v1_DRAFT with SEAT DECIDES points; seat freezes before any registration; zero outcome rows read.
+    depends_on: [EW-P1]
+  - id: EW-P4
+    title: EW-P4 descriptive early-warning surface (product A) per PRODUCT_DESIGN_SPEC - observation language only, no forecast or sizing
+    status: done
+    pr: 10350
+    # MERGED 2026-11-01T04:36:16Z squash 886ab694c947 (exact head a49a16d52ac2, base 1d253e1d). Built by ORCH-P4 -> ORCH-P4b (Opus orchestrators, fabric lanes; both COMPLETED).
+    # Independent review: gd-ew-p4-r1 REQUEST_CHANGES (F1-F5 repaired), r2 APPROVE_WITH_NOTES on 423c403f, r3 APPROVE_WITH_NOTES on a49a16d5 (no new findings). Seat visual check of 46 shots (EN/ZH x dark/light x 1280/390/320, receipt source_revision 5bb16bdb) PASS; that check is the seat's, not independent.
+    # Local 539 passed / 2 skipped, node 19/19, contract-delta 0/0; hosted ci-gate, ci-plan and fence-pack SUCCESS at the exact head.
+    # Rung = MERGED only. No producer writes latest_observation (EW-P2 recording stays default-off), so production shows the "Rotation data unavailable" state; PRODUCTION_PROOF not claimed. Follow-ups in EW-P4-FU.
+    depends_on: [EW-P2]
+  - id: EW-P4-FU
+    title: EW-P4 follow-ups - review notes F-1..F-3 (the UI validator rejects what the lib validator rejects)
+    status: done
+    pr: 10364
+    # MERGED 2026-11-01T07:11:16Z squash d3fb043b0f2f (exact head 19accf478bb9). F-1 whitespace-only pair_id, F-2 calendar-impossible event_as_of and F-3 full drawer scan are closed in the Jinja template, its JS mirror and site/rotation_events.js.
+    # Review round 1 (native Opus, read-only) found the UI looser than lib/rotation_observation_notification.py; round 2 aligned pair_id blankness and length, withdrawal source_as_of and the observed_at/not_after stamp subset. The re-review returned PASS with notes, no blocking findings.
+    # Browser probe re-ran at 30998ca1: all 46 shots byte-identical to the EW-P4 set; the receipt binds 21 render inputs at that commit. Rung = MERGED only. The producer gap and the vision lane moved to EW-P4-ACT.
+    depends_on: [EW-P4]
+  - id: EW-P4-ACT
+    title: EW-P4 producer activation - a gated writer for latest_observation; its own activation gate, not a UI fix
+    status: todo
+    # Producer: the surface renders a real observation only after an activation gate turns on ROTATION_OBSERVATION_RECORDING_ENABLED and a writer emits latest_observation (EW-P2 "Activation (T2+) needs its own gate"). Until then the unavailable state is the truthful render.
+    # Vision review lane refused (controller_minimax_lease_required); the seat contact-sheet check stood in. Re-run when that lane is admitted.
+    depends_on: [EW-P4]
+  - id: EW-P5
+    title: EW-P5 acceptance and release - packs S01-S12, Q01-Q08, O01-O08, C01-C16, U01-U11, R01-R08 per ACCEPTANCE_AND_RELEASE.md; natural production proof
+    status: in_progress
+    # Receipts table started 2026-11-01 at research/grey_deer/ew_completion_20261031/EW_P5_ACCEPTANCE_RECEIPTS.md (section 7 schema).
+    # Records r5: first pack census run ew-p5-packs-20261101T071404Z-518ae7cd at main d3fb043b0f2f: pytest 1069 passed, 17 skipped, 0 failed, 0 errors; node 20 of 20. An independent read-only reviewer mapped all 63 rows: COVERED_ISOLATED 4, PARTIAL 20, NOT_COVERED 10, NOT_EXECUTABLE 13, HELD_EXTERNAL 16. No pack is PASS; the defects and gaps are EW-P5-FU.
+    depends_on: [EW-P1, EW-P2, EW-P3, EW-P4, EW-P4-ACT, EW-P5-FU]
+  - id: EW-P5-FU
+    title: EW-P5 follow-ups from the first pack census - defects and coverage gaps that keep every pack below PASS
+    status: todo
+    # Major, from the census mapping: S02/S12 live-overlay precedence in scripts/build_live_risk_envelope.py (settled won whenever the session dates matched), repair merged as #10371 a7628775 after the census head; O06 publish-before-record with no check for a source-owned published reference; the U pack is fixture-only until EW-P4-ACT.
+    # Minor: O01 receipt has no definition/version/rights field; C05 no test for an opt-out between the preference GET and PUT; U02 no gain/flow/shelter negative scan; U09 no separate dark/light design judgement; the ROI real-category-click test reads site/account.js with no sparse-tree skip guard.
+    # Seat-found coverage candidates to verify independently: S08 (tests/test_risk_envelope.py null-law classes), S11 (three tests/test_rotation_risk_envelope.py module tests), U05 (two tests/test_risk_envelope_radar_integration.py tests). Mapping gaps are listed in the receipts census.
+    depends_on: [EW-P4]
 next_action: >
-  Complete the enclosing Macro 9595 evidence continuation through actual integrated CI, normal controller
-  landing and separate fetched-main owned-blob readback; all edits must precede arming. Recovery head5a228eb5
-  was already published. Old ac08 failure stays failed; three base RIG paths were fixed byte-preservingly by
-  7100, and inactive ci-authority/codex/merge-queue-pilot is non-binding for main. No guard waiver.
-  Mastermind 1610 source landed as a7553e0a with all five blobs separately verified; observer80374 is terminal.
-  Actual full eligible-archive startup/restore at a755 passed in the installed Linux Python/runtime using
-  isolated canonical book/cohort state. Initial audit-fixture failure is retained; corrected startup registered18
-  jobs with readable-history first-run guards and unchanged cohort. Real rsync restoration had zero differences.
-  The actual service data bind is /opt/mastermind-live-data, verified through /proc/1627652/root; host data is stale.
-  The 07:41 read showed88/86/87 NAV rows throughOctober19 and no pending/WAL/settlement receipts for3 active books.
-  Live release732cf7be and PID1627652 were unchanged. The 07:19 health timeout and later07:26 HTTP200 both remain.
-  Protected master8bce27bb731f475885352add0be7f885e0862714 is now qualified through unchanged critical implementation
-  bindings and its newly manifested102789120-byte/5152-member archive, SHA256
-  28e87cd1c942ed2c10c64cf39e0e26f21821ff60f18b7368cfbee10861140a92. Actual non-writing receiver comparison exit0.
-  Present the reserved exact full-archive VPS upgrade/restart decision after source evidence lands.
-  Before any approved execution recheck exact master, runtime/namespace, cohort/NAV/pending/WAL/receipts and custody.
-  Invoke the accepted wrapper with explicit8bce so further master movement refuses; no provider/Parall installer
-  execution is included. Production remains unapproved; source restore cannot undo runtime data effects.
-  Preserve all failed experiments, 113 unchanged passes plus the separately corrected source regression, and
-  original1586/642/124 ownership/HOLDs. Macro9515/9573 source acceptance remains.
-  Use the accepted October16 map only as dated exposure review; four proxies remainOctober14. No current quote,
-  flows/systemic-contagion claim or numerical allocation authority follows.
-  W5 first natural operational issuance is accepted: one30-rowSPY batch with lineage and warning checks,
-  all outcomes immature. No30-independent-events, Friday-close execution, manual nightly, backfill or early grade.
-  R1 remains proposed deterministic reporting; all532 B0/B1 fits NOT_ADMITTED/zero executed pending actual Yahoo
-  source-purpose and executable/runtime acceptance. Preserve FRED HOLD, T13h21 refusal, null independentN and failed studies.
-  Existing Copilot8014/9447 and Radar9548 actual writers retain intersections; source counterexamples remain.
-  Require served source and a useful authenticated answer after writer reconciliation; no provider replay is implied.
-  Preserve publisher8132/8721 HOLDs,9428 refusal and QLedger/nightly custody. Forecast qualifiers, Terminal proof,
-  full warning/recovery delivery and empirical promotion remain open. Envelope rank/gate/size/execute stay false.
-  Update MAS-258 from verified canonical evidence. Whole programme remains active; no autonomous wake is claimed.
+  2026-11-01 (CEO seat 00dea969, records r5): EW-P4-FU #10364 is MERGED (d3fb043b0f2f, exact head 19accf47, independent
+  re-review PASS with notes); F-1..F-3 are closed and the UI validator now matches the lib validator. The producer gap
+  and the vision lane moved to EW-P4-ACT. EW-P5 ran its first pack census (ew-p5-packs-20261101T071404Z-518ae7cd at main
+  d3fb043b0f2f: pytest 1069 passed, 17 skipped, 0 failed, 0 errors; node 20 of 20); an independent reviewer mapped all
+  63 rows (COVERED_ISOLATED 4, PARTIAL 20, NOT_COVERED 10, NOT_EXECUTABLE 13, HELD_EXTERNAL 16) and no pack is PASS.
+  Next: EW-P5-FU repairs (S02/S12 precedence merged in #10371; O06 ordering, then the minors), each with its own PR and fresh
+  review, then a second named run that adds tests/test_qledger_carve.py and re-maps S01/S03/S05/S06/Q01-Q05 (mapped at
+  2796abf7, before #10255 merged as c2772cc4). EW-P1 waits on two natural engine landings after c2772cc4.
+
+  2026-11-01 (CEO seat 00dea969, records r4): EW-P4 #10350 is MERGED (886ab694c947, exact head a49a16d5, review r3
+  APPROVE_WITH_NOTES). Its rung is MERGED, not production proof: no producer writes latest_observation, so the surface shows
+  the unavailable state until an activation gate exists (EW-P4-FU). EW-P1 still waits on #10255; the seat watcher was re-armed
+  with a strict "(#10255)" subject match after the first one matched the records r3 subject. EW-P5 receipts table started.
+  Next: EW-P1 acceptance (two natural engine landings after #10255), then EW-P5 packs S/Q/O/C/U/R at exact heads; no live send,
+  no Tier A grant without authenticated proof.
+
+  2026-10-31 (Fable CEO seat 00dea969, records r3): EW-P0 #10249, EW-P2 #10325 (b38935af), CI budget #10341 (dbaf1e07) and
+  EW-P3 #10340 (11e6c98eb8c3) are MERGED; the EW-P3 prereg is dated (merge 2026-10-31, prospective start 2026-11-02, earliest first
+  look 2027-12-31) and its two declared budgets are on the trial ledger - zero outcome rows read. EW-P1.T2 #10333 is CLOSED,
+  superseded by the incumbent carve #10255; acceptance stays two natural nightly engine landings on main after #10255
+  merges (seat git-only watcher, never dispatch). EW-P4 UI is in flight on ORCH-P4; EW-P5 acceptance packs follow its merge.
+  See research/grey_deer/ew_completion_20261031/ADOPTION_RECORD_2026-10-31.md (Reconciliation section) and the handoff.
+  Older frontier retained below.
+
+  Continue the existing MAS-258 Census / Grey Deer / Risk Radar / Risk On-Risk Off programme.
+  Macro9595 remains merged and closed. Mastermind1660 merged at 3960aefcf4724a88812d79d97c1b370dc9f951c4
+  on October21 at06:24:13UTC, final headb54c58df73077bf50762e71136d8a8ae6c92bed2; this is not production deployment.
+  Original MTF operation rotation-mtf-reasons-atomic-20261018 was reconciled and canonically reused without replacement.
+  Macro9957 publishes forward reason-pair custody at26f60b69a5c929f2a5a4316add623d01ccbc7eac; local108passed,
+  unchanged schema/validator/history and original refinement boundary. Complete exact-source independent review and
+  binding CI before Sol releases its draft hold. Published-source Fabric review returned INVALID_ARGUMENT parent_id,
+  then NOT_FOUND/UNVERIFIED with execution_absence_proven=false and retry_allowed=false; do not retry or reroute it.
+  Six-row bounded history is captured with the local August23 shallow boundary explicitly disclosed.
+  AMZN creating run31452043288/job93658213173 checked outd9075317, rejected the mismatch, then rebased and
+  pushed210d11a; the outer workflow still succeeded. This is rejected publication, not historical admission.
+  Qualify the still-nonblocking render gate under its actual workflow owner; preserve the nightly data-writer boundary.
+  The AMZN current correction is reviewable but unapplied: exact predecessor fence, explicit historical rejection,
+  separate acceptance and protection against retrospective eligibility remain. Other rows retain their own evidence gaps.
+  Original publisher owner has published Mastermind1667, observed head65c071d9d4820135a54d6d2f7af861bb5e7cebc1.
+  Owner reports472passed/1skipped and two source review acceptances at application predecessordd44a6b; current
+  hosted checks and exact release qualification remain. Root made no overlapping publisher edit or independent retest.
+  Actual-source replay refused stale mtf_signals and retained both outputs; original MTF rows remain August5.
+  No fabricated signal, historical eligibility upgrade, manual nightly/portfolio, duplicate publisher or new episode store.
+  Keep current-reader, source merge, natural publication, active consumer acceptance and exact production release separate.
+  The October20 approval was consumed by releasefe7afd0111141bae27927715e709d074fea729e2; new deployment remains reserved.
+  Preserve descriptive36ETF/8486session/305496row census; W5 outcomes remain immature and not30 independent events.
+  All532B0/B1 fits remain NOT_ADMITTED/zero executed; Yahoo model-purpose, FRED HOLD, T13h21 refusal, null independentN,
+  frozen failed studies, warning8132/8721 HOLDs,9428 refusal, Copilot8014/9447 and Radar9548 writer intersections,
+  QLedger/nightly custody and Terminal proof remain. Envelope rank/gate/size/execute authority remains false.
+  Current evidence is serving_freshness_20261021/CONTINUATION.md on original evidence carrier9932.
+  MISSION_COMPLETE=false; no autonomous wake or full programme completion is claimed.
 
 ---
 

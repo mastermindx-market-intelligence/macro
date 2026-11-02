@@ -12,6 +12,7 @@
   var FINANCIAL_QUERY_URL = '/api/forensics/v1/financial/query';
   var FINANCIAL_REVISIONS_URL = '/api/forensics/v1/financial/revisions';
   var FINANCIAL_STATEMENTS_URL = '/api/forensics/v1/financial/statements';
+  var FINANCIAL_CATALOG_URL = '/api/forensics/v1/financial/catalog';
   var FINANCIAL_QUERY_XLSX_URL = '/api/forensics/v1/financial/query.xlsx';
   var DESKTOP_QUERY = '(min-width: 1100px)';
   var state = {
@@ -50,10 +51,15 @@
     queryNodes: null,
     cellEvidence: null,
     financialToken: 0,
+    statementsToken: 0,
     financial: { phase: 'idle' },
     statementColumns: [],
     statements: { phase: 'idle' },
     statementCells: [],
+    // Production-only: the filings the admitted generation serves, and the
+    // one-shot period prime the revisions panel takes from them.
+    catalog: { entityId: '', phase: 'idle', filings: [], promise: null },
+    periodPrime: null,
     exportUnavailable: false,
     receipt: {
       phase: 'idle',
@@ -279,6 +285,7 @@
       'SEC Company Facts normalized projection': 'SEC 公司事实标准化投影',
       'repository quarterly and annual EDGAR panels': '仓库内季度及年度 EDGAR 面板',
       'normalized_quarterly_projection': '标准化季度投影',
+      'coverage_contract_catalog_only': '覆盖合约·仅申报目录',
       'filing_index': '披露索引',
       'companyfacts_source': '公司事实来源'
     };
@@ -907,6 +914,7 @@
       window.MMOnboard.open('upgrade', { plan: 'essential', period: 'annual' });
       return;
     }
+    if (window.MMXSharedShell) { window.MMXSharedShell.openAuth('billing'); return; }
     window.location.href = '/plans.html';
   }
 
@@ -919,6 +927,7 @@
       window.MDXAuth.open('signin');
       return;
     }
+    if (window.MMXSharedShell) { window.MMXSharedShell.openAuth('signin'); return; }
     window.location.href = '/?signin=1';
   }
 
@@ -1733,25 +1742,71 @@
       '<span class="ff-compact tnum">' + compact + '</span></button>';
   }
 
-  // §2.3.4 — a finding value with no attached occurrence is matched to a query
-  // node by metric id plus period label; no match stays disabled (AM1).
-  function queryNodeForValue(value) {
+  function isoDay(text) {
+    var match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(text || ''));
+    return match ? Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])) / 86400000 : null;
+  }
+
+  // A state period is a fiscal-quarter duration bucket. A query node answers
+  // it only for the same metric, the same period end, the same start (or, when
+  // the panel row carries no start, a node interval no longer than one fiscal
+  // quarter), a value state with a source span, and the very number the page
+  // shows (AM1). Anything else stays disabled; no node is borrowed from
+  // another period.
+  function queryNodeForPeriod(metricId, period, expected) {
     var nodes = state.queryNodes;
-    if (!Array.isArray(nodes) || !objectValue(value)) return null;
-    var wantedKey = String(value.metric_id || value.key || '');
-    var wantedPeriod = String(value.period_label || value.period || '');
+    if (!Array.isArray(nodes) || !metricId || !objectValue(period)) return null;
+    var wantedEnd = String(period.end || period.period_end || '');
+    var wantedStart = period.start ? String(period.start) : '';
+    var wantedNumber = numberValue(expected);
+    if (!wantedEnd || wantedNumber == null) return null;
     for (var index = 0; index < nodes.length; index += 1) {
       var node = objectValue(nodes[index]);
-      if (!node) continue;
-      if (wantedKey && String(node.metric_id || '') !== wantedKey) continue;
-      if (wantedPeriod && String(node.period_label || node.period || '') !== wantedPeriod) continue;
+      if (!node || String(node.metric_id || '') !== metricId) continue;
+      if (node.state != null && node.state !== 'value') continue;
+      if (typeof node.value !== 'string' || numberValue(node.value) !== wantedNumber) continue;
+      var nodePeriod = objectValue(node.period) || {};
+      if (String(nodePeriod.end || '') !== wantedEnd) continue;
+      var nodeStart = nodePeriod.start ? String(nodePeriod.start) : '';
+      if (wantedStart) {
+        if (nodeStart !== wantedStart) continue;
+      } else {
+        var startDay = isoDay(nodeStart);
+        var endDay = isoDay(nodePeriod.end);
+        if (startDay == null || endDay == null || endDay - startDay > 100) continue;
+      }
+      if (!spanOk(controlFromQueryNode(node, ''))) continue;
       return node;
     }
     return null;
   }
 
-  function valueControlOpts(value, which) {
-    var node = queryNodeForValue(value);
+  function statePeriodByLabel(label) {
+    var target = company();
+    var periods = target && Array.isArray(target.periods) ? target.periods : [];
+    var wanted = String(label || '');
+    if (!wanted) return null;
+    for (var index = 0; index < periods.length; index += 1) {
+      var period = objectValue(periods[index]);
+      if (period && (String(period.label || '') === wanted || periodLabel(period) === wanted)) return period;
+    }
+    return null;
+  }
+
+  // §2.3.4 — a finding value with no attached occurrence is matched to a query
+  // node by metric id plus the finding's own period (current or prior); no
+  // match stays disabled (AM1).
+  function queryNodeForValue(value, label, expected) {
+    if (!objectValue(value)) return null;
+    var metricId = String(value.metric_id || METRIC_ID_BY_KEY[value.key] || '');
+    return queryNodeForPeriod(metricId, statePeriodByLabel(label), expected);
+  }
+
+  function valueControlOpts(value, which, finding) {
+    finding = objectValue(finding) || {};
+    var node = which === 'prior'
+      ? queryNodeForValue(value, finding.period_prior, value.prior)
+      : queryNodeForValue(value, finding.period_current, value.current);
     var text = which === 'prior' ? value.prior : which === 'delta' ? value.delta : value.current;
     var shown = which === 'delta' ? formatChange(text, value.format, lang()) : formatValue(text, value.format);
     if (node) {
@@ -1839,7 +1894,8 @@
       titlePair: '',
       exactText: '',
       unit: '',
-      excerpt: ''
+      excerpt: '',
+      negatedLabel: false
     };
     // Exact facts attach only when this control backs onto a query node whose
     // value is canonical decimal text; a JSON number is a contract break and
@@ -1872,6 +1928,7 @@
         cell.titlePair = entry.label ? pair(entry.label, entry.label) : '';
         cell.exactText = entry.value;
         cell.unit = entry.unit;
+        cell.negatedLabel = entry.negatedLabel === true;
         break;
       }
     }
@@ -2101,6 +2158,7 @@
     state.financial = { phase: 'idle' };
     state.queryNodes = null;
     state.statementColumns = [];
+    state.periodPrime = null;
   }
 
   function ensureFinancialData() {
@@ -2193,6 +2251,26 @@
       }
     }
     if (!latestBody.periods.length) {
+      // The panel snapshot can carry periods without starts. In production the
+      // admitted generation's own statement columns supply them: prime once per
+      // issuer, then re-evaluate; a failed prime settles into no-periods.
+      if (!pinnedBody && state.datasetMode === 'production' && latestBody.entity_id) {
+        var prime = state.periodPrime;
+        if (!prime || prime.entityId !== latestBody.entity_id) {
+          prime = { entityId: latestBody.entity_id, settled: false, promise: null };
+          prime.promise = primeStatementColumns(prime.entityId).then(function () { prime.settled = true; });
+          state.periodPrime = prime;
+        }
+        if (!prime.settled) {
+          state.financial = { phase: 'loading' };
+          renderRevisions();
+          prime.promise.then(function () {
+            if (token !== state.financialToken) return;
+            ensureFinancialData();
+          });
+          return;
+        }
+      }
       state.financial = { phase: 'no-periods' };
       renderRevisions();
       return;
@@ -2231,6 +2309,9 @@
       };
       state.queryNodes = state.financial.latest;
       renderRevisions();
+      // The compare cards drew before the nodes arrived; redraw them so each
+      // card binds its own period's source span.
+      if (company()) renderCompare(company());
       // X2-b+c r3 R3-3b: reconcile FIRST — a view another tab unpinned,
       // changed or deleted while this tab's pinned fetch was in flight must
       // be refused before the backfill can write anything against it.
@@ -2433,7 +2514,7 @@
   // ── Statement tree (§3.5 statements POST, spec row 6) ───────────────────
   // Accession comes from the disclosure layer's current filing or the query
   // provenance — never guessed from a ticker or a period label.
-  function currentAccession() {
+  function panelAccession() {
     var current = disclosureDocuments(company()).find(function (document) {
       return document._filing_role === 'current';
     });
@@ -2450,37 +2531,79 @@
     return '';
   }
 
-  function resetStatementsState() {
-    state.statements = { phase: 'idle' };
-    state.statementCells = [];
-    state.statementColumns = [];
+  // FIF catalog: the filings the admitted production generation serves. The
+  // company panel is a refreshed snapshot whose accession can name a filing
+  // the generation never admitted, so production asks only for a listed one.
+  // Golden/demonstration wiring has no catalog and keeps the panel accession.
+  // The promise never rejects: any failure leaves the panel accession in force.
+  function ensureCatalog(entityId) {
+    if (state.datasetMode !== 'production' || !entityId) {
+      return Promise.resolve({ phase: 'none', filings: [] });
+    }
+    var cached = state.catalog;
+    if (cached && cached.entityId === entityId && cached.promise) return cached.promise;
+    var entry = { entityId: entityId, phase: 'loading', filings: [], promise: null };
+    state.catalog = entry;
+    entry.promise = financialPost(FINANCIAL_CATALOG_URL, {
+      schema: 'fundamental_forensics.financial_catalog_request/v1',
+      entity_id: entityId
+    }).then(function (payload) {
+      var entity = objectValue(payload && payload.entity) || {};
+      if (entity.entity_id !== entityId || !Array.isArray(payload.filings)) {
+        entry.phase = 'none';
+      } else {
+        entry.filings = payload.filings.filter(objectValue);
+        entry.phase = 'ready';
+      }
+      return entry;
+    }, function () {
+      entry.phase = 'none';
+      return entry;
+    });
+    return entry.promise;
   }
 
-  function ensureStatements() {
-    if (state.tab !== 'statements') return;
+  var PERIODIC_FORM = /^(10-K|10-Q|20-F|40-F)(\/A)?$/;
+
+  // Latest periodic report the catalog lists: latest period, the original
+  // ahead of its amendment, then the later filing date. '' when none is listed.
+  function latestPeriodicAccession(filings) {
+    var best = null;
+    filings.forEach(function (filing) {
+      var form = String(filing.form || '');
+      if (!PERIODIC_FORM.test(form) || !filing.accession) return;
+      var rank = [String(filing.period_of_report || ''), /\/A$/.test(form) ? '0' : '1', String(filing.filing_date || '')];
+      var better = !best;
+      for (var index = 0; !better && index < rank.length; index += 1) {
+        if (rank[index] === best.rank[index]) continue;
+        better = rank[index] > best.rank[index];
+        break;
+      }
+      if (better) best = { rank: rank, accession: String(filing.accession) };
+    });
+    return best ? best.accession : '';
+  }
+
+  function currentAccession() {
+    var accession = panelAccession();
     var target = company();
-    if (!target) return;
-    if (state.statements.phase === 'loading' || state.statements.phase === 'ready') return;
-    var entityId = String(target.entity_id || '');
-    var accession = currentAccession();
-    if (!entityId || !accession) {
-      state.statements = { phase: 'unavailable' };
-      renderStatementTree();
-      return;
+    var catalog = state.catalog;
+    if (!target || !catalog || catalog.phase !== 'ready' || catalog.entityId !== String(target.entity_id || '')) {
+      return accession;
     }
-    var token = state.financialToken + 1;
-    state.financialToken = token;
-    state.statements = { phase: 'loading' };
-    renderStatementTree();
-    financialPost(FINANCIAL_STATEMENTS_URL, {
+    var listed = accession && catalog.filings.some(function (filing) {
+      return String(filing.accession) === accession;
+    });
+    return listed ? accession : latestPeriodicAccession(catalog.filings);
+  }
+
+  function fetchStatements(entityId, accession) {
+    return financialPost(FINANCIAL_STATEMENTS_URL, {
       schema: 'fundamental_forensics.financial_statement_request/v1',
       entity_id: entityId,
       accession: accession
     }).then(function (payload) {
-      if (token !== state.financialToken) return;
       var statements = Array.isArray(payload && payload.statements) ? payload.statements.filter(objectValue) : [];
-      state.statements = { phase: statements.length ? 'ready' : 'empty', statements: statements };
-      state.statementCells = [];
       var columns = [];
       // PF-1: every statement repeats its comparative periods, so columns are
       // de-duplicated by the server's own period identity before they are
@@ -2501,10 +2624,77 @@
           }
         });
       });
-      state.statementColumns = columns;
+      return { statements: statements, columns: columns, filing: objectValue(payload && payload.filing) };
+    });
+  }
+
+  // Revisions periods from the admitted generation's statement columns. Never
+  // rejects; columns land only for the same issuer and only when none exist.
+  function primeStatementColumns(entityId) {
+    return ensureCatalog(entityId).then(function () {
+      var target = company();
+      if (!target || String(target.entity_id || '') !== entityId) return null;
+      var accession = currentAccession();
+      if (!accession) return null;
+      return fetchStatements(entityId, accession).then(function (result) {
+        var current = company();
+        if (!current || String(current.entity_id || '') !== entityId) return;
+        if (state.statementColumns.length) return;
+        state.statementColumns = result.columns;
+      });
+    }).catch(function () { return null; });
+  }
+
+  function resetStatementsState() {
+    state.statementsToken += 1;
+    state.statements = { phase: 'idle' };
+    state.statementCells = [];
+    state.statementColumns = [];
+    state.catalog = { entityId: '', phase: 'idle', filings: [], promise: null };
+  }
+
+  function ensureStatements() {
+    if (state.tab !== 'statements') return;
+    var target = company();
+    if (!target) return;
+    if (state.statements.phase === 'loading' || state.statements.phase === 'ready') return;
+    var entityId = String(target.entity_id || '');
+    var production = state.datasetMode === 'production';
+    var accession = production ? '' : currentAccession();
+    if (!entityId || (!production && !accession)) {
+      state.statements = { phase: 'unavailable' };
       renderStatementTree();
-    }).catch(function (error) {
-      if (token !== state.financialToken) return;
+      return;
+    }
+    var token = state.statementsToken + 1;
+    state.statementsToken = token;
+    state.statements = { phase: 'loading' };
+    renderStatementTree();
+    var apply = function (result) {
+      if (token !== state.statementsToken) return;
+      state.statements = {
+        phase: result.statements.length ? 'ready' : 'empty',
+        statements: result.statements,
+        filing: result.filing
+      };
+      state.statementCells = [];
+      state.statementColumns = result.columns;
+      renderStatementTree();
+    };
+    var pending = production
+      ? ensureCatalog(entityId).then(function () {
+        if (token !== state.statementsToken) return null;
+        var resolved = currentAccession();
+        if (!resolved) {
+          state.statements = { phase: 'unavailable' };
+          renderStatementTree();
+          return null;
+        }
+        return fetchStatements(entityId, resolved).then(apply);
+      })
+      : fetchStatements(entityId, accession).then(apply);
+    pending.catch(function (error) {
+      if (token !== state.statementsToken) return;
       if (error && (error.status === 401 || error.status === 403)) {
         showLoadError(error);
         return;
@@ -2512,6 +2702,73 @@
       state.statements = { phase: 'error' };
       renderStatementTree();
     });
+  }
+
+  function signedCompact(value) {
+    var numeric = numberValue(value);
+    if (numeric == null) return compactNumber(value, 1);
+    return (numeric < 0 ? '−' : '') + compactNumber(Math.abs(numeric), 1);
+  }
+
+  // FIF (b): a statement cell's unit picks its display, so a share count is
+  // never shown as dollars. Units arrive as measure names, optionally
+  // prefixed (iso4217:USD, xbrli:shares, USD/shares); USD and per-share USD
+  // keep the money format.
+  function statementValueText(cell) {
+    var parts = String(cell.unit == null ? '' : cell.unit).split('/').map(function (part) {
+      var measure = part.trim();
+      return measure.slice(measure.lastIndexOf(':') + 1).toLowerCase();
+    }).filter(Boolean);
+    var perShare = parts.length === 2 && /^shares?$/.test(parts[1]);
+    if (!parts.length || parts[0] === 'usdpershare' || (parts[0] === 'usd' && (parts.length === 1 || perShare))) {
+      return formatValue(cell.value, 'currency');
+    }
+    if (parts.length === 1 && /^shares?$/.test(parts[0])) return signedCompact(cell.value);
+    if (/^[a-z]{3}$/.test(parts[0]) && (parts.length === 1 || perShare)) {
+      return signedCompact(cell.value) + ' ' + parts[0].toUpperCase() + (perShare ? '/share' : '');
+    }
+    return signedCompact(cell.value);
+  }
+
+  // The served filing the tree was rebuilt from, named beside the tree.
+  function servedFilingCaption(filing) {
+    filing = objectValue(filing);
+    if (!filing || !filing.accession) return '';
+    var en = [];
+    var zh = [];
+    if (filing.form) {
+      en.push(String(filing.form));
+      zh.push(String(filing.form));
+    }
+    if (filing.period_of_report) {
+      en.push('period ending ' + filing.period_of_report);
+      zh.push('报告期截至' + filing.period_of_report);
+    }
+    if (filing.filing_date) {
+      en.push('filed ' + filing.filing_date);
+      zh.push('提交于' + filing.filing_date);
+    }
+    en.push('accession ' + filing.accession);
+    zh.push('文件编号 ' + filing.accession);
+    return '<p class="ff-statement-notice">' +
+      pair('As-reported filing shown: ' + en.join(' · '), '所示按披露原样的财报：' + zh.join(' · ')) + '</p>';
+  }
+
+  // Defect (c): a presentation arc whose preferred label is in the XBRL
+  // negated-label family tells the reader to show the reported fact with
+  // its sign reversed. "Purchases of marketable securities" is a positive
+  // PaymentsToAcquire fact that the filing prints as (24,407). Only the
+  // compact text follows the filing; the exact value and its receipt keep
+  // the reported bytes (A38/AM1).
+  function isNegatedLabelRole(role) {
+    return /\/role\/negated[A-Za-z]*Label$/.test(String(role || ''));
+  }
+
+  function negatedDecimalText(text) {
+    var value = String(text || '');
+    if (value.charAt(0) === '-') return value.slice(1);
+    if (!/[1-9]/.test(value)) return value;
+    return '-' + value;
   }
 
   function statementCellControl(cell, row) {
@@ -2523,7 +2780,9 @@
     if (quality !== 'available' || !exact) {
       return sourceControlHtml({ kind: 'statement' });
     }
-    var control = controlFromStatementCell(cell, formatValue(cell.value, 'currency'));
+    var negated = isNegatedLabelRole(row.preferred_label_role);
+    var shown = negated ? Object.assign({}, cell, { value: negatedDecimalText(exact) }) : cell;
+    var control = controlFromStatementCell(cell, statementValueText(shown));
     control.metricId = String(row.standardized_metric_id || '');
     state.statementCells.push({
       occurrenceId: control.occurrenceId,
@@ -2532,7 +2791,8 @@
       metricId: control.metricId,
       value: exact,
       unit: cell.unit == null ? '' : String(cell.unit),
-      accession: control.accession
+      accession: control.accession,
+      negatedLabel: negated
     });
     return sourceControlHtml(control);
   }
@@ -2621,7 +2881,7 @@
         '<div class="ff-table-wrap"><table class="ff-table ff-statement-table"><thead><tr>' + header +
         '</tr></thead><tbody>' + body + '</tbody></table></div></section>';
     }).join('');
-    ui.statements.innerHTML = blocks;
+    ui.statements.innerHTML = servedFilingCaption(statements.filing) + blocks;
   }
 
   // ── Peer panel (§4, R5) ─────────────────────────────────────────────────
@@ -3431,7 +3691,8 @@
       '<section class="ff-proof-section"><h3>' + pair('Exact value', '精确数值') + '</h3>' +
       (exact ? '<code class="ff-exact">' + esc(exact) + '</code>' +
         '<p class="ff-proof-compact-line"><b>' + pair('Compact', '简写') + '</b> ' + esc(cell.compactText || '—') + '</p>' +
-        (cell.unit ? '<p class="ff-proof-compact-line"><b>' + pair('Unit', '单位') + '</b> ' + esc(cell.unit) + '</p>' : '')
+        (cell.unit ? '<p class="ff-proof-compact-line"><b>' + pair('Unit', '单位') + '</b> ' + esc(cell.unit) + '</p>' : '') +
+        (cell.negatedLabel ? '<p class="ff-proof-compact-line">' + pair('The filing shows this line with its sign reversed; the exact value is the reported fact.', '财报以相反符号列示此项；精确数值为所报告的原始数值。') + '</p>' : '')
         : '<p class="ff-proof-compact-line">' + pair('Exact value unavailable for this cell.', '该单元格的精确数值不可用。') + '</p>') +
       '</section>' +
       '<section class="ff-proof-section"><h3>' + pair('Source span', '来源片段') + '</h3>' +
@@ -3826,6 +4087,11 @@
     }
     var current = periods[state.currentPeriod] || periods[0];
     var prior = periods[state.priorPeriod] || periods[0];
+    function cellControl(period, metric) {
+      var shown = formatValue(period[metric.key], metric.format);
+      var node = queryNodeForPeriod(METRIC_ID_BY_KEY[metric.key] || '', period, period[metric.key]);
+      return node ? controlFromQueryNode(node, shown) : { kind: 'cell', compactText: shown };
+    }
     ui.compareGrid.innerHTML = METRICS.map(function (metric) {
       var currentNumber = numberValue(current[metric.key]);
       var priorNumber = numberValue(prior[metric.key]);
@@ -3835,9 +4101,9 @@
       if (pct != null) deltaText += ' · ' + formatSigned(pct, 'percent');
       return '<article class="ff-compare-card"><h3>' + pair(metric.en, metric.zh) + '</h3>' +
         '<div class="ff-compare-values"><div class="ff-compare-value"><span>' + pair('Current · ' + periodLabel(current), '本期 · ' + periodLabel(current)) +
-        '</span>' + sourceControlHtml({ kind: 'cell', compactText: formatValue(current[metric.key], metric.format) }) + '</div>' +
+        '</span>' + sourceControlHtml(cellControl(current, metric)) + '</div>' +
         '<div class="ff-compare-value"><span>' + pair('Prior · ' + periodLabel(prior), '上期 · ' + periodLabel(prior)) +
-        '</span>' + sourceControlHtml({ kind: 'cell', compactText: formatValue(prior[metric.key], metric.format) }) + '</div></div>' +
+        '</span>' + sourceControlHtml(cellControl(prior, metric)) + '</div></div>' +
         '<div class="ff-compare-delta">' + pair('Change ' + deltaText, '变化 ' + deltaText) + '</div></article>';
     }).join('');
   }
@@ -4996,7 +5262,7 @@
     ui.evidenceTitle.innerHTML = fieldPair(finding, 'title', 'Untitled finding');
     var values = Array.isArray(finding.values) ? finding.values : [];
     var valueRows = values.length ? values.map(function (value) {
-      var cellOpts = [valueControlOpts(value, 'current'), valueControlOpts(value, 'prior'), valueControlOpts(value, 'delta')];
+      var cellOpts = [valueControlOpts(value, 'current', finding), valueControlOpts(value, 'prior', finding), valueControlOpts(value, 'delta', finding)];
       // Item 2 (§2.1): an unavailable span is shown, not dimmed — the number
       // keeps full ink, the control takes a dashed hairline, and the row
       // prints the visible .ff-source-unavail label once under its metric
@@ -5884,7 +6150,15 @@
       peerExclusionCopy: peerExclusionCopy,
       financialPost: financialPost,
       renderRevisions: renderRevisions,
-      setAsofControlsFromState: setAsofControlsFromState
+      setAsofControlsFromState: setAsofControlsFromState,
+      // Defect (g) seams: period-bound source links on compare cards and
+      // finding values.
+      renderCompare: renderCompare,
+      renderEvidence: renderEvidence,
+      queryNodeForPeriod: queryNodeForPeriod,
+      queryNodeForValue: queryNodeForValue,
+      valueControlOpts: valueControlOpts,
+      resetStatementsState: resetStatementsState
     };
   } else if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init, { once: true });

@@ -1,0 +1,640 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-10-19T11:31:24Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:3100/data/manifest.json",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/macrodata/release_forecast.json",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/quotes.json",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/overlay.json",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/risk_state.json?t=1792409492204",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/risk_envelope.json?t=1792409492208",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/release_publications.json",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/api/brain/me",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/risk_state.json?t=1792409510667",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/risk_envelope.json?t=1792409510711",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/risk_state.json?t=1792409530088",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/risk_envelope.json?t=1792409530150",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/risk_envelope.json?t=1792409552354",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/risk_state.json?t=1792409552514",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/risk_envelope.json?t=1792409579160",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/risk_state.json?t=1792409579292",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/risk_state.json?t=1792409606661",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/risk_envelope.json?t=1792409606711",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/risk_state.json?t=1792409632541",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/risk_envelope.json?t=1792409632544",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/risk_state.json?t=1792409672330",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/live/risk_envelope.json?t=1792409672370",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 2277,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 4466,
+            "elements_wider_than_viewport": 2,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 2277,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 0,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 33,
+        "payload_bytes_total": 7021212,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 89,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 514
+      },
+      "page_id": "macro.html",
+      "registry_route": "/macro.html",
+      "route": "/macro.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 270585,
+          "captured": true,
+          "file": "evidence/6afe1eca553d05c2.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "en",
+          "sha256": "6afe1eca553d05c24fd4434195273126616be23a602a16feac06f8fcaaff58d4",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 197585,
+          "captured": true,
+          "file": "evidence/05c35e7dd425abc0.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "en",
+          "sha256": "05c35e7dd425abc0603ec381af43eccf6b7f6bb5bd97f1251860b2642cd0f877",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 271904,
+          "captured": true,
+          "file": "evidence/5ce44e3f37291d96.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "zh",
+          "sha256": "5ce44e3f37291d96402f65ab33838d14cc63067d4552b6a421aa73cd61dfe3e4",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 208314,
+          "captured": true,
+          "file": "evidence/e5013323bf0b574b.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "zh",
+          "sha256": "e5013323bf0b574b0f356f1bb354b9779638f3a65938952da48e4cc54aec4a3b",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 109211,
+          "captured": true,
+          "file": "evidence/854eb5b5a1c95a22.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "en",
+          "sha256": "854eb5b5a1c95a227273cb42cb03ae30ebef3185171a866b167df0f09470fd15",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 93366,
+          "captured": true,
+          "file": "evidence/7a834c51b2df23d9.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "en",
+          "sha256": "7a834c51b2df23d970af2074bea9bafe8c0b38eaac6bdeb4d4cda91b1fa92e3e",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 107910,
+          "captured": true,
+          "file": "evidence/c561872f08145567.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "zh",
+          "sha256": "c561872f081455672cbf88d038d9555367d150f1c7dc26ce89d3c7260dd33194",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 95923,
+          "captured": true,
+          "file": "evidence/e1599bd05ce39f57.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "zh",
+          "sha256": "e1599bd05ce39f57d41c1eec2ada24abd0dd0b2b0f24b93b01dbed7804e4199d",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    },
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:3100/data/manifest.json",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "source_url": "http://127.0.0.1:3110/api/billing/offers/founding_pro",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 3049,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 3874,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": true
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 3049,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 4,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 0,
+        "payload_bytes_total": 6522330,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 49,
+        "screenshot_completion": 1.0,
+        "section_count": 5,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 509
+      },
+      "page_id": "about.html",
+      "registry_route": "/about.html",
+      "route": "/about.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 136106,
+          "captured": true,
+          "file": "evidence/9a2a990ac000a03b.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "en",
+          "sha256": "9a2a990ac000a03b257beb4543a6484bcd091ff16a8362314a0f80804d1f121f",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 135682,
+          "captured": true,
+          "file": "evidence/ec9ca84a631e3a1b.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "en",
+          "sha256": "ec9ca84a631e3a1bb5a42bf4ae1d7ea0cf50e37b9eeffee00436e0305e93557a",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 142099,
+          "captured": true,
+          "file": "evidence/728236371ad0bfa3.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "zh",
+          "sha256": "728236371ad0bfa3c31a659a54384f5194264878da94b2521a8fd28c1e05d961",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 141597,
+          "captured": true,
+          "file": "evidence/e43fc9bc6a0aa303.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "zh",
+          "sha256": "e43fc9bc6a0aa303e20e317934038bc3a5da06bf2f66f8ce7713af07b3e30b99",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 67429,
+          "captured": true,
+          "file": "evidence/645fb4397df00480.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "en",
+          "sha256": "645fb4397df00480f6bbb424a4e18763ae9a848512fa2a68c23bf94fab7c751f",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 67484,
+          "captured": true,
+          "file": "evidence/f485cafea067be20.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "en",
+          "sha256": "f485cafea067be20eb2e417e2a2d998676fa06a0929ad58b26f4d287e07c2478",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 82455,
+          "captured": true,
+          "file": "evidence/66c8ca3dc7dfea5e.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "zh",
+          "sha256": "66c8ca3dc7dfea5eaa9978df6c2b5960a3c1ff4a88b6f58953d69dec08b107a0",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 82337,
+          "captured": true,
+          "file": "evidence/fbe07d62b9e8d989.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "zh",
+          "sha256": "fbe07d62b9e8d989d2081dd852704064cc4c3702b7cfe96d9dbe6490dba962bc",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/macro.html",
+      "/about.html"
+    ],
+    "max_pages": 2,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 0,
+    "repo": null,
+    "selected": 2
+  },
+  "target": {
+    "base_url": "http://127.0.0.1:3100",
+    "kind": "base_url",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "unavailable: a live origin does not disclose the commit it is serving",
+    "site_dir": null
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 2,
+    "states_attempted": 16,
+    "states_captured": 16
+  }
+}

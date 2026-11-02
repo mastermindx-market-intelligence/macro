@@ -1350,6 +1350,22 @@ def _direct_usd_xccy_basis(fx_lobe: dict, today: str) -> Any:
     return None
 
 
+
+def _decision_fx_current(labels, world_fx, snapshot, field, fallback_field, today):
+    """Current FX selection: explicit null wins; fallback needs a matching source date.
+
+    Dates are a compatibility check, not a freshness claim. Newer explicit-null
+    snapshots must never be filled from an older world-state value.
+    """
+    if field in labels:
+        return labels[field]
+    source = _decision_source_receipt(snapshot, "data/forex/latest.json", today)
+    asof = world_fx.get("asof")
+    if source["date_status"] != "known" or not asof or source["asof"] != str(asof)[:10]:
+        return None
+    return world_fx.get(fallback_field)
+
+
 def _build_decision_workspaces(
     snapshot: dict | None,
     world_state: dict | None,
@@ -1500,8 +1516,8 @@ def _build_decision_workspaces(
     radar = fx.get("regime_radar") if isinstance(fx.get("regime_radar"), dict) else {}
     fx_current = {
         "usd_trend": fx_labels.get("usd_trend") or desk.get("trend"),
-        "usd_regime": fx_labels.get("usd_regime") or fx.get("regime"),
-        "fx_risk": fx_labels.get("fx_risk") or fx.get("risk"),
+        "usd_regime": _decision_fx_current(fx_labels, fx, snap, "usd_regime", "regime", today),
+        "fx_risk": _decision_fx_current(fx_labels, fx, snap, "fx_risk", "risk", today),
         "desk_lean": desk.get("lean"),
         "real_rate_regime": fx_labels.get("real_rate_regime") or desk.get("real_rate_regime"),
         "fed_path_lean": fx_labels.get("fed_path_lean") or desk.get("fed_path_lean"),

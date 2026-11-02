@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-14T16:17:46.550768+00:00",
+  "verdict": "ROOT_ACCEPTED_BOUNDED_SOURCE_ORDER_CORRECTION",
+  "source_parent": "d15e7ac3f0bd9ea7ee9f203f96f0a9469c6357fb",
+  "qualified_a1": "b1db2fc7510b3121bb9494f7f55a4351e6a48c77",
+  "changed_runtime": false,
+  "job_definitions_preserved": 314,
+  "path_multisets_preserved": true,
+  "limits_preserved": true,
+  "tests": 3,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "warnings": "14 inherited pytest temporary-directory cleanup warnings; no test failure",
+  "repair": "Align two shared dependency lines with A1 and relocate ten follow-on-only paths after admin/theme_tokens.py; no membership change.",
+  "limitations": [
+    "Preview only; no base integration or release",
+    "First proposal failed and was never applied",
+    "order-tests.xml ran on unchanged baseline and is not repair proof",
+    "Existing runtime qualification retained without rerun; production and adoption unproven"
+  ]
+}

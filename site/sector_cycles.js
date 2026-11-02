@@ -1072,14 +1072,27 @@
   function _hzPass(c) { return !!c && c.p != null && (c.cell_verdict === "PASS" || c.source === "MODEL"); }
   function _hzTip(hz, key, pass) {
     var epoch = hz.epoch || "", dir = hz.direction || "";
-    var revOpt = hz.revision_optimistic ? " · revision-optimistic (quad not PIT-vintaged)" : "";
-    return pass
-      ? ("Calibrated model probability — the " + dir + "/" + key + " cell PASSED the W4.2 gate " +
+    var revOpt = hz.revision_optimistic
+      ? L(" · revision-optimistic (quad not PIT-vintaged)", " · 结果可能偏乐观（象限未按当时版本回放）")
+      : "";
+    var cell = dir + "/" + key;
+    var en = pass
+      ? ("Calibrated model probability — the " + cell + " cell PASSED the W4.2 gate " +
          "vs the family-stratified KM baseline (OOS Brier + month-block bootstrap CI + BH-FDR). " +
-         "Epoch: " + epoch + revOpt + " · backtest-validated OOS; live cohort accruing")
-      : ("KM base-rate prior — the " + dir + "/" + key + " cell did NOT pass the W4.2 gate; " +
-         "this is the historical family-stratified base rate, not a validated model output. " +
-         "Epoch: " + epoch + revOpt);
+         "Epoch: " + epoch + revOpt + ". Cohort still accruing. " +
+         "Not checked against later outcomes.")
+      : ("KM base-rate prior — the " + cell + " cell did NOT pass the W4.2 gate; " +
+         "this is the historical family-stratified base rate, not a model output. " +
+         "Epoch: " + epoch + revOpt + ". Not checked against later outcomes.");
+    var zh = pass
+      ? ("校准模型概率——" + cell + " 单元已通过 W4.2 门槛，对照分族 KM 基准" +
+         "（样本外 Brier + 月块自助 CI + BH-FDR）。" +
+         "Epoch: " + epoch + revOpt + "。样本仍在累积。" +
+         "未用之后的结果核对。")
+      : ("KM 基准率先验——" + cell + " 单元未通过 W4.2 门槛；" +
+         "这是历史上的分族基准率，不是模型输出。" +
+         "Epoch: " + epoch + revOpt + "。未用之后的结果核对。");
+    return L(en, zh);
   }
   function _hzBadge(pass) {
     return pass ? '<span class="hz-badge hz-pass">' + L("PASS", "通过") + '</span>'
@@ -1089,6 +1102,10 @@
   function hazardLineHTML(s) {
     var hz = s.now && s.now.hazard;
     if (!hz) return "";
+    if (hz.unavailable) {
+      return '<div class="cyc-hazard sc-hazard"><span class="hz-label">' +
+        L("Turn hazard", "转折风险") + '</span>' + esc(_hzWithheld(hz)) + '</div>';
+    }
     function cell(key, label, labelZh) {
       var c = hz[key];
       if (!c || c.p == null) return "";
@@ -1123,9 +1140,26 @@
     if (hz["1m"] && hz["1m"].p != null) return { key: "1m", c: hz["1m"], pass: false };
     return null;
   }
+  function _hzWithheld(hz) {
+    if (!hz || !hz.unavailable) return "";
+    var cdf = hz.unavailable_reason === "non_monotone_cdf";
+    var en = cdf
+      ? ("Unavailable today — the model's short- and long-window reads disagreed, "
+          + "so no clean probability can be shown.")
+      : "Unavailable today — a required input didn't settle cleanly.";
+    var zh = cdf
+      ? "今日暂不可用——模型的短窗与长窗读数不一致，无法给出可靠概率。"
+      : "今日暂不可用——所需输入未能完整结算。";
+    return L(en, zh);
+  }
   function hazardCardChip(s) {
     var hz = s.now && s.now.hazard;
     if (!hz) return "";
+    if (hz.unavailable) {
+      return '<div class="cc-hz hz-muted" title="' + esc(_hzWithheld(hz)) + '">' +
+        '<span class="cc-hz-k">' + L("Turn hazard", "转折风险") + '</span> ' +
+        L("Unavailable today", "今日暂不可用") + '</div>';
+    }
     var pick = _hzPick(hz);
     if (!pick) return "";
     return '<div class="cc-hz' + (pick.pass ? '' : ' hz-muted') + '" title="' + esc(_hzTip(hz, pick.key, pick.pass)) + '">' +

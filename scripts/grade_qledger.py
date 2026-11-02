@@ -52,6 +52,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import hashlib
+import platform
+import os
+import stat
 import logging
 import math
 import sys
@@ -62,7 +66,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from engine import qledger as q
-from lib import config
+# lib/config is DEFERRED to call time on purpose: this module is a seed of the
+# admin panel's load-time closure (the Intelligence OS evidence view calls
+# compute_promotion_readiness per request), and lib/config is a declared
+# non-admin lane — see ADMIN_MUST_NOT_RESTART in
+# tests/test_deploy_update_self_heal.py. A module-level import here would
+# restart the admin panel on every API/site-build config change.
 
 log = logging.getLogger("grade_qledger")
 
@@ -155,6 +164,110 @@ def _projected_ready_date(n_dates: int, rate_per_day: float | None) -> str | Non
     from datetime import timedelta
     proj = date.today() + timedelta(days=days)
     return proj.isoformat()
+
+
+READINESS_RECEIPT_SCHEMA = "mastermind.qledger.readiness_receipt.v1"
+READINESS_RECEIPT_PRODUCER = "scripts/grade_qledger.py:run_readiness_post_step"
+_READINESS_DOCUMENT_MAX_BYTES = 16 * 1024 * 1024
+
+
+def readiness_payload_digest(payload: dict) -> str:
+    """Identity of the owner's exact projection, not a performance measurement."""
+    return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":"),
+                                     ensure_ascii=False, allow_nan=False).encode()).hexdigest()
+
+
+def _receipt_stat(path: Path) -> list[int] | None:
+    try:
+        st = path.stat()
+        return [st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns, st.st_ctime_ns]
+    except OSError:
+        return None
+
+
+def _receipt_bounded_read(path: Path, limit: int) -> bytes:
+    before = _receipt_stat(path)
+    if before is None or not stat.S_ISREG(path.lstat().st_mode):
+        raise ValueError("readiness dependency unavailable")
+    fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW)
+    try:
+        info = os.fstat(fd)
+        opened = [info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns]
+        if not stat.S_ISREG(info.st_mode) or opened != before:
+            raise ValueError("readiness dependency changed")
+        with os.fdopen(fd, "rb") as handle:
+            fd = -1
+            data = handle.read(limit + 1)
+    finally:
+        if fd >= 0:
+            os.close(fd)
+    if len(data) > limit or _receipt_stat(path) != before:
+        raise ValueError("readiness dependency unavailable or changed")
+    return data
+
+
+def _receipt_small_file(path: Path, limit: int = 1024 * 1024) -> dict:
+    before = _receipt_stat(path)
+    if before is None:
+        return {"present": False}
+    data = _receipt_bounded_read(path, limit)
+    if len(data) > limit or _receipt_stat(path) != before:
+        raise ValueError("readiness dependency unavailable or changed")
+    return {"present": True, "sha256": hashlib.sha256(data).hexdigest(), "host_local_stat": before}
+
+
+def readiness_source_generation(root: Path, families: list[str], today: date | str | None = None) -> dict:
+    """Named owner provenance only; never certify quote caches or market freshness.
+
+    Legacy/grades metadata is HOST_LOCAL, not portable content identity. Native
+    claims retain their existing verified owner receipt. No corpus is hashed here.
+    """
+    from engine.qledger_store import ClaimsReadScope
+    from engine import qledger_evidence_clock
+
+    root = Path(root)
+    expanded = sorted(set(families) | {f for f, policy in q.FAMILY_CONTROL_POLICY.items()
+                                      if policy == q.CONTROL_POLICY_REQUIRED})
+    resolved_today = today.isoformat() if isinstance(today, date) else (today or date.today().isoformat())
+    host_scope = hashlib.sha256((platform.node() + "\0" + str(root.resolve())).encode()).hexdigest()
+    with ClaimsReadScope(root) as scope:
+        if scope.snapshot is None:
+            claims = {"kind": "legacy", "identity_kind": "host_local_stat",
+                      "identity": _receipt_stat(root / "data/qledger/claims.jsonl")}
+        else:
+            receipt = scope.snapshot.receipt
+            claims = {"kind": "native", "identity_kind": "retained_owner_receipt",
+                      "source_id_digest": hashlib.sha256(str(receipt.source_id).encode()).hexdigest(),
+                      "root_digest": receipt.root_digest, "logical_digest": receipt.logical_digest}
+    clocks = {}
+    for family in expanded:
+        clocks[family] = {
+            "first_registration": _receipt_small_file(qledger_evidence_clock._clock_path(family, root), 65536),
+            "control_registration": _receipt_small_file(q._control_clock_path(family, root), 65536),
+        }
+    methods = {"scripts/grade_qledger.py": _receipt_small_file(Path(__file__)),
+               "engine/qledger.py": _receipt_small_file(Path(q.__file__))}
+    tr_path = root.joinpath(*q._TRACK_FILE)
+    duel = {"placebo_magnitude": None, "by_family": None}
+    if tr_path.is_file():
+        raw = _receipt_bounded_read(tr_path, _READINESS_DOCUMENT_MAX_BYTES)
+        if len(raw) > _READINESS_DOCUMENT_MAX_BYTES:
+            raise ValueError("owner snapshot exceeds read budget")
+        try:
+            tr = json.loads(raw)
+            if isinstance(tr, dict):
+                duel = {"placebo_magnitude": tr.get("placebo_magnitude"), "by_family": tr.get("by_family")}
+        except (ValueError, UnicodeError):
+            duel = {"placebo_magnitude": None, "by_family": None}
+    return {"portability": "host_local_metadata", "host_scope_digest": host_scope,
+            "selected_claims": claims, "grades": _receipt_stat(root / "data/qledger/grades.jsonl"),
+            "qual_ladder": _receipt_small_file(root / "config/qual_ladder.yml"),
+            "control_policy_digest": readiness_payload_digest(q.FAMILY_CONTROL_POLICY),
+            "clocks": clocks, "owner_code": methods, "families": expanded,
+            "evaluation_date": str(resolved_today), "duel_baseline_digest": readiness_payload_digest(duel or {}),
+            "qualified_scope": "named_ledger_metadata_config_clocks_owner_code",
+            "all_inputs_qualification": "unavailable",
+            "excluded_scope": ["quote_prices", "price_cache", "calendar_data", "market_freshness", "task_version_cohort"]}
 
 
 def compute_promotion_readiness(root: Path, families: list[str] | None = None,
@@ -591,18 +704,31 @@ def run_readiness_post_step(root: Path, n_graded_today: int, n_open: int,
     try:
         with ClaimsReadScope(root):
             families = _load_qual_ladder_families(root)
+            baseline_before = _receipt_stat(root.joinpath(*q._TRACK_FILE))
+            generation_before = readiness_source_generation(root, families, today)
             readiness = compute_promotion_readiness(root, families, today=today)
+            generation_after = readiness_source_generation(root, families, today)
+            if generation_before != generation_after or baseline_before != _receipt_stat(root.joinpath(*q._TRACK_FILE)):
+                return {"error": "readiness inputs changed during evaluation",
+                        "error_code": "changed_during_read", "publication": "retained_previous"}
+            receipt = {"schema": READINESS_RECEIPT_SCHEMA, "producer": READINESS_RECEIPT_PRODUCER,
+                       "payload_digest": readiness_payload_digest(readiness),
+                       "source_generation": generation_before}
 
             # Merge into track_record.json
             if not dry_run:
                 tr_path = root.joinpath(*q._TRACK_FILE)
                 try:
-                    payload: dict = json.loads(tr_path.read_text(encoding="utf-8")) \
+                    payload: dict = json.loads(_receipt_bounded_read(tr_path, _READINESS_DOCUMENT_MAX_BYTES)) \
                         if tr_path.exists() else {}
                 except Exception:  # noqa: BLE001
                     payload = {}
+                if baseline_before != _receipt_stat(tr_path):
+                    return {"error": "readiness artifact changed before publication",
+                            "error_code": "changed_during_read", "publication": "retained_previous"}
                 payload["promotion_readiness"] = readiness
                 payload["promotion_readiness_at"] = datetime.now(timezone.utc).isoformat()
+                payload["promotion_readiness_receipt"] = receipt
                 tr_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2),
                                    encoding="utf-8")
 
@@ -700,7 +826,11 @@ def run(root: Path | str | None = None, today: date | None = None,
     from engine.qledger_store import ClaimsReadScope
     from engine.qledger_store_protocol import SnapshotIntegrityError
 
-    root = Path(root) if root else config.ROOT
+    if not root:
+        from lib import config  # noqa: PLC0415 — see module header
+        root = config.ROOT          # unwrapped, exactly as before
+    else:
+        root = Path(root)
     today_dt = today or date.today()
 
     # W0 Stage B-e (§3.4): backfill missing regime stamps from the persisted

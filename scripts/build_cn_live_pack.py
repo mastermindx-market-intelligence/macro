@@ -18,6 +18,7 @@ withheld per name, never silently shipped.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import sys
@@ -44,15 +45,25 @@ def _now(raw: str | None) -> datetime | None:
     return t if t.tzinfo else t.replace(tzinfo=timezone.utc)
 
 
-def load_frozen(root: Path) -> dict[str, dict[str, Any]]:
-    """Nightly board rows keyed by ticker. Missing file → empty (fail-open)."""
+def load_frozen(root: Path,
+                *, receipt_out: dict[str, Any] | None = None) -> dict[str, dict[str, Any]]:
+    """Nightly board rows keyed by ticker. Missing file → empty (fail-open).
+
+    ``receipt_out``, when given, is filled with the board's source identity for
+    the pack stamp: ``path`` (repo-relative), ``as_of``, ``sha256`` of the file
+    bytes read here, plus the ``project_primary_board`` receipt — or a single
+    ``reason`` (``no_board`` / ``refused:<why>``) when no board was loaded. The
+    file is read once as bytes and hashed from that same read; it is never
+    re-read or re-parsed a second way.
+    """
     for rel in ("site/factordata/china_standouts.json",
                 "site/china_standouts.json", "data/china_standouts.json"):
         p = root / rel
         if not p.is_file():
             continue
         try:
-            doc = json.loads(p.read_text(encoding="utf-8"))
+            raw = p.read_bytes()
+            doc = json.loads(raw.decode("utf-8"))
         except Exception as exc:  # noqa: BLE001
             print(f"::warning title=cn-live-pack::frozen board {p} unreadable ({exc})",
                   flush=True)
@@ -63,11 +74,17 @@ def load_frozen(root: Path) -> dict[str, dict[str, Any]]:
             if receipt.get("refused"):
                 print(f"::warning title=cn-live-pack::frozen board {p} "
                       f"refused ({receipt['refused']})", flush=True)
+                if receipt_out is not None:
+                    receipt_out["reason"] = f"refused:{receipt['refused']}"
                 return {}
             print(f"::notice title=cn-live-pack::frozen board {p} "
                   f"as_of={receipt['as_of']} primary={receipt['primary_rows']} "
                   f"projected={receipt['projected']} "
                   f"excluded={receipt['excluded']}", flush=True)
+            if receipt_out is not None:
+                receipt_out.update(receipt)
+                receipt_out["path"] = rel
+                receipt_out["sha256"] = hashlib.sha256(raw).hexdigest()
             return rows
         out: dict[str, dict[str, Any]] = {}
         lanes = doc.get("lanes") if isinstance(doc, dict) else None
@@ -89,7 +106,14 @@ def load_frozen(root: Path) -> dict[str, dict[str, Any]]:
                 if isinstance(row, dict):
                     out[str(tkr)] = row
         if out:
+            if receipt_out is not None:
+                ao = doc.get("as_of") if isinstance(doc, dict) else None
+                receipt_out["path"] = rel
+                receipt_out["as_of"] = ao if isinstance(ao, str) else None
+                receipt_out["sha256"] = hashlib.sha256(raw).hexdigest()
             return out
+    if receipt_out is not None:
+        receipt_out["reason"] = "no_board"
     return {}
 
 
@@ -166,8 +190,11 @@ def build(*, root: Path | None = None, cfg: dict[str, Any] | None = None,
 
     tip = AP.as_of_date(series.values())
     g = gate_fn or CP.make_cn_gate()
+    board: dict[str, Any] = {}
     if frozen is None:
-        frozen = load_frozen(root)
+        frozen = load_frozen(root, receipt_out=board)
+    else:
+        board["reason"] = "injected"
 
     recs: dict[str, dict[str, Any]] = {}
     probes: dict[str, dict[str, Any]] = {}
@@ -246,10 +273,72 @@ def build(*, root: Path | None = None, cfg: dict[str, Any] | None = None,
         edges_checked=edges, frozen=frozen, now=now,
     )
     payload["meta"]["edge_mismatches"] = bad
+    # Identity stamps (archive spec §1-§2): the session this pack is armed FOR,
+    # off the same CN calendar the lag gate uses, and the board it froze from.
+    # A tipless (empty-universe) pack gets no intended_session, and the publish
+    # helper then refuses to replace the current key rather than archive under
+    # a fabricated session.
+    if tip:
+        payload["meta"]["intended_session"] = AP.next_session_stamp(
+            tip, cn_calendar).date().isoformat()
+    if "reason" in board:
+        payload["meta"]["source_board"] = {"path": None, "reason": board["reason"]}
+    else:
+        payload["meta"]["source_board"] = {
+            "path": board.get("path"), "as_of": board.get("as_of"),
+            "sha256": board.get("sha256"),
+        }
     print(f"cn-live pack: universe={len(series)} probed={payload['meta']['probed_n']} "
           f"armed={payload['meta']['armed_n']} tip={tip} "
           f"{payload['meta']['build_seconds']}s", flush=True)
     return payload
+
+
+def pack_digest(payload: dict[str, Any]) -> str:
+    """sha256 over the canonical payload with ``meta.pack_sha256`` absent.
+
+    Canonical = ``sort_keys`` + compact separators + ``allow_nan=False``: the
+    same bytes on every host, so the archive key addresses content, not the
+    build that produced it. A verifier recomputes exactly this after removing
+    that one field — nothing else may be dropped or reordered.
+    """
+    scrub = dict(payload)
+    meta = dict(payload.get("meta") or {})
+    meta.pop("pack_sha256", None)
+    scrub["meta"] = meta
+    return hashlib.sha256(json.dumps(
+        scrub, allow_nan=False, sort_keys=True,
+        separators=(",", ":")).encode()).hexdigest()
+
+
+def publish_with_archive(payload: dict[str, Any], *, put=r2io.put_json) -> bool:
+    """Archive the pack content-addressed, THEN replace the current key (F7).
+
+    The current key is a single slot each roll overwrites; the archived N-1
+    object is the authority for first-event identity and frozen score/rank. So
+    the archive put goes FIRST and a False from it refuses the current-key
+    replace — a roll that cannot preserve N-1 must not erase it. Both puts
+    receive the identical payload object, stamped with its own digest. Identical
+    content re-published lands on the same archive key (no timestamp enters the
+    digest), so retries and re-runs cannot fork two authorities per session.
+    """
+    meta = payload.setdefault("meta", {})
+    session = str(meta.get("intended_session") or "")
+    if not session:
+        print("::error title=cn-live-pack::pack archive refused - no "
+              "intended_session - current key NOT replaced", flush=True)
+        return False
+    digest = pack_digest(payload)
+    meta["pack_sha256"] = digest
+    if not put(r2io.pack_archive_key(session, digest), payload):
+        print("::error title=cn-live-pack::pack archive write failed - "
+              "current key NOT replaced", flush=True)
+        return False
+    if not put(r2io.CN_PACK_KEY, payload):
+        print("::warning title=cn-live-pack::R2 publish failed — pack stays local",
+              flush=True)
+        return False
+    return True
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -312,9 +401,11 @@ def main(argv: list[str] | None = None) -> int:
         Path(args.out).write_text(json.dumps(payload, allow_nan=False, indent=2),
                                   encoding="utf-8")
     if args.publish:
-        if not r2io.put_json(r2io.CN_PACK_KEY, payload):
-            print("::warning title=cn-live-pack::R2 publish failed — pack stays local",
-                  flush=True)
+        # Archive-first (F7): rc 1 when the archive (or publish) failed — the
+        # Asia-close step runs this lane continue-on-error, so the honest exit
+        # code costs nothing and the failure stays visible in the annotation.
+        if not publish_with_archive(payload):
+            return 1
     return 0
 
 

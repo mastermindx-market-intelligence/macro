@@ -9,10 +9,12 @@ events (``apply_activity_membership_events``) beside the A3 ThemeState composer
 and its readers, on fixtures only: no I/O beyond checked-in contracts and owner
 spec bytes, no clock reads, no store, no publication.
 
-Everything not yet wired is expressed ONLY as the two strict xfails at the end:
-the fold is not wired into ``materialize.build`` (no publication marks a
-correction, so no production observed->routed latency can be measured), and the
-v1 event contract has no WITHHOLD action. Synthetic fixtures use neutral ids
+Everything not yet wired is expressed ONLY as the one remaining strict xfail at
+the end: the v1 event contract has no WITHHOLD action (curated withholding of an
+existing belief is owed by the activity_membership_history v2 contract, owner
+WS:GMI-THEME-GRAPH). The fold IS wired into ``materialize.build`` since the
+2026-10-21 fold-seam lane, so publication marks corrections and the production
+observed->routed latency is measurable. Synthetic fixtures use neutral ids
 (basket "fixture-roster-01", tickers FIXA/FIXB); the only subject is the
 canonical node "theme:hbm_packaging".
 """
@@ -538,12 +540,7 @@ def test_unavailable_or_non_pit_native_membership_is_not_a_roster():
         assert readers.StateQualificationReader._pit_membership(native) is None
 
 
-# -------------------------------------------------------- strict xfails
+# ------------------------------ fold wiring (a strict xfail until 2026-10-21)
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="activity history fold is not wired into materialize.build: no "
-                          "publication marks a correction and no production observed->routed "
-                          "latency (the §7 >=95%-within-48h rate) can be measured until it is; "
-                          "edges.v1 projection owed (owner WS:GMI-THEME-GRAPH)")
 def test_fold_is_wired_into_build_so_publication_marks_corrections_and_routing_is_measured():
     assert "apply_activity_membership_events" in inspect.getsource(materialize.build)

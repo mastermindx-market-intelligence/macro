@@ -642,7 +642,12 @@ def _dimensions_admitted(occurrence: Any, allowed: tuple[str, ...]) -> bool:
     if occurrence.dimensions_known is False:
         return False
     context = occurrence.context
-    axes = set(context.explicit_dimensions) | set(context.typed_dimensions)
+    # Both containers hold (axis, member) PAIRS; ``allowed`` names AXES, so
+    # the comparison set is the axis names. An empty ``allowed`` therefore
+    # still admits only an undimensioned occurrence, exactly as before.
+    axes = {axis for axis, _ in context.explicit_dimensions} | {
+        axis for axis, _ in context.typed_dimensions
+    }
     return axes <= set(allowed)
 
 

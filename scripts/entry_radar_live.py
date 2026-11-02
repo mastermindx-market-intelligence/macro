@@ -455,6 +455,22 @@ def run(root: Path, *, now: datetime | None = None, dry_run: bool = False,
     ledger.save()
     stages["ledger_save_s"] = time.perf_counter() - t_stage
     t_stage = time.perf_counter()
+    # Research transport only, AFTER native spool/commit/save. Never feeds the
+    # evaluator or rewrites an episode; optional failure cannot fail the pass.
+    try:
+        from engine.entry_radar.earnings_context import attach_retrospective_earnings_context
+        context_report = attach_retrospective_earnings_context(result.payload, pack=pack,
+            identity_directory=root / "data" / "reference", committed=result.committed,
+            ledger=ledger, journal=LE.SessionJournal(state),
+            budget_seconds=min(16.0, max(0.0, 540.0 - (time.perf_counter() - t_run))))
+        health["retrospective_earnings_context"] = context_report
+        result.payload.setdefault("health", {})["retrospective_earnings_context"] = context_report
+    except Exception:
+        context_report = {"state":"unavailable", "reason":"context_unavailable"}
+        health["retrospective_earnings_context"] = context_report
+        result.payload.setdefault("health", {})["retrospective_earnings_context"] = context_report
+    stages["research_context_s"] = time.perf_counter() - t_stage
+    t_stage = time.perf_counter()
     published = publish(out_dir / PAYLOAD_NAME, result.payload)
     stages["publish_s"] = time.perf_counter() - t_stage
     _print_timings(stages, getattr(result, "timings", {}), time.perf_counter() - t_run)
