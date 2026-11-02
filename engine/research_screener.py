@@ -254,12 +254,8 @@ def _assumptions_text(assumptions: Mapping[str, Any] | None) -> dict[str, str]:
 
 
 def _valuation_for(
-    state: Mapping[str, Any],
-    postures_by_ticker: Mapping[str, Mapping[str, Any]],
+    blob: Mapping[str, Any] | None,
 ) -> dict[str, Any] | None:
-    ticker = str(state.get("ticker_display") or "")
-    listing_key = str(state.get("listing_key") or "")
-    blob = postures_by_ticker.get(ticker) or postures_by_ticker.get(listing_key)
     if not isinstance(blob, Mapping):
         return None
     schema = blob.get("schema")
@@ -390,25 +386,53 @@ def _why_glance(
     return _bilingual(WHY_IDENTITY_EN, WHY_IDENTITY_ZH)
 
 
-def _index_postures(rows: list[Mapping[str, Any]] | Mapping[str, Mapping[str, Any]] | None) -> dict[str, Mapping[str, Any]]:
-    out: dict[str, Mapping[str, Any]] = {}
-    if rows is None:
-        return out
-    if isinstance(rows, Mapping):
-        for key, blob in rows.items():
-            if isinstance(blob, Mapping):
-                out[str(key)] = blob
-        return out
-    for blob in rows:
+def _index_postures(
+    rows: list[Mapping[str, Any]] | Mapping[str, Mapping[str, Any]] | None,
+    states: list[Mapping[str, Any]],
+) -> dict[str, Mapping[str, Any] | None]:
+    """Bind listing-level evidence first. A ticker alone must resolve uniquely."""
+    tickers_by_listing: dict[str, set[str]] = {}
+    listings_by_ticker: dict[str, set[str]] = {}
+    for state in states:
+        listing = str(state["listing_key"])
+        tickers = tickers_by_listing.setdefault(listing, set())
+        if ticker := str(state.get("ticker_display") or ""):
+            tickers.add(ticker)
+            listings_by_ticker.setdefault(ticker, set()).add(listing)
+
+    exact: dict[str, Mapping[str, Any] | None] = {}
+    fallback: dict[str, Mapping[str, Any] | None] = {}
+    items = rows.items() if isinstance(rows, Mapping) else ((None, row) for row in (rows or []))
+    for key, blob in items:
         if not isinstance(blob, Mapping):
             continue
+        listing = str(blob.get("listing_key") or "")
         ticker = str(blob.get("ticker") or "")
-        listing_key = str(blob.get("listing_key") or "")
-        if ticker:
-            out[ticker] = blob
-        if listing_key:
-            out[listing_key] = blob
-    return out
+        if key in tickers_by_listing:
+            if listing and listing != key:
+                continue
+            listing = key
+        elif key is not None:
+            if ticker and ticker != key:
+                continue
+            ticker = key
+
+        target = exact
+        if listing:
+            if listing not in tickers_by_listing:
+                continue
+        else:
+            candidates = listings_by_ticker.get(ticker, set())
+            if len(candidates) != 1:
+                continue
+            listing = next(iter(candidates))
+            target = fallback
+        known_tickers = tickers_by_listing[listing]
+        if len(known_tickers) > 1 or (ticker and known_tickers and ticker not in known_tickers):
+            continue
+        # Conflicting evidence at the same specificity cannot select a posture.
+        target[listing] = blob if listing not in target or target[listing] == blob else None
+    return fallback | exact
 
 
 def sort_rows(rows: list[dict[str, Any]], order: str = DEFAULT_ORDER) -> list[dict[str, Any]]:
@@ -453,8 +477,7 @@ def compile_research_screener(
         Optional listing_key-or-ticker → display name map.
     """
     as_of_date = _iso_date(as_of)
-    postures = _index_postures(valuation_postures)
-    rows: list[dict[str, Any]] = []
+    states: list[Mapping[str, Any]] = []
     for raw in security_states or []:
         if not isinstance(raw, Mapping):
             continue
@@ -464,12 +487,16 @@ def compile_research_screener(
         schema = state.get("schema")
         if schema not in (None, "security_state.v1"):
             continue
-        listing_key = str(state.get("listing_key") or "")
-        if not listing_key:
-            continue
+        if state.get("listing_key"):
+            states.append(state)
+
+    postures = _index_postures(valuation_postures, states)
+    rows: list[dict[str, Any]] = []
+    for state in states:
+        listing_key = str(state["listing_key"])
         ticker = str(state.get("ticker_display") or "")
         catalyst = _catalyst_for(state, as_of_date)
-        valuation = _valuation_for(state, postures)
+        valuation = _valuation_for(postures.get(listing_key))
         rows.append({
             "listing_key": listing_key,
             "name": _name_of(state, names),
