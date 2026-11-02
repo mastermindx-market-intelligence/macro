@@ -475,7 +475,7 @@ waves:
     status: in_progress
     # T1 DONE by the seat 2026-10-31: claims.jsonl 104,857,394 B (206 B under 100 MiB); engine script and commit-tail step carry no carve-out; run 40803269874 engine job 123688873047 + collect_tail job 123688869633 GH001; last landed engine data commit ad6e5a824334 (10-21; a050d2c71647 22 min earlier last landed claims.jsonl).
     # T2 PR #10333 (head f095c641, two fabric APPROVEs) CLOSED 2026-10-31T20:14Z as SUPERSEDED by incumbent #10255 (two Opus review rounds, APPROVED, merge-on-green, superset scope). Seat ruling in #10333's closing comment; one note on #10255. Diagnosis retained at research/grey_deer/evidence/EW_P1_ENGINE_TAIL_GH001_DIAGNOSIS_2026-10-31.md.
-    # Acceptance unchanged: two natural nightly `engine: regime update` landings on main after #10255 merges; seat watcher (hourly git fetch, never dispatch). CI budget #10341 merged dbaf1e07 (intl job 8->15 min).
+    # Acceptance unchanged: two natural nightly `engine: regime update` landings on main after #10255 (merged c2772cc4, 2026-11-01T06:29:41Z); seat watcher (hourly git fetch, never dispatch). CI budget #10341 merged dbaf1e07 (intl job 8->15 min).
     depends_on: [EW-P0]
   - id: EW-P2
     title: EW-P2 rotation observation continuity - successor of orphaned #10104 rebased onto main, six conflicts resolved both-sides, recording stays default-off (T1)
@@ -493,14 +493,57 @@ waves:
     depends_on: [EW-P1]
   - id: EW-P4
     title: EW-P4 descriptive early-warning surface (product A) per PRODUCT_DESIGN_SPEC - observation language only, no forecast or sizing
-    status: in_progress
-    # ORCH-P4 (Opus orchestrator, fabric lanes) spawned 2026-10-31 18:4xZ after the EW-P2 merge; seat judges by artifact (rubric rows, EN/ZH x dark/light x 1280/390/320 shots + receipt), fresh review, merge.
+    status: done
+    pr: 10350
+    # MERGED 2026-11-01T04:36:16Z squash 886ab694c947 (exact head a49a16d52ac2, base 1d253e1d). Built by ORCH-P4 -> ORCH-P4b (Opus orchestrators, fabric lanes; both COMPLETED).
+    # Independent review: gd-ew-p4-r1 REQUEST_CHANGES (F1-F5 repaired), r2 APPROVE_WITH_NOTES on 423c403f, r3 APPROVE_WITH_NOTES on a49a16d5 (no new findings). Seat visual check of 46 shots (EN/ZH x dark/light x 1280/390/320, receipt source_revision 5bb16bdb) PASS; that check is the seat's, not independent.
+    # Local 539 passed / 2 skipped, node 19/19, contract-delta 0/0; hosted ci-gate, ci-plan and fence-pack SUCCESS at the exact head.
+    # Rung = MERGED only. No producer writes latest_observation (EW-P2 recording stays default-off), so production shows the "Rotation data unavailable" state; PRODUCTION_PROOF not claimed. Follow-ups in EW-P4-FU.
     depends_on: [EW-P2]
+  - id: EW-P4-FU
+    title: EW-P4 follow-ups - review notes F-1..F-3 (the UI validator rejects what the lib validator rejects)
+    status: done
+    pr: 10364
+    # MERGED 2026-11-01T07:11:16Z squash d3fb043b0f2f (exact head 19accf478bb9). F-1 whitespace-only pair_id, F-2 calendar-impossible event_as_of and F-3 full drawer scan are closed in the Jinja template, its JS mirror and site/rotation_events.js.
+    # Review round 1 (native Opus, read-only) found the UI looser than lib/rotation_observation_notification.py; round 2 aligned pair_id blankness and length, withdrawal source_as_of and the observed_at/not_after stamp subset. The re-review returned PASS with notes, no blocking findings.
+    # Browser probe re-ran at 30998ca1: all 46 shots byte-identical to the EW-P4 set; the receipt binds 21 render inputs at that commit. Rung = MERGED only. The producer gap and the vision lane moved to EW-P4-ACT.
+    depends_on: [EW-P4]
+  - id: EW-P4-ACT
+    title: EW-P4 producer activation - a gated writer for latest_observation; its own activation gate, not a UI fix
+    status: todo
+    # Producer: the surface renders a real observation only after an activation gate turns on ROTATION_OBSERVATION_RECORDING_ENABLED and a writer emits latest_observation (EW-P2 "Activation (T2+) needs its own gate"). Until then the unavailable state is the truthful render.
+    # Vision review lane refused (controller_minimax_lease_required); the seat contact-sheet check stood in. Re-run when that lane is admitted.
+    depends_on: [EW-P4]
   - id: EW-P5
     title: EW-P5 acceptance and release - packs S01-S12, Q01-Q08, O01-O08, C01-C16, U01-U11, R01-R08 per ACCEPTANCE_AND_RELEASE.md; natural production proof
+    status: in_progress
+    # Receipts table started 2026-11-01 at research/grey_deer/ew_completion_20261031/EW_P5_ACCEPTANCE_RECEIPTS.md (section 7 schema).
+    # Records r5: first pack census run ew-p5-packs-20261101T071404Z-518ae7cd at main d3fb043b0f2f: pytest 1069 passed, 17 skipped, 0 failed, 0 errors; node 20 of 20. An independent read-only reviewer mapped all 63 rows: COVERED_ISOLATED 4, PARTIAL 20, NOT_COVERED 10, NOT_EXECUTABLE 13, HELD_EXTERNAL 16. No pack is PASS; the defects and gaps are EW-P5-FU.
+    depends_on: [EW-P1, EW-P2, EW-P3, EW-P4, EW-P4-ACT, EW-P5-FU]
+  - id: EW-P5-FU
+    title: EW-P5 follow-ups from the first pack census - defects and coverage gaps that keep every pack below PASS
     status: todo
-    depends_on: [EW-P1, EW-P2, EW-P3, EW-P4]
+    # Major, from the census mapping: S02/S12 live-overlay precedence in scripts/build_live_risk_envelope.py (settled won whenever the session dates matched), repair merged as #10371 a7628775 after the census head; O06 publish-before-record with no check for a source-owned published reference; the U pack is fixture-only until EW-P4-ACT.
+    # Minor: O01 receipt has no definition/version/rights field; C05 no test for an opt-out between the preference GET and PUT; U02 no gain/flow/shelter negative scan; U09 no separate dark/light design judgement; the ROI real-category-click test reads site/account.js with no sparse-tree skip guard.
+    # Seat-found coverage candidates to verify independently: S08 (tests/test_risk_envelope.py null-law classes), S11 (three tests/test_rotation_risk_envelope.py module tests), U05 (two tests/test_risk_envelope_radar_integration.py tests). Mapping gaps are listed in the receipts census.
+    depends_on: [EW-P4]
 next_action: >
+  2026-11-01 (CEO seat 00dea969, records r5): EW-P4-FU #10364 is MERGED (d3fb043b0f2f, exact head 19accf47, independent
+  re-review PASS with notes); F-1..F-3 are closed and the UI validator now matches the lib validator. The producer gap
+  and the vision lane moved to EW-P4-ACT. EW-P5 ran its first pack census (ew-p5-packs-20261101T071404Z-518ae7cd at main
+  d3fb043b0f2f: pytest 1069 passed, 17 skipped, 0 failed, 0 errors; node 20 of 20); an independent reviewer mapped all
+  63 rows (COVERED_ISOLATED 4, PARTIAL 20, NOT_COVERED 10, NOT_EXECUTABLE 13, HELD_EXTERNAL 16) and no pack is PASS.
+  Next: EW-P5-FU repairs (S02/S12 precedence merged in #10371; O06 ordering, then the minors), each with its own PR and fresh
+  review, then a second named run that adds tests/test_qledger_carve.py and re-maps S01/S03/S05/S06/Q01-Q05 (mapped at
+  2796abf7, before #10255 merged as c2772cc4). EW-P1 waits on two natural engine landings after c2772cc4.
+
+  2026-11-01 (CEO seat 00dea969, records r4): EW-P4 #10350 is MERGED (886ab694c947, exact head a49a16d5, review r3
+  APPROVE_WITH_NOTES). Its rung is MERGED, not production proof: no producer writes latest_observation, so the surface shows
+  the unavailable state until an activation gate exists (EW-P4-FU). EW-P1 still waits on #10255; the seat watcher was re-armed
+  with a strict "(#10255)" subject match after the first one matched the records r3 subject. EW-P5 receipts table started.
+  Next: EW-P1 acceptance (two natural engine landings after #10255), then EW-P5 packs S/Q/O/C/U/R at exact heads; no live send,
+  no Tier A grant without authenticated proof.
+
   2026-10-31 (Fable CEO seat 00dea969, records r3): EW-P0 #10249, EW-P2 #10325 (b38935af), CI budget #10341 (dbaf1e07) and
   EW-P3 #10340 (11e6c98eb8c3) are MERGED; the EW-P3 prereg is dated (merge 2026-10-31, prospective start 2026-11-02, earliest first
   look 2027-12-31) and its two declared budgets are on the trial ledger - zero outcome rows read. EW-P1.T2 #10333 is CLOSED,

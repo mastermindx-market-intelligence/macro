@@ -706,6 +706,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -1307,11 +1308,37 @@ jobs:
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
+      - "app/catalyst_source_wiring.py"
+      - "config/catalyst_pilot_universe.json"
+      - "engine/marketing/accounts.py"
       - "engine/marketing/attribution.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -1352,6 +1379,119 @@ jobs:
         run: pip install pytest
       - name: Private directory boundary and deployment refusal contracts
         run: python -m pytest tests/test_company_intelligence_private_roots.py -q
+
+  company-intelligence-relationships:
+    if: ${{ false }}
+    gate: code
+    # GMI ORCH-REL (M1/M2/M3, 2026-10-21..23): the relationship-envelope suites —
+    # contracts, the M1 SWKS->AAPL primary-source record, the derivation battery,
+    # the M2 EDGAR harvest / source keys / judge / precision / recall / envelope
+    # measures, and the M3 descriptive renderer. Registered by the GMI COMPLETION
+    # seat (A25) from the lanes' ci_registration_proposal*.yml under
+    # research/theme_graph/gmi_relationships_20261021/: `scope: exclusive`, paths =
+    # the union of the measured import/read closures those proposals carry.
+    # test_curated_exclusive_scopes_cover_their_own_import_closure keeps it honest.
+    scope: exclusive
+    paths:
+      - "contracts/company_intelligence/relationship_extraction.v1.schema.json"
+      - "contracts/company_intelligence/relationship_source_excerpt.v1.schema.json"
+      - "contracts/company_intelligence/relationship_observation_package.v2.schema.json"
+      - "contracts/company_intelligence/relationship_edges.v1.schema.json"
+      - "engine/__init__.py"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/company_intelligence/relationships/__init__.py"
+      - "engine/company_intelligence/relationships/clock.py"
+      - "engine/company_intelligence/relationships/package_v2.py"
+      - "engine/company_intelligence/relationships/replay.py"
+      - "lib/__init__.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/identity.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
+      - "scripts/build_relationship_observations.py"
+      - "research/theme_graph/gmi_relationships_20261021/extraction/swks_aapl_m1.jsonl"
+      - "research/theme_graph/gmi_relationships_20261021/extraction/m2/P.jsonl"
+      - "research/theme_graph/gmi_relationships_20261021/extraction/m2/D1a.jsonl"
+      - "research/theme_graph/gmi_relationships_20261021/extraction/m2/D1b.jsonl"
+      - "research/theme_graph/gmi_relationships_20261021/extraction/m2/D2a.jsonl"
+      - "research/theme_graph/gmi_relationships_20261021/extraction/m2/D2b.jsonl"
+      - "research/theme_graph/gmi_relationships_20261021/sources/0000004127-24-000131.json"
+      - "research/theme_graph/gmi_relationships_20261021/sources/0000004127-25-000085.json"
+      - "research/theme_graph/gmi_relationships_20261021/sources/0000004127-26-000003.json"
+      - "research/theme_graph/coverage_20261019/UNIVERSE_MANIFEST.json"
+      - "data/company_intelligence/relationships/observation_package.v2.json"
+      - "data/company_intelligence/relationships/relationship_edges.json"
+      - "tests/conftest.py"
+      - "tests/test_relationship_contracts.py"
+      - "tests/test_relationship_m1_swks_aapl.py"
+      - "tests/test_relationship_battery.py"
+      - "engine/company_intelligence/relationships/envelope.py"
+      - "scripts/relationship_m2_envelope.py"
+      - "research/theme_graph/gmi_relationships_20261021/m2_inputs/envelope_panel_v1.json"
+      - "tests/test_relationship_m2_envelope.py"
+      - "engine/company_intelligence/relationships/edgar.py"
+      - "engine/company_intelligence/relationships/harvest.py"
+      - "scripts/__init__.py"
+      - "scripts/relationship_m2_harvest.py"
+      - "research/theme_graph/gmi_relationships_20261021/m2_inputs/curated_aliases_v1.json"
+      - "research/theme_graph/gmi_relationships_20261021/m2_inputs/filing_census_v1.json"
+      - "research/theme_graph/gmi_relationships_20261021/m2_inputs/leaves_v1.json"
+      - "research/theme_graph/gmi_relationships_20261021/m2_inputs/resolver_us_issuers_v1.json"
+      - "tests/test_relationship_m2_harvest.py"
+      - "engine/company_intelligence/relationships/resolve.py"
+      - "engine/company_intelligence/relationships/judge.py"
+      - "scripts/relationship_m2_judge.py"
+      - "tests/test_relationship_m2_judge.py"
+      - "tests/test_relationship_m2_capfix.py"
+      - "tests/test_relationship_m2_keys.py"
+      - "engine/company_intelligence/relationships/precision.py"
+      - "scripts/relationship_m2_precision.py"
+      - "tests/test_relationship_m2_precision.py"
+      - "engine/company_intelligence/relationships/recall.py"
+      - "scripts/relationship_m2_recall.py"
+      - "tests/test_relationship_m2_recall.py"
+      - "research/theme_graph/gmi_relationships_20261021/m2_recall/recall_corpus_v1.json"
+      - "engine/company_intelligence/relationships/describe.py"
+      - "scripts/relationship_m3_describe.py"
+      - "research/theme_graph/gmi_relationships_20261021/m3/describe_premises_v1.json"
+      - "tests/test_relationship_m3_describe.py"
+      - "tests/__init__.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Install relationship contract test dependencies
+        run: pip install pytest jsonschema tzdata
+      - name: Relationship contract schemas
+        run: python -m pytest tests/test_relationship_contracts.py -q
+      - name: Relationship M1 SWKS->AAPL primary-source record
+        run: python -m pytest tests/test_relationship_m1_swks_aapl.py -q
+      - name: Relationship derivation battery
+        run: python -m pytest tests/test_relationship_battery.py -q
+      - name: Relationship M2 envelope (§8.2 measures)
+        run: python -m pytest tests/test_relationship_m2_envelope.py -q
+      - name: Relationship M2 EDGAR harvest
+        run: python -m pytest tests/test_relationship_m2_harvest.py -q
+      - name: Relationship M2 judge pack/verify/materialize
+        run: python -m pytest tests/test_relationship_m2_judge.py -q
+      - name: Relationship M2 cap fix (per-filing caps, doc-order tie-break, unjudged packing)
+        run: python -m pytest tests/test_relationship_m2_capfix.py -q
+      - name: Relationship M2 source keys and identity
+        run: python -m pytest tests/test_relationship_m2_keys.py -q
+      - name: Relationship M2 precision sample and scorer
+        run: python -m pytest tests/test_relationship_m2_precision.py -q
+      - name: Relationship M2 recall corpus, scan and compare
+        run: python -m pytest tests/test_relationship_m2_recall.py -q
+      - name: Relationship M3 descriptive renderer + correction demo
+        run: python -m pytest tests/test_relationship_m3_describe.py -q
 
   microstructure-pressure-response-r0:
     if: ${{ false }}
@@ -2709,6 +2849,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -3312,11 +3453,37 @@ jobs:
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
+      - "app/catalyst_source_wiring.py"
+      - "config/catalyst_pilot_universe.json"
+      - "engine/marketing/accounts.py"
       - "engine/marketing/attribution.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -3767,6 +3934,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -4372,11 +4540,37 @@ jobs:
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
+      - "app/catalyst_source_wiring.py"
+      - "config/catalyst_pilot_universe.json"
+      - "engine/marketing/accounts.py"
       - "engine/marketing/attribution.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -6914,7 +7108,8 @@ jobs:
     #
     # The serving boundary has three enforcement halves and CI now covers all of
     # them: the Caddy public list (site_access_boundary), the paid stage
-    # (paywall/api_paywall), and the anonymous stage (regwall). The regwall pair
+    # (paywall/api_paywall), and the anonymous stage (regwall), now in the
+    # `site-access-boundary` and `paywall-contracts` jobs below. The regwall pair
     # was the last one running in no workflow — and it is the expensive one to get
     # wrong in the quiet direction: #3387 had to reopen /stocks/ /tools/ /learn/
     # /blog/ after a wall with no crawler exception 302'd Googlebot off 1,665
@@ -6977,12 +7172,27 @@ jobs:
         # workflow. tests/test_site_access_boundary.py derives this job's inputs
         # into ci.yml's paths filter, so this line also makes the suite reach.
         run: python -m pytest tests/test_public_dashboard_preview.py -q
+
+  paywall-contracts:
+    if: ${{ false }}
+    gate: data
+    # The paid and anonymous stages of the serving boundary, moved out of
+    # `tier-gate` on 2026-10-31 for the same reason as `site-access-boundary`
+    # below: a failed step skips the rest of its job, and the tier-preview shell
+    # checks move with every bake. Most of these suites have no other CI home.
+    # Same install line as `tier-gate`: app.main's import graph needs it.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas beautifulsoup4 plotly pyarrow
       - name: paywall fail-closed contract (incl. enforced-early payload lane)
         run: python -m pytest tests/test_paywall.py tests/test_api_paywall.py tests/test_auth_cache_outage.py -q
       - name: Pro-only host gate (bot.mastermind-x.com -> /api/paywall/check_pro)
         run: python -m pytest tests/test_paywall_pro_gate.py -q
-      - name: static serving boundary (Caddy <-> site_access.yml, no leaked artifacts)
-        run: python -m pytest tests/test_site_access_boundary.py -q
       - name: delivery-plane census (exact families, alternate origins, consumers, defaults)
         run: python -m pytest tests/test_r2_delivery_plane_classification.py -q
       # tests/test_regwall_json_gate.py used to run HERE and no longer does: it
@@ -7006,6 +7216,176 @@ jobs:
       # theme-research transport step moved to semiconductor-b-boundary (scope:
       # exclusive, gate: code). The three suites still run there; this broad job
       # no longer carries their +8 declared weight onto ordinary code PRs.
+
+  site-access-boundary:
+    if: ${{ false }}
+    gate: code
+    # The static serving boundary, on its own (2026-10-31). This step sat in
+    # `tier-gate` after "tier-preview split contract". The pack runner skips a
+    # job's later steps once one fails, and that shell check moves with every
+    # bake, so its reds kept this suite from running: the heartbeat skipped it in
+    # at least seven runs in a row. Here it reports whatever the shells do.
+    #
+    # On the merge gate since R-28 (2026-11-01). It was `gate: data`, which
+    # ci.yml never packs, so a pull request could breach the public list and
+    # still merge on green.
+    #
+    # `scope: exclusive` so that these paths replace inference. `site/**` is not
+    # listed on purpose: the suite globs the committed site/ tree, and a bake
+    # alone can move its verdict, so a bake must not wake this job on an
+    # unrelated pull request. The heartbeat mirror in ci-main-heartbeat.yml stays
+    # and still reports what a bake moves. Only the site/ files the suite opens
+    # by name are listed. The same holds for the workflow files: the suite joins
+    # every workflow, and only the ones that carry a force-add are listed.
+    #
+    # pytest + pyyaml is the whole dependency line, measured with every other
+    # third-party import refused. The job id is registered in CURATED_EXCLUSIVE
+    # in tests/test_ci_pack.py.
+    scope: exclusive
+    paths:
+      - ".github/ci/legacy-jobs.yml"
+      - ".github/workflows/btc-live.yml"
+      - ".github/workflows/ci-main-heartbeat.yml"
+      - ".github/workflows/ci.yml"
+      - ".github/workflows/closing-bell.yml"
+      - ".github/workflows/earlyclose.yml"
+      - ".github/workflows/intraday-fastpath.yml"
+      - ".gitignore"
+      - "app/__init__.py"
+      - "app/biocatalyst.py"
+      - "app/deploy/Caddyfile"
+      - "app/ontology_explorer.py"
+      - "app/paywall.py"
+      - "app/regwall.py"
+      - "config/site_access.yml"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "site/assets/js/intelligence-hub-market-pulse.js"
+      - "site/help_refresh.js"
+      - "site/market_memory_intent.js"
+      - "site/market_memory_retained.css"
+      - "site/market_memory_retained.js"
+      - "site/portfolio_state.js"
+      - "site/scene-motion.css"
+      - "site/scene-motion.js"
+      - "site/theme.css"
+      - "site/watchlist.html"
+      - "templates/dashboard.html.j2"
+      - "templates/help_refresh.js"
+      - "templates/market_memory_intent.js"
+      - "templates/market_memory_retained.css"
+      - "templates/market_memory_retained.js"
+      - "templates/watchlist.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_site_access_boundary.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml
+      - name: static serving boundary (Caddy <-> site_access.yml, no leaked artifacts)
+        run: python -m pytest tests/test_site_access_boundary.py -q
+
+  sector-cycles-page:
+    if: ${{ false }}
+    gate: code
+    # tests/test_sector_cycles.py sat on the unrun baseline, so no pull request ran it,
+    # and the sector page's copy and its RS arithmetic could change and still merge.
+    # On the merge gate since 2026-11-01. pyarrow stays out on purpose: the two tests
+    # that compute from the sector store skip without it, so a bake cannot move this job.
+    # One test runs the page's date scripts under the node the runner ships.
+    scope: exclusive
+    paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "collectors/holdings.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "engine/__init__.py"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/basket_index.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/cycle_forward_log.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycles.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/falsifier_tripwires.py"
+      - "engine/hazard_score.py"
+      - "engine/holdings_signals.py"
+      - "engine/i18n.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/mtf_monitor.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/read.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/rates_command_basis.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_state.py"
+      - "engine/sector_cycles.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/yield_momentum.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "scripts/__init__.py"
+      - "scripts/_cycles_payload.py"
+      - "scripts/_narrative_epoch.py"
+      - "scripts/_narrative_ttl.py"
+      - "scripts/build_sector_cycles.py"
+      - "scripts/validate_regime_fwd.py"
+      - "templates/country_cycles.html.j2"
+      - "templates/sector_cycles.html.j2"
+      - "templates/sector_cycles.js"
+      - "templates/sector_cycles_china.html.j2"
+      - "tests/__init__.py"
+      - "tests/test_sector_cycles.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest numpy pandas pyyaml jinja2
+      - name: sector cycles page and RS arithmetic
+        run: python -m pytest tests/test_sector_cycles.py -q
 
   regwall-boundary:
     if: ${{ false }}
@@ -7409,6 +7789,7 @@ jobs:
       - "scripts/probe_theme_exposure_axes.py"
       - "engine/catalyst_opportunity/__init__.py"
       - "engine/price_pressure/__init__.py"
+      - "engine/news_impact/edgar_body.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7951,6 +8332,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -8599,12 +8981,38 @@ jobs:
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
+      - "app/catalyst_source_wiring.py"
+      - "config/catalyst_pilot_universe.json"
+      - "engine/marketing/accounts.py"
       - "engine/marketing/attribution.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "lib/rotation_observation_notification.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -8660,6 +9068,7 @@ jobs:
       - "tests/test_options_observed_qqq.py"
       - "scripts/repair_gex_history.py"
       - "tests/test_repair_gex_history.py"
+      - "tests/test_gex_archive_correction.py"
       - "lib/options_source_receipts.py"
       - "lib/options_reference_pages.py"
       - "tests/test_options_reference_pages.py"
@@ -9278,6 +9687,8 @@ jobs:
       - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/k3e_eval1_forward.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "engine/pick_forward_dist.py"
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
       - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
@@ -9292,6 +9703,7 @@ jobs:
       - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - "engine/alert_delivery_drain.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9301,7 +9713,7 @@ jobs:
       - name: install deps
         # jinja2 + pyarrow are for the options-screener suite below: the builder imports
         # jinja2 at module scope and reads its inputs from parquet.
-        run: pip install pytest pyyaml numpy pandas scipy jinja2 pyarrow jsonschema fastapi httpx requests
+        run: pip install pytest pyyaml numpy pandas scipy jinja2 pyarrow jsonschema fastapi httpx requests boto3
       - name: flow surface + dated archive cadence truth (poll floor, observed sparse spacing, retention)
         run: python -m pytest tests/test_flow_surface.py tests/test_flow_archive.py -q
       # PRISM's daily matrix shares this options data-plane lane.  Keep the
@@ -9359,7 +9771,7 @@ jobs:
       - name: intraday greek + conditional scenario surface tests (IV solve, Greek parity, source clocks, price×time contours)
         run: python -m pytest tests/test_intraday_greeks.py tests/test_options_scenario_surface.py tests/test_options_scenario_admission.py -q
       - name: qualified joint exposure and legacy Hub publication compatibility
-        run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_snapshot_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_observed_qqq.py tests/test_repair_gex_history.py tests/test_options_reference_pages.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
+        run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_snapshot_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_observed_qqq.py tests/test_repair_gex_history.py tests/test_gex_archive_correction.py tests/test_options_reference_pages.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
       - name: structure payoff / scenario / greeks-drift engine (shared BS core reuse, bounded vs UNBOUNDED, typed nulls, zero entry authority)
         run: python -m pytest tests/test_options_payoff.py tests/test_options_plan_expiry.py tests/test_options_plan_quote_context.py -q
       # OEU M-XP(b)+(c): the two payloads the Terminal / Options workspace fetch. Both are
@@ -9529,6 +9941,11 @@ jobs:
         # `from playwright.sync_api import sync_playwright` at test level for the
         # computed-style probe — the suite died ModuleNotFoundError without it.
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4 fastapi httpx jsonschema rjsmin==1.2.5 playwright
+      # tests/test_ud_b2_w1_red_first_proof.py reads site/macro.html at the pre-fold
+      # commit, and this checkout is one commit deep. Fetch only that commit's trees;
+      # git show then pulls the one blob it needs. fetch-depth: 0 would cost minutes.
+      - name: fetch the pre-fold commit for the red-first proof
+        run: git fetch --no-tags --depth=1 --filter=blob:none origin c22864f80967e77e6e42cd926ef00f11f7197d06
       - name: Install Chromium for the browser-backed render guards
         run: python -m playwright install --with-deps chromium
       # NEVER put a `#` comment inside the folded `run: >` scalar below. YAML folds it
@@ -10299,6 +10716,8 @@ jobs:
     # so 8 was only ever proven there. 15 keeps the fail-closed fetch and both suites
     # unchanged and covers the measured PR-side infrastructure time. Same repair as
     # macro #10257 (unmerged at the time of writing); whichever lands second is a no-op.
+    # F10 (#10367) replaced that ~4-min unrestricted fetch with the blob-filtered
+    # canonical-main helper; 15 is kept until the job's PR-side time is re-measured.
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -10317,12 +10736,32 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.63.0
           npx playwright install --with-deps chromium
+      # F10 (intl-GS CI budget, DEC:INTL-GS-W2A-CI-BUDGET-RAISE-IS-W2A-SCOPE-20261031):
+      # the unrestricted post-checkout base fetch cost ~4 minutes on hosted runners
+      # (PR full-suite runs of 2026-10-31; every subtest green, job cut at the pack
+      # budget). The same fail-closed helper the international-workspace-browser
+      # job uses acquires canonical main once, blob-filtered and tag-free, and
+      # verifies this job's compared objects are present offline before the tests
+      # run. The compared paths are passed here, not hard-coded in the helper, so
+      # the control-plane job's import closure does not absorb scripts/build_intl.py.
       - name: canonical base for the frozen-file guard (fail closed)
         run: |
-          if ! git fetch origin ${{ github.base_ref || 'main' }}; then
-            echo "::error title=international-dislocation-explorer::could not fetch origin/${{ github.base_ref || 'main' }}; tests/test_intl_gs_dislocations_view.py frozen-seam checks have NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a pass."
-            exit 1
-          fi
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from scripts.run_ci_pack import prepare_canonical_main
+
+          prepare_canonical_main(
+              Path.cwd(),
+              tested_tree_sha=os.environ.get("CI_TESTED_TREE_SHA") or os.environ["TESTED_TREE_SHA"],
+              base_ref="${{ github.base_ref || 'main' }}",
+              frozen_paths=(
+                  "templates/intl_workspace_surveillance.css",
+                  "lib/intl_surveillance_mount.py",
+                  "scripts/build_intl.py",
+              ),
+          )
+          PY
       - name: Dislocation explorer view contracts
         run: python -m pytest tests/test_intl_gs_dislocations_view.py -q
       - name: Dislocation explorer DOM and selection in Chromium
@@ -11102,8 +11541,10 @@ jobs:
     # ran ~1.8x faster, and W2A's own IM13 step costs 95s tests + 78s browser proof,
     # with the IM14 dossier step still to run at 9m45s.  12 → 20.
     # Weight is not derived from timeout-minutes, so this does not rebalance packs.
-    # The structural fix — dropping the redundant base fetch after the fetch-depth 0
-    # checkout, or a job split — is deferred to a separate intl-GS CI-budget lane.
+    # The structural fix for the sibling international-dislocation-explorer job
+    # (its redundant unrestricted base fetch after the fetch-depth 0 checkout)
+    # is F10 (#10367): both international jobs use prepare_canonical_main.
+    # This job's own measured budget (20) is unchanged by F10.
     timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
@@ -11298,6 +11739,11 @@ jobs:
       - "tests/test_us_candidate_episode_reconciler.py"
       - "tests/test_us_candidate_episode_wiring.py"
       - "tests/test_us_candidate_episode_identity_retry.py"
+      # entry-timing W2 estimator (conservative-of-two block bounds)
+      - "research/prophet_v4/entry_timing_w2_estimator.py"
+      - "research/prophet_v4/entry_timing_w2_freeze.py"
+      - "tests/test_entry_timing_w2_estimator.py"
+      - "tests/test_entry_timing_w2_freeze.py"
       - "tests/fixtures/us_candidate_episode/**"
       - "engine/prophet_object_change.py"
       - "tests/test_prophet_object_change.py"
@@ -11326,7 +11772,9 @@ jobs:
         # `_r2_client()`, and every R2 path this suite exercises either deletes
         # the R2 credential env vars or injects a fake client object directly —
         # the real boto3 import is never reached.
-        run: pip install pytest pandas numpy pyarrow fastapi httpx pyyaml requests jinja2 playwright
+        # W2's frozen estimator imports scipy.stats at collection time; the
+        # isolated prophet-lab CI environment must include scipy explicitly.
+        run: pip install pytest pandas numpy scipy pyarrow fastapi httpx pyyaml requests jinja2 playwright
       - name: Prophet Operator Lab — projection, real-reader chain, transport, timeparse, commissioning-prep
         run: >
           python -m pytest
@@ -11352,6 +11800,8 @@ jobs:
       # B1's hermetic source, intake and generation contracts guard the reader
       # used by this projection. Keep their existing proof in the PR code gate;
       # the context-and-grades data job only runs after merge.
+      - name: entry-timing W2 estimator (conservative-of-two block bounds)
+        run: python -m pytest tests/test_entry_timing_w2_estimator.py tests/test_entry_timing_w2_freeze.py -q
       - name: US B1 canonical candidate episodes (contract + intake + reconciler + wiring)
         run: python -m pytest tests/test_us_candidate_episode.py tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py tests/test_us_candidate_episode_identity_retry.py -q
 
@@ -12609,17 +13059,25 @@ jobs:
       - "tests/test_fif_gsrc_capture.py"
       - "tests/test_fif_held_out_capture_predeclared.py"
       - "tests/test_fundamental_forensics_held_out_packages.py"
+      - "tests/test_fif_q0_label_conformance.py"
+      - "scripts/fif_q0_label_conformance.py"
       - "tests/test_fif_p2_evidence_capture.py"
       - "tests/test_fif_a43_responsive_keyboard_corpus.py"
       - "mockups/evidence/fundamental_forensics_p2/**"
       - "tests/test_fif_source_rights.py"
       - "tests/test_fif_publication_workflow_shape.py"
       - "tests/test_fif_se_receipts.py"
+      - "tests/test_fif_dev_corpus.py"
+      - "scripts/fif_dev_corpus.py"
+      - "tests/fixtures/fundamental_forensics/dev_corpus/**"
       - "tests/test_fif_g_pack_gold.py"
       - "tests/test_fif_g_pack_kernel.py"
       - "tests/test_fif_a33_gold_replay_receipt.py"
       - "research/financial_intelligence_fabric/FIF_A33_GOLD_REPLAY_RECEIPT_2026-10-20.json"
       - "tests/test_fif_z0_gap_a23_a38.py"
+      - "tests/test_fif_z0_gap_a23_saved_research.py"
+      - "engine/fif_saved_research_notifications.py"
+      - "scripts/run_fif_saved_research_notifications.py"
       - "tests/test_filing_forensics_broad_sec_lane.py"
       - "tests/test_filing_forensics_sec_lane.py"
       - "tests/test_forensics_api.py"
@@ -12811,11 +13269,25 @@ jobs:
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
+      - "app/catalyst_source_wiring.py"
+      - "config/catalyst_pilot_universe.json"
       - "engine/marketing/attribution.py"
+      - "engine/marketing/campaign_compiler.py"
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12832,6 +13304,7 @@ jobs:
           tests/test_fif_excel_refresh_harness.py
           tests/test_fif_z0_closure_matrix.py
           tests/test_fif_z0_gap_a23_a38.py
+          tests/test_fif_z0_gap_a23_saved_research.py
           tests/test_fif_a33_gold_replay_receipt.py
           tests/test_fif_a34_pack_proof_ledger.py
           tests/test_fif_a47_recovery_drill_receipts.py
@@ -12840,9 +13313,11 @@ jobs:
           tests/test_fif_gsrc_capture.py
           tests/test_fif_held_out_capture_predeclared.py
           tests/test_fundamental_forensics_held_out_packages.py
+          tests/test_fif_q0_label_conformance.py
           tests/test_fif_source_rights.py
           tests/test_fif_publication_workflow_shape.py
           tests/test_fif_se_receipts.py
+          tests/test_fif_dev_corpus.py
           tests/test_fif_pf_health_entity.py
           tests/test_fif_pf_health_pointer.py
           tests/test_fif_a0_production_mode_unit.py
@@ -12861,9 +13336,11 @@ jobs:
           tests/test_fundamental_forensics_attestation_admission.py
           tests/test_fundamental_forensics_attested_history_reader.py
           tests/test_fundamental_forensics_attested_query_snapshots.py
+          tests/test_fundamental_forensics_catalog_api.py
           tests/test_fundamental_forensics_companyfacts.py
           tests/test_fundamental_forensics_companyfacts_ledger.py
           tests/test_fundamental_forensics_contract.py
+          tests/test_fundamental_forensics_contract_issuers.py
           tests/test_fundamental_forensics_coverage_proof.py
           tests/test_fundamental_forensics_cost_ledger.py
           tests/test_fundamental_forensics_detector_applicability.py
@@ -12916,6 +13393,7 @@ jobs:
           tests/test_fundamental_forensics_q0_quality_protocol.py
           tests/test_fundamental_forensics_q1_held_out_evaluate.py
           tests/test_fundamental_forensics_q1_held_out_g2_reports.py
+          tests/test_fundamental_forensics_q1_held_out_g3_reports.py
           tests/test_fundamental_forensics_query.py
           tests/test_fundamental_forensics_query_exports.py
           tests/test_fundamental_forensics_query_metric_qualification.py
@@ -13136,8 +13614,11 @@ jobs:
           tests/test_capital_structure_scenario_inputs.py
           tests/test_capital_structure_state_changes.py
           tests/test_capital_structure_saved_scenarios.py
+          tests/test_capital_structure_saved_scenario_api.py
+          tests/test_capital_structure_saved_scenario_monitor.py
           tests/test_capital_structure_scenario_export.py
           tests/test_capital_structure_v0_recovery.py
+          tests/test_capital_structure_v0_serving.py
           tests/test_capital_structure_a1_served_properties.py
           tests/test_nwqs_c_dilution.py
           tests/test_compile_capital_structure_registration_lifecycles.py
@@ -13461,8 +13942,15 @@ jobs:
     # ceilings stay fixed.
     # W31-L51 (2026-10-21): the tape staleness tests import scripts/build_china_altdata.py,
     # so the builder and its closure (lib/illus, lib/pages, lib/site_assets) join the paths.
+    # W38-B3 (2026-10-31): the suite reads engine/china_narrative_radar.py by ast to pin its
+    # provenance copy, so that module and its closure join the paths.
     paths:
       - "templates/china_altdata.html.j2"
+      - "engine/china_narrative_radar.py"
+      - "engine/china_sector_index.py"
+      - "engine/china_sector_pathway.py"
+      - "engine/cn_ai_semis_confirmer.py"
+      - "engine/grading_stats.py"
       - "tests/test_china_altdata.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -13975,7 +14463,7 @@ jobs:
       - name: factor boundary selftest (guard fires on planted violations)
         run: python3 scripts/check_factor_boundaries.py --selftest
       - name: synapse owning contracts in one pytest session
-        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py tests/test_factor_deescalation_shadow.py tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py tests/test_sp1500_pit_sectors.py tests/test_winner_autopsy.py -q
+        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py tests/test_factor_deescalation_shadow.py tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_quarterly_period_start.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py tests/test_sp1500_pit_sectors.py tests/test_winner_autopsy.py -q
       # Share one pytest session across the five existing offline EDGAR suites.
       # Test inventory, dependencies and ordinary scope inference are unchanged.
       # GR3b: 8-K counterparty extraction unlock. GR3 (#5008) measured the column
@@ -15316,6 +15804,8 @@ jobs:
       - "tests/test_options_index_lock_identity.py"
       - "tests/test_qledger_publication.py"
       - "tests/test_qledger_publish_binding.py"
+      - "scripts/ci/qledger_carve.sh"
+      - "tests/test_qledger_carve.py"
       # Read closure of tests/test_crypto_publication_contract.py.
       # .github/workflows/** and scripts/ci/*.sh are already declared above.
       - "app/__init__.py"
@@ -15410,6 +15900,14 @@ jobs:
         run: python -m pytest tests/test_crypto_observations_contract.py -q
       - name: append-only base fence (real-incident replay, withhold, quiet-night property)
         run: python -m pytest tests/test_append_only_base_fence.py -q
+      # scripts/ci/qledger_carve.sh is the third policy the nightly commit→push steps
+      # source: it carves data/qledger/claims.jsonl (> GitHub's 100 MB GH001 blob
+      # ceiling since 2026-10-21) out of every wholesale nightly commit so the rest
+      # of the session's data lands (PR #10255; #9556 carved only `collect`). The
+      # suite replays the GH001 pre-receive rejection against real git repos and
+      # pins the per-path delta restore and always()-restore ordering.
+      - name: qledger carve (GH001 replay, per-path restore, lane wiring)
+        run: python -m pytest tests/test_qledger_carve.py -q
 
   quant-q06-sparse-cal:
     if: ${{ false }}
@@ -16190,6 +16688,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -16950,12 +17449,25 @@ jobs:
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
+      - "app/catalyst_source_wiring.py"
+      - "config/catalyst_pilot_universe.json"
       - "engine/marketing/attribution.py"
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "lib/rotation_observation_notification.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -16982,6 +17494,106 @@ jobs:
         run: python -m pytest tests/test_price_pressure_research.py tests/test_h20_supplier_conditional.py tests/test_gmi_native_disclosure_propagation.py -q
       - name: ontology explorer — real browser, selected context, responsive and failure states
         run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_ontology_explorer_brain_browser.py tests/test_ontology_company_browser.py tests/test_ontology_company_controller.py tests/test_ontology_exposure_company_browser.py tests/test_ontology_theme_browser.py tests/test_ontology_research_browser.py tests/test_ontology_radar_research_browser.py tests/test_ontology_radar_quote_lineage_browser.py tests/test_ontology_supplier_research_browser.py -q
+
+  gmi-explorer:
+    if: ${{ false }}
+    gate: code
+    # GMI explorer static surfaces (site/gmi*.html — map + index, issuer, theme,
+    # path, states), the siblings of ontology.html. The builder
+    # (scripts/build_gmi_explorer.py + scripts/gmi_explorer/) reads the committed
+    # theme-graph store and runs scripts/gmi_coverage_proof.py in-process, so the
+    # suites below prove the model, the rendered pages, the shared assets and the
+    # reason-code vocabulary pin against the live committed data. `gate: code`
+    # keeps them on the merge gate: they are this feature's entire proof.
+    # CURATED SCOPE (2026-10-22). Inference widened this job to whole scan
+    # roots (the identity reader names scripts/build_security_master.py by
+    # path, pulling its subprocess call and parquet traversal into the
+    # closure), which selected it on the templates/index.html,
+    # scripts/build_free_content.py and engine/prophet/plan_book.py
+    # PACKING_PROBES in tests/test_ci_pack.py. `scope: exclusive` makes the
+    # paths below REPLACE inference: the exact static closure of the suites,
+    # measured with run_ci_pack.inferred_as_if_not_exclusive, plus program
+    # globs so new GMI templates, builder modules and suites keep selecting it.
+    # A suite that imports a new tree must widen this list;
+    # test_curated_exclusive_scopes_cover_their_own_import_closure fails until
+    # it does.
+    scope: exclusive
+    paths:
+      - "scripts/__init__.py"
+      - "engine/__init__.py"
+      - "engine/earnings_narrative/__init__.py"
+      - "engine/research_vault/__init__.py"
+      - "tests/__init__.py"
+      - "scripts/build_gmi_explorer.py"
+      - "scripts/gmi_explorer/**"
+      - "scripts/gmi_coverage_proof.py"
+      - "scripts/check_design_system.py"
+      - "scripts/build_security_master.py"
+      - "scripts/publish_company_disclosure.py"
+      - "config/gmi_reason_codes.yml"
+      - "config/dataset_registry.yml"
+      - "config/delisted_symbols.yml"
+      - "config/issuer_group_allowlist.yml"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_graph_identity_breaks.yml"
+      - "config/theme_sources.yml"
+      - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "contracts/theme_graph/**"
+      - "engine/theme_graph/**"
+      - "engine/company_intelligence/**"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/research_vault/r2_store.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/dataos/**"
+      - "lib/delisted_symbols.py"
+      - "lib/pages.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "lib/symbol_directory_receipts.py"
+      - "lib/ticker_aliases.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json"
+      - "research/theme_graph/microtheme_membership_candidates_2026-10-08.json"
+      - "templates/gmi*"
+      - "templates/theme.css"
+      - "templates/landing.css"
+      - "templates/navigation-refresh.css"
+      - "tests/test_gmi_explorer_*.py"
+      - "tests/test_gmi_reason_codes.py"
+      # Widened 2026-11-01 (seat merge of main f50fc7b7 into #10099): #10178's
+      # identity reader now reaches the SEC document spine / fundamental
+      # forensics chain via lib/dataos identity -> engine/neuralweb
+      # market_memory_identity_candidate; the closure test names these.
+      - "collectors/edgar_forensics.py"
+      # ancestor inits of the #10178 closure (tests/test_ci_pack.py ancestor-init ratchet)
+      - "collectors/__init__.py"
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/neuralweb/__init__.py"
+      - "collectors/fundamental_forensics_*.py"
+      - "collectors/sec_document_spine.py"
+      - "collectors/sec_filing_parser.py"
+      - "collectors/sec_request_pacer.py"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/fundamental_forensics/**"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
+      - "research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json"
+      - "research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json"
+      - "research/theme_graph/gmi_relationships_20261021/m3/describe_premises_v1.json"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        run: pip install pytest pandas numpy pyyaml pyarrow jsonschema jinja2
+      - name: gmi explorer — model, shared assets, reason-code pin, S1-S5 pages
+        run: TZ=UTC python -m pytest tests/test_gmi_explorer_model.py tests/test_gmi_explorer_shared.py tests/test_gmi_explorer_assets.py tests/test_gmi_reason_codes.py tests/test_gmi_explorer_s2.py tests/test_gmi_explorer_s1_s5.py tests/test_gmi_explorer_s3_s4.py -q
 
   research-factory-authority:
     if: ${{ false }}
@@ -21105,6 +21717,11 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      # EW-P4.T1 descriptive observation glance (GD-EW-P4-B1): the node suite
+      # reads the production function and the shared fixtures.
+      - "templates/rotation_events.js"
+      - "tests/ew_p4_glance_ui.test.cjs"
+      - "tests/fixtures/ew_p4_observation/**"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21115,6 +21732,8 @@ jobs:
         run: pip install pytest pandas numpy scipy pyyaml pyarrow
       - name: ratio lens test suite
         run: python -m pytest tests/test_oracle_ratio_lens.py tests/test_rotation_early_context.py tests/test_rotation_observation_state.py tests/test_rotation_observation_builder.py tests/test_rotation_role_retention.py tests/test_rotation_flow_pit.py -q
+      - name: ew-p4 glance node test
+        run: node --test tests/ew_p4_glance_ui.test.cjs
 
   leadership-rotation-contract:
     if: ${{ false }}
@@ -21633,6 +22252,30 @@ jobs:
         run: pip install pytest pandas pyarrow jinja2 pyyaml
       - name: basket staleness warn tests
         run: python -m pytest tests/test_basket_staleness_warn.py -q
+
+  sector-basket-links:
+    if: ${{ false }}
+    gate: code
+    # The sector page and the basket page link each other through two small blocks in
+    # shared templates, and no merge-gate job reads templates/sector.html.j2. The suite
+    # renders the two blocks alone, so a bake cannot move this job. One test runs the
+    # basket block under the node the runner ships.
+    scope: exclusive
+    paths:
+      - "templates/basket_detail.html.j2"
+      - "templates/sector.html.j2"
+      - "tests/__init__.py"
+      - "tests/test_sector_basket_links.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: sector page and basket page links
+        run: python -m pytest tests/test_sector_basket_links.py -q
 
   ftr-tape-surfaces:
     if: ${{ false }}
@@ -26856,6 +27499,8 @@ jobs:
       # W2F-X closure widening: the observation seam widened these import closures
       - "engine/intl_global_observation.py"
       - "engine/k3e_eval1_forward.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "engine/pick_forward_dist.py"
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
       - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
@@ -26870,6 +27515,7 @@ jobs:
       - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - "engine/alert_delivery_drain.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -27458,6 +28104,8 @@ jobs:
       - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/k3e_eval1_forward.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "engine/pick_forward_dist.py"
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
       - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
@@ -27472,6 +28120,7 @@ jobs:
       - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - "engine/alert_delivery_drain.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -27742,6 +28391,35 @@ jobs:
         run: pip install pytest
       - name: Connected deployment Git history contracts
         run: python -m pytest tests/test_deploy_git_history.py -q
+
+  deploy-git-store-maintenance:
+    if: ${{ false }}
+    gate: code
+    # 2026-10-19 root-disk incident: the nightly bounded repack of /opt/macro's
+    # Git store, its units, the journald cap and the update.sh/setup.sh stanzas
+    # that self-arm them. The functional half runs the real script against
+    # hermetic file:// repositories and needs Linux flock/ionice/GNU df.
+    scope: exclusive
+    paths:
+      - "app/deploy/macro-git-store-maintenance.sh"
+      - "app/deploy/macro-git-store-maintenance.service"
+      - "app/deploy/macro-git-store-maintenance.timer"
+      - "app/deploy/journald-macro-vps.conf"
+      - "app/deploy/update.sh"
+      - "app/deploy/setup.sh"
+      - "app/deploy/*.sh"
+      - "tests/test_deploy_git_store_maintenance.py"
+    timeout-minutes: 12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Git store maintenance test dependencies
+        run: pip install pytest
+      - name: Bounded Git store maintenance contracts
+        run: python -m pytest tests/test_deploy_git_store_maintenance.py -q
 
   biocatalyst-regulatory:
     if: ${{ false }}
@@ -29656,6 +30334,7 @@ jobs:
       - engine/fundamental_forensics/attested_history_credentials.py
       - engine/fundamental_forensics/attested_history_store.py
       - engine/fundamental_forensics/attested_query_snapshots.py
+      - engine/fundamental_forensics/catalog_service.py
       - engine/fundamental_forensics/companyfacts_ledger.py
       - engine/fundamental_forensics/context_projection.py
       - engine/fundamental_forensics/detectors.py
@@ -30240,11 +30919,38 @@ jobs:
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
+      - "app/catalyst_source_wiring.py"
+      - "config/catalyst_pilot_universe.json"
+      - "engine/marketing/__init__.py"
+      - "engine/marketing/accounts.py"
       - "engine/marketing/attribution.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -31426,6 +32132,7 @@ jobs:
       - "data/baskets/membership.json"
       - "data/baskets/ohlcv/**"
       - "data/yahoo/SPY.parquet"
+      - "engine/__init__.py"
       - "tests/fixtures/defense_government_context.json"
       - "tests/fixtures/defense_government_context_inputs.json"
       - "tests/test_theme_economic_interpretation.py"
@@ -31461,6 +32168,8 @@ jobs:
       - "engine/market_os/macro_workspaces/__init__.py"
       - "engine/market_os/macro_workspaces/contract.py"
       - "engine/market_os/macro_workspaces/registry.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "engine/research_intelligence/extractor.py"
       - "engine/research_intelligence/schema.py"
       - "engine/research_intelligence/selection.py"
@@ -32376,6 +33085,8 @@ jobs:
       - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/k3e_eval1_forward.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "engine/pick_forward_dist.py"
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
       - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
@@ -32390,6 +33101,7 @@ jobs:
       - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - "engine/alert_delivery_drain.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -32704,6 +33416,12 @@ jobs:
       # second navigation owner is created.
       - name: one product header + nav prefix + hover/anchor geometry + All tools integration
         run: python -m pytest tests/test_product_chrome.py tests/test_subdir_nav_prefix.py tests/test_nav_hover_bridge.py tests/test_nav_menu_mockup_hover.py tests/test_nav_wide_menu_anchor.py tests/test_all_tools_menu.py -q
+      # ITP-ES wave 2 (2026-10-22): the Expectation Surface row in the Research
+      # mega-menu — partial inventory, bridge icon entries, mask fallback and the
+      # template↔site pairs. Same navigation owner as the hover-bridge suite above;
+      # no parallel job or second navigation owner is created.
+      - name: Expectation Surface nav row — inventory, bridge icon, pairs (ITP-ES wave 2)
+        run: python -m pytest tests/test_expectation_surface_nav.py -q
       - name: landing IA + nav front-door regroup + start-page voice and publish integrity
         run: python -m pytest tests/test_landing_navigation.py tests/test_oip_w1_nav_regroup.py tests/test_hub_welcome_persona.py tests/test_start_publish_integrity.py -q
       - name: terminal entitlement copy + chat-allowance truth + full-screen portal contract
@@ -38045,6 +38763,8 @@ jobs:
       - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/k3e_eval1_forward.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "engine/pick_forward_dist.py"
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
       - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
@@ -38059,6 +38779,7 @@ jobs:
       - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - "engine/alert_delivery_drain.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -38627,6 +39348,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -39349,11 +40071,37 @@ jobs:
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
+      - "app/catalyst_source_wiring.py"
+      - "config/catalyst_pilot_universe.json"
+      - "engine/marketing/accounts.py"
       - "engine/marketing/attribution.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41863,6 +42611,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -41940,6 +42689,7 @@ jobs:
       - "engine/intelligence_workspace/adapters/stage.py"
       # Catalyst route import closure; selection only, no test exemptions.
       - "app/catalyst_opportunity.py"
+      - "app/catalyst_source_wiring.py"
       - "engine/catalyst_opportunity/projection.py"
       - "engine/catalyst_opportunity/__init__.py"
       - "engine/catalyst_opportunity/reader.py"
@@ -42499,6 +43249,7 @@ jobs:
       - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "app/company_supplier_research.py"
+      - "config/catalyst_pilot_universe.json"
       - "engine/company_intelligence/h20_reported_event.py"
       - "engine/theme_graph/native_disclosure_propagation.py"
       - "lib/economic_propagation.py"
@@ -42548,6 +43299,11 @@ jobs:
       - "engine/transmission_company_continuation.py"
       - "engine/company_intelligence/sec_supplier_adoption.py"
       - "engine/k3e_eval1_forward.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "engine/pick_forward_dist.py"
       - "engine/seasonality/multiplicity.py"
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
@@ -42563,6 +43319,12 @@ jobs:
       - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -42660,6 +43422,7 @@ jobs:
       - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
       - "research/DO_NOT_REBUILD.md"
+      - "research/MARKETING_X_CATALYST_CONTINUATION_HANDOFF_20261101.md"
       - "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md"
       - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
       - "research/US_BOARD_MEASUREMENT.md"
@@ -42714,7 +43477,10 @@ jobs:
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
       - "app/catalyst_scan_ui.js"
+      - "app/catalyst_source_wiring.py"
       - "app/company_intelligence.py"
+      - "app/deploy/macro-catalyst-source-cycle.service"
+      - "app/deploy/macro-catalyst-source-cycle.timer"
       - "app/deploy/update.sh"
       - "app/dossier_quote.py"
       - "app/earnings.py"
@@ -42787,6 +43553,7 @@ jobs:
       - "config/biocatalyst_sources.yml"
       - "config/biocatalyst_sponsor_ticker_map.yml"
       - "config/capability_manifest.yml"
+      - "config/catalyst_pilot_universe.json"
       - "config/compiled_kill_registry.yml"
       - "config/dataset_registry.yml"
       - "config/delisted_symbols.yml"
@@ -43062,6 +43829,9 @@ jobs:
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_partner_pack.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
       - "engine/marketing/chart_director.py"
       - "engine/marketing/chart_facts.py"
       - "engine/marketing/chart_followups.py"
@@ -43122,6 +43892,7 @@ jobs:
       - "engine/name_resolver.py"
       - "engine/name_score.py"
       - "engine/name_score_grader.py"
+      - "engine/news_impact/edgar_body.py"
       - "engine/narrative_crossmarket.py"
       - "engine/narrative_rotation.py"
       - "engine/neuralweb/__init__.py"
@@ -43379,6 +44150,7 @@ jobs:
       - "scripts/optimize_assets.py"
       - "scripts/query_k3e_expectation_surface.py"
       - "scripts/render_catalyst_scan.py"
+      - "scripts/run_catalyst_source_cycle.py"
       - "scripts/security_state_producer.py"
       - "scripts/snapshot_shadow_book.py"
       - "scripts/sparse_guard.py"
@@ -43412,6 +44184,9 @@ jobs:
       - "tests/test_catalyst_scan.py"
       - "tests/test_catalyst_scan_authority.py"
       - "tests/test_catalyst_scan_frontend.py"
+      - "tests/test_catalyst_source_adapter.py"
+      - "tests/test_catalyst_source_cycle.py"
+      - "tests/test_catalyst_source_deploy.py"
       - "app/catalyst_opportunity.py"
       - "app/company_disclosures.py"
       - "app/company_supplier_research.py"
@@ -43533,6 +44308,7 @@ jobs:
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "engine/fundamental_forensics/__init__.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/detectors.py"
       - "engine/fundamental_forensics/excel_export.py"
       - "engine/fundamental_forensics/issuer_sic.py"
@@ -43737,6 +44513,12 @@ jobs:
       - "engine/market_ontology/theme_research_registry.py"
       - "engine/market_ontology/workspace_projection.py"
       - "engine/theme_graph/curation_assertion.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -43748,7 +44530,12 @@ jobs:
         with:
           node-version: "20"
       - name: Catalyst hermetic integration dependencies
-        run: pip install pytest pandas pyarrow pyyaml requests fastapi httpx jinja2 websockets jsonschema referencing
+        # playwright: tests/test_catalyst_scan_frontend.py drives the scan card
+        # in Chromium (importorskip("playwright.sync_api")); without it the
+        # browser contract only ever SKIPS on the merge gate.
+        run: pip install pytest pandas pyarrow pyyaml requests fastapi httpx jinja2 websockets jsonschema referencing playwright
+      - name: Install Chromium for the scan-card browser contract
+        run: python -m playwright install --with-deps chromium
       - name: Anonymous scan, rights, consent and first-value UX
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
@@ -43761,6 +44548,9 @@ jobs:
           tests/test_catalyst_admission.py
           tests/test_catalyst_scan_frontend.py
           tests/test_catalyst_partner_pack.py
+          tests/test_catalyst_source_cycle.py
+          tests/test_catalyst_source_deploy.py
+          tests/test_catalyst_source_adapter.py
           -q -rs
 
   no-client-supplied-identity:
@@ -44367,6 +45157,22 @@ jobs:
       - "tests/test_mag7_tape_strip.py"
       - "tests/test_theme_tape.py"
       - "tests/test_us_board_priority_ui.py"
+      # EW-P4.T1 descriptive observation UI (GD-EW-P4-B1): the suite reads the
+      # band templates, the frozen lib contract it mirrors, the Sector Central
+      # glance source it shares CSS discipline with, and shared fixtures.
+      - "tests/test_ew_p4_descriptive_ui.py"
+      - "tests/fixtures/ew_p4_observation/**"
+      - "lib/rotation_observation_notification.py"
+      - "templates/_risk_envelope_band.html.j2"
+      - "templates/_risk_envelope_band.css.j2"
+      - "templates/rotation_events.js"
+      # The route test reads the Sector Central hash router.
+      - "templates/si_workspace.js"
+      # The receipt test binds the committed shots to their render inputs.
+      - "research/evidence/ew_p4_descriptive_ui_20261031/**"
+      - "tests/probe_ew_p4_descriptive_ui_browser.py"
+      # The site-copy test reads the published byte copy of the shared glance source.
+      - "site/rotation_events.js"
       # Templates the renders load by name.
       - "templates/_macro_sector_desk.html.j2"
       - "templates/dashboard.html.j2"
@@ -44574,7 +45380,8 @@ jobs:
           tests/test_unified_dashboard_b2w2.py
           tests/test_ud_b2_w1_vw_fold.py
           tests/test_vsb_surface.py
-          tests/test_macro_mtf_sort_key.py -q
+          tests/test_macro_mtf_sort_key.py
+          tests/test_ew_p4_descriptive_ui.py -q
 
   options-skew-engine:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -45455,7 +46262,8 @@ jobs:
   # cluster adapter, issuer resolver, and the W2 benchmark tools (tape draw
   # with the body-available frame, EDGAR body fetch; hermetic, no network) and
   # the W3 measured packet producer (label returns to validated candidate events),
-  # and the section 11 registration (pinned inputs, populations and draws).
+  # and the section 11 registration (pinned inputs, populations and draws),
+  # plus the F2 negative-control repairs (amount formatting, text safety).
   news-impact-contracts:
     if: ${{ false }}
     gate: code
@@ -45518,6 +46326,8 @@ jobs:
         run: python -m pytest tests/test_news_impact_transfer.py tests/test_news_impact_observation.py tests/test_news_impact_cascade.py tests/test_news_impact_mechanisms.py tests/test_news_impact_eval_receipt.py tests/test_news_impact_eval_grade.py tests/test_news_impact_thesis.py tests/test_news_impact_prophet_adapter.py tests/test_news_impact_agreement.py tests/test_news_impact_producer.py tests/test_news_impact_producer_facts.py tests/test_news_impact_section11.py -q
       - name: news impact w2 benchmark (tape draw, edgar body)
         run: python -m pytest tests/test_news_impact_tape_draw.py tests/test_news_impact_edgar_body.py -q
+      - name: news impact F2 negative-control repairs (amount formatting, text safety)
+        run: python -m pytest tests/test_news_impact_f2_amount_format.py tests/test_news_impact_f2_text_safety.py -q
 
   site20-s4-chart-brief-js:
     if: ${{ false }}
@@ -46578,6 +47388,29 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp15-operating-driver-pins
         run: python -m pytest tests/test_operating_driver_scenario.py -q -p no:cacheprovider
+  c19-wp28-cs-leg-qualification:
+    if: ${{ false }}
+    gate: code
+    # C19 WP28: issuer-id forms the held capital-structure leg must join on release, the resolver's refusals, and the hold itself (offline).
+    timeout-minutes: 10
+    paths:
+      - "tests/test_c19_wp28_cs_leg_qualification.py"
+      - "tests/test_c19_wp14_capital_observation_pins.py"
+      - "tests/test_capital_structure_event_spine.py"
+      - "tests/fixtures/capital_structure/document_terms/registration_fee_table_submission.txt"
+      - "engine/capital_structure/**"
+      - "engine/company_intelligence/identity.py"
+      - "app/integrated_answer.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest fastapi pandas numpy pyarrow pyyaml jsonschema==4.26.0
+      - name: c19-wp28-cs-leg-qualification
+        run: python -m pytest tests/test_c19_wp28_cs_leg_qualification.py -q -p no:cacheprovider
 
   grey-deer-pboc-liquidity:
     # Grey Deer GD-4C: the typed PBOC liquidity state that reads an OMO window.
@@ -47766,6 +48599,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -48756,12 +49590,25 @@ jobs:
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
+      - "app/catalyst_source_wiring.py"
+      - "config/catalyst_pilot_universe.json"
       - "engine/marketing/attribution.py"
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "lib/rotation_observation_notification.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

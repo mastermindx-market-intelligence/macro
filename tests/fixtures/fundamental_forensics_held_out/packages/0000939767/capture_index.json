@@ -1,0 +1,29 @@
+[
+  {
+    "accession": "0000939767-24-000028",
+    "form": "10-K",
+    "period_of_report": "2023-12-29",
+    "selection": "admission_candidate",
+    "manifest_sha256": "6b102aeb1095ffa45e9544377862308327eac0bfbbd56ee9b65e910bdd6ebe9c",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  },
+  {
+    "accession": "0000939767-23-000019",
+    "form": "10-K",
+    "period_of_report": "2022-12-30",
+    "selection": "admission_candidate",
+    "manifest_sha256": "ed0b662e6271b617a3902b2824b9cc588193267bec8494568f814d4a2b939498",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  },
+  {
+    "accession": "0000939767-22-000026",
+    "form": "10-K",
+    "period_of_report": "2021-12-31",
+    "selection": "admission_candidate",
+    "manifest_sha256": "739fc33c4880db658b34d81b36ee9255f44fcae3c41a720ed8f0f0535f7bfd1a",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  }
+]

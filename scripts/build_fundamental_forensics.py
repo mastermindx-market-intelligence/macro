@@ -831,9 +831,11 @@ def _contract_members(contract: Mapping[str, Any]) -> list[dict[str, Any]]:
                 except ValueError:
                     continue
                 accession_periods[accession] = period
+        legal_name = issuer.get("legal_name")
         members.append({
             "ticker": ticker,
             "cik10": cik10,
+            "legal_name": legal_name.strip() if isinstance(legal_name, str) and legal_name.strip() else None,
             "sic": issuer.get("sic"),
             "accessions": accessions,
             "accession_periods": accession_periods,
@@ -1314,6 +1316,47 @@ def _peer_cohort_within_budget(state: dict[str, Any]) -> bool:
     return len(gzip.compress(encoded, compresslevel=9)) <= MAX_COMPRESSED_BYTES
 
 
+def _contract_only_company(
+    member: Mapping[str, Any],
+    names: Mapping[str, str],
+    sectors: Mapping[str, str],
+    issuer_master: IssuerMasterIndex,
+) -> dict[str, Any]:
+    """A coverage-contract issuer the broad panel does not carry.
+
+    The panel only yields companies with a prior-year same quarter, so a
+    contract issuer can be absent from it while the admitted filing generation
+    still serves its statements. This row carries identity only: no findings,
+    no panel periods, and every check counted as not evaluable.
+    """
+    ticker = member["ticker"]
+    entity_id, entity_id_reason = issuer_master.join(member["cik10"])
+    return {
+        "symbol": ticker,
+        "name": names.get(ticker) or member.get("legal_name") or ticker,
+        "sector": sectors.get(ticker, "Unclassified"),
+        "cik": int(member["cik10"]),
+        "entity_id": entity_id,
+        "entity_id_reason": entity_id_reason,
+        "latest_period": "",
+        "latest_filed": "",
+        "action": {
+            "key": "limited",
+            "en": "Checks not run: not yet in the broad statements panel",
+            "zh": "未运行检查：尚未进入广覆盖报表面板",
+        },
+        "coverage": {
+            "periods": 0,
+            "metrics_pct": 0.0,
+            "detectors_evaluable": 0,
+            "detectors_total": len(DETECTORS),
+            "basis": "coverage_contract_catalog_only",
+        },
+        "findings": [],
+        "periods": [],
+    }
+
+
 def compose_state(root: Path, *, generated_at: str | None = None) -> dict[str, Any]:
     q_path = root / "data" / "edgar" / "statements_quarterly.parquet"
     a_path = root / "data" / "edgar" / "statements.parquet"
@@ -1438,6 +1481,25 @@ def compose_state(root: Path, *, generated_at: str | None = None) -> dict[str, A
                 "latest_filed": latest_filed,
             })
 
+    # FIF (d): coverage-contract issuers the panel did not yield are still
+    # listed, after every panel company, so the page can open their
+    # generation-backed statements. They add no findings and no as-of date.
+    contract = _read_coverage_contract(root)
+    contract_only = 0
+    for member in _contract_members(contract) if contract else []:
+        ticker = member["ticker"]
+        if ticker in companies:
+            continue
+        company = _contract_only_company(member, names, sectors, issuer_master)
+        disclosure = disclosure_projections.get(ticker)
+        if disclosure is not None:
+            company["disclosures"] = _state_disclosure_projection(disclosure)
+            disclosure_attached += 1
+            disclosure_tracks_ready += int(disclosure["coverage"].get("tracks_ready") or 0)
+            disclosure_tracks_not_evaluable += int(disclosure["coverage"].get("tracks_not_evaluable") or 0)
+        companies[ticker] = company
+        contract_only += 1
+
     ranked.sort(key=lambda row: (
         0 if row["priority"] == "high" else 1,
         -(int(row["latest_filed"].replace("-", "")[:8]) if row["latest_filed"][:10].replace("-", "").isdigit() else 0),
@@ -1484,6 +1546,7 @@ def compose_state(root: Path, *, generated_at: str | None = None) -> dict[str, A
         },
         "summary": {
             "companies": len(companies),
+            "contract_only_companies": contract_only,
             "findings": len(ranked),
             "high": high_n,
             "watch": len(ranked) - high_n,
@@ -1665,6 +1728,29 @@ def read_public_summary(root: Path, *, now: datetime | None = None) -> dict[str,
         return {}
 
 
+def _calendar_day(generated_at: object) -> str:
+    """YYYY-MM-DD of a parseable ISO stamp, in the stamp's own zone, else ""."""
+    if not isinstance(generated_at, str):
+        return ""
+    try:
+        return datetime.fromisoformat(generated_at).date().isoformat()
+    except ValueError:
+        return ""
+
+
+def public_summary_as_of(root: Path, *, now: datetime | None = None) -> str:
+    """Calendar day when read_public_summary would return counts, else ""."""
+    if not read_public_summary(root, now=now):
+        return ""
+    try:
+        raw = json.loads((root / PUBLIC_SUMMARY_RELATIVE).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return ""
+    if not isinstance(raw, dict):
+        return ""
+    return _calendar_day(raw.get("generated_at"))
+
+
 def render_shell(root: Path, state_summary: dict[str, Any] | None = None) -> Path:
     """Render only the public workbench shell, versioned assets, and free counts.
 
@@ -1677,9 +1763,16 @@ def render_shell(root: Path, state_summary: dict[str, Any] | None = None) -> Pat
     site.mkdir(parents=True, exist_ok=True)
     env = Environment(loader=FileSystemLoader(str(root / "templates")), autoescape=True)
     counts = public_summary_projection(state_summary) if state_summary else read_public_summary(root)
+    # In-memory counts keep their own stamp. A missing stamp stays blank so a
+    # file written beside an unstamped summary cannot date the sentence.
+    if state_summary:
+        summary_as_of = _calendar_day(state_summary.get("generated_at"))
+    else:
+        summary_as_of = public_summary_as_of(root)
     html = env.get_template("fundamental_forensics.html.j2").render(
         generated_utc="private-state-runtime",
         state_summary=counts,
+        summary_as_of=summary_as_of,
         active_section="research",
         active_page="fundamental_forensics",
         holding_js_version=hashlib.sha256((root / "templates" / "institutional_holding_research.js").read_bytes()).hexdigest()[:8],

@@ -1,7 +1,7 @@
 {
   "schema": "influence.graph.v1",
   "as_of": "2026-06-19",
-  "generated_utc": "2026-10-31T23:26:15.208982+00:00",
+  "generated_utc": "2026-11-02T04:52:14.909148+00:00",
   "note": "Curated multi-actor influence graph: important people and the investable names/themes they are affiliated with (control, holdings, public advocacy, partnerships). Public-record only. provenance = FACT (filing/widely-reported structural fact) | DISCLOSED (self-reported trade/holding) | INFERRED (analytical link). The LLM extractor grows candidate edges; a human promotes them here.",
   "n_actors": 22,
   "n_entities": 19,
@@ -800,10 +800,11 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 3,
-      "alt_weighted": 0.85,
+      "alt_score": 4,
+      "alt_weighted": 1.15,
       "alt_channels": [
         "affiliation",
+        "lobbying",
         "special_situation",
         "stocktwits_bull"
       ],
@@ -847,10 +848,11 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 2,
-      "alt_weighted": 0.7,
+      "alt_score": 3,
+      "alt_weighted": 1.0,
       "alt_channels": [
         "affiliation",
+        "lobbying",
         "special_situation"
       ],
       "top_holder": {
@@ -997,13 +999,12 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 6,
-      "alt_weighted": 2.45,
+      "alt_score": 5,
+      "alt_weighted": 2.15,
       "alt_channels": [
         "affiliation",
         "app_demand",
         "hf_model_momentum",
-        "lobbying",
         "patent_cluster",
         "trump"
       ],
@@ -1011,6 +1012,38 @@
         "owner": "BARCLAYS PLC",
         "title": "Institution",
         "shares": 794117000
+      }
+    },
+    {
+      "ticker": "ORCL",
+      "actors": [
+        {
+          "actor": "Larry Ellison",
+          "kind": "exec",
+          "rel": "CONTROLS",
+          "provenance": "FACT",
+          "qualitative": false
+        },
+        {
+          "actor": "Larry Ellison",
+          "kind": "exec",
+          "rel": "CONTROLS",
+          "provenance": "FACT",
+          "qualitative": false
+        }
+      ],
+      "n_actors": 2,
+      "alt_corroborated": true,
+      "alt_score": 2,
+      "alt_weighted": 0.8,
+      "alt_channels": [
+        "affiliation",
+        "lobbying"
+      ],
+      "top_holder": {
+        "owner": "VANGUARD GROUP INC",
+        "title": "Institution",
+        "shares": 174802084
       }
     },
     {
@@ -1094,12 +1127,11 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 5,
-      "alt_weighted": 1.55,
+      "alt_score": 4,
+      "alt_weighted": 1.1,
       "alt_channels": [
         "affiliation",
         "github_momentum",
-        "gov_contract",
         "retail_buzz",
         "stocktwits_bull"
       ],
@@ -1367,6 +1399,31 @@
       }
     },
     {
+      "ticker": "COIN",
+      "actors": [
+        {
+          "actor": "Cathie Wood",
+          "kind": "fund",
+          "rel": "AFFILIATES_WITH",
+          "provenance": "DISCLOSED",
+          "qualitative": true
+        }
+      ],
+      "n_actors": 1,
+      "alt_corroborated": true,
+      "alt_score": 2,
+      "alt_weighted": 0.95,
+      "alt_channels": [
+        "affiliation",
+        "gov_contract"
+      ],
+      "top_holder": {
+        "owner": "LINDEN ADVISORS LP",
+        "title": "Institution",
+        "shares": 384176000
+      }
+    },
+    {
       "ticker": "LULU",
       "actors": [
         {
@@ -1491,37 +1548,6 @@
       }
     },
     {
-      "ticker": "ORCL",
-      "actors": [
-        {
-          "actor": "Larry Ellison",
-          "kind": "exec",
-          "rel": "CONTROLS",
-          "provenance": "FACT",
-          "qualitative": false
-        },
-        {
-          "actor": "Larry Ellison",
-          "kind": "exec",
-          "rel": "CONTROLS",
-          "provenance": "FACT",
-          "qualitative": false
-        }
-      ],
-      "n_actors": 2,
-      "alt_corroborated": false,
-      "alt_score": 1,
-      "alt_weighted": 0.5,
-      "alt_channels": [
-        "affiliation"
-      ],
-      "top_holder": {
-        "owner": "VANGUARD GROUP INC",
-        "title": "Institution",
-        "shares": 174802084
-      }
-    },
-    {
       "ticker": "ASML",
       "actors": [
         {
@@ -1627,30 +1653,6 @@
         "affiliation"
       ],
       "top_holder": null
-    },
-    {
-      "ticker": "COIN",
-      "actors": [
-        {
-          "actor": "Cathie Wood",
-          "kind": "fund",
-          "rel": "AFFILIATES_WITH",
-          "provenance": "DISCLOSED",
-          "qualitative": true
-        }
-      ],
-      "n_actors": 1,
-      "alt_corroborated": false,
-      "alt_score": 1,
-      "alt_weighted": 0.5,
-      "alt_channels": [
-        "affiliation"
-      ],
-      "top_holder": {
-        "owner": "LINDEN ADVISORS LP",
-        "title": "Institution",
-        "shares": 384176000
-      }
     },
     {
       "ticker": "MOH",

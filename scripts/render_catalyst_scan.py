@@ -4,11 +4,16 @@ from __future__ import annotations
 
 import argparse
 import shutil
+import sys
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))  # this script runs by file path, without PYTHONPATH
+
+from lib.pages import write_unshimmed_html  # noqa: E402
+
 TEMPLATES = ROOT / "templates"
 ASSETS = ("catalyst_scan.css", "catalyst_scan.js")
 
@@ -26,7 +31,7 @@ def render_preview(out: Path) -> Path:
         raise ValueError("Preview requires noindex")
     target.mkdir(parents=True, exist_ok=True)
     dest = target / "catalyst-scan.html"
-    dest.write_text(markup, encoding="utf-8")
+    write_unshimmed_html(dest, markup, encoding="utf-8")
     for asset in ASSETS:
         shutil.copyfile(TEMPLATES / asset, target / asset)
     theme = ROOT / "site" / "theme.css"
