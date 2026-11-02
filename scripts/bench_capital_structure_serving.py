@@ -51,7 +51,9 @@ own refusal shape (``capacity_joint`` lines 302-309) is recorded alongside
 what the served body actually carried.  The served request needs an issuer
 with two active routes; a corpus with none records
 ``served_request.active_pair_found = False`` and names the gap instead of a
-served claim.
+served claim.  The fixture corpus carries such a pair (two effective S-3
+shelves for issuer one), and the same body is also posted at exactly the
+bound, where the joint solve must still run.
 """
 from __future__ import annotations
 
@@ -299,15 +301,55 @@ class ServingWorld(NamedTuple):
         return TestClient(application)
 
 
+def _active_pair_rows() -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Two effective S-3 shelves for issuer one, each S-3 -> EFFECT.
+
+    The state-API rows give issuer one only a withdrawn S-1 and an S-3 with no
+    EFFECT notice, so no served issuer has two active routes and the served
+    branch-bound probe cannot reach the joint solve.  These two registration
+    paths are built with the registration suite's own event and edge helpers;
+    both resolve to conditional shelf-takedown routes.
+    """
+    from tests.test_capital_structure_registration_lifecycle import (  # noqa: PLC0415
+        _edge,
+        _event,
+    )
+
+    events: list[dict[str, Any]] = []
+    edges: list[dict[str, Any]] = []
+    for suffix, file_number in ((81, "333-501"), (91, "333-502")):
+        shelf = _event(
+            suffix,
+            "S-3",
+            accepted_at="2026-07-01T10:00:00Z",
+            seen_at="2026-07-01T18:00:00Z",
+            file_number=file_number,
+        )
+        effect = _event(
+            suffix + 1,
+            "EFFECT",
+            accepted_at="2026-07-10T10:00:00Z",
+            seen_at="2026-07-10T18:00:00Z",
+            file_number=file_number,
+        )
+        events += [shelf, effect]
+        edges.append(_edge(effect, shelf, "effectuates"))
+    return events, edges
+
+
 def _fixture_corpus(work: Path) -> dict[str, Any]:
     """Build the U1a fixture generation, projection, state bundle and inputs.
 
     Built through the state-API suite's own fixture helpers, imported by name
-    (never copied): the same event rows, the same builders, the same stamps.
+    (never copied): the same event rows, the same builders, the same stamps,
+    plus the two effective shelves of ``_active_pair_rows``.
     """
     import tests.test_capital_structure_state_api as state_suite  # noqa: PLC0415
 
     events, edges = state_suite._fixture_rows()
+    pair_events, pair_edges = _active_pair_rows()
+    events += pair_events
+    edges += pair_edges
     telemetry = state_suite._telemetry(events, edges)
     telemetry["counts"] = {
         "event_versions": len(events),
@@ -824,6 +866,11 @@ def _strip_identity(node: Any) -> Any:
 #: the served blocker must carry the kernel's refusal text verbatim.
 _PROBE_BRANCH_LIMIT = 1
 
+#: The ``MAX_BRANCHES`` of the at-bound request: exactly the two branches of
+#: the probed pair.  ``solve_joint`` refuses only past the limit, so at it the
+#: joint solve must still run and the served body must carry no refusal.
+_AT_BOUND_BRANCH_LIMIT = 2
+
 
 def _branch_bound_probe(world: ServingWorld) -> dict[str, Any]:
     """One served evaluate request over the declared branch bound.
@@ -834,13 +881,17 @@ def _branch_bound_probe(world: ServingWorld) -> dict[str, Any]:
     recorded.  The served request needs an issuer with two ACTIVE routes, since
     the envelope drops inactive members of a declared group before the solve;
     the first such served issuer is used, and a corpus with none records that
-    gap instead of a served claim.  The SAME body is posted twice — once under
-    the declared bound, once over it — so the two served answers differ by
-    nothing but the bound.  The kernel's own refusal shape (``solve_joint``,
+    gap instead of a served claim.  The SAME body is posted three times — under
+    the declared bound, at exactly its branch count, and one past it — so the
+    served answers differ by nothing but the bound, and the boundary sits
+    between the last two.  The kernel's own refusal shape (``solve_joint``,
     lines 302-309) is recorded beside what the served body actually carried.
     """
     from engine.capital_structure import capacity_joint  # noqa: PLC0415
-    from engine.capital_structure.capacity import ACTIVE_ROUTE_STATUSES  # noqa: PLC0415
+    from engine.capital_structure.capacity import (  # noqa: PLC0415
+        ACTIVE_ROUTE_STATUSES,
+        JOINT_SOLVE_REFUSED_PREFIX,
+    )
 
     probe: dict[str, Any] = {
         "declared_limit": capacity_joint.MAX_BRANCHES,
@@ -928,6 +979,16 @@ def _branch_bound_probe(world: ServingWorld) -> dict[str, Any]:
             under_bound_body = under_bound.json()
         except ValueError:
             under_bound_body = None
+        capacity_joint.MAX_BRANCHES = _AT_BOUND_BRANCH_LIMIT
+        try:
+            at_bound = client.post(evaluate_path, json=probe_body)
+        finally:
+            capacity_joint.MAX_BRANCHES = real
+        at_bound_status = int(at_bound.status_code)
+        try:
+            at_bound_body = at_bound.json()
+        except ValueError:
+            at_bound_body = None
         capacity_joint.MAX_BRANCHES = _PROBE_BRANCH_LIMIT
         probe["monkeypatched_limit"] = _PROBE_BRANCH_LIMIT
         try:
@@ -939,29 +1000,29 @@ def _branch_bound_probe(world: ServingWorld) -> dict[str, Any]:
             over_bound_body = over_bound.json()
         except ValueError:
             over_bound_body = None
-        over_text = (
-            json.dumps(over_bound_body, sort_keys=True, separators=(",", ":"))
-            if over_bound_body is not None
-            else ""
-        )
+        over_text = _body_text(over_bound_body)
         probe["served_request"] = {
             "active_pair_found": True,
             "issuers_scanned": scanned,
             "evaluate_path": evaluate_path,
             "exclusive_group": list(active_ids[:2]),
+            "at_bound_limit": _AT_BOUND_BRANCH_LIMIT,
             "plain_status": plain_status,
             "under_bound_status": under_bound_status,
+            "at_bound_status": at_bound_status,
             "over_bound_status": over_bound_status,
+            "under_bound_aggregate_status": _aggregate_status(under_bound_body),
+            "at_bound_aggregate_status": _aggregate_status(at_bound_body),
+            "under_bound_body_names_a_refusal": (
+                JOINT_SOLVE_REFUSED_PREFIX in _body_text(under_bound_body)
+            ),
+            "at_bound_body_names_a_refusal": (
+                JOINT_SOLVE_REFUSED_PREFIX in _body_text(at_bound_body)
+            ),
             "served_view_generation_id": ((over_bound_body or {}).get("view") or {}).get(
                 "generation_id"
             ),
-            "served_aggregate_status": (
-                (over_bound_body or {})
-                .get("result", {})
-                .get("capacity_envelope", {})
-                .get("aggregate_bound", {})
-                .get("status")
-            ),
+            "served_aggregate_status": _aggregate_status(over_bound_body),
             "served_joint_check_status": (over_bound_body or {}).get("result", {}).get(
                 "joint_check", {}
             ).get("status"),
@@ -980,12 +1041,30 @@ def _branch_bound_probe(world: ServingWorld) -> dict[str, Any]:
     return probe
 
 
+def _body_text(body: Any) -> str:
+    """A served body as canonical JSON text; empty when the body was not JSON."""
+    if body is None:
+        return ""
+    return json.dumps(body, sort_keys=True, separators=(",", ":"))
+
+
+def _aggregate_status(body: Any) -> Any:
+    """The served capacity envelope's aggregate-bound status, or None."""
+    return (
+        (body or {})
+        .get("result", {})
+        .get("capacity_envelope", {})
+        .get("aggregate_bound", {})
+        .get("status")
+    )
+
+
 def _probe_note() -> str:
     """The one sentence every branch-bound probe record carries."""
     return (
         f"MAX_BRANCHES was monkeypatched to {_PROBE_BRANCH_LIMIT} for the kernel probe "
-        "and the one over-bound request only; "
-        "the production constant 4096 is never edited"
+        f"and the one over-bound request, and to {_AT_BOUND_BRANCH_LIMIT} for the one "
+        "at-bound request, only; the production constant 4096 is never edited"
     )
 
 
