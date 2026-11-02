@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-01-29T21:10:25Z",
+ "accession": "0001288469-26-000011",
+ "cik": "0001288469",
+ "doc_byte_length": 2532450,
+ "doc_sha256": "8db122043350e872a91eeb4fe300cb56df88d6805324dbf3b1e641b2d69eafb0",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-01-29",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mxl-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 308957,
+  "byte_start": 308601,
+  "normalized": "We depend on independent silicon foundry manufacturers to support our wafer fabrication requirements. Our key foundry partners include Taiwan Semiconductor Manufacturing Corporation, or TSMC, in Taiwan, and United Microelectronics Corporation, or UMC, in Taiwan and Singapore. We generally do not depend on a single source for the supply of our materials.",
+  "normalized_sha256": "23d5867d64dbd0276f867474a73e73eeb68054b8268cd5a2e601a73274fa5df3",
+  "raw": " We depend on independent silicon foundry manufacturers to support our wafer fabrication requirements. Our key foundry partners include Taiwan Semiconductor Manufacturing Corporation, or TSMC, in Taiwan, and United Microelectronics Corporation, or UMC, in Taiwan and Singapore. We generally do not depend on a single source for the supply of our materials.",
+  "raw_sha256": "26ffda70146fa8bd3fda045f4f70bc14073045f56331b8cff34493e1adad5d15"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1288469/000128846926000011/mxl-20251231.htm",
+ "xbrl_contexts": []
+}

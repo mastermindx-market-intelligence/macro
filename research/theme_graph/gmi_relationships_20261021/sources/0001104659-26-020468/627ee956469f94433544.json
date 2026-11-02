@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T21:02:34Z",
+ "accession": "0001104659-26-020468",
+ "cik": "0001086600",
+ "doc_byte_length": 8502637,
+ "doc_sha256": "83144fc00e1339bc0af49e49cadda22e4a3b26f3085e6dff3c5da52eddf82081",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "arlp-20251231x10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1064390,
+  "byte_start": 1063827,
+  "normalized": "In 2025, we derived more than 10% of our total revenues from each of Louisville Gas and Electric Company and American Electric Power Company, Inc. If we were to lose this or any of our significant customers without finding replacement customers willing to purchase an equivalent amount of coal on similar terms, or if these customers were to decrease the amounts of coal purchased or change the terms, including pricing terms, on which they buy coal from us, it could have a material adverse effect on our business, financial condition, and results of operations.",
+  "normalized_sha256": "627ee956469f94433544408667f5104e68251eb04c8d0db94c393ce2055bd5c1",
+  "raw": "In 2025, we derived more than 10% of our total revenues from each of Louisville Gas and Electric Company and American Electric Power Company, Inc. If we were to lose this or any of our significant customers without finding replacement customers willing to purchase an equivalent amount of coal on similar terms, or if these customers were to decrease the amounts of coal purchased or change the terms, including pricing terms, on which they buy coal from us, it could have a material adverse effect on our business, financial condition, and results of operations.",
+  "raw_sha256": "627ee956469f94433544408667f5104e68251eb04c8d0db94c393ce2055bd5c1"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1086600/000110465926020468/arlp-20251231x10k.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-03T23:14:52Z",
+ "accession": "0000002488-26-000018",
+ "cik": "0000002488",
+ "doc_byte_length": 2174707,
+ "doc_sha256": "38bc381563ff1c70d8f75186075eeb4b4f215b0b6cdd8000737bce06870910c8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-04",
+ "form": "10-K",
+ "period_of_report": "2025-12-27",
+ "primary_document": "amd-20251227.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2096333,
+  "byte_start": 2095927,
+  "normalized": "Intellectual Property Cross-License Agreement between Advanced Micro Devices, Inc. and Broadcom Corporation, effective as of August 25, 2008, filed as Exhibit 10.78 to AMD’s Annual Report on Form 10-K for the fiscal year ended December 30, 2023, is hereby incorporated by reference.",
+  "normalized_sha256": "c297dfed906c38a87d6cc8231eccc7c33e663d861f1409ee6a9ba37a948cefe6",
+  "raw": "Intellectual Property Cross-License Agreement between Advanced Micro Devices, Inc. and Broadcom Corporation, effective as of August 25, 2008, filed as Exhibit 10.78 to AMD&#8217;s Annual Report on Form 10-K for the fiscal year ended December 30, 2023, is hereby incorporated by reference</a></span><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%\">.",
+  "raw_sha256": "187d86a3c13705ff9cc349fcfc0ef898a1f80db85d298e46b2b6a0415a115cc2"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+ "xbrl_contexts": []
+}

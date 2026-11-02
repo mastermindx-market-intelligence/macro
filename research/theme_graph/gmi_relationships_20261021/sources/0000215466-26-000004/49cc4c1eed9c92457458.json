@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-18T21:55:17Z",
+ "accession": "0000215466-26-000004",
+ "cik": "0000215466",
+ "doc_byte_length": 3547169,
+ "doc_sha256": "cc814e3c24419e09f2864e6f257ae3afcabacd26e94779a7bec9453ab6a4359e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-18",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "cde-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 482413,
+  "byte_start": 481958,
+  "normalized": "Coeur Mexicana is obligated to sell 50% of Palmarejo gold production (excluding production from certain properties acquired in 2015) to a subsidiary of Franco-Nevada Corporation (“Franco-Nevada”) under a gold stream agreement for the lesser of $800 or spot price per ounce. Coeur Mexicana is subject to other royalty agreements for which there are no mineral resources or mineral reserves associated with them in the current life-of-mine plan.",
+  "normalized_sha256": "b325ce7e74a9ecc61ecdd440a2c58b81eafed5478a4c3488f3b573171f6db74c",
+  "raw": "Coeur Mexicana is obligated to sell 50% of Palmarejo gold production (excluding production from certain properties acquired in 2015) to a subsidiary of Franco-Nevada Corporation (&#8220;Franco-Nevada&#8221;) under a gold stream agreement for the lesser of $800 or spot price per ounce. Coeur Mexicana is subject to other royalty agreements for which there are no mineral resources or mineral reserves associated with them in the current life-of-mine plan.",
+  "raw_sha256": "49cc4c1eed9c924574582e8618292b8653c8011d89692bc346e8592c8225baf5"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/215466/000021546626000004/cde-20251231.htm",
+ "xbrl_contexts": []
+}

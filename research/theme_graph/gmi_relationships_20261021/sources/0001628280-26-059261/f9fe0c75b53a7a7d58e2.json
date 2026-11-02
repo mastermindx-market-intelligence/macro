@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-27T20:22:52Z",
+ "accession": "0001628280-26-059261",
+ "cik": "0001387467",
+ "doc_byte_length": 2239148,
+ "doc_sha256": "6d4c95e6af58015d107d47bb66895a3cd9fc36f1626e928c225ad7a841ec49a0",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-27",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "aosl-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 200635,
+  "byte_start": 200117,
+  "normalized": "We hold a minority equity interest in a power semiconductor packaging, testing and 12-inch wafer fabrication facility (the “JV Company”) in the LiangJiang New Area of Chongqing, China, which provides us with significant level of foundry and packaging capacity to enable us to develop and manufacture our products. Pursuant to an agreement with the JV Company and other shareholders of the JV Company, the JV Company is committed to providing us with a specified level of monthly wafer production capacity.",
+  "normalized_sha256": "41829c38b26cfaa393d20d0ac7ef8734fd748931bf0e14339e1bc106c9ff988e",
+  "raw": "We hold a minority equity interest in a power semiconductor packaging, testing and 12-inch wafer fabrication facility (the &#8220;JV Company&#8221;) in the LiangJiang New Area of Chongqing, China, which provides us with significant level of foundry and packaging capacity to enable us to develop and manufacture our products.  Pursuant to an agreement with the JV Company and other shareholders of the JV Company, the JV Company is committed to providing us with a specified level of monthly wafer production capacity.",
+  "raw_sha256": "f9fe0c75b53a7a7d58e232f2ff26352859cd39b60be9556ef1add23f97096166"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1387467/000162828026059261/aosl-20260630.htm",
+ "xbrl_contexts": []
+}

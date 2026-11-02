@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-12T21:16:46Z",
+ "accession": "0001104659-26-027163",
+ "cik": "0001463972",
+ "doc_byte_length": 3177948,
+ "doc_sha256": "5d3f41d59fa013b2054aa3a2aba17ed22b29388f912693daeec4e17dfbb6b392",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-12",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "vuzi-20251231x10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2252690,
+  "byte_start": 2251539,
+  "normalized": "On June 30, 2024, the Company decided to cease further funding of development activities with Atomistic SAS (“Atomistic”) under the license agreement dated December 16, 2022 among the Company, Atomistic, and Atomistic’s two principals (the “License Agreement”). The Company’s decision gave Atomistic the right under the License Agreement to terminate the Granted License (as defined under the License Agreement), which right Atomistic exercised on July 1, 2024. As a result of the termination of the Granted License, the Company determined that the technology license asset, with a net book value as of June 30, 2024 of $24,335,554, had been impaired as the Company no longer held exclusive licensing rights to the technology for its use.",
+  "normalized_sha256": "a124f07e26b5f3dcd8e731f9cce148c8817db56459558b3b7fa9910e947d6a4e",
+  "raw": "On June 30, 2024, the Company decided to cease further funding of development activities with Atomistic SAS (&#8220;Atomistic&#8221;) under the license agreement dated December 16, 2022 among the Company, Atomistic, and Atomistic&#8217;s two principals (the &#8220;License Agreement&#8221;). The Company&#8217;s decision gave Atomistic the right under the License Agreement to terminate the Granted License (as defined under the License Agreement), which right Atomistic exercised on July 1, 2024. As a result of the termination of the Granted License, the Company determined that the technology license asset, with a net book value as of June 30, 2024 of $<ix:nonFraction unitRef=\"Unit_Standard_USD_nyADAGzOYkeDLEWhbR7dSw\" contextRef=\"As_Of_6_30_2024_us-gaap_FiniteLivedIntangibleAssetsByMajorClassAxis_us-gaap_LicensingAgreementsMember_2xRh9LC0HU-zXu8ZkELTvQ\" decimals=\"0\" format=\"ixt:num-dot-decimal\" name=\"vuzi:NetBookValueOfFiniteLivedIntangibleAssetsImpaired\" scale=\"0\" id=\"Narr_afj7pxJAaECvoeXlZMn77Q\">24,335,554</ix:nonFraction>, had been impaired as the Company no longer held exclusive licensing rights to the technology for its use. &#160; ",
+  "raw_sha256": "370efab49311e43baeb878e7c1d4b7aeaa94d7a910ded70612834e04ffb7d059"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1463972/000110465926027163/vuzi-20251231x10k.htm",
+ "xbrl_contexts": []
+}

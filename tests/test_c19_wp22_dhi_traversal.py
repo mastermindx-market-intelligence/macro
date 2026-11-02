@@ -11,9 +11,11 @@ AAPL-only path; ``event_workspace`` uses the real ``_event_result``.
 """
 from __future__ import annotations
 
+import pytest
+
 import app.integrated_answer as integrated_answer
 from tests.test_company_intelligence_event_workspace import _published_workspaces, _wire_remote
-from tests.test_integrated_answer_v0 import REF_KEYS, _patch_all_seams
+from tests.test_integrated_answer_v0 import REF_KEYS, _patch_all_seams, pin_capital_structure_leg
 from tests.test_issuer_profiles_a5a import DHI_EXHIBIT, _build_dhi_workspace
 
 LEG_ORDER = [
@@ -29,6 +31,11 @@ LEG_ORDER = [
 ]
 ALLOWED_STATUSES = frozenset({"ok", "stale", "absent", "held_unavailable"})
 FIXED_ABSENT_REASON = "not_read_in_v0:owner_not_recorded;direct_site_json_reads_forbidden(I-R2)"
+
+
+@pytest.fixture(autouse=True)
+def _pin_capital_structure_leg(monkeypatch: pytest.MonkeyPatch) -> None:
+    pin_capital_structure_leg(monkeypatch)
 
 
 def _compose_dhi(tmp_path, monkeypatch):
@@ -63,7 +70,9 @@ def test_dhi_page_shape_is_typed_and_honest(tmp_path, monkeypatch) -> None:
     assert page["display_only"] is True
     assert [item["leg"] for item in page["legs"]] == LEG_ORDER
     assert {item["status"] for item in page["legs"]} <= ALLOWED_STATUSES
-    assert _leg(page, "capital_structure")["status"] == "held_unavailable"
+    cs = _leg(page, "capital_structure")
+    assert cs["status"] == "absent"
+    assert cs["degraded_reason"] == "state_unavailable"
 
     financial_facts = _leg(page, "financial_facts")
     assert financial_facts["status"] == "absent"

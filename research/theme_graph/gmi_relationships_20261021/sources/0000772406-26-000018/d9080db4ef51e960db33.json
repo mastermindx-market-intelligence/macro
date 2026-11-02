@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-21T20:11:56Z",
+ "accession": "0000772406-26-000018",
+ "cik": "0000772406",
+ "doc_byte_length": 1688324,
+ "doc_sha256": "38603376827b247d3b9116ab5efe18c85aac83feddcf709371908d03fc7895e6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-28",
+ "primary_document": "crus-20260328.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 491549,
+  "byte_start": 491020,
+  "normalized": "Our future capital requirements will depend on many factors, including the rate of sales growth, market acceptance of our products, the timing and extent of research and development projects, and potential future acquisitions of companies or technologies, commitments under the Capacity Reservation Agreement with GlobalFoundries (discussed further in Note 13 - Commitments and Contingencies of the Notes to the Consolidated Financial Statements and Item 1A. Risk Factors) and the expansion of our sales and marketing activities.",
+  "normalized_sha256": "d9080db4ef51e960db331a8ad7208a6a192c98333ace08f750a45cb09f76b968",
+  "raw": "Our future capital requirements will depend on many factors, including the rate of sales growth, market acceptance of our products, the timing and extent of research and development projects, and potential future acquisitions of companies or technologies, commitments under the Capacity Reservation Agreement with GlobalFoundries (discussed further in Note 13 - Commitments and Contingencies of the Notes to the Consolidated Financial Statements and Item 1A. Risk Factors) and the expansion of our sales and marketing activities.",
+  "raw_sha256": "d9080db4ef51e960db331a8ad7208a6a192c98333ace08f750a45cb09f76b968"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/772406/000077240626000018/crus-20260328.htm",
+ "xbrl_contexts": []
+}
