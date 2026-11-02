@@ -837,3 +837,279 @@ def test_explicit_store_ledger_path_is_not_double_counted(tmp_path):
         {k: v for k, v in base_seen.items() if k != "duplicate_rows_dropped"}
     assert twice["activity"]["us"]["numerator_issuers"] == base["activity"]["us"]["numerator_issuers"]
     assert twice["gates"] == base["gates"]
+
+
+# --- 16 (owner-disposition contract: measurement only, never a count) --------
+SHIPPED_OWNER_CONTRACT = (Path(__file__).resolve().parents[1]
+                          / gcp.OWNER_DISPOSITIONS_DEFAULT)
+
+
+def _build_68(tmp_path: Path) -> SimpleNamespace:
+    """The fixture grown to exactly 68 frozen micros plus two expansion micros."""
+    fixture = _build(tmp_path)
+    extra = [(f"theme:fixture_frozen_{n:02d}", "2026-10-08") for n in range(1, 66)]
+    extra += [(f"theme:fixture_expansion_{n:02d}", "2026-10-21") for n in range(1, 3)]
+    _rewrite_hierarchy(fixture, [
+        ({"id": micro_id, "name_en": micro_id, "name_zh": micro_id,
+          "asserted_on": asserted_on}, "theme:fixture_cat_a")
+        for micro_id, asserted_on in extra])
+    return fixture
+
+
+def _owner_row(micro_id: str, disposition: str = "KEEP", **overrides) -> dict:
+    row = {"micro_id": micro_id, "disposition": disposition, "reviewer": "fixture owner",
+           "decided_at": "2026-11-02", "evidence": "research/theme_graph/fixture.md"}
+    row.update(overrides)
+    return row
+
+
+def _write_owner_contract(fixture: SimpleNamespace, rows, *, owner=None,
+                          path: Path | None = None) -> Path:
+    target = path or fixture.root / gcp.OWNER_DISPOSITIONS_DEFAULT
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(yaml.safe_dump({"schema": gcp.OWNER_DISPOSITIONS_SCHEMA,
+                                      "owner": owner, "rows": rows}, allow_unicode=True),
+                      encoding="utf-8")
+    return target
+
+
+def _without_owner_keys(report: dict) -> dict:
+    """The report with every owner-review key removed: what a contract may never move."""
+    trimmed = copy.deepcopy(report)
+    trimmed.pop("report_version")
+    taxonomy = trimmed["taxonomy"]
+    taxonomy.pop("owner_review")
+    for micro in taxonomy["micros"] + taxonomy["expansion_micros"]:
+        micro.pop("owner_reviewed")
+        micro.pop("owner_disposition", None)
+    for gate in trimmed["gates"]:
+        if gate["dimension"] == "Taxonomy coverage":
+            for key in ("owner_reviewed", "owner_review_gap", "owner_reviewed_count",
+                        "owner_review_rejected_rows"):
+                gate["measured"].pop(key, None)
+            gate.pop("verdict")
+    return trimmed
+
+
+def test_shipped_owner_contract_has_zero_rows_and_a_null_owner():
+    doc = yaml.safe_load(SHIPPED_OWNER_CONTRACT.read_text(encoding="utf-8"))
+    assert doc == {"schema": gcp.OWNER_DISPOSITIONS_SCHEMA, "owner": None, "rows": []}
+
+
+def test_absent_owner_contract_is_byte_identical_to_reading_none(tmp_path):
+    fixture = _build_68(tmp_path)
+    assert not (fixture.root / gcp.OWNER_DISPOSITIONS_DEFAULT).exists()
+    report, _, markdown = _run(fixture, out=tmp_path / "out_absent")
+    taxonomy = report["taxonomy"]
+    assert taxonomy["owner_review"] == {"source": None, "gap": "NO_OWNER_DISPOSITION_CONTRACT"}
+    for micro in taxonomy["micros"] + taxonomy["expansion_micros"]:
+        assert micro["owner_reviewed"] is False
+        assert "owner_disposition" not in micro
+    gate = _gate(report, "Taxonomy coverage")
+    assert gate["verdict"] == "FAIL"
+    assert "owner_reviewed_count" not in gate["measured"]
+    assert "owner_review_rejected_rows" not in gate["measured"]
+    assert ("Owner review: NO_OWNER_DISPOSITION_CONTRACT "
+            "(owner_reviewed is false for every micro).") in markdown
+    assert "| vendor routes | owner |" not in markdown
+    _run(fixture, out=tmp_path / "out_none", extra=["--no-owner-dispositions"])
+    for name in ("coverage_report.json", "UNIVERSE_MANIFEST.json", "COVERAGE_REPORT.md"):
+        assert (tmp_path / "out_absent" / name).read_bytes() == \
+            (tmp_path / "out_none" / name).read_bytes()
+
+
+def test_zero_row_shipped_contract_reviews_nothing_and_the_gate_fails(tmp_path):
+    fixture = _build_68(tmp_path)
+    absent, absent_manifest, _ = _run(fixture, out=tmp_path / "out_absent")
+    target = fixture.root / gcp.OWNER_DISPOSITIONS_DEFAULT
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(SHIPPED_OWNER_CONTRACT.read_bytes())
+    report, manifest, markdown = _run(fixture, out=tmp_path / "out_shipped")
+    review = report["taxonomy"]["owner_review"]
+    assert review == {"source": gcp.OWNER_DISPOSITIONS_DEFAULT, "owner": None,
+                      "reviewed": 0, "unreviewed": 68, "gap": "68_OF_68_UNREVIEWED",
+                      "rejected_rows": []}
+    for micro in report["taxonomy"]["micros"] + report["taxonomy"]["expansion_micros"]:
+        assert micro["owner_reviewed"] is False and micro["owner_disposition"] is None
+    gate = _gate(report, "Taxonomy coverage")
+    assert gate["verdict"] == "FAIL"
+    assert gate["measured"]["owner_reviewed"] is False
+    assert gate["measured"]["owner_reviewed_count"] == 0
+    assert gate["measured"]["owner_review_rejected_rows"] == 0
+    assert gate["measured"]["owner_review_gap"] == "68_OF_68_UNREVIEWED"
+    assert _without_owner_keys(report) == _without_owner_keys(absent)
+    assert manifest == absent_manifest
+    assert "| vendor routes | owner |" in markdown
+    assert "Owner review: 68_OF_68_UNREVIEWED (owner_reviewed 0/68 frozen micros;" in markdown
+
+
+def test_two_valid_rows_review_two_micros_and_move_no_count(tmp_path):
+    fixture = _build_68(tmp_path)
+    absent, absent_manifest, _ = _run(fixture, out=tmp_path / "out_absent")
+    target = fixture.root / gcp.OWNER_DISPOSITIONS_DEFAULT
+    target.parent.mkdir(parents=True, exist_ok=True)
+    # one unquoted YAML date, one ISO datetime string with a note
+    target.write_text(
+        f"schema: {gcp.OWNER_DISPOSITIONS_SCHEMA}\n"
+        "owner: fixture owner\n"
+        "rows:\n"
+        f"  - micro_id: {MICROS[0]}\n"
+        "    disposition: KEEP\n"
+        "    reviewer: fixture owner\n"
+        "    decided_at: 2026-11-02\n"
+        "    evidence: research/theme_graph/fixture.md\n"
+        "  - micro_id: theme:fixture_frozen_07\n"
+        "    disposition: RETIRE\n"
+        "    reviewer: fixture owner\n"
+        "    decided_at: '2026-11-02T09:30:00Z'\n"
+        "    evidence: https://example.invalid/review/7\n"
+        "    note: superseded by a sibling micro\n", encoding="utf-8")
+    report, manifest, markdown = _run(fixture, out=tmp_path / "out_rows")
+    taxonomy = report["taxonomy"]
+    by_id = {micro["id"]: micro for micro in taxonomy["micros"]}
+    assert (by_id[MICROS[0]]["owner_reviewed"], by_id[MICROS[0]]["owner_disposition"]) == \
+        (True, "KEEP")
+    assert (by_id["theme:fixture_frozen_07"]["owner_reviewed"],
+            by_id["theme:fixture_frozen_07"]["owner_disposition"]) == (True, "RETIRE")
+    others = [micro for micro in taxonomy["micros"]
+              if micro["id"] not in (MICROS[0], "theme:fixture_frozen_07")]
+    assert all(m["owner_reviewed"] is False and m["owner_disposition"] is None
+               for m in others)
+    assert taxonomy["owner_review"] == {
+        "source": gcp.OWNER_DISPOSITIONS_DEFAULT, "owner": "fixture owner",
+        "reviewed": 2, "unreviewed": 66, "gap": "66_OF_68_UNREVIEWED", "rejected_rows": []}
+    gate = _gate(report, "Taxonomy coverage")
+    assert gate["verdict"] == "FAIL"
+    assert gate["measured"]["owner_reviewed_count"] == 2
+    # a disposition row moves no computed disposition, count, threshold or denominator
+    assert [m["disposition"] for m in taxonomy["micros"]] == \
+        [m["disposition"] for m in absent["taxonomy"]["micros"]]
+    assert [m["counts"] for m in taxonomy["micros"]] == \
+        [m["counts"] for m in absent["taxonomy"]["micros"]]
+    assert gate["threshold"] == _gate(absent, "Taxonomy coverage")["threshold"]
+    assert taxonomy["observed_micro_count"] == 68
+    assert _without_owner_keys(report) == _without_owner_keys(absent)
+    assert manifest == absent_manifest
+    assert f"| {MICROS[0]} |" in markdown
+    row_line = next(line for line in markdown.splitlines()
+                    if line.startswith(f"| theme:fixture_frozen_07 |"))
+    assert row_line.endswith("| RETIRE |")
+    assert "owner_reviewed 2/68 frozen micros" in markdown
+
+
+def test_bad_enum_duplicate_unknown_and_expansion_rows_are_rejected_never_applied(tmp_path):
+    fixture = _build_68(tmp_path)
+    _write_owner_contract(fixture, [
+        _owner_row("theme:fixture_frozen_01", "BOGUS"),
+        _owner_row("theme:fixture_frozen_01", "KEEP"),
+        _owner_row("theme:not_in_the_hierarchy", "KEEP"),
+        _owner_row("theme:fixture_expansion_01", "MERGE"),
+    ])
+    report, _, _ = _run(fixture)
+    review = report["taxonomy"]["owner_review"]
+    assert review["rejected_rows"] == [
+        {"micro_id": "theme:fixture_frozen_01", "reason": "INVALID_DISPOSITION: BOGUS"},
+        {"micro_id": "theme:fixture_frozen_01", "reason": "DUPLICATE_MICRO_ID"},
+        {"micro_id": "theme:not_in_the_hierarchy", "reason": "UNKNOWN_MICRO_ID"},
+        {"micro_id": "theme:fixture_expansion_01", "reason": "EXPANSION_MICRO_ID"},
+    ]
+    assert review["reviewed"] == 0 and review["gap"] == "68_OF_68_UNREVIEWED"
+    taxonomy = report["taxonomy"]
+    assert all(m["owner_reviewed"] is False and m["owner_disposition"] is None
+               for m in taxonomy["micros"] + taxonomy["expansion_micros"])
+    gate = _gate(report, "Taxonomy coverage")
+    assert gate["measured"]["owner_review_rejected_rows"] == 4
+    assert gate["verdict"] == "FAIL"
+
+
+@pytest.mark.parametrize("row, reason", [
+    (_owner_row(MICROS[0], extra_key="x"), "UNKNOWN_KEY: extra_key"),
+    ({k: v for k, v in _owner_row(MICROS[0]).items() if k != "reviewer"},
+     "MISSING_FIELD: reviewer"),
+    (_owner_row(MICROS[0], evidence="  "), "MISSING_FIELD: evidence"),
+    (_owner_row(MICROS[0], reviewer=7), "INVALID_FIELD: reviewer"),
+    (_owner_row(MICROS[0], decided_at="next tuesday"), "INVALID_DECIDED_AT"),
+    (_owner_row(MICROS[0], decided_at="2026-13-40"), "INVALID_DECIDED_AT"),
+    (_owner_row(MICROS[0], note=["not", "text"]), "INVALID_FIELD: note"),
+    (_owner_row("basket:fixture"), "FORBIDDEN_LABEL_ID"),
+    ("not a mapping", "ROW_NOT_MAPPING"),
+])
+def test_each_malformed_row_is_rejected_with_its_reason(tmp_path, row, reason):
+    fixture = _build(tmp_path)
+    _write_owner_contract(fixture, [row, _owner_row(MICROS[1], "SPLIT")])
+    report, _, _ = _run(fixture)
+    review = report["taxonomy"]["owner_review"]
+    assert [entry["reason"] for entry in review["rejected_rows"]] == [reason]
+    assert review["reviewed"] == 1  # the valid sibling row still applies
+    by_id = {micro["id"]: micro for micro in report["taxonomy"]["micros"]}
+    assert by_id[MICROS[1]]["owner_disposition"] == "SPLIT"
+    if isinstance(row, dict) and row.get("micro_id") == MICROS[0]:
+        assert by_id[MICROS[0]]["owner_reviewed"] is False
+
+
+@pytest.mark.parametrize("text, detail", [
+    ("schema: wrong/v0\nowner: null\nrows: []\n", "schema is not"),
+    ("- just\n- a list\n", "top level is not a mapping"),
+    ("schema: theme_graph.micro_owner_dispositions/v1\nowner: null\nrows: {}\n",
+     "rows is not a list"),
+    ("schema: theme_graph.micro_owner_dispositions/v1\nowner: null\nrows: []\nextra: 1\n",
+     "unknown top-level key extra"),
+    ("schema: [unclosed\n", "Error"),  # the concrete yaml exception class name
+])
+def test_invalid_contract_file_rejects_everything_and_never_raises(tmp_path, text, detail):
+    fixture = _build(tmp_path)
+    target = fixture.root / gcp.OWNER_DISPOSITIONS_DEFAULT
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(text, encoding="utf-8")
+    report, _, _ = _run(fixture)
+    review = report["taxonomy"]["owner_review"]
+    assert len(review["rejected_rows"]) == 1
+    assert review["rejected_rows"][0]["micro_id"] is None
+    assert review["rejected_rows"][0]["reason"].startswith("CONTRACT_INVALID: ")
+    assert detail in review["rejected_rows"][0]["reason"]
+    assert review["reviewed"] == 0 and review["gap"] == "3_OF_3_UNREVIEWED"
+
+
+def test_no_owner_dispositions_flag_ignores_the_shipped_file(tmp_path):
+    fixture = _build_68(tmp_path)
+    _run(fixture, out=tmp_path / "out_absent")
+    _write_owner_contract(fixture, [_owner_row(MICROS[0])])
+    report, _, _ = _run(fixture, out=tmp_path / "out_flag", extra=["--no-owner-dispositions"])
+    assert report["taxonomy"]["owner_review"] == {"source": None,
+                                                  "gap": "NO_OWNER_DISPOSITION_CONTRACT"}
+    for name in ("coverage_report.json", "UNIVERSE_MANIFEST.json", "COVERAGE_REPORT.md"):
+        assert (tmp_path / "out_absent" / name).read_bytes() == \
+            (tmp_path / "out_flag" / name).read_bytes()
+
+
+def test_owner_dispositions_flag_overrides_the_default_path(tmp_path):
+    fixture = _build(tmp_path)
+    _write_owner_contract(fixture, [_owner_row(MICROS[0], "KEEP")])
+    elsewhere = _write_owner_contract(fixture, [_owner_row(MICROS[2], "RENAME")],
+                                      path=tmp_path / "elsewhere" / "owner.yml")
+    report, _, _ = _run(fixture, extra=["--owner-dispositions", str(elsewhere)])
+    by_id = {micro["id"]: micro for micro in report["taxonomy"]["micros"]}
+    assert by_id[MICROS[2]]["owner_disposition"] == "RENAME"
+    assert by_id[MICROS[0]]["owner_reviewed"] is False
+    assert report["taxonomy"]["owner_review"]["source"] == str(elsewhere.resolve())
+    missing = tmp_path / "missing.yml"
+    assert gcp.main(_argv(fixture, extra=["--owner-dispositions", str(missing)])) == 2
+    with pytest.raises(SystemExit):
+        gcp.main(_argv(fixture, extra=["--owner-dispositions", str(elsewhere),
+                                       "--no-owner-dispositions"]))
+
+
+def test_a_row_for_every_frozen_micro_closes_only_the_owner_review_gap(tmp_path):
+    fixture = _build_68(tmp_path)
+    absent, _, _ = _run(fixture, out=tmp_path / "out_absent")
+    frozen_ids = [micro["id"] for micro in absent["taxonomy"]["micros"]]
+    _write_owner_contract(fixture, [_owner_row(micro_id) for micro_id in frozen_ids],
+                          owner="fixture owner")
+    report, _, markdown = _run(fixture, out=tmp_path / "out_all")
+    review = report["taxonomy"]["owner_review"]
+    assert (review["reviewed"], review["unreviewed"], review["gap"]) == (68, 0, None)
+    gate = _gate(report, "Taxonomy coverage")
+    assert gate["measured"]["owner_reviewed"] is True
+    assert gate["verdict"] == "PASS"
+    assert _without_owner_keys(report) == _without_owner_keys(absent)
+    assert "Owner review: ALL_REVIEWED (owner_reviewed 68/68 frozen micros;" in markdown
