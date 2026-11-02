@@ -181,3 +181,16 @@ Next: binding CI green on the new head -> PR-body addendum (partial-release scop
 PARTIAL release (`--match-head-commit`, no auto-merge, HOLD label = barrier) -> land check -> Cycles build-wave commission from
 main -> P22 production + natural-update proof -> P23 separate acceptances.
 
+
+2026-11-02 13:34Z (P21 CI repair): ci run 41443578532 on head 83e2d038 turned three binding jobs red — contract-delta
+(job 125271753276), ci-pack-6 (125273606585), ci-pack-11 (125273606718). Main b6c20fa09b31 was merged into the branch first
+(f89df17f43b2, clean auto-merge, no conflicts), then one repair commit 202498e76063 lands all four fixes: the two packing
+ceilings funded to the measured 5,921 / 5,662 (main-side manifest growth of two planning units each; ledger entry in
+tests/test_ci_pack.py); the reference-integrity venv gains numpy + pandas through the install string thirteen sibling jobs
+share (engine/cycle_ontology.py imports both at module scope); tests/test_sector_completion_capability_map.py splits site/
+and data/ tokens by git so build outputs are skipped with a reason in an unbuilt checkout and still asserted in a built one;
+and the 100 `templates/sector_cycles.js:N` citations in copy_deck.{json,md} / state_matrix.{csv,md} plus the deck test's
+own fixtures are re-pointed after main #10534 (+47 @:118, +48 @:941, +41 @:1168) by text identity — citation maintenance,
+no deck extension. Local: tests/test_ci_pack.py 238 passed; design-reference guards + R3 fixture 96 passed; capability map
+138 passed; legacy-jobs.yml yaml ok (378 jobs). Next: one CI read on the new head -> squash-merge #9917 as the PARTIAL
+release (`--match-head-commit`, no auto-merge, HOLD label = barrier) -> land check -> Cycles phase 2 from main.
