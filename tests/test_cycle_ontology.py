@@ -1056,3 +1056,45 @@ def test_doctrine_vocabulary_is_the_production_vocabulary():
     assert set(DOCTRINE_STANCES) - set(_DOCTRINE_ZH_ORIGIN) == {"act"}
     assert not {v["zh"] for v in STANCES.values()} & {v["zh"] for v in DOCTRINE_STANCES.values()}
     assert "观望" not in DOCTRINE_STANCES["watch"]["zh"]
+
+
+def test_hold_sentence_is_identical_and_true():
+    """SIC-V5-C02 (PRC-037, SIC-ADJ-01a): the HOLD sentence is one sentence in three places — the engine comment
+    beside ``DOCTRINE_STANCE["HOLD"]``, design_refs/sector-paper-20261021/cycles_ia.md and
+    components/COMPONENTS.md — its line citation lands on the Peak extended-uptrend override, and the cells it
+    names are exactly the cells ``resolve_state`` stamps HOLD (every RALLY ON row, Recovery × TOP WATCH, and
+    Peak × BOTTOM WATCH / TURN SIGNALED / FRESH BUY under trend_up), with no other HOLD cell."""
+    import re as _re
+    from pathlib import Path as _Path
+    from engine import cycle_ontology as c
+    repo = _Path(__file__).resolve().parents[1]
+    pat = _re.compile(r"HOLD is stamped on every RALLY ON row.*?SIC-V5-C02\)", _re.S)
+    src = (repo / "engine" / "cycle_ontology.py").read_text(encoding="utf-8").split("\n")
+    i = next(n for n, l in enumerate(src) if l.startswith('    "HOLD":') and '"watch"' in l)  # the DOCTRINE_STANCE row, not STANCE_DISPLAY
+    comment = " ".join(l.split("#", 1)[1] for l in src[i:i + 6])
+    docs = ("design_refs/sector-paper-20261021/cycles_ia.md", "design_refs/sector-paper-20261021/components/COMPONENTS.md")
+    found = [pat.findall(t) for t in [comment] + [(repo / p).read_text(encoding="utf-8") for p in docs]]
+    assert [len(f) for f in found] == [1, 1, 1], [len(f) for f in found]
+    sents = [_re.sub(r"\s+", " ", f[0]) for f in found]
+    assert sents[0] == sents[1] == sents[2], sents
+    m = _re.search(r"engine/cycle_ontology\.py:(\d+)-(\d+)", sents[0])
+    cited = "\n".join(src[int(m.group(1)) - 1:int(m.group(2))])
+    for frag in ('ladder_state in ("BOTTOM WATCH", "TURN SIGNALED", "FRESH BUY")', 'stance = "HOLD"', 'note_key = "extended_uptrend"'):
+        assert frag in cited, (frag, cited)
+    ladders = sorted({k[1] for k in c._SIMPLE_CROSSWALK})
+    hold = set()
+    for ph in c.PHASES:
+        for ld in ladders:
+            for tu in (False, True):
+                for pos in (10.0, 50.0, 90.0):
+                    r = c.resolve_state(pos=pos, phase=ph, phase_dir="rising" if ph in ("Recovery", "Expansion", "Peak") else "falling",
+                                        ladder_state=ld, trend_up=tu)
+                    if r["stance"] == "HOLD":
+                        hold.add((ph, ld, tu))
+    expected = ({(ph, "RALLY ON", tu) for ph in c.PHASES for tu in (False, True)}
+                | {("Recovery", "TOP WATCH", tu) for tu in (False, True)}
+                | {("Peak", ld, True) for ld in ("BOTTOM WATCH", "TURN SIGNALED", "FRESH BUY")})
+    assert hold == expected, hold ^ expected
+    r = c.resolve_state(pos=80.0, phase="Peak", phase_dir="rising", ladder_state="FRESH BUY", trend_up=True)
+    assert r["divergence"] is False and r["divergence_note"] == c.DIVERGENCE_NOTES["extended_uptrend"]["en"]
+    assert r["doctrine_stance"] == "watch" and r["doctrine_stance_en"] == c.DOCTRINE_STANCES["watch"]["en"]

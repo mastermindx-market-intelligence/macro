@@ -41,8 +41,10 @@ html[data-lang="zh"] .cyc-eyebrow{letter-spacing:.02em;text-transform:none}
 .cyc-stance[data-stance="aside"],.cyc-stance[data-stance="ignore"]{--c:var(--muted)}
 .cyc-stance-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
 .cyc-stance-ttl{font-size:var(--fs-label);color:var(--muted);font-weight:600}
-.cyc-clocks{--c:var(--ink-warn,var(--warn))}
-.cyc-div-note{flex-basis:100%;margin:0;font-size:var(--fs-micro);color:var(--muted);line-height:1.45}
+/* wave 5 (SIC-V5-C07): the clock-state chips and the Live-parity / Overdue chips take a neutral, even all-round outline — no fill tint,
+   no edge accent (Chairman 2026-10-18); the doctrine chip is the only warn chip on a card */
+.cyc-outline{--c:var(--muted);background:transparent;border:1px solid color-mix(in srgb,var(--muted) 55%,var(--line));color:var(--muted)}
+.cyc-clocks{font-weight:600}
 .cyc-age{margin:0;font-size:var(--fs-sm);color:var(--text);display:flex;align-items:flex-start;gap:6px;line-height:1.4}
 .cyc-age .spc-icon{color:var(--muted);margin-top:2px}
 .cyc-sec{display:flex;flex-direction:column;gap:8px;padding-top:10px;border-top:1px solid var(--line)}
@@ -142,6 +144,7 @@ html[data-state="incompatible_generation"] .cyc .cyc-ev-qual{display:inline-flex
 html[data-state="incompatible_generation"] .cyc .cyc-gen-fresh{display:none}
 html[data-state="incompatible_generation"] .cyc .cyc-gen-incompat{display:inline}
 .cyc-clocks-state{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:0 0 6px}
+.cyc-clocks-sec .cyc-clocks-state{margin:0}
 .cyc-clocks-both{font:500 var(--fs-sm)/1.4 var(--font-ui)}
 .cyc-read-withheld{color:var(--muted)}
 .cyc-def-lbl{font:600 var(--fs-micro)/1.3 var(--font-ui);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
@@ -159,7 +162,9 @@ html[data-desk="composite"] .cyc > .cyc-cards{display:none}
 .cyc-desk-cards > .cyc-chips{margin-bottom:8px}
 .cyc-ctx dd code{white-space:nowrap;display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}
 /* wave 4 (SIC-V4-C02/C03, C07/C08, C10): labeled hazard/rhythm mismatch states reuse .cyc-clocks-state; the fixture strip holds
-   two labeled FIXTURE cards; the desk caption carries the clock statement */
+   two labeled FIXTURE cards; the desk caption carries the clock statement.
+   wave 5 (SIC-V5-C07/C08): the mismatch states moved into one .cyc-clocks-sec block per card (one .cyc-clocks-state line per
+   disagreeing clock); a section whose clock disagrees is not drawn */
 .cyc-fixtures{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-top:16px}
 .cyc-fixtures .cyc-fixture-card{margin-top:0}
 .cyc-desk-clock{display:block;margin-top:6px;color:var(--muted)}

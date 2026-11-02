@@ -48,6 +48,10 @@ def DH(sec, key, **fmt):
     # Like D, but the fmt values are trusted HTML fragments (code()/mono()) inserted AFTER escaping the deck text, so an
     # identifier on a ZH face (page, sha, capture id, field name) is a <code> element the SIC-V3-C06 grep exempts (SIC-V4-C05).
     e = DECK[sec][key]; return f'<span class="l-en">{esc(e["en"]).format(**fmt)}</span><span class="l-zh">{esc(e["zh"]).format(**fmt)}</span>'
+def DH2(sec, key, en_fmt, zh_fmt):
+    # Per-locale trusted fills (wave 5, SIC-V5-C05/C06 under SIC-ADJ-03): the EN face may carry an identifier as <code>; the ZH deck
+    # text names the thing in plain words and points to the drawer, so zh_fmt usually fills dates only. Fills are inserted after escaping.
+    e = DECK[sec][key]; return f'<span class="l-en">{esc(e["en"]).format(**en_fmt)}</span><span class="l-zh">{esc(e["zh"]).format(**zh_fmt)}</span>'
 def D2(sec, key, en_fmt, zh_fmt):
     e = DECK[sec][key]; return bi(e["en"].format(**en_fmt), e["zh"].format(**zh_fmt))
 def SRC(sec, key): return f'<code>{esc(DECK[sec][key]["source"])}</code>'
@@ -100,9 +104,38 @@ PHASE_FACE_ZH = {p: DECK["cycles"][k]["zh"] for p, k in PHASE_CHIP.items()}
 PHASE_LABEL_ZH = {k: v["label_zh"] for k, v in ONTO_PHASES.items()}
 # SIC-V4-C03: the ladder state is glossed on the face with the production display label, never the raw enum.
 from engine.cycles import STATE_DISPLAY as LADDER_DISPLAY  # noqa: E402 — engine/cycles.py:653 (label / label_zh per ladder state)
-def clock_state(chip_key, pattern_key, en_fmt, zh_fmt, withheld_key):
-    return (f'<div class="cyc-clocks-state">{chip(D("cycles", chip_key), "cyc-clocks")}<span class="cyc-clocks-both">{D2("cycles", pattern_key, en_fmt, zh_fmt)}</span></div>'
-            f'<p class="cyc-read-body cyc-read-withheld">{D("cycles", withheld_key)}</p>')
+# SIC-V5-C07/C08 (wave 5): one Clocks block per card — one line per disagreeing clock (ladder, hazard, rhythm, read), each naming
+# its own clock and the phase clock in plain words; the chips take the neutral outline (.cyc-outline) so the doctrine chip is the
+# only warn chip on a card. A section whose clock disagrees is not drawn on the face; its values and its withheld sentence are
+# provenance-drawer rows (card_prov), each at most once per card.
+def clock_lines(s):
+    now = s["now"]; h = now["hazard"]; r = s["rhythm"]; lf = leg_family(s); v2 = now["phase_v2"]; en, zh_ = phase_pair(v2); lines = []
+    if now.get("divergence"):
+        # SIC-V3-C01/C03, SIC-V4-C03/C04: the ladder state glossed with its production display label; the engine note (stance words) is drawer-only.
+        ld = LADDER_DISPLAY[now["clocks"]["ladder"]]
+        lines.append(("clocks_ladder_chip", D2("cycles", "ladder_state_pattern",
+            dict(phase_name=DECK["cycles"]["clock_phase_v2"]["en"], phase=PHASE_SHORT[v2], ladder_name=DECK["cycles"]["clock_ladder"]["en"], ladder=ld["label"].lower()),
+            dict(phase_name=DECK["cycles"]["clock_phase_v2"]["zh"], phase=PHASE_FACE_ZH[v2], ladder_name=DECK["cycles"]["clock_ladder"]["zh"], ladder=ld["label_zh"])), None))
+    if not lf["hazard_agrees"]:
+        lines.append(("clocks_hazard_chip", D2("cycles", "hazard_mismatch_pattern",
+            dict(a_name=DECK["cycles"]["clock_hazard"]["en"], leg=DECK["cycles"]["leg_" + h["direction"]]["en"], turn=h["turn_kind"], expected=lf["turn"], **en),
+            dict(a_name=DECK["cycles"]["clock_hazard"]["zh"], leg=DECK["cycles"]["leg_" + h["direction"]]["zh"], turn=zh(h["turn_kind"]), expected=zh(lf["turn"]), **zh_)), "hazard_withheld_face"))
+    if not lf["rhythm_agrees"]:
+        lines.append(("clocks_rhythm_chip", D2("cycles", "rhythm_mismatch_pattern",
+            dict(a_name=DECK["cycles"]["clock_rhythm"]["en"], turn=r["next_turn"], expected=lf["turn"], **en),
+            dict(a_name=DECK["cycles"]["clock_rhythm"]["zh"], turn=zh(r["next_turn"]), expected=zh(lf["turn"]), **zh_)), "rhythm_withheld_face"))
+    if not family_match(now):
+        # SIC-V3-C03: the legacy read and the phase clock name different families; SIC-V4-C03/C04: both phases in the production ZH vocabulary.
+        lg = now["phase"]
+        lines.append(("clocks_read_chip", D2("cycles", "clocks_disagree_pattern",
+            dict(a_name=DECK["cycles"]["clock_read"]["en"], a=PHASE_SHORT[lg], b_name=DECK["cycles"]["clock_phase_v2"]["en"], b=PHASE_SHORT[v2]),
+            dict(a_name=DECK["cycles"]["clock_read"]["zh"], a=PHASE_FACE_ZH[lg], b_name=DECK["cycles"]["clock_phase_v2"]["zh"], b=PHASE_FACE_ZH[v2])), "read_withheld_face"))
+    return lines
+def clocks_block(s):
+    lines = clock_lines(s)
+    if not lines: return ""
+    rows = "".join(f'<div class="cyc-clocks-state">{chip(D("cycles", ck), "cyc-clocks cyc-outline")}<span class="cyc-clocks-both">{txt}</span></div>' for ck, txt, _ in lines)
+    return f'<section class="cyc-sec cyc-clocks-sec"><div class="cyc-sec-ttl"><h3>{D("cycles","clocks_h3")}</h3></div>{rows}<p class="cyc-foot">{D("cycles","clocks_foot")}</p></section>'
 def phase_pair(v2):
     return (dict(b_name=DECK["cycles"]["clock_phase_v2"]["en"], phase=PHASE_SHORT[v2]), dict(b_name=DECK["cycles"]["clock_phase_v2"]["zh"], phase=PHASE_FACE_ZH[v2]))
 # C07 — legacy-family numerals withheld from the face (kept verbatim in the drawer).
@@ -119,11 +152,12 @@ def asof():
 def context_card():
     # SIC-V3-C08: the hero context card carries real content — as-of, generation state (toggled by html[data-state]), hazard epoch.
     s0 = DS["sectors"][0]; sf = META["semantic_families"]
+    # SIC-V5-C06 (wave 5): the schema id and the hazard epoch are <code> on the EN face only; the ZH face points to the Built table.
     gen = (f'<span class="cyc-gen-fresh">{D("states","fresh_title")}</span>'
-           f'<span class="cyc-gen-incompat">{D("states","incompatible_generation_title")}</span> · {code(sf["schema"])}')
+           f'<span class="cyc-gen-incompat">{D("states","incompatible_generation_title")}</span> · {DH2("cycles", "context_schema", dict(schema=code(sf["schema"])), {})}')
     rows = [(D("cycles","context_asof"), f'{mono(META["asOf"])} · {bi(SOURCE_LABEL, SOURCE_LABEL_ZH)}'),
             (D("cycles","context_generation"), gen),
-            (D("cycles","context_hazard_epoch"), code(s0["now"]["hazard"]["epoch"]))]
+            (D("cycles","context_hazard_epoch"), DH2("cycles", "context_epoch_value", dict(epoch=code(s0["now"]["hazard"]["epoch"])), {}))]
     return '<dl class="cyc-ctx">' + "".join(f'<div><dt>{k}</dt><dd>{v}</dd></div>' for k, v in rows) + '</dl>'
 
 def head():
@@ -135,7 +169,7 @@ def head():
 </div>
 <aside class="cyc-panel cyc-basis">
 {context_card()}
-<div class="cyc-chips">{chip(D("authority","basis_price_only"))}{chip(D("cycles","rhythm_kind"))}{chip(D("cycles","hazard_parity_chip"), "cyc-warn")}</div>
+<div class="cyc-chips">{chip(D("authority","basis_price_only"))}{chip(D("cycles","hazard_parity_chip"), "cyc-outline")}</div>
 <p class="cyc-foot">{D("components","footnote_pattern")}</p>
 </aside>
 </header>'''
@@ -150,13 +184,9 @@ def age_line(now):
 def hazard(s):
     h = s["now"]["hazard"]; ek = s["estimate_kinds"]; lf = leg_family(s)
     if not lf["hazard_agrees"]:
-        # SIC-V4-C02: the leg names another family than the phase clock -> labeled hazard-mismatch state; the ladder stays in the drawer.
-        en, zh_ = phase_pair(s["now"]["phase_v2"])
-        state = clock_state("clocks_hazard_chip", "hazard_mismatch_pattern",
-                            dict(a_name=DECK["cycles"]["clock_hazard"]["en"], leg=DECK["cycles"]["leg_" + h["direction"]]["en"], turn=h["turn_kind"], expected=lf["turn"], **en),
-                            dict(a_name=DECK["cycles"]["clock_hazard"]["zh"], leg=DECK["cycles"]["leg_" + h["direction"]]["zh"], turn=zh(h["turn_kind"]), expected=zh(lf["turn"]), **zh_),
-                            "hazard_withheld_face")
-        return f'''<section class="cyc-sec"><div class="cyc-sec-ttl"><h3>{D("cycles","hazard_label")}</h3></div>{state}</section>'''
+        # SIC-V4-C02 / SIC-V5-C08: the leg names another family than the phase clock -> the section is not drawn; the labeled line is in
+        # the card's Clocks block and the ladder cells + withheld sentence are drawer rows.
+        return ""
     heads = "".join(f'<span class="spc-hz-head">{D("cycles", k)}</span>' for _, k in HZ)
     rowlab = f'<span class="spc-hz-rowlab">{D2("cycles","hazard_row_pattern", dict(direction=h["direction"], turn=h["turn_kind"]), dict(direction=zh(h["direction"]), turn=zh(h["turn_kind"])))}</span>'
     parity = ""; muted = ""
@@ -172,7 +202,7 @@ def hazard(s):
                       f'<span class="spc-model-prior-badge" data-source="{src}">{badge}</span></span>')
         if ek.get("model_cell_current_claim"):
             muted = " cyc-hz-muted"
-            parity = chip(D("cycles","hazard_parity_chip"), "cyc-warn")
+            parity = chip(D("cycles","hazard_parity_chip"), "cyc-outline")  # SIC-V5-C07: neutral outline
         note = f'<span class="spc-hz-note">{D("cycles","hazard_face_note")}</span>'
     return f'''<section class="cyc-sec"><div class="cyc-sec-ttl"><h3>{D("cycles","hazard_label")}</h3>{parity}</div>
 <div class="spc-hazard-ladder{muted}" role="group"><span class="spc-hz-head"></span>{heads}{rowlab}{cells}{note}</div></section>'''
@@ -180,15 +210,10 @@ def hazard(s):
 def rhythm(s):
     r = s["rhythm"]; w = r["window"]; unit = s["kind"]; lf = leg_family(s)
     if not lf["rhythm_agrees"]:
-        # SIC-V4-C02: the projection names another turn than the phase clock's family -> labeled rhythm-mismatch state; no Overdue chip, no window on the face.
-        en, zh_ = phase_pair(s["now"]["phase_v2"])
-        state = clock_state("clocks_rhythm_chip", "rhythm_mismatch_pattern",
-                            dict(a_name=DECK["cycles"]["clock_rhythm"]["en"], turn=r["next_turn"], expected=lf["turn"], **en),
-                            dict(a_name=DECK["cycles"]["clock_rhythm"]["zh"], turn=zh(r["next_turn"]), expected=zh(lf["turn"]), **zh_),
-                            "rhythm_withheld_face")
-        return f'''<section class="cyc-sec"><div class="cyc-sec-ttl"><h3>{D("cycles","r6_timing")}</h3></div>
-<div class="cyc-rhythm-row">{chip(D("cycles","rhythm_kind"))}</div>{state}</section>'''
-    chips = chip(D("cycles","rhythm_kind")) + (chip(D("cycles","overdue_chip"), "cyc-warn") if r.get("overdue") else "")
+        # SIC-V4-C02 / SIC-V5-C08: the projection names another turn than the phase clock's family -> the section is not drawn (no
+        # Descriptive-rhythm chip, no Overdue chip, no window); the labeled line is in the Clocks block, window + flag are drawer rows.
+        return ""
+    chips = chip(D("cycles","rhythm_kind")) + (chip(D("cycles","overdue_chip"), "cyc-outline") if r.get("overdue") else "")  # SIC-V5-C07/C08
     win = "".join(f'<div data-central="{str(k == "central").lower()}"><span class="k">{D("cycles", "win_" + k)}</span><span class="v">{esc(w[k])}</span></div>'
                   for k in ("low", "central", "high"))
     fn = D2("cycles", "forecast_footnote",
@@ -211,14 +236,9 @@ def read(s):
         if "above its 200-day" in en: zh_ = zh_.replace("位于200日均线。", "位于200日均线上方。")
         body = f'<p class="cyc-read-body">{bi(en, zh_)}</p><p class="cyc-foot">{D("cycles","read_provenance")}</p>'
     else:
-        # SIC-V3-C03: the legacy read and the phase clock name different families -> labeled Clocks-disagree state naming both.
-        lg, v2 = now["phase"], now["phase_v2"]
-        # SIC-V4-C03/C04: distinct "Read disagrees" label; both phases in the production ZH vocabulary.
-        state = D2("cycles", "clocks_disagree_pattern",
-                   dict(a_name=DECK["cycles"]["clock_read"]["en"], a=PHASE_SHORT[lg], b_name=DECK["cycles"]["clock_phase_v2"]["en"], b=PHASE_SHORT[v2]),
-                   dict(a_name=DECK["cycles"]["clock_read"]["zh"], a=PHASE_FACE_ZH[lg], b_name=DECK["cycles"]["clock_phase_v2"]["zh"], b=PHASE_FACE_ZH[v2]))
-        body = (f'<div class="cyc-clocks-state">{chip(D("cycles","clocks_read_chip"), "cyc-clocks")}<span class="cyc-clocks-both">{state}</span></div>'
-                f'<p class="cyc-read-body cyc-read-withheld">{D("cycles","read_withheld_face")}</p>')
+        # SIC-V3-C03 / SIC-V5-C08: the legacy read and the phase clock name different families -> the section is not drawn; the labeled
+        # Read-disagrees line is in the Clocks block, the withheld sentence and the legacy read verbatim are drawer rows.
+        return ""
     return f'''<section class="cyc-sec"><div class="cyc-sec-ttl"><h3>{D("cycles","r5_read")}</h3></div>{body}</section>'''
 
 def card_prov(s):
@@ -228,6 +248,7 @@ def card_prov(s):
         (code("doctrine_stance"), mono(f'{now.get("doctrine_stance")} · ink {now.get("doctrine_ink")}') + " " + code("engine/cycle_ontology.py DOCTRINE_STANCE :147 · doctrine_for :179 · resolve_state :948")),
         (code("clocks"), mono(f'phase {ck["phase"]} · ladder {ck["ladder"]} · agree {str(ck["agree"]).lower()}')
             + (f' <span class="cyc-prov-read">{bi(now["divergence_note"], now["divergence_note_zh"])}</span>' if now.get("divergence") else "")),
+        *[(D("cycles", ck), D("cycles", wk)) for ck, _, wk in clock_lines(s) if wk],  # SIC-V5-C08: the withheld sentence of each disagreeing clock, once
         (code("read_family_match"), mono(f'legacy {now["phase"]} ({PHASE_SHORT.get(now["phase"])}) · phase_v2 {now["phase_v2"]} ({PHASE_SHORT[now["phase_v2"]]}) · match {str(family_match(now)).lower()}')),
         (code("leg_family"), mono(f'phase_v2 {now["phase_v2"]} -> {lf["direction"]} leg toward a {lf["turn"]} · hazard {h["direction"]} / {h["turn_kind"]} agrees {str(lf["hazard_agrees"]).lower()} · rhythm next_turn {r["next_turn"]} · proj nextTurn {pj["nextTurn"]} agrees {str(lf["rhythm_agrees"]).lower()}') + " " + code("build_cycles.py leg_family · engine/cycle_ontology.py:614-629")),
         (code("pos_v2 · phase_v2"), mono(f'{now["pos_v2"]} · {now["phase_v2"]} · source {now["phase_v2_source"]} · age {a.get("status")} · method {a.get("method")}')),
@@ -251,36 +272,29 @@ def stance_row(now):
         chipv = f'<span class="cyc-stance-na">{D("cycles","stance_unavailable")}</span>'
     row = (f'<div class="cyc-stance-row"><span class="cyc-stance-ttl">{D("components","stance_title")}</span>{chipv}'
            f'<span class="cyc-stance-src">{D("cycles","stance_source_eyebrow")}</span>')
-    note = ""
-    if now.get("divergence"):
-        # SIC-V3-C01/C03: the amber chip names the clocks; the ladder state and the engine note (stance words) stay drawer-only.
-        # SIC-V4-C03/C04 (wave 4): distinct "Ladder disagrees" label; the ladder state glossed with its production display label.
-        row += chip(D("cycles","clocks_ladder_chip"), "cyc-clocks"); v2 = now["phase_v2"]; ld = LADDER_DISPLAY[now["clocks"]["ladder"]]
-        note = '<p class="cyc-div-note">' + D2("cycles", "ladder_state_pattern",
-            dict(phase_name=DECK["cycles"]["clock_phase_v2"]["en"], phase=PHASE_SHORT[v2], ladder_name=DECK["cycles"]["clock_ladder"]["en"], ladder=ld["label"].lower()),
-            dict(phase_name=DECK["cycles"]["clock_phase_v2"]["zh"], phase=PHASE_FACE_ZH[v2], ladder_name=DECK["cycles"]["clock_ladder"]["zh"], ladder=ld["label_zh"])) + '</p>'
-    return row + "</div>" + note
+    # SIC-V5-C07 (wave 5): the Ladder-disagrees chip is not a child of the stance row — it is a line of the card's Clocks block.
+    return row + "</div>"
 
 def card(s):
     now = s["now"]; phase = now["phase_v2"]; pos = now["pos_v2"]
-    stance = stance_row(now); note = ""
+    stance = stance_row(now)
     return f'''<article class="cyc-panel cyc-card" data-sector="{esc(s["id"])}">
 <div class="cyc-card-head">
 <div class="cyc-id"><h2>{bi(s["name"], s["name_zh"])}</h2><span class="cyc-tk">{esc(s["ticker"])}</span>
 <span class="cyc-pos"><b>{pos:.0f}</b>/100<span class="b">{D("cycles","mode_osc_chip")}</span></span>
 <span class="cyc-grp">{bi(s["group"], s["group_zh"])} · {D2("cycles","kind_basis_pattern", dict(kind=s["kind"], basis=s["basis"]), dict(kind=zh(s["kind"]), basis=zh(s["basis"])))}</span></div>
 <div class="cyc-chips">{chip(D("cycles", PHASE_CHIP[phase]), "spc-phase-chip", phase=phase.lower())}</div>
-{stance}{note}
+{stance}
 {age_line(now)}
 </div>
-{hazard(s)}{rhythm(s)}{read(s)}
+{clocks_block(s)}{hazard(s)}{rhythm(s)}{read(s)}
 {card_prov(s)}
 </article>'''
 
 def methods():
     lp = META["live_hazard_parity"]; s0 = DS["sectors"][0]
     items = [
-        ("now.hazard", D("cycles","hazard_label"), chip(D("cycles","hazard_parity_chip"), "cyc-warn"),
+        ("now.hazard", D("cycles","hazard_label"), chip(D("cycles","hazard_parity_chip"), "cyc-outline"),
          mono(f'live_hazard_parity {lp["verdict"]} · {len(lp["failing"])} features · measured_on {lp["measured_on"][:8]}')),
         ("rhythm", D("cycles","rhythm_kind_body"), "", mono(f'rhythm_version {META["rhythm_version"]} · {s0["rhythm"]["schema"]}')),
         ("size_mult", D("cycles","sizing_inert"), "", SRC("cycles","sizing_inert")),
@@ -354,16 +368,23 @@ def fixture_null():
 def desk(cards):
     # SIC-V3-C09 (board 40; `hidden` unless ?desk=composite): the production chart capture labeled with render source, sha and
     # both as-of dates on the face, beside the specimen correction cards. No desk silently mixes two as-of dates.
-    fmt = dict(page=code(PC["page"]), sha=code(PC["sha"]), capture=code("chrome-headless-1x"), asof_prod=PC["asof_prod"], asof_ds=META["asOf"], asof_brief=BRIEF_ASOF)  # identifiers as <code> (SIC-V4-C05)
-    cap = DH("cycles", "capture_body", **fmt); alt = DECK["cycles"]["capture_alt"]["en"].format(captured_at=PC["captured_at"])
-    drawer = prov([(code("prod_capture.json"), mono(f'{PC["file"]} · {PC["page"]} @ {PC["sha"]} · asof_prod {PC["asof_prod"]} · captured_at {PC["captured_at"]} · px {PC["px"][0]}×{PC["px"][1]} · theme {PC["theme"]}')),
+    # SIC-V5-C05/C06 (wave 5, SIC-ADJ-03): the EN caption carries page / sha / capture tool as <code>; the ZH caption names the page in
+    # plain words and points to the drawer, where the identifiers are rows. Both clocks are named in plain words (clock_read / clock_phase_v2).
+    dates = dict(asof_prod=PC["asof_prod"], asof_ds=META["asOf"], asof_brief=BRIEF_ASOF)
+    cap = DH2("cycles", "capture_body", dict(page=code(PC["page"]), sha=code(PC["sha"]), capture=code("chrome-headless-1x"), **dates), dates)
+    clock_note = D2("cycles", "desk_clock_note", dict(legacy=DECK["cycles"]["clock_read"]["en"], v2=DECK["cycles"]["clock_phase_v2"]["en"]),
+                    dict(legacy=DECK["cycles"]["clock_read"]["zh"], v2=DECK["cycles"]["clock_phase_v2"]["zh"]))
+    alt = DECK["cycles"]["capture_alt"]["en"].format(captured_at=PC["captured_at"])
+    drawer = prov([(code("prod_capture.json"), mono(f'{PC["file"]} · {PC["page"]} @ {PC["sha"]} · asof_prod {PC["asof_prod"]} · captured_at {PC["captured_at"]} · px {PC["px"][0]}×{PC["px"][1]} · theme {PC["theme"]} · locale {PC["locale"]}')),
+                   (code("capture"), mono("chrome-headless-1x · window 1440x1800 · crop (56,404)-(1386,1222)")),
+                   (code("clocks"), mono("chart 'Where they stand' counts: now.phase (templates/sector_cycles.js:611) · specimen cards: phase_v2")),
                    (code("specimen"), mono(f'meta.asOf {META["asOf"]} · brief as_of {BRIEF_ASOF}'))], hint=False)
     return f'''<section class="cyc-panel cyc-desk" hidden aria-labelledby="cyc-desk-h2">
 <h2 id="cyc-desk-h2" class="cyc-sec-h2">{D("cycles","desk_h2")}</h2>
 <div class="cyc-desk-grid">
-<figure class="cyc-capture"><div class="cyc-chips">{chip(D("cycles","capture_label"), "cyc-capture-chip")}{chip(D("cycles","capture_theme_chip"), "cyc-capture-chip")}{chip(D("cycles","context_asof") + " " + mono(PC["asof_prod"]))}</div>
+<figure class="cyc-capture"><div class="cyc-chips">{chip(D("cycles","capture_label"), "cyc-capture-chip")}{chip(D("cycles","capture_theme_chip"), "cyc-capture-chip")}{chip(D("cycles","capture_locale_chip"), "cyc-capture-chip")}{chip(D("cycles","context_asof") + " " + mono(PC["asof_prod"]))}</div>
 <img src="{esc(PC["file"])}" width="{PC["px"][0]}" height="{PC["px"][1]}" alt="{esc(alt)}">
-<figcaption>{cap}<span class="cyc-desk-clock">{DH("cycles","desk_clock_note", legacy=code("now.phase"), v2=code("phase_v2"))}</span></figcaption></figure>
+<figcaption>{cap}<span class="cyc-desk-clock">{clock_note}</span></figcaption></figure>
 <div class="cyc-desk-cards"><div class="cyc-chips">{chip(D("cycles","context_asof") + " " + mono(META["asOf"]))}</div><div class="cyc-cards">{cards}</div></div>
 </div>
 <p class="cyc-foot">{D("cycles","desk_note")}</p>{drawer}</section>'''
@@ -421,3 +442,7 @@ if __name__ == "__main__":
     lf = {s["ticker"]: leg_family(s) for s in DS["sectors"]}
     for t, v in lf.items(): print(f'     {t}: leg_family hazard_agrees {v["hazard_agrees"]} · rhythm_agrees {v["rhythm_agrees"]} (phase_v2 family -> {v["direction"]} / {v["turn"]})')
     assert lf["XLF"]["hazard_agrees"] and not lf["XLC"]["hazard_agrees"] and not any(v["rhythm_agrees"] for v in lf.values()), lf  # SIC-V4-C02 demonstration cells
+    cl = {s["ticker"]: [ck for ck, _, _ in clock_lines(s)] for s in DS["sectors"]}
+    for tk, v in cl.items(): print(f"     {tk}: Clocks block lines {v}")
+    assert cl["XLF"] == ["clocks_ladder_chip", "clocks_rhythm_chip"] and cl["XLC"] == ["clocks_hazard_chip", "clocks_rhythm_chip", "clocks_read_chip"], cl  # SIC-V5-C08 demonstration cells
+    assert "cyc-warn" not in "".join(card(s) for s in DS["sectors"]) and len(re.findall(r'class="[^"]*\bcyc-warn\b', PAGE)) == 1, "only the events qualifier keeps warn ink outside the doctrine chip (SIC-V5-C07)"

@@ -52,16 +52,16 @@ specimen, not production**: the production template remains `templates/sector_cy
 
 | # | File | Viewport | Theme | Locale | Query | Height px |
 |---|---|---|---|---|---|---|
-| 28 | `28-cycles-desktop-light-en.png` | 1440 | light | EN | `?theme=light&lang=en` | 2408 |
-| 29 | `29-cycles-desktop-dark-en.png` | 1440 | dark | EN | `?theme=dark&lang=en` | 2408 |
-| 30 | `30-cycles-mobile-dark-zh.png` | 390 (iframe host) | dark | ZH | `mobile_frame.html?src=cycles.html&theme=dark&lang=zh` | 4639 |
-| 31 | `31-cycles-mobile-light-en.png` | 390 (iframe host) | light | EN | `…&theme=light&lang=en&state=incompatible_generation` (fixture) | 5258 |
-| 34 | `34-cycles-desktop-light-zh.png` | 1440 | light | ZH | `?theme=light&lang=zh` | 2228 |
-| 35 | `35-cycles-desktop-dark-zh.png` | 1440 | dark | ZH | `?theme=dark&lang=zh` | 2228 |
-| 36 | `36-cycles-mobile-light-zh.png` | 390 (iframe host) | light | ZH | `mobile_frame.html?src=cycles.html&theme=light&lang=zh` | 4639 |
-| 39 | `39-cycles-mobile-dark-en.png` | 390 (iframe host) | dark | EN | `mobile_frame.html?src=cycles.html&theme=dark&lang=en` | 5154 |
-| 40 | `40-cycles-desk-desktop-dark-en.png` | 1440 | dark | EN | `?theme=dark&lang=en&desk=composite` (composite desk) | 3427 |
-| 41 | `41-cycles-desk-desktop-light-zh.png` | 1440 | light | ZH | `?theme=light&lang=zh&desk=composite` (composite desk) | 3267 |
+| 28 | `28-cycles-desktop-light-en.png` | 1440 | light | EN | `?theme=light&lang=en` | 2343 |
+| 29 | `29-cycles-desktop-dark-en.png` | 1440 | dark | EN | `?theme=dark&lang=en` | 2343 |
+| 30 | `30-cycles-mobile-dark-zh.png` | 390 (iframe host) | dark | ZH | `mobile_frame.html?src=cycles.html&theme=dark&lang=zh` | 4327 |
+| 31 | `31-cycles-mobile-light-en.png` | 390 (iframe host) | light | EN | `…&theme=light&lang=en&state=incompatible_generation` (fixture) | 4879 |
+| 34 | `34-cycles-desktop-light-zh.png` | 1440 | light | ZH | `?theme=light&lang=zh` | 2225 |
+| 35 | `35-cycles-desktop-dark-zh.png` | 1440 | dark | ZH | `?theme=dark&lang=zh` | 2225 |
+| 36 | `36-cycles-mobile-light-zh.png` | 390 (iframe host) | light | ZH | `mobile_frame.html?src=cycles.html&theme=light&lang=zh` | 4327 |
+| 39 | `39-cycles-mobile-dark-en.png` | 390 (iframe host) | dark | EN | `mobile_frame.html?src=cycles.html&theme=dark&lang=en` | 4775 |
+| 40 | `40-cycles-desk-desktop-dark-en.png` | 1440 | dark | EN | `?theme=dark&lang=en&desk=composite` (composite desk) | 3400 |
+| 41 | `41-cycles-desk-desktop-light-zh.png` | 1440 | light | ZH | `?theme=light&lang=zh&desk=composite` (composite desk) | 3262 |
 
 Boards 30/31/36/39 are rendered inside `mobile_frame.html` because headless Chrome clamps its
 window width to ≥500 px; the host page copies `data-h`/`data-w`/`data-ovf` from the 390 px
@@ -78,7 +78,7 @@ desk (`?desk=composite`): the production chart capture recorded in `prod_capture
 and as-of beside the correction cards, the as-of difference stated on the board face
 (SIC-V3-C09). Board heights in this table equal `png_px` in `boards_manifest.yml`
 (SIC-V3-C11). Probes: `components/board_probe.py` (theme pixels, 390 overflow, six-link
-switcher) and `components/zh_latin_grep.py` (ZH faces) — lines in `capture.log`.
+switcher) and `components/zh_latin_grep.py` (ZH faces; since wave 5 every zh-latin line states its SIC-ADJ-03 scope — `<details>` skipped wholesale, `<code>` on a face counts, ALLOW XL?/FIX/SPY/MODEL/PRIOR, the Cycles boards with no allow-file) — lines in `capture.log`.
 
 Wave 4 (SIC-V4, 2026-11-01): the doctrine chips carry the engine's ZH vocabulary (`DOCTRINE_STANCES`,
 SIC-ADJ-02); one family rule decides every clock on a face (`leg_family` in `build_cycles.py`: the hazard
@@ -92,6 +92,23 @@ card draws the null-stance treatment (Stance unavailable). Board 41 is the light
 (boards 40/41) is a review instrument outside the shipped surface: supporting evidence for the chart/card
 as-of relation, not a coverage cell; its caption states that the chart's "Where they stand" counts use
 the legacy `now.phase` clock while the specimen cards use `phase_v2` (SIC-V4-C07/C08).
+
+Wave 5 (SIC-ADJ-03 / SIC-V5, 2026-11-02): the zh-latin probe scope is one rule — `zh_latin_grep.py` skips a
+provenance drawer (`<details>`) wholesale and nothing else by tag except nav/script/style/svg/title/head, hidden
+elements and `l-en` spans, so a `<code>` identifier on a face counts (SIC-V5-C04/C05/C06); every zh-latin=0 line in
+`capture.log` states that scope and the tokens it exempted (ALLOW unchanged; the Cycles boards run with no allow-file).
+Identifiers a face must reference moved into the drawers: the ZH context card points to the page foot for the schema
+and epoch, the desk caption is plain ZH and the clock note names both clocks in plain words (`now.phase` / `phase_v2`
+and `templates/sector_cycles.js:611` in the desk drawer). Each card draws at most one Clocks block (`clocks_block`
+in `build_cycles.py`), one line per disagreeing clock naming both clocks — XLF Ladder + Rhythm, XLK Rhythm, XLC
+Hazard + Rhythm + Read — with neutral even-outline chips (`.cyc-outline`; the Live parity unproven chip takes the same
+treatment) so the doctrine chip is the only warn-ink chip on a card (SIC-V5-C07/C08); the hazard, rhythm and read
+sections are not drawn while their clock disagrees, and the overdue sentence sits in the drawer once per card. The
+ZH PRIOR fixture title and body use 先验 (SIC-V5-C09). Boards 40/41 declare the crop's EN interface on the face
+(EN-interface capture / 英文界面截图; `prod_capture.json` locale en) beside the dark-theme chip (SIC-V5-C03/C10).
+The engine HOLD sentence now names the Peak extended-uptrend override and is test-asserted identical in three
+places (`tests/test_cycle_ontology.py` `test_hold_sentence_is_identical_and_true`; SIC-V5-C02). Boards
+28-31/34-36/39-41 re-rendered; heights above equal `png_px` in `boards_manifest.yml` (SIC-V5-C12).
 
 ## How to render
 

@@ -154,13 +154,13 @@ BOUNCE → Watch — don't chase (bounce inside a down leg, no chase) · COUNTER
 Watch — don't chase (counter-trend structure only; moved from Stand aside so the ink group
 follows the engine tone) · TRIM → Protect gains (reduce into strength) · SELL → Protect
 gains (exit the leg) · WAIT → Stand aside (no entry condition) · AVOID → Stand aside
-(structure broken). SIC-ADJ-01a (wave 4, PRC-037; `engine/cycle_ontology.py:159-164`, the same sentence in COMPONENTS.md): HOLD is stamped on every RALLY ON row — the clean (non-divergent) Recovery/Expansion/Peak cells and the divergent Trough/Downturn cells — and on Recovery × TOP WATCH. The doctrine word is knowingly "Watch — don't chase" in warn ink for all of them: a held position is never a fresh entry, and the chip is not an exit (SIC-ADJ-01a; PRC-037) There is no None entry: a null stance (resolve failure,
+(structure broken). SIC-ADJ-01a (wave 4, PRC-037; wave 5, SIC-V5-C02 — the sentence is identical in the engine comment `engine/cycle_ontology.py:159-164`, here and in components/COMPONENTS.md, asserted by `tests/test_cycle_ontology.py` `test_hold_sentence_is_identical_and_true`): HOLD is stamped on every RALLY ON row — the clean (non-divergent) Recovery/Expansion/Peak cells and the divergent Trough/Downturn cells — on Recovery × TOP WATCH, and by the Peak extended-uptrend override (trend_up × Peak × ladder in BOTTOM WATCH / TURN SIGNALED / FRESH BUY, note_key extended_uptrend, engine/cycle_ontology.py:1060-1063). The doctrine word is knowingly "Watch — don't chase" in warn ink for all of them: a held position is never a fresh entry, and the chip is not an exit (SIC-ADJ-01a; PRC-037; SIC-V5-C02). There is no None entry: a null stance (resolve failure,
 `engine/sector_cycles.py:852-854`) draws the muted `cycles.stance_unavailable` line and no
 chip. The engine stance and tone stay verbatim as the first line of the card's provenance
 drawer; no engine stance word (HOLD, SELL, TRIM, BUY, WAIT, AVOID, GET READY, COUNTERTREND
 ONLY, HIGH-RISK BOUNCE) and no ladder state appears on a face — the divergence note, which
-carries stance words, is drawer-only under the amber Clocks-disagree chip, whose face note
-(`cycles.clocks_ladder_pattern`) names the phase clock and the timing ladder only. Tests:
+carries stance words, is drawer-only under the neutral-outline Ladder-disagrees chip in the card's Clocks block (wave 5,
+SIC-V5-C07), whose face line (`cycles.ladder_state_pattern`) names the phase clock and the timing ladder only. Tests:
 `tests/test_cycle_ontology.py:979` (every engine stance mapped exactly once), `:991` (ink
 never contradicts tone), `:1007` (`resolve_state` stamps every cell), `:1023` (export payload
 carries the fields without logic). The specimen dataset is stamped by
@@ -174,10 +174,10 @@ the face only when its phase word belongs to the chip's family, where family = t
 short label (`engine/cycle_ontology.py:70-81`; `engine/sector_cycles.py:134-139` and
 `:391-403` emit the same `(phase, short)` pairs) and the test is
 `PHASE_SHORT[now.phase] == PHASE_SHORT[now.phase_v2] and PHASE_SHORT[now.phase_v2] in now.read`
-(`build_cycles.py` `family_match`) — never `clocks.agree`. Otherwise the read section draws
-the labeled Clocks-disagree state naming both clocks (`cycles.clocks_disagree_pattern`:
-"cycle read says Bottoming · phase clock says Rolling over" for XLC) and
-`cycles.read_withheld_face`, with the legacy read verbatim in the drawer. XLF (match,
+(`build_cycles.py` `family_match`) — never `clocks.agree`. Otherwise the read section is not drawn (wave 5, SIC-V5-C08): the card's Clocks block carries the
+labeled Read-disagrees line naming both clocks (`cycles.clocks_disagree_pattern`: "cycle read says Bottoming ·
+phase clock says Rolling over" for XLC), and `cycles.read_withheld_face` is a drawer row beside the legacy read
+verbatim. XLF (match,
 divergence) and XLC (mismatch) demonstrate both states on boards 28–31/34–36/39/40.
 
 Wave 4 (SIC-V4-C02/C03) — one family rule for every clock: `build_cycles.py` `leg_family` reads the
@@ -186,11 +186,13 @@ peak, next turn a peak; falling family Trough/Downturn → a down leg toward a t
 trough; `engine/cycle_ontology.py` `classify_phase` :614-629, Peak rising by construction :990-991).
 The hazard leg (`hazard.direction` · `turn_kind`) and the rhythm projection (`rhythm.next_turn`,
 `proj.nextTurn`, the date and the Overdue chip) reach the card face only when they agree with that
-leg; otherwise the row draws the labeled state naming its own clock and the phase clock in plain
-words (`cycles.clocks_hazard_chip` + `hazard_mismatch_pattern`: "hazard clock says an up leg toward a
-peak · phase clock says Rolling over, next turn a trough"; `clocks_rhythm_chip` +
-`rhythm_mismatch_pattern`) and the cells and date move to the provenance drawer (`leg_family` row,
-recorded per sector). The face therefore carries at most three distinct labeled states: Ladder
+leg; otherwise that section is not drawn and the card's one Clocks block (wave 5, SIC-V5-C07/C08; `build_cycles.py`
+`clocks_block`) carries the labeled line naming its own clock and the phase clock in plain words
+(`cycles.clocks_hazard_chip` + `hazard_mismatch_pattern`: "hazard clock says an up leg toward a peak · phase clock
+says Rolling over, next turn a trough"; `clocks_rhythm_chip` + `rhythm_mismatch_pattern`), the cells and date move
+to the provenance drawer (`leg_family` row, recorded per sector) and the clock's withheld sentence is a drawer row.
+The chips take the neutral outline; the Descriptive-rhythm chip is drawn only beside a face window. The Clocks
+block therefore carries at most three distinct labeled states: Ladder
 disagrees (`clocks_ladder_chip` + `ladder_state_pattern`, the ladder state glossed from
 `engine/cycles.py:653` STATE_DISPLAY — "timing ladder says uptrend", never RALLY ON), Read disagrees
 (`clocks_read_chip`, only when `family_match` is false) and Hazard / Rhythm clock disagrees.
@@ -236,8 +238,7 @@ PASS/PRIOR badge (`hazardLineHTML:1087-1088`); PRIOR cells render muted
 schema/epoch guard gets no `now.hazard` (stamp is warn-and-skip,
 `engine/sector_cycles.py:1093-1098`) and the line is omitted (`hazardLineHTML:1082`)
 — that is the current error treatment, not a typed state. Wave 4 (SIC-V4-C02): a stamped
-hazard whose leg disagrees with the phase_v2 family (XLC: up/peak under Downturn) is the
-labeled hazard-mismatch state of R5, cells drawer-only. C16's
+hazard whose leg disagrees with the phase_v2 family (XLC: up/peak under Downturn) is the labeled Hazard-clock-disagrees line of the card's Clocks block (wave 5, SIC-V5-C08), cells drawer-only. C16's
 measured phase age is produced by `engine/cycle_phase_age.py` (`forward_log_replay.v2`):
 `phase_v2_age {sessions, status, observed_from, history_rows}` with status one of
 measured / lower_bound / insufficient_history / source_unavailable / unknown_phase /
