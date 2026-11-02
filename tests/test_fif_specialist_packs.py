@@ -8631,6 +8631,152 @@ def test_pk04_grouped_conflict_names_the_duplicate_facts(monkeypatch) -> None:
     assert contract.validate_pack_result(result) == []
 
 
+# PK04 review repair (run A1): the typed-dimensioned selector admits a
+# start-date bucket at ANY distance on or after the period of report, so a
+# filing whose only RevenueRemainingPerformanceObligationPercentage bucket
+# starts beyond 12 months was valued under a field whose catalogue name
+# promises "expected within 12 months". The finalize hook bounds the selected
+# member to the rpo_total guard's window: por < member_date <= por + 92 days.
+
+
+def _pk04_rpo_pct_events(buckets: tuple[tuple[str, str], ...]) -> tuple:
+    """Synthetic percentage facts, one per (typed start date, value) bucket."""
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+    events = []
+    for index, (day, value) in enumerate(buckets):
+        events.append(
+            make_raw_fact(
+                source=filing_row["source"],
+                concept_qname=(
+                    "us-gaap:RevenueRemainingPerformanceObligationPercentage"
+                ),
+                context=FactContext(
+                    context_id=f"c-pct-{index}",
+                    entity_scheme="http://www.sec.gov/CIK",
+                    entity_identifier=TESTREV_CIK,
+                    instant="2025-12-31",
+                    typed_dimensions=((_RPO_AXIS, _typed_member(day)),),
+                ),
+                unit=FactUnit("xbrli:pure", ["xbrli:pure"]),
+                raw_token=value,
+                parsed_value=value,
+                dimensions_known=True,
+                decimals="2",
+                source_span=(0, len(value)),
+                source_occurrence_key=f"pct-{index}",
+                accepted_at=filing_row["accepted_at"],
+                recorded_at=filing_row["recorded_at"],
+            )
+        )
+    return tuple(events)
+
+
+def _produce_pk04_rpo_pct(
+    monkeypatch: pytest.MonkeyPatch, buckets: tuple[tuple[str, str], ...]
+) -> dict:
+    events = _pk04_rpo_pct_events(buckets)
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(
+        ixbrl_module, "parse_and_convert_golden_packages", _convert
+    )
+    return produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+
+
+def test_pk04_rpo_percentage_lone_bucket_beyond_window_is_not_valued(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T1: run A1's shape — the only bucket starts 2027-07-01, more than a
+    # year past por 2025-12-31; the field says "within 12 months", so the
+    # value never ships: the row is the resolver's own typed absence.
+    result = _produce_pk04_rpo_pct(monkeypatch, (("2027-07-01", "0.4"),))
+    row = _testrev_row(result, "rpo_percentage_next_12m")
+    assert row["quality_state"] == "missing"
+    assert row["non_value_state"] == "missing"
+    assert row["value"] is None
+    assert row["reason"] == (
+        "missing_standard_fact:us-gaap:RevenueRemainingPerformanceObligation"
+        "Percentage"
+    )
+    assert row["dimensions"] == []
+    assert row["source_occurrence_ids"] == []
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk04_rpo_percentage_in_window_bucket_wins_over_later(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T2 (control): with a within-window bucket present the selector's
+    # earliest-on-or-after pick is unchanged — 2026-01-01 beats 2027-07-01.
+    result = _produce_pk04_rpo_pct(
+        monkeypatch, (("2026-01-01", "0.47"), ("2027-07-01", "0.26"))
+    )
+    row = _testrev_row(result, "rpo_percentage_next_12m")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "0.47"
+    assert row["dimensions"] == [{"axis": _RPO_AXIS, "member": "2026-01-01"}]
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk04_rpo_percentage_bucket_on_report_date_is_not_valued(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T3: a bucket dated exactly on the report date mirrors the rpo_total
+    # guard's strict ``por < member_date`` lower bound: not valued.
+    result = _produce_pk04_rpo_pct(monkeypatch, (("2025-12-31", "0.55"),))
+    row = _testrev_row(result, "rpo_percentage_next_12m")
+    assert row["quality_state"] == "missing"
+    assert row["value"] is None
+    assert row["reason"] == (
+        "missing_standard_fact:us-gaap:RevenueRemainingPerformanceObligation"
+        "Percentage"
+    )
+
+
+def test_pk04_rpo_percentage_bucket_at_window_edge_is_valued(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T4: por + 92 days (2026-04-02) is the inclusive upper bound: valued.
+    edge = (_date(2025, 12, 31) + timedelta(days=92)).isoformat()
+    result = _produce_pk04_rpo_pct(monkeypatch, ((edge, "0.31"),))
+    row = _testrev_row(result, "rpo_percentage_next_12m")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "0.31"
+    assert row["dimensions"] == [{"axis": _RPO_AXIS, "member": edge}]
+    assert contract.validate_pack_result(result) == []
+
+
 def test_pk03_grouped_conflict_names_the_duplicate_facts(monkeypatch) -> None:
     # R-F9 sink repair F1: same disclosure on a PK03 dimensioned segment field.
     revenue = "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"
