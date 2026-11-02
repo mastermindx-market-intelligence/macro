@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-23T20:05:50Z",
+ "accession": "0000088941-26-000005",
+ "cik": "0000088941",
+ "doc_byte_length": 3008268,
+ "doc_sha256": "21eb0d660130cf2e2abc0e60e366ff44116cb766f31be2c44f9c02a4e818af6a",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-23",
+ "form": "10-K",
+ "period_of_report": "2026-01-25",
+ "primary_document": "smtc-20260125.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2744973,
+  "byte_start": 2744533,
+  "normalized": "Some of these assets are at locations owned or operated by the Company’s suppliers. The Company has consigned certain equipment to a foundry based in China to support its specialized processes run at the foundry. The Company has also installed its own equipment at some of its packaging and testing subcontractors in order to ensure a certain level of capacity, assuming the subcontractor has ample employees to operate the equipment.",
+  "normalized_sha256": "1123e71f282ed42ada08855c828a352adc85a35682ca8b82e2518c51a32c94ba",
+  "raw": "Some of these assets are at locations owned or operated by the Company&#8217;s suppliers. The Company has consigned certain equipment to a foundry based in China to support its specialized processes run at the foundry. The Company has also installed its own equipment at some of its packaging and testing subcontractors in order to ensure a certain level of capacity, assuming the subcontractor has ample employees to operate the equipment.",
+  "raw_sha256": "26dda1e9f83478cd1e244132880ffadb26e49e7f0e75ff0258d2c8c34ad8bc76"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/88941/000008894126000005/smtc-20260125.htm",
+ "xbrl_contexts": []
+}

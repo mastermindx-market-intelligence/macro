@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-25T21:42:19Z",
+ "accession": "0001045810-26-000021",
+ "cik": "0001045810",
+ "doc_byte_length": 1967931,
+ "doc_sha256": "da9d303996fc11fe1e7d64c463bc3b338521fbf1291eacda3e269d446abfaa36",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2026-01-25",
+ "primary_document": "nvda-20260125.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1106113,
+  "byte_start": 1105858,
+  "normalized": "In December 2025, we entered into a non‑exclusive license agreement with Groq, Inc., or Groq, for its language processing unit technology and hired certain Groq employees. No customer contracts, existing products, or equity interests were purchased.",
+  "normalized_sha256": "a86767523038f07990d5cef86306eb10528c74bf67016f0448ef3a28b17252e3",
+  "raw": "In December 2025, we entered into a non&#8209;exclusive license agreement with Groq, Inc., or Groq, for its language processing unit technology and hired certain Groq employees. No customer contracts, existing products, or equity interests were purchased.",
+  "raw_sha256": "510b0ff323e407c02dd2e7aacdfb232d0ad82a55049cfe334c61e97194110575"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+ "xbrl_contexts": []
+}
