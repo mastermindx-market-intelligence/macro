@@ -37,7 +37,8 @@ def test_ind_d04() -> None:
     assert pnr.external_ids == {"cik": "0000077360"}
 
     # Positive enrollment must not widen the lookup into syntax acceptance.
-    for probe in ("EXPO1", "PNRA", "EXPO.US", "UNKNOWN"):
+    # Punctuation-only variants of an enrolled ticker must not resolve either.
+    for probe in ("EXPO1", "PNRA", "EXPO.US", "EXPO.", "PNR.", "EXPO-", "UNKNOWN"):
         assert issuer_for_ticker(probe) is None
         assert profile_for_ticker(probe) is None
 
