@@ -34,6 +34,11 @@
 # rows re-sourced, ZH clock-mismatch patterns in verb/colon construction, .cyc-cards align-items:start, methods parity chip align-self:flex-start, the page-level
 # session family in data vocabulary; boards 28-31/34-36/39-41 re-rendered, the 32 other PNGs byte-identical; confirmatory round 7). proposed_artifact.frozen_sha and
 # manifest.yml frozen_sha both read 78c14f7d — asserted equal by the seat's refreeze6.py (revision_mandate_round6 at the end of this file).
+# Round 7 at 78c14f7d (confirmatory, SIC-ADJ-04): Reviewer B PASS/PASS (no conditions; VTC-043..046 cured; VTC-047 minor advisory,
+# non-binding) / Reviewer A PASS_WITH_CONDITIONS/PASS_WITH_CONDITIONS (PRC-046..049 cured, SIC-V6-C01..C09 met; PRC-050/051 minor,
+# PRC-052 nit from the rationale) → verdict REVISE round 7 with SIC-V7-C01..C06 (C04 the adopted 显示 polish, C05 the PRC-052 record,
+# C06 the re-render discipline) and SIC-ADJ-05 (round 8 is the last confirmatory round unless it finds a defect); repair wave 7 →
+# re-freeze → confirmatory round 8 (revision_mandate_round7 is appended at the wave-7 re-freeze).
 schema: mastermind.rig_proposal.v1
 reference_id: sector-intelligence-cycles-20261021
 proposed_artifact:
