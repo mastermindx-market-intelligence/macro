@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-02T07:08:48.794886+00:00",
+  "generated_utc": "2026-11-02T10:47:57.440754+00:00",
   "as_of": "2026-11-02",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -27357,7 +27357,7 @@
         "ticker": "ADI",
         "net_up_30d": 23,
         "breadth": 1.0,
-        "est_chg_30d": 0.83,
+        "est_chg_30d": 1.0,
         "n_analysts": 23,
         "bull_ratio": 1.0,
         "rising": true,
@@ -27681,163 +27681,163 @@
     ],
     "short_interest": [
       {
-        "ticker": "TROW",
-        "days_to_cover": 17.2,
-        "si_change_pct": -2.0,
-        "short_shares": 26898202.0,
-        "settlement": "2026-09-30",
+        "ticker": "OTTR",
+        "days_to_cover": 22.2,
+        "si_change_pct": -0.3,
+        "short_shares": 4801454.0,
+        "settlement": "2026-10-15",
         "hot": true
       },
       {
         "ticker": "EZPW",
-        "days_to_cover": 16.9,
-        "si_change_pct": 0.7,
-        "short_shares": 12339130.0,
-        "settlement": "2026-09-30",
-        "hot": true
-      },
-      {
-        "ticker": "OTTR",
-        "days_to_cover": 16.3,
-        "si_change_pct": 0.5,
-        "short_shares": 4814876.0,
-        "settlement": "2026-09-30",
-        "hot": true
-      },
-      {
-        "ticker": "PCRX",
-        "days_to_cover": 15.1,
-        "si_change_pct": 6.8,
-        "short_shares": 8076461.0,
-        "settlement": "2026-09-30",
+        "days_to_cover": 19.5,
+        "si_change_pct": 3.9,
+        "short_shares": 12815603.0,
+        "settlement": "2026-10-15",
         "hot": true
       },
       {
         "ticker": "CXT",
-        "days_to_cover": 15.0,
-        "si_change_pct": 14.4,
-        "short_shares": 9138118.0,
-        "settlement": "2026-09-30",
+        "days_to_cover": 18.9,
+        "si_change_pct": 6.1,
+        "short_shares": 9694325.0,
+        "settlement": "2026-10-15",
         "hot": true
       },
       {
         "ticker": "TGTX",
-        "days_to_cover": 15.0,
-        "si_change_pct": 1.6,
-        "short_shares": 30634421.0,
-        "settlement": "2026-09-30",
-        "hot": true
-      },
-      {
-        "ticker": "KMB",
-        "days_to_cover": 14.2,
-        "si_change_pct": 1.3,
-        "short_shares": 53177521.0,
-        "settlement": "2026-09-30",
-        "hot": true
-      },
-      {
-        "ticker": "ACHC",
-        "days_to_cover": 13.9,
-        "si_change_pct": 5.9,
-        "short_shares": 22770844.0,
-        "settlement": "2026-09-30",
-        "hot": true
-      },
-      {
-        "ticker": "LIF",
-        "days_to_cover": 13.7,
-        "si_change_pct": -3.1,
-        "short_shares": 8052465.0,
-        "settlement": "2026-09-30",
-        "hot": true
-      },
-      {
-        "ticker": "OZK",
-        "days_to_cover": 13.5,
-        "si_change_pct": 6.6,
-        "short_shares": 17600458.0,
-        "settlement": "2026-09-30",
-        "hot": true
-      },
-      {
-        "ticker": "DBD",
-        "days_to_cover": 13.3,
-        "si_change_pct": 10.1,
-        "short_shares": 3320162.0,
-        "settlement": "2026-09-30",
-        "hot": true
-      },
-      {
-        "ticker": "SBH",
-        "days_to_cover": 13.3,
-        "si_change_pct": -6.8,
-        "short_shares": 18537888.0,
-        "settlement": "2026-09-30",
-        "hot": true
-      },
-      {
-        "ticker": "SPHR",
-        "days_to_cover": 13.2,
-        "si_change_pct": 8.4,
-        "short_shares": 6998608.0,
-        "settlement": "2026-09-30",
-        "hot": true
-      },
-      {
-        "ticker": "DCOM",
-        "days_to_cover": 13.1,
-        "si_change_pct": 5.9,
-        "short_shares": 4238109.0,
-        "settlement": "2026-09-30",
-        "hot": true
-      },
-      {
-        "ticker": "TMDX",
-        "days_to_cover": 13.1,
-        "si_change_pct": 7.2,
-        "short_shares": 8551869.0,
-        "settlement": "2026-09-30",
-        "hot": true
-      },
-      {
-        "ticker": "IDCC",
-        "days_to_cover": 13.0,
-        "si_change_pct": -3.2,
-        "short_shares": 2824358.0,
-        "settlement": "2026-09-30",
+        "days_to_cover": 18.9,
+        "si_change_pct": -3.4,
+        "short_shares": 29586873.0,
+        "settlement": "2026-10-15",
         "hot": true
       },
       {
         "ticker": "XPEL",
-        "days_to_cover": 13.0,
-        "si_change_pct": 4.7,
-        "short_shares": 2674596.0,
-        "settlement": "2026-09-30",
+        "days_to_cover": 17.5,
+        "si_change_pct": -0.8,
+        "short_shares": 2654026.0,
+        "settlement": "2026-10-15",
         "hot": true
       },
       {
         "ticker": "RDNT",
-        "days_to_cover": 12.8,
+        "days_to_cover": 17.1,
         "si_change_pct": -3.2,
-        "short_shares": 9361935.0,
-        "settlement": "2026-09-30",
+        "short_shares": 9064501.0,
+        "settlement": "2026-10-15",
         "hot": true
       },
       {
-        "ticker": "EXEL",
-        "days_to_cover": 12.7,
-        "si_change_pct": 6.8,
-        "short_shares": 28183726.0,
-        "settlement": "2026-09-30",
+        "ticker": "IDCC",
+        "days_to_cover": 16.4,
+        "si_change_pct": -3.4,
+        "short_shares": 2729065.0,
+        "settlement": "2026-10-15",
         "hot": true
       },
       {
-        "ticker": "AKR",
-        "days_to_cover": 12.5,
-        "si_change_pct": 10.7,
-        "short_shares": 14050244.0,
-        "settlement": "2026-09-30",
+        "ticker": "TR",
+        "days_to_cover": 16.0,
+        "si_change_pct": 1.4,
+        "short_shares": 2282764.0,
+        "settlement": "2026-10-15",
+        "hot": true
+      },
+      {
+        "ticker": "SLG",
+        "days_to_cover": 15.4,
+        "si_change_pct": 5.4,
+        "short_shares": 12848121.0,
+        "settlement": "2026-10-15",
+        "hot": true
+      },
+      {
+        "ticker": "TPL",
+        "days_to_cover": 14.9,
+        "si_change_pct": 0.1,
+        "short_shares": 4234985.0,
+        "settlement": "2026-10-15",
+        "hot": true
+      },
+      {
+        "ticker": "DEI",
+        "days_to_cover": 14.8,
+        "si_change_pct": 1.6,
+        "short_shares": 31993647.0,
+        "settlement": "2026-10-15",
+        "hot": true
+      },
+      {
+        "ticker": "HASI",
+        "days_to_cover": 14.8,
+        "si_change_pct": 1.9,
+        "short_shares": 14663178.0,
+        "settlement": "2026-10-15",
+        "hot": true
+      },
+      {
+        "ticker": "JBGS",
+        "days_to_cover": 14.4,
+        "si_change_pct": 5.8,
+        "short_shares": 13953611.0,
+        "settlement": "2026-10-15",
+        "hot": true
+      },
+      {
+        "ticker": "PFBC",
+        "days_to_cover": 14.0,
+        "si_change_pct": 4.1,
+        "short_shares": 1399383.0,
+        "settlement": "2026-10-15",
+        "hot": true
+      },
+      {
+        "ticker": "ERIE",
+        "days_to_cover": 13.8,
+        "si_change_pct": -2.4,
+        "short_shares": 2488722.0,
+        "settlement": "2026-10-15",
+        "hot": true
+      },
+      {
+        "ticker": "FOXA",
+        "days_to_cover": 13.8,
+        "si_change_pct": 1.4,
+        "short_shares": 48844725.0,
+        "settlement": "2026-10-15",
+        "hot": true
+      },
+      {
+        "ticker": "SNA",
+        "days_to_cover": 13.8,
+        "si_change_pct": 1.1,
+        "short_shares": 3693236.0,
+        "settlement": "2026-10-15",
+        "hot": true
+      },
+      {
+        "ticker": "ACHC",
+        "days_to_cover": 13.7,
+        "si_change_pct": -8.0,
+        "short_shares": 20939393.0,
+        "settlement": "2026-10-15",
+        "hot": true
+      },
+      {
+        "ticker": "LIF",
+        "days_to_cover": 13.2,
+        "si_change_pct": 1.6,
+        "short_shares": 8179374.0,
+        "settlement": "2026-10-15",
+        "hot": true
+      },
+      {
+        "ticker": "TRIP",
+        "days_to_cover": 13.2,
+        "si_change_pct": 0.6,
+        "short_shares": 38397250.0,
+        "settlement": "2026-10-15",
         "hot": true
       }
     ],
@@ -29837,14 +29837,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "QQQ",
-        "mentions": 25,
-        "sentiment": 0.074
-      },
-      {
         "ticker": "MSFT",
         "mentions": 25,
         "sentiment": 0.015
+      },
+      {
+        "ticker": "QQQ",
+        "mentions": 25,
+        "sentiment": 0.074
       },
       {
         "ticker": "OKLO",
@@ -31506,6 +31506,13 @@
     ],
     "earnings": [
       {
+        "ticker": "AAPL",
+        "next_date": "2026-11-02",
+        "days_to": 0,
+        "eps_forecast": 1.98,
+        "last_surprise_pct": 1.6
+      },
+      {
         "ticker": "BWXT",
         "next_date": "2026-11-02",
         "days_to": 0,
@@ -31516,7 +31523,7 @@
         "ticker": "CLX",
         "next_date": "2026-11-02",
         "days_to": 0,
-        "eps_forecast": 0.99,
+        "eps_forecast": 0.97,
         "last_surprise_pct": 1.2
       },
       {
@@ -31530,28 +31537,21 @@
         "ticker": "FANG",
         "next_date": "2026-11-02",
         "days_to": 0,
-        "eps_forecast": 4.48,
+        "eps_forecast": 4.92,
         "last_surprise_pct": 8.7
       },
       {
-        "ticker": "HALO",
+        "ticker": "FOXA",
         "next_date": "2026-11-02",
         "days_to": 0,
-        "eps_forecast": 2.13,
-        "last_surprise_pct": 25.4
-      },
-      {
-        "ticker": "HIMS",
-        "next_date": "2026-11-02",
-        "days_to": 0,
-        "eps_forecast": 0.07,
-        "last_surprise_pct": -42.9
+        "eps_forecast": 1.99,
+        "last_surprise_pct": 33.6
       },
       {
         "ticker": "IDXX",
         "next_date": "2026-11-02",
         "days_to": 0,
-        "eps_forecast": 3.7,
+        "eps_forecast": 3.71,
         "last_surprise_pct": 8.1
       },
       {
@@ -31562,45 +31562,52 @@
         "last_surprise_pct": -3.1
       },
       {
+        "ticker": "MAR",
+        "next_date": "2026-11-02",
+        "days_to": 0,
+        "eps_forecast": 2.87,
+        "last_surprise_pct": 4.2
+      },
+      {
         "ticker": "OTTR",
         "next_date": "2026-11-02",
         "days_to": 0,
-        "eps_forecast": 1.43,
+        "eps_forecast": 1.57,
         "last_surprise_pct": 12.2
       },
       {
         "ticker": "PLTR",
         "next_date": "2026-11-02",
         "days_to": 0,
-        "eps_forecast": 0.34,
+        "eps_forecast": 0.33,
         "last_surprise_pct": 10.7
       },
       {
-        "ticker": "SPG",
+        "ticker": "ROKU",
         "next_date": "2026-11-02",
         "days_to": 0,
-        "eps_forecast": 3.32,
-        "last_surprise_pct": 3.5
+        "eps_forecast": 0.55,
+        "last_surprise_pct": 93.4
       },
       {
         "ticker": "TGTX",
         "next_date": "2026-11-02",
         "days_to": 0,
-        "eps_forecast": 0.36,
+        "eps_forecast": 0.37,
         "last_surprise_pct": -87.8
       },
       {
         "ticker": "VRTX",
         "next_date": "2026-11-02",
         "days_to": 0,
-        "eps_forecast": 4.3,
+        "eps_forecast": 4.36,
         "last_surprise_pct": 1.2
       },
       {
         "ticker": "WMB",
         "next_date": "2026-11-02",
         "days_to": 0,
-        "eps_forecast": 0.56,
+        "eps_forecast": 0.55,
         "last_surprise_pct": -3.9
       },
       {
@@ -31618,24 +31625,17 @@
         "last_surprise_pct": 433.3
       },
       {
-        "ticker": "AFL",
-        "next_date": "2026-11-03",
-        "days_to": 1,
-        "eps_forecast": 1.81,
-        "last_surprise_pct": -1.1
-      },
-      {
         "ticker": "AMD",
         "next_date": "2026-11-03",
         "days_to": 1,
-        "eps_forecast": 1.64,
+        "eps_forecast": 1.68,
         "last_surprise_pct": 6.7
       },
       {
         "ticker": "AMGN",
         "next_date": "2026-11-03",
         "days_to": 1,
-        "eps_forecast": 5.69,
+        "eps_forecast": 5.74,
         "last_surprise_pct": 12.3
       },
       {
@@ -31649,35 +31649,42 @@
         "ticker": "APO",
         "next_date": "2026-11-03",
         "days_to": 1,
-        "eps_forecast": 2.12,
+        "eps_forecast": 2.04,
         "last_surprise_pct": -12.4
       },
       {
-        "ticker": "AXON",
+        "ticker": "BKNG",
         "next_date": "2026-11-03",
         "days_to": 1,
-        "eps_forecast": 0.48,
-        "last_surprise_pct": 90.0
+        "eps_forecast": 4.48,
+        "last_surprise_pct": 3.7
+      },
+      {
+        "ticker": "DD",
+        "next_date": "2026-11-03",
+        "days_to": 1,
+        "eps_forecast": 1.86,
+        "last_surprise_pct": 6.8
+      },
+      {
+        "ticker": "DEI",
+        "next_date": "2026-11-03",
+        "days_to": 1,
+        "eps_forecast": 0.33,
+        "last_surprise_pct": 2.8
       },
       {
         "ticker": "ETN",
         "next_date": "2026-11-03",
         "days_to": 1,
-        "eps_forecast": 3.53,
+        "eps_forecast": 3.54,
         "last_surprise_pct": 2.3
-      },
-      {
-        "ticker": "EXEL",
-        "next_date": "2026-11-03",
-        "days_to": 1,
-        "eps_forecast": 0.79,
-        "last_surprise_pct": 9.3
       },
       {
         "ticker": "EXPD",
         "next_date": "2026-11-03",
         "days_to": 1,
-        "eps_forecast": 2.12,
+        "eps_forecast": 2.24,
         "last_surprise_pct": 20.8
       },
       {
@@ -31691,7 +31698,7 @@
         "ticker": "LDOS",
         "next_date": "2026-11-03",
         "days_to": 1,
-        "eps_forecast": 3.0,
+        "eps_forecast": 3.04,
         "last_surprise_pct": 12.4
       },
       {
@@ -31702,24 +31709,17 @@
         "last_surprise_pct": 10.3
       },
       {
-        "ticker": "MAR",
-        "next_date": "2026-11-03",
-        "days_to": 1,
-        "eps_forecast": 2.84,
-        "last_surprise_pct": 4.2
-      },
-      {
         "ticker": "MPC",
         "next_date": "2026-11-03",
         "days_to": 1,
-        "eps_forecast": 23.15,
+        "eps_forecast": 25.74,
         "last_surprise_pct": 22.1
       },
       {
         "ticker": "MPLX",
         "next_date": "2026-11-03",
         "days_to": 1,
-        "eps_forecast": 1.13,
+        "eps_forecast": 1.11,
         "last_surprise_pct": 1.9
       },
       {
@@ -31733,7 +31733,7 @@
         "ticker": "PFE",
         "next_date": "2026-11-03",
         "days_to": 1,
-        "eps_forecast": 0.77,
+        "eps_forecast": 0.72,
         "last_surprise_pct": 13.2
       },
       {
@@ -31742,6 +31742,13 @@
         "days_to": 1,
         "eps_forecast": 0.13,
         "last_surprise_pct": -200.0
+      },
+      {
+        "ticker": "PRU",
+        "next_date": "2026-11-03",
+        "days_to": 1,
+        "eps_forecast": 3.32,
+        "last_surprise_pct": 17.6
       },
       {
         "ticker": "PSKY",
@@ -31761,7 +31768,7 @@
         "ticker": "SMCI",
         "next_date": "2026-11-03",
         "days_to": 1,
-        "eps_forecast": 0.94,
+        "eps_forecast": 1.04,
         "last_surprise_pct": 189.3
       },
       {
@@ -31779,11 +31786,11 @@
         "last_surprise_pct": 8.9
       },
       {
-        "ticker": "UBER",
+        "ticker": "TLN",
         "next_date": "2026-11-03",
         "days_to": 1,
-        "eps_forecast": 1.03,
-        "last_surprise_pct": 41.0
+        "eps_forecast": 8.42,
+        "last_surprise_pct": -95.0
       },
       {
         "ticker": "WING",
@@ -31793,10 +31800,17 @@
         "last_surprise_pct": 15.7
       },
       {
+        "ticker": "XYZ",
+        "next_date": "2026-11-03",
+        "days_to": 1,
+        "eps_forecast": 0.68,
+        "last_surprise_pct": 112.5
+      },
+      {
         "ticker": "ZBRA",
         "next_date": "2026-11-03",
         "days_to": 1,
-        "eps_forecast": 4.11,
+        "eps_forecast": 4.21,
         "last_surprise_pct": 61.6
       },
       {
@@ -31807,32 +31821,18 @@
         "last_surprise_pct": null
       },
       {
-        "ticker": "ALGT",
-        "next_date": "2026-11-03",
-        "days_to": 1,
-        "eps_forecast": null,
-        "last_surprise_pct": 72.4
-      },
-      {
-        "ticker": "CTVA",
-        "next_date": "2026-11-03",
-        "days_to": 1,
-        "eps_forecast": null,
-        "last_surprise_pct": 2.7
-      },
-      {
-        "ticker": "HUT",
-        "next_date": "2026-11-03",
-        "days_to": 1,
-        "eps_forecast": null,
-        "last_surprise_pct": 48.0
-      },
-      {
         "ticker": "IBRX",
         "next_date": "2026-11-03",
         "days_to": 1,
         "eps_forecast": null,
         "last_surprise_pct": 11.1
+      },
+      {
+        "ticker": "JBGS",
+        "next_date": "2026-11-03",
+        "days_to": 1,
+        "eps_forecast": null,
+        "last_surprise_pct": null
       },
       {
         "ticker": "RIVN",
@@ -31842,13 +31842,6 @@
         "last_surprise_pct": 22.9
       },
       {
-        "ticker": "SPHR",
-        "next_date": "2026-11-03",
-        "days_to": 1,
-        "eps_forecast": null,
-        "last_surprise_pct": 29.6
-      },
-      {
         "ticker": "ACHC",
         "next_date": "2026-11-04",
         "days_to": 2,
@@ -31856,17 +31849,17 @@
         "last_surprise_pct": 15.2
       },
       {
-        "ticker": "AEE",
+        "ticker": "AFL",
         "next_date": "2026-11-04",
         "days_to": 2,
-        "eps_forecast": 2.27,
-        "last_surprise_pct": 4.6
+        "eps_forecast": 1.8,
+        "last_surprise_pct": -1.1
       },
       {
         "ticker": "ALB",
         "next_date": "2026-11-04",
         "days_to": 2,
-        "eps_forecast": 2.55,
+        "eps_forecast": 2.56,
         "last_surprise_pct": 11.9
       },
       {
@@ -31880,7 +31873,7 @@
         "ticker": "APP",
         "next_date": "2026-11-04",
         "days_to": 2,
-        "eps_forecast": 3.95,
+        "eps_forecast": 3.94,
         "last_surprise_pct": 1.1
       },
       {
@@ -31894,7 +31887,7 @@
         "ticker": "CHYM",
         "next_date": "2026-11-04",
         "days_to": 2,
-        "eps_forecast": 0.08,
+        "eps_forecast": 0.09,
         "last_surprise_pct": 800.0
       },
       {
@@ -31922,15 +31915,15 @@
         "ticker": "CXT",
         "next_date": "2026-11-04",
         "days_to": 2,
-        "eps_forecast": 1.19,
+        "eps_forecast": 1.2,
         "last_surprise_pct": 5.8
       },
       {
-        "ticker": "DBD",
+        "ticker": "DDOG",
         "next_date": "2026-11-04",
         "days_to": 2,
-        "eps_forecast": 1.38,
-        "last_surprise_pct": 0.0
+        "eps_forecast": 0.18,
+        "last_surprise_pct": 38.5
       },
       {
         "ticker": "DRS",
@@ -31947,17 +31940,10 @@
         "last_surprise_pct": 0.2
       },
       {
-        "ticker": "DVN",
-        "next_date": "2026-11-04",
-        "days_to": 2,
-        "eps_forecast": 1.18,
-        "last_surprise_pct": 20.8
-      },
-      {
         "ticker": "EMR",
         "next_date": "2026-11-04",
         "days_to": 2,
-        "eps_forecast": 1.84,
+        "eps_forecast": 1.85,
         "last_surprise_pct": 1.8
       },
       {
@@ -31996,13 +31982,6 @@
         "last_surprise_pct": 216.3
       },
       {
-        "ticker": "IBP",
-        "next_date": "2026-11-04",
-        "days_to": 2,
-        "eps_forecast": 2.72,
-        "last_surprise_pct": 13.7
-      },
-      {
         "ticker": "KHC",
         "next_date": "2026-11-04",
         "days_to": 2,
@@ -32017,24 +31996,17 @@
         "last_surprise_pct": -75.0
       },
       {
-        "ticker": "LYFT",
-        "next_date": "2026-11-04",
-        "days_to": 2,
-        "eps_forecast": 0.22,
-        "last_surprise_pct": -23.5
-      },
-      {
         "ticker": "MCD",
         "next_date": "2026-11-04",
         "days_to": 2,
-        "eps_forecast": 3.37,
+        "eps_forecast": 3.36,
         "last_surprise_pct": 1.8
       },
       {
         "ticker": "MCK",
         "next_date": "2026-11-04",
         "days_to": 2,
-        "eps_forecast": 10.72,
+        "eps_forecast": 10.69,
         "last_surprise_pct": 5.2
       },
       {
@@ -32073,6 +32045,13 @@
         "last_surprise_pct": 12.6
       },
       {
+        "ticker": "MSI",
+        "next_date": "2026-11-04",
+        "days_to": 2,
+        "eps_forecast": 3.99,
+        "last_surprise_pct": 14.6
+      },
+      {
         "ticker": "NOW",
         "next_date": "2026-11-04",
         "days_to": 2,
@@ -32087,6 +32066,13 @@
         "last_surprise_pct": 17.1
       },
       {
+        "ticker": "NWS",
+        "next_date": "2026-11-04",
+        "days_to": 2,
+        "eps_forecast": 0.27,
+        "last_surprise_pct": 133.3
+      },
+      {
         "ticker": "OSW",
         "next_date": "2026-11-04",
         "days_to": 2,
@@ -32094,39 +32080,25 @@
         "last_surprise_pct": 0.0
       },
       {
-        "ticker": "PAA",
+        "ticker": "PODD",
         "next_date": "2026-11-04",
         "days_to": 2,
-        "eps_forecast": 0.42,
-        "last_surprise_pct": 2.5
+        "eps_forecast": 1.59,
+        "last_surprise_pct": 15.3
       },
       {
         "ticker": "PR",
         "next_date": "2026-11-04",
         "days_to": 2,
-        "eps_forecast": 0.58,
+        "eps_forecast": 0.6,
         "last_surprise_pct": 23.2
-      },
-      {
-        "ticker": "PRU",
-        "next_date": "2026-11-04",
-        "days_to": 2,
-        "eps_forecast": 3.48,
-        "last_surprise_pct": 17.6
       },
       {
         "ticker": "QCOM",
         "next_date": "2026-11-04",
         "days_to": 2,
-        "eps_forecast": 1.47,
+        "eps_forecast": 1.46,
         "last_surprise_pct": -0.7
-      },
-      {
-        "ticker": "REZI",
-        "next_date": "2026-11-04",
-        "days_to": 2,
-        "eps_forecast": 0.53,
-        "last_surprise_pct": 22.9
       },
       {
         "ticker": "SBUX",
@@ -32143,13 +32115,6 @@
         "last_surprise_pct": -25.0
       },
       {
-        "ticker": "SRE",
-        "next_date": "2026-11-04",
-        "days_to": 2,
-        "eps_forecast": 1.08,
-        "last_surprise_pct": 14.8
-      },
-      {
         "ticker": "TENB",
         "next_date": "2026-11-04",
         "days_to": 2,
@@ -32157,25 +32122,11 @@
         "last_surprise_pct": 0.0
       },
       {
-        "ticker": "TLN",
+        "ticker": "TPL",
         "next_date": "2026-11-04",
         "days_to": 2,
-        "eps_forecast": 9.62,
-        "last_surprise_pct": -95.0
-      },
-      {
-        "ticker": "TMDX",
-        "next_date": "2026-11-04",
-        "days_to": 2,
-        "eps_forecast": 0.27,
-        "last_surprise_pct": -12.0
-      },
-      {
-        "ticker": "TRGP",
-        "next_date": "2026-11-04",
-        "days_to": 2,
-        "eps_forecast": 2.66,
-        "last_surprise_pct": 25.1
+        "eps_forecast": 2.35,
+        "last_surprise_pct": 4.2
       },
       {
         "ticker": "TRMB",
@@ -32192,11 +32143,11 @@
         "last_surprise_pct": -3.8
       },
       {
-        "ticker": "U",
+        "ticker": "UBER",
         "next_date": "2026-11-04",
         "days_to": 2,
-        "eps_forecast": 0.18,
-        "last_surprise_pct": 75.0
+        "eps_forecast": 0.94,
+        "last_surprise_pct": 41.0
       },
       {
         "ticker": "XPEL",
@@ -32206,11 +32157,39 @@
         "last_surprise_pct": 11.5
       },
       {
+        "ticker": "Z",
+        "next_date": "2026-11-04",
+        "days_to": 2,
+        "eps_forecast": 0.26,
+        "last_surprise_pct": 100.0
+      },
+      {
+        "ticker": "ALGT",
+        "next_date": "2026-11-04",
+        "days_to": 2,
+        "eps_forecast": null,
+        "last_surprise_pct": 72.4
+      },
+      {
         "ticker": "BA",
         "next_date": "2026-11-04",
         "days_to": 2,
         "eps_forecast": null,
         "last_surprise_pct": -123.5
+      },
+      {
+        "ticker": "HUT",
+        "next_date": "2026-11-04",
+        "days_to": 2,
+        "eps_forecast": null,
+        "last_surprise_pct": 48.0
+      },
+      {
+        "ticker": "AEE",
+        "next_date": "2026-11-05",
+        "days_to": 3,
+        "eps_forecast": 2.29,
+        "last_surprise_pct": 4.6
       },
       {
         "ticker": "AMN",
@@ -32220,11 +32199,11 @@
         "last_surprise_pct": 250.0
       },
       {
-        "ticker": "AVAH",
+        "ticker": "AXON",
         "next_date": "2026-11-05",
         "days_to": 3,
-        "eps_forecast": 0.19,
-        "last_surprise_pct": 31.2
+        "eps_forecast": 0.44,
+        "last_surprise_pct": 90.0
       },
       {
         "ticker": "BDX",
@@ -32234,45 +32213,45 @@
         "last_surprise_pct": 2.9
       },
       {
+        "ticker": "CAH",
+        "next_date": "2026-11-05",
+        "days_to": 3,
+        "eps_forecast": 2.92,
+        "last_surprise_pct": 20.2
+      },
+      {
         "ticker": "CERT",
         "next_date": "2026-11-05",
         "days_to": 3,
-        "eps_forecast": 0.06,
+        "eps_forecast": 0.05,
         "last_surprise_pct": -16.7
       },
       {
         "ticker": "COP",
         "next_date": "2026-11-05",
         "days_to": 3,
-        "eps_forecast": 2.58,
+        "eps_forecast": 2.97,
         "last_surprise_pct": 9.5
-      },
-      {
-        "ticker": "DD",
-        "next_date": "2026-11-05",
-        "days_to": 3,
-        "eps_forecast": 1.89,
-        "last_surprise_pct": 6.8
-      },
-      {
-        "ticker": "DDOG",
-        "next_date": "2026-11-05",
-        "days_to": 3,
-        "eps_forecast": 0.18,
-        "last_surprise_pct": 38.5
       },
       {
         "ticker": "DUK",
         "next_date": "2026-11-05",
         "days_to": 3,
-        "eps_forecast": 1.85,
+        "eps_forecast": 1.87,
         "last_surprise_pct": 10.8
+      },
+      {
+        "ticker": "DVN",
+        "next_date": "2026-11-05",
+        "days_to": 3,
+        "eps_forecast": 1.24,
+        "last_surprise_pct": 20.8
       },
       {
         "ticker": "EOG",
         "next_date": "2026-11-05",
         "days_to": 3,
-        "eps_forecast": 4.15,
+        "eps_forecast": 4.45,
         "last_surprise_pct": 1.2
       },
       {
@@ -32283,10 +32262,52 @@
         "last_surprise_pct": 19.6
       },
       {
+        "ticker": "HALO",
+        "next_date": "2026-11-05",
+        "days_to": 3,
+        "eps_forecast": 2.16,
+        "last_surprise_pct": 25.4
+      },
+      {
+        "ticker": "HASI",
+        "next_date": "2026-11-05",
+        "days_to": 3,
+        "eps_forecast": 0.69,
+        "last_surprise_pct": 6.0
+      },
+      {
+        "ticker": "IBP",
+        "next_date": "2026-11-05",
+        "days_to": 3,
+        "eps_forecast": 2.74,
+        "last_surprise_pct": 13.7
+      },
+      {
+        "ticker": "KMB",
+        "next_date": "2026-11-05",
+        "days_to": 3,
+        "eps_forecast": 1.69,
+        "last_surprise_pct": -10.0
+      },
+      {
+        "ticker": "LYFT",
+        "next_date": "2026-11-05",
+        "days_to": 3,
+        "eps_forecast": 0.22,
+        "last_surprise_pct": -23.5
+      },
+      {
+        "ticker": "MAIR",
+        "next_date": "2026-11-05",
+        "days_to": 3,
+        "eps_forecast": 0.3,
+        "last_surprise_pct": 29.2
+      },
+      {
         "ticker": "MCHP",
         "next_date": "2026-11-05",
         "days_to": 3,
-        "eps_forecast": 0.81,
+        "eps_forecast": 0.82,
         "last_surprise_pct": 3.4
       },
       {
@@ -32297,39 +32318,18 @@
         "last_surprise_pct": 3.1
       },
       {
-        "ticker": "NWS",
+        "ticker": "NET",
         "next_date": "2026-11-05",
         "days_to": 3,
-        "eps_forecast": 0.27,
-        "last_surprise_pct": 133.3
-      },
-      {
-        "ticker": "ONTO",
-        "next_date": "2026-11-05",
-        "days_to": 3,
-        "eps_forecast": 2.27,
-        "last_surprise_pct": 14.9
-      },
-      {
-        "ticker": "PCRX",
-        "next_date": "2026-11-05",
-        "days_to": 3,
-        "eps_forecast": 0.48,
-        "last_surprise_pct": 63.0
+        "eps_forecast": 0.02,
+        "last_surprise_pct": -66.7
       },
       {
         "ticker": "PH",
         "next_date": "2026-11-05",
         "days_to": 3,
-        "eps_forecast": 8.1,
+        "eps_forecast": 8.23,
         "last_surprise_pct": 11.8
-      },
-      {
-        "ticker": "PODD",
-        "next_date": "2026-11-05",
-        "days_to": 3,
-        "eps_forecast": 1.59,
-        "last_surprise_pct": 15.3
       },
       {
         "ticker": "PRMB",
@@ -32342,15 +32342,22 @@
         "ticker": "RL",
         "next_date": "2026-11-05",
         "days_to": 3,
-        "eps_forecast": 4.21,
+        "eps_forecast": 4.27,
         "last_surprise_pct": 6.7
       },
       {
         "ticker": "ROK",
         "next_date": "2026-11-05",
         "days_to": 3,
-        "eps_forecast": 3.53,
+        "eps_forecast": 3.55,
         "last_surprise_pct": 3.0
+      },
+      {
+        "ticker": "SARO",
+        "next_date": "2026-11-05",
+        "days_to": 3,
+        "eps_forecast": 0.37,
+        "last_surprise_pct": 14.3
       },
       {
         "ticker": "SNDK",
@@ -32363,8 +32370,36 @@
         "ticker": "SO",
         "next_date": "2026-11-05",
         "days_to": 3,
-        "eps_forecast": 1.65,
+        "eps_forecast": 1.71,
         "last_surprise_pct": 11.9
+      },
+      {
+        "ticker": "SONY",
+        "next_date": "2026-11-05",
+        "days_to": 3,
+        "eps_forecast": 0.38,
+        "last_surprise_pct": 9.1
+      },
+      {
+        "ticker": "SPG",
+        "next_date": "2026-11-05",
+        "days_to": 3,
+        "eps_forecast": 3.32,
+        "last_surprise_pct": 3.5
+      },
+      {
+        "ticker": "SRE",
+        "next_date": "2026-11-05",
+        "days_to": 3,
+        "eps_forecast": 1.18,
+        "last_surprise_pct": 14.8
+      },
+      {
+        "ticker": "TEAM",
+        "next_date": "2026-11-05",
+        "days_to": 3,
+        "eps_forecast": 0.24,
+        "last_surprise_pct": 103.1
       },
       {
         "ticker": "TFX",
@@ -32374,6 +32409,20 @@
         "last_surprise_pct": 37.5
       },
       {
+        "ticker": "TRGP",
+        "next_date": "2026-11-05",
+        "days_to": 3,
+        "eps_forecast": 2.74,
+        "last_surprise_pct": 25.1
+      },
+      {
+        "ticker": "TRIP",
+        "next_date": "2026-11-05",
+        "days_to": 3,
+        "eps_forecast": 0.37,
+        "last_surprise_pct": -4.2
+      },
+      {
         "ticker": "TRUP",
         "next_date": "2026-11-05",
         "days_to": 3,
@@ -32381,25 +32430,11 @@
         "last_surprise_pct": 45.5
       },
       {
-        "ticker": "TTD",
+        "ticker": "U",
         "next_date": "2026-11-05",
         "days_to": 3,
-        "eps_forecast": 0.08,
-        "last_surprise_pct": -36.4
-      },
-      {
-        "ticker": "TTWO",
-        "next_date": "2026-11-05",
-        "days_to": 3,
-        "eps_forecast": 0.4,
-        "last_surprise_pct": -112.5
-      },
-      {
-        "ticker": "XYZ",
-        "next_date": "2026-11-05",
-        "days_to": 3,
-        "eps_forecast": 0.67,
-        "last_surprise_pct": 112.5
+        "eps_forecast": 0.18,
+        "last_surprise_pct": 75.0
       },
       {
         "ticker": "OSCR",
@@ -32412,22 +32447,29 @@
         "ticker": "BRK.B",
         "next_date": "2026-11-06",
         "days_to": 4,
-        "eps_forecast": 5.66,
+        "eps_forecast": 5.91,
         "last_surprise_pct": null
       },
       {
-        "ticker": "CEG",
+        "ticker": "CHTR",
         "next_date": "2026-11-06",
         "days_to": 4,
-        "eps_forecast": 3.99,
-        "last_surprise_pct": 8.1
+        "eps_forecast": 10.06,
+        "last_surprise_pct": 7.0
       },
       {
         "ticker": "ENB",
         "next_date": "2026-11-06",
         "days_to": 4,
-        "eps_forecast": 0.38,
+        "eps_forecast": 0.36,
         "last_surprise_pct": 7.0
+      },
+      {
+        "ticker": "PAA",
+        "next_date": "2026-11-06",
+        "days_to": 4,
+        "eps_forecast": 0.4,
+        "last_surprise_pct": 2.5
       },
       {
         "ticker": "BRK.A",
@@ -32444,6 +32486,34 @@
         "last_surprise_pct": null
       },
       {
+        "ticker": "OKLO",
+        "next_date": "2026-11-06",
+        "days_to": 4,
+        "eps_forecast": null,
+        "last_surprise_pct": -64.7
+      },
+      {
+        "ticker": "CEG",
+        "next_date": "2026-11-09",
+        "days_to": 7,
+        "eps_forecast": 3.9,
+        "last_surprise_pct": 8.1
+      },
+      {
+        "ticker": "HIMS",
+        "next_date": "2026-11-09",
+        "days_to": 7,
+        "eps_forecast": 0.07,
+        "last_surprise_pct": -42.9
+      },
+      {
+        "ticker": "ONTO",
+        "next_date": "2026-11-09",
+        "days_to": 7,
+        "eps_forecast": 2.27,
+        "last_surprise_pct": 14.9
+      },
+      {
         "ticker": "RDNT",
         "next_date": "2026-11-09",
         "days_to": 7,
@@ -32451,18 +32521,18 @@
         "last_surprise_pct": 61.1
       },
       {
-        "ticker": "SARO",
+        "ticker": "TTD",
         "next_date": "2026-11-09",
         "days_to": 7,
-        "eps_forecast": 0.38,
-        "last_surprise_pct": 14.3
+        "eps_forecast": 0.08,
+        "last_surprise_pct": -36.4
       },
       {
-        "ticker": "CRWV",
+        "ticker": "TTWO",
         "next_date": "2026-11-09",
         "days_to": 7,
-        "eps_forecast": null,
-        "last_surprise_pct": 13.2
+        "eps_forecast": 0.49,
+        "last_surprise_pct": -112.5
       },
       {
         "ticker": "LIF",
@@ -32479,6 +32549,20 @@
         "last_surprise_pct": 14.3
       },
       {
+        "ticker": "REZI",
+        "next_date": "2026-11-10",
+        "days_to": 8,
+        "eps_forecast": 0.4,
+        "last_surprise_pct": 22.9
+      },
+      {
+        "ticker": "CRWV",
+        "next_date": "2026-11-10",
+        "days_to": 8,
+        "eps_forecast": null,
+        "last_surprise_pct": 13.2
+      },
+      {
         "ticker": "NBIS",
         "next_date": "2026-11-10",
         "days_to": 8,
@@ -32486,32 +32570,18 @@
         "last_surprise_pct": 82.1
       },
       {
-        "ticker": "OKLO",
-        "next_date": "2026-11-10",
-        "days_to": 8,
-        "eps_forecast": null,
-        "last_surprise_pct": -64.7
-      },
-      {
-        "ticker": "SONY",
-        "next_date": "2026-11-10",
-        "days_to": 8,
-        "eps_forecast": null,
-        "last_surprise_pct": 9.1
-      },
-      {
         "ticker": "CSCO",
         "next_date": "2026-11-11",
         "days_to": 9,
-        "eps_forecast": 1.14,
+        "eps_forecast": 1.15,
         "last_surprise_pct": 9.1
       },
       {
-        "ticker": "CBRS",
+        "ticker": "CTVA",
         "next_date": "2026-11-11",
         "days_to": 9,
-        "eps_forecast": null,
-        "last_surprise_pct": 81.0
+        "eps_forecast": 0.09,
+        "last_surprise_pct": 2.7
       },
       {
         "ticker": "INFQ",
@@ -32528,11 +32598,11 @@
         "last_surprise_pct": 3.5
       },
       {
-        "ticker": "DIS",
+        "ticker": "AVAH",
         "next_date": "2026-11-12",
         "days_to": 10,
-        "eps_forecast": 1.66,
-        "last_surprise_pct": 9.6
+        "eps_forecast": 0.19,
+        "last_surprise_pct": 31.2
       },
       {
         "ticker": "EZPW",
@@ -32549,11 +32619,11 @@
         "last_surprise_pct": 10.0
       },
       {
-        "ticker": "SBH",
+        "ticker": "CBRS",
         "next_date": "2026-11-12",
         "days_to": 10,
-        "eps_forecast": 0.6,
-        "last_surprise_pct": 3.8
+        "eps_forecast": null,
+        "last_surprise_pct": 81.0
       },
       {
         "ticker": "LUNR",
@@ -32571,38 +32641,52 @@
       },
       {
         "ticker": "ACM",
-        "next_date": "2026-11-17",
-        "days_to": 15,
-        "eps_forecast": 1.61,
+        "next_date": "2026-11-16",
+        "days_to": 14,
+        "eps_forecast": 1.57,
         "last_surprise_pct": -133.6
       },
       {
         "ticker": "BIDU",
+        "next_date": "2026-11-16",
+        "days_to": 14,
+        "eps_forecast": 0.57,
+        "last_surprise_pct": -35.3
+      },
+      {
+        "ticker": "DIS",
         "next_date": "2026-11-17",
         "days_to": 15,
-        "eps_forecast": 1.05,
-        "last_surprise_pct": -35.3
+        "eps_forecast": 1.67,
+        "last_surprise_pct": 9.6
       },
       {
         "ticker": "HD",
         "next_date": "2026-11-17",
         "days_to": 15,
-        "eps_forecast": 3.87,
+        "eps_forecast": 3.86,
         "last_surprise_pct": 4.5
+      },
+      {
+        "ticker": "NVDA",
+        "next_date": "2026-11-17",
+        "days_to": 15,
+        "eps_forecast": 2.49,
+        "last_surprise_pct": 6.2
       },
       {
         "ticker": "LOW",
         "next_date": "2026-11-18",
         "days_to": 16,
-        "eps_forecast": 2.88,
+        "eps_forecast": 2.86,
         "last_surprise_pct": 4.3
       },
       {
-        "ticker": "NVDA",
+        "ticker": "P",
         "next_date": "2026-11-18",
         "days_to": 16,
-        "eps_forecast": 2.47,
-        "last_surprise_pct": 10.0
+        "eps_forecast": 0.27,
+        "last_surprise_pct": 21.1
       },
       {
         "ticker": "TJX",
@@ -32629,7 +32713,7 @@
         "ticker": "ESE",
         "next_date": "2026-11-19",
         "days_to": 17,
-        "eps_forecast": 2.58,
+        "eps_forecast": 2.59,
         "last_surprise_pct": 3.8
       },
       {
@@ -32647,6 +32731,13 @@
         "last_surprise_pct": 4.0
       },
       {
+        "ticker": "KEYS",
+        "next_date": "2026-11-19",
+        "days_to": 17,
+        "eps_forecast": 3.09,
+        "last_surprise_pct": 30.6
+      },
+      {
         "ticker": "VEEV",
         "next_date": "2026-11-19",
         "days_to": 17,
@@ -32657,14 +32748,14 @@
         "ticker": "WMT",
         "next_date": "2026-11-19",
         "days_to": 17,
-        "eps_forecast": 0.63,
+        "eps_forecast": 0.64,
         "last_surprise_pct": 11.0
       },
       {
         "ticker": "MOG.A",
         "next_date": "2026-11-20",
         "days_to": 18,
-        "eps_forecast": 2.69,
+        "eps_forecast": 2.7,
         "last_surprise_pct": 39.3
       },
       {
@@ -32673,13 +32764,6 @@
         "days_to": 21,
         "eps_forecast": 1.72,
         "last_surprise_pct": 9.5
-      },
-      {
-        "ticker": "KEYS",
-        "next_date": "2026-11-23",
-        "days_to": 21,
-        "eps_forecast": 3.09,
-        "last_surprise_pct": 30.6
       }
     ],
     "retail": [
@@ -33033,17 +33117,6 @@
         "why": "lobbying: $4,330,000 lobbied \u00b7 material_8k: 3 material 8-Ks (items 1.01, 2.01, 2.03, 5.02, 7.01, 8.01) \u00b7 special_situation: Acquisitions"
       },
       {
-        "ticker": "KMB",
-        "score": 3,
-        "weighted_score": 1.05,
-        "channel_list": [
-          "material_8k",
-          "short_squeeze",
-          "special_situation"
-        ],
-        "why": "material_8k: 5 material 8-Ks (items 1.01, 2.03, 7.01, 8.01) \u00b7 short_squeeze: 14.2d to cover, SI +1% \u00b7 special_situation: Acquisitions"
-      },
-      {
         "ticker": "CVX",
         "score": 3,
         "weighted_score": 1.05,
@@ -33053,6 +33126,16 @@
           "trump"
         ],
         "why": "analyst_upgrade_cluster: net upgrades +14 revision delta \u00b7 special_situation: Divestitures \u00b7 trump: CHEVRON CORP"
+      },
+      {
+        "ticker": "PG",
+        "score": 2,
+        "weighted_score": 1.05,
+        "channel_list": [
+          "material_8k",
+          "trump"
+        ],
+        "why": "material_8k: 3 material 8-Ks (items 7.01, 8.01) \u00b7 trump: Procter & Gamble Co"
       }
     ]
   }

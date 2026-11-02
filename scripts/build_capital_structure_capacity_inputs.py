@@ -263,6 +263,35 @@ def _issuer_rows(path: Path, json_column: str, issuer_id: str, label: str) -> tu
     return tuple(rows)
 
 
+def _instant(value: Any) -> datetime | None:
+    """An aware ISO-8601 instant, or ``None`` when the text is not one."""
+    if not isinstance(value, str) or not value:
+        return None
+    text = value[:-1] + "+00:00" if value.endswith("Z") else value
+    try:
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo is not None else None
+
+
+def _any_visible(records: Sequence[Mapping[str, Any]], as_of: str) -> bool:
+    """Whether any candidate could be visible at ``as_of`` (the resolver's rule).
+
+    Only a record whose ``point_in_time.available_at`` parses and is later than
+    the cutoff counts as not yet visible; an unreadable timestamp or cutoff is
+    left to the resolver, which refuses it as the integrity fault it is.
+    """
+    cutoff = _instant(as_of)
+    if cutoff is None:
+        return True
+    for record in records:
+        available = _instant((record.get("point_in_time") or {}).get("available_at"))
+        if available is None or available <= cutoff:
+            return True
+    return False
+
+
 def _bind_instruments(root: Path, issuer_id: str, as_of: str) -> FamilyEntry:
     """Bind the instruments family, or name why nothing is bound (SPEC_U1B §3)."""
     ledger_path = root / CANDIDATE_TERMS_FILENAME
@@ -273,7 +302,12 @@ def _bind_instruments(root: Path, issuer_id: str, as_of: str) -> FamilyEntry:
             reason_codes=("candidate_terms_not_materialized",),
         )
     records = _issuer_rows(ledger_path, "candidate_term_json", issuer_id, "instrument_candidate_terms")
-    if not records:
+    if not records or not _any_visible(records, as_of):
+        # A candidate compiled after the cutoff is not yet known at ``as_of``:
+        # the nightly compiles candidates after the state step fixes the
+        # cutoff, so an issuer's first candidates are on file one night before
+        # they are visible.  At ``as_of`` none had been materialized — a typed
+        # unavailability, never the resolver's whole-run refusal.
         return FamilyEntry(
             family=INSTRUMENTS_FAMILY,
             support="unavailable",

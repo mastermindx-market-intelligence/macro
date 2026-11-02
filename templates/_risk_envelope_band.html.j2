@@ -68,7 +68,9 @@
    Validates the optional risk_envelope.rotation_context.latest_observation view
    wrapper against the frozen macro.rotation_observation.v1 contract (V1-V7, the
    lib/rotation_observation_notification.py mirror) plus the stricter engine id
-   rule (rotobs_ + 40 lowercase hex), then applies the frozen state precedence.
+   rule (rotobs_ + 40 lowercase hex) and the O06 source-owned ledger receipt
+   (recorded.source/ledger/receipt_sha256), then applies the frozen state
+   precedence. A view that fails any check claims no observation id.
    Envelope verdicts (measured_state, hazard_summary, leadership) NEVER feed this
    state: a quiet market must not hide a qualified observation; a fragile market
    must not create one. #}
@@ -248,6 +250,17 @@
       {% endif %}
     {% endif %}
   {% endif %}
+  {# O06: the view counts only with its source-owned ledger receipt #}
+  {% if not _ew.fail %}
+    {% set _rec = _ew_view.get('recorded') %}
+    {% if _rec is mapping and _rec.get('source') == 'macro.rotation_events.ledger'
+          and _rec.get('ledger') == 'rotation_events/events.jsonl'
+          and _rec.get('receipt_sha256') is string and _rec.get('receipt_sha256')|length == 64 %}
+      {% set _recns = namespace(ok=true) %}
+      {% for _ch in _rec.get('receipt_sha256') %}{% if _ch not in _EW_HEX %}{% set _recns.ok = false %}{% endif %}{% endfor %}
+      {% if not _recns.ok %}{% set _ew.fail = true %}{% endif %}
+    {% else %}{% set _ew.fail = true %}{% endif %}
+  {% endif %}
   {# V8 windows: malformed ones are ABSENT (partial), never a malformed observation #}
   {% if not _ew.fail %}
     {% set _w = _ew_view.get('window_2s') %}
@@ -296,7 +309,7 @@
     {% elif _ew.kind == 'reversal' %}{% set _ew.state = 'reversal' %}
     {% else %}{% set _ew.state = 'observed' %}{% endif %}
   {% endif %}
-  {% if _ew.fail %}{% set _ew.state = 'unreadable' %}{% endif %}
+  {% if _ew.fail %}{% set _ew.state = 'unreadable' %}{% set _ew.oid = '' %}{% endif %}
 {% else %}
   {# no observation: scoped unavailability, never a market verdict; a present
      non-object wrapper fails V1 and is unreadable, not absent (frozen §B.2) #}
