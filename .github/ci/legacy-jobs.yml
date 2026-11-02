@@ -16881,6 +16881,21 @@ jobs:
       - "templates/navigation-refresh.css"
       - "tests/test_gmi_explorer_*.py"
       - "tests/test_gmi_reason_codes.py"
+      # Widened 2026-11-01 (seat merge of main f50fc7b7 into #10099): #10178's
+      # identity reader now reaches the SEC document spine / fundamental
+      # forensics chain via lib/dataos identity -> engine/neuralweb
+      # market_memory_identity_candidate; the closure test names these.
+      - "collectors/edgar_forensics.py"
+      - "collectors/fundamental_forensics_*.py"
+      - "collectors/sec_document_spine.py"
+      - "collectors/sec_filing_parser.py"
+      - "collectors/sec_request_pacer.py"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/fundamental_forensics/**"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
+      - "research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json"
+      - "research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
