@@ -2838,7 +2838,9 @@
     // Receipts line: own-history depth + base rates, or the plain-word null form.
     var h = w.history || {};
     var n = (h.n == null) ? 0 : h.n;
-    var dp = (w.depth_pctile == null) ? '—' : w.depth_pctile;
+    // A turn's headline names the crossing event; a watch names current depth.
+    var depth = isTurn ? w.depth_pctile_at_cross : w.depth_pctile;
+    var dp = (depth == null) ? '—' : depth;
     var receipts;
     if (n < 8 || h.med_13w == null || h.med_26w == null) {
       // Hybrid null form: the depth receipt stands even when the base-rate

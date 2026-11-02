@@ -725,3 +725,58 @@ def test_short_history_is_insufficient_not_a_silent_none():
 
 if __name__ == "__main__":  # pragma: no cover
     pytest.main([__file__, "-x", "-q"])
+
+
+def test_stock_chip_binds_turn_depth_to_cross_receipt():
+    """Whole chip function: turn receipts name the crossing, watches current depth."""
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is required for the stock chip source regression")
+    root = Path(__file__).resolve().parents[1]
+    receipt = compute_symbol_washout(
+        _extend_weeks(_deep_washout_then_turn(), [0.03, 0.03, 0.03])
+    )
+    assert receipt["state"] == STATE_TURN
+    assert receipt["depth_pctile"] != receipt["depth_pctile_at_cross"]
+    program = r"""
+const fs = require('node:fs');
+const vm = require('node:vm');
+const assert = require('node:assert/strict');
+const {source, receipt} = JSON.parse(fs.readFileSync(0, 'utf8'));
+const start = source.indexOf('  function renderWashoutTurn(d) {');
+const end = source.indexOf('\n  }', start) + 4;
+assert(start >= 0 && end > start);
+const fn = source.slice(start, end);
+const missing = {...receipt}; delete missing.depth_pctile_at_cross;
+const cases = [
+  [receipt, receipt.depth_pctile_at_cross],
+  [{...receipt, state:'TURN_WATCH'}, receipt.depth_pctile],
+  [{...receipt, state:'FUTURE_STATE'}, receipt.depth_pctile],
+  [{...receipt, depth_pctile_at_cross:0}, 0],
+  [{...receipt, depth_pctile_at_cross:null}, '—'],
+  [missing, '—'],
+  [{...receipt, history:{n:2, med_13w:null, med_26w:null}}, receipt.depth_pctile_at_cross],
+];
+for (const zh of [false, true]) {
+  for (const [w, depth] of cases) {
+    const box = {innerHTML:'', style:{display:'none'}};
+    const context = {el:()=>box, lz:(en,cn)=>zh?cn:en,
+      esc:s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'),
+      Date:{now:()=>Date.parse(receipt.data_through+'T00:00:00Z'), parse:Date.parse}, isFinite};
+    vm.createContext(context);
+    vm.runInContext(fn+'\nrenderWashoutTurn('+JSON.stringify({washout_turn:w})+');', context);
+    assert.equal(box.style.display, '');
+    assert(box.innerHTML.includes(zh ? '深度：自身历史最低 '+depth+'%' : 'depth: bottom '+depth+'%'));
+    assert(box.innerHTML.includes(zh ? '窗口而非定论' : 'windows, not certainties'));
+  }
+}
+"""
+    subprocess.run(
+        [node, "-e", program],
+        input=json.dumps({"source": (root / "templates/stock.html.j2").read_text(),
+                          "receipt": receipt}),
+        text=True, check=True, capture_output=True,
+    )
