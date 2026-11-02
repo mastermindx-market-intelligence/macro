@@ -25,6 +25,10 @@
 # prod_capture.json locale, Watch-stance drift census + apostrophe record, test-asserted HOLD sentence, boards_manifest rows 23-41 per board, png_px current;
 # boards 0-41; round 6 dual review). SIC-V5-C13: proposed_artifact.frozen_sha and manifest.yml frozen_sha both read 204500aa — asserted equal by the seat's
 # refreeze5.py before it finishes (revision_mandate_round5 at the end of this file).
+# Round 6 at 204500aa: Reviewer B PASS/PASS (no conditions; VTC-043..046 minor advisory, non-binding) / Reviewer A PASS_WITH_CONDITIONS/
+# PASS_WITH_CONDITIONS (PRC-046..048 minor record/test/deck findings, PRC-049 minor from the rationale) → verdict REVISE round 6 with
+# SIC-V6-C01..C09 (C05..C08 the authority-adopted polish, C09 the re-render discipline) and SIC-ADJ-04 (approval binds to the shipped
+# bytes); repair wave 6 → re-freeze → confirmatory round 7 (revision_mandate_round6 is appended at the wave-6 re-freeze).
 schema: mastermind.rig_proposal.v1
 reference_id: sector-intelligence-cycles-20261021
 proposed_artifact:

@@ -1,15 +1,15 @@
-# RIG round 5 receipt — normalized from critic_return/*_visual_taste.md (byte-exact agent returns) by the seat's rig_normalize5.py; values copied, not rewritten.
+# RIG round 6 receipt — normalized from critic_return/*_visual_taste.md (byte-exact agent returns) by the seat's rig_normalize6.py; values copied, not rewritten.
 schema: mastermind.rig_review.v1
 reference_id: sector-intelligence-cycles-20261021
 role: visual_taste
-artifact_sha: 66829d178798f9226be7f668e82fe7c15e38b5e4
-review_round: 5
+artifact_sha: 204500aa619c95677eee8f3bb2133f454847f792
+review_round: 6
 supersedes:
-  artifact_sha: 1ad748c8e785eda0a3e1f13167a9290c194d07ae
-  receipt: reviews/round4_1ad748c8/visual_taste.yml
+  artifact_sha: 66829d178798f9226be7f668e82fe7c15e38b5e4
+  receipt: reviews/round5_66829d17/visual_taste.yml
 reviewer:
-  identity: opus-auditor-visual-taste-sic-20261021-r5
-  model: 'claude-opus-5-5 (native reviewer agent a48a38779cafe1df4, ROUTE: review, MODE: READ_ONLY; the round-4
+  identity: opus-auditor-visual-taste-sic-20261021-r6
+  model: 'claude-opus-5-5 (native reviewer agent a48a38779cafe1df4, ROUTE: review, MODE: READ_ONLY; the round-5
     agent resumed by message, no re-spawn)'
   independent_of_author: true
   prior_design_participation: false
@@ -19,193 +19,266 @@ quarantine:
   - user/business job (baseline.yml user_job)
   - production-before artifact (16 served-site captures + production source paths)
   - proposed-after artifact (42 frozen boards 0-41 incl. HTML specimen boards 23-41 + design_refs/sector-paper-20261021
-    at 66829d17)
-  - capability ledger (baseline.yml) + 9-row user task manifest + the reviewer's own round-4 receipt (reviews/round4_1ad748c8/<role>.yml)
-  - the round-4 verdict conditions SIC-V4-C01..C10 (compressed) and the adjudications SIC-ADJ-02 / SIC-ADJ-01a /
-    SIC-ADJ-01 as stated in the commission
+    at 204500aa)
+  - capability ledger (baseline.yml) + 9-row user task manifest + the reviewer's own round-5 receipt (reviews/round5_66829d17/<role>.yml)
+  - the round-5 verdict conditions SIC-V5-C01..C13 (compressed) and the adjudications SIC-ADJ-03 / SIC-ADJ-02 /
+    SIC-ADJ-01a / SIC-ADJ-01 as stated in the commission
   first_pass_path: critic_return/first_pass_visual_taste.md
   rationale_received_after_first_pass: true
 first_pass:
   frozen_at: '2026-11-02T02:16:38.104Z'
-  verdict: PASS_WITH_CONDITIONS
-  verdict_as_filed: PASS_WITH_NOTES
-  round4_dispositions:
+  verdict: PASS
+  round5_dispositions:
+  - finding: VTC-035
+    severity: minor
+    status: cured
+    evidence: components/zh_latin_grep.py SKIP_TAGS has no code, so <code> on a ZH face now counts. <details> is
+      skipped wholesale. The ZH context card points to the page foot (版本号见页底「生成于」, boards 34/35/41) and no longer
+      prints the schema or epoch. Every zh-latin=0 line states its scope and exempted tokens (cycles_repair/capture.log
+      wave 5 lines 36-43; brief_repair/capture.log lines 35, 38, 39, 41).
+  - finding: VTC-036
+    severity: minor
+    status: cured
+    evidence: cycles.css:46 .cyc-outline is an even neutral 1px outline. Clocks chips use it (build_cycles.py:137;
+      cycles.html:286/298/310), and so do the parity chip (:205) and the overdue chip (:216). Assert :448 allows
+      exactly one cyc-warn class in the page, and "cyc-warn" is not in the cards. On boards 28/29/34/35/41 the doctrine
+      chip is the only warn-ink chip on each card. The ladder chip has left the stance row (stance_row :266-276).
+  - finding: VTC-037
+    severity: minor
+    status: cured
+    evidence: Each card has one Clocks block (card order :278-292). The hazard, rhythm and read sections are not
+      drawn while their clock disagrees (:184-242 return ""). The withheld sentence appears once per card, inside
+      the drawer (card_prov :251). It occurs 6 times in cycles.html only because the composite desk duplicates the
+      three cards. No Descriptive rhythm chip reaches a live card at this dataset.
+  - finding: VTC-038
+    severity: minor
+    status: cured
+    evidence: The ZH PRIOR fixture title and body use 先验 (fixture_prior :332; boards 34/35/41). There is no doctrine_stance
+      field name on any face. The null fixture reads Stance unavailable in plain words (board 28).
+  - finding: VTC-039
+    severity: minor
+    status: cured
+    evidence: Desk chips 生产截图 / 深色主题截图 / 英文界面截图 / 截至 2026-10-20 are on the face (cycles.html desk :315; board 41).
+      boards_manifest.yml:1153 and proposal.yml:327 declare the crop as dark-theme and EN-interface, and both limit
+      the ZH deck claim to the specimen deck (manifest :1154). Board 40 carries the EN-interface chip (manifest
+      :1124, proposal :322).
+  - finding: VTC-040
+    severity: minor
+    status: cured
+    evidence: 'Manifest rows list only the drawn stances (28 :760, 29 :795, 30 :824, 34 :942, 39 :1097, 41 :1152;
+      fixtures draw no stance chip). EN rows 23/24/26/28/29/31/37/39/40 carry no ZH strings. GLP-1 is spelled correctly
+      (:685, :883, :912, :1069). The per-board wave bullets are distinct prose. Residual, not a finding: short state
+      tags such as "rotation clocks aligned (fresh)" and the stance-pair tags repeat across rows; these are tags,
+      not wave bullets.'
+  - finding: VTC-041
+    severity: none
+    status: withdrawn
+    evidence: This id was never filed in the round-5 pass-1 or pass-2 receipt (pass 1 filed VTC-035..040; pass 2
+      added VTC-042). No substance is carried under this id.
+  - finding: VTC-042
+    severity: minor
+    status: cured
+    evidence: 'For boards 23-41, png_px in boards_manifest.yml, proposal.yml screenshots notes and the capture logs
+      agree: 23/24 1440x2752, 25/38 390x4604, 26 390x4625, 27 1440x1026, 28/29 1440x2343, 30/36 390x4327, 31 390x4879,
+      32/33 1440x2777, 34/35 1440x2225, 37 390x4860, 39 390x4775, 40 1440x3400, 41 1440x3262. The board-39 note
+      names the SIC-V4-C03 disagree states per card (proposal.yml:317; manifest :1097).'
+  findings:
+  - id: VTC-043
+    severity: minor
+    title: ZH clock lines use the stiff "X为Y" construction
+    finding: cycles.html:286/298/310 render lines such as 节律时钟为下一拐点顶部 and 风险时钟为向上段，趋向顶部 on boards 30/34/35/36/41.
+      They read as transliterated field assignment, not as a desk sentence.
+    cure: Use a verb construction, for example 节律时钟显示下一拐点为顶部 or 风险时钟：向上段，趋向顶部. The neutral outline chip and the
+      two-clock naming stay as they are.
+  - id: VTC-044
+    severity: minor
+    title: The XLC card is mostly empty on the desktop 3-up grid, and the Clocks caveats come before the read
+    finding: With hazard, rhythm and read all withheld, the XLC face is the head, the stance and a three-line Clocks
+      block. Its column leaves about 280px of empty card height beside XLF/XLK (boards 28/29/34/35/41). The card
+      order at build_cycles.py:278-292 also puts clocks_block above the hazard/rhythm/read sections on every card,
+      so the caveats come before the readings they qualify.
+    cure: Either let a card whose sections are all withheld size to its content (align-self:start or grid auto rows)
+      with a one-line plain withheld summary, or move clocks_block below the drawn sections so a reader sees the
+      reading first and then its caveat.
+  - id: VTC-045
+    severity: minor
+    title: The methods-card parity chip stretches to the full card width
+    finding: build_cycles.py:297/303 places the Live parity unproven / 实时一致性未证实 outline chip directly in the flex-column
+      .cyc-method, so it stretches the full width (methods card 1 on boards 28/34/35/41). Everywhere else the same
+      chip is intrinsic width.
+    cure: Add align-self:flex-start (or wrap the chip in a row) so the chip keeps its intrinsic width, as the hazard-section
+      parity chip does.
+  - id: VTC-046
+    severity: minor
+    title: '"Clocks" names two different objects on one face'
+    finding: The page-level generation chip reads "aligned" (cycles.html:373, settled_daily_session status aligned),
+      and the fixture banner reads "Clocks aligned on the history day 2026-10-16". Meanwhile every live card says
+      Clocks with Ladder/Rhythm/Hazard disagrees. The manifest tags these boards "rotation clocks aligned (fresh)"
+      next to per-card clock disagreements (rows 28/34/35/36/39). A reader can take "clocks aligned" and "clocks
+      disagree" as a contradiction.
+    cure: Rename the page-level alignment by its object, for example Data session aligned / 数据交易日一致, in the face
+      chip, the fixture banner and the manifest state tag. "Clock" then means only the per-card phase/hazard/rhythm/read
+      clocks.
+  strengths:
+  - The one-block Clocks design is calm in both themes. Neutral even outlines and two-clock naming replace the scattered
+    warn chips of round 5.
+  - The producer-stamped doctrine chip is now visually unique on each card, and the build assert at :448 enforces
+    this.
+  - Identifiers are off every ZH face. Every zh-latin=0 claim states its exact scope and exempted tokens, so the
+    claim is now falsifiable.
+  - The composite desk states its crop locale and theme on the face and in both records. The ZH claim is honestly
+    limited to the specimen deck.
+  - Dark (29/35/39) and light (28/34/36) are each a designed composition, not a token swap. Mobile recompositions
+    are single column with no overflow.
+  - The manifest, proposal and capture-log png_px values agree for every board 23-41.
+  round1_residuals: []
+  rig: sector-intelligence-cycles-20261021
+  issue: 'macro #7646'
+  mode: READ_ONLY
+  tree_check: HEAD af9d7ed3; git diff --stat 204500aa is empty for design_refs/sector-paper-20261021 and mockups/refs/reference_integrity/sector-intelligence-cycles-20261021.
+    research/reference_integrity/sector-intelligence-cycles-20261021/proposal.yml differs from the frozen sha in
+    the working tree (+88/-1, the post-freeze record). Only its screenshots entries (lines 233-327) were judged,
+    and they agree with the frozen manifest and capture logs.
+  inputs_opened_pass1:
+  - design_refs/sector-paper-20261021/cycles_repair/build_cycles.py
+  - design_refs/sector-paper-20261021/cycles_repair/cycles.css
+  - design_refs/sector-paper-20261021/cycles_repair/cycles.html
+  - design_refs/sector-paper-20261021/cycles_repair/capture.log
+  - design_refs/sector-paper-20261021/brief_repair/capture.log
+  - design_refs/sector-paper-20261021/components/zh_latin_grep.py
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/boards_manifest.yml (rows 23-41,
+    capability_boards)
+  - research/reference_integrity/sector-intelligence-cycles-20261021/proposal.yml (screenshots entries 17-41 only,
+    lines 200-327)
+  - PNGs 28, 30, 34, 35, 41
+  not_opened:
+  - proposal.yml dispositions / revision_mandate_round5 / wave5_summary
+  - verdict.yml
+  - continuity.yml
+  - reviews/product_regression.yml and every product_regression receipt (critic_return, round5_66829d17, round4_1ad748c8)
+  - agentos/**, .claude/**, research/sector_completion_20261021/**, scratchpad/memory
+  - Reviewer A task output a29cc1ce
+  - PNGs 29, 31, 36, 39, 40 (judged from DOM, CSS and capture-log probes, not by direct viewing)
+  conditions: []
+  round4_carried_dispositions:
   - finding: VTC-029
     status: cured
-    evidence: 'Judged under SIC-ADJ-02. engine/cycle_ontology.py:143-150 DOCTRINE_STANCES zh is 行动 / 做好准备 / 观察 ——
-      别追 / 保护利润 / 暂时观望 / 忽略. Import-time asserts at :190-195 block any collision with an engine STANCES zh word
-      and any 观望 in Watch. Cycles: the XLF/XLK chip reads 观察 —— 别追 and the XLC chip reads 保护利润 (cycles.html:327,
-      :340, :353; boards 34/35/41). Brief: the lane titles read 行动 / 做好准备 / 观察 —— 别追 / 保护利润 / 暂时观望 and the bottoming
-      chip reads 观察 —— 别追 (boards 32/38). No face uses 观望 for Watch.'
+    evidence: The ZH doctrine vocabulary is 观察 —— 别追 / 保护利润 on boards 30/34/35/36/41 (SIC-ADJ-02). One doctrine
+      chip per face.
   - finding: VTC-028
     status: cured
-    evidence: A hazard leg or rhythm projection now reaches a face only when it agrees with the phase_v2 family.
-      XLF and XLK draw the down · trough ladder (cycles.html:331, :344). The XLC up · peak ladder is replaced by
-      the labeled Hazard clock disagrees state (:356). Every rhythm next_turn=peak appears as Rhythm clock disagrees,
-      with the window drawer-only (:332, :345, :357; boards 28/34/35/41).
+    evidence: The engine word is drawer-only. A null stance shows a muted Stance unavailable (fixture_null :353;
+      board 28).
   - finding: VTC-030
     status: cured
-    evidence: 'Four distinct labels: Ladder disagrees, Read disagrees, Hazard clock disagrees, Rhythm clock disagrees.
-      Each names both clocks in plain words. The ladder state is glossed "timing ladder says uptrend" / 时序阶梯为上涨趋势
-      (cycles.html:327); RALLY ON appears only in the drawer (:333). XLF matches its family and shows no Read state
-      (:333). XLC shows Read + Hazard + Rhythm (:356-357).'
+    evidence: The disagreeing-clock rule holds. Each disagreeing clock gets one line that names both clocks, and
+      the dependent section is withheld (clock_lines :111-133).
   - finding: VTC-031
     status: cured
-    evidence: 'The desk figcaption carries the clock note: legacy now.phase versus the cards'' phase_v2 (cycles.html:320
-      cyc-desk-clock). It is rendered on board 41 under the production crop, in EN and ZH.'
+    evidence: The desk clock note uses plain words (旧版周期读数 / 阶段时钟). The identifiers are in the desk drawer only
+      (cycles.html :317).
   - finding: VTC-032
     status: cured
-    evidence: boards_manifest.yml rows 32/33 (:910-919, :940-949) no longer list lane titles + production qualifiers
-      or coverage unavailable. A wider overclaim of the same class is filed as VTC-040.
-  - finding: VTC-033
-    status: withdrawn
-    evidence: 'The round-4 pass-2 withdrawal still holds: SIC-V3-C17 mandates the field shape on the fixture face.
-      A different fixture-copy defect is filed as VTC-038.'
+    evidence: The coverage-unavailable line is not drawn on the Brief boards (manifest :627, :882, :911). The PNGs
+      are unchanged since wave 4.
   - finding: VTC-034
     status: cured
-    evidence: The ZH reads say 金融处于回落中阶段，位于200日均线上方 and 科技处于回落中阶段，位于200日均线上方 (cycles.html:332, :345; board 34).
-      The drawer tone lines read 持有 · 语气 看涨 and 高风险反弹 · 语气 谨慎 (:333, :346).
+    evidence: The ZH read reads 位于200日均线上方 (cycles.html :287/:299). The methods card reads 领先滞后：不作声明.
   - finding: VTC-021
     status: cured
-    evidence: On the ZH faces the only word for Rolling over is the production chip label 回落中 (cycles.html:326-332,
-      :339-345, :352-357; boards 34/35/41). 下行 appears only in the cyc-prov drawers (:302, :314, :333, :346, :358).
-      筑底中 appears only inside the XLC Read-disagrees state (:357).
+    evidence: Labeled dashed Fixture cards follow the live grid (cycles.css:151). The fixture label is printed (board
+      31 banner).
   - finding: VTC-024
     status: cured
-    evidence: 'Methods card 4 now reads "Lead-lag: no claim" / 领先滞后：不作声明 (cycles.html:373; boards 28/34/35). W5.1
-      survives only in the drawer <code>. The tokenizer now catches letter+digit and letter+punctuation tokens and
-      lone letters (zh_latin_grep.py:33). The ZH hazard heads are 转折≤1月 / ≤3月 / ≤6月. The residual <code> scope gap
-      is filed as VTC-035.'
+    evidence: Dark board 35 and light board 34 are each a designed composition. On dark, the outline chips stay
+      legible and keep separate from the warn doctrine chip.
   - finding: VTC-016
     status: cured
-    evidence: This row was tied to VTC-024; W5.1 is now off both faces (cycles.html:373).
-  findings:
-  - id: VTC-035
-    severity: minor
-    finding: 'zh-latin=0 is proven only for non-code text, because zh_latin_grep.py:5 and :15 exempt every <code>
-      element. Two places still put letter-plus-digit identifiers on ZH faces. The context card on boards 30/34/35/36/41
-      shows sector_cycles.semantic_families.v2 and price_c4414dcb. The board 41 desk caption shows site/sector_cycles.html,
-      d86344b93a0b, chrome-headless-1x, now.phase and phase_v2 as visible mono pills (cycles.html:320). SIC-V4-C05
-      bars "any letter-plus-digit id", and both capture.log wave 4 (:21) and manifest row 41 (:1211) rely on the
-      exemption. Severity is minor because the context-card tokens were accepted in round 4 and the desk is a declared
-      review instrument. Cure: either state the <code> exemption in C05, or move the caption identifiers into the
-      drawer and name the clocks in plain ZH.'
-  - id: VTC-036
-    severity: minor
-    finding: 'The one authoritative doctrine chip (SIC-ADJ-01) uses the same warn ink, fill and shape as every caveat
-      chip (Ladder/Hazard/Rhythm/Read disagrees, Live parity unproven). This holds on boards 28/34 (light) and 35
-      (dark). The XLF Ladder disagrees chip sits inside cyc-stance-row (cycles.html:327), on the same line as 观察
-      —— 别追, so it reads as a second stance. XLC shows Protect gains among three identical amber chips. Cure: give
-      the clocks chips a distinct neutral or outline treatment, and move the ladder chip to its note line.'
-  - id: VTC-037
-    severity: minor
-    finding: 'The same withheld-state boilerplate repeats on every card. "The projected window and its overdue flag
-      are kept in the provenance drawer..." appears three times (cycles.html:332, :345, :357). A Descriptive rhythm
-      chip heads a section that draws no rhythm. The XLC face draws no hazard, no timing and no read: only three
-      chip + sentence + paragraph stacks (boards 28/34/35). Cure: one compact clocks-disagree block per card with
-      a single drawer footnote.'
-  - id: VTC-038
-    severity: minor
-    finding: 'Fixture copy has two problems. (1) The ZH PRIOR fixture title and body say PRIOR (cycles.html:363,
-      :365), but the ZH cell badges below them read 先验 (:366; boards 34/35/41). (2) The EN body of the null-stance
-      fixture shows the field id "(doctrine_stance null)" on the face (:371; board 28). Cure: use 先验 (PRIOR) in
-      the ZH copy, and plain words in place of the field id.'
-  - id: VTC-039
-    severity: minor
-    finding: 'The board 41 production crop is the English-language production render (Sector rotation overlay, Where
-      they stand, Rolling over 2, Bottoming 5) on a ZH board. The face chips declare only the dark-theme capture
-      (cycles.html:318), not the language. Manifest row 41 (:1211) claims "ZH deck copy end-to-end". Cure: declare
-      the crop as an English-interface capture on the face, or capture production at lang=zh.'
-  - id: VTC-040
-    severity: minor
-    finding: The wave-4 states_shown bullet is boilerplate copied onto every Cycles row, and it lists states the
-      boards do not draw. EN rows 31/39/40 (boards_manifest.yml:889, :1149, :1178) claim ZH vocabulary and ZH phase
-      words. Every Cycles row lists 做好准备 and 暂时观望, but Cycles draws only Watch and Protect (cycles.html:327, :340,
-      :353). Rows 32/33/38 (:919, :949, :1121) still cite GLP-, but the allow file says GLP-1. This is the SIC-V2-C07
-      class.
-  strengths:
-  - The one-family clock rule gives each Cycles face a single coherent story. Every disagreement is labeled, names
-    both clocks, and keeps its cells in the drawer (boards 28/34/35/41).
-  - One ZH doctrine vocabulary now runs from the engine through Cycles and the Brief, and import-time asserts protect
-    it (engine/cycle_ontology.py:190-195).
-  - Light (28/32/34/41) and dark (35) each read as designed themes. Surfaces are neutral, borders even, and there
-    are no container edge stripes. Fixtures are dashed and labeled, and gap cells are drawn as gaps, never as zero.
-  - Board 41 declares on its face that the production crop is a dark capture, and its C08 clock note explains why
-    the chart counts differ from the cards.
-  round1_residuals: []
-  conditions:
-  - 'VTC-036: give the doctrine chip a treatment distinct from the caveat chips, and move the XLF ladder chip out
-    of the stance row.'
-  - 'VTC-037: consolidate the withheld states into one compact disagree block with a single drawer footnote.'
-  - 'VTC-035 / VTC-039: write the desk caption in plain ZH with the identifiers in the drawer, and declare on board
-    41 that the crop is EN-language.'
-  - 'VTC-038 / VTC-040: fix the fixture PRIOR/先验 wording and the null-stance field id, and trim the manifest states_shown
-    per board.'
+    evidence: Mobile boards 30/31/36/39 are one column with ovf="" and switcher=6 (capture.log wave 5).
+  advisory_notes: VTC-043..046 are polish (minor under the RIG severity law). None of them violates doctrine or
+    worsens the core object. They are recorded for the builder as non-binding follow-ups and are not merge conditions.
+  verdict_as_filed: PASS
   quarantine_breaches: []
 second_pass:
-  amended_at: '2026-11-02T04:04:20.066Z'
+  amended_at: '2026-11-02T05:58:22.893Z'
   rationale_received: true
   amendments:
-  - finding: VTC-035
+  - finding: VTC-043
+    action: upheld
+    note: The seat accepts the finding and names the exact deck source (copy_deck.json:177/178). The proposed verb/colon
+      wording (风险时钟：向上段，趋向顶部 · 阶段时钟显示回落中，下一拐点为底部; 节律时钟显示下一拐点为顶部) is an adequate cure. Severity stays minor because
+      it is polish on correct, legible copy, so it is not a condition.
+  - finding: VTC-044
     action: upheld
     action_as_filed: reworded
-    note: Answer to the author's question. A stated exemption is sufficient only for drawers, not for faces. - The
-      drawer does not have to be zh-latin=0. SIC-ADJ-01 already places engine words and identifiers in the labeled
-      provenance drawer (verdict.yml:30, :72). - SIC-V4-C05 (verdict.yml:54) says "no internal study id ... on either
-      face". That bars a letter-plus-digit id on the face whether or not it sits in <code>. - A written exemption
-      alone leaves the hole open. zh_latin_grep.py:5 and :15 skip <code> wherever it appears, so a face <code> id
-      would still pass the probe. - The cure must therefore keep the <details> (drawer) skip and stop skipping <code>
-      outside a drawer. Moving the context-card and desk-caption identifiers into drawers is the right cure. Severity
-      stays minor.
-  - finding: VTC-036
+    note: 'The seat explains that clock trust gates the reading of the sections beneath it (wave-5 IA, SIC-V5-C07/C08).
+      That is a sound IA reason to keep clocks_block above hazard/rhythm/read: a reader should meet the disagreement
+      before a reading it qualifies. I withdraw the "caveats come before the read" half. The finding is reworded
+      to the empty-band half only (the XLC card leaves about 280px of empty card height in the desktop 3-up grid
+      on boards 28/29/34/35/41). The seat''s cure, .cyc-cards align-items:start, is adequate for it. Minor, not
+      a condition.'
+  - finding: VTC-045
     action: upheld
-    action_as_filed: reworded
-    note: Answer to the author's question. Use outline-neutral chips, not plain text labels. - A chip keeps each
-      disagree state scannable as a state and keeps the four labels parallel in EN and ZH. Plain text would merge
-      into the explanatory sentence that follows it (boards 28/34). - The outline must be an even all-round neutral
-      border with neutral or muted ink, never warn ink or fill. It must not be a one-sided rule, because the CLAUDE.md
-      permanent visual rule bans edge accents. - "Live parity unproven" is also a caveat chip. It must take the
-      same neutral treatment, or the doctrine chip is still not the only warn chip on the card (board 28, XLF hazard
-      section). Severity stays minor.
-  - finding: VTC-039
+    note: .cyc-method .spc-chip{align-self:flex-start} is exactly the cure I proposed and is adequate. Minor, not
+      a condition.
+  - finding: VTC-046
     action: upheld
-    action_as_filed: reworded
-    note: 'The scope widens to the proposal record. proposal.yml:316-317 lists board 41 with locale ZH and declares
-      only the dark-theme capture, not that the crop is the EN-language production render. The locale declaration
-      therefore has to be added in three places: the face chip, boards_manifest row 41 and proposal.yml screenshots
-      entry 41. Keeping the d86344b93a0b crop instead of re-capturing it is accepted. Severity stays minor.'
-  verdict: PASS_WITH_CONDITIONS
-  conditions:
-  - 'VTC-035a: components/zh_latin_grep.py skips <details> (drawer) content but no longer skips <code> outside <details>.
-    capture.log reports zh-latin=0 under that rule on boards 25/30/32/33/34/35/36/38/41.'
-  - 'VTC-035b: no ZH face outside a <details> drawer carries sector_cycles.semantic_families.v2, price_c4414dcb,
-    site/sector_cycles.html, d86344b93a0b, chrome-headless-1x, now.phase or phase_v2. Board 41''s desk caption names
-    both clocks in plain ZH, with the identifiers in the drawer. Every capture.log line that claims zh-latin=0 states
-    the exemption scope.'
-  - 'VTC-036: in cycles.html and boards 28/29/34/35/41, the doctrine chip is the only warn-ink or warn-fill chip
-    on each card. The Ladder / Hazard / Rhythm / Read disagrees chips and the Live parity unproven chip take a neutral,
-    even all-round outline with no edge accent. The XLF Ladder-disagrees chip is not a child of cyc-stance-row.'
-  - 'VTC-037: each card draws at most one Clocks block, with one line per disagreeing clock naming both clocks.
-    The sentence "The projected window and its overdue flag are kept in the provenance drawer" appears at most once
-    per card, inside the drawer. The Descriptive rhythm chip is drawn only when a rhythm value is drawn on the face.'
-  - 'VTC-038: the ZH PRIOR fixture title and body use 先验, matching its cell badges (cycles.html fixture card; boards
-    34/35/41). The string "doctrine_stance" does not appear on the EN or ZH face outside a drawer.'
-  - 'VTC-039: board 41 shows a face chip declaring that the production crop has an EN interface (for example 英文界面截图)
-    beside 生产截图 / 深色主题截图. boards_manifest row 41 and proposal.yml screenshots entry 41 declare the crop''s locale
-    and limit the "ZH deck copy end-to-end" claim to the specimen deck.'
-  - 'VTC-040: every boards_manifest Cycles row lists only the doctrine stances its PNG draws (Watch / Protect).
-    EN rows 28/29/31/39/40 name no ZH strings. Rows 32/33/38 spell the allow entry GLP-1, as zh_face_latin_allow.txt
-    does. No wave bullet is shared verbatim across rows.'
-  - 'VTC-042: proposal.yml screenshots png_px equals the latest capture.log size for every board 23-41, and the
-    board 39 note names the SIC-V4-C03 disagree states.'
+    note: 'The plan is adequate. The per-card Clocks block keeps the name "clock"; the page-level session family
+      moves to data vocabulary (Events data · aligned / 事件数据 · 一致; aligned_qualifier to Data sessions aligned on
+      the history day {d} / 数据交易日在历史日 {d} 一致；在此横幅下并非当前; manifest tag rotation data aligned (fresh)). The plan also
+      binds the wording in copy_deck.json, not build_cycles.py, which keeps deck sourcing intact. One wording note
+      for round 7: replace both 对齐 and the EN "Clocks aligned" so no "clock" or 时钟 term survives in the page-level
+      family. Minor, not a condition.'
+  verdict: PASS
+  pass2_status: COMPLETE
+  pass1_receipt: research/reference_integrity/sector-intelligence-cycles-20261021/reviews/critic_return/first_pass_visual_taste.md
+    (commit bdf5ab722e67); pass-1 findings frozen, amended below only
+  rationale_verification:
+  - item: VTC-043
+    verified: true
+    evidence: design_refs/sector-paper-20261021/copy_deck.json:177 hazard_mismatch_pattern zh "{a_name}为{leg}，趋向{turn}
+      · {b_name}为{phase}，下一拐点为{expected}" and :178 rhythm_mismatch_pattern zh "{a_name}为下一拐点{turn} · ..." are the
+      source of the stiff construction, as the seat states. EN patterns at the same lines read naturally ("says").
+  - item: VTC-046
+    verified: true
+    evidence: copy_deck.json:249 cycles.aligned_qualifier en "Clocks aligned on the history day {d}; not current
+      under this banner" / zh "时钟在历史日 {d} 对齐；在此横幅下并非当前". This confirms the two-object use of "clock(s)" that the
+      rename targets.
+  - item: VTC-041
+    verified: true
+    evidence: grep finds no VTC-041 in reviews/round5_66829d17/*visual_taste* or in verdict.yml. The pass-1 withdrawn
+      disposition stands.
+  - item: round5_mandate
+    verified: true
+    evidence: proposal.yml revision_mandate_round5 :2079-2121 records VTC-035..040 and 042 with the cure and condition
+      (SIC-V5-C05..C12) matching my round-5 conditions. Each wave-5 proof agrees with the pass-1 evidence I took
+      independently from the frozen tree.
+  round5_dispositions_unchanged: VTC-035..040 and VTC-042 cured, VTC-041 withdrawn, and the carried round-4 rows
+    (VTC-029/028/030/031/032/034/021/024/016) cured, as filed in pass 1. The rationale gives no reason to amend
+    them.
+  conditions: []
+  advisory_notes: 'I now hold VTC-043, VTC-044 (empty band only), VTC-045 and VTC-046 as minor advisory polish.
+    None becomes a condition after the rationale: none violates doctrine or worsens the core object at 204500aa.
+    The seat may apply them in wave 6. Round 7 may confirm that each landed as described and that the re-rendered
+    Cycles boards 28-41 regress nothing (one doctrine warn chip per card, neutral outline chips, ZH faces zh-latin=0
+    under the SIC-ADJ-03 scope, png_px parity). That confirmation follows from the seat''s plan; it is not a gate
+    created by this review.'
   inputs_opened_pass2:
-  - research/reference_integrity/sector-intelligence-cycles-20261021/proposal.yml lines 305-320 (screenshots entries
-    39 tail, 40, 41)
-  - research/reference_integrity/sector-intelligence-cycles-20261021/verdict.yml lines 1-75 and 200-296
-  - wc -l verdict.yml
+  - research/reference_integrity/sector-intelligence-cycles-20261021/proposal.yml:2079-2158 (revision_mandate_round5)
+  - design_refs/sector-paper-20261021/copy_deck.json:177-178, :249 (artifact file, verifying the rationale citations)
+  - 'grep "VTC-041" over research/reference_integrity/sector-intelligence-cycles-20261021/reviews/round5_66829d17/*visual_taste*
+    (my own round-5 receipts) and verdict.yml: no matches'
+  - ls design_refs/sector-paper-20261021/cycles_repair/
+  not_opened:
+  - proposal.yml wave5_summary :1313 and round-4 annotations :2036-2051 (not needed; the mandate rows sufficed)
+  - continuity.yml
+  - verdict.yml beyond the VTC-041 grep
+  - reviews/critic_return/*product_regression*.md, reviews/round5_66829d17/*product_regression*, reviews/product_regression.yml
+  - anything written by Reviewer A, including task output a29cc1ce
+  verdict_as_filed: PASS
   quarantine_breaches: []
   second_pass_path: critic_return/second_pass_visual_taste.md
-  disposition_notes: 'Judged as frozen at 66829d17; the pass-2 grant revealed proposal.yml revision_mandate_round4
-    + wave4_summary, verdict.yml (round 4: SIC-V4-C01..C10, SIC-ADJ-02, SIC-ADJ-01a) and continuity.yml only. Amendment
-    actions are normalized to the checker vocabulary (upheld/downgraded/withdrawn); the critic''s own wording is
-    kept in action_as_filed and a raised severity in severity_after_pass2.'
+  disposition_notes: 'Judged as frozen at 204500aa; the pass-2 grant revealed proposal.yml revision_mandate_round5
+    + wave5_summary, verdict.yml (round 5: SIC-V5-C01..C13, SIC-ADJ-03, SIC-ADJ-02, SIC-ADJ-01a) and continuity.yml
+    only. Amendment actions are normalized to the checker vocabulary (upheld/downgraded/withdrawn); the critic''s
+    own wording is kept in action_as_filed and a raised severity in severity_after_pass2.'
