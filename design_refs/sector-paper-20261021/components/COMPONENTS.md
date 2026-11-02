@@ -127,7 +127,12 @@ Tokens `templates/theme.css` lacks; listed here, never defined locally:
 - **States:** fresh, stale (stale tag rides the row, not a recolor of the stance).
 - **ZH notes:** 行动 / 做好准备 / 观察 —— 别追 / 保护利润 / 暂时观望 / 忽略 — the engine's
   `DOCTRINE_STANCES` zh strings (`engine/cycle_ontology.py:143-149`, SIC-ADJ-02 / SIC-V4-C01;
-  the production vocabulary, never a specimen-only translation);
+  the production vocabulary, never a specimen-only translation); declared production drift
+  outside this reference, not changed by it (PRC-036): `templates/rotation_events.js:200`
+  观望，不要追高, `templates/_ignition_radar_card.html.j2:170` 观望 — 勿追高 and
+  `templates/_mag7_tape_strip.html.j2:227` 观望，勿追高 are three surface-local ZH renderings
+  of the Watch stance on the rotation, ignition and Mag-7 surfaces; unifying them is a production
+  change owned by those surfaces, outside the sector_central / sector_cycles scope of this set);
   stance is not direction — never flips under 红涨绿跌, never painted `--up/--down`.
 - **Keyboard/touch:** when the chip links to a detail view it is focusable, 44px.
 - **Do not:** never invent a stance outside the six, and never print a stance for an
