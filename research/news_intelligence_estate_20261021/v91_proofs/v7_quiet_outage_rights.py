@@ -22,8 +22,10 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import contextlib
 import copy
 import importlib.util
+import io
 import json
 import os
 import sys
@@ -388,7 +390,8 @@ def p2_stale_data(fx: Fixtures) -> tuple[str, str]:
         f"fresh obs+catchup->{seen['fresh']} (negative); obs10m->"
         f"{seen['receipt_stale']}; catchup10m->{seen['catchup_stale']}; future obs "
         f"refused {refused}; extras poll fresh->available old/none->degraded, stale "
-        f"receipt extras->unavailable; api live+stale-extra->{api_seam}; "
+        f"receipt extras->unavailable; uncurated state mapper (before the reader-scope "
+        f"filter app/ticker_news.py:380) live+stale-extra->{api_seam}; "
         f"engine/qbus_news_receipts.py:306 engine/qbus_news_intake.py:144 "
         f"tests/test_qbus_news_receipts.py:146"
     )
@@ -647,15 +650,17 @@ def p7_honest_degraded_ai(fx: Fixtures) -> tuple[str, str]:
     if carries_state:
         return "PARTIAL", (
             f"bundle carries degraded state {degraded_member}; "
-            f"engine/qbus_news_context.py:35 no-test"
+            f"engine/qbus_news_context.py:35; no test asserts a degraded/health member"
         )
     return "ABSENT", (
         f"AI evidence bundle keys={keys} carry no degraded/health "
         f"member; state=available even for "
         f"zero-story quiet store (vocab restricted|available); pre-call "
-        f"coalescing/spend keyword hits={m13_hits} (M13); nearest "
-        f"engine/qbus_news_context.py:35; model-facing reader "
-        f"engine/press/qbus_news.py:219; neither reads the health receipt; no-test"
+        f"coalescing/spend keyword hits in engine/qbus_news_context.py only={m13_hits} "
+        f"(M13); nearest engine/qbus_news_context.py:35 (its state is tested at "
+        f"tests/test_shared_news_intelligence.py:426); model-facing reader "
+        f"engine/press/qbus_news.py:219; neither reads the health receipt; no test "
+        f"asserts a degraded/health member"
     )
 
 
@@ -714,11 +719,15 @@ def p8_no_duplicate_work(fx: Fixtures) -> tuple[str, str]:
     verdict = "PARTIAL"
     return verdict, (
         f"backlog replay after outage: dup={replay.duplicate_revisions} inserted=0 "
-        f"applied=0, rows stay revisions=2 states=2 changes=2; T15 provider stamp "
+        f"applied=0, rows stay revisions=2 states=2 changes=2; R17 provider stamp "
         f"{'enforced' if stamps_ok else 'NOT enforced'} (no-provider massive receipt "
-        f"refused {stamp_code}); model-call coalescing/spend budget: {m13_hits} "
-        f"keyword hits (M13); engine/qbus_news_store.py:260 "
-        f"tests/test_qbus_news_store.py:177 "
+        f"refused {stamp_code}, research/news_intelligence_estate_20261021/"
+        f"F2_RIGHTS_IDENTITY_NEGATIVE_CONTROLS.md:52); model-call coalescing "
+        f"keyword hits in engine/qbus_news_context.py only: {m13_hits} (M13); the "
+        f"press news run carries a token cap and one provider attempt "
+        f"scripts/run_press.py:908 scripts/run_press.py:921, not exercised here; "
+        f"revision dedup engine/qbus_news_store.py:1090 store uniqueness "
+        f"engine/qbus_news_store.py:260 tests/test_qbus_news_store.py:177 "
         f"research/news_intelligence_estate_20261021/F2_MODEL_CONTEXT_NEGATIVE_CONTROLS.md:54"
     )
 
@@ -727,10 +736,23 @@ def p9_live_api_human_gate(fx: Fixtures) -> tuple[str, str]:
     """The live signed-in ticker news API is a human gate."""
     from app import ticker_news
 
+    from fastapi import HTTPException
+
     gate = callable(ticker_news.require_site_full_user)
     if not gate:
         return "ABSENT", "auth dependency missing; app/ticker_news.py:195 no-test"
+    refused = None
+    try:
+        with contextlib.redirect_stdout(io.StringIO()):
+            ticker_news.require_site_full_user(None)
+    except HTTPException as exc:  # the gate's own refusal class
+        refused = f"HTTP {exc.status_code} '{exc.detail}'"
+    if refused is None:
+        return "ABSENT", (
+            "gate did not refuse an unauthenticated read; app/ticker_news.py:195 no-test"
+        )
     return "HUMAN_GATE", (
+        f"unauthenticated read refused {refused}; "
         f"live endpoint requires a signed-in paid session via require_site_full_user "
         f"-> enforce_site_full; dependency runs before any store open and cannot be "
         f"satisfied offline without credentials; gate app/ticker_news.py:195 "
@@ -752,6 +774,7 @@ def main() -> int:
     # Imported f2_controls builders call tempfile.mkdtemp() at import; keep every
     # temp artifact under the declared scratch directory.
     os.environ["TMPDIR"] = str(SCRATCH)
+    tempfile.tempdir = str(SCRATCH)
 
     fixtures = Fixtures(SCRATCH)
     properties = [
