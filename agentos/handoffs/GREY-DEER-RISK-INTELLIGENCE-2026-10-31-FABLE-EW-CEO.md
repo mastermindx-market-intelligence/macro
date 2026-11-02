@@ -68,7 +68,7 @@ verified:
 unverified:
   - claim: EW-P1 repair restores the nightly engine data commit.
     what_would_verify: >-
-      Two natural engine sessions after the carve (main's own engine workflow runs, never a seat dispatch) in which `engine: regime update <date>` lands on main and data/risk_envelope/latest.json advances.
+      Two natural engine sessions after the carve (scheduled daily.yml runs on main, never a seat dispatch) in which `engine: regime update <date>` lands on main and data/risk_envelope/latest.json advances.
       One of two observed: 2026-11-02 (b0a37dfbaff4, 9d7925b30a01). The second is the next natural engine session; observed by the seat's hourly git-only read, never polled or dispatched.
   - claim: #10219's failing check names.
     what_would_verify: One bounded `gh pr checks 10219` after the CI-wait cooldown (REDUNDANT POLL blocked the second read).
