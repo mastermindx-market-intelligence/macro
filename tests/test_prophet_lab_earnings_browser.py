@@ -138,3 +138,95 @@ def test_matching_generation_pin_reuses_one_atomic_b1_snapshot(monkeypatch):
         )
     assert response.status_code == 200
     assert loads == [snapshot.generation_id]
+
+
+# --- Design doctrine §3 (2026-10-18): no colored container edges -------------
+# docs/DESIGN_DOCTRINE.md §3 bans a colored left border, inset stripe,
+# pseudo-element rail, or equivalent edge accent on a container, and forbids
+# relocating that stripe to another edge.  Containers use even, neutral
+# borders; complete keyboard focus outlines are explicitly exempt and must
+# survive the repair.  This regression pins that rule for the Prophet Lab
+# evidence drawer, which has two independent CSS owners.
+NEUTRAL_BORDER_VALUES = frozenset({"none", "transparent", "inherit", "currentcolor", "0"})
+NEUTRAL_SURFACE_TOKENS = frozenset({
+    "--line", "--panel", "--panel2", "--panel3", "--text", "--muted", "--bg",
+    "--surface", "--card-shadow",
+})
+
+
+def _css_rules(css):
+    """(selector, body) pairs for every rule in a stylesheet."""
+    return [(m.group(1).strip(), m.group(2))
+            for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", css)]
+
+
+def _colored_edge_accents(css):
+    """Every colored container-edge accent in a stylesheet, as text lines."""
+    accents = []
+    for selector, body in _css_rules(css):
+        for match in re.finditer(
+                r"(?<![\w-])border-(left|right|top|bottom)\s*:\s*([^;}]+)", body):
+            value = match.group(2).strip().lower()
+            if value in NEUTRAL_BORDER_VALUES or "var(--line)" in value:
+                continue
+            accents.append(
+                f"{selector} :: border-{match.group(1)}: {match.group(2).strip()}")
+        for match in re.finditer(r"(?<![\w-])box-shadow\s*:\s*([^;}]+)", body):
+            value = match.group(1).strip().lower()
+            if "inset" in value and "var(--line)" not in value:
+                accents.append(
+                    f"{selector} :: inset colour stripe: box-shadow: {match.group(1).strip()}")
+        if "::before" in selector or "::after" in selector:
+            for match in re.finditer(
+                    r"(?<![\w-])background(?:-color)?\s*:\s*([^;}]+)", body):
+                tokens = re.findall(r"var\((--[\w-]+)\)", match.group(1))
+                if any(token not in NEUTRAL_SURFACE_TOKENS for token in tokens):
+                    accents.append(
+                        f"{selector} :: pseudo-element rail: background: {match.group(1).strip()}")
+    return accents
+
+
+def test_no_colored_container_edge_accent_in_emitted_and_template_css():
+    """Design doctrine §3 (2026-10-18): no colored container edges."""
+    env = Environment(loader=FileSystemLoader(T), autoescape=True)
+    template_css = env.get_template("_prophet_earnings_browser.css.j2").render()
+    fragment = render_earnings_fragment(corrected_payload(), language="en")
+    emitted_css = re.search(r"<style>(.*?)</style>", fragment, re.S).group(1)
+
+    # The native STYLE constant and the template are two independent owners of
+    # the same rules; the fragment emits the native one at request time.
+    for label, css in (("emitted CSS view", emitted_css),
+                       ("native STYLE constant", STYLE),
+                       ("template CSS", template_css)):
+        accents = _colored_edge_accents(css)
+        assert not accents, f"{label} still carries a colored container edge: {accents}"
+
+    # The container keeps one even, neutral border and nothing else, so a
+    # stripe cannot survive on another edge either.
+    for label, css in (("emitted CSS view", emitted_css), ("template CSS", template_css)):
+        body = next((b for s, b in _css_rules(css) if s == ".plab-evidence .pe-state"), None)
+        assert body is not None, f"{label} lost the .plab-evidence .pe-state rule"
+        borders = re.findall(
+            r"(?<![\w-])(border|border-(?:left|right|top|bottom))\s*:\s*([^;}]+)", body)
+        assert borders == [("border", "1px solid var(--line)")], (
+            f"{label} .plab-evidence .pe-state must declare exactly the even "
+            f"neutral border, got {borders}")
+
+    # The complete keyboard focus ring is exempt from the doctrine and must
+    # survive the repair untouched.
+    for label, css in (("emitted CSS view", emitted_css), ("template CSS", template_css)):
+        assert "outline:2px solid var(--info)" in css, f"{label} lost the focus ring"
+        assert "outline-offset" in css, f"{label} lost the focus ring offset"
+
+    # The two owners stay in lockstep, and native source semantics are
+    # unmodified: the evidence still presents the same numbers and the same
+    # status callout.
+    assert STYLE.strip() in template_css, "template CSS and native STYLE diverged"
+    view = build_earnings_view(_build_d5())
+    assert view["metrics"][0]["display_value"] == "$109,417,000,000"
+    assert view["presentation"]["title"] == "Earnings evidence"
+    assert view["presentation"]["separate"][0]["label"] == "Forward expectations"
+    assert "Not connected" in view["presentation"]["separate"][0]["note"]
+    assert view["expectation_revision"]["state"] == "NOT_CONNECTED"
+    assert not any(view["authority"].values())
+    assert "class='pe-state'" in fragment and "role='status'" in fragment

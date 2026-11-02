@@ -109,7 +109,7 @@ STYLE = """
 .plab-evidence h2{font-size:var(--fs-h1);line-height:1.15;margin:0 0 var(--sp-2,8px);font-weight:800}
 .plab-evidence h3{font-size:var(--fs-h2);margin:0 0 var(--sp-3,12px)}.plab-evidence p{margin:0 0 var(--sp-3,12px)}
 .plab-evidence .pe-muted{color:var(--muted)}
-.plab-evidence .pe-state{padding:var(--sp-4,16px);border:1px solid var(--line);border-left:3px solid var(--info);border-radius:var(--r-ctl,8px);background:var(--panel2);margin-bottom:var(--sp-5,20px)}
+.plab-evidence .pe-state{padding:var(--sp-4,16px);border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2);margin-bottom:var(--sp-5,20px)}
 .plab-evidence .pe-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-4,16px);margin:var(--sp-4,16px) 0 var(--sp-6,24px)}
 .plab-evidence .pe-card{min-width:0;padding:var(--sp-5,20px);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);box-shadow:var(--card-shadow)}
 .plab-evidence .pe-value{font-size:var(--fs-num-lg);font-weight:800;line-height:1.3;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;margin:var(--sp-2,8px) 0 var(--sp-3,12px)}
