@@ -216,3 +216,23 @@ def test_conflicting_sector_sources_are_recorded_not_silently_resolved():
     ctx = _ctx("RWT", "Redwood Trust Inc", "Real Estate", {"sector": "Energy"})
     assert ctx["identity"]["sector"] == "Real Estate"       # canonical plane wins
     assert ctx["identity"]["sector_conflict"] == "Real Estate vs Energy"
+
+
+def test_published_dossier_quote_url_tracks_the_shipped_controller(template, tmp_path):
+    import hashlib
+    import re
+    from scripts.optimize_assets import make_optimizer
+
+    html = template.render(**_ctx("AAPL", "Apple Inc", "Technology", {}))
+    site = tmp_path / "site"
+    stocks = site / "stocks"
+    stocks.mkdir(parents=True)
+    asset = site / "assets/js/dossier-live-quote.js"
+    asset.parent.mkdir(parents=True)
+    shipped = (ROOT / "site/assets/js/dossier-live-quote.js").read_bytes()
+    pattern = r'<script\b[^>]*\bsrc="(\.\./assets/js/dossier-live-quote\.js[^"]*)"'
+    for content in (shipped, shipped + b"\n/* changed bytes */"):
+        asset.write_bytes(content)
+        html = make_optimizer(site)(html, stocks)
+        key = hashlib.sha256(content).hexdigest()[:8]
+        assert re.findall(pattern, html) == [f"../assets/js/dossier-live-quote.js?v={key}"]
