@@ -4413,6 +4413,9 @@ CURATED_EXCLUSIVE = {
     # F09 petroleum: native builder imports have opaque whole-root fallbacks.
     # Keep its complete measured closure; do not widen ordinary packing probes.
     "market-ontology-f09-petroleum-flow",
+    # R-28: a public link to an admin-only page fails before merge. Every template is
+    # walked, and naming the tree would wake the job on every template edit.
+    "admin-research-tools",
     # F04 exact import/read closure; all suites retained, no homepage fallback.
     "ontology-explorer",
     # DR3: exact closure isolates the observation consumer; no packing ceiling change.
@@ -4438,6 +4441,9 @@ CURATED_EXCLUSIVE = {
     # F04 real-Git acquisition reads three deploy scripts. Its dedicated job
     # preserves the broader self-heal owner without widening unrelated probes.
     "deploy-git-history",
+    # 2026-10-19/11-01 root-disk refills: the bounded store-maintenance job reads
+    # its script, units and the update.sh/setup.sh stanzas that self-arm them.
+    "deploy-git-store-maintenance",
     # PR #7861: Options matrix source/session/retention checks are hermetic.
     # The exclusive manifest scope retains both suites, their concrete import
     # closure, config.yml fallback and the retention-fixture wildcard. This
@@ -4445,6 +4451,7 @@ CURATED_EXCLUSIVE = {
     # the code gate, closure audit and packing ceilings remain unchanged.
     "options-matrix-code",
     "push-retry-policy",
+    "sector-cycles-page",  # measured literal closure of its one suite
     # 2026-10-14 LR T17: the measured-group-read suite is pure-synthetic; the
     # exclusive scope is its measured literal closure (no fallback smear).
     "leadership-measured-read",
@@ -4568,6 +4575,10 @@ CURATED_EXCLUSIVE = {
     # public documents test_public_pages_fetch_nothing_under_paid_prefixes
     # actually reads; the other two probes are unmoved.
     "regwall-boundary",
+    # 2026-11-01, R-28. Same class as regwall-boundary: the static serving
+    # boundary moved onto the merge gate. Curated for coverage, and so that a
+    # bake does not wake it on an unrelated pull request.
+    "site-access-boundary",
     "quant-q11-episode-duration",  # Q11 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-08-19 wave 5. #6027 moved #5984's three dossier suites into
     # conviction-profile — the right call, because their #6023 home
@@ -4928,6 +4939,11 @@ CURATED_EXCLUSIVE = {
     # build_free_content / plan_book packing probes. scope: exclusive pins it
     # to its measured closure, so it must be listed here.
     "gmi-classification-axes",
+    # 2026-10-22 GMI explorer (W3): the identity reader names
+    # scripts/build_security_master.py by path, so inference smeared the
+    # gmi-explorer job onto the templates/index.html, build_free_content and
+    # plan_book packing probes. scope: exclusive pins it to its measured closure.
+    "gmi-explorer",
     # GovRev dependency changes must not select GR3 on unrelated page templates.
     "group-linked-outsiders",
     "govrev-program-ontology",
@@ -5065,6 +5081,11 @@ CURATED_EXCLUSIVE = {
     # inferred scope would ride the shared template packing probes; scope:
     # exclusive pins the template closure, both suites and the tests inits.
     "narrative-radar-display",
+    # 2026-10-21 W33-LD: the regime-history reader repairs (US basis, HK segment
+    # in force, Canada today marker, China 120d analogs). Its own exclusive job
+    # pins the four page templates, build_hk's static import closure and the
+    # suites instead of adding test paths to a shared job; ceilings stay fixed.
+    "regime-history-surfaces",
     # 2026-10-20 W28D-L33: the commodity strategies grid suite renders the page
     # template and its six includes with jinja2 and the new pure helper alone. As an
     # ordinary job its inferred scope would ride the shared template packing probes;
@@ -5117,6 +5138,17 @@ CURATED_EXCLUSIVE = {
     # single-suite owner. Its explicit paths cover the static import closure
     # and package ancestor init, without accepting unrelated render probes.
     "aibrief-countdown-pr",
+    # 2026-11-01 GMI relationships (ORCH-REL M1/M2/M3): the eleven relationship
+    # suites get one gate:code exclusive home with their measured import/read
+    # closure (package v2, edges, SEC source packets, m2 extraction samples).
+    # Registered from the lanes' ci_registration_proposal*.yml; no pack
+    # ceiling is loosened and no unrelated render probe is selected.
+    "company-intelligence-relationships",
+    # EW-P4 descriptive UI (Grey Deer early-warning, EW-P5 FU2 split from
+    # dashboard-render-contract): the suite's import closure IS the dashboard render
+    # closure through tests/test_macro_risk_dialog.py, declared verbatim plus what the
+    # suite reads by name; the curated-closure guard audits it like its parent.
+    "ew-p4-descriptive-ui",
 }
 
 
@@ -5540,6 +5572,21 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     closure and all old execution. Actual compiler93.59s measures selected
     index136/5868, free135/5840, Prophet128/5612, all ten packs. Fund only
     six added estimator units per probe; no job/pack/runtime limit changes.
+
+    2026-10-22 Expectation Surface nav row (ITP-ES wave 2, #10077) adds
+    tests/test_expectation_surface_nav.py as one run: step of the existing
+    `unrun-nav-chrome` navigation owner (contract-delta's unrun-suite gate;
+    no new job, no second navigation owner). Composed on protected main
+    d81eb778: index 136 jobs / 5,867, free-content 135 / 5,839, plan-book
+    128 / 5,611, all ten packs with identical selected IDs versus main
+    (136/5,864, 135/5,836, 128/5,608); newly selected: none. The +3 per
+    probe is the new step's estimator weight on the already-selected job.
+    Fund only 5,867/5,839/5,611; job ceilings 136/136/130, the ten-pack
+    limit and every other bound stay unchanged.
+    2026-11-01 merge of main d08e0da7765c into #10077: the post-#10294
+    ceilings above (137/5,886, 138/5,877, 130/5,636) already cover this
+    composition (measured 136/5,836, 137/5,863, 129/5,586, ten packs,
+    no breach), so the 10-22 funding is absorbed and no ceiling moves.
 
     2026-10-22 visual-evidence correction composes protected8c23f6 and
     native-plan Brief coverage without removing any suite. Actual compiler

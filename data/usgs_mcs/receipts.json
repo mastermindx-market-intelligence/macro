@@ -1,10 +1,10 @@
 {
-  "status": "ok",
+  "status": "no_change",
   "requests": [
     {
       "url": "https://www.sciencebase.gov/catalog/items",
       "status": 200,
-      "bytes": 8268
+      "bytes": 8667
     },
     {
       "url": "https://www.sciencebase.gov/catalog/item/696a75d5d4be0228872d3bf8",
@@ -28,9 +28,9 @@
     }
   ],
   "rows_parsed": {
-    "t7": 117,
-    "fig3_import_sources": 191,
-    "world_production": 2028
+    "t7": 0,
+    "fig3_import_sources": 0,
+    "world_production": 0
   },
   "unparsed_rows": 0,
   "edition_year": 2026
