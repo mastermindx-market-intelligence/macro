@@ -191,7 +191,7 @@
          escape — the compositor applies it to the whole subtree. Both are kept,
          and no child may own the closed state. */
       '#mm-terminal-overlay{--mmto-x:50vw;--mmto-y:18vh;position:fixed;inset:0;z-index:2147483000;',
-        'visibility:hidden;opacity:0;pointer-events:none;isolation:isolate;overflow:hidden;background:var(--bg,#05070b);',
+        'visibility:hidden;opacity:0;pointer-events:none;isolation:isolate;overflow:hidden;background:var(--bg);',
         'font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f4f7ff}',
       '#mm-terminal-overlay.is-open{visibility:visible;opacity:1;pointer-events:auto}',
       '#mm-terminal-overlay.is-closing{visibility:visible;opacity:1;pointer-events:none;background:transparent}',
@@ -201,7 +201,7 @@
         'opacity:0;transform:scale(1.04);transition:opacity .32s ease,transform .62s cubic-bezier(.16,1,.3,1)}',
       '#mm-terminal-overlay.is-open::before{opacity:1;transform:none}',
       '#mm-terminal-overlay.is-closing::before{opacity:0;transform:scale(1.025)}',
-      '.mmto-stage{position:absolute;inset:72px 0 0;z-index:1;overflow:hidden;background:#07090e;',
+      '.mmto-stage{position:absolute;inset:72px 0 0;z-index:1;overflow:hidden;background:var(--bg);',
         'opacity:0;transform:translate3d(0,14px,0) scale(.978);transform-origin:var(--mmto-x) var(--mmto-y);',
         'transition:opacity .22s ease,transform .56s cubic-bezier(.16,1,.3,1),clip-path .62s cubic-bezier(.16,1,.3,1)}',
       '#mm-terminal-overlay.is-open .mmto-stage{opacity:1;transform:none}',

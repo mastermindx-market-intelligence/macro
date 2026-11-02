@@ -6,8 +6,19 @@ const path = require('node:path');
 const vm = require('node:vm');
 const source = fs.readFileSync(process.env.OVERLAY_SOURCE || path.resolve(__dirname, '../../templates/terminal_overlay.js'), 'utf8');
 
+// P12.T21 regression scope. The harness may expose document focus and DOM
+// parse order (the parent-chain walk below); it must never stand in for real
+// CSS hit testing or the cross-origin child keyboard crossing, which stay
+// covered by the parent's browser fixture proof.
+function ancestorsOf(el) {
+  const chain = [];
+  let node = el && el.parentNode;
+  while (node) { chain.push(node); node = node.parentNode; }
+  return chain;
+}
+
 function browser(mobile = false) {
-  let now = 100000, serial = 0;
+  let now = 100000, serial = 0, activeEl = null;
   const timers = new Map();
   const listeners = {};
   const setTimeout = (fn, delay = 0) => { timers.set(++serial, {at: now + delay, fn}); return serial; };
@@ -44,7 +55,9 @@ function browser(mobile = false) {
     removeChild(el) { this.children.splice(this.children.indexOf(el), 1); el.parentNode = null; }
     addEventListener(name, fn) { (this.events[name] ||= []).push(fn); }
     fire(name, data = {}) { (this.events[name] || []).forEach(fn => fn(data)); }
-    focus() {}
+    // Document focus is observable harness state: where focus lands after an
+    // open, a proven reveal or a blind fallback is exactly the P12.T21 contract.
+    focus() { activeEl = this; }
     querySelector(selector) {
       for (const el of this.children) {
         if ((selector[0] === '.' && el.classList.contains(selector.slice(1))) ||
@@ -67,7 +80,8 @@ function browser(mobile = false) {
   }
   const body = new Element('body'), head = new Element('head'), html = new Element('html');
   const location = {hostname: 'www.mastermind-x.com', protocol: 'https:', href: 'https://www.mastermind-x.com/stocks/POWI.html'};
-  const document = {body, head, documentElement: html, activeElement: null,
+  const document = {body, head, documentElement: html,
+    get activeElement() { return activeEl; },
     createElement: tag => new Element(tag),
     getElementById: id => body.querySelector('#' + id) || head.querySelector('#' + id)};
   const window = {location, innerWidth: mobile ? 390 : 1440, innerHeight: 900, scrollX: 0, scrollY: 120,
@@ -85,6 +99,7 @@ function browser(mobile = false) {
   }
   return {open, advance, emit, close: () => window.MDXTerminalOverlay.close(),
     root: () => document.getElementById('mm-terminal-overlay'),
+    activeElement: () => activeEl,
     message: (frame, type, overrides = {}) => emit('message', {source: frame.contentWindow,
       origin: 'https://app.mastermind-x.com', data: {source: 'mastermind-terminal', type, symbol: 'POWI'}, ...overrides})};
 }
@@ -135,4 +150,78 @@ test('Escape and Back close a stalled overlay without revealing it', () => {
     b.advance(10000); assert.equal(b.root().classList.contains('is-open'), false);
     assert.equal(b.root().classList.contains('is-ready'), false);
   }
+});
+
+test('P12.T21: Back control persists at the overlay root, outside stage and loader', () => {
+  const b = browser(), frame = b.open();
+  const root = b.root();
+  const back = root.querySelector('.mmto-back');
+  const stage = root.querySelector('.mmto-stage');
+  const loader = root.querySelector('.mmto-loader');
+  assert.ok(back && stage && loader);
+  const chain = ancestorsOf(back);
+  assert.ok(chain.includes(root), 'Back must belong to the persistent overlay root subtree');
+  assert.ok(!chain.includes(stage), 'Back must not live inside the stage/iframe subtree');
+  assert.ok(!chain.includes(loader), 'Back must not live inside the loader a reveal blanks out');
+  b.message(frame, 'terminal:visual-ready');
+  b.advance(900);
+  assert.equal(root.classList.contains('is-ready'), true);
+  assert.equal(root.querySelector('.mmto-back'), back, 'the persistent Back control survives the reveal');
+  back.fire('click');
+  assert.equal(root.classList.contains('is-open'), false);
+});
+test('P12.T21: opening hands focus to the persistent parent Back control', () => {
+  const b = browser();
+  b.open();
+  const back = b.root().querySelector('.mmto-back');
+  assert.ok(back);
+  b.advance(200);
+  assert.equal(b.activeElement(), back,
+    'initial open must keep focus in the parent document so the dashboard window can receive Escape');
+  b.advance(9100);
+  assert.equal(b.activeElement(), back, 'no stalled-load timer may move focus into the unproven child');
+});
+test('P12.T21: a proven visual-ready reveal hands focus into the Terminal frame', () => {
+  const b = browser(), frame = b.open();
+  b.message(frame, 'terminal:visual-ready');
+  b.advance(1100);
+  assert.equal(b.root().classList.contains('is-ready'), true);
+  assert.equal(b.activeElement(), frame,
+    'a healthy reveal keeps the incumbent iframe keyboard handoff');
+});
+test('P12.T21: blind document-load fallback keeps recovery focus in the parent', () => {
+  const b = browser(), frame = b.open();
+  const back = b.root().querySelector('.mmto-back');
+  frame.fire('load');
+  b.advance(6100);
+  assert.equal(b.root().classList.contains('is-ready'), true);
+  b.advance(200);
+  assert.equal(b.activeElement(), back,
+    'a blind reveal never proves the child painted; recovery focus must stay on the parent Back control');
+  assert.notEqual(b.activeElement(), frame);
+});
+test('P12.T21: blind shell-ready fallback keeps recovery focus in the parent', () => {
+  const b = browser(), frame = b.open();
+  const back = b.root().querySelector('.mmto-back');
+  b.message(frame, 'terminal:ready');
+  b.advance(7100);
+  assert.equal(b.root().classList.contains('is-ready'), true);
+  b.advance(200);
+  assert.equal(b.activeElement(), back,
+    'the shell fallback is equally blind; recovery focus must stay on the parent Back control');
+  assert.notEqual(b.activeElement(), frame);
+});
+
+// Parent integration regression from the subsequent non-author review.
+test('prior visual-ready focus cannot cross a close/reopen of the same warm desktop iframe', () => {
+  const b = browser(), frame = b.open();
+  b.message(frame, 'terminal:visual-ready'); b.advance(900);
+  b.close(); const current = b.open('AAPL'); assert.equal(current, frame);
+  const back = b.root().querySelector('.mmto-back'); assert.equal(b.activeElement(), back);
+  b.advance(180); assert.equal(b.activeElement(), back);
+  assert.equal(b.root().classList.contains('is-loading'), true);
+});
+test('confirmed current visual-ready still focuses its healthy iframe', () => {
+  const b = browser(), frame = b.open();
+  b.message(frame, 'terminal:visual-ready'); b.advance(1080); assert.equal(b.activeElement(), frame);
 });

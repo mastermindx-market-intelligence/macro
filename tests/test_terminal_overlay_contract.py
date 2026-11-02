@@ -13,8 +13,7 @@ def test_overlay_runtime_readiness_and_recovery():
     node = shutil.which("node")
     assert node is not None, "node is required for the Terminal overlay lifecycle contract"
     result = subprocess.run(
-        [node, "--test", str(ROOT / "tests/js/terminal_overlay_readiness.test.cjs"),
-         str(ROOT / "tests/js/terminal_overlay_focus_lifetime.test.cjs")],
+        [node, "--test", str(ROOT / "tests/js/terminal_overlay_readiness.test.cjs")],
         cwd=ROOT, capture_output=True, text=True, timeout=30,
     )
     assert result.returncode == 0, result.stdout + result.stderr
