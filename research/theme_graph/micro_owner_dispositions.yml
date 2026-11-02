@@ -1,0 +1,46 @@
+# GMI taxonomy owner dispositions — one row per FROZEN-tier micro.
+#
+# Read by scripts/gmi_coverage_proof.py (IF PRESENT; --owner-dispositions <path>
+# overrides, --no-owner-dispositions reads none). A row only ever sets that micro's
+# owner_reviewed / owner_disposition in the coverage report. It never changes a
+# computed disposition, a count, a gate threshold or the frozen 68-micro denominator,
+# and the proof script never writes this file.
+#
+# Who writes rows: the named GMI taxonomy owner. A seat or agent may not self-review
+# (DEC:GMI-DESCRIPTIVE-PRODUCT-ACCEPTANCE-2026-10-19). This file ships with ZERO rows.
+#
+# Top level (exactly these three keys):
+#   schema: theme_graph.micro_owner_dispositions/v1
+#   owner:  null, or the taxonomy owner's name (a non-empty string)
+#   rows:   a list of row mappings
+#
+# Row fields (any other key rejects the row):
+#   micro_id     required  frozen-tier micro id from config/theme_crosswalk.yml
+#                          (asserted_on before 2026-10-21), e.g. theme:example_micro
+#   disposition  required  one of KEEP | MERGE | RENAME | RETIRE | SPLIT
+#   reviewer     required  non-empty string naming who decided
+#   decided_at   required  ISO-8601 date (2026-11-02) or datetime (2026-11-02T09:30:00Z)
+#   evidence     required  non-empty repository path or URL backing the decision
+#   note         optional  free text
+#
+# Example row (shape only — not a real disposition):
+#   - micro_id: theme:example_micro
+#     disposition: KEEP
+#     reviewer: <taxonomy owner>
+#     decided_at: 2026-11-02
+#     evidence: <path or URL>
+#     note: <optional>
+#
+# A row is NOT applied, and is listed under owner_review.rejected_rows with a reason,
+# when: it is malformed (UNKNOWN_KEY, MISSING_FIELD, INVALID_FIELD,
+# INVALID_DISPOSITION, INVALID_DECIDED_AT, FORBIDDEN_LABEL_ID); its micro_id is named
+# by more than one row (DUPLICATE_MICRO_ID, every such row); it names a display-tier
+# expansion micro (EXPANSION_MICRO_ID); or it names an id outside the hierarchy
+# (UNKNOWN_MICRO_ID). An unreadable file or bad top level rejects everything
+# (CONTRACT_INVALID). The proof never raises on this file's content.
+#
+# Coverage gap: "<unreviewed>_OF_<observed>_UNREVIEWED" until every frozen micro
+# carries a valid row; the Taxonomy gate stays FAIL until then.
+schema: theme_graph.micro_owner_dispositions/v1
+owner: null
+rows: []

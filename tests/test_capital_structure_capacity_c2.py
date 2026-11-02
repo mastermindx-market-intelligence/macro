@@ -154,6 +154,8 @@ def a21_kwargs(
     float_value: str = "30000000",
     registered_a: str = "8000000",
     registered_b: str = "7000000",
+    used_a: str = "0",
+    used_b: str = "0",
     sold: str = "0",
     other: Sequence[tuple[str, str]] = (),
 ) -> dict[str, Any]:
@@ -177,9 +179,9 @@ def a21_kwargs(
         "share_basis": shares_records,
         "other": tuple(NASDAQ_ASSUMPTIONS) + tuple(other),
         "resolutions": [
-            usd(f"shelf_usage:{PATH_A}", "0"),
+            usd(f"shelf_usage:{PATH_A}", used_a),
             usd(f"continuing_offering:{PATH_A}", "0"),
-            usd(f"shelf_usage:{PATH_B}", "0"),
+            usd(f"shelf_usage:{PATH_B}", used_b),
             usd(f"continuing_offering:{PATH_B}", "0"),
             usd(f"baby_shelf_sold_trailing:{SALE}", sold),
         ],
@@ -768,8 +770,10 @@ def test_l258_a_exclusive_takedowns_choose_one() -> None:
     assert positive == [TAKE_A]
     assert witness == {TAKE_A: Decimal("8000000.00"), TAKE_B: Decimal("0.00")}
     # The aggregate is the maximum of the two single-route optima, never their sum.
-    alone_a, _, _ = evaluate(**a21_kwargs(registered_b="0"))
-    alone_b, _, _ = evaluate(**a21_kwargs(registered_a="0"))
+    # Each single-route optimum exhausts the other shelf rather than registering
+    # it at $0: a fee row quoting zero is indeterminate, never a known $0.
+    alone_a, _, _ = evaluate(**a21_kwargs(used_b="7000000"))
+    alone_b, _, _ = evaluate(**a21_kwargs(used_a="8000000"))
     assert money(alone_a.envelope.aggregate_bound) == Decimal("8000000")
     assert money(alone_b.envelope.aggregate_bound) == Decimal("7000000")
     assert money(envelope.aggregate_bound) == max(
