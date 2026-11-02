@@ -11433,6 +11433,168 @@ def test_pk03_widened_near_misses_never_resolve(
     assert contract.validate_pack_result(result) == []
 
 
+_PK03_SYN_ELIMINATION_CLARK_MEMBER = (
+    "{http://fasb.org/srt/2025}ConsolidationEliminationsMember"
+)
+
+
+def _pk03_elimination_bridge_facts(
+    elimination_member: str,
+) -> tuple[RawFactOccurrence, ...]:
+    """One consolidated + one segment + one elimination revenue fact.
+
+    The bridge only ties with the elimination counted once: 1,500,000,000
+    (segment) + elimination == 1,000,000,000 (consolidated) inside the
+    check's 1,000,000 tolerance, while a double-counted elimination is off
+    by its own full magnitude.
+    """
+    return (
+        _pk03_syn_fact(
+            "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            (),
+            "1000000000",
+        ),
+        _pk03_syn_fact(
+            "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            (
+                (_PK03_SYN_SEG_AXIS, "us-gaap:AlphaSegmentMember"),
+                (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+            ),
+            "1500000000",
+        ),
+        _pk03_syn_fact(
+            "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            ((_PK03_SYN_CONS_AXIS, elimination_member),),
+            "-500000000",
+        ),
+    )
+
+
+def test_pk03_clark_form_elimination_member_emits_one_row(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A Clark-form elimination member is one row, never two.
+
+    The ledger canonicalizes only us-gaap and dei namespaces, so an
+    srt-namespace member stays in Clark form and binds by local name: both
+    declared ConsolidationEliminationsMember entries would admit the same
+    occurrence. The first declared entry owns it; the second emits nothing.
+    """
+    result = _produce_pk03_synthetic(
+        monkeypatch,
+        _pk03_elimination_bridge_facts(_PK03_SYN_ELIMINATION_CLARK_MEMBER),
+    )
+    rows = _pk03_field_rows(result, "unallocated_corporate_and_eliminations")
+    assert [row["quality_state"] for row in rows] == ["valued"]
+    assert rows[0]["value"] == "-500000000"
+    assert len(rows[0]["source_occurrence_ids"]) == 1
+    # The row keeps the ledger's own Clark spelling.
+    assert rows[0]["dimensions"] == [
+        {
+            "axis": _PK03_SYN_CONS_AXIS,
+            "member": _PK03_SYN_ELIMINATION_CLARK_MEMBER,
+        }
+    ]
+    # Counted once the bridge ties: 1,500,000,000 - 500,000,000 equals the
+    # consolidated 1,000,000,000. A second -500,000,000 row from the same
+    # occurrence misses by 500,000,000, far past the 1,000,000 tolerance.
+    check = _check(result, "segment_sum_plus_eliminations_equals_consolidated")
+    assert check["status"] == "pass"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk03_prefixed_elimination_member_still_one_row(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The prefixed srt spelling binds exactly one entry (regression guard).
+
+    Exact QName equality admits the occurrence under the srt entry only, so
+    the Clark-form dedupe changes nothing for prefixed spellings.
+    """
+    result = _produce_pk03_synthetic(
+        monkeypatch,
+        _pk03_elimination_bridge_facts("srt:ConsolidationEliminationsMember"),
+    )
+    rows = _pk03_field_rows(result, "unallocated_corporate_and_eliminations")
+    assert [row["quality_state"] for row in rows] == ["valued"]
+    assert rows[0]["value"] == "-500000000"
+    assert len(rows[0]["source_occurrence_ids"]) == 1
+    assert rows[0]["dimensions"] == [
+        {
+            "axis": _PK03_SYN_CONS_AXIS,
+            "member": "srt:ConsolidationEliminationsMember",
+        }
+    ]
+    check = _check(result, "segment_sum_plus_eliminations_equals_consolidated")
+    assert check["status"] == "pass"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk03_distinct_elimination_members_keep_two_rows(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Two genuinely distinct members on two occurrences stay two rows.
+
+    The dedupe collapses only a repeated source occurrence, never a second
+    distinct elimination member.
+    """
+    result = _produce_pk03_synthetic(
+        monkeypatch,
+        (
+            _pk03_syn_fact(
+                "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+                (),
+                "1000000000",
+            ),
+            _pk03_syn_fact(
+                "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+                (
+                    (_PK03_SYN_SEG_AXIS, "us-gaap:AlphaSegmentMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "1500000000",
+            ),
+            _pk03_syn_fact(
+                "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+                ((_PK03_SYN_CONS_AXIS, "us-gaap:CorporateNonSegmentMember"),),
+                "-200000000",
+            ),
+            _pk03_syn_fact(
+                "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+                ((_PK03_SYN_CONS_AXIS, _PK03_SYN_ELIMINATION_CLARK_MEMBER),),
+                "-300000000",
+            ),
+        ),
+    )
+    rows = _pk03_field_rows(result, "unallocated_corporate_and_eliminations")
+    # Declared member order: CorporateNonSegmentMember first, then the
+    # Clark-form ConsolidationEliminationsMember under the us-gaap entry.
+    assert [row["quality_state"] for row in rows] == ["valued", "valued"]
+    assert [row["value"] for row in rows] == ["-200000000", "-300000000"]
+    assert [row["dimensions"] for row in rows] == [
+        [
+            {
+                "axis": _PK03_SYN_CONS_AXIS,
+                "member": "us-gaap:CorporateNonSegmentMember",
+            }
+        ],
+        [
+            {
+                "axis": _PK03_SYN_CONS_AXIS,
+                "member": _PK03_SYN_ELIMINATION_CLARK_MEMBER,
+            }
+        ],
+    ]
+    # Two rows, two distinct source occurrences.
+    first_ids = rows[0]["source_occurrence_ids"]
+    second_ids = rows[1]["source_occurrence_ids"]
+    assert len(first_ids) == len(second_ids) == 1
+    assert not set(first_ids) & set(second_ids)
+    check = _check(result, "segment_sum_plus_eliminations_equals_consolidated")
+    assert check["status"] == "pass"
+    assert contract.validate_pack_result(result) == []
+
+
 # 99. PK02 dev-corpus lane: duration contract, duplicates, aliases, guard ------
 #
 # Synthetic inline-XBRL 10-Q shapes built inside the tests (no filing bytes),
