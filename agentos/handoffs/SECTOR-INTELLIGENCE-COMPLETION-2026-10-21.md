@@ -152,3 +152,17 @@ Next: fresh READ_ONLY review of the P20 source diff → binding CI green → squ
 Central half + CI wiring; never the programme's completion) → commission the Cycles build wave (SIC-I03/I09B, C19 badge
 qualification, U07 port, typed states, light/ZH/1440/390 cells) → P22 production + natural-update proof on both served
 surfaces → P23 separate acceptances and the 134-row `*_to_record` fill.
+
+## Checkpoint 5 — P20 CI repairs landed on the branch, main 838a69c0 merged (2026-11-02 13:2xZ)
+
+Since checkpoint 4: the six pack reds on ci run 41426752895 (head ec1f1ea6) are answered on the branch. 442713973f2a:
+tests/test_sector_central.py `_status` reconciled with the SIC-D-B02 settled-session gate (56 passed), P0B receipts re-minted
+for the candidate's stocktable.js with the manifest rebound (closure gate rc=0; 143 passed), dashboard availability dispatch
+feature-detected for the Prophet node harnesses (237 passed). 8d1fe9324402: research screener page re-stamped
+(watchstore.js?v=f43cba98; H4.7 bake test passes), research-entry textarea literals replaced by house tokens
+(design ratchet enforce-added: 0 blocking on the whole template diff). The seventh red — ci-pack-6 gmi-explorer — was an
+inherited main red; main fixed it in #10541/#10556 and b6b4743f534d merges main 838a69c08deb into the branch
+(one conflict, the P0B manifest, resolved to the merged receipts' digests). The pushed branch head is recorded on PR #9917.
+
+Next: fresh READ_ONLY Opus review of the P20 diff (commission in flight) → binding CI green on the new merge ref →
+squash-merge #9917 as a PARTIAL release → Cycles build wave → P22/P23.
