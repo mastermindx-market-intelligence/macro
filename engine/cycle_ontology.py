@@ -159,7 +159,7 @@ DOCTRINE_STANCE: dict[str, str] = {
     "HOLD":              "watch",      # bullish, already held. HOLD is stamped on every RALLY ON row — the clean (non-divergent)
                                        # Recovery/Expansion/Peak cells and the divergent Trough/Downturn cells — on Recovery × TOP WATCH, and by the
                                        # Peak extended-uptrend override (trend_up × Peak × ladder in BOTTOM WATCH / TURN SIGNALED / FRESH BUY,
-                                       # note_key extended_uptrend, engine/cycle_ontology.py:1060-1063). The doctrine word is knowingly "Watch — don't
+                                       # note_key extended_uptrend, engine/cycle_ontology.py:1059-1063). The doctrine word is knowingly "Watch — don't
                                        # chase" in warn ink for all of them: a held position is never a fresh entry, and the chip is not an exit
                                        # (SIC-ADJ-01a; PRC-037; SIC-V5-C02)
     "HIGH-RISK BOUNCE":  "watch",      # caution; a bounce is watched, never chased

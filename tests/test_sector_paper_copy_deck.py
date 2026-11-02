@@ -3,7 +3,10 @@
 # The deck (design_refs/sector-paper-20261021/copy_deck.json) is what the Paper
 # writer places on the boards. It must reuse the product's shipped EN/ZH strings:
 # every non-NEW entry cites a file:line that really carries a fragment of the
-# string, so the boards cannot drift from the shipped templates.
+# string, so the boards cannot drift from the shipped templates. SIC-V6-C04 (PRC-049): the ZH of a
+# cited row must itself have a fragment in the cited window (JS unicode escapes decoded), unless the
+# source declares the ZH NEW or gives the ZH its own `ZH path:line` that carries it — an EN hit alone
+# never vouches for a misattributed ZH string.
 """Tests for the Sector Paper bilingual copy deck."""
 
 import json
@@ -163,21 +166,69 @@ def is_note(source):
     return source.startswith(("NEW", "derived:")) or _CITE.match(source) is None
 
 
+# SIC-V6-C04 (PRC-049): a source may give the ZH its own line (`; ZH path:line`) when the EN and the ZH
+# sit on different lines, or declare the ZH NEW (`; ZH NEW (...)`) when the ZH was written for the deck.
+_ZH_CITE = re.compile(r"(?:^|[\s;(])ZH (\S+?\.(?:j2|js|py|md|html|json|css|yml|yaml)):(\d+)(?:-(\d+))?(?=\s|$|[),;])")
+_ZH_NEW = re.compile(r"(?:^|[\s;(])ZH NEW(?=\s|$|[(),;])")
+_JS_ESCAPE = re.compile(r"\\u([0-9a-fA-F]{4})")
+
+
+def _window(path_str, lo_no, hi_no):
+    path = REPO / path_str
+    if not path.is_file():
+        return None
+    lines = path.read_text(encoding="utf-8").splitlines()
+    lo = max(0, lo_no - 4)
+    hi = min(len(lines), hi_no + 3)
+    text = " ".join(lines[lo:hi])
+    # a ZH string a template writes as JS unicode escapes (sector_central.html.j2 state copy) still counts
+    text = _JS_ESCAPE.sub(lambda m: chr(int(m.group(1), 16)), text)
+    return norm(text)
+
+
 def source_window(source):
     """Lines around a ``path:line`` or ``path:lo-hi`` citation; annotations after the citation
     (a finding id, a note in parentheses) are allowed and ignored."""
     m = _CITE.match(source)
     if not m:
         return None
-    path = REPO / m.group(1)
-    if not path.is_file():
+    return _window(m.group(1), int(m.group(2)), int(m.group(3) or m.group(2)))
+
+
+def zh_window(source):
+    """The window of a ``ZH path:line`` sub-citation, or None when the source has none."""
+    m = _ZH_CITE.search(source)
+    if not m:
         return None
-    lo_no = int(m.group(2))
-    hi_no = int(m.group(3) or lo_no)
-    lines = path.read_text(encoding="utf-8").splitlines()
-    lo = max(0, lo_no - 4)
-    hi = min(len(lines), hi_no + 3)
-    return norm(" ".join(lines[lo:hi]))
+    return _window(m.group(1), int(m.group(2)), int(m.group(3) or m.group(2)))
+
+
+def zh_fragments(entry):
+    return re.findall(r"[一-鿿]{2,}", entry["zh"])
+
+
+def row_gaps(entry):
+    """Gaps of one cited (non-note) row: the any-fragment check, then the SIC-V6-C04 ZH rule — the ZH
+    needs a fragment in the cited window, or a ``ZH NEW`` declaration, or a ``ZH path:line`` whose own
+    window carries a ZH fragment."""
+    src = entry["source"]
+    window = source_window(src)
+    if window is None:
+        return ["unresolvable source"]
+    cands = fragments(entry)
+    if not cands:
+        return ["no fragments"]
+    gaps = []
+    if not any(c in window for c in cands):
+        gaps.append("fragment not found")
+    zh = zh_fragments(entry)
+    if zh and not any(c in window for c in zh) and not _ZH_NEW.search(src):
+        sub = zh_window(src)
+        if sub is None:
+            gaps.append("zh fragment not in the cited window; no ZH NEW declaration and no ZH path:line")
+        elif not any(c in sub for c in zh):
+            gaps.append("zh fragment not found at the ZH path:line")
+    return gaps
 
 
 def test_deck_exists_and_boards_exact():
@@ -233,17 +284,22 @@ def test_cited_sources_carry_a_fragment():
         src = entry["source"]
         if is_note(src):
             continue
-        window = source_window(src)
-        if window is None:
-            missing.append((board, key, src, "unresolvable source"))
-            continue
-        cands = fragments(entry)
-        if not cands:
-            missing.append((board, key, src, "no fragments"))
-            continue
-        if not any(c in window for c in cands):
-            missing.append((board, key, src, "fragment not found"))
+        for gap in row_gaps(entry):
+            missing.append((board, key, src, gap))
     assert not missing, missing
+
+
+def test_zh_rule_catches_a_misattributed_zh():
+    """PRC-049 falsifier: a row whose EN is near the cited line but whose ZH is not (stanceHTML opens at
+    templates/sector_cycles.js:155; its L("Resolved stance · engine", "综合策略 · 引擎") is at :162, outside the
+    :155 window) fails the ZH rule; it passes once the ZH is sub-cited to the line that carries it or declared
+    NEW; a ZH string the sub-cited line does not carry still fails."""
+    row = {"en": "Resolved stance · engine", "zh": "综合策略 · 引擎", "role": "label", "source": "templates/sector_cycles.js:155"}
+    assert row_gaps(row) == ["zh fragment not in the cited window; no ZH NEW declaration and no ZH path:line"]
+    assert row_gaps(dict(row, source="templates/sector_cycles.js:155; ZH templates/sector_cycles.js:162")) == []
+    assert row_gaps(dict(row, source="templates/sector_cycles.js:155 (EN); ZH NEW (test fixture)")) == []
+    assert row_gaps(dict(row, zh="不存在的字串", source="templates/sector_cycles.js:155; ZH templates/sector_cycles.js:162")) == ["zh fragment not found at the ZH path:line"]
+    assert row_gaps(dict(row, source="templates/sector_cycles.js:162")) == []
 
 
 def test_all_seventeen_states_present():

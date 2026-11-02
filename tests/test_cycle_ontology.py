@@ -1059,11 +1059,14 @@ def test_doctrine_vocabulary_is_the_production_vocabulary():
 
 
 def test_hold_sentence_is_identical_and_true():
-    """SIC-V5-C02 (PRC-037, SIC-ADJ-01a): the HOLD sentence is one sentence in three places — the engine comment
-    beside ``DOCTRINE_STANCE["HOLD"]``, design_refs/sector-paper-20261021/cycles_ia.md and
-    components/COMPONENTS.md — its line citation lands on the Peak extended-uptrend override, and the cells it
-    names are exactly the cells ``resolve_state`` stamps HOLD (every RALLY ON row, Recovery × TOP WATCH, and
-    Peak × BOTTOM WATCH / TURN SIGNALED / FRESH BUY under trend_up), with no other HOLD cell."""
+    """SIC-V5-C02 (PRC-037, SIC-ADJ-01a) narrowed by SIC-V6-C02 (PRC-047): the HOLD sentence is one sentence in three
+    places — the engine comment beside ``DOCTRINE_STANCE["HOLD"]``, design_refs/sector-paper-20261021/cycles_ia.md and
+    components/COMPONENTS.md — identical after whitespace folding; its line citation lands on the Peak extended-uptrend
+    override (the condition ``trend_up and phase == "Peak"`` with the ladder tuple, and the effects stance HOLD /
+    note_key extended_uptrend, all inside the cited range); the folded sentence names every RALLY ON row, Recovery ×
+    TOP WATCH and BOTTOM WATCH / TURN SIGNALED / FRESH BUY; and, as an independent hand-written second check,
+    ``resolve_state`` stamps HOLD on exactly (every RALLY ON row, Recovery × TOP WATCH, Peak × BOTTOM WATCH / TURN
+    SIGNALED / FRESH BUY under trend_up) with no other HOLD cell. The test does not parse the cells out of the sentence."""
     import re as _re
     from pathlib import Path as _Path
     from engine import cycle_ontology as c
@@ -1079,8 +1082,11 @@ def test_hold_sentence_is_identical_and_true():
     assert sents[0] == sents[1] == sents[2], sents
     m = _re.search(r"engine/cycle_ontology\.py:(\d+)-(\d+)", sents[0])
     cited = "\n".join(src[int(m.group(1)) - 1:int(m.group(2))])
-    for frag in ('ladder_state in ("BOTTOM WATCH", "TURN SIGNALED", "FRESH BUY")', 'stance = "HOLD"', 'note_key = "extended_uptrend"'):
+    for frag in ('trend_up and phase == "Peak"', 'ladder_state in ("BOTTOM WATCH", "TURN SIGNALED", "FRESH BUY")',
+                 'stance = "HOLD"', 'note_key = "extended_uptrend"'):
         assert frag in cited, (frag, cited)
+    for phrase in ("every RALLY ON row", "Recovery × TOP WATCH", "BOTTOM WATCH / TURN SIGNALED / FRESH BUY"):
+        assert phrase in sents[0], (phrase, sents[0])
     ladders = sorted({k[1] for k in c._SIMPLE_CROSSWALK})
     hold = set()
     for ph in c.PHASES:

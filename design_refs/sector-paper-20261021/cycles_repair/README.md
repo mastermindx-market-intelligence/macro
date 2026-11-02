@@ -56,12 +56,12 @@ specimen, not production**: the production template remains `templates/sector_cy
 | 29 | `29-cycles-desktop-dark-en.png` | 1440 | dark | EN | `?theme=dark&lang=en` | 2343 |
 | 30 | `30-cycles-mobile-dark-zh.png` | 390 (iframe host) | dark | ZH | `mobile_frame.html?src=cycles.html&theme=dark&lang=zh` | 4327 |
 | 31 | `31-cycles-mobile-light-en.png` | 390 (iframe host) | light | EN | `…&theme=light&lang=en&state=incompatible_generation` (fixture) | 4879 |
-| 34 | `34-cycles-desktop-light-zh.png` | 1440 | light | ZH | `?theme=light&lang=zh` | 2225 |
-| 35 | `35-cycles-desktop-dark-zh.png` | 1440 | dark | ZH | `?theme=dark&lang=zh` | 2225 |
+| 34 | `34-cycles-desktop-light-zh.png` | 1440 | light | ZH | `?theme=light&lang=zh` | 2242 |
+| 35 | `35-cycles-desktop-dark-zh.png` | 1440 | dark | ZH | `?theme=dark&lang=zh` | 2242 |
 | 36 | `36-cycles-mobile-light-zh.png` | 390 (iframe host) | light | ZH | `mobile_frame.html?src=cycles.html&theme=light&lang=zh` | 4327 |
 | 39 | `39-cycles-mobile-dark-en.png` | 390 (iframe host) | dark | EN | `mobile_frame.html?src=cycles.html&theme=dark&lang=en` | 4775 |
 | 40 | `40-cycles-desk-desktop-dark-en.png` | 1440 | dark | EN | `?theme=dark&lang=en&desk=composite` (composite desk) | 3400 |
-| 41 | `41-cycles-desk-desktop-light-zh.png` | 1440 | light | ZH | `?theme=light&lang=zh&desk=composite` (composite desk) | 3262 |
+| 41 | `41-cycles-desk-desktop-light-zh.png` | 1440 | light | ZH | `?theme=light&lang=zh&desk=composite` (composite desk) | 3279 |
 
 Boards 30/31/36/39 are rendered inside `mobile_frame.html` because headless Chrome clamps its
 window width to ≥500 px; the host page copies `data-h`/`data-w`/`data-ovf` from the 390 px
@@ -109,6 +109,19 @@ ZH PRIOR fixture title and body use 先验 (SIC-V5-C09). Boards 40/41 declare th
 The engine HOLD sentence now names the Peak extended-uptrend override and is test-asserted identical in three
 places (`tests/test_cycle_ontology.py` `test_hold_sentence_is_identical_and_true`; SIC-V5-C02). Boards
 28-31/34-36/39-41 re-rendered; heights above equal `png_px` in `boards_manifest.yml` (SIC-V5-C12).
+
+Wave 6 (SIC-V6, 2026-11-02): the round-6 cures. The ZH clock-mismatch lines use a verb/colon construction
+(`cycles.hazard_mismatch_pattern` / `rhythm_mismatch_pattern` in `copy_deck.json`; SIC-V6-C05). `.cyc-cards` takes
+`align-items:start` so a card ends where its drawn sections end (C06) and the methods-card parity chip hugs its
+content (`.cyc-method .spc-chip{align-self:flex-start}`; C07). The page-level session family speaks data, not
+clocks: `Events data` / `Fragmentation data` chips with the status word, the dated qualifier `Data sessions aligned
+on the history day {d}; not current under this banner`, and `enum_zh.json` `aligned` = 一致 — no clock / 时钟 / 对齐
+term survives in that family, while each card's Clocks block keeps its name (C08). The deck test carries a ZH rule
+(`row_gaps` in `tests/test_sector_paper_copy_deck.py`): a cited row's ZH must itself have a fragment in the cited
+window (JS unicode escapes decoded) unless the source declares the ZH NEW or gives it a `ZH path:line`; 32 rows were
+re-sourced under it and the provenance drawers render those sources (C03/C04); the five C05/C08 rows carry their
+wave-6 provenance in the same field. Boards 28-31/34-36/39-41 re-rendered;
+the other 32 PNGs are byte-identical; heights above equal `png_px` in `boards_manifest.yml` (C09).
 
 ## How to render
 
