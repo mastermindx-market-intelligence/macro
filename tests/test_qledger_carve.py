@@ -539,10 +539,10 @@ def _fault_shim(tmp_path: Path, env: dict[str, str], mode: str) -> tuple[dict[st
     (shim / "git").write_text(
         "#!/usr/bin/env bash\n"
         f'if [ -e "{arm}" ]; then\n'
-        '  sub=""; has_e=0; has_blob=0\n'
-        '  for a in "$@"; do case "$a" in ls-tree|cat-file) [ -n "$sub" ] || sub="$a" ;; -e) has_e=1 ;; blob) has_blob=1 ;; esac; done\n'
+        '  sub=""; has_e=0; has_blob=0; is_watch=0\n'
+        '  for a in "$@"; do case "$a" in ls-tree|cat-file) [ -n "$sub" ] || sub="$a" ;; -e) has_e=1 ;; blob) has_blob=1 ;; *:data/qledger/claims.jsonl) is_watch=1 ;; esac; done\n'
         f'  if [ "{mode}" = lookup ] && {{ [ "$sub" = ls-tree ] || {{ [ "$sub" = cat-file ] && [ "$has_e" = 1 ]; }}; }}; then echo "fatal: shim: object lookup unavailable" >&2; exit 128; fi\n'
-        f'  if [ "{mode}" = blob ] && [ "$sub" = cat-file ] && [ "$has_blob" = 1 ]; then wc -c < "{watch}" > "{witness}" 2>/dev/null || echo missing > "{witness}"; echo "fatal: shim: blob read failed" >&2; exit 128; fi\n'
+        f'  if [ "{mode}" = blob ] && [ "$sub" = cat-file ] && [ "$has_blob" = 1 ]; then if [ "$is_watch" = 1 ]; then wc -c < "{watch}" > "{witness}" 2>/dev/null || echo missing > "{witness}"; fi; echo "fatal: shim: blob read failed" >&2; exit 128; fi\n'
         "fi\n"
         f'exec "{real_git}" "$@"\n'
     )
