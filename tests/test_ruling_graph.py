@@ -328,6 +328,9 @@ def test_ruling_ci_consumes_exact_base_without_network_refetch():
     assert "TESTED_BASE_SHA" in cmd
     assert "git rev-list --parents -n 1 HEAD" in cmd
     assert "git merge-base --is-ancestor" in cmd
+    assert "CI_DISABLE_BASE_REPLAY" in cmd
+    assert "CI_TESTED_TREE_SHA" in cmd
+    assert "head=$head_sha" in cmd
     assert 'RULING_DIFF_BASE="$TESTED_BASE_SHA"' in cmd
 
 
@@ -345,7 +348,18 @@ def test_trusted_pc_route_requires_two_parent_tested_merge(tmp_path):
     prefix = cmd.split('RULING_DIFF_BASE="$TESTED_BASE_SHA" python ', 1)[0]
     script = prefix + '\nprintf "%s\\n" "$TESTED_BASE_SHA"\n'
     env = os.environ.copy()
-    env.pop("TESTED_BASE_SHA", None)
+    for key in ("TESTED_BASE_SHA", "CI_DISABLE_BASE_REPLAY",
+                "CI_SEMANTIC_ROLE", "CI_BASE_SHA", "CI_TESTED_TREE_SHA",
+                "TESTED_TREE_SHA", "GITHUB_REF", "GITHUB_EVENT_NAME"):
+        env.pop(key, None)
+
+    def run_checked(attributes=None):
+        scoped_env = dict(env)
+        scoped_env.update(attributes or {})
+        return subprocess.run(
+            ["bash", "-eo", "pipefail", "-c", script],
+            cwd=tmp_path, env=scoped_env, capture_output=True, text=True,
+        )
 
     def git(*args):
         result = subprocess.run(
@@ -360,11 +374,28 @@ def test_trusted_pc_route_requires_two_parent_tested_merge(tmp_path):
     (tmp_path / "base.txt").write_text("base\n", encoding="utf-8")
     git("add", ".")
     git("commit", "-m", "base")
-    single_parent = subprocess.run(
-        ["bash", "-eo", "pipefail", "-c", script],
-        cwd=tmp_path, env=env, capture_output=True, text=True,
-    )
+    base_sha = git("rev-parse", "HEAD")
+    single_parent = run_checked()
     assert single_parent.returncode != 0
+    assert base_sha in single_parent.stdout
+
+    valid_replay = {
+        "CI_DISABLE_BASE_REPLAY": "1",
+        "CI_SEMANTIC_ROLE": "main",
+        "CI_BASE_SHA": base_sha,
+        "CI_TESTED_TREE_SHA": base_sha,
+    }
+    replay = run_checked(valid_replay)
+    assert replay.returncode == 0, replay.stderr
+    assert replay.stdout.splitlines()[-1] == base_sha
+
+    main_baseline = run_checked({
+        "TESTED_BASE_SHA": base_sha,
+        "TESTED_TREE_SHA": base_sha,
+        "GITHUB_REF": "refs/heads/main",
+        "GITHUB_EVENT_NAME": "workflow_dispatch",
+    })
+    assert main_baseline.returncode == 0, main_baseline.stderr
 
     git("checkout", "-b", "feature")
     (tmp_path / "feature.txt").write_text("feature\n", encoding="utf-8")
@@ -377,9 +408,20 @@ def test_trusted_pc_route_requires_two_parent_tested_merge(tmp_path):
     expected_base = git("rev-parse", "HEAD")
     git("merge", "--no-ff", "-m", "synthetic merge", "feature")
 
-    two_parent = subprocess.run(
-        ["bash", "-eo", "pipefail", "-c", script],
-        cwd=tmp_path, env=env, capture_output=True, text=True,
-    )
+    two_parent = run_checked()
     assert two_parent.returncode == 0, two_parent.stderr
     assert two_parent.stdout.splitlines()[-1] == expected_base
+
+    hosted = run_checked({"TESTED_BASE_SHA": expected_base})
+    assert hosted.returncode == 0, hosted.stderr
+    assert hosted.stdout.splitlines()[-1] == expected_base
+
+    wrong_hosted = run_checked({"TESTED_BASE_SHA": base_sha})
+    assert wrong_hosted.returncode != 0
+    assert git("rev-parse", "HEAD") in wrong_hosted.stdout
+    assert "does not match first parent" in wrong_hosted.stdout
+
+    rejected_replay = run_checked(valid_replay)
+    assert rejected_replay.returncode != 0
+    assert "invalid base-replay identity" in rejected_replay.stdout
+    assert git("rev-parse", "HEAD") in rejected_replay.stdout
