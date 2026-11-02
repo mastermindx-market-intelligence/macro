@@ -767,7 +767,11 @@ def test_u2_daily_job_previous_capture_changes_and_monitor_steps_are_ordered_and
     ), changes_run
 
     monitor_step = _step_by_id(steps, _CS_MONITOR_STEP)
-    assert monitor_step.get("if") == "always()", monitor_step.get("if")
+    # Step-level gate: the monitor attributes moved rows against tonight's
+    # change ledger, so it runs only when cs_changes produced one.
+    assert monitor_step.get("if") == (
+        "always() && steps.cs_changes.outcome == 'success'"
+    ), monitor_step.get("if")
     assert monitor_step.get("continue-on-error") is True, (
         "the monitor is fail-soft: a missing table or an unapplied DDL is a "
         "typed unavailable night, never a failed lane"
