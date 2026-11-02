@@ -6,14 +6,14 @@
     "site/policy_lever.json",
     "data/regime/latest.json"
   ],
-  "command": "CI=1 python3 tests/probe_policy_monitor_browser.py --out /tmp/policy-monitor-r4-final-20261101 --states populated,partial,missing,malformed",
-  "resolved_sha": "19eea495290e5df443984f820e49bb0b26d3b97f",
+  "command": "CI=1 python3 tests/probe_policy_monitor_browser.py --out /tmp/policy-monitor-r5-final-20261101 --states populated,partial,missing,malformed",
+  "resolved_sha": "afc33cb328f354a95923957928432f9ed64b86b0",
   "source_dirty": false,
   "template_blob": "e5dfcbe92035a5c553cec795f0006bac3c7f64ba",
   "normalizer_blob": "159cf2bf19695cf973dfd6ff213c10bf09c291e7",
   "face_fragment_blob": "19923c6623cc82d16e8705abb00306e7c5e426e1",
-  "dialog_fragment_blob": "547257b1d4ba7b80b5196e2e98a4c9b6fc1240fd",
-  "stylesheet_blob": "40c031a1b886ca4b85f3b5036cea21d53504e3bf",
+  "dialog_fragment_blob": "58880af75e936141a9b426a644e4f8855ffc5ea5",
+  "stylesheet_blob": "b261a890918748bf7e588379736a7ae4be8b2cff",
   "harness_note": "The macro page's detailed dialogs are the registration benefit: the page's own MMXAccessPreview resolves an anonymous visitor to the sign-in sheet, so the probe resolves that preview as a signed-in tier before it clicks the face. The page's own mx5OpenDlg/mx5CloseDlg controller opens the real dialog; no markup or controller code is patched.",
   "shapes": [
     {
@@ -43,7 +43,7 @@
             "width": 1004,
             "height": 844
           },
-          "bytes": 103249
+          "bytes": 103244
         }
       ],
       "table_rows": 4,
@@ -86,7 +86,7 @@
             "width": 390,
             "height": 729.4
           },
-          "bytes": 60707
+          "bytes": 60694
         },
         {
           "kind": "chart",
@@ -97,7 +97,7 @@
             "width": 352,
             "height": 238.5
           },
-          "bytes": 19943
+          "bytes": 19724
         }
       ],
       "table_rows": 4,
@@ -140,7 +140,7 @@
             "width": 1004,
             "height": 844
           },
-          "bytes": 112364
+          "bytes": 112341
         }
       ],
       "table_rows": 4,
@@ -237,7 +237,7 @@
             "width": 1004,
             "height": 844
           },
-          "bytes": 92241
+          "bytes": 92273
         }
       ],
       "table_rows": 4,
@@ -334,7 +334,7 @@
             "width": 1004,
             "height": 844
           },
-          "bytes": 104703
+          "bytes": 104674
         }
       ],
       "table_rows": 4,
@@ -377,7 +377,7 @@
             "width": 390,
             "height": 729.4
           },
-          "bytes": 60668
+          "bytes": 60640
         },
         {
           "kind": "chart",
@@ -474,7 +474,7 @@
             "width": 390,
             "height": 729.4
           },
-          "bytes": 58378
+          "bytes": 58373
         },
         {
           "kind": "chart",

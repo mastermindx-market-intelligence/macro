@@ -443,3 +443,29 @@ onubuntu0. No interruption or failover occurred. This bounded R5 delta must be
 adjudicated separately after that original return; it is not silently covered
 by an older review. The final source will receive clean-head regression and
 browser receipts before normal release. No approval or production claim.
+
+### Final R5 verification — clean immutable source
+
+Source afc33cb328f354a95923957928432f9ed64b86b0:
+- Full focused command (view, UI and producer suites): **306 passed, zero skips**
+  in57.18s with the committed source price/alert inputs present.
+- Standard production-template browser probe: **14 shapes,34 captures**, rc0,
+  source_dirty=false, all interaction/overflow assertions true, in52.44s.
+- Existing producer -> real template -> browser supplement: EN/light/1440 and
+  ZH/dark/390, six lower-section captures, source_dirty=false, all interaction
+  checks true. produced-sections.json binds the producer/config/data blobs,
+  genuine generation time and separate market/oil observation dates.
+- Root visually verified the explicitly labeled neutral stochastic bar and the
+  dated activity/transmission/calendar sections. The duplicate date is gone;
+  the malformed oscillator is unavailable rather than a clamped endpoint claim.
+- Parsed the actual render workflow at this commit and verified that the new
+  helper is in the existing push filter.
+
+This checkpoint replaces the standard images/receipt and adds the six produced
+section images/receipt,40 images total. It changes documentation/evidence only;
+source and tests remain byte-identical toafc33cb3. The principal freezes feature
+source pending genuine independent-review findings or hosted regressions.
+Original review19eea495 is still on its original active carrier and is not
+represented as final-head approval. R5's four-file functional delta (dialog,
+stylesheet, UI test and one render-trigger path) remains for independent delta
+review after that return. Required normal CI/release/live-path gates remain.
