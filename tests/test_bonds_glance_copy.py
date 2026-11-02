@@ -12,6 +12,19 @@ def _src() -> str:
     return TEMPLATE.read_text(encoding="utf-8")
 
 
+def test_page_copy_names_no_data_provider() -> None:
+    """Product surfaces describe the data; `<polygon` SVG tags are markup, not copy."""
+    import re
+
+    pattern = re.compile(
+        r"(?i)(?<![A-Za-z0-9])(?:yfinance|yahoo|tushare|polygon|massive)(?![A-Za-z0-9(])"
+    )
+    copy = re.sub(r"\{#.*?#\}", "", _src(), flags=re.S)
+    copy = re.sub(r"</?polygon\b", "", copy)
+    assert pattern.findall(copy) == []
+    assert "雅虎" not in copy
+
+
 def test_bonds_hero_uses_snapshot_not_live_badge() -> None:
     src = _src()
     assert "dtp-chip--live" not in src
