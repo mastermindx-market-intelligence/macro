@@ -44,7 +44,10 @@ sys.path.insert(0, str(_ROOT))
 from engine.capital_structure.covenant_terms import COVENANT_TERM_SCHEMA  # noqa: E402
 from engine.capital_structure.document_terms import DOCUMENT_TERM_SCHEMA  # noqa: E402
 from engine.capital_structure.instrument_candidates import INSTRUMENT_CANDIDATE_TERM_SCHEMA  # noqa: E402
-from engine.capital_structure.instrument_resolution import resolve_instruments  # noqa: E402
+from engine.capital_structure.instrument_resolution import (  # noqa: E402
+    resolve_instruments,
+    visible_candidate_count,
+)
 from engine.capital_structure.issuer_state_contracts import (  # noqa: E402
     COMPATIBLE_INPUT_SCHEMAS,
     CandidateBundle,
@@ -55,7 +58,6 @@ from engine.capital_structure.issuer_state_contracts import (  # noqa: E402
     CorporateActionInputs,
     sha256_of,
 )
-from engine.capital_structure.term_integration import assert_closed_candidate_term  # noqa: E402
 from engine.capital_structure.rule_applicability import (  # noqa: E402
     build_rule_pack,
     load_rule_applicability_pack,
@@ -184,32 +186,18 @@ def _issuer_rows(path: Path, json_column: str, issuer_id: str, label: str) -> tu
     return tuple(rows)
 
 
-def _zoned_instant(value: Any) -> datetime | None:
-    """An ISO instant with a timezone, or None (the resolver refuses it by name)."""
-    if not isinstance(value, str) or not value:
-        return None
-    text = value[:-1] + "+00:00" if value.endswith("Z") else value
-    try:
-        parsed = datetime.fromisoformat(text)
-    except ValueError:
-        return None
-    return parsed if parsed.tzinfo is not None else None
-
-
-def _any_candidate_visible(records: Sequence[Mapping[str, Any]], as_of: str) -> bool:
-    """True when some candidate is available at ``as_of``, or a timestamp is malformed.
-
-    A malformed cutoff or ``available_at`` counts as visible so the resolver,
-    not this pre-check, refuses it.
-    """
-    cutoff = _zoned_instant(as_of)
-    if cutoff is None:
-        return True
-    for row in records:
-        available = _zoned_instant((row.get("point_in_time") or {}).get("available_at"))
-        if available is None or available <= cutoff:
-            return True
-    return False
+def _candidate_bundle(records: tuple[dict[str, Any], ...], support: str, as_of: str) -> CandidateBundle:
+    return CandidateBundle(
+        GenerationBinding(
+            CANDIDATE_FAMILY,
+            INSTRUMENT_CANDIDATE_TERM_SCHEMA,
+            support,
+            artifact_sha256=sha256_of(list(records)),
+            as_of=as_of,
+        ),
+        records,
+        as_of,
+    )
 
 
 def _bind_instruments(root: Path, issuer_id: str, as_of: str) -> FamilyEntry:
@@ -226,12 +214,10 @@ def _bind_instruments(root: Path, issuer_id: str, as_of: str) -> FamilyEntry:
     # compiled candidate is stamped available after the state's cutoff.  An
     # issuer none of whose candidates is visible at the cutoff has no candidate
     # terms as of it: unavailable, never a resolver refusal.  Carried rows keep
-    # their first available_at, so they bind on the next night's cutoff.  Every
-    # row is first re-proved closed, as the resolver would, so lateness never
-    # hides a tampered row.
-    for row in records:
-        assert_closed_candidate_term(row)
-    if not records or not _any_candidate_visible(records, as_of):
+    # their first available_at, so they bind on the next night's cutoff.  The
+    # count runs every row check resolution runs, so lateness never hides a
+    # tampered, malformed or incomplete row.
+    if not records or not visible_candidate_count(_candidate_bundle(records, "partial", as_of), as_of):
         return FamilyEntry(
             family=INSTRUMENTS_FAMILY,
             support="unavailable",
@@ -253,18 +239,7 @@ def _bind_instruments(root: Path, issuer_id: str, as_of: str) -> FamilyEntry:
     # when every candidate resolved, so the published binding never overstates.
     support = "partial"
     while True:
-        bundle = CandidateBundle(
-            GenerationBinding(
-                CANDIDATE_FAMILY,
-                INSTRUMENT_CANDIDATE_TERM_SCHEMA,
-                support,
-                artifact_sha256=sha256_of(list(records)),
-                as_of=as_of,
-            ),
-            records,
-            as_of,
-        )
-        instrument_set = resolve_instruments(bundle, resolution_inputs, as_of)
+        instrument_set = resolve_instruments(_candidate_bundle(records, support, as_of), resolution_inputs, as_of)
         if support == "partial" and not instrument_set.unresolved_candidate_ids:
             support = "supported"
             continue

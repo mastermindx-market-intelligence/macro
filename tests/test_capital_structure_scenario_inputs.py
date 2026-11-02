@@ -22,6 +22,7 @@ import io
 import json
 import os
 import sys
+from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 from typing import Any, Mapping
@@ -586,7 +587,9 @@ def test_u1b_producer_reports_candidates_compiled_after_the_cutoff_as_not_materi
         return rows
 
     late = "2026-08-10T00:00:00Z"
-    assert producer._zoned_instant(late) > producer._zoned_instant(SERVED_AS_OF)
+    assert datetime.fromisoformat(late.replace("Z", "+00:00")) > datetime.fromisoformat(
+        SERVED_AS_OF.replace("Z", "+00:00")
+    )
     root = _served_root(tmp_path)
     ledger = root / producer.CANDIDATE_TERMS_FILENAME
     output = root / producer.CAPACITY_INPUTS_FILENAME
@@ -614,6 +617,18 @@ def test_u1b_producer_reports_candidates_compiled_after_the_cutoff_as_not_materi
     # A malformed timestamp is not "late": the resolver still refuses it.
     _write_parquet(ledger, _to_frame(stamped("not-a-timestamp")))
     with pytest.raises(ResolutionRefusal, match="not an ISO timestamp"):
+        producer.build_from_disk(root=root)
+    assert output.read_bytes() == good
+
+    # An all-late history that starts after v1 is incomplete, not "late": the
+    # version visible at the cutoff is missing, so the resolver refuses it.
+    truncated = []
+    for row in stamped(late):
+        row["version"]["correction_version"] = 2
+        row["candidate_term_id"] = candidate_term_id_for(row)
+        truncated.append(row)
+    _write_parquet(ledger, _to_frame(truncated))
+    with pytest.raises(ResolutionRefusal, match="lacks the version visible at as_of"):
         producer.build_from_disk(root=root)
     assert output.read_bytes() == good
 
