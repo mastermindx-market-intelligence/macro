@@ -1,6 +1,6 @@
 ---
 workstream: "WS:CI-MERGE-CONTROL-PLANE"
-session: "01a153e8-3c85-7bb2-af63-7f477b570512 / codex/ci-throughput-matched-cohort-20261020"
+session: "01a153e8-3c85-7bb2-af63-7f477b570512 / codex/ci-parser-qname-20261020"
 model: codex
 ended_because: ci_handoff
 mission: >
@@ -63,63 +63,40 @@ danger_areas:
   - Local green and one hosted run do not prove the fleet p95 target.
 ---
 
-# Current checkpoint — October20,2026,10:03Z
+# Current checkpoint — October20,2026,11:12Z
 
-Original root01a153e8-3c85-7bb2-af63-7f477b570512; owned branch
-codex/ci-throughput-matched-cohort-20261020 from fresh main. PR9850 merged
-6793c010048996193d3d98876b486910c7982e3c at09:08:07Z. CI39389030973:
-75 selected jobs, exact subject0d0e5ee02f5972ecd220e5e8e77d499f86c4d075,
-all12packs/gate/contract-delta/fences/active authority passed. All6authored blobs
-verified after successful fresh fetch; concurrent shared-ref fetch race resolved
-by one successful refetch, no reset. Evidence parser-results-landing.json.
-PR9813 remains accepted9c7df3786fc3856fbb692da301584b4b443ab66d:
-96jobs/299proofs/7blobs;34.55min/222.45wall. Earlier releases9722/9763/9791
-and reports9780/9801 reusable. No live observers/runners/downloads.
+Original root01a153e8-3c85-7bb2-af63-7f477b570512. Owned branch
+codex/ci-parser-qname-20261020. Report9857 merged4290a79a222da944dbee0b438474029d67d0c4b2
+at11:04:34Z;75selected jobs, all active gates/fences/authority passed,5blobs verified
+on fresh main. No accepted-log/test replay or cohort expansion. Fixed0754comparison
+and all earlier implementation/report releases remain accepted; no causal fleet
+speedup/cost neutrality/30percent target is proven. Keep12packs/two weights.
 
-Fixed07:54 parser comparison COMPLETE:57runs,36qualified first attempts
-(29success7failure),18pending3cancelled0reruns. All31missing job records acquired;
-no missing metadata. Exact parser79df25f36a17c79a726e28d11f0018dda92d5bbd,
-plannerf92be10fc37455fd427829f0f964c5ef581b3a80 plus parser-merge ancestry.
-Scoped successN24 p50/p951895/2553sec,wall177.675/253.95min. Global successN5
-2723/3156sec,wall352.6/360.1min. Scoped failureN7 firstfailed-step completion
-578/1853sec (includes replay),wall200.067/337.633min. Zero original-baseline
-full-proof matches. Preserve fixed05:54 and ancestry00:55 cohorts separately.
+New discriminating residual profile on exact parser79df25 and two accepted inputs:
+687371 qname splits,0.419cumsec of2.109instrumentedsec. Complete outputs match.
+Candidate stores split name parts per node and invalidates on qname change; no global
+cache, output/limit/refusal/proof/route change. Regression fails before1200splits vs6;
+215parser tests pass7.96sec after. Five alternating local samples CPU0.749179→0.655287
+(12.53percent),wall0.805988→0.726055; complete output hashes equal. Tracemalloc peaks
++3.25/+5.49percent, not RSS/hosted cost. Offline TEMP-store publisher lineage
+round-trip passes1test10.85sec, including direct-mint equality. All local runners settled.
+No source edit to active FIF producer/registry carriers. Bounded500open-PR file census
+and targeted parser title/body search found no parser carrier; census reached limit,
+so it is not an exhaustive proof of absence. Exact current parser blob was verified.
+Next: finish affected integration check, normal scoped PR/hosted proof/merge/landing.
+Evidence qname-trial.json and raw /Volumes/Mastermind/ci-pack-throughput-20261019/.
 
-Secondary matched successes39384839986/39378857695/39374295130 share identical
-103job execution proofs and pack assignment with ONE old-parser control39346152272.
-Control2007sec/232.533wallmin; treated2066/2581/2553sec and220.833/228.15/228.067wallmin.
-All treated slower to gate, fewer summed wall minutes; not3independent pairs.
-Control criticalpack7; treated criticalFIF-alonepack0. FIF wrapper1347sec control
-versus1616/2172/2113sec treated; checkout199sec versus201/197/197. No causal gain,
-cost neutrality or30percent target proven. Keep12packs/two weights.
+Portfolio dependency at11:03:56Z release boundary: canonical admission16active proofs
++1unindexed reservation=17/cap8, no opening; lease7480. No peer send or rerun.
+At next useful integration boundary use eligible existing canonical observation;
+return actual opening ONCE via supported peer message to Evaluation OS root
+01a1333d-b0c0-7f33-9259-dd718391d9e4. Original owner alone fresh-checks/executes unused
+authority for38801258721/workflow335022837/PR6651 atb4ff0d721ab8f40cd7aa50d469167537f43ca3cd.
+No dependency-only polling/reservation/preemption/capchange/guardreset.
 
-All four matched full logs now consumed; no download handles remain. Control
-FIF2680pass1skip1311.39sec, fourcommands1329.857sec. Treated primary
-2681pass1skip1573.45/2126.72/2065.02sec; fourcommands1594.096/2151.041/2089.544sec.
-All treated runner2.337.0/image20261012.334.1/Python3.12.13. Labels do not control
-physical performance or transitive inputs. Primary FIF command dominates.
-Decision: retain12packs/two weights/accepted parser source; next engineering slice
-needs discriminating residual profile and current active-carrier check. No additional
-optimization/revert justified by one reused control. Current action: batch complete
-fixed comparison/report/method/workstream through normal source delivery. No new
-cohort expansion, accepted-test/log replay or per-wake placeholder PR. Preserve
-repair carriers9216/9831 and all active FIF owners.
-
-Portfolio capacity dependency: canonical scripts/merge_on_green.py census and
-lease register observed10:01:26Z:13active PR proofs+1unindexed reservation=14,
-cap8, zero slots. Leaseowner7480; admission-boundary-1000.json retained.
-NO opening evidence; NO peer send, reservation or rerun. At next already-useful
-release/cohort integration boundary obtain eligible existing observation; send
-actual opening evidence ONCE via supported peer message to Evaluation OS root
-01a1333d-b0c0-7f33-9259-dd718391d9e4. That original owner alone holds UNUSED
-one-rerun authority38801258721/workflow335022837/PR6651 at
-b4ff0d721ab8f40cd7aa50d469167537f43ca3cd and must fresh-check/execute same carrier.
-Do not poll solely for this dependency, preempt, raise cap or reset guards.
-
-Raw evidence /Volumes/Mastermind/ci-pack-throughput-20261019/. All accepted
-logs/tests/reviews remain reusable; no replay. Optional Fabric weight review
-was denied preexecution canonical_source_unreadable, no verdict/bypass.
-Profiling tree stays detached unchangedff3996da. Preserve root/grants/writers,
-Desktop approvals/refusals and unknown effects. No speculative shards, new
-scheduler/controlplane or unrelated deploy. Existing hourly heartbeat only;
-notify material results. Two unchanged wakes diagnose once/back off60minutes.
+Preserve root/grants/writers/unknown effects and real approval/refusal boundaries.
+Earlier optional Fabric weight review denied preexecution canonical_source_unreadable;
+no verdict/bypass. Profiling tree ff3996da remains unchanged, not adopted/reminted.
+No synthetic CI, speculative shards, new scheduler/controlplane or unrelated deploy.
+One existing hourly heartbeat; no CI observer.300sec same-run cooldown/no bypass.
+Notify material results; two unchanged wakes diagnose/back off60minutes.
