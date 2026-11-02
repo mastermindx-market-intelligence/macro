@@ -54,6 +54,9 @@ DOCUMENT_TERM_COLUMNS = [
     "correction_version", "observation_json",
 ]
 
+PARSE_RECEIPTS_FILE = "document_term_parse_receipts.jsonl"
+PARSE_RECEIPTS_TEMP_FILE = "document_term_parse_receipts.tmp.jsonl"
+
 
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
@@ -166,6 +169,77 @@ def _load_existing_observations(path: Path, schema: Mapping[str, Any]) -> list[d
         observations.append(dict(observation))
     validate_document_term_history(observations)
     return observations
+
+
+def parse_receipts_path(root: Path) -> Path:
+    return root / PARSE_RECEIPTS_FILE
+
+
+def _load_parse_receipts(path: Path, schema: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Load durable parse receipts; a missing file simply means no receipts.
+
+    Every present line must be one canonical, schema-valid JSON object, and the
+    file must be sorted by (source_manifest_id, parser_version) and end with a
+    single newline. Anything else fails closed before the compile reads a source.
+    """
+    if not path.exists():
+        return []
+    raw_text = path.read_text(encoding="utf-8")
+    if not raw_text:
+        return []
+    if not raw_text.endswith("\n"):
+        raise ValueError(
+            f"document-term parse receipts file {path} must end with one newline"
+        )
+    receipts: list[dict[str, Any]] = []
+    for index, line in enumerate(raw_text[:-1].split("\n")):
+        if not line.strip():
+            raise ValueError(f"document-term parse receipts line {index} is blank")
+        try:
+            receipt = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise ValueError(
+                f"document-term parse receipts line {index} is malformed"
+            ) from exc
+        if not isinstance(receipt, dict):
+            raise ValueError(
+                f"document-term parse receipts line {index} must be an object"
+            )
+        if line != _canonical_json(receipt):
+            raise ValueError(
+                f"document-term parse receipts line {index} is not canonical JSON"
+            )
+        _validate_schema(
+            receipt, schema, f"document-term parse receipts line {index}",
+        )
+        receipts.append(receipt)
+    ordered = sorted(
+        receipts,
+        key=lambda item: (
+            str(item.get("source_manifest_id") or ""),
+            str(item.get("parser_version") or ""),
+        ),
+    )
+    if receipts != ordered:
+        raise ValueError(
+            "document-term parse receipts file is not sorted by "
+            "(source_manifest_id, parser_version)"
+        )
+    return receipts
+
+
+def _atomic_write_receipts(
+    receipts: Sequence[Mapping[str, Any]], target: Path,
+) -> None:
+    payload = "".join(_canonical_json(receipt) + "\n" for receipt in receipts)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    temporary = target.parent / PARSE_RECEIPTS_TEMP_FILE
+    try:
+        temporary.write_text(payload, encoding="utf-8")
+        os.replace(temporary, target)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
 
 
 def _validate_observation_lineage(
@@ -282,12 +356,18 @@ def compile_from_disk(
     ledger_path = root / "document_term_observations.parquet"
     manifest_schema = _load_contract("capital_structure_source_manifest.schema.json")
     observation_schema = _load_contract("capital_structure_document_term_observation.schema.json")
+    receipt_schema = _load_contract(
+        "capital_structure_document_term_parse_receipt.schema.json"
+    )
     manifests = read_source_ledger(manifest_path)
     for index, manifest in enumerate(manifests):
         _validate_schema(manifest, manifest_schema, f"source manifest {index}")
         validate_manifest_content_binding(manifest)
     validate_manifest_ledger(manifests)
     existing = _load_existing_observations(ledger_path, observation_schema)
+    parse_receipts = _load_parse_receipts(
+        parse_receipts_path(root), receipt_schema,
+    )
     store = source_store if source_store is not None else build_source_stores()
     base_reader = _source_reader_for_store(store)
     source_cache: dict[str, bytes | None] = {}
@@ -304,12 +384,17 @@ def compile_from_disk(
         existing_observations=existing,
         generated_at=generated_at or _now_iso(),
         rebuild=rebuild,
+        parse_receipts=parse_receipts,
     )
     observations = result["observations"]
     _validate_observation_lineage(
         observations, manifests, observation_schema, source_reader=source_reader,
     )
+    # Serialize both payloads before either write so a degraded or failed run
+    # leaves the previous generation of both files untouched.
+    receipts = result["receipts"]
     _atomic_write(_to_frame(observations), ledger_path)
+    _atomic_write_receipts(receipts, parse_receipts_path(root))
     return {"status": "ok", **result["counts"], "path": str(ledger_path)}
 
 
