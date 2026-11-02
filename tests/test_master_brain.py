@@ -719,3 +719,92 @@ if __name__ == "__main__":
             print(f"FAIL  {t.__name__}: {type(e).__name__}: {e}")
     print(f"\n{len(tests) - failed}/{len(tests)} passed")
     sys.exit(1 if failed else 0)
+
+
+# ABX3 contract regressions. Provider IO is stubbed; persistence is real in tmp_path.
+def _abx3_run_fixture(monkeypatch, tmp_path, candidate):
+    monkeypatch.setattr(mb, '_cfg', lambda: {'enabled': True, 'translate_zh': False})
+    monkeypatch.setitem(mb.LENSES, 'macro', {**mb.LENSES['macro'], 'state_fn': lambda root: {}})
+    monkeypatch.setattr(mb, 'synthesize', lambda *a, **kw: dict(candidate))
+    calls = []
+    monkeypatch.setattr(mb, '_append_ledger', lambda *a: calls.append(a))
+    (tmp_path / 'data/regime').mkdir(parents=True)
+    (tmp_path / 'site').mkdir()
+    return calls
+
+
+def test_abx3_failed_generation_retains_original_dates(monkeypatch, tmp_path):
+    old = {'schema': 'master_brief.v2', 'lens': 'macro', 'summary': 'Last valid read',
+           'state_asof': '2026-10-16', 'generated_at': '2026-10-18T06:00:00+00:00',
+           'confidence': 'medium', 'theses': [{'id': 'old'}]}
+    calls = _abx3_run_fixture(monkeypatch, tmp_path, {'lens': 'macro', 'summary': None,
+        'generated_at': '2026-11-02T06:00:00+00:00', 'degraded_reason': 'empty_reply'})
+    out = tmp_path / 'data/regime/master_brief.json'
+    out.write_text(json.dumps(old))
+    result = mb.run(root=tmp_path)
+    assert result['summary'] == old['summary']
+    assert result['state_asof'] == old['state_asof']
+    assert result['generated_at'] == old['generated_at']
+    assert result['last_attempt']['status'] == 'retained'
+    assert not calls, 'retaining a prior brief must not replay its thesis ledger'
+    assert json.loads(out.read_text())['summary'] == old['summary']
+    assert json.loads((tmp_path / 'site/master_brief.json').read_text())['summary'] == old['summary']
+
+
+def test_abx3_dry_run_has_no_persistence_or_ledger(monkeypatch, tmp_path):
+    calls = _abx3_run_fixture(monkeypatch, tmp_path, {'lens': 'macro', 'summary': 'Valid',
+        'generated_at': '2026-11-02T06:00:00+00:00', 'theses': [{'id': 'new'}]})
+    assert mb.run(root=tmp_path, persist=False)['summary'] == 'Valid'
+    assert not calls
+    assert not (tmp_path / 'data/regime/master_brief.json').exists()
+    assert not (tmp_path / 'data/master_brain/reply_cache').exists()
+
+
+def test_abx3_future_generation_is_not_a_young_brief():
+    age = mb._brief_age_days({'generated_at': '2999-01-01T00:00:00+00:00'})
+    assert age is None
+
+
+def test_abx3_bad_model_field_types_are_normalized(monkeypatch, tmp_path):
+    monkeypatch.setattr(mb, '_call_model', lambda *a, **kw: (json.dumps({
+        'summary': ['wrong'], 'tldr': [None, 'Driver: Real'], 'watch_items': 42,
+        'confidence': 'unrecognized', 'conflicts': 'wrong'}), None))
+    result = mb.synthesize({}, {'translate_zh': False}, root=tmp_path)
+    assert result['summary'] is None
+    assert result['tldr'] == ['Driver: Real']
+    assert result['watch_items'] == [] and result['conflicts'] == []
+    assert result['confidence'] is None
+
+
+def test_abx3_comparison_requires_same_lens_forward_chronology():
+    from lib import aibrief_contract as contract
+    current = {'lens': 'macro', 'state_asof': '2026-11-02', 'key_facts': [
+        {'key': 'risk', 'label_en': 'Market risk', 'value_en': 'Elevated'}]}
+    previous = {'lens': 'macro', 'state_asof': '2026-10-30', 'summary': 'Prior', 'key_facts': [
+        {'key': 'risk', 'label_en': 'Market risk', 'value_en': 'Low'}]}
+    change = contract.compare_readings(current, previous)
+    assert change['status'] == 'compared'
+    assert change['rows'][0]['previous_en'] == 'Low'
+    for bad in (None, {**previous, 'lens': 'btc'}, {**previous, 'state_asof': '2026-11-03'},
+                {**previous, 'state_asof': '2026-11-02'}):
+        assert contract.compare_readings(current, bad)['status'] == 'unavailable'
+
+
+def test_abx3_translation_filter_preserves_positions():
+    from lib import aibrief_contract as contract
+    brief = contract.normalize_brief({'tldr': ['First', None, 'Third'],
+        'zh': {'tldr': ['一', '二', '三']}, 'confidence': []})
+    assert brief['tldr'] == ['First', 'Third']
+    assert brief['zh']['tldr'] == ['一', '三']
+
+
+def test_abx3_atomic_failure_keeps_canonical(monkeypatch, tmp_path):
+    from lib import aibrief_contract as contract
+    out = tmp_path / 'brief.json'
+    out.write_text('{"summary":"old"}')
+    monkeypatch.setattr(contract.os, 'replace', lambda *a: (_ for _ in ()).throw(OSError('disk')))
+    import pytest
+    with pytest.raises(OSError):
+        contract.write_brief_atomic(out, {'summary': 'new'})
+    assert json.loads(out.read_text())['summary'] == 'old'
+    assert list(tmp_path.iterdir()) == [out]

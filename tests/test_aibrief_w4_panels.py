@@ -138,7 +138,8 @@ class TestContextStrip:
             self._write_fixtures(Path(td))
             out = _gather_context_strip(Path(td))
         # Tension-class contradiction → "bonds and stocks" plain line
-        assert "bonds and stocks" in (out["contradiction_line_en"] or "")
+        assert "inputs disagree" in (out["contradiction_line_en"] or "")
+        assert "bonds and stocks" not in (out["contradiction_line_en"] or "")
 
     def test_no_tension_gets_mixed_signals_line(self):
         with tempfile.TemporaryDirectory() as td:
@@ -158,7 +159,7 @@ class TestContextStrip:
             (nw / "world_state.json").write_text(json.dumps(_make_world_state(n_contra=0, severity_tension=0)))
             (nw / "liquidity_plumbing.json").write_text(json.dumps(_make_liquidity_plumbing()))
             out = _gather_context_strip(Path(td))
-        assert "same way" in (out["contradiction_line_en"] or "")
+        assert "No divergence flagged" in (out["contradiction_line_en"] or "")
 
     def test_liquidity_plain_word_no_raw_state(self):
         with tempfile.TemporaryDirectory() as td:
@@ -173,7 +174,8 @@ class TestContextStrip:
             self._write_fixtures(Path(td))
             out = _gather_context_strip(Path(td))
         assert out["cortex_status"] == "degraded"
-        assert "rate-limited" in (out["cortex_en"] or "").lower()
+        assert "unavailable" in (out["cortex_en"] or "").lower()
+        assert "rate-limited" not in (out["cortex_en"] or "").lower()
 
     def test_absent_when_all_reads_fail(self):
         with tempfile.TemporaryDirectory() as td:
@@ -382,14 +384,14 @@ class TestRecordPanel:
         # Locate the record-cal <p> block
         record_cal_start = body_only.find('class="record-cal"')
         assert record_cal_start >= 0, "record-cal class not found in body"
-        record_cal_end = body_only.find("</p>", record_cal_start)
+        record_cal_end = body_only.find("</div>", record_cal_start)
         record_cal_block = body_only[record_cal_start:record_cal_end]
 
-        # The raw note lives in the help tooltip (.tip span, display:none until hover).
+        # The raw note lives inside a closed native disclosure (keyboard/touch accessible).
         # Strip all .help … </span></span> blocks and attribute values, then assert clean.
         import re
         # Remove the help tooltip span (class="help"…</span></span>) entirely
-        stripped = re.sub(r'<span class="help">.*?</span></span>', '', record_cal_block, flags=re.DOTALL)
+        stripped = re.sub(r'<details class="help">.*?</details>', '', record_cal_block, flags=re.DOTALL)
         # Also strip attribute values
         stripped = re.sub(r'="[^"]*"', '=""', stripped)
         assert "hit-rate" not in stripped, (

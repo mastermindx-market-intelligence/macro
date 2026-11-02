@@ -1,0 +1,90 @@
+{
+  "scope": "built local page plus explicitly synthetic failure fixtures; not production acceptance",
+  "checks": [
+    {
+      "case": "page_navigation",
+      "viewport": 1440,
+      "theme": "dark",
+      "language": "en",
+      "pass": true
+    },
+    {
+      "case": "page_navigation",
+      "viewport": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "pass": true
+    },
+    {
+      "case": "page_navigation",
+      "viewport": 1440,
+      "theme": "light",
+      "language": "en",
+      "pass": true
+    },
+    {
+      "case": "page_navigation",
+      "viewport": 1440,
+      "theme": "light",
+      "language": "zh",
+      "pass": true
+    },
+    {
+      "case": "page_navigation",
+      "viewport": 390,
+      "theme": "dark",
+      "language": "en",
+      "pass": true
+    },
+    {
+      "case": "page_navigation",
+      "viewport": 390,
+      "theme": "dark",
+      "language": "zh",
+      "pass": true
+    },
+    {
+      "case": "page_navigation",
+      "viewport": 390,
+      "theme": "light",
+      "language": "en",
+      "pass": true
+    },
+    {
+      "case": "page_navigation",
+      "viewport": 390,
+      "theme": "light",
+      "language": "zh",
+      "pass": true
+    },
+    {
+      "case": "shared_renderer_fixture",
+      "fixture": 0,
+      "pass": true
+    },
+    {
+      "case": "shared_renderer_fixture",
+      "fixture": 1,
+      "pass": true
+    },
+    {
+      "case": "shared_renderer_fixture",
+      "fixture": 2,
+      "pass": true
+    },
+    {
+      "case": "shared_renderer_fixture",
+      "fixture": 3,
+      "pass": true
+    },
+    {
+      "case": "shared_renderer_fixture",
+      "fixture": 4,
+      "pass": true
+    },
+    {
+      "case": "optional_review_http_error",
+      "pass": true
+    }
+  ]
+}

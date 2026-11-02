@@ -1,0 +1,33 @@
+{
+  "scope": "candidate working-tree source identity; not release approval",
+  "parent_commit": "7e09c5006473bfc639029793eb5fa7a2f224acd5",
+  "files": {
+    "engine/master_brain.py": "9278d3e8bec666b1289370a0aaaa10e699981f1a78656d4ec501d32b8ffb0f3b",
+    "lib/aibrief_contract.py": "ec459935f4efcf6e3da142310fedc8b8c97f15ab6f72e47f123f274b1515b6d5",
+    "scripts/build_aibrief.py": "ae79a687cd2cf520bbcb93449cc141a7a794ed4b683a3024d792c08a54125027",
+    "templates/_aibrief_body.html.j2": "3626de3390345244304b95e37f164b9c63d63de237163586df9694c37a9f621f",
+    "templates/_aibrief_css.j2": "01b91f1ce8fb1c805195461ccecab5dd14f7d547fc5f1c17bbb07409a3876d0e",
+    "templates/aibrief.html.j2": "40d801359918e9a9de06e687108f33bcc21b7932fe986e96ed53d44c7cad7edc",
+    "templates/aibrief.js": "b15547a6fe25624e8286c34bfafe2a251012031501f9b2fe70d72c1d550ff9bf",
+    "site/aibrief.js": "b15547a6fe25624e8286c34bfafe2a251012031501f9b2fe70d72c1d550ff9bf",
+    "templates/dashboard.html.j2": "b3cafcfd699d3427be67337b737adb938af69adffe00fb70713327d4b9a6faa3",
+    "templates/china.html.j2": "fcdeedb37af3b6342b86ca5040bdacf5f680e513fe2fc92273d27e0743662d4d",
+    "templates/hk.html.j2": "f0885bec476c35b8e50d092e5e6a95ea40aa8cc1e98240c6639599d13618988b",
+    "tests/test_aibrief_page.py": "c8e24ddbf7fe0082ea81deb655c6851c9b2bcefd2e7711c0026f7f24e0abe4bc",
+    "tests/test_master_brain.py": "89df466b0c88360116c2a35b6f250b45885165cf65d0b5178cb81ef3f099cfa2",
+    "tests/test_aibrief_w4_panels.py": "45060aa80e13e30fe68fb6e989ed58f1db75f6d795463ea9a77404d2b21a7c5c",
+    "research/aibrief_v2/verify_browser.py": "f0df276a6ce3eca4b1e568d15cc604c820ece0d64f0dc0be515951367b5dcd1c"
+  },
+  "checks": {
+    "focused_pytest": 176,
+    "new_regressions": 22,
+    "browser_assertions": 14,
+    "capture_states": 16
+  },
+  "gaps": [
+    "Independent review pending",
+    "Full host-dialog build proof pending",
+    "Current production generation and release not proven",
+    "Three additional backend tests were not written after an action-scoped platform refusal"
+  ]
+}

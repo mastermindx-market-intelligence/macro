@@ -151,3 +151,127 @@ def test_no_template_links_deleted_brief_pages():
             if needle in src:
                 offenders.append(f"{path.name}: {needle}")
     assert not offenders, "templates still link retired brief pages: " + "; ".join(offenders)
+
+
+# ABX3: hostile/malformed input must remain safe even in non-autoescaping hosts.
+def _abx3_body(payload):
+    return str(_env().get_template('_aibrief_body.html.j2').module.aibrief_body(payload, 'macro', True))
+
+
+def test_abx3_escapes_all_narrative_surfaces():
+    attack = '<img src=x onerror=alert(1)>'
+    html = _abx3_body({'summary': attack, 'regime_read': attack,
+        'tldr': ['Driver: ' + attack, 'What to do: Watch — don\'t chase'],
+        'conflicts': [attack], 'transmission': [attack], 'watch_items': [attack],
+        'rotation_check': attack, 'degraded_reason': attack,
+        'zh': {'summary': attack, 'watch_items': [attack]}})
+    assert '<img' not in html
+    assert '&lt;img' in html
+
+
+def test_abx3_malformed_rows_do_not_break_shared_body():
+    for payload in ([], 'broken', 42, {'summary': 'Usable', 'key_facts': [None, 'broken'],
+        'tldr': [None, {}, 'Driver: real'], 'zh': {'tldr': [None]},
+        'watch_items': 7, 'conflicts': 'not a list', 'forward_watch': [42]}):
+        html = _abx3_body(payload)
+        assert 'not a signal source' in html
+        assert '>None<' not in html
+
+
+def test_abx3_unknown_confidence_is_not_low():
+    html = _abx3_body({'summary': 'Usable', 'confidence': 'unexpected'})
+    assert 'Confidence: Low' not in html
+    assert 'Not assessed' in html
+
+
+def test_abx3_last_tldr_is_not_automatically_a_stance():
+    html = _abx3_body({'tldr': ['Driver: Real', 'Watch the next release']})
+    assert 'class="aib2-stance ' not in html
+    assert 'Watch the next release' in html
+
+
+def test_abx3_cadence_does_not_claim_a_successful_update():
+    html = _abx3_body({'summary': 'Old', 'state_asof': '2026-10-16',
+        'generated_at': '2026-10-18T06:50:00+00:00', 'refresh_days': 1})
+    assert 'Updated daily' not in html
+    assert 'Scheduled daily' in html
+    assert '2026-10-16' in html and '2026-10-18' in html
+
+
+def test_abx3_no_decorative_container_edges():
+    css = (config.ROOT / 'templates/_aibrief_css.j2').read_text()
+    assert 'border-left:' not in css
+    assert 'linear-gradient' not in css
+    assert 'var(--font-ui' in css
+
+
+def test_abx3_null_translation_falls_back_per_item():
+    html = _abx3_body({'watch_items': ['Credit: Watch spreads'], 'zh': {'watch_items': [None]}})
+    assert html.count('Watch spreads') == 2
+
+
+def test_abx3_watch_conditions_precede_detail():
+    html = _abx3_body({'summary': 'Read', 'watch_items': ['Trigger: meaning'], 'regime_read': 'Detail'})
+    assert html.index('Trigger') < html.index('Detail')
+
+
+def test_abx3_full_page_malformed_lens_is_safe():
+    html = _render(master_brief=['broken'], china_brief=42, btc_brief='broken')
+    assert 'AI Daily Brief' in html
+    assert 'has not generated yet' in html
+
+
+def test_abx3_tab_aria_contract():
+    html = _render()
+    for lens in ('macro', 'china', 'btc'):
+        assert 'aria-controls="brief-' + lens + '"' in html
+        assert 'id="brief-' + lens + '"' in html
+    assert 'role="tabpanel"' in html
+
+
+def test_abx3_main_brief_precedes_supporting_calendar():
+    html = _render(master_brief={'summary': 'PRIORITY_THESIS'})
+    assert html.index('PRIORITY_THESIS') < html.index('Morning Orientation', html.index('<body>'))
+
+
+def test_abx3_cortex_degraded_does_not_invent_rate_limiting(tmp_path):
+    from scripts.build_aibrief import _gather_context_strip
+    folder = tmp_path / 'neuralweb'
+    folder.mkdir()
+    (folder / 'market_plane.json').write_text(json.dumps({'cortex': {'status': 'degraded'}, 'verdict': {}}))
+    out = _gather_context_strip(tmp_path)
+    assert 'rate-limit' not in out['cortex_en'].lower()
+
+
+def test_abx3_missing_contradiction_count_never_means_agreement(tmp_path):
+    from scripts.build_aibrief import _gather_context_strip
+    folder = tmp_path / 'neuralweb'
+    folder.mkdir()
+    (folder / 'world_state.json').write_text(json.dumps({'contradictions': {}}))
+    out = _gather_context_strip(tmp_path)
+    assert 'same way' not in (out['contradiction_line_en'] or '')
+
+
+def test_abx3_freshness_clock_rejects_invalid_and_future_dates():
+    import shutil
+    import subprocess
+    import pytest
+    node = shutil.which('node')
+    if not node:
+        pytest.skip('Node is required for the real client-clock contract')
+    result = subprocess.run([node, '-e', '''
+const assert=require('node:assert/strict');
+const {freshness}=require('./templates/aibrief.js');
+const now=Date.parse('2026-11-02T12:00:00Z');
+assert.equal(freshness('2026-10-16','2026-10-18T06:00:00Z',1,now).state,'old');
+for(const [s,g] of [['2026-02-30','2026-11-02T06:00:00Z'],['2027-01-01','2027-01-01T06:00:00Z'],['',''],['2026-11-02','2026-11-02T06:00:00']]) {
+ assert.equal(freshness(s,g,1,now).state,'unknown');
+}
+assert.equal(freshness('2026-11-02','2026-11-02T06:00:00Z',1,now).state,'dated');
+'''], cwd=config.ROOT, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+
+
+def test_abx3_stance_requires_a_whole_approved_verb():
+    html = _abx3_body({'tldr': ['Driver: Real', 'What to do: Actuary says wait']})
+    assert 'class="aib2-stance ' not in html

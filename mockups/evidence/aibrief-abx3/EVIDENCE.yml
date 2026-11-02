@@ -1,0 +1,11 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_aibrief_body.html.j2
+  - templates/_aibrief_css.j2
+  - templates/aibrief.html.j2
+  - templates/aibrief.js
+  - templates/dashboard.html.j2
+  - templates/china.html.j2
+  - templates/hk.html.j2
+  - site/aibrief.js
+manifest: mockups/evidence/aibrief-abx3/manifest.json

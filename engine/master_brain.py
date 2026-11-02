@@ -32,6 +32,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from lib import config
+from lib.aibrief_contract import normalize_brief, usable_brief, compare_readings, write_brief_atomic
 from engine import desk_ledger as _ledger_law    # run-scoped ids + immutable appends (leaf util)
 from engine.catalyst_tone import _extract_json   # shared tolerant JSON parser (leaf util)
 
@@ -492,7 +493,8 @@ def _brief_age_days(prev: dict | None) -> float | None:
         gen = datetime.fromisoformat(ts)
         if gen.tzinfo is None:
             gen = gen.replace(tzinfo=timezone.utc)
-        return (datetime.now(timezone.utc) - gen).total_seconds() / 86400.0
+        age = (datetime.now(timezone.utc) - gen).total_seconds() / 86400.0
+        return age if age >= 0 else None
     except Exception:  # noqa: BLE001
         return None
 
@@ -1567,6 +1569,8 @@ def _mb_reply_cache_get(prompt_hash: str, cfg: dict, root=None) -> str | None:
 
 
 def _mb_reply_cache_put(prompt_hash: str, text: str, cfg: dict, root=None) -> None:
+    if not cfg.get("_write_reply_cache", True):
+        return
     try:
         _mb_reply_cache_path(prompt_hash, cfg, root, create=True).write_text(text)
     except Exception:  # noqa: BLE001
@@ -2010,6 +2014,8 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
         brief["degraded_reason"] = reason or "unparseable_reply"   # surfaces "truncated"
         return brief
 
+    parsed = normalize_brief(parsed)
+
     # Style lint + ONE rewrite retry (spec §4).
     # Skip lint on cache hits — stored text was already linted on the run that wrote it.
     style_flags: list[str] = []
@@ -2106,7 +2112,7 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
             brief["theses"] = []
     if reason:
         brief["degraded_reason"] = reason          # parsed, but flag e.g. truncation
-    return brief
+    return normalize_brief(brief, lens)
 
 
 # --------------------------------------------------------------------------- #
@@ -2742,8 +2748,9 @@ def run(persist: bool = True, root: Path | None = None, force: bool = False,
                     log.info("master_brain: lens=%s brief is %.1fd old (< %dd interval) "
                              "— skipping regen, keeping prior brief", lens, age, interval)
                     return prev
+        previous = _read_json(root / "data" / "regime" / spec["out"])
         state = spec["state_fn"](root)
-        brief = synthesize(state, cfg, lens=lens, root=root)
+        brief = synthesize(state, {**cfg, "_write_reply_cache": persist}, lens=lens, root=root)
         # ADB-R9: additive optional keys (schema: master_brief.v2)
         brief["nw_context_used"] = bool(state.get("neural_web"))
         _nw = state.get("neural_web") or {}
@@ -2758,19 +2765,35 @@ def run(persist: bool = True, root: Path | None = None, force: bool = False,
             brief["key_facts"] = _key_facts_for(lens, state)
         except Exception:  # noqa: BLE001 — additive, never fatal
             brief["key_facts"] = []
-        _translate_brief(brief, cfg, lens)    # attach brief['zh'] for the 中文 toggle
+        brief = normalize_brief(brief, lens)
+        retained = False
+        if (not usable_brief(brief) and isinstance(previous, dict)
+                and previous.get("lens") == lens and usable_brief(previous)):
+            attempt = {"status": "retained", "attempted_at": datetime.now(timezone.utc).isoformat(),
+                       "reason": brief.get("degraded_reason") or "unusable_reply"}
+            brief = normalize_brief(previous, lens)
+            brief["last_attempt"] = attempt
+            retained = True
+        else:
+            brief["reading_changes"] = compare_readings(brief, previous)
+            _translate_brief(brief, cfg, lens)
+            brief = normalize_brief(brief, lens)
+        canonical_written = False
         if persist:
+            out = root / "data" / "regime" / spec["out"]
             try:
-                payload = json.dumps(brief, indent=2, default=str)
-                out = root / "data" / "regime" / spec["out"]
-                out.parent.mkdir(parents=True, exist_ok=True)
-                out.write_text(payload)
-                site = root / "site"          # client-fetched by the dashboard panel
-                if site.is_dir():
-                    (site / spec["out"]).write_text(payload)
-            except Exception as e:  # noqa: BLE001
-                log.warning("master_brief persist failed (lens=%s: %s)", lens, e)
-        if lens == "macro":                   # producer: append the brain's own leans (macro only)
+                write_brief_atomic(out, brief)
+                canonical_written = True
+            except (OSError, ValueError, TypeError) as exc:
+                log.warning("master_brief canonical persist failed (lens=%s: %s)", lens, exc)
+            # Never publish a mirror of a canonical write that failed.
+            if canonical_written and (root / "site").is_dir():
+                try:
+                    write_brief_atomic(root / "site" / spec["out"], brief)
+                except (OSError, ValueError, TypeError) as exc:
+                    log.warning("master_brief mirror persist failed (lens=%s: %s)", lens, exc)
+        # A dry run or retained older brief must never originate ledger effects.
+        if lens == "macro" and canonical_written and not retained and usable_brief(brief):
             _append_ledger(brief, root)
         return brief
     except Exception as e:  # noqa: BLE001 — additive, never fatal

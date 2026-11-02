@@ -25,6 +25,7 @@ from jinja2 import Environment, FileSystemLoader
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config, site_assets  # noqa: E402
+from lib.aibrief_contract import normalize_brief  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -58,8 +59,8 @@ _LIQUIDITY_PLAIN = {
 # Plain-word translations for cortex status
 _CORTEX_PLAIN = {
     "degraded": (
-        "Rate-limited overnight — ran on dashboards alone",
-        "隔夜遭速率限制，仅依靠看板运行",
+        "Overnight review unavailable — no added conclusions",
+        "隔夜复盘不可用，未添加额外结论",
     ),
     "ok": (
         "Ran successfully",
@@ -92,9 +93,9 @@ def _load_briefs(site_dir: Path, data_dir: Path) -> dict:
     out: dict = {}
     for ctx_key, fname in _BRIEF_FILES.items():
         brief = _load_json_safe(site_dir / fname)
-        if brief is None:
+        if not isinstance(brief, dict):
             brief = _load_json_safe(data_dir / "regime" / fname)
-        out[ctx_key] = brief  # may be None → template shows the absent note
+        out[ctx_key] = normalize_brief(brief) if isinstance(brief, dict) else None  # may be None → template shows the absent note
     return out
 
 
@@ -211,35 +212,37 @@ def _gather_context_strip(data_dir: Path) -> dict:
     ws = _load_json_safe(data_dir / "neuralweb" / "world_state.json")
     if ws:
         contra = ws.get("contradictions") or {}
-        n = contra.get("n", 0)
+        n = contra.get("n")
+        if type(n) is not int or n < 0:
+            n = None
         note = contra.get("note", "")
         by_sev = contra.get("by_severity") or {}
         n_tension = by_sev.get("tension", 0)
 
         # Translate the technical note into plain words for the glance tier
-        if n > 0:
+        if n is not None and n > 0:
             if n_tension > 0:
                 out["contradiction_line_en"] = (
-                    "One tension worth knowing: bonds and stocks are telling "
-                    "different stories."
+                    "The available inputs disagree — review the underlying desks "
+                    "before drawing a firm conclusion."
                 )
                 out["contradiction_line_zh"] = (
-                    "值得关注的一处矛盾：债券与股票传递出不同信号。"
+                    "现有输入存在分歧，请对照底层看板再作判断。"
                 )
             else:
                 out["contradiction_line_en"] = (
                     "The dashboards flag some mixed signals — nothing critical."
                 )
                 out["contradiction_line_zh"] = "各看板有些混合信号，尚不严重。"
-        else:
-            out["contradiction_line_en"] = "The main signals are pointing the same way."
-            out["contradiction_line_zh"] = "主要信号方向一致。"
+        elif n == 0:
+            out["contradiction_line_en"] = "No divergence flagged in the available inputs."
+            out["contradiction_line_zh"] = "现有输入未标记分歧。"
 
         # Full technical counts go in the hover receipt (drop the raw slug list)
         n_note = by_sev.get("note", 0)
         n_tension_sev = by_sev.get("tension", 0)
         out["contradiction_tip_en"] = (
-            f"Note: {n} signal divergence(s) detected. "
+            f"Note: {n if n is not None else 'unavailable'} signal divergence(s) detected. "
             f"By severity — tension: {n_tension_sev}, note: {n_note}."
         ).strip()
         out["contradiction_tip_zh"] = (
@@ -252,8 +255,8 @@ def _gather_context_strip(data_dir: Path) -> dict:
     lp = _load_json_safe(data_dir / "neuralweb" / "liquidity_plumbing.json")
     if lp:
         headline = lp.get("headline") or {}
-        state = headline.get("state", "neutral")
-        pair = _LIQUIDITY_PLAIN.get(state, _LIQUIDITY_PLAIN["neutral"])
+        state = headline.get("state")
+        pair = _LIQUIDITY_PLAIN.get(state, ("Liquidity reading unavailable", "流动性读数不可用"))
         out["liquidity_en"] = pair[0]
         out["liquidity_zh"] = pair[1]
         lp_asof = lp.get("asof", "")
