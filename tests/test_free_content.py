@@ -1976,3 +1976,14 @@ class TestLearningReaderJourney:
         assert len(re.findall(r'<nav\b[^>]*id="toc"', html)) == 1
         assert 'href="../../learn/options/gamma-regimes.html"' in html
         assert 'href="../../learn/options/"' not in html
+
+    def test_lesson_navigation_crumbs_reuse_known_chinese_labels_without_translating_schema(self, tmp_path, monkeypatch):
+        from bs4 import BeautifulSoup
+        _, out = _render_free_estate(tmp_path, monkeypatch)
+        soup = BeautifulSoup((out / "learn/options/dealer-hedging-mechanics.html").read_text(), "html.parser")
+        crumbs = soup.select(".est-crumb a")
+        assert [a.select_one(".l-zh").get_text() if a.select_one(".l-zh") else a.get_text() for a in crumbs] == ["首页", "学习", "期权与做市商持仓"]
+        assert crumbs[-1]["href"] == "../../learn/index.html#track-options"
+        schema = next(json.loads(s.string) for s in soup.select('script[type="application/ld+json"]') if json.loads(s.string).get("@type") == "BreadcrumbList")
+        assert [i["name"] for i in schema["itemListElement"]][:3] == ["Home", "Learn", "Options & Dealer Positioning"]
+        assert schema["itemListElement"][2]["item"].endswith("/learn/index.html#track-options")
