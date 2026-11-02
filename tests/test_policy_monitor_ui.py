@@ -34,7 +34,7 @@ CSS = TEMPLATES / "_policy_monitor.css.j2"
 # --------------------------------------------------------------------------- #
 
 def _env() -> jinja2.Environment:
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(TEMPLATES)))
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(TEMPLATES)), autoescape=True)
     env.filters["min"] = lambda seq: min(seq)
     env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)
     env.globals["pm_view"] = pmv.build_view
@@ -160,7 +160,7 @@ class TestHonesty:
     def test_the_old_quiet_fallback_copy_is_gone(self):
         html = _render(_policy_lever(state=None), _latest())
         assert "Quiet — no active jawboning" not in html
-        assert "Condition state not reported" in html
+        assert "Assessment unavailable" in html
 
     def test_the_old_hawkish_unknown_copy_is_gone(self):
         html = _render(_policy_lever(), _latest())
@@ -211,7 +211,7 @@ class TestHonesty:
 
     def test_the_countdown_is_marked_as_a_count_not_a_live_clock(self):
         html = _render(_policy_lever(), _latest())
-        assert "not a live clock" in html
+        assert "calculation date unavailable" in html
 
     def test_the_stale_narrative_is_flagged_next_to_the_copy(self):
         html = _render(_policy_lever(), _latest())
@@ -245,7 +245,7 @@ class TestRatesPanel:
         html = _render(_policy_lever(), _latest())
         dlg = _panel(html, 'id="dlg-policy"', "</body>")
         assert '<table class="plm-table">' in dlg
-        for horizon in ("Now", "1 month", "3 months", "6 months", "12 months"):
+        for horizon in ("1 month", "3 months", "6 months", "12 months"):
             assert horizon in dlg
 
     def test_the_axis_carries_percent_units_and_a_horizon_title(self):
@@ -258,15 +258,15 @@ class TestRatesPanel:
         html = _render(_policy_lever(), _latest())
         dlg = _panel(html, 'id="dlg-policy"', "</body>")
         assert "Market-implied rate" in dlg
-        assert "Fed SEP median dot (year-end)" in dlg
-        assert "Policy rate today" in dlg
+        assert "SEP year-end projection" in dlg
+        assert "Target range midpoint" in dlg
 
     def test_the_supporting_rail_carries_the_three_qualified_facts(self):
         html = _render(_policy_lever(), _latest())
         dlg = _panel(html, 'id="dlg-policy"', "</body>")
-        assert "Comparable market horizon" in dlg
-        assert "Fed comparison (relative)" in dlg
-        assert "window 2026-11-01 → 2026-12-31" in dlg
+        assert "12-month market rate" in dlg
+        assert "Fed projection comparison" in dlg
+        assert "-14 bp at end-2026" in dlg
 
     def test_the_fed_projection_table_is_tabulated_by_year(self):
         html = _render(_policy_lever(), _latest())
@@ -299,12 +299,43 @@ class TestRatesPanel:
 # --------------------------------------------------------------------------- #
 
 class TestDegradation:
+    def test_source_text_is_inert_in_the_production_autoescape_environment(self):
+        pl = _policy_lever()
+        pl["levers"][0]["watch"] = '<img src=x onerror="window.policyInjected=true">'
+        html = _render(pl, _latest())
+        dlg = _panel(html, 'id="dlg-policy"', "</body>")
+        assert '<img src=x onerror=' not in dlg
+        assert '&lt;img src=x onerror=' in dlg
+
+    def test_policy_disclosures_participate_in_the_existing_focus_trap(self):
+        body = DIALOG.read_text(encoding="utf-8")
+        assert '<summary>' not in body
+        assert body.count('<summary tabindex="0">') >= 4
+
+    def test_undated_sep_is_retained_as_an_unqualified_reference(self):
+        fp = _latest()["fed_path"]
+        fp["implied_source_meta"]["dots"]["vintage"] = None
+        html = _render(_policy_lever(), _latest(fed_path=fp))
+        dlg = _panel(html, 'id="dlg-policy"', "</body>")
+        assert 'Publication date unavailable' in dlg
+        assert 'Comparison unavailable' in dlg
+        assert '-14 bp at end-2026' not in dlg
+        assert '<polygon class="plm-dot-marker"' not in dlg
+
+    def test_current_rate_survives_a_missing_futures_path(self):
+        fp = _latest()["fed_path"]
+        fp["implied"] = {}
+        html = _render(_policy_lever(), _latest(fed_path=fp))
+        dlg = _panel(html, 'id="dlg-policy"', "</body>")
+        assert 'Target range midpoint' in dlg
+        assert '3.88%' in dlg
+
     def test_an_all_null_policy_lever_renders_without_a_calm_claim(self):
         pl = {"schema": "policy_lever.v1"}
         html = _render(pl, {"date": "2026-10-30", "fed_path": {}, "fed_stance": None})
         assert 'id="sx-policy-v2"' in html
-        assert "Condition state not reported" in html
-        assert "No market-implied rate path" in html
+        assert "Assessment unavailable" in html
+        assert "Market-implied path unavailable" in html
 
     def test_a_malformed_lever_row_does_not_break_the_panel(self):
         pl = _policy_lever()
@@ -397,3 +428,4 @@ class TestScopedStylesheet:
         for path in (FACE, DIALOG, CSS):
             assert path.exists()
             assert len(path.read_text(encoding="utf-8")) > 2000
+

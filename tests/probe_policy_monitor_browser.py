@@ -117,10 +117,21 @@ def _missing_payloads() -> tuple[dict, dict]:
             {"date": "2026-10-30", "fed_path": {}, "fed_stance": None})
 
 
+def _malformed_payloads() -> tuple[dict, dict]:
+    pl, lt = _real_payloads()
+    pl["state"] = " quiet "
+    pl["favored_complex"] = {"drawdown_pct": None}
+    pl["levers"] = [{"asset": "CL=F", "arming": None}]
+    lt["fed_path"]["implied"] = {"m1": -1e308, "m6": None, "m12": 4.44}
+    lt["fed_path"]["implied_source_meta"]["missing_source"] = [None, {}]
+    return pl, lt
+
+
 STATES = {
     "populated": _real_payloads,
     "partial": _partial_payloads,
     "missing": _missing_payloads,
+    "malformed": _malformed_payloads,
 }
 
 # The populated state gets the full matrix; the degraded states get one
@@ -217,10 +228,9 @@ def run(out_dir: Path, states=("populated",)) -> dict:
                "template": "templates/dashboard.html.j2",
                "normalizer": "lib/policy_monitor_view.py",
                "payloads": ["site/policy_lever.json", "data/regime/latest.json"],
-               "command": "CI=1 python3 tests/probe_policy_monitor_browser.py "
-                          "--out research/evidence/policy_monitor_upgrade_20261101 "
-                          "--states populated,partial,missing",
+               "command": f"CI=1 python3 tests/probe_policy_monitor_browser.py --out {out_dir} --states {','.join(states)}",
                "resolved_sha": _git("rev-parse", "HEAD"),
+               "source_dirty": bool(_git("status", "--porcelain", "--", "lib/policy_monitor_view.py", "templates", "tests/probe_policy_monitor_browser.py")),
                "template_blob": _git("hash-object", "templates/dashboard.html.j2"),
                "normalizer_blob": _git("hash-object", "lib/policy_monitor_view.py"),
                "face_fragment_blob": _git("hash-object", "templates/_policy_monitor_face.html.j2"),
@@ -295,6 +305,33 @@ def run(out_dir: Path, states=("populated",)) -> dict:
                                 "#dlg-policy .plm-table tbody tr", "els => els.length")
                             shot["fed_dot_rows"] = page.eval_on_selector_all(
                                 "#dlg-policy .plm-src-table tbody tr", "els => els.length")
+                            shot["no_dialog_overflow"] = page.eval_on_selector(
+                                "#dlg-policy .mx5-dlg-body", "el => el.scrollWidth <= el.clientWidth + 1")
+                            shot["no_launcher_overlap"] = all(
+                                not page.locator(selector).is_visible()
+                                for selector in ("#mmb-boot", "#mmb-launch"))
+                            shot["launcher_nodes"] = page.locator("#mmb-boot, #mmb-launch").count()
+                            # Traverse the native disclosures through the same
+                            # keyboard trap that serves production.
+                            page.locator("#dlg-policy .mx5-dlg-close").focus()
+                            summaries = page.locator("#dlg-policy summary:visible").count()
+                            visited = 0
+                            contained = True
+                            activated = True
+                            for _ in range(summaries + 1):
+                                page.keyboard.press("Tab")
+                                observation = page.evaluate("() => ({inside: !!document.activeElement.closest('#dlg-policy'), summary: document.activeElement.tagName === 'SUMMARY'})")
+                                contained = contained and observation["inside"]
+                                visited += int(observation["summary"])
+                                if observation["summary"]:
+                                    page.keyboard.press("Enter")
+                                    activated = activated and page.evaluate("() => document.activeElement.parentElement.open === true")
+                                    page.keyboard.press("Enter")
+                            shot["keyboard_disclosures_reachable"] = contained and visited == summaries
+                            shot["keyboard_disclosures_activate"] = activated
+                            page.locator("#dlg-policy .mx5-dlg-close").focus()
+                            page.keyboard.press("Shift+Tab")
+                            shot["reverse_focus_wrap"] = page.evaluate("() => document.activeElement.tagName === 'SUMMARY' && !!document.activeElement.closest('#dlg-policy')")
                             # close and reopen through the controller: no
                             # duplicated instances or listeners
                             page.click("#dlg-policy .mx5-dlg-close")
@@ -318,6 +355,11 @@ def run(out_dir: Path, states=("populated",)) -> dict:
                             shot["no_page_overflow"] = page.evaluate(
                                 "() => document.documentElement.scrollWidth <= "
                                 "document.documentElement.clientWidth + 1")
+                            required = ("reopen_ok", "escape_closed", "focus_returned", "no_page_overflow",
+                                        "no_dialog_overflow", "no_launcher_overlap", "keyboard_disclosures_reachable", "keyboard_disclosures_activate", "reverse_focus_wrap")
+                            failures = [key for key in required if not shot[key]]
+                            if failures:
+                                raise AssertionError(f"{tag}: {failures}")
                             page.close()
                             receipt["shapes"].append(shot)
             browser.close()
@@ -346,3 +388,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

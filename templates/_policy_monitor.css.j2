@@ -65,6 +65,8 @@ body.page-macro.mx4-grid .plm-face-open{
   /* the shared shell's title colour resolves to a translucent white, which is
      invisible on the light panel — the policy dialog names itself in text ink. */
   color:var(--text);
+  font-size:var(--fs-num-lg);font-weight:700;text-transform:none;
+  letter-spacing:0;margin:0;
 }
 #dlg-policy .plm-dlg-headtext{min-width:0;}
 #dlg-policy .plm-dlg-sub{
@@ -72,6 +74,10 @@ body.page-macro.mx4-grid .plm-face-open{
   text-transform:none;letter-spacing:0;font-weight:500;
 }
 #dlg-policy .plm-dlg-body{padding-top:18px;}
+body.page-macro:has(#dlg-policy.open) #mmb-boot,
+body.page-macro:has(#dlg-policy.open) #mmb-launch{
+  visibility:hidden;pointer-events:none;
+}
 
 /* ══ 3 · Surfaces + section headings ════════════════════════════════════ */
 #dlg-policy .plm-surface{
@@ -81,6 +87,10 @@ body.page-macro.mx4-grid .plm-face-open{
 #dlg-policy .plm-eyebrow{
   font-size:var(--fs-label);font-weight:700;letter-spacing:.09em;
   text-transform:uppercase;color:var(--muted);margin:0 0 12px;
+}
+#dlg-policy .plm-section-title{
+  font-size:var(--fs-h2);font-weight:700;color:var(--text);
+  margin:0 0 10px;letter-spacing:0;text-transform:none;
 }
 #dlg-policy .plm-note{
   font-size:var(--fs-sm);color:var(--muted);line-height:1.6;
@@ -126,10 +136,11 @@ body.page-macro.mx4-grid .plm-face-open{
 #dlg-policy .plm-cond-mark--unmet{color:var(--muted);}
 #dlg-policy .plm-cond-mark--unknown{color:var(--muted);}
 #dlg-policy .plm-cond-label{
+  display:block;
   font-size:var(--fs-sm);color:var(--text);line-height:1.45;font-weight:600;
 }
 #dlg-policy .plm-cond-value{
-  font-size:var(--fs-micro);color:var(--muted);line-height:1.5;margin-top:2px;
+  display:block;font-size:var(--fs-label);color:var(--muted);line-height:1.5;margin-top:2px;
   font-variant-numeric:tabular-nums;
 }
 #dlg-policy .plm-evidence-row{
@@ -139,7 +150,7 @@ body.page-macro.mx4-grid .plm-face-open{
   font-size:var(--fs-sm);font-weight:700;color:var(--text);
 }
 #dlg-policy .plm-evidence-note{
-  font-size:var(--fs-micro);color:var(--muted);line-height:1.55;
+  font-size:var(--fs-label);color:var(--muted);line-height:1.55;
 }
 #dlg-policy .plm-evidence-list{
   margin:8px 0 0;padding:0;list-style:none;
@@ -153,10 +164,15 @@ body.page-macro.mx4-grid .plm-face-open{
 #dlg-policy .plm-chartwrap{
   overflow-x:auto;overflow-y:hidden;margin-bottom:14px;
 }
+#dlg-policy .plm-analysis-grid{
+  display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:20px;align-items:start;
+}
+#dlg-policy .plm-analysis-main{min-width:0;}
 #dlg-policy .plm-chart-svg{
-  display:block;width:100%;height:auto;min-width:640px;max-width:760px;
+  display:block;width:100%;height:auto;min-width:0;
   overflow:visible;
 }
+#dlg-policy .plm-chart--mobile{display:none;}
 #dlg-policy .plm-axis-text{
   fill:var(--muted);font-size:11px;font-variant-numeric:tabular-nums;
 }
@@ -204,7 +220,7 @@ body.page-macro.mx4-grid .plm-face-open{
 }
 
 #dlg-policy .plm-rail{
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  display:grid;grid-template-columns:minmax(0,1fr);
   gap:10px;margin-bottom:14px;
 }
 #dlg-policy .plm-rail-card{padding:11px 13px;}
@@ -217,8 +233,10 @@ body.page-macro.mx4-grid .plm-face-open{
   font-size:var(--fs-md);font-weight:700;color:var(--text);line-height:1.35;
   font-variant-numeric:tabular-nums;
 }
+#dlg-policy .plm-rail-value--reading{font-size:var(--fs-num-lg);}
+#dlg-policy .plm-rail-value--status{font-size:var(--fs-sm);}
 #dlg-policy .plm-rail-sub{
-  font-size:var(--fs-micro);color:var(--muted);line-height:1.5;margin-top:4px;
+  font-size:var(--fs-label);color:var(--muted);line-height:1.5;margin-top:4px;
 }
 
 #dlg-policy .plm-table{
@@ -366,7 +384,7 @@ body.page-macro.mx4-grid .plm-face-open{
 #dlg-policy details.plm-details > summary:focus-visible{
   outline:2px solid var(--link);outline-offset:3px;
 }
-#dlg-policy .plm-details-body{padding:11px 0 2px;}
+#dlg-policy .plm-details-body{padding:11px 0 2px;max-width:100%;overflow-x:auto;}
 #dlg-policy .plm-src-table{width:100%;border-collapse:collapse;font-size:var(--fs-micro);}
 #dlg-policy .plm-src-table th{
   text-align:left;font-weight:600;color:var(--muted);padding:5px 8px 5px 0;
@@ -424,7 +442,15 @@ body.page-macro.mx4-grid .plm-face-open{
 /* ══ 13 · Responsive — narrow screens stack the rail below the chart ════ */
 @media(max-width:720px){
   #dlg-policy .plm-assess{grid-template-columns:minmax(0,1fr);}
-  #dlg-policy .plm-rail{grid-template-columns:minmax(0,1fr);}
+  #dlg-policy .plm-assess-cell{padding:11px 12px;}
+  #dlg-policy .plm-assess-watch{margin-bottom:5px;}
+  #dlg-policy .plm-analysis-grid{grid-template-columns:minmax(0,1fr);gap:10px;}
+  #dlg-policy .plm-rail{grid-template-columns:repeat(2,minmax(0,1fr));}
+  #dlg-policy .plm-rail-card:last-child{grid-column:1 / -1;}
+  #dlg-policy .plm-chart--desktop{display:none;}
+  #dlg-policy .plm-chart--mobile{display:block;}
+  #dlg-policy .plm-chartwrap{overflow:visible;margin-bottom:8px;}
+  #dlg-policy .plm-legend{gap:8px;}
   #dlg-policy .plm-split{grid-template-columns:minmax(0,1fr);}
   #dlg-policy .plm-counts{grid-template-columns:repeat(2,minmax(0,1fr));}
   #dlg-policy .plm-ctx-row{grid-template-columns:minmax(0,1fr);gap:3px;}
@@ -452,3 +478,4 @@ body.page-macro.mx4-grid .plm-face-open{
   #dlg-policy .plm-node,
   #dlg-policy .plm-dot-marker{opacity:1;transition:none;animation:none;}
 }
+

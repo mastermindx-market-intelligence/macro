@@ -64,7 +64,7 @@ def _policy_lever(**over) -> dict:
         "levers": [
             {
                 "name": "Iran / oil", "name_zh": "伊朗/石油", "asset": "CL=F",
-                "arming": {"stoch_k": 88.47, "armed": False},
+                "arming": {"stoch_k": 88.47, "armed": False, "as_of": "2026-10-30"},
                 "watch": "Middle East escalation is the transmission channel.",
                 "watch_zh": "中东局势升级是传导通道。",
                 "copy_as_of": "2026-07-18", "copy_age_days": 106, "copy_stale": True,
@@ -121,8 +121,8 @@ def _fed_path(**over) -> dict:
                 "source": "fred:FEDTARMD",
                 "target": "sep_fed_funds_year_end_median",
                 "target_epoch": "2026-12-31",
-                "vintage": None, "value_state": "present",
-                "limitations": ["sep_release_date_unknown"],
+                "vintage": "2026-03-18", "value_state": "present",
+                "limitations": [],
             },
             "gap": {
                 "rule_id": "sep_vs_market_year_end.v1",
@@ -136,6 +136,7 @@ def _fed_path(**over) -> dict:
         },
     }
     base.update(over)
+    base["implied_source_meta"]["strips"]["zq"]["observation_time"] = base["asof"]
     return base
 
 
@@ -178,9 +179,12 @@ class TestState:
         v = pmv.build_view(_policy_lever(state="BOOM"), _latest())
         assert v["state"]["value"] == "UNKNOWN"
 
-    def test_known_states_pass_through(self):
-        for s in ("ARMED", "ELEVATED", "QUIET"):
-            v = pmv.build_view(_policy_lever(state=s), _latest())
+    def test_reported_states_need_matching_dated_predicates(self):
+        for s, dd, armed in (("ARMED", -25, True), ("ELEVATED", -25, False), ("QUIET", -5, False)):
+            pl = _policy_lever(state=s)
+            pl["favored_complex"]["drawdown_pct"] = dd
+            pl["levers"][0]["arming"]["armed"] = armed
+            v = pmv.build_view(pl, _latest())
             assert v["state"]["value"] == s
             assert v["state"]["known"] is True
 
@@ -349,16 +353,17 @@ class TestRates:
     def test_points_carry_elapsed_months(self):
         v = pmv.build_view(_policy_lever(), _latest())
         months = [p["months"] for p in v["rates"]["points"]]
-        assert months == [0.0, 1.0, 3.0, 6.0, 12.0]
+        assert months == [1.0, 3.0, 6.0, 12.0]
 
     def test_x_axis_is_elapsed_time_not_evenly_spaced(self):
         """0/1/3/6/12 must sit to scale — the old chart spaced them evenly."""
         v = pmv.build_view(_policy_lever(), _latest())
         ticks = {t["months"]: t["x"] for t in v["rates"]["chart"]["x_ticks"]}
-        span = ticks[12.0] - ticks[0.0]
-        assert ticks[1.0] - ticks[0.0] == pytest.approx(span / 12, rel=1e-3)
-        assert ticks[3.0] - ticks[0.0] == pytest.approx(span / 4, rel=1e-3)
-        assert ticks[6.0] - ticks[0.0] == pytest.approx(span / 2, rel=1e-3)
+        origin = v["rates"]["chart"]["x_min"]
+        span = ticks[12.0] - origin
+        assert ticks[1.0] - origin == pytest.approx(span / 12, rel=1e-3)
+        assert ticks[3.0] - origin == pytest.approx(span / 4, rel=1e-3)
+        assert ticks[6.0] - origin == pytest.approx(span / 2, rel=1e-3)
         # an even spacing would have put m3 at 1/4 of the way and m6 at 1/2 —
         # the distinguishing case is m1, which is at 1/12 and not 1/4
         assert ticks[1.0] != pytest.approx(ticks[3.0])
@@ -370,8 +375,9 @@ class TestRates:
         row = {r["key"]: r for r in v["rates"]["table"]}
         assert row["m3"]["known"] is False
         assert row["m3"]["value"] == "not available"
-        # the line BREAKS at the gap: two segments, not one bridged polyline
-        assert len(v["rates"]["chart"]["segments"]) == 2
+        # m1 remains a standalone observation; only m6→m12 is joined.
+        assert len(v["rates"]["chart"]["segments"]) == 1
+        assert v["rates"]["chart"]["markers"][0]["months"] == 1
         assert [g["months"] for g in v["rates"]["chart"]["gaps"]] == [3.0]
 
     def test_non_finite_value_is_refused_as_a_reading(self):
@@ -498,7 +504,7 @@ class TestComparisonBasis:
         assert v["rates"]["gap"]["available"] is False
         assert v["relative"]["known"] is False
         assert v["rates"]["gap"]["gap_bp"] is None
-        assert "matched measure" in v["relative"]["sub_en"]
+        assert "publication date" in v["relative"]["sub_en"]
 
     def test_comparison_is_suppressed_when_the_rule_says_not_comparable(self):
         fp = _fed_path()
@@ -507,7 +513,7 @@ class TestComparisonBasis:
         v = pmv.build_view(_policy_lever(), _latest(fed_path=fp))
         assert v["rates"]["gap"]["available"] is False
         assert v["relative"]["known"] is False
-        assert "basis_mismatch:rate_index" in v["relative"]["sub_en"]
+        assert "matched measure" in v["relative"]["sub_en"]
 
     def test_relative_read_is_labelled_relative_not_a_policy_stance(self):
         v = pmv.build_view(_policy_lever(), _latest())
@@ -536,11 +542,11 @@ class TestContext:
         assert v["context"]["calendar"]["known"] is True
         assert v["context"]["calendar"]["days"] == 0
 
-    def test_countdown_is_a_count_not_a_live_clock(self):
+    def test_legacy_countdown_does_not_borrow_the_semis_date(self):
         v = pmv.build_view(_policy_lever(), _latest())
         txt = v["context"]["calendar"]["countdown_en"].lower()
-        assert "not a live clock" in txt
-        assert "2026-10-30" in txt
+        assert "calculation date unavailable" in txt
+        assert "2026-10-30" not in txt
 
     def test_absent_repricing_field_is_unknown_not_empty(self):
         """The old dialog said 'No repricing channels active today' when the
@@ -673,7 +679,7 @@ class TestSources:
     def test_each_input_carries_source_date_and_basis(self):
         v = pmv.build_view(_policy_lever(), _latest())
         labels = {s["label_en"] for s in v["sources"]}
-        assert "Policy conditions snapshot" in labels
+        assert "Semiconductor drawdown" in labels
         assert "Market-implied rate path" in labels
         assert "Fed projection (dot plot)" in labels
         assert "Fed-vs-market comparison rule" in labels
@@ -723,3 +729,115 @@ class TestEvidenceLevel:
         assert v["state"]["value"] == "ELEVATED"
         assert v["evidence"]["level"] in ("partial", "complete")
         assert "not proof that markets have repriced" not in v["state"]["summary_en"]
+
+
+class TestReviewedRegressions:
+    """Cases independently reproduced against the first pushed candidate."""
+
+    @pytest.mark.parametrize("raw,dd,armed,expected,qualification", [
+        ("QUIET", None, None, "UNKNOWN", "unavailable"),
+        ("ARMED", -25, None, "UNKNOWN", "unavailable"),
+        ("ARMED", -5, None, "UNKNOWN", "inconsistent"),
+        ("QUIET", -25, None, "UNKNOWN", "inconsistent"),
+        ("ELEVATED", -25, None, "ELEVATED", "partial"),
+        ("ELEVATED", -5, None, "UNKNOWN", "unavailable"),
+        ("ARMED", -25, False, "UNKNOWN", "inconsistent"),
+        ("QUIET", -5, False, "QUIET", "confirmed"),
+        (" quiet ", -5, False, "QUIET", "confirmed"),
+        ("ELEVATED", -25, False, "ELEVATED", "confirmed"),
+        ("ARMED", -25, True, "ARMED", "confirmed"),
+        ("ELEVATED", -25, True, "UNKNOWN", "inconsistent"),
+    ])
+    def test_headline_is_qualified_without_replacing_the_score(self, raw, dd, armed, expected, qualification):
+        pl = _policy_lever(state=raw)
+        pl["favored_complex"]["drawdown_pct"] = dd
+        pl["levers"][0]["arming"] = None if armed is None else {"armed": armed, "as_of": "2026-10-30"}
+        v = pmv.build_view(pl, _latest())
+        assert v["state"]["value"] == expected
+        assert v["state"]["qualification"] == qualification
+        assert pl["state"] == raw
+
+    def test_undated_or_future_technical_observation_cannot_confirm_quiet(self):
+        for stamp in (None, "2026-11-03"):
+            pl = _policy_lever(state="QUIET", computed_at="2026-11-01T01:00:00Z")
+            pl["favored_complex"]["drawdown_pct"] = -5
+            pl["levers"][0]["arming"]["as_of"] = stamp
+            assert pmv.build_view(pl, _latest())["state"]["value"] == "UNKNOWN"
+
+    def test_missing_eligible_lever_prevents_a_false_negative(self):
+        pl = _policy_lever(state="QUIET")
+        pl["favored_complex"]["drawdown_pct"] = -5
+        pl["levers"].append({"asset": "XYZ", "arming": None})
+        assert pmv.build_view(pl, _latest())["conditions"][1]["met"] is None
+
+    @pytest.mark.parametrize("rates", [
+        {"implied": {"m1": 4.0, 3: 4.1}},
+        {"implied_source_meta": {"missing_source": [None, {}, 7]}},
+        {"implied_source_meta": {"selected_strip": ["zq"]}},
+        {"implied": {"m1": -1e308, "m12": 1e308}},
+    ])
+    def test_bad_rate_metadata_cannot_crash_independent_sections(self, rates):
+        v = pmv.build_view(_policy_lever(), _latest(fed_path=rates))
+        assert v["activity"]["n_30d"] == 12
+        assert v["conditions"][0]["met"] is True
+        json.dumps(v, allow_nan=False)
+
+    @pytest.mark.parametrize("bad", ["2026-10-30junk", "2026-10-30<script>", "2026-02-30", "2026-10-30T25:00:00"])
+    def test_date_parser_validates_the_entire_input(self, bad):
+        assert pmv._date(bad) is None
+
+    def test_source_rule_alone_does_not_qualify_undated_sep(self):
+        fp = _fed_path()
+        fp["implied_source_meta"]["dots"]["vintage"] = None
+        v = pmv.build_view(_policy_lever(), _latest(fed_path=fp))
+        assert not v["relative"]["known"]
+        assert not v["rates"]["dots_on_axis"]
+        assert len(v["rates"]["dots"]) == 2
+        assert v["rates"]["available"]
+
+    @pytest.mark.parametrize("stamp", ["2026-10-30", "2026-11-01"])
+    def test_sep_must_be_available_before_the_chart_observation(self, stamp):
+        fp = _fed_path()
+        fp["implied_source_meta"]["dots"]["vintage"] = stamp
+        fp["implied_source_meta"]["cutoff"] = "2026-12-01"
+        v = pmv.build_view(_policy_lever(), _latest(fed_path=fp))
+        assert not v["rates"]["dots_on_axis"]
+        assert not v["relative"]["known"]
+
+    def test_sofr_curve_has_no_connected_policy_observation_or_fed_gap(self):
+        fp = _fed_path()
+        meta = fp["implied_source_meta"]
+        meta.update(selected_strip="sofr", selected_is_effr=False, selected_basis="sr3_compounded_sofr")
+        meta["strips"]["sofr"] = {"rate_index": "SOFR", "value_state": "present", "observation_time": "2026-10-30"}
+        meta["gap"]["status"] = "not_comparable"
+        v = pmv.build_view(_policy_lever(), _latest(fed_path=fp))
+        assert all(p["months"] > 0 for p in v["rates"]["points"])
+        assert v["rates"]["reference"] is None
+        assert v["rates"]["bp_12m"] is None
+        assert v["rates"]["available"]
+        assert not v["relative"]["known"]
+
+    def test_current_effective_rate_is_not_mislabelled_as_target_midpoint(self):
+        fp = _fed_path(target_mid=None, policy_rate=3.91)
+        v = pmv.build_view(_policy_lever(), _latest(fed_path=fp))
+        assert v["rates"]["current_rate"]["value"] == 3.91
+        assert "Effective" in v["rates"]["current_rate"]["label_en"]
+        assert "today" not in v["rates"]["current_rate"]["label_en"].lower()
+
+    def test_semis_date_cannot_move_the_rate_chart(self):
+        v = pmv.build_view(_policy_lever(as_of="2026-06-30"), _latest())
+        assert v["rates"]["dots"][0]["months"] == pytest.approx(2.03, abs=.05)
+        assert v["rates"]["as_of"] == "2026-10-30"
+
+    def test_mobile_geometry_preserves_values_and_readable_coordinates(self):
+        r = pmv.build_view(_policy_lever(), _latest())["rates"]
+        assert r["mobile_chart"]["width"] == 340
+        assert [m["value"] for m in r["mobile_chart"]["markers"]] == [m["value"] for m in r["chart"]["markers"]]
+        assert all(0 <= m["x"] <= 340 for m in r["mobile_chart"]["markers"])
+
+    def test_out_of_horizon_points_are_not_clamped_to_twelve_months(self):
+        fp = _fed_path()
+        fp["implied"].update(m999=8.0, m0=9.0)
+        r = pmv.build_view(_policy_lever(), _latest(fed_path=fp))["rates"]
+        assert [p["months"] for p in r["points"]] == [1, 3, 6, 12]
+

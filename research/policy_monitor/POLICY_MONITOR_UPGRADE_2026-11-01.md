@@ -222,3 +222,32 @@ R2 is terminal; do not overwrite either return.
 The implementation-record claims above describe R1's own reported results.
 They are superseded where contradicted by this review. The candidate remains
 NOT_ACCEPTED until these material findings and integrated proof are resolved.
+
+### R3 corrective source checkpoint
+
+The principal repaired the reproduced parser failures, evidence-qualified the
+reported PS-R9 label without replacing its score, required SEP publication and
+comparison provenance, disconnected spot policy observations from futures,
+introduced narrow-screen chart geometry, moved the desktop rail beside the
+curve, reduced repeated copy, and enrolled native disclosures in the existing
+keyboard trap. The shared Fed-dialog projection-chip style removed by R1 was
+restored with existing design tokens.
+
+Validation in isolated checkout /tmp/policy-monitor-r3-20261101:
+`CI=1 python3 -m pytest tests/test_policy_monitor_view.py tests/test_policy_monitor_ui.py tests/test_policy_lever.py -q --tb=short -rs`
+→ **220 passed, 1 skipped**. The skip is the existing cached CL=F arming
+cross-check: its price data is unavailable in this scoped environment; it is
+not a fabricated producer observation.
+
+An initial actual-template browser pass covered dark/light × EN/ZH × 1440/390
+and passed Escape, reopen, focus return, forward/reverse keyboard traversal,
+native disclosure activation, launcher non-overlap (launcher present), and
+page/dialog overflow checks. Its temporary images are composition review
+evidence, not immutable release evidence. Independent native product judgment
+found no blocking layout defect and requested only the final shorter predicate
+copy and modest secondary-type readability refinements, now included.
+
+Remaining: original R2 producer return and integration, exact integrated-head
+browser artifacts, separate qualified source/product review, hosted gates,
+normal independent release and served-path verification. NOT_ACCEPTED remains
+the correct overall product status until those obligations are complete.

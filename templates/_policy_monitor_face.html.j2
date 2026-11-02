@@ -78,15 +78,16 @@
       </span>
     </div>
 
-    {# 4 — ONE as-of stamp for the panel #}
+    {# The rate date qualifies rates only; other inputs have their own dates. #}
     <div class="plm-face-asof">
-      {% if pmv.snapshot.known %}
-      <span class="l-en">Snapshot {{ pmv.snapshot.date }}</span>
-      <span class="l-zh">快照 {{ pmv.snapshot.date }}</span>
+      {% if pmv.rates.as_of %}
+      <span class="l-en">Market rates · {{ pmv.rates.as_of }} · component dates vary</span>
+      <span class="l-zh">市场利率 · {{ pmv.rates.as_of }} · 各部分日期不同</span>
       {% else %}
-      <span class="l-en">Snapshot date not recorded</span>
-      <span class="l-zh">未记录快照日期</span>
+      <span class="l-en">Rate observation date unavailable</span>
+      <span class="l-zh">利率观测日期不可用</span>
       {% endif %}
     </div>
   </div>
 </div>{# /sx-policy-v2 #}
+

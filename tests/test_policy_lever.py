@@ -597,8 +597,10 @@ class TestTemplateRender:
         assert html.count('id="dlg-policy"') == 1
         assert html.count('id="dlg-policy-lever-card"') == 1
         assert "mx5OpenDlg('dlg-policy')" in html
-        # the panel reports the CONDITIONS state in plain words, not a bare enum
-        assert "One condition is met" in html or "一项条件成立" in html
+        # This legacy fixture has undated predicates and no qualifying deep
+        # drawdown. Its raw ELEVATED label cannot prove a complete assessment.
+        assert "Assessment unavailable" in html
+        assert "评估不可用" in html
 
     def test_render_macro_mode_keeps_a_zero_alert_count_visible(self):
         """n_7d = 0 is a real reading: it must not disappear behind truthiness."""
@@ -961,3 +963,4 @@ class TestTornLineResilience:
         assert result["n_7d"] == 1
         assert result["n_30d"] == 2
         assert result.get("_skipped_lines", 0) == 1
+
