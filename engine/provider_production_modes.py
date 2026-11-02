@@ -1075,6 +1075,11 @@ def _minimax_transport(
     return normalize_anthropic_response(_message_to_payload(message))
 
 
+def _modelark_usage_count(value: Any) -> int | None:
+    """Issuer usage must be a bounded non-negative JSON integer, never a string."""
+    return value if type(value) is int and 0 <= value < 2**31 else None
+
+
 def _modelark_responses_transport(
     mode: ProductionMode,
     system: str,
@@ -1164,8 +1169,8 @@ def _modelark_responses_transport(
     usage = payload.get("usage")
     return TransportOutcome(
         text="".join(parts) or None,
-        input_tokens=_int_or_none(_usage_field(usage, "input_tokens")),
-        output_tokens=_int_or_none(_usage_field(usage, "output_tokens")),
+        input_tokens=_modelark_usage_count(_usage_field(usage, "input_tokens")),
+        output_tokens=_modelark_usage_count(_usage_field(usage, "output_tokens")),
         status_code=code,
     )
 
@@ -1317,6 +1322,18 @@ def call_mode(
     exists — that is a refusal, not a provider failure.
     """
     mode = _mode(mode_id)
+    if (
+        mode.protocol == PROTOCOL_RESPONSES
+        and mode.enabled
+        and (type(max_tokens) is not int or not 1 <= max_tokens <= 512)
+    ):
+        # Reject before the commercial credential is even inspected.
+        invalid_status = _status(mode, None)
+        _emit_attempt(invalid_status, ok=False, latency_ms=0, error_class="unsupported")
+        return _receipt(
+            invalid_status, ok=False, text=None, input_tokens=None,
+            output_tokens=None, error_class="unsupported", latency_ms=0,
+        )
     source: Mapping[str, str] = os.environ if env is None else env
     status, credential = _resolve_status_and_credential(mode, source)
     if status.state != "configured":
