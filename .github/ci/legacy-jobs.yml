@@ -44134,6 +44134,8 @@ jobs:
       - "tests/test_prophet_page_composition.py"
       - "tests/test_action_board_hover_cards.py"
       - "templates/_us_act_now_board.html.j2"
+      - "templates/_china_act_now_board.html.j2"
+      - "templates/_decision_card.html.j2"
       - "templates/_prophet_page.css.j2"
       - "templates/_prophet_workspace.css.j2"
       - "tests/test_unified_dashboard_b2w2.py"
