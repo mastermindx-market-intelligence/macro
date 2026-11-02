@@ -51,7 +51,7 @@ ZH labels below are the strings the current template/renderer actually carries
 | Row | Element | ZH label | Producer → Render | Status |
 |-----|---------|----------|-------------------|--------|
 | C01 | Eleven SPDR records + identity/group metadata | 板块周期情报 · 每个美股板块所处的位置 (header `templates/sector_cycles.html.j2:37-38`); tab 板块 ETF (:50) | `engine/sector_cycles.py::build_sector:1101` (identity :1119-1123; registry `SECTORS` :45) → `templates/sector_cycles.js::mountChips:783`, counts `wireFamily:773`, cards `mountCards:944` | PRODUCED |
-| C02 | Family registry (thematic / Nasdaq / Russell) | 主题篮子 · 纳斯达克100 · 罗素2000 (tabs `templates/sector_cycles.html.j2:51-53`); 主题篮子轮动 (title `sector_cycles.js:736`) | `engine/sector_cycles.py::build_amalgam_family:1241` (+`build_basket:1146`, `_load_baskets:1189`, `_load_amalgams:1230`, families meta :1429) → `switchFamily:747`, `mountBaskets:829` | PRODUCED |
+| C02 | Family registry (thematic / Nasdaq / Russell) | 主题篮子 · 纳斯达克100 · 罗素2000 (tabs `templates/sector_cycles.html.j2:59-61`); 主题篮子轮动 (title `sector_cycles.js:736`) | `engine/sector_cycles.py::build_amalgam_family:1241` (+`build_basket:1146`, `_load_baskets:1189`, `_load_amalgams:1230`, families meta :1429) → `switchFamily:747`, `mountBaskets:829` | PRODUCED |
 
 Notes. C01: `meta.n_sectors` (`compute:1427`) is the count of records that actually
 built; a sector that fails (`build_sector` returns None when <300 rows,
@@ -66,9 +66,9 @@ itself is C24.
 
 | Row | Element | ZH label | Producer → Render | Status |
 |-----|---------|----------|-------------------|--------|
-| C03 | Rebased real-price series + rebase metadata | 价格 (mode button `templates/sector_cycles.html.j2:62`) | `engine/sector_cycles.py::record_series:605` (points `v/base*100` :701 via `_taper_points:380`; basis key :862; TR/price panel split `compute:1322-1327`) → `seriesFor:357` (price mode), anchor `priceAnchorFactor:311`, extent `priceExtent:317`, tooltip `heroTip:371-383` | PRODUCED |
-| C04 | Cycle-position oscillator + legacy phase/position | 周期位置 (`templates/sector_cycles.html.j2:63`); 低 = 超卖 · 高 = 拉伸 (:65); zones 超卖/周期中段/周期晚期/狂热·见顶/复苏 (`sector_cycles.js:390-392`) | `engine/sector_cycles.py::_detrended_osc:146` → `osc` points; `now.pos` :758, `now.phase/phaseLabel` :766 (`_classify_phase:285`) → `seriesFor:357` (default mode; `state` init `sector_cycles.js:73`), `yDomain:332` [0,100], `bands:347`, `zoneWord:390` | PRODUCED |
-| C05 | Log/linear scale | 对数 / 线性 (`templates/sector_cycles.html.j2:70-71`) | display transform on the same price field → `yval:298`, `yDomain:332`, `yTicks:338`, toggle `wireControls:532-539`; scale row hidden outside Price mode `syncHeroControls:552-560` | PRODUCED |
+| C03 | Rebased real-price series + rebase metadata | 价格 (mode button `templates/sector_cycles.html.j2:70`) | `engine/sector_cycles.py::record_series:605` (points `v/base*100` :701 via `_taper_points:380`; basis key :862; TR/price panel split `compute:1322-1327`) → `seriesFor:357` (price mode), anchor `priceAnchorFactor:311`, extent `priceExtent:317`, tooltip `heroTip:371-383` | PRODUCED |
+| C04 | Cycle-position oscillator + legacy phase/position | 周期位置 (`templates/sector_cycles.html.j2:71`); 低 = 超卖 · 高 = 拉伸 (:65); zones 超卖/周期中段/周期晚期/狂热·见顶/复苏 (`sector_cycles.js:390-392`) | `engine/sector_cycles.py::_detrended_osc:146` → `osc` points; `now.pos` :758, `now.phase/phaseLabel` :766 (`_classify_phase:285`) → `seriesFor:357` (default mode; `state` init `sector_cycles.js:73`), `yDomain:332` [0,100], `bands:347`, `zoneWord:390` | PRODUCED |
+| C05 | Log/linear scale | 对数 / 线性 (`templates/sector_cycles.html.j2:78-79`) | display transform on the same price field → `yval:298`, `yDomain:332`, `yTicks:338`, toggle `wireControls:532-539`; scale row hidden outside Price mode `syncHeroControls:552-560` | PRODUCED |
 
 Notes. C03 basis (`price` / `tr` / `tr_fallback`, `engine/sector_cycles.py:859-862`)
 is stamped per record but **not displayed on the US page** (the only rendered basis
@@ -253,7 +253,7 @@ never as a size.
 
 | Row | Element | ZH label | Producer → Render | Status |
 |-----|---------|----------|-------------------|--------|
-| C20 | Rotation-event chips | 轮动进行中 / 资金流入 (`sector_cycles.js:222-225`); copy from payload `copy_zh` | `engine/rotation_events.py::run_nightly:1991` (+`emit_v2:1627`), written `scripts/build_rotation_events.py:179` → raw fetch `loadRotation:2049-2073`, chip `rotationCardChip:211-226`, mounted `mountCards:972` | PRODUCED |
+| C20 | Rotation-event chips | 轮动进行中 / 资金流入 (`sector_cycles.js:222-225`); copy from payload `copy_zh` | `engine/rotation_events.py::run_nightly:1991` (+`emit_v2:1627`), written `scripts/build_rotation_events.py:193` → raw fetch `loadRotation:2049-2073`, chip `rotationCardChip:211-226`, mounted `mountCards:972` | PRODUCED |
 | C21 | Fragmentation chips | 聚合读数或失真 (`sector_cycles.js:232`); copy from payload `copy_zh` | `engine/sector_fragmentation.py::compute:105`, written `scripts/build_rotation_events.py:136` → same fetch :2053-2055, chip `fragCardChip:227-233` | PRODUCED |
 | C22 | Research links + panel transitions | 查看 <名称> 页面 (`sector_cycles.js:1238`) | destinations built by `scripts/build_site.py::main:6093` (us_sector_* themes :1684-1808); route table `US_SECTOR_PAGE` `sector_cycles.js:1203-1215` → `sectorPageHref:1222-1234`, `sectorPageLabel:1235-1240`, open button `focusHTML:1382-1384` | PRODUCED |
 
@@ -292,7 +292,7 @@ generation check — each script global simply overrides.
 | Row | Element | ZH label | Producer → Render | Status |
 |-----|---------|----------|-------------------|--------|
 | C25 | Mobile picker + sheet detents + full-screen + touch | 完成 (`sector_cycles.js:1748`); sheet ✕ aria-label "Close" EN only (:1646); fs button aria-label EN only (:1839) | `initSheet:1629` (US peek-expand :1632-1641; China detents `setDetent:1615` hidden→half→full, `detentPx:1627`, 1:1 drag + flick :1656-1687, Esc :1689), picker overlay `buildSeriesOverlay:1740`, full-screen `toggleChartFs:1844`/`mountChartFsBtn:1834`; media queries `templates/sector_cycles.css:424-470`, sheet transforms in `site/cycle.css:326,350-351` | PRODUCED |
-| C26 | Keyboard + live region + chart focus | live-region message 已显示 N / M 项 (`sector_cycles.js:690`) | `srStatus:697` (role=status aria-live=polite; node also `templates/sector_cycles.html.j2:86`), `keyActivate:115` (wired on legs :1031 and lead rows :1570), chart role=img (`templates/sector_cycles.html.j2:88`), Esc handlers :1689/:2030-2032, focus-visible outlines `templates/sector_cycles.css:534` | PRODUCED |
+| C26 | Keyboard + live region + chart focus | live-region message 已显示 N / M 项 (`sector_cycles.js:690`) | `srStatus:697` (role=status aria-live=polite; node also `templates/sector_cycles.html.j2:94`), `keyActivate:115` (wired on legs :1031 and lead rows :1570), chart role=img (`templates/sector_cycles.html.j2:96`), Esc handlers :1689/:2030-2032, focus-visible outlines `templates/sector_cycles.css:534` | PRODUCED |
 | C27 | Bilingual + semantic tone + light/dark | whole-page `l-en`/`l-zh` spans + `L(en, zh)` (`sector_cycles.js:59-60`); tone tokens flip-safe :148-156 | engine-stamped zh fields (`read_zh`, `stance_zh`, `divergence_note_zh`, `name_zh`…) → language flip re-render `rerender:1858` on `langchange` (:2029); theme boot `templates/sector_cycles.html.j2:13`; semantic tone→root tokens `TONE_CLS:153` | PRODUCED |
 | C28 | Lazy hydration + resilient core | 引擎解读生成中 (`sector_cycles.js:1374`) | payload split `scripts/build_sector_cycles.py:108-129` (core light / series heavy / narr / dna) → `hydrateSeries:1977` + `_scheduleSeries:2001` (post-first-paint; onerror tolerated :2011), `hydrateExtras:1929` + `_scheduleExtras:1941` (idle-callback), stamped-URL reuse `vUrl:1919`, pre-hydration guards `seriesFor:360-361` / `priceExtent:321` / `sparkSpec:918`, null-safe rotation fetch :2051-2053 | PRODUCED |
 

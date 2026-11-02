@@ -45,12 +45,12 @@ shown as zero (`templates/subsector_detail.html.j2:124`, `sgn`).
 | stale | `templates/_sector_central_coverage.js.j2:87` | 'Older than source page <date>' appended; numbers stay |
 | incompatible_generation | `templates/_sector_central_coverage.js.j2:52` | clock_mismatch: dates disagree, no coverage asserted |
 | partial | `templates/_sector_central_coverage.js.j2:85` | 'N of 11 measured'; unmeasured named in full evidence |
-| error | `templates/sector_central.html.j2:3023` | 'Data failed to load — please refresh.'; preview stays |
-| empty | `templates/sector_central.html.j2:2092` | 'Refreshing the action board — check back after tonight's close.' |
+| error | `templates/sector_central.html.j2:3024` | 'Data failed to load — please refresh.'; preview stays |
+| empty | `templates/sector_central.html.j2:2093` | 'Refreshing the action board — check back after tonight's close.' |
 | no_access | `templates/_us_act_now_board.html.j2:64` | free shell: preview rows only, full-board counts |
 | loading | `templates/_sector_central_brief.html.j2:15` | placeholder copy until matching closes land |
-| offline | `templates/sector_central.html.j2:4156` | shell stays exactly as rendered; no flash |
-| unauthorized | `templates/sector_central.html.j2:2030` | 401/403 no-op; sign-in disclosure line stays |
+| offline | `templates/sector_central.html.j2:4157` | shell stays exactly as rendered; no flash |
+| unauthorized | `templates/sector_central.html.j2:2031` | 401/403 no-op; sign-in disclosure line stays |
 | locked | `templates/_us_act_now_board.html.j2:31` | violet lock; 'N more here — sign in' per lane |
 | invalid_payload | `templates/_sector_central_coverage.js.j2:31` | 'coverage could not be checked — open the full evidence' |
 | zero | `templates/_sector_central_coverage.js.j2:78` | '0 of 11 sectors have qualified measurements' |
@@ -60,17 +60,17 @@ shown as zero (`templates/subsector_detail.html.j2:124`, `sgn`).
 | State | Trigger | Tier-1 render |
 |---|---|---|
 | fresh | `templates/subsectors.js:508` | 'as of <date>' per universe; honest coverage line |
-| stale | `templates/sector_central.html.j2:1655` | >12h guard demotes token to 'LAST SESSION · SETTLED' |
-| incompatible_generation | `templates/sector_central.html.j2:3816` | 'History is from a different day … Not drawn, never mixed' |
-| partial | `templates/sector_central.html.j2:3621` | 'Partial — N of 11 measured' chip |
-| corrected | `templates/sector_central.html.j2:1973` | 'Comparison reset after a source change' |
-| abstained | `templates/sector_central.html.j2:3895` | 'Forecast: none — no forecasting model has been approved' |
-| error | `templates/sector_central.html.j2:3746` | 'History unavailable right now' + 'current read unaffected' |
+| stale | `templates/sector_central.html.j2:1656` | >12h guard demotes token to 'LAST SESSION · SETTLED' |
+| incompatible_generation | `templates/sector_central.html.j2:3817` | 'History is from a different day … Not drawn, never mixed' |
+| partial | `templates/sector_central.html.j2:3622` | 'Partial — N of 11 measured' chip |
+| corrected | `templates/sector_central.html.j2:1974` | 'Comparison reset after a source change' |
+| abstained | `templates/sector_central.html.j2:3896` | 'Forecast: none — no forecasting model has been approved' |
+| error | `templates/sector_central.html.j2:3747` | 'History unavailable right now' + 'current read unaffected' |
 | empty | `templates/subsectors.js:506` | 'No data yet — run the nightly build.' |
-| loading | `templates/sector_central.html.j2:3741` | true-geometry skeletons + 'Loading history…' |
-| offline | `templates/sector_central.html.j2:2032` | 'could not be loaded', distinct from denied/invalid |
-| unauthorized | `templates/sector_central.html.j2:2030` | 'Sign in with access to view these observations.' |
-| invalid_payload | `templates/sector_central.html.j2:2040` | 'could not be verified' (schema gate `basket_pulse.v1`) |
+| loading | `templates/sector_central.html.j2:3742` | true-geometry skeletons + 'Loading history…' |
+| offline | `templates/sector_central.html.j2:2033` | 'could not be loaded', distinct from denied/invalid |
+| unauthorized | `templates/sector_central.html.j2:2031` | 'Sign in with access to view these observations.' |
+| invalid_payload | `templates/sector_central.html.j2:2041` | 'could not be verified' (schema gate `basket_pulse.v1`) |
 | zero | `templates/subsectors.js:309` | 'Nothing extended or in a downtrend right now' |
 | empty_search | `templates/subsectors.js:496` | count-only '0 / N' header; no no-results copy yet |
 
@@ -135,7 +135,7 @@ triggered until the trigger exists):
 - **corrected** — brief (R3A-92 producer-dependent gap); dossier (Record provenance);
   watches (record-owner dating); research (snapshot revisions). Cycles already produces
   a narrative-revision note (`templates/sector_cycles.js:1468`); explore already produces
-  the interval baseline-corrected reset (`templates/sector_central.html.j2:1973`).
+  the interval baseline-corrected reset (`templates/sector_central.html.j2:1974`).
 - **stale** — dossier (no freshness threshold on the detail page); research (no snapshot
   clock on the handoff).
 - **incompatible_generation** — cycles standalone (reads raw rotation/fragmentation with
@@ -164,7 +164,7 @@ in the CSV rows.
 
 **Loading.** Loading is a true-geometry state, never a blank or a spinner over nothing:
 the surface reserves the geometry the content will occupy (`.skel mr-skel-line` /
-`mr-skel-row` line/row skeletons at `templates/sector_central.html.j2:2207-2209`, the
+`mr-skel-row` line/row skeletons at `templates/sector_central.html.j2:2208-2210`, the
 420px chart host at `templates/subsector_detail.html.j2:59`) and the useful core paints
 first while optional depth loads (cycles' split core/series payloads,
 `templates/sector_cycles.js:2137`; the cycles SSR as-of starts as an ellipsis until JS,
@@ -175,7 +175,7 @@ effect — research's contract explicitly forbids loading-induced automatic save
 **Stale.** Stale qualifies the answer, it never replaces it: the answer and its numbers
 stay, and an amber chip beside the as-of carries the age (brief's 'Older than source
 page', cycles' 'curated <N>d ago' amber/red TTL badge, explore's 'LAST SESSION ·
-SETTLED' demotion after the >12h guard at `templates/sector_central.html.j2:1655`; the
+SETTLED' demotion after the >12h guard at `templates/sector_central.html.j2:1656`; the
 engine-side >48h rotation guard keeps conviction ordering,
 `engine/sector_central.py:677`). A stale source is never relabelled live, dates are
 never rolled forward to look fresh, and staleness is data-quality ink (never flipped
@@ -184,7 +184,7 @@ under ZH), announced politely.
 **Incompatible_generation.** When two sources were generated on different days, the
 join is withheld whole, not blended: explore renders 'History is from a different day —
 history X, current read Y. Not drawn, so the two are never mixed'
-(`templates/sector_central.html.j2:3816`, produced by
+(`templates/sector_central.html.j2:3817`, produced by
 `engine/leadership_rotation_context.py:1629/1785/1798`). The board keeps its
 same-generation content and names both dates; it never backfills the older source into
 the newer snapshot, and never treats the withheld half as zero or empty. The 19 Oct /
@@ -194,7 +194,7 @@ the newer snapshot, and never treats the withheld half as zero or empty. The 19 
 value or narrative stays visible with a 'revised <date>: summary' note beside it
 (cycles' revision provenance, `templates/sector_cycles.js:1468`; explore's 'Comparison
 reset after a source change' when a baseline was corrected,
-`templates/sector_central.html.j2:1973`). Corrections come only from the record owner —
+`templates/sector_central.html.j2:1974`). Corrections come only from the record owner —
 no board invents a correction marker where the native source has no correction contract
 (R3A-92), ordinary daily change is never labelled a restatement, and a corrected record
 never silently replaces what a user previously read.
@@ -212,7 +212,7 @@ folds abstentions into a denominator, and no blended confidence badge covers the
 in to see the full lane' line (`templates/_us_act_now_board.html.j2:31`), with
 full-board lane counts preserved because counts are free while names are paid (R3A-03).
 The shell is computed from the identical source list as the payload so the two cannot
-disagree (R3A-15); a fetch failure keeps exactly this shell (`templates/sector_central.html.j2:4156`)
+disagree (R3A-15); a fetch failure keeps exactly this shell (`templates/sector_central.html.j2:4157`)
 — never a blank board, never a flash of protected rows, and never a red/error treatment
 for what is an entitlement state.
 

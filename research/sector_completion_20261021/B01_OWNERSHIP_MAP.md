@@ -179,7 +179,7 @@ Defects and hazards seen while mapping. None fixed (read-only packet).
   — read by the same engine (`:688-699`) and by `templates/sector_cycles.js:2269` — has
   no age check at all. *Post-B02 the `latest.json` side is the generation guard above;
   the `rotation_events.json` gap is tracked by the same packet's Cycles guard (B02/B1011).*
-- **F7 — `templates/sector_central.html.j2:46` prefetches `heatmap.js`** while the
+- **F7 — `templates/sector_central.html.j2:47` prefetches `heatmap.js`** while the
   page's rendered heat context is computed server-side from `sp500_heatmap.json`
   (`engine/sector_central.py:176-225`). Whether the prefetched script fetches the raw
   feed on this page was not traced; recorded as an untraced second heatmap path.
