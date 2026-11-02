@@ -73,8 +73,9 @@ stop_live_unit() {
   local unit=$1 state main control
   if ! systemctl stop "$unit" >/dev/null 2>&1; then
     [ ! -e "/etc/systemd/system/$unit" ] && [ ! -L "/etc/systemd/system/$unit" ] || return 1
-    [ "$(systemctl show -p LoadState --value "$unit")" = not-found ]
-    return
+    state=$(systemctl show -p LoadState --value "$unit") || return 1
+    [ "$state" = not-found ] || return 1
+    return 0
   fi
   state=$(systemctl show -p ActiveState --value "$unit") || return 1
   main=$(systemctl show -p MainPID --value "$unit") || return 1
