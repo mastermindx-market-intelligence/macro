@@ -367,6 +367,9 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 .fu i{font-style:normal;font-size:10.5px;color:var(--faint);font-variant-numeric:tabular-nums;flex:none}
 .fu u{text-decoration:none;font-size:9.5px;font-weight:700;color:var(--faint);
   border:1px solid var(--grid);border-radius:5px;padding:0 4px;flex:none}
+/* holdings date wraps under the chip: .fu itself does not wrap */
+.fu{flex-wrap:wrap}
+.fu time{display:block;flex-basis:100%;min-width:0;color:var(--muted)}
 .fl-foot{margin-top:16px;font-size:11.5px;color:var(--faint);line-height:1.55}
 
 /* ═══ disclosure ═══ */
