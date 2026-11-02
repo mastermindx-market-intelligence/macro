@@ -7,22 +7,39 @@ Artifact schema (Policy-Shock W2-F, masterplan §4):
 
     policy_lever = {
       "schema": "policy_lever.v1",
-      "as_of": "YYYY-MM-DD",
+      "as_of": "YYYY-MM-DD",       # EVIDENCE date — the semis price date
+      "as_of_basis": "price_date" | "build_date_fallback",
+      "computed_at": str,         # GENERATION instant (UTC ISO-8601), not evidence
       "favored_complex": {
         "basket": ["SMH", "SOXX"],
         "drawdown_pct": float,     # trailing-120d peak drawdown %
         "drawdown_z": float | None,
         "note": str,               # unsigned EN display copy
         "note_zh": str,
+        "as_of": str | None,       # price date (evidence)
+        "computed_at": str,        # generation instant (UTC ISO-8601)
       },
       "jawboning": {
-        "n_7d": int | None,
+        "n_7d": int | None,        # None = unavailable, NOT a confident zero
         "n_30d": int | None,
-        "last_alert_ts": str | None,
+        "last_alert_ts": str | None,        # raw source timestamp
         "last_alert_summary": str | None,   # ~140 chars
+        "last_alert_summary_zh": str | None,
+        "last_alert_ts_utc": str | None,    # normalised UTC instant
+        "source_status": "missing" | "unreadable" | "empty" | "unusable"
+                       | "partial" | "usable",
+        "coverage": "unknown",    # reading a file never proves feed completeness
+        "evaluated_at": str,       # the single evaluation instant (UTC ISO-8601)
+        "evaluated_date": "YYYY-MM-DD",
+        "diagnostics": {...},      # per-class rejection counts
       },
       "calendar": {
-        "days_to_midterm": int,
+        "days_to_midterm": int | None,   # None once the event has passed
+        "days_since_midterm": int | None,
+        "event_date": "YYYY-MM-DD",
+        "event_state": "upcoming" | "today" | "past",
+        "evaluation_date": "YYYY-MM-DD",
+        "evaluated_at": str,
         "context_note": str,
         "context_note_zh": str,
       },
@@ -102,6 +119,34 @@ _FRAMING_ZH = (
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+def _utc_now() -> datetime:
+    """The current instant, UTC.
+
+    Every computing function receives the evaluation instant as an argument so
+    one build uses ONE instant. Production default is the wall clock; a test
+    injects a fixed instant through the ``now=`` parameter, which leaves this
+    default — and therefore production semantics — untouched.
+    """
+    return datetime.now(timezone.utc)
+
+
+def _as_utc(moment: datetime) -> datetime:
+    """Aware-UTC datetime.
+
+    Naive values follow the established source convention: a timestamp written
+    without a zone is read as UTC. Aware values are converted to UTC so every
+    window comparison happens on one scale.
+    """
+    if moment.tzinfo is None:
+        return moment.replace(tzinfo=timezone.utc)
+    return moment.astimezone(timezone.utc)
+
+
+def _iso_utc(moment: datetime) -> str:
+    """ISO-8601 UTC instant, e.g. 2026-11-01T19:47:12.123456Z."""
+    return _as_utc(moment).isoformat().replace("+00:00", "Z")
+
 
 def _load_price(ticker: str) -> pd.DataFrame | None:
     """Load daily close from the committed yahoo store (same path as commodity_inputs).
@@ -292,115 +337,282 @@ def _compute_oil_arming() -> dict | None:
         return None
 
 
-def _compute_jawboning(alerts_path: Path) -> dict:
+_TIMESTAMP_FIELDS = ("published", "generated_at")
+
+
+def _parse_record_timestamp(record: dict) -> tuple[datetime | None, str | None, str]:
+    """Parse a record's observation timestamp.
+
+    Returns ``(instant, raw_source_string, reason)``. ``instant`` is an
+    aware-UTC datetime and ``raw_source_string`` the untouched source text.
+    When the record carries no usable timestamp ``instant`` is None and
+    ``reason`` names the first defect found: "missing" | "wrong_type" |
+    "unparseable".
+    """
+    reason = "missing"
+    for field in _TIMESTAMP_FIELDS:
+        raw = record.get(field)
+        if raw is None:
+            continue
+        if not isinstance(raw, str):
+            # A number, bool, list or dict is not a timestamp.
+            if reason == "missing":
+                reason = "wrong_type"
+            continue
+        text = raw.strip()
+        if not text:
+            continue
+        try:
+            parsed = datetime.fromisoformat(text)
+        except (ValueError, TypeError):
+            if reason == "missing":
+                reason = "unparseable"
+            continue
+        return _as_utc(parsed), raw, ""
+    return None, None, reason
+
+
+def _display_text(record: dict, *fields: str) -> str | None:
+    """First present, non-blank STRING display field, bounded for display.
+
+    A non-string value (list / dict / number / bool) is not display copy and is
+    rejected: rendering it would leak raw structure into the surface instead of
+    a bounded string.
+    """
+    for field in fields:
+        value = record.get(field)
+        if isinstance(value, str) and value.strip():
+            return value[:_LAST_ALERT_SUMMARY_LEN]
+    return None
+
+
+def _compute_jawboning(alerts_path: Path, now: datetime | None = None) -> dict:
     """Read data/whitehouse/alerts.jsonl (READ-ONLY — sentinel is the single writer).
 
-    Returns jawboning counts for 7d/30d windows plus the most recent alert summary.
-    Degrades gracefully to nulls when the file is absent or corrupted.
+    Returns jawboning counts for the 7d/30d windows plus the most recent
+    OBSERVED alert summary.
+
+    Contract (R2 producer integrity):
+      - ONE evaluation instant (`now`) bounds both windows. A record is
+        observed only when published <= that instant; a future-dated record
+        is excluded from the counts AND from the last observed event.
+      - Strict per-record validation: a line must decode to an object, carry
+        a usable timestamp, and carry display copy as strings. One corrupt
+        line never discards an independent valid record and never crashes
+        the publication.
+      - Counts are unavailable (None) when no eligible record basis exists.
+        An absent, unreadable, wholly unusable or all-future source is NOT a
+        confident zero.
+      - `source_status` qualifies the file. `coverage` is always "unknown":
+        reading a file never proves the upstream feed was collected whole, and
+        a read or evaluation instant is never feed freshness.
     """
-    null_result = {
+    evaluation = _as_utc(now) if now is not None else _utc_now()
+
+    diagnostics: dict = {
+        "records_read": 0,
+        "eligible_observed": 0,
+        "malformed_json": 0,
+        "invalid_structure": 0,
+        "invalid_timestamp": 0,
+        "future_records": 0,
+        "invalid_timestamp_reasons": {"missing": 0, "wrong_type": 0, "unparseable": 0},
+    }
+
+    result: dict = {
+        # legacy keys — same names, same meaning for valid input
         "n_7d": None,
         "n_30d": None,
         "last_alert_ts": None,
         "last_alert_summary": None,
-        "_note": "whitehouse/alerts.jsonl absent — jawboning unavailable",
+        "last_alert_summary_zh": None,
+        # additive source-quality metadata
+        "last_alert_ts_utc": None,
+        "source_status": "missing",
+        "coverage": "unknown",
+        "evaluated_at": _iso_utc(evaluation),
+        "evaluated_date": evaluation.date().isoformat(),
+        "diagnostics": diagnostics,
+        "_skipped_lines": 0,
     }
 
     if not alerts_path.exists():
         log.info("whitehouse alerts file absent — jawboning nulls")
-        return null_result
+        result["_note"] = "whitehouse/alerts.jsonl absent — jawboning unavailable"
+        return result
 
     try:
         raw_text = alerts_path.read_text(encoding="utf-8")
-    except Exception as e:  # noqa: BLE001
+    except (OSError, UnicodeDecodeError) as e:
         log.warning("whitehouse alerts read failed: %s", e)
-        return {**null_result, "_note": f"read error: {e}"}
+        result["source_status"] = "unreadable"
+        result["_note"] = f"read error: {e}"
+        return result
 
-    # Per-line parse: skip bad lines (torn last line, encoding noise) instead of
-    # letting one bad line null the whole jawboning block.
-    alerts: list[dict] = []
-    skipped = 0
+    cutoff_7d = evaluation - timedelta(days=_JAWBONE_7D_WINDOW)
+    cutoff_30d = evaluation - timedelta(days=_JAWBONE_30D_WINDOW)
+
+    # Per-line parse: a bad line (torn last line, encoding noise, a JSON
+    # scalar/array, a record without a usable timestamp) is rejected on its
+    # own and never nulls the whole jawboning block.
+    observed: list[tuple[datetime, dict, str]] = []
+
     for line in raw_text.splitlines():
         line = line.strip()
         if not line:
             continue
+        diagnostics["records_read"] += 1
         try:
-            alerts.append(json.loads(line))
-        except json.JSONDecodeError:
-            skipped += 1
+            parsed = json.loads(line)
+        except (json.JSONDecodeError, RecursionError):
+            diagnostics["malformed_json"] += 1
             log.debug("jawboning: skipped malformed line: %.80s…", line)
+            continue
+        if not isinstance(parsed, dict):
+            # A JSON scalar / list / null is not a record.
+            diagnostics["invalid_structure"] += 1
+            log.debug("jawboning: skipped non-object record: %.80s…", line)
+            continue
+        pub, raw_ts, reason = _parse_record_timestamp(parsed)
+        if pub is None:
+            diagnostics["invalid_timestamp"] += 1
+            reasons = diagnostics["invalid_timestamp_reasons"]
+            reasons[reason] = reasons.get(reason, 0) + 1
+            continue
+        if pub > evaluation:
+            # Published after the evaluation instant — not yet observable.
+            diagnostics["future_records"] += 1
+            continue
+        observed.append((pub, parsed, raw_ts))
 
-    now = datetime.now(timezone.utc)
-    cutoff_7d = now - timedelta(days=_JAWBONE_7D_WINDOW)
-    cutoff_30d = now - timedelta(days=_JAWBONE_30D_WINDOW)
+    diagnostics["eligible_observed"] = len(observed)
+    rejected = (
+        diagnostics["malformed_json"]
+        + diagnostics["invalid_structure"]
+        + diagnostics["invalid_timestamp"]
+    )
+    result["_skipped_lines"] = rejected
+
+    if diagnostics["records_read"] == 0:
+        # Readable but empty: zero RECORDED events. Coverage stays unknown —
+        # an empty file is not proof that no event happened.
+        result["source_status"] = "empty"
+        result["n_7d"] = 0
+        result["n_30d"] = 0
+        result["_note"] = (
+            "whitehouse/alerts.jsonl readable but empty — no recorded events in file; "
+            "feed coverage unknown"
+        )
+        return result
+
+    if not observed:
+        # No eligible record basis: the counts are unavailable, not zero.
+        result["source_status"] = "unusable"
+        result["_note"] = (
+            "whitehouse/alerts.jsonl holds no usable observed record — jawboning "
+            "counts unavailable; feed coverage unknown"
+        )
+        return result
 
     n_7d = 0
     n_30d = 0
-    last_alert = None
-    last_ts: datetime | None = None
+    last_pub: datetime | None = None
+    last_record: dict | None = None
+    last_raw: str | None = None
 
-    for a in alerts:
-        raw_pub = a.get("published") or a.get("generated_at", "")
-        if not raw_pub:
-            continue
-        try:
-            pub = datetime.fromisoformat(raw_pub)
-            if pub.tzinfo is None:
-                pub = pub.replace(tzinfo=timezone.utc)
-        except ValueError:
-            continue
-
+    for pub, record, raw_ts in observed:
+        # pub <= evaluation by construction, so the window is [cutoff, now].
         if pub >= cutoff_7d:
             n_7d += 1
         if pub >= cutoff_30d:
             n_30d += 1
 
-        if last_ts is None or pub > last_ts:
-            last_ts = pub
-            last_alert = a
+        if last_pub is None or pub > last_pub:
+            last_pub = pub
+            last_record = record
+            last_raw = raw_ts
 
-    last_alert_ts: str | None = None
-    last_alert_summary: str | None = None      # EN display
-    last_alert_summary_zh: str | None = None   # ZH display
-    if last_alert is not None:
-        last_alert_ts = last_alert.get("published") or last_alert.get("generated_at")
-        # EN: prefer banner_title, fall back to summary
-        raw_en = last_alert.get("banner_title") or last_alert.get("summary") or ""
-        last_alert_summary = raw_en[:_LAST_ALERT_SUMMARY_LEN] if raw_en else None
-        # ZH: prefer banner_title_zh or summary_zh from the alert record; fall back to EN
-        raw_zh = (
-            last_alert.get("banner_title_zh")
-            or last_alert.get("summary_zh")
-            or raw_en
-        )
-        last_alert_summary_zh = raw_zh[:_LAST_ALERT_SUMMARY_LEN] if raw_zh else None
-
-    result: dict = {
-        "n_7d": n_7d,
-        "n_30d": n_30d,
-        "last_alert_ts": last_alert_ts,
-        "last_alert_summary": last_alert_summary,
-        "last_alert_summary_zh": last_alert_summary_zh,
-    }
-    if skipped:
-        result["_skipped_lines"] = skipped
+    result["n_7d"] = n_7d
+    result["n_30d"] = n_30d
+    result["source_status"] = (
+        "partial" if (rejected or diagnostics["future_records"]) else "usable"
+    )
+    result["last_alert_ts"] = last_raw
+    result["last_alert_ts_utc"] = _iso_utc(last_pub)
+    # EN: prefer banner_title, fall back to summary.
+    en_summary = _display_text(last_record, "banner_title", "summary")
+    # ZH: prefer banner_title_zh / summary_zh from the alert record; fall back to EN.
+    zh_summary = _display_text(last_record, "banner_title_zh", "summary_zh") or en_summary
+    result["last_alert_summary"] = en_summary
+    result["last_alert_summary_zh"] = zh_summary
+    result["_note"] = (
+        "whitehouse/alerts.jsonl read — recorded events counted inside the 7d/30d "
+        "windows ending at the evaluation instant; feed coverage unknown"
+    )
     return result
 
 
-def _compute_calendar() -> dict:
-    """Days to 2026-11-03 midterms + unsigned display context (no signal language)."""
-    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-    days = max(0, (_MIDTERM_DATE - today).days)
-    context_note = (
-        f"US midterm elections: {days} days (2026-11-03). "
-        f"Policy cycle context only — no directional read."
-    )
-    context_note_zh = (
-        f"美国中期选举：{days}天（2026年11月3日）。"
-        f"仅作政策周期背景参考，不作方向性判断。"
-    )
+def _compute_calendar(now: datetime | None = None) -> dict:
+    """2026-11-03 midterms + unsigned display context (no signal language).
+
+    The event is dated, so the block carries the event date, the evaluation
+    date and an explicit upcoming/today/past state. Once the event has passed
+    there is no live countdown to report: `days_to_midterm` becomes None
+    (the legacy field stays present for consumers that key on it) and
+    `days_since_midterm` carries the elapsed days. A permanent live zero is
+    not a date, and a passed event is not a countdown.
+    """
+    evaluation = _as_utc(now) if now is not None else _utc_now()
+    eval_date = evaluation.date()
+    event_date = _MIDTERM_DATE.date()
+    days = (event_date - eval_date).days
+
+    if days > 0:
+        event_state = "upcoming"
+        days_to = days
+        days_since = None
+        context_note = (
+            f"US midterm elections: {days} days (2026-11-03). "
+            f"Policy cycle context only — no directional read."
+        )
+        context_note_zh = (
+            f"美国中期选举：{days}天（2026年11月3日）。"
+            f"仅作政策周期背景参考，不作方向性判断。"
+        )
+    elif days == 0:
+        event_state = "today"
+        days_to = 0
+        days_since = 0
+        context_note = (
+            f"US midterm elections: today (2026-11-03). "
+            f"Policy cycle context only — no directional read."
+        )
+        context_note_zh = (
+            f"美国中期选举：今天（2026年11月3日）。"
+            f"仅作政策周期背景参考，不作方向性判断。"
+        )
+    else:
+        event_state = "past"
+        days_to = None
+        days_since = -days
+        context_note = (
+            f"US midterm elections took place on 2026-11-03 "
+            f"({days_since} days ago). "
+            f"Policy cycle context only — no directional read."
+        )
+        context_note_zh = (
+            f"美国中期选举已于2026年11月3日举行（{days_since}天前）。"
+            f"仅作政策周期背景参考，不作方向性判断。"
+        )
+
     return {
-        "days_to_midterm": days,
+        "days_to_midterm": days_to,
+        "days_since_midterm": days_since,
+        "event_date": event_date.isoformat(),
+        "event_state": event_state,
+        "evaluation_date": eval_date.isoformat(),
+        "evaluated_at": _iso_utc(evaluation),
+        "computed_at": _iso_utc(evaluation),
         "context_note": context_note,
         "context_note_zh": context_note_zh,
     }
@@ -478,9 +690,15 @@ def build() -> dict:
     root = config.ROOT
     alerts_path = root / "data" / "whitehouse" / "alerts.jsonl"
 
+    # ONE evaluation instant for the whole build: every window bound, every
+    # component date and every stamped timestamp below reads this value.
+    evaluation = _utc_now()
+
     # 1. favored complex drawdown
     log.info("computing favored-complex drawdown (SMH/SOXX)…")
     fc = _compute_drawdown(["SMH", "SOXX"])
+    # generation instant, distinct from fc["as_of"] (the price date / evidence)
+    fc["computed_at"] = _iso_utc(evaluation)
 
     # 2. oil arming (W1-B engine path — same config as build_commodities)
     log.info("computing oil arming (CL=F technical_arming)…")
@@ -488,16 +706,16 @@ def build() -> dict:
 
     # 3. jawboning
     log.info("reading whitehouse alerts (read-only)…")
-    jawboning = _compute_jawboning(alerts_path)
+    jawboning = _compute_jawboning(alerts_path, now=evaluation)
 
     # 4. calendar
-    calendar = _compute_calendar()
+    calendar = _compute_calendar(now=evaluation)
 
     # 5. levers
     levers = _build_levers(oil_arming)
 
     # 5a. stamp copy_age_days / copy_stale on each lever that has copy_as_of
-    _today_utc = datetime.now(timezone.utc).date()
+    _today_utc = evaluation.date()
     for _lv in levers:
         _cao = _lv.get("copy_as_of")
         if not _cao:
@@ -512,11 +730,16 @@ def build() -> dict:
     # 6. state
     state = _compute_state(fc.get("drawdown_pct"), levers)
 
-    as_of = fc.get("as_of") or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    # Top-level as_of keeps its price-date (evidence) meaning; computed_at is
+    # the generation instant and is never presented as source freshness.
+    price_as_of = fc.get("as_of")
+    as_of = price_as_of or evaluation.strftime("%Y-%m-%d")
 
     artifact = {
         "schema": "policy_lever.v1",
         "as_of": as_of,
+        "as_of_basis": "price_date" if price_as_of else "build_date_fallback",
+        "computed_at": _iso_utc(evaluation),
         "favored_complex": fc,
         "jawboning": jawboning,
         "calendar": calendar,

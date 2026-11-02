@@ -224,18 +224,34 @@ class TestWhitehouseReader:
 class TestCalendarMath:
 
     def test_days_to_midterm_is_positive(self):
-        """With today's date before 2026-11-03, days_to_midterm should be positive."""
+        """Before the event the countdown is a non-negative day count."""
         from scripts.build_policy_lever import _compute_calendar
         cal = _compute_calendar()
-        assert cal["days_to_midterm"] >= 0
+        if cal["event_state"] == "past":
+            # After 2026-11-03 there is no live countdown to report.
+            assert cal["days_to_midterm"] is None
+        else:
+            assert cal["days_to_midterm"] >= 0
 
     def test_days_to_midterm_value(self):
-        """As of 2026-07-09, days_to_midterm should be around 117."""
+        """Before the event the countdown equals the whole-day gap to 2026-11-03."""
         from scripts.build_policy_lever import _compute_calendar, _MIDTERM_DATE
-        cal = _compute_calendar()
-        today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-        expected = max(0, (_MIDTERM_DATE - today).days)
+        cal = _compute_calendar(now=datetime(2026, 11, 1, 12, 0, tzinfo=timezone.utc))
+        # The legacy computation counted whole UTC calendar days from midnight.
+        midnight = datetime(2026, 11, 1, 12, 0, tzinfo=timezone.utc).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        expected = (_MIDTERM_DATE - midnight).days
+        assert expected == 2
         assert cal["days_to_midterm"] == expected
+
+    def test_days_to_midterm_is_not_a_permanent_zero_after_the_event(self):
+        """After 2026-11-03 the countdown is unavailable, not a live zero."""
+        from scripts.build_policy_lever import _compute_calendar
+        cal = _compute_calendar(now=datetime(2026, 11, 10, 12, 0, tzinfo=timezone.utc))
+        assert cal["days_to_midterm"] is None
+        assert cal["event_state"] == "past"
+        assert cal["days_since_midterm"] == 7
 
     def test_calendar_context_note_present(self):
         """context_note and context_note_zh must be non-empty strings."""
@@ -909,14 +925,20 @@ class TestTornLineResilience:
         assert result["last_alert_summary"] == "Good alert"
         assert result.get("_skipped_lines", 0) == 1
 
-    def test_all_bad_lines_skipped_returns_zero_counts(self, tmp_path):
-        """All bad lines → n_7d=0, n_30d=0 (not None — the file exists)."""
+    def test_all_bad_lines_skipped_returns_unavailable_counts(self, tmp_path):
+        """All bad lines → counts are UNAVAILABLE, not a confident zero.
+
+        R2 producer integrity: with no eligible record basis there is no window
+        to count, so n_7d/n_30d are None and the file is qualified as
+        unusable. The previous 0/0 asserted absence of activity that was never
+        observed.
+        """
         p = tmp_path / "alerts.jsonl"
         p.write_text("not json\n{broken line\nanother bad", encoding="utf-8")
         result = self._call(p)
-        # File is present → zero counts (not None)
-        assert result["n_7d"] == 0
-        assert result["n_30d"] == 0
+        assert result["n_7d"] is None
+        assert result["n_30d"] is None
+        assert result["source_status"] == "unusable"
         assert result.get("_skipped_lines", 0) == 3
 
     def test_mixed_good_bad_lines(self, tmp_path):
@@ -934,3 +956,512 @@ class TestTornLineResilience:
         assert result["n_7d"] == 1
         assert result["n_30d"] == 2
         assert result.get("_skipped_lines", 0) == 1
+
+
+# ---------------------------------------------------------------------------
+# R2 producer integrity (P2.T1 / P2.T2)
+#
+# Deterministic evaluation instant: every case below injects a fixed `now`
+# through the producer's own parameter. The production default (wall clock)
+# is untouched, so nothing here changes production semantics.
+# ---------------------------------------------------------------------------
+
+_EVAL = datetime(2026, 11, 1, 12, 0, 0, tzinfo=timezone.utc)
+_CUT_7D = _EVAL - timedelta(days=7)
+_CUT_30D = _EVAL - timedelta(days=30)
+
+
+def _write_jsonl(tmp_path, records, name="alerts.jsonl"):
+    """Write a jsonl fixture. str entries are written verbatim (corrupt lines)."""
+    p = tmp_path / name
+    lines = [r if isinstance(r, str) else json.dumps(r) for r in records]
+    p.write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
+    return p
+
+
+def _jw(path, now=_EVAL):
+    """Call the jawboning reader at a fixed evaluation instant."""
+    from scripts.build_policy_lever import _compute_jawboning
+    return _compute_jawboning(path, now=now)
+
+
+@pytest.fixture(scope="module")
+def built_artifact():
+    """One real build, shared by the timestamp assertions."""
+    from scripts.build_policy_lever import build
+    return build()
+
+
+class TestJawboningStrictRecordValidation:
+    """A record is an OBJECT with a usable timestamp; anything else is rejected."""
+
+    def test_json_scalar_lines_do_not_crash(self, tmp_path):
+        """null / bool / number / string / array lines are rejected, never crashed on."""
+        p = _write_jsonl(tmp_path, ["null", "true", "42", '"a string"', "[]"])
+        r = _jw(p)
+        assert r["n_7d"] is None
+        assert r["n_30d"] is None
+        assert r["source_status"] == "unusable"
+        assert r["diagnostics"]["invalid_structure"] == 5
+        assert r["diagnostics"]["malformed_json"] == 0
+
+    def test_json_array_line_does_not_crash(self, tmp_path):
+        """Reproduced defect: a valid JSON array line raised AttributeError."""
+        p = _write_jsonl(tmp_path, ["[]"])
+        r = _jw(p)
+        assert r["diagnostics"]["invalid_structure"] == 1
+        assert r["n_7d"] is None
+        assert r["last_alert_ts"] is None
+
+    def test_json_null_line_does_not_crash(self, tmp_path):
+        """Reproduced defect: a JSON null line raised AttributeError."""
+        p = _write_jsonl(tmp_path, ["null"])
+        r = _jw(p)
+        assert r["diagnostics"]["invalid_structure"] == 1
+        assert r["source_status"] == "unusable"
+
+    def test_object_without_timestamp_is_invalid(self, tmp_path):
+        """A record with no timestamp field cannot be observed."""
+        p = _write_jsonl(tmp_path, [{"banner_title": "no time here"}])
+        r = _jw(p)
+        assert r["diagnostics"]["invalid_timestamp"] == 1
+        assert r["diagnostics"]["invalid_timestamp_reasons"]["missing"] == 1
+        assert r["n_7d"] is None
+
+    def test_wrongtype_timestamp_is_invalid(self, tmp_path):
+        """A numeric timestamp is a wrong type, not a crash and not an observation."""
+        p = _write_jsonl(tmp_path, [{"published": 12345, "banner_title": "x"}])
+        r = _jw(p)
+        assert r["diagnostics"]["invalid_timestamp_reasons"]["wrong_type"] == 1
+        assert r["n_7d"] is None
+
+    def test_bool_timestamp_is_invalid(self, tmp_path):
+        """bool is not a timestamp even though it is an int subclass."""
+        p = _write_jsonl(tmp_path, [{"published": True}])
+        r = _jw(p)
+        assert r["diagnostics"]["invalid_timestamp_reasons"]["wrong_type"] == 1
+
+    def test_unparseable_timestamp_is_invalid(self, tmp_path):
+        """An unparseable timestamp string is rejected deterministically."""
+        p = _write_jsonl(tmp_path, [{"published": "not-a-date"}])
+        r = _jw(p)
+        assert r["diagnostics"]["invalid_timestamp_reasons"]["unparseable"] == 1
+        assert r["n_7d"] is None
+
+    def test_generated_at_is_the_fallback_timestamp(self, tmp_path):
+        """generated_at is used when published is absent."""
+        p = _write_jsonl(tmp_path, [{
+            "generated_at": "2026-10-31T00:00:00+00:00",
+            "banner_title": "generated only",
+        }])
+        r = _jw(p)
+        assert r["n_7d"] == 1
+        assert r["last_alert_ts"] == "2026-10-31T00:00:00+00:00"
+
+    def test_naive_timestamp_is_read_as_utc(self, tmp_path):
+        """A timestamp written without a zone follows the established UTC convention."""
+        p = _write_jsonl(tmp_path, [{
+            "published": "2026-10-31T12:00:00",
+            "banner_title": "naive",
+        }])
+        r = _jw(p)
+        assert r["n_7d"] == 1
+        assert r["last_alert_ts_utc"] == "2026-10-31T12:00:00Z"
+
+    def test_offset_timestamp_is_converted_to_utc(self, tmp_path):
+        """-08:00 offsets land on the UTC scale before any window comparison."""
+        p = _write_jsonl(tmp_path, [{
+            "published": "2026-10-31T20:00:00-08:00",
+            "banner_title": "offset",
+        }])
+        r = _jw(p)
+        assert r["n_7d"] == 1
+        assert r["last_alert_ts_utc"] == "2026-11-01T04:00:00Z"
+
+    def test_offset_timestamp_resolves_against_the_utc_cutoff(self, tmp_path):
+        """2026-10-25T04:00:00-08:00 == 2026-10-25T12:00:00Z — exactly the 7d cutoff."""
+        p = _write_jsonl(tmp_path, [{"published": "2026-10-25T04:00:00-08:00"}])
+        r = _jw(p)
+        assert r["n_7d"] == 1
+        assert r["n_30d"] == 1
+
+    def test_z_suffix_timestamp_is_parsed(self, tmp_path):
+        """A trailing Z is a valid UTC designator."""
+        p = _write_jsonl(tmp_path, [{"published": "2026-10-31T12:00:00Z"}])
+        r = _jw(p)
+        assert r["n_7d"] == 1
+        assert r["last_alert_ts_utc"] == "2026-10-31T12:00:00Z"
+
+
+class TestJawboningWindowBoundaries:
+    """The windows are [cutoff, evaluation instant] — both ends exact."""
+
+    def _one(self, tmp_path, when):
+        p = _write_jsonl(tmp_path, [{"published": when.isoformat()}])
+        return _jw(p)
+
+    def test_exactly_7d_before_the_evaluation_is_inside_the_7d_window(self, tmp_path):
+        r = self._one(tmp_path, _CUT_7D)
+        assert r["n_7d"] == 1
+        assert r["n_30d"] == 1
+
+    def test_one_microsecond_before_the_7d_cutoff_is_outside(self, tmp_path):
+        r = self._one(tmp_path, _CUT_7D - timedelta(microseconds=1))
+        assert r["n_7d"] == 0
+        assert r["n_30d"] == 1
+
+    def test_exactly_30d_before_the_evaluation_is_inside_the_30d_window(self, tmp_path):
+        r = self._one(tmp_path, _CUT_30D)
+        assert r["n_7d"] == 0
+        assert r["n_30d"] == 1
+
+    def test_one_microsecond_before_the_30d_cutoff_is_outside(self, tmp_path):
+        r = self._one(tmp_path, _CUT_30D - timedelta(microseconds=1))
+        assert r["n_7d"] == 0
+        assert r["n_30d"] == 0
+        # still an eligible observation: zero recorded events in the windows,
+        # and the older record remains the last observed event
+        assert r["source_status"] == "usable"
+        assert r["last_alert_ts"] is not None
+
+    def test_record_exactly_at_the_evaluation_instant_is_observed(self, tmp_path):
+        r = self._one(tmp_path, _EVAL)
+        assert r["n_7d"] == 1
+        assert r["n_30d"] == 1
+        assert r["last_alert_ts_utc"] == "2026-11-01T12:00:00Z"
+
+    def test_record_one_microsecond_after_the_evaluation_is_future(self, tmp_path):
+        r = self._one(tmp_path, _EVAL + timedelta(microseconds=1))
+        assert r["n_7d"] is None
+        assert r["n_30d"] is None
+        assert r["diagnostics"]["future_records"] == 1
+
+    def test_evaluation_instant_is_recorded_on_the_result(self, tmp_path):
+        r = _jw(tmp_path / "absent.jsonl")
+        assert r["evaluated_at"] == "2026-11-01T12:00:00Z"
+        assert r["evaluated_date"] == "2026-11-01"
+
+
+class TestJawboningSourceQuality:
+    """missing / unreadable / empty / unusable / partial / usable are distinct."""
+
+    def test_absent_source_is_missing_with_unavailable_counts(self, tmp_path):
+        r = _jw(tmp_path / "nope.jsonl")
+        assert r["source_status"] == "missing"
+        assert r["n_7d"] is None
+        assert r["n_30d"] is None
+        assert r["coverage"] == "unknown"
+
+    def test_unreadable_source_is_unreadable_with_unavailable_counts(self, tmp_path):
+        d = tmp_path / "alerts.jsonl"
+        d.mkdir()          # a directory exists but cannot be read as a file
+        r = _jw(d)
+        assert r["source_status"] == "unreadable"
+        assert r["n_7d"] is None
+        assert r["n_30d"] is None
+
+    def test_empty_readable_source_is_empty_with_zero_recorded_events(self, tmp_path):
+        p = tmp_path / "alerts.jsonl"
+        p.write_text("", encoding="utf-8")
+        r = _jw(p)
+        assert r["source_status"] == "empty"
+        assert r["n_7d"] == 0
+        assert r["n_30d"] == 0
+        assert r["coverage"] == "unknown"
+
+    def test_whitespace_only_source_is_empty(self, tmp_path):
+        p = tmp_path / "alerts.jsonl"
+        p.write_text("\n\n   \n", encoding="utf-8")
+        r = _jw(p)
+        assert r["source_status"] == "empty"
+        assert r["n_7d"] == 0
+
+    def test_empty_source_is_distinct_from_an_unusable_source(self, tmp_path):
+        empty = tmp_path / "empty.jsonl"
+        empty.write_text("", encoding="utf-8")
+        unusable = _write_jsonl(tmp_path, ["not json", "[]"], name="unusable.jsonl")
+        r_empty = _jw(empty)
+        r_unusable = _jw(unusable)
+        assert r_empty["source_status"] != r_unusable["source_status"]
+        assert r_empty["n_7d"] == 0
+        assert r_unusable["n_7d"] is None
+
+    def test_all_invalid_source_is_unusable_not_a_confident_zero(self, tmp_path):
+        p = _write_jsonl(tmp_path, ["not json", "[]", '{"published": 5}'])
+        r = _jw(p)
+        assert r["source_status"] == "unusable"
+        assert r["n_7d"] is None
+        assert r["n_30d"] is None
+        assert r["diagnostics"]["malformed_json"] == 1
+        assert r["diagnostics"]["invalid_structure"] == 1
+        assert r["diagnostics"]["invalid_timestamp"] == 1
+
+    def test_future_only_source_is_unusable_not_a_confident_zero(self, tmp_path):
+        p = _write_jsonl(tmp_path, [{
+            "published": (_EVAL + timedelta(days=30)).isoformat(),
+            "banner_title": "future",
+        }])
+        r = _jw(p)
+        assert r["source_status"] == "unusable"
+        assert r["n_7d"] is None
+        assert r["n_30d"] is None
+        assert r["last_alert_ts"] is None
+        assert r["diagnostics"]["future_records"] == 1
+
+    def test_valid_old_records_plus_a_future_record_is_partial(self, tmp_path):
+        """Reproduced defect: a future record used to enter both windows and
+        become the last observed event."""
+        p = _write_jsonl(tmp_path, [
+            {"published": (_EVAL - timedelta(days=40)).isoformat(), "banner_title": "old but real"},
+            {"published": (_EVAL + timedelta(days=10)).isoformat(), "banner_title": "future"},
+        ])
+        r = _jw(p)
+        assert r["source_status"] == "partial"
+        assert r["n_7d"] == 0
+        assert r["n_30d"] == 0
+        assert r["last_alert_summary"] == "old but real"
+        assert r["diagnostics"]["future_records"] == 1
+        assert r["diagnostics"]["eligible_observed"] == 1
+
+    def test_all_usable_source_is_usable(self, tmp_path):
+        p = _write_jsonl(tmp_path, [
+            {"published": (_EVAL - timedelta(days=1)).isoformat(), "banner_title": "a"},
+            {"published": (_EVAL - timedelta(days=2)).isoformat(), "banner_title": "b"},
+        ])
+        r = _jw(p)
+        assert r["source_status"] == "usable"
+        assert r["_skipped_lines"] == 0
+
+    def test_coverage_is_always_unknown(self, tmp_path):
+        """Reading a file never proves the upstream feed was collected whole."""
+        p = _write_jsonl(tmp_path, [{"published": (_EVAL - timedelta(days=1)).isoformat()}])
+        assert _jw(p)["coverage"] == "unknown"
+        assert _jw(tmp_path / "absent.jsonl")["coverage"] == "unknown"
+        empty = tmp_path / "empty.jsonl"
+        empty.write_text("", encoding="utf-8")
+        assert _jw(empty)["coverage"] == "unknown"
+
+
+class TestJawboningDisplayCopy:
+    """Display copy is bounded, string-typed and bilingual for valid input."""
+
+    def test_non_string_summary_values_are_rejected(self, tmp_path):
+        """A list/dict summary is not display copy and never reaches the surface."""
+        p = _write_jsonl(tmp_path, [{
+            "published": (_EVAL - timedelta(days=1)).isoformat(),
+            "banner_title": ["<b>markup</b>"],
+            "summary": {"raw": "structure"},
+        }])
+        r = _jw(p)
+        # the record is still a valid OBSERVATION
+        assert r["n_7d"] == 1
+        assert r["last_alert_summary"] is None
+        assert r["last_alert_summary_zh"] is None
+
+    def test_numeric_summary_is_rejected(self, tmp_path):
+        """Reproduced defect: a numeric summary raised TypeError on slicing."""
+        p = _write_jsonl(tmp_path, [{
+            "published": (_EVAL - timedelta(days=1)).isoformat(),
+            "banner_title": 42,
+        }])
+        r = _jw(p)
+        assert r["n_7d"] == 1
+        assert r["last_alert_summary"] is None
+
+    def test_malformed_copy_does_not_discard_an_independent_valid_record(self, tmp_path):
+        p = _write_jsonl(tmp_path, [
+            {"published": (_EVAL - timedelta(days=2)).isoformat(), "banner_title": ["x"]},
+            {"published": (_EVAL - timedelta(days=1)).isoformat(), "banner_title": "Good alert"},
+        ])
+        r = _jw(p)
+        assert r["n_7d"] == 2
+        assert r["n_30d"] == 2
+        assert r["last_alert_summary"] == "Good alert"
+
+    def test_malformed_copy_on_the_last_record_leaves_no_garbled_summary(self, tmp_path):
+        p = _write_jsonl(tmp_path, [
+            {"published": (_EVAL - timedelta(days=2)).isoformat(), "banner_title": "Older good"},
+            {"published": (_EVAL - timedelta(days=1)).isoformat(), "banner_title": {"a": 1}},
+        ])
+        r = _jw(p)
+        assert r["n_7d"] == 2
+        assert r["last_alert_summary"] is None
+        assert isinstance(r["last_alert_summary"], (str, type(None)))
+
+    def test_summary_is_bounded_to_the_display_length(self, tmp_path):
+        p = _write_jsonl(tmp_path, [{
+            "published": (_EVAL - timedelta(days=1)).isoformat(),
+            "banner_title": "A" * 400,
+        }])
+        r = _jw(p)
+        assert len(r["last_alert_summary"]) == 140
+
+    def test_bilingual_fields_preserved_for_valid_input(self, tmp_path):
+        p = _write_jsonl(tmp_path, [{
+            "published": (_EVAL - timedelta(days=1)).isoformat(),
+            "banner_title": "EN title",
+            "banner_title_zh": "中文标题",
+            "summary": "EN summary",
+            "summary_zh": "中文摘要",
+        }])
+        r = _jw(p)
+        assert r["last_alert_summary"] == "EN title"
+        assert r["last_alert_summary_zh"] == "中文标题"
+
+    def test_zh_falls_back_to_en_for_valid_input(self, tmp_path):
+        p = _write_jsonl(tmp_path, [{
+            "published": (_EVAL - timedelta(days=1)).isoformat(),
+            "banner_title": "EN headline only",
+        }])
+        r = _jw(p)
+        assert r["last_alert_summary"] == "EN headline only"
+        assert r["last_alert_summary_zh"] == "EN headline only"
+
+
+class TestCalendarEventSemantics:
+    """The event is dated: upcoming / today / past are explicit."""
+
+    def _cal(self, when):
+        from scripts.build_policy_lever import _compute_calendar
+        return _compute_calendar(now=when)
+
+    def test_before_the_event(self):
+        c = self._cal(datetime(2026, 11, 1, 12, 0, tzinfo=timezone.utc))
+        assert c["event_state"] == "upcoming"
+        assert c["days_to_midterm"] == 2
+        assert c["days_since_midterm"] is None
+        assert c["event_date"] == "2026-11-03"
+        assert c["evaluation_date"] == "2026-11-01"
+
+    def test_on_the_event(self):
+        c = self._cal(datetime(2026, 11, 3, 0, 0, tzinfo=timezone.utc))
+        assert c["event_state"] == "today"
+        assert c["days_to_midterm"] == 0
+        assert c["days_since_midterm"] == 0
+        assert c["event_date"] == "2026-11-03"
+
+    def test_after_the_event(self):
+        c = self._cal(datetime(2026, 11, 4, 0, 0, tzinfo=timezone.utc))
+        assert c["event_state"] == "past"
+        assert c["days_to_midterm"] is None      # NOT a permanent live zero
+        assert c["days_since_midterm"] == 1
+        assert "2026-11-03" in c["context_note"]
+        assert "2026年11月3日" in c["context_note_zh"]
+
+    def test_naive_evaluation_instant_is_read_as_utc(self):
+        c = self._cal(datetime(2026, 11, 3, 0, 0))
+        assert c["event_state"] == "today"
+
+    def test_calendar_exposes_the_evaluation_instant(self):
+        c = self._cal(_EVAL)
+        assert c["evaluated_at"] == "2026-11-01T12:00:00Z"
+        assert c["evaluation_date"] == "2026-11-01"
+
+    def test_past_note_has_no_directional_language(self):
+        c = self._cal(datetime(2026, 11, 4, 0, 0, tzinfo=timezone.utc))
+        for word in ("buy", "sell", "short", "long", "intent", "predict"):
+            assert word not in c["context_note"].lower()
+
+
+class TestArtifactTimestamps:
+    """Computation time is distinct from evidence time."""
+
+    def test_computed_at_is_a_utc_instant(self, built_artifact):
+        assert built_artifact["computed_at"].endswith("Z")
+        parsed = datetime.fromisoformat(built_artifact["computed_at"].replace("Z", "+00:00"))
+        assert parsed.tzinfo is not None
+        assert parsed.utcoffset() == timedelta(0)
+
+    def test_as_of_keeps_the_price_date_meaning(self, built_artifact):
+        fc = built_artifact["favored_complex"]
+        if fc.get("as_of"):
+            assert built_artifact["as_of"] == fc["as_of"]
+            assert built_artifact["as_of_basis"] == "price_date"
+        else:
+            assert built_artifact["as_of_basis"] == "build_date_fallback"
+
+    def test_as_of_is_a_date_and_not_the_evaluation_instant(self, built_artifact):
+        assert "T" not in built_artifact["as_of"]
+        assert built_artifact["as_of"] != built_artifact["computed_at"]
+
+    def test_one_evaluation_instant_is_shared_by_the_components(self, built_artifact):
+        assert built_artifact["jawboning"]["evaluated_at"] == built_artifact["computed_at"]
+        assert built_artifact["calendar"]["evaluated_at"] == built_artifact["computed_at"]
+        assert built_artifact["favored_complex"]["computed_at"] == built_artifact["computed_at"]
+
+    def test_component_evaluation_date_is_the_utc_date_of_the_instant(self, built_artifact):
+        assert built_artifact["calendar"]["evaluation_date"] == built_artifact["computed_at"][:10]
+        assert built_artifact["jawboning"]["evaluated_date"] == built_artifact["computed_at"][:10]
+
+    def test_calendar_event_date_is_the_midterm_date(self, built_artifact):
+        assert built_artifact["calendar"]["event_date"] == "2026-11-03"
+
+    def test_artifact_is_json_serializable_with_the_new_metadata(self, built_artifact):
+        reloaded = json.loads(json.dumps(built_artifact, default=str))
+        assert reloaded["schema"] == "policy_lever.v1"
+        assert "computed_at" in reloaded
+        assert "source_status" in reloaded["jawboning"]
+        assert "event_state" in reloaded["calendar"]
+
+
+class TestProducerIntegrityRegressionGuard:
+    """The R2 repair must not touch the frozen PS-R9 scoring or the basket block."""
+
+    def test_drawdown_threshold_is_unchanged(self):
+        from scripts.build_policy_lever import _DRAWDOWN_THRESHOLD
+        assert _DRAWDOWN_THRESHOLD == -0.15
+
+    def test_state_rule_is_unchanged(self):
+        from scripts.build_policy_lever import _compute_state
+        assert _compute_state(-15.0, [_lever(True)]) == "ARMED"
+        assert _compute_state(-14.99, [_lever(True)]) == "ELEVATED"
+        assert _compute_state(-15.0, [_lever(False)]) == "ELEVATED"
+        assert _compute_state(-10.0, [_lever(False)]) == "QUIET"
+        assert _compute_state(None, [_lever(False)]) == "QUIET"
+
+    def test_favored_complex_keeps_its_legacy_keys(self):
+        from scripts.build_policy_lever import build
+        fc = build()["favored_complex"]
+        for key in ("basket", "basket_incomplete", "drawdown_pct", "drawdown_z",
+                    "as_of", "note", "note_zh"):
+            assert key in fc
+
+    def test_jawboning_keeps_its_legacy_keys(self):
+        from scripts.build_policy_lever import build
+        jw = build()["jawboning"]
+        for key in ("n_7d", "n_30d", "last_alert_ts", "last_alert_summary",
+                    "last_alert_summary_zh"):
+            assert key in jw
+
+    def test_calendar_keeps_its_legacy_keys(self):
+        from scripts.build_policy_lever import build
+        cal = build()["calendar"]
+        for key in ("days_to_midterm", "context_note", "context_note_zh"):
+            assert key in cal
+
+    def test_deeply_nested_line_never_crashes_the_producer(self, tmp_path):
+        """A pathological line is rejected on its own; the next record survives."""
+        p = tmp_path / "alerts.jsonl"
+        p.write_text(
+            "[" * 20000 + "]" * 20000 + "\n" +
+            json.dumps({"published": "2026-10-31T00:00:00+00:00", "banner_title": "ok"}) + "\n",
+            encoding="utf-8",
+        )
+        r = _jw(p)
+        assert r["n_7d"] == 1
+        assert r["last_alert_summary"] == "ok"
+        assert r["diagnostics"]["malformed_json"] == 1
+
+    def test_build_never_raises_on_a_corrupt_source(self, monkeypatch, tmp_path):
+        """The publication path survives a wholly corrupt source file."""
+        from scripts import build_policy_lever as mod
+        mod.config.load()   # warm the config cache so the patched ROOT needs no config.yml
+        monkeypatch.setattr(mod.config, "ROOT", tmp_path)
+        (tmp_path / "data" / "whitehouse").mkdir(parents=True)
+        (tmp_path / "data" / "whitehouse" / "alerts.jsonl").write_text(
+            "garbage\n[]\n", encoding="utf-8"
+        )
+        artifact = mod.build()
+        assert artifact["schema"] == "policy_lever.v1"
+        assert artifact["jawboning"]["source_status"] == "unusable"
+        assert artifact["jawboning"]["n_7d"] is None
