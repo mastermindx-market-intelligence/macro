@@ -33,6 +33,7 @@ import json
 import logging
 import math
 import os
+import subprocess
 import sys
 import tempfile
 from datetime import date, datetime, timezone
@@ -818,8 +819,23 @@ def write(root: Path | None = None, now: datetime | None = None) -> dict[str, An
             public = site_path(source_root)
             try:
                 durable_bytes = durable.read_bytes()
-                if durable_bytes != public.read_bytes():
+                public_bytes = public.read_bytes()
+                if durable_bytes != public_bytes:
                     log.warning("risk_envelope: renderer-only settled mirrors differ; withholding")
+                    return {}
+                # A matching working-tree pair is not enough: a provisional
+                # source could have written both before a site-only commit.
+                # Reuse only the immutable bytes already in this checkout's HEAD.
+                committed_data = subprocess.check_output(
+                    ["git", "-C", str(source_root), "show", "HEAD:data/risk_envelope/latest.json"],
+                    stderr=subprocess.DEVNULL, timeout=15,
+                )
+                committed_site = subprocess.check_output(
+                    ["git", "-C", str(source_root), "show", "HEAD:site/riskdata/risk_envelope.json"],
+                    stderr=subprocess.DEVNULL, timeout=15,
+                )
+                if durable_bytes != committed_data or public_bytes != committed_site:
+                    log.warning("risk_envelope: renderer-only pair is not committed; withholding")
                     return {}
                 existing = json.loads(durable_bytes)
                 market_state = _read_json(source_root / "data" / "market_state" / "latest.json")
@@ -837,7 +853,7 @@ def write(root: Path | None = None, now: datetime | None = None) -> dict[str, An
                     log.warning("risk_envelope: renderer-only source/session unqualified; withholding")
                     return {}
                 return existing
-            except (OSError, ValueError, TypeError) as exc:
+            except (OSError, ValueError, TypeError, subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
                 log.warning("risk_envelope: renderer-only source unavailable (%s); withholding", type(exc).__name__)
                 return {}
 
