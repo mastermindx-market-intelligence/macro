@@ -5420,7 +5420,7 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
 
     2026-11-02 News #9612 composition with main b4a0ae4e: actual
     372-job registry, all seven additive shared path fields preserved.
-    Canonical measurements on the composed tree (104.34s): index136/5843,
+    Local preflight on the composed tree (104.34s): index136/5843,
     free-content137/5870, plan-book129/5593, each ten packs. All fit the
     current main ceilings137/5886,138/5877,130/5636; retain those exactly.
     No new budget, job, command, selector, timeout or pack-limit change.

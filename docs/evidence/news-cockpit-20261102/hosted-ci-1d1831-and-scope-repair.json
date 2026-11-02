@@ -1,0 +1,52 @@
+{
+  "subject_head": "1d1831bafdfb45efbf967150fb796c296c06ca46",
+  "tested_merge": "4ebca316958e11d5c0cf5b09bf7eeed5c3aaa74e",
+  "tested_base": "e4009c94d75770739844240b22f5fc915668aa9b",
+  "ci_run": 41383134053,
+  "failed_jobs": {
+    "contract-delta": 125078047790,
+    "ci-pack-1": 125078420275
+  },
+  "only_failed_legacy_job": "ci-control-plane-contracts",
+  "failure": "eight missing import-closure registrations across four current-main jobs",
+  "affected_jobs": [
+    "catalyst-loop-integrated",
+    "eval-os-a1",
+    "ontology-explorer",
+    "options-matrix-code"
+  ],
+  "added_paths_each": [
+    "app/news_desk.py",
+    "engine/marketing/intelligence_history.py"
+  ],
+  "preserved_job_payloads_and_all_prior_paths": true,
+  "fix_scope": "eight additive path declarations; no command, test, selector, timeout, weight or count changes",
+  "hosted_packing": [
+    {
+      "probe": "templates/index.html",
+      "head_jobs": 136,
+      "head_weight": 5843,
+      "base_jobs": 136,
+      "base_weight": 5833,
+      "packs": 10
+    },
+    {
+      "probe": "scripts/build_free_content.py",
+      "head_jobs": 137,
+      "head_weight": 5870,
+      "base_jobs": 137,
+      "base_weight": 5860,
+      "packs": 10
+    },
+    {
+      "probe": "engine/prophet/plan_book.py",
+      "head_jobs": 129,
+      "head_weight": 5593,
+      "base_jobs": 129,
+      "base_weight": 5583,
+      "packs": 10
+    }
+  ],
+  "all_packing_ceiling_checks_passed": true,
+  "fixed_candidate_validation": "PENDING"
+}

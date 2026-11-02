@@ -725,7 +725,7 @@ CI registry retains 372 unique jobs, every unilateral payload and the
 exact additive path multisets in all seven jointly changed fields.
 No suite, command, selector, timeout, or job is removed.
 
-Canonical measurements on the actual composed working tree take 104.34s:
+Local preflight measurements on the composed working tree take 104.34s:
 index 136 jobs / 5,843 estimator units, free-content 137 / 5,870,
 and plan-book 129 / 5,593; each selects ten packs. All fit main's
 existing ceilings (137/5,886; 138/5,877; 130/5,636). No budget increase
@@ -795,3 +795,35 @@ the managed commit must bind the actual final tree to e4009c94 as its
 second parent. No tracking ref, guard, or protected source was overwritten.
 The prior validation and packing receipts retain their actual b4a0ae4e
 subject; current hosted checks remain mandatory.
+
+## Published 1d1831 hosted CI and scope repair — 2026-11-02
+
+Managed publication applied at exact head `1d1831bafdfb45efbf967150fb796c296c06ca46`,
+tree `f37d40ac638d4055d9a5b6e1e9b072b65117895e`, with parents
+`a32b568a5488df28da226232e43c9ddf4998a0e6` and
+`e4009c94d75770739844240b22f5fc915668aa9b`. Local and remote matched;
+tracked source was clean. PR9612 is now DRAFT with its merge hold retained.
+
+Run41383134053 tested merge4ebca316 against basee4009c94. Eleven packs,
+fences, ci-authority and medtech-contracts passed. Contract-delta and
+ci-pack-1 failed for the same eight missing registrations: each of
+catalyst-loop-integrated, eval-os-a1, ontology-explorer and options-matrix-code
+now imports app/news_desk.py and engine/marketing/intelligence_history.py.
+The only failed legacy job is ci-control-plane-contracts; its suite reports
+844 passed, one skipped and the one import-closure failure. The base replay
+settlement was unknown and is not treated as a pass.
+
+The hosted canonical packing census confirms the earlier local preflight
+numbers exactly (136/5843,137/5870,129/5593; ten packs each), with News
+adding ten estimator units and no selected job versus that actual base.
+All existing ceilings passed. The earlier local invocation did not bind
+a tracked-path inventory and is retained as preflight, not substituted
+for this hosted proof.
+
+The repair adds only the two exact News dependency paths to each of those
+four existing jobs. All prior path multisets and all other job fields
+are preserved, including commands, suites, timeout and budget limits.
+An exact-job/News-path open-PR search found no competing repair, and the
+existing build map was checked. This remains the original News-owned heal;
+no separate pack-repair lane or workflow exemption is created.
+Validation and publication of the corrected candidate remain pending.

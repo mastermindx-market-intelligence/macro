@@ -7385,6 +7385,8 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "app/news_desk.py"
+      - "engine/marketing/intelligence_history.py"
       # Plan private-reader/installer suites belong to this scoped CODE lane.
       - "tests/test_options_plan_api.py"
       - "tests/test_options_plan_install.py"
@@ -15543,6 +15545,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "app/news_desk.py"
+      - "engine/marketing/intelligence_history.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -42344,6 +42348,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/news_desk.py"
+      - "engine/marketing/intelligence_history.py"
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -46991,6 +46997,8 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "app/news_desk.py"
+      - "engine/marketing/intelligence_history.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
