@@ -68,14 +68,14 @@ verified:
 unverified:
   - claim: EW-P1 repair restores the nightly engine data commit.
     what_would_verify: >-
-      Two natural nightly sessions after the carve in which `engine: regime update <date>` lands on main and data/risk_envelope/latest.json advances.
-      One of two observed: 2026-11-02 (b0a37dfbaff4, 9d7925b30a01). The second is the next nightly; observed by the seat's hourly git-only read, never polled or dispatched.
+      Two natural engine sessions after the carve (main's own engine workflow runs, never a seat dispatch) in which `engine: regime update <date>` lands on main and data/risk_envelope/latest.json advances.
+      One of two observed: 2026-11-02 (b0a37dfbaff4, 9d7925b30a01). The second is the next natural engine session; observed by the seat's hourly git-only read, never polled or dispatched.
   - claim: #10219's failing check names.
     what_would_verify: One bounded `gh pr checks 10219` after the CI-wait cooldown (REDUNDANT POLL blocked the second read).
 unresolved:
   - >-
-    EW-P1 acceptance: two natural nightly SESSIONS after the incumbent carve #10255 (merged c2772cc4, 06:29:41Z). The first landed 2026-11-02
-    (b0a37dfbaff4 10:20:35Z, 9d7925b30a01 10:40:00Z; latest.json advanced). A session lands two or more engine commits, so the earlier
+    EW-P1 acceptance: two natural engine SESSIONS after the incumbent carve #10255 (merged c2772cc4, 06:29:41Z). The first landed 2026-11-02
+    (b0a37dfbaff4 10:20:35Z, 9d7925b30a01 10:40:00Z; latest.json advanced). A session lands one to five engine commits (census since 2026-10-01), so the earlier
     commit-counting watcher's exit proved one session, not two; PRODUCTION_PROOF is not recorded. The sessions-counting watcher runs hourly, git-only.
   - >-
     #10221's three engine-script hunks are not taken over; #10221 remains the orphaned carrier for the pair check until a successor is decided. QLedger publication (data/qledger + site/qledger) stays unpublished; owner #10079 (inert/NOT_CUT_OVER).
