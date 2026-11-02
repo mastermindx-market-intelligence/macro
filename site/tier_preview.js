@@ -346,7 +346,7 @@
     // Recheck the native identity even if its notification has not arrived yet.
     requestGeneration += 1;
     clearIdentity();
-    setTier(nativeUserId() ? "unknown" : "anon", "unconfirmed");
+    setTier(nativeUserId() || hasSessionCookie() ? "unknown" : "anon", "unconfirmed");
     return false;
   }
   function resolveTier() {
@@ -422,7 +422,7 @@
       // it to an unknown account. Only /api/me failures for a verified user may
       // retain that user's last confirmed summary cap.
       clearIdentity();
-      setTier(nativeUserId() ? "unknown" : "anon", "unconfirmed");
+      setTier(nativeUserId() || hasSessionCookie() ? "unknown" : "anon", "unconfirmed");
     });
   }
 
@@ -439,12 +439,15 @@
     resolveTier();
     if (window.MDXAuth && typeof window.MDXAuth.onChange === "function") {
       window.MDXAuth.onChange(function (user, event) {
-        if (!user || event === "SIGNED_OUT") {
+        if (event === "SIGNED_OUT" || (!user && !hasSessionCookie())) {
           requestGeneration += 1;
           clearIdentity();
           setTier("anon", "signed-out");
+        } else if (user || accessResolution !== "pending") {
+          // An early INITIAL_SESSION without a user is not an actual sign-out.
+          // Keep the restrictive cap while a persisted session is verified.
+          resolveTier();
         }
-        else resolveTier();
       });
     }
     if (window.MutationObserver) {
