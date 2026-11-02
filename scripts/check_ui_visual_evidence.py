@@ -1442,16 +1442,17 @@ def run_selftest() -> int:
 
     # 14. A REQUIRED rest cell whose committed PNG bytes no longer match its
     # recorded sha256 must red — rest cells get the same byte-level floor as
-    # force_state cells, not mere file existence.
+    # force_state cells, not mere file existence. The swap keeps the recorded
+    # length, so only the sha256 comparison can catch it.
     with tempfile.TemporaryDirectory(prefix="ui_visual_evidence_selftest_") as tmp:
         root = Path(tmp)
         _selftest_write(root, _selftest_full_states())
-        (root / "mockups" / "evidence" / "selftest" / "shot.png").write_bytes(
-            b"\x89PNG\r\n\x1a\nswapped"
-        )
+        swapped = b"\x89PNG\r\n\x1a\nSELFTEST"
+        assert len(swapped) == len(_SELFTEST_PNG_BYTES)
+        (root / "mockups" / "evidence" / "selftest" / "shot.png").write_bytes(swapped)
         result = evaluate(_selftest_diff(), root)
-        if not result:
-            failures.append("rest cell with swapped PNG bytes unexpectedly passed")
+        if not any("sha256=" in finding for finding in result):
+            failures.append(f"rest cell with same-length swapped PNG bytes did not red on sha256: {result}")
 
     if failures:
         for failure in failures:
