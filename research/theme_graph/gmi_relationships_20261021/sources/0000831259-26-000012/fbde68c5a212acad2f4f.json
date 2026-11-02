@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-13T19:44:37Z",
+ "accession": "0000831259-26-000012",
+ "cik": "0000831259",
+ "doc_byte_length": 6347593,
+ "doc_sha256": "2987cd4a68a5767d8f3d8dbbb0778c86fbd438a36ed7694581bc01d50c360ced",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-13",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "fcx-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 5562935,
+  "byte_start": 5561825,
+  "normalized": "Sales to MMC, PTFI’s joint venture partner in PT Smelting, totaled $1.7 billion in 2025, $4.4 billion in 2024 and $2.0 billion in 2023. Sales to MMC totaled 17% of FCX’s consolidated revenues in 2024, and they are the only customer that accounted for 10% or more of FCX’s annual consolidated revenues during the three years ended December 31, 2025.",
+  "normalized_sha256": "8730ddd39f80becaa8f51a08efac8d2d348d8c27d37adb8b662d21a8c9ed8f61",
+  "raw": " </span><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">Sales to MMC, PTFI&#8217;s joint venture partner in PT Smelting, totaled $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-741\" decimals=\"-8\" name=\"us-gaap:Revenues\" format=\"ixt:num-dot-decimal\" scale=\"9\" id=\"f-2049\">1.7</ix:nonFraction>&#160;billion in 2025, $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-742\" decimals=\"-8\" name=\"us-gaap:Revenues\" format=\"ixt:num-dot-decimal\" scale=\"9\" id=\"f-2050\">4.4</ix:nonFraction>&#160;billion in 2024 and $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-743\" decimals=\"-8\" name=\"us-gaap:Revenues\" format=\"ixt:num-dot-decimal\" scale=\"9\" id=\"f-2051\">2.0</ix:nonFraction>&#160;billion in 2023. Sales to MMC totaled <ix:nonFraction unitRef=\"number\" contextRef=\"c-744\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-2052\">17</ix:nonFraction>% of FCX&#8217;s consolidated revenues in 2024, and they are the only customer that accounted for 10% or more of FCX&#8217;s annual consolidated revenues during the three years ended December 31, 2025.",
+  "raw_sha256": "fbde68c5a212acad2f4f994f99060cbbf83c17373c7f57fd79d7f62d6c4c6fa4"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/831259/000083125926000012/fcx-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 381308,
+   "byte_start": 380611,
+   "context_ref": "c-744",
+   "raw": "<xbrli:context id=\"c-744\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000831259</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">fcx:MitsubishiMaterialsCorporationMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "cdef369ae04aff9d4f89ce10833d19f2f243b41b25e6578af7cabb9c3c03be3b"
+  }
+ ]
+}

@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-02-26T19:36:10Z",
+ "accession": "0001841666-26-000015",
+ "cik": "0001841666",
+ "doc_byte_length": 4263100,
+ "doc_sha256": "25d293cae78d9d7526d22c19e961c7ec40ebe482dbe538f1e2c0c2159711eea3",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "apa-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3220693,
+  "byte_start": 3219827,
+  "normalized": "During 2025, sales to EGPC in Egypt accounted for approximately 15 percent of the Company’s worldwide crude oil, natural gas, and NGLs revenues. During 2024 and 2023, sales to EGPC accounted for approximately 17 percent and 15 percent, respectively, of the Company’s worldwide crude oil, natural gas, and NGLs revenues.",
+  "normalized_sha256": "95b115d223a492baa98b31ad131d1cd9dc2668555ffe56dcf10f254c2c7b7910",
+  "raw": " During 2025, sales to EGPC in Egypt accounted for approximately <ix:nonFraction unitRef=\"number\" contextRef=\"c-420\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" format=\"ixt:num-dot-decimal\" scale=\"-2\" id=\"f-1972\">15</ix:nonFraction> percent of the Company&#8217;s worldwide crude oil, natural gas, and NGLs revenues. During 2024 and 2023, sales to EGPC accounted for approximately <ix:nonFraction unitRef=\"number\" contextRef=\"c-421\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" format=\"ixt:num-dot-decimal\" scale=\"-2\" id=\"f-1973\">17</ix:nonFraction> percent and <ix:nonFraction unitRef=\"number\" contextRef=\"c-422\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" format=\"ixt:num-dot-decimal\" scale=\"-2\" id=\"f-1974\">15</ix:nonFraction> percent, respectively, of the Company&#8217;s worldwide crude oil, natural gas, and NGLs revenues.",
+  "raw_sha256": "c2f073f8f356b6a57a336e4bd79528affb387c75c87ef7103a8d73e528ca4099"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1841666/000184166626000015/apa-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 203005,
+   "byte_start": 202315,
+   "context_ref": "c-421",
+   "raw": "<xbrli:context id=\"c-421\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001841666</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">apa:EgyptianGeneralPetroleumCompanyMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">apa:OilAndGasProductionRevenuesMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "0bd3e8c6f90b420a9ba82ab687c172975674c78ecbf1c520eb6909a3aabee33d"
+  },
+  {
+   "byte_end": 203695,
+   "byte_start": 203005,
+   "context_ref": "c-422",
+   "raw": "<xbrli:context id=\"c-422\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001841666</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">apa:EgyptianGeneralPetroleumCompanyMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">apa:OilAndGasProductionRevenuesMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "370f1b78d0649423ec47d713360a4cdfb6ff85f989c217b4476e0fd9266301fb"
+  }
+ ]
+}
