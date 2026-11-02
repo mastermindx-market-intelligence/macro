@@ -170,9 +170,22 @@ def test_scan_receipt_is_validated_by_the_real_authority(env):
         catalyst_optin.request_optin(body)
     # Consent owner answered, so the forged receipt reaches the real HMAC check
     # and is refused there — never SCAN_AUTHORITY_NOT_WIRED, never GoTrue.
-    assert gate.value.code != "SCAN_AUTHORITY_NOT_WIRED"
-    assert gate.value.code != "CONSENT_OWNER_NOT_READY"
-    assert gate.value.status in (400, 403, 503)
+    assert (gate.value.code, gate.value.status) == ("INVALID_SCAN_PROOF", 400)
+
+
+@pytest.mark.parametrize("break_it", ["switch_off", "short_secret", "consent_down"])
+def test_a_later_refusal_clears_a_previously_configured_service(env, break_it):
+    import app.mailer as mailer
+    assert wiring.configure_from_environment() is True
+    assert isinstance(catalyst_optin._active(), FunnelService)
+    if break_it == "switch_off":
+        env.delenv("CATALYST_OPTIN_ENABLED")
+    elif break_it == "short_secret":
+        env.setenv("MAIL_UNSUB_SECRET", "short")
+    else:
+        env.setattr(mailer, "_pg", _contract_down)
+    assert wiring.configure_from_environment() is False
+    assert _unconfigured()
 
 
 def test_app_boot_hook_runs_after_the_router_mount_and_fails_closed():
@@ -180,7 +193,33 @@ def test_app_boot_hook_runs_after_the_router_mount_and_fails_closed():
     mount = src.index("app.include_router(catalyst_secure_optin_router)")
     hook = src.index("from app.catalyst_optin_wiring import (")
     assert mount < hook
-    block = src[hook:hook + 700]
+    assert src.index("_catalyst_optin_router_mounted = True") < hook
+    block = src[hook - 120:hook + 700]
+    assert "if not _catalyst_optin_router_mounted:" in block
     assert "_configure_catalyst_optin()" in block
     assert re.search(r"except Exception as _catalyst_optin_wiring_exc", block)
     assert "type(_catalyst_optin_wiring_exc).__name__" in block
+
+
+def test_importing_the_app_with_flags_unset_configures_nothing_and_opens_no_socket():
+    """Runs the real boot hook in a fresh interpreter: no network, no service."""
+    import os
+    import subprocess
+    import sys
+    probe = (
+        "import urllib.request, socket\n"
+        "calls=[]\n"
+        "def deny(*a, **k): calls.append('net'); raise OSError('network disabled by test')\n"
+        "urllib.request.urlopen = deny\n"
+        "socket.socket.connect = deny\n"
+        "import app.main\n"
+        "from app import catalyst_optin\n"
+        "print('service_none', catalyst_optin._service is None, 'net_calls', len(calls))\n"
+    )
+    clean = {k: v for k, v in os.environ.items()
+             if k not in ("CATALYST_PUBLIC_ENABLED", "CATALYST_OPTIN_ENABLED",
+                          "CATALYST_UX_ENABLED", "SUPABASE_SERVICE_ROLE_KEY")}
+    out = subprocess.run([sys.executable, "-c", probe], cwd=str(REPO), env=clean,
+                         capture_output=True, text=True, timeout=240)
+    assert out.returncode == 0, out.stderr[-800:]
+    assert "service_none True net_calls 0" in out.stdout

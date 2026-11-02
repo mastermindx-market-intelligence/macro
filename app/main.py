@@ -2898,12 +2898,15 @@ except Exception as _catalyst_source_exc:  # noqa: BLE001
 
 # Session 02 secure Catalyst opt-in router (DRAFT/HOLD sibling source).
 # Mount only the existing owner-backed request/verify API WHEN its source lands.
-# Do not auto-configure a consent service, allocate email state or send messages.
-# The Session 02 router remains fail-closed (503) until its verified owner/RPC,
-# scan receipt authority and revision authority are all explicitly admitted.
+# This mount itself configures nothing, allocates no email state and sends no
+# message: the router stays fail-closed (503) until the B1 wiring hook below
+# admits its verified owner/RPC, scan receipt authority and revision authority
+# under the production flags.
+_catalyst_optin_router_mounted = False
 try:
     from app.catalyst_optin import router as catalyst_secure_optin_router  # noqa: E402
     app.include_router(catalyst_secure_optin_router)
+    _catalyst_optin_router_mounted = True
 except ModuleNotFoundError as _catalyst_module_exc:  # noqa: BLE001
     if _catalyst_module_exc.name != "app.catalyst_optin":
         import logging as _logging  # noqa: PLC0415
@@ -2922,6 +2925,8 @@ except Exception as _catalyst_secure_exc:  # noqa: BLE001
 # or failure leaves the router at 503 CATALYST_INTEGRATION_NOT_READY. This never
 # applies the consent RPC, never enables delivery and binds no rights authority.
 try:
+    if not _catalyst_optin_router_mounted:
+        raise RuntimeError("router_not_mounted")
     from app.catalyst_optin_wiring import (  # noqa: E402
         configure_from_environment as _configure_catalyst_optin,
     )

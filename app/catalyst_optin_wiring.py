@@ -60,7 +60,9 @@ def _secret_present(name: str) -> bool:
 
 
 def _identity_configured() -> bool:
-    """GoTrue endpoint + publishable key exist (same seams the funnel uses)."""
+    """Shape-only check: an https GoTrue endpoint and a non-empty publishable key
+    exist on the same seams the funnel uses. It does not prove GoTrue is
+    reachable; each request still fails closed (IDENTITY_VERIFICATION_UNAVAILABLE)."""
     try:
         from app.account_actions import _anon_key, _supabase  # noqa: PLC0415
         url, _service_role = _supabase()
