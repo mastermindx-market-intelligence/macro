@@ -492,15 +492,44 @@ def test_unknown_or_phantom_parser_correction_fails_closed_against_retained_byte
 
 
 @pytest.mark.parametrize(
-    "target",
+    ("target", "exercised_parser"),
     [
-        "_canonical_json", "_digest_id", "_clone_json_value", "_parse_time", "_iso",
-        "_unique_spans", "make_stable_span", "_base_record",
-        "_records_for_manifest_v1_1_0",
+        pytest.param("_canonical_json", None, id="_canonical_json"),
+        pytest.param("_digest_id", None, id="_digest_id"),
+        pytest.param("_clone_json_value", None, id="_clone_json_value"),
+        pytest.param("_parse_time", None, id="_parse_time"),
+        pytest.param("_iso", None, id="_iso"),
+        pytest.param("_unique_spans", None, id="_unique_spans"),
+        pytest.param("make_stable_span", None, id="make_stable_span"),
+        # Active 1.2.0 extractor graph.
+        pytest.param("_base_record_v1_2_0", None, id="_base_record_v1_2_0"),
+        pytest.param("_records_for_manifest_v1_2_0", None, id="_records_for_manifest_v1_2_0"),
+        pytest.param("_parse_fee_tables_v1_2_0", None, id="_parse_fee_tables_v1_2_0"),
+        pytest.param("_security_header_v1_2_0", None, id="_security_header_v1_2_0"),
+        pytest.param("_term_for_header_v1_2_0", None, id="_term_for_header_v1_2_0"),
+        pytest.param("_total_row_record_v1_2_0", None, id="_total_row_record_v1_2_0"),
+        # Released 1.1.0 graph: still registered, still sealed, exercised
+        # through its own released resolver rather than the active compile.
+        pytest.param(
+            "_base_record", "capital-structure-document-terms/1.1.0",
+            id="_base_record-v1_1_0",
+        ),
+        pytest.param(
+            "_records_for_manifest_v1_1_0", "capital-structure-document-terms/1.1.0",
+            id="_records_for_manifest_v1_1_0",
+        ),
+        pytest.param(
+            "_security_header", "capital-structure-document-terms/1.1.0",
+            id="_security_header-v1_1_0",
+        ),
+        pytest.param(
+            "_parse_fee_tables", "capital-structure-document-terms/1.1.0",
+            id="_parse_fee_tables-v1_1_0",
+        ),
     ],
 )
 def test_registered_parser_closure_rejects_every_mutated_semantic_helper(
-    monkeypatch, target,
+    monkeypatch, target, exercised_parser,
 ):
     raw = FIXTURE.read_bytes()
     manifest = _manifest(raw)
@@ -513,6 +542,16 @@ def test_registered_parser_closure_rejects_every_mutated_semantic_helper(
         return original(*args, **kwargs)
 
     monkeypatch.setattr(document_terms, target, altered_semantic_helper)
+    if exercised_parser is not None:
+        # A released-but-inactive parser must fail closed through the exact
+        # resolver every historical consumer uses, never merely via the compile.
+        with pytest.raises(ValueError, match="closure mismatch"):
+            document_terms._registered_parser(exercised_parser)
+        with pytest.raises(ValueError, match="closure mismatch"):
+            document_terms._records_for_manifest(
+                manifest, raw, parser_version=exercised_parser,
+            )
+        return
     with pytest.raises(ValueError, match="closure mismatch"):
         compile_document_term_records(
             [manifest], source_reader=_reader(raw), generated_at="2026-08-03T00:00:00Z",
@@ -572,6 +611,7 @@ def test_registered_parser_closure_rejects_mutated_module_attribute(
 def test_released_parser_registry_has_closed_golden_semantic_bundle():
     assert tuple(document_terms._PARSER_REGISTRY) == (
         "capital-structure-document-terms/1.1.0",
+        "capital-structure-document-terms/1.2.0",
     )
     registration = document_terms._PARSER_REGISTRY[
         "capital-structure-document-terms/1.1.0"
@@ -590,6 +630,33 @@ def test_released_parser_registry_has_closed_golden_semantic_bundle():
     assert len(manifest) == registration.semantic_bundle.dependency_count
     assert manifest_sha256 == registration.semantic_bundle.dependency_manifest_sha256
     assert implementation_sha256 == registration.implementation_sha256
+    # 1.2.0 shares the 1.1.0 dispatch roots and runtime allowlist; only its own
+    # extractor graph moves, so the runtime seal below is asserted once.
+    v1_2_0 = document_terms._PARSER_REGISTRY["capital-structure-document-terms/1.2.0"]
+    assert v1_2_0.semantic_bundle.dispatch_roots is (
+        registration.semantic_bundle.dispatch_roots
+    )
+    manifest_1_2_0, manifest_sha256_1_2_0, implementation_sha256_1_2_0 = (
+        document_terms._semantic_closure(
+            v1_2_0.semantic_bundle.entrypoints,
+            v1_2_0.semantic_bundle.dispatch_roots,
+        )
+    )
+    assert len(manifest_1_2_0) == 298
+    assert manifest_sha256_1_2_0 == (
+        "ca0c0bc8a061739ed91c10988dcb45517e5060bfd787b9967fbbb1b92ca097f9"
+    )
+    assert implementation_sha256_1_2_0 == (
+        "939fb266ac7b94483ba08b54153fbd5f45c49e261cffaaaf6bd2a80eb0fade7a"
+    )
+    assert len(manifest_1_2_0) == v1_2_0.semantic_bundle.dependency_count
+    assert manifest_sha256_1_2_0 == v1_2_0.semantic_bundle.dependency_manifest_sha256
+    assert implementation_sha256_1_2_0 == v1_2_0.implementation_sha256
+    # The 1.1.0 closure graph is untouched by the 1.2.0 additions: none of the
+    # 1.2.0-only private copies may appear in it.
+    for node in manifest:
+        assert "v1_2_0" not in node and "V1_2_0" not in node, node
+    assert any("._records_for_manifest_v1_2_0" in node for node in manifest_1_2_0)
     runtime_manifest, runtime_manifest_sha256, runtime_implementation_sha256 = (
         document_terms._runtime_dispatch_closure(
             registration.semantic_bundle.dispatch_roots,
@@ -613,6 +680,7 @@ def test_released_parser_registry_has_closed_golden_semantic_bundle():
         "CDATA_CONTENT_ELEMENTS",
     ):
         assert any(required in node for node in manifest), required
+        assert any(required in node for node in manifest_1_2_0), required
 
 
 def test_parser_runtime_dispatch_seal_recovers_after_in_process_monkeypatch(monkeypatch):
@@ -952,8 +1020,8 @@ def test_cold_tracked_source_export_import_is_repeatable_without_bytecode(tmp_pa
     ]
     assert outputs == [outputs[0]] * 3
     assert outputs[0] == (
-        "263 d47515272069bfc3f3f768b84b94a218f7f66e7c746e36a8702efd97c26af645 "
-        "b08d50df113550f4faea3ff676e48718355e04b95c89b5b1a7ff53ae4e09b32f "
+        "298 939fb266ac7b94483ba08b54153fbd5f45c49e261cffaaaf6bd2a80eb0fade7a "
+        "c9885c435ed0dab8dc1b742efae1ff7d25f131e485275391723fde5dae9fd0fe "
         "7adefd79136224d8c0ca0c84cd4ef41bd206690f9ec28622cdf95f682c811b28"
     )
     assert not list(export_root.rglob("__pycache__"))
@@ -969,7 +1037,7 @@ def test_released_authority_policy_has_independent_golden_closure():
         "ce4537defd873c1f1406ea8b4e3709ef0e33c8e034c9d6c2b632b3af546c0425"
     )
     assert implementation_sha256 == (
-        "b08d50df113550f4faea3ff676e48718355e04b95c89b5b1a7ff53ae4e09b32f"
+        "c9885c435ed0dab8dc1b742efae1ff7d25f131e485275391723fde5dae9fd0fe"
     )
     assert len(manifest) == policy.dependency_count
     assert manifest_sha256 == policy.dependency_manifest_sha256
@@ -2276,3 +2344,324 @@ def test_daily_compiler_has_namespace_parity_with_collector():
         "R2_RESEARCH_SECRET_ACCESS_KEY", "R2_RESEARCH_BUCKET",
     ):
         assert f"{variable}:" in step
+
+
+# ---------------------------------------------------------------------------
+# capital-structure-document-terms/1.2.0 — real Exhibit 107 Table 1 fixtures
+#
+# Every expected value below is a cell quoted from a committed fixture whose
+# exhibit bytes were served by SEC EDGAR for the named accession.
+# ---------------------------------------------------------------------------
+
+EX107_QUOTED_TOTALS = {
+    # accession: (fixture glob fragment, quoted "Total Offering Amounts" value
+    #             cell, parsed decimal, observed security aggregate rows)
+    "0001493152-26-034585": ("ex107_S-3_", "$ 1,009,975.00", "1009975", 1),
+    # This exhibit renders the currency glyph as its own cell beside the
+    # amount, both inside the one "Maximum Aggregate Offering Price" header
+    # span; the quoted cell is the amount cell of that span.
+    "0001213900-26-081199": ("ex107_S-1A_", "27,686,250.00", "27686250", 0),
+    "0001193125-26-312562": ("ex107_F-1_", "$ 13,800,000.00", "13800000", 2),
+    "0001493152-26-034502": ("ex107_S-3A_", "$ 47,116,264.06", "47116264.06", 8),
+    "0001193125-26-326375": ("ex107_S-3ASR_0001193125", "$ 0.00", "0", 0),
+}
+
+EX107_FIXTURES = sorted(
+    (ROOT / "tests/fixtures/capital_structure/document_terms").glob("ex107_*.txt")
+)
+
+
+def _ex107_identity(raw: bytes) -> tuple[str, str, str]:
+    """The accession, form, and CIK pinned inside one committed envelope."""
+    accession = re.search(
+        rb"^<SEC-DOCUMENT>([0-9]{10}-[0-9]{2}-[0-9]{6})\.txt", raw, re.MULTILINE,
+    ).group(1).decode("ascii")
+    form = re.search(
+        rb"^CONFORMED SUBMISSION TYPE:\s*(\S+)", raw, re.MULTILINE,
+    ).group(1).decode("ascii")
+    cik = re.search(
+        rb"^[ \t]*CENTRAL INDEX KEY:[ \t]*([0-9]+)", raw, re.MULTILINE,
+    ).group(1).decode("ascii")
+    return accession, form, cik
+
+
+def _ex107_manifest(raw: bytes) -> dict:
+    accession, form, cik = _ex107_identity(raw)
+    digest = sha256(raw).hexdigest()
+    record = {
+        "schema": "capital_structure.source_manifest/v1",
+        "source_system": "sec_edgar",
+        "source_id": f"{accession}:0:complete-submission.txt",
+        "issuer": {
+            "issuer_id": f"sec:cik:{cik}", "cik": cik, "ticker": "ABC",
+            "aliases": ["ABC Corp"],
+        },
+        "filing": {
+            "accession": accession, "form": form,
+            "filing_date": "2026-08-01", "accepted_at": "2026-08-01T11:00:00Z",
+            "file_number": "333-123456",
+        },
+        "document": {
+            "canonical_url": f"https://www.sec.gov/Archives/edgar/data/{accession}.txt",
+            "document_name": "complete-submission.txt", "document_type": form,
+            "document_role": "complete_submission", "sequence": "0", "media_type": "text/plain",
+            "byte_length": len(raw), "document_version": 1, "content_sha256": digest,
+            "parent_manifest_id": None, "root_locator": f"sha256:{digest}",
+        },
+        "retrieval": {
+            "retrieved_at": "2026-08-02T12:00:00Z", "first_seen_at": "2026-08-02T12:00:00Z",
+            "transport_status": "retrieved",
+        },
+        "storage": {
+            "backend": "r2", "store_id": "r2_shared",
+            "object_key": f"capital_structure/sec/sha256/{digest[:2]}/{digest}",
+            "content_addressed": True, "retention_state": "retained",
+        },
+        "rights": {
+            "redistribution_class": "public_source_link", "attribution_required": True,
+            "license_note": "United States SEC EDGAR public filing",
+        },
+        "privacy": {"classification": "public", "contains_personal_data": False},
+        "parser": {
+            "eligibility": "eligible", "corruption_state": "clean",
+            "parser_version": "sec-source-inspector/1.0.0",
+        },
+        "spans": [{
+            "span_id": f"root:{digest}", "locator_type": "document",
+            "locator": f"bytes:0-{len(raw)}", "text_sha256": digest,
+        }],
+    }
+    record["manifest_id"] = manifest_id_for(record)
+    return record
+
+
+def test_ex107_table_1_yields_security_rows_and_exactly_one_total_under_1_2_0():
+    assert len(EX107_FIXTURES) == 6
+    for path in EX107_FIXTURES:
+        raw = path.read_bytes()
+        accession = _ex107_identity(raw)[0]
+        manifest = _ex107_manifest(raw)
+        result = compile_document_term_records(
+            [manifest], source_reader=_reader(raw), generated_at="2026-08-03T00:00:00Z",
+        )
+        rows = result["observations"]
+        _schema_validate(rows)
+        totals = [
+            row for row in rows
+            if row["term"]["scope"] == "registration_fee_table_total"
+        ]
+        if accession in EX107_QUOTED_TOTALS:
+            _, cell, expected, security_aggregates = EX107_QUOTED_TOTALS[accession]
+            assert len(totals) == 1, path.name
+            total = totals[0]
+            assert total["term"]["name"] == "proposed_maximum_aggregate_offering_price"
+            assert total["term"]["term_type"] == "amount"
+            assert total["reported"]["raw_text"] == cell
+            assert total["reported"]["value"] == expected
+            assert total["normalized"]["value"] == expected
+            assert total["reported"]["unit"] == "USD"
+            assert total["reported"]["currency"] == "USD"
+            assert total["reported"]["scale"] == "1"
+            assert total["state"] == {
+                "disposition": "observed", "reason": "direct_table_value",
+            }
+            assert total["security"]["title_raw"] == "Total Offering Amounts:"
+            span_roles = [span["locator"] for span in total["evidence"]["spans"]]
+            assert any("role=proposed_maximum_aggregate_offering_price" in item for item in span_roles)
+            assert any("role=security_title" in item for item in span_roles)
+            aggregates = [
+                row for row in rows
+                if row["term"]["name"] == "proposed_maximum_aggregate_offering_price"
+                and row["term"]["scope"] == "registration_fee_table_row"
+                and row["state"]["disposition"] == "observed"
+            ]
+            assert len(aggregates) == security_aggregates, path.name
+            for row in rows:
+                assert row["extraction"]["parser_version"] == (
+                    "capital-structure-document-terms/1.2.0"
+                )
+        else:
+            # The committed S-3ASR whose totals live in a separate header-less
+            # table: the detected fee table has no total row at all.
+            assert accession == "0000097216-26-000127", path.name
+            assert totals == [], path.name
+            assert any(
+                row["term"]["scope"] == "registration_fee_table_row"
+                and row["state"]["disposition"] == "observed"
+                for row in rows
+            ), path.name
+
+
+def test_ex107_fixtures_still_refuse_under_the_released_1_1_0_parser():
+    for path in EX107_FIXTURES:
+        raw = path.read_bytes()
+        manifest = _ex107_manifest(raw)
+        rows = document_terms._records_for_manifest(
+            manifest, raw, parser_version="capital-structure-document-terms/1.1.0",
+        )
+        assert len(rows) == len(document_terms.TERM_NAMES), path.name
+        for row in rows:
+            assert row["state"] == {
+                "disposition": "ambiguous", "reason": "duplicate_header_mapping",
+            }, path.name
+            assert row["term"]["scope"] == "registration_fee_table_row"
+            assert row["extraction"]["parser_version"] == (
+                "capital-structure-document-terms/1.1.0"
+            )
+
+
+def _ex107_table_html(header_cells: bytes, body_rows: bytes) -> bytes:
+    envelope = b"""<SEC-DOCUMENT>0000000001-26-000001.txt
+<SEC-HEADER>0000000001-26-000001.hdr.sgml : 20260801
+<ACCEPTANCE-DATETIME>20260801112314
+ACCESSION NUMBER:\t\t0000000001-26-000001
+CONFORMED SUBMISSION TYPE:\tS-3
+PUBLIC DOCUMENT COUNT:\t\t1
+FILED AS OF DATE:\t\t20260801
+
+FILER:
+
+\tCOMPANY DATA:\t
+\t\tCOMPANY CONFORMED NAME:\t\t\tABC Corp
+\t\tCENTRAL INDEX KEY:\t\t\t0000000001
+
+\tFILING VALUES:
+\t\tFORM TYPE:\tS-3
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>EX-FILING FEES
+<SEQUENCE>1
+<FILENAME>ex107.htm
+<TEXT>
+<html><body><table>%s%s</table></body></html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+"""
+    return envelope % (header_cells, body_rows)
+
+
+_EX107_HEADER = (
+    "<tr><td>Security Type</td><td>Security Class Title</td>"
+    "<td>Proposed Maximum Offering Price Per Unit</td>"
+    "<td>Maximum Aggregate Offering Price</td><td>Fee Rate</td>"
+    "<td>Amount of Registration Fee</td></tr>"
+)
+
+
+def test_ex107_two_genuine_title_columns_stay_duplicate_header_mapping():
+    header = (
+        "<tr><td>Security Class Title</td><td>Security Class Title</td>"
+        "<td>Proposed Maximum Offering Price Per Unit</td>"
+        "<td>Maximum Aggregate Offering Price</td><td>Fee Rate</td>"
+        "<td>Amount of Registration Fee</td></tr>"
+    )
+    body = (
+        "<tr><td>Common Stock</td><td>Class A Common Stock</td>"
+        "<td>$10.00</td><td>$ 5,000,000.00</td><td>0.0001381</td><td>$ 690.50</td></tr>"
+    )
+    raw = _ex107_table_html(header.encode(), body.encode())
+    manifest = _manifest(raw)
+    rows = document_terms._records_for_manifest(manifest, raw, parser_version=None)
+    assert rows == document_terms._records_for_manifest_v1_2_0(
+        manifest, raw, document_terms.PARSER_VERSION,
+    )
+    assert len(rows) == len(document_terms.TERM_NAMES)
+    for row in rows:
+        assert row["state"] == {
+            "disposition": "ambiguous", "reason": "duplicate_header_mapping",
+        }
+
+
+def test_ex107_security_type_column_alone_never_blocks_the_table():
+    body = (
+        "<tr><td>Fees to be Paid</td><td>Common Stock, par value $0.01</td>"
+        "<td>$10.00</td><td>$ 5,000,000.00</td><td>0.0001381</td><td>$ 690.50</td></tr>"
+        "<tr><td colspan=\"3\">Total Offering Amounts:</td>"
+        "<td>$ 5,000,000.00</td><td></td><td></td></tr>"
+        "<tr><td colspan=\"6\">Total Fees Previously Paid:</td></tr>"
+        "<tr><td colspan=\"6\">Total Fee Offsets:</td></tr>"
+        "<tr><td colspan=\"6\">Net Fee Due:</td></tr>"
+    )
+    raw = _ex107_table_html(_EX107_HEADER.encode(), body.encode())
+    manifest = _manifest(raw)
+    rows = document_terms._records_for_manifest_v1_2_0(
+        manifest, raw, document_terms.PARSER_VERSION,
+    )
+    aggregates = [
+        row for row in rows
+        if row["term"]["name"] == "proposed_maximum_aggregate_offering_price"
+    ]
+    # One security row of five terms plus exactly one total row.
+    assert len(rows) == len(document_terms.TERM_NAMES) + 1
+    assert [row["term"]["scope"] for row in aggregates] == [
+        "registration_fee_table_row", "registration_fee_table_total",
+    ]
+    security_row, total_row = aggregates
+    assert security_row["state"] == {
+        "disposition": "observed", "reason": "direct_table_value",
+    }
+    assert security_row["reported"]["value"] == "5000000"
+    assert security_row["security"]["title_raw"] == "Common Stock, par value $0.01"
+    assert total_row["state"] == {
+        "disposition": "observed", "reason": "direct_table_value",
+    }
+    assert total_row["reported"]["raw_text"] == "$ 5,000,000.00"
+    assert total_row["reported"]["value"] == "5000000"
+    assert total_row["security"]["title_raw"] == "Total Offering Amounts:"
+    # The other summary rows produce no observation at all, under any label.
+    titles = {row["security"]["title_normalized"] for row in rows}
+    assert "net fee due" not in titles
+    assert "total fees previously paid" not in titles
+    assert "total fee offsets" not in titles
+
+
+def test_ex107_blank_total_cell_is_unavailable_never_a_guess():
+    body = (
+        "<tr><td>Fees to be Paid</td><td>Common Stock</td>"
+        "<td>$10.00</td><td>$ 5,000,000.00</td><td>0.0001381</td><td>$ 690.50</td></tr>"
+        "<tr><td colspan=\"6\">Total Offering Amounts:</td></tr>"
+    )
+    raw = _ex107_table_html(_EX107_HEADER.encode(), body.encode())
+    manifest = _manifest(raw)
+    rows = document_terms._records_for_manifest_v1_2_0(
+        manifest, raw, document_terms.PARSER_VERSION,
+    )
+    totals = [
+        row for row in rows if row["term"]["scope"] == "registration_fee_table_total"
+    ]
+    assert len(totals) == 1
+    assert totals[0]["state"] == {
+        "disposition": "unavailable", "reason": "header_without_direct_value",
+    }
+    assert totals[0]["reported"] == document_terms._empty_value()
+    assert totals[0]["security"]["title_raw"] == "Total Offering Amounts:"
+
+
+def test_ex107_total_row_split_currency_cells_stay_inside_the_header_span():
+    header = (
+        "<tr><td>Security Type</td><td>Security Class Title</td>"
+        "<td colspan=\"2\">Maximum Aggregate Offering Price</td>"
+        "<td>Amount of Registration Fee</td><td>Fee Rate</td>"
+        "<td>Proposed Maximum Offering Price Per Unit</td></tr>"
+    )
+    body = (
+        "<tr><td>Fees to be Paid</td><td>Common Stock</td>"
+        "<td>$</td><td>2,750,000.00</td><td>$ 379.53</td><td>0.0001381</td><td></td></tr>"
+        "<tr><td colspan=\"2\">Total Offering Amounts:</td>"
+        "<td>$</td><td>2,750,000.00</td><td></td><td></td><td></td></tr>"
+    )
+    raw = _ex107_table_html(header.encode(), body.encode())
+    manifest = _manifest(raw)
+    rows = document_terms._records_for_manifest_v1_2_0(
+        manifest, raw, document_terms.PARSER_VERSION,
+    )
+    totals = [
+        row for row in rows if row["term"]["scope"] == "registration_fee_table_total"
+    ]
+    assert len(totals) == 1
+    assert totals[0]["state"] == {
+        "disposition": "observed", "reason": "direct_table_value",
+    }
+    assert totals[0]["reported"]["raw_text"] == "2,750,000.00"
+    assert totals[0]["reported"]["value"] == "2750000"
