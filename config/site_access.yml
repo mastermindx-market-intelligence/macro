@@ -318,6 +318,8 @@ public:
     - /risk_envelope_live.js
     - /china_risk_state_live.js
     - /release_publications_live.js
+    - /macro_news_intelligence.css
+    - /macro_news_intelligence.js
     - /heatmap.js
     - /stocktable.js
     - /globe-deck.js
@@ -772,3 +774,4 @@ premium:
       # API. Lock the whole static estate so a guessed direct URL cannot bypass
       # the Capital Structure desk entitlement boundary.
       - /capital-structure-data/
+

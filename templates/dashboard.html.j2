@@ -301,6 +301,8 @@
 {% include "_seo_head.html.j2" %}
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="macro_news_intelligence.css">
+<script defer src="macro_news_intelligence.js"></script>
 {% if mode != 'stocks' %}{% include "_lazy_heatmap_loader.html.j2" %}{% endif %}
 {# UD-B1 R-L (BLOCKER-1): at ≤640px, remove the server-rendered `open` attribute on
    .ud-watch-details so the <summary> disclosure row takes over (CSS cannot override
@@ -14453,138 +14455,16 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     </div>
   </div>
 
-  {# dlg-news: Alerts + market intelligence #}
-  <div class="mx5-dlg" id="dlg-news" role="dialog" aria-modal="true" tabindex="-1">
+  {# dlg-news: Existing alert and headline owners, News-only briefing presentation #}
+  <div class="mx5-dlg" id="dlg-news" role="dialog" aria-labelledby="ni-dialog-title" aria-modal="true" tabindex="-1">
     <div class="mx5-dlg-backdrop" onclick="mx5CloseDlg()"></div>
     <div class="mx5-dlg-panel">
       <div class="mx5-dlg-header">
-        <span class="mx5-dlg-title"><span class="l-en">News — Market Intelligence</span><span class="l-zh">新闻 — 市场情报</span></span>
+        <span class="mx5-dlg-title" id="ni-dialog-title"><span class="l-en">News — Market Intelligence</span><span class="l-zh">新闻 — 市场情报</span></span>
         <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
       </div>
       <div class="mx5-dlg-body">
-        {# All fired alerts — grouped by conviction tier: act+watch (Priority) then context.
-           Dislocation is in `_nalerts` so it must be a countable row here (one-population). #}
-        {% set _dlg_dislo = (latest is defined and latest and latest.dislocation and latest.dislocation.dislocation_active) %}
-        {% if alerts or _dlg_dislo %}
-        {% set _dlg_alv5_all = alerts if alerts else [] %}
-        {# Same partition as the face: event_risk (engine-tiered context = no edge claim) is
-           time-critical calendar fact and sits with Priority; its chip says "Event", honest #}
-        {% set _dlg_alv5_prio = (_dlg_alv5_all | selectattr('tier','in',('act','watch')) | list) + (_dlg_alv5_all | selectattr('tier','equalto','context') | selectattr('rule','equalto','event_risk') | list) + (_dlg_alv5_all | rejectattr('tier','defined') | list) %}
-        {% set _dlg_alv5_ctx  = _dlg_alv5_all | selectattr('tier','equalto','context') | rejectattr('rule','equalto','event_risk') | list %}
-        <div class="isle-head"><div class="isle-head-dot"></div><span class="isle-head-label"><span class="l-en">Priority</span><span class="l-zh">优先</span></span><div class="isle-head-line"></div></div>
-        {% if _dlg_dislo or _dlg_alv5_prio %}
-        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
-          {% if _dlg_dislo %}
-          {% set _dlg_dl = latest.dislocation %}
-          {% set _dlg_dl_unknown = ((_dlg_dl.put_state is defined and _dlg_dl.put_state == 'unknown')
-                                    or (_dlg_dl.put_state_reliable is defined and not _dlg_dl.put_state_reliable)
-                                    or (_dlg_dl.fed_put is defined and _dlg_dl.fed_put is none)) %}
-          {% set _dlg_dl_dissent = ((_dlg_dl.geo_reversibility and _dlg_dl.geo_reversibility.agreement != 'corroborates')
-                                    or (_dlg_dl.catalyst_narrative and _dlg_dl.catalyst_narrative.agreement != 'corroborates')) %}
-          <div data-al-row class="mx5-alert-item info">
-            <div class="mx5-alert-dot info"></div>
-            <div class="mx5-alert-content">
-              <div class="mx5-alert-title">
-                <span class="mx5-alert-k"><span class="l-en">Tape</span><span class="l-zh">盘面</span></span>
-                <span class="l-en">Selling has turned stressed</span><span class="l-zh">抛售已转为压力状态</span>
-              </div>
-              <div class="mx5-alert-detail">{% if _dlg_dl_unknown %}<span class="l-en">We cannot read whether the Fed would step in today, so no call is made. Watch — don’t chase.</span><span class="l-zh">今日无法判读美联储是否会出手，因此不作判定。观察 — 不要追。</span>{% elif _dlg_dl.verdict == 'buyable_washout' %}<span class="l-en">The Fed’s backstop still reads intact, so damage like this has usually stayed shallower. Wait for the market to steady — don’t try to catch it.</span><span class="l-zh">美联储托底仍在位，此类下跌历史上通常跌幅更浅。等待市场企稳 — 不要接飞刀。</span>{% elif _dlg_dl.verdict == 'stand_aside' %}<span class="l-en">The Fed’s backstop is not there. This is the setup that kept falling through 2008 — stand aside.</span><span class="l-zh">美联储托底缺失。这正是 2008 年一路下跌的情形 — 观望。</span>{% else %}<span class="l-en">Nothing to do until it steadies. Watch — don’t chase.</span><span class="l-zh">企稳前无需行动。观察 — 不要追。</span>{% endif %}{% if _dlg_dl_dissent %} <span class="l-en">Not everything agrees — the reasons are on the signal board.</span><span class="l-zh">并非所有指标一致 — 详见信号看板。</span>{% endif %}</div>
-            </div>
-          </div>
-          {% endif %}
-          {% for a in _dlg_alv5_prio %}
-          {% set _asev2 = 'warn' if a.severity in ('warn','high','critical') else 'info' %}
-          {% set _atier = a.tier if (a.tier is defined and a.tier) else 'watch' %}
-          <div data-al-row>
-          <div style="display:flex;gap:10px;padding:12px;background:{{ 'rgba(245,158,11,.06)' if _asev2=='warn' else 'rgba(255,255,255,.03)' }};border-radius:10px;border:1px solid {{ 'rgba(245,158,11,.18)' if _asev2=='warn' else 'rgba(255,255,255,.06)' }}">
-            <div style="width:8px;height:8px;border-radius:50%;background:{{ 'var(--mx5-warn)' if _asev2=='warn' else 'var(--ink-3,rgba(255,255,255,.36))' }};flex-shrink:0;margin-top:5px"></div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px">
-                <div style="font-size:13px;font-weight:600;color:{{ 'var(--mx5-warn)' if _asev2=='warn' else 'var(--ink-1,rgba(255,255,255,.92))' }}">
-                  {% if a.icon %}<span style="font-size:12px;margin-right:3px">{{ a.icon }}</span>{% endif %}
-                  <span class="l-en">{{ a.plain_en }}</span><span class="l-zh">{{ a.plain_zh or a.plain_en }}</span>
-                </div>
-                {# Tier chip #}
-                {% if a.rule is defined and a.rule == 'event_risk' %}
-                <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:rgba(245,158,11,.12);color:var(--mx5-warn-ink,#9c6212);border:1px solid rgba(245,158,11,.22);white-space:nowrap"><span class="l-en">Event</span><span class="l-zh">事件</span></span>
-                {% elif _atier == 'act' %}
-                <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.25);white-space:nowrap"><span class="l-en">Act</span><span class="l-zh">行动</span></span>
-                {% elif _atier == 'watch' %}
-                <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:rgba(245,158,11,.12);color:var(--mx5-warn-ink,#9c6212);border:1px solid rgba(245,158,11,.22);white-space:nowrap"><span class="l-en">Watch</span><span class="l-zh">关注</span></span>
-                {% endif %}
-              </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5"><span class="l-en">{{ a.message }}</span><span class="l-zh">{{ a.message_zh or a.message }}</span></div>
-              {% if a.what_en %}
-              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">{{ a.what_en }}</span><span class="l-zh">{{ a.what_zh or a.what_en }}</span></div>
-              {% endif %}
-            </div>
-          </div>
-          </div>
-          {% endfor %}
-        </div>
-        {% else %}
-        <div style="font-size:12px;color:var(--ink-3,rgba(255,255,255,.4));margin-bottom:16px;padding:10px 0">
-          <span class="l-en">No priority alerts firing right now.</span><span class="l-zh">当前无优先警报触发。</span>
-        </div>
-        {% endif %}
-        {# Context tier — dimmer, distinct section #}
-        {% if _dlg_alv5_ctx %}
-        <div class="isle-head"><div class="isle-head-dot"></div><span class="isle-head-label"><span class="l-en">Context</span><span class="l-zh">背景</span></span><div class="isle-head-line"></div></div>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;opacity:.8">
-          {% for a in _dlg_alv5_ctx %}
-          <div data-al-row>
-          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
-            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
-                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
-                  {% if a.icon %}<span style="font-size:11px;margin-right:3px">{{ a.icon }}</span>{% endif %}
-                  <span class="l-en">{{ a.plain_en }}</span><span class="l-zh">{{ a.plain_zh or a.plain_en }}</span>
-                </div>
-                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
-              </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">{{ a.message }}</span><span class="l-zh">{{ a.message_zh or a.message }}</span></div>
-              {% if a.what_en %}
-              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">{{ a.what_en }}</span><span class="l-zh">{{ a.what_zh or a.what_en }}</span></div>
-              {% endif %}
-            </div>
-          </div>
-          </div>
-          {% endfor %}
-        </div>
-        {% endif %}
-        {% endif %}
-        {# Headlines #}
-        {% if macro_news and macro_news.headlines %}
-        <div class="isle-head"><div class="isle-head-dot"></div><span class="isle-head-label"><span class="l-en">Market Intelligence</span><span class="l-zh">市场情报</span></span><div class="isle-head-line"></div></div>
-        {% set _dlg_TL_nb = {'monetary':['Fed','美联储'],'inflation':['Inflation','通胀'],'labor':['Labor','就业'],'growth':['Growth','增长'],'credit':['Rates','利率'],'fiscal':['Fiscal','财政'],'earnings':['Earnings','业绩'],'guidance':['Guidance','指引'],'analyst':['Analysts','分析师'],'deals':['Deals','并购/IPO'],'capital_return':['Buybacks','回购/分红'],'stocks':['Stocks','个股'],'macro':['Macro','宏观']} %}
-        <div class="nbx-list">
-          {% for h in macro_news.headlines[:10] %}
-          {% set _dlg_tl = _dlg_TL_nb.get(h.theme, [h.theme, h.theme]) %}
-          {# short date from ISO seendate (YYYY-MM-DD…) → "Jul 21"; guarded #}
-          {% set _hd = h.seendate if (h.seendate is defined and h.seendate) else '' %}
-          {% set _hd_lbl = (_mos2[_hd[5:7]|int] ~ ' ' ~ (_hd[8:10]|int)) if (_hd and _hd[5:7]|int > 0) else '' %}
-          <a class="nbx-item" href="{{ h.url }}" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme">{{ t(_dlg_tl[0], _dlg_tl[1]) }}</span>
-              <span class="nbx-title"><span class="l-en">{{ h.title }}</span><span class="l-zh">{{ h.title_zh or h.title }}</span></span>
-            </div>
-            <div class="nbx-meta">
-              {% if h.source is defined and h.source %}<span class="nbx-src">{{ h.source }}</span>{% endif %}
-              {% if (h.source is defined and h.source) and _hd_lbl %}<span class="nbx-dot">·</span>{% endif %}
-              {% if _hd_lbl %}<span class="nbx-date">{{ _hd_lbl }}</span>{% endif %}
-              <span class="nbx-arrow">{{ t('Read','阅读') }} →</span>
-            </div>
-            {% if h.summary is defined and h.summary %}
-            <div class="nbx-sum"><span class="l-en">{{ h.summary }}</span><span class="l-zh">{{ h.summary_zh or h.summary }}</span></div>
-            {% endif %}
-          </a>
-          {% endfor %}
-        </div>
-        {% endif %}
-        <div style="margin-top:16px;text-align:center">
-          <a href="news.html" style="color:var(--ink-link, var(--link));font-weight:700;font-size:13px">{{ t('Open the full news feed →','打开完整新闻流 →') }}</a>
-        </div>
+        {% include '_macro_news_intelligence.html.j2' %}
       </div>
     </div>
   </div>
@@ -15408,10 +15288,16 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       }
       /* Close any open scorecard popovers first */
       if(window.mx5CloseAllPopovers) window.mx5CloseAllPopovers();
+      /* Keep the page opener while following links between dialog surfaces. */
+      var closingSource = document.activeElement && document.activeElement.closest('.mx5-dlg-closing');
+      var openingTrigger = _dlgActive ? _dlgTrigger :
+        ((closingSource && closingSource._returnFocus) || document.activeElement);
       /* Switching dialogs: tear the previous one down instantly (no lingering animation). */
       if(_dlgActive){ _dlgTeardown(_dlgActive, false); _dlgActive = null; }
       var dlg = document.getElementById(id);
       if(!dlg) return;
+      /* Reopening during the close transition must cancel its old teardown. */
+      if(dlg._closeTimer || dlg._endH) _dlgTeardown(dlg, false);
       /* One-time hydration happens ONLY after the existing registration gate.
          This keeps the sentiment panel out of the cold DOM; it preserves
          server-rendered metrics and delegated [data-rpop] handlers. */
@@ -15435,7 +15321,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           window.dispatchEvent(new Event('resize'));
         }
       }
-      _dlgTrigger = document.activeElement;
+      _dlgTrigger = openingTrigger;
       _dlgActive = dlg;
       dlg.classList.remove('mx5-dlg-closing');
       /* 1) make it displayed (start state painted) */
@@ -15484,7 +15370,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       var bd = dlg.querySelector('.mx5-dlg-backdrop');
       if(bd && bd._clickH){ bd.removeEventListener('click', bd._clickH); delete bd._clickH; }
       var trig = _dlgTrigger; _dlgTrigger = null;
-      var refocus = function(){ if(trig && typeof trig.focus === 'function') trig.focus(); };
+      dlg._returnFocus = trig;
+      var refocus = function(){ if(!_dlgActive && trig && typeof trig.focus === 'function') trig.focus(); };
       if(_prefReduced()){
         _dlgTeardown(dlg, false); refocus(); return;
       }
@@ -21595,3 +21482,4 @@ if (document.readyState === 'loading') {
 </footer>
 </body>
 </html>
+

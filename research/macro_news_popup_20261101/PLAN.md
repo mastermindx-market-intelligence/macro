@@ -37,10 +37,10 @@ Expected source: existing `templates/dashboard.html.j2` News-only section, extra
 | ID | Dependency | Objective and acceptance | Editorial label |
 |---|---|---|---|
 | N1 | — | Freeze actual source/data/modal boundaries and collision census; inspect screenshot and existing program. | implementation_complete |
-| N2 | N1 | Build and screenshot-review production-shaped light/dark responsive design; keep shared semantics and full evidence accessible. | in_progress |
-| N3 | N2 | Implement the approved News-only presentation and resilient progressive enhancement in the existing consumer. | proposed |
-| N4 | N1 | Reproduce publication age/identity defects and apply only verified, nonconflicting fixes to incumbent updater. | proposed |
-| N5 | N3,N4 | Targeted adversarial tests, actual browser journey and visual matrix; independent source/design review and bounded repair. | proposed |
+| N2 | N1 | Build and screenshot-review production-shaped light/dark responsive design; keep shared semantics and full evidence accessible. | implementation_complete |
+| N3 | N2 | Implement the approved News-only presentation and resilient progressive enhancement in the existing consumer. | implementation_complete |
+| N4 | N1 | Reproduce publication age/identity defects and apply only verified, nonconflicting fixes to incumbent updater. | implementation_complete |
+| N5 | N3,N4 | Targeted adversarial tests, actual browser journey and visual matrix; independent source/design review and bounded repair. | in_progress |
 | N6 | N5 | Publish exact candidate, satisfy lawful review/CI/release gates, and verify actual served consumer. | proposed |
 
 ## Current source findings and falsifiers
@@ -56,3 +56,8 @@ Historical #7879 polling candidate and accepted unchanged evidence should be reu
 Evidence is attached at exact candidate revisions. This plan is repository source evidence, not a runtime Job or Agent OS wave. No new workstream is invented. Existing organizational association is #7879; no verified popup-specific Agent OS mapping has been established, so PLAN_NOT_ORG_LINKED is explicit.
 
 No merge, deploy, publication service change, credentials or independent review approval is authorized by this document itself. Current Chairman intent and existing repository/release controls govern each next action.
+
+## Implementation checkpoint — November 2, 2026
+
+N2/N3/N4 source implementation is complete and under verification. Detailed behavior, reproduced failures, passing checks and unproven gates are recorded in VALIDATION.md. Canonical isolated workspace acquired at `/Volumes/Mastermind/agent-workspaces/macro/web/news-intelligence-popup-20261101-c2`; sparse data/site materialization uses the incumbent repository helper. No shared primary checkout or held R2 branch was modified.
+
