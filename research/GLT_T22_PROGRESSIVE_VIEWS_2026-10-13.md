@@ -1,7 +1,8 @@
 # GLT T22 — progressive views on the liquidity and central banks workspace (2026-10-13 program, built 2026-11-02)
 
 Program: Global Liquidity Transmission (GLT), task T22. Seat 10c41bc9; orchestrator ORCH-M.
-Result head: see the PR body. Code commits: M1 `c8f1f862` (composer) and M2r `d2cdcf4a` (projection, labels, presenter, tests), parent base `f50fc7b7`.
+Result head: see the PR body. Code commits: M1 `c8f1f862` (composer), M2r `d2cdcf4a` (projection, labels, presenter, tests) and M5r `59ae8f77`
+(producer unchanged-gate repair), on base `f50fc7b7` with origin/main `b394a98b` merged in at `572b2dc3`.
 
 ## What T22 adds
 
@@ -17,7 +18,7 @@ Below T21's Now view, the existing `liquidity_central_banks` workspace now carri
 
 Every row is an upstream-qualified read-model field. It carries its estimate type or disposition label and its clocks (`published_at`, `as_of`, `known_at`, `corrected_at` where they apply). The composer and the presenter format and select; neither computes a shock, response, confidence, gap, time-to-reprice or forecast. The views have no rank, size, trade, alert or posture authority.
 
-## Field → render chain (grep receipt per hop, at `d2cdcf4a`)
+## Field → render chain (grep receipt per hop, at `59ae8f77`)
 
 1. **Composer (pure, I/O-free).** `engine/global_liquidity_views.py`:
    - L25 `VIEW_VERSION = "glt_views_v1"`;
@@ -26,11 +27,16 @@ Every row is an upstream-qualified read-model field. It carries its estimate typ
    - L815 `def _replay(history_records: Any, day: date) -> dict:`;
    - L633 `"reason_key": "science_results_not_published_to_product_plane",`.
 2. **Producer attach (additive key only).** `scripts/build_global_liquidity_transmission.py`:
-   - L25–26 `from engine.global_liquidity_views import ( compose_views,`;
-   - L179 `views = compose_views(payload, None, t09, None, as_of=asof, outlook_inputs={"probe": probe})`;
-   - L199 `payload["views"] = _compose_views(payload)`.
+   - L25–27 `from engine.global_liquidity_views import ( VIEW_VERSION, compose_views,`;
+   - L180 `views = compose_views(payload, None, t09, None, as_of=asof, outlook_inputs={"probe": probe})`;
+   - L200 `payload["views"] = _compose_views(payload)`;
+   - L247 `if trusted and prev_asof == new_asof and prev_hash == new_hash and views_current:`.
 
-   A compose failure yields `views_compose_failed` and prints nothing.
+   A compose failure yields `views_compose_failed` and prints nothing. The unchanged gate also requires the stored
+   `views.view_version` to equal `VIEW_VERSION`: a stored contract without the current views block (a pre-T22 nightly
+   artifact) is rewritten once with its first-known clocks kept, and the next identical run writes nothing again.
+   Tests: `test_t22_producer_rewrites_views_less_artifact_once`, `test_t22_producer_current_views_artifact_stays_unchanged`;
+   the T23 idempotency tests pass unmodified.
 3. **Workspace projection.** `engine/market_os/macro_workspaces/liquidity_central_banks.py`:
    - L616 `"metrics": {"items": metrics + _glt_view_rows(g, glt_asof, glt_repr_fresh)},`;
    - L1431 `_GLT_VIEW_FAMILIES = (`;
@@ -116,8 +122,15 @@ LIGHT TREATMENT: existing tokens and components; no new material decisions.
 - The H.4.1 Table 5 loader is missing, so live K1 is `data_degraded`.
 - No issue ledger exists, so live replay is `no_history`.
 - Replay records declare no unit.
-- The views appear on the producer's next nightly run.
+- The views appear on the producer's next nightly run, which rewrites the stored pre-T22 contract once.
+- The unchanged gate checks the views version, not the views content: on a night with the same as-of and source hash,
+  a change in T09 or the H.4.1 probe alone does not refresh the stored views (a failed views block is kept the same way).
 
 ## Review
 
 A non-author review on 2026-11-02 found 0 blockers, 0 majors and 1 minor. With the T22 presenter and label code reverted, all 17 T22 audit, C37–C39 and journey tests fail, so none of them pass vacuously. The minor finding: the page now shows owner-describing copy, "Owner: the liquidity research lab." and "Owner: the global-liquidity desk." That copy stays. The K8 rule asks for named owners, and the internal owner identifier never renders.
+
+The first render-proof run failed: the producer kept a stored pre-T22 contract unchanged, so the page showed no views.
+M5r added the version check to the unchanged gate. The orchestrator, who did not write it, checked the change by
+artifact: red first, then green, with two mutations each caught by the new tests.
+The render-proof run 3 (M3c, glm-5.3-flash on ubuntu0, full-data tree at `59ae8f77`) passed: 72 matrix frames, 5 focus shots, the 320 no-overflow assertion, all checkers rc 0 and 0 forbidden words. The producer's head-vs-base wall time on that host was +0 %. Against the T23 BEFORE receipt from another host it was +13.6 %, and base on the same host shows the same rise.
