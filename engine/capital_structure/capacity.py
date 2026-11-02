@@ -1554,12 +1554,23 @@ class _Builder:
         # as unreadable), so a later amendment this evaluator cannot read
         # still makes the earlier amount stale.  An amendment with no fee
         # table at all emits no row and never displaces the original's amount.
+        # Every fee-table row of a filing is counted whatever its disposition,
+        # currency or scale, and a contradiction on any of them marks the
+        # filing contradicted: a row this evaluator cannot read is still part
+        # of the table, so a lone readable row beside it is never the total.
         unobserved_totals: Counter[str] = Counter()
+        table_rows: Counter[str] = Counter()
+        contradicted: set[str] = set()
         stated: list[tuple[str, datetime | None]] = []
         for observation in self.read.fee_rows:  # type: ignore[union-attr]
             body = observation.body
             if _text(_nested(body, "term", "name")) != FEE_TABLE_TERM_NAME:
                 continue
+            on_path = _text(_nested(body, "filing", "accession"))
+            if on_path is not None and on_path in path.accessions:
+                table_rows[on_path] += 1
+                if _sequence(_nested(body, "relationships", "contradiction_ids")):
+                    contradicted.add(on_path)
             if _text(_nested(body, "state", "disposition")) != "observed":
                 if _text(_nested(body, "term", "scope")) == "registration_fee_table_total":
                     unobserved = _text(_nested(body, "filing", "accession"))
@@ -1638,29 +1649,29 @@ class _Builder:
                 )
             accession = leaders[0]
         group = [item for item in rows if item[1] == accession]
+        if accession in contradicted:
+            # SPEC_C1 §5: a contradicted fee table is reported as contradicted,
+            # never as merely unknown and never as a known amount -- even when
+            # the contradicted row is one this evaluator cannot read.
+            return missing(
+                f"the fee-table rows of {accession} carry a contradiction",
+                blockers=(f"fee_table_contradicted:{accession}",),
+                status="contradicted",
+            )
         if not group and not unobserved_totals[accession]:
             return missing(
                 f"the fee-table rows of {accession} are not stated in whole US dollars, "
                 "so the latest filing's amount cannot be read",
                 blockers=(f"fee_table_value_unusable:{accession}",),
             )
-        contradicted = any(
-            _sequence(_nested(item[0].body, "relationships", "contradiction_ids")) for item in group
-        )
-        if contradicted:
-            # SPEC_C1 §5: a contradicted fee table is reported as contradicted,
-            # never as merely unknown and never as a known amount.
-            return missing(
-                f"the fee-table rows of {accession} carry a contradiction",
-                blockers=(f"fee_table_contradicted:{accession}",),
-                status="contradicted",
-            )
         # SPEC_C2 §5: the filing's own "Total Offering Amounts" row is the
         # registered amount.  When the latest accession carries exactly one
         # such total-scoped row, its value -- with its provenance and span
         # evidence -- wins over the per-security rows, which are never summed.
-        # Two total rows (agreeing or not) cannot pick an amount, and with no
-        # total row the single security-row rule is unchanged.
+        # Two total rows (agreeing or not) cannot pick an amount.  With no
+        # total row a security row is the amount only when it is the filing's
+        # ONLY fee-table row: a sibling row in another currency or scale, or
+        # one the compiler could not observe, leaves the amount unknown.
         total_rows = [
             item
             for item in group
@@ -1674,13 +1685,14 @@ class _Builder:
             )
         if len(total_rows) == 1 and not unobserved_totals[accession]:
             chosen = total_rows
-        elif total_rows:
+        elif total_rows or table_rows[accession] != len(group):
             chosen = []
         else:
             chosen = list(group)
         if not chosen or len(chosen) > 1:
             return missing(
-                f"{len(group)} fee-table rows in {accession} disagree about the registered amount",
+                f"{table_rows[accession]} fee-table rows in {accession} cannot name one "
+                "registered amount",
                 blockers=(f"fee_table_multi_row:{accession}",),
             )
         refs = _unique_refs(

@@ -2215,3 +2215,83 @@ def test_u1c_an_earlier_filing_in_another_currency_does_not_block_a_later_dollar
     assert path["registered_amount"]["status"] == "known"
     assert path["registered_amount"]["value"] == "30000000"
     assert path["fee_table_accession"] == ACC_A2
+
+
+def test_u1c_a_dollar_row_beside_a_row_in_another_currency_is_not_the_total() -> None:
+    # The amendment's table has two security rows, one in dollars and one in
+    # euros.  The dollar row is only part of the table, never its total.
+    stamp = f"{shift(SALE, 20)}T21:00:00Z"
+    reg, shares = _amended_registration(stamp)
+    reg.append(
+        fee_row(ACC_A2, "5000000", available_at=stamp, observation_id="doc:amend-eur", currency="EUR")
+    )
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "unknown"
+    assert path["registered_amount"]["value"] is None
+    assert f"fee_table_multi_row:{ACC_A2}" in evaluation.envelope.blockers
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+
+
+def test_u1c_a_dollar_row_beside_an_unreadable_row_is_not_the_total() -> None:
+    stamp = f"{shift(SALE, 20)}T21:00:00Z"
+    reg, shares = _amended_registration(stamp)
+    reg.append(
+        fee_row(ACC_A2, None, available_at=stamp, observation_id="doc:amend-amb", disposition="ambiguous")
+    )
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "unknown"
+    assert path["registered_amount"]["value"] is None
+    assert f"fee_table_multi_row:{ACC_A2}" in evaluation.envelope.blockers
+
+
+def test_u1c_a_contradicted_row_in_another_currency_is_reported_contradicted() -> None:
+    # SPEC_C1 §5: the latest filing's only row is in euros AND contradicted.
+    # The contradiction is reported, not hidden behind "unusable".
+    reg, shares = _amended_registration(f"{shift(SALE, 20)}T21:00:00Z")
+    amendment = _row_by_id(reg, "doc:amend")
+    amendment["normalized"] = {**amendment["normalized"], "currency": "EUR"}
+    amendment["relationships"] = {
+        **amendment["relationships"], "contradiction_ids": ["contradiction:cs:" + "8" * 24],
+    }
+    evaluation = _zero_usage_evaluation(reg, shares)
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "contradicted"
+    assert registered["value"] is None
+    assert f"fee_table_contradicted:{ACC_A2}" in evaluation.envelope.blockers
+    assert f"fee_table_value_unusable:{ACC_A2}" not in evaluation.envelope.blockers
+
+
+def test_u1c_a_contradicted_unreadable_sibling_is_reported_contradicted() -> None:
+    stamp = f"{shift(SALE, 20)}T21:00:00Z"
+    reg, shares = _amended_registration(stamp)
+    reg.append(
+        fee_row(
+            ACC_A2, None, available_at=stamp, observation_id="doc:amend-amb", disposition="ambiguous",
+            contradiction_ids=["contradiction:cs:" + "7" * 24],
+        )
+    )
+    evaluation = _zero_usage_evaluation(reg, shares)
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "contradicted"
+    assert f"fee_table_contradicted:{ACC_A2}" in evaluation.envelope.blockers
+    assert f"fee_table_multi_row:{ACC_A2}" not in evaluation.envelope.blockers
+
+
+def test_u1c_an_amendment_without_a_fee_table_keeps_the_original_amount() -> None:
+    # The compiler found no fee table in the amendment and emitted only a
+    # document-level "unavailable" row.  That row states no amount, so the
+    # amendment never displaces the original's amount.
+    stamp = f"{shift(SALE, 20)}T21:00:00Z"
+    reg, shares = _amended_registration(stamp)
+    reg.remove(_row_by_id(reg, "doc:amend"))
+    reg.append(
+        fee_row(ACC_A2, None, available_at=stamp, observation_id="doc:amend-nt", disposition="unavailable")
+    )
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "known"
+    assert path["registered_amount"]["value"] == "20000000"
+    assert path["fee_table_accession"] == ACC_A
+    assert not any(b.endswith(f":{ACC_A2}") for b in evaluation.envelope.blockers)
