@@ -194,3 +194,22 @@ own fixtures are re-pointed after main #10534 (+47 @:118, +48 @:941, +41 @:1168)
 no deck extension. Local: tests/test_ci_pack.py 238 passed; design-reference guards + R3 fixture 96 passed; capability map
 138 passed; legacy-jobs.yml yaml ok (378 jobs). Next: one CI read on the new head -> squash-merge #9917 as the PARTIAL
 release (`--match-head-commit`, no auto-merge, HOLD label = barrier) -> land check -> Cycles phase 2 from main.
+
+2026-11-02 15:5xZ (seat 1a26b044, P21 CI repair round 2 on #9917): run 41454243058 at head 1dd732b0 was red
+on three packs, each classified by legacy job + test id. ci-pack-6 (unrun-scoring-engine, B01/B04 citation
+guards) = own drift after the main merge -> B01 re-installed from the own-base mapping with two malformed
+ranges repaired by construct (166445643fa2). ci-pack-11 (reference-integrity, Sector Paper design-reference
+guards) = main-side drift: the CI merge ref carried main 82d89579 (#10533 inserted +8 lines in
+sector_cycles.html.j2, +1 sector_central.html.j2, +2 build_sector_central.py, +9 country_cycles.html.j2;
+#10401 moved build_rotation_events.py +14) which the ±3-line citation window cannot absorb -> main 64dc8a16
+merged (e49b2a38, no conflicts) and 208 citations across copy_deck/state_matrix/cycles_ia/B01 re-pointed by
+text identity (c8b048dd; 197 guard tests pass). ci-pack-10 (design-governance, visual evidence required for a
+material UI change) = three genuinely unowned material paths of this PR -> three real
+scripts/capture_page_evidence.py 1.4.0 packs from a local build of the head in the #9917 render worktree
+(data as built, session 2026-10-30, anonymous only, production readback owed at P22):
+mockups/evidence/sector-research-entry (research_vault.html.j2 island, textarea hover+focus applied,
+24/24), sector-prophet-context (_sector_prophet_context.html.j2 on us_stocks.html?si_sector=XLK, 8/8) and
+sector-central-paper-pivot (_sector_central_paper.css.j2 + sector_central.html.j2, workflow-link
+hover+focus applied, 24/24); check_ui_visual_evidence.py rc=0 locally on the merge-base diff. Next: push
+-> one CI read -> squash-merge #9917 as the PARTIAL release (`--match-head-commit`, no auto-merge, HOLD
+label = barrier) -> land check -> Cycles phase 2 from main.
