@@ -1,0 +1,156 @@
+{
+  "schema": "prophet.lab_signin_continuation_proof/v1",
+  "operation": "prophet-native-lab-earnings-release-20260917-sol-001",
+  "parent_head": "1951c4947aae2ca97fb6cb557fdc1cf7e4c5eab7",
+  "procedure": "61a2ff79aba4e8a5685e779707ad5c4426cf5cc5",
+  "source_sha256": {
+    "templates/_prophet_earnings_browser.js.j2": "0d17bbecf76d777408aaf5eb29f22fe1fdaecf50f905be9e3f485f3aaa778993",
+    "tests/fixtures/prophet_lab/earnings_browser_runtime.mjs": "0ec70ffb05836c28b0e098cdd25173ecb14b4e3e2f7efed6710130cd48ff3b1e",
+    "tests/test_prophet_lab_earnings_browser.py": "d2d1db3d4cf432d44f36dd4febefe755c53bb790733991ca486a747fc59d7948"
+  },
+  "native_frontend_this_turn": {
+    "command": "python3 -m pytest tests/test_prophet_lab_earnings_browser.py -q -p no:cacheprovider --tb=short",
+    "exit_code": 0,
+    "passed": 45,
+    "warnings": 1
+  },
+  "recovered_same_operation_integration": {
+    "head_parent": "1951c4947aae2ca97fb6cb557fdc1cf7e4c5eab7",
+    "base": "f261afde8251e74f9b331ab59619e62e33afe89b",
+    "trees": {
+      "candidate": "20c58a41584ab8ec446f6917f286febac98d7b88",
+      "integration": "b9a5e94f1e851785760f32058aed1f741020faec"
+    },
+    "owned_blobs": {
+      "templates/_prophet_earnings_browser.js.j2": "773257d7cd716d48d2b1927a4f5f8e8e723e2c18",
+      "tests/fixtures/prophet_lab/earnings_browser_runtime.mjs": "05f775b6ff6d86683695c6adede2f7838eb0d3cb",
+      "tests/test_prophet_lab_earnings_browser.py": "a6715b5ac4b8bb16d9086d13b11e4029569fbecc"
+    },
+    "source_sha256": {
+      "templates/_prophet_earnings_browser.js.j2": "0d17bbecf76d777408aaf5eb29f22fe1fdaecf50f905be9e3f485f3aaa778993",
+      "tests/fixtures/prophet_lab/earnings_browser_runtime.mjs": "0ec70ffb05836c28b0e098cdd25173ecb14b4e3e2f7efed6710130cd48ff3b1e",
+      "tests/test_prophet_lab_earnings_browser.py": "d2d1db3d4cf432d44f36dd4febefe755c53bb790733991ca486a747fc59d7948"
+    },
+    "source_files": 9283,
+    "source_export": "/Volumes/Mastermind/agent-evidence/prophet-d5-view-20260917/release/current-release-20260918/signin-integrated-source",
+    "branch_commit_or_ref_modified": false,
+    "procedure": "61a2ff79aba4e8a5685e779707ad5c4426cf5cc5",
+    "batches": [
+      {
+        "batch": "core",
+        "command": [
+          "python3",
+          "-m",
+          "pytest",
+          "-v",
+          "-p",
+          "no:cacheprovider",
+          "tests/test_prophet_lab.py",
+          "tests/test_prophet_lab_api.py",
+          "tests/test_prophet_lab_earnings_view.py",
+          "tests/test_prophet_lab_earnings_browser.py",
+          "tests/test_company_intelligence_workspace_chain.py",
+          "tests/test_prophet_lab_timeparse.py",
+          "tests/test_prophet_lab_commissioning.py",
+          "tests/test_caddy_hub_boundary.py",
+          "--tb=short",
+          "-o",
+          "faulthandler_timeout=90",
+          "--basetemp",
+          "/Volumes/Mastermind/agent-evidence/prophet-d5-view-20260917/release/current-release-20260918/signin-tmp-core",
+          "--junitxml",
+          "/Volumes/Mastermind/agent-evidence/prophet-d5-view-20260917/release/current-release-20260918/signin-core.xml"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "seconds": 65.07,
+        "tests": 572,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "batch": "render",
+        "command": [
+          "python3",
+          "-m",
+          "pytest",
+          "-v",
+          "-p",
+          "no:cacheprovider",
+          "tests/test_dashboard_template_render.py",
+          "tests/test_p0_prophet_candidate_board.py",
+          "--tb=short",
+          "-o",
+          "faulthandler_timeout=90",
+          "--basetemp",
+          "/Volumes/Mastermind/agent-evidence/prophet-d5-view-20260917/release/current-release-20260918/signin-tmp-render",
+          "--junitxml",
+          "/Volumes/Mastermind/agent-evidence/prophet-d5-view-20260917/release/current-release-20260918/signin-render.xml"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "seconds": 193.1,
+        "tests": 61,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "batch": "adjacent",
+        "command": [
+          "python3",
+          "-m",
+          "pytest",
+          "-v",
+          "-p",
+          "no:cacheprovider",
+          "tests/test_us_stocks_s2_compression.py",
+          "tests/test_mag7_tape_strip.py",
+          "tests/test_theme_tape.py",
+          "tests/test_holdings_signals.py",
+          "--tb=short",
+          "-o",
+          "faulthandler_timeout=90",
+          "--basetemp",
+          "/Volumes/Mastermind/agent-evidence/prophet-d5-view-20260917/release/current-release-20260918/signin-tmp-adjacent",
+          "--junitxml",
+          "/Volumes/Mastermind/agent-evidence/prophet-d5-view-20260917/release/current-release-20260918/signin-adjacent.xml"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "seconds": 136.56,
+        "tests": 183,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ],
+    "totals": {
+      "tests": 816,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "completed": true,
+    "source_files_changed": [],
+    "production_proof": false,
+    "market_outcomes_read": false,
+    "method": "Complete native modules and existing 14 suites on exact integrated Git export, with synthetic access/source fixtures."
+  },
+  "material_comparison": {
+    "from": "f261afde8251e74f9b331ab59619e62e33afe89b",
+    "to": "4686d197b4fee1c08cff622724cbe0aa6d7aa010",
+    "source_dependency_governance_diff": [],
+    "new_integrated_test_run": false
+  },
+  "browser_new_change": {
+    "status": "NOT_EXECUTED_PLATFORM_BLOCKED",
+    "partial_harness": "release/current-release-20260918/signin_full_dashboard.py",
+    "partial_sha256": "04b65358a829bc8d25df0f1b3d3096bc066c54bfee18ed3f2d29f0ce9aee5152",
+    "supersedes_prior_full_page_proof": false
+  },
+  "independent_review": false,
+  "production": false,
+  "market_outcomes_read": false
+}

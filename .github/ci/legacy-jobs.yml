@@ -11245,6 +11245,12 @@ jobs:
       - "tests/test_prophet_lab.py"
       - "tests/test_intelligence_vector_units.py"
       - "tests/test_prophet_lab_api.py"
+      - "tests/test_prophet_lab_opportunity_context.py"
+      - "tests/test_prophet_lab_research_opportunity_context.py"
+      - "tests/test_prophet_lab_earnings_view.py"
+      - "tests/test_prophet_lab_earnings_browser.py"
+      - "templates/_prophet_earnings_browser*"
+      - "templates/dashboard.html.j2"
       # D5 A7's manifest-authenticated N/N+1 correction chain is hermetic and
       # load-bearing for the Prophet Lab adapter, so its PR owner must be this
       # gate:code job rather than only neural-web-core's nightly data lane.
@@ -11313,6 +11319,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: install minimal deps
         # fastapi + httpx: test_prophet_lab_api.py's FastAPI TestClient needs
         # both (httpx importorskip'd). pandas + pyarrow: the D5 API suite writes
@@ -11331,7 +11340,11 @@ jobs:
           python -m pytest
           tests/test_prophet_lab.py tests/test_intelligence_vector_units.py
           tests/test_prophet_lab_api.py
+          tests/test_prophet_lab_opportunity_context.py
+          tests/test_prophet_lab_research_opportunity_context.py
           tests/test_treasury_daily_history.py tests/test_treasury_history_api.py
+          tests/test_prophet_lab_earnings_view.py
+          tests/test_prophet_lab_earnings_browser.py
           tests/test_company_intelligence_workspace_chain.py
           tests/test_company_intelligence_event_evolution.py
           tests/test_prophet_lab_timeparse.py

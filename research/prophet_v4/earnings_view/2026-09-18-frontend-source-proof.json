@@ -1,0 +1,102 @@
+{
+  "schema": "prophet.lab_frontend_source_proof/v1",
+  "operation": "prophet-native-lab-earnings-release-20260917-sol-001",
+  "pr": 7264,
+  "parent_head": "3ec7646978a9a5d8527ed26a8ea26d8dec4508e6",
+  "procedure_pin": "320f586126b7c82c843ef17612f12d40d20a42e0",
+  "native": {
+    "command": [
+      "python3",
+      "-m",
+      "pytest",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "tests/test_prophet_lab.py",
+      "tests/test_prophet_lab_api.py",
+      "tests/test_prophet_lab_earnings_view.py",
+      "tests/test_prophet_lab_earnings_browser.py",
+      "tests/test_company_intelligence_workspace_chain.py",
+      "tests/test_prophet_lab_timeparse.py",
+      "tests/test_prophet_lab_commissioning.py",
+      "tests/test_caddy_hub_boundary.py",
+      "tests/test_dashboard_template_render.py",
+      "tests/test_p0_prophet_candidate_board.py",
+      "--tb=short",
+      "--junitxml",
+      "/Volumes/Mastermind/agent-evidence/prophet-d5-view-20260917/release/frontend-completion/09_native_final.xml"
+    ],
+    "exit_code": 0,
+    "tests": 624,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "source_sha256": {
+      "templates/dashboard.html.j2": "d70ef91b9e84aea2a234901ba5e33b2b4186779ed34bfc4da0b8e2008ccff35b",
+      "templates/_prophet_earnings_browser.js.j2": "9d34ca80c1748223fe92f3423613ff87adbec145cd9685ba4f984e370fca592b",
+      "templates/_prophet_earnings_browser.html.j2": "82d772b3bed100f3ed8b262b38d332ad1044d8e14fefdc10dfebce84c7252815",
+      "templates/_prophet_earnings_browser.css.j2": "ef77cb0d153a114fb54410b78ca42b178952497c00eaccece5dbedcf294bf229",
+      "tests/test_prophet_lab_earnings_browser.py": "bc3705bb5ff1200b9da5a65864abe98996c67948efade9461c1d86dfa7cf14e5",
+      "tests/fixtures/prophet_lab/earnings_browser_runtime.mjs": "c7163ee54ac13994fe9ac68af430f891f614be2999f95f3ef4ca842906a8ed87",
+      ".github/ci/legacy-jobs.yml": "519d6bd2d2ef1fd7d2a54b387d5e7dc3af58552d40615d20442afb1dd237b694"
+    },
+    "browser_proof": "PLATFORM_BLOCKED_NOT_RUN",
+    "production_proof": false,
+    "fixture_inputs": "native source fixtures and minimal browser DOM for behavior; real Jinja dashboard render tests",
+    "market_outcomes_read": false
+  },
+  "mutations": {
+    "results": [
+      {
+        "mutation": "request_epoch_removed",
+        "scenario": "superseded_response",
+        "exit_code": 1,
+        "assertion_failed": true
+      },
+      {
+        "mutation": "version_pair_check_removed",
+        "scenario": "wrongref",
+        "exit_code": 1,
+        "assertion_failed": true
+      },
+      {
+        "mutation": "error_purge_removed",
+        "scenario": "http403",
+        "exit_code": 1,
+        "assertion_failed": true
+      }
+    ],
+    "source_unchanged": true,
+    "source_sha256": "9d34ca80c1748223fe92f3423613ff87adbec145cd9685ba4f984e370fca592b"
+  },
+  "design_checks": [
+    {
+      "check": "design-added",
+      "exit_code": 0
+    },
+    {
+      "check": "runtime-style",
+      "exit_code": 1
+    },
+    {
+      "check": "whitespace",
+      "exit_code": 0
+    }
+  ],
+  "ci_manifest_validation": {
+    "exit_code": 0,
+    "jobs_validated": 214
+  },
+  "browser_execution": {
+    "state": "PLATFORM_BLOCKED",
+    "executed": false,
+    "independent_visual_review": false
+  },
+  "authority": {
+    "rank_change": false,
+    "entry_change": false,
+    "model_fit": false,
+    "outcomes_read": false,
+    "deployment": false
+  }
+}

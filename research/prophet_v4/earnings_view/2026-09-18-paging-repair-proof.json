@@ -1,0 +1,490 @@
+{
+  "schema": "prophet.lab_paging_repair_proof/v1",
+  "operation": "prophet-native-lab-earnings-release-20260917-sol-001",
+  "pr": 7264,
+  "parent_head": "ee1429aecd591a662fd987ce5337b4b9a465b8ca",
+  "procedure_pin": "320f586126b7c82c843ef17612f12d40d20a42e0",
+  "source_postimages": {
+    "templates/_prophet_earnings_browser.js.j2": "a92599921d08755ba7bd15baf19c290c0e2befeb7aecb25151d78556bbd80192",
+    "tests/fixtures/prophet_lab/earnings_browser_runtime.mjs": "3933249d5e3b399aeff5748a0dbda0f1e03df9d08236d38646861a5e4c7694f2",
+    "tests/test_prophet_lab_earnings_browser.py": "f913670677d7092a993e89adfc6f815ef3a89f17202e34578fcdbef101b056e3"
+  },
+  "sealed_patch_sha256": "e4ae27e32207a3b680e9ed61d746f3cfae1048f9745e64f19f03530af55f8bd6",
+  "native": {
+    "exit_code": 0,
+    "tests": 628,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "command": [
+      "python3",
+      "-m",
+      "pytest",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "tests/test_prophet_lab.py",
+      "tests/test_prophet_lab_api.py",
+      "tests/test_prophet_lab_earnings_view.py",
+      "tests/test_prophet_lab_earnings_browser.py",
+      "tests/test_company_intelligence_workspace_chain.py",
+      "tests/test_prophet_lab_timeparse.py",
+      "tests/test_prophet_lab_commissioning.py",
+      "tests/test_caddy_hub_boundary.py",
+      "tests/test_dashboard_template_render.py",
+      "tests/test_p0_prophet_candidate_board.py",
+      "--tb=short",
+      "--junitxml",
+      "/Volumes/Mastermind/agent-evidence/prophet-d5-view-20260917/release/paging-repair-20260918/08_native_final.xml"
+    ],
+    "restored_metadata_unchanged": true,
+    "production": false
+  },
+  "native_red": {
+    "failed": 4,
+    "passed": 0,
+    "cause": "draft query navigation and first-page generation pin"
+  },
+  "component_browser": {
+    "cases": 32,
+    "status": "PASS",
+    "page_errors": [],
+    "external_requests": [],
+    "source_sha256": {
+      "templates/_prophet_earnings_browser.js.j2": "a92599921d08755ba7bd15baf19c290c0e2befeb7aecb25151d78556bbd80192",
+      "templates/_prophet_earnings_browser.html.j2": "82d772b3bed100f3ed8b262b38d332ad1044d8e14fefdc10dfebce84c7252815",
+      "templates/_prophet_earnings_browser.css.j2": "ef77cb0d153a114fb54410b78ca42b178952497c00eaccece5dbedcf294bf229",
+      "engine/prophet_lab/earnings_view.py": "823d5c05f71ce44aa80295ad4d9b3d298e827d916fadd6760670d8918b93b60f"
+    }
+  },
+  "full_dashboard_browser": {
+    "cases": 32,
+    "status": "PASS",
+    "failures": [],
+    "blocked_external_requests": [
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      },
+      {
+        "host": "cloud.umami.is",
+        "path": "/script.js"
+      }
+    ],
+    "missing_fixture_assets": [
+      "/basketdata/baskets.json",
+      "/live/basket_pulse.json",
+      "/live/prophet_live.json",
+      "/live/release_publications.json",
+      "/live/risk_state.json",
+      "/live_config.js",
+      "/stockdata/mtf_upturn.json"
+    ],
+    "source_sha256": {
+      "templates/dashboard.html.j2": "d70ef91b9e84aea2a234901ba5e33b2b4186779ed34bfc4da0b8e2008ccff35b",
+      "templates/_prophet_earnings_browser.js.j2": "a92599921d08755ba7bd15baf19c290c0e2befeb7aecb25151d78556bbd80192",
+      "templates/theme.js": "7e67de51aac47a1b3784d19a4d58a7f9c800be4bb74ae87f97bce8fed750afde",
+      "templates/theme.css": "63df1679c57976ef2130022690fd31bbb23bf41982658b87a6117457fb02bdab"
+    },
+    "rendered_document_sha256": "c176d43809bd37f3f38858710b7206076f8d3eadf335f2bfa59c11b779d9ed86",
+    "method": "Complete native dashboard Jinja render, existing native CSS/scripts and Lab TestClient; intercepted requests; synthetic source and session dependency only",
+    "production_authentication": false,
+    "network_transmissions": 0
+  },
+  "native_http_paging": {
+    "status": "PASS",
+    "cases": [
+      {
+        "scenario": "unsubmitted_next",
+        "status": "PASS",
+        "native_http": [
+          {
+            "query": {
+              "v": [
+                "093ad1ea"
+              ]
+            },
+            "status": 404
+          },
+          {
+            "query": {
+              "limit": [
+                "25"
+              ],
+              "offset": [
+                "0"
+              ]
+            },
+            "status": 200
+          },
+          {
+            "query": {
+              "limit": [
+                "25"
+              ],
+              "offset": [
+                "25"
+              ],
+              "expected_generation": [
+                "peg:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              ]
+            },
+            "status": 200
+          }
+        ]
+      },
+      {
+        "scenario": "unsubmitted_first",
+        "status": "PASS",
+        "native_http": [
+          {
+            "query": {
+              "v": [
+                "093ad1ea"
+              ]
+            },
+            "status": 404
+          },
+          {
+            "query": {
+              "limit": [
+                "25"
+              ],
+              "offset": [
+                "0"
+              ]
+            },
+            "status": 200
+          },
+          {
+            "query": {
+              "limit": [
+                "25"
+              ],
+              "offset": [
+                "25"
+              ],
+              "expected_generation": [
+                "peg:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              ]
+            },
+            "status": 200
+          },
+          {
+            "query": {
+              "limit": [
+                "25"
+              ],
+              "offset": [
+                "0"
+              ],
+              "expected_generation": [
+                "peg:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              ]
+            },
+            "status": 200
+          }
+        ]
+      },
+      {
+        "scenario": "first_generation",
+        "status": "PASS",
+        "native_http": [
+          {
+            "query": {
+              "v": [
+                "093ad1ea"
+              ]
+            },
+            "status": 404
+          },
+          {
+            "query": {
+              "limit": [
+                "25"
+              ],
+              "offset": [
+                "0"
+              ]
+            },
+            "status": 200
+          },
+          {
+            "query": {
+              "limit": [
+                "25"
+              ],
+              "offset": [
+                "25"
+              ],
+              "expected_generation": [
+                "peg:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              ]
+            },
+            "status": 200
+          },
+          {
+            "query": {
+              "limit": [
+                "25"
+              ],
+              "offset": [
+                "0"
+              ],
+              "expected_generation": [
+                "peg:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              ]
+            },
+            "status": 200
+          }
+        ]
+      },
+      {
+        "scenario": "changed_first_generation",
+        "status": "PASS",
+        "native_http": [
+          {
+            "query": {
+              "v": [
+                "093ad1ea"
+              ]
+            },
+            "status": 404
+          },
+          {
+            "query": {
+              "limit": [
+                "25"
+              ],
+              "offset": [
+                "0"
+              ]
+            },
+            "status": 200
+          },
+          {
+            "query": {
+              "limit": [
+                "25"
+              ],
+              "offset": [
+                "25"
+              ],
+              "expected_generation": [
+                "peg:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              ]
+            },
+            "status": 200
+          },
+          {
+            "query": {
+              "limit": [
+                "25"
+              ],
+              "offset": [
+                "0"
+              ],
+              "expected_generation": [
+                "peg:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              ]
+            },
+            "status": 409
+          }
+        ]
+      }
+    ],
+    "count": 4,
+    "production": false,
+    "source_and_access": "synthetic owner snapshots and session fixture; real directory route, real Chromium controller"
+  },
+  "guards": [
+    {
+      "check": "design-added",
+      "exit_code": 0,
+      "command": [
+        "python3",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "/Volumes/Mastermind/agent-evidence/prophet-d5-view-20260917/release/paging-repair-20260918/ui.diff"
+      ]
+    },
+    {
+      "check": "runtime-style",
+      "exit_code": 0,
+      "command": [
+        "python3",
+        "scripts/check_runtime_style_injection.py"
+      ]
+    },
+    {
+      "check": "visual-evidence",
+      "exit_code": 0,
+      "command": [
+        "python3",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "/Volumes/Mastermind/agent-evidence/prophet-d5-view-20260917/release/paging-repair-20260918/ui.diff"
+      ]
+    },
+    {
+      "check": "whitespace",
+      "exit_code": 0,
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "mockups/evidence/prophet-earnings-browser-v1/paging-full-dashboard/corrected-en-dark-1440.png",
+      "sha256": "e5abb625fefc9ce21c0e1e1d058b6c97fd74c8651042e14b66c90bfb34b8241b",
+      "synthetic_source_and_access": true
+    },
+    {
+      "path": "mockups/evidence/prophet-earnings-browser-v1/paging-full-dashboard/withdrawn-zh-light-390.png",
+      "sha256": "ed4265bae4efb06f5442f7ab22c01a3680d504d426c6a7bf65d2e1b642ee0f27",
+      "synthetic_source_and_access": true
+    }
+  ],
+  "evidence_root": "/Volumes/Mastermind/agent-evidence/prophet-d5-view-20260917/release/paging-repair-20260918",
+  "harness_sha256": {
+    "browser_proof.py": "6477b3422d55c1f60462f8dbe02e5b667a9c34571f22c2017e6f6d06cbe79195",
+    "full_dashboard_proof.py": "315558ed44ed1e0235ad9d36cdea306101652409a34cd07275d9c5b003259d0c",
+    "native_paging_browser.py": "a6546663be353754ea2fd930e4f52aee37feac1c646a080087f7c33c2d84ff9c"
+  },
+  "earlier_failed_attempts": [
+    "14-suite integrated-main command was run against candidate-only source: absent newer-main test path, zero tests ran; not a code failure or pass",
+    "candidate 628-test attempt initially failed two metadata smoke tests; four exact committed metadata files restored, targeted 2 pass, full 628 pass; no tests altered or skipped"
+  ],
+  "latest_base_integration": "Fresh main comparison was platform-refused; prior b51d4ebc integration receipt remains historical and is not rebranded latest",
+  "independent_review": false,
+  "production_proof": false,
+  "model_fit": false,
+  "market_outcomes_read": false,
+  "ranking_changed": false,
+  "capability_state": "BUILT_NOT_PROVEN"
+}

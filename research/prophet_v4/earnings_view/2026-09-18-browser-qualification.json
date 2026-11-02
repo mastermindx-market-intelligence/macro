@@ -1,0 +1,473 @@
+{
+  "schema": "prophet.lab_browser_qualification/v1",
+  "operation": "prophet-native-lab-earnings-release-20260917-sol-001",
+  "pr": 7264,
+  "source_semantic_head": "a76d390a92e9c7ad86eb88684831fd8f71d3adf8",
+  "procedure_pin": "320f586126b7c82c843ef17612f12d40d20a42e0",
+  "observed_at": "2026-09-18T03:05:13.279719+00:00",
+  "component_browser": {
+    "status": "PASS",
+    "cases": [
+      {
+        "case": "covered-en-dark-1440",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "covered-en-dark-390",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "covered-en-light-1440",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "covered-en-light-390",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "covered-zh-dark-1440",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "covered-zh-dark-390",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "covered-zh-light-1440",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "covered-zh-light-390",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "corrected-en-dark-1440",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "corrected-en-dark-390",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "corrected-en-light-1440",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "corrected-en-light-390",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "corrected-zh-dark-1440",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "corrected-zh-dark-390",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "corrected-zh-light-1440",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "corrected-zh-light-390",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "withdrawn-en-dark-1440",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "withdrawn-en-dark-390",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "withdrawn-en-light-1440",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "withdrawn-en-light-390",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "withdrawn-zh-dark-1440",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "withdrawn-zh-dark-390",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "withdrawn-zh-light-1440",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "withdrawn-zh-light-390",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "unavailable-en-dark-1440",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "unavailable-en-dark-390",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "unavailable-en-light-1440",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "unavailable-en-light-390",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "unavailable-zh-dark-1440",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "unavailable-zh-dark-390",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "unavailable-zh-light-1440",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      },
+      {
+        "case": "unavailable-zh-light-390",
+        "result": "PASS",
+        "native_http_calls": 2,
+        "source_and_access": "synthetic fixtures"
+      }
+    ],
+    "count": 32,
+    "page_errors": [],
+    "external_requests": [],
+    "http_status_counts": {
+      "200": 64
+    },
+    "method": "native router, D5 producer and validator -> exact frontend -> Chromium; component host explicitly uses existing bg/text tokens; synthetic source/access adapters; NOT full dashboard or production authentication",
+    "production_proof": false,
+    "market_outcomes_read": false,
+    "source_sha256": {
+      "templates/_prophet_earnings_browser.js.j2": "9d34ca80c1748223fe92f3423613ff87adbec145cd9685ba4f984e370fca592b",
+      "templates/_prophet_earnings_browser.html.j2": "82d772b3bed100f3ed8b262b38d332ad1044d8e14fefdc10dfebce84c7252815",
+      "templates/_prophet_earnings_browser.css.j2": "ef77cb0d153a114fb54410b78ca42b178952497c00eaccece5dbedcf294bf229",
+      "engine/prophet_lab/earnings_view.py": "823d5c05f71ce44aa80295ad4d9b3d298e827d916fadd6760670d8918b93b60f"
+    }
+  },
+  "negative_browser": {
+    "status": "PASS",
+    "count": 24,
+    "cases": [
+      {
+        "case": "directory401",
+        "theme": "dark",
+        "result": "PASS",
+        "http_calls": 1,
+        "native_access_fixture": true
+      },
+      {
+        "case": "directory401",
+        "theme": "light",
+        "result": "PASS",
+        "http_calls": 1,
+        "native_access_fixture": true
+      },
+      {
+        "case": "directory403",
+        "theme": "dark",
+        "result": "PASS",
+        "http_calls": 1,
+        "native_access_fixture": true
+      },
+      {
+        "case": "directory403",
+        "theme": "light",
+        "result": "PASS",
+        "http_calls": 1,
+        "native_access_fixture": true
+      },
+      {
+        "case": "detail403",
+        "theme": "dark",
+        "result": "PASS",
+        "http_calls": 2,
+        "native_access_fixture": true
+      },
+      {
+        "case": "detail403",
+        "theme": "light",
+        "result": "PASS",
+        "http_calls": 2,
+        "native_access_fixture": true
+      },
+      {
+        "case": "detail409",
+        "theme": "dark",
+        "result": "PASS",
+        "http_calls": 2,
+        "native_access_fixture": false
+      },
+      {
+        "case": "detail409",
+        "theme": "light",
+        "result": "PASS",
+        "http_calls": 2,
+        "native_access_fixture": false
+      },
+      {
+        "case": "detail503",
+        "theme": "dark",
+        "result": "PASS",
+        "http_calls": 2,
+        "native_access_fixture": false
+      },
+      {
+        "case": "detail503",
+        "theme": "light",
+        "result": "PASS",
+        "http_calls": 2,
+        "native_access_fixture": false
+      },
+      {
+        "case": "non_json",
+        "theme": "dark",
+        "result": "PASS",
+        "http_calls": 2,
+        "native_access_fixture": false
+      },
+      {
+        "case": "non_json",
+        "theme": "light",
+        "result": "PASS",
+        "http_calls": 2,
+        "native_access_fixture": false
+      },
+      {
+        "case": "invalid_schema",
+        "theme": "dark",
+        "result": "PASS",
+        "http_calls": 2,
+        "native_access_fixture": false
+      },
+      {
+        "case": "invalid_schema",
+        "theme": "light",
+        "result": "PASS",
+        "http_calls": 2,
+        "native_access_fixture": false
+      },
+      {
+        "case": "close_pending",
+        "theme": "dark",
+        "result": "PASS",
+        "http_calls": 1,
+        "native_access_fixture": false
+      },
+      {
+        "case": "close_pending",
+        "theme": "light",
+        "result": "PASS",
+        "http_calls": 1,
+        "native_access_fixture": false
+      },
+      {
+        "case": "empty_search",
+        "theme": "dark",
+        "result": "PASS",
+        "http_calls": 2,
+        "native_access_fixture": false
+      },
+      {
+        "case": "empty_search",
+        "theme": "light",
+        "result": "PASS",
+        "http_calls": 2,
+        "native_access_fixture": false
+      },
+      {
+        "case": "close_loaded",
+        "theme": "dark",
+        "result": "PASS",
+        "http_calls": 2,
+        "native_access_fixture": false
+      },
+      {
+        "case": "close_loaded",
+        "theme": "light",
+        "result": "PASS",
+        "http_calls": 2,
+        "native_access_fixture": false
+      },
+      {
+        "case": "account_update",
+        "theme": "dark",
+        "result": "PASS",
+        "http_calls": 2,
+        "native_access_fixture": false
+      },
+      {
+        "case": "account_update",
+        "theme": "light",
+        "result": "PASS",
+        "http_calls": 2,
+        "native_access_fixture": false
+      },
+      {
+        "case": "language_change",
+        "theme": "dark",
+        "result": "PASS",
+        "http_calls": 4,
+        "native_access_fixture": false
+      },
+      {
+        "case": "language_change",
+        "theme": "light",
+        "result": "PASS",
+        "http_calls": 4,
+        "native_access_fixture": false
+      }
+    ],
+    "page_errors": [],
+    "external_requests": [],
+    "production_proof": false,
+    "method": "actual Chromium and native router; access/source/network faults are synthetic controls, not production sessions",
+    "source_sha256": "9d34ca80c1748223fe92f3423613ff87adbec145cd9685ba4f984e370fca592b"
+  },
+  "integrated_native": {
+    "exit_code": 0,
+    "tests": 807,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "command": [
+      "python3",
+      "-m",
+      "pytest",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "tests/test_prophet_lab.py",
+      "tests/test_prophet_lab_api.py",
+      "tests/test_prophet_lab_earnings_view.py",
+      "tests/test_prophet_lab_earnings_browser.py",
+      "tests/test_company_intelligence_workspace_chain.py",
+      "tests/test_prophet_lab_timeparse.py",
+      "tests/test_prophet_lab_commissioning.py",
+      "tests/test_caddy_hub_boundary.py",
+      "tests/test_dashboard_template_render.py",
+      "tests/test_p0_prophet_candidate_board.py",
+      "tests/test_us_stocks_s2_compression.py",
+      "tests/test_mag7_tape_strip.py",
+      "tests/test_theme_tape.py",
+      "tests/test_holdings_signals.py",
+      "--tb=short",
+      "--basetemp",
+      "/Volumes/Mastermind/agent-evidence/prophet-d5-view-20260917/release/frontend-completion/current-base-qualification/pytest-integrated-final",
+      "--junitxml",
+      "/Volumes/Mastermind/agent-evidence/prophet-d5-view-20260917/release/frontend-completion/current-base-qualification/integrated-final.xml"
+    ],
+    "tree": "dd6780bcd1953c903d1c1e3050521be913528eac",
+    "main": "b51d4ebcdf1a73bae3b6b9ef3632495cef107c58",
+    "candidate_head": "a76d390a92e9c7ad86eb88684831fd8f71d3adf8",
+    "method": "complete native source modules and native tests in exact Git archive; no dynamic module replacement; selected-source export lacks full repository data/assets",
+    "source_files_checked": 6904,
+    "source_files_changed": [],
+    "production": false,
+    "restored_input_files_changed": [],
+    "all_sources_preserved": true,
+    "note": "Initial six missing-export-input failures were repaired by restoring exact integrated-tree bytes; no test altered or skipped."
+  },
+  "canonical_visual_manifest": "mockups/evidence/prophet-earnings-browser-v1/manifest.json",
+  "canonical_visual_manifest_sha256": "8cc756907c3330f75d31674a7bc2a050ae9430e8355dc15348575364e3a0bb30",
+  "canonical_visual_cells": 32,
+  "guard_results": {
+    "visual_evidence": {
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runtime_style": {
+      "exit_code": 0,
+      "scanned_js_files": 195,
+      "existing_injecting_files": 44,
+      "existing_hits": 89,
+      "log_sha256": "f11c1f0b4ee55d4dcbd1d04ac0e2331fc81ae1c71e3325aaaef428130f484c1f"
+    }
+  },
+  "qualification_limits": [
+    "Local native HTTP and Chromium with synthetic source/access adapters; not a production entitlement test.",
+    "Component host explicitly applies existing bg/text tokens; full generated dashboard browser test not completed.",
+    "Canonical recapture repeats the same 32 states; it is not 32 additional distinct cases.",
+    "Native integration is exact tree dd6780... against pinned main b51d4...; not a claim for an unexamined future main.",
+    "Independent reviewer has not approved this result; hosted exact-head CI remains distinct."
+  ],
+  "canonical_capture_driver_sha256": "bb2f7e0b4ff3e23bdefc655076a1628ac167373e12fbf785480ebffdcded36db",
+  "product_source_changed": false,
+  "model_fit": false,
+  "strategy_outcomes_evaluated": false,
+  "ranking_changed": false,
+  "production_proof": false,
+  "capability_state": "BUILT_NOT_PROVEN"
+}

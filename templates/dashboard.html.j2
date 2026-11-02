@@ -16727,6 +16727,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {% if gate or pgate or life_gate %}
       <p id="us-board-load-status" class="muted" role="status" aria-live="polite" hidden>{{ t('Full board data could not load. The dated preview remains available. Reload to try again.', '完整榜单数据无法加载，带日期的预览仍可查看。请刷新页面重试。') }}</p>
       {% endif %}
+      {% include '_prophet_earnings_browser.html.j2' %}
       {#- ── W-L1 SLOT B — the board-state note (spec §2 B, §5.1, §5.2) ────────────────
           ONE line, FOUR mutually exclusive contents, never two at once. Every variant is
           SSR-baked with its l-en/l-zh pair and its own Tier-2 `?` receipt, so the live

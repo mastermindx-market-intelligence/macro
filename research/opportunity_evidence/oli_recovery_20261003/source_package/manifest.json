@@ -1,0 +1,37 @@
+{
+  "schema": "source_archive_manifest.v1",
+  "archived_at": "2026-10-03T19:33:15.679927+00:00",
+  "parent_issue": 8328,
+  "pull_request": 8333,
+  "publication_authorization": "Chairman explicitly approved public Macro publication in the current conversation on 2026-10-03: yes macro repo, then initiate and begin the project",
+  "files": [
+    {
+      "original_filename": "Opportunity_Lifecycle_Intelligence_Master_Report(1).md",
+      "repository_path": "research/opportunity_evidence/oli_recovery_20261003/source_package/Opportunity_Lifecycle_Intelligence_Master_Report.md",
+      "bytes": 145561,
+      "sha256": "c6e84b43409e24eb9b74aa6f4d726188620ff0ebb832e8b594b922358adbd5e2",
+      "git_blob_sha": "262c437754bd0537e795eaf40175349ab129a10c",
+      "transformation": "filename normalized only; original bytes unchanged"
+    },
+    {
+      "original_filename": "Next_Execution_Handoff(1).md",
+      "repository_path": "research/opportunity_evidence/oli_recovery_20261003/source_package/Next_Execution_Handoff.md",
+      "bytes": 11090,
+      "sha256": "79e4ffeac5661f3813c260010de3376a00bc509099dd6473a67efc5539c0c70e",
+      "git_blob_sha": "758719e1bc783d6a22d3ac1313bdfe0196c81c00",
+      "transformation": "filename normalized only; original bytes unchanged"
+    },
+    {
+      "original_filename": "Opportunity_Lifecycle_Intelligence_Master_Report(1).pdf",
+      "repository_path": "research/opportunity_evidence/oli_recovery_20261003/source_package/Opportunity_Lifecycle_Intelligence_Master_Report.pdf",
+      "bytes": 254545,
+      "sha256": "027a3459a6028cd57654c0cd3997d6fe6edc9c212b4866964dbc0eb8dd5beb90",
+      "git_blob_sha": "2ea684c78a604493924a015d4b9bac7776b8c01a",
+      "transformation": "filename normalized only; original bytes unchanged"
+    }
+  ],
+  "missing_originals": [
+    "sources.json was referenced by the handoff but not supplied; no replacement is represented as the original"
+  ],
+  "authority": "Research/design input only. Publication is not implementation, source-law adoption, data admission, scientific promotion or release approval."
+}

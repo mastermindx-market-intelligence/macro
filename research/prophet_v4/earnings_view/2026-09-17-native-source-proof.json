@@ -1,0 +1,60 @@
+{
+  "operation": "prophet-native-lab-earnings-release-20260917-sol-001",
+  "skillpack_pin": "8b231e8267f09cfb002ed3e87bec14906dce1720",
+  "source": {
+    "base": "c2ac0b8d3196cabfb84d9629b587ee3365509614",
+    "branch": "claude/prophet-lab-earnings-view-20260917",
+    "exit_code": 0,
+    "tests": 490,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "method": "native source worktree, native conftest, complete code, exact HEAD metadata prerequisites",
+    "metadata_prerequisites": [
+      "data/qledger/evidence_clock_start/demand_chain.json",
+      "data/qledger/evidence_clock_start/thematic_desk.json",
+      "data/qledger/evidence_clock_start/stock_desk.json",
+      "data/us_prophet_rank/w3/status.json"
+    ],
+    "production_proof": false,
+    "source_sha256": {
+      "app/prophet_lab.py": "d1e501c3dfc262d7050c8cfa63f108f46246d6277a6e814a4a0caf72aec90f37",
+      "engine/prophet_lab/earnings_view.py": "ea4c19c14d9624b61de75c89d4d16c7667fcf36cdcda546aaed32d7ef557de53",
+      "tests/test_prophet_lab_earnings_view.py": "abbac3a99098ad5a2f1308d8d6a93d7f52173b52e1b0afdaa729b5f250227d44",
+      ".github/ci/legacy-jobs.yml": "8133945cf0b7803686fac05b15277a048f377027880517384174e904cab525e7"
+    }
+  },
+  "candidate_patch_sha256": "7fe98d7cb047210ab22a13582e0e73d1fdd175cc2da4349725416698fca6bd1a",
+  "collision_review": {
+    "base": "c2ac0b8d3196cabfb84d9629b587ee3365509614",
+    "prs": 291,
+    "all_source_reads_complete": true,
+    "direct_overlaps": [],
+    "related_reader_pr": 6625,
+    "canonical_source_effect": false,
+    "large_pr_resolution": {
+      "pr": 7193,
+      "head": "dfaa93ba6e0241d1df8ddd1ee908bb234b582be6",
+      "paths": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "method": "exact-object three-dot path diff"
+    }
+  },
+  "prior_development_evidence": {
+    "native_owner_tests": 490,
+    "browser_matrix_cases": 32,
+    "no_javascript_cases": 2,
+    "detected_mutants": 3,
+    "basis": "Preceding development package; identical source hashes, not rerun browser proof on production"
+  },
+  "limits": [
+    "Native first run had two missing-metadata failures; exact HEAD metadata restored without changing tests or reading outcome files.",
+    "Local full test_ci_pack.py invocation timed out at 120 seconds; no full local CI-suite pass claimed.",
+    "Hosted CI, independent review, frontend mount and authenticated production proof remain separate."
+  ],
+  "state": "BUILT_NOT_PROVEN",
+  "production_proof": false,
+  "model_fit": false,
+  "outcomes_read": false
+}
