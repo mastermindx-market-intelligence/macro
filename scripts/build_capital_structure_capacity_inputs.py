@@ -6,7 +6,8 @@ and the verified projection generation through the same verifier the projection
 uses, then binds per issuer exactly what each nightly run can lawfully produce:
 
 * instruments — from ``instrument_candidate_terms.parquet`` when the candidate
-  compiler has materialized rows for the issuer, resolved with an owner
+  compiler has materialized rows for the issuer that are available at the
+  cutoff, resolved with an owner
   decisions ledger when one is admitted (never fuzzy, never invented);
 * share basis — only from admitted share-count observations and corporate
   actions under the root (never from a provider, a publication chain or R2);
@@ -48,7 +49,10 @@ from engine.capital_structure.covenant_terms import COVENANT_TERM_SCHEMA  # noqa
 from engine.capital_structure.document_terms import DOCUMENT_TERM_SCHEMA  # noqa: E402
 from engine.capital_structure.funding import ITEM_RULES  # noqa: E402
 from engine.capital_structure.instrument_candidates import INSTRUMENT_CANDIDATE_TERM_SCHEMA  # noqa: E402
-from engine.capital_structure.instrument_resolution import resolve_instruments  # noqa: E402
+from engine.capital_structure.instrument_resolution import (  # noqa: E402
+    resolve_instruments,
+    visible_candidate_count,
+)
 from engine.capital_structure.issuer_state_contracts import (  # noqa: E402
     COMPATIBLE_INPUT_SCHEMAS,
     CandidateBundle,
@@ -299,33 +303,18 @@ def _issuer_rows(path: Path, json_column: str, issuer_id: str, label: str) -> tu
     return tuple(rows)
 
 
-def _instant(value: Any) -> datetime | None:
-    """An aware ISO-8601 instant, or ``None`` when the text is not one."""
-    if not isinstance(value, str) or not value:
-        return None
-    text = value[:-1] + "+00:00" if value.endswith("Z") else value
-    try:
-        parsed = datetime.fromisoformat(text)
-    except ValueError:
-        return None
-    return parsed if parsed.tzinfo is not None else None
-
-
-def _any_visible(records: Sequence[Mapping[str, Any]], as_of: str) -> bool:
-    """Whether any candidate could be visible at ``as_of`` (the resolver's rule).
-
-    Only a record whose ``point_in_time.available_at`` parses and is later than
-    the cutoff counts as not yet visible; an unreadable timestamp or cutoff is
-    left to the resolver, which refuses it as the integrity fault it is.
-    """
-    cutoff = _instant(as_of)
-    if cutoff is None:
-        return True
-    for record in records:
-        available = _instant((record.get("point_in_time") or {}).get("available_at"))
-        if available is None or available <= cutoff:
-            return True
-    return False
+def _candidate_bundle(records: tuple[dict[str, Any], ...], support: str, as_of: str) -> CandidateBundle:
+    return CandidateBundle(
+        GenerationBinding(
+            CANDIDATE_FAMILY,
+            INSTRUMENT_CANDIDATE_TERM_SCHEMA,
+            support,
+            artifact_sha256=sha256_of(list(records)),
+            as_of=as_of,
+        ),
+        records,
+        as_of,
+    )
 
 
 def _bind_instruments(root: Path, issuer_id: str, as_of: str) -> FamilyEntry:
@@ -338,12 +327,14 @@ def _bind_instruments(root: Path, issuer_id: str, as_of: str) -> FamilyEntry:
             reason_codes=("candidate_terms_not_materialized",),
         )
     records = _issuer_rows(ledger_path, "candidate_term_json", issuer_id, "instrument_candidate_terms")
-    if not records or not _any_visible(records, as_of):
-        # A candidate compiled after the cutoff is not yet known at ``as_of``:
-        # the nightly compiles candidates after the state step fixes the
-        # cutoff, so an issuer's first candidates are on file one night before
-        # they are visible.  At ``as_of`` none had been materialized — a typed
-        # unavailability, never the resolver's whole-run refusal.
+    # The nightly compiles candidates after the state step, so a freshly
+    # compiled candidate is stamped available after the state's cutoff.  An
+    # issuer none of whose candidates is visible at the cutoff has no candidate
+    # terms as of it: unavailable, never a resolver refusal.  Carried rows keep
+    # their first available_at, so they bind on the next night's cutoff.  The
+    # count runs every row check resolution runs, so lateness never hides a
+    # tampered, malformed or incomplete row.
+    if not records or not visible_candidate_count(_candidate_bundle(records, "partial", as_of), as_of):
         return FamilyEntry(
             family=INSTRUMENTS_FAMILY,
             support="unavailable",
@@ -351,7 +342,9 @@ def _bind_instruments(root: Path, issuer_id: str, as_of: str) -> FamilyEntry:
         )
     decisions_path = root / DECISIONS_FILENAME
     if decisions_path.exists():
-        decisions = _read_jsonl_records(decisions_path, "instrument_resolution_decisions")
+        decisions = _issuer_decisions(
+            _read_jsonl_records(decisions_path, "instrument_resolution_decisions"), issuer_id
+        )
         decided_by = DECIDED_BY_LEDGER
         limits: tuple[str, ...] = ()
     else:
@@ -365,18 +358,7 @@ def _bind_instruments(root: Path, issuer_id: str, as_of: str) -> FamilyEntry:
     # when every candidate resolved, so the published binding never overstates.
     support = "partial"
     while True:
-        bundle = CandidateBundle(
-            GenerationBinding(
-                CANDIDATE_FAMILY,
-                INSTRUMENT_CANDIDATE_TERM_SCHEMA,
-                support,
-                artifact_sha256=sha256_of(list(records)),
-                as_of=as_of,
-            ),
-            records,
-            as_of,
-        )
-        instrument_set = resolve_instruments(bundle, resolution_inputs, as_of)
+        instrument_set = resolve_instruments(_candidate_bundle(records, support, as_of), resolution_inputs, as_of)
         if support == "partial" and not instrument_set.unresolved_candidate_ids:
             support = "supported"
             continue
@@ -395,6 +377,25 @@ def _bind_instruments(root: Path, issuer_id: str, as_of: str) -> FamilyEntry:
         ),
         record=instrument_set,
     )
+
+
+def _issuer_decisions(
+    decisions: Sequence[Mapping[str, Any]], issuer_id: str
+) -> tuple[Mapping[str, Any], ...]:
+    """The decisions that can bear on one issuer's resolution.
+
+    The ledger holds every issuer's decisions, while the resolver requires
+    exactly one issuer per resolution.  Only a decision naming another issuer
+    is left out; a record without a usable ``issuer_id`` still reaches the
+    resolver, which refuses it as the integrity fault it is.
+    """
+    kept = []
+    for record in decisions:
+        owner = record.get("issuer_id")
+        if isinstance(owner, str) and owner and owner != issuer_id:
+            continue
+        kept.append(record)
+    return tuple(kept)
 
 
 def _bind_share_basis(root: Path, issuer_id: str, as_of: str) -> FamilyEntry:
