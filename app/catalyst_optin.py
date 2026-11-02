@@ -296,13 +296,14 @@ class SupabaseConsentRpcOwner(ConsentOwner):
         self._pg_override = pg
 
     # PostgREST answers a `raise exception 'NAME'` from inside an RPC with HTTP 400 and
-    # a JSON body whose "message" is that name. Only these allow-listed, public-safe
+    # a JSON body {"code": "P0001", "message": NAME}. Only these allow-listed, public-safe
     # names become 4xx gates the browser can act on; every other failure keeps the
     # generic 503 the lifecycle applies, so SQL text never reaches a visitor.
+    # INVALID_PENDING_REF is deliberately absent: the lifecycle already checks the ref
+    # format, so that name can only mean a server-side fault and stays a 503.
     REFUSALS: dict[str, tuple[str, int]] = {
         # resolve(): the ref is unknown, expired, consumed or for another address.
         "PENDING_REF_UNAVAILABLE": ("PENDING_CONSENT_EXPIRED", 410),
-        "INVALID_PENDING_REF": ("INVALID_VERIFICATION_REF", 400),
         # confirm(): the owner's own veto chain, by name.
         "CONSENT_ADDRESS_SUPPRESSED": ("ADDRESS_SUPPRESSED", 403),
         "CONSENT_GOTRUE_UNVERIFIED": ("IDENTITY_UNVERIFIED", 403),
@@ -319,7 +320,10 @@ class SupabaseConsentRpcOwner(ConsentOwner):
             return None
         try:
             raw = exc.read()
-            message = json.loads(raw.decode("utf-8", "replace")).get("message") if raw else None
+            body = json.loads(raw.decode("utf-8", "replace")) if raw else {}
+            if body.get("code") != "P0001":  # only a `raise exception` body can map
+                return None
+            message = body.get("message")
         except Exception:  # no body, not JSON, not an object: not a named refusal
             return None
         return cls.REFUSALS.get(message.strip()) if isinstance(message, str) else None

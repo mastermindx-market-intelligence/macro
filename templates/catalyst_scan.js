@@ -308,10 +308,10 @@
           PENDING_CONSENT_EXPIRED: "That verification request has expired. Request a new code.",
           PENDING_CONSENT_REPLAYED: "That verification was already used. Request a new code.",
           PENDING_CONSENT_MISMATCH: "The code does not belong to this verification request. Request a new code.",
-          CONSENT_REVOKED_OR_CHANGED: "Updates for this event were withdrawn earlier and cannot be re-enabled.",
+          CONSENT_REVOKED_OR_CHANGED: "Updates for this event already exist with a different ticker list or were withdrawn; this request cannot change them.",
+          CONSENT_INTEREST_MISMATCH: "The code does not match the tickers in this verification request. Request a new code.",
           ADDRESS_SUPPRESSED: "This address has opted out; no updates will be sent.",
-          IDENTITY_UNVERIFIED: "The code could not be verified for this address.",
-          INVALID_VERIFICATION_REF: "The verification request is no longer valid. Start again."
+          IDENTITY_UNVERIFIED: "The code could not be verified for this address."
         }[json && typeof json.detail === "string" ? json.detail : ""];
         const e = new Error(named ? named :
           res.status === 429 ? "Rate limit reached. Try again later." :

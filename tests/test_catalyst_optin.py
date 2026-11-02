@@ -574,7 +574,6 @@ def _rpc_refusal(name: str):
 
 @pytest.mark.parametrize("name,code,status", [
     ("PENDING_REF_UNAVAILABLE", "PENDING_CONSENT_EXPIRED", 410),
-    ("INVALID_PENDING_REF", "INVALID_VERIFICATION_REF", 400),
     ("CONSENT_ADDRESS_SUPPRESSED", "ADDRESS_SUPPRESSED", 403),
     ("CONSENT_GOTRUE_UNVERIFIED", "IDENTITY_UNVERIFIED", 403),
     ("CONSENT_ALREADY_REVOKED_OR_MISMATCHED", "CONSENT_REVOKED_OR_CHANGED", 409),
@@ -602,6 +601,9 @@ def test_named_rpc_refusals_become_public_4xx_gates(name, code, status):
 
 @pytest.mark.parametrize("exc", [
     _rpc_refusal("CONSENT_PURPOSE_INVALID"),              # app-side bug: not a visitor gate
+    _rpc_refusal("INVALID_PENDING_REF"),                  # server-computed tag fault, not a visitor gate
+    _rpc_http_error(400, json.dumps({"code": "PGRST100", "message": "CONSENT_ADDRESS_SUPPRESSED"}).encode()),
+    _rpc_http_error(400, json.dumps({"message": "PENDING_REF_UNAVAILABLE"}).encode()),  # no P0001 code
     _rpc_refusal("CATALYST_CONSENT_RLS_MODE_BLOCK"),      # install fence name
     _rpc_refusal("CONSENT_ADDRESS_SUPPRESSED: extra"),    # must match exactly
     _rpc_http_error(400, b"not json"),
