@@ -17402,11 +17402,10 @@ jobs:
     #   - all test_ruling_graph.py assertions pass
     # The graph is display-only (RUL-CL-12: authority_ceiling A1_EXPLAIN).
     # Mirrors cycle-pattern-authority pattern.
-    # fetch-depth 0 + explicit base fetch: the checker needs `git merge-base HEAD
-    # origin/main` for its diff-scoped H1/H2/W1 scans. On a shallow checkout there
-    # is no base ref, the checker degrades to skip-diff-checks, and the job goes
-    # green while guarding nothing — the #1195 shallow-cut incident class (see the
-    # board-contradictions job above).
+    # Hosted CI supplies the planner-pinned base; trusted PC CI derives the
+    # same base only from an exact two-parent tested merge. Exact-base replay
+    # uses the bound main identity with an empty diff, not a guessed parent.
+    # No moving-ref fetch or skipped H1/H2/W1 scan on missing Git history.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17421,8 +17420,46 @@ jobs:
         run: python scripts/build_ruling_graph.py --check
       - name: conflict checker (hard fail on new FDR family or privacy boundary violations)
         run: |
-          git fetch origin ${{ github.base_ref || 'main' }}
-          RULING_DIFF_BASE="origin/${{ github.base_ref || 'main' }}" python scripts/check_ruling_conflicts.py
+          # Both routes pin tested HEAD; never fetch a moving canonical ref.
+          head_sha="$(git rev-parse --verify HEAD)"
+          if [ -z "${TESTED_BASE_SHA:-}" ]; then
+            if [ "${CI_DISABLE_BASE_REPLAY:-}" = "1" ] || [ "${CI_SEMANTIC_ROLE:-}" = "main" ]; then
+              if [ "${CI_DISABLE_BASE_REPLAY:-}" != "1" ] || [ "${CI_SEMANTIC_ROLE:-}" != "main" ] || [ "${CI_BASE_SHA:-}" != "$head_sha" ] || [ "${CI_TESTED_TREE_SHA:-}" != "$head_sha" ]; then
+                echo "::error::ruling-graph invalid base-replay identity: head=$head_sha base=${CI_BASE_SHA:-absent}"
+                exit 1
+              fi
+              TESTED_BASE_SHA="$head_sha"
+            else
+              read -r tested_tree fallback_base subject_head extra < <(git rev-list --parents -n 1 HEAD)
+              if [ "$tested_tree" != "$head_sha" ] || [ -z "${fallback_base:-}" ] || [ -z "${subject_head:-}" ] || [ -n "${extra:-}" ]; then
+                echo "::error::ruling-graph unproven two-parent candidate: head=$head_sha"
+                exit 1
+              fi
+              TESTED_BASE_SHA="$fallback_base"
+            fi
+          fi
+          if [ "$TESTED_BASE_SHA" != "$head_sha" ]; then
+            first_parent="$(git rev-parse --verify 'HEAD^1' 2>/dev/null)" || {
+              echo "::error::ruling-graph first parent unavailable: head=$head_sha base=$TESTED_BASE_SHA"
+              exit 1
+            }
+            if [ "$TESTED_BASE_SHA" != "$first_parent" ]; then
+              echo "::error::ruling-graph planner base does not match first parent: head=$head_sha base=$TESTED_BASE_SHA parent=$first_parent"
+              exit 1
+            fi
+          elif ! { [ "${CI_DISABLE_BASE_REPLAY:-}" = "1" ] && [ "${CI_SEMANTIC_ROLE:-}" = "main" ] && [ "${CI_BASE_SHA:-}" = "$head_sha" ] && [ "${CI_TESTED_TREE_SHA:-}" = "$head_sha" ]; } && ! { [ "${GITHUB_EVENT_NAME:-}" = "workflow_dispatch" ] && [ "${GITHUB_REF:-}" = "refs/heads/main" ] && [ "${TESTED_TREE_SHA:-}" = "$head_sha" ]; }; then
+            echo "::error::ruling-graph equal base is not pinned main: head=$head_sha base=$TESTED_BASE_SHA"
+            exit 1
+          fi
+          if ! git cat-file -e "${TESTED_BASE_SHA}^{commit}"; then
+            echo "::error::ruling-graph missing tested base object: head=$head_sha base=$TESTED_BASE_SHA"
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$TESTED_BASE_SHA" HEAD; then
+            echo "::error::ruling-graph tested base ancestry unavailable: head=$head_sha base=$TESTED_BASE_SHA"
+            exit 1
+          fi
+          RULING_DIFF_BASE="$TESTED_BASE_SHA" python scripts/check_ruling_conflicts.py
       - name: conflict checker selftest (gate fires on planted violations)
         run: python scripts/check_ruling_conflicts.py --selftest
       - name: ruling graph test suite
