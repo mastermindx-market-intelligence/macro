@@ -159,6 +159,72 @@ row — after which the seat can read the opened body with read-only pane tools.
 no authenticated display proof it did not observe.
 
 
+### 4c. Entitled display proof — seat-observed after the Chairman's click (2026-11-01, later still)
+
+The Chairman performed the one remaining human act named in §4b: one click on
+"Setup detail" in the CVCO pool row, in the shared browser pane holding the
+existing signed-in session. The detail opened as a read-only modal
+("CVCO — Setup detail · read only", Close control) rather than inline under
+the row; the `<details>` summary in the pool row stays rendered closed, which
+is why `read_page` on the row node alone showed nothing new. The seat then
+read the opened body with read-only pane tools only (screenshot + zoom); no
+click, no script, no DOM export (those were refused in §4b and stay refused).
+No credential was typed or seen. Served page bytes were unchanged
+(`origin/main` f50fc7b7, §4b).
+
+Displayed body versus the source row (`factordata/us_standouts.json`, CVCO in
+`buy`, the same payload the materialized-template evaluation in §4b used):
+
+| Displayed (modal) | Source field | Source value | Match |
+| --- | --- | --- | --- |
+| Source as-of 2026-10-30 · Quote time Not supplied | payload `as_of` / `price_as_of` | 2026-10-30 / null | MATCH |
+| Entry conditions: "Buy zone — entry open now" | `entry_signal.headline` (status `buy_now`) | same | MATCH |
+| "Entry read as of 2026-10-29 · quote time not supplied" | `signal_asof` / `price_as_of` | 2026-10-29 / null | MATCH |
+| Snapshot price $619.00 | `price` / `entry_signal.spot` | 619.0 | MATCH |
+| Entry zone · low $589.20 / high $619.00 | `entry_signal.buy_zone.low/high` | 589.2 / 619.0 | MATCH |
+| Entry-method stop $506.30 | `entry_signal.stop` | 506.3 | MATCH |
+| Base invalidation $491.11 | `hold.invalidation` | 491.11 | MATCH |
+| Chase boundary $630.90 | `entry_signal.chase_above` | 630.9 | MATCH |
+| "Entry stop and base invalidation are different. Chase boundary is not a target." | derived caption (stop ≠ invalidation) | 506.3 ≠ 491.11 | MATCH |
+| Why it is here: "Original source · buy fired; forward confirmation pending" | setup kind label + `signal.reason` | native source · "buy fired; forward confirmation pending" | MATCH (pre-#10385 why-copy; see below) |
+| Above 200-day trend: Yes | `signal.above200` | true | MATCH |
+| Weekly confirmation: No | `signal.weekly_bull` | false | MATCH |
+| Provisional observation: No | `signal.provisional` / `hold.provisional` | false / false | MATCH |
+| Chart: "Published zone chart · no raw price series" | no price series in payload | (none) | MATCH |
+| "Target and holding period unavailable in this view. Reward/risk and win probability are not calculated." | no target/hold-period fields; no R/R field | (none) | MATCH |
+| "Evidence & source details" expander (closed) | J8 provenance block | not opened (would need a second click) | NOT OBSERVED |
+
+Reading of the journey law against this observation:
+
+- **J5/J6 display** — the displayed body is the source binding, field for field;
+  no invented level, no invented probability, no target where the payload has
+  none. The plan-relation attribute (`data-plan-relation`) is a DOM attribute the
+  seat could not export, so J6's "supported plan relation" clause stays
+  **browser-runtime, not observed**; the §4b materialized-template receipt
+  records it empty.
+- **J11 why-copy** — the modal shows the **pre-#10385** why-text ("buy fired;
+  forward confirmation pending", the raw `signal.reason`), as expected: #10385
+  is unmerged and the served bytes are f50fc7b7. This is the exact string the
+  #10385 why-copy lifecycle family replaces; production proof of #10385 is the
+  first nightly after its merge rendering this row without the raw reason
+  token.
+- **J7** — unchanged from §4b: unsatisfiable from published artifacts (routed on
+  #6817). **J9** — `#plv-asof` not observed (runtime).
+- **Anonymous boundary** — unchanged (§3/§4b): anonymous `prophet/index.json`
+  is `locked`, and the setup body is not present in the anonymous bytes, DOM,
+  cache or telemetry; the entitled body appears only after the signed-in
+  `account.js` load and a user click.
+
+**Disposition.** The R7 US product row ("trace one real opportunity … capture
+authenticated machine and browser output and explain the ranking and refusal
+under the same cut") is now evidenced for CVCO end to end: machine output
+(§2–§3 receipts), anonymous refusal (§3), authenticated browser display (this
+section). What remains is forward, not display: the W3 next-day leg for
+FLS/CVCO after the next completed session, and the #10385 production proof.
+The structured record of this observation is
+`r7_journey_receipts_2026-11-01/display_CVCO_main_f50fc7b7_seat_observed.json`
+(seat-transcribed from the rendered modal, labelled as such; not a checker run).
+
 ## 5. Next-day return leg (W3)
 
 W3 durable ledger `data/us_prophet_rank/w3/` reports 30 paired sessions, 1 matured
