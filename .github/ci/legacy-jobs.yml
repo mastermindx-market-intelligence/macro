@@ -12931,6 +12931,7 @@ jobs:
           tests/test_capital_structure_instrument_resolution.py
           tests/test_c19_wp14_capital_observation_pins.py
           tests/test_capital_structure_event_spine.py
+          tests/test_capital_structure_registration_lifecycle.py
           tests/test_capital_structure_graph.py
           tests/test_capital_structure_legacy_compat.py
           tests/test_capital_structure_pit.py
@@ -12946,6 +12947,7 @@ jobs:
           tests/test_capital_policy_projection.py
           tests/test_capital_structure_api.py
           tests/test_capital_structure_state_bundle.py
+          tests/test_capital_structure_state_bundle_document_terms.py
           tests/test_capital_structure_state_api.py
           tests/test_capital_structure_source_identity.py
           tests/test_capital_structure_source_manifest.py
