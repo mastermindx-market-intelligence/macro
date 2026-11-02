@@ -84,20 +84,20 @@ watches,invalid_payload,yes,templates/watchlist.js:183,"Unparseable stored blob 
 watches,zero,no,,"Cannot occur — zero holdings and empty list are one state here.",n/a,none,none,none,NOT YET PRODUCED
 watches,empty_search,yes,templates/watchlist.js:435,"Book-empty copy names which book is empty and what to do; other books stay.",other books; list,none,polite,U10,PRODUCED
 watches,uncertain_command,yes,templates/watchlist.js:189,"Acknowledgement only after the write lands; no pre-write optimistic 'Saved'; near-misses never emit.",list; read state,none,assertive,U10,PRODUCED
-cycles,fresh,yes,templates/sector_cycles.js:1529,"Panel header 'Sector rotation · <asOf>'; cards, hazards, legs and chart drawn.",chart; cards; legs; hazards,none,none,C24,PRODUCED
-cycles,stale,yes,templates/sector_cycles.js:1306,"Analyst note kept; amber or red 'curated <N>d ago' badge; engine read stays.",chart; cards; legs,none,polite,C12,PRODUCED
+cycles,fresh,yes,templates/sector_cycles.js:1665,"Panel header 'Sector rotation · <asOf>'; cards, hazards, legs and chart drawn.",chart; cards; legs; hazards,none,none,C24,PRODUCED
+cycles,stale,yes,templates/sector_cycles.js:1442,"Analyst note kept; amber or red 'curated <N>d ago' badge; engine read stays.",chart; cards; legs,none,polite,C12,PRODUCED
 cycles,incompatible_generation,yes,NOT YET PRODUCED,"Keep cycles; 'context from <date> — different generation' note; artifacts never joined across generations.",chart; cards; oscillator,none,polite,C20;U02,NOT YET PRODUCED
-cycles,partial,yes,templates/sector_cycles.js:1458,"Leg shows 'What drove this move — research pending'; measured leg numbers stay.",chart; cards; position,none,polite,C11;C13,PRODUCED
-cycles,corrected,yes,templates/sector_cycles.js:1332,"'revised <date>: <summary>' line under the analyst note; original narrative kept dated.",chart; legs; engine read,none,polite,C12;U05,PRODUCED
-cycles,abstained,yes,templates/sector_cycles.js:1077,"Hazard PRIOR badge, muted: KM base rate replaces model claim; badge never omitted.",chart; cards; legs,none,polite,C19;U14,PRODUCED
-cycles,error,yes,templates/sector_cycles.js:2052,"Failed rotation or fragmentation fetch silently drops chips; core chart unaffected; no error UI.",chart; cards; legs; panel,retry,assertive,C20;C28;U02,PRODUCED
-cycles,empty,yes,templates/sector_cycles.js:1435,"'No major turns in window.'; position, phase and stance read stay.",chart; cards; position,none,polite,C10,PRODUCED
+cycles,partial,yes,templates/sector_cycles.js:1594,"Leg shows 'What drove this move — research pending'; measured leg numbers stay.",chart; cards; position,none,polite,C11;C13,PRODUCED
+cycles,corrected,yes,templates/sector_cycles.js:1468,"'revised <date>: <summary>' line under the analyst note; original narrative kept dated.",chart; legs; engine read,none,polite,C12;U05,PRODUCED
+cycles,abstained,yes,templates/sector_cycles.js:1172,"Hazard PRIOR badge, muted: KM base rate replaces model claim; badge never omitted.",chart; cards; legs,none,polite,C19;U14,PRODUCED
+cycles,error,yes,templates/sector_cycles.js:2188,"Failed rotation or fragmentation fetch silently drops chips; core chart unaffected; no error UI.",chart; cards; legs; panel,retry,assertive,C20;C28;U02,PRODUCED
+cycles,empty,yes,templates/sector_cycles.js:1571,"'No major turns in window.'; position, phase and stance read stay.",chart; cards; position,none,polite,C10,PRODUCED
 cycles,no_access,no,,"Cannot occur — Cycles reads public marketdata files; no tier gate exists.",n/a,none,none,none,NOT YET PRODUCED
-cycles,loading,yes,templates/sector_cycles.js:2001,"Core paints immediately; heavy series hydrate after first paint; guarded empties never throw.",cards; chart; panel,none,polite,C28;C24,PRODUCED
+cycles,loading,yes,templates/sector_cycles.js:2137,"Core paints immediately; heavy series hydrate after first paint; guarded empties never throw.",cards; chart; panel,none,polite,C28;C24,PRODUCED
 cycles,offline,yes,NOT YET PRODUCED,"Keep workspace; 'offline — series unavailable' note with retry; baked as-of date never overwritten.",chart; cards,retry,polite,C28;U11,NOT YET PRODUCED
 cycles,unauthorized,no,,"Cannot occur — no authenticated fetch on Cycles; payloads are public.",n/a,none,none,none,NOT YET PRODUCED
 cycles,locked,no,,"Cannot occur — no premium surface on the Cycles workspace.",n/a,none,none,none,NOT YET PRODUCED
 cycles,invalid_payload,yes,templates/sector_cycles.js:19,"Core payload absent or malformed: board never mounts; static shell remains; no typed UI.",page shell; nav,none,polite,C28;U02,PRODUCED
-cycles,zero,yes,templates/sector_cycles.js:1546,"'No sectors are at prime entry right now.' row kept; bucket zero explicit.",map rows; chart; cards,none,polite,C01;C07,PRODUCED
-cycles,empty_search,yes,templates/sector_cycles.js:1803,"Search hides non-matching rows and groups; no no-results copy; All and Clear offered.",picker; chips; All/Clear,clear search,polite,C08,PRODUCED
+cycles,zero,yes,templates/sector_cycles.js:1682,"'No sectors are at prime entry right now.' row kept; bucket zero explicit.",map rows; chart; cards,none,polite,C01;C07,PRODUCED
+cycles,empty_search,yes,templates/sector_cycles.js:1939,"Search hides non-matching rows and groups; no no-results copy; All and Clear offered.",picker; chips; All/Clear,clear search,polite,C08,PRODUCED
 cycles,uncertain_command,no,,"Cannot occur — view state is local; no persisted commands to reconcile.",n/a,none,none,none,NOT YET PRODUCED

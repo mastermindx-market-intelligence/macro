@@ -310,21 +310,21 @@ def test_cited_sources_carry_a_fragment():
 
 def test_zh_rule_catches_a_misattributed_zh():
     """PRC-049 falsifier, restated in wave 7 (PRC-050 / SIC-V7-C01): stanceHTML opens at
-    templates/sector_cycles.js:158 (:155 is the TONE_CLS anticipatory/neutral row); its
-    L("Resolved stance · engine", "综合策略 · 引擎") sits at :162, outside the :155 window (:152-158). The
-    :155-misattributed row clears the EN half anyway — under the wave-6 substring rule on the identifier
-    substring ``stance`` (stances :152, stanceLabel / stanceHTML :157-158), and under the wave-7 whole-word
-    rule (SIC-V7-C03 (i)) on the whole token ``stance`` in ``nw.stance`` at :157 — so this falsifier
+    templates/sector_cycles.js:205 (:202 is the TONE_CLS anticipatory/neutral row); its
+    L("Resolved stance · engine", "综合策略 · 引擎") sits at :209, outside the :202 window (:199-205). The
+    :202-misattributed row clears the EN half anyway — under the wave-6 substring rule on the identifier
+    substring ``stance`` (stances :199, stanceLabel / stanceHTML :204-205), and under the wave-7 whole-word
+    rule (SIC-V7-C03 (i)) on the whole token ``stance`` in ``nw.stance`` at :204 — so this falsifier
     discriminates on the ZH half only: the ZH fragment is outside the window and the source carries no ZH NEW
     declaration and no ZH path:line. It passes once the ZH is sub-cited to the line that carries it or
     declared NEW; a ZH string the sub-cited line does not carry still fails. The EN-half falsifier is
     test_en_rule_rejects_identifier_substrings."""
-    row = {"en": "Resolved stance · engine", "zh": "综合策略 · 引擎", "role": "label", "source": "templates/sector_cycles.js:155"}
+    row = {"en": "Resolved stance · engine", "zh": "综合策略 · 引擎", "role": "label", "source": "templates/sector_cycles.js:202"}
     assert row_gaps(row) == ["zh fragment not in the cited window; no ZH NEW declaration and no ZH path:line"]
-    assert row_gaps(dict(row, source="templates/sector_cycles.js:155; ZH templates/sector_cycles.js:162")) == []
-    assert row_gaps(dict(row, source="templates/sector_cycles.js:155 (EN); ZH NEW (test fixture)")) == []
-    assert row_gaps(dict(row, zh="不存在的字串", source="templates/sector_cycles.js:155; ZH templates/sector_cycles.js:162")) == ["zh fragment not found at the ZH path:line"]
-    assert row_gaps(dict(row, source="templates/sector_cycles.js:162")) == []
+    assert row_gaps(dict(row, source="templates/sector_cycles.js:202; ZH templates/sector_cycles.js:209")) == []
+    assert row_gaps(dict(row, source="templates/sector_cycles.js:202 (EN); ZH NEW (test fixture)")) == []
+    assert row_gaps(dict(row, zh="不存在的字串", source="templates/sector_cycles.js:202; ZH templates/sector_cycles.js:209")) == ["zh fragment not found at the ZH path:line"]
+    assert row_gaps(dict(row, source="templates/sector_cycles.js:209")) == []
 
 
 def test_en_rule_rejects_identifier_substrings():
@@ -332,8 +332,8 @@ def test_en_rule_rejects_identifier_substrings():
     components.grader_caption cited at engine/sector_central_grader.py:332 (the frozen_df window predicate)
     has no whole-word EN hit — the wave-6 substring rule passed it on ``win`` inside ``window`` — so it fails
     the EN half; the real row, cited at :498-506 where dir_hit_rate is produced and defined, passes.
-    (2) The stance shape: the stance_label row cited at templates/sector_cycles.js:153 (window :150-156)
-    has ``stance`` only inside ``stances`` (:152), so the substring rule passed it and the whole-word rule
+    (2) The stance shape: the stance_label row cited at templates/sector_cycles.js:200 (window :197-203)
+    has ``stance`` only inside ``stances`` (:199), so the substring rule passed it and the whole-word rule
     fails it; its ZH is outside that window too, so both halves report. Each case first shows that the
     substring rule would have passed."""
     deck = load_deck()
@@ -342,10 +342,10 @@ def test_en_rule_rejects_identifier_substrings():
     stale = dict(real, source="engine/sector_central_grader.py:332 dir_hit_rate (PRC-051 fixture); ZH NEW (test fixture)")
     assert any(c in source_window(stale["source"]) for c in fragments(stale))  # win inside window
     assert row_gaps(stale) == ["fragment not found"]
-    row = {"en": "Resolved stance · engine", "zh": "综合策略 · 引擎", "role": "label", "source": "templates/sector_cycles.js:153"}
-    assert any(c in source_window(row["source"]) for c in fragments(row))  # stance inside stances (:152)
+    row = {"en": "Resolved stance · engine", "zh": "综合策略 · 引擎", "role": "label", "source": "templates/sector_cycles.js:200"}
+    assert any(c in source_window(row["source"]) for c in fragments(row))  # stance inside stances (:199)
     assert row_gaps(row) == ["fragment not found", "zh fragment not in the cited window; no ZH NEW declaration and no ZH path:line"]
-    assert row_gaps(dict(row, source="templates/sector_cycles.js:153 (EN); ZH NEW (test fixture)")) == ["fragment not found"]
+    assert row_gaps(dict(row, source="templates/sector_cycles.js:200 (EN); ZH NEW (test fixture)")) == ["fragment not found"]
 
 
 def test_all_seventeen_states_present():

@@ -41353,7 +41353,15 @@ jobs:
         # `from jinja2 import Environment, FileSystemLoader` at module scope,
         # so importing any name from it -- even a pure helper -- requires
         # jinja2 in this job's venv even though the RIG steps above never use it.
-        run: pip install pyyaml pytest jinja2
+        # numpy + pandas are needed ONLY for the Sector Paper design-reference
+        # guards step at the end of this job: tests/test_sector_paper_copy_deck.py
+        # binds the deck's stance chips to engine.cycle_ontology.DOCTRINE_STANCES
+        # (SIC-V4-C01), and engine/cycle_ontology.py imports numpy and pandas at
+        # module scope. ci run 41443578532 / ci-pack-11 job 125273606718 measured
+        # the miss (ModuleNotFoundError: numpy). The install string below is the
+        # one 13 sibling jobs already use, so the pack shares that venv instead
+        # of building a new one.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: reference-integrity selftest (gate fires on synthetic violations)
         run: python3 scripts/check_reference_integrity.py --selftest
       - name: RIG artifact integrity across the checkout (hard gate)

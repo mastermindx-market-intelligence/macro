@@ -115,17 +115,17 @@ shown as zero (`templates/subsector_detail.html.j2:124`, `sgn`).
 
 | State | Trigger | Tier-1 render |
 |---|---|---|
-| fresh | `templates/sector_cycles.js:1529` | 'Sector rotation · <asOf>' header; cards/legs/hazards drawn |
-| stale | `templates/sector_cycles.js:1306` | amber/red 'curated <N>d ago' badge; engine read stays |
-| partial | `templates/sector_cycles.js:1458` | 'What drove this move — research pending' |
-| corrected | `templates/sector_cycles.js:1332` | 'revised <date>: <summary>' provenance line |
-| abstained | `templates/sector_cycles.js:1077` | hazard PRIOR badge, muted; badge never omitted |
-| error | `templates/sector_cycles.js:2052` | failed rotation fetch silently drops chips; no error UI |
-| empty | `templates/sector_cycles.js:1435` | 'No major turns in window.' |
-| loading | `templates/sector_cycles.js:2001` | core paints; heavy series hydrate after first paint |
+| fresh | `templates/sector_cycles.js:1665` | 'Sector rotation · <asOf>' header; cards/legs/hazards drawn |
+| stale | `templates/sector_cycles.js:1442` | amber/red 'curated <N>d ago' badge; engine read stays |
+| partial | `templates/sector_cycles.js:1594` | 'What drove this move — research pending' |
+| corrected | `templates/sector_cycles.js:1468` | 'revised <date>: <summary>' provenance line |
+| abstained | `templates/sector_cycles.js:1172` | hazard PRIOR badge, muted; badge never omitted |
+| error | `templates/sector_cycles.js:2188` | failed rotation fetch silently drops chips; no error UI |
+| empty | `templates/sector_cycles.js:1571` | 'No major turns in window.' |
+| loading | `templates/sector_cycles.js:2137` | core paints; heavy series hydrate after first paint |
 | invalid_payload | `templates/sector_cycles.js:19` | payload absent: board never mounts; no typed UI |
-| zero | `templates/sector_cycles.js:1546` | 'No sectors are at prime entry right now.' |
-| empty_search | `templates/sector_cycles.js:1803` | rows/groups hidden; no no-results copy; All/Clear offered |
+| zero | `templates/sector_cycles.js:1682` | 'No sectors are at prime entry right now.' |
+| empty_search | `templates/sector_cycles.js:1939` | rows/groups hidden; no no-results copy; All/Clear offered |
 
 ## Not yet produced
 
@@ -134,7 +134,7 @@ triggered until the trigger exists):
 
 - **corrected** — brief (R3A-92 producer-dependent gap); dossier (Record provenance);
   watches (record-owner dating); research (snapshot revisions). Cycles already produces
-  a narrative-revision note (`templates/sector_cycles.js:1332`); explore already produces
+  a narrative-revision note (`templates/sector_cycles.js:1468`); explore already produces
   the interval baseline-corrected reset (`templates/sector_central.html.j2:1973`).
 - **stale** — dossier (no freshness threshold on the detail page); research (no snapshot
   clock on the handoff).
@@ -167,7 +167,7 @@ the surface reserves the geometry the content will occupy (`.skel mr-skel-line` 
 `mr-skel-row` line/row skeletons at `templates/sector_central.html.j2:2207-2209`, the
 420px chart host at `templates/subsector_detail.html.j2:59`) and the useful core paints
 first while optional depth loads (cycles' split core/series payloads,
-`templates/sector_cycles.js:2001`; the cycles SSR as-of starts as an ellipsis until JS,
+`templates/sector_cycles.js:2137`; the cycles SSR as-of starts as an ellipsis until JS,
 `templates/sector_cycles.html.j2:45`). Loading is announced politely, must never
 resemble empty (a still-loading list is not "no data"), and must never trigger a side
 effect — research's contract explicitly forbids loading-induced automatic saves (J10).
@@ -192,7 +192,7 @@ the newer snapshot, and never treats the withheld half as zero or empty. The 19 
 
 **Corrected.** A correction is a dated provenance event, not an overwrite: the original
 value or narrative stays visible with a 'revised <date>: summary' note beside it
-(cycles' revision provenance, `templates/sector_cycles.js:1332`; explore's 'Comparison
+(cycles' revision provenance, `templates/sector_cycles.js:1468`; explore's 'Comparison
 reset after a source change' when a baseline was corrected,
 `templates/sector_central.html.j2:1973`). Corrections come only from the record owner —
 no board invents a correction marker where the native source has no correction contract

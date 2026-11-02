@@ -12,9 +12,14 @@ actually exists in the repository:
 * every `#anchor` named alongside a template appears in that template's text;
 * every JSON artifact key cited as `site/…json[keys]` appears in the writer's source.
 
-Artifacts under `site/` or `data/` are built outputs: they are asserted to exist only
-when the built directory is present in the checkout, and skipped (with the reason
-recorded) when it is not — the writer's-source key check still runs either way.
+Artifacts under `site/` or `data/` split by git: a git-tracked file (a site page, a
+committed projection) is asserted whenever the checkout materializes its top dir
+(a sparse checkout reports its skip-worktree entries as skips); an untracked file is
+a BUILD OUTPUT that exists only after the site build ran, so build outputs are
+asserted only in a built checkout — one where at least one cited build output
+exists — and every one is skipped (with the reason recorded) in an unbuilt tree
+such as a ci-pack checkout. In a built tree a single missing artifact is therefore
+a failure, never a skip. The writer's-source key check still runs either way.
 Site-root URL fragments (``basket/…``, ``sectors/…``, bare ``stock.html`` …) are page
 URLs, not repo paths, and are skipped by classification, never asserted.
 """
@@ -23,6 +28,7 @@ from __future__ import annotations
 import csv
 import io
 import re
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -103,6 +109,51 @@ def _template_files(cell: str) -> list[Path]:
     return out
 
 
+def _artifact_tokens() -> set[str]:
+    """Every site//data token cited in the two observed columns."""
+    return {
+        tok
+        for row in MATRIX
+        for col in (PRODUCER_COL, ROUTE_COL)
+        for tok in _path_tokens(row[col])
+        if tok.startswith(("site/", "data/"))
+    }
+
+
+def _git_index(tokens: set[str]) -> tuple[set[str], set[str]]:
+    """`git ls-files -t` over the cited tokens: (tracked, skip-worktree).
+
+    H = tracked and checked out, S = tracked but skip-worktree (a sparse checkout).
+    A tree without git (an exported tarball) reports nothing, so every token is then
+    a build output and the built/unbuilt rule alone decides.
+    """
+    if not tokens:
+        return set(), set()
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(REPO), "ls-files", "-t", "--", *sorted(tokens)],
+            capture_output=True, text=True, check=False,
+        ).stdout
+    except OSError:
+        return set(), set()
+    tracked: set[str] = set()
+    skip_worktree: set[str] = set()
+    for line in out.splitlines():
+        tag, _, path = line.partition(" ")
+        if not path:
+            continue
+        tracked.add(path)
+        if tag == "S":
+            skip_worktree.add(path)
+    return tracked, skip_worktree
+
+
+ARTIFACT_TOKENS = _artifact_tokens()
+TRACKED_ARTIFACTS, SKIP_WORKTREE_ARTIFACTS = _git_index(ARTIFACT_TOKENS)
+BUILD_OUTPUTS = ARTIFACT_TOKENS - TRACKED_ARTIFACTS
+CHECKOUT_IS_BUILT = any((REPO / tok).exists() for tok in BUILD_OUTPUTS)
+
+
 def _check_cell(cell: str, row_id: str, col: str) -> tuple[list[str], list[str]]:
     """Run all assertions for one cell. Returns (failure messages, skip reasons)."""
     fails: list[str] = []
@@ -117,11 +168,19 @@ def _check_cell(cell: str, row_id: str, col: str) -> tuple[list[str], list[str]]
                 fails.append(f"{row_id}/{col}: cited path does not exist: {tok}")
         elif kind == "skip-absent":
             top = tok.split("/", 1)[0]
-            if (REPO / top).is_dir():
+            if tok in SKIP_WORKTREE_ARTIFACTS:
+                skips.append(f"{row_id}/{col}: {tok} — tracked, skip-worktree in this sparse checkout")
+            elif tok in TRACKED_ARTIFACTS:
+                if (REPO / top).is_dir():
+                    if not (REPO / tok).exists():
+                        fails.append(f"{row_id}/{col}: tracked site/data file missing: {tok}")
+                else:
+                    skips.append(f"{row_id}/{col}: {tok} — {top}/ absent from this checkout")
+            elif CHECKOUT_IS_BUILT:
                 if not (REPO / tok).exists():
                     fails.append(f"{row_id}/{col}: built artifact missing: {tok}")
             else:
-                skips.append(f"{row_id}/{col}: {tok} — {top}/ absent from this checkout")
+                skips.append(f"{row_id}/{col}: {tok} — build output; unbuilt checkout (no cited build output exists)")
         else:
             skips.append(f"{row_id}/{col}: {tok} — site-root page URL, not a repo path")
 
@@ -180,24 +239,39 @@ def test_cited_paths_symbols_and_anchors_exist(row: dict) -> None:
 def test_site_and_data_artifacts_report_skip_reasons(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    """The site//data skip path must engage exactly when the built dir is absent."""
+    """The build-output skip path must engage exactly when the checkout is unbuilt.
+
+    A ci-pack checkout is a full git tree with no site build (ci run 41443578532,
+    job 125273606585 measured the old top-dir rule asserting 26 rows' build
+    outputs against a `site/` that held only tracked files): there every cited
+    build output is skipped with its reason. A built tree (the render runner, a
+    local build) asserts every one, so a single missing artifact fails there.
+    """
     all_skips: list[str] = []
     for row in MATRIX:
         for col in (PRODUCER_COL, ROUTE_COL):
             _, skips = _check_cell(row[col], row["row_id"], col)
             all_skips += skips
-    absent = [d for d in ("site", "data") if not (REPO / d).is_dir()]
-    artifact_skips = [s for s in all_skips if "— site/ absent" in s or "— data/ absent" in s]
-    if absent:
-        assert artifact_skips, (
-            f"{', '.join(absent)} absent but no artifact token was skipped — "
+    assert BUILD_OUTPUTS, "the matrix cites no build output — nothing for this rule to guard"
+    build_skips = [s for s in all_skips if "— build output;" in s]
+    present = sorted(tok for tok in BUILD_OUTPUTS if (REPO / tok).exists())
+    if CHECKOUT_IS_BUILT:
+        assert not build_skips, (
+            f"built checkout ({len(present)} cited build outputs present), "
+            "so no build-output skip reasons expected"
+        )
+    else:
+        assert len(build_skips) >= len(BUILD_OUTPUTS), (
+            "unbuilt checkout but the cited build outputs were not all skipped — "
             "the skip rule is not engaging"
         )
-        for reason in artifact_skips[:5]:
+        for reason in build_skips[:5]:
             print(f"SKIP: {reason}")
-    else:
-        assert not artifact_skips, "built dirs present, so no artifact skip reasons expected"
-    print(f"{len(all_skips)} skipped tokens total")
+    print(
+        f"{len(all_skips)} skipped tokens total; build outputs cited {len(BUILD_OUTPUTS)}, "
+        f"present {len(present)}; tracked {len(TRACKED_ARTIFACTS)}, "
+        f"skip-worktree {len(SKIP_WORKTREE_ARTIFACTS)}"
+    )
 
 
 def test_every_row_records_something_resolvable() -> None:

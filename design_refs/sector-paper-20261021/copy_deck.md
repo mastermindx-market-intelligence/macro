@@ -55,7 +55,7 @@ colour.
 | `buyable_chip` | chip | Buyable | 可买 | 1 | 2 | templates/sector_central.html.j2:2184 |
 | `changed_label` | label | What changed? | 发生了什么变化？ | 2 | 8 | templates/sector_central.html.j2:1535 |
 | `rotation_link` | link | See the rotation map | 查看轮动图 | 4 | 5 | templates/sector_central.html.j2:2437 |
-| `select_all_cta` | cta | Select all visible | 全选可见 | 3 | 4 | templates/sector_cycles.js:794 |
+| `select_all_cta` | cta | Select all visible | 全选可见 | 3 | 4 | templates/sector_cycles.js:841 |
 | `breadth_label` | label | MARKET BREADTH | 市场广度 | 2 | 4 | templates/sector_central.html.j2:2319 |
 | `breadth_body` | body | Breadth tells you whether the rotation is a broad tide or a narrow few. Be selective when it is narrow. | 广度告诉你这是全面上涨还是少数领涨。领涨面窄时应精挑细选。 | 20 | 29 | templates/sector_central.html.j2:2317 |
 
@@ -82,15 +82,15 @@ colour.
 
 | key | role | EN | ZH | EN words | ZH chars | source |
 |---|---|---|---|---:|---:|---|
-| `title` | h1 | Where it stands | 所处位置 | 3 | 4 | templates/sector_cycles.js:1404 |
+| `title` | h1 | Where it stands | 所处位置 | 3 | 4 | templates/sector_cycles.js:1540 |
 | `tagline` | subtitle | Tap any card — or its line on the chart — to focus it | 点按任意卡片（或图中其曲线）以聚焦 | 12 | 17 | templates/sector_cycles.html.j2:104 |
-| `legs_h2` | h2 | Cycle legs — tap for the story | 周期区段 — 点击查看故事 | 6 | 11 | templates/sector_cycles.js:1428 |
+| `legs_h2` | h2 | Cycle legs — tap for the story | 周期区段 — 点击查看故事 | 6 | 11 | templates/sector_cycles.js:1564 |
 | `record_h2` | h2 | Track record | 跟踪记录 | 2 | 4 | templates/subsector_rotation.js:343 |
 | `evidence_date_label` | label | Evidence date | 证据日期 | 2 | 4 | templates/sector_central.html.j2:3711 |
 | `measured_order_label` | label | Measured order | 实测排序 | 2 | 4 | templates/sector_central.html.j2:3710 |
-| `last_trough_label` | label | Last trough | 上次底部 | 2 | 4 | templates/sector_cycles.js:1409 |
-| `last_peak_label` | label | Last peak | 上次顶部 | 2 | 4 | templates/sector_cycles.js:1410 |
-| `half_cycle_label` | label | Typical ½-cycle | 典型半周期 | 2 | 5 | templates/sector_cycles.js:1412 |
+| `last_trough_label` | label | Last trough | 上次底部 | 2 | 4 | templates/sector_cycles.js:1545 |
+| `last_peak_label` | label | Last peak | 上次顶部 | 2 | 4 | templates/sector_cycles.js:1546 |
+| `half_cycle_label` | label | Typical ½-cycle | 典型半周期 | 2 | 5 | templates/sector_cycles.js:1548 |
 | `from_central_label` | label | From Sector Central | 来自板块情报 | 3 | 6 | templates/_sector_prophet_context.html.j2:5 |
 | `members_label` | label | {n} stocks turning up | {n}只成分股转强 | 4 | 9 | docs/DESIGN_DOCTRINE.md:70 |
 | `history_label` | label | History | 历史 | 1 | 2 | templates/sector_central.html.j2:3716 |
@@ -102,7 +102,7 @@ colour.
 | `screener_link` | link | View sector in Screener → | 在筛选器中查看该板块 → | 4 | 11 | templates/_sector_prophet_context.html.j2:10 |
 | `return_link` | link | Return to sector evidence → | 返回板块证据 → | 4 | 7 | templates/_sector_prophet_context.html.j2:11 |
 | `clear_link` | link | Clear context | 清除板块背景 | 2 | 6 | templates/_sector_prophet_context.html.j2:12 |
-| `open_central_link` | link | Open in Sector Central | 在板块中枢查看 | 4 | 7 | templates/sector_cycles.js:1236 |
+| `open_central_link` | link | Open in Sector Central | 在板块中枢查看 | 4 | 7 | templates/sector_cycles.js:1372 |
 | `prophet_link` | link | Compare in Prophet → | 前往 Prophet 对照 → | 3 | 12 | templates/sector_central.html.j2:3714 |
 | `invalid_subject_state` | state_title | Selected sector unavailable | 无法识别所选板块 | 3 | 8 | templates/_sector_prophet_context.js.j2:57 |
 | `invalid_subject_body` | state_body | Return to sector evidence to choose a sector. Prophet Stock Signals remains available. | 请返回板块证据，选择一个板块。Prophet 选股仍可查看。 | 13 | 29 | templates/_sector_prophet_context.js.j2:58 |
@@ -151,7 +151,7 @@ colour.
 | `r2_chart` | h2 | Chart | 图表 | 1 | 2 | NEW |
 | `r3_controls` | h2 | Chart options | 图表选项 | 2 | 4 | templates/sector_cycles.html.j2:67 |
 | `r4_leadership` | h2 | Leadership & turns | 领涨与拐点 | 2 | 5 | NEW |
-| `r5_read` | h2 | The read | 解读 | 2 | 2 | templates/sector_cycles.js:1368 |
+| `r5_read` | h2 | The read | 解读 | 2 | 2 | templates/sector_cycles.js:1504 |
 | `r6_timing` | h2 | Timing & projection | 时机与推演 | 2 | 5 | NEW |
 | `r7_events` | h2 | Events | 事件 | 1 | 2 | NEW |
 | `r8_grader` | h2 | Self-grader — measured accuracy | 自评分器 — 已衡量准确度 | 4 | 11 | templates/sector_central.html.j2:3334 |
@@ -160,29 +160,29 @@ colour.
 | `mode_osc_chip` | chip | Cycle position | 周期位置 | 2 | 4 | templates/sector_cycles.html.j2:63 |
 | `scale_log_chip` | chip | Log | 对数 | 1 | 2 | templates/sector_cycles.html.j2:70 |
 | `scale_linear_chip` | chip | Linear | 线性 | 1 | 2 | templates/sector_cycles.html.j2:71 |
-| `zoom_hint_aria` | aria | scroll · drag | 滚动 · 拖拽 | 2 | 5 | templates/sector_cycles.js:511 |
-| `zoom_home_chip` | chip | Home ⤢ | 首页 ⤢ | 1 | 3 | templates/sector_cycles.js:513 |
-| `range_7y_chip` | chip | 7y | 7年 | 1 | 2 | templates/sector_cycles.js:506 |
-| `all_chip` | chip | All | 全选 | 1 | 2 | templates/sector_cycles.js:1751 |
-| `clear_chip` | chip | Clear | 清空 | 1 | 2 | templates/sector_cycles.js:1752 |
+| `zoom_hint_aria` | aria | scroll · drag | 滚动 · 拖拽 | 2 | 5 | templates/sector_cycles.js:558 |
+| `zoom_home_chip` | chip | Home ⤢ | 首页 ⤢ | 1 | 3 | templates/sector_cycles.js:560 |
+| `range_7y_chip` | chip | 7y | 7年 | 1 | 2 | templates/sector_cycles.js:553 |
+| `all_chip` | chip | All | 全选 | 1 | 2 | templates/sector_cycles.js:1887 |
+| `clear_chip` | chip | Clear | 清空 | 1 | 2 | templates/sector_cycles.js:1888 |
 | `compare_chip` | chip | Compare | 对比 | 1 | 2 | templates/subsector_rotation.js:848 |
 | `reanchor_chip` | chip | Re-anchor | 再基准化 | 2 | 4 | templates/sector_central.html.j2:2222 |
-| `phase_topping_chip` | chip | Topping · late | 见顶 · 晚期 | 2 | 5 | templates/sector_cycles.js:1542 |
-| `phase_trending_chip` | chip | Trending | 上行中 | 1 | 3 | templates/sector_cycles.js:1543 |
-| `phase_rolling_chip` | chip | Rolling over | 回落中 | 2 | 3 | templates/sector_cycles.js:1544 |
-| `phase_prime_chip` | chip | Prime entry | 入场良机 | 2 | 4 | templates/sector_cycles.js:1545 |
-| `phase_bottoming_chip` | chip | Bottoming | 筑底中 | 1 | 3 | templates/sector_cycles.js:1548 |
-| `all_phases_chip` | chip | All phases | 全部阶段 | 2 | 4 | templates/sector_cycles.js:619 |
-| `hz_1m_chip` | chip | P(turn ≤ 1m) | P(转折≤1月) | 3 | 8 | templates/sector_cycles.js:1091 |
-| `hz_3m_chip` | chip | ≤3m | ≤3月 | 1 | 3 | templates/sector_cycles.js:1092 |
-| `hz_6m_chip` | chip | ≤6m | ≤6月 | 1 | 3 | templates/sector_cycles.js:1093 |
-| `clocks_chip` | chip | Clocks disagree | 时钟分歧 | 2 | 4 | templates/sector_cycles.js:171 |
+| `phase_topping_chip` | chip | Topping · late | 见顶 · 晚期 | 2 | 5 | templates/sector_cycles.js:1678 |
+| `phase_trending_chip` | chip | Trending | 上行中 | 1 | 3 | templates/sector_cycles.js:1679 |
+| `phase_rolling_chip` | chip | Rolling over | 回落中 | 2 | 3 | templates/sector_cycles.js:1680 |
+| `phase_prime_chip` | chip | Prime entry | 入场良机 | 2 | 4 | templates/sector_cycles.js:1681 |
+| `phase_bottoming_chip` | chip | Bottoming | 筑底中 | 1 | 3 | templates/sector_cycles.js:1684 |
+| `all_phases_chip` | chip | All phases | 全部阶段 | 2 | 4 | templates/sector_cycles.js:666 |
+| `hz_1m_chip` | chip | P(turn ≤ 1m) | P(转折≤1月) | 3 | 8 | templates/sector_cycles.js:1186 |
+| `hz_3m_chip` | chip | ≤3m | ≤3月 | 1 | 3 | templates/sector_cycles.js:1187 |
+| `hz_6m_chip` | chip | ≤6m | ≤6月 | 1 | 3 | templates/sector_cycles.js:1188 |
+| `clocks_chip` | chip | Clocks disagree | 时钟分歧 | 2 | 4 | templates/sector_cycles.js:218 |
 | `overdue_chip` | chip | Overdue | 已逾期 | 1 | 3 | templates/country_cycles.html.j2:122 |
 | `short_history_chip` | chip | Short history | 价格历史不足 | 2 | 6 | templates/sector_central.html.j2:3507 |
-| `dna_h2` | h2 | Cycle DNA — why it rhymes | 周期基因 — 历史为何押韵 | 5 | 11 | templates/sector_cycles.js:1258 |
-| `hazard_label` | label | Turn hazard (calibrated) | 转折风险（校准） | 3 | 8 | templates/sector_cycles.js:1102 |
-| `hazard_footnote` | footnote | P(next confirmed turn within horizon) for the open {direction}-leg. PASS cells: isotonic-calibrated hazard model (calibration-gated vs KM, W4.2 gate). PRIOR cells: KM base rate, shown muted. Display-only context — never a signal. | 开放周期段在各时间窗内出现下一个已确认拐点的概率。PASS=经W4.2门槛校准的模型输出；PRIOR=KM基准率（弱化显示）。仅供展示，绝非信号。 | 37 | 73 | templates/sector_cycles.js:1101 |
-| `forecast_footnote` | footnote | Projected next {turn} ≈ {month} ({low}–{high}), from this {unit}’s own median half-cycle. A timing estimate, not a guarantee. | 预计下次{turn}约在 {month}（{low}–{high}），基于该{unit}自身的中位半周期。仅为时间估计。 | 20 | 59 | templates/sector_cycles.js:1134 |
+| `dna_h2` | h2 | Cycle DNA — why it rhymes | 周期基因 — 历史为何押韵 | 5 | 11 | templates/sector_cycles.js:1394 |
+| `hazard_label` | label | Turn hazard (calibrated) | 转折风险（校准） | 3 | 8 | templates/sector_cycles.js:1197 |
+| `hazard_footnote` | footnote | P(next confirmed turn within horizon) for the open {direction}-leg. PASS cells: isotonic-calibrated hazard model (calibration-gated vs KM, W4.2 gate). PRIOR cells: KM base rate, shown muted. Display-only context — never a signal. | 开放周期段在各时间窗内出现下一个已确认拐点的概率。PASS=经W4.2门槛校准的模型输出；PRIOR=KM基准率（弱化显示）。仅供展示，绝非信号。 | 37 | 73 | templates/sector_cycles.js:1196 |
+| `forecast_footnote` | footnote | Projected next {turn} ≈ {month} ({low}–{high}), from this {unit}’s own median half-cycle. A timing estimate, not a guarantee. | 预计下次{turn}约在 {month}（{low}–{high}），基于该{unit}自身的中位半周期。仅为时间估计。 | 20 | 59 | templates/sector_cycles.js:1229 |
 
 ## components — 14 reused / 10 NEW
 
@@ -198,20 +198,20 @@ colour.
 | `stance_ignore` | chip | Ignore | 忽略 | 1 | 2 | templates/options.html.j2:3630 |
 | `asof_label` | asof | As of | 截至 | 2 | 2 | templates/sector_cycles.html.j2:45 |
 | `asof_pattern` | asof | As of {date} · {source} | 截至 {date} · {source} | 4 | 17 | templates/sector_central.html.j2:3865 |
-| `footnote_pattern` | footnote | Display-only context — never a signal. | 仅供展示，绝非信号。 | 6 | 10 | templates/sector_cycles.js:1101 |
+| `footnote_pattern` | footnote | Display-only context — never a signal. | 仅供展示，绝非信号。 | 6 | 10 | templates/sector_cycles.js:1196 |
 | `badge_model` | chip | MODEL | 模型 | 1 | 2 | NEW |
-| `badge_prior` | chip | PRIOR | 先验 | 1 | 2 | templates/sector_cycles.js:1077 |
+| `badge_prior` | chip | PRIOR | 先验 | 1 | 2 | templates/sector_cycles.js:1172 |
 | `prior_gloss` | footnote | PRIOR — historical base rate, not a model | 先验 — 历史基准率，并非模型 | 7 | 13 | NEW |
 | `grader_caption` | footnote | Conditional hit rate, not a win rate | 条件命中率，并非胜率 | 7 | 10 | NEW |
 | `lock_chip` | chip | Locked | 已锁定 | 1 | 3 | NEW |
-| `see_all_link` | link | See all {n} ▾ | 展开全部 {n} ▾ | 3 | 8 | templates/sector_cycles.js:1551 |
-| `see_less_link` | link | See less ▴ | 收起 ▴ | 2 | 3 | templates/sector_cycles.js:1578 |
+| `see_all_link` | link | See all {n} ▾ | 展开全部 {n} ▾ | 3 | 8 | templates/sector_cycles.js:1687 |
+| `see_less_link` | link | See less ▴ | 收起 ▴ | 2 | 3 | templates/sector_cycles.js:1714 |
 | `alt_table_label` | label | Performance table | 表现一览 | 2 | 4 | templates/sector_central.html.j2:2359 |
 | `alt_map_link` | link | See the rotation map | 查看轮动图 | 4 | 5 | templates/sector_central.html.j2:2437 |
 | `alt_toggle_aria` | aria | Switch between chart and table | 在图表与表格之间切换 | 5 | 10 | NEW |
 | `rel_not_supplied` | state_title | Sector relationship not supplied | 未提供板块间关系 | 4 | 8 | NEW |
 | `no_evidence_attached` | state_title | No Sector evidence attached | 未附带板块证据 | 4 | 7 | NEW |
-| `search_aria` | aria | Search sectors | 搜索板块 | 2 | 4 | templates/sector_cycles.js:1750 |
+| `search_aria` | aria | Search sectors | 搜索板块 | 2 | 4 | templates/sector_cycles.js:1886 |
 
 ## states — 25 reused / 15 NEW
 
@@ -252,9 +252,9 @@ colour.
 | `invalid_payload_body` | state_body | The source coverage could not be checked. Open the full evidence for details. | 无法核验来源覆盖情况。请打开完整证据查看详情。 | 13 | 23 | templates/_sector_central_coverage.js.j2:67 |
 | `zero_title` | state_title | No names clear both gates today. | 今日无名单同时通过双门槛。 | 6 | 13 | templates/us_stocks_v2.html.j2:212 |
 | `zero_body` | state_body | Zero fill pressure: however many qualify (an empty lane is honest). | 零填充压力：合格多少就显示多少（空榜也是诚实的）。 | 11 | 25 | templates/us_stocks_v2.html.j2:205 |
-| `empty_search_title` | state_title | No items match this phase | 该阶段暂无条目 | 5 | 7 | templates/sector_cycles.js:717 |
-| `empty_search_body` | state_body | Nothing on the clock — tap an item or hit Select all visible to chart them. | 图中暂无条目——点击任一条目或点全选可见即可绘制。 | 15 | 25 | templates/sector_cycles.js:719 |
-| `empty_search_action` | state_action | All phases | 全部阶段 | 2 | 4 | templates/sector_cycles.js:619 |
+| `empty_search_title` | state_title | No items match this phase | 该阶段暂无条目 | 5 | 7 | templates/sector_cycles.js:764 |
+| `empty_search_body` | state_body | Nothing on the clock — tap an item or hit Select all visible to chart them. | 图中暂无条目——点击任一条目或点全选可见即可绘制。 | 15 | 25 | templates/sector_cycles.js:766 |
+| `empty_search_action` | state_action | All phases | 全部阶段 | 2 | 4 | templates/sector_cycles.js:666 |
 | `uncertain_command_title` | state_title | Command outcome uncertain | 指令结果未确认 | 3 | 7 | NEW |
 | `uncertain_command_body` | state_body | It was sent, but the result is not confirmed. Nothing retries automatically — check the record before repeating it. | 操作已发出，但结果未确认。不会自动重试——重复前请先核对记录。 | 18 | 31 | NEW |
 

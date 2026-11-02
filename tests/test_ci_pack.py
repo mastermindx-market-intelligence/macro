@@ -5435,8 +5435,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_906),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_919),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_660),
+    ("scripts/build_free_content.py", 138, 5_921),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_662),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6961,6 +6961,25 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5,906, free-content 137 jobs / 5,919, plan-book 131 jobs / 5,660. No job
     enters or leaves. Fund exactly the measured values: 5,897 -> 5,906,
     5,910 -> 5,919, 5,651 -> 5,660; job-count ceilings, selectors and the
+    ten-pack bound stay unchanged. Planning weights are not measured execution
+    times.
+
+    Sector Intelligence P21 (2026-11-02, #9917 after merging main b6c20fa09b31):
+    the contract-delta gate on the PR merge ref (ci run 41443578532, job
+    125271753276, base main 210516fd0503) measured free-content 137 jobs /
+    5,921 and plan-book 131 jobs / 5,662 on ten packs against the P20 ceilings
+    5,919 / 5,660 (index 137 / 5,906, unchanged, inside its ceiling). The two
+    units per probe are main-side manifest growth between the P20 merge-base
+    and 210516fd0503 on jobs that already ride those probes: the pre-merge
+    branch tree still measures the P20 values, the merged tree measures
+    5,921 / 5,662; no job enters or leaves on free-content, and the two jobs
+    newly selected on plan-book versus the base (cycle-forward-log,
+    hk-cycle-ontology) were already funded inside the P20 131-job ceiling.
+    The same merged tree measures the same 5,921 / 5,662 after the
+    reference-integrity install string gained numpy + pandas (it is now
+    byte-identical to the thirteen sibling jobs' string, so the venv is shared
+    and no pack weight moves). Fund exactly the measured values:
+    5,919 -> 5,921, 5,660 -> 5,662; job-count ceilings, selectors and the
     ten-pack bound stay unchanged. Planning weights are not measured execution
     times.
     """
