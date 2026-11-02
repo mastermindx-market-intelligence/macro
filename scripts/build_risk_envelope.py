@@ -852,6 +852,14 @@ def write(root: Path | None = None, now: datetime | None = None) -> dict[str, An
                 ):
                     log.warning("risk_envelope: renderer-only source/session unqualified; withholding")
                     return {}
+                # A site-only recompute can change the market score or its components
+                # without advancing the session. Reuse only the native source fields
+                # captured by the settled publisher, not another same-date reading.
+                transition = existing.get("market_transition")
+                snapshot = transition.get("current_snapshot") if isinstance(transition, dict) else None
+                if not isinstance(snapshot, dict) or canonical_json(snapshot) != canonical_json(_native_record(market_state)):
+                    log.warning("risk_envelope: renderer-only market snapshot differs; withholding")
+                    return {}
                 return existing
             except (OSError, ValueError, TypeError, subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
                 log.warning("risk_envelope: renderer-only source unavailable (%s); withholding", type(exc).__name__)
