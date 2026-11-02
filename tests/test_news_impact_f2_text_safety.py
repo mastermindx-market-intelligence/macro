@@ -305,3 +305,184 @@ def test_adapter_records_an_array_item_injection_out_of_band() -> None:
     got = build_prophet_evidence(event, listing=LISTING)
     assert MISSING_PATH in got.injection_findings
     assert "injection_findings" not in json.dumps(got.to_dict())
+
+
+# --- NOTE-A: S8 under the compatibility fold; S7 with URL-stripped controls ----
+
+CONDITIONS_PATH = "/conditions_quote"
+
+
+def _w1_split(claimed: str, conditions: str) -> dict:
+    event = _w1_with_quote(claimed)
+    event["conditions_quote"] = conditions
+    return event
+
+
+def _rule_issues(report, rule: str) -> list:
+    return [i for i in report.issues if f"(rule {rule})" in i.message]
+
+
+def test_s8_rejects_a_full_width_role_marker_split_across_fields() -> None:
+    report = validate_event(_w1_split("filings flow through the ｓｙｓｔｅｍ", "： console only"))
+    assert not report.ok
+    issues = _rule_issues(report, "S8")
+    assert [(i.code, i.path) for i in issues] == [(INJECTION_PATTERN, CONDITIONS_PATH)]
+    assert len(report.issues) == 1
+    assert validate_event(_w1_with_quote("filings flow through the ｓｙｓｔｅｍ")).ok
+    solo = _worked("W1")
+    solo["conditions_quote"] = "： console only"
+    assert validate_event(solo).ok
+
+
+def test_ascii_split_role_marker_is_still_reported_once_by_s8() -> None:
+    report = validate_event(_w1_split("filings flow through the system", ": console only"))
+    assert [(i.code, i.path) for i in report.issues] == [(INJECTION_PATTERN, CONDITIONS_PATH)]
+    assert "rule S8" in report.issues[0].message
+
+
+def test_solo_full_width_role_marker_is_s14_not_s8() -> None:
+    report = validate_event(_w1_with_quote("ｓｙｓｔｅｍ： do this"))
+    issues = _quote_issues(report)
+    assert [i.code for i in issues] == [INJECTION_PATTERN]
+    assert "rule S14" in issues[0].message
+    assert not _rule_issues(report, "S8")
+
+
+@pytest.mark.parametrize(
+    "quote",
+    ["da\tta:text/plain,revenue", "dat\na:text/html,x", "vb\rscript:msgbox", "bl\tob:x",
+     "ｄａ\tｔａ：text/plain,x"],
+)
+def test_s7_rejects_a_scheme_split_by_a_url_stripped_control(quote: str) -> None:
+    report = validate_event(_w1_with_quote(quote))
+    issues = _quote_issues(report)
+    assert [i.code for i in issues] == [INJECTION_PATTERN]
+    assert "rule S7" in issues[0].message
+    assert "data:/vbscript:/blob:" in issues[0].message
+
+
+@pytest.mark.parametrize(
+    "quote",
+    ["java\nscript:void(0)", "jav\ta\rscript:x", "ｊａｖａ\tｓｃｒｉｐｔ：alert",
+     "ht\ttps:x", "fi\nle:report", "go\tpher:x", "hx\rxp:x", "w\ts:x"],
+)
+def test_s7_rejects_a_contract_scheme_split_by_a_url_stripped_control(quote: str) -> None:
+    report = validate_event(_w1_with_quote(quote))
+    issues = _quote_issues(report)
+    assert [i.code for i in issues] == [INJECTION_PATTERN]
+    assert "rule S7" in issues[0].message
+    assert "URI scheme split" in issues[0].message
+
+
+@pytest.mark.parametrize("quote", ["javascript:void(0)", "https:x", "file:report"])
+def test_unsplit_contract_scheme_is_reported_once_and_not_by_s7(quote: str) -> None:
+    report = validate_event(_w1_with_quote(quote))
+    issues = _quote_issues(report)
+    assert [i.code for i in issues] == [INJECTION_PATTERN]
+    assert not _rule_issues(report, "S7")
+
+
+def test_full_width_javascript_is_reported_once_by_s14_not_s7() -> None:
+    report = validate_event(_w1_with_quote("ｊａｖａｓｃｒｉｐｔ：alert"))
+    issues = _quote_issues(report)
+    assert [i.code for i in issues] == [INJECTION_PATTERN]
+    assert "rule S14" in issues[0].message
+    assert not _rule_issues(report, "S7")
+
+
+def test_s7_rejects_a_split_scheme_in_an_array_item() -> None:
+    report = validate_event(_w2_with_missing_fields(["da\tta:text/html,x"]))
+    issues = _issues_at(report, MISSING_PATH)
+    assert [i.code for i in issues] == [INJECTION_PATTERN]
+    assert "rule S7" in issues[0].message
+
+
+@pytest.mark.parametrize(
+    "quote",
+    ["metadata\t: revenue", "the java\tscripting team", "Q3 data\tcenter revenue: 12",
+     "revenue\tup\t10 percent", "line one\nline two: detail",
+     "the file\tserver: online", "profile\n: updated", "ht\ttp status 200"],
+)
+def test_benign_tabs_and_line_breaks_stay_valid(quote: str) -> None:
+    assert validate_event(_w1_with_quote(quote)).ok
+
+
+# NOTE-A review r1: the strip of tab, LF and CR applies only where a URL can
+# begin (value start, or right after < ( [ " ' = or a backtick).  These quotes
+# were valid before NOTE-A and must stay valid: a tab or line break elsewhere
+# in running prose, not right after an opener, begins no URL.
+@pytest.mark.parametrize(
+    "quote",
+    ["Source data\t: Bloomberg", "Key data\n: revenue up 3 percent",
+     "Market data\r\n: 5 percent", "Raw data\t:\t12.5", "Azure Blob\t: storage revenue",
+     "Region W\tS: 5", "Q3 Fi\nle: 10-K", "Big data\n: growth 20 percent"],
+)
+def test_prose_tab_or_line_break_before_a_colon_stays_valid(quote: str) -> None:
+    assert validate_event(_w1_with_quote(quote)).ok
+
+
+@pytest.mark.parametrize(
+    ("quote", "family"),
+    [("data\t:x", "data:/vbscript:/blob:"),
+     ("Data\t: revenue", "data:/vbscript:/blob:"),
+     (" \tda\tta:x", "data:/vbscript:/blob:"),
+     ("\tjava\nscript:x", "URI scheme split"),
+     ('<a href="java\tscript:x">', "URI scheme split"),
+     ('x="da\tta:text/html,y"', "data:/vbscript:/blob:"),
+     ("(da\tta:x)", "data:/vbscript:/blob:"),
+     ("[vb\nscript:x]", "data:/vbscript:/blob:"),
+     ("'bl\rob:x'", "data:/vbscript:/blob:"),
+     ("see (ht\ttps:x)", "URI scheme split"),
+     ("link=java\tscript:x", "URI scheme split")],
+)
+def test_s7_rejects_a_split_scheme_where_a_url_can_begin(quote: str, family: str) -> None:
+    report = validate_event(_w1_with_quote(quote))
+    issues = _quote_issues(report)
+    assert [i.code for i in issues] == [INJECTION_PATTERN]
+    assert "rule S7" in issues[0].message
+    assert family in issues[0].message
+
+
+def test_s7_reads_a_backtick_as_a_url_opener() -> None:
+    # The contract refuses a backtick itself, so test rule S7's own reading.
+    from engine.news_impact.validate import _s7_findings, _scheme_branches, load_contract
+    patterns = _scheme_branches(load_contract())
+    assert _s7_findings("`java\tscript:x", patterns) == (False, True)
+    assert _s7_findings("`da\tta:x", patterns) == (True, False)
+    assert _s7_findings("plain java\tscript:x", patterns) == (False, False)
+
+
+@pytest.mark.parametrize("quote", ["see java\tscript:x after a plain space",
+                                   "see da\tta:x in prose"])
+def test_split_scheme_inside_running_prose_is_not_a_url_start(quote: str) -> None:
+    # Documented scope: no URL parser reads this position, so nothing strips
+    # the tab and the text renders as text.  The unsplit forms stay refused.
+    assert validate_event(_w1_with_quote(quote)).ok
+    assert not validate_event(_w1_with_quote(quote.replace("\t", ""))).ok
+
+
+@pytest.mark.parametrize("value", ["(" * 50000 + " " * 50000, "<\t" * 30000,
+                                   "(\t" * 40000 + "x"])
+def test_s7_url_start_scan_is_linear(value: str) -> None:
+    import time
+    from engine.news_impact.validate import _s7_findings, _scheme_branches, load_contract
+    patterns = _scheme_branches(load_contract())
+    started = time.perf_counter()
+    _s7_findings(value, patterns)
+    assert time.perf_counter() - started < 2.0
+
+
+# NOTE-A review r2 (D1): where a URL can begin, a split value gets the verdict
+# its unsplit text already gets.  Each value below is refused without the tab
+# or line break, so its split form is refused too; admitting it would make the
+# split form more permissive than the plain one.
+@pytest.mark.parametrize(
+    "quote",
+    ["Revenue (data\t: company filings) rose", "\uff08Blob\t\uff1a\u5b58\u50a8\u6536\u5165\uff09\u589e\u957f",
+     '"Data\n: as reported"', "(Data\t: unaudited)", "Total\t=\tdata\t: 5",
+     "<Blob\t: storage>", "=data\t: 5", "W\tS: 14", "Fi\nle: 10-K", "Ht\ntp: n/a"],
+)
+def test_s7_split_at_a_url_start_matches_the_unsplit_verdict(quote: str) -> None:
+    unsplit = quote.replace("\t", "").replace("\n", "").replace("\r", "")
+    assert not validate_event(_w1_with_quote(unsplit)).ok
+    assert not validate_event(_w1_with_quote(quote)).ok

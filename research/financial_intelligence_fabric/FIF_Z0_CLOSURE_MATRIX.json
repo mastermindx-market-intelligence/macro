@@ -28,10 +28,10 @@
     "records"
   ],
   "summary": {
-    "CLOSED": 41,
-    "PARTIAL": 6,
+    "CLOSED": 43,
+    "PARTIAL": 5,
     "OPEN": 0,
-    "PENDING_LIVE": 3,
+    "PENDING_LIVE": 2,
     "HUMAN_GATE": 4
   },
   "final_acceptance": {
@@ -420,7 +420,7 @@
       ],
       "condition": "No new filings, source outage, duplicate delivery and retry",
       "required_behavior": "Differentiate checked-no-change from source_outage and stale; idempotent generation, no rerender freshness.",
-      "verdict": "PENDING_LIVE",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_filing_observation_state.py::test_observe_duplicate_delivery_is_idempotent",
         "tests/test_fundamental_forensics_filing_observation_state.py::test_mark_published_requires_successful_check_and_is_monotone",
@@ -437,16 +437,13 @@
         "tests/test_fif_a21_publish_observation.py::test_t7a_source_outage_exclusion_observes_source_outage",
         "tests/test_fif_a21_publish_observation.py::test_t7b_refusal_class_exclusion_observes_check_failed",
         "tests/test_fif_a21_publish_observation.py::test_t8_same_clock_rerun_is_byte_identical_zero_extra_writes",
-        "tests/test_fif_a21_publish_observation.py::test_t9_unchanged_check_at_later_clock_is_zero_write_like_t8b"
+        "tests/test_fif_a21_publish_observation.py::test_t9_unchanged_check_at_later_clock_is_zero_write_like_t8b",
+        "tests/test_fif_a21_publish_observation.py::test_t10_admission_refused_exclusion_withholds_identity_unproven",
+        "tests/test_fif_a21_publish_observation.py::test_t11_unchanged_generation_without_prior_record_withholds",
+        "research/financial_intelligence_fabric/FIF_A21_LIVE_OBSERVATION_2026-11-01.md::## Per-run publish rows (five published issuers)"
       ],
-      "obligations": [
-        {
-          "kind": "live_proof",
-          "owner": "natural schedule",
-          "next_action": "Observe one scheduled publish (never dispatched) after PR #9871 lands and a later no-new-filing cycle: issuers/<id>/observation.json carries new_filing then checked_no_change; a withheld row shows observation_write withheld:<reason>."
-        }
-      ],
-      "note": " 2026-10-20: PR #9871 wires FilingObservationState into publish (R-A21-T8B material-change rule; R-A21-STORE-TRACE withholds the record where A14/A18 forbid a store write)."
+      "obligations": [],
+      "note": " 2026-10-20: PR #9871 wires FilingObservationState into publish (R-A21-T8B material-change rule; R-A21-STORE-TRACE withholds the record where A14/A18 forbid a store write). 2026-11-01: closed on the natural schedule (no dispatch). Scheduled filing-forensics-sec run 39565177126 (2026-10-21, after #9871 landed as c304c027) persisted new_filing for all five issuers; the ten later scheduled runs through 41185445273 (2026-10-31) each report checked_no_change with the same five generation ids and zero store writes, the T8B/T9 zero-write rule reconciled cycle by cycle in FIF_A21_LIVE_OBSERVATION_2026-11-01.md. No run produced a withheld row; a withheld row needs a commit fault, an identity refusal or a missing prior record, none of which may be induced on production, so the three withheld causes are pinned offline through the publish CLI: commit_phase_fault (T4), identity_unproven (T10) and unchanged_without_prior (T11), added by #10396 (main 889da6ee). An unreadable prior record is a run refusal (observation_prior_unreadable, T6), not a withheld row."
     },
     {
       "id": "A22",
@@ -476,20 +473,18 @@
       ],
       "condition": "Different users or temporal query policies hit shared cache",
       "required_behavior": "Tenant/entitlement/policy/generation isolation; saved research does not alter canonical facts.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_financial_query_api.py::test_two_users_two_policies_share_no_answer_object",
         "tests/test_fif_x2_ownership_guards.py::test_partition_never_reads_one_users_list_into_another_users_rows",
-        "tests/test_fif_z0_gap_a23_a38.py::test_a23_two_generations_one_store_one_provider"
+        "tests/test_fif_z0_gap_a23_a38.py::test_a23_two_generations_one_store_one_provider",
+        "tests/test_fif_z0_gap_a23_saved_research.py::test_a23_replaying_saved_views_leaves_store_and_answers_byte_identical",
+        "tests/test_fif_z0_gap_a23_saved_research.py::test_a23_router_has_no_saved_research_write_path",
+        "tests/test_fif_z0_gap_a23_saved_research.py::test_a23_store_write_guard_flags_a_planted_writer",
+        "tests/test_fif_z0_gap_a23_saved_research.py::test_a23_saved_research_producer_never_reaches_the_production_store"
       ],
-      "obligations": [
-        {
-          "kind": "test_gap",
-          "owner": "FIF seat",
-          "next_action": "Prove saved research cannot alter canonical facts: saving and replaying saved views leaves the production store and every query answer byte-identical."
-        }
-      ],
-      "note": "Generation isolation is proven by #9858 (main 17f42f0e): one process, one store and one provider carry two admitted generations and never share an answer object. Only the saved-research half stays open."
+      "obligations": [],
+      "note": "Generation isolation is proven by #9858 (main 17f42f0e): one process, one store and one provider carry two admitted generations and never share an answer object. The saved-research half is proven by #10392 (main cd88f432): every committed saved view replayed with the page's restore bytes answers byte-identically to a direct query and leaves the production store's objects, versions and write counter unchanged; a view pinned before the generation's admission fails closed; the router has no saved-research write route and the notification producer names no store write API. Independent review (fresh read-only lane): PASS_WITH_NOTES; notes: a non-pinned restore posts a rebuilt body through the same route (the stored-bytes replay is the stricter instance), and the S3 writer guard is name-based AST with no dynamic-import blind spot in current sources."
     },
     {
       "id": "A24",

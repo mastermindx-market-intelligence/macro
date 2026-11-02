@@ -1728,6 +1728,29 @@ def read_public_summary(root: Path, *, now: datetime | None = None) -> dict[str,
         return {}
 
 
+def _calendar_day(generated_at: object) -> str:
+    """YYYY-MM-DD of a parseable ISO stamp, in the stamp's own zone, else ""."""
+    if not isinstance(generated_at, str):
+        return ""
+    try:
+        return datetime.fromisoformat(generated_at).date().isoformat()
+    except ValueError:
+        return ""
+
+
+def public_summary_as_of(root: Path, *, now: datetime | None = None) -> str:
+    """Calendar day when read_public_summary would return counts, else ""."""
+    if not read_public_summary(root, now=now):
+        return ""
+    try:
+        raw = json.loads((root / PUBLIC_SUMMARY_RELATIVE).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return ""
+    if not isinstance(raw, dict):
+        return ""
+    return _calendar_day(raw.get("generated_at"))
+
+
 def render_shell(root: Path, state_summary: dict[str, Any] | None = None) -> Path:
     """Render only the public workbench shell, versioned assets, and free counts.
 
@@ -1740,9 +1763,16 @@ def render_shell(root: Path, state_summary: dict[str, Any] | None = None) -> Pat
     site.mkdir(parents=True, exist_ok=True)
     env = Environment(loader=FileSystemLoader(str(root / "templates")), autoescape=True)
     counts = public_summary_projection(state_summary) if state_summary else read_public_summary(root)
+    # In-memory counts keep their own stamp. A missing stamp stays blank so a
+    # file written beside an unstamped summary cannot date the sentence.
+    if state_summary:
+        summary_as_of = _calendar_day(state_summary.get("generated_at"))
+    else:
+        summary_as_of = public_summary_as_of(root)
     html = env.get_template("fundamental_forensics.html.j2").render(
         generated_utc="private-state-runtime",
         state_summary=counts,
+        summary_as_of=summary_as_of,
         active_section="research",
         active_page="fundamental_forensics",
         holding_js_version=hashlib.sha256((root / "templates" / "institutional_holding_research.js").read_bytes()).hexdigest()[:8],
