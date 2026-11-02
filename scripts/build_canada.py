@@ -266,19 +266,14 @@ def canada_regime_timeline(hist: pd.DataFrame) -> dict:
 
 
 def _lifespan_rows(quad: pd.Series) -> list[dict]:
-    from engine.playbook import QUAD_SHORT, next_quads_line, transition_stats
-    trans = transition_stats(quad)
-    rows = []
-    for q in ("Q1", "Q2", "Q3", "Q4"):
-        nxt = trans["matrix"].get(q, {})
-        rows.append({
-            "quad": QUAD_SHORT[q],           # display name (template reads row.quad)
-            "n": trans["n_by_quad"].get(q, "—"),
-            "median_days": trans["median_days"].get(q, "—"),  # template reads row.median_days
-            "next": next_quads_line(nxt),
-            "next_zh": next_quads_line(nxt, zh=True),
-        })
-    return rows
+    """canada.html's table: canada_history.html's rows under this template's keys."""
+    from engine.playbook import finished_lifespan_rows
+    return [{"quad": row["name"],             # display name (template reads row.quad)
+             "n": row["n"],
+             "median_days": row["median"],    # template reads row.median_days
+             "next": row["next"],
+             "next_zh": row["next_zh"]}
+            for row in finished_lifespan_rows(quad)]
 
 
 def _drilldown_closes() -> tuple[pd.DataFrame, str | None]:
@@ -591,7 +586,7 @@ def _housing_note() -> dict | None:
 
 
 def _build_history(env, latest: dict, generated: str) -> None:
-    from engine.playbook import QUAD_SHORT, next_quads_line, transition_stats
+    from engine.playbook import finished_lifespan_rows, transition_stats
     hist = store.read("canada_regime", "regime_history")
     if hist is None or "quad" not in hist.columns:
         log.warning("canada history: no regime_history; skipping history page")
@@ -600,12 +595,7 @@ def _build_history(env, latest: dict, generated: str) -> None:
     mdf = store.read("canada", mi)
     px = mdf["close"] if mdf is not None else pd.Series(dtype=float)
     trans = transition_stats(hist["quad"])
-    rows = []
-    for q in ("Q1", "Q2", "Q3", "Q4"):
-        nxt = trans["matrix"].get(q, {})
-        rows.append({"name": QUAD_SHORT[q], "n": trans["n_by_quad"].get(q, "—"),
-                     "median": trans["median_days"].get(q, "—"),
-                     "next": next_quads_line(nxt), "next_zh": next_quads_line(nxt, zh=True)})
+    rows = finished_lifespan_rows(hist["quad"])
     html = env.get_template("canada_history.html.j2").render(
         latest=latest, generated_utc=generated,
         chart_regime=_chart_regime(px, hist) if not px.empty else "", chart_axes=_chart_axes(hist),

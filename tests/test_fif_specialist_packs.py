@@ -1159,15 +1159,19 @@ def test_pk01_envelope_digest_unchanged_by_pk02_edits() -> None:
 
 
 def test_pk02_a2_emits_consolidated_row_then_members() -> None:
+    # R-F1: the probe's stand-in concept is USD-tagged, so the stand-in field
+    # must carry a USD catalogue unit — since the axes resolver enforces the
+    # same unit-equivalence refusal as the plain resolver, a shares-catalogue
+    # field refuses these facts outright (unit_mismatch).
     probe = _pk02_probe(
         {
-            "antidilutive_securities_excluded": pack_base.FactMapping(
+            "sbc_allocated_by_line": pack_base.FactMapping(
                 ("us-gaap:NetIncomeLoss",),
                 optional_axes=("us-gaap:StatementEquityComponentsAxis",),
             )
         }
     )
-    rows = _rows(probe, "antidilutive_securities_excluded")
+    rows = _rows(probe, "sbc_allocated_by_line")
     assert len(rows) == 2
     assert rows[0]["dimensions"] == []  # consolidated row first
     assert rows[0]["value"] == "112010000000"
@@ -1177,28 +1181,29 @@ def test_pk02_a2_emits_consolidated_row_then_members() -> None:
     )
     assert rows[1]["value"] == "112010000000"
     for row in rows:
-        assert row["field_id"] == "antidilutive_securities_excluded"
-        assert row["mapping_rule_id"] == (
-            "PK02.antidilutive_securities_excluded.fact/v1"
-        )
+        assert row["field_id"] == "sbc_allocated_by_line"
+        assert row["mapping_rule_id"] == "PK02.sbc_allocated_by_line.fact/v1"
     # Repeated rows sit at the catalogue position, adjacent.
     produced = [row["field_id"] for row in probe["fields"]]
-    position = produced.index("antidilutive_securities_excluded")
-    assert produced[position + 1] == "antidilutive_securities_excluded"
+    position = produced.index("sbc_allocated_by_line")
+    assert produced[position + 1] == "sbc_allocated_by_line"
     assert contract.validate_pack_result(probe) == []
 
 
 def test_pk02_a2_consolidated_row_false_keeps_members_only() -> None:
+    # R-F1: same USD-catalogue stand-in field as the consolidated-row probe
+    # above; the antidilutive field itself keeps its real FY2025 mapping and
+    # resolves missing on this fixture.
     probe = _pk02_probe(
         {
-            "antidilutive_securities_excluded": pack_base.FactMapping(
+            "sbc_allocated_by_line": pack_base.FactMapping(
                 ("us-gaap:NetIncomeLoss",),
                 optional_axes=("us-gaap:StatementEquityComponentsAxis",),
                 consolidated_row=False,
             )
         }
     )
-    rows = _rows(probe, "antidilutive_securities_excluded")
+    rows = _rows(probe, "sbc_allocated_by_line")
     assert len(rows) == 1
     assert rows[0]["dimensions"]  # the member row, never the consolidated one
     check = _check(probe, "antidilutive_table_total_vs_rows")
@@ -1228,35 +1233,212 @@ def test_pk02_a2_foreign_axis_only_is_disallowed_dimension() -> None:
     assert rows[0]["reason"] == "disallowed_dimension"
 
 
-def test_pk02_a4_total_vs_rows_passes_when_members_sum_to_total() -> None:
-    probe = _pk02_probe(
-        {
-            "antidilutive_securities_excluded": pack_base.FactMapping(
-                ("us-gaap:NetIncomeLoss",),
-                optional_axes=("us-gaap:StatementEquityComponentsAxis",),
-            )
-        }
+# Synthetic full-envelope PK02 probes (the PK11 §TESTS converter pattern).
+# R-F1: the AAPL fixture carries no share-unit duration facts under the
+# antidilutive/class axes, so unit-correct axes probes (A.4 arithmetic, the
+# per-class check and the unit-refusal pins below) run on a synthetic ledger
+# with properly tagged facts instead of stand-in USD concepts.
+_PK02FIX_CIK = "0000000012"
+_PK02FIX_ENTITY = {
+    "entity_id": _PK02FIX_CIK,
+    "cik": _PK02FIX_CIK,
+    "ticker": "TEST",
+    "name": "Test Issuer",
+    "identity_basis": "synthetic_in_test_ledger",
+    "source_entity_id": _PK02FIX_CIK,
+}
+_PK02FIX_SIC = "3571"
+_PK02FIX_CLASS_AXIS = "us-gaap:StatementClassOfStockAxis"
+_PK02FIX_ANTIDILUTIVE_AXIS = (
+    "us-gaap:AntidilutiveSecuritiesExcludedFromComputationOfEarningsPerShare"
+    "ByAntidilutiveSecuritiesAxis"
+)
+_PK02FIX_POR = date(2025, 9, 27)
+_PK02FIX_FY_START = date(2024, 9, 29)
+_PK02FIX_SHARES = FactUnit("shares", ["xbrli:shares"])
+_PK02FIX_USD = FactUnit("USD", ["iso4217:USD"])
+
+
+def _pk02fix_fact(
+    concept: str,
+    *,
+    unit: FactUnit,
+    value: str,
+    key: str,
+    instant=None,
+    start=None,
+    end=None,
+    explicit=(),
+    decimals: str = "-6",
+) -> RawFactOccurrence:
+    filing_row = synthetic_filing(
+        accession="0000000012-25-000001",
+        document_id="testco-20250927.htm",
+        accepted_at="2025-11-01T16:00:00Z",
+        recorded_at="2025-11-01T16:05:00Z",
+        filed_at="2025-11-01",
+        entity_id=_PK02FIX_CIK,
     )
-    check = _check(probe, "antidilutive_table_total_vs_rows")
+    return make_raw_fact(
+        source=filing_row["source"],
+        concept_qname=concept,
+        context=FactContext(
+            context_id=f"ctx-{key}",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=_PK02FIX_CIK,
+            instant=instant,
+            start=start,
+            end=end,
+            explicit_dimensions=explicit,
+        ),
+        recorded_at=filing_row["recorded_at"],
+        accepted_at=filing_row["accepted_at"],
+        unit=unit,
+        raw_token=value,
+        parsed_value=value,
+        decimals=decimals,
+        source_span=(0, len(value)),
+        source_occurrence_key=key,
+    )
+
+
+def _pk02fix_packages() -> tuple:
+    return (
+        _SyntheticPackage(
+            {
+                "cik": _PK02FIX_CIK,  # R-F4: package issuer == packet entity
+                "form": "10-K",
+                "period_of_report": "2025-09-27",
+                "accession": "0000000012-25-000001",
+                "primary_document": "testco-20250927.htm",
+            }
+        ),
+    )
+
+
+def _pk02fix_input(**overrides) -> PackInput:
+    defaults = dict(
+        packages=_pk02fix_packages(),
+        entity=_PK02FIX_ENTITY,
+        query=PK02_QUERY,
+        issuer_sic=_PK02FIX_SIC,
+        sic_source="dei",
+    )
+    defaults.update(overrides)
+    return PackInput(**defaults)
+
+
+def _pk02fix_produce(
+    monkeypatch: pytest.MonkeyPatch, events: tuple
+) -> dict:
+    """Full-envelope PK02 probe over a synthetic in-test ledger."""
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000012-25-000001",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    return produce_pack("PK02", _pk02fix_input())
+
+
+def test_pk02_a4_total_vs_rows_passes_when_members_sum_to_total(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    concept = (
+        "us-gaap:AntidilutiveSecuritiesExcludedFromComputationOf"
+        "EarningsPerShareAmount"
+    )
+    result = _pk02fix_produce(
+        monkeypatch,
+        (
+            _pk02fix_fact(
+                concept,
+                unit=_PK02FIX_SHARES,
+                value="30000000",
+                key="total",
+                start=_PK02FIX_FY_START,
+                end=_PK02FIX_POR,
+            ),
+            _pk02fix_fact(
+                concept,
+                unit=_PK02FIX_SHARES,
+                value="20000000",
+                key="member-options",
+                start=_PK02FIX_FY_START,
+                end=_PK02FIX_POR,
+                explicit=(
+                    (_PK02FIX_ANTIDILUTIVE_AXIS, "testco:OptionAwardsMember"),
+                ),
+            ),
+            _pk02fix_fact(
+                concept,
+                unit=_PK02FIX_SHARES,
+                value="10000000",
+                key="member-rsu",
+                start=_PK02FIX_FY_START,
+                end=_PK02FIX_POR,
+                explicit=(
+                    (_PK02FIX_ANTIDILUTIVE_AXIS, "testco:RSUAwardsMember"),
+                ),
+            ),
+        ),
+    )
+    check = _check(result, "antidilutive_table_total_vs_rows")
     assert check["status"] == "pass"
     assert check["tolerance"] == "1000000"  # min decimals -6 across the rows
+    assert contract.validate_pack_result(result) == []
 
 
-def test_pk02_a4_total_vs_rows_fails_when_members_differ() -> None:
-    probe = _pk02_probe(
-        {
-            "antidilutive_securities_excluded": pack_base.FactMapping(
-                ("us-gaap:StockRepurchasedAndRetiredDuringPeriodValue",),
-                optional_axes=("us-gaap:StatementEquityComponentsAxis",),
-            )
-        }
+def test_pk02_a4_total_vs_rows_fails_when_members_differ(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    concept = (
+        "us-gaap:AntidilutiveSecuritiesExcludedFromComputationOf"
+        "EarningsPerShareAmount"
+    )
+    result = _pk02fix_produce(
+        monkeypatch,
+        (
+            _pk02fix_fact(
+                concept,
+                unit=_PK02FIX_SHARES,
+                value="89300000000",
+                decimals="-8",
+                key="total",
+                start=_PK02FIX_FY_START,
+                end=_PK02FIX_POR,
+            ),
+            _pk02fix_fact(
+                concept,
+                unit=_PK02FIX_SHARES,
+                value="90052000000",
+                key="member-options",
+                start=_PK02FIX_FY_START,
+                end=_PK02FIX_POR,
+                explicit=(
+                    (_PK02FIX_ANTIDILUTIVE_AXIS, "testco:OptionAwardsMember"),
+                ),
+            ),
+        ),
     )
     # Consolidated 89,300,000,000 (dec -8) vs member 90,052,000,000 (dec -6):
     # the 752,000,000 gap exceeds the 100,000,000 tolerance.
-    check = _check(probe, "antidilutive_table_total_vs_rows")
+    check = _check(result, "antidilutive_table_total_vs_rows")
     assert check["status"] == "fail"
     assert check["tolerance"] == "100000000"
-    assert contract.validate_pack_result(probe) == []
+    assert contract.validate_pack_result(result) == []
 
 
 def _share_operand(field_id: str, value: str, decimals: int, rows: list) -> object:
@@ -4877,6 +5059,330 @@ def test_pk02_envelope_digest_unchanged_by_pk04_edits() -> None:
         result, sort_keys=True, separators=(",", ":"), ensure_ascii=False
     )
     assert sha256(payload.encode("utf-8")).hexdigest() == PK02_ENVELOPE_SHA256
+
+
+# 37b. PK02 R-F1 unit equivalence on the axes resolver (per-pack review) -----
+#
+# The independent PK02 review failed the pack because a wrong-unit fact (a
+# USD-tagged share count) on an optional-axes path was emitted as a valued
+# row stamped with the catalogue unit, while the identical fact on a plain
+# mapping was refused. These pins hold the axes resolver to the same R-F1
+# refusal, and hold the per-class check to never comparing the number.
+
+
+def _pk02fix_axes_outcome(
+    field_id: str,
+    events: tuple,
+    *,
+    mapping: pack_base.FactMapping | None = None,
+    filed_at: date | None = None,
+) -> tuple:
+    """Direct axes-resolver call against the real PK02 catalogue field."""
+    limitations: list[str] = []
+    outcome = pack_base._resolve_axes_fact_mapping(
+        pack_id="PK02",
+        catalogue_field=_catalogue_field("PK02", field_id),
+        mapping=mapping or pk02_sbc._FIELD_MAPPINGS[field_id],
+        ledger=RawFactLedger(events=events),
+        por=_PK02FIX_POR,
+        filed_at=filed_at,
+        limitations=limitations,
+    )
+    return outcome, limitations
+
+
+def test_pk02_axes_usd_tagged_parenthetical_fact_is_unit_mismatch() -> None:
+    # T1 (review probe A2): a USD-tagged CommonStockSharesIssued on the
+    # shares_issued_parenthetical axes path is refused exactly like the same
+    # wrong-unit fact on a plain mapping — never a valued row stamped
+    # 'shares'.
+    outcome, limitations = _pk02fix_axes_outcome(
+        "shares_issued_parenthetical",
+        (
+            _pk02fix_fact(
+                "us-gaap:CommonStockSharesIssued",
+                unit=_PK02FIX_USD,
+                value="1000000000",
+                key="parenthetical-usd",
+                instant=_PK02FIX_POR,
+            ),
+        ),
+    )
+    row = outcome.row
+    assert row["quality_state"] == "not_evaluable"
+    assert row["non_value_state"] == "not_evaluable"
+    assert row["coverage_state"] == "unmapped"
+    assert row["reason"] == "unit_mismatch"
+    assert row["value"] is None and row["text_value"] is None
+    assert row["unit"] == "shares"
+    assert row["concept"] == "us-gaap:CommonStockSharesIssued"
+    assert row["mapping_rule_id"] == "PK02.shares_issued_parenthetical.fact/v1"
+    assert len(row["source_occurrence_ids"]) == 1
+    assert outcome.value is None
+    assert outcome.extra_rows == ()
+    assert limitations == [
+        "shares_issued_parenthetical: fact unit USD is not shares"
+    ]
+
+
+def test_pk02_axes_usd_tagged_cover_fact_is_unit_mismatch() -> None:
+    # T2 (review probe A3): the same wrong-unit hole on the
+    # shares_outstanding_cover path (cover instant inside [por, filed_at]).
+    outcome, limitations = _pk02fix_axes_outcome(
+        "shares_outstanding_cover",
+        (
+            _pk02fix_fact(
+                "dei:EntityCommonStockSharesOutstanding",
+                unit=_PK02FIX_USD,
+                value="1000000000",
+                key="cover-usd",
+                instant=date(2025, 10, 17),
+                decimals="0",
+            ),
+        ),
+        filed_at=date(2025, 11, 1),
+    )
+    row = outcome.row
+    assert row["quality_state"] == "not_evaluable"
+    assert row["non_value_state"] == "not_evaluable"
+    assert row["reason"] == "unit_mismatch"
+    assert row["value"] is None
+    assert len(row["source_occurrence_ids"]) == 1
+    assert outcome.value is None
+    assert limitations == [
+        "shares_outstanding_cover: fact unit USD is not shares"
+    ]
+
+
+def test_pk02_per_class_check_never_fails_on_usd_member(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T3 (review probe M): a per-class parenthetical member in USD next to
+    # real share counts. The per-class check must see the absence — the
+    # dollar number is never compared against the cover share counts, so no
+    # nonsense fail is minted.
+    result = _pk02fix_produce(
+        monkeypatch,
+        (
+            _pk02fix_fact(
+                "dei:EntityCommonStockSharesOutstanding",
+                unit=_PK02FIX_SHARES,
+                value="600",
+                key="cover-class-a",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassAMember"),),
+                decimals="3",
+            ),
+            _pk02fix_fact(
+                "dei:EntityCommonStockSharesOutstanding",
+                unit=_PK02FIX_SHARES,
+                value="500",
+                key="cover-class-b",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassBMember"),),
+                decimals="3",
+            ),
+            _pk02fix_fact(
+                "us-gaap:CommonStockSharesIssued",
+                unit=_PK02FIX_SHARES,
+                value="600",
+                key="parenthetical-class-a",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassAMember"),),
+                decimals="3",
+            ),
+            _pk02fix_fact(
+                "us-gaap:CommonStockSharesIssued",
+                unit=_PK02FIX_USD,
+                value="400",
+                key="parenthetical-class-b-usd",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassBMember"),),
+                decimals="3",
+            ),
+        ),
+    )
+    parenthetical = _rows(result, "shares_issued_parenthetical")
+    valued = [row for row in parenthetical if row["quality_state"] == "valued"]
+    refused = [
+        row for row in parenthetical if row["quality_state"] != "valued"
+    ]
+    assert len(valued) == 1
+    assert valued[0]["value"] == "600"
+    assert valued[0]["unit"] == "shares"
+    assert len(refused) == 1
+    assert refused[0]["quality_state"] == "not_evaluable"
+    assert refused[0]["reason"] == "unit_mismatch"
+    check = _check(result, "per_class_shares_vs_cover")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "missing_dependency"
+    assert (
+        "shares_issued_parenthetical: fact unit USD is not shares"
+        in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk02_axes_shares_tagged_facts_valued_as_at_base(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T4 (regression): correctly shares-tagged facts on the same paths are
+    # valued exactly as at the lane base commit 392f59ace3541.
+    outcome, limitations = _pk02fix_axes_outcome(
+        "shares_issued_parenthetical",
+        (
+            _pk02fix_fact(
+                "us-gaap:CommonStockSharesIssued",
+                unit=_PK02FIX_SHARES,
+                value="14773260000",
+                key="parenthetical-shares",
+                instant=_PK02FIX_POR,
+                decimals="-6",
+            ),
+        ),
+    )
+    row = outcome.row
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "14773260000"
+    assert row["unit"] == "shares"
+    assert row["period"] == {"kind": "instant", "end": "2025-09-27"}
+    assert row["concept"] == "us-gaap:CommonStockSharesIssued"
+    assert row["taxonomy"] == "us-gaap"
+    assert row["mapping_rule_id"] == "PK02.shares_issued_parenthetical.fact/v1"
+    assert len(row["source_occurrence_ids"]) == 1
+    assert outcome.value == Decimal("14773260000")
+    assert outcome.decimals == -6
+    assert limitations == []
+    # The fully shares-tagged per-class envelope still passes the check.
+    result = _pk02fix_produce(
+        monkeypatch,
+        (
+            _pk02fix_fact(
+                "dei:EntityCommonStockSharesOutstanding",
+                unit=_PK02FIX_SHARES,
+                value="600",
+                key="cover-class-a",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassAMember"),),
+                decimals="3",
+            ),
+            _pk02fix_fact(
+                "dei:EntityCommonStockSharesOutstanding",
+                unit=_PK02FIX_SHARES,
+                value="500",
+                key="cover-class-b",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassBMember"),),
+                decimals="3",
+            ),
+            _pk02fix_fact(
+                "us-gaap:CommonStockSharesIssued",
+                unit=_PK02FIX_SHARES,
+                value="600",
+                key="parenthetical-class-a",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassAMember"),),
+                decimals="3",
+            ),
+            _pk02fix_fact(
+                "us-gaap:CommonStockSharesIssued",
+                unit=_PK02FIX_SHARES,
+                value="500",
+                key="parenthetical-class-b",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassBMember"),),
+                decimals="3",
+            ),
+        ),
+    )
+    check = _check(result, "per_class_shares_vs_cover")
+    assert check["status"] == "pass"
+    assert all(
+        row["quality_state"] == "valued"
+        for row in _rows(result, "shares_issued_parenthetical")
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk02_axes_usd_member_refused_while_share_siblings_valued() -> None:
+    # T5: a wrong-unit member row is an absence on its own; sibling member
+    # rows with a valid unit are unchanged.
+    outcome, limitations = _pk02fix_axes_outcome(
+        "shares_issued_parenthetical",
+        (
+            _pk02fix_fact(
+                "us-gaap:CommonStockSharesIssued",
+                unit=_PK02FIX_SHARES,
+                value="600",
+                key="parenthetical-class-a",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassAMember"),),
+            ),
+            _pk02fix_fact(
+                "us-gaap:CommonStockSharesIssued",
+                unit=_PK02FIX_USD,
+                value="400",
+                key="parenthetical-class-b-usd",
+                instant=_PK02FIX_POR,
+                explicit=((_PK02FIX_CLASS_AXIS, "testco:ClassBMember"),),
+            ),
+        ),
+    )
+    rows = (outcome.row, *outcome.extra_rows)
+    valued = [row for row in rows if row["quality_state"] == "valued"]
+    refused = [row for row in rows if row["quality_state"] != "valued"]
+    assert len(valued) == 1
+    assert valued[0]["value"] == "600"
+    assert valued[0]["unit"] == "shares"
+    assert valued[0]["dimensions"] == [
+        {"axis": _PK02FIX_CLASS_AXIS, "member": "testco:ClassAMember"}
+    ]
+    assert len(refused) == 1
+    assert refused[0]["quality_state"] == "not_evaluable"
+    assert refused[0]["non_value_state"] == "not_evaluable"
+    assert refused[0]["reason"] == "unit_mismatch"
+    assert outcome.member_values == (None, Decimal("600"))
+    assert outcome.value is None  # the wrong-unit member never sums in
+    assert limitations == [
+        "shares_issued_parenthetical: fact unit USD is not shares"
+    ]
+
+
+def test_pk02_axes_field_without_catalogue_unit_imposes_no_check() -> None:
+    # T6: a catalogue field with no unit imposes no equivalence check —
+    # behaviour is unchanged for both unit spellings, as at the base commit.
+    catalogue_field = {
+        **_catalogue_field("PK02", "shares_issued_parenthetical"),
+        "unit": None,
+    }
+    for unit, stamped in (
+        (_PK02FIX_SHARES, "shares"),
+        (_PK02FIX_USD, "USD"),
+    ):
+        limitations: list[str] = []
+        outcome = pack_base._resolve_axes_fact_mapping(
+            pack_id="PK02",
+            catalogue_field=catalogue_field,
+            mapping=pk02_sbc._FIELD_MAPPINGS["shares_issued_parenthetical"],
+            ledger=RawFactLedger(
+                events=(
+                    _pk02fix_fact(
+                        "us-gaap:CommonStockSharesIssued",
+                        unit=unit,
+                        value="1000000000",
+                        key=f"parenthetical-{stamped}",
+                        instant=_PK02FIX_POR,
+                    ),
+                )
+            ),
+            por=_PK02FIX_POR,
+            filed_at=None,
+            limitations=limitations,
+        )
+        assert outcome.row["quality_state"] == "valued"
+        assert outcome.row["value"] == "1000000000"
+        assert outcome.row["unit"] == stamped  # the fact measure wins
+        assert limitations == []
 
 
 def test_pk04_cli_writes_valid_envelope(tmp_path: Path) -> None:
@@ -12780,3 +13286,1723 @@ def test_pk09_single_conformed_signature_resolves_unchanged() -> None:
     result = _pk09_synthetic("10-K", body)
     assert _row(result, "auditor_firm")["text_value"] == "Northgate Audit LLP"
     assert contract.validate_pack_result(result) == []
+
+
+# 46. PK01 covenant hardening (2026-11-01 lane fif-pk01harden-r1) ------------
+#
+# Every test below fails on the pre-hardening pack (872452c): (a)/(d) pin the
+# N3/N2 residue trim — the emitted text is the matched covenant sentence, so
+# the 1024 cap cannot push it out and the source_span slices back exactly;
+# (b)/(c) pin the N4 heading selection — a Financing-Receivables note is not
+# a debt note and a trailing cross-reference mention never steals the pick;
+# (e) pins the known N1 limitation instead: the first covenant sentence
+# wins. Synthetic fixtures only, no filing bytes.
+
+_PK01_FACILITIES_ROWS = "".join(
+    f"<tr><td>Revolving credit facility {idx:02d}</td><td>2031</td>"
+    f"<td>2,5{idx:02d}</td><td>1,2{idx:02d}</td></tr>"
+    for idx in range(20)
+)
+
+
+def test_pk01_covenant_span_drops_long_facilities_table_prefix() -> None:
+    # (a) N3: a facilities table longer than the 1024 cap and with no ". "
+    # separator before the covenant sentence must not reach the text_value.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 7. Debt </div>"
+        "<table><tr><td>Facility</td><td>Maturity</td><td>Capacity</td>"
+        f"<td>Outstanding</td></tr>{_PK01_FACILITIES_ROWS}</table>"
+        "<div>The credit agreement contains a financial covenant limiting"
+        " total indebtedness, and the company was in compliance with all"
+        " covenants at year end.</div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    assert contract.validate_pack_result(result) == []
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "The credit agreement contains a financial covenant limiting"
+        " total indebtedness, and the company was in compliance with all"
+        " covenants at year end."
+    )
+    assert "Revolving credit facility" not in row["text_value"]
+    assert _check(result, "covenant_span_present")["status"] == "pass"
+
+
+def test_pk01_covenant_span_rejects_financing_receivables_heading() -> None:
+    # (b) N4: "Financing Receivables" is not a debt note, so the real debt
+    # note supplies the value even though the receivables note matches later.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 9. Debt </div>"
+        "<div>The term facility requires compliance with all financial"
+        " covenants.</div>"
+        "<div>Note 3. Financing Receivables </div>"
+        "<div>The securitization facility contains financial covenant"
+        " language.</div>"
+        "<div>Note 10. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "The term facility requires compliance with all financial covenants."
+    )
+    assert "securitization" not in row["text_value"]
+    assert _check(result, "covenant_span_present")["status"] == "pass"
+
+
+def test_pk01_covenant_span_ignores_cross_reference_mention_after_body() -> None:
+    # (c) N4: a trailing "see Note 9. Debt" mention inside another note's
+    # sentence must not steal the last-occurrence pick from the note body.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 9. Debt </div>"
+        "<div>The term facility requires compliance with all financial"
+        " covenants.</div>"
+        "<div>Note 10. Commitments </div>"
+        "<div>For details on the credit agreement, see Note 9. Debt for the"
+        " negotiated terms.</div>"
+        "<div>Note 11. Subsequent Events </div>"
+        "<div>There were no subsequent events.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "The term facility requires compliance with all financial covenants."
+    )
+    assert "negotiated terms" not in row["text_value"]
+    assert _check(result, "covenant_span_present")["status"] == "pass"
+
+
+def test_pk01_covenant_source_span_slices_back_to_emitted_text() -> None:
+    # (d) N3: the offsets locate exactly the emitted text under the narrative
+    # normalization (entity expansion + whitespace collapse). On the parent
+    # build the same span emitted a capped table prefix instead.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 7. Debt </div>"
+        "<table><tr><td>Facility</td><td>Maturity</td><td>Capacity</td>"
+        f"<td>Outstanding</td></tr>{_PK01_FACILITIES_ROWS}</table>"
+        "<div>The credit agreement&#8217;s financial covenant limits total"
+        " indebtedness, and the company was in compliance at year end.</div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    package = _synthetic_package("10-K", body)
+    result = produce_pack("PK01", _pk01_syn_input(package))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"].startswith("The credit agreement")
+    span = row["source_span"]
+    slice_text = pk01_mod.narrative.narrative_text_from_bytes(
+        package.members["doc.htm"][span["start_offset"] : span["end_offset"]],
+        span["document_id"],
+    ).text
+    assert slice_text == row["text_value"]
+
+
+def test_pk01_covenant_emits_first_covenant_sentence() -> None:
+    # (e) N1 limitation: within one note the first covenant sentence wins,
+    # even when a later sentence names the ratio and its threshold.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 7. Debt </div>"
+        "<div>The agreement contains affirmative, negative and financial"
+        " covenants, and events of default customary for facilities of this"
+        " type. The credit agreement covenants include a maximum leverage"
+        " ratio of 3.50 to 1.00.</div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "The agreement contains affirmative, negative and financial covenants,"
+        " and events of default customary for facilities of this type."
+    )
+    assert _check(result, "covenant_span_present")["status"] == "pass"
+
+
+# PK01 harden repair: the five defects the independent review of 32578982
+# found. Each test below fails on that build.
+
+# A tag-free run longer than the 1024-char cap with no ". " separator.
+_PK01_LONG_RUN = " ".join(
+    f"Tranche {i:02d} 2031 2,5{i:02d} 1,2{i:02d}" for i in range(60)
+)
+
+
+def _pk01_slice_back(package: Any, row: dict[str, Any]) -> str:
+    span = row["source_span"]
+    return pk01_mod.narrative.narrative_text_from_bytes(
+        package.members["doc.htm"][span["start_offset"] : span["end_offset"]],
+        span["document_id"],
+    ).text
+
+
+def test_pk01_covenant_span_keeps_inline_negation() -> None:
+    # Inline markup is not a sentence boundary: a bolded "not" stays in the
+    # emitted text. The 32578982 build started the sentence after </b> and
+    # emitted "required to comply ...", inverting the disclosure.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 7. Debt </div>"
+        "<div><span>The Company is </span><b>not</b><span> required to"
+        " comply with a leverage ratio covenant.</span></div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    package = _synthetic_package("10-K", body)
+    result = produce_pack("PK01", _pk01_syn_input(package))
+    assert contract.validate_pack_result(result) == []
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "The Company is not required to comply with a leverage ratio covenant."
+    )
+    assert _pk01_slice_back(package, row) == row["text_value"]
+    assert _check(result, "covenant_span_present")["status"] == "pass"
+
+
+def test_pk01_covenant_span_keeps_hyperlinked_subject() -> None:
+    # A hyperlink around the sentence subject is inline markup too.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 7. Debt </div>"
+        '<div><a href="#ex10">The credit agreement</a> contains a financial'
+        " covenant on leverage.</div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "The credit agreement contains a financial covenant on leverage."
+    )
+    assert _check(result, "covenant_span_present")["status"] == "pass"
+
+
+def test_pk01_covenant_span_drops_block_directly_before_match() -> None:
+    # The space directly before the matched term is tested for a block
+    # break too, so a heading block that ends right before the term is
+    # dropped. The 32578982 build emitted "FINANCING Covenants in ...".
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 7. Debt </div>"
+        "<div>FINANCING</div>"
+        "<div>Covenants in the revolving credit Facility limit secured"
+        " debt.</div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "Covenants in the revolving credit Facility limit secured debt."
+    )
+
+
+def test_pk01_covenant_span_drops_over_cap_block_before_match() -> None:
+    # A paragraph longer than the cap that ends right before the covenant
+    # block must not be emitted. The 32578982 build emitted 1024 chars of
+    # the tranche run and marked them valued.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 7. Debt </div>"
+        f"<div>{_PK01_LONG_RUN}</div>"
+        "<div>Leverage ratio requirements cap secured debt at 3.0 times"
+        " EBITDA.</div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "Leverage ratio requirements cap secured debt at 3.0 times EBITDA."
+    )
+    assert "Tranche" not in row["text_value"]
+
+
+def test_pk01_covenant_span_unsupported_when_cap_cuts_the_term() -> None:
+    # When the matched term ends past the cap, capping would emit text with
+    # no covenant term in it. The candidate is dropped and the field stays
+    # the typed absence. The 32578982 build emitted the capped tranche run.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 7. Debt </div>"
+        f"<div>{_PK01_LONG_RUN} The credit agreement contains a financial"
+        " covenant limiting total indebtedness.</div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    assert contract.validate_pack_result(result) == []
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "unsupported"
+    assert row["non_value_state"] == "unsupported"
+    assert row["reason"] == "missing_dependency"
+    assert row["text_value"] is None
+    check = _check(result, "covenant_span_present")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "missing_dependency"
+
+
+def test_pk01_covenant_compliance_sentence_wins_over_later_statistic() -> None:
+    # The earlier compliance sentence wins over a later reported ratio,
+    # which is a statistic, not a covenant term. The 32578982 build emitted
+    # the statistic.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 7. Debt </div>"
+        "<div>The Company was in compliance with all of its debt covenants."
+        " The Company's net leverage ratio was 2.1 times at year end.</div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "The Company was in compliance with all of its debt covenants."
+    )
+
+
+def test_pk01_covenant_span_ignores_hyperlinked_cross_reference() -> None:
+    # N4: a hyperlink around a "see Note 9. Debt" mention does not make it a
+    # heading. The 32578982 build picked the mention as the debt note and
+    # emitted "; the guarantee contains a financial covenant."
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 9. Debt </div>"
+        "<div>The term facility requires compliance with all financial"
+        " covenants.</div>"
+        "<div>Note 10. Commitments </div>"
+        '<div>For the credit agreement terms, see <a href="#n9">Note 9.'
+        " Debt</a>; the guarantee contains a financial covenant.</div>"
+        "<div>Note 11. Subsequent Events </div>"
+        "<div>There were no subsequent events.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "The term facility requires compliance with all financial covenants."
+    )
+    assert "guarantee" not in row["text_value"]
+
+
+def test_pk01_covenant_span_ignores_parenthesised_cross_reference() -> None:
+    # N4: "(Note 9. Debt)" runs mid-sentence after an opening parenthesis.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 9. Debt </div>"
+        "<div>The term facility requires compliance with all financial"
+        " covenants.</div>"
+        "<div>Note 10. Commitments </div>"
+        "<div>The guarantee is described in the debt note (Note 9. Debt) and"
+        " contains a financial covenant.</div>"
+        "<div>Note 11. Subsequent Events </div>"
+        "<div>There were no subsequent events.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "The term facility requires compliance with all financial covenants."
+    )
+    assert "guarantee" not in row["text_value"]
+
+
+def test_pk01_covenant_span_drops_leading_footnote_marker() -> None:
+    # Inline markup no longer bounds a sentence, so a footnote marker in its
+    # own span ("(1)") would open the emitted text. The marker is dropped,
+    # matching the 32578982 output for this shape.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 7. Debt </div>"
+        "<div><span>(1)</span><span> </span><span>The revolving credit"
+        " facility does not require us to comply with financial"
+        " covenants.</span></div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    package = _synthetic_package("10-K", body)
+    result = produce_pack("PK01", _pk01_syn_input(package))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "The revolving credit facility does not require us to comply with"
+        " financial covenants."
+    )
+    assert _pk01_slice_back(package, row) == row["text_value"]
+
+
+def _pk01_compliance_then(term: str) -> Any:
+    return _synthetic_package(
+        "10-K",
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 7. Debt </div>"
+        "<div>We were in compliance with all covenants. " + term + "</div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>",
+    )
+
+
+@pytest.mark.parametrize(
+    "term",
+    (
+        "The credit agreement contains a maximum leverage ratio of 3.50 to 1.00.",
+        "The Revolving Facility includes a minimum interest coverage ratio of"
+        " 3.0 to 1.0.",
+        "Borrowings are subject to a maximum leverage ratio of 3.75x.",
+        "The interest coverage ratio shall not be less than 3.0 to 1.0.",
+        "The leverage ratio covenant limits net debt to 3.5 times EBITDA.",
+        "The leverage ratio cannot exceed 3.5 to 1.0.",
+        "Total debt may not be greater than 3.5 times EBITDA.",
+    ),
+)
+def test_pk01_covenant_compliance_sentence_wins_over_later_threshold(
+    term: str,
+) -> None:
+    # Known N1 limitation (reviews of 32cad175 and 0aff2ac0 failed on every
+    # sentence-preference rule): no preference is applied, so the earlier
+    # generic compliance sentence wins over each later threshold sentence,
+    # and the emitted value slices back exactly.
+    package = _pk01_compliance_then(term)
+    row = _pk01_covenant_row(produce_pack("PK01", _pk01_syn_input(package)))
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "We were in compliance with all covenants."
+    assert _pk01_slice_back(package, row) == row["text_value"]
+
+
+def test_pk01_covenant_compliance_wins_over_statistic_with_obligation_word() -> None:
+    # Review F1 of 32cad175: an obligation word that follows a reported
+    # ratio ("repayments required") never moves the pick off the earlier
+    # compliance sentence.
+    package = _pk01_compliance_then(
+        "Our net leverage ratio was 2.1 times, lower than last year because"
+        " of repayments required under the term loan."
+    )
+    row = _pk01_covenant_row(produce_pack("PK01", _pk01_syn_input(package)))
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "We were in compliance with all covenants."
+
+
+def test_pk01_covenant_span_drops_stacked_leading_markers() -> None:
+    # Review F4 of 32cad175: "(1) (a) " carries two markers; both are
+    # dropped, not just the first.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 7. Debt </div>"
+        "<div><span>(1)</span><span> </span><span>(a)</span><span> We must"
+        " maintain a leverage ratio below 3.5x.</span></div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    package = _synthetic_package("10-K", body)
+    row = _pk01_covenant_row(produce_pack("PK01", _pk01_syn_input(package)))
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "We must maintain a leverage ratio below 3.5x."
+    assert _pk01_slice_back(package, row) == row["text_value"]
+
+
+@pytest.mark.parametrize("brk", ["<br/>", "</div><div>", "<hr/>"])
+def test_pk01_covenant_span_keeps_clause_across_mid_sentence_block_break(
+    brk: str,
+) -> None:
+    # Review F1 of d6d7437f: a block break inside a clause ("was not<br/>in
+    # compliance") is not a sentence start, so "was not" stays in the span.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 7. Debt </div>"
+        "<div>The Company was not"
+        + brk
+        + "in compliance with the financial covenants under the credit"
+        " facility.</div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    package = _synthetic_package("10-K", body)
+    result = produce_pack("PK01", _pk01_syn_input(package))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "The Company was not in compliance with the financial covenants under"
+        " the credit facility."
+    )
+    assert _pk01_slice_back(package, row) == row["text_value"]
+    assert _check(result, "covenant_span_present")["status"] == "pass"
+
+
+def test_pk01_covenant_span_ignores_cross_reference_after_item_number() -> None:
+    # Review F3 of d6d7437f: "Item 8 Note 9. Debt" is a cross-reference too;
+    # a digit before the heading mention is mid-sentence text.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 9. Debt </div>"
+        "<div>The term facility requires compliance with all financial"
+        " covenants.</div>"
+        "<div>Note 10. Commitments </div>"
+        "<div>For the terms of the credit agreement, refer to Part II, Item 8"
+        " Note 9. Debt for the negotiated terms.</div>"
+        "<div>Note 11. Subsequent Events </div>"
+        "<div>There were no subsequent events.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "The term facility requires compliance with all financial covenants."
+    )
+    assert "negotiated terms" not in row["text_value"]
+    assert _check(result, "covenant_span_present")["status"] == "pass"
+
+
+def _pk01_clause_result(clause: str) -> tuple:
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 7. Debt </div>"
+        + clause
+        + "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    package = _synthetic_package("10-K", body)
+    result = produce_pack("PK01", _pk01_syn_input(package))
+    return package, result, _pk01_covenant_row(result)
+
+
+@pytest.mark.parametrize(
+    ("clause", "expected"),
+    [
+        (
+            "<div>The Company was not</div><div>42</div><hr/><div>in compliance"
+            " with the financial covenants under the credit facility.</div>",
+            "The Company was not 42 in compliance with the financial covenants"
+            " under the credit facility.",
+        ),
+        (
+            "<div>The Company was not</div><div>42</div><hr/>"
+            '<div><a href="#toc">Table of Contents</a></div>'
+            "<div>in compliance with the financial covenants under the credit"
+            " facility.</div>",
+            "The Company was not 42 Table of Contents in compliance with the"
+            " financial covenants under the credit facility.",
+        ),
+        (
+            "<div>The Company was not in compliance with the</div><div>F-23</div>"
+            "<hr/><div>financial covenants under the credit facility.</div>",
+            "The Company was not in compliance with the F-23 financial covenants"
+            " under the credit facility.",
+        ),
+    ],
+    ids=["page-number", "table-of-contents", "page-number-before-term"],
+)
+def test_pk01_covenant_span_skips_page_residue_inside_a_clause(
+    clause: str, expected: str
+) -> None:
+    # Review of e56ccab7: a page number or "Table of Contents" link left by a
+    # page break mid-clause is not a sentence start, so "was not" stays in.
+    package, result, row = _pk01_clause_result(clause)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == expected
+    assert _pk01_slice_back(package, row) == row["text_value"]
+    assert _check(result, "covenant_span_present")["status"] == "pass"
+
+
+@pytest.mark.parametrize(
+    ("clause", "expected"),
+    [
+        (
+            "<div>The Company was not, as of<br/>December 31, 2025, in compliance"
+            " with its financial covenants.</div>",
+            "The Company was not, as of December 31, 2025, in compliance with its"
+            " financial covenants.",
+        ),
+        (
+            "<div>The Company has not obtained a waiver from<br/>Bank of America"
+            " of its breach of the financial covenants.</div>",
+            "The Company has not obtained a waiver from Bank of America of its"
+            " breach of the financial covenants.",
+        ),
+        (
+            "<div>Acme Holdings did not satisfy the</div><div>F-23</div><hr/>"
+            "<div>Leverage ratio covenant under the credit facility.</div>",
+            "Acme Holdings did not satisfy the F-23 Leverage ratio covenant under"
+            " the credit facility.",
+        ),
+        (
+            "<div>The Company was not in compliance with:</div>"
+            "<div>(a) the financial covenants under the credit facility.</div>",
+            "The Company was not in compliance with: (a) the financial covenants"
+            " under the credit facility.",
+        ),
+    ],
+    ids=["capitalized-date", "proper-noun", "capitalized-term", "list-marker"],
+)
+def test_pk01_covenant_span_keeps_negation_before_a_capitalized_break(
+    clause: str, expected: str
+) -> None:
+    # Review of e56ccab7: a break followed by a capitalized word or a list
+    # marker opened the span and dropped "not" before it, inverting the
+    # disclosure. A break that would drop a negation does not start the span.
+    package, result, row = _pk01_clause_result(clause)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == expected
+    assert _pk01_slice_back(package, row) == row["text_value"]
+    assert _check(result, "covenant_span_present")["status"] == "pass"
+
+
+def test_pk01_covenant_span_takes_heading_after_inline_page_number() -> None:
+    # Review of e56ccab7: "F-12" opening the heading's own block is page
+    # residue, not an item number, so the real note heading is not taken for
+    # a cross-reference and a later mention cannot win the note pick.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div><span>F-12</span> <span>Note 7. Debt</span></div>"
+        "<div>The term facility requires compliance with all financial"
+        " covenants.</div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease costs were recorded; see Note 7. Debt for the"
+        " leverage ratio of the revolving facility.</div>"
+        "<div>Note 9. Equity </div>"
+        "<div>No equity was issued.</div>"
+    )
+    package = _synthetic_package("10-K", body)
+    result = produce_pack("PK01", _pk01_syn_input(package))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "The term facility requires compliance with all financial covenants."
+    )
+    assert "revolving facility" not in row["text_value"]
+    assert _pk01_slice_back(package, row) == row["text_value"]
+
+
+# 41. PK04 dev-corpus pins (diversified_v1: PG, TMO, DHR, VZ, HON) -------------
+#
+# Dev-corpus evidence lane (fif-pk04dev-20261101-r1). Every test below is a
+# PIN of verified-correct current behaviour, rebuilt synthetically from the
+# diversified_v1 filings' own fact shapes (no filing bytes):
+#
+#   - revenue alias selection: the undimensioned
+#     RevenueFromContractWithCustomerExcludingAssessedTax annual total wins
+#     (TMO/DHR/HON 10-K shape), a Revenues-only issuer resolves at alias 30
+#     (VZ/PG shape), and segment-dimensioned totals never leak into the
+#     consolidated row.
+#   - typed absences: an issuer that tags no contract-liability or RPO
+#     concepts (PG shape) gets exact missing_standard_fact reasons.
+#   - rollforward false-positive guard: an issuer that tags only the split
+#     balance-sheet contract liabilities and no bare
+#     ContractWithCustomerLiability (TMO 10-K shape) never gets an invented
+#     rollforward opening/closing from the balance-sheet lines.
+#   - rpo_percentage_next_12m: the earliest typed start date on/after the
+#     period of report is the within-12-months share (DHR two-bucket shape).
+#   - rpo_total typed-axis admit (pk04dev2, the repaired boundary): the
+#     framework helper ``base.py::_dimensions_admitted`` now compares
+#     dimension AXIS NAMES rather than (axis, member) pair tuples against
+#     the allowed tuple, and PK04 admits a filing's single typed-axis RPO
+#     aggregate through its finalize hook while multi-bucket ladders and
+#     Period1-marked buckets stay typed absences (never summed, never
+#     picked).
+
+from engine.fundamental_forensics.raw_ledger import make_raw_fact  # noqa: E402
+
+TESTREV_CIK = "0000000004"
+TESTREV_SIC = "3829"
+TESTREV_ENTITY = {
+    "entity_id": "ISS:US-TESTREV",
+    "cik": TESTREV_CIK,
+    "ticker": "TESTREV",
+    "name": "TESTREV SYNTHETIC CORP",
+    "identity_basis": "synthetic_in_test_ledger_v1",
+    "source_entity_id": TESTREV_CIK,
+}
+_RPO_AXIS = RPO_TIMING_AXIS_QNAME
+
+
+def _typed_member(day: str) -> str:
+    return f"<{_RPO_AXIS}.domain>{day}</{_RPO_AXIS}.domain>"
+
+
+def _testrev_packages() -> tuple:
+    return (
+        _SyntheticPackage(
+            {
+                "cik": TESTREV_CIK,  # R-F4: package issuer == packet entity
+                "form": "10-K",
+                "period_of_report": "2025-12-31",
+                "accession": "0000000004-26-000010",
+                "primary_document": "testrev-20251231.htm",
+            }
+        ),
+    )
+
+
+def _testrev_contexts() -> dict:
+    return {
+        "duration": FactContext(
+            context_id="c-fy",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTREV_CIK,
+            start="2025-01-01",
+            end="2025-12-31",
+        ),
+        "instant": FactContext(
+            context_id="c-i",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTREV_CIK,
+            instant="2025-12-31",
+        ),
+        "segment": FactContext(
+            context_id="c-seg",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTREV_CIK,
+            instant="2025-12-31",
+            explicit_dimensions=(
+                (
+                    "us-gaap:StatementBusinessSegmentsAxis",
+                    "us-gaap:OperatingSegmentsMember",
+                ),
+            ),
+        ),
+    }
+
+
+def _testrev_events(
+    *, facts: tuple[tuple[str, str, str, str, str], ...]
+) -> tuple:
+    """(key, concept, placement, value, unit_id) placements from the contexts."""
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+    contexts = _testrev_contexts()
+    units = {"USD": FactUnit("USD", ["iso4217:USD"]), "pure": FactUnit("xbrli:pure", ["xbrli:pure"])}
+    events = []
+    for key, concept, placement, value, unit_id in facts:
+        events.append(
+            make_raw_fact(
+                source=filing_row["source"],
+                concept_qname=concept,
+                context=contexts[placement],
+                unit=units[unit_id],
+                raw_token=value,
+                parsed_value=value,
+                dimensions_known=True,
+                decimals="0",
+                source_span=(0, len(value)),
+                source_occurrence_key=key,
+                accepted_at=filing_row["accepted_at"],
+                recorded_at=filing_row["recorded_at"],
+            )
+        )
+    return tuple(events)
+
+
+def _produce_testrev(monkeypatch: pytest.MonkeyPatch, facts) -> dict:
+    events = _testrev_events(facts=facts)
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    return produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+
+
+def _testrev_row(result: dict, field_id: str) -> dict:
+    return next(row for row in result["fields"] if row["field_id"] == field_id)
+
+
+# PIN: the TMO/DHR/HON 10-K shape — the undimensioned annual
+# RevenueFromContractWithCustomerExcludingAssessedTax total resolves at alias
+# 10 and a segment-dimensioned duplicate never leaks into the consolidated
+# row.
+def test_pk04dev_pin_revenue_first_alias_and_segment_guard(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _produce_testrev(
+        monkeypatch,
+        (
+            ("rev", "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax", "duration", "24568000000", "USD"),
+            (
+                "rev_segment",
+                "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+                "segment",
+                "15000000000",
+                "USD",
+            ),
+        ),
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _testrev_row(result, "revenue")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "24568000000"
+    assert row["concept"] == "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"
+    assert row["dimensions"] == []
+
+
+# PIN: the VZ/PG 10-K shape — an issuer tagging only Revenues resolves at
+# alias 30, again ignoring its segment-dimensioned totals.
+def test_pk04dev_pin_revenue_revenues_fallback_alias(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _produce_testrev(
+        monkeypatch,
+        (
+            ("rev", "us-gaap:Revenues", "duration", "138191000000", "USD"),
+            ("rev_segment", "us-gaap:Revenues", "segment", "40000000000", "USD"),
+        ),
+    )
+    row = _testrev_row(result, "revenue")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "138191000000"
+    assert row["concept"] == "us-gaap:Revenues"
+
+
+# PIN: the PG shape — an issuer that tags no contract-liability or RPO
+# concepts gets exact typed-absence reasons, never a narrative extraction.
+def test_pk04dev_pin_contract_liability_and_rpo_typed_absences(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _produce_testrev(
+        monkeypatch,
+        (("rev", "us-gaap:Revenues", "duration", "87032000000", "USD"),),
+    )
+    for field_id, concept in (
+        ("contract_liability_current", "us-gaap:ContractWithCustomerLiabilityCurrent"),
+        ("contract_liability_noncurrent", "us-gaap:ContractWithCustomerLiabilityNoncurrent"),
+        ("contract_liability_rollforward_opening", "us-gaap:ContractWithCustomerLiability"),
+        ("contract_liability_rollforward_closing", "us-gaap:ContractWithCustomerLiability"),
+        ("rpo_total", "us-gaap:RevenueRemainingPerformanceObligation"),
+        (
+            "rpo_percentage_next_12m",
+            "us-gaap:RevenueRemainingPerformanceObligationPercentage",
+        ),
+    ):
+        row = _testrev_row(result, field_id)
+        assert row["quality_state"] == "missing", field_id
+        assert row["reason"] == f"missing_standard_fact:{concept}", field_id
+        assert row["value"] is None, field_id
+
+
+# PIN (rollforward false-positive guard): the TMO 10-K shape — split
+# balance-sheet contract liabilities with no bare ContractWithCustomerLiability
+# rollforward never invents an opening/closing from the balance-sheet lines.
+def test_pk04dev_pin_rollforward_absent_without_bare_concept(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _produce_testrev(
+        monkeypatch,
+        (
+            ("rev", "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax", "duration", "44556000000", "USD"),
+            ("cl_cur", "us-gaap:ContractWithCustomerLiabilityCurrent", "instant", "2710000000", "USD"),
+            ("cl_nc", "us-gaap:ContractWithCustomerLiabilityNoncurrent", "instant", "1183000000", "USD"),
+        ),
+    )
+    assert _testrev_row(result, "contract_liability_current")["value"] == "2710000000"
+    assert _testrev_row(result, "contract_liability_noncurrent")["value"] == "1183000000"
+    for field_id in (
+        "contract_liability_rollforward_opening",
+        "contract_liability_rollforward_closing",
+    ):
+        row = _testrev_row(result, field_id)
+        assert row["quality_state"] == "missing", field_id
+        assert row["reason"] == (
+            "missing_standard_fact:us-gaap:ContractWithCustomerLiability"
+        ), field_id
+        assert row["value"] is None, field_id
+
+
+# PIN: the DHR shape — the earliest typed start date on/after the period of
+# report is the within-12-months share; the later bucket never wins, and the
+# undimensioned RPO total resolves alongside it.
+def test_pk04dev_pin_rpo_percentage_earliest_typed_bucket(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+    undimensioned = _testrev_contexts()
+    events = [
+        make_raw_fact(
+            source=filing_row["source"],
+            concept_qname="us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            context=undimensioned["duration"],
+            unit=FactUnit("USD", ["iso4217:USD"]),
+            raw_token="24568000000",
+            parsed_value="24568000000",
+            dimensions_known=True,
+            decimals="0",
+            source_span=(0, 10),
+            source_occurrence_key="rev",
+            accepted_at=filing_row["accepted_at"],
+            recorded_at=filing_row["recorded_at"],
+        ),
+        make_raw_fact(
+            source=filing_row["source"],
+            concept_qname="us-gaap:RevenueRemainingPerformanceObligation",
+            context=undimensioned["instant"],
+            unit=FactUnit("USD", ["iso4217:USD"]),
+            raw_token="5200000000",
+            parsed_value="5200000000",
+            dimensions_known=True,
+            decimals="0",
+            source_span=(0, 10),
+            source_occurrence_key="rpo",
+            accepted_at=filing_row["accepted_at"],
+            recorded_at=filing_row["recorded_at"],
+        ),
+    ]
+    for key, day, value in (
+        ("pct_next12", "2026-01-01", "0.47"),
+        ("pct_subsequent", "2027-01-01", "0.26"),
+    ):
+        events.append(
+            make_raw_fact(
+                source=filing_row["source"],
+                concept_qname=(
+                    "us-gaap:RevenueRemainingPerformanceObligationPercentage"
+                ),
+                context=FactContext(
+                    context_id=f"c-pct-{day}",
+                    entity_scheme="http://www.sec.gov/CIK",
+                    entity_identifier=TESTREV_CIK,
+                    instant="2025-12-31",
+                    typed_dimensions=((_RPO_AXIS, _typed_member(day)),),
+                ),
+                unit=FactUnit("xbrli:pure", ["xbrli:pure"]),
+                raw_token=value,
+                parsed_value=value,
+                dimensions_known=True,
+                decimals="2",
+                source_span=(0, 4),
+                source_occurrence_key=key,
+                accepted_at=filing_row["accepted_at"],
+                recorded_at=filing_row["recorded_at"],
+            )
+        )
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    result = produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+    assert _testrev_row(result, "rpo_total")["value"] == "5200000000"
+    percentage = _testrev_row(result, "rpo_percentage_next_12m")
+    assert percentage["quality_state"] == "valued"
+    assert percentage["value"] == "0.47"
+    assert percentage["dimensions"] == [
+        {"axis": _RPO_AXIS, "member": "2026-01-01"}
+    ]
+
+
+# pk04dev2 (diversified_v1 repair): the VZ FY25 10-K shape — the RPO total
+# tagged only on the standard typed start-date axis as ONE aggregate now
+# resolves. base.py::_dimensions_admitted compares AXIS NAMES (pair tuples
+# never matched), and the PK04 finalize hook admits the single aggregate:
+# the co-tagged product-or-service fact (an additional axis) never leaks in.
+# Multi-bucket ladders and Period1-marked buckets stay absent — the tests
+# below this one pin those refusals.
+def test_pk04dev2_rpo_total_single_typed_axis_aggregate_resolves(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    aggregate_context = FactContext(
+        context_id="c-rpo-typed",
+        entity_scheme="http://www.sec.gov/CIK",
+        entity_identifier=TESTREV_CIK,
+        instant="2025-12-31",
+        typed_dimensions=((_RPO_AXIS, _typed_member("2026-01-01")),),
+    )
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+
+    def _fact(key, context, concept, value):
+        return make_raw_fact(
+            source=filing_row["source"],
+            concept_qname=concept,
+            context=context,
+            unit=FactUnit("USD", ["iso4217:USD"]),
+            raw_token=value,
+            parsed_value=value,
+            dimensions_known=True,
+            decimals="-8",
+            source_span=(0, len(value)),
+            source_occurrence_key=key,
+            accepted_at=filing_row["accepted_at"],
+            recorded_at=filing_row["recorded_at"],
+        )
+
+    undimensioned_instant = FactContext(
+        context_id="c-i",
+        entity_scheme="http://www.sec.gov/CIK",
+        entity_identifier=TESTREV_CIK,
+        instant="2025-12-31",
+    )
+    aggregate = _fact(
+        "rpo_total",
+        aggregate_context,
+        "us-gaap:RevenueRemainingPerformanceObligation",
+        "58100000000",
+    )
+    events = [
+        aggregate,
+        # A product-or-service subset co-tagged on the same typed axis: two
+        # axes, so it is never admissible and never a source of the total.
+        _fact(
+            "rpo_product_subset",
+            FactContext(
+                context_id="c-rpo-product",
+                entity_scheme="http://www.sec.gov/CIK",
+                entity_identifier=TESTREV_CIK,
+                instant="2025-12-31",
+                explicit_dimensions=(
+                    (
+                        "{http://fasb.org/srt/2025}ProductOrServiceAxis",
+                        "{http://www.example.com/20251231}SubsetMember",
+                    ),
+                ),
+                typed_dimensions=((_RPO_AXIS, _typed_member("2026-01-01")),),
+            ),
+            "us-gaap:RevenueRemainingPerformanceObligation",
+            "1300000000",
+        ),
+        _fact(
+            "cl_cur",
+            undimensioned_instant,
+            "us-gaap:ContractWithCustomerLiabilityCurrent",
+            "7576000000",
+        ),
+        _fact(
+            "cl_nc",
+            undimensioned_instant,
+            "us-gaap:ContractWithCustomerLiabilityNoncurrent",
+            "1000000000",
+        ),
+    ]
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    result = produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+    assert contract.validate_pack_result(result) == []
+    rows = [row for row in result["fields"] if row["field_id"] == "rpo_total"]
+    assert len(rows) == 1
+    row = rows[0]
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "58100000000"
+    assert row["concept"] == "us-gaap:RevenueRemainingPerformanceObligation"
+    assert row["taxonomy"] == "us-gaap"
+    assert row["dimensions"] == [{"axis": _RPO_AXIS, "member": "2026-01-01"}]
+    assert row["source_occurrence_ids"] == [aggregate.occurrence_id]
+    assert row["mapping_rule_id"] == "PK04.rpo_total.fact/v1"
+    # The scope check re-runs over the finalized rows: the total covers the
+    # deferred contract liabilities at the facts' own precision.
+    check = next(
+        item
+        for item in result["checks"]
+        if item["check_id"] == "rpo_vs_deferred_scope"
+    )
+    assert check["status"] == "pass"
+    assert Decimal(check["tolerance"]) == Decimal("1E8")
+    assert result["coverage"]["valued_fields"] == 3
+
+
+# pk04dev2: the framework helper compares AXIS NAMES against the allowed
+# tuple — a pair-tuple set never matched an axis name, so a non-empty
+# ``dimensions_allowed`` was dead code. Fails on the parent commit (the
+# helper refused every dimensioned occurrence there).
+def test_pk04dev2_dimensions_admitted_compares_axis_names() -> None:
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+
+    def _occ(explicit=(), typed=(), known=True):
+        return make_raw_fact(
+            source=filing_row["source"],
+            concept_qname="us-gaap:RevenueRemainingPerformanceObligation",
+            context=FactContext(
+                context_id="c-axis",
+                entity_scheme="http://www.sec.gov/CIK",
+                entity_identifier=TESTREV_CIK,
+                instant="2025-12-31",
+                explicit_dimensions=explicit,
+                typed_dimensions=typed,
+            ),
+            unit=FactUnit("USD", ["iso4217:USD"]),
+            raw_token="1",
+            parsed_value="1",
+            dimensions_known=known,
+            decimals="0",
+            source_span=(0, 1),
+            source_occurrence_key="axis",
+            accepted_at=filing_row["accepted_at"],
+            recorded_at=filing_row["recorded_at"],
+        )
+
+    typed_only = _occ(typed=((_RPO_AXIS, _typed_member("2026-01-01")),))
+    extra_axis = _occ(
+        explicit=(
+            (
+                "{http://fasb.org/srt/2025}ProductOrServiceAxis",
+                "{http://www.example.com/20251231}SubsetMember",
+            ),
+        ),
+        typed=((_RPO_AXIS, _typed_member("2026-01-01")),),
+    )
+    # The only dimension is the named axis: admitted.
+    assert pack_base._dimensions_admitted(typed_only, (_RPO_AXIS,)) is True
+    # An additional axis is never admitted.
+    assert pack_base._dimensions_admitted(extra_axis, (_RPO_AXIS,)) is False
+    # R-F3 first and unchanged: an unknown-dimensional occurrence is never
+    # admitted, allowed axes or not.
+    assert (
+        pack_base._dimensions_admitted(
+            _occ(typed=((_RPO_AXIS, _typed_member("2026-01-01")),), known=False),
+            (_RPO_AXIS,),
+        )
+        is False
+    )
+    # Default ``dimensions_allowed=()`` semantics are unchanged: only an
+    # undimensioned occurrence passes an empty allowance.
+    assert pack_base._dimensions_admitted(_occ(), ()) is True
+    assert pack_base._dimensions_admitted(typed_only, ()) is False
+
+
+# pk04dev2: through the live pack, the default ``dimensions_allowed=()``
+# behaves exactly as before the repair — an undimensioned fact resolves, a
+# dimensioned one stays the disallowed-dimension typed absence. Pins that no
+# other PK04 mapping's behavior moved.
+def test_pk04dev2_default_dimensions_allowed_unchanged(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    valued = _produce_testrev(
+        monkeypatch,
+        (
+            ("rev", "us-gaap:Revenues", "duration", "138191000000", "USD"),
+            (
+                "cl_cur",
+                "us-gaap:ContractWithCustomerLiabilityCurrent",
+                "instant",
+                "7576000000",
+                "USD",
+            ),
+        ),
+    )
+    assert _testrev_row(valued, "contract_liability_current")["value"] == "7576000000"
+
+    # A contract-liability fact carried only on the RPO timing axis (a shape
+    # no real filing tags) is refused for this field: the axis is not named
+    # in the mapping's empty allowance.
+    events = list(
+        _testrev_events(
+            facts=(
+                ("rev", "us-gaap:Revenues", "duration", "138191000000", "USD"),
+            )
+        )
+    )
+    events.append(
+        make_raw_fact(
+            source=events[0].source,
+            concept_qname="us-gaap:ContractWithCustomerLiabilityCurrent",
+            context=FactContext(
+                context_id="c-cl-typed",
+                entity_scheme="http://www.sec.gov/CIK",
+                entity_identifier=TESTREV_CIK,
+                instant="2025-12-31",
+                typed_dimensions=((_RPO_AXIS, _typed_member("2026-01-01")),),
+            ),
+            unit=FactUnit("USD", ["iso4217:USD"]),
+            raw_token="7576000000",
+            parsed_value="7576000000",
+            dimensions_known=True,
+            decimals="-8",
+            source_span=(0, 10),
+            source_occurrence_key="cl_typed",
+            accepted_at=events[0].clocks.accepted_at,
+            recorded_at=events[0].clocks.recorded_at,
+        )
+    )
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    result = produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+    row = _testrev_row(result, "contract_liability_current")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+
+
+# pk04dev2: undimensioned-first — when an undimensioned RPO total and a
+# typed-axis aggregate both exist, the undimensioned fact wins and the
+# typed one is never a second source (no conflict, no blended value).
+def test_pk04dev2_rpo_total_undimensioned_wins_over_typed_axis(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+    undimensioned = make_raw_fact(
+        source=filing_row["source"],
+        concept_qname="us-gaap:RevenueRemainingPerformanceObligation",
+        context=FactContext(
+            context_id="c-rpo-bare",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTREV_CIK,
+            instant="2025-12-31",
+        ),
+        unit=FactUnit("USD", ["iso4217:USD"]),
+        raw_token="5200000000",
+        parsed_value="5200000000",
+        dimensions_known=True,
+        decimals="-8",
+        source_span=(0, 10),
+        source_occurrence_key="rpo_bare",
+        accepted_at=filing_row["accepted_at"],
+        recorded_at=filing_row["recorded_at"],
+    )
+    typed = make_raw_fact(
+        source=filing_row["source"],
+        concept_qname="us-gaap:RevenueRemainingPerformanceObligation",
+        context=FactContext(
+            context_id="c-rpo-typed",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTREV_CIK,
+            instant="2025-12-31",
+            typed_dimensions=((_RPO_AXIS, _typed_member("2026-01-01")),),
+        ),
+        unit=FactUnit("USD", ["iso4217:USD"]),
+        raw_token="58100000000",
+        parsed_value="58100000000",
+        dimensions_known=True,
+        decimals="-8",
+        source_span=(0, 11),
+        source_occurrence_key="rpo_typed",
+        accepted_at=filing_row["accepted_at"],
+        recorded_at=filing_row["recorded_at"],
+    )
+    events = [undimensioned, typed]
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    result = produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "5200000000"
+    assert row["source_occurrence_ids"] == [undimensioned.occurrence_id]
+    assert row["dimensions"] == []
+
+
+# pk04dev2: a timing ladder — two typed-axis buckets at the same period end
+# — stays the disallowed-dimension typed absence. Buckets are never summed
+# and neither bucket is picked as the total, whatever their values.
+def test_pk04dev2_rpo_total_two_bucket_ladder_stays_absent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+    events = []
+    for key, day, value in (
+        ("bucket_2026", "2026-01-01", "28500000000"),
+        ("bucket_2027", "2027-01-01", "17500000000"),
+    ):
+        events.append(
+            make_raw_fact(
+                source=filing_row["source"],
+                concept_qname="us-gaap:RevenueRemainingPerformanceObligation",
+                context=FactContext(
+                    context_id=f"c-rpo-{day}",
+                    entity_scheme="http://www.sec.gov/CIK",
+                    entity_identifier=TESTREV_CIK,
+                    instant="2025-12-31",
+                    typed_dimensions=((_RPO_AXIS, _typed_member(day)),),
+                ),
+                unit=FactUnit("USD", ["iso4217:USD"]),
+                raw_token=value,
+                parsed_value=value,
+                dimensions_known=True,
+                decimals="-8",
+                source_span=(0, len(value)),
+                source_occurrence_key=key,
+                accepted_at=filing_row["accepted_at"],
+                recorded_at=filing_row["recorded_at"],
+            )
+        )
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    result = produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
+
+
+# pk04dev2: the Period1 guard — a single typed-axis fact whose context also
+# carries the standard expected-timing Period1 duration element is ONE
+# TIMING BUCKET, not the disclosure's total, and stays a typed absence even
+# though it is the only numeric RPO fact on the axis. (The real duration is
+# a non-numeric iXBRL fact the converter excludes by design; a synthetic
+# ledger CAN carry the concept, so the row below stands in with a pure-unit
+# value — the guard matches the concept and the context, never the value.)
+def test_pk04dev2_rpo_total_period1_bucket_stays_absent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    bucket_context = FactContext(
+        context_id="c-rpo-period1",
+        entity_scheme="http://www.sec.gov/CIK",
+        entity_identifier=TESTREV_CIK,
+        instant="2025-12-31",
+        typed_dimensions=((_RPO_AXIS, _typed_member("2026-01-01")),),
+    )
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+    events = []
+    for key, concept, value, unit, decimals in (
+        (
+            "rpo_bucket",
+            "us-gaap:RevenueRemainingPerformanceObligation",
+            "28500000000",
+            "USD",
+            "-8",
+        ),
+        (
+            "period1_duration",
+            (
+                "us-gaap:RevenueRemainingPerformanceObligationExpectedTiming"
+                "OfSatisfactionPeriod1"
+            ),
+            "1",
+            "xbrli:pure",
+            "0",
+        ),
+    ):
+        events.append(
+            make_raw_fact(
+                source=filing_row["source"],
+                concept_qname=concept,
+                context=bucket_context,
+                unit=FactUnit(unit, [unit]),
+                raw_token=value,
+                parsed_value=value,
+                dimensions_known=True,
+                decimals=decimals,
+                source_span=(0, len(value)),
+                source_occurrence_key=key,
+                accepted_at=filing_row["accepted_at"],
+                recorded_at=filing_row["recorded_at"],
+            )
+        )
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    result = produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
+
+
+# pk04dev3 (guard-precision repair): two narrow guard defects in the
+# single-aggregate rule. (1) the admitted aggregate's TYPED MEMBER DATE was
+# never checked, so a lone far-future bucket could be valued as the total;
+# the member must sit in the period-adjacent window
+# ``por < member_date <= por + 92 days`` (both real filer conventions put it
+# at the day after the period end). (2) an occurrence carrying the timing
+# axis as an EXPLICIT member passed the axis-name check and then crashed the
+# mint's read of ``typed_dimensions[0]``, dropping the whole PK04 envelope;
+# the guard now requires the axis in typed_dimensions and skips explicit-
+# member occurrences — a typed absence, never an exception.
+def _pk04dev3_filing_row() -> dict:
+    return synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+
+
+def _pk04dev3_rpo_event(
+    filing_row: dict, key: str, member: str, *, explicit: bool = False
+):
+    """One RPO-total fact at the period end on the timing axis.
+
+    ``member`` is the serialized axis token; ``explicit`` puts the
+    (axis, member) pair in ``explicit_dimensions`` instead of
+    ``typed_dimensions``.
+    """
+    return make_raw_fact(
+        source=filing_row["source"],
+        concept_qname="us-gaap:RevenueRemainingPerformanceObligation",
+        context=FactContext(
+            context_id=f"c-rpo-{key}",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTREV_CIK,
+            instant="2025-12-31",
+            explicit_dimensions=((_RPO_AXIS, member),) if explicit else (),
+            typed_dimensions=() if explicit else ((_RPO_AXIS, member),),
+        ),
+        unit=FactUnit("USD", ["iso4217:USD"]),
+        raw_token="58100000000",
+        parsed_value="58100000000",
+        dimensions_known=True,
+        decimals="-8",
+        source_span=(0, 10),
+        source_occurrence_key=key,
+        accepted_at=filing_row["accepted_at"],
+        recorded_at=filing_row["recorded_at"],
+    )
+
+
+def _pk04dev3_produce(monkeypatch: pytest.MonkeyPatch, events) -> dict:
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    return produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+
+
+def test_pk04dev3_rpo_total_far_future_typed_member_stays_absent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = _pk04dev3_filing_row()
+    result = _pk04dev3_produce(
+        monkeypatch,
+        [_pk04dev3_rpo_event(filing_row, "rpo_2030", _typed_member("2030-01-01"))],
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
+
+
+def test_pk04dev3_rpo_total_explicit_member_occurrence_refused(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = _pk04dev3_filing_row()
+    base = list(
+        _testrev_events(
+            facts=(
+                ("rev", "us-gaap:Revenues", "duration", "138191000000", "USD"),
+                (
+                    "cl_cur",
+                    "us-gaap:ContractWithCustomerLiabilityCurrent",
+                    "instant",
+                    "7576000000",
+                    "USD",
+                ),
+            )
+        )
+    )
+    explicit_occ = _pk04dev3_rpo_event(
+        filing_row, "rpo_explicit", _typed_member("2026-01-01"), explicit=True
+    )
+    with_occ = _pk04dev3_produce(monkeypatch, base + [explicit_occ])
+    without = _pk04dev3_produce(monkeypatch, list(base))
+    row = _testrev_row(with_occ, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
+    others_with = [r for r in with_occ["fields"] if r["field_id"] != "rpo_total"]
+    others_without = [r for r in without["fields"] if r["field_id"] != "rpo_total"]
+    assert others_with == others_without
+
+
+def test_pk04dev3_rpo_total_period_end_plus_one_day_stays_valued(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = _pk04dev3_filing_row()
+    result = _pk04dev3_produce(
+        monkeypatch,
+        [_pk04dev3_rpo_event(filing_row, "rpo_agg", _typed_member("2026-01-01"))],
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "58100000000"
+    assert row["dimensions"] == [{"axis": _RPO_AXIS, "member": "2026-01-01"}]
+
+
+def test_pk04dev3_rpo_total_member_window_boundaries(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = _pk04dev3_filing_row()
+    # A member exactly AT the period end is not after it: refused.
+    result = _pk04dev3_produce(
+        monkeypatch,
+        [_pk04dev3_rpo_event(filing_row, "rpo_at_end", _typed_member("2025-12-31"))],
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
+    # Period end + 92 days is the last admitted day.
+    result = _pk04dev3_produce(
+        monkeypatch,
+        [_pk04dev3_rpo_event(filing_row, "rpo_92d", _typed_member("2026-04-02"))],
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "58100000000"
+    assert row["dimensions"] == [{"axis": _RPO_AXIS, "member": "2026-04-02"}]
+    # One day further is refused.
+    result = _pk04dev3_produce(
+        monkeypatch,
+        [_pk04dev3_rpo_event(filing_row, "rpo_93d", _typed_member("2026-04-03"))],
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
+
+
+def test_pk04dev3_rpo_total_unparseable_typed_member_stays_absent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = _pk04dev3_filing_row()
+    member = f"<{_RPO_AXIS}.domain>FY2026-and-thereafter</{_RPO_AXIS}.domain>"
+    result = _pk04dev3_produce(
+        monkeypatch,
+        [_pk04dev3_rpo_event(filing_row, "rpo_opaque", member)],
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []

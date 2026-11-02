@@ -24,12 +24,19 @@ rule (`rotobs_` + 40 lowercase hex) and apply one state precedence. Envelope ver
 (measured trend, transition fragility, leadership) never feed the observation state: a quiet
 headline cannot hide a qualified observation and a fragile one cannot create it.
 
-**Forward-only consumer contract.** No producer writes `latest_observation` today. Recording
-stays behind `ROTATION_OBSERVATION_RECORDING_ENABLED` (off) in
-`scripts/build_rotation_events.py`, and no builder copies an observation into the envelope or
-into `rotation_events.json`. Until one does, both hosts render the scoped
-"Rotation data unavailable" state in production. The qualified states in the evidence pack
-come from synthetic fixtures in `tests/fixtures/ew_p4_observation/`.
+**Producer behind an off flag (EW-P4-ACT).** Recording still stays behind
+`ROTATION_OBSERVATION_RECORDING_ENABLED` (off) in `scripts/build_rotation_events.py`. When the
+flag is on and the recorder returns `recorded`, the same builder projects the newest standing
+notification from the canonical ledger (`project_latest_observation_view`, read-only and
+strict) and atomically republishes `rotation_events.json` with
+`early_context.latest_observation`. The view carries a `recorded` receipt: source
+`macro.rotation_events.ledger`, ledger `rotation_events/events.jsonl` and the sha256 of the
+canonical receipt line. `scripts/build_risk_envelope.py` lifts that view into
+`rotation_context.latest_observation` only if it existed at the envelope cutoff; otherwise it
+records `latest_observation_withheld` with the reason. With the flag off in production, no
+view is written, and both hosts render the scoped "Rotation data unavailable" state. The
+qualified states in the evidence pack come from synthetic fixtures in
+`tests/fixtures/ew_p4_observation/`.
 
 ## Census map and chosen hosts
 
@@ -50,7 +57,7 @@ The read-only census (lane GD-EW-P4-C1, repo HEAD `b38935afc1a5`) mapped these f
 | Q9 `rotobs_` | Ids are minted only by `engine/rotation_events.py:2389–2395`; no site JSON exposes them | Consumer contract is forward-only (above) |
 | Q10 envelope feed | `site/riskdata/risk_envelope.json` carries `source_session`, `data_state`, `freshness`, `policy_summary`, `produced_at` | The "how current" line reads source session, availability and quality first; build time is secondary |
 
-## Consumer contract latest_observation (forward; no producer in this change)
+## Consumer contract latest_observation (producer gated by the off recording flag)
 
 Frozen build packet §A, verbatim. The validation mirror V1–V8 is implemented identically in
 `templates/_risk_envelope_band.html.j2` and in `ewGlanceHtml()` in `templates/rotation_events.js`.
@@ -90,6 +97,14 @@ Validation MIRROR (implement identically in Jinja and JS; it mirrors lib/rotatio
 - **Present non-object wrapper (review r1).** A `latest_observation` that is present but is not an object
   (a string, a list, a number or a boolean) fails V1 and renders `unreadable`. It is not treated as absent. Only a
   missing or null `latest_observation` is "no observation".
+- **Source-owned receipt (O06, EW-P4-ACT).** Both mirrors also require `recorded` to be an object
+  with source `macro.rotation_events.ledger`, ledger `rotation_events/events.jsonl` and a
+  64-character lowercase-hex `receipt_sha256`. A view without that receipt renders `unreadable`,
+  even when its notification passes the lib validator. This applies the release rule that no
+  consumer claims an id without a source-owned published identity.
+- **No id on an invalid view (O06, EW-P4-ACT).** A view that fails any check now carries an empty
+  `data-observation-id` and never shows its raw id. This supersedes the earlier behaviour, where an
+  unreadable view echoed its id in the attribute.
 
 ## State precedence
 
@@ -165,8 +180,9 @@ warning surface, never on the neutral surface.
 - **No forecast, delivery or sizing.** The copy is descriptive (watch/context only). There is
   no forecast, hazard, odds, probability, sizing, trade or activation language, and no
   subscribe/notify/consent control. Nothing is sent, scheduled or recorded.
-- **No producer.** `latest_observation` is a forward-only consumer contract. Observation
-  recording stays off, and no current build emits an observation into either host.
+- **No live producer.** The producer exists but is gated. Observation recording stays off,
+  so no current production build emits an observation into either host. Turning the flag on
+  is a separate decision and is not part of this change.
 - **Not production-authenticated.** All qualified states are synthetic fixtures rendered in a
   static harness. The receipt says `production_authenticated: false`.
 - **Separate work.** EW-P4.T2 (Terminal / Mastermind consumer) and EW-P4.T3 (exposure context)
@@ -189,3 +205,6 @@ warning surface, never on the neutral surface.
 - **Accepted limitation.** The Radar policy footer's state, count and sentence spans have no separators in the base markup, so the line reads as one run. That markup predates this change and is left as is.
 - **Accepted limitation.** Below the new glance, the pre-existing Sector Central events list still prints both its not-an-all-clear sentence and "No active rotation events — quiet state is a valid state", and the early-context card keeps its English status enums (`VERIFIED`, `UNKNOWN`) under ZH. Both predate this change.
 - **Review r1 repairs (F1–F5).** Independent lane gd-ew-p4-r1 (REQUEST_CHANGES on `dae8ba64`) found five gaps, all repaired. F1: `site/rotation_events.js` was not byte-copied after wave C; it is copied again, and a pytest now asserts byte identity. F2: both mirrors now require explicit `source_as_of` and `values` keys (lib:306). F3: a present non-object wrapper is `unreadable`, not `unavailable`. F4: the study id is set in `var(--font-mono)`. F5: this record now carries the §A contract, the §B precedence and the census marker. The r1 node test and seven of the ten r1 pytest cases fail on the pre-repair sources; the other three pin behaviour that was already correct.
+- **EW-P4-ACT producer.** The gated producer described above was added. The rotation builder republishes `rotation_events.json` with the view only after the recorder returns `recorded`; any failure leaves the legacy publication unchanged. The envelope builder carries the view point-in-time: a future or unreadable availability clock, an event after the session, or an `observed_at` after the cutoff withholds it with a `latest_observation_withheld` reason. A stale or expired source still carries its view, because the consumer judges staleness by the view's own event date. The view is display-only and never feeds stage, hazard, confluence or policy.
+- **EW-P4-ACT O06.** Every synthetic wrapper fixture now carries a `recorded` receipt whose digest is `sha256("ew_p4_fixture:<stem>")`. A new fixture, `malformed_missing_recorded.json`, is the observed-rise wrapper without it and renders `unreadable` in both hosts. The malformed-id fixture now renders an empty `data-observation-id`, which supersedes the earlier echo of the raw id.
+- **EW-P4-ACT receipt re-capture.** The shots were re-rendered at the EW-P4-ACT code commit, and `pr_source_equivalence` was rebuilt to cover the new fixture. The `source_revision` bullet above describes the original capture; `receipt.json` holds the current revision.
