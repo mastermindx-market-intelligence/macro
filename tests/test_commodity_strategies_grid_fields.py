@@ -282,3 +282,41 @@ def test_intro_oil_clause_names_the_dollar_not_inventories():
     assert ("oil on the dollar and the futures curve "
             "(inventories were tested and dropped, with no forward edge)") in src
     assert "原油看美元与期货曲线（库存经检验后剔除，无前瞻性）" in src
+
+
+def test_commodity_tabs_expose_the_visually_selected_group(tmp_path):
+    """Actual rendered tab markup and controller retain selected state on click/hash."""
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if node is None:
+        import pytest
+        pytest.skip("node is not installed")
+    groups = [
+        {"key": key, "icon": "", "label_en": key, "label_zh": key,
+         "cards": [_plain(key="cm_" + key, href="strategy_cm_" + key + ".html")]}
+        for key in ("gold", "silver", "copper", "oil")
+    ]
+    html = _env().get_template("commodity_strategies.html.j2").render(
+        groups=groups, built="now", C=_C,
+    )
+    page = tmp_path / "commodity.html"
+    page.write_text(html, encoding="utf-8")
+    program = r"""const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
+function run(file,hash=''){
+ const html=fs.readFileSync(file,'utf8'), scripts=[...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)].map(x=>x[1]);
+ const code=scripts.find(s=>s.includes("querySelectorAll('.cmdy-tab')"));assert.ok(code);
+ function nodes(cls,tag){return [...html.matchAll(new RegExp('<'+tag+'\\b([^>]*class="[^"]*\\b'+cls+'\\b[^"]*"[^>]*)>','g'))].map(m=>{const a=Object.fromEntries([...m[1].matchAll(/([\w-]+)="([^"]*)"/g)].map(x=>[x[1],x[2]]));const classes=new Set(a.class.split(/\s+/));const handlers={};return {a,classes,getAttribute:k=>a[k]??null,setAttribute:(k,v)=>a[k]=v,classList:{toggle:(k,on)=>on?classes.add(k):classes.delete(k)},addEventListener:(k,fn)=>handlers[k]=fn,click(){handlers.click.call(this)}}});}
+ const tabs=nodes('cmdy-tab','button'),grids=nodes('cmdy-grid','div');assert.equal(tabs.length,4);assert.equal(grids.length,4);
+ let writes=[];const document={querySelectorAll:s=>s==='.cmdy-tab'?tabs:s==='.cmdy-grid'?grids:[],querySelector:s=>tabs.find(t=>s===`.cmdy-tab[data-grp="${t.a['data-grp']}"]`)||null};
+ vm.runInNewContext(code,{document,location:{hash},history:{replaceState:(_,__,h)=>writes.push(h)}});
+ function check(k){for(const t of tabs){const on=t.a['data-grp']===k;assert.equal(t.classes.has('active'),on);assert.equal(t.a['aria-selected'],String(on));}for(const g of grids)assert.equal(g.classes.has('active'),g.a['data-grp']===k);}
+ check(hash&&hash!=='#unknown'?hash.slice(1):'gold');
+ for(const k of ['silver','oil','copper','gold','gold']){tabs.find(t=>t.a['data-grp']===k).click();check(k);assert.equal(writes.at(-1),'#'+k);}
+ return {tabs:4,transitions:5};
+}
+"""
+    program += "for(const hash of ['', '#oil', '#unknown']) run(process.argv[1], hash);"
+    subprocess.run([node, "-e", program, str(page)], check=True,
+                   capture_output=True, text=True, timeout=30)
