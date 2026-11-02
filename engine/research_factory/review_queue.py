@@ -812,7 +812,16 @@ def _compose_diagnostic_receipts(public, receipts):
                      "evidence_sha256": output_evidence})
     controls.extend({"id": key, "status": "NOT_RUN", "evidence_sha256": None}
                     for key in ("physical_boundary", "resource_overload"))
+    from engine.research_codegen import prospective_contract
+    if outcome.freeze_proposal_sha256 is not None:
+        require(prepared.freeze_proposal is not None
+                and outcome.freeze_proposal_sha256 == prepared.freeze_proposal.sha256)
+    readiness = prospective_contract.assess_label_readiness(run, prepared,
+        local_observations=tuple(a.local_observation for a in outcome.attempts))
+    if outcome.freeze_proposal_sha256 is not None:
+        readiness["driver_proposal_binding"] = "BOUND_SOURCE_ONLY"
     return {"schema": "research_codegen.engineering_evidence.v1",
+            "prospective_readiness": readiness,
             "identity": {key: public[key] for key in (*bridge._IDENTITY, "artifact_sha256")},
             "accounting": {"expected_generation_sha256": staged.expected_generation.sha256,
                            "trial_readback_sha256": staged.trial_readback.sha256,
@@ -847,7 +856,10 @@ def _diagnostic_engineering_evidence(public, evidence):
         return (type(value) is str and 1 <= len(value) <= 128
                 and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", value) is not None)
 
-    closed(evidence, ("schema", "identity", "accounting", "attempts", "controls"))
+    evidence_keys = ("schema", "identity", "accounting", "attempts", "controls")
+    if type(evidence) is dict and "prospective_readiness" in evidence:
+        evidence_keys = (*evidence_keys, "prospective_readiness")
+    closed(evidence, evidence_keys)
     require(type(evidence["schema"]) is str
             and evidence["schema"] == "research_codegen.engineering_evidence.v1")
     identity_keys = ("diagnostic_id", "original_root_id", "candidate_id", "source_sha256",
@@ -925,7 +937,11 @@ def _diagnostic_engineering_evidence(public, evidence):
         if expected in ("physical_boundary", "resource_overload"):
             require(row["status"] == "NOT_RUN")
         copied_controls.append(dict(row))
-    return {"schema": evidence["schema"], "identity": dict(identity),
+    prospective = {}
+    if "prospective_readiness" in evidence:
+        from engine.research_codegen.prospective_contract import validate_public_readiness
+        prospective["prospective_readiness"] = validate_public_readiness(evidence["prospective_readiness"])
+    return {**prospective, "schema": evidence["schema"], "identity": dict(identity),
             "accounting": dict(accounting), "attempts": attempts,
             "controls": copied_controls, "authority": "display_only",
             "scope": "SYNTHETIC_ENGINEERING_ONLY", "physical_acceptance": False,

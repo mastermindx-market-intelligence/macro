@@ -486,7 +486,8 @@ def test_issue_clock_failure_prevents_effect(connected_case, monkeypatch):
 def test_capture_evidence_missing_is_absent_and_malformed_refuses_before_transport(connected_case, mutation):
     _, run, prepared, _, index = _output_expectation_case(connected_case)
     if mutation == "absent":
-        prepared = replace(prepared, decisions=tuple(replace(t, capture_evidence=None) for t in prepared.decisions))
+        prepared = replace(prepared, decisions=tuple(replace(t, capture_evidence=None) for t in prepared.decisions),
+                           freeze_proposal=None)  # Historical preparation has neither new field.
     else:
         prepared = replace(prepared, decisions=(replace(prepared.decisions[0], capture_evidence=pf.bound({})), *prepared.decisions[1:]))
     engine = pf.ScriptedFakeEngine()
@@ -528,3 +529,194 @@ def test_clock_regression_before_later_attempt_keeps_first_return(connected_case
     assert outcome.refusal_reasons == ("LOCAL_CLOCK_REGRESSION",)
     assert outcome.attempts[0].transport_attempt.cleanup_confirmed
     assert json.loads(outcome.attempts[0].local_observation.raw)["returned_at_utc"] == "2026-11-01T00:00:02+00:00"
+
+
+# Freeze references and label readiness stay source proposals with no trusted issuer.
+def test_freeze_proposal_is_connected_and_never_an_acceptance(connected_case):
+    from engine.research_codegen import prospective_contract as pc
+    _, outcome, public, _, receipts = execute_case(connected_case)
+    prepared = b.prepare_synthetic_inputs(receipts["run"], commission=receipts["commission"])
+    assert outcome.freeze_proposal_sha256 == prepared.freeze_proposal.sha256
+    assessment = pc.verify_freeze_proposal(prepared.freeze_proposal)
+    assert assessment["status"] == "UNQUALIFIED"
+    assert "QUALIFIED_ACCEPTANCE_ISSUER_UNAVAILABLE" in assessment["missing_evidence"]
+    packet = diagnostic_review_packet(public, engineering_receipts=receipts)
+    result = packet["engineering_evidence"]["prospective_readiness"]
+    assert result["freeze_status"] == "UNQUALIFIED" and result["mature_count"] == result["pending_count"] == 0
+    assert result["unknown_count"] == 2 * len(prepared.decisions)
+    assert result["execution_enabled"] is False
+    assert all(label["state"] == "UNKNOWN" for label in result["labels"])
+
+
+def _freeze_reference(run, prepared):
+    from engine.research_codegen import prospective_contract as pc
+    doc = json.loads(prepared.freeze_proposal.raw)
+    return dict(schema=pc.REFERENCE_SCHEMA, issuer_origin="external-evidence-owner",
+        receipt_id="external-receipt-1", evidence_sha256="e" * 64,
+        proposal_identity_sha256=doc["proposal_identity_sha256"], state="current", superseded_by=None)
+
+
+@pytest.mark.parametrize("mutation", ["version", "origin", "spoof", "superseded", "replayed", "identity", "duplicate"])
+def test_freeze_reference_contract_rejects_spoofed_or_stale_inputs(connected_case, mutation):
+    staged, run, prepared, _, _ = _output_expectation_case(connected_case)
+    ref = _freeze_reference(run, prepared)
+    if mutation == "version": ref["schema"] += ".wrong"
+    elif mutation == "origin": ref["issuer_origin"] = None
+    elif mutation == "spoof": ref["accepted"] = True
+    elif mutation == "superseded": ref["superseded_by"] = "replacement"
+    elif mutation == "replayed": ref["state"] = "replayed"
+    elif mutation == "identity": ref["proposal_identity_sha256"] = "f" * 64
+    refs = (pf.bound(ref),) * (2 if mutation == "duplicate" else 1)
+    with pytest.raises(ValueError):
+        b.prepare_synthetic_inputs(replace(run, freeze_evidence_references=refs), commission=connected_case[3]["commission"])
+
+
+def _label_declarations(run, prepared):
+    from engine.research_codegen import prospective_contract as pc
+    declarations = []
+    for task in prepared.decisions:
+        labels = []
+        trigger = run.session_dates.index(run.positions[task.calendar_index].trigger_date)
+        for name, offset in pc.LABEL_DEPENDENCIES:
+            day = run.session_dates[trigger + offset]
+            labels.append(dict(label_id=name, dependency_end_session=day,
+                declared_expected_maturity_at_utc=day + "T23:59:00+00:00",
+                source_id="label-source", source_revision_sha256="a" * 64,
+                basis="total_return", vintage="fixture-vintage", observation_id="obs-" + name,
+                known_by_at_utc="2026-11-01T00:00:00+00:00",
+                received_at_utc="2026-11-01T00:01:00+00:00", receipt_sha256="b" * 64,
+                clock_basis="SOURCE_SESSION_REFERENCE", clock_evidence_reference=_freeze_reference(run, prepared)))
+        declarations.append(pf.bound(dict(schema=pc.LABEL_SCHEMA, fold_id=task.fold_id,
+            entity_id=task.entity_id, decision_id=task.decision_id,
+            input_sha256=task.input_bytes.sha256, labels=labels)))
+    return tuple(declarations)
+
+
+@pytest.mark.parametrize("mutation", [None, "21_as_25", "unknown_maturity", "spoof_clock", "known_before_mature", "known_before_unknown_mature", "receipt_before_known", "decision", "revision", "availability_absent"])
+def test_label_readiness_preserves_25session_dependency_and_never_infers_maturity(connected_case, mutation):
+    from engine.research_codegen import prospective_contract as pc
+    _, run, prepared, _, _ = _output_expectation_case(connected_case)
+    declarations = _label_declarations(run, prepared)
+    first = json.loads(declarations[0].raw)
+    label = first["labels"][0]
+    if mutation == "21_as_25": label["dependency_end_session"] = first["labels"][1]["dependency_end_session"]
+    elif mutation == "unknown_maturity": label["declared_expected_maturity_at_utc"] = None
+    elif mutation == "spoof_clock": label["clock_evidence_reference"] = {"qualified": True}
+    elif mutation == "known_before_mature": label["known_by_at_utc"] = "2000-01-01T00:00:00+00:00"
+    elif mutation == "known_before_unknown_mature":
+        label["declared_expected_maturity_at_utc"] = None
+        label["known_by_at_utc"] = "2000-01-01T00:00:00+00:00"
+    elif mutation == "receipt_before_known":
+        label["known_by_at_utc"] = "2026-11-01T00:00:00+00:00"
+        label["received_at_utc"] = "2026-10-31T00:00:00+00:00"
+        label["receipt_sha256"] = "b" * 64
+    elif mutation == "decision": first["decision_id"] = "wrong"
+    elif mutation == "revision": label["source_revision_sha256"] = None
+    elif mutation == "availability_absent":
+        label["known_by_at_utc"] = label["received_at_utc"] = label["receipt_sha256"] = None
+    declarations = (pf.bound(first), *declarations[1:])
+    assessed = pc.assess_label_readiness(replace(run, label_readiness=declarations), prepared)
+    assert assessed["mature_count"] == assessed["pending_count"] == 0
+    if mutation in ("21_as_25", "spoof_clock", "known_before_mature", "known_before_unknown_mature", "receipt_before_known", "decision"):
+        assert assessed["refused_count"] > 0
+    elif mutation in ("unknown_maturity", "revision", "availability_absent"):
+        assert assessed["unknown_count"] > 0
+    else:
+        assert assessed["unqualified_count"] == len(prepared.decisions) * 2
+
+
+def test_external_references_remain_unqualified_and_rendered_without_raw_evidence(connected_case):
+    from engine.research_codegen import prospective_contract as pc
+    _, run, prepared, _, _ = _output_expectation_case(connected_case)
+    refs = (pf.bound(_freeze_reference(run, prepared)),)
+    revised = replace(run, freeze_evidence_references=refs, label_readiness=_label_declarations(run, prepared))
+    revised_prepared = b.prepare_synthetic_inputs(revised, commission=connected_case[3]["commission"])
+    assert pc.verify_freeze_proposal(revised_prepared.freeze_proposal)["status"] == "UNQUALIFIED"
+    assert pc.assess_label_readiness(revised, revised_prepared)["unqualified_count"] == 2 * len(prepared.decisions)
+    # Historical outcomes can display a source proposal but never an observed pre-transport binding.
+    _, outcome, public, _, receipts = execute_case(connected_case)
+    old = replace(outcome, freeze_proposal_sha256=None)
+    packet = diagnostic_review_packet(public, engineering_receipts={**receipts, "outcome": old})
+    assert packet["engineering_evidence"]["prospective_readiness"]["driver_proposal_binding"] == "UNAVAILABLE"
+    assert "Freeze proposal: UNQUALIFIED" in render_markdown([packet], "2026-11-01T00:00:00Z")
+
+
+@pytest.mark.parametrize("mutation", ["admission", "accepted", "mature", "pending", "extra", "count", "scope"])
+def test_public_readiness_cannot_promote_or_discard_labels(connected_case, mutation):
+    _, _, public, _, receipts = execute_case(connected_case)
+    evidence = diagnostic_review_packet(public, engineering_receipts=receipts)["engineering_evidence"]
+    altered = {key: deepcopy(evidence[key]) for key in
+        ("schema", "identity", "accounting", "attempts", "controls", "prospective_readiness")}
+    readiness = altered["prospective_readiness"]
+    if mutation == "admission": readiness["admission_enabled"] = True
+    elif mutation == "accepted": readiness["freeze_status"] = "ACCEPTED"
+    elif mutation == "mature": readiness["labels"][0]["state"] = "MATURE"
+    elif mutation == "pending": readiness["labels"][0]["state"] = "PENDING"
+    elif mutation == "extra": readiness["labels"][0]["value"] = 0
+    elif mutation == "count": readiness["unknown_count"] -= 1
+    else: readiness["scope"] = "PROSPECTIVE"
+    with pytest.raises(ValueError):
+        diagnostic_review_packet(public, engineering_evidence=altered)
+
+
+def test_full_label_horizon_is_required_without_evaluation(connected_case):
+    from engine.research_codegen import prospective_contract as pc
+    _, run, _, _, _ = _output_expectation_case(connected_case)
+    trigger = run.session_dates.index(run.positions[2].trigger_date)
+    # Keep both declared entry positions and the 21-session reference dependency,
+    # omit the later empty formation and the final MAE dependency in this fixture.
+    short = replace(run, positions=run.positions[:3], session_dates=run.session_dates[:trigger + 25])
+    prepared = b.prepare_synthetic_inputs(short, commission=connected_case[3]["commission"])
+    assessment = pc.assess_label_readiness(short, prepared)
+    assert assessment["refused_count"] > 0 and assessment["mature_count"] == 0
+    assert any("LABEL_HORIZON_INCOMPLETE" in r["missing_evidence"] for r in assessment["labels"])
+
+
+def test_sparse_formation_ids_are_mapped_without_tuple_indexing(connected_case):
+    from engine.research_codegen import prospective_contract as pc
+    _, run, prepared, _, _ = _output_expectation_case(connected_case)
+    # A declared index is an identity; positional tuple lookup would raise or select wrong data.
+    positions = tuple(replace(p, calendar_index=p.calendar_index + 17) for p in run.positions)
+    tasks = tuple(replace(t, calendar_index=t.calendar_index + 17) for t in prepared.decisions)
+    sparse = replace(run, positions=positions)
+    adjusted = replace(prepared, decisions=tasks)
+    adjusted = replace(adjusted, freeze_proposal=pc.produce_freeze_proposal(sparse, adjusted))
+    result = pc.assess_label_readiness(sparse, adjusted)
+    assert result["unknown_count"] == 2 * len(tasks) and result["refused_count"] == 0
+    negative = replace(adjusted, decisions=(replace(tasks[0], calendar_index=-1), *tasks[1:]))
+    negative = replace(negative, freeze_proposal=pc.produce_freeze_proposal(sparse, negative))
+    assert pc.assess_label_readiness(sparse, negative)["refused_count"] == 2
+
+
+def test_declared_freeze_after_local_issue_refuses_readiness_without_rewriting_observation(connected_case):
+    from engine.research_codegen import prospective_contract as pc
+    staged, run, _, _, index = _output_expectation_case(connected_case)
+    run = replace(run, declared_freeze_at_utc="2100-01-01T00:00:00+00:00")
+    prepared = b.prepare_synthetic_inputs(run, commission=connected_case[3]["commission"])
+    engine = p01.AccountingGuardedFakeEngine(connected_case, staged)
+    outcome = pd.run_prefix_driver(prepared, source=connected_case[1][index], engine=engine,
+        spec=pf.spec(), config_sha256=run.identity.config_sha256)
+    observations = tuple(a.local_observation for a in outcome.attempts)
+    raw = pd.connect_prepared_outputs(run, outcome, commission=connected_case[3]["commission"])
+    _, public = p01._decode_public(run, connected_case[3]["commission"], raw)
+    packet = diagnostic_review_packet(public, engineering_receipts=dict(run=run,
+        commission=connected_case[3]["commission"], source=connected_case[1][index], staged=staged, outcome=outcome))
+    readiness = packet["engineering_evidence"]["prospective_readiness"]
+    assert readiness["status"] == "REFUSED" and readiness["freeze_status"] == "UNQUALIFIED"
+    assert all(r["missing_evidence"] == ["DECLARED_FREEZE_AFTER_TRANSPORT_ISSUE"] for r in readiness["labels"])
+    assert tuple(a.local_observation for a in outcome.attempts) == observations
+
+
+@pytest.mark.parametrize("field", ["identity", "decision_inputs_sha256"])
+def test_recomputed_but_substituted_proposal_refuses_before_transport(connected_case, field):
+    _, run, prepared, _, index = _output_expectation_case(connected_case)
+    doc = json.loads(prepared.freeze_proposal.raw)
+    if field == "identity": doc["base"]["identity"]["evaluator_sha256"] = "e" * 64
+    else: doc["base"][field] = "e" * 64
+    doc["proposal_identity_sha256"] = pf.bound(doc["base"]).sha256
+    prepared = replace(prepared, freeze_proposal=pf.bound(doc))
+    engine = pf.ScriptedFakeEngine()
+    with pytest.raises(ValueError, match="PROPOSAL_PREPARATION_MISMATCH"):
+        pd.run_prefix_driver(prepared, source=connected_case[1][index], engine=engine,
+            spec=pf.spec(), config_sha256=run.identity.config_sha256)
+    assert engine.calls == []

@@ -333,6 +333,7 @@ class PrefixDriverOutcome:
     config_sha256: str
     total_wall_seconds: float
     output_expectation_sha256: str | None = None
+    freeze_proposal_sha256: str | None = None
 
 
 def _transport_error(exc):
@@ -544,6 +545,11 @@ def run_prefix_driver(prepared, *, source, engine, spec, config_sha256=None,
                       decision_operation_id(prepared, task, carrier)))
     plans = tuple((task, argv, header, carrier, operation, _plan_for(spec, operation, argv))
                   for task, argv, header, carrier, operation in tasks)
+    freeze_proposal_sha256 = None
+    if prepared.freeze_proposal is not None:
+        from .prospective_contract import verify_freeze_proposal
+        verify_freeze_proposal(prepared.freeze_proposal, prepared=prepared)
+        freeze_proposal_sha256 = prepared.freeze_proposal.sha256
     started = time.monotonic()
     attempts, rows, reasons = [], [], []
     previous_returned = None
@@ -628,7 +634,7 @@ def run_prefix_driver(prepared, *, source, engine, spec, config_sha256=None,
             outputs = (*outputs, BoundBytes(raw, hashlib.sha256(raw).hexdigest(), len(raw)))
     return PrefixDriverOutcome(identity, tuple(attempts), outputs, complete,
                                tuple(reasons), source.sha256, config_sha256,
-                               elapsed_total, expectation_sha256)
+                               elapsed_total, expectation_sha256, freeze_proposal_sha256)
 
 
 def connect_prepared_outputs(run, outcome, *, commission=None):
