@@ -723,6 +723,13 @@ def test_older_or_stale_context_still_carries_its_view_for_the_consumer_to_judge
     (lambda d: d["early_context"].update(produced_at="2026-10-07T13:00:00Z"), "future_production_clock"),
     (lambda d: d["early_context"].update(produced_at="tomorrow"), "malformed_source_clock"),
     (lambda d: d.update(available_at="2026-10-07T13:00:00Z"), "source_not_available"),
+    # Review (FU2, F1): an off-session source still answers for its availability and
+    # production clocks; a replay must not lift a view published after the cutoff.
+    (lambda d: d["early_context"].update(as_of="2026-10-05", available_at="2026-10-07T13:00:00Z"),
+     "source_not_available"),
+    (lambda d: d["early_context"].update(as_of="2026-10-05", produced_at="2026-10-07T13:00:00Z"),
+     "future_production_clock"),
+    (lambda d: d.update(as_of="2026-10-05", available_at="2026-10-07T13:00:00Z"), "source_not_available"),
     (lambda d: d["early_context"]["latest_observation"]["notification"].update(
         observed_at="2026-10-07T12:00:01+00:00"), "observation_not_available"),
     (lambda d: d["early_context"].update(as_of="2026-10-05")

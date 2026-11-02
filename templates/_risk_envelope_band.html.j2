@@ -585,20 +585,23 @@
           </div>
           {% endif %}
           <div class="gde-tblwrap">
-            <table class="gde-tbl">
-              <thead><tr>
-                <th><span class="l-en">Source</span><span class="l-zh">来源</span></th>
-                <th><span class="l-en">Its own read</span><span class="l-zh">自身读数</span></th>
-                <th><span class="l-en">As of</span><span class="l-zh">数据日期</span></th>
-                <th><span class="l-en">Freshness</span><span class="l-zh">新鲜度</span></th>
+            {# Explicit table roles: below 481 px the cells become block/grid boxes, which
+               drops the implicit table semantics in WebKit; the header row stays readable. #}
+            <table class="gde-tbl" role="table">
+              <thead role="rowgroup"><tr role="row">
+                <th role="columnheader"><span class="l-en">Source</span><span class="l-zh">来源</span></th>
+                <th role="columnheader"><span class="l-en">Its own read</span><span class="l-zh">自身读数</span></th>
+                <th role="columnheader"><span class="l-en">As of</span><span class="l-zh">数据日期</span></th>
+                <th role="columnheader"><span class="l-en">Freshness</span><span class="l-zh">新鲜度</span></th>
               </tr></thead>
-              <tbody>
+              <tbody role="rowgroup">
               {% for s in _prov %}
-                <tr>
-                  <td class="l" data-label-en="Source" data-label-zh="来源">{% if s.label_en %}<span class="l-en">{{ s.label_en }}</span><span class="l-zh">{{ s.label_zh or s.label_en }}</span>{% else %}<span class="tnum">{{ s.source_id }}</span>{% endif %}</td>
-                  <td class="tnum" data-label-en="Its own read" data-label-zh="自身读数">{% if s.source_id == 'site-marketdata-rotation-events' and s.state in _rotation_labels %}<span class="l-en">{{ _rotation_labels[s.state][0] }}</span><span class="l-zh">{{ _rotation_labels[s.state][1] }}</span>{% else %}{{ s.state if s.state is not none else '—' }}{% endif %}{% if s.score is not none %} · {{ s.score }}{% endif %}</td>
-                  <td class="tnum" data-label-en="As of" data-label-zh="数据日期">{{ s.as_of or '—' }}</td>
-                  <td data-label-en="Freshness" data-label-zh="新鲜度">
+                <tr role="row">
+                  <td class="l" role="cell" data-label-en="Source" data-label-zh="来源">{% if s.label_en %}<span class="l-en">{{ s.label_en }}</span><span class="l-zh">{{ s.label_zh or s.label_en }}</span>{% else %}<span class="tnum">{{ s.source_id }}</span>{% endif %}</td>
+                  {#- Every cell child is an element: the stacked grid places bare text runs by auto-flow. -#}
+                  <td class="tnum" role="cell" data-label-en="Its own read" data-label-zh="自身读数"><span class="gde-cell">{% if s.source_id == 'site-marketdata-rotation-events' and s.state in _rotation_labels %}<span class="l-en">{{ _rotation_labels[s.state][0] }}</span><span class="l-zh">{{ _rotation_labels[s.state][1] }}</span>{% else %}{{ s.state if s.state is not none else '—' }}{% endif %}{% if s.score is not none %} · {{ s.score }}{% endif %}</span></td>
+                  <td class="tnum" role="cell" data-label-en="As of" data-label-zh="数据日期"><span class="gde-cell">{{ s.as_of or '—' }}</span></td>
+                  <td role="cell" data-label-en="Freshness" data-label-zh="新鲜度">
                     {% if s.coverage == 'FRESH' %}<span class="l-en">This session</span><span class="l-zh">本交易日</span>
                     {% elif s.coverage == 'STALE' %}<span class="gde-warn"><span class="l-en">Older than this session</span><span class="l-zh">早于本交易日</span></span>
                     {% else %}<span class="gde-warn"><span class="l-en">Did not publish</span><span class="l-zh">未发布</span></span>{% endif %}

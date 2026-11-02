@@ -109,10 +109,38 @@ def _clock_reason(doc: Mapping[str, Any], as_of: Any, session: Any,
         return "missing_or_malformed_session"
     if source_day > session_day:
         return "future_source_session"
-    if source_day < session_day:
-        return "off_session"
-    if now is not None and source_day > now.astimezone(ET).date():
+    off_session = source_day < session_day
+    if not off_session and now is not None and source_day > now.astimezone(ET).date():
         return "future_source_session"
+    # Review (FU2, F1): an older source day is benign only if the artifact itself was
+    # available at the cutoff. A replay or historical rebuild must not lift a view
+    # whose availability or production clock is still in the future of `now`.
+    availability_reason = _availability_clock_reason(doc, now)
+    if availability_reason is not None:
+        return availability_reason
+    if off_session:
+        return "off_session"
+    expiry = doc.get("stale_after")
+    if expiry is not None:
+        stamp = _instant(expiry)
+        if stamp is None:
+            return "malformed_source_expiry"
+        if now is not None and stamp <= now.astimezone(timezone.utc):
+            return "source_expired"
+    fresh = doc.get("freshness")
+    if fresh is not None and not isinstance(fresh, Mapping):
+        return "malformed_freshness"
+    if isinstance(fresh, Mapping):
+        if "stale" in fresh and not isinstance(fresh["stale"], bool):
+            return "malformed_freshness"
+        if fresh.get("stale"):
+            return "source_stale"
+    return None
+
+
+def _availability_clock_reason(doc: Mapping[str, Any], now: datetime | None) -> str | None:
+    """Every supplied native availability/production clock must read and lie at or
+    before `now`; checked for same-session and off-session sources alike."""
     clocks = [(key, doc.get(key)) for key in ("available_at", "produced_at", "generated_utc")]
     availability = doc.get("availability")
     if availability is not None and not isinstance(availability, Mapping):
@@ -141,21 +169,6 @@ def _clock_reason(doc: Mapping[str, Any], as_of: Any, session: Any,
             return "malformed_source_clock"
         if now is not None and stamp > now.astimezone(timezone.utc):
             return "source_not_available" if key == "available_at" else "future_production_clock"
-    expiry = doc.get("stale_after")
-    if expiry is not None:
-        stamp = _instant(expiry)
-        if stamp is None:
-            return "malformed_source_expiry"
-        if now is not None and stamp <= now.astimezone(timezone.utc):
-            return "source_expired"
-    fresh = doc.get("freshness")
-    if fresh is not None and not isinstance(fresh, Mapping):
-        return "malformed_freshness"
-    if isinstance(fresh, Mapping):
-        if "stale" in fresh and not isinstance(fresh["stale"], bool):
-            return "malformed_freshness"
-        if fresh.get("stale"):
-            return "source_stale"
     return None
 
 
@@ -227,9 +240,10 @@ def _observation_lift(early: Mapping[str, Any] | None, clock_reasons: tuple[str 
 
     Every clock reason is checked, the parent artifact's and the early context's
     alike: a benign parent reason (stale, expired, off-session) must not hide an
-    early context that was not yet available at the cutoff. The off-session clock
-    path never inspects availability clocks, so the view's own notification
-    clocks are also checked: an observation recorded after the cutoff, or for an
+    early context that was not yet available at the cutoff, and an off-session
+    source answers for its availability clocks like a same-session one. The
+    view's own notification clocks are also checked: an observation recorded
+    after the cutoff, or for an
     event after the session, is withheld, and so is a notification whose event
     session or observed instant cannot be read (a non-trading or malformed date,
     a naive or malformed timestamp). A present non-object, or an object without

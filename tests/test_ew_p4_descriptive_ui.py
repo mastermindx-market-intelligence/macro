@@ -66,13 +66,24 @@ def envelope(wrapper: dict | None = None, *, rotation: dict | None = None) -> di
 _RENDER_CACHE: dict[str, str] = {}
 
 
+def _canon(value):
+    """Type-tagged canonical form. json.dumps(sort_keys=True, default=repr) would merge
+    {1: x} with {"1": x}, a tuple with a list, and an object with the string of its
+    repr; those are exactly the odd-typed inputs this suite feeds the renderer."""
+    if isinstance(value, dict):
+        return ("dict", tuple(sorted(((_canon(k), _canon(v)) for k, v in value.items()), key=repr)))
+    if isinstance(value, (list, tuple)):
+        return (type(value).__name__, tuple(_canon(v) for v in value))
+    return (type(value).__name__, repr(value))
+
+
 def render(env: dict) -> str:
     """One dashboard render per distinct envelope. The template render is ~3 s and
     most cases re-render the same fixture, so the suite was render-bound (FU2:
     ~500 s locally, past the dashboard-render-contract pack budget on CI). The key
-    is the envelope's JSON; the ORIGINAL object is rendered, so odd-typed cases
-    (non-object wrappers, bad timestamps) keep their exact inputs."""
-    key = json.dumps(env, sort_keys=True, default=repr)
+    is a type-tagged canonical form of the envelope; the ORIGINAL object is rendered,
+    so odd-typed cases (non-object wrappers, bad timestamps) keep their exact inputs."""
+    key = repr(_canon(env))
     if key not in _RENDER_CACHE:
         _RENDER_CACHE[key] = _dlg(_render(_vm(risk_envelope=env)))
     return _RENDER_CACHE[key]
@@ -539,12 +550,25 @@ def test_fu2_radar_band_wraps_raises_and_matches_sector_central():
     assert "#dlg-risk .gde-tbl thead {position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;}" in narrow
     assert "#dlg-risk .gde-tbl td {display:grid; grid-template-columns:minmax(0, 7.5em) minmax(0, 1fr);" in narrow
     assert "#dlg-risk .gde-tbl td > * {grid-column:2;}" in narrow  # the required badge stays in the value column
-    assert 'html:not([data-lang="zh"]) #dlg-risk .gde-tbl td::before {content:attr(data-label-en);}' in narrow
-    assert 'html[data-lang="zh"] #dlg-risk .gde-tbl td::before {content:attr(data-label-zh);}' in narrow
+    assert 'html:not([data-lang="zh"]) #dlg-risk .gde-tbl td::before {content:attr(data-label-en) / "";}' in narrow
+    assert 'html[data-lang="zh"] #dlg-risk .gde-tbl td::before {content:attr(data-label-zh) / "";}' in narrow
+    # Review (FU2): labels and prose read in the UI face on the Radar host, where the
+    # page-wide td rule sets the numeric face; the As-of date never splits.
+    assert "font-family:var(--font-ui); letter-spacing:normal;}" in narrow.split("td::before {color")[1].split("\n")[0]
+    assert '#dlg-risk .gde-tbl td[data-label-en="As of"] {white-space:nowrap;}' in css
+    assert "#dlg-risk .gde-tbl td .l-en, #dlg-risk .gde-tbl td .l-zh {font-family:var(--font-ui); letter-spacing:normal;}" in css
+    assert "#dlg-risk .gde-ew-legs td:not(.tnum) {font-family:var(--font-ui); letter-spacing:normal; font-variant-numeric:normal;}" in css
     soup = BeautifulSoup(render(envelope(deepcopy(_fixtures()["observed_rise"]))), "html.parser")
     heads = [th.select_one(".l-en").get_text(strip=True) for th in soup.select(".gde-tbl thead th")]
     heads_zh = [th.select_one(".l-zh").get_text(strip=True) for th in soup.select(".gde-tbl thead th")]
     rows = soup.select(".gde-tbl tbody tr")
+    # Review (FU2): every cell child is an element, so the stacked grid never auto-places
+    # a bare text run into the label column; explicit roles keep the table semantics.
+    assert soup.select_one(".gde-tbl")["role"] == "table"
+    assert all(th["role"] == "columnheader" for th in soup.select(".gde-tbl thead th"))
+    for td in soup.select(".gde-tbl tbody td"):
+        assert td["role"] == "cell"
+        assert not [t for t in td.find_all(string=True, recursive=False) if t.strip()], td
     assert rows
     for row in rows:
         cells = row.find_all("td")
@@ -601,6 +625,16 @@ def test_receipt_shots_depict_the_source_under_test():
         "templates/_risk_envelope_band.css.j2",
         "templates/rotation_events.js",
         "templates/rotation_glance.css",
+        # Review (FU2): the tokens the L3/L4 claims rest on, the Radar host page and
+        # the Sector Central page are render inputs too; a later edit to any of
+        # them fails this test instead of leaving the shots silently stale.
+        "templates/theme.css",
+        "templates/dashboard.html.j2",
+        "templates/_risk_radar_workspace.html.j2",
+        "templates/sector_central.html.j2",
+        "templates/si_workspace.js",
+        "site/theme.css",
+        "site/si_workspace.js",
         "tests/probe_ew_p4_descriptive_ui_browser.py",
     } <= paths
     assert {f"tests/fixtures/ew_p4_observation/{p.name}" for p in FIX.glob("*.json")} <= paths

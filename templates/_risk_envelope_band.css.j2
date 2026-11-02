@@ -33,6 +33,11 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
 #dlg-risk .gde-tbl th, #dlg-risk .gde-tbl td {padding:8px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; overflow-wrap:break-word;}
 #dlg-risk .gde-tbl th {color:var(--ink-2); font-weight:600;}
 #dlg-risk .gde-tbl td {color:var(--ink-1);}
+/* Review (FU2): the page-wide body.page-macro td rule puts the numeric face on every
+   non-first cell; prose and labels in this table read in the UI face, and the As-of
+   date never splits across lines when the read column takes the width. */
+#dlg-risk .gde-tbl td[data-label-en="As of"] {white-space:nowrap;}
+#dlg-risk .gde-tbl td .l-en, #dlg-risk .gde-tbl td .l-zh {font-family:var(--font-ui); letter-spacing:normal;}
 /* D2 (FU2 recapture): below 481 px four columns cannot hold "Leadership cohort" or
    the uppercase headers without letter-level breaks, so the table reduces to one
    stacked card per source: the header row leaves the visual flow (still read by
@@ -42,10 +47,11 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
   #dlg-risk .gde-tbl, #dlg-risk .gde-tbl tbody {display:block;}
   #dlg-risk .gde-tbl tr {display:block; padding:6px 0; border-bottom:1px solid var(--line);}
   #dlg-risk .gde-tbl td {display:grid; grid-template-columns:minmax(0, 7.5em) minmax(0, 1fr); gap:0 12px; padding:3px 0; border-bottom:0;}
-  #dlg-risk .gde-tbl td::before {color:var(--ink-2); font-weight:600; font-size:var(--fs-label);}
+  #dlg-risk .gde-tbl td::before {color:var(--ink-2); font-weight:600; font-size:var(--fs-label); font-family:var(--font-ui); letter-spacing:normal;}
   #dlg-risk .gde-tbl td > * {grid-column:2;}
-  html:not([data-lang="zh"]) #dlg-risk .gde-tbl td::before {content:attr(data-label-en);}
-  html[data-lang="zh"] #dlg-risk .gde-tbl td::before {content:attr(data-label-zh);}
+  /* The label is visual only (empty alt text): assistive tech still has the header row. */
+  html:not([data-lang="zh"]) #dlg-risk .gde-tbl td::before {content:attr(data-label-en) / "";}
+  html[data-lang="zh"] #dlg-risk .gde-tbl td::before {content:attr(data-label-zh) / "";}
 }
 #dlg-risk .gde-warn {color:var(--ink-warn);}
 #dlg-risk .gde-req {color:var(--ink-3);}
@@ -121,6 +127,8 @@ html[data-theme="light"] #dlg-risk .gde-ew {--gde-ew-surface:var(--panel); box-s
    body.page-macro th rule would otherwise make them uppercase micro type. */
 #dlg-risk .gde-ew-legs th {color:var(--ink-2); font-weight:600; font-family:var(--font-ui); font-size:var(--fs-label); text-transform:none; letter-spacing:normal;}
 #dlg-risk .gde-ew-legs td {color:var(--ink-1); font-variant-numeric:tabular-nums;}
+/* Review (FU2): sector names read in the UI face on both hosts; only .tnum cells are figures. */
+#dlg-risk .gde-ew-legs td:not(.tnum) {font-family:var(--font-ui); letter-spacing:normal; font-variant-numeric:normal;}
 #dlg-risk .gde-ew-contextline {margin:6px 0 0; font-size:var(--fs-sm); line-height:1.45;}
 #dlg-risk .gde-ew-horizons {display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;}
 #dlg-risk .gde-ew-hz {flex:1 1 150px; min-width:0; border:1px solid var(--line); border-radius:var(--r-ctl); padding:8px 10px; font-size:var(--fs-label); color:var(--ink-2); display:flex; gap:6px 10px; align-items:baseline; flex-wrap:wrap;}

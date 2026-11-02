@@ -141,6 +141,12 @@ def _publish_latest_observation(payload, data_dir, site):
             # mkstemp creates 0600; the published file must stay world-readable
             os.chmod(tmp, 0o644)
             os.replace(tmp, target)
+            # The rename is durable only once the directory entry is flushed as well.
+            dfd = os.open(str(target.parent), os.O_RDONLY)
+            try:
+                os.fsync(dfd)
+            finally:
+                os.close(dfd)
         except BaseException:
             try:
                 os.unlink(tmp)
