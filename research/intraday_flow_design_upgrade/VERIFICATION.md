@@ -2,7 +2,8 @@
 
 ## Candidate and scope
 
-Implementation candidate: `aeff31db0803d75e41881fd566e13f6222d4ca05`.
+Latest integrated implementation: `d0201df47d889fb50cef04b5aa2fcda251b1a034`.
+Canonical screenshot candidate: `aeff31db0803d75e41881fd566e13f6222d4ca05`.
 Initial base: `f754bdee6b803b18191841863c35527c0a74571e`.
 
 The template, rendered page and paired stylesheet implement the redesigned scan.
@@ -10,18 +11,25 @@ The shared navigation, producers, canonical freshness thresholds, six-class
 deterministic model and seven-leg calculation remain under their existing owners.
 The separate timing/precursor work in macro #6867 is not replayed here.
 
-The isolated branch incorporates main `f6fb23200bb2fee8368aecda7f23725ccf4a6add`.
+The first shared-shell integration incorporates main `f6fb23200bb2fee8368aecda7f23725ccf4a6add`.
 The conflict was limited to generated cache tags and was resolved by page-only
 rendering. The template and paired CSS retain the reviewed repairs; the generated
 page also receives main's canonical Expectation Surface navigation item. This
 feature does not customize shared navigation. Verification was repeated with the
 integrated shared assets.
 
+A later main update `bca436e58f7069ff8b52d31074f30726cfecf0e4` was reconciled at the latest
+candidate above. It changes this page only by the shared theme cache tag; the
+upstream new GMI variables are unused. The template, paired page CSS and embedded
+base remain unchanged. All regression/browser and relevant guard checks were
+repeated. MAIN_INTEGRATION.md documents the exact carry-forward scope; the canonical
+matrix is preserved at its actual capture commit rather than falsely repinned.
+
 ## Results
 
 | Check | Observed result |
 |---|---|
-| Intraday pytest suite | 280 passed; final run 12.99 seconds |
+| Intraday pytest suite | 280 passed; final integrated run 21.46 seconds |
 | Isolated browser harness | 515 passed, zero failures |
 | Matrix | 1440×900 and 390×844 × light/dark × EN/ZH |
 | Canonical screenshots | 24/24 captured: eight resting + eight hover + eight focus |
@@ -33,7 +41,7 @@ integrated shared assets.
 | Paired assets | Template/site CSS byte-identical |
 | Visual receipt guard | Passed against the material source diff and staged canonical evidence |
 | Design-system ratchet | Zero newly blocking findings |
-| Runtime stylesheet budget | 145 JS files scanned; 44 injecting; 88 existing hits within frozen allowances |
+| Runtime stylesheet budget | 146 JS files scanned; 44 injecting; 88 existing hits within frozen allowances |
 | Model preservation | 15 core regions byte-identical to the initial base |
 
 Commands used:

@@ -223,3 +223,18 @@ actual final head, and finish the normal integration path once those gates pass.
 CLOSEOUT.md preserves the exact resume frontier; the PR carries post-checkpoint CI. See
 `PAPER_QUALIFICATION_HANDOFF.md` for the bounded owner remedy. No Paper canvas effect,
 merge into main, production deployment, live-page proof or final acceptance has occurred.
+
+## Final main reconciliation — 2026-11-02
+
+Main advanced during final CI observation and created a generated-page cache-tag
+conflict. It is resolved in isolated-branch merge `d0201df47d889fb50cef04b5aa2fcda251b1a034`, incorporating
+`bca436e58f7069ff8b52d31074f30726cfecf0e4`. The template, page CSS, model and embedded base are unchanged; the
+rendered page differs from the reviewed version only by the shared theme cache tag.
+The upstream GMI theme variables are unused by this page. Applicable instructions
+were unchanged. See MAIN_INTEGRATION.md for the exact source comparison and scope.
+
+The integrated candidate again passes 280 pytest cases and 515 browser checks, plus
+design-system, runtime-style and visual-receipt guards. The existing canonical
+matrix is carried forward with explicit source/geometry proof, not relabeled as a
+new capture. Qualified visual/Paper gates and served production acceptance remain
+open. Final-head CI belongs in the PR receipt after this proof update is pushed.

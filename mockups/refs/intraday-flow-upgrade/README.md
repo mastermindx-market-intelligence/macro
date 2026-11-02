@@ -1,6 +1,13 @@
 # Intraday Flow — visual evidence
 
-Source candidate: `aeff31db0803d75e41881fd566e13f6222d4ca05`.
+Capture source: `aeff31db0803d75e41881fd566e13f6222d4ca05`.
+Latest integrated candidate: `d0201df47d889fb50cef04b5aa2fcda251b1a034`.
+
+The later integration changes this page only by its shared theme cache tag and adds
+unused upstream GMI custom properties. The template, page stylesheet and embedded
+base are unchanged. The matrix is carried forward with an exact source comparison
+and another successful 515 browser / 280 regression checks; it is not represented
+as a fresh capture. See [main integration proof](../../../research/intraday_flow_design_upgrade/MAIN_INTEGRATION.md).
 
 The canonical capture produced **24 of 24 states**: eight resting cells and actual
 hover/focus variants of each. It records zero console errors, zero failed responses

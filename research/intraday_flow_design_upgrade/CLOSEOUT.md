@@ -13,16 +13,21 @@ user's end-to-end request is complete.
 - Branch: claude/intraday-flow-design-upgrade-20261101-c2.
 - Operation/root/parent: intraday-flow-design-upgrade-20261101-c2.
 - Initial base: f754bdee6b803b18191841863c35527c0a74571e.
-- Main integrated into the isolated branch: f6fb23200bb2fee8368aecda7f23725ccf4a6add.
+- Latest main integrated into the isolated branch: bca436e58f7069ff8b52d31074f30726cfecf0e4.
+- Earlier main integration: f6fb23200bb2fee8368aecda7f23725ccf4a6add.
+- Latest integration candidate: d0201df47d889fb50cef04b5aa2fcda251b1a034.
 - Bounded review repairs: 660136436850d1ad5ff38ffc611525c7c10dc573.
 - Integrated implementation and canonical matrix: aeff31db0803d75e41881fd566e13f6222d4ca05.
 - Independently submitted proof head: 99b6151530160f1fb432277e48274040f2581660.
 - Protected procedure: Mastermind@19cb00cfed26b68f0a8a5cdc0f2f1a9463a3feec.
 
-The four product files at the submitted proof head are byte-identical to the integrated
-implementation candidate. Subsequent checkpoint documentation does not change the
-product. Its exact containing commit and post-checkpoint CI are recorded in the PR
-rather than fabricating a self-referential commit identity.
+The submitted proof head and documentation checkpoint 6eadd471ef16e1bf11ac67fc0f7292436462633a
+preserve the original integrated product. A later main update introduced only a
+shared theme cache-tag conflict. MAIN_INTEGRATION.md records its canonical page-only
+resolution: template and page CSS remain byte-identical, and the generated page differs
+only by that cache tag. All 280 regression and 515 browser checks passed again on
+the latest integration candidate. The final containing commit and CI are recorded
+in the PR rather than fabricating a self-referential commit identity.
 
 ## Delivered implementation
 
@@ -87,7 +92,10 @@ passed. CI run
 was in progress at this checkpoint; ci-plan and contract-delta had passed.
 No CI failure was inferred from pending jobs.
 
-The final checkpoint changes documentation only. Its exact head and concluded CI
+Main subsequently advanced and made the documentation checkpoint conflict on the
+shared theme stamp. MAIN_INTEGRATION.md records the resolved merge and repeated checks.
+The final proof update changes documentation/browser evidence only; its product is
+identical to the latest integration candidate. Its exact head and concluded CI
 must be read from the PR after push. This document does not claim a future pass or
 substitute a predecessor result for the current head. The PR body is the binding
 post-checkpoint receipt, avoiding a cycle of committing a CI result that creates
