@@ -5151,6 +5151,11 @@ CURATED_EXCLUSIVE = {
     # Registered from the lanes' ci_registration_proposal*.yml; no pack
     # ceiling is loosened and no unrelated render probe is selected.
     "company-intelligence-relationships",
+    # EW-P4 descriptive UI (Grey Deer early-warning, EW-P5 FU2 split from
+    # dashboard-render-contract): the suite's import closure IS the dashboard render
+    # closure through tests/test_macro_risk_dialog.py, declared verbatim plus what the
+    # suite reads by name; the curated-closure guard audits it like its parent.
+    "ew-p4-descriptive-ui",
 }
 
 

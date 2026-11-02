@@ -1173,15 +1173,7 @@ def resolve_issuer(
     if moment is not None:
         return _resolve_at(bundle, normalized, moment)
 
-    matches = []
-    for record in _records(bundle):
-        identity = record["identity"]
-        tickers = {
-            str(identity.get("ticker") or "").upper(),
-            *(str(value).upper() for value in identity.get("observed_tickers") or []),
-        }
-        if normalized in tickers:
-            matches.append(record)
+    matches = _ticker_matches(bundle, normalized)
 
     if not matches:
         raise _private_error(404, "ticker not covered")
@@ -1202,6 +1194,20 @@ def resolve_issuer(
         "query": {"ticker": normalized},
         "issuer": _overview_record(matches[0]),
     }
+
+
+def _ticker_matches(projection: dict[str, Any], normalized: str) -> list[dict[str, Any]]:
+    """The projection records whose identity carries the normalized ticker."""
+    matches = []
+    for record in _records(projection):
+        identity = record["identity"]
+        tickers = {
+            str(identity.get("ticker") or "").upper(),
+            *(str(value).upper() for value in identity.get("observed_tickers") or []),
+        }
+        if normalized in tickers:
+            matches.append(record)
+    return matches
 
 
 def _resolve_at(projection: dict[str, Any], normalized: str, moment: str) -> dict[str, Any]:
