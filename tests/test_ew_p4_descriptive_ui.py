@@ -538,6 +538,7 @@ def test_fu2_radar_band_wraps_raises_and_matches_sector_central():
     narrow = narrow[:narrow.index("\n}\n") + 3]
     assert "#dlg-risk .gde-tbl thead {position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;}" in narrow
     assert "#dlg-risk .gde-tbl td {display:grid; grid-template-columns:minmax(0, 7.5em) minmax(0, 1fr);" in narrow
+    assert "#dlg-risk .gde-tbl td > * {grid-column:2;}" in narrow  # the required badge stays in the value column
     assert 'html:not([data-lang="zh"]) #dlg-risk .gde-tbl td::before {content:attr(data-label-en);}' in narrow
     assert 'html[data-lang="zh"] #dlg-risk .gde-tbl td::before {content:attr(data-label-zh);}' in narrow
     soup = BeautifulSoup(render(envelope(deepcopy(_fixtures()["observed_rise"]))), "html.parser")

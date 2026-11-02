@@ -43,6 +43,7 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
   #dlg-risk .gde-tbl tr {display:block; padding:6px 0; border-bottom:1px solid var(--line);}
   #dlg-risk .gde-tbl td {display:grid; grid-template-columns:minmax(0, 7.5em) minmax(0, 1fr); gap:0 12px; padding:3px 0; border-bottom:0;}
   #dlg-risk .gde-tbl td::before {color:var(--ink-2); font-weight:600; font-size:var(--fs-label);}
+  #dlg-risk .gde-tbl td > * {grid-column:2;}
   html:not([data-lang="zh"]) #dlg-risk .gde-tbl td::before {content:attr(data-label-en);}
   html[data-lang="zh"] #dlg-risk .gde-tbl td::before {content:attr(data-label-zh);}
 }
