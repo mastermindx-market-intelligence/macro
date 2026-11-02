@@ -4438,6 +4438,9 @@ CURATED_EXCLUSIVE = {
     # F04 real-Git acquisition reads three deploy scripts. Its dedicated job
     # preserves the broader self-heal owner without widening unrelated probes.
     "deploy-git-history",
+    # 2026-10-19/11-01 root-disk refills: the bounded store-maintenance job reads
+    # its script, units and the update.sh/setup.sh stanzas that self-arm them.
+    "deploy-git-store-maintenance",
     # PR #7861: Options matrix source/session/retention checks are hermetic.
     # The exclusive manifest scope retains both suites, their concrete import
     # closure, config.yml fallback and the retention-fixture wildcard. This
@@ -4933,6 +4936,11 @@ CURATED_EXCLUSIVE = {
     # build_free_content / plan_book packing probes. scope: exclusive pins it
     # to its measured closure, so it must be listed here.
     "gmi-classification-axes",
+    # 2026-10-22 GMI explorer (W3): the identity reader names
+    # scripts/build_security_master.py by path, so inference smeared the
+    # gmi-explorer job onto the templates/index.html, build_free_content and
+    # plan_book packing probes. scope: exclusive pins it to its measured closure.
+    "gmi-explorer",
     # GovRev dependency changes must not select GR3 on unrelated page templates.
     "group-linked-outsiders",
     "govrev-program-ontology",
@@ -5129,6 +5137,12 @@ CURATED_EXCLUSIVE = {
     # single-suite owner. Its explicit paths cover the static import closure
     # and package ancestor init, without accepting unrelated render probes.
     "aibrief-countdown-pr",
+    # 2026-11-01 GMI relationships (ORCH-REL M1/M2/M3): the eleven relationship
+    # suites get one gate:code exclusive home with their measured import/read
+    # closure (package v2, edges, SEC source packets, m2 extraction samples).
+    # Registered from the lanes' ci_registration_proposal*.yml; no pack
+    # ceiling is loosened and no unrelated render probe is selected.
+    "company-intelligence-relationships",
 }
 
 

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-10-20T20:38:41Z",
+ "accession": "0001616533-26-000050",
+ "cik": "0001616533",
+ "doc_byte_length": 2706558,
+ "doc_sha256": "e415f3bf752a21e09e8f075648e256805702f3395e4dd0d04a4872a84cf68ae2",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-10-20",
+ "form": "10-K",
+ "period_of_report": "2026-08-28",
+ "primary_document": "peng-20260828.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 395974,
+  "byte_start": 395414,
+  "normalized": "The identity of these customers has changed from year to year and may continue to change in the future. In 2026, one Integrated Memory customer accounted for approximately 20% of our net sales, while the Advanced Computing customer that accounted for approximately 18% of our net sales in each of 2025 and 2024, and a different Integrated Memory customer that accounted for approximately 14% of our net sales in 2025, did not account for more than 10% of our net sales in 2026. In some cases, our customers also compete with us and/or are our major suppliers.",
+  "normalized_sha256": "8d901c856e6bd552829394048cc35d0d5704b7b9dcc4095e55b33f3873442574",
+  "raw": " The identity of these customers has changed from year to year and may continue to change in the future. In 2026, one Integrated Memory customer accounted for approximately 20% of our net sales, while the Advanced Computing customer that accounted for approximately 18% of our net sales in each of 2025 and 2024, and a different Integrated Memory customer that accounted for approximately 14% of our net sales in 2025, did not account for more than 10% of our net sales in 2026. In some cases, our customers also compete with us and/or are our major suppliers.",
+  "raw_sha256": "2148b4aede9caa37ec4299b9be8fd4f1e9be77426aedea210351fdce3c566788"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653326000050/peng-20260828.htm",
+ "xbrl_contexts": []
+}

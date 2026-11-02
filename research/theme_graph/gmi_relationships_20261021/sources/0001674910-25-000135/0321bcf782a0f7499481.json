@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2025-11-21T22:27:25Z",
+ "accession": "0001674910-25-000135",
+ "cik": "0001674910",
+ "doc_byte_length": 2328932,
+ "doc_sha256": "2438129dac2d588b4f427aecbf1a485b50a7cd5104e4beff3b4aaaee003d2d5c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-11-21",
+ "form": "10-K",
+ "period_of_report": "2025-09-30",
+ "primary_document": "vvv-20250930.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2232207,
+  "byte_start": 2231833,
+  "normalized": "Trademark Co-Existence Agreement by and between, on the one hand, Valvoline LLC, Valvoline Licensing and Intellectual Property LLC, and Valvoline Inc. and, on the other hand, VGP Holdings LLC and VGP IPCo LLC, dated as of March 1, 2023 (incorporated by reference to Exhibit 10.2 to Valvoline’s Quarterly Report on Form 10-Q (File No. 001-37884) filed on May 10, 2023).",
+  "normalized_sha256": "ab6cda74d67f084ff4fc08e4f5f17ebd54f63b83419b03d613cfbef0bddc6a05",
+  "raw": "Trademark Co-Existence Agreement by and between, on the one hand, Valvoline LLC, Valvoline Licensing and Intellectual Property LLC, and Valvoline Inc. and, on the other hand, VGP Holdings LLC and VGP IPCo LLC, dated as of March 1, 2023 (incorporated by reference to Exhibit 10.2 to Valvoline&#8217;s Quarterly Report on Form 10-Q (File No. 001-37884) filed on May 10, 2023).",
+  "raw_sha256": "0321bcf782a0f74994818d4f3d86280ef6f18cb9c564fff3d16e815d2ff313e6"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1674910/000167491025000135/vvv-20250930.htm",
+ "xbrl_contexts": []
+}

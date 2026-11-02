@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-04T20:06:57Z",
+ "accession": "0000002488-26-000021",
+ "cik": "0000002488",
+ "doc_byte_length": 293837,
+ "doc_sha256": "40c560ba9bf0a9ad87101d396def14a3be4024ecb21e87f67effc2927ba4efa3",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-04",
+ "form": "10-K/A",
+ "period_of_report": "2025-12-27",
+ "primary_document": "amd-20251227.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 27632,
+  "byte_start": 26728,
+  "normalized": "Advanced Micro Devices, Inc. (the “Company”) is filing this Amendment No. 1 (this “Amendment”) to its Annual Report on Form 10-K for the fiscal year ended December 27, 2025, previously filed with the Securities and Exchange Commission (“SEC”) on February 4, 2026 (the “Original Filing”), solely for the purpose of correcting an inadvertent error in the presentation of certain numerical disclosures in the Management’s Discussion and Analysis of Financial Condition and Results of Operations (“MD&A”). After filing the Original Filing, the Company identified that the year-over-year changes in average selling price (“ASP”) and unit shipment figures within the Client revenue disclosure were inadvertently transposed, resulting in an incorrect depiction of the year‑over‑year changes in ASP and unit shipments.",
+  "normalized_sha256": "9d3167eb5b9d38853f165b8d68e436396a7e1dea90e00f1320cfc1f813e32e8f",
+  "raw": "Advanced Micro Devices, Inc. (the &#8220;Company&#8221;) is filing this Amendment No. 1 (this &#8220;Amendment&#8221;) to its Annual Report on Form 10-K for the fiscal year ended December 27, 2025, previously filed with the Securities and Exchange Commission (&#8220;SEC&#8221;) on February 4, 2026 (the &#8220;Original Filing&#8221;), solely for the purpose of correcting an inadvertent error in the presentation of certain numerical disclosures in the Management&#8217;s Discussion and Analysis of Financial Condition and Results of Operations (&#8220;MD&amp;A&#8221;). After filing the Original Filing, the Company identified that the year-over-year changes in average selling price (&#8220;ASP&#8221;) and unit shipment figures within the Client revenue disclosure were inadvertently transposed, resulting in an incorrect depiction of the year&#8209;over&#8209;year changes in ASP and unit shipments.",
+  "raw_sha256": "8be44912f15da690a8f60e278921389bfabbcc547dbe7115e2dab8474a13e5c5"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000021/amd-20251227.htm",
+ "xbrl_contexts": []
+}
