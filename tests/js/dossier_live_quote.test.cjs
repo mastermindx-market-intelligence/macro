@@ -52,11 +52,14 @@ async function harness(payload = packet(), options = {}) {
     clear:()=>{storageMap.clear();}
   };
   // Plain (non-async) function so a pre-origin sync throw is genuinely sync.
-  const fetch = function(){
+  const fetch = function(url, init){
     if(options.beforeFetch) options.beforeFetch(sandbox.window.__dqAttemptLedger.snapshot(), calls);
     calls++;
     if(options.syncThrow) throw Error('pre-origin sync failure fixture');
     if(failed) return Promise.reject(Error('offline fixture'));
+    if(options.abortOnTimeout) return new Promise((_,reject)=>{
+      init.signal.addEventListener('abort',()=>{options.onAbort();reject(Error('aborted'));},{once:true});
+    });
     if(options.hang) return new Promise(()=>{});
     if(options.defer) return new Promise(res=>{releaseLate=res;});
     if(options.httpError) return Promise.resolve({ok:false,json:async()=>({})});
@@ -67,6 +70,7 @@ async function harness(payload = packet(), options = {}) {
     fetch,window:{fetch:options.noFetch ? undefined : fetch,
       Promise,sessionStorage:options.noStorage ? undefined : sessionStorage},
   };
+  if(options.abortOnTimeout) sandbox.AbortController=sandbox.window.AbortController=AbortController;
   vm.runInNewContext(source,sandbox,{timeout:1000});
   const flush=async()=>{for(let i=0;i<12;i++)await Promise.resolve();};
   await flush();
@@ -307,31 +311,44 @@ test('a rolled-back counter is detected and never rewinds',async()=>{
   const s=h.snapshot();
   assert.equal(s.uncertainty.reset,true);                    // rollback surfaced under reset
   assert.deepEqual([...s.degraded.reasons],['rollback']);
+  assert.equal(s.aggregate_known,false);
   assert.equal(s.aggregate,4);                               // ours, monotonic, never rewound
 });
-test('duplicate script execution counts conservatively and flags the loss',async()=>{
+test('duplicate pollers count every invocation on the stamp and across reload',async()=>{
   const h=await harness(packet());
-  await h.rerun();                                           // same document runs it again
+  await h.rerun();
+  for (const snap of [h.snapshot(),JSON.parse(h.nodes.stamp.getAttribute('data-dq-accounting')),JSON.parse(h.raw())]) {
+    assert.equal(snap.aggregate,h.calls()); assert.equal(snap.aggregate,2);
+    assert.equal(snap.aggregate_known,false);
+  }
   await h.advance(15000);
   const s=h.snapshot();
-  assert.equal(s.aggregate,2);                               // two pollers fetched; one counted
-  assert.ok(h.calls()>=4);                                   // both really ran
-  assert.equal(s.uncertainty.loss,true);                     // and the ledger says so
-  assert.equal(s.uncertainty.concurrent_writer,true);
-  assert.equal(s.writer.exclusive_proven,false);
+  assert.equal(s.aggregate,h.calls());assert.equal(s.aggregate,4);
+  assert.equal(s.records.length,4);assert.equal(s.uncertainty.concurrent_writer,true);
+  const next=await harness(packet(),{storage:h.storage});
+  assert.equal(next.snapshot().aggregate,5);assert.equal(next.snapshot().aggregate_known,false);
 });
-test('two live writers in one storage scope fail completeness closed',async()=>{
+test('overlapping documents preserve each attempted row and its own outcome',async()=>{
   const storage=new Map();
-  const a=await harness(packet(),{storage});
-  const b=await harness(packet(),{storage});                 // a frame writing alongside
-  await a.advance(15000);
-  const s=a.snapshot();
-  assert.equal(s.uncertainty.concurrent_writer,true);
-  assert.ok(s.degraded.reasons.includes('concurrent_writer'));
-  assert.equal(s.writer.exclusive_proven,false);
-  assert.ok(s.aggregate>=3);                                 // nobody's increment was dropped
-  const sb=b.snapshot();
-  assert.ok(sb.aggregate>=s.aggregate-1);
+  const a=await harness(packet(),{storage,defer:true});
+  const b=await harness(packet(),{storage});
+  a.resolveLate(packet());await a.advance(0);
+  await a.advance(15000);await b.advance(15000);
+  const s=b.snapshot();
+  assert.equal(s.aggregate,a.calls()+b.calls());assert.equal(s.records.length,4);
+  assert.equal(new Set(s.records.map(r=>r.document+':'+r.seq)).size,4);
+  assert.equal(s.history_truncated,false);assert.equal(s.aggregate_known,false);
+  assert.equal(s.records.filter(r=>r.outcome==='pending').length,1);
+});
+test('a higher foreign count cannot restore certainty after corruption',async()=>{
+  const h=await harness(packet(),{storage:new Map([[LEDGER_KEY,'{']])});
+  const other=await harness(packet());
+  const foreign=JSON.parse(other.raw()); foreign.aggregate=20;
+  h.storage.set(LEDGER_KEY,JSON.stringify(foreign));await h.advance(15000);
+  for (const s of [h.snapshot(),JSON.parse(h.raw())]) {
+    assert.equal(s.aggregate,21);assert.equal(s.aggregate_known,false);
+  }
+  assert.equal(h.snapshot().history_truncated,true);
 });
 test('history keeps 64 records and the total stays exact past 64',async()=>{
   const storage=new Map();
@@ -357,6 +374,7 @@ test('a denied read is never misreported as a reset',async()=>{
   await h.advance(15000);
   const s=h.snapshot();
   assert.equal(s.uncertainty.storage,true);
+  assert.equal(h.raw(),durable);                             // an unreadable prior value survives
   assert.equal(s.uncertainty.reset,false);                   // denial is not deletion
   assert.deepEqual([...s.degraded.reasons],['storage']);
   assert.equal(s.aggregate,3);                               // monotonic, no fabricated rollback
@@ -447,4 +465,13 @@ test('each invocation sees its already-recorded pending attempt before fetch can
   }});
   await h.advance(30000);
   assert.deepEqual(seen,[1,2,3]); assert.equal(h.calls(),3);
+});
+
+test('watchdog abort and its resulting rejection settle the same attempt once',async()=>{
+  let aborted=0;
+  const h=await harness(packet(),{abortOnTimeout:true,onAbort:()=>aborted++});
+  await h.advance(6000);
+  assert.equal(aborted,1); assert.equal(h.calls(),1);
+  assert.equal(h.snapshot().aggregate,1);
+  assert.equal(h.snapshot().records[0].outcome,'timeout');
 });

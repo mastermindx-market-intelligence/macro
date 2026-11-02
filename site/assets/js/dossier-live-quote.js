@@ -119,7 +119,7 @@
   };
   var seriesPrior = false;   // a readable prior series was adopted at load
   var lastObservedInst = null;
-  var passive = false;       // duplicate script: count nothing, flag the loss
+  var duplicateWriter = false;
   // Local increments not yet reconciled against storage. They are carried
   // across a merge so a foreign writer's advance is ADDED to ours instead of
   // either side's count being silently dropped.
@@ -138,6 +138,7 @@
   function degrade(reason) {
     if (!ledger.degraded) ledger.degraded = { reasons: [], at_clock: Date.now() };
     if (ledger.degraded.reasons.indexOf(reason) === -1) ledger.degraded.reasons.push(reason);
+    if (reason !== 'storage') ledger.aggregate_known = false;
     var key = UNC_OF[reason];
     if (key) ledger.unc[key] = true;
   }
@@ -202,10 +203,30 @@
     }
     if (d.aggregate_known === false) ledger.aggregate_known = false;
     if (typeof d.seq === 'number' && isFinite(d.seq) && d.seq > ledger.seq) ledger.seq = d.seq;
-    if (Array.isArray(d.records) && d.records.length > ledger.records.length) {
-      ledger.records = d.records.slice(-LEDGER_MAX);
-    }
     if (d.truncated) ledger.truncated = true;
+  }
+
+  function mergeRecords(stored) {
+    // Sequence numbers can coincide in different documents. Only a document
+    // and sequence together identify an attempt. A late pending row must
+    // never overwrite the observed outcome for that attempt.
+    var rows = new Map();
+    stored.concat(ledger.records).forEach(function (r) {
+      var key = r.document + ':' + r.seq;
+      if (!rows.has(key) || r.outcome !== 'pending') {
+        rows.set(key, { document: r.document, seq: r.seq, clock: r.clock,
+                        symbol: r.symbol, outcome: r.outcome });
+      }
+    });
+    var all = Array.from(rows.values()).sort(function (a, b) {
+      return a.seq - b.seq || a.clock - b.clock || a.document.localeCompare(b.document);
+    });
+    if (all.length > LEDGER_MAX) ledger.truncated = true;
+    if (all.length < Math.min(ledger.aggregate, LEDGER_MAX)) {
+      ledger.truncated = true;
+      degrade('loss');
+    }
+    ledger.records = all.slice(-LEDGER_MAX);
   }
 
   function stateForStorage() {
@@ -224,15 +245,15 @@
     };
   }
 
-  // One read-modify-write against the storage scope. Between the read and the
-  // write no other task can run, so same-origin frames cannot silently lose
-  // increments — but a writer that was NOT the document we took over from is
-  // proof we are not alone, and that is recorded rather than papered over.
+  // Storage offers no transaction across writers. Reconcile observed records
+  // and keep the uncertainty visible if another writer or a rollback appears.
   function writeLedger() {
+    if (duplicateWriter || window.__dqAttemptConflict) { degrade('loss'); degrade('concurrent_writer'); }
     var s = storage();
     if (!s) { ledger.unc.storage = true; degrade('storage'); return; }
 
     var r = readLedger(s);
+    if (r.state === 'failed') return;  // Keep unsynced attempts until the prior value is readable.
     var d = r.state === 'ok' ? r.data : null;
     if (d) {
       if (typeof d.gen === 'number' && isFinite(d.gen) && d.gen > ledger.gen) {
@@ -262,7 +283,6 @@
           var merged = storedAgg + unsynced;
           if (merged > ledger.aggregate) {
             ledger.aggregate = merged;
-            if (d.aggregate_known === true) ledger.aggregate_known = true;
           }
         }
       } else {
@@ -270,6 +290,7 @@
         ledger.aggregate_known = false;
       }
       adoptSticky(d);
+      mergeRecords(d.records);
     } else if (r.state === 'absent' && lastObservedInst !== null && ledger.seq > 0) {
       // Evidence we ourselves wrote is GONE — genuinely absent, not merely
       // denied to us. The prior total is now unknown and stays unknown; this
@@ -294,14 +315,11 @@
   }
 
   function initLedger() {
-    // A duplicate script tag (or double evaluation) in this document means two
-    // pollers would each count attempts the other also made. The late instance
-    // stands down from counting and records the loss instead of letting the
-    // ledger keep pretending it is complete.
     try {
-      if (window.__dqAttemptInst) { window.__dqAttemptConflict = true; passive = true; ledger.unc.loss = true; degrade('loss'); }
+      duplicateWriter = Boolean(window.__dqAttemptInst);
+      if (duplicateWriter) window.__dqAttemptConflict = true;
       else window.__dqAttemptInst = instanceId;
-    } catch (e) { passive = true; ledger.unc.loss = true; degrade('loss'); }
+    } catch (e) { duplicateWriter = true; }
 
     var s = storage();
     if (!s) {
@@ -363,9 +381,8 @@
   // before originating, or a promise that never settles, is still an attempt
   // the operator should hear about. Outcomes only NAME the record afterwards.
   function beginAttempt(symbol) {
-    if (passive) return null;
     try {
-      ledger.seq += 1;
+      var attemptSeq = ++ledger.seq;
       ledger.aggregate += 1;
       unsynced += 1;
       ledger.records.push({ seq: ledger.seq, clock: Date.now(), document: docId, symbol: symbol, outcome: 'pending' });
@@ -375,7 +392,7 @@
       }
       writeLedger();
       publishLedgerSnapshot();
-      return ledger.seq;
+      return attemptSeq;
     } catch (e) {
       try { ledger.unc.storage = true; degrade('storage'); } catch (e2) { /* stay quiet */ }
       return null;
@@ -386,7 +403,7 @@
     if (seq === null || seq === undefined) return;
     try {
       for (var i = ledger.records.length - 1; i >= 0; i--) {
-        if (ledger.records[i].seq === seq) { ledger.records[i].outcome = outcome; break; }
+        if (ledger.records[i].document === docId && ledger.records[i].seq === seq) { ledger.records[i].outcome = outcome; break; }
       }
       writeLedger();
       publishLedgerSnapshot();
@@ -410,7 +427,6 @@
   // on purpose — no document can prove no other writer exists, so no snapshot
   // can honestly claim a complete count.
   function snapshotState() {
-    if (window.__dqAttemptConflict) { degrade('loss'); ledger.aggregate_known = false; }
     return {
       schema: 'dq-attempt-ledger/1',
       mode: 'observational',        // counting only: not enforcement, not a budget
@@ -449,23 +465,19 @@
 
   function publishLedgerSnapshot() {
     try {
-      if (stamp) stamp.setAttribute('data-dq-accounting', JSON.stringify(snapshotState()));
+      var snapshot = freezeDeep(snapshotState());
+      window.__dqAttemptLedger = Object.freeze({ snapshot: function () { return snapshot; } });
+      if (stamp) stamp.setAttribute('data-dq-accounting', JSON.stringify(snapshot));
     } catch (e) { /* diagnostics must never block quoting */ }
   }
-
-  try {
-    if (!window.__dqAttemptLedger || typeof window.__dqAttemptLedger.snapshot !== 'function') {
-      window.__dqAttemptLedger = { snapshot: function () {
-        try { return freezeDeep(snapshotState()); } catch (e) { return null; }
-      } };
-    }
-  } catch (e) { /* no window to expose on: accounting stays internal */ }
 
   try { initLedger(); } catch (e) {
     // The same rule as everywhere else: a broken ledger must not take the
     // quote it is observing down with it.
     try { ledger.unc.storage = true; degrade('storage'); } catch (e2) { /* stay quiet */ }
   }
+
+  publishLedgerSnapshot();
 
   // Bilingual pairs. The page ships both strings and CSS reveals one, so a
   // JS-written label must set BOTH or the other language silently keeps the

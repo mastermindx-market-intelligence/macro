@@ -171,3 +171,10 @@ freshness attestation. Records retain document id, symbol, sequence, clock and
 outcome only. The aggregate and 64 retained records survive same-tab navigation;
 `prior_history_complete:false`, `authoritative:false` and `enforcement:none`
 prevent a diagnostic series from claiming complete browser custody or a budget.
+
+Duplicate pollers each record their own fetch. The stamp and stored series mark
+a writer conflict immediately. Once a count becomes unknown, a later stored
+total cannot restore certainty. Rows are reconciled by document and sequence,
+with a visible history gap if the observed total exceeds the retained rows.
+The snapshot describes the last accounting event. Separate browser writers do
+not share a transactional storage guarantee.
