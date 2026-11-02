@@ -1086,9 +1086,9 @@ def _modelark_responses_transport(
 ) -> TransportOutcome:
     """Commercial ModelArk Responses API only; no Coding Plan or fallback.
 
-    The default checked-in profiles are UNQUALIFIED and the modes are OFF.
-    This transport cannot qualify an issuer account, Worker or Capacity.
-    The SDK is invoked only after existing mode/profile/credential gates.
+    The default profiles are UNQUALIFIED and the shipped modes are OFF.
+    The existing requests dependency is reused with zero automatic retries,
+    no redirects and no SDK-specific hidden request/credential fallback.
     """
     profile = _request_profile_for_mode(mode)
     if type(profile) is not ResponsesProfile or profile.qualification != PROFILE_QUALIFIED_CANARY:
@@ -1096,57 +1096,77 @@ def _modelark_responses_transport(
     if not credential:
         return TransportOutcome(reason="unconfigured", error_class="unconfigured")
     try:
-        import openai  # noqa: PLC0415 — no import or HTTP for disabled mode
+        import requests  # noqa: PLC0415 — lazy; no import for disabled mode
     except ImportError:
-        return TransportOutcome(reason="sdk_unavailable", error_class="unsupported")
+        return TransportOutcome(reason="requests_unavailable", error_class="unsupported")
+
+    session = None
     try:
-        client = openai.OpenAI(
-            api_key=credential,
-            base_url=mode.base_url,
-            max_retries=0,
+        session = requests.Session()
+        session.mount("https://", requests.adapters.HTTPAdapter(max_retries=0))
+        response = session.post(
+            mode.base_url + "/responses",
+            headers={
+                "Authorization": "Bearer " + credential,
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": profile.model,
+                "input": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user},
+                ],
+                "max_output_tokens": min(int(max_tokens), profile.max_output_tokens),
+                "store": False,
+            },
             timeout=timeout_s,
+            allow_redirects=False,
         )
-        response = client.responses.create(
-            model=profile.model,
-            input=[
-                {"role": "system", "content": system},
-                {"role": "user", "content": user},
-            ],
-            max_output_tokens=min(max_tokens, profile.max_output_tokens),
-            store=False,
-        )
-    except BaseException as exc:  # noqa: BLE001 — one attempt, bounded taxonomy
-        code = _exception_status_code(exc)
+    except BaseException as exc:  # noqa: BLE001 — classified, never leak value
+        status = _exception_status_code(exc)
         return TransportOutcome(
             reason=type(exc).__name__,
-            status_code=code,
-            error_class=None if code is not None else _incumbent_error_class(exc=exc),
+            status_code=status,
+            error_class=None if status is not None else _incumbent_error_class(exc=exc),
         )
-    # A server-side model fallback or missing served identity is NOT proof of
-    # the pinned model, even when text and usage are returned.
-    if getattr(response, "model", None) != profile.model:
+    finally:
+        if session is not None:
+            session.close()
+
+    code = _int_or_none(getattr(response, "status_code", None))
+    if code is None or not HTTPStatus.OK <= code < HTTPStatus.MULTIPLE_CHOICES:
+        return TransportOutcome(
+            reason="http_refused",
+            status_code=code,
+            error_class="error" if code is None else _status_to_error_class(code),
+        )
+    try:
+        payload = response.json()
+    except (ValueError, TypeError):
+        return TransportOutcome(reason="bad_json", error_class="error")
+    if not isinstance(payload, dict):
+        return TransportOutcome(reason="bad_shape", error_class="error")
+    # Do not accept gateway substitution as the pinned/served model.
+    if payload.get("model") != profile.model:
         return TransportOutcome(reason="served_model_unverified", error_class="unsupported")
-    if getattr(response, "status", None) != "completed":
+    if payload.get("status") != "completed":
         return TransportOutcome(reason="response_not_completed", error_class="error")
 
-    text = getattr(response, "output_text", None)
-    if not isinstance(text, str) or not text.strip():
-        parts: list[str] = []
-        for output in getattr(response, "output", None) or ():
-            if getattr(output, "type", None) != "message":
-                continue
-            for block in getattr(output, "content", None) or ():
-                if getattr(block, "type", None) == "output_text":
-                    value = getattr(block, "text", None)
-                    if isinstance(value, str) and value:
-                        parts.append(value)
-        text = "".join(parts)
-    usage = getattr(response, "usage", None)
+    parts: list[str] = []
+    for item in payload.get("output") or ():
+        if not isinstance(item, dict) or item.get("type") != "message":
+            continue
+        for block in item.get("content") or ():
+            if isinstance(block, dict) and block.get("type") == "output_text":
+                value = block.get("text")
+                if isinstance(value, str) and value:
+                    parts.append(value)
+    usage = payload.get("usage")
     return TransportOutcome(
-        text=text if isinstance(text, str) and text.strip() else None,
+        text="".join(parts) or None,
         input_tokens=_int_or_none(_usage_field(usage, "input_tokens")),
         output_tokens=_int_or_none(_usage_field(usage, "output_tokens")),
-        status_code=HTTPStatus.OK,
+        status_code=code,
     )
 
 
