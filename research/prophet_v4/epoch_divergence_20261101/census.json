@@ -1,0 +1,1753 @@
+{
+  "captured_at": "2026-11-02T02:58:20.139808+00:00",
+  "base_sha": "9fe98ab14db8ccc1bb35d9dd8b1d11617527dfdf",
+  "open_count": 881,
+  "matching_count": 139,
+  "incomplete": [],
+  "matching": [
+    {
+      "number": 10489,
+      "title": "Fix US Risk Radar rotation freshness, source coverage and correlation readings",
+      "isDraft": false,
+      "headRefOid": "0623dc2a59b6be20e20ddaef1a67a18be4a4923c",
+      "headRefName": "sol/web-risk-radar-session-coverage-20261101-c3",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10489",
+      "matched_path_count": 1,
+      "source_paths": [
+        "scripts/build_site.py"
+      ]
+    },
+    {
+      "number": 10481,
+      "title": "qledger carve restore: never destroy surviving bytes on a failed snapshot read (#9556 post-merge findings)",
+      "isDraft": false,
+      "headRefOid": "a6f9a4b5db9c3fef63afd210deaa5c58e98134b5",
+      "headRefName": "claude/qledger-restore-lookup-safety-20261102",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10481",
+      "matched_path_count": 1,
+      "source_paths": [
+        ".github/workflows/daily.yml"
+      ]
+    },
+    {
+      "number": 10432,
+      "title": "ci(daily): land the US board grade and fast rotation in their own job",
+      "isDraft": false,
+      "headRefOid": "a27a8a2b9fad41b3ddab7af79848c621655298f5",
+      "headRefName": "seat/us-board-rotation-landing-job",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10432",
+      "matched_path_count": 2,
+      "source_paths": [
+        ".github/workflows/daily.yml"
+      ]
+    },
+    {
+      "number": 10385,
+      "title": "prophet(us): word a candidate's \"Why it is here\" exactly as its row does (J11 journey law) + R7 US journey trace",
+      "isDraft": false,
+      "headRefOid": "774c059aabfa54cf233702c0cc86400d3352df37",
+      "headRefName": "claude/prophet-journey-why-copy-20261101",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10385",
+      "matched_path_count": 10,
+      "source_paths": [
+        "templates/_prophet_setup_detail.html.j2"
+      ]
+    },
+    {
+      "number": 10381,
+      "title": "fix(macro): render neutral source labels in the data-health panel",
+      "isDraft": false,
+      "headRefOid": "df100f83b63d63b98223f9542644faee0acfa95e",
+      "headRefName": "claude/ssd-health-panel-neutral-labels-270d8a20fe99d4b4",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10381",
+      "matched_path_count": 1,
+      "source_paths": [
+        "scripts/build_site.py"
+      ]
+    },
+    {
+      "number": 10363,
+      "title": "entry-timing B4: durable home for the same-read capture \u2014 VPS --spool pass + nightly --from-spool ingest",
+      "isDraft": false,
+      "headRefOid": "71daf06d01da6c477badb6291af3f9a846820fd1",
+      "headRefName": "claude/prophet-b4-capture-nightly-home-20261031",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10363",
+      "matched_path_count": 5,
+      "source_paths": [
+        ".github/workflows/daily.yml",
+        "scripts/capture_prophet_b4_same_read.py"
+      ]
+    },
+    {
+      "number": 10289,
+      "title": "prophet-v4 A2: salvage the retained issuer-side settlement preflight onto the #10209 head (Draft, stacked, NOT_ACCEPTED)",
+      "isDraft": true,
+      "headRefOid": "ea8e38052b3e897577aa181cf9b4438faa23c766",
+      "headRefName": "claude/a2-prophet-fullpop-preflight-salvage-20261031",
+      "baseRefName": "sol/web-prophet-v4-a2-producer-clock-20261030",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10289",
+      "matched_path_count": 4,
+      "source_paths": [
+        "scripts/ci/daily_engine_prophet_nightly.sh",
+        "scripts/prophet_output_inventory.py",
+        "scripts/prophet_settlement_preflight.py"
+      ]
+    },
+    {
+      "number": 10277,
+      "title": "entry-timing-w1: intake waterfall by session + as-known identity replay (read-only)",
+      "isDraft": false,
+      "headRefOid": "97756d0a4c38b73d99a90ba437a15a2584fb5cab",
+      "headRefName": "claude/entry-timing-w1-denominator-20261031",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10277",
+      "matched_path_count": 1,
+      "source_paths": []
+    },
+    {
+      "number": 10266,
+      "title": "agentos(prophet-v4): Fable CEO checkpoint 2026-10-31 \u2014 curated-tier outage, PR #10255, B4 seam census",
+      "isDraft": false,
+      "headRefOid": "b108ca3c7052b141f6b630d674956e0bba4bf18c",
+      "headRefName": "claude/prophet-us-v4-fable-checkpoint-20261031",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10266",
+      "matched_path_count": 1,
+      "source_paths": []
+    },
+    {
+      "number": 10256,
+      "title": "[V4-A2][HOLD] Consume public settlement evidence in existing nightly Check E",
+      "isDraft": true,
+      "headRefOid": "c155e2781c81b7363f68b9d1e7d6790b89c7c49d",
+      "headRefName": "sol/prophet-v4-a2-liveness-check-e-consumer-20261031",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10256",
+      "matched_path_count": 1,
+      "source_paths": []
+    },
+    {
+      "number": 10242,
+      "title": "Prophet US V4 / Entry Timing \u2014 October 31 completion plan and Fable source census",
+      "isDraft": true,
+      "headRefOid": "e757498822a2255d3895b76232989dac3e739276",
+      "headRefName": "sol/web-prophet-us-v4-entry-timing-masterplan-20261031",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10242",
+      "matched_path_count": 4,
+      "source_paths": []
+    },
+    {
+      "number": 10235,
+      "title": "feat(prophet): news-impact section 11 report assembler (registration-gated)",
+      "isDraft": false,
+      "headRefOid": "1e91b19f5d0e2e7aa30d1376190442e38188a648",
+      "headRefName": "claude/ssd-prophet-ni-section11-report-d7e7a16e6c8d7299",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10235",
+      "matched_path_count": 3,
+      "source_paths": []
+    },
+    {
+      "number": 10229,
+      "title": "feat(macro): SPY/QQQ Tech Volatility Shock EOD market internals",
+      "isDraft": false,
+      "headRefOid": "f52fb6df6059dbff316f23eaaa2df28a0b174667",
+      "headRefName": "sol/tech-volatility-shock-20261030",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10229",
+      "matched_path_count": 1,
+      "source_paths": [
+        "scripts/build_site.py"
+      ]
+    },
+    {
+      "number": 10209,
+      "title": "[PROPHET V4-A2][HOLD] Genuine UTC compute clock at private index writer",
+      "isDraft": true,
+      "headRefOid": "da3a04518f13695339ab54421e3894632d3b6ba4",
+      "headRefName": "sol/web-prophet-v4-a2-producer-clock-20261030",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10209",
+      "matched_path_count": 2,
+      "source_paths": [
+        "scripts/build_prophet.py"
+      ]
+    },
+    {
+      "number": 10208,
+      "title": "feat(brain): render native OHLC candlestick pivot diagrams in Mastermind AI",
+      "isDraft": false,
+      "headRefOid": "c7c12bcabaa698aa456d4a5bab4e969f0e366bca",
+      "headRefName": "sol/web-mastermind-ai-candlestick-pivots-20261030",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10208",
+      "matched_path_count": 3,
+      "source_paths": []
+    },
+    {
+      "number": 10202,
+      "title": "[V4-A2] Settlement manifest: exact served-byte projection and sentinel gates",
+      "isDraft": true,
+      "headRefOid": "e0c522c968e0f8367e0c313b9b39ef8fa2c9ff3a",
+      "headRefName": "sol/web-prophet-v4-a2-settlement-read-projection-20261030",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10202",
+      "matched_path_count": 3,
+      "source_paths": [
+        "scripts/prophet_settlement_manifest.py"
+      ]
+    },
+    {
+      "number": 10189,
+      "title": "fix(website): align lifetime plan CTAs and Settings Close",
+      "isDraft": true,
+      "headRefOid": "542e1ddb47dc627f8b9fb3c4f5957cddbfaf73d4",
+      "headRefName": "claude/ssd-website-writer-20261029-884a581cda85dee8",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10189",
+      "matched_path_count": 3,
+      "source_paths": []
+    },
+    {
+      "number": 10180,
+      "title": "[Draft] Prophet B2: recover B-17 frozen inputs and bounded cutoff replay",
+      "isDraft": true,
+      "headRefOid": "943906af5c0478e6bcf43f601b7f001fc30e0914",
+      "headRefName": "sol/web-prophet-v4-b17-frozen-inputs-20261025",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10180",
+      "matched_path_count": 5,
+      "source_paths": []
+    },
+    {
+      "number": 10176,
+      "title": "fix(prophet): distinguish withdrawn episodes in private Lab reads (B2-1)",
+      "isDraft": true,
+      "headRefOid": "228c25d37617a7217c8f65f1613ade701a2fe01a",
+      "headRefName": "sol/web-prophet-v4-b2-withdrawal-20261024",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10176",
+      "matched_path_count": 2,
+      "source_paths": [
+        "app/prophet_lab.py"
+      ]
+    },
+    {
+      "number": 10174,
+      "title": "[Draft] Prophet V4 recovery: wave census and B17 frozen-input handoff",
+      "isDraft": true,
+      "headRefOid": "96825c90854944ad38a154b8d6ab5ffdd5f99dc7",
+      "headRefName": "sol/web-prophet-v4-wave-census-20261024",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10174",
+      "matched_path_count": 8,
+      "source_paths": []
+    },
+    {
+      "number": 10099,
+      "title": "GMI explorer: S1\u2013S5 pages (map, index, issuer, relationships, coverage, states)",
+      "isDraft": false,
+      "headRefOid": "9e58154b56445a9e40846b2942d2ad433c74fa58",
+      "headRefName": "claude/ssd-gmi-orch-ui-integ-b465bae8557f7433",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10099",
+      "matched_path_count": 4,
+      "source_paths": [
+        ".github/workflows/render.yml"
+      ]
+    },
+    {
+      "number": 10067,
+      "title": "[HOLD] MAS-258: require verified signals before publication",
+      "isDraft": true,
+      "headRefOid": "4526babd9da6e6331e81ed247c19b59084cbd92b",
+      "headRefName": "sol/web-census-signal-publication-gate-20261021",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10067",
+      "matched_path_count": 3,
+      "source_paths": [
+        ".github/workflows/daily.yml",
+        ".github/workflows/engine-render.yml"
+      ]
+    },
+    {
+      "number": 10063,
+      "title": "[news-estate NE-B4] gated_v3 draw as registered (issuer fallback, ni-edgar-body-2, gates-2) + census verdict",
+      "isDraft": true,
+      "headRefOid": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+      "headRefName": "lane/ne-b4-gated-v3-20261022-r3",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10063",
+      "matched_path_count": 9,
+      "source_paths": []
+    },
+    {
+      "number": 10062,
+      "title": "prophet r7: B21 U5 \u2014 drain stale-mandatory-fact guard + A2-N3 watchlist footnote",
+      "isDraft": true,
+      "headRefOid": "af255c2fd720da49c1432a7a2f0ee1132cf44301",
+      "headRefName": "claude/prophet-r7-b21-u5-drain-guard",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10062",
+      "matched_path_count": 1,
+      "source_paths": []
+    },
+    {
+      "number": 10060,
+      "title": "Redesign the macro overview for clearer daily decisions",
+      "isDraft": false,
+      "headRefOid": "16b65052863386bee987ad1185a4a5d4683951ca",
+      "headRefName": "claude/ssd-macro-dashboard-design-20261022-29cca618e2a89cb5",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10060",
+      "matched_path_count": 3,
+      "source_paths": []
+    },
+    {
+      "number": 10053,
+      "title": "feat(history): regime age, segment in force, flip countdown, analog hold (W33-LD)",
+      "isDraft": false,
+      "headRefOid": "ec486fb93ee3922683e46e9f0a14209e5a5c5ee0",
+      "headRefName": "seat/w33-regime-history",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10053",
+      "matched_path_count": 1,
+      "source_paths": [
+        "scripts/build_site.py"
+      ]
+    },
+    {
+      "number": 9995,
+      "title": "fix(render): default automatic runs to live render-heavy lane",
+      "isDraft": true,
+      "headRefOid": "b6eda9f2595c8fe2d93f61e42cdc340cc2c269a5",
+      "headRefName": "claude/ssd-render-default-routing-20261021-864a5f9a9f521283",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9995",
+      "matched_path_count": 1,
+      "source_paths": [
+        ".github/workflows/render.yml"
+      ]
+    },
+    {
+      "number": 9953,
+      "title": "fix(auth): preserve dashboard sessions and self-heal transient restore errors",
+      "isDraft": false,
+      "headRefOid": "a923732c2294f5905c188257d868d05a9015a45c",
+      "headRefName": "sol/auth-session-continuity-20261021",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9953",
+      "matched_path_count": 3,
+      "source_paths": []
+    },
+    {
+      "number": 9917,
+      "title": "Sector Intelligence completion: carry Macro candidate 4fd82658 forward onto main (#7646 P01\u2013P03)",
+      "isDraft": true,
+      "headRefOid": "fb18314aca9c6e75b85ae198b73176d523df3d4e",
+      "headRefName": "claude/ssd-sector-intelligence-macro-7646-82cb8b-35c697a089b670b0",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9917",
+      "matched_path_count": 5,
+      "source_paths": [
+        "scripts/build_site.py",
+        "templates/_sector_prophet_context.css.j2",
+        "templates/_sector_prophet_context.html.j2",
+        "templates/_sector_prophet_context.js.j2"
+      ]
+    },
+    {
+      "number": 9821,
+      "title": "fix(prophet): revalidate profitability evidence before interpretation",
+      "isDraft": false,
+      "headRefOid": "cac29b29094f3e0bf403d01b715b067ad96f6820",
+      "headRefName": "sol/web-prophet-profitability-evidence-integrity-20261019-01a14838",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9821",
+      "matched_path_count": 9,
+      "source_paths": []
+    },
+    {
+      "number": 9774,
+      "title": "feat(cs-v2-u2+v0b): saved scenarios, change desk, dormant monitor and served joint-solve refusal",
+      "isDraft": false,
+      "headRefOid": "7fcfdf0a71908e1b8704fc0cdd83739c303eedf5",
+      "headRefName": "claude/cs-v2-u2-ship",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9774",
+      "matched_path_count": 1,
+      "source_paths": [
+        ".github/workflows/daily.yml"
+      ]
+    },
+    {
+      "number": 9731,
+      "title": "fix(prophet): qualify entry comparison basis before price conclusions",
+      "isDraft": false,
+      "headRefOid": "4d40006d73d3a9e1306c2a2da110a3a90a946a90",
+      "headRefName": "sol/web-catalyst-entry-basis-r3-20261019",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9731",
+      "matched_path_count": 23,
+      "source_paths": [
+        ".github/workflows/engine-render.yml",
+        ".github/workflows/render.yml"
+      ]
+    },
+    {
+      "number": 9714,
+      "title": "fix(prophet): refuse lossy peer roster key normalization",
+      "isDraft": false,
+      "headRefOid": "a1511d63de8cb1d65287da95d5d6e9f9f49a0015",
+      "headRefName": "sol/web-prophet-peer-roster-integrity-20261019-01a14838",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9714",
+      "matched_path_count": 14,
+      "source_paths": []
+    },
+    {
+      "number": 9677,
+      "title": "fix(options): bind daily campaign to controlled correction receipt",
+      "isDraft": true,
+      "headRefOid": "65a230d376821d3c2db8707820e91cbcb194c02f",
+      "headRefName": "claude/ssd-options-campaign-correction-20261019-d8bcdfddeb15196f",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9677",
+      "matched_path_count": 1,
+      "source_paths": [
+        ".github/workflows/daily.yml"
+      ]
+    },
+    {
+      "number": 9634,
+      "title": "fix(prophet): retain exact Turn Watch producer clocks",
+      "isDraft": false,
+      "headRefOid": "366472b94ff5042b936e99081f8919f672c51a1f",
+      "headRefName": "sol/review-prophet-turn-watch-producer-clock-20261018-01a14838",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9634",
+      "matched_path_count": 4,
+      "source_paths": [
+        "engine/prophet_early_observations.py"
+      ]
+    },
+    {
+      "number": 9616,
+      "title": "[HOLD-FOR-SOL] Catalyst stock context: peer, news and entry research consumer",
+      "isDraft": true,
+      "headRefOid": "d6b5f51bd9bb60decf5d2a51e375217bfba9f6ac",
+      "headRefName": "sol/web-catalyst-stock-context-r1-20261019",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9616",
+      "matched_path_count": 5,
+      "source_paths": [
+        ".github/workflows/daily.yml",
+        ".github/workflows/engine-render.yml",
+        ".github/workflows/render.yml"
+      ]
+    },
+    {
+      "number": 9610,
+      "title": "fix(prophet): qualify early evidence and prospective universe coverage",
+      "isDraft": false,
+      "headRefOid": "e0669f617dde25fe78bcf392589b1bd0ed60fa05",
+      "headRefName": "sol/web-prophet-wmko-coverage-20261018",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9610",
+      "matched_path_count": 44,
+      "source_paths": [
+        "app/prophet_observations.py",
+        "engine/prophet_early_observations.py"
+      ]
+    },
+    {
+      "number": 9601,
+      "title": "Upgrade Brain with coordinated native chart drawing plans and visible studies",
+      "isDraft": false,
+      "headRefOid": "ccd843b47ddac57b3f44eb07ee252911fe8782ce",
+      "headRefName": "sol/web-chart-ai-drawing-workspace-20261018-c4-001",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9601",
+      "matched_path_count": 3,
+      "source_paths": []
+    },
+    {
+      "number": 9600,
+      "title": "fix(sector): disclose last valid source session before JS hydration",
+      "isDraft": true,
+      "headRefOid": "a96b39002fcf9fbe0f8108252a7a8203709dafe9",
+      "headRefName": "sol/web-sector-asof-disclosure-20261018",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9600",
+      "matched_path_count": 1,
+      "source_paths": [
+        "scripts/build_site.py"
+      ]
+    },
+    {
+      "number": 9596,
+      "title": "feat(intl): country intelligence cockpit and governed market evidence",
+      "isDraft": true,
+      "headRefOid": "1d6d5468eeb81311cf08189ac02b1f21a32370a3",
+      "headRefName": "sol/web-intl-country-cockpit-20261018",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9596",
+      "matched_path_count": 3,
+      "source_paths": []
+    },
+    {
+      "number": 9590,
+      "title": "feat(ccw): issuer credit-equity comparison, Bonds UI and masterplan",
+      "isDraft": true,
+      "headRefOid": "8f48b64961f1d8e3d0df2fd7f588d96655f8954e",
+      "headRefName": "claude/ssd-ccw-dislocation-v1-cc87720e59421398",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9590",
+      "matched_path_count": 1,
+      "source_paths": [
+        ".github/workflows/daily.yml"
+      ]
+    },
+    {
+      "number": 9574,
+      "title": "feat(macro): source-backed Dark Flow index, sector drivers and volatility context",
+      "isDraft": false,
+      "headRefOid": "b2bacdec61b7c963ecbe6b7a921e014ed1441eb9",
+      "headRefName": "sol/web-dark-flow-dix-20261017",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9574",
+      "matched_path_count": 3,
+      "source_paths": [
+        ".github/workflows/daily.yml",
+        ".github/workflows/render.yml",
+        "scripts/build_site.py"
+      ]
+    },
+    {
+      "number": 9548,
+      "title": "feat(macro): add Fear and Greed intelligence with VIX risk dynamics",
+      "isDraft": false,
+      "headRefOid": "4cbb2439ff07ffe7a0abfc2aa2b960e87ea3dbec",
+      "headRefName": "sol/web-macro-fear-greed-dynamics-20261017",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9548",
+      "matched_path_count": 2,
+      "source_paths": [
+        ".github/workflows/render.yml",
+        "scripts/build_site.py"
+      ]
+    },
+    {
+      "number": 9495,
+      "title": "Prophet: restore detailed opportunity cards and connected setup workspace",
+      "isDraft": true,
+      "headRefOid": "38a7f2a5fc69cfbdcea4691a605c083f56e6802b",
+      "headRefName": "claude/ssd-prophet-opportunity-system-20261015-5ba805642dd9aece",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9495",
+      "matched_path_count": 25,
+      "source_paths": [
+        "engine/prophet_opportunity_presentation.py",
+        "engine/prophet_plan_presentation.py",
+        "scripts/build_prophet.py",
+        "scripts/build_site.py",
+        "scripts/build_stock_library.py",
+        "templates/_prophet_board_cautions.html.j2",
+        "templates/_prophet_opportunity.css.j2",
+        "templates/_prophet_opportunity_card.html.j2",
+        "templates/_prophet_setup_detail.html.j2",
+        "templates/_prophet_workspace.css.j2"
+      ]
+    },
+    {
+      "number": 9479,
+      "title": "Market Memory: inspect exact retained outcome evidence",
+      "isDraft": true,
+      "headRefOid": "58c992843acf044b7cceb1f155f36f5ae3b25c6a",
+      "headRefName": "claude/ssd-market-memory-price-metadata-01a1333c-725c066443c030f3",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9479",
+      "matched_path_count": 1,
+      "source_paths": [
+        "scripts/build_site.py"
+      ]
+    },
+    {
+      "number": 9450,
+      "title": "fix(qledger): refuse known oversized committed legacy blob before Git push",
+      "isDraft": true,
+      "headRefOid": "aabe2778e6998ec72545f6a8d6932e40de78e444",
+      "headRefName": "sol/w2-legacy-qledger-gh001-local-preflight-20261015",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9450",
+      "matched_path_count": 1,
+      "source_paths": [
+        ".github/workflows/daily.yml"
+      ]
+    },
+    {
+      "number": 9447,
+      "title": "feat(brain): native charts, diagrams and rich visual answers",
+      "isDraft": false,
+      "headRefOid": "aed92aaa474ebf3802b6f43ac55138dedfe4c8aa",
+      "headRefName": "sol/web-mastermind-ai-illustrations-20261015-c1",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9447",
+      "matched_path_count": 4,
+      "source_paths": [
+        "scripts/build_site.py"
+      ]
+    },
+    {
+      "number": 9369,
+      "title": "perf(prophet): batch native Today reads with isolated projections",
+      "isDraft": true,
+      "headRefOid": "858e11a4d17f2d9387af720d01c6d84dcc80b49d",
+      "headRefName": "claude/ssd-prophet-native-batch-20261014-322bf76c368bc005",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9369",
+      "matched_path_count": 4,
+      "source_paths": [
+        "engine/prophet_candidate_state.py",
+        "scripts/build_stock_library.py"
+      ]
+    },
+    {
+      "number": 9294,
+      "title": "Prophet: study selected original cards and preserve exact return context",
+      "isDraft": true,
+      "headRefOid": "a11fe5028a1a8130ab3d15ea624efd22b187b283",
+      "headRefName": "claude/ssd-prophet-comparison-study-20261014-6ffb458967ebb739",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9294",
+      "matched_path_count": 39,
+      "source_paths": [
+        "templates/_prophet_workspace.css.j2"
+      ]
+    },
+    {
+      "number": 9137,
+      "title": "fix(risk-radar): escape ticker and as-of strings in the Risk Radar dialogs",
+      "isDraft": true,
+      "headRefOid": "79644b1630091c077aad4e077a788f9150dc5fd2",
+      "headRefName": "claude/ssd-elegant-benz-86c2d1-2978e53bc48cabb9",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9137",
+      "matched_path_count": 4,
+      "source_paths": []
+    },
+    {
+      "number": 9035,
+      "title": "Rotation intelligence: Meta-CEO forensic audit and connected decision architecture",
+      "isDraft": true,
+      "headRefOid": "86a17dd45c8eb43f37b81c81e0da9103d4e314cc",
+      "headRefName": "sol/web-rotation-intelligence-architecture-20261012",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9035",
+      "matched_path_count": 1,
+      "source_paths": []
+    },
+    {
+      "number": 8800,
+      "title": "fix(signal-quality): refuse future washout artifacts on truncated price tapes",
+      "isDraft": false,
+      "headRefOid": "55efdabda414e52d46047fea114894c14dbafcb0",
+      "headRefName": "sol/pit-washout-future-session-fence-20261011",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8800",
+      "matched_path_count": 1,
+      "source_paths": []
+    },
+    {
+      "number": 8787,
+      "title": "fix(m2): prevent Homebrew Bash heredoc deadlocks in nightly and tests",
+      "isDraft": false,
+      "headRefOid": "d0f07b860f19769944932084b593c76b413cde37",
+      "headRefName": "sol/web-m2-closepass-bash-heredoc-20261011",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8787",
+      "matched_path_count": 2,
+      "source_paths": [
+        ".github/workflows/daily.yml",
+        "scripts/ci/daily_engine_prophet_nightly.sh"
+      ]
+    },
+    {
+      "number": 8759,
+      "title": "docs(prophet): CEO master direction and execution handoff (2026-10-10)",
+      "isDraft": true,
+      "headRefOid": "48ee616394fa6af60e2a113927de762e6b5df498",
+      "headRefName": "sol/web-prophet-ceo-master-handoff-20261010-sol-001",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8759",
+      "matched_path_count": 1,
+      "source_paths": []
+    },
+    {
+      "number": 8729,
+      "title": "feat(cot): source-correct positioning board and release-time repairs",
+      "isDraft": true,
+      "headRefOid": "8663836a1f1da0e11e30fb61dec140db996df7cc",
+      "headRefName": "sol/web-cot-positioning-20261009-sol-001",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8729",
+      "matched_path_count": 1,
+      "source_paths": [
+        "scripts/build_site.py"
+      ]
+    },
+    {
+      "number": 8721,
+      "title": "Risk Radar: measured \"Pullback underway\" section for the US and China dialogs",
+      "isDraft": false,
+      "headRefOid": "e0e0b8ce52202f1a9eb0f030ba9e8b31a5d7e73d",
+      "headRefName": "sol/risk-radar-pullback-depth-20261009",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8721",
+      "matched_path_count": 5,
+      "source_paths": [
+        "scripts/build_site.py"
+      ]
+    },
+    {
+      "number": 8714,
+      "title": "[Draft/HOLD] China Prophet \u2014 completed research and implementation handoff",
+      "isDraft": true,
+      "headRefOid": "efab78a1bff5318ef30f6070be674a6ddc58573c",
+      "headRefName": "claude/cn-prophet-census-20261009",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8714",
+      "matched_path_count": 476,
+      "source_paths": []
+    },
+    {
+      "number": 8657,
+      "title": "[HOLD] Sovereign auction lifecycle, PIT research and context vertical",
+      "isDraft": true,
+      "headRefOid": "fdc4239a67125fdbd96ddb889b3c60033f720272",
+      "headRefName": "sol/web-sovereign-auction-pressure-20261008-sol-001",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8657",
+      "matched_path_count": 1,
+      "source_paths": [
+        ".github/workflows/daily.yml"
+      ]
+    },
+    {
+      "number": 8586,
+      "title": "feat(leadership-lab): restore Alpha + Top RS continuation research",
+      "isDraft": true,
+      "headRefOid": "fe3f076b7c9f0d365640c67ae148007c776c310c",
+      "headRefName": "sol/web-alpha-rs-leadership-recovery-20261005-astra-001",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8586",
+      "matched_path_count": 1,
+      "source_paths": []
+    },
+    {
+      "number": 8577,
+      "title": "feat(macro): add relative options pricing map",
+      "isDraft": true,
+      "headRefOid": "677affa0cfbb6b88ab0851b9784e91f5c8d430e0",
+      "headRefName": "sol/options-compare-macro-20261006",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8577",
+      "matched_path_count": 1,
+      "source_paths": [
+        "scripts/build_site.py"
+      ]
+    },
+    {
+      "number": 8531,
+      "title": "research(prophet): complete emergence + ignition audit and R6 handoff",
+      "isDraft": false,
+      "headRefOid": "46597b348649080720c9a012f4e5970420e5215b",
+      "headRefName": "claude/prophet-emergence-ignition-research-20261006",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8531",
+      "matched_path_count": 70,
+      "source_paths": []
+    },
+    {
+      "number": 8495,
+      "title": "research(prophet): NVDA golden-case, emergence + ignition audit",
+      "isDraft": true,
+      "headRefOid": "770918cb266b5d884978e31d61670b4efd789eaf",
+      "headRefName": "sol/prophet-nvda-conversion-audit-20261006",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8495",
+      "matched_path_count": 14,
+      "source_paths": []
+    },
+    {
+      "number": 8444,
+      "title": "feat(prophet): compose shared coverage and truthful Plan relations",
+      "isDraft": true,
+      "headRefOid": "6b45b8693ff64c26dc4a8c0dcea4cbedffa810f0",
+      "headRefName": "sol/web-prophet-four-market-p1a-20261004-sol-001",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8444",
+      "matched_path_count": 58,
+      "source_paths": [
+        "scripts/build_site.py",
+        "templates/_prophet_card.html.j2",
+        "templates/_prophet_coverage.html.j2"
+      ]
+    },
+    {
+      "number": 8363,
+      "title": "docs(prophet): harden Astra research takeover context and existing-plan map",
+      "isDraft": true,
+      "headRefOid": "69846be73b624625add90823624630a740c1ed4f",
+      "headRefName": "docs/prophet-astra-regime-indicator-handoff-20261004",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8363",
+      "matched_path_count": 6,
+      "source_paths": []
+    },
+    {
+      "number": 8333,
+      "title": "[OLI / Draft] Source validators hardened; native P0 and release gates remain",
+      "isDraft": true,
+      "headRefOid": "227e64daab838b9d99d3a16b011894395f5096db",
+      "headRefName": "sol/oli-recovery-c0-20261003",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8333",
+      "matched_path_count": 2,
+      "source_paths": [
+        "engine/prophet_lab/opportunity_context.py"
+      ]
+    },
+    {
+      "number": 8325,
+      "title": "research: Prophet Timing State Engine audit and implementation masterplan",
+      "isDraft": true,
+      "headRefOid": "604273045df4a277f0895093d8bebcd96a4e795f",
+      "headRefName": "sol/prophet-timing-state-masterplan-20261003",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8325",
+      "matched_path_count": 1,
+      "source_paths": []
+    },
+    {
+      "number": 8324,
+      "title": "research(gmi): audited v3 report, full master plan and Astra CEO handoff",
+      "isDraft": true,
+      "headRefOid": "0a74706819a2cdf276b8d278182c8b468c481d93",
+      "headRefName": "research/gmi-theme-subtheme-completion-blueprint-20261003",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8324",
+      "matched_path_count": 2,
+      "source_paths": []
+    },
+    {
+      "number": 8308,
+      "title": "[HOLD-FOR-SOL] feat(prophet): model Cycle funding and original-equity recovery",
+      "isDraft": true,
+      "headRefOid": "446ffd0f1062dd064c0716b576ceba7ce90acf2b",
+      "headRefName": "sol/prophet-cycle-equity-v1-20261001",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8308",
+      "matched_path_count": 5,
+      "source_paths": [
+        "engine/prophet_cycle_equity.py"
+      ]
+    },
+    {
+      "number": 8303,
+      "title": "[HOLD-FOR-SOL] Prophet regime research: native identity, ETF pilots and clock qualification",
+      "isDraft": true,
+      "headRefOid": "00d180f4632f7f245d09b1a1fee5bfc337e405e7",
+      "headRefName": "sol/prophet-regime-indicator-program-20261002",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8303",
+      "matched_path_count": 22,
+      "source_paths": []
+    },
+    {
+      "number": 8271,
+      "title": "feat(prophet-w3): add guarded post-floor validation report",
+      "isDraft": true,
+      "headRefOid": "7b19b87eb61d3b5d04197d2c5e346e0163f894d5",
+      "headRefName": "claude/ssd-prophet-w3-guardrail-20261002-5167b974f63e6828",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8271",
+      "matched_path_count": 5,
+      "source_paths": [
+        "engine/us_prophet_w3.py",
+        "scripts/report_us_prophet_w3_guardrail.py"
+      ]
+    },
+    {
+      "number": 8240,
+      "title": "feat(prophet): compile source-bound Early Leadership evidence",
+      "isDraft": true,
+      "headRefOid": "6d920952dc07731139cefc8a41cbd9bf92be5acf",
+      "headRefName": "sol/prophet-early-leadership-evidence-v1-20260930",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8240",
+      "matched_path_count": 3,
+      "source_paths": [
+        "engine/prophet_early_leadership_evidence.py"
+      ]
+    },
+    {
+      "number": 8192,
+      "title": "feat(prophet): release complete prospective capture and integrity verification",
+      "isDraft": false,
+      "headRefOid": "07136c56ec6f8492067b468f90c6b4372ca649b4",
+      "headRefName": "sol/prophet-h1-accrual-checker-20260929",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8192",
+      "matched_path_count": 11,
+      "source_paths": [
+        "engine/us_prophet_grades.py",
+        "scripts/check_prophet_h1_prospective_accrual.py",
+        "scripts/prophet_fusion_arena.py",
+        "scripts/prophet_fusion_labels.py"
+      ]
+    },
+    {
+      "number": 8188,
+      "title": "[DRAFT/HOLD] Show observed China pullbacks separately from forecast risk",
+      "isDraft": true,
+      "headRefOid": "ff27a268abaacfdb50534a60d1ca4ffe7a119938",
+      "headRefName": "claude/ssd-cn-pullback-lifecycle-20260929-68e848e41de4db74",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8188",
+      "matched_path_count": 4,
+      "source_paths": []
+    },
+    {
+      "number": 8141,
+      "title": "[HOLD-FOR-SOL] feat(prophet): native GD-6A shadow build and publication",
+      "isDraft": true,
+      "headRefOid": "b41e7117a1f5db3ac51811dda5bea8e8b918fea0",
+      "headRefName": "claude/gd6a-us-shadow-intake-20260928",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8141",
+      "matched_path_count": 11,
+      "source_paths": [
+        "engine/prophet_bridge.py",
+        "engine/prophet_market_eligibility.py",
+        "scripts/build_prophet.py",
+        "scripts/build_prophet_market_eligibility.py",
+        "scripts/ci/daily_engine_prophet_checkpoint.sh",
+        "scripts/prophet_board_acceptance.py",
+        "templates/_prophet_card.html.j2"
+      ]
+    },
+    {
+      "number": 8136,
+      "title": "feat(hk): restore macro dashboard intelligence parity",
+      "isDraft": true,
+      "headRefOid": "8d335e2f24486a7ee96d7b7270338a2a7b6a6c42",
+      "headRefName": "sol/hk-macro-parity-20260928",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8136",
+      "matched_path_count": 4,
+      "source_paths": []
+    },
+    {
+      "number": 8091,
+      "title": "fix(prophet): capture prospective peer evidence inputs",
+      "isDraft": false,
+      "headRefOid": "410965bd243d94e9f0e528e15f0c97df53fae732",
+      "headRefName": "sol/prophet-packet3-owner-consolidation-20260927",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8091",
+      "matched_path_count": 7,
+      "source_paths": [
+        "engine/us_prophet_grades.py",
+        "scripts/prophet_fusion_arena.py",
+        "scripts/prophet_fusion_labels.py"
+      ]
+    },
+    {
+      "number": 8026,
+      "title": "fix(china): keep EMERGING ENTER themes in Buy Now",
+      "isDraft": true,
+      "headRefOid": "0fab873d85decf6ce72d08e9d4df6b7668e5626f",
+      "headRefName": "sol/cn-emerging-enter-theme-buy-now-20260925",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8026",
+      "matched_path_count": 288,
+      "source_paths": []
+    },
+    {
+      "number": 8008,
+      "title": "fix(daily): keep market checkpoint alive past the collect cap",
+      "isDraft": true,
+      "headRefOid": "d10f828c6fa7291a971ee5dab1bc0271b3e1c10d",
+      "headRefName": "claude/prophet-delivery-nightly-collect-cap-20260925",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8008",
+      "matched_path_count": 1,
+      "source_paths": [
+        ".github/workflows/daily.yml"
+      ]
+    },
+    {
+      "number": 8004,
+      "title": "fix(prophet): bind episode security before issuer evidence",
+      "isDraft": true,
+      "headRefOid": "f5898f9b0b90cb317ff1e225ae757406ae0ab558",
+      "headRefName": "claude/prophet-p4-d5-identity-binding-20260925",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8004",
+      "matched_path_count": 2,
+      "source_paths": [
+        "engine/prophet_lab/intelligence_vector.py"
+      ]
+    },
+    {
+      "number": 7980,
+      "title": "docs(prophet): original-track product, recovery and scientific decisions",
+      "isDraft": true,
+      "headRefOid": "677565283ff5fe6d22a2d5345242132903177cd5",
+      "headRefName": "sol/prophet-recovery-cohort1-20260924",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7980",
+      "matched_path_count": 32,
+      "source_paths": []
+    },
+    {
+      "number": 7978,
+      "title": "perf(macro): move Release Radar off mobile cold path",
+      "isDraft": false,
+      "headRefOid": "05bdcd43472d3c1ef94e0595c1311f9a7e4a19ab",
+      "headRefName": "sol/macro-mobile-load-20260924",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7978",
+      "matched_path_count": 1,
+      "source_paths": [
+        "scripts/build_site.py"
+      ]
+    },
+    {
+      "number": 7963,
+      "title": "feat(market-os): join Prophet outlook into Security State",
+      "isDraft": false,
+      "headRefOid": "e66ac771e05e95991ae1adb58d253016cf3dd503",
+      "headRefName": "sol/security-state-prophet-outlook-20260924",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7963",
+      "matched_path_count": 4,
+      "source_paths": [
+        "scripts/build_stock_library.py",
+        "scripts/ci/daily_engine_prophet_checkpoint.sh",
+        "scripts/refresh_security_state_prophet_outlook.py"
+      ]
+    },
+    {
+      "number": 7871,
+      "title": "data-os(fred): nightly full-vintage store for the Cycle (a) series (NEWORDER/ISRATIO/INDPRO) via the release-target producer, parameterized",
+      "isDraft": true,
+      "headRefOid": "df96a1e3a79d976c987470c12b0d15ccf579c5ef",
+      "headRefName": "claude/pu-w3-cycle-vintages-producer",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7871",
+      "matched_path_count": 1,
+      "source_paths": [
+        ".github/workflows/daily.yml"
+      ]
+    },
+    {
+      "number": 7868,
+      "title": "research(prophet-us r6/w3): Cycle (a) macro diagnostic pre-registration v3 (full-vintage store)",
+      "isDraft": true,
+      "headRefOid": "3ad50f9d92d560a8375fd56a350243ee3aa99a93",
+      "headRefName": "claude/pu-w3-cycle-a-prereg-v3",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7868",
+      "matched_path_count": 1,
+      "source_paths": []
+    },
+    {
+      "number": 7860,
+      "title": "fix(china): preserve daily input dates in native signal receipts",
+      "isDraft": false,
+      "headRefOid": "b99fcb6f541d74234a9c25ab99a3c2d8a87e8c39",
+      "headRefName": "claude/cn-signal-input-receipt-20260923",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7860",
+      "matched_path_count": 12,
+      "source_paths": []
+    },
+    {
+      "number": 7851,
+      "title": "design(prophet-us r6/w3): B20-1 component markup/CSS spec + static fixture (design-spec-first)",
+      "isDraft": true,
+      "headRefOid": "1fb77001e8fc733ec242334ac2ef7a492c95a9a3",
+      "headRefName": "claude/pu-w3-b20-1-spec",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7851",
+      "matched_path_count": 23,
+      "source_paths": []
+    },
+    {
+      "number": 7849,
+      "title": "design-system(DS-PR-0a): land \u00a72.2 scales, .mx-* primitives, --ink-prov alias and zh estate rule in theme.css",
+      "isDraft": false,
+      "headRefOid": "722d2c5065574b83e7db02d597ff4b829c256e67",
+      "headRefName": "claude/pu-w2-dspr0a-tokens-primitives",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7849",
+      "matched_path_count": 2,
+      "source_paths": []
+    },
+    {
+      "number": 7779,
+      "title": "research(prophet): publish consolidated US flagship master plan R5",
+      "isDraft": true,
+      "headRefOid": "66d2e5b747e164faac62b80535458ea2945e85d1",
+      "headRefName": "claude/prophet-us-r5-master-plan-publication-20260923",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7779",
+      "matched_path_count": 4,
+      "source_paths": []
+    },
+    {
+      "number": 7772,
+      "title": "research(prophet): add RQ1 point-in-time research matrix spine",
+      "isDraft": true,
+      "headRefOid": "2c198dd2cdcf359729dd9ec07f8a1e74f5b888d9",
+      "headRefName": "sol/prophet-north-star-rq1-pit-matrix-20260923",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7772",
+      "matched_path_count": 3,
+      "source_paths": [
+        "engine/prophet_research_matrix.py",
+        "scripts/build_prophet_research_matrix.py"
+      ]
+    },
+    {
+      "number": 7769,
+      "title": "fix(sector-intelligence): stop erasing stock-detail assessments",
+      "isDraft": false,
+      "headRefOid": "335e84994f8eca8ae87c116dab79e89236f2e157",
+      "headRefName": "sol/sector-focus-preserve-dossiers-20260923",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7769",
+      "matched_path_count": 1,
+      "source_paths": []
+    },
+    {
+      "number": 7762,
+      "title": "research(prophet): freeze north-star quantitative research architecture",
+      "isDraft": true,
+      "headRefOid": "6011b830943d694738866eb79d51b68e64cc51b9",
+      "headRefName": "sol/prophet-north-star-quant-research-20260923",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7762",
+      "matched_path_count": 1,
+      "source_paths": []
+    },
+    {
+      "number": 7690,
+      "title": "fix(render): self-heal persistent venv when pip is missing",
+      "isDraft": true,
+      "headRefOid": "8362613e3de626bf238ed61d5595f80cd528b2c0",
+      "headRefName": "sol/render-venv-pip-self-heal-20260921",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7690",
+      "matched_path_count": 2,
+      "source_paths": [
+        ".github/workflows/engine-render.yml",
+        ".github/workflows/render.yml"
+      ]
+    },
+    {
+      "number": 7684,
+      "title": "fix(prophet): retain completed Door sightings with truthful ingestion clocks",
+      "isDraft": true,
+      "headRefOid": "81d0d88798a3837f43e58f1764ed265f8cae4dbf",
+      "headRefName": "claude/prophet-door-intake-retention-20260922",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7684",
+      "matched_path_count": 25,
+      "source_paths": []
+    },
+    {
+      "number": 7669,
+      "title": "fix(themes): explain recommendation and entry constraints",
+      "isDraft": true,
+      "headRefOid": "2e6bea89cb327388d02d7a9ee849abe2a95cf49f",
+      "headRefName": "claude/theme-recommendation-reasons-20260921-sol",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7669",
+      "matched_path_count": 1,
+      "source_paths": []
+    },
+    {
+      "number": 7664,
+      "title": "[HOLD] fix(theme): realign Lane E visibility contract and Lane C leadership",
+      "isDraft": true,
+      "headRefOid": "a27de02fb53e223ea126a89ab3327e62700b365f",
+      "headRefName": "sol/theme-intelligence-e-v5-delivery-20260921",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7664",
+      "matched_path_count": 9,
+      "source_paths": []
+    },
+    {
+      "number": 7604,
+      "title": "feat(prophet): measure emerging subtheme funnel gaps",
+      "isDraft": true,
+      "headRefOid": "abcf15fad369534eae73207e338913f2da96e8b4",
+      "headRefName": "sol/prophet-subtheme-funnel-audit-20260921",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7604",
+      "matched_path_count": 4,
+      "source_paths": [
+        "engine/prophet_miss_audit.py",
+        "engine/prophet_subtheme_funnel.py"
+      ]
+    },
+    {
+      "number": 7559,
+      "title": "ci: make workflow alert transports honest (Telegram is not provisioned)",
+      "isDraft": false,
+      "headRefOid": "9f9c1e869742c73a5e06c1881417258a11938719",
+      "headRefName": "claude/alert-transport-audit",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7559",
+      "matched_path_count": 2,
+      "source_paths": [
+        ".github/workflows/daily.yml",
+        ".github/workflows/prophet-rescue.yml"
+      ]
+    },
+    {
+      "number": 7502,
+      "title": "fix(tables): localize shared filter controls",
+      "isDraft": false,
+      "headRefOid": "40489377675596605c12e443d7743106c138dd9f",
+      "headRefName": "claude/table-filter-i18n-20260920",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7502",
+      "matched_path_count": 3,
+      "source_paths": []
+    },
+    {
+      "number": 7499,
+      "title": "docs(prophet): freeze HK/Canada paired Paper reference",
+      "isDraft": true,
+      "headRefOid": "73a8a5020c0da1507635b60e0f7ea17f55b61efd",
+      "headRefName": "sol/prophet-hkca-shared-design-contract-r1-20260920",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7499",
+      "matched_path_count": 52,
+      "source_paths": []
+    },
+    {
+      "number": 7466,
+      "title": "fix(ui): soften light mode across shared and standalone pages",
+      "isDraft": false,
+      "headRefOid": "ff9777043d5abcb3413eee463645431310267b61",
+      "headRefName": "claude/light-theme-comfort-20260919-astra",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7466",
+      "matched_path_count": 1,
+      "source_paths": []
+    },
+    {
+      "number": 7426,
+      "title": "feat(company-intelligence): materialize v3 workspace clock index",
+      "isDraft": true,
+      "headRefOid": "7bc04876747d773861b47519061279ae033a148d",
+      "headRefName": "sol/event-workspace-clock-index-k4g-20260918",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7426",
+      "matched_path_count": 5,
+      "source_paths": [
+        "engine/prophet_lab/intelligence_vector.py"
+      ]
+    },
+    {
+      "number": 7394,
+      "title": "docs(design): require editable references for material UI work",
+      "isDraft": true,
+      "headRefOid": "57eeb5225a6d4360675c0e733df0dae039b66e89",
+      "headRefName": "sol/design-system-editable-reference-20260919",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7394",
+      "matched_path_count": 1,
+      "source_paths": []
+    },
+    {
+      "number": 7292,
+      "title": "persona memory: reconcile publications across hosts (closes XG-W3 F11)",
+      "isDraft": false,
+      "headRefOid": "909dc5a058f0be752c49a4defc3a92438818edd8",
+      "headRefName": "claude/persona-memory-cross-host-durability",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7292",
+      "matched_path_count": 1,
+      "source_paths": [
+        ".github/workflows/daily.yml"
+      ]
+    },
+    {
+      "number": 7288,
+      "title": "[HOLD-FOR-SOL] Prophet HK/CA governed discovery outcome evaluator",
+      "isDraft": true,
+      "headRefOid": "d4fee89c081e31ec131f3394d8500625dccae510",
+      "headRefName": "claude/ssd-prophet-discovery-outcomes-20260918-sol-ff5b955a336326e3",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7288",
+      "matched_path_count": 2,
+      "source_paths": [
+        "engine/prophet_discovery_grade.py",
+        "scripts/grade_prophet_discovery.py"
+      ]
+    },
+    {
+      "number": 7273,
+      "title": "feat(events): source-backed calendar context and shared Brain grounding",
+      "isDraft": true,
+      "headRefOid": "0644fccc4d6f35367337b9520a6e66ff7699fcec",
+      "headRefName": "claude/event-intelligence-auction-20260917-sol",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7273",
+      "matched_path_count": 1,
+      "source_paths": [
+        "scripts/build_site.py"
+      ]
+    },
+    {
+      "number": 7264,
+      "title": "feat(prophet): native private-Lab earnings research view",
+      "isDraft": true,
+      "headRefOid": "214e0eda8cea910a52aa592a1b7fdecc345748fc",
+      "headRefName": "claude/prophet-lab-earnings-view-20260917",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7264",
+      "matched_path_count": 61,
+      "source_paths": [
+        "app/prophet_lab.py",
+        "engine/prophet_lab/earnings_view.py",
+        "engine/prophet_lab/episode_directory.py",
+        "templates/_prophet_earnings_browser.css.j2",
+        "templates/_prophet_earnings_browser.html.j2",
+        "templates/_prophet_earnings_browser.js.j2"
+      ]
+    },
+    {
+      "number": 7256,
+      "title": "[HOLD-FOR-SOL] Preserve independent T2 and section-7 plan clocks",
+      "isDraft": true,
+      "headRefOid": "b4cdb12cf0f046ce2759ab531b00030458d03243",
+      "headRefName": "claude/prophet-independent-t2-clocks-20260917",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7256",
+      "matched_path_count": 14,
+      "source_paths": [
+        "engine/prophet_bridge.py",
+        "engine/prophet_integrity.py",
+        "scripts/build_prophet.py"
+      ]
+    },
+    {
+      "number": 7254,
+      "title": "[HOLD-FOR-SOL] Refuse Prophet plans with breached protective geometry",
+      "isDraft": true,
+      "headRefOid": "7eacaec7ce70e6509850967f651d916f1ade309e",
+      "headRefName": "claude/prophet-protective-geometry-20260917",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7254",
+      "matched_path_count": 36,
+      "source_paths": [
+        "engine/prophet_bridge.py",
+        "templates/_prophet_receipts.html.j2"
+      ]
+    },
+    {
+      "number": 7248,
+      "title": "[HOLD-FOR-SOL] HK/Canada Prophet CEO recovery: delivery contract and continuation",
+      "isDraft": true,
+      "headRefOid": "ef2428088d3317d49884da54e226470a843dcda2",
+      "headRefName": "claude/prophet-hk-ca-ceo-recovery-20260917",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7248",
+      "matched_path_count": 3,
+      "source_paths": []
+    },
+    {
+      "number": 7246,
+      "title": "fix(agentos): materialize Mastermind P0 in nightly",
+      "isDraft": true,
+      "headRefOid": "acb2fb10c1cd2e3ac9157271e6abc845bc70048a",
+      "headRefName": "sol/agentos-mastermind-p0-nightly-20260916",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7246",
+      "matched_path_count": 1,
+      "source_paths": [
+        ".github/workflows/daily.yml"
+      ]
+    },
+    {
+      "number": 7244,
+      "title": "fix(agentos): paginate active open PR discovery",
+      "isDraft": true,
+      "headRefOid": "618fcb957058d76c8f9e80cc6001e100643cbf15",
+      "headRefName": "sol/agentos-active-builds-open-pr-cap-20260916",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7244",
+      "matched_path_count": 1,
+      "source_paths": [
+        ".github/workflows/daily.yml"
+      ]
+    },
+    {
+      "number": 7238,
+      "title": "research(prophet): checkpoint frozen-price loss and winner-retention replay",
+      "isDraft": true,
+      "headRefOid": "69d0b74b483125ce198c3b56886b01f477902299",
+      "headRefName": "sol/us-prophet-track-forensics-20260916",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7238",
+      "matched_path_count": 3,
+      "source_paths": []
+    },
+    {
+      "number": 7227,
+      "title": "[HOLD-FOR-SOL] Stage TURN WATCH v2 row evidence for idempotent retries",
+      "isDraft": true,
+      "headRefOid": "17987ce512661e24d6fe69bc0ea18ee76e62e976",
+      "headRefName": "claude/prophet-turn-watch-row-evidence-v2-20260916",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7227",
+      "matched_path_count": 5,
+      "source_paths": []
+    },
+    {
+      "number": 7218,
+      "title": "[RESEARCH][HOLD-FOR-SOL] Prophet global upgrade \u2014 era-clean autopsy and model research",
+      "isDraft": true,
+      "headRefOid": "9b37c28e174c97a1a5ca9343a51c8900899d1027",
+      "headRefName": "claude/prophet-global-r2-autopsy-20260916",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7218",
+      "matched_path_count": 5,
+      "source_paths": []
+    },
+    {
+      "number": 7206,
+      "title": "fix(stocks): recover completed closes before publishing deep-stock histories",
+      "isDraft": true,
+      "headRefOid": "cb957a38909b016ebc09fc545b80516790dd42b5",
+      "headRefName": "sol/prophet-deep-stock-current-close-20260916",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7206",
+      "matched_path_count": 6,
+      "source_paths": []
+    },
+    {
+      "number": 7200,
+      "title": "fix(breadth): reject and retry completed sessions with missing prices",
+      "isDraft": false,
+      "headRefOid": "fa4ad9a11e00610706afcfb52768a3e6e0eab688",
+      "headRefName": "claude/prophet-us-current-close-collector-20260916",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7200",
+      "matched_path_count": 19,
+      "source_paths": []
+    },
+    {
+      "number": 7197,
+      "title": "fix(pressure-watch): restore source-aware freshness and same-run page consumption",
+      "isDraft": true,
+      "headRefOid": "8cb51ef4e306be8e1839a01bedde8fe241061fda",
+      "headRefName": "claude/pressure-watch-recovery-20260916-c3",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7197",
+      "matched_path_count": 1,
+      "source_paths": [
+        ".github/workflows/daily.yml"
+      ]
+    },
+    {
+      "number": 7185,
+      "title": "[HOLD][AI Brief] Carry workload policy through the existing producer",
+      "isDraft": true,
+      "headRefOid": "2d666944aa3984dfe9abae4e99f577bb715009db",
+      "headRefName": "claude/vps-aibrief-policy-adoption-stack-20260916-sol",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7185",
+      "matched_path_count": 4,
+      "source_paths": []
+    },
+    {
+      "number": 7178,
+      "title": "Fix AI Daily Brief starvation behind wedged regional builder band",
+      "isDraft": false,
+      "headRefOid": "ec3190b33e0a3d5cc8a83797631f641274cdd974",
+      "headRefName": "sol/aibrief-reachability-20260915",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7178",
+      "matched_path_count": 1,
+      "source_paths": [
+        ".github/workflows/daily.yml"
+      ]
+    },
+    {
+      "number": 7177,
+      "title": "research(macd): preserve replay history and require witnessed board output",
+      "isDraft": true,
+      "headRefOid": "b95ac06808b15d9696e2c1318fbce0cadc343d41",
+      "headRefName": "sol/macd-cycle-research-20260915-c3",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7177",
+      "matched_path_count": 7,
+      "source_paths": [
+        "scripts/prophet_pit_replay.py"
+      ]
+    },
+    {
+      "number": 7174,
+      "title": "[DRAFT/HOLD] Prophet rotation W1: source-faithful diagnostics in existing admin workflow",
+      "isDraft": true,
+      "headRefOid": "effdbd13cb78f2da3770733e85f64c93d395eb0d",
+      "headRefName": "claude/ssd-rotation-diagnostics-w1-20260915-sol-9178859f97e5e1b1",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7174",
+      "matched_path_count": 14,
+      "source_paths": []
+    },
+    {
+      "number": 7168,
+      "title": "[DRAFT/HOLD] Prophet rotation: corrected audit evidence and episode-aware delivery diagnostics",
+      "isDraft": true,
+      "headRefOid": "641904a3a350c1cdb5ab10c765dc59e01b7f6346",
+      "headRefName": "sol/rotation-audit-evidence-20260915",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7168",
+      "matched_path_count": 7,
+      "source_paths": []
+    },
+    {
+      "number": 7084,
+      "title": "docs(market-os): central MarketOntology organizer and convergence handoff",
+      "isDraft": false,
+      "headRefOid": "4fab84d2bdad0a56b063f6da98a2c41585456ecd",
+      "headRefName": "claude/marketontology-central-convergence-20260912",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7084",
+      "matched_path_count": 5,
+      "source_paths": [
+        ".github/workflows/daily.yml",
+        ".github/workflows/render.yml"
+      ]
+    },
+    {
+      "number": 7076,
+      "title": "[MO-W16] sector_central: honest null verdicts, lane-true actions, plain vocabulary, count truth",
+      "isDraft": false,
+      "headRefOid": "3b0b765574c5572d7684a4e4538f5c0744a776f9",
+      "headRefName": "claude/ssd-mo-heal-seccen-w16-70f2f7ba1b32090c",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7076",
+      "matched_path_count": 1,
+      "source_paths": [
+        "scripts/build_site.py"
+      ]
+    },
+    {
+      "number": 7063,
+      "title": "HOLD: homepage recovery lessons retained; replacement cover rejected",
+      "isDraft": true,
+      "headRefOid": "bf023f5e6f358aa4216d7135dc87af2584dd12b8",
+      "headRefName": "sol/homepage-thesis-recovery-records-20260911",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7063",
+      "matched_path_count": 7,
+      "source_paths": []
+    },
+    {
+      "number": 7060,
+      "title": "W1: historical US sector participation evidence journey (Draft/HOLD)",
+      "isDraft": true,
+      "headRefOid": "170ad35b12673eac75ebefb53b3a5da4640daf06",
+      "headRefName": "claude/ssd-sector-central-w1-source-impl-1c350aeb6815a110",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7060",
+      "matched_path_count": 6,
+      "source_paths": [
+        ".github/workflows/daily.yml",
+        ".github/workflows/engine-render.yml",
+        ".github/workflows/render.yml"
+      ]
+    },
+    {
+      "number": 7059,
+      "title": "HOLD: clarify Prophet unbuilt-plan receipt copy",
+      "isDraft": true,
+      "headRefOid": "ce330cc68b4c61af12bef7702d0fc27a6fa1d1ee",
+      "headRefName": "claude/prophet-intake-validation-copy-20260910-sol-001",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7059",
+      "matched_path_count": 3,
+      "source_paths": [
+        "engine/prophet_bridge.py",
+        "templates/_prophet_receipts.html.j2"
+      ]
+    },
+    {
+      "number": 7043,
+      "title": "docs(prophet): align downside research with absolute loss, entry paths and existing owners",
+      "isDraft": true,
+      "headRefOid": "a6331a911cb01de2c1fabfe191abfb69bcef539f",
+      "headRefName": "sol/prophet-absolute-downside-research-20260910",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7043",
+      "matched_path_count": 4,
+      "source_paths": [
+        ".github/workflows/prophet-r6-audit-once.yml"
+      ]
+    },
+    {
+      "number": 7001,
+      "title": "Fix International dashboard publication freeze",
+      "isDraft": false,
+      "headRefOid": "3684c7d51a0b5d894314c369b408896f54df2ffd",
+      "headRefName": "sol/intl-publication-checkpoint-20260908",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7001",
+      "matched_path_count": 1,
+      "source_paths": [
+        ".github/workflows/daily.yml"
+      ]
+    },
+    {
+      "number": 7000,
+      "title": "HOLD-FOR-SOL: P0-C semiconductor decision-organism incident delta",
+      "isDraft": true,
+      "headRefOid": "177fb09f9039c8f4de578da031c02f4c0ddb2250",
+      "headRefName": "sol/decision-organism-incident-delta-20260908-astra-001",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7000",
+      "matched_path_count": 1,
+      "source_paths": []
+    },
+    {
+      "number": 6990,
+      "title": "HOLD-FOR-SOL: Prophet rotation integration forensic assessment and recovery delta",
+      "isDraft": true,
+      "headRefOid": "bb39cf729451fb5916f74a05377c360a70faaf48",
+      "headRefName": "claude/prophet-rotation-assessment-20260908-sol-001",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6990",
+      "matched_path_count": 3,
+      "source_paths": []
+    },
+    {
+      "number": 6974,
+      "title": "feat(macro): add dated economic backdrop to the briefing",
+      "isDraft": true,
+      "headRefOid": "dcd7960b14402d788ee691ed18dc60d09dbd7a5a",
+      "headRefName": "claude/ssd-sol-macro-economic-backdrop-20260907-afc3f1512bdbd93e",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6974",
+      "matched_path_count": 1,
+      "source_paths": [
+        "scripts/build_site.py"
+      ]
+    },
+    {
+      "number": 6871,
+      "title": "[HOLD-FOR-SOL][REQUEST_CHANGES] CN Prophet R0 current safety replay",
+      "isDraft": true,
+      "headRefOid": "51ddb898ff0c130910f9f3f4266727905826a92d",
+      "headRefName": "claude/cn-prophet-r0-current-safety-replay-20260905",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6871",
+      "matched_path_count": 4,
+      "source_paths": []
+    },
+    {
+      "number": 6861,
+      "title": "feat(f13): capability health & freshness projection V1 (engine+registry+builder, display-tier)",
+      "isDraft": false,
+      "headRefOid": "6f3b75657f342949b9e0e04b837565cdb71a38a2",
+      "headRefName": "claude/marketontology-f13-capability-health-v1-20260904",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6861",
+      "matched_path_count": 1,
+      "source_paths": [
+        ".github/workflows/daily.yml"
+      ]
+    },
+    {
+      "number": 6842,
+      "title": "HOLD-FOR-SOL: [MARKET OS] Acquisition Truth Bridge \u2014 derive landing freshness/coverage from canonical artifacts (freeze Packet B)",
+      "isDraft": true,
+      "headRefOid": "70815229c55963598d4441eef07ca3949d097b3b",
+      "headRefName": "claude/market-os-acquisition-truth-bridge-20260903",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6842",
+      "matched_path_count": 2,
+      "source_paths": [
+        ".github/workflows/engine-render.yml",
+        ".github/workflows/render.yml"
+      ]
+    },
+    {
+      "number": 6801,
+      "title": "[RECORDS][HOLD-FOR-SOL] Prophet post-D5 critical-path reset",
+      "isDraft": true,
+      "headRefOid": "9b03364003dc2ec2c8f870852e38e393da7442f3",
+      "headRefName": "sol/prophet-post-d5-critical-path-reset-20260903",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6801",
+      "matched_path_count": 3,
+      "source_paths": []
+    },
+    {
+      "number": 6712,
+      "title": "[FABLE COO / DRAFT] BioCatalyst V3 \u2014 delegated end-to-end Decision Intelligence completion",
+      "isDraft": true,
+      "headRefOid": "9239d53f8b5b5ef20d7c88980af5682603813916",
+      "headRefName": "sol/biocatalyst-v3-r0-fable-principal-20260901",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6712",
+      "matched_path_count": 3,
+      "source_paths": [
+        ".github/workflows/daily.yml",
+        ".github/workflows/engine-render.yml",
+        ".github/workflows/render.yml"
+      ]
+    },
+    {
+      "number": 6625,
+      "title": "[HOLD-FOR-SOL] radar(w4.2): private evidence-spool boundary \u2014 dedicated store + shared-bucket refusal (LER-C1)",
+      "isDraft": true,
+      "headRefOid": "ea32fc9fad6e826fa01f626a56054e3eff4815d2",
+      "headRefName": "claude/ler-c1-private-spool",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6625",
+      "matched_path_count": 2,
+      "source_paths": [
+        "engine/prophet_lab/sources.py"
+      ]
+    },
+    {
+      "number": 6264,
+      "title": "research(prophet): harden flagship intelligence fan-out cells",
+      "isDraft": true,
+      "headRefOid": "5d6fd20e5716258f4d6aa93811561a3a6463360c",
+      "headRefName": "sol/prophet-flagship-fanout-hardening-20260822",
+      "baseRefName": "main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6264",
+      "matched_path_count": 31,
+      "source_paths": []
+    }
+  ]
+}
