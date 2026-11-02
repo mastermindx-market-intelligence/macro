@@ -44104,6 +44104,12 @@ jobs:
       # Dashboard suites and the helper suites they import.
       - "tests/test_dashboard_template_render.py"
       - "tests/test_risk_radar_workspace.py"
+      # EW-P1: renderer-only settled envelope custody and source-clock contract.
+      - "tests/test_risk_envelope_render_only_guard.py"
+      - ".github/workflows/render.yml"
+      - ".github/workflows/engine-render.yml"
+      - ".github/workflows/closing-bell.yml"
+      - ".github/workflows/earlyclose.yml"
       # #7798: source-dated Hottest Desk leadership/recommendation contract.
       - "tests/test_macro_sector_desk.py"
       # #7859: volatility-placement tests used to live only in gate:data
@@ -44331,6 +44337,7 @@ jobs:
           tests/test_macro_risk_dialog.py
           tests/test_risk_envelope_radar_integration.py
           tests/test_risk_radar_workspace.py
+          tests/test_risk_envelope_render_only_guard.py
           tests/test_us_stocks_s2_compression.py
           tests/test_unified_dashboard_b2w2.py
           tests/test_ud_b2_w1_vw_fold.py
