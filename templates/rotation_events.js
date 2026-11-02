@@ -246,7 +246,7 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
   function pct2(x) { return (x > 0 ? '+' : '') + x.toFixed(2) + '%'; }
   // Display names for the registered defensive-sector legs; they mirror the
   // name_en / name_zh halves in data/oracle/ratio_pairs.json (parity-tested).
-  // An unregistered symbol falls back to the validated ticker alone.
+  // An unregistered symbol falls back to the ticker symbol alone.
   var SECTOR_NAMES = {
     XLP: ['consumer staples', '必需消费'], XLU: ['utilities', '公用事业'],
     XLV: ['health care', '医疗保健'], XLK: ['technology', '科技'], SMH: ['semiconductors', '半导体']
