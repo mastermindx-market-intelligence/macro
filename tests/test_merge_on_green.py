@@ -17,6 +17,10 @@ import ast
 import base64
 import datetime as dt
 import json
+import re
+import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -279,9 +283,11 @@ def test_the_sweeper_sparse_checks_out_only_what_it_reads():
     instead of merging on undated greens, but it still aborts, so the entry is
     part of the lane's contract.
 
-    `scripts/run_ci_pack.py` is here because live-inherited red must read
-    `GLOBAL_INVALIDATORS` from the same list the packs use. Without it the
-    import fail-closes and the waiver never fires.
+    `scripts/run_ci_pack.py` is inert: importing the planner needs its own
+    imports (`ci_scope_dependencies.py` and onward), which are not here, so
+    live-inherited red reads a mirror of `GLOBAL_INVALIDATORS` instead. What the
+    sweeper really loads from this list is pinned by running it from a copy of it
+    (`test_live_inherited_red_can_fire_in_the_sweepers_sparse_checkout`).
     """
     checkout = _workflow()["jobs"]["sweep"]["steps"][0]
     assert checkout["uses"] == "actions/checkout@v4"
@@ -420,6 +426,7 @@ def _proof(
     source: str = "ci.yml@ffffffffffff",
     failed_names: tuple[str, ...] = (),
     failed_legacy_jobs: tuple[str, ...] = (),
+    failed_steps: tuple[str, ...] = (),
 ) -> "MOG.MainProof":
     """A `MainProof` whose default instant POSTDATES `_run`'s default conclusion.
 
@@ -433,6 +440,7 @@ def _proof(
         source,
         frozenset(failed_names),
         frozenset(failed_legacy_jobs),
+        frozenset(failed_steps),
     )
 
 
@@ -6715,6 +6723,19 @@ _GOVREV_JOBS = (
     "unrun-government-revenue",
     "unrun-government-revenue-candidate-projection",
 )
+_GOVREV_STEPS = (
+    "unrun-government-revenue: step 'pytest' exited 1",
+    "unrun-government-revenue-candidate-projection: step 'pytest' exited 1",
+)
+
+
+def _pack_complete(*job_ids):
+    """The notice ``run_ci_pack`` prints after its job loop, naming every failed job."""
+    return {
+        "title": "ci-pack-complete",
+        "message": json.dumps(sorted(job_ids)),
+        "annotation_level": "notice",
+    }
 
 
 def _live_weather_proof():
@@ -6723,6 +6744,7 @@ def _live_weather_proof():
         "ci-pack-1",
         failed_names=("ci-pack-6", "ci-pack-8"),
         failed_legacy_jobs=_GOVREV_JOBS,
+        failed_steps=_GOVREV_STEPS,
     )
 
 
@@ -6736,7 +6758,8 @@ def _govrev_red_pages():
             {
                 "title": "legacy-job-unrun-government-revenue",
                 "message": "unrun-government-revenue: step 'pytest' exited 1",
-            }
+            },
+            _pack_complete("unrun-government-revenue"),
         ],
         6008: [
             {
@@ -6745,7 +6768,8 @@ def _govrev_red_pages():
                     "unrun-government-revenue-candidate-projection: "
                     "step 'pytest' exited 1"
                 ),
-            }
+            },
+            _pack_complete("unrun-government-revenue-candidate-projection"),
         ],
     }
     return {1: pages}, annotations
@@ -6838,7 +6862,8 @@ def test_a_live_inherited_red_survives_pack_rebalance(monkeypatch, capsys):
             {
                 "title": "legacy-job-unrun-government-revenue",
                 "message": "unrun-government-revenue: step 'pytest' exited 1",
-            }
+            },
+            _pack_complete("unrun-government-revenue"),
         ],
         7011: [
             {
@@ -6847,7 +6872,8 @@ def test_a_live_inherited_red_survives_pack_rebalance(monkeypatch, capsys):
                     "unrun-government-revenue-candidate-projection: "
                     "step 'pytest' exited 1"
                 ),
-            }
+            },
+            _pack_complete("unrun-government-revenue-candidate-projection"),
         ],
     }
     calls = _fake_api(
@@ -6881,13 +6907,15 @@ def test_a_live_inherited_red_with_an_extra_job_is_still_blocked(monkeypatch):
             {
                 "title": "legacy-job-unrun-government-revenue",
                 "message": "unrun-government-revenue: step 'pytest' exited 1",
-            }
+            },
+            _pack_complete("unrun-government-revenue"),
         ],
         6009: [
             {
                 "title": "legacy-job-something-else",
                 "message": "something-else: step 'pytest' exited 1",
-            }
+            },
+            _pack_complete("something-else"),
         ],
     }
     calls = _fake_api(monkeypatch, check_pages=pages, annotations=annotations)
@@ -6940,12 +6968,23 @@ def test_pack_annotation_parser_ignores_template_site_sync_refused_synthetic():
     assert ids == {"workflow-yaml"}
 
 
+_WORKFLOW_YAML_STEP = "workflow-yaml: step 'hosted-runner packing contract' exited 1"
+_SELF_MOD_FENCE_STEP = (
+    "self-mod-fence: step 'self-mod-fence live check "
+    "(loop PR + immutable → BLOCKED)' exited 1"
+)
+_CONFLICT_MARKERS_STEP = (
+    "conflict-markers: step 'no new git conflict markers in PR content' exited 2"
+)
+
+
 def _workflow_yaml_weather_proof():
     """Main dispatch 31746772926: only workflow-yaml is red on main."""
     return _proof(
         "ci-pack-0",
         failed_names=("ci-pack-1", "ci-gate"),
         failed_legacy_jobs=("workflow-yaml",),
+        failed_steps=(_WORKFLOW_YAML_STEP,),
     )
 
 
@@ -6968,6 +7007,7 @@ def _fleet_shallow_plus_yaml_pages(*, extra_job=None):
                     "workflow-yaml: step 'hosted-runner packing contract' exited 1"
                 ),
             },
+            _pack_complete("workflow-yaml"),
         ],
         8002: [
             {
@@ -6984,6 +7024,7 @@ def _fleet_shallow_plus_yaml_pages(*, extra_job=None):
                     "fail-closed (exit 1)."
                 ),
             },
+            _pack_complete("self-mod-fence"),
         ],
         8007: [
             {
@@ -6993,6 +7034,7 @@ def _fleet_shallow_plus_yaml_pages(*, extra_job=None):
                     "in PR content' exited 2"
                 ),
             },
+            _pack_complete("conflict-markers"),
         ],
     }
     if extra_job:
@@ -7002,21 +7044,553 @@ def _fleet_shallow_plus_yaml_pages(*, extra_job=None):
             {
                 "title": f"legacy-job-{extra_job}",
                 "message": f"{extra_job}: step 'pytest' exited 1",
-            }
+            },
+            _pack_complete(extra_job),
         ]
     pages = {1: {"total_count": len(runs), "check_runs": runs}}
     return pages, annotations
 
 
-def test_a_live_inherited_red_subtracts_shallow_clone_fence_and_markers(
+def test_a_fence_that_could_not_list_the_diff_never_gets_the_live_inherited_waiver(
     monkeypatch, capsys
 ):
-    """Fleet 2026-08-13: remaining identity is workflow-yaml, which is on main.
+    """The #5564 fetch-depth:1 pair gave this head no fence verdict.
 
-    Pack numbers differ per PR; ci-gate is the aggregate. self-mod-fence and
-    conflict-markers are the #5564 fetch-depth:1 pair, not product reds.
+    Packs now read ci-plan's changed-file list, so "could not determine changed
+    files" means that list was missing and the git fallback failed too. A real
+    immutable-path or marker hit fails the same jobs, so subtracting them as
+    infra would merge an unfenced head behind main's workflow-yaml weather.
     """
     pages, annotations = _fleet_shallow_plus_yaml_pages()
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, annotations=annotations, merge_status=200
+    )
+    verdict = MOG.sweep_pull(
+        "acme/widgets",
+        _pull(),
+        "read",
+        "write",
+        _freshness(),
+        _workflow_yaml_weather_proof(),
+        _authorized_budget(),
+    )
+    assert verdict == "blocked"
+    assert not any(call[1].endswith("/merge") for call in calls)
+    assert "live-inherited red" not in capsys.readouterr().out
+
+
+def _fence_block_pages():
+    """A real fence hit: the live check BLOCKED and markers found, no shallow text."""
+    pack1 = _run("ci-pack-1", conclusion="failure", check_id=8001)
+    pack2 = _run("ci-pack-2", conclusion="failure", check_id=8002)
+    pack7 = _run("ci-pack-7", conclusion="failure", check_id=8007)
+    gate = _run("ci-gate", conclusion="failure", check_id=8010)
+    runs = [pack1, pack2, pack7, gate]
+    annotations = {
+        8001: [
+            {
+                "title": "legacy-job-workflow-yaml",
+                "message": (
+                    "workflow-yaml: step 'hosted-runner packing contract' exited 1"
+                ),
+            },
+            _pack_complete("workflow-yaml"),
+        ],
+        8002: [
+            {
+                "title": "legacy-job-self-mod-fence",
+                "message": (
+                    "self-mod-fence: step 'self-mod-fence live check "
+                    "(loop PR + immutable → BLOCKED)' exited 1"
+                ),
+            },
+            _pack_complete("self-mod-fence"),
+        ],
+        8007: [
+            {
+                "title": "legacy-job-conflict-markers",
+                "message": (
+                    "conflict-markers: step 'no new git conflict markers "
+                    "in PR content' exited 2"
+                ),
+            },
+            _pack_complete("conflict-markers"),
+        ],
+    }
+    return {1: {"total_count": len(runs), "check_runs": runs}}, annotations
+
+
+@pytest.mark.parametrize(
+    "build_pages",
+    [_fence_block_pages, _fleet_shallow_plus_yaml_pages],
+    ids=["real-fence-block", "fence-gave-no-verdict"],
+)
+def test_main_red_on_the_fence_ids_never_waives_a_head_the_fence_failed(
+    monkeypatch, capsys, build_pages
+):
+    """Main red on ``self-mod-fence`` says nothing about THIS head's diff.
+
+    That id also runs the ship-loop and worktree contract suites before the live
+    check, so main can be red on it for an unrelated test while this head carries
+    an immutable-path BLOCK. A job-level subset check would call that main's
+    weather and merge it.
+    """
+    pages, annotations = build_pages()
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, annotations=annotations, merge_status=200
+    )
+    proof = _proof(
+        "ci-pack-0",
+        failed_names=("ci-pack-1", "ci-pack-2", "ci-pack-7", "ci-gate"),
+        failed_legacy_jobs=("workflow-yaml", "self-mod-fence", "conflict-markers"),
+        failed_steps=(
+            _WORKFLOW_YAML_STEP,
+            _SELF_MOD_FENCE_STEP,
+            _CONFLICT_MARKERS_STEP,
+        ),
+    )
+    verdict = MOG.sweep_pull(
+        "acme/widgets",
+        _pull(),
+        "read",
+        "write",
+        _freshness(),
+        proof,
+        _authorized_budget(),
+    )
+    assert verdict == "blocked"
+    assert not any(call[1].endswith("/merge") for call in calls)
+    assert "live-inherited red" not in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    ("noise_level", "noise_count", "expected"),
+    [
+        ("failure", 9, "blocked"),
+        (None, 9, "blocked"),
+        ("failure", 8, "merged"),
+        ("warning", 12, "merged"),
+    ],
+    ids=["at-cap", "at-cap-unlabelled", "below-cap", "warnings-only"],
+)
+def test_a_pack_at_the_step_error_cap_never_gets_the_live_inherited_waiver(
+    monkeypatch, noise_level, noise_count, expected
+):
+    """GitHub keeps 10 error annotations per step and drops the rest silently.
+
+    The pack step echoes child output live, so a child's own ``::error`` lines
+    can spend the budget before this head's unique ``legacy-job-*`` title. At the
+    cap the readable ids may be a strict subset that only LOOKS like main's
+    weather.
+    """
+    pack1 = _run("ci-pack-1", conclusion="failure", check_id=8001)
+    gate = _run("ci-gate", conclusion="failure", check_id=8010)
+    pages = {1: {"total_count": 2, "check_runs": [pack1, gate]}}
+    noise = [
+        {
+            "title": "template-site-sync wrong-direction fix refused",
+            "message": f"REFUSED: templates/wrongway{n}.html carries a ?v= stamp",
+            **({"annotation_level": noise_level} if noise_level else {}),
+        }
+        for n in range(noise_count)
+    ]
+    annotations = {
+        8001: noise
+        + [
+            {
+                "title": "legacy-job-workflow-yaml",
+                "message": (
+                    "workflow-yaml: step 'hosted-runner packing contract' exited 1"
+                ),
+                "annotation_level": "failure",
+            },
+            _pack_complete("workflow-yaml"),
+        ]
+    }
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, annotations=annotations, merge_status=200
+    )
+    verdict = MOG.sweep_pull(
+        "acme/widgets",
+        _pull(),
+        "read",
+        "write",
+        _freshness(),
+        _workflow_yaml_weather_proof(),
+        _authorized_budget(),
+    )
+    assert verdict == expected
+    assert any(call[1].endswith("/merge") for call in calls) == (expected == "merged")
+
+
+def _workflow_yaml_pack(messages, *, conclusion="failure", complete=True):
+    """One failed pack (check 8001) carrying ``messages`` as ``(title, message)``.
+
+    ``complete`` adds the notice a finished pack prints, naming the jobs its
+    titles name (an untitled message names the job before its first colon).
+    """
+    pack1 = _run("ci-pack-1", conclusion=conclusion, check_id=8001)
+    gate = _run("ci-gate", conclusion="failure", check_id=8010)
+    pages = {1: {"total_count": 2, "check_runs": [pack1, gate]}}
+    entries = [{"title": title, "message": message} for title, message in messages]
+    if complete:
+        entries.append(
+            _pack_complete(
+                *{
+                    title.removeprefix("legacy-job-")
+                    if title
+                    else message.split(":", 1)[0]
+                    for title, message in messages
+                }
+            )
+        )
+    return pages, {8001: entries}
+
+
+def _sweep_workflow_yaml_head(monkeypatch, pages, annotations, proof):
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, annotations=annotations, merge_status=200
+    )
+    verdict = MOG.sweep_pull(
+        "acme/widgets",
+        _pull(),
+        "read",
+        "write",
+        _freshness(),
+        proof,
+        _authorized_budget(),
+    )
+    return verdict, calls
+
+
+@pytest.mark.parametrize(
+    "main_steps",
+    [
+        _GOVREV_STEPS,
+        ("workflow-yaml: step 'actionlint' exited 1",),
+        ("workflow-yaml: step 'hosted-runner packing contract' exited 2",),
+    ],
+    ids=["main-red-on-the-job-by-infrastructure", "another-step", "another-exit-code"],
+)
+def test_main_red_on_the_same_job_for_another_reason_never_excuses_this_head(
+    monkeypatch, capsys, main_steps
+):
+    """A job id is not an identity: main red on it says nothing about THIS step.
+
+    ``run_ci_pack`` stops a job at its first failed step, so the named step and
+    its exit code are what decided the red. Main red by a lost runner, or on an
+    earlier step, never ran the step this head failed.
+    """
+    pages, annotations = _workflow_yaml_pack(
+        [("legacy-job-workflow-yaml", _WORKFLOW_YAML_STEP)]
+    )
+    proof = _proof(
+        "ci-pack-0",
+        failed_names=("ci-pack-1", "ci-gate"),
+        failed_legacy_jobs=("workflow-yaml", *_GOVREV_JOBS),
+        failed_steps=main_steps,
+    )
+    verdict, calls = _sweep_workflow_yaml_head(monkeypatch, pages, annotations, proof)
+    assert verdict == "blocked"
+    assert not any(call[1].endswith("/merge") for call in calls)
+    assert "live-inherited red" not in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        (
+            "legacy-job-unrun-government-revenue",
+            "unrun-government-revenue: infrastructure unknown (runner lost)",
+        ),
+        (
+            "legacy-job-unrun-government-revenue",
+            "unrun-government-revenue: timed out after 30 minutes",
+        ),
+        (
+            "legacy-job-unrun-government-revenue",
+            "unrun-government-revenue: browser setup failure (exit 1); "
+            "original outcome retained",
+        ),
+        (
+            "legacy-job-unrun-government-revenue",
+            "unrun-government-revenue: original failure command has unknown settlement",
+        ),
+        ("legacy-job-unrun-government-revenue", _WORKFLOW_YAML_STEP),
+        ("", "unrun-government-revenue: step 'pytest' exited 1"),
+        ("legacy-job-workflow-yaml", "workflow-yaml: timed out after 30 minutes"),
+    ],
+    ids=[
+        "infrastructure",
+        "timeout",
+        "browser-setup",
+        "unknown-settlement",
+        "title-names-another-job",
+        "untitled-step",
+        "same-job-second-message",
+    ],
+)
+def test_a_red_this_head_cannot_name_as_a_step_never_gets_the_live_inherited_waiver(
+    monkeypatch, capsys, extra
+):
+    """Every red legacy job on this head must be named by its own step failure.
+
+    Main is red on all of these jobs, so a job-level subset check would merge.
+    A timeout or infrastructure red never reached the step that would decide
+    the job, and an id with no matching step message has no identity to match.
+    """
+    pages, annotations = _workflow_yaml_pack(
+        [("legacy-job-workflow-yaml", _WORKFLOW_YAML_STEP), extra]
+    )
+    proof = _proof(
+        "ci-pack-0",
+        failed_names=("ci-pack-1", "ci-gate"),
+        failed_legacy_jobs=("workflow-yaml", *_GOVREV_JOBS),
+        failed_steps=(_WORKFLOW_YAML_STEP, *_GOVREV_STEPS),
+    )
+    verdict, calls = _sweep_workflow_yaml_head(monkeypatch, pages, annotations, proof)
+    assert verdict == "blocked"
+    assert not any(call[1].endswith("/merge") for call in calls)
+    assert "live-inherited red" not in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    "conclusion", ["timed_out", "startup_failure", "action_required"]
+)
+def test_a_pack_that_did_not_conclude_failure_never_gets_the_live_inherited_waiver(
+    monkeypatch, capsys, conclusion
+):
+    """A pack that stopped early never printed the titles of the jobs it skipped.
+
+    What it did print can match main exactly while a later job, the one this
+    head breaks, never ran.
+    """
+    pages, annotations = _workflow_yaml_pack(
+        [("legacy-job-workflow-yaml", _WORKFLOW_YAML_STEP)], conclusion=conclusion
+    )
+    verdict, calls = _sweep_workflow_yaml_head(
+        monkeypatch, pages, annotations, _workflow_yaml_weather_proof()
+    )
+    assert verdict != "merged"
+    assert not any(call[1].endswith("/merge") for call in calls)
+    assert "live-inherited red" not in capsys.readouterr().out
+
+
+def _complete_notice(message, *, level="notice"):
+    return {"title": "ci-pack-complete", "message": message, "annotation_level": level}
+
+
+@pytest.mark.parametrize(
+    ("extra", "expected"),
+    [
+        (
+            [{"message": "Process completed with exit code 137.", "annotation_level": "failure"}],
+            "blocked",
+        ),
+        (
+            [
+                {
+                    "message": (
+                        "The hosted runner: GitHub Actions 2 lost communication "
+                        "with the server."
+                    ),
+                    "annotation_level": "failure",
+                }
+            ],
+            "blocked",
+        ),
+        ([_complete_notice('["ci-pack", "workflow-yaml"]')], "blocked"),
+        ([_complete_notice('["unrun-government-revenue"]')], "blocked"),
+        ([_complete_notice("[]")], "blocked"),
+        (
+            [
+                _complete_notice('["workflow-yaml"]'),
+                _complete_notice('["workflow-yaml"]'),
+            ],
+            "blocked",
+        ),
+        ([_complete_notice('["workflow-yaml"')], "blocked"),
+        ([_complete_notice('{"workflow-yaml": 1}')], "blocked"),
+        ([_complete_notice('["workflow-yaml", 1]')], "blocked"),
+        ([_complete_notice('["workflow-yaml", "workflow-yaml"]')], "blocked"),
+        ([_complete_notice('["workflow-yaml"]', level="warning")], "blocked"),
+        ([_complete_notice('["workflow-yaml"]')], "merged"),
+    ],
+    ids=[
+        "killed-exit-137",
+        "lost-runner",
+        "restore-failed",
+        "names-another-job",
+        "names-no-job",
+        "printed-twice",
+        "malformed",
+        "not-a-list",
+        "not-all-strings",
+        "duplicate-ids",
+        "warning-level",
+        "finished",
+    ],
+)
+def test_a_pack_that_did_not_finish_never_gets_the_live_inherited_waiver(
+    monkeypatch, capsys, extra, expected
+):
+    """A pack killed mid-loop still concludes ``failure`` with main's titles.
+
+    The runner was OOM-killed or lost after printing the ``workflow-yaml``
+    title main shares, so a later job, the one this head breaks, never ran
+    and never printed. Only the notice ``run_ci_pack`` prints after its loop,
+    naming exactly the jobs the titles name, says the pack got that far.
+    """
+    pages, annotations = _workflow_yaml_pack(
+        [("legacy-job-workflow-yaml", _WORKFLOW_YAML_STEP)], complete=False
+    )
+    annotations[8001].extend(extra)
+    verdict, calls = _sweep_workflow_yaml_head(
+        monkeypatch, pages, annotations, _workflow_yaml_weather_proof()
+    )
+    assert verdict == expected
+    assert any(call[1].endswith("/merge") for call in calls) == (expected == "merged")
+    assert ("live-inherited red" in capsys.readouterr().out) == (expected == "merged")
+
+
+def test_a_base_replay_echo_of_the_same_red_still_gets_the_waiver(
+    monkeypatch, capsys
+):
+    """A plan-backed pack replays each red on main's tree inside its own log.
+
+    The replay child prints the same ``workflow-yaml`` title again but no
+    ``ci-pack-complete`` notice, so the pack still carries exactly one.
+    """
+    pages, annotations = _workflow_yaml_pack(
+        [
+            ("legacy-job-workflow-yaml", _WORKFLOW_YAML_STEP),
+            ("legacy-job-workflow-yaml", _WORKFLOW_YAML_STEP),
+        ]
+    )
+    verdict, calls = _sweep_workflow_yaml_head(
+        monkeypatch, pages, annotations, _workflow_yaml_weather_proof()
+    )
+    assert verdict == "merged"
+    assert any(call[1].endswith("/merge") for call in calls)
+    assert "live-inherited red" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    ("bad_names", "waived"),
+    [({"ci-pack-1", "ci-gate"}, True), ({"ci-pack-1", "ci-pack-9", "ci-gate"}, False)],
+    ids=["every-red-pack-read", "a-red-pack-nobody-read"],
+)
+def test_a_red_pack_the_waiver_did_not_read_is_never_waived(
+    monkeypatch, bad_names, waived
+):
+    """Every red ``ci-pack-N`` name must be a pack whose annotations were read.
+
+    ``ci-pack-9`` is red in the names but absent from the runs, so nothing
+    printed by it was checked against main.
+    """
+    pages, annotations = _workflow_yaml_pack(
+        [("legacy-job-workflow-yaml", _WORKFLOW_YAML_STEP)]
+    )
+    _fake_api(monkeypatch, check_pages=pages, annotations=annotations)
+    reason = MOG.live_inherited_red(
+        "acme/widgets",
+        _pull(),
+        pages[1]["check_runs"],
+        bad_names,
+        _workflow_yaml_weather_proof(),
+        _freshness(),
+        "read",
+    )
+    assert (reason is not None) == waived
+
+
+@pytest.mark.parametrize(
+    ("warnings", "expected"), [(48, "blocked"), (47, "merged")], ids=["at-cap", "below-cap"]
+)
+def test_a_pack_at_the_job_annotation_cap_never_gets_the_live_inherited_waiver(
+    monkeypatch, warnings, expected
+):
+    """GitHub also keeps at most 50 annotations per job, warnings included.
+
+    A pack below the 10-error step cap can still hit it, and then a later
+    ``legacy-job-*`` title is gone without a trace. The completion notice is
+    one of the 50.
+    """
+    pack1 = _run("ci-pack-1", conclusion="failure", check_id=8001)
+    gate = _run("ci-gate", conclusion="failure", check_id=8010)
+    pages = {1: {"total_count": 2, "check_runs": [pack1, gate]}}
+    annotations = {
+        8001: [
+            {
+                "title": "deprecation",
+                "message": f"tests/test_{n}.py: DeprecationWarning",
+                "annotation_level": "warning",
+            }
+            for n in range(warnings)
+        ]
+        + [
+            {
+                "title": "legacy-job-workflow-yaml",
+                "message": _WORKFLOW_YAML_STEP,
+                "annotation_level": "failure",
+            },
+            _pack_complete("workflow-yaml"),
+        ]
+    }
+    verdict, calls = _sweep_workflow_yaml_head(
+        monkeypatch, pages, annotations, _workflow_yaml_weather_proof()
+    )
+    assert verdict == expected
+    assert any(call[1].endswith("/merge") for call in calls) == (expected == "merged")
+
+
+# How a legacy job reads this head's diff or history. A job matching any of these
+# must be a never-waived fence or carry an exemption with its reason.
+_READS_THE_PULL_REQUEST = re.compile(
+    r"CI_CHANGED_FILES|changed[-_]files|--diff-file|--changed-from|--name-only"
+    r"|merge-base|base_ref|BASE_REF|HEAD_REF|RULING_DIFF_BASE|HEAD[~^]|origin/main"
+    r"|git diff|git log|fetch-depth|pull_request"
+    r"|CI_BASE_SHA|TESTED_BASE_SHA|CI_SUBJECT_HEAD_SHA"
+)
+_NOT_A_PULL_REQUEST_READ = {
+    "house-law-registry": (
+        "docs-drift diffs a regenerated doc against the checkout, not against main"
+    ),
+    "house-law-registry-code": (
+        "docs-drift diffs a regenerated doc against the checkout, not against main"
+    ),
+}
+
+
+def test_every_legacy_job_that_reads_the_pull_request_is_a_never_waived_fence():
+    """A new diff-reading job must not inherit main's weather by default.
+
+    Its verdict is about this head's own changes, so the same step red on main
+    is a different answer to a different question.
+    """
+    jobs = yaml.safe_load((ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text())[
+        "jobs"
+    ]
+    readers = {
+        job_id
+        for job_id, job in jobs.items()
+        if _READS_THE_PULL_REQUEST.search(json.dumps(job))
+    }
+    assert set(_NOT_A_PULL_REQUEST_READ) <= readers, "stale exemption"
+    assert readers - set(_NOT_A_PULL_REQUEST_READ) == MOG._PR_CONTENT_FENCE_JOBS
+
+
+def test_the_same_head_without_its_fence_reds_is_main_weather(monkeypatch, capsys):
+    """Fleet 2026-08-13 minus the fence pair: workflow-yaml alone is on main.
+
+    Pack numbers differ per PR; ci-gate is the aggregate; the packing-contract
+    ``REFUSED`` synthetic is not a job identity.
+    """
+    pages, annotations = _fleet_shallow_plus_yaml_pages()
+    runs = pages[1]["check_runs"]
+    keep = [run for run in runs if run["name"] in {"ci-pack-1", "ci-gate"}]
+    pages = {1: {"total_count": len(keep), "check_runs": keep}}
+    annotations = {8001: annotations[8001]}
     calls = _fake_api(
         monkeypatch, check_pages=pages, annotations=annotations, merge_status=200
     )
@@ -7032,14 +7606,11 @@ def test_a_live_inherited_red_subtracts_shallow_clone_fence_and_markers(
     assert verdict == "merged"
     assert any(call[1].endswith("/merge") for call in calls)
     out = capsys.readouterr().out
-    assert "live-inherited red" in out
-    assert "workflow-yaml" in out
-    assert "self-mod-fence" not in out
-    assert "conflict-markers" not in out
+    assert "live-inherited red: workflow-yaml already failing on main" in out
     assert "REFUSED" not in out
 
 
-def test_a_unique_product_job_is_still_blocked_after_shallow_subtract(monkeypatch):
+def test_a_unique_product_job_beside_fence_reds_is_still_blocked(monkeypatch):
     """#5478 also failed marketing-data / tier-gate — those are this PR's own."""
     pages, annotations = _fleet_shallow_plus_yaml_pages(extra_job="marketing-data")
     calls = _fake_api(monkeypatch, check_pages=pages, annotations=annotations)
@@ -7077,6 +7648,7 @@ def test_a_fence_only_head_is_not_main_weather(monkeypatch):
                     "fail-closed (exit 1)."
                 ),
             },
+            _pack_complete("self-mod-fence"),
         ]
     }
     calls = _fake_api(monkeypatch, check_pages=pages, annotations=annotations)
@@ -7107,6 +7679,7 @@ def test_conflict_markers_alone_without_fence_sibling_is_still_blocked(monkeypat
                     "workflow-yaml: step 'hosted-runner packing contract' exited 1"
                 ),
             },
+            _pack_complete("workflow-yaml"),
         ],
         8007: [
             {
@@ -7116,6 +7689,7 @@ def test_conflict_markers_alone_without_fence_sibling_is_still_blocked(monkeypat
                     "in PR content' exited 2"
                 ),
             },
+            _pack_complete("conflict-markers"),
         ],
     }
     calls = _fake_api(monkeypatch, check_pages=pages, annotations=annotations)
@@ -7132,10 +7706,10 @@ def test_conflict_markers_alone_without_fence_sibling_is_still_blocked(monkeypat
     assert not any(call[1].endswith("/merge") for call in calls)
 
 
-def test_distinctive_markers_classify_text_is_infra_without_the_fence_sibling(
+def test_a_markers_red_that_could_not_classify_the_diff_is_not_waived(
     monkeypatch, capsys
 ):
-    """Once conflict-markers emits the classify-failure annotation, subtract it."""
+    """The classify-failure annotation means conflict-markers never scanned this head."""
     pack1 = _run("ci-pack-1", conclusion="failure", check_id=8001)
     pack7 = _run("ci-pack-7", conclusion="failure", check_id=8007)
     gate = _run("ci-gate", conclusion="failure", check_id=8010)
@@ -7148,6 +7722,7 @@ def test_distinctive_markers_classify_text_is_infra_without_the_fence_sibling(
                     "workflow-yaml: step 'hosted-runner packing contract' exited 1"
                 ),
             },
+            _pack_complete("workflow-yaml"),
         ],
         8007: [
             {
@@ -7157,6 +7732,7 @@ def test_distinctive_markers_classify_text_is_infra_without_the_fence_sibling(
                     "fatal: bad revision 'origin/main...HEAD'"
                 ),
             },
+            _pack_complete("conflict-markers"),
         ],
     }
     calls = _fake_api(
@@ -7171,10 +7747,9 @@ def test_distinctive_markers_classify_text_is_infra_without_the_fence_sibling(
         _workflow_yaml_weather_proof(),
         _authorized_budget(),
     )
-    assert verdict == "merged"
-    out = capsys.readouterr().out
-    assert "workflow-yaml" in out
-    assert "conflict-markers" not in out
+    assert verdict == "blocked"
+    assert not any(call[1].endswith("/merge") for call in calls)
+    assert "live-inherited red" not in capsys.readouterr().out
 
 
 def test_a_control_plane_diff_never_gets_the_live_inherited_waiver(monkeypatch):
@@ -7199,6 +7774,224 @@ def test_a_control_plane_diff_never_gets_the_live_inherited_waiver(monkeypatch):
     )
     assert verdict == "blocked"
     assert not any(call[1].endswith("/merge") for call in calls)
+
+
+def test_an_unreadable_diff_never_gets_the_live_inherited_waiver(monkeypatch):
+    """An unknown file list may hold a CI invalidator; never waive on it."""
+    pages, annotations = _govrev_red_pages()
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, annotations=annotations, merge_status=200
+    )
+    verdict = MOG.sweep_pull(
+        "acme/widgets",
+        _pull(),
+        "read",
+        "write",
+        _freshness(pull_files={4242: None}),
+        _live_weather_proof(),
+        _authorized_budget(),
+    )
+    assert verdict == "blocked"
+    assert not any(call[1].endswith("/merge") for call in calls)
+
+
+# The sweep step runs `python3 scripts/merge_on_green.py` in its sparse checkout,
+# not in this tree. An import that resolves here can fail there, and
+# `_touches_ci_control_plane` used to answer that ImportError with "control
+# plane": every test above passed while the waiver never fired in a real sweep.
+
+_SPARSE_SWEEP_PROBE = r"""
+import importlib
+import json
+import os
+import sys
+
+tree, repo = (os.path.realpath(arg) for arg in sys.argv[1:3])
+modules, probes = json.loads(sys.argv[3]), json.loads(sys.argv[4])
+# The sweep step's own `sys.path`: the script's directory first, and nothing
+# from the full checkout this test runs in.
+sys.path[:] = [os.path.join(tree, "scripts")] + [
+    entry for entry in sys.path if os.path.realpath(entry or os.curdir) != repo
+]
+sweeper = importlib.import_module("merge_on_green")
+scripts = importlib.import_module("scripts")
+missing = {}
+for name in modules:
+    try:
+        importlib.import_module("scripts." + name)
+    except ImportError as exc:
+        missing[name] = repr(exc)
+print(json.dumps({
+    "sweeper": os.path.realpath(sweeper.__file__),
+    "scripts": [os.path.realpath(entry) for entry in scripts.__path__],
+    "missing": missing,
+    "control_plane": {
+        label: sweeper._touches_ci_control_plane(paths)
+        for label, paths in probes.items()
+    },
+}))
+"""
+
+# ci-trigger-closure: data — file NAMES handed to the sparse sweeper, never opened
+_SPARSE_CONTROL_PLANE_PROBES = {
+    "product": ["engine/regime.py", "tests/test_regime.py", "site/index.html"],
+    "manifest": [".github/ci/legacy-jobs.yml"],
+    "workflow": ["engine/regime.py", ".github/workflows/merge-on-green.yml"],
+    "nested conftest": ["engine/regime.py", "tests/conftest.py"],
+}
+
+
+def _first_party_imports(path: Path) -> list[str]:
+    """Every `scripts/` module a file imports, at any depth or branch.
+
+    Both spellings count: `scripts.x` (imported as a package member) and the
+    bare `x` an `except ImportError` fallback uses when run as a script.
+    """
+    stems = set()
+    for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
+        if isinstance(node, ast.Import):
+            names = [alias.name for alias in node.names]
+        elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+            names = [node.module]
+            if node.module == "scripts":
+                names = [f"scripts.{alias.name}" for alias in node.names]
+        else:
+            continue
+        for name in names:
+            stem = name.removeprefix("scripts.")
+            if stem == name and stem in sys.stdlib_module_names:
+                continue
+            if (ROOT / "scripts" / f"{stem}.py").is_file():
+                stems.add(stem)
+    return sorted(stems)
+
+
+@pytest.fixture(scope="module")
+def sparse_sweep(tmp_path_factory):
+    """Load the sweeper as the sweep step does, from a copy of its checkout."""
+    tree = tmp_path_factory.mktemp("sparse-sweep").resolve()
+    checkout = _workflow()["jobs"]["sweep"]["steps"][0]["with"]
+    for entry in str(checkout["sparse-checkout"]).split():
+        source, target = ROOT / entry, tree / entry
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if source.is_dir():
+            shutil.copytree(source, target)
+        else:
+            shutil.copy2(source, target)
+    modules = _first_party_imports(ROOT / "scripts" / "merge_on_green.py")
+    # `-E` drops PYTHONPATH but keeps site-packages: the sweep installs PyYAML.
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-E",
+            "-c",
+            _SPARSE_SWEEP_PROBE,
+            str(tree),
+            str(ROOT),
+            json.dumps(modules),
+            json.dumps(_SPARSE_CONTROL_PLANE_PROBES),
+        ],
+        cwd=tree,
+        capture_output=True,
+        text=True,
+        timeout=120,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    probe = json.loads(result.stdout)
+    # Loading this tree's regular `scripts` package instead would pass vacuously.
+    assert probe["sweeper"] == str(tree / "scripts" / "merge_on_green.py")
+    assert probe["scripts"], probe
+    assert all(Path(entry).is_relative_to(tree) for entry in probe["scripts"]), probe
+    return modules, probe
+
+
+def test_every_scripts_module_the_sweeper_imports_loads_in_its_sparse_checkout(
+    sparse_sweep,
+):
+    """A lazy import of a file the sparse list lacks fails only in production."""
+    modules, probe = sparse_sweep
+    assert {"ci_authority_paths", "ci_semantic_proof", "gh_path_filter"} <= set(modules)
+    assert probe["missing"] == {}
+
+
+def test_live_inherited_red_can_fire_in_the_sweepers_sparse_checkout(sparse_sweep):
+    """The waiver must be reachable where the sweep runs, not only under pytest.
+
+    `_touches_ci_control_plane` imported `run_ci_pack`, whose own
+    `ci_scope_dependencies` import is outside the sparse list. That ImportError
+    fail-closed to "control plane" for every pull request, so the waiver never fired.
+    """
+    _modules, probe = sparse_sweep
+    assert probe["control_plane"] == {
+        "product": False,
+        "manifest": True,
+        "workflow": True,
+        "nested conftest": True,
+    }
+
+
+# ci-trigger-closure: data — file NAMES matched against the invalidator globs, never opened
+_CONTROL_PLANE_CORPUS = (
+    ".github/workflows/ci.yml",
+    ".github/workflows/nested/reusable.yml",
+    ".github/ci/legacy-jobs.yml",
+    ".github/ci/shards/pack-1.json",
+    ".github/CODEOWNERS",
+    ".github/workflowsx/ci.yml",
+    "scripts/run_ci_pack.py",
+    "scripts/run_ci_pack.pyc",
+    "scripts/ci_scope_dependencies.py",
+    "scripts/check_ci_trigger_closure.py",
+    "scripts/audit_unrun_tests.py",
+    "scripts/merge_on_green.py",
+    "config/dag.yml",
+    "config/dag.yaml",
+    "config/synapse.yml",
+    "conftest.py",
+    "tests/conftest.py",
+    "tests/conftest_helpers.py",
+    "requirements.txt",
+    "requirements-dev.txt",
+    "api/requirements-ci.txt",
+    "requirements/dev.txt",
+    "constraints.txt",
+    "a/b/constraints-lock.txt",
+    "pyproject.toml",
+    "tools/pyproject.toml",
+    "docs/pyproject.toml.md",
+    "setup.cfg",
+    "pkg/setup.py",
+    "tox.ini",
+    "a/pytest.ini",
+    "package.json",
+    "site/package.json",
+    "site/package-lock.json",
+    "uv.lock",
+    "svc/poetry.lock",
+    "engine/regime.py",
+    "site/index.html",
+)
+
+
+def test_the_control_plane_mirror_answers_like_the_planner():
+    """The sweeper reads a mirror so it never imports the planner; the planner's
+    `GLOBAL_INVALIDATORS` and glob semantics stay the law."""
+    import scripts.run_ci_pack as PLAN
+
+    assert MOG.MANIFEST_GLOBAL_INVALIDATORS == PLAN.GLOBAL_INVALIDATORS
+    for pattern in (*PLAN.GLOBAL_INVALIDATORS, "engine/", "a/*/b?.py", "a/**/b.py"):
+        assert (
+            MOG._manifest_glob_regex(pattern).pattern
+            == PLAN._glob_to_regex(pattern).pattern
+        ), pattern
+    mirror = {path: MOG._touches_ci_control_plane([path]) for path in _CONTROL_PLANE_CORPUS}
+    planner = {
+        path: PLAN._matches_any(PLAN.GLOBAL_INVALIDATORS, path)
+        for path in _CONTROL_PLANE_CORPUS
+    }
+    assert mirror == planner
+    assert set(mirror.values()) == {True, False}
 
 
 def test_empty_pack_annotations_fail_closed_on_live_inherited_red(monkeypatch):
@@ -7559,7 +8352,11 @@ def test_main_proof_costs_four_requests_not_a_twenty_commit_walk(monkeypatch):
 
 
 def test_main_proof_records_failed_pack_names_and_legacy_jobs(monkeypatch):
-    """Live-inherited red needs BOTH the pack name and the legacy job identity."""
+    """Live-inherited red needs BOTH the pack name and the legacy job identity.
+
+    Only a step failure can excuse a pull request: an infrastructure red on main
+    is a job id for the diagnostics, never a step this head could share.
+    """
     runs, jobs = _both_workflows(
         [
             ("ci-pack-6", "failure"),
@@ -7581,7 +8378,11 @@ def test_main_proof_records_failed_pack_names_and_legacy_jobs(monkeypatch):
                 {
                     "title": "legacy-job-unrun-government-revenue",
                     "message": "unrun-government-revenue: step 'pytest' exited 1",
-                }
+                },
+                {
+                    "title": "legacy-job-dependency-audit",
+                    "message": "dependency-audit: infrastructure unknown (runner lost)",
+                },
             ]
         },
     )
@@ -7589,7 +8390,12 @@ def test_main_proof_records_failed_pack_names_and_legacy_jobs(monkeypatch):
     assert "ci-pack-6" in proof.failed_names
     assert "ci-gate" in proof.failed_names
     assert "ci-pack-1" in proof.clean_names
-    assert proof.failed_legacy_jobs == frozenset({"unrun-government-revenue"})
+    assert proof.failed_legacy_jobs == frozenset(
+        {"unrun-government-revenue", "dependency-audit"}
+    )
+    assert proof.failed_steps == frozenset(
+        {"unrun-government-revenue: step 'pytest' exited 1"}
+    )
 
 
 @pytest.mark.parametrize(
@@ -7986,7 +8792,7 @@ def test_proof_postdates_failures_is_pure_and_fail_closed():
 # repairing the supply would have fixed the mechanism and kept the daily audit.
 
 
-def _aged_proof(hours, *names, failed_legacy_jobs=(), failed_names=()):
+def _aged_proof(hours, *names, failed_legacy_jobs=(), failed_names=(), failed_steps=()):
     """A proof `hours` old (None = undated)."""
     when = None if hours is None else dt.datetime.now(dt.timezone.utc) - dt.timedelta(hours=hours)
     return MOG.MainProof(
@@ -7996,6 +8802,7 @@ def _aged_proof(hours, *names, failed_legacy_jobs=(), failed_names=()):
         "test",
         frozenset(failed_names),
         frozenset(failed_legacy_jobs),
+        frozenset(failed_steps),
     )
 
 
@@ -9161,6 +9968,7 @@ def test_a_live_inherited_red_is_left_for_the_full_sweep(monkeypatch, capsys):
             "ci-pack-1",
             failed_names=("ci-pack-5",),
             failed_legacy_jobs=_GOVREV_JOBS,
+            failed_steps=_GOVREV_STEPS,
         ),
     )
     assert code == 0

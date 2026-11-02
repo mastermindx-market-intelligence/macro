@@ -5316,6 +5316,7 @@ def execute_pack(
     base_replay_budget_seconds: int = DEFAULT_BASE_REPLAY_BUDGET_SECONDS,
     changed_files_file: str | Path | None = None,
     require_attestation: bool = False,
+    announce_completion: bool = True,
 ) -> int:
     """Execute a pack, account completely, and emit raw bounded evidence."""
     root = _workspace_root()
@@ -5674,6 +5675,21 @@ def execute_pack(
         {failure.split(":", 1)[0] for failure in failures if ":" in failure}
     )
     print("CI_PACK_FAILED_JOBS=" + json.dumps(failed_ids), flush=True)
+    if announce_completion:
+        # merge_on_green waives a failed pack only when it carries this notice. A
+        # pack that died mid-loop (OOM, lost runner, an escaped exception) never
+        # prints it, so a job it never ran cannot hide behind an inherited title.
+        # A failure with no job prefix is named ``ci-pack`` rather than dropped.
+        completed_ids = sorted(
+            {
+                failure.split(":", 1)[0] if ":" in failure else "ci-pack"
+                for failure in failures
+            }
+        )
+        print(
+            "::notice title=ci-pack-complete::" + json.dumps(completed_ids),
+            flush=True,
+        )
     if failures:
         print("\nLegacy CI failures:", file=sys.stderr)
         for failure in failures:
@@ -5943,6 +5959,10 @@ def main(argv: list[str] | None = None) -> int:
                 emit_semantic_fragment=args.emit_semantic_fragment,
                 emit_timing_observations=args.emit_timing_observations,
                 enable_base_replay=False,
+                # A replay child writes into the parent pack's log. Only the
+                # parent may say the pack finished; a second notice there
+                # would refuse every inherited-red waiver.
+                announce_completion=False,
                 # parse_args already requires --emit-semantic-fragment here,
                 # so this replay always mints evidence and always attests —
                 # cheaply, since it runs on the same already-attested runner

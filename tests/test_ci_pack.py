@@ -2404,6 +2404,154 @@ def test_execute_pack_emits_legacy_job_annotations_and_failed_job_ids(
         line for line in out.splitlines() if line.startswith("CI_PACK_FAILED_JOBS=")
     )
     assert json.loads(failed.split("=", 1)[1]) == ["unrun-government-revenue"]
+    assert out.splitlines().count(
+        '::notice title=ci-pack-complete::["unrun-government-revenue"]'
+    ) == 1, out
+
+
+def _legacy_pack_jobs():
+    definition = {
+        "steps": [{"name": "semantic proof", "run": "true"}],
+        "runs-on": "ubuntu-latest",
+    }
+    return [
+        PACK.LegacyJob("unrun-government-revenue", definition, 0, 1, ("engine/**",)),
+        PACK.LegacyJob("other", definition, 1, 1, ("engine/**",)),
+    ]
+
+
+def _first_job_fails(job, **_kwargs):
+    failed = job.job_id == "unrun-government-revenue"
+    return PACK.JobExecution(
+        logical_job_id=job.job_id,
+        job_exec_sha256=PACK.semantic_job_digest(job),
+        infrastructure={"outcome": "passed"},
+        steps=(),
+        failure=(f"{job.job_id}: step 'pytest' exited 1" if failed else None),
+    )
+
+
+def test_a_pack_that_dies_mid_loop_prints_no_completion_notice(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """merge_on_green waives a red pack only when it carries `ci-pack-complete`.
+
+    The first job's title is already out when the runner dies on the second,
+    so that title alone must not read as a finished pack.
+    """
+    monkeypatch.setattr(PACK, "_workspace_root", lambda: ROOT)
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_args: None)
+
+    def dies_on_other(job, **kwargs):
+        if job.job_id == "other":
+            raise KeyboardInterrupt
+        return _first_job_fails(job, **kwargs)
+
+    monkeypatch.setattr(PACK, "_run_job", dies_on_other)
+    with pytest.raises(KeyboardInterrupt):
+        PACK.execute_pack(_legacy_pack_jobs())
+    out = capsys.readouterr().out
+    assert any(
+        line.startswith("::error title=legacy-job-unrun-government-revenue::")
+        for line in out.splitlines()
+    ), out
+    assert "ci-pack-complete" not in out
+
+
+def test_a_failed_final_restore_is_named_in_the_completion_notice(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A restore failure has no legacy-job title, so the notice must carry it."""
+    monkeypatch.setattr(PACK, "_workspace_root", lambda: ROOT)
+
+    def restore_fails(*_args):
+        raise RuntimeError("index.lock exists")
+
+    monkeypatch.setattr(PACK, "_restore_workspace", restore_fails)
+    monkeypatch.setattr(PACK, "_run_job", _first_job_fails)
+    assert PACK.execute_pack(_legacy_pack_jobs()) == 1
+    notices = [
+        line
+        for line in capsys.readouterr().out.splitlines()
+        if line.startswith("::notice title=ci-pack-complete::")
+    ]
+    assert notices == [
+        '::notice title=ci-pack-complete::["ci-pack", "unrun-government-revenue"]'
+    ]
+
+
+def test_a_base_replay_child_prints_no_completion_notice(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A replay child shares the PR pack's log, so only the parent may announce.
+
+    Its title is a second copy of the head's red. A second notice would make
+    merge_on_green refuse every pack whose red main shares.
+    """
+    for key in (
+        "CI_TESTED_TREE_SHA",
+        "CI_SUBJECT_HEAD_SHA",
+        "CI_BASE_SHA",
+        "CI_SEMANTIC_ROLE",
+        "GITHUB_RUN_ID",
+        "GITHUB_WORKFLOW",
+        "GITHUB_EVENT_NAME",
+    ):
+        monkeypatch.setenv(key, "")
+    monkeypatch.setattr(PACK, "load_legacy_jobs", lambda *_args, **_kwargs: _legacy_pack_jobs())
+    monkeypatch.setattr(PACK, "attest_execution_profile", lambda _plan: None)
+    monkeypatch.setattr(PACK, "_workspace_root", lambda: ROOT)
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_args: None)
+    monkeypatch.setattr(PACK, "_run_job", _first_job_fails)
+    assert PACK.main(
+        [
+            "--workflow", str(MANIFEST),
+            "--execute",
+            "--semantic-replay-job", "unrun-government-revenue",
+            "--emit-semantic-fragment", str(tmp_path / "replay.json"),
+        ]
+    ) == 1
+    out = capsys.readouterr().out
+    assert any(
+        line.startswith("::error title=legacy-job-unrun-government-revenue::")
+        for line in out.splitlines()
+    ), out
+    assert "ci-pack-complete" not in out
+
+
+def test_a_failure_without_a_job_prefix_is_named_in_the_completion_notice(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Dropping it would let the notice match the titles with a red unaccounted."""
+    monkeypatch.setattr(PACK, "_workspace_root", lambda: ROOT)
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_args: None)
+
+    def unprefixed(job, **_kwargs):
+        return PACK.JobExecution(
+            logical_job_id=job.job_id,
+            job_exec_sha256=PACK.semantic_job_digest(job),
+            infrastructure={"outcome": "passed"},
+            steps=(),
+            failure=(
+                "runner lost its workspace"
+                if job.job_id == "unrun-government-revenue"
+                else None
+            ),
+        )
+
+    monkeypatch.setattr(PACK, "_run_job", unprefixed)
+    assert PACK.execute_pack(_legacy_pack_jobs()) == 1
+    notices = [
+        line
+        for line in capsys.readouterr().out.splitlines()
+        if line.startswith("::notice title=ci-pack-complete::")
+    ]
+    assert notices == ['::notice title=ci-pack-complete::["ci-pack"]']
 
 
 def test_execution_timing_observations_do_not_change_semantic_fragment(
