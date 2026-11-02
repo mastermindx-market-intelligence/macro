@@ -1289,6 +1289,70 @@ def test_a_405_base_modified_is_retried_once(monkeypatch, capsys):
     assert "retrying once" in capsys.readouterr().out
 
 
+@pytest.mark.parametrize("head", ["54086756f43b63f8db4c0fa4c47f93f9cd449356", "a" * 40])
+def test_tiingo_release_cannot_use_an_unbound_shared_credential(monkeypatch, head):
+    principal = "01a16b7e-cc57-74b3-ad85-407753abc193"
+    repo = "mastermindx-market-intelligence/macro"
+    pull = _pull(10507)
+    pull["head"] = {"sha": head, "ref": "tiingo", "repo": {"full_name": repo}}
+    pull["body"] = f"Designated executor {principal} requests squash of {head}."
+    pull["user"] = {"login": "mastermindxryan"}
+    monkeypatch.setenv("CODEX_THREAD_ID", principal)
+    check = _run("ci-pack-1", conclusion="success", head_sha=head, pr_numbers=(10507,))
+    calls = _fake_api(monkeypatch, check_pages={1: {"total_count": 1, "check_runs": [check]}},
+                      pull_payload=pull)
+    assert MOG.decide_verdict([check])[0] == "clean"
+    assert not MOG.can_arm_merge_on_green([check])
+    assert not MOG.can_arm_merge_on_green([check], repo=repo)
+    assert not MOG.can_arm_merge_on_green([check], pull_number=10507)
+    assert not MOG.can_arm_merge_on_green([check], repo=repo, pull_number=10507)
+    assert MOG.can_arm_merge_on_green([check], repo=repo, pull_number=10508)
+    assert MOG.can_arm_merge_on_green([check], repo="another/macro", pull_number=10507)
+    assert MOG.sweep_pull(repo, pull, "read", "shared-write", _freshness(repo=repo)) == "executor-unbound"
+    assert all(method == "GET" for method, _url, _body in calls)
+
+
+@pytest.mark.parametrize("orphan", [False, True], ids=["settled-generation", "disarmed-orphan"])
+def test_tiingo_executor_hold_preserves_normal_lease_cleanup(monkeypatch, orphan):
+    repo = "mastermindx-market-intelligence/macro"
+    number = 10507
+    head = "54086756f43b63f8db4c0fa4c47f93f9cd449356"
+    target = _pull(number, (MOG.REFRESH_LEASE_LABEL,) if orphan else
+                   (MOG.MERGE_ON_GREEN_LABEL, MOG.REFRESH_LEASE_LABEL))
+    other = _pull(4242)
+    for pull in (target, other):
+        pull["head"].update(sha=head, repo={"full_name": repo})
+    target["body"] = "Executor: 01a16b7e-cc57-74b3-ad85-407753abc193"
+    sweep = MOG.sweep_pull
+    _main_harness(monkeypatch, [other] if orphan else [target, other])
+    monkeypatch.setenv("GH_REPO", repo)
+    monkeypatch.setattr(MOG, "sweep_pull", sweep)
+    monkeypatch.setattr(MOG, "prepare_refresh_lease", REAL_PREPARE_REFRESH_LEASE)
+    monkeypatch.setattr(MOG, "open_refresh_lease_issues", lambda *_: [dict(target)])
+    record = (number, "b" * 40, "2026-10-30T00:00:00Z", "1a2b3c4d5e6f")
+    monkeypatch.setattr(MOG, "read_refresh_lease_register", lambda *_: (True, record))
+    monkeypatch.setattr(MOG, "refresh_lease_acquired_at", lambda *_: record[2])
+    checks = [_run("ci-pack-1", conclusion="success", head_sha=head, pr_numbers=(number, 4242))]
+    _fake_api(monkeypatch, check_pages={1: {"total_count": 1, "check_runs": checks}})
+    api = MOG._request
+    writes = []
+
+    def request(method, url, token, payload=None):
+        if method != "GET":
+            writes.append((method, url.split(f"/repos/{repo}", 1)[-1]))
+        for pull in (target, other):
+            if method == "GET" and url.endswith(f"/pulls/{pull['number']}"):
+                return 200, dict(pull)
+        return api(method, url, token, payload)
+
+    monkeypatch.setattr(MOG, "_request", request)
+    assert MOG.main() == 0
+    assert sorted(writes) == [
+        ("DELETE", f"/issues/{number}/labels/{MOG.REFRESH_LEASE_LABEL}"),
+        ("PUT", "/pulls/4242/merge"),
+    ]
+
+
 def test_standing_holds_are_never_squash_merged(monkeypatch):
     calls = _fake_api(
         monkeypatch,

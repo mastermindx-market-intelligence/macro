@@ -716,23 +716,30 @@ def binding_status_checks(
     ]
 
 
+def _hosted_executor_unbound(repo: str, pull_number: Any) -> bool:
+    # #10507 needs a live native operation through the write and its result.
+    # No native executor is enrolled in this hosted sweep (ruling 6575447706).
+    return (repo.casefold(), str(pull_number)) == ("mastermindx-market-intelligence/macro", "10507")
+
+
 def can_arm_merge_on_green(
     runs: list[dict[str, Any]],
     *,
     base_ref: str = "main",
+    repo: str | None = None,
+    pull_number: int | None = None,
 ) -> bool:
-    """Whether a session may add the ``merge-on-green`` label on this head.
+    """Check arming readiness for a named pull. Use decide_verdict for CI alone.
 
-    This is the ARMING predicate, not the merge predicate. The sweeper still
-    decides whether an already-labeled PR merges; this answers whether a
-    session (or any other caller) may add the label. It uses the same
-    binding-check semantics as :func:`decide_verdict`: for PRs targeting
-    main, the inactive pilot authority context is not a red, an absence of
-    red is not a pass, and a real binding failure still refuses.
-
-    Non-main bases are out of scope for this label and return False.
+    Omitted target identity fails closed, including for old check-only callers.
+    Independent holds and live authorization still apply in the controller.
     """
     if str(base_ref or "main") != "main":
+        return False
+    if (not isinstance(repo, str) or not re.fullmatch(r"[\w.-]+/[\w.-]+", repo, re.ASCII)
+            or type(pull_number) is not int or pull_number <= 0):
+        return False
+    if _hosted_executor_unbound(repo, pull_number):
         return False
     verdict, _names = decide_verdict(runs)
     return verdict == "clean"
@@ -6877,6 +6884,15 @@ def sweep_pull(
             # durable workload reservation can settle/expire; it must never turn
             # ordinary PR proof into permission to merge through a red baseline.
             return "baseline-blocked"
+    # Reconcile an existing refresh lease above before deciding on new work.
+    # The shared-token sweep has no authenticated P1 operation to execute here.
+    if _hosted_executor_unbound(repo, number):
+        _annotate(
+            "warning", "merge-on-green executor",
+            "PR #10507: the hosted sweep cannot bind the designated native executor "
+            "to this merge request and its result. Release held (ruling 6575447706).",
+        )
+        return "executor-unbound"
     verdict, names = decide_verdict(runs)
     if verdict == "clean":
         if anchor_verdict != "clean":

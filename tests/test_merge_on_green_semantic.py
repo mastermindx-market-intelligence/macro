@@ -185,7 +185,7 @@ def test_main_pr_can_be_armed_when_only_the_inactive_pilot_context_is_red() -> N
         _check(INACTIVE_CONTEXT, "failure"),
     ]
     assert MOG.decide_verdict(runs) == ("clean", [])
-    assert MOG.can_arm_merge_on_green(runs, base_ref="main") is True
+    assert MOG.can_arm_merge_on_green(runs, base_ref="main", repo="acme/widgets", pull_number=4242) is True
 
 
 def test_real_ci_failure_still_prevents_arming_merge_on_green() -> None:
@@ -196,7 +196,7 @@ def test_real_ci_failure_still_prevents_arming_merge_on_green() -> None:
         _check("ci-authority/main", "success"),
         _check(INACTIVE_CONTEXT, "failure"),
     ]
-    assert MOG.can_arm_merge_on_green(pack_red, base_ref="main") is False
+    assert MOG.can_arm_merge_on_green(pack_red, base_ref="main", repo="acme/widgets", pull_number=4242) is False
     verdict, names = MOG.decide_verdict(pack_red)
     assert verdict == "blocked"
     assert names == ["ci-pack-3 (failure)"]
@@ -206,7 +206,7 @@ def test_real_ci_failure_still_prevents_arming_merge_on_green() -> None:
         _check("ci-authority/main", "failure"),
         _check(INACTIVE_CONTEXT, "failure"),
     ]
-    assert MOG.can_arm_merge_on_green(active_red, base_ref="main") is False
+    assert MOG.can_arm_merge_on_green(active_red, base_ref="main", repo="acme/widgets", pull_number=4242) is False
     verdict, names = MOG.decide_verdict(active_red)
     assert verdict == "blocked"
     assert names == ["ci-authority/main (failure)"]
