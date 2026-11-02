@@ -807,7 +807,22 @@ def _current_scope(repo_root: Path, theme_id: str) -> str | None:
 
 
 def _activity_market_rows(store_queue: list, proposal_rows: list) -> dict:
-    all_rows = list(store_queue) + list(proposal_rows)
+    # read_store() already folds the store's own activity ledger into the queue,
+    # so an explicit --activity-proposals naming that same ledger used to count
+    # every row twice (measured 2026-11-02, O5 A/B on bca436e5: proposals_seen
+    # a1 2->4 with every gate, remainder and disposition unchanged). Byte-identical
+    # rows collapse to one and the drop is printed; distinct rows never merge.
+    all_rows: list = []
+    seen_keys: set = set()
+    duplicate_rows_dropped = 0
+    for row in list(store_queue) + list(proposal_rows):
+        key = (json.dumps(row, sort_keys=True, default=str)
+               if isinstance(row, dict) else repr(row))
+        if key in seen_keys:
+            duplicate_rows_dropped += 1
+            continue
+        seen_keys.add(key)
+        all_rows.append(row)
     a1 = [row for row in all_rows
           if isinstance(row, dict) and row.get("schema") == probation.ACTIVITY_PROPOSAL_SCHEMA]
     forbidden = [row for row in a1 if _is_forbidden_label(row)]
@@ -826,6 +841,7 @@ def _activity_market_rows(store_queue: list, proposal_rows: list) -> dict:
             "rejected": sum(1 for row in kept if row.get("status") == "REJECTED"),
             "scope_stale": 0,
             "forbidden_label_rows": len(forbidden),
+            "duplicate_rows_dropped": duplicate_rows_dropped,
         },
     }
 
