@@ -1295,6 +1295,7 @@ jobs:
       - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
+      - "app/catalyst_optin_wiring.py"
       - "app/catalyst_scan_authority.py"
       - "app/catalyst_source_wiring.py"
       - "config/catalyst_pilot_universe.json"
@@ -3426,6 +3427,7 @@ jobs:
       - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
+      - "app/catalyst_optin_wiring.py"
       - "app/catalyst_scan_authority.py"
       - "app/catalyst_source_wiring.py"
       - "config/catalyst_pilot_universe.json"
@@ -4499,6 +4501,7 @@ jobs:
       - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
+      - "app/catalyst_optin_wiring.py"
       - "app/catalyst_scan_authority.py"
       - "app/catalyst_source_wiring.py"
       - "config/catalyst_pilot_universe.json"
@@ -8522,6 +8525,7 @@ jobs:
       - "engine/company_intelligence/issuer_supplements.py"
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
+      - "app/catalyst_optin_wiring.py"
       - "app/catalyst_scan_authority.py"
       - "app/catalyst_source_wiring.py"
       - "config/catalyst_pilot_universe.json"
@@ -12765,6 +12769,7 @@ jobs:
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
+      - "app/catalyst_optin_wiring.py"
       - "app/catalyst_scan_authority.py"
       - "app/catalyst_source_wiring.py"
       - "config/catalyst_pilot_universe.json"
@@ -16928,6 +16933,7 @@ jobs:
       - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
+      - "app/catalyst_optin_wiring.py"
       - "app/catalyst_scan_authority.py"
       - "app/catalyst_source_wiring.py"
       - "config/catalyst_pilot_universe.json"
@@ -30260,6 +30266,7 @@ jobs:
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
+      - "app/catalyst_optin_wiring.py"
       - "app/catalyst_scan_authority.py"
       - "app/catalyst_source_wiring.py"
       - "config/catalyst_pilot_universe.json"
@@ -39259,6 +39266,7 @@ jobs:
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
+      - "app/catalyst_optin_wiring.py"
       - "app/catalyst_scan_authority.py"
       - "app/catalyst_source_wiring.py"
       - "config/catalyst_pilot_universe.json"
@@ -41479,6 +41487,7 @@ jobs:
       - "engine/us_candidate_episode_intake.py"
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
+      - "app/catalyst_optin_wiring.py"
       - "app/catalyst_scan_authority.py"
       - "engine/marketing/attribution.py"
       - "engine/marketing/catalyst_admission.py"
@@ -42645,6 +42654,7 @@ jobs:
       - "app/capital_structure.py"
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
+      - "app/catalyst_optin_wiring.py"
       - "app/catalyst_scan_authority.py"
       - "app/catalyst_scan_ui.js"
       - "app/catalyst_source_wiring.py"
@@ -43349,6 +43359,7 @@ jobs:
       - "tests/test_catalyst_integration.py"
       - "tests/test_catalyst_lifecycle.py"
       - "tests/test_catalyst_optin.py"
+      - "tests/test_catalyst_optin_wiring.py"
       - "tests/test_catalyst_packet_public.py"
       - "tests/test_catalyst_partner_pack.py"
       - "tests/test_catalyst_scan.py"
@@ -43703,6 +43714,7 @@ jobs:
           tests/test_catalyst_scan.py
           tests/test_catalyst_lifecycle.py
           tests/test_catalyst_optin.py
+          tests/test_catalyst_optin_wiring.py
           tests/test_catalyst_admission.py
           tests/test_catalyst_scan_frontend.py
           tests/test_catalyst_partner_pack.py
@@ -48728,6 +48740,7 @@ jobs:
       - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
+      - "app/catalyst_optin_wiring.py"
       - "app/catalyst_scan_authority.py"
       - "app/catalyst_source_wiring.py"
       - "config/catalyst_pilot_universe.json"
