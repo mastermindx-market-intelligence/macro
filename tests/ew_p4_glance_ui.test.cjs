@@ -65,7 +65,37 @@ test('stricter id rule: lib-valid rotobs_XYZ stays UI-unreadable', () => {
   const h = render('malformed_id', 'en');
   assert.equal(stateOf(h), 'unreadable');
   assert.ok(h.includes('Rotation record failed checks and is not shown.'));
-  assert.ok(h.includes('data-observation-id="rotobs_XYZ"')); // raw id echoed escaped, still not shown as fact
+  assert.ok(h.includes('data-observation-id=""')); // O06: an invalid view claims no observation id
+  assert.ok(!h.includes('rotobs_XYZ'));
+});
+
+test('O06: a view counts only with its source-owned ledger receipt', () => {
+  const variants = [
+    ['missing', (v) => { delete v.recorded; }],
+    ['null', (v) => { v.recorded = null; }],
+    ['non-object', (v) => { v.recorded = 'macro.rotation_events.ledger'; }],
+    ['array', (v) => { v.recorded = [v.recorded]; }],
+    ['wrong source', (v) => { v.recorded.source = 'macro.rotation_events.cache'; }],
+    ['wrong ledger', (v) => { v.recorded.ledger = 'rotation_events/other.jsonl'; }],
+    ['uppercase hex', (v) => { v.recorded.receipt_sha256 = v.recorded.receipt_sha256.toUpperCase(); }],
+    ['63 chars', (v) => { v.recorded.receipt_sha256 = v.recorded.receipt_sha256.slice(1); }],
+    ['non-string digest', (v) => { v.recorded.receipt_sha256 = 7; }],
+  ];
+  const good = render('journey_b_both_fell', 'en');
+  assert.equal(stateOf(good), 'observed');
+  assert.ok(/data-observation-id="rotobs_[0-9a-f]{40}"/.test(good), 'valid view keeps its id');
+  for (const [label, mutate] of variants) {
+    const view = fixture('journey_b_both_fell');
+    mutate(view);
+    for (const lang of ['en', 'zh']) {
+      const h = fn(view, null, view.notification.event_as_of, lang, NOW);
+      assert.equal(stateOf(h), 'unreadable', label + '/' + lang);
+      assert.ok(h.includes('data-observation-id=""'), label + ' claims no id');
+      assert.ok(!h.includes(view.notification.observation_id), label + ' id never shown');
+    }
+  }
+  const h = render('malformed_missing_recorded', 'zh');
+  assert.ok(h.includes('轮动记录未通过校验，未予显示。'));
 });
 
 test('no observation: missing early_context is unavailable, aged context is stale', () => {
@@ -104,7 +134,7 @@ test('dynamic strings are escaped; a script payload in pair_id never appears raw
   badId.notification.observation_id = 'rotobs_"><img src=x onerror=alert(1)>aaaaaaaaaaaaaaaaaaaaaaaaaa';
   const h2 = fn(badId, null, '2026-10-30', 'en', NOW);
   assert.ok(!h2.includes('<img'), 'raw injected element via id');
-  assert.ok(h2.includes('&lt;img'), 'id payload is escaped');
+  assert.ok(h2.includes('data-observation-id=""'), 'a malformed id is never echoed');
 });
 
 test('input is never mutated and the shared escape helper is optional', () => {
