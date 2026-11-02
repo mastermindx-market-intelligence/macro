@@ -114,6 +114,16 @@ marker through the existing override layer. The source owner removes the marker
 only after the exact Shared Shell consumer purpose is qualified; standalone
 availability alone does not supply that qualification.
 
+Publication consumers share
+`scripts.export_shared_shell_routes.validate_publication_sources(registry: dict) -> str`.
+After the caller validates the canonical registry schema, this pure helper
+requires immutable Macro, Terminal, and Mastermind SHA metadata and rejects any
+explicit availability value other than `true`. Older SHA-only source records
+remain compatible. It returns the registry's Macro SHA and performs no Git,
+filesystem, or network operations. It does not replace the exporter's separate
+`bind_inventory_commit(candidate, registry_bytes)` proof of an inventory commit
+on protected `origin/main` carrying the exact canonical registry bytes.
+
 ### `payload_tier`, precisely
 
 Every macro `*.html` **shell** has been anonymous since 2026-08-04

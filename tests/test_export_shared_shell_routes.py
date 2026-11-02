@@ -611,3 +611,36 @@ def test_consumer_marker_keeps_stronger_exclusion_reasons(stronger):
     assert result["directory"] == []
     assert result["coverage"]["familyMembers"] == {}
     assert result["coverage"]["excluded"] == [{"path": "/macro.html", "reason": stronger}]
+
+
+@pytest.mark.parametrize("availability_recorded", [False, True])
+def test_publication_source_helper_is_pure_and_keeps_legacy_metadata(
+        monkeypatch, availability_recorded):
+    from scripts import export_shared_shell_routes as exporter
+
+    def forbidden_io(*args, **kwargs):
+        pytest.fail("publication source metadata validation must not invoke git")
+
+    monkeypatch.setattr(exporter.subprocess, "run", forbidden_io)
+    monkeypatch.setattr(exporter.subprocess, "check_output", forbidden_io)
+    registry = catalog()
+    if availability_recorded:
+        for source in registry["sources"].values():
+            source["available"] = True
+    original = copy.deepcopy(registry)
+    assert exporter.validate_publication_sources(registry) == PIN
+    assert registry == original
+
+
+@pytest.mark.parametrize("repo", ["macro", "terminal", "mastermind"])
+@pytest.mark.parametrize("problem", ["unavailable", "missing_sha"])
+def test_publication_source_helper_rejects_each_incomplete_input(repo, problem):
+    from scripts import export_shared_shell_routes as exporter
+
+    registry = catalog()
+    if problem == "unavailable":
+        registry["sources"][repo]["available"] = False
+    else:
+        del registry["sources"][repo]["sha"]
+    with pytest.raises(ValueError, match=repo.title() + " source"):
+        exporter.validate_publication_sources(registry)
