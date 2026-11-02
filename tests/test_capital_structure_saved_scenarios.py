@@ -895,6 +895,7 @@ import pathlib  # noqa: E402
 import json as _json  # noqa: E402
 import re as _re  # noqa: E402
 import urllib.error as _urlerror  # noqa: E402
+import urllib.parse as _urlparse  # noqa: E402
 
 from engine.alert_delivery_drain import (  # noqa: E402
     READ_OK,
@@ -998,6 +999,67 @@ def test_u2_store_partition_is_enforced_by_the_module(
     dropped = store.read_one(USER_ALPHA, saved.saved_id)
     assert dropped.state == READ_OK_ZERO
     assert dropped.error_class == "partition_violation"
+
+
+def test_u2_store_keyset_cursor_reads_the_boundary_then_strictly_after_it(
+    composed: _Composed, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    saved = _make_saved(composed)
+    fake = _FakePostgREST(rows=[_row_for(saved)])
+    monkeypatch.setattr(store, "_transport", fake)
+
+    first = store.read_for_user(USER_ALPHA, issuer_id=evaluate_suite.ISSUER_ONE, limit=3)
+    assert first.state == READ_OK
+    assert len(fake.calls) == 1, "a read without a cursor is one call"
+    assert "&or=" not in fake.calls[0][1]
+
+    fake.calls.clear()
+    store.read_for_user(USER_ALPHA, issuer_id=evaluate_suite.ISSUER_ONE, after_id=saved.saved_id, limit=3)
+    assert len(fake.calls) == 2, "the boundary row, then the page after it"
+    boundary_path, page_path = (path for _method, path in fake.calls)
+    for scoped in (boundary_path, page_path):
+        assert f"user_id=eq.{_urlparse.quote(USER_ALPHA, safe='')}" in scoped
+        assert f"issuer_id=eq.{_urlparse.quote(evaluate_suite.ISSUER_ONE, safe='')}" in scoped
+    assert f"saved_id=eq.{_urlparse.quote(saved.saved_id, safe='')}" in boundary_path
+    assert "&or=" not in boundary_path
+    assert "order=saved_at.desc,saved_id.desc" in page_path
+    assert "limit=3" in page_path
+    assert "offset=" not in page_path
+    tree = _urlparse.unquote(page_path.split("&or=", 1)[1])
+    assert tree == (
+        f'(saved_at.lt."{SAVED_AT}",and(saved_at.eq."{SAVED_AT}",saved_id.lt."{saved.saved_id}"))'
+    )
+    # A literal escapes the two characters that could end it early.
+    assert store._literal('a"b\\c') == '"a\\"b\\\\c"'
+
+
+@pytest.mark.parametrize("case", ("unknown", "foreign_user", "other_issuer", "duplicate"))
+def test_u2_store_cursor_outside_the_scope_is_cursor_absent_never_page_one(
+    composed: _Composed, monkeypatch: pytest.MonkeyPatch, case: str
+) -> None:
+    saved = _make_saved(composed)
+    rows = {
+        "unknown": [],
+        "foreign_user": [_row_for(_make_saved(composed, user_id=USER_BETA))],
+        "other_issuer": [_row_for(_make_saved(composed, issuer_id=evaluate_suite.ISSUER_TWO))],
+        "duplicate": [_row_for(saved), _row_for(saved)],
+    }[case]
+    cursor = rows[0]["saved_id"] if rows else saved.saved_id
+    fake = _FakePostgREST(rows=rows)
+    monkeypatch.setattr(store, "_transport", fake)
+
+    result = store.read_for_user(USER_ALPHA, issuer_id=evaluate_suite.ISSUER_ONE, after_id=cursor)
+    assert result.state == READ_OK_ZERO
+    assert result.rows == []
+    assert result.error_class == "cursor_absent"
+    assert len(fake.calls) == 1, "no page is read after an absent cursor"
+
+    unavailable = _FakePostgREST(failure="timeout")
+    monkeypatch.setattr(store, "_transport", unavailable)
+    down = store.read_for_user(USER_ALPHA, after_id=cursor)
+    assert down.state == READ_UNAVAILABLE
+    assert down.rows is None
+    assert len(unavailable.calls) == 1
 
 
 @pytest.mark.parametrize("failure", ("http404", "pg42P01", "timeout"))

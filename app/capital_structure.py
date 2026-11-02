@@ -77,11 +77,6 @@ from engine.capital_structure.saved_scenarios import (
     result_digest_of,
     result_substance_digest_of,
 )
-from engine.capital_structure.scenario_export import (
-    ScenarioExportError,
-    export_filename,
-    export_scenario_envelope,
-)
 from engine.capital_structure.state_changes import (
     CHANGE_KINDS,
     STATE_CHANGES_SCHEMA,
@@ -101,7 +96,6 @@ from engine.capital_structure.state_bundle import (
 from engine.capital_structure.verified_projection_generation import (
     read_verified_projection_generation,
 )
-from engine.fundamental_forensics.query_exports import EXPORT_FORMATS
 
 
 router = APIRouter()
@@ -1731,6 +1725,20 @@ def _saved_store():
     return saved_scenario_store
 
 
+def _scenario_export():
+    """The scenario export serializer, imported on first use.
+
+    The serializer reuses the forensics export primitives
+    (``engine.fundamental_forensics.query``), whose import closure reaches
+    ``collectors``.  Importing it here rather than at module load keeps this
+    router's import closure inside ``engine`` and ``contracts``, as
+    ``_saved_store`` does.
+    """
+    from engine.capital_structure import scenario_export
+
+    return scenario_export
+
+
 def _saved_from_record(record: Mapping[str, Any]) -> SavedScenario:
     """A stored record as a ``SavedScenario``, contract-checked on the way.
 
@@ -2166,10 +2174,11 @@ async def issuer_scenario_save(
     eval_mode, eval_cutoff = (
         ("then_known", normalized_cutoff) if mode == "then_known" else (None, normalized_cutoff)
     )
-    envelope = _evaluate_internals(issuer_id, eval_mode, eval_cutoff, "system", scenario_raw).envelope
+    # The generations stamped on the save are the ones this evaluation read,
+    # never a second read that a publish between the two could move.
+    evaluated = _evaluate_internals(issuer_id, eval_mode, eval_cutoff, "system", scenario_raw)
+    envelope = evaluated.envelope
     scenario_record = _scenario_record_of(scenario_raw)
-    served_state = _load_state()
-    served_inputs = _load_inputs()
     result = envelope["result"]
     try:
         saved = SavedScenario(
@@ -2178,8 +2187,8 @@ async def issuer_scenario_save(
             label=label,
             view={"mode": mode, "cutoff": normalized_cutoff},
             scenario=scenario_record,
-            state_generation_id=str(served_state["generation_id"]),
-            inputs_generation_id=str(served_inputs["generation_id"]),
+            state_generation_id=evaluated.state_generation_id,
+            inputs_generation_id=evaluated.inputs_generation_id,
             result_id=str(result["result_id"]),
             result_digest=result_digest_of(result),
             result_substance_digest=result_substance_digest_of(result),
@@ -2206,20 +2215,25 @@ def issuer_scenario_saved_list(
     limit: int = Query(default=25, ge=1, le=100),
     _user: dict = Depends(require_site_full_user),
 ) -> dict[str, Any]:
-    """The caller's saved scenarios, newest first, one keyset page.
+    """The caller's saved scenarios for this issuer, newest first, one keyset page.
 
-    The adapter owns the partition and the ``after`` keyset exclusion; the
-    route re-checks the user of every row it serves and slices the page.
+    The adapter owns the partition, the issuer scope and the ``after`` keyset
+    (rows strictly after the cursor row in ``saved_at desc, saved_id desc``
+    order); an ``after`` that names no row of the caller's for this issuer is
+    a 400, never a silent first page.  The route re-checks the user and the
+    issuer of every row it serves and slices the page.
     """
     _private(response)
     user_id = _caller_id(_user)
     store = _saved_store()
-    result = store.read_for_user(user_id, after_id=after, limit=limit + 1)
+    result = store.read_for_user(user_id, issuer_id=issuer_id, after_id=after, limit=limit + 1)
     if result.state == store.READ_UNAVAILABLE:
         raise _unavailable(_STORE_UNAVAILABLE)
+    if result.error_class == "cursor_absent":
+        raise _private_error(400, "invalid cursor")
     if result.error_class == "partition_violation":
-        # The adapter caught the store serving another user's row: the typed
-        # unavailable response, never the rows.
+        # The adapter caught the store serving another user's (or another
+        # issuer's) row: the typed unavailable response, never the rows.
         raise _unavailable(_STORE_UNAVAILABLE)
     rows = list(result.rows or [])
     page = rows[:limit]
@@ -2227,6 +2241,8 @@ def issuer_scenario_saved_list(
     for row in page:
         if str(row.get("user_id") or "") != user_id:
             continue  # defense in depth: never serve another user's row
+        if str(_stored_record(row).get("issuer_id") or "") != issuer_id:
+            continue  # nor another issuer's
         try:
             items.append(_saved_from_record(_stored_record(row)).public_record())
         except ContractViolation as exc:
@@ -2284,10 +2300,11 @@ def issuer_scenario_delete(
 
 def _attachment(envelope: Mapping[str, Any], fmt: str) -> Response:
     """The one export response: deterministic bytes, exact filename, exact hash."""
+    serializer = _scenario_export()
     try:
-        export = export_scenario_envelope(envelope, fmt)
-        filename = export_filename(envelope, fmt)
-    except ScenarioExportError as exc:
+        export = serializer.export_scenario_envelope(envelope, fmt)
+        filename = serializer.export_filename(envelope, fmt)
+    except serializer.ScenarioExportError as exc:
         raise _private_error(503, str(exc)) from None
     return Response(
         content=export.payload,
@@ -2312,7 +2329,7 @@ async def issuer_scenario_saved_export(
 ) -> Response:
     """The restored answer's exact bytes as a private attachment (SPEC_U2 §1.4)."""
     _private(response)
-    if fmt not in EXPORT_FORMATS:
+    if fmt not in _scenario_export().EXPORT_FORMATS:
         raise _private_error(404, f"unsupported export format: {fmt}")
     restored = _restore_answer(_caller_id(_user), issuer_id, saved_id)
     if restored.export_envelope is None:
@@ -2344,15 +2361,15 @@ async def issuer_scenario_evaluate_export(
     them.
     """
     _private(response)
-    if fmt not in EXPORT_FORMATS:
+    if fmt not in _scenario_export().EXPORT_FORMATS:
         raise _private_error(404, f"unsupported export format: {fmt}")
     raw = await request.body()
-    envelope = _evaluate_internals(issuer_id, mode, cutoff, clock, raw).envelope
+    evaluated = _evaluate_internals(issuer_id, mode, cutoff, clock, raw)
     export_envelope = {
-        **envelope,
+        **evaluated.envelope,
         "scenario": _scenario_record_of(raw),
         "issuer_id": issuer_id,
-        "inputs_generation_id": str(_load_inputs()["generation_id"]),
+        "inputs_generation_id": evaluated.inputs_generation_id,
     }
     return _attachment(export_envelope, fmt)
 

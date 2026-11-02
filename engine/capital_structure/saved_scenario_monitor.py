@@ -37,8 +37,29 @@ same generation is silence, and the alert_outbox UNIQUE(fire_event_id) plus a
 pre-insert SELECT of the ids this run would mint is the FIF producer's
 belt-and-braces dedupe.  ``fire_event_id`` is the FROZEN literal
 concatenation (no hashing), and ``write_outcome`` lands only after that row's
-enqueue actually succeeded — an outage night re-fires once per generation
-gap and then stays quiet until the generation changes.
+enqueue actually succeeded, so a failed enqueue is planned again next night.
+
+The stored pair is the row's LAST CLASSIFIED outcome, not its last alert: a
+non-firing outcome whose pair differs is recorded too (no enqueue), so the
+generation a row was last classified at — ``last_seen`` — follows the served
+generation night by night.  Two consequences:
+
+* an outage names no served generation, so it is anchored at ``last_seen``:
+  consecutive outage nights repeat the pair and stay quiet, a recovery
+  records its own pair, and the NEXT outage differs again and fires.  Its
+  dedupe slot carries the episode (``last_seen@<UTC day first planned>``)
+  because two outages can bracket a recovery at the same generation.  If an
+  outage enqueue lands but its outcome write fails, the next outage night
+  mints a new episode and alerts once more — loud, never silent;
+* the retained ledger spans one nightly step, so after a row's first night
+  it spans ``last_seen → served``, never ``saved → served``.  A moved
+  generation the saved→served classification leaves unattributed is
+  attributed through that ledger — a new event or a correction for this
+  issuer on it fires; any other ledger attributes nothing.  A night the
+  monitor did not classify breaks the chain honestly: the next ledger does
+  not start at ``last_seen`` and attributes nothing.  A rerun at a
+  generation already alerted as a correction or new events keeps that
+  record rather than overwriting it with the unattributed rerun verdict.
 
 Payload: exactly the SPEC_U2 §1 "U2-3" fields — category, kind, saved and
 issuer identity, the plain-guarded label, the two generation ids, the change
@@ -56,7 +77,8 @@ from __future__ import annotations
 import json
 import os
 import uuid as _uuid_mod
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -86,6 +108,7 @@ from engine.capital_structure.saved_scenarios import (
     RESTORE_OUTCOMES,
     RestoreOutcome,
     SavedScenario,
+    attributed_outcome,
     classify_restore,
     restore_anchor,
 )
@@ -164,6 +187,9 @@ class ProducerPlan:
     candidates_n: int
     duplicate_n: int
     unreadable_n: int
+    #: ``(saved_id, outcome, generation)`` for each non-firing outcome whose
+    #: pair differs from the stored one — recorded with no enqueue.
+    observed: list[tuple[str, str, str]] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -183,6 +209,7 @@ class ProducerResult:
     inputs_state: str
     changes_state: str
     notes: list[str] = field(default_factory=list)
+    observed_n: int = 0
 
 
 # ---------------------------------------------------------------------------
@@ -193,7 +220,9 @@ def fire_event_id(
     *, saved_id: str, outcome: str, to_generation_id: str, user_id: str
 ) -> str:
     """The FROZEN dedupe key (SPEC_U2 §1 "U2-3"): literal concatenation, no
-    hashing.  UNIQUE(fire_event_id) makes replays no-ops."""
+    hashing.  UNIQUE(fire_event_id) makes replays no-ops.  An outage names no
+    served generation, so its slot carries the outage episode instead
+    (``_outage_episode``)."""
     return f"cs_saved_scenario|{saved_id}|{outcome}|{to_generation_id}|{user_id}"
 
 
@@ -566,6 +595,62 @@ def _restore_outcome_for(
 # Planning — one candidate row per (saved row, firing transition)
 # ---------------------------------------------------------------------------
 
+#: The outcomes a re-anchored ledger may attribute: a moved generation the
+#: saved→served classification could not attribute.
+_REANCHORABLE = ("no_change", "changed_unattributed")
+#: The firing outcomes a ledger attributes (an outage attributes nothing).
+_ATTRIBUTED = ("correction", "new_events")
+
+
+def _reanchored(
+    outcome: RestoreOutcome, saved: SavedScenario, changes_doc: Any, last_seen: str
+) -> RestoreOutcome:
+    """Attribute a moved generation through the ledger the monitor can read.
+
+    After a row's first classified night the retained ledger spans
+    ``last_seen → served``.  A new event, correction, withdrawal or rule-pack
+    change for this issuer on THAT ledger is the night's transition: the
+    outcome keeps its saved→served identity and takes the ledger's outcome,
+    counts and closed note.  Any other ledger — absent, unreadable, a
+    baseline, another span — attributes nothing and the outcome stands.
+    """
+    served = outcome.to_generation_id
+    if outcome.outcome not in _REANCHORABLE or served is None:
+        return outcome
+    if last_seen == saved.state_generation_id or served == saved.state_generation_id:
+        # the saved→served ledger was already the classification's own
+        return outcome
+    changeset = _changeset_of(changes_doc)
+    if changeset is None or changeset.baseline:
+        return outcome
+    if changeset.from_generation_id != last_seen or changeset.to_generation_id != served:
+        return outcome
+    issuer_changes = changes_for_issuer(changeset, saved.issuer_id)
+    kinds = tuple(sorted({change.kind for change in issuer_changes}))
+    attributed = attributed_outcome(kinds)
+    if attributed is None:
+        return outcome
+    return replace(
+        outcome,
+        outcome=attributed,
+        changes_n=len(issuer_changes),
+        change_kinds=kinds,
+        note=RESTORE_NOTES[attributed],
+    )
+
+
+def _outage_episode(last_seen: str, run_day: str) -> str:
+    """The dedupe slot of an outage: the generation the row was last
+    classified at and the UTC day the outage was first planned.  Consecutive
+    outage nights never reach this (their stored pair repeats); a later
+    outage after a recovery at the same generation is a new episode."""
+    return f"{last_seen}@{run_day}"
+
+
+def _utc_day() -> str:
+    return datetime.now(timezone.utc).date().isoformat()
+
+
 def _saved_of_row(row: Mapping[str, Any]) -> SavedScenario:
     """Rebuild the stored row's contract record.  ``last_outcome`` is read
     from the row's own columns first — the monitor's ``write_outcome`` is
@@ -602,13 +687,16 @@ def _plan(
     pack: Any,
     changes_doc: Any,
     evidence_base: str,
+    run_day: str | None = None,
 ) -> ProducerPlan:
     """One candidate entry per saved row whose classified outcome fires on a
-    NEW (outcome, generation) transition.  Everything else — a non-firing
-    outcome, a repeated verdict, a row that no longer reconstructs, an
-    unreadable row — plans nothing and is counted instead."""
+    NEW (outcome, generation) transition.  A non-firing outcome on a new pair
+    is recorded as observed (no enqueue); a repeated verdict, a row that no
+    longer reconstructs and an unreadable row plan nothing and are counted."""
     served_generation_id = str(bundle["generation_id"]) if bundle is not None else None
+    day = run_day or _utc_day()
     entries: list[tuple[dict, str, str, str]] = []
+    observed: list[tuple[str, str, str]] = []
     rows_n = len(saved_rows)
     classified_n = 0
     unreadable_n = 0
@@ -635,17 +723,36 @@ def _plan(
                 pack=pack,
                 changeset=changeset,
             )
+            last_seen = saved.last_outcome_generation_id or saved.state_generation_id
+            outcome = _reanchored(outcome, saved, changes_doc, last_seen)
         except ContractViolation:
             # Identity drift on unchanged generations is a bug, never an
             # outcome: counted, noted, never planned, never fatal to the run.
             unreadable_n += 1
             continue
         classified_n += 1
+        stored = (saved.last_outcome, saved.last_outcome_generation_id)
         if outcome.outcome not in FIRING_OUTCOMES:
+            if outcome.to_generation_id is None or (
+                (outcome.outcome, outcome.to_generation_id) == stored
+            ):
+                continue
+            if (
+                saved.last_outcome in _ATTRIBUTED
+                and saved.last_outcome_generation_id == outcome.to_generation_id
+            ):
+                # This generation was already alerted with its attribution; a
+                # rerun that can no longer see the attributing ledger (its
+                # last_seen is now the served generation) keeps that record.
+                continue
+            observed.append((saved.saved_id, outcome.outcome, outcome.to_generation_id))
             continue
-        anchor = outcome.to_generation_id or saved.state_generation_id
-        if (outcome.outcome, anchor) == (saved.last_outcome, saved.last_outcome_generation_id):
+        # An outage names no served generation: it stands where the row was
+        # last classified, so it repeats quietly until a recovery is recorded.
+        anchor = outcome.to_generation_id or last_seen
+        if (outcome.outcome, anchor) == stored:
             continue
+        slot = anchor if outcome.to_generation_id is not None else _outage_episode(anchor, day)
         user_id = saved.user_id
         entries.append(
             (
@@ -655,7 +762,7 @@ def _plan(
                     "fire_event_id": fire_event_id(
                         saved_id=saved.saved_id,
                         outcome=outcome.outcome,
-                        to_generation_id=anchor,
+                        to_generation_id=slot,
                         user_id=user_id,
                     ),
                     "channel": CHANNEL,
@@ -674,6 +781,7 @@ def _plan(
         candidates_n=classified_n,
         duplicate_n=0,
         unreadable_n=unreadable_n,
+        observed=observed,
     )
 
 
@@ -786,11 +894,31 @@ def _enqueue_and_record(
     return (enqueued, duplicates, written, error_class)
 
 
+def _record_observed(
+    observed: list[tuple[str, str, str]], *, dry_run: bool
+) -> tuple[int, str | None]:
+    """``write_outcome`` for each non-firing outcome on a new pair — nothing on
+    a dry run.  A failed write leaves the stored pair as it was, so the next
+    night observes the same transition again.  Returns ``(written, error)``."""
+    if dry_run:
+        return (0, None)
+    written = 0
+    error_class: str | None = None
+    for saved_id, outcome, generation in observed:
+        write = write_outcome(saved_id, outcome, generation)
+        if write.state == "ok":
+            written += 1
+        elif error_class is None:
+            error_class = str(getattr(write, "error_class", None) or write.state)
+    return (written, error_class)
+
+
 def run(
     *,
     root: str | Path = ".",
     dry_run: bool = True,
     evidence_base: str = EVIDENCE_BASE,
+    run_day: str | None = None,
 ) -> ProducerResult:
     saved_read = read_all_service_side()
     if saved_read.state == READ_UNAVAILABLE:
@@ -814,6 +942,7 @@ def run(
         pack=pack,
         changes_doc=arts.changes_doc,
         evidence_base=evidence_base,
+        run_day=run_day,
     )
     existing_read = read_existing_fire_ids(
         [entry[0]["fire_event_id"] for entry in probe.entries]
@@ -839,6 +968,9 @@ def run(
     )
     if error_class is not None:
         notes.append(f"enqueue stopped early ({error_class})")
+    observed_n, observe_error = _record_observed(probe.observed, dry_run=dry_run)
+    if observe_error is not None:
+        notes.append(f"observed outcome write failed ({observe_error})")
     return ProducerResult(
         outcome="ok" if error_class is None else "partial",
         read_state=READ_OK,
@@ -853,6 +985,7 @@ def run(
         inputs_state=arts.inputs_state,
         changes_state=arts.changes_state,
         notes=notes,
+        observed_n=observed_n,
     )
 
 

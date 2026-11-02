@@ -1553,9 +1553,13 @@ jobs:
         # soft: absent creds/tables/inputs -> typed unavailable, 0 rows, exit
         # 0. Dormant unless BOTH CS_SAVED_SCENARIO_ENABLE=1 AND
         # ALERT_DRAIN_ENABLE=1 (checked before the producer is even imported);
-        # arming the secret is human-only enrollment (SPEC_U2 §3).
+        # arming the secret is human-only enrollment (SPEC_U2 §3). Runs only
+        # when tonight's change ledger was produced: a failed derivation leaves
+        # no ledger to attribute against, so the monitor stays silent rather
+        # than classify every moved row as unattributed (step-level gate; the
+        # job's coupling to collect is unchanged).
         id: cs_saved_monitor
-        if: always()
+        if: always() && steps.cs_changes.outcome == 'success'
         timeout-minutes: 3
         continue-on-error: true
         env:

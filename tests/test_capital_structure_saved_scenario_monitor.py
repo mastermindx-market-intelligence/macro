@@ -734,17 +734,24 @@ def test_u2_monitor_fires_only_firing_outcomes_and_only_on_transition(
     )
     for row in posts:
         _check_planned_row(row, known_users=(USER,))
-    # The outcome write followed each row's OWN successful enqueue, and the
-    # non-firing rows stay untouched.
+    # The outcome write followed each row's OWN successful enqueue; the
+    # non-firing rows are recorded at the served generation without an alert,
+    # so the next night's ledger (served → next) is the one that attributes.
     written = store_fake.written()
     assert written[fixture_rows.correction.saved_id] == ("correction", served_gen)
     assert written[fixture_rows.new_events.saved_id] == ("new_events", served_gen)
-    assert written[fixture_rows.no_change.saved_id] == (None, None)
-    assert written[fixture_rows.unavailable.saved_id] == (None, None)
+    assert written[fixture_rows.no_change.saved_id] == ("no_change", served_gen)
+    assert written[fixture_rows.unavailable.saved_id] == ("inputs_unavailable", served_gen)
+    assert written[fixture_rows.absent.saved_id] == ("scenario_rejected", served_gen)
+    assert result.observed_n == 3
 
-    # A second run over the unchanged (outcome, generation) plans nothing.
+    # A second run over the unchanged (outcome, generation) plans and records
+    # nothing.
+    patches = store_fake.patch_count()
     second = monitor.run(root=tmp_path, dry_run=False)
     assert second.planned_n == 0 and second.enqueued_n == 0
+    assert second.observed_n == 0
+    assert store_fake.patch_count() == patches
     assert len(outbox.posts()) == len(posts)
     for row in outbox.posts():
         _check_planned_row(row, known_users=(USER,))
@@ -761,7 +768,7 @@ def test_u2_monitor_missing_state_bundle_is_source_outage_once_per_generation(
         monkeypatch, fixture_rows, world=None, root=tmp_path, seeded=[]
     )
 
-    first = monitor.run(root=tmp_path, dry_run=False)
+    first = monitor.run(root=tmp_path, dry_run=False, run_day="2026-10-20")
     assert first.outcome == "ok"
     assert first.state_state == monitor.READ_UNAVAILABLE
     planned = sorted(row["fire_event_id"] for row in outbox.posts())
@@ -771,19 +778,25 @@ def test_u2_monitor_missing_state_bundle_is_source_outage_once_per_generation(
     for row in outbox.posts():
         _check_planned_row(row, known_users=(USER,))
         assert row["payload"]["kind"] == "source_outage"
+    # The dedupe slot is the episode: the last classified generation and the
+    # UTC day the outage was first planned.
     anchors = {row["fire_event_id"].split("|")[3] for row in outbox.posts()}
     assert anchors == {
-        fixture_rows.no_change.state_generation_id,
-        fixture_rows.correction.state_generation_id,
+        f"{fixture_rows.no_change.state_generation_id}@2026-10-20",
+        f"{fixture_rows.correction.state_generation_id}@2026-10-20",
     }
+    # The stored pair is the generation itself, never the episode slot.
     written = store_fake.written()
     assert written[fixture_rows.absent.saved_id] == (
         "source_outage", fixture_rows.absent.state_generation_id,
     )
 
-    # Never again until the generation changes: the second run plans nothing.
-    second = monitor.run(root=tmp_path, dry_run=False)
+    # Never again while the outage lasts: the same night and every following
+    # outage night plan nothing.
+    second = monitor.run(root=tmp_path, dry_run=False, run_day="2026-10-20")
     assert second.planned_n == 0 and second.enqueued_n == 0
+    third = monitor.run(root=tmp_path, dry_run=False, run_day="2026-10-21")
+    assert third.planned_n == 0 and third.enqueued_n == 0
     assert sorted(row["fire_event_id"] for row in outbox.posts()) == planned
 
 
@@ -817,7 +830,8 @@ def test_u2_monitor_payload_has_no_numbers_and_passes_plain_guard(
     assert (
         by_saved[fixture_rows.new_events.saved_id]["payload"]["label"] == PLAIN_LABEL
     )
-    assert store_fake.patch_count() == 2
+    # Two enqueued outcome writes plus three recorded non-firing observations.
+    assert store_fake.patch_count() == 5
 
 
 # ---------------------------------------------------------------------------
@@ -842,17 +856,22 @@ def test_u2_monitor_dedupes_against_outbox_and_writes_outcome_only_on_ok(
         ),
     ]
 
-    # A dry run plans but never enqueues and never writes an outcome.
+    firing_ids = {fixture_rows.correction.saved_id, fixture_rows.new_events.saved_id}
+
+    # A dry run plans but never enqueues and never writes an outcome — not
+    # even a non-firing observation.
     _store, outbox = _install(
         monkeypatch, fixture_rows, world=world, root=tmp_path, seeded=[]
     )
     dry = monitor.run(root=tmp_path, dry_run=True)
     assert dry.planned_n == 2 and dry.enqueued_n == 0
+    assert dry.observed_n == 0
     assert outbox.posts() == []
     assert _store.patch_count() == 0
 
     # A field where the outbox already holds both ids: deduped before the
-    # plan, nothing enqueued, NO outcome write.
+    # plan, nothing enqueued, NO firing outcome write.  The three non-firing
+    # observations are recorded — they never depended on an enqueue.
     _store, outbox = _install(
         monkeypatch, fixture_rows, world=world, root=tmp_path, seeded=both_fids
     )
@@ -860,11 +879,14 @@ def test_u2_monitor_dedupes_against_outbox_and_writes_outcome_only_on_ok(
     assert armed.planned_n == 0 and armed.duplicate_n == 2
     assert armed.enqueued_n == 0
     assert outbox.posts() == []
-    assert _store.patch_count() == 0
-    assert all(row["last_outcome"] is None for row in _store.rows)
+    assert armed.observed_n == 3 and _store.patch_count() == 3
+    written = _store.written()
+    assert all(written[saved_id] == (None, None) for saved_id in firing_ids)
+    assert written[fixture_rows.no_change.saved_id] == ("no_change", served_gen)
 
     # With the dedupe probe blinded, the UNIQUE index absorbs both replays
-    # and an absorbed row still writes no outcome — only an enqueued row does.
+    # and an absorbed row still writes no outcome — only an enqueued row does;
+    # the already-recorded observations repeat their pair and stay unwritten.
     monkeypatch.setattr(
         monitor,
         "read_existing_fire_ids",
@@ -872,8 +894,9 @@ def test_u2_monitor_dedupes_against_outbox_and_writes_outcome_only_on_ok(
     )
     blinded = monitor.run(root=tmp_path, dry_run=False)
     assert blinded.enqueued_n == 0 and blinded.duplicate_n == 2
+    assert blinded.observed_n == 0
     assert len(outbox.posts()) == 2
-    assert _store.patch_count() == 0
+    assert _store.patch_count() == 3
 
     # A clean field for one row: it enqueues and its outcome write follows;
     # the still-deduped sibling stays unwritten.
@@ -885,6 +908,175 @@ def test_u2_monitor_dedupes_against_outbox_and_writes_outcome_only_on_ok(
     written = _store.written()
     assert written[fixture_rows.new_events.saved_id] == ("new_events", served_gen)
     assert written[fixture_rows.correction.saved_id] == (None, None)
+
+
+# ---------------------------------------------------------------------------
+# An outage after a recovery at the same generation is a new episode;
+# consecutive outage nights stay quiet
+# ---------------------------------------------------------------------------
+def test_u2_monitor_outage_after_a_recovery_is_a_new_episode(
+    world: _World, fixture_rows: _Fixture, tmp_path, monkeypatch
+):
+    served_gen = world.current["generation_id"]
+    store_fake, outbox = _install(
+        monkeypatch, fixture_rows, world=None, root=tmp_path, seeded=[]
+    )
+    first = monitor.run(root=tmp_path, dry_run=False, run_day="2026-10-20")
+    assert first.enqueued_n == 5
+
+    # The bundle returns: the data verdicts fire and the rest are recorded at
+    # the served generation — a recovery is a pair of its own.
+    _write_artifacts(tmp_path, world)
+    recovered = monitor.run(root=tmp_path, dry_run=False, run_day="2026-10-21")
+    assert recovered.enqueued_n == 2 and recovered.observed_n == 3
+    assert store_fake.written()[fixture_rows.no_change.saved_id] == (
+        "no_change", served_gen,
+    )
+
+    # The bundle goes missing again.  The no_change row was last classified at
+    # the very generation its first outage anchored on — same anchor, new
+    # episode, so it alerts again under a distinct id.
+    (tmp_path / monitor.STATE_BUNDLE_FILENAME).unlink()
+    again = monitor.run(root=tmp_path, dry_run=False, run_day="2026-10-22")
+    assert again.state_state == monitor.READ_UNAVAILABLE
+    assert again.enqueued_n == 5
+    for row in outbox.posts()[-5:]:
+        _check_planned_row(row, known_users=(USER,))
+        assert row["fire_event_id"].split("|")[3] == f"{served_gen}@2026-10-22"
+    episodes = [
+        monitor.fire_event_id(
+            saved_id=fixture_rows.no_change.saved_id,
+            outcome="source_outage",
+            to_generation_id=f"{served_gen}@{day}",
+            user_id=USER,
+        )
+        for day in ("2026-10-20", "2026-10-22")
+    ]
+    assert episodes[0] != episodes[1]
+    assert set(episodes) <= set(outbox.fids())
+    assert all(
+        pair == ("source_outage", served_gen)
+        for saved_id, pair in store_fake.written().items()
+        if saved_id != fixture_rows.rows[4]["saved_id"]
+    )
+
+    # Still missing the next night: the stored pair repeats, nothing plans.
+    quiet = monitor.run(root=tmp_path, dry_run=False, run_day="2026-10-23")
+    assert quiet.planned_n == 0 and quiet.enqueued_n == 0
+    assert quiet.observed_n == 0
+
+
+# ---------------------------------------------------------------------------
+# A moved generation is attributed through the retained last_seen → served
+# ledger, and only through that ledger
+# ---------------------------------------------------------------------------
+#: A generation the row was saved at two nights before the served one — no
+#: longer the start of any retained ledger.
+_OLDER_GENERATION = "state_bundle:cs:" + "0" * 32
+
+
+def _moved_row(
+    fixture_rows: _Fixture, *, last_outcome: str | None, last_seen: str | None
+) -> tuple[SavedScenario, dict[str, Any]]:
+    saved = dataclasses.replace(
+        fixture_rows.no_change,
+        state_generation_id=_OLDER_GENERATION,
+        last_outcome=last_outcome,
+        last_outcome_generation_id=last_seen,
+    )
+    return saved, _store_row(saved)
+
+
+def _plan_one(world: _World, pack, row: dict[str, Any], *, changes_doc: Any = None):
+    return monitor._plan(
+        saved_rows=[row],
+        bundle=world.current,
+        inputs_doc=world.inputs_current,
+        pack=pack,
+        changes_doc=world.changes_record if changes_doc is None else changes_doc,
+        evidence_base=monitor.EVIDENCE_BASE,
+        run_day="2026-10-21",
+    )
+
+
+def test_u2_monitor_attributes_a_second_night_correction_through_the_retained_ledger(
+    world: _World, fixture_rows: _Fixture, pack
+):
+    previous_gen = world.previous["generation_id"]
+    served_gen = world.current["generation_id"]
+    saved, row = _moved_row(fixture_rows, last_outcome="no_change", last_seen=previous_gen)
+
+    plan = _plan_one(world, pack, row)
+    assert plan.observed == []
+    [(planned, saved_id, outcome, anchor)] = plan.entries
+    assert (saved_id, outcome, anchor) == (saved.saved_id, "correction", served_gen)
+    assert planned["fire_event_id"] == monitor.fire_event_id(
+        saved_id=saved.saved_id,
+        outcome="correction",
+        to_generation_id=served_gen,
+        user_id=USER,
+    )
+    _check_planned_row(planned, known_users=(USER,))
+    payload = planned["payload"]
+    assert payload["kind"] == "correction"
+    assert "withdrawn_observation" in payload["change_kinds"]
+    # The outcome keeps the saved scenario's own identity.
+    assert payload["from_generation_id"] == _OLDER_GENERATION
+    assert payload["to_generation_id"] == served_gen
+
+    # A rerun at the alerted generation can no longer see the attributing
+    # ledger (last_seen is now the served generation); it keeps the alerted
+    # record and plans nothing.
+    _alerted, rerun_row = _moved_row(
+        fixture_rows, last_outcome="correction", last_seen=served_gen
+    )
+    rerun = _plan_one(world, pack, rerun_row)
+    assert rerun.entries == [] and rerun.observed == []
+
+
+def _ledger_without_issuer_one(world: _World) -> dict[str, Any]:
+    changes = [
+        change
+        for change in world.changes_record["changes"]
+        if change.get("issuer_id") != ISSUER_ONE
+    ]
+    return dict(world.changes_record, changes=changes)
+
+
+@pytest.mark.parametrize(
+    ("case", "last_outcome", "last_seen"),
+    [
+        # a night the monitor did not classify: the ledger does not start at
+        # last_seen
+        ("broken_chain", "no_change", "state_bundle:cs:" + "1" * 32),
+        # never classified: last_seen is the saved generation itself
+        ("never_classified", None, None),
+        ("baseline_ledger", "no_change", "previous"),
+        ("no_attributing_kind", "no_change", "previous"),
+    ],
+)
+def test_u2_monitor_attributes_nothing_through_any_other_ledger(
+    world: _World, fixture_rows: _Fixture, pack, case, last_outcome, last_seen
+):
+    served_gen = world.current["generation_id"]
+    if last_seen == "previous":
+        last_seen = world.previous["generation_id"]
+    changes_doc = None
+    if case == "baseline_ledger":
+        changes_doc = dict(
+            world.changes_record,
+            baseline=True,
+            from_generation_id=None,
+            from_as_of=None,
+            changes=[],
+        )
+    elif case == "no_attributing_kind":
+        changes_doc = _ledger_without_issuer_one(world)
+    saved, row = _moved_row(fixture_rows, last_outcome=last_outcome, last_seen=last_seen)
+
+    plan = _plan_one(world, pack, row, changes_doc=changes_doc)
+    assert plan.entries == []
+    assert plan.observed == [(saved.saved_id, "no_change", served_gen)]
 
 
 # ---------------------------------------------------------------------------

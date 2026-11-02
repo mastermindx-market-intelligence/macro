@@ -24,7 +24,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, replace
-from typing import Any, Mapping
+from typing import Any, Iterable, Mapping
 
 from engine.capital_structure.issuer_state_contracts import (
     RECORD_SCHEMAS,
@@ -403,6 +403,19 @@ class RestoreOutcome:
         }
 
 
+def attributed_outcome(kinds: Iterable[str]) -> str | None:
+    """The outcome one issuer's ledger change kinds attribute (SPEC_U2 §1.2
+    steps 5–6): a new event → ``new_events``; a correction, a withdrawal or a
+    rule-pack edition change → ``correction``; anything else attributes
+    nothing (``None``)."""
+    present = set(kinds)
+    if "new_event" in present:
+        return "new_events"
+    if {"corrected_observation", "withdrawn_observation", "rule_pack_changed"} & present:
+        return "correction"
+    return None
+
+
 def classify_restore(
     saved: SavedScenario,
     *,
@@ -555,13 +568,9 @@ def classify_restore(
     if current_result is None:
         raise ContractViolation("classify_restore: a moved generation names no current result")
     result_id, identical = identity(current_result)
-    if "new_event" in kinds:
-        outcome, note = "new_events", RESTORE_NOTES["new_events"]
-    elif (
-        {"corrected_observation", "withdrawn_observation"} & set(kinds)
-        or "rule_pack_changed" in kinds
-    ):
-        outcome, note = "correction", RESTORE_NOTES["correction"]
+    attributed = attributed_outcome(kinds)
+    if attributed is not None:
+        outcome, note = attributed, RESTORE_NOTES[attributed]
     elif identical:
         outcome = "no_change"
         note = (
@@ -597,6 +606,7 @@ __all__ = [
     "SAVED_SCENARIO_SCHEMA",
     "RestoreOutcome",
     "SavedScenario",
+    "attributed_outcome",
     "classify_restore",
     "financing_scenario_from_record",
     "result_digest_of",

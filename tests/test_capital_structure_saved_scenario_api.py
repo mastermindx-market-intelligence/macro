@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import urllib.parse
 from pathlib import Path
 from typing import Any, NamedTuple
@@ -93,25 +94,67 @@ def _client_for(user_id: str) -> TestClient:
     return TestClient(app)
 
 
+#: A PostgREST logic-tree literal: double-quoted, backslash-escaped.
+_LITERAL = r'"((?:[^"\\]|\\.)*)"'
+#: The one keyset tree the adapter sends: rows strictly after the cursor row in
+#: ``saved_at desc, saved_id desc`` order.
+_KEYSET = re.compile(
+    rf"^\(saved_at\.lt\.{_LITERAL},and\(saved_at\.eq\.{_LITERAL},saved_id\.lt\.{_LITERAL}\)\)$"
+)
+
+
+def _unliteral(text: str) -> str:
+    return re.sub(r"\\(.)", r"\1", text)
+
+
 class _PartitionedStore(_FakePostgREST):
-    """The U2-1 canned fake, answering like the real store: only the rows the
-    query's ``user_id=eq.`` names (a real PostgREST filter), so one store can
-    hold every user's rows without tripping the adapter's partition alarm.
-    Same recording, same canned failures — everything delegates to the fake."""
+    """The U2-1 canned fake, answering like the real store: the ``eq``/``neq``
+    filters, the ``or`` keyset, the order, the limit and the projection the
+    query names, so one store can hold every user's and every issuer's rows
+    without tripping the adapter's partition alarm.  A query shape the fake
+    does not know fails loudly rather than answering wrong.  Same recording,
+    same canned failures — everything delegates to the fake."""
+
+    _FILTERS = ("user_id", "issuer_id", "saved_id")
 
     def __call__(self, method: str, path: str, body: Any = None, prefer: str | None = None, timeout: int = 6) -> Any:
         rows = super().__call__(method, path, body=body, prefer=prefer, timeout=timeout)
-        if isinstance(rows, list):
-            for marker in path.split("&"):
-                if marker.startswith("user_id=eq."):
-                    wanted = urllib.parse.unquote(marker[len("user_id=eq.") :])
-                    rows = [row for row in rows if row.get("user_id") == wanted]
-                elif marker.startswith("saved_id=neq."):
-                    excluded = urllib.parse.unquote(marker[len("saved_id=neq.") :])
-                    rows = [row for row in rows if row.get("saved_id") != excluded]
-                elif marker.startswith("saved_id=eq."):
-                    wanted = urllib.parse.unquote(marker[len("saved_id=eq.") :])
-                    rows = [row for row in rows if row.get("saved_id") == wanted]
+        if not isinstance(rows, list) or "?" not in path:
+            return rows
+        columns: list[str] | None = None
+        order: str | None = None
+        limit: int | None = None
+        for marker in path.split("?", 1)[1].split("&"):
+            name, _, value = marker.partition("=")
+            if name == "select":
+                columns = value.split(",")
+            elif name == "order":
+                order = value
+            elif name == "limit":
+                limit = int(value)
+            elif name == "or":
+                match = _KEYSET.match(urllib.parse.unquote(value))
+                assert match, f"unknown logic tree: {value}"
+                at, at_again, sid = (_unliteral(group) for group in match.groups())
+                assert at == at_again, "the keyset names one boundary timestamp"
+                rows = [
+                    row for row in rows
+                    if row["saved_at"] < at or (row["saved_at"] == at and row["saved_id"] < sid)
+                ]
+            elif name in self._FILTERS:
+                operator, _, operand = value.partition(".")
+                wanted = urllib.parse.unquote(operand)
+                assert operator in ("eq", "neq"), f"unknown operator: {marker}"
+                rows = [row for row in rows if (row.get(name) == wanted) == (operator == "eq")]
+            else:
+                raise AssertionError(f"unknown query marker: {marker}")
+        if order is not None:
+            assert order == "saved_at.desc,saved_id.desc", f"unknown order: {order}"
+            rows = sorted(rows, key=lambda row: (row["saved_at"], row["saved_id"]), reverse=True)
+        if limit is not None:
+            rows = rows[:limit]
+        if columns is not None:
+            rows = [{key: row[key] for key in columns if key in row} for row in rows]
         return rows
 
 
@@ -633,12 +676,180 @@ def test_u2_list_returns_only_the_callers_rows(
     assert [item["saved_id"] for item in beta_listed["items"]] == [other.saved_id]
 
 
+#: Five of the caller's ISSUER_ONE saves, three tied on one save moment.
+_LISTED_STAMPS = (
+    "2026-10-15T09:00:00Z",
+    "2026-10-14T09:00:00Z",
+    "2026-10-14T09:00:00Z",
+    "2026-10-14T09:00:00Z",
+    "2026-10-13T09:00:00Z",
+)
+_TIED_STAMP = _LISTED_STAMPS[1]
+
+
+def _listed_world(composed) -> tuple[list[SavedScenario], list[SavedScenario]]:
+    """The caller's five ISSUER_ONE rows (distinct views, so distinct ids) and
+    two rows the listing must never serve: another user's and another issuer's,
+    both on the tied save moment so they sit inside every keyset window."""
+    own = [
+        contract_suite._make_saved(
+            composed,
+            view={"mode": "scenario", "cutoff": f"2026-10-0{index + 1}T00:00:00Z"},
+            user_id="paid-user",
+            saved_at=stamp,
+        )
+        for index, stamp in enumerate(_LISTED_STAMPS)
+    ]
+    foreign = contract_suite._make_saved(composed, user_id=USER_BETA, saved_at=_TIED_STAMP)
+    elsewhere = contract_suite._make_saved(
+        composed, issuer_id=ISSUER_TWO, user_id="paid-user", saved_at=_TIED_STAMP
+    )
+    return own, [foreign, elsewhere]
+
+
+def test_u2_list_pages_by_keyset_through_save_moment_ties(
+    client: TestClient,
+    served: evaluate_suite._Served,
+    built: evaluate_suite._Built,
+    with_inputs,
+    composed,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    own, never = _listed_world(composed)
+    assert len({saved.saved_id for saved in own + never}) == 7
+    fake = _PartitionedStore(rows=[_row_for(saved) for saved in never + own])
+    monkeypatch.setattr(store, "_transport", fake)
+
+    walked: list[str] = []
+    after: str | None = None
+    pages = 0
+    while True:
+        query = "?limit=2" + (f"&after={urllib.parse.quote(after, safe='')}" if after else "")
+        page = evaluate_suite._checked(client.get(f"{SAVED_PATH}{query}"), status=200)
+        pages += 1
+        assert 1 <= len(page["items"]) <= 2
+        walked.extend(item["saved_id"] for item in page["items"])
+        after = page["next_after"]
+        if after is None:
+            break
+        assert after == walked[-1]
+        assert pages < 5, "the walk terminates"
+
+    expected = [
+        saved.saved_id
+        for saved in sorted(own, key=lambda saved: (saved.saved_at, saved.saved_id), reverse=True)
+    ]
+    assert walked == expected, "every row once, in (saved_at desc, saved_id desc) order"
+    assert pages == 3
+    for saved in never:
+        assert saved.saved_id not in walked
+    keyset_reads = [path for _, path in fake.calls if "&or=" in path]
+    assert len(keyset_reads) == 2, "pages two and three are keyset reads, not offsets"
+    assert all("offset=" not in path for _, path in fake.calls)
+
+    # The other issuer's page holds exactly that issuer's own row.
+    elsewhere_path = f"{PREFIX}/issuers/{ISSUER_TWO}/scenarios/saved"
+    elsewhere = evaluate_suite._checked(client.get(elsewhere_path), status=200)
+    assert [item["saved_id"] for item in elsewhere["items"]] == [never[1].saved_id]
+    assert elsewhere["next_after"] is None
+
+
+def test_u2_list_cursor_outside_the_callers_issuer_page_is_400(
+    client: TestClient,
+    served: evaluate_suite._Served,
+    built: evaluate_suite._Built,
+    with_inputs,
+    composed,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    own, (foreign, elsewhere) = _listed_world(composed)
+    monkeypatch.setattr(
+        store, "_transport", _PartitionedStore(rows=[_row_for(saved) for saved in own + [foreign, elsewhere]])
+    )
+    for cursor in ("saved:nobody", foreign.saved_id, elsewhere.saved_id):
+        refused = client.get(f"{SAVED_PATH}?limit=2&after={urllib.parse.quote(cursor, safe='')}")
+        assert refused.status_code == 400, (cursor, refused.text[:200])
+        assert evaluate_suite._detail(refused) == "invalid cursor"
+        evaluate_suite._checked(refused)
+    # The same rows still page normally from a real cursor.
+    real = evaluate_suite._checked(
+        client.get(f"{SAVED_PATH}?limit=2&after={urllib.parse.quote(own[0].saved_id, safe='')}"),
+        status=200,
+    )
+    assert own[0].saved_id not in [item["saved_id"] for item in real["items"]]
+    assert len(real["items"]) == 2
+
+
+# ---------------------------------------------------------------------------
+# Gate 26b — save and the evaluate export stamp the generations they evaluated
+# ---------------------------------------------------------------------------
+
+
+def _republish_after_evaluating(
+    monkeypatch: pytest.MonkeyPatch, served: evaluate_suite._Served, built
+) -> dict[str, Any]:
+    """Wrap the shared evaluate internals so a nightly republish lands between
+    the evaluation and whatever the route does next.  Returns a live record of
+    the calls and the generation the republish installed."""
+    seen: dict[str, Any] = {"calls": 0, "republished": None}
+    evaluate = api._evaluate_internals
+
+    def raced(*args: Any, **kwargs: Any):
+        evaluated = evaluate(*args, **kwargs)
+        seen["calls"] += 1
+        seen["republished"] = _unavailable_families_inputs(served, built)["generation_id"]
+        return evaluated
+
+    monkeypatch.setattr(api, "_evaluate_internals", raced)
+    return seen
+
+
+def test_u2_save_and_export_stamp_the_evaluated_generations_not_a_later_read(
+    client: TestClient,
+    served: evaluate_suite._Served,
+    built: evaluate_suite._Built,
+    store_transport: _FakePostgREST,
+    with_inputs,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    evaluated_inputs = str(with_inputs.record["generation_id"])
+    evaluated = evaluate_suite._checked(
+        client.post(
+            f"{PREFIX}/issuers/{ISSUER_ONE}/scenarios/evaluate",
+            json=evaluate_suite._scenario_body(),
+        ),
+        status=200,
+    )
+    seen = _republish_after_evaluating(monkeypatch, served, built)
+
+    saved = evaluate_suite._checked(client.post(SAVED_PATH, json=_save_body()), status=201)["saved"]
+    assert seen["calls"] == 1
+    assert seen["republished"] != evaluated_inputs, "the race really moved the inputs generation"
+    assert saved["inputs_generation_id"] == evaluated_inputs
+    assert saved["state_generation_id"] == str(built.bundle["generation_id"])
+    assert saved["result_id"] == evaluated["result"]["result_id"]
+
+    expected_envelope = {
+        **evaluated,
+        "scenario": evaluate_suite._test_scenario().as_record(),
+        "issuer_id": ISSUER_ONE,
+        "inputs_generation_id": evaluated_inputs,
+    }
+    for fmt, media_prefix in (("csv", CSV_MEDIA_TYPE), ("parquet", PARQUET_MEDIA_TYPE)):
+        _write_inputs(served, with_inputs.record)
+        fresh = client.post(f"{EVALUATE_EXPORT_PATH}.{fmt}", json=evaluate_suite._scenario_body())
+        export = export_scenario_envelope(expected_envelope, fmt)
+        filename = f"{expected_envelope['result']['result_id']}.{fmt}"
+        _checked_attachment(fresh, export=export, media_prefix=media_prefix, filename=filename)
+    assert seen["calls"] == 3
+
+
 # ---------------------------------------------------------------------------
 # Gate 27 — every restore outcome is 200 with the typed outcome
 # ---------------------------------------------------------------------------
 
 
-def _unavailable_families_inputs(served: evaluate_suite._Served, built) -> None:
+def _unavailable_families_inputs(served: evaluate_suite._Served, built) -> dict[str, Any]:
     entries = evaluate_suite._fixture_entries(built.bundle["as_of"])
     entries[inputs_suite.FINANCIALS_FAMILY] = inputs_suite.FamilyEntry(
         family=inputs_suite.FINANCIALS_FAMILY,
@@ -650,7 +861,9 @@ def _unavailable_families_inputs(served: evaluate_suite._Served, built) -> None:
         support="unavailable",
         reason_codes=("share_observations_not_admitted",),
     )
-    _write_inputs(served, evaluate_suite._inputs_bundle_record(built, entries=entries))
+    record = evaluate_suite._inputs_bundle_record(built, entries=entries)
+    _write_inputs(served, record)
+    return record
 
 
 def _corrected_financials_inputs(
