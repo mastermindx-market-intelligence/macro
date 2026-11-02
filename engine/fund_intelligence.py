@@ -575,7 +575,7 @@ def _snapshot_filing_provenance(frame: pd.DataFrame) -> dict:
         base = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{accession.replace('-', '')}/"
         index_url = f"{base}{accession}-index.html"
         supplied_index = one("source_index_url")
-        if supplied_index and supplied_index != index_url:
+        if supplied_index and supplied_index not in (index_url, f"{base}index.json"):
             raise ValueError("filing index mismatch")
         source_url = one("source_url")
         if source_url:
@@ -587,7 +587,8 @@ def _snapshot_filing_provenance(frame: pd.DataFrame) -> dict:
                 raise ValueError("filing source mismatch")
         return {"status": "available", "manager": one("fund_name"),
                 "cik": str(int(cik)), "accession": accession, "form": form,
-                "index_url": index_url, "source_url": source_url,
+                "index_url": index_url, "receipt_index_url": supplied_index,
+                "source_url": source_url,
                 "source_sha256": one("source_sha256")}
     except (TypeError, ValueError):
         return {"status": "unavailable"}

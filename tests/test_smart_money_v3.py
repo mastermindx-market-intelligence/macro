@@ -1493,6 +1493,7 @@ def _retained_fund_snapshot():
         'accession': '0001193125-26-352200', 'form': '13F-HR',
         'source_url': 'https://www.sec.gov/Archives/edgar/data/1067983/000119312526352200/56757.xml',
         'available_date': '2026-08-15',
+        'period_end': '2026-06-30', 'filing_date': '2026-08-14',
     }])
 
 
@@ -1532,6 +1533,32 @@ def test_fund_filing_provenance_legacy_and_conflicting_metadata_unavailable():
     other = frame.copy()
     other['accession'] = '0001193125-26-000001'
     assert fi._snapshot_filing_provenance(pd.concat([frame, other])) == {'status': 'unavailable'}
+
+
+def test_fund_filing_provenance_uses_incumbent_receipt_index_on_real_read_path(tmp_path, monkeypatch):
+    from engine import smart_money as sm
+    import pandas as pd
+    folder = tmp_path / 'smart_money' / 'berkshire'
+    folder.mkdir(parents=True)
+    _retained_fund_snapshot().to_parquet(folder / '2026-06-30.parquet', index=False)
+    receipt_index = 'https://www.sec.gov/Archives/edgar/data/1067983/000119312526352200/index.json'
+    pd.DataFrame([{'slug': 'berkshire', 'period_end': '2026-06-30',
+                   'filing_date': '2026-08-14', 'accepted_at': '20260814170000',
+                   'accession': '0001193125-26-352200', 'form': '13F-HR',
+                   'source_index_url': receipt_index}]).to_parquet(
+                       tmp_path / 'smart_money' / 'filing_receipts.parquet', index=False)
+    monkeypatch.setattr(sm.config, 'data_dir', lambda: tmp_path)
+    monkeypatch.setattr(sm, '_RECEIPT_CACHE', None)
+    monkeypatch.setattr(fi, '_HIST_CACHE', {})
+    monkeypatch.setattr(fi, 'resolve_tickers', lambda frame, *args: frame.assign(ticker='AAPL'))
+    # _read_all -> receipt metadata -> actual resolution -> book metadata.
+    meta = fi._book_meta('berkshire', {}, {})
+    assert meta['filing']['status'] == 'available'
+    assert meta['filing']['receipt_index_url'] == receipt_index
+    assert meta['filing']['index_url'].endswith('/0001193125-26-352200-index.html')
+    assert meta['filing']['source_url'].endswith('/56757.xml')
+    assert (meta['period_end'], meta['filing_date'], meta['available_date']) == ('2026-06-30', '2026-08-14', '2026-08-15')
+    assert (meta['n_positions'], meta['n_resolved'], meta['book_value_usd']) == (1, 1, 100.0)
 
 
 @pytest.mark.skipif(jinja2 is None or _DOSSIER_DIR is None, reason='jinja2/template unavailable')
