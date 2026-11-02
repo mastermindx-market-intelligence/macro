@@ -153,7 +153,7 @@ html[data-lang="zh"] .rf-grp-h { letter-spacing:0; text-transform:none; }
 html[data-theme="light"] .rf-sum:hover { background:var(--panel2); }
 .rf-hash { color:var(--muted); font-size:var(--fs-label); opacity:0; flex:none;
   transition:opacity var(--t-fast,.16s) ease; }
-.rf-sum:hover .rf-hash, .rf-sum:focus-visible .rf-hash, .rf-e:target .rf-hash { opacity:1; }
+.rf-sum:hover .rf-hash, .rf-sum:focus-visible .rf-hash, .rf-e:is(:target, .rf-open):not(.rf-closed) .rf-hash { opacity:1; }
 .rf-label { font-size:var(--fs-h2); font-weight:800; letter-spacing:-.01em; }
 html[data-lang="zh"] .rf-label { font-weight:700; letter-spacing:0; }
 .rf-gloss { color:var(--muted); font-size:var(--fs-sm); min-width:0;
@@ -169,18 +169,17 @@ html[data-lang="zh"] .rf-kind { letter-spacing:0; text-transform:none; }
 
 /* ══ :target — deep-link open + focus state. ONE mechanism, two materials. ════ */
 .rf-body { display:none; }
-.rf-e:target .rf-body { display:block; padding:0 var(--sp-4,16px) var(--sp-5,20px) var(--sp-4,16px); }
-/* DARK: lift by LUMINANCE (--panel2) + a 3px accent rail. */
-.rf-e:target { background:var(--panel2); border-left:3px solid var(--link);
+.rf-e:is(:target, .rf-open):not(.rf-closed) .rf-body { display:block; padding:0 var(--sp-4,16px) var(--sp-5,20px) var(--sp-4,16px); }
+/* DARK: lift by luminance with an even neutral border. */
+.rf-e:is(:target, .rf-open):not(.rf-closed) { background:var(--panel2); border:1px solid var(--line);
   padding-left:var(--sp-2,8px); }
 /* LIGHT: a --panel2 step on a white sheet is the "dirty smudge" §12 names. Lift by
-   STRUCTURE instead — the card stays white, gains an accent hairline and a real
-   shadow, and keeps the same 3px rail so the semantic marker is identical. */
-html[data-theme="light"] .rf-e:target { background:var(--panel);
-  border:1px solid color-mix(in srgb, var(--link) 34%, var(--line));
-  border-left:3px solid var(--link); box-shadow:var(--card-shadow); }
-.rf-e:target .rf-label { font-weight:800; }
-.rf-e:target + .rf-e > .rf-sum, .rf-e:target > .rf-sum { border-top-color:transparent; }
+   STRUCTURE instead — the card stays white with an even neutral border and a
+   shadow. Typography carries the same open-state meaning in both themes. */
+html[data-theme="light"] .rf-e:is(:target, .rf-open):not(.rf-closed) { background:var(--panel);
+  border:1px solid var(--line); box-shadow:var(--card-shadow); }
+.rf-e:is(:target, .rf-open):not(.rf-closed) .rf-label { font-weight:800; }
+.rf-e:is(:target, .rf-open):not(.rf-closed) + .rf-e > .rf-sum, .rf-e:is(:target, .rf-open):not(.rf-closed) > .rf-sum { border-top-color:transparent; }
 /* Close-affordance fallback (verified empirically in headless Chromium,
    2026-09-02): history.replaceState() clearing location.hash does NOT make
    :target stop matching in Chromium — it is "sticky" until a real navigation
@@ -190,7 +189,7 @@ html[data-theme="light"] .rf-e:target { background:var(--panel);
    and handleHash() removes the class the moment a real hash navigation
    re-opens that (or any) entry. */
 .rf-e.rf-closed .rf-body { display:none !important; }
-.rf-e.rf-closed { background:none; border-left-color:transparent; padding-left:0; }
+.rf-e.rf-closed { background:none; border:0; padding-left:0; }
 html[data-theme="light"] .rf-e.rf-closed { background:none; border:0; box-shadow:none; }
 
 /* ── record blocks ──────────────────────────────────────────────────────────── */
@@ -252,7 +251,7 @@ html[data-theme="light"] .rf-e.rf-closed { background:none; border:0; box-shadow
   .rf-gloss { grid-column:1 / -1; white-space:normal; overflow:visible;
               display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
   .rf-label { font-size:var(--fs-md); }
-  .rf-e:target .rf-body { padding:0 var(--sp-3,12px) var(--sp-4,16px); }
+  .rf-e:is(:target, .rf-open):not(.rf-closed) .rf-body { padding:0 var(--sp-3,12px) var(--sp-4,16px); }
   .rf-ledger { grid-template-columns:minmax(56px,max-content) minmax(0,1fr); }
   .rf-links { gap:var(--sp-1,4px); }
   html[data-theme="light"] .rf-list { padding:var(--sp-2,8px) var(--sp-3,12px) var(--sp-3,12px); }
@@ -790,8 +789,7 @@ html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var
     // alone does not make :target stop matching, so stamp .rf-closed on the
     // currently-open entry (its CSS wins regardless of :target). handleHash()
     // clears the class the moment a real navigation re-opens an entry.
-    var openEl = root.querySelector(".rf-e:target");
-    if (openEl) openEl.classList.add("rf-closed");
+    setOpenEntry(null);
     history.replaceState(null, "", location.pathname + location.search);
   }
 
@@ -853,7 +851,7 @@ html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var
       ev.preventDefault();
       var article = closeLink.closest(".rf-e");
       clearHashToBrowse();
-      if (article) article.scrollIntoView({ block: "start" });
+      if (article) scrollEntryIntoView(article, "auto");
       return;
     }
   });
@@ -883,6 +881,24 @@ html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var
 
   // 7 · Deep-link on load + hashchange.
   var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Native :target does not follow History.replaceState used by the shell.
+  // The acknowledged URL therefore owns the explicit open entry as well.
+  function setOpenEntry(target){
+    entries.forEach(function(el){
+      var open = el === target;
+      el.classList.toggle("rf-open", open);
+      el.classList.toggle("rf-closed", !open);
+      var summary = el.querySelector(".rf-sum");
+      if (summary) summary.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+  }
+  function scrollEntryIntoView(entry, behavior){
+    // The mobile controls can wrap or expand; measure their actual sticky height.
+    var bar = root.querySelector(".rf-bar");
+    var clearance = bar ? Math.ceil(bar.getBoundingClientRect().height) + 12 : 0;
+    entry.style.scrollMarginTop = Math.max(84, clearance) + "px";
+    entry.scrollIntoView({ block: "start", behavior: behavior });
+  }
   function handleHash(){
     // N6: decodeURIComponent throws URIError on a malformed percent-encoding
     // (an incomplete/invalid escape). Uncaught here it would abort THIS whole
@@ -896,18 +912,18 @@ html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var
       catch (e) { hash = ""; }
     }
     if (!hash){
+      setOpenEntry(null);
       if (missEl) missEl.hidden = true;
       return;
     }
     var target = null;
     try { target = root.getElementById(hash); } catch(e) {}
-    if (target && target.classList.contains("rf-e")){
-      // a real hash navigation is opening this entry — clear any stale
-      // Close-affordance fallback class so :target's own styling shows again.
-      target.classList.remove("rf-closed");
+    var entry = target && target.classList.contains("rf-e") ? target : null;
+    setOpenEntry(entry);
+    if (entry){
       if (missEl) missEl.hidden = true;
       window.requestAnimationFrame(function(){
-        target.scrollIntoView({ block: "start", behavior: reduceMotion ? "auto" : "smooth" });
+        scrollEntryIntoView(target, reduceMotion ? "auto" : "smooth");
       });
     } else {
       if (missEl){

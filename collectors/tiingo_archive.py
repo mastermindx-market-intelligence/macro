@@ -32,6 +32,7 @@ DEFAULT_ARCHIVE = EXTERNAL_MOUNT / "market-data" / "tiingo"
 DEFAULT_KEY_FILE = EXTERNAL_MOUNT / ".mastermind_private" / "tiingo" / "api_key"
 MIN_FREE_BYTES = 35 * 1024**3
 MAX_RESPONSE_BYTES = 512 * 1024**2
+RESPONSE_OBSERVATION_CLOCK_CONTRACT = "local_utc_after_bounded_read_before_http_exit/v1"
 _SYMBOL = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,35}$")
 _ALLOWED_PARAMS = frozenset({
     "startDate", "endDate", "startExDate", "endExDate", "exDate",
@@ -184,6 +185,13 @@ def receipt_identity(receipt: dict[str, Any]) -> str:
                                      allow_nan=False).encode()).hexdigest()
 
 
+def parse_observation_clock_contract(value: Any) -> str | None:
+    """An optional bounded producer declaration, never execution authentication."""
+    if value is not None and (type(value) is not str or not 1 <= len(value) <= 128):
+        raise TiingoArchiveError("invalid observation clock contract")
+    return value
+
+
 def validate_receipt(receipt: dict[str, Any]) -> str:
     if not isinstance(receipt, dict):
         raise TiingoArchiveError("invalid original receipt")
@@ -193,6 +201,7 @@ def validate_receipt(receipt: dict[str, Any]) -> str:
     if source != "boats-firehose":
         validate_request(source, receipt.get("symbol"), receipt.get("request_path"))
     capture_day(receipt.get("observed_at_utc") or receipt.get("first_received_at_utc"))
+    parse_observation_clock_contract(receipt.get("observation_clock_contract"))
     identity = receipt_identity(receipt)
     if "receipt_id" in receipt and receipt["receipt_id"] != identity:
         raise TiingoArchiveError("original receipt identity mismatch")
@@ -291,11 +300,17 @@ class Archive:
 
     def store_response(self, source: str, symbol: str | None, path: str,
                        raw: bytes, *, received_at: str | None = None,
-                       content_type: str = "application/json", http_status: int = 200
+                       content_type: str = "application/json", http_status: int = 200,
+                       observation_clock_contract: str | None = None,
                        ) -> dict[str, Any]:
         if source not in SOURCES or SOURCES[source].symbol != bool(symbol):
             raise ValueError("invalid source/symbol")
         validate_request(source, symbol, path, allow_legacy_sources=False)
+        parse_observation_clock_contract(observation_clock_contract)
+        if observation_clock_contract is not None and (
+            observation_clock_contract != RESPONSE_OBSERVATION_CLOCK_CONTRACT or not received_at
+        ):
+            raise TiingoArchiveError("unsupported or untimed response observation clock contract")
         require_space(self.root, floor=self.free_floor)
         received_at = received_at or utc_now()
         day = capture_day(received_at)
@@ -338,6 +353,8 @@ class Archive:
             "correction_policy": "APPEND_VINTAGE_NEVER_IN_PLACE",
             "price_basis_policy": "PRESERVE_VENDOR_RAW_AND_ADJUSTED_AS_DIFFERENT_FIELDS",
         }
+        if observation_clock_contract is not None:
+            receipt["observation_clock_contract"] = observation_clock_contract
         receipt["receipt_id"] = receipt_identity(receipt)
         receipt_path = self.root / "receipts" / source / day / f"{request_hash}-{fingerprint[:24]}.json"
         if receipt_path.is_symlink() or not receipt_path.resolve().is_relative_to(self.root):
@@ -356,9 +373,13 @@ class Archive:
                 raise TiingoArchiveError("original receipt partition mismatch")
         except (OSError, ValueError, TypeError, KeyError) as exc:
             raise TiingoArchiveError("existing receipt is corrupt") from exc
-        return {"new_raw": added, "raw_sha256": fingerprint, "path": rel.as_posix(),
-                "receipt_id": identity, "observed_at_utc": original["observed_at_utc"],
-                "rows_hint": count, "raw_bytes": len(raw)}
+        result = {"new_raw": added, "raw_sha256": fingerprint, "path": rel.as_posix(),
+                  "receipt_id": identity, "observed_at_utc": original["observed_at_utc"],
+                  "rows_hint": count, "raw_bytes": len(raw)}
+        # A reused first receipt owns its clock contract, including its absence.
+        if "observation_clock_contract" in original:
+            result["observation_clock_contract"] = original["observation_clock_contract"]
+        return result
 
     def store_boats_batch(self, messages: Iterable[tuple[str, str]]) -> dict[str, Any]:
         """One append-only segment of timestamped raw websocket envelopes."""
@@ -404,8 +425,9 @@ class Archive:
                 "raw_bytes": len(data), "counts": count}
 
 
-def fetch_json_bytes(path: str, key: str, *, timeout: float = 30,
-                     max_bytes: int = MAX_RESPONSE_BYTES) -> tuple[bytes, str]:
+def _fetch_json_observation(path: str, key: str, *, timeout: float = 30,
+                            max_bytes: int = MAX_RESPONSE_BYTES) -> tuple[bytes, str, str]:
+    """Return bounded bytes, content type, and the local read-completion clock."""
     # Caller constructs a fixed-origin, documented endpoint via request_path().
     if not path.startswith("/") or "//" in path or "@" in path:
         raise ValueError("unsafe API path")
@@ -419,7 +441,9 @@ def fetch_json_bytes(path: str, key: str, *, timeout: float = 30,
             raw = response.read(max_bytes + 1)
             if len(raw) > max_bytes:
                 raise TiingoArchiveError("Tiingo response exceeded bounded archive size")
-            return raw, mime
+            # Capture before HTTP teardown or archive work can cross a UTC boundary.
+            observed_at = utc_now()
+            return raw, mime, observed_at
     except urllib.error.HTTPError as exc:
         # Do not print response body; vendors sometimes echo authentication details.
         raise TiingoArchiveError(f"Tiingo HTTP {exc.code}; source not admitted") from None
@@ -427,8 +451,17 @@ def fetch_json_bytes(path: str, key: str, *, timeout: float = 30,
         raise TiingoArchiveError("Tiingo transport unavailable") from None
 
 
+def fetch_json_bytes(path: str, key: str, *, timeout: float = 30,
+                     max_bytes: int = MAX_RESPONSE_BYTES) -> tuple[bytes, str]:
+    """Preserve the public bytes/content-type pair for direct fetch callers."""
+    raw, mime, _ = _fetch_json_observation(path, key, timeout=timeout, max_bytes=max_bytes)
+    return raw, mime
+
+
 def collect_one(archive: Archive, source: str, symbol: str | None, key: str,
                 params: dict[str, Any] | None = None) -> dict[str, Any]:
     path = request_path(source, symbol, params)
-    raw, mime = fetch_json_bytes(path, key)
-    return archive.store_response(source, symbol, path, raw, content_type=mime)
+    raw, mime, observed_at = _fetch_json_observation(path, key)
+    return archive.store_response(source, symbol, path, raw, content_type=mime,
+                                  received_at=observed_at,
+                                  observation_clock_contract=RESPONSE_OBSERVATION_CLOCK_CONTRACT)

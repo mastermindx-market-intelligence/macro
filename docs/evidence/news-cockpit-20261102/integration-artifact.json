@@ -1,0 +1,18 @@
+{
+  "operation": "news-cockpit-rebuild-20261018-astra-01",
+  "source_parent": "a32b568a5488df28da226232e43c9ddf4998a0e6",
+  "incoming_main": "b4a0ae4e08fb0a78e156d445f9b2078a0489cffc",
+  "kind": "main_integration_artifact_finalization",
+  "before_sha256": "730f128a655fac79a83828fdc90c21cc7a083f2b055fd7ef9284099690a13ca0",
+  "after_sha256": "ec9a38f6801e3d801f065b6f77d361c6e82f175b6cbab0c88b6ff6cb9d963985",
+  "bytes": 369748,
+  "canonical_finalizer_fixed_point": true,
+  "preserved_context_sha256": {
+    "reporting_seed": "af3749d343622526c2abfa6e70bc54ccabbc85948e2cf8a6e86e1fe4226b1071",
+    "calendar_edition": "983358700d4c93787bca6f39f52325913f5cc7be333a44b81e1be91827e74023",
+    "event_impact": "96e26bd9ca51f9ee90a3673320034486aeddc64d1e69485ceebc179a581b917a"
+  },
+  "not_a_fresh_data_build": true,
+  "not_applied_to_paper": true,
+  "not_deployed": true
+}

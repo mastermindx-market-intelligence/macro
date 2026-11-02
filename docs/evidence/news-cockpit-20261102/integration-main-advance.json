@@ -1,0 +1,17 @@
+{
+  "kind": "protected_main_advance_composition",
+  "first_commit_attempt": "REFUSED_NOT_APPLIED_PROTECTED_BASE_MISMATCH_OR_UNAVAILABLE",
+  "source_parent": "a32b568a5488df28da226232e43c9ddf4998a0e6",
+  "prior_main": "b4a0ae4e08fb0a78e156d445f9b2078a0489cffc",
+  "current_main": "e4009c94d75770739844240b22f5fc915668aa9b",
+  "incoming_paths": [
+    "engine/fundamental_forensics/specialist_packs/pk02_sbc.py",
+    "research/financial_intelligence_fabric/FIF_A34_PACK_PROOF_LEDGER.json",
+    "tests/test_fif_specialist_packs.py"
+  ],
+  "all_incoming_blobs_exact": true,
+  "prior_merge_resolution_retained": true,
+  "normal_git_merge_quit_preserved_index_tree": true,
+  "news_source_artifact_deployment_and_manifest_unchanged_in_main_interval": true,
+  "managed_merge_parent_must_be": "e4009c94d75770739844240b22f5fc915668aa9b"
+}

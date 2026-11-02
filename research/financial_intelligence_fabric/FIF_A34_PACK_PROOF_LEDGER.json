@@ -1,0 +1,695 @@
+{
+  "schema": "fif.a34_pack_proof_ledger.v1",
+  "matrix_row": "A34",
+  "base_commit": "9af0a33eb38b08d902c3e593cb0e276d3f0d6a18",
+  "generated_at": "2026-11-02T02:02:34.525475+00:00",
+  "protocol_id": "fif-q0-quality-protocol/v1",
+  "packs": [
+    {
+      "pack_id": "PK01",
+      "name": "Debt, liquidity, covenants and maturities",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk01.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 27,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "missing",
+          "sealed": true,
+          "quality_label": "underpowered",
+          "quality_report": "research/financial_intelligence_fabric/reports/q1_held_out_20261031_g3/PK01_pack_quality_report.json",
+          "failed_families": [
+            {
+              "section_family": "covenant_text",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "debt_outstanding",
+              "disposition": "unavailable_research_only"
+            }
+          ]
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "held_out",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK02",
+      "name": "Stock compensation and dilution",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk02.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 44,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "missing",
+          "sealed": true,
+          "quality_label": "underpowered",
+          "quality_report": "research/financial_intelligence_fabric/reports/q1_held_out_20261031_g3/PK02_pack_quality_report.json",
+          "failed_families": [
+            {
+              "section_family": "eps",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "sbc",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "share_counts",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "share_repurchase",
+              "disposition": "unavailable_research_only"
+            }
+          ]
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "held_out",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK03",
+      "name": "Segments and geographic/product dimensions",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk03.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 42,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "missing",
+          "sealed": true,
+          "quality_label": "underpowered",
+          "quality_report": "research/financial_intelligence_fabric/reports/q1_held_out_20261031_g3/PK03_pack_quality_report.json",
+          "failed_families": [
+            {
+              "section_family": "segments",
+              "disposition": "unavailable_research_only"
+            }
+          ]
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "held_out",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK04",
+      "name": "Revenue recognition and contract balances",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk04.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 25,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "missing",
+          "sealed": true,
+          "quality_label": "underpowered",
+          "quality_report": "research/financial_intelligence_fabric/reports/q1_held_out_20261031_g3/PK04_pack_quality_report.json",
+          "failed_families": [
+            {
+              "section_family": "Total remaining performance obligations (amount not yet recognized as revenues from customer commitments, primarily Google Cloud) at 2020-12-31; revenue note; fact scale 9 on displayed 29.8.",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "Total remaining performance obligations (revenue backlog) at 2021-12-31; revenue note; fact scale 9 on displayed 51.0.",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "contract_liability",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "revenue",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "rpo",
+              "disposition": "unavailable_research_only"
+            }
+          ]
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "held_out",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK05",
+      "name": "Tax and uncertain tax positions",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk05.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 18,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "missing",
+          "sealed": true,
+          "quality_label": "underpowered",
+          "quality_report": "research/financial_intelligence_fabric/reports/q1_held_out_20261031_g3/PK05_pack_quality_report.json",
+          "failed_families": [
+            {
+              "section_family": "utp",
+              "disposition": "unavailable_research_only"
+            }
+          ]
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "held_out",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK06",
+      "name": "Leases and off-balance commitments",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk06.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 2,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "missing",
+          "sealed": true,
+          "quality_label": "underpowered",
+          "quality_report": "research/financial_intelligence_fabric/reports/q1_held_out_20261031_g3/PK06_pack_quality_report.json",
+          "failed_families": []
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "held_out",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK07",
+      "name": "M&A, goodwill, intangibles and impairments",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk07.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 39,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "missing",
+          "sealed": true,
+          "quality_label": "underpowered",
+          "quality_report": "research/financial_intelligence_fabric/reports/q1_held_out_20261031_g3/PK07_pack_quality_report.json",
+          "failed_families": [
+            {
+              "section_family": "business_combination",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "goodwill_intangibles",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "goodwill_rollforward",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "impairment_testing",
+              "disposition": "unavailable_research_only"
+            }
+          ]
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "held_out",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK08",
+      "name": "Legal contingencies",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk08.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 31,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "missing",
+          "sealed": true,
+          "quality_label": "underpowered",
+          "quality_report": "research/financial_intelligence_fabric/reports/q1_held_out_20261031_g3/PK08_pack_quality_report.json",
+          "failed_families": [
+            {
+              "section_family": "commitments_note",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "legal_proceedings",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "loss_contingency",
+              "disposition": "unavailable_research_only"
+            }
+          ]
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "held_out",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK09",
+      "name": "Controls, auditor and going concern",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk09.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 45,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "missing",
+          "sealed": true,
+          "quality_label": "underpowered",
+          "quality_report": "research/financial_intelligence_fabric/reports/q1_held_out_20261031_g3/PK09_pack_quality_report.json",
+          "failed_families": [
+            {
+              "section_family": "auditor_opinion",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "going_concern_wording",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "icfr_opinion",
+              "disposition": "unavailable_research_only"
+            }
+          ]
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "held_out",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK10",
+      "name": "Proxy compensation and governance",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk10.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 26,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "missing",
+          "sealed": false,
+          "quality_label": "underpowered",
+          "quality_report": "research/financial_intelligence_fabric/reports/q1_held_out_20261031_g3/PK10_pack_quality_report.json",
+          "failed_families": []
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "held_out",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK11",
+      "name": "Financial-institution credit/capital/liquidity",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk11.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 15,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "missing",
+          "sealed": true,
+          "quality_label": "underpowered",
+          "quality_report": "research/financial_intelligence_fabric/reports/q1_held_out_20261031_g3/PK11_pack_quality_report.json",
+          "failed_families": [
+            {
+              "section_family": "cet1_or_stated_ratio",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "credit_loss",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "lcr_or_stated_liq",
+              "disposition": "unavailable_research_only"
+            }
+          ]
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "held_out",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK12",
+      "name": "Biotech cash/R&D/financing disclosures",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk12.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 16,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "missing",
+          "sealed": true,
+          "quality_label": "underpowered",
+          "quality_report": "research/financial_intelligence_fabric/reports/q1_held_out_20261031_g3/PK12_pack_quality_report.json",
+          "failed_families": [
+            {
+              "section_family": "cash_flow",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "cash_investments",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "liquidity",
+              "disposition": "unavailable_research_only"
+            },
+            {
+              "section_family": "rd_expense",
+              "disposition": "unavailable_research_only"
+            }
+          ]
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "held_out",
+        "review",
+        "live"
+      ]
+    }
+  ],
+  "gaps_by_pack": {
+    "PK01": [
+      "gold",
+      "held_out",
+      "review",
+      "live"
+    ],
+    "PK02": [
+      "gold",
+      "held_out",
+      "review",
+      "live"
+    ],
+    "PK03": [
+      "gold",
+      "held_out",
+      "review",
+      "live"
+    ],
+    "PK04": [
+      "gold",
+      "held_out",
+      "review",
+      "live"
+    ],
+    "PK05": [
+      "gold",
+      "held_out",
+      "review",
+      "live"
+    ],
+    "PK06": [
+      "gold",
+      "held_out",
+      "review",
+      "live"
+    ],
+    "PK07": [
+      "gold",
+      "held_out",
+      "review",
+      "live"
+    ],
+    "PK08": [
+      "gold",
+      "held_out",
+      "review",
+      "live"
+    ],
+    "PK09": [
+      "gold",
+      "held_out",
+      "review",
+      "live"
+    ],
+    "PK10": [
+      "gold",
+      "held_out",
+      "review",
+      "live"
+    ],
+    "PK11": [
+      "gold",
+      "held_out",
+      "review",
+      "live"
+    ],
+    "PK12": [
+      "gold",
+      "held_out",
+      "review",
+      "live"
+    ]
+  },
+  "packs_with_gaps": 12,
+  "packs_complete": 0
+}

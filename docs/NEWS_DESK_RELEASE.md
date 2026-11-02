@@ -712,3 +712,86 @@ Browser validation remains unaccepted. The connected browser could not reach the
 Paper's full current catalog was captured read-only through PaperClient from protected Mastermind 19cb00cfed26b68f0a8a5cdc0f2f1a9463a3feec on M2. Its exact 41-descriptor digest is 16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd. This is a real semantic change: set_text_content replaces textContent with required html, create_file/list_resources add optional fields, and four new resource-management tools remain outside all allowlists. Do not admit the digest as a description-only change. Qualification, independent review and a normal same-direct-app runtime update remain required; no canvas edits or runtime changes have occurred.
 
 The two new paid audits returned retained responses; neither is accepted as a source approval or catalog qualification. The parent's corrections and exact response digests are retained in audit-disposition.json. The audit's suggestion to recover a fresh workspace and its legacy Studio runtime recommendation do not apply to this verified original M2 source/direct-Paper carrier. Historical no-replay review dispositions remain unchanged. The PR stays held for final independent review, current CI, actual Paper edits and visual proof, followed by normal merge/render/deployment and live acceptance.
+
+## Current-main source integration — 2026-11-02
+
+The original managed News branch integrates Macro main
+`b4a0ae4e08fb0a78e156d445f9b2078a0489cffc` into the verified local
+refinement parent `a32b568a5488df28da226232e43c9ddf4998a0e6`.
+The three conflicts are resolved on the original carrier and operation.
+The API restart trigger preserves the union of both parents, including
+News intelligence history and all newer main deployment inputs. The
+CI registry retains 372 unique jobs, every unilateral payload and the
+exact additive path multisets in all seven jointly changed fields.
+No suite, command, selector, timeout, or job is removed.
+
+Canonical measurements on the actual composed working tree take 104.34s:
+index 136 jobs / 5,843 estimator units, free-content 137 / 5,870,
+and plan-book 129 / 5,593; each selects ten packs. All fit main's
+existing ceilings (137/5,886; 138/5,877; 130/5,636). No budget increase
+is needed. Both parents' prior measurement histories remain in the test.
+These are planner weights, not measured job durations.
+
+The redesigned News artifact is retained and finalized through current
+`lib.pages.write_page` and `scripts.optimize_assets.make_optimizer`.
+The finalizer is a fixed point. The 369,748-byte page hashes to
+`ec9a38f6801e3d801f065b6f77d361c6e82f175b6cbab0c88b6ff6cb9d963985`.
+Its reporting seed, calendar edition and event-impact payload remain
+byte-exact. This is a source/artifact composition, not a fresh data
+build, covering production render, deployed page or Paper modification.
+
+Post-integration validation passed 719 Python tests (News rendering,
+JS contract wrapper, API, intake, marketing desk, GDELT and deployment
+self-heal) and all 66 mounted aggregate/company interaction tests.
+The Python JS wrapper is included in the 719 total; its child assertions
+must not be counted again. Shell syntax and the candidate working diff
+check pass. One inherited FastAPI/Starlette deprecation warning remains.
+Exact commands, logs and digests are retained in
+`docs/evidence/news-cockpit-20261102/validation-integration.json`;
+packing and registry comparison have separate receipts.
+
+### Remaining acceptance and custody
+
+Paper's current News boards were reread on their explicit page and file.
+The four intended refinement targets remain desktop dark/light
+`6FXR-0` / `6GMY-0` and mobile dark/light `6GUZ-0` / `6H8F-0`.
+No Paper mutation has been attempted or applied. Its selected direct
+carrier still refuses the unqualified observed 16e catalog.
+
+The new bounded support proposal
+`news-paper-16e-proposal-20261102-c2-01` is on the original News root.
+Controller81823 reported a lease wait; worker start and terminal return
+remain unconfirmed. This is an unapplied compatibility proposal, not
+an approved adapter patch, runtime change or retry of the historic
+News source review.
+
+Browser acceptance of this candidate remains UNRUN. The connected
+browser cannot reach the loopback-only fixture server. Automatic
+approval review denied the temporary public localtunnel because it
+would transmit preview source/application data through an untrusted
+third party without specific authorization. That tunnel was terminated
+and its termination read back. No substitute tunnel, raw CDP or alternate
+browser was used. Passing automated tests are not visual acceptance.
+
+The original failed independent News source review retains its recorded
+no-replay disposition. Current hosted CI, a lawful independent review,
+Paper refinement/readback, browser acceptance, protected merge, covering
+render and actual live acceptance remain outstanding. The mission-owned
+merge hold is retained. This checkpoint does not claim SHIPPED,
+production-ready visual quality, review approval, or background follow-up.
+
+### Publication-fence main advance — 2026-11-02
+
+The first managed integration commit refused before effects because shared
+origin/main advanced to `e4009c94d75770739844240b22f5fc915668aa9b`.
+GitHub and original-carrier ls-remote agreed on that head. Its entire
+interval is one accepted FIF PK02 correction across three paths: the
+SBC parser, its existing specialist-pack tests, and its proof ledger.
+Each pending index blob matched prior main before composition; each
+resulting blob is exact current main. No News source, artifact, deployment
+rule, CI registry, selector or shared finalizer changed in this interval.
+The resolved index was retained through normal `git merge --quit`;
+the managed commit must bind the actual final tree to e4009c94 as its
+second parent. No tracking ref, guard, or protected source was overwritten.
+The prior validation and packing receipts retain their actual b4a0ae4e
+subject; current hosted checks remain mandatory.

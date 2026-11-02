@@ -1447,3 +1447,109 @@ def test_t21_translation_rows_only_for_ecb_and_boj() -> None:
                          if m["metric_id"].endswith("_usd_translation")]
     assert base_translations == []
     assert len(base_snap["metrics"]["items"]) == BASE_LCB_METRIC_COUNT
+
+
+# --------------------------------------------------------------------------- #
+# Lineage drawer: a stale no-change note must follow the two printed dates.
+# The snapshot is built here. site/ and data/ are not on this tree.
+# --------------------------------------------------------------------------- #
+_STALE_NO_CHANGE_NOTE = (
+    "Same reference period as the predecessor print; "
+    "no tracked metric changed value (no-change republication)."
+)
+
+
+def _evidence_lineage_note(note: str, effective: str, prior: str) -> dict:
+    from lib.macro_suite_view import _evidence
+
+    snapshot = {
+        "headline": {
+            "effective_date": effective,
+            "prior_state": {"effective_date": prior},
+        },
+        "corrections": {
+            "note": note,
+            "correction_state": "none",
+            "changed_fingerprints": [],
+            "predecessor_generation_id": "liquidity_central_banks-US-prior",
+        },
+        "changes": {
+            "comparability": "COMPARABLE",
+            "prior_effective_date": prior,
+        },
+    }
+    drawer = _evidence(snapshot, {}, "2026-10-11T03:40:41Z", {})
+    return drawer["corrections"]["note"]
+
+
+def test_lineage_note_follows_printed_dates_not_stale_no_change_kind() -> None:
+    """RED-1: dates 9 Oct vs 28 Aug beat a stale no-change sentence."""
+    pair = _evidence_lineage_note(
+        _STALE_NO_CHANGE_NOTE, "2026-10-09", "2026-08-28")
+    en = pair["en"]
+    assert "later reference period" in en
+    assert "new observation" in en
+    assert "9 Oct 2026" in en
+    assert "28 Aug 2026" in en
+    assert "no-change republication" not in en
+    assert "Same reference period" not in en
+    zh = pair["zh"]
+    assert "较晚参考期" in zh
+    assert "新观察" in zh
+    assert "2026年10月9日" in zh
+    assert "2026年8月28日" in zh
+    assert "无变更再发布" not in zh
+
+
+def test_lineage_note_equal_dates_stay_no_change_republication() -> None:
+    """RED-1b: equal dates keep the honest same-period reprint."""
+    pair = _evidence_lineage_note(
+        _STALE_NO_CHANGE_NOTE, "2026-08-28", "2026-08-28")
+    en = pair["en"]
+    assert "no-change republication" in en
+    assert "Both as of" in en
+    assert "later reference period" not in en
+    assert "无变更再发布" in pair["zh"]
+    assert "两期均截至" in pair["zh"]
+
+
+def test_lineage_swap_needs_two_different_dates_and_a_no_change_note() -> None:
+    """Only a no-change note under two different printed dates is replaced."""
+    from lib.macro_suite_disclosure import classify_lineage_kind
+    from lib.macro_suite_view import _lineage_note_for_printed_dates as swap
+
+    later, earlier = "2026-10-09", "2026-08-28"
+    assert swap(_STALE_NO_CHANGE_NOTE, later, None) == _STALE_NO_CHANGE_NOTE
+    assert swap(_STALE_NO_CHANGE_NOTE, None, earlier) == _STALE_NO_CHANGE_NOTE
+    assert swap(_STALE_NO_CHANGE_NOTE, later, later) == _STALE_NO_CHANGE_NOTE
+
+    first_known = "First-known snapshot; predecessor recorded when a prior accepted print exists."
+    assert classify_lineage_kind(first_known) == "first_known"
+    assert swap(first_known, later, earlier) == first_known
+
+    unknown = "A sentence with no lineage marker."
+    assert swap(unknown, later, earlier) == unknown
+
+    swapped = swap(_STALE_NO_CHANGE_NOTE, later, earlier)
+    assert swapped == (
+        "Reference period differs from the predecessor print "
+        "(a new observation, not a revision of the same period); "
+        "no correction asserted."
+    )
+    assert classify_lineage_kind(swapped) == "reference_period_change"
+
+
+def test_committed_central_banks_snapshot_lineage_is_a_later_period() -> None:
+    """RED-2: the committed 9 Oct vs 28 Aug print is a later period."""
+    pair = _evidence_lineage_note(
+        _STALE_NO_CHANGE_NOTE, "2026-10-09", "2026-08-28")
+    assert pair["en"] == (
+        "This is a new observation for a later reference period, "
+        "not a revision of the prior print. "
+        "This print is as of 9 Oct 2026; "
+        "the predecessor is as of 28 Aug 2026."
+    )
+    assert pair["zh"] == (
+        "这是较晚参考期的新观察，不是对上一期读数的修订。"
+        "本期截至2026年10月9日；上一期截至2026年8月28日。"
+    )
