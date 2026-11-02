@@ -291,13 +291,55 @@ def _carries_private_profile(value: Any, depth: int) -> bool:
 
 
 def _closure_of(prior: VerifiedPrior | Mapping[str, Any] | None) -> Mapping[str, Any] | None:
+    """The prior closure, admitted only in the shape every reader below indexes.
+
+    An inline ``prior_closure`` (the ``--economic-refresh`` JSON) is not verified
+    by the publication owner, so a non-mapping chain item or a missing
+    ``selection`` used to escape as ``TypeError``/``KeyError`` past the CLI's
+    typed handler. Any closure that is not this shape refuses ``malformed_prior``
+    before a byte is written. Value checks (text, ids, issuer) stay downstream.
+    """
     if prior is None:
         return None
     if isinstance(prior, VerifiedPrior):
-        return prior.closure
-    if type(prior) is dict and "chain" in prior and "record" in prior:
-        return prior
-    raise PrivateEconomicStageError("malformed_prior")
+        closure = prior.closure
+    elif type(prior) is dict:
+        closure = prior
+    else:
+        raise PrivateEconomicStageError("malformed_prior")
+    if closure is not None and not _closure_shape_ok(closure):
+        raise PrivateEconomicStageError("malformed_prior")
+    return closure
+
+
+def _closure_shape_ok(closure: Any) -> bool:
+    if type(closure) is not dict:
+        return False
+    chain = closure.get("chain")
+    # isinstance, not type-is: a caller's list subclass stays admissible so the
+    # downstream plain-str dedup defence still sees it (JSON yields plain lists).
+    if not isinstance(chain, list) or not chain:
+        return False
+    for item in chain:
+        if type(item) is not dict or "text" not in item:
+            return False
+        workspace = item.get("workspace")
+        document = item.get("document")
+        if type(workspace) is not dict or "generation_id" not in workspace:
+            return False
+        if type(document) is not dict or "document_id" not in document:
+            return False
+    record = closure.get("record")
+    if type(record) is not dict or "slug" not in record:
+        return False
+    selection = closure.get("selection")
+    if type(selection) is not dict:
+        return False
+    stored = selection.get("selection")
+    if type(stored) is not dict or "currentness" not in stored or "facts" not in stored:
+        return False
+    scope = selection.get("fiscal_scope")
+    return type(scope) in (list, tuple) and all(type(entry) is str for entry in scope)
 
 
 def _predecessor_of(

@@ -1598,3 +1598,132 @@ def test_stage_refuses_a_non_dict_workspace_on_an_older_chain_item(
         control, acquisition=None, prior_closure=control_closure, observed_at=LATER_OBSERVED_AT,
     )
     assert written["wrote"] is True
+
+
+def _drop(path: tuple):
+    def mutate(closure: dict) -> None:
+        target = closure
+        for key in path[:-1]:
+            target = target[key]
+        del target[path[-1]]
+    return mutate
+
+
+def _put(path: tuple, value):
+    def mutate(closure: dict) -> None:
+        target = closure
+        for key in path[:-1]:
+            target = target[key]
+        target[path[-1]] = copy.deepcopy(value)
+    return mutate
+
+
+_MALFORMED_PRIOR_SHAPES = {
+    "chain_item_not_a_mapping": _put(("chain",), [1]),
+    "chain_not_a_list": lambda closure: closure.__setitem__("chain", tuple(closure["chain"])),
+    "empty_chain": _put(("chain",), []),
+    "chain_item_without_text": _drop(("chain", -1, "text")),
+    "workspace_not_a_mapping": _put(("chain", -1, "workspace"), 7),
+    "workspace_without_generation_id": _drop(("chain", -1, "workspace", "generation_id")),
+    "document_not_a_mapping": _put(("chain", -1, "document"), 7),
+    "document_without_document_id": _drop(("chain", -1, "document", "document_id")),
+    "record_not_a_mapping": _put(("record",), 7),
+    "record_without_slug": _drop(("record", "slug")),
+    "no_selection": _drop(("selection",)),
+    "selection_not_a_mapping": _put(("selection",), None),
+    "stored_selection_not_a_mapping": _put(("selection", "selection"), None),
+    "stored_selection_without_currentness": _drop(("selection", "selection", "currentness")),
+    "stored_selection_without_facts": _drop(("selection", "selection", "facts")),
+    "fiscal_scope_not_a_list": _put(("selection", "fiscal_scope"), "FY2026"),
+    "fiscal_scope_entry_not_a_string": _put(("selection", "fiscal_scope"), [2026]),
+}
+
+
+@pytest.mark.parametrize("acquisition", [None, {"withdrawn": True}], ids=["reuse", "withdrawn"])
+@pytest.mark.parametrize("shape", sorted(_MALFORMED_PRIOR_SHAPES))
+def test_an_inline_prior_of_the_wrong_shape_refuses_typed_before_any_write(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, shape: str, acquisition,
+) -> None:
+    """R-36 item 17 rule 4 (W-TYPE): ``_closure_of`` gates the inline prior.
+
+    The ``--economic-refresh`` JSON ``prior_closure`` is not verified by the
+    publication owner. A chain item that is not a mapping escaped as
+    ``TypeError`` and a prior without ``selection`` as ``KeyError``, past the
+    CLI's typed handler (OPUS-R8 probe on 1cc7dcc2). Every shape the stage
+    readers index now refuses ``malformed_prior`` and leaves the stage as it was.
+    """
+    _permit(monkeypatch, tmp_path)
+    receipt = run_economic_wire_fixture(tmp_path, wire="w1", source="pg1", observed_at=OBSERVED_AT)
+    assert receipt.closure is not None
+    baseline = tmp_path / "shape-baseline"
+    shutil.copytree(receipt.private_dir, baseline)
+
+    def _tree(root: Path) -> dict[str, bytes]:
+        return {
+            str(path.relative_to(root)): path.read_bytes()
+            for path in sorted(root.rglob("*"))
+            if path.is_file()
+        }
+
+    # CONTROL: the unmodified inline closure is admitted and writes.
+    control = tmp_path / "shape-control"
+    shutil.copytree(baseline, control)
+    written = augment_private_stage(
+        control, acquisition=copy.deepcopy(acquisition),
+        prior_closure=copy.deepcopy(receipt.closure), observed_at=LATER_OBSERVED_AT,
+    )
+    assert written["wrote"] is True
+
+    forged = copy.deepcopy(receipt.closure)
+    _MALFORMED_PRIOR_SHAPES[shape](forged)
+    stage = tmp_path / "shape-hostile"
+    shutil.copytree(baseline, stage)
+    with pytest.raises(PrivateEconomicStageError) as raised:
+        augment_private_stage(
+            stage, acquisition=copy.deepcopy(acquisition),
+            prior_closure=forged, observed_at=LATER_OBSERVED_AT,
+        )
+    assert raised.value.reason == "malformed_prior"
+    assert _tree(stage) == _tree(baseline), "the shape refusal still wrote to the stage"
+
+
+@pytest.mark.parametrize("closure_shape", ["honest", "not_a_mapping", "no_selection"])
+def test_a_verified_prior_closure_is_held_to_the_same_shape(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, closure_shape: str,
+) -> None:
+    """The gate reads ``VerifiedPrior.closure`` too, so no reader indexes an unchecked shape."""
+    from engine.earnings_narrative.private_economic_stage import VerifiedPrior
+
+    _permit(monkeypatch, tmp_path)
+    receipt = run_economic_wire_fixture(tmp_path, wire="w1", source="pg1", observed_at=OBSERVED_AT)
+    assert receipt.closure is not None
+    closure = copy.deepcopy(receipt.closure)
+    if closure_shape == "not_a_mapping":
+        closure = [closure]
+    elif closure_shape == "no_selection":
+        del closure["selection"]
+    prior = VerifiedPrior(
+        closure=closure, previous_manifest=None, native_source_cutoff=None, schema=MANIFEST_SCHEMA_V2,
+    )
+    stage = tmp_path / "verified-shape"
+    shutil.copytree(receipt.private_dir, stage)
+    if closure_shape == "honest":
+        written = augment_private_stage(
+            stage, acquisition=None, prior_closure=prior, observed_at=LATER_OBSERVED_AT,
+        )
+        assert written["wrote"] is True
+        return
+    before = {
+        str(path.relative_to(stage)): path.read_bytes()
+        for path in sorted(stage.rglob("*")) if path.is_file()
+    }
+    with pytest.raises(PrivateEconomicStageError) as raised:
+        augment_private_stage(
+            stage, acquisition=None, prior_closure=prior, observed_at=LATER_OBSERVED_AT,
+        )
+    assert raised.value.reason == "malformed_prior"
+    after = {
+        str(path.relative_to(stage)): path.read_bytes()
+        for path in sorted(stage.rglob("*")) if path.is_file()
+    }
+    assert after == before, "the shape refusal still wrote to the stage"
