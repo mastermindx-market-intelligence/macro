@@ -458,6 +458,27 @@ class LiveEpisodeLedger:
     def events(self) -> tuple[dict[str, Any], ...]:
         return tuple(copy.deepcopy(self._events[k]) for k in sorted(self._events))
 
+    def candidate_origin(self, episode_id: str) -> dict[str, Any]:
+        """Read the original ordinary commit receipts, without copying the ledger.
+
+        This does not infer a receipt from the current pass, mutate an episode,
+        or read/replay a spool object. Ambiguity is left to the consumer to refuse.
+        """
+        row = self.get(episode_id)
+        if row is None or len(row.evidence_refs) > 64:
+            return {"events": [], "transitions": []}
+        events = [copy.deepcopy(self._events[eid]) for eid in row.evidence_refs
+                  if eid in self._events]
+        transitions = []
+        for item in self._transitions:
+            if (item.get("ticker") == row.ticker and item.get("detector_id") == row.detector_id
+                    and item.get("variant") == row.variant and item.get("to_state") == "CANDIDATE"
+                    and item.get("at") == row.candidate_at):
+                transitions.append(copy.deepcopy(item))
+                if len(transitions) > 1:
+                    break
+        return {"events": events, "transitions": transitions}
+
     @property
     def suppressions(self) -> tuple[dict[str, Any], ...]:
         return tuple(copy.deepcopy(s) for s in self._suppressions)

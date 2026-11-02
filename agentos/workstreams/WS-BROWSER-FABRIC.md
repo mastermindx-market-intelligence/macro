@@ -17,13 +17,13 @@ waves:
     next_action: Integrate current protected source and qualify required checks on the reviewed candidate.
   - id: creation-recovery-routing
     title: Tab and window creation, durable recovery, and authenticated estate routing
-    status: in_progress
-    next_action: Finish creation qualification, then implement owner-record recovery and bounded authenticated host observation.
+    status: awaiting_ci
+    next_action: Qualify protected source and current checks for implemented creation, durable recovery, native installer and authenticated service v4 estate routing.
   - id: installed-client-acceptance
     title: Install preserved Web Sol overlays and prove live cross-client browser use
-    status: todo
-    next_action: Complete source and release requirements, enroll exact profiles and host routes, then prove one-host and two-host browser use.
-next_action: Continue PR 1259 on its retained source workspace; qualify creation and implement the remaining recovery, activation and multi-host transport paths before installing the reviewed release.
+    status: in_progress
+    next_action: Finish typed service lifecycle and persistent runtime, renewal and client setup; resolve actual OAuth and public-route access, then install and prove one-host and two-host browser use.
+next_action: Continue PR 1259 from d186cb73b26f6833c0e71e8f074dc014d4da3662; complete operational service, credential and client composition, satisfy protected release gates, then update the qualified installed Chrome profiles and prove real client use.
 do_not_redo:
   - Keep existing Executive admission, Capacity placement, Workbench resource ownership and ActionArtifactStore effect truth.
   - Preserve the original browser-fabric-attached-tabs-20261005-c2-001 workspace and branch custody.
@@ -31,7 +31,7 @@ do_not_redo:
   - Do not equate synthetic native transport tests with installed Chrome acceptance.
   - Do not reconstruct or replay the historically held mastermind-browser-candidate archive transfer.
 landmines:
-  - The active browser projection is currently volatile and configured profiles do not automatically start resources.
+  - Configured activation now recovers original descriptors through the existing owner; production lease and credential renewal remain separate.
   - A new service process must not adopt a relay owned by a previous process; original process and effect fences remain.
   - Pending or unknown page effects must remain fenced across reconnect and service restart.
   - The installed Studio Direct fleet router is a different source release and currently routes Desktop Commander, not Browser.
@@ -43,9 +43,15 @@ The Chairman requested implementation and installation of central browser use in
 
 ## Current source evidence
 
-Mastermind draft [PR 1259](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1259) retains operation `browser-fabric-attached-tabs-20261005-c2-001`. Commit `9b25a72a61` connects the public Browser facade to exact shared tabs through the normal Workbench v3 service, isolated relay, private native channel and Chrome native-messaging bridge. Its current-contract campaign passed 723 Python tests with 2 skipped; the extension campaign passed 67 tests. The native peer is synthetic and the test process stands in for the Chrome parent.
+Mastermind draft [PR 1259](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1259) retains operation `browser-fabric-attached-tabs-20261005-c2-001`. Pushed commit `d186cb73b26f6833c0e71e8f074dc014d4da3662` adds authenticated central estate transport and normal Workbench service v4 over one local and up to sixteen remote Browser owners. It follows native v2 tab/window creation, durable configured activation/recovery (`f3f5f23bc3`) and transactional native installation (`e6d401f432`).
 
-The independent review also cleared the existing exact-profile overlay source, which preserves the observed installed Web Sol 0.2/0.4 releases and uses the incumbent transactional deployment owner. No installed profile was changed. Native v2 creation work is in progress in the same source checkout.
+The central campaign passed 1,080 tests; the final targeted estate/transport/legacy projection campaign passed 40 tests. Earlier bounded campaigns passed 1,033 recovery tests, 179 native/legacy installer tests and 84 extension Node tests. Counts overlap and must not be added. Evidence is retained in the M2 test logs named by the cumulative implementation document; commands are the broad Browser/Workbench/native/deployment pytest campaign, focused estate/transport/inventory pytest campaign, native transaction campaign and `node --test tests/browser_link/*.test.mjs`. These tests use actual MCP/HTTP/RSA-JWT and service/relay/bridge processes, but synthetic Chrome peers and remote effect owners.
+
+The central surface keeps exact signed host/profile/tab identity, independently bounded sessions, original-action reconciliation and zero modifying replay. Fleet/tab pagination is byte-bounded, caller-bound and explicit about partial observations: any restart_required page leaves the walk incomplete until fresh discovery. Healthy later hosts receive bounded attempts even behind stalled routes. The seven-tool public catalog is v3; no arbitrary CDP or scripting tool is exposed.
+
+No installed Chrome or native files have changed. Next source work covers typed host lifecycle, sealed persistent runtime prerequisites, outgoing credential renewal and explicit client setup. Existing Auth0 resource validation is available, but this session has no identified authenticated Auth0 management path or enrolled outgoing token renewer. The access-mastermind-vps skill's required Studio mapping returned FLEET_STATUS_OWNER_RESULT_INVALID; ping had selectedHostRef=null. No VPS/SSH action was attempted. A broad external canary-source read was denied by automatic approval review for possible credential exposure and was not retried. Source work continues on unaffected lanes.
+
+Official product documentation now establishes Grok Bot Remote HTTPS custom MCP, OpenClaw native Streamable HTTP/OAuth and separate hosted ChatGPT/Claude user OAuth. CLI configuration is not hosted-Bot installation. Live enrollment and accepted browser use still require proof.
 
 Detailed, cumulative implementation evidence and remaining work live in Mastermind:
 - `docs/browser_fabric/IMPLEMENTATION_STATUS_2026-10-22.md`

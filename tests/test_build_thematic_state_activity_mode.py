@@ -19,6 +19,7 @@ from pathlib import Path
 
 import pytest
 
+from engine.neuralweb import envelope
 from engine.neuralweb import theme_state_generation as g
 from lib import config
 from scripts import build_thematic_state as builder
@@ -312,15 +313,22 @@ def test_legacy_outputs_are_byte_identical_with_and_without_a_prior_activity_run
     class Pinned(dt.datetime):
         @classmethod
         def now(cls, tz=None):
-            instant = dt.datetime(2026, 10, 4, 12, 0, 0)
+            instant = dt.datetime(2026, 10, 4, 12, 0, 0, tzinfo=dt.timezone.utc)
             return instant.astimezone(tz) if tz is not None else instant.replace(tzinfo=None)
 
     monkeypatch.setattr(dt, "datetime", Pinned)
+    monkeypatch.setattr(envelope, "datetime", Pinned)
 
     assert builder.build(world_a, mode=MODE, generated_at=ACT_STAMP) == 0
     assert (world_a / ARTIFACT).is_file() and not (world_b / ARTIFACT).exists()
     assert _legacy_build(world_a, monkeypatch) == 0
     assert _legacy_build(world_b, monkeypatch) == 0
+
+    for world in (world_a, world_b):
+        for legacy_path in ("data/neuralweb/theme_state.json",
+                            "site/neuralwebdata/theme_state.json"):
+            payload = json.loads((world / legacy_path).read_text(encoding="utf-8"))
+            assert payload["produced_at"] == "2026-10-04T12:00:00Z", (world, legacy_path)
 
     for legacy_path in ("data/neuralweb/theme_state.json",
                         "site/neuralwebdata/theme_state.json",

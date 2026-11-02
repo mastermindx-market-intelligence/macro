@@ -99,6 +99,22 @@ def _row(**over) -> dict:
 
 # ── 1. verb mapping ─────────────────────────────────────────────────────────
 
+def test_landing_tag_says_winners_only_and_promises_no_fixed_age():
+    """The wall is winners only and its age moves with the board store (as of
+    2026-09-10 on 2026-11-01). A note in the payload does not reach a reader, so
+    the tag on the page has to say it."""
+    root = Path(__file__).resolve().parent.parent
+    for rel in ("templates/index.html", "site/index.html"):
+        text = (root / rel).read_text(encoding="utf-8")
+        tag = text[text.index('<span class="ph-tag">') : text.index('id="ph-asof"')]
+        assert "WINNERS ONLY" in tag, rel
+        assert "只展示走对的信号" in tag, rel
+        # The section's own words, not the page: a hero chart elsewhere has a two-week setup.
+        section = text[text.index('id="f-prophet"') : text.index('id="ph-data"')]
+        for stale in ("2-WEEK", "两周", "REAL CALLS", "two-plus weeks"):
+            assert stale not in section, f"{rel}: {stale}"
+
+
 def test_verb_mapping_mirrors_board():
     expect = {
         "buy_now": "buy", "partial": "buy",

@@ -30,6 +30,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from engine.market_os.macro_workspaces import contract, labor  # noqa: E402
+from lib import macro_suite_view  # noqa: E402
 
 BUILT_AT = "2026-09-04T00:00:00Z"
 REGIME_LATEST = ROOT / "data" / "regime" / "latest.json"
@@ -549,3 +550,150 @@ def test_builds_from_real_owner_artifact_and_is_schema_conformant_modulo_axis_id
     assert snap["generation"]["calculation_as_of"] == regime.get("asof")
     assert snap["authority"]["can_size"] is False
     assert snap["workspace"]["id"] == "labor_markets"
+
+
+# --------------------------------------------------------------------------- #
+# previous claims reading beside the current number
+# --------------------------------------------------------------------------- #
+def _claims_prior_items() -> list[dict]:
+    """Prior rows for the two claims cards, each with its own date."""
+    return [
+        {
+            "metric_id": "initial_claims_4wk",
+            "value": 200000.0,
+            "observed_at": "2026-08-20",
+        },
+        {
+            "metric_id": "continued_claims",
+            "value": 1700000.0,
+            "observed_at": "2026-08-27",
+        },
+        {
+            "metric_id": "claims_yoy_pct",
+            "value": -10.0,
+            "observed_at": "2026-08-01",
+        },
+    ]
+
+
+def _snapshot_with_prior_claims() -> dict:
+    prior = _prior()
+    prior["metrics"] = {"items": _claims_prior_items()}
+    return _compose(_base_regime(), prior_snapshot=prior)
+
+
+def _prior_item(snapshot: dict, metric_id: str) -> dict:
+    items = snapshot["prior_publication"]["metrics"]["items"]
+    return next(row for row in items if row["metric_id"] == metric_id)
+
+
+def _labor_view(snapshot: dict) -> dict:
+    return macro_suite_view.build_view(
+        snapshot,
+        page_built_at=BUILT_AT,
+        artifact={
+            "path": "fixture",
+            "manifest_path": "fixture",
+            "sha256": "fixture",
+            "bytes": 1,
+            "min_client_contract": "1",
+        },
+    )
+
+
+def _view_metric(view: dict, metric_id: str) -> dict:
+    return next(row for row in view["metrics"] if row["metric_id"] == metric_id)
+
+
+def test_claims_cards_show_the_previous_version_of_the_page() -> None:
+    view = _labor_view(_snapshot_with_prior_claims())
+    initial = _view_metric(view, "initial_claims_4wk")["sample_note"]
+    continued = _view_metric(view, "continued_claims")["sample_note"]
+    assert initial == {
+        "en": "This page's previous version, dated 20 August 2026, showed 200,000.0 persons.",
+        "zh": "本页上一版（2026年8月20日）显示 200,000.0 人。",
+    }
+    assert continued == {
+        "en": "This page's previous version, dated 27 August 2026, showed 1,700,000.0 persons.",
+        "zh": "本页上一版（2026年8月27日）显示 1,700,000.0 人。",
+    }
+    assert initial["zh"].endswith("。")
+    assert continued["zh"].endswith("。")
+    assert "20 August 2026" in initial["en"]
+    assert "27 August 2026" in continued["en"]
+    other = _view_metric(view, "claims_yoy_pct")["sample_note"]
+    assert other is None
+
+
+def test_prior_claims_note_stays_off_without_an_earlier_reading() -> None:
+    absent = _compose(_base_regime())
+    assert absent["prior_publication"] is None
+    absent_view = _labor_view(absent)
+    assert _view_metric(absent_view, "initial_claims_4wk")["sample_note"] is None
+    assert _view_metric(absent_view, "continued_claims")["sample_note"] is None
+
+    missing = _snapshot_with_prior_claims()
+    kept = [
+        row for row in missing["prior_publication"]["metrics"]["items"]
+        if row["metric_id"] != "initial_claims_4wk"
+    ]
+    missing["prior_publication"]["metrics"]["items"] = kept
+    missing_view = _labor_view(missing)
+    assert _view_metric(missing_view, "initial_claims_4wk")["sample_note"] is None
+
+    blank = _snapshot_with_prior_claims()
+    _prior_item(blank, "continued_claims")["value"] = None
+    blank_view = _labor_view(blank)
+    assert _view_metric(blank_view, "continued_claims")["sample_note"] is None
+
+    not_finite = _snapshot_with_prior_claims()
+    _prior_item(not_finite, "continued_claims")["value"] = float("nan")
+    not_finite_view = _labor_view(not_finite)
+    assert _view_metric(not_finite_view, "continued_claims")["sample_note"] is None
+
+    same = _snapshot_with_prior_claims()
+    current_at = _metric(same, "initial_claims_4wk")["observed_at"]
+    _prior_item(same, "initial_claims_4wk")["observed_at"] = current_at
+    same_view = _labor_view(same)
+    assert _view_metric(same_view, "initial_claims_4wk")["sample_note"] is None
+
+    later = _snapshot_with_prior_claims()
+    _prior_item(later, "continued_claims")["observed_at"] = "2099-01-01"
+    later_view = _labor_view(later)
+    assert _view_metric(later_view, "continued_claims")["sample_note"] is None
+
+    unread = _snapshot_with_prior_claims()
+    _prior_item(unread, "initial_claims_4wk")["observed_at"] = "not-a-date"
+    unread_view = _labor_view(unread)
+    assert _view_metric(unread_view, "initial_claims_4wk")["sample_note"] is None
+
+
+def test_prior_claims_note_stays_off_when_the_value_did_not_change() -> None:
+    """Most builds carry the same print: 21 of main's last 24 publications of this page."""
+    level = _snapshot_with_prior_claims()
+    _prior_item(level, "initial_claims_4wk")["value"] = _metric(level, "initial_claims_4wk")["value"]
+    view = _labor_view(level)
+    assert _view_metric(view, "initial_claims_4wk")["sample_note"] is None
+    # The other card moved, so it keeps its note.
+    assert "1,700,000.0" in _view_metric(view, "continued_claims")["sample_note"]["en"]
+
+
+def test_prior_claims_note_stays_off_when_the_two_numbers_print_the_same() -> None:
+    near = _snapshot_with_prior_claims()
+    _prior_item(near, "continued_claims")["value"] = _metric(near, "continued_claims")["value"] + 0.001
+    view = _labor_view(near)
+    assert _view_metric(view, "continued_claims")["sample_note"] is None
+
+
+def test_prior_claims_note_stays_off_when_this_version_has_no_value() -> None:
+    blank = _snapshot_with_prior_claims()
+    _metric(blank, "continued_claims")["value"] = None
+    view = _labor_view(blank)
+    assert _view_metric(view, "continued_claims")["sample_note"] is None
+
+
+def test_prior_claims_note_does_not_call_a_build_a_reading() -> None:
+    view = _labor_view(_snapshot_with_prior_claims())
+    note = _view_metric(view, "initial_claims_4wk")["sample_note"]
+    assert "reading" not in note["en"].lower()
+    assert "读数" not in note["zh"]

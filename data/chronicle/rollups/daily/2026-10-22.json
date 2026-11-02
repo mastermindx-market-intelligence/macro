@@ -1,12 +1,16 @@
 {
   "as_of": "2026-10-22",
   "coverage": {
-    "end": "2026-10-21",
-    "note": "daily rollup covers 10 session-date(s) from 2026-10-11 to 2026-10-21; chronicle event store begins 2013-03-14; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-10-11"
+    "end": "2026-10-22",
+    "note": "daily rollup covers 10 session-date(s) from 2026-10-12 to 2026-10-22; chronicle event store begins 2013-03-14; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-10-12"
   },
   "schema": "chronicle.rollup.daily/v1",
   "sessions": [
+    {
+      "date": "2026-10-22",
+      "events": []
+    },
     {
       "date": "2026-10-21",
       "events": []
@@ -174,80 +178,65 @@
           "tickers": [],
           "title": "BlackRock: Weekly investment commentary en us 20261012 upgrading us treasuries to lock in income",
           "weight_hint": 3
-        }
-      ]
-    },
-    {
-      "date": "2026-10-11",
-      "events": [
-        {
-          "date": "2026-10-11",
-          "id": "cev-research_vault-3e89189a0040",
-          "kind": "report",
-          "source": "research_vault",
-          "source_ref": "marketdesk-u3jutia0kcw-5915c8",
-          "tickers": [],
-          "title": "Morgan Stanley: MS Savone Global Reflections 10 Oct 2026",
-          "weight_hint": 3
         },
         {
-          "date": "2026-10-11",
-          "id": "cev-research_vault-af4bcc659bac",
+          "date": "2026-10-12",
+          "id": "cev-research_vault-db2194a832f8",
           "kind": "report",
           "source": "research_vault",
-          "source_ref": "marketdesk-2awqk6n25ud-ce3287",
+          "source_ref": "marketdesk-cucjl2nrsal-fbd798",
           "tickers": [],
-          "title": "Metlife: Capital Market Line 3q2026 v3",
+          "title": "UBS: Equities Tactical Top Picks",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-11",
-          "id": "cev-research_vault-bd6d002d4468",
+          "date": "2026-10-12",
+          "id": "cev-research_vault-de5f5de087ff",
           "kind": "report",
           "source": "research_vault",
-          "source_ref": "marketdesk-wjsf6ezrbet-d10add",
+          "source_ref": "marketdesk-ldkix3lyxvh-f204cd",
           "tickers": [],
-          "title": "Goldman Sachs: WUS (002463)",
+          "title": "Ashmore: Theme Commentary CORP DEBT 2026 09 30",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-11",
-          "id": "cev-research_vault-c38e51c90f9d",
+          "date": "2026-10-12",
+          "id": "cev-research_vault-f0a1fbe30b61",
           "kind": "report",
           "source": "research_vault",
-          "source_ref": "marketdesk-1rcik5ibo7a-4fb6ef",
+          "source_ref": "marketdesk-9f7b08hhppb-f1ab7a",
           "tickers": [],
-          "title": "JPM Eye on the Market: JPM EOTM Oct 8 Califoreboding",
+          "title": "Goldman Sachs: Americas Business & Information Services 3Q debt issuance moderates, but key growth drivers remain intact",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-11",
-          "id": "cev-research_vault-d420db16ffb4",
+          "date": "2026-10-12",
+          "id": "cev-research_vault-f1c57134564e",
           "kind": "report",
           "source": "research_vault",
-          "source_ref": "marketdesk-oeq9goyorka-f4bf38",
+          "source_ref": "marketdesk-vwu0m6jvedw-616840",
           "tickers": [],
-          "title": "HSBC AM: HSBC AM Investment Monthly October 2026",
+          "title": "Ashmore: weekly 12oct26",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-11",
-          "id": "cev-research_vault-d67b2caa1fd4",
+          "date": "2026-10-12",
+          "id": "cev-research_vault-f42adefbadb2",
           "kind": "report",
           "source": "research_vault",
-          "source_ref": "marketdesk-mhalr7cfzpz-7353f6",
+          "source_ref": "marketdesk-mub8by2pkvk-0c5c41",
           "tickers": [],
-          "title": "Morgan Stanley: Article thecaseforasianequities ltr",
+          "title": "American Century: Institutional investors insights us policy watch",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-11",
-          "id": "cev-research_vault-ffe63fcb57d7",
+          "date": "2026-10-12",
+          "id": "cev-research_vault-fb737d1dabd4",
           "kind": "report",
           "source": "research_vault",
-          "source_ref": "marketdesk-cxuixky8noz-6137e7",
+          "source_ref": "marketdesk-4sbw9xdvesv-09647d",
           "tickers": [],
-          "title": "HSBC AM: AM Investment Weekly 09 10 26",
+          "title": "Goldman Sachs: Americas Homebuilders, Building Products & Wood Products 3Q26 Earnings Preview",
           "weight_hint": 2
         }
       ]

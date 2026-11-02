@@ -3,6 +3,10 @@
 
 The registry and site-access policy remain authoritative. This file adds no routes:
 families expand only over git-tracked HTML at the recorded source revision.
+
+By default that inventory is the registry's own Macro pin. `--inventory-ref <commit>`
+opts into enumerating a later immutable commit instead; the binding is proven
+before anything is read from the inventory or written to the output.
 """
 from __future__ import annotations
 
@@ -22,6 +26,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from scripts import build_product_page_registry as registry_owner  # noqa: E402
 SCHEMA = "mastermind.shared_shell_routes.v1"
+# The canonical registry path inside the Macro repo: an opt-in inventory commit
+# must carry the caller's registry bytes at exactly this path.
+CANONICAL_REGISTRY = "data/product_experience/page_registry.json"
 PARAM = re.compile(r"<[^/<>]+>")
 ANCHOR = re.compile(r"<a\b[^>]*\bhref=[\"']([^\"']+)[\"'][^>]*>(.*?)</a>", re.S)
 TRANSLATION = re.compile(r"t\(\s*(['\"])(.*?)\1\s*,\s*(['\"])(.*?)\3\s*\)", re.S)
@@ -237,9 +244,46 @@ def document_inventory(root: Path, ref: str, paths: list[str]) -> set[str]:
     return result
 
 
+def bind_inventory_commit(candidate: str, registry_bytes: bytes) -> str:
+    """Prove an opt-in inventory commit before anything is read from it.
+
+    Every refusal happens before any projection exists: the candidate must be an
+    immutable commit contained in protected origin/main and must carry the
+    caller's exact registry bytes at the canonical registry path. All checks are local git operations.
+    """
+    def commit_of(rev: str, what: str) -> str:
+        done = subprocess.run(["git", "rev-parse", "--verify", "--quiet", rev + "^{commit}"],
+                              cwd=ROOT, capture_output=True)
+        if done.returncode:
+            raise ValueError(what + " must be an existing immutable commit: " + rev)
+        return done.stdout.decode().strip()
+
+    if not re.fullmatch(r"[0-9a-f]{40}", candidate):
+        raise ValueError("inventory must be a 40-character lowercase hex commit")
+    commit = commit_of(candidate, "inventory")
+    if commit != candidate:
+        raise ValueError("inventory must identify a commit directly, not a peeled tag")
+    contained = subprocess.run(["git", "merge-base", "--is-ancestor", commit, "origin/main"],
+                               cwd=ROOT, capture_output=True)
+    if contained.returncode:
+        raise ValueError("inventory commit is not contained in protected origin/main")
+    try:
+        published = subprocess.check_output(
+            ["git", "show", commit + ":" + CANONICAL_REGISTRY], cwd=ROOT,
+            stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        raise ValueError("canonical registry blob is missing at the inventory ref") from None
+    if published != registry_bytes:
+        raise ValueError("caller registry bytes differ from the canonical registry at the inventory ref")
+    return commit
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--registry", type=Path, default=ROOT / "data/product_experience/page_registry.json")
+    parser.add_argument("--inventory-ref", metavar="COMMIT",
+                        help="opt-in: enumerate the concrete HTML inventory at an immutable Macro "
+                             "commit on protected origin/main whose tree carries this exact registry")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
@@ -248,14 +292,18 @@ def main() -> int:
     problems = registry_owner.validate(registry)
     if problems:
         raise ValueError("invalid canonical registry: " + "; ".join(problems[:5]))
-    ref = registry["sources"]["macro"]["sha"]
-    if not re.fullmatch(r"[0-9a-f]{40}", ref):
+    source_pin = ((registry.get("sources") or {}).get("macro") or {}).get("sha")
+    if not re.fullmatch(r"[0-9a-f]{40}", source_pin or ""):
         raise ValueError("Macro source must be an immutable commit")
+    # Same-revision default, or the proven cross-revision inventory. Everything
+    # below (enumeration, policy, labels, document bytes) reads `ref`.
+    ref = source_pin if args.inventory_ref is None else bind_inventory_commit(
+        args.inventory_ref, raw)
     files = subprocess.check_output(
         ["git", "ls-tree", "-r", "--name-only", ref, "--", "site"], cwd=ROOT, text=True)
     paths = ["/" + f.removeprefix("site/") for f in files.splitlines()
              if f.startswith("site/") and f.endswith(".html")]
-    # Read the deny policy and labels at the same source pin as the inventory.
+    # Read the deny policy and labels at the same revision as the HTML inventory.
     def source(path: str) -> str:
         return subprocess.check_output(["git", "show", ref + ":" + path], cwd=ROOT, text=True)
     import yaml
@@ -271,8 +319,12 @@ def main() -> int:
         labels.setdefault("/" + path + ".html", document_heading_label(
             source("templates/" + path + ".html.j2")))
     doc = derive_projection(registry, paths, denied, labels,
-                            registry_digest=hashlib.sha256(raw).hexdigest(), inventory_ref=ref,
+                            registry_digest=hashlib.sha256(raw).hexdigest(), inventory_ref=source_pin,
                             document_paths=document_inventory(ROOT, ref, paths))
+    if args.inventory_ref is not None:
+        # Cross-revision provenance: sources.macro keeps the registry's own pin;
+        # the bound inventory is recorded as its own immutable source.
+        doc["sources"]["inventory"] = ref
     encoded = json.dumps(doc, ensure_ascii=False, indent=2) + "\n"
     if args.check:
         if not args.output.is_file() or args.output.read_text() != encoded:
