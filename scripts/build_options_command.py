@@ -1,10 +1,10 @@
 """Build the Options workspace -> site/options.html  (OEU lane M-CMD).
 
-THE CANONICAL OPTIONS SURFACE. One page, four modes (Daily Brief / Scanner /
+THE CANONICAL OPTIONS SURFACE. One page, five modes (Daily Brief / Flow / Scanner /
 Ticker / Leaders), assembled STRICTLY by re-serialising stores that other
 builders already wrote.  Ruling: research/options_estate/OEU_MASTERPLAN.md §2.
-Pinned design: research/options_estate/WORKSPACE_DESIGN_SPEC.md (markup and CSS
-copied from mockups/oeu_workspace/options_mockup.html).
+Current composition: mockups/options_workspace_revamp/DESIGN_SPEC.md.
+Scientific display contracts remain in research/options_estate/WORKSPACE_DESIGN_SPEC.md.
 
 CONTRACT — read before changing anything here
 ─────────────────────────────────────────────
@@ -43,6 +43,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import math
 import os
 import sys
 from datetime import date, datetime, timedelta, timezone
@@ -1631,6 +1632,8 @@ def build_payoff_lab(payload: dict | None, stores: dict, *,
             "tenor_days": tenor_days,
             "summary_en": summary_en, "summary_zh": summary_zh,
             "rows": rows, "bracket": bracket,
+            "source_session": _day(ledger_asof) or _day(card_asof),
+            "dealer_session": _day((((stores.get("gex") or {}).get(sym) or {}).get("meta") or {}).get("asof")),
             "asof_note_en": asof_note_en, "asof_note_zh": asof_note_zh,
             "catalyst": catalyst,
         }
@@ -1736,10 +1739,10 @@ def _source_asof(payload) -> str | None:
     if not isinstance(payload, dict):
         return None
     # Prefer an explicit source-session field over build/publish timestamps.
-    for key in ("session_date", "session", "asof", "as_of", "date", "built"):
-        v = payload.get(key)
-        if isinstance(v, str) and v[:4].isdigit():
-            return v[:10]
+    for key in ("session_date", "session", "asof", "as_of", "date"):
+        day = _day(payload.get(key))
+        if day:
+            return day
     return None
 
 
@@ -1824,7 +1827,8 @@ def build_session(stores: dict, missing: list[str], intel_brief: dict | None = N
         ("flow_desk", "Options tape", "期权成交", _source_asof(fd)),
         ("screener", "Scanner rows", "筛选表标的", coverage_asof),
         ("gex", "Dealer positioning", "做市商持仓", oi_vintage),
-        ("leaders", "Flow leaders", "资金领跑", _source_asof(stores.get("leaders"))),
+        ("leaders", "Flow leaders", "资金领跑",
+         _day((stores.get("leaders") or {}).get("session_date"))),
         ("market_structure", "Index structure", "指数结构",
          _source_asof(stores.get("market_structure"))),
         ("vol", "Volatility regime", "波动状态", _source_asof(stores.get("vol"))),
@@ -1963,7 +1967,7 @@ def build_session(stores: dict, missing: list[str], intel_brief: dict | None = N
                 ),
                 options_coverage.source(
                     "leaders", "Flow leaders", "资金领跑",
-                    asof=_source_asof(stores.get("leaders")),
+                    asof=_day((stores.get("leaders") or {}).get("session_date")),
                     # leaders.json counts its universe as coverage.n_universe
                     n=_source_n((stores.get("leaders") or {}).get("coverage")
                                 if isinstance(stores.get("leaders"), dict) else None,
@@ -2104,6 +2108,11 @@ def build_posture(stores: dict) -> list[dict]:
                    if share is not None else _ZERODTE_TIP_ZH),
         "available": share is not None,
     })
+    # Presentation provenance follows each producing payload. A target-session
+    # heading must never restamp an older tape or market-structure reading.
+    for cell, key in zip(cells, ("vol", "market_structure", "flow_desk", "flow_desk")):
+        cell["source_key"] = key
+        cell["source_session"] = _source_asof(stores.get(key))
     return cells
 
 
@@ -2149,7 +2158,7 @@ def build_changed(stores: dict) -> dict:
         arrow, en, zh = dod_copy[dod_key]
         gross = money_mn(read.get("gross_premium_mn"))
         chips.append({
-            "arrow": arrow, "en": en, "zh": zh,
+            "arrow": arrow, "en": en, "zh": zh, "asof": _day(read.get("asof")),
             "tip_en": (f"Options premium traded: {gross} this close, "
                        f"{dod_pct:+.0f}% against the previous close."
                        if dod_pct is not None else f"Options premium traded: {gross} this close."),
@@ -2181,11 +2190,11 @@ def build_changed(stores: dict) -> dict:
                 continue
             to = item.get("to")
             if to == "short":
-                chips.append({"arrow": "d", "en": "Dealers now amplify moves", "zh": "做市商转为放大波动",
+                chips.append({"asof": ms_asof, "arrow": "d", "en": "Dealers now amplify moves", "zh": "做市商转为放大波动",
                               "tip_en": (item.get("note_en") or "") + vs_stamp_en,
                               "tip_zh": (item.get("note_zh") or "") + vs_stamp_zh})
             elif to == "long":
-                chips.append({"arrow": "u", "en": "Dealers now absorb moves", "zh": "做市商转为吸收波动",
+                chips.append({"asof": ms_asof, "arrow": "u", "en": "Dealers now absorb moves", "zh": "做市商转为吸收波动",
                               "tip_en": (item.get("note_en") or "") + vs_stamp_en,
                               "tip_zh": (item.get("note_zh") or "") + vs_stamp_zh})
 
@@ -2195,6 +2204,27 @@ def build_changed(stores: dict) -> dict:
 # ─────────────────────────────────────────────────────────────────────────────
 # Brief · index close row
 # ─────────────────────────────────────────────────────────────────────────────
+def _level_track(spot, floor, flip, ceiling) -> dict | None:
+    """Linear display coordinates, including closes outside either wall.
+
+    This is geometry only. Missing values remain missing; coincident levels
+    share a position. The domain includes every available value and a small
+    symmetric pad so no marker is clipped at a card edge.
+    """
+    values = {key: _num(value) for key, value in
+              (("spot", spot), ("floor", floor), ("flip", flip), ("ceiling", ceiling))}
+    values = {key: value if value is not None and math.isfinite(value) else None
+              for key, value in values.items()}
+    present = [value for value in values.values() if value is not None]
+    if not present:
+        return None
+    low, high = min(present), max(present)
+    pad = (high - low) * 0.08 or max(abs(low) * 0.01, 1.0)
+    low, high = low - pad, high + pad
+    return {key: round((value - low) / (high - low) * 100, 3)
+            if value is not None else None for key, value in values.items()}
+
+
 def build_indexes(stores: dict) -> list[dict]:
     """SPX / SPY / QQQ / IWM: regime word, position against the flip, levels."""
     out: list[dict] = []
@@ -2228,9 +2258,11 @@ def build_indexes(stores: dict) -> list[dict]:
             "floor": level(summary.get("put_wall")),
             "flip": level(summary.get("gamma_flip")),
             "ceiling": level(summary.get("call_wall")),
+            "track": _level_track(summary.get("spot"), summary.get("put_wall"),
+                                  summary.get("gamma_flip"), summary.get("call_wall")),
             "stance": _REGIME_STANCE[regime],
             "em": (f"±{_num(em.get('daily_pct')):.2f}%" if _num(em.get("daily_pct")) is not None else "—"),
-            "asof": meta.get("asof"),
+            "asof": _day(meta.get("asof")),
         })
     return out
 
@@ -2339,7 +2371,9 @@ def build_rail(stores: dict) -> dict:
         # ``as_of`` is the build timestamp; ``session_date`` is the source
         # session these rows actually describe.  Never label prior-session
         # leaders with the day the JSON happened to be serialized.
-        "asof": (_day(leaders.get("session_date")) or _day(leaders.get("as_of"))),
+        "asof": _day(leaders.get("session_date")),
+        "near_asof": max((_day(r.get("asof")) for r in rows
+                          if isinstance(r, dict) and _day(r.get("asof"))), default=None),
     }
 
 
@@ -2430,6 +2464,11 @@ def build_context(root: Path, stores: dict | None = None, intel_brief: dict | No
     sectors = build_sectors(stores)
     bets = build_bets(stores)
     rail = build_rail(stores)
+    aib = build_aib(intel_brief, now=clock)
+    session["mixed_dates"] = (
+        any(src["status"] != "current" for src in session["sources"])
+        or any(ix["asof"] != session["target_session"] for ix in indexes)
+    )
 
     leaders = stores.get("leaders") if isinstance(stores.get("leaders"), dict) else {}
     n_boards = sum(1 for k in ("board_a", "board_b") if leaders.get(k))
@@ -2452,7 +2491,11 @@ def build_context(root: Path, stores: dict | None = None, intel_brief: dict | No
         "sectors": sectors,
         "bets": bets,
         "rail": rail,
-        "aib": build_aib(intel_brief, now=clock),
+        "aib": aib,
+        "aib_current": bool(aib.get("healthy") and
+                            _day(aib.get("as_of_session")) == session["target_session"]),
+        "brief_context_current": all(src["status"] == "current" for src in session["sources"]
+                                     if src["key"] in {"flow_desk", "screener", "leaders", "market_structure"}),
         # F03-W2-5b · index-ETF payoff lab fold on the four index cards.  Pass-
         # through — see build_payoff_lab() above; an empty/absent payload
         # renders {} and the fold's Jinja guard `{% if lab %}` short-circuits.

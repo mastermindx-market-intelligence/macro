@@ -2,31 +2,283 @@
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
 {%- endmacro %}
 {#
-  ══════════════════════════════════════════════════════════════════════════════
-  OPTIONS WORKSPACE — the canonical options surface (OEU lane M-CMD).
-  Ruling: research/options_estate/OEU_MASTERPLAN.md §2
-  Pinned design: research/options_estate/WORKSPACE_DESIGN_SPEC.md
-  Reference markup/CSS: mockups/oeu_workspace/options_mockup.html (copied)
-  Context: scripts/build_options_command.py
-
-  THE VISUAL SYSTEM IN ONE LINE — "the fill-track": every quantity is drawn as a
-  bounded track with a VISIBLE denominator and a filled portion. Four scales of
-  one idea — the close line (coverage), the pip strip (5), the dot-ladder (8/7),
-  the sector bar (shared scale). An unfilled pip is a filled grey tile, never an
-  empty outline: when "off" is invisible, 6/8 reads as a random pattern and the
-  honesty of the scale is lost.
-
-  PAYLOAD LAW (spec §6): the persistent chrome and the Daily Brief are baked
-  inline — the honesty layer must never depend on a fetch. Scanner / Ticker /
-  Leaders payloads are lazy-fetched on first mode activation with plain fetch().
-  NEVER a JS-injected <script> loader: that bypasses asset stamping (#3372).
-  ══════════════════════════════════════════════════════════════════════════════
+  Options research workspace. Display adapter: scripts/build_options_command.py.
+  Current composition and acceptance: mockups/options_workspace_revamp/DESIGN_SPEC.md.
+  Shared house navigation, tokens, and language/theme behavior remain canonical.
+  The baked Brief retains source evidence; Flow, Scanner, Ticker, and Leaders
+  load existing stores lazily. No producer scores or ranking are derived here.
 #}
 {% set sess = session if session else {} %}
-{#- The close line's fill IS the coverage share. An UNKNOWN coverage must never
-    render as a complete line: with no number the rule stays fully hatched and
-    says so on hover. Never a floor, a minimum, or a "looks better" rounding. -#}
-{% set cov_pct = sess.coverage_pct if sess.coverage_pct is not none else 0 %}
+{% macro intelligence_brief() -%}
+  <div class="oew-panel oew-aib" id="aib"
+       data-aib-state="{{ aib.board_state or 'unavailable' }}"
+       data-aib-asof="{{ aib.freshness.asof_date or '' }}"
+       data-aib-receipt="{{ (aib.receipt_id or '')[:12] }}"
+       data-aib-fresh="{{ aib.freshness.level }}">
+    <div class="oew-phead">
+      <h2 class="oew-ph-title">{{ t('Options Intelligence Brief', '期权情报简报') }}</h2>
+      <span class="oew-ph-sub">{{ t('ranked priorities, event and crowding reads, and one quiet control', '优先级排序、事件与拥挤读数，以及一个平静对照') }}</span>
+      <div class="oew-ph-right">
+        <span class="oew-aib-honesty">{{ t('Research priority · not a probability or trade signal', '研究优先级 · 非概率或交易信号') }}</span>
+        <span class="oew-help" tabindex="0" role="button"
+          data-tip-en="Ranked by evidence strength and confidence — never a probability, an edge, or a buy/sell signal. Two independent facts (open-interest positioning and skew change) must agree before a card gets a direction; Prophet context is display-only and never changes this ranking."
+          data-tip-zh="按证据强度与置信度排序——绝非概率、优势或买卖信号。未平仓合约仓位与偏度变化两个独立事实须一致，卡片才会给出方向；Prophet 参考仅供展示，不影响本排序。">?</span>
+      </div>
+    </div>
+    {% if aib.available %}
+    <div class="oew-aib-stamps">
+      {% if aib.as_of_session %}<span class="mono">{{ t('Settled', '已结算') }} {{ aib.as_of_session }}</span>{% endif %}
+      {% if aib.oi_counted_date %}<span class="mono">{{ t('Positions counted', '持仓统计于') }} {{ aib.oi_counted_date }}</span>{% endif %}
+      {% if aib.pending_session %}
+      <span class="oew-aib-pending mono">{{ t('Newer session', '更新交易日') }} {{ aib.pending_session }} {{ t('awaiting position counts', '等待持仓统计') }}</span>
+      {% endif %}
+      {%- if aib.healthy %}
+      <span class="oew-aib-elig mono">{{ aib.eligible }}/{{ aib.present }} {{ t('names eligible', '名称符合条件') }}</span>
+      {%- endif %}
+    </div>
+    {% endif %}
+    {#- ── GLANCE TIER · lede ────────────────────────────────────────────────
+        The answer before the evidence: what today's brief says, what to do
+        about it, and how fresh it is.  Every string is a closed-vocabulary
+        lookup from build_aib() keyed on the payload's own board_state and
+        card count — no scoring, no ranking and no generated prose here. -#}
+    <div class="oew-aib-lede is-{{ aib.freshness.level }}">
+      <h3 class="oew-aib-lede-head">{{ t(aib.lede_head_en, aib.lede_head_zh) }}</h3>
+      <p class="oew-aib-lede-stance">
+        <span class="oew-aib-lede-todo">{{ t('What to do', '该怎么做') }}</span>
+        {%- if aib.lede_stance_slug == 'data' %}
+        <span class="oew-aib-lede-chip">{{ t(aib.lede_stance_word_en, aib.lede_stance_word_zh) }}</span>
+        {%- else %}
+        <span class="oew-stance st-{{ aib.lede_stance_slug }}">{{ t(aib.lede_stance_word_en, aib.lede_stance_word_zh) }}</span>
+        {%- endif %}
+        <span class="oew-aib-lede-said">{{ t(aib.lede_stance_en, aib.lede_stance_zh) }}</span>
+      </p>
+      <p class="oew-aib-fresh">
+        {%- if aib.freshness.asof_en %}
+        <span class="oew-aib-fresh-asof">{{ t('As of', '数据截至') }} {{ t(aib.freshness.asof_en, aib.freshness.asof_zh) }}</span>
+        {%- endif %}
+        <span class="oew-aib-fresh-age lvl-{{ aib.freshness.level }}">{{ t(aib.freshness.age_en, aib.freshness.age_zh) }}</span>
+        {%- if aib.freshness.built_en %}
+        <span class="oew-aib-fresh-built">{{ t(aib.freshness.built_en, aib.freshness.built_zh) }}</span>
+        {%- else %}
+        <span class="oew-aib-fresh-built">{{ t('Update time not recorded', '未记录更新时间') }}</span>
+        {%- endif %}
+      </p>
+    </div>
+    <div class="oew-pbody">
+      {% if aib.available and aib.healthy %}
+
+      {# ── BAND 1 · canon: the ranked top six, exactly as ranked ── #}
+      {% if aib.cards %}
+      <div class="oew-aib-grid">
+        {% for c in aib.cards %}
+        <article class="oew-aib-card is-{{ c.state_slug }}">
+          <header class="oew-aib-top">
+            <span class="oew-aib-rank mono">№{{ c.board_rank }}</span>
+            {# board_rank is machine-supplied (contract §5a); the template no longer derives rank from loop.index #}
+            <span class="oew-aib-sym mono">{{ c.symbol }}</span>
+            <span class="oew-aib-state">{{ t(c.display_state_en, c.display_state_zh) }}</span>
+          </header>
+          <div class="oew-aib-legs" role="img"
+            data-tip-en="Two independent facts must agree before we call a direction: how open interest grew (calls vs puts) and how the skew moved. One arrow per fact."
+            data-tip-zh="必须两个独立事实一致才判定方向：未平仓合约的增长结构（看涨与看跌）与偏度的变化。每个事实一个箭头。">
+            <span class="leg leg-oi {{ c.oi_cls }}">{{ c.oi_glyph }} OI</span>
+            <span class="leg leg-skew {{ c.skew_cls }}">{{ c.skew_glyph }} {{ t('Skew', '偏度') }}</span>
+            <span class="oew-aib-legverdict">{{ t(c.leg_verdict_en, c.leg_verdict_zh) }}</span>
+          </div>
+          <div class="oew-aib-meter">
+            <span class="lbl">{{ t('Evidence', '证据') }}</span>
+            <span class="oew-pips" role="img"
+              data-tip-en="Evidence strength, {{ c.pips }} of {{ c.pips_total }}."
+              data-tip-zh="证据强度，{{ c.pips_total }} 格中第 {{ c.pips }} 格。">
+              {% for i in range(c.pips_total) %}<i class="oew-pip{% if i < c.pips %} on{% endif %}"></i>{% endfor %}
+            </span>
+            <span class="oew-aib-band band-{{ c.band_slug }}">{{ t(c.band_en, c.band_zh) }}</span>
+          </div>
+          <p class="oew-aib-why">{{ t(c.why_lead_en, c.why_lead_zh) }}</p>
+          <div class="oew-aib-facts mono">
+            <span>{{ t('Horizon', '周期') }} {{ t(c.horizon_en, c.horizon_zh) }}</span>
+            {% if c.move_pct %}<span>±{{ c.move_pct }}% {{ t('implied', '隐含') }}</span>{% endif %}
+            <span>{{ t('Fresh until', '有效至') }} {{ c.fresh_until }}</span>
+          </div>
+          <div class="oew-aib-chips">
+            {% if c.crowding %}<span class="oew-aib-crowd">{{ t('Crowded tape', '拥挤交易') }}</span>{% endif %}
+            <span class="oew-aib-prophet"
+              data-tip-en="Prophet context only — it does not change this board's ranking.{% if c.prophet_asof %} As of {{ c.prophet_asof }}.{% endif %}"
+              data-tip-zh="仅为 Prophet 参考——不影响本板块排序。{% if c.prophet_asof %}截至 {{ c.prophet_asof }}。{% endif %}">Prophet · {{ t(c.prophet_en, c.prophet_zh) }}</span>
+          </div>
+          <details class="oew-aib-detail">
+            <summary>{{ t('Why & what would change it', '依据与变化条件') }}</summary>
+            <div class="oew-aib-detailbody">
+              <div class="oew-aib-dline">
+                <span class="k">{{ t('OI evidence', '未平仓量证据') }}</span>
+                <span class="v">{{ t(c.detail.oi_line_en, c.detail.oi_line_zh) }}</span>
+              </div>
+              <div class="oew-aib-dline">
+                <span class="k">{{ t('Skew evidence', '偏度证据') }}</span>
+                <span class="v">{{ t(c.detail.skew_line_en, c.detail.skew_line_zh) }}</span>
+              </div>
+              {% if c.detail.mechanics_en %}
+              <div class="oew-aib-dline">
+                <span class="k">{{ t('Mechanics', '机制背景') }}</span>
+                <span class="v">{{ t(c.detail.mechanics_en, c.detail.mechanics_zh) }}</span>
+              </div>
+              {% endif %}
+              {% for w in c.detail.why_now %}
+              <div class="oew-aib-dline">
+                <span class="k">{{ t('Evidence', '证据') }}</span>
+                <span class="v">{{ t(w.en, w.zh) }}</span>
+              </div>
+              {% endfor %}
+              <div class="oew-aib-dline">
+                <span class="k">{{ t('Would confirm', '确认条件') }}</span>
+                <span class="v">{{ t(c.detail.trigger_en, c.detail.trigger_zh) }}</span>
+              </div>
+              <div class="oew-aib-dline">
+                <span class="k">{{ t('Would change it', '变化条件') }}</span>
+                <span class="v">{{ t(c.detail.invalidation_en, c.detail.invalidation_zh) }}</span>
+              </div>
+              <div class="oew-aib-dline">
+                <span class="k">{{ t('Priority score', '优先级分数') }}</span>
+                <span class="v mono">{{ c.research_priority_score }}</span>
+              </div>
+              <div class="oew-aib-dline">
+                <span class="k">{{ t('Receipt', '回执') }}</span>
+                <span class="v mono">{{ c.signal_id }}</span>
+              </div>
+            </div>
+          </details>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="oew-aib-empty">
+        <p class="oew-aib-empty-lead">{{ t('No name clears the research-priority threshold today.', '今日没有名称达到研究优先级门槛。') }}</p>
+        <p class="oew-aib-empty-sub">{{ aib.eligible }} {{ t('names fully eligible · source healthy', '个名称完全符合条件 · 数据源正常') }}</p>
+      </div>
+      {% endif %}
+
+      {# ── BAND 2 · directional watch — same ranked list, below the cut ── #}
+      {% if aib.watch %}
+      <div class="oew-aib-watch">
+        <span class="oew-aib-wlbl" tabindex="0" role="button"
+          data-tip-en="Names that met the same evidence bar as the six above but ranked below the cut. The numbers are their place in the full ranking, so a gap means a higher-ranked volatility name sits between them. Order comes from the board's own ranking and is never re-sorted here."
+          data-tip-zh="与上方六个达到同一证据标准、但排名未进前六的名称。编号为其在完整排序中的位次，因此编号跳跃表示中间有排名更高的波动率名称。顺序沿用板块自身排序，此处不重新排序。"
+        >{{ t('Qualified below the cut', '达标但未入前六') }}</span>
+        {% for w in aib.watch %}
+        <button class="oew-tkchip oew-aib-wchip is-{{ w.dir_slug }}" type="button" data-goto="{{ w.symbol }}">
+          <span class="rk">№{{ w.board_rank }}</span>
+          <span>{{ w.symbol }}</span>
+          <span class="dir">{{ t(w.dir_en, w.dir_zh) }}</span>
+        </button>
+        {% endfor %}
+        {% if aib.watch_overflow > 0 %}
+        <span class="oew-aib-rmore">+{{ aib.watch_overflow }} {{ t('more', '个') }}</span>
+        {% endif %}
+      </div>
+      {% elif aib.no_directional %}
+      <p class="oew-aib-wnull">{{ t('No upside or downside hypothesis qualified today.', '今日没有上行或下行假设达标。') }}</p>
+      {% endif %}
+
+      {# ── BAND 3 · evidence rail — event premium | crowded tape ── #}
+      <div class="oew-aib-rail">
+
+        <div class="oew-rg oew-aib-rgbody">
+          <div class="oew-aib-rghead">
+            <span class="oew-rg-h">{{ t('Ahead of an event', '事件前') }}</span>
+            <span class="oew-help" tabindex="0" role="button"
+              data-tip-en="Names with a known event inside the next 45 days, ordered by how far their event pricing sits from other event names today. Cross-sectional comparison only — it never says an event move is cheap or expensive."
+              data-tip-zh="未来 45 天内有已知事件的名称，按其事件定价与当前其他事件名称的偏离程度排序。仅为横截面比较——绝不表示某次事件变动是便宜还是昂贵。">?</span>
+          </div>
+          {% if aib.events %}
+            {% for e in aib.events %}
+            <div class="oew-aib-rrow">
+              <span class="oew-aib-rsym">{{ e.symbol }}</span>
+              <span class="oew-aib-rline">{{ t(e.state_en, e.state_zh) }}</span>
+              {% if e.board_rank %}<span class="oew-aib-rref">№{{ e.board_rank }} {{ t('above', '见上') }}</span>{% endif %}
+              <span class="oew-aib-rmeta">{{ t('Event', '事件') }} {{ e.event_date }}{% if e.move_pct %} · ±{{ e.move_pct }}%{% endif %}</span>
+            </div>
+            {% endfor %}
+            {% if aib.events_overflow > 0 %}
+            <div class="oew-aib-rmore">+{{ aib.events_overflow }} {{ t('more', '个') }}</div>
+            {% endif %}
+          {% else %}
+          <p class="oew-aib-rempty">{{ t(aib.events_empty_en, aib.events_empty_zh) }}</p>
+          {% endif %}
+        </div>
+
+        <div class="oew-rg oew-aib-rgbody">
+          <div class="oew-aib-rghead">
+            <span class="oew-rg-h">{{ t('Crowded tape', '拥挤交易') }}</span>
+            <span class="oew-help" tabindex="0" role="button"
+              data-tip-en="Names where activity looks crowded: same-day expiries dominating the tape, options costly while price sits at a high, or both running for days. Crowding cuts how tradeable an idea is; it never gives a direction."
+              data-tip-zh="活跃度显示拥挤的名称：当日到期主导盘面、价格高位时期权偏贵，或两者持续数日。拥挤会削弱想法的可执行性；它从不给出方向。">?</span>
+          </div>
+          {% if aib.risks %}
+            {% for r in aib.risks %}
+            <div class="oew-aib-rrow">
+              <span class="oew-aib-rsym">{{ r.symbol }}</span>
+              <span class="oew-aib-rline">{{ t(r.cause_en, r.cause_zh) }}</span>
+              {% if r.board_rank %}<span class="oew-aib-rref">№{{ r.board_rank }} {{ t('above', '见上') }}</span>{% endif %}
+            </div>
+            {% endfor %}
+            {% if aib.risks_overflow > 0 %}
+            <div class="oew-aib-rmore">+{{ aib.risks_overflow }} {{ t('more', '个') }}</div>
+            {% endif %}
+          {% else %}
+          <p class="oew-aib-rempty">{{ t('Nothing looks crowded today.', '今日无拥挤迹象。') }}</p>
+          {% endif %}
+        </div>
+
+      </div>
+
+      {# ── BAND 4 · the control — never a card, never clickable ── #}
+      <div class="oew-aib-control">
+        <span class="oew-aib-ctlk" tabindex="0" role="button"
+          data-tip-en="A healthy, fully covered name that cleared nothing today — shown so you can tell 'nothing here' apart from 'no data'. It is not a research priority and is never ranked."
+          data-tip-zh="一个数据完整、今日无任何状态达标的健康名称——用以区分「无信号」与「无数据」。它不是研究优先级，也从不参与排序。"
+        >{{ t('Control', '对照') }}</span>
+        {% if aib.control %}
+        <span class="oew-aib-ctlsym">{{ aib.control.symbol }}</span>
+        <span>— {{ t(aib.control.reason_en, aib.control.reason_zh) }}</span>
+        {% else %}
+        <span>— {{ t('no fully covered quiet name today.', '今日无数据完整的平静名称。') }}</span>
+        {% endif %}
+      </div>
+
+      {% else %}
+      <div class="oew-aib-degraded">
+        <p class="oew-aib-degraded-lead">{{ t(aib.degraded_en or 'This board is unavailable for this close.', aib.degraded_zh or '本次收盘该板块暂不可用。') }}</p>
+        <p class="oew-aib-degraded-why">{{ t(aib.degraded_why_en or 'This is a data gap, not a quiet market.',
+                                              aib.degraded_why_zh or '这是数据缺口，并非市场平静。') }}</p>
+        <details class="oew-aib-degraded-rcp">
+          <summary>{{ t('What we checked', '我们检查了什么') }}</summary>
+          <div class="oew-aib-detailbody">
+            <div class="oew-aib-dline"><span class="k">{{ t('Last settled close', '最近结算收盘') }}</span><span class="v mono">{{ aib.as_of_session or t('not recorded', '未记录') }}</span></div>
+            <div class="oew-aib-dline"><span class="k">{{ t('Positions counted', '持仓统计于') }}</span><span class="v mono">{{ aib.oi_counted_date or t('not recorded', '未记录') }}</span></div>
+            <div class="oew-aib-dline"><span class="k">{{ t('Built', '生成于') }}</span><span class="v">{% if aib.freshness.built_en %}{{ t(aib.freshness.built_en, aib.freshness.built_zh) }}{% else %}{{ t('not recorded', '未记录') }}{% endif %}</span></div>
+            <div class="oew-aib-dline"><span class="k">{{ t('Receipt', '回执') }}</span><span class="v mono">{{ (aib.receipt_id or '')[:12] or t('not recorded', '未记录') }}</span></div>
+          </div>
+        </details>
+      </div>
+      {% endif %}
+    </div>
+    <div class="oew-pfoot">
+      <span>{{ t('Hypotheses to research, ranked by evidence — none is a trade on its own.', '按证据排序的研究假设——均非独立交易信号。') }}</span>
+      {% if aib.overflow > 0 %}<span class="oew-aib-more"
+        data-tip-en="Counts every direction above the threshold, including volatility names. The strip above names only the upside and downside ones."
+        data-tip-zh="统计门槛之上的全部方向，含波动率名称。上方条带仅列出上行与下行名称。">{{ aib.overflow }} {{ t('more above threshold', '个更多超过门槛') }}</span>{% endif %}
+      {% if aib.as_of_session %}
+      <span class="oew-asof mono" data-tip-en="Receipt {{ aib.receipt_id[:12] }}" data-tip-zh="回执 {{ aib.receipt_id[:12] }}">{{ aib.as_of_session }}</span>
+      {% endif %}
+      {% if skew_source_note_en %}<p class="oew-aib-note" data-skew-source-note>{{ t(skew_source_note_en, skew_source_note_zh) }}</p>{% endif %}
+    </div>
+  </div>
+
+{%- endmacro %}
+
+{% macro icon(name) -%}<svg class="oew-icon" viewBox="0 0 24 24" aria-hidden="true">{% if name=='arrow' %}<path d="M5 12h14m-5-5 5 5-5 5"/>{% elif name=='clock' %}<circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/>{% elif name=='chart' %}<path d="M4 4v16h16M8 15l4-5 4 3 4-7"/>{% elif name=='search' %}<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/>{% elif name=='grid' %}<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>{% elif name=='layers' %}<path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/>{% elif name=='brief' %}<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/>{% elif name=='chevron' %}<path d="m9 5 7 7-7 7"/>{% endif %}</svg>{%- endmacro %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,7 +300,7 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:var(--font-ui);
-  font-size:13.5px;line-height:1.5;margin:0;padding:18px 0 0;-webkit-font-smoothing:antialiased}
+  font-size:14px;line-height:1.5;margin:0;padding:18px 0 0;-webkit-font-smoothing:antialiased}
 
 /* TYPE ROLE LAW — machine-recorded facts are monospaced, human interpretation is
    not. Never put Hanzi inside .mono (CJK falls back to a mismatched face). The
@@ -56,21 +308,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-ui);
    "SF Mono"-first stack, which renders SERIF in Chrome (#3371). */
 .oew .mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   WORKSPACE TOKENS — the Options workspace identity.
-   --oew-accent  SLATE-INDIGO. STRUCTURE ONLY: close line, active tab, focus
-                 rings, pip fills. NEVER encodes data, never encodes direction.
-                 Non-directional on purpose — it must be unmistakable for --up or
-                 --down in BOTH languages (zh flips those two), and distinct from
-                 every sibling desk (gex=coral, flow=teal, market_structure=violet).
-   --oew-stamp   BRASS. THE RECORD INK. Exactly three uses: the session date
-                 stamp, as-of / vintage micro-labels, and the coverage label on
-                 the close line. Darker and browner than --warn so a vintage mark
-                 can never be misread as an amber warning.
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* Workspace aliases inherit the canonical theme. Information accents never
+   encode price direction; directional data retains the shared up/down tokens. */
 .oew{
-  --oew-accent:#8e97c8;
-  --oew-stamp:#b49256;
+  --oew-accent:var(--info);
+  --oew-stamp:var(--muted);
   --hair: color-mix(in srgb, var(--line) 72%, transparent);
   --tile: color-mix(in srgb, var(--panel2) 86%, var(--panel));
   --ink-2: color-mix(in srgb, var(--text) 66%, transparent);
@@ -91,66 +333,43 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-ui);
   --r-pill:999px; --r-ctl:8px; --r-panel:14px; --r-shell:14px;
 }
 html[data-theme="light"] .oew{
-  --oew-accent:#4c55a8;
-  --oew-stamp:#8a6a2e;
   --hair: color-mix(in srgb, var(--line) 92%, transparent);
   --ink-2: color-mix(in srgb, var(--text) 72%, transparent);
 }
 
-.oew-eyebrow{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
-html[data-lang="zh"] .oew-eyebrow{letter-spacing:.02em;text-transform:none}
-.oew-wrap{max-width:1240px;margin:0 auto;padding:0 var(--s5) var(--s8)}
-@media (max-width:560px){.oew-wrap{padding:0 var(--s3) var(--s7)}}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   THE PERSISTENT CHROME (identity · stamp · posture console · close line · tabs).
-   This is the product: all four modes inherit it unchanged. That inheritance is
-   the entire argument for a workspace rather than four pages.
-   ═══════════════════════════════════════════════════════════════════════════ */
-.oew-chrome{padding:var(--s6) 0 0}
-.oew-idrow{display:flex;align-items:flex-end;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s5)}
-.oew-title{margin:0;font-size:22px;font-weight:700;letter-spacing:-.015em;line-height:1.15}
-.oew-title .sub{display:block;font-size:11.5px;font-weight:500;color:var(--muted);letter-spacing:0;margin-top:3px}
-
-.oew-receipt{display:grid;grid-template-columns:minmax(196px,232px) 1fr;gap:var(--s5);align-items:stretch}
-@media (max-width:900px){.oew-receipt{grid-template-columns:1fr;gap:var(--s4)}}
-
-/* ── THE SESSION STAMP — brass, monospaced, reads as a settlement record ── */
-.oew-stampblock{border:1px solid var(--hair);border-radius:var(--r-panel);background:var(--tile);
-  padding:var(--s4) var(--s4) var(--s3);position:relative;overflow:hidden}
-.oew-stampblock::before{content:'';position:absolute;inset:0 auto 0 0;width:2px;background:var(--oew-stamp);opacity:.8}
-.oew-stamp-k{font-size:10px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--oew-stamp);margin-bottom:5px}
-html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
-.oew-stamp-date{font-size:27px;font-weight:700;line-height:1;color:var(--text)}
-.oew-stamp-closed{font-size:11px;color:var(--muted);margin-top:6px}
-.oew-stamp-rows{margin-top:var(--s3);padding-top:var(--s3);border-top:1px solid var(--hair);display:grid;gap:4px}
-.oew-stamp-row{display:flex;gap:var(--s2);font-size:11px;align-items:baseline}
-.oew-stamp-row .k{color:var(--muted)}
-.oew-stamp-row .v{margin-left:auto;color:var(--ink-2);font-weight:600}
-.oew-stamp-row .v.brass{color:var(--oew-stamp)}
-.oew-source-receipt{margin-top:7px;border-top:1px solid var(--hair);padding-top:6px}
-.oew-source-receipt summary{cursor:pointer;color:var(--muted);font-size:10px;letter-spacing:.04em}
-.oew-source-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:4px;font-size:10px;color:var(--muted)}
-.oew-source-row .stale{color:var(--orange);font-weight:650}.oew-source-row .current{color:var(--up)}
-
-/* ── THE POSTURE CONSOLE — four co-displayed readings, NEVER fused ─────────
-   Four equal cells, hairline-divided, no arithmetic between them. The refusal
-   to fuse is made legible by the layout, then stated in words below. */
-.oew-console{border:1px solid var(--hair);border-radius:var(--r-panel);background:var(--panel);display:flex;flex-direction:column}
-.oew-console-grid{display:grid;grid-template-columns:repeat(4,1fr);flex:1}
-@media (max-width:760px){.oew-console-grid{grid-template-columns:repeat(2,1fr)}}
-.oew-read{padding:var(--s4);border-left:1px solid var(--hair);display:flex;flex-direction:column;gap:6px;justify-content:center}
-.oew-read:first-child{border-left:none}
-@media (max-width:760px){
-  .oew-read:nth-child(odd){border-left:none}
-  .oew-read:nth-child(n+3){border-top:1px solid var(--hair)}
-}
+.oew-eyebrow{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+html[data-lang="zh"] .oew-eyebrow{letter-spacing:0;text-transform:none}
+.oew-wrap{max-width:1328px;margin:0 auto;padding:var(--s7) var(--s6) var(--s8)}
+.oew-icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.oew :focus-visible{outline:2px solid var(--info);outline-offset:3px}
+.oew button,.oew input,.oew select{font-family:inherit}
+.oew-chrome{margin-bottom:var(--s6)}
+.oew-idrow{display:flex;align-items:center;justify-content:space-between;gap:var(--s6);margin-bottom:var(--s6)}
+.oew-title{margin:var(--s1) 0 0;font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1.12}
+.oew-subtitle{margin:var(--s2) 0 0;color:var(--muted);font-size:15px}
+.oew-session{display:flex;align-items:center;gap:var(--s3);flex:none}
+.oew-session-icon{width:44px;height:44px;display:grid;place-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:12px;color:var(--muted)}
+.oew-session-date{font-size:17px;font-weight:650;margin-top:2px}
+.oew-context-drawer{border:1px solid var(--line);border-radius:12px;background:var(--panel);margin-bottom:var(--s5)}
+.oew-context-drawer>summary{display:flex;align-items:center;gap:var(--s4);padding:var(--s4) var(--s5);cursor:pointer;list-style:none;min-height:56px}
+.oew-context-drawer>summary::-webkit-details-marker,.oew-history>summary::-webkit-details-marker{display:none}
+.oew-context-drawer>summary>.oew-icon,.oew-history>summary>.oew-icon{width:16px;height:16px;transition:transform .16s ease;color:var(--muted)}
+.oew-context-drawer[open]>summary>.oew-icon,.oew-history[open]>summary>.oew-icon{transform:rotate(90deg)}
+.oew-context-summary{font-size:13px;color:var(--muted)}
+.oew-context-link{margin-left:auto;color:var(--ink-info,var(--info));font-size:12px;font-weight:600;white-space:nowrap}
+.oew-context-body{border-top:1px solid var(--line);padding:var(--s5)}
+.oew-console-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s3)}
+.oew-read{padding:var(--s4);background:var(--panel2);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;align-items:flex-start;gap:var(--s2)}
 .oew-read-k{display:flex;align-items:center;gap:5px}
-.oew-read-v{font-size:15px;font-weight:650;line-height:1.2;color:var(--text)}
-.oew-read-n{font-size:10.5px;color:var(--muted)}
-.oew-vetted{display:inline-grid;place-items:center;width:13px;height:13px;border-radius:50%;
-  background:color-mix(in srgb,var(--ok) 20%,transparent);color:var(--ink-ok, var(--ok));font-size:8.5px;font-weight:900;cursor:help;flex:none}
-
+.oew-read-v{font-size:18px;font-weight:700;line-height:1.3;color:var(--text)}
+.oew-read-n{font-size:12px;color:var(--muted)}
+.oew-reading-date{display:flex;flex-wrap:wrap;gap:var(--s2);font-size:11.5px;color:var(--muted);margin-top:auto;padding-top:var(--s2)}
+.oew-vetted{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:var(--panel);color:var(--ink-ok,var(--ok));font-size:10px;cursor:help;flex:none}
+.oew-source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 var(--s6)}
+.oew-source-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px var(--s3);padding:var(--s3) 0;border-top:1px solid var(--line);font-size:12.5px}
+.oew-source-state{grid-column:1/-1;font-size:12px;color:var(--muted)}
+.oew-source-state.current{color:var(--ink-ok,var(--ok))}
+.oew-source-note{font-size:12px;color:var(--muted);margin:var(--s4) 0 0;line-height:1.65}
 /* ── THE PIP STRIP — the atomic fill-track. The DENOMINATOR must be as visible
       as the reading: an unfilled pip is a filled tile, not an empty outline. */
 .oew-pips{display:inline-flex;gap:3px;align-items:center;cursor:help;margin-top:2px}
@@ -159,7 +378,7 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
 .oew-pip.nul{background:transparent;border:1px dotted var(--hair);opacity:.6}
 .oew-pips.sm .oew-pip{width:9px;height:5px}
 
-.oew-nofuse{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;margin-top:var(--s4);font-size:12.5px;color:var(--ink-2)}
+.oew-nofuse{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;margin:var(--s4) 0;font-size:12.5px;color:var(--ink-2)}
 .oew-aib>.oew-nofuse{margin:0;padding:10px var(--s4);border-bottom:1px solid var(--hair);background:var(--tile)}
 
 /* ── STANCE CHIP — the most important words on the page ─────────────────── */
@@ -180,60 +399,35 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
   letter-spacing:.01em;white-space:nowrap;padding:4px 11px;border-radius:var(--r-pill);
   border:1px solid var(--hair);color:var(--ink-info, var(--info));background:var(--tile)}
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   ★ THE SIGNATURE — THE CLOSE LINE ★
-   A full-width rule marking the boundary between "what settled" (above) and
-   "what you do about it" (below). ITS FILLED PORTION IS THE COVERAGE NUMBER —
-   the page's most structural element carries its most important honesty fact.
-   When coverage is complete the signature is nearly silent; when data degrades
-   the hatched remainder grows and the page visibly changes. An instrument, not
-   an ornament — which is why it gets no floor, no minimum and no rounding.
-   ═══════════════════════════════════════════════════════════════════════════ */
-.oew-closeline{position:relative;height:3px;margin-top:var(--s7);border-radius:3px;
-  background:repeating-linear-gradient(90deg,var(--line) 0 3px,transparent 3px 6px)}
-.oew-closeline::before{content:'';position:absolute;inset:0;border-radius:3px;
-  background:color-mix(in srgb,var(--line) 55%,transparent)}
-.oew-closeline::after{content:'';position:absolute;left:0;top:0;height:3px;width:var(--oew-cov,100%);
-  background:var(--oew-accent);border-radius:3px;
-  box-shadow:0 0 14px -2px color-mix(in srgb,var(--oew-accent) 70%,transparent)}
-.oew-cov-tick{position:absolute;top:-5px;left:var(--oew-cov,100%);width:2px;height:13px;background:var(--oew-stamp);border-radius:1px}
-.oew-cov-label{position:absolute;top:-21px;left:var(--oew-cov,100%);transform:translateX(-100%);
-  font-size:10px;font-weight:600;color:var(--oew-stamp);white-space:nowrap;padding-right:7px;letter-spacing:.03em}
-@media (max-width:560px){.oew-cov-label{font-size:9px}}
-
-/* ── MODE TABS — sit directly under the close line; the active tab caps it ── */
-.oew-tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin-bottom:var(--s6)}
-.oew-tabs::-webkit-scrollbar{display:none}
-.oew-tab{appearance:none;background:none;border:none;border-top:2px solid transparent;margin-top:-2px;
-  padding:11px var(--s4) 10px;font:inherit;font-size:13px;font-weight:650;color:var(--muted);cursor:pointer;
-  white-space:nowrap;flex:none;display:inline-flex;align-items:baseline;gap:6px}
-.oew-tab:hover{color:var(--text)}
-.oew-tab:focus-visible{outline:2px solid var(--oew-accent);outline-offset:-3px;border-radius:2px}
-.oew-tab .cnt{font-size:10.5px;font-weight:600;color:var(--muted);opacity:.8}
-.oew-tab[aria-selected="true"]{color:var(--text);border-top-color:var(--oew-accent)}
-.oew-tab[aria-selected="true"] .cnt{color:var(--oew-accent);opacity:1}
+/* Five persistent research tasks. Roving focus and history are handled below. */
+.oew-tabs{display:flex;gap:var(--s1);padding:var(--s1);background:var(--panel2);border:1px solid var(--line);border-radius:12px;margin:0}
+.oew-tab{appearance:none;display:flex;align-items:center;justify-content:center;gap:var(--s2);min-width:0;min-height:44px;flex:1;padding:var(--s2) var(--s4);font:inherit;font-size:13px;font-weight:650;border:0;border-radius:10px;background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap}
+.oew-tab[aria-selected="true"]{background:var(--panel);color:var(--text);box-shadow:var(--card-shadow)}
+.oew-tab:hover{color:var(--text);background:color-mix(in srgb,var(--panel) 65%,transparent)}
+.oew-tab .cnt{font-size:11px;font-weight:500;background:var(--panel2);border-radius:6px;padding:1px 5px;color:var(--muted)}
+.oew-tab:focus-visible{outline-offset:-2px}
 
 /* ═══ PANEL SHELL — shared by every panel in every mode ═══ */
 .oew-panel{border:1px solid var(--hair);border-radius:var(--r-panel);background:var(--panel);
   box-shadow:var(--card-shadow);margin-bottom:var(--s4);overflow:hidden}
-.oew-phead{display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;padding:var(--s3) var(--s4);border-bottom:1px solid var(--hair)}
-.oew-ph-title{font-size:14px;font-weight:700;margin:0;letter-spacing:-.01em}
-.oew-ph-sub{font-size:11.5px;color:var(--muted)}
+.oew-phead{display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;padding:var(--s5) var(--s6);border-bottom:1px solid var(--hair)}
+.oew-ph-title{font-size:16px;font-weight:700;margin:0;letter-spacing:-.01em}
+.oew-ph-sub{font-size:12.5px;color:var(--muted)}
 /* Wraps because the Scanner header packs a segmented control AND the CSV button
    in here: at 375px that pair measured 319px inside a 317px header content box,
    overhanging the padding. Most .oew-ph-right instances hold a single ? chip, so
    the wrap only engages where the content genuinely does not fit. */
 .oew-ph-right{margin-left:auto;display:flex;align-items:center;gap:var(--s2);
   flex-wrap:wrap;justify-content:flex-end;min-width:0}
-.oew-pbody{padding:var(--s4)}
+.oew-pbody{padding:var(--s6)}
 .oew-pfoot{padding:10px var(--s4);border-top:1px solid var(--hair);background:var(--tile);
-  font-size:11px;color:var(--muted);display:flex;gap:var(--s2);align-items:center;flex-wrap:wrap}
+  font-size:12px;color:var(--muted);display:flex;gap:var(--s2);align-items:center;flex-wrap:wrap}
 /* F03-W2-4c · one-sentence footnote about the source break in put-skew
    history. Inherits --muted from the panel foot; the wrapped paragraph is
    allowed to grow to two lines on narrow viewports. No new tokens. */
 .oew-pfoot .oew-aib-note{flex-basis:100%;font-size:12px;color:var(--muted);
   margin:var(--s2) 0 0;line-height:1.45}
-.oew-asof{margin-left:auto;font-size:10px;color:var(--oew-stamp);opacity:.9;letter-spacing:.02em}
+.oew-asof{margin-left:auto;font-size:12px;color:var(--oew-stamp);opacity:.9;letter-spacing:.02em}
 /* the ? help affordance — the Tier-2 home for mechanics (LENS popover) */
 .oew-help{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;
   border:1px solid var(--hair);color:var(--muted);font-size:9.5px;font-weight:800;cursor:help;flex:none;background:var(--tile)}
@@ -264,12 +458,8 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
 .oew-aib-honesty{font-size:10px;color:var(--ink-2);font-weight:600;white-space:nowrap}
 .oew-aib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--s3)}
 @media (max-width:700px){.oew-aib-grid{grid-template-columns:1fr}}
-.oew-aib-card{border:1px solid var(--hair);border-left:3px solid var(--hair);border-radius:var(--r-ctl);
+.oew-aib-card{border:1px solid var(--hair);border-radius:var(--r-ctl);
   background:var(--tile);padding:var(--s3);display:flex;flex-direction:column;gap:7px;min-width:0}
-.oew-aib-card.is-up{border-left-color:var(--ink-up, var(--up))}
-.oew-aib-card.is-down{border-left-color:var(--ink-down, var(--down))}
-.oew-aib-card.is-vol{border-left-color:var(--ink-info, var(--info))}
-.oew-aib-card.is-risk{border-left-color:var(--ink-warn, var(--warn))}
 .oew-aib-top{display:flex;align-items:baseline;gap:7px}
 .oew-aib-rank{font-size:10px;color:var(--muted)}
 .oew-aib-sym{font-size:14px;font-weight:700}
@@ -373,12 +563,8 @@ html[data-theme="light"] .oew-lab-be{outline:none}
    same semantics (lede -> evidence -> detail, stance vocabulary, EN/ZH
    parity); only the material differs. Packet A-F03-W2-2 §6. */
 .oew-aib-lede{padding:var(--s3) var(--s4);border-bottom:1px solid var(--hair);
-  background:var(--tile);border-left:3px solid var(--hair);
+  background:var(--tile);
   box-shadow:inset 0 1px 0 color-mix(in srgb,var(--text) 6%,transparent)}
-.oew-aib-lede.is-current{border-left-color:var(--oew-accent)}
-.oew-aib-lede.is-lagging{border-left-color:var(--ink-info, var(--info))}
-.oew-aib-lede.is-stale,
-.oew-aib-lede.is-unknown{border-left-color:var(--ink-warn, var(--warn))}
 
 .oew-aib-lede-head{margin:0 0 6px;font-size:15.5px;line-height:1.35;font-weight:680;
   letter-spacing:-.005em;color:var(--text)}
@@ -408,10 +594,6 @@ html[data-theme="light"] .oew-lab-be{outline:none}
    does not need. */
 html[data-theme="light"] .oew-aib-lede{box-shadow:var(--card-shadow);
   border-top:1px solid var(--hair);border-right:1px solid var(--hair)}
-html[data-theme="light"] .oew-aib-lede.is-current{border-left-color:var(--oew-accent)}
-html[data-theme="light"] .oew-aib-lede.is-lagging{border-left-color:var(--ink-info, var(--info))}
-html[data-theme="light"] .oew-aib-lede.is-stale,
-html[data-theme="light"] .oew-aib-lede.is-unknown{border-left-color:var(--ink-warn, var(--warn))}
 html[data-theme="light"] .oew-aib-lede-chip{background:transparent;border-color:var(--hair)}
 html[data-theme="light"] .oew-aib-fresh-age{background:transparent}
 html[data-theme="light"] .oew-aib-fresh-age.lvl-stale,
@@ -479,7 +661,7 @@ html[data-theme="light"] .oew-aib-fresh-age.lvl-unknown{
 /* ── BRIEF: index close row ── */
 .oew-idx{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s3)}
 @media (max-width:1000px){.oew-idx{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:560px){.oew-idx{grid-template-columns:1fr}}
+
 .oew-ic{border:1px solid var(--hair);border-radius:var(--r-ctl);background:var(--tile);padding:var(--s3)}
 .oew-ic-top{display:flex;align-items:baseline;gap:var(--s2)}
 .oew-ic-sym{font-size:15px;font-weight:700}
@@ -552,13 +734,13 @@ html[data-lang="zh"] .oew-ic-lv .k{letter-spacing:.02em;text-transform:none}
 
 /* ── Terminal handoff ── */
 .oew-handoff{border:1px solid var(--hair);border-radius:var(--r-panel);
-  background:linear-gradient(100deg,color-mix(in srgb,var(--oew-accent) 11%,var(--panel)),var(--panel) 62%);
+  background:var(--panel);
   padding:var(--s4);display:flex;align-items:center;gap:var(--s4);flex-wrap:wrap}
 .oew-ho-t{font-size:14px;font-weight:700}
 .oew-ho-s{font-size:12px;color:var(--ink-2);margin-top:2px;max-width:56ch;line-height:1.45}
 .oew-ho-clock{font-size:11px;color:var(--oew-stamp);margin-top:6px}
 .oew-cta{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:7px;background:var(--oew-accent);
-  color:#fff;border:none;border-radius:var(--r-ctl);padding:10px 17px;font:inherit;font-size:13px;font-weight:650;
+  color:var(--bg);border:none;border-radius:10px;padding:12px 18px;min-height:44px;font:inherit;font-size:13px;font-weight:650;
   cursor:pointer;text-decoration:none}
 .oew-cta:hover{filter:brightness(1.08)}
 .oew-cta:focus-visible{outline:2px solid var(--oew-accent);outline-offset:2px}
@@ -568,7 +750,7 @@ html[data-lang="zh"] .oew-ic-lv .k{letter-spacing:.02em;text-transform:none}
 .oew-sc-bar{display:flex;gap:var(--s2);align-items:center;flex-wrap:wrap;margin-bottom:var(--s3)}
 /* font:inherit FIRST — a <button> does NOT inherit the page face, and without
    this the chip renders in the UA default (Arial), breaking the type role law. */
-.oew-preset{appearance:none;font:inherit;font-size:11.5px;font-weight:600;padding:5px 11px;
+.oew-preset{appearance:none;font:inherit;font-size:12px;font-weight:600;padding:8px 12px;min-height:36px;
   border-radius:var(--r-pill);border:1px solid var(--hair);
   background:var(--tile);color:var(--ink-2);cursor:pointer;white-space:nowrap}
 .oew-preset:hover{border-color:var(--oew-accent);color:var(--text)}
@@ -577,7 +759,7 @@ html[data-lang="zh"] .oew-ic-lv .k{letter-spacing:.02em;text-transform:none}
 .oew-preset:focus-visible{outline:2px solid var(--oew-accent);outline-offset:2px}
 .oew-seg{display:inline-flex;border:1px solid var(--hair);border-radius:var(--r-ctl);overflow:hidden}
 .oew-seg button{appearance:none;border:none;background:var(--tile);color:var(--muted);font:inherit;font-size:11.5px;
-  font-weight:650;padding:6px 13px;cursor:pointer;border-left:1px solid var(--hair)}
+  font-weight:650;padding:10px 13px;min-height:40px;cursor:pointer;border-left:1px solid var(--hair)}
 .oew-seg button:first-child{border-left:none}
 .oew-seg button[aria-pressed="true"]{background:color-mix(in srgb,var(--oew-accent) 17%,var(--panel));color:var(--text)}
 .oew-seg button:focus-visible{outline:2px solid var(--oew-accent);outline-offset:-2px}
@@ -585,12 +767,12 @@ html[data-lang="zh"] .oew-ic-lv .k{letter-spacing:.02em;text-transform:none}
    <table> not already inside one, and a double wrap breaks the sticky header. */
 .oew-tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
 table.oew-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
-table.oew-tbl thead th{text-align:right;color:var(--muted);font-weight:600;font-size:10.5px;text-transform:uppercase;
-  letter-spacing:.06em;padding:8px 10px 6px;white-space:nowrap;border-bottom:1px solid var(--line);
+table.oew-tbl thead th{text-align:right;color:var(--muted);font-weight:600;font-size:11.5px;text-transform:uppercase;
+  letter-spacing:.04em;padding:12px 14px;white-space:nowrap;border-bottom:1px solid var(--line);
   position:sticky;top:0;background:var(--panel);z-index:2}
 html[data-lang="zh"] table.oew-tbl thead th{letter-spacing:.02em;text-transform:none;font-size:11px}
 table.oew-tbl thead th.left,table.oew-tbl thead th:first-child{text-align:left}
-table.oew-tbl tbody td{padding:7px 10px;border-bottom:1px solid var(--hair);text-align:right;
+table.oew-tbl tbody td{padding:12px 14px;border-bottom:1px solid var(--hair);text-align:right;
   font-variant-numeric:tabular-nums;white-space:nowrap}
 table.oew-tbl tbody td.left,table.oew-tbl tbody td:first-child{text-align:left}
 table.oew-tbl tbody tr:hover td{background:var(--tile)}
@@ -613,23 +795,10 @@ tr:hover .oew-sc-tk .go{opacity:1}
 .oew-tbl[data-view="flow"] .c-ovr,.oew-tbl[data-view="pos"] .c-ovr{display:none}
 .oew-tbl[data-view="flow"] .c-flow{display:table-cell}
 .oew-tbl[data-view="pos"] .c-pos{display:table-cell}
-@media (max-width:900px){.oew-tbl .hide-sm{display:none !important}}
-/* mobile: table → row cards. Every <td> carries data-k and data-k-zh. */
-@media (max-width:560px){
-  .oew-tbl thead{display:none}
-  .oew-tbl,.oew-tbl tbody,.oew-tbl tr,.oew-tbl td{display:block;width:auto}
-  .oew-tbl tbody tr{border:1px solid var(--hair);border-radius:var(--r-ctl);background:var(--tile);
-    padding:var(--s3);margin-bottom:var(--s2)}
-  .oew-tbl tbody td{position:static !important;border:none;padding:2px 0;text-align:right;display:flex;
-    justify-content:space-between;align-items:center;gap:var(--s3);background:none !important}
-  .oew-tbl tbody td::before{content:attr(data-k);color:var(--muted);font-size:10.5px;font-weight:600;
-    text-transform:uppercase;letter-spacing:.06em;text-align:left}
-  html[data-lang="zh"] .oew-tbl tbody td::before{content:attr(data-k-zh);letter-spacing:.02em;text-transform:none}
-  .oew-tbl tbody td:first-child{padding-bottom:7px;margin-bottom:5px;border-bottom:1px solid var(--hair);
-    justify-content:flex-start;gap:var(--s2)}
-  .oew-tbl tbody td:first-child::before,
-  html[data-lang="zh"] .oew-tbl tbody td:first-child::before{content:none}
-  .oew-tbl tbody td:first-child .oew-sec{margin-left:auto}
+/* The same sortable columns remain reachable on small screens. */
+@media (max-width:760px){
+  table.oew-tbl{min-width:850px}
+  .oew-tblwrap{border-top:1px solid var(--line)}
 }
 
 /* ═══ TICKER (the gex workbench re-homed — the ladder is #3341's ratified signature) ═══ */
@@ -999,130 +1168,213 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
   color:var(--oew-accent);cursor:pointer;text-align:center}
 .oew-ld-exp:hover{background:var(--panel2)}
 .oew-ld-exp:focus-visible{outline:2px solid var(--oew-accent);outline-offset:-2px}
+
+/* Research desk composition. All colors inherit the shared theme. */
+.oew-name-link{appearance:none;border:0;background:transparent;color:var(--text);padding:0;font:inherit;font-weight:700;cursor:pointer;text-align:left}
+.oew-name-link:hover{color:var(--ink-info,var(--info))}
+.oew-source-date{font-size:12px;font-weight:500;color:var(--muted);margin-left:auto;white-space:nowrap}
+.oew-availability,.oew-recovery{display:flex;align-items:center;justify-content:space-between;gap:var(--s6);padding:var(--s5) var(--s6);margin-bottom:var(--s7)}
+.oew-availability-title{display:flex;align-items:center;gap:var(--s2);font-size:14px;font-weight:650;color:var(--text)}
+.oew-availability-title>.oew-icon{color:var(--ink-warn,var(--warn));width:18px;height:18px}
+.oew-availability p,.oew-recovery p{color:var(--muted);font-size:13px;line-height:1.6;margin:var(--s2) 0 0;max-width:72ch}
+.oew-actions{display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap;flex:none}
+.oew-secondary,.oew-text-link{appearance:none;font:inherit;display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);min-height:44px;cursor:pointer;font-size:12.5px;font-weight:600;text-decoration:none}
+.oew-secondary{padding:var(--s2) var(--s4);color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:10px}
+.oew-secondary:hover{background:var(--bg)}
+.oew-text-link{border:0;background:none;padding:0;color:var(--ink-info,var(--info));white-space:nowrap}
+.oew-index-section{margin:0 0 var(--s7)}
+.oew-index-section>.oew-phead{padding:0 0 var(--s4);border:0;gap:var(--s1) var(--s3)}
+.oew-index-section>.oew-phead>.oew-ph-title{font-size:21px;letter-spacing:-.02em;flex-basis:100%}
+.oew-index-section>.oew-phead>.oew-ph-sub{font-size:13px}
+.oew-index-section>.oew-pbody{padding:0}
+.oew-idx{grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s3);align-items:start}
+.oew-ic{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:var(--s5);box-shadow:var(--card-shadow);min-width:0}
+.oew-ic-top{align-items:flex-start;gap:var(--s2);margin-bottom:var(--s3)}
+.oew-ic-sym{font-size:16px;font-weight:750;line-height:1.2;min-height:30px;display:flex;align-items:center}
+.oew-ic-sym>span{font-size:12px;color:var(--muted);margin-left:var(--s1)}
+.oew-ic-name{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.4;max-width:120px}
+.oew-ic-px{font-size:20px;font-weight:700;letter-spacing:-.03em;padding-top:2px}
+.oew-ic-date{display:flex;flex-wrap:wrap;gap:2px var(--s2);color:var(--muted);font-size:11.5px;padding-bottom:var(--s3);border-bottom:1px solid var(--line)}
+.oew-ic-regime{font-size:13px;margin:var(--s3) 0 var(--s2);line-height:1.5;font-weight:650}
+.oew-ic-line{font-size:12px;color:var(--muted);line-height:1.6;min-height:38px}
+.oew-index-track{position:relative;height:44px;margin:var(--s2) 0}
+.oew-index-track-line{position:absolute;left:0;right:0;top:22px;height:2px;background:var(--line)}
+.oew-index-mark{position:absolute;top:17px;height:12px;width:1px;background:var(--muted);transform:translateX(-50%)}
+.oew-index-mark.is-flip{top:12px;height:22px;width:0;background:none;border-left:2px dashed var(--muted)}
+.oew-index-mark.is-spot{top:17px;width:12px;height:12px;border-radius:50%;background:var(--info);border:2px solid var(--panel);box-shadow:0 0 0 1px var(--info);z-index:1}
+.oew-ic-levels{margin-top:0;padding-top:0;border-top:0;gap:var(--s2)}
+.oew-ic-lv .k{font-size:11px;letter-spacing:0;text-transform:none}
+.oew-ic-lv .v{font-size:12px;margin-top:3px}
+.oew-ic-foot{padding-top:var(--s3);margin-top:var(--s3);border-top:1px solid var(--line);gap:var(--s2);align-items:center}
+.oew-ic-em{font-size:11.5px;color:var(--muted)}
+.oew-ic-em b{color:var(--text);font-weight:550}
+.oew-index-legend{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s4);color:var(--muted);font-size:12px;margin-top:var(--s4)}
+.oew-index-legend>span{display:inline-flex;gap:var(--s2);align-items:center}
+.oew-legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--info)}
+.oew-legend-rule{display:inline-block;height:12px;border-left:2px dashed var(--muted)}
+.oew-history{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:var(--s5);box-shadow:var(--card-shadow)}
+.oew-history>summary{list-style:none;cursor:pointer;padding:var(--s5) var(--s6);display:flex;align-items:center;justify-content:space-between;gap:var(--s5)}
+.oew-history>summary h2{margin:0;font-size:16px;font-weight:700}
+.oew-history>summary p{margin:var(--s1) 0 0;font-size:12.5px;color:var(--muted);max-width:85ch}
+.oew-history-body{padding:var(--s5);border-top:1px solid var(--line);background:var(--panel2);border-radius:0 0 14px 14px}
+.oew-change-date{font-size:11px;font-weight:400;color:var(--muted);margin-left:var(--s1)}
+.oew-handoff{padding:var(--s5) var(--s6)}
+.oew-ho-s{max-width:86ch;font-size:12.5px;line-height:1.6;margin-top:var(--s1)}
+.oew-mode-context{display:flex;justify-content:space-between;align-items:flex-start;gap:var(--s5);margin:0 0 var(--s5)}
+.oew-mode-context h2{font-size:24px;letter-spacing:-.02em;line-height:1.2;margin:0 0 var(--s2)}
+.oew-mode-context p{font-size:13px;color:var(--muted);margin:0}
+.oew-mode-date{text-align:right;color:var(--muted);font-size:12px;display:flex;flex-direction:column;gap:var(--s1)}
+.oew-mode-date time{font-size:14px;color:var(--text);white-space:nowrap}
+.oew-recovery h2{font-size:20px;margin:0}
+.oew-tktoolbar{gap:var(--s4);padding:0 0 var(--s5)}
+.oew-tksearch input{min-height:44px;font-size:14px}
+.oew-tksugg .row{min-height:44px;padding:var(--s3)}
+.oew-tk-say{font-size:14px;line-height:1.65}
+.oew-tk-regime{font-size:22px}
+.oew-ldrow{padding:var(--s4);min-height:72px}
+.oew-ld .oew-name-link{min-height:32px}
+.oew-ld-exp{min-height:44px;font-size:13px}
+.oew-sc-tk{min-height:30px}
+.oew-sc-tk .go{opacity:1;color:var(--muted)}
+.oew-panel .oew-help{width:20px;height:20px;font-size:11px}
+html[data-theme="light"] .oew-cta{background:var(--text);color:var(--panel)}
+@media(max-width:1100px){
+  .oew-idx{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .oew-availability{align-items:flex-start;flex-direction:column;gap:var(--s4)}
+  .oew-console-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .oew-wrap{padding:var(--s6) var(--s4) var(--s8)}
+  .oew-title{font-size:32px}
+  .oew-idrow{align-items:flex-start;gap:var(--s4);flex-wrap:wrap}
+  .oew-session{width:100%;gap:var(--s2)}
+  .oew-session-icon{width:36px;height:36px;border-radius:10px}
+  .oew-session>div{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap}
+  .oew-session-date{font-size:14px;margin:0}
+  .oew-context-drawer>summary{padding:var(--s3);gap:var(--s2);flex-wrap:wrap}
+  .oew-context-summary{font-size:12px}
+  .oew-context-link{display:none}
+  .oew-context-drawer>summary>.oew-icon{margin-left:auto}
+  .oew-context-body{padding:var(--s3)}
+  .oew-read{padding:var(--s3)}
+  .oew-read-v{font-size:16px}
+  .oew-source-grid{grid-template-columns:1fr}
+  .oew-tab{padding:var(--s2) 3px;gap:var(--s1);font-size:12px;min-height:44px}
+  .oew-tab .oew-icon{display:none}
+  .oew-tab .cnt{display:none}
+  .oew-phead{padding:var(--s4);gap:var(--s2)}
+  .oew-pbody{padding:var(--s4)}
+  .oew-pfoot{padding:var(--s3) var(--s4)}
+  .oew-ph-title{font-size:15px}
+  .oew-ph-sub{font-size:12px}
+  .oew-availability,.oew-recovery{padding:var(--s4);gap:var(--s4);flex-direction:column;align-items:flex-start}
+  .oew-actions{gap:var(--s3);flex-wrap:wrap}
+  .oew-idx{gap:var(--s3)}
+  .oew-ic{padding:var(--s3)}
+  .oew-ic-top{flex-direction:column;gap:var(--s2)}
+  .oew-ic-name{max-width:none;font-size:11px}
+  .oew-ic-px{font-size:21px}
+  .oew-ic-date{font-size:11px;gap:2px;flex-direction:column}
+  .oew-ic-regime{font-size:12.5px;min-height:38px}
+  .oew-ic-line{font-size:12px;min-height:58px}
+  .oew-ic-levels{grid-template-columns:1fr;gap:var(--s2)}
+  .oew-ic-lv{display:flex;justify-content:space-between;gap:4px;align-items:baseline}
+  .oew-ic-lv .v{font-size:12px;margin:0}
+  .oew-ic-foot{flex-direction:column;align-items:flex-start}
+  .oew-ic .oew-stance{font-size:11px;padding:4px 7px;max-width:100%}
+  .oew-ic .oew-ic-em{font-size:11px;display:flex;flex-wrap:wrap;gap:2px var(--s1)}
+  .oew-ic .oew-lab>summary{font-size:11px;line-height:1.6}
+  .oew-ic .oew-lab-body{overflow-x:auto}
+  .oew-index-legend{font-size:11.5px}
+  .oew-history>summary{padding:var(--s4)}
+  .oew-history-body{padding:var(--s3)}
+  .oew-history-body .oew-phead,.oew-history-body .oew-pbody{padding:var(--s3)}
+  .oew-handoff{padding:var(--s4)}
+  .oew-mode-context{gap:var(--s3)}
+  .oew-mode-context h2{font-size:21px}
+  .oew-mode-context p{font-size:12px}
+  .oew-mode-date{font-size:11px}
+  .oew-mode-date time{font-size:12px}
+  .oew-tktoolbar{flex-wrap:wrap;gap:var(--s2)}
+  .oew-tktoolbar>.oew-text-link{flex-basis:100%;justify-content:flex-start;min-height:32px}
+  .oew-tksearch{flex-basis:100%;width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+  .oew-mode.active{animation:none}
+  .oew *, .oew *::before, .oew *::after{scroll-behavior:auto!important;transition:none!important}
+}
+
+.oew-partial-recovery{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--s3);padding:var(--s4);border:1px solid var(--line);border-radius:12px;color:var(--muted);font-size:12.5px;margin-bottom:var(--s4)}
+.oew-partial-recovery button:disabled{cursor:wait;opacity:.6}
+.oew-index-section>.oew-phead{position:relative;padding-right:24px}
+.oew-index-section>.oew-phead>.oew-ph-right{position:absolute;right:0;top:5px}
+@media(max-width:760px){
+  .oew-wrap{padding-top:var(--s4)}
+  .oew-idrow{gap:var(--s3);margin-bottom:var(--s4)}
+  .oew-session-icon{display:none}
+  .oew-session{min-height:24px}
+  .oew-context-drawer{margin-bottom:var(--s3)}
+  .oew-context-drawer>summary{min-height:48px}
+  .oew-chrome{margin-bottom:var(--s4)}
+  .oew-availability{gap:var(--s3);margin-bottom:var(--s6)}
+  .oew-index-section>.oew-phead>.oew-ph-title{font-size:20px}
+}
+.oew-sc-more>summary{min-height:44px;display:flex;align-items:center;font-size:12px}
+.oew-sc-clear,.oew-sc-csv{min-height:40px}
 </style>
 </head>
 <body class="page-options">
 
 {% include "_site_nav.html.j2" %}
 
-<div class="oew">
+<main class="oew" id="options-workspace">
 <div class="oew-wrap">
 
-<!-- ══════════ PERSISTENT CHROME (all four modes inherit it) ══════════ -->
+<!-- ══════════ PERSISTENT CHROME (all five research tasks) ══════════ -->
 <header class="oew-chrome">
-
   <div class="oew-idrow">
-    <h1 class="oew-title">
-      <span class="l-en">Options</span><span class="l-zh">期权工作台</span>
-      <span class="sub">
-        <span class="l-en">One workspace for the settled close — brief, scanner, per-name, leaders.</span>
-        <span class="l-zh">收盘后的统一工作台 — 简报、筛选、个股、领头股。</span>
-      </span>
-    </h1>
-  </div>
-
-  <div class="oew-receipt">
-
-    <!-- THE SESSION STAMP -->
-    <div class="oew-stampblock">
-      <div class="oew-stamp-k">{{ t('Latest completed session', '最近完成场次') }}</div>
-      <div class="oew-stamp-date mono">{{ sess.date if sess.date else '—' }}</div>
-      <div class="oew-stamp-closed">
-        {% if sess.weekday_en %}
-        <span class="l-en">{{ sess.weekday_en }} · closed 16:00 ET</span><span class="l-zh">{{ sess.weekday_zh }} · 美东 16:00 收盘</span>
-        {% else %}{{ t('closed 16:00 ET', '美东 16:00 收盘') }}{% endif %}
-      </div>
-      <div class="oew-stamp-rows">
-        <div class="oew-stamp-row">
-          <span class="k">{{ t('Positions counted', '持仓统计') }}</span>
-          <span class="v brass mono">{{ sess.oi_vintage if sess.oi_vintage else '—' }}</span>
-        </div>
-        <div class="oew-stamp-row">
-          <span class="k">{{ t('Names covered', '覆盖标的') }}</span>
-          <span class="v mono">{% if sess.covered is not none %}{{ sess.covered }} / {{ sess.universe }}{% else %}—{% endif %}</span>
-        </div>
-        <div class="oew-stamp-row">
-          <span class="k">{{ t('Data quality', '数据质量') }}</span>
-          <span class="v" data-tip-en="{{ sess.quality_tip_en }}" data-tip-zh="{{ sess.quality_tip_zh }}">{{ t(sess.quality_en, sess.quality_zh) }}</span>
-        </div>
-      </div>
-      <details class="oew-source-receipt">
-        <summary>{{ t('Source-session receipt', '数据源场次凭证') }}</summary>
-        {%- for src in sess.sources %}
-        <div class="oew-source-row">
-          <span>{{ t(src.name_en, src.name_zh) }}</span>
-          <span class="mono {{ src.status }}">{{ src.source_session or t('unavailable', '不可用') }}{% if src.sessions_behind %} · {{ src.sessions_behind }} {{ t('sessions behind', '个交易日落后') }}{% endif %}</span>
-        </div>
-        {%- endfor %}
-      </details>
+    <div><div class="oew-eyebrow">{{ t('Research desk / US markets', '研究工作台 / 美国市场') }}</div>
+      <h1 class="oew-title">{{ t('Options', '期权工作台') }}</h1>
+      <p class="oew-subtitle">{{ t('The settled close, in perspective.', '看清收盘数据，掌握市场全貌。') }}</p>
     </div>
-
-    <!-- THE POSTURE CONSOLE — four readings, side by side, never combined -->
-    <div class="oew-console">
+    <div class="oew-session"><span class="oew-session-icon">{{ icon('clock') }}</span><div>
+      <span class="oew-eyebrow">{{ t('Latest completed session', '最近完成场次') }}</span>
+      <div class="oew-session-date mono">{{ sess.date or '—' }}</div>
+    </div></div>
+  </div>
+  <details class="oew-context-drawer" id="oew-sources">
+    <summary><span class="oew-eyebrow">{{ t('Market context', '市场背景') }}</span>
+      <span class="oew-context-summary">{{ t('Sources have different dates', '各数据源日期不同') if sess.mixed_dates else t('Sources aligned to this session', '数据源与此场次一致') }}</span>
+      <span class="oew-context-link">{{ t('View sources', '查看来源') }}</span>{{ icon('chevron') }}</summary>
+    <div class="oew-context-body">
       <div class="oew-console-grid">
         {% for cell in posture %}
         <div class="oew-read">
-          <div class="oew-read-k">
-            <span class="oew-eyebrow">{{ t(cell.label_en, cell.label_zh) }}</span>
-            {% if cell.vetted %}<span class="oew-vetted" role="img"
-              data-tip-en="One of the few readings on this site with a published track record. Open the panel's ? for the full receipt."
-              data-tip-zh="本站少数拥有公开历史记录的读数之一。点击面板的 ? 查看完整依据。">✓</span>{% endif %}
-          </div>
+          <div class="oew-read-k"><span class="oew-eyebrow">{{ t(cell.label_en, cell.label_zh) }}</span>
+          {% if cell.vetted %}<span class="oew-vetted" role="img" data-tip-en="This reading has a published track record; see its source for the full receipt." data-tip-zh="此读数具有公开历史记录；完整凭证见其来源。">✓</span>{% endif %}</div>
           <div class="oew-read-v">{{ t(cell.state_en, cell.state_zh) }}</div>
-          <div class="oew-pips" role="img" data-tip-en="{{ cell.tip_en }}" data-tip-zh="{{ cell.tip_zh }}">
-            {% for i in range(cell.pips_total) %}<i class="oew-pip{% if i < cell.pips %} on{% endif %}"></i>{% endfor %}
-          </div>
+          <div class="oew-pips" role="img" data-tip-en="{{ cell.tip_en }}" data-tip-zh="{{ cell.tip_zh }}">{% for i in range(cell.pips_total) %}<i class="oew-pip{% if i < cell.pips %} on{% endif %}"></i>{% endfor %}</div>
           {% if cell.note_en %}<div class="oew-read-n">{{ t(cell.note_en, cell.note_zh) }}</div>{% endif %}
+          <div class="oew-reading-date"><time class="mono">{{ cell.source_session or '—' }}</time>
+            <span>{{ t('Selected session', '所选场次') if cell.source_session == sess.target_session else t('Earlier session', '较早场次') if cell.source_session and cell.source_session < sess.target_session else t('Date unavailable', '日期不可用') if not cell.source_session else t('Later source', '较晚来源') }}</span></div>
         </div>
         {% endfor %}
       </div>
+      <p class="oew-nofuse">{{ t('Four independent readings, never averaged into one score. Historical readings describe their own source session.', '四项独立读数，不会合成单一评分。历史读数仅描述其对应的数据源场次。') }}</p>
+      <div class="oew-source-grid">
+        {% for src in sess.sources %}
+        <div class="oew-source-row"><span>{{ t(src.name_en, src.name_zh) }}</span><time class="mono">{{ src.source_session or '—' }}</time>
+          <span class="oew-source-state {{ src.status }}">{{ t('Selected session', '所选场次') if src.status == 'current' else t('Earlier session', '较早场次') if src.status == 'stale' else t('Later source', '较晚来源') if src.status == 'conflict' else t('Unavailable', '不可用') }}</span></div>
+        {% endfor %}
+      </div>
+      <p class="oew-source-note">{{ t('Scanner coverage', '筛选数据覆盖') }} <b class="mono">{{ sess.covered if sess.covered is not none else '—' }}/{{ sess.universe if sess.universe is not none else '—' }}</b> · <time class="mono">{{ sess.coverage_asof or '—' }}</time>. {{ t('Coverage belongs to that scanner snapshot. Each index card retains its own date.', '覆盖数对应该筛选快照。每张指数卡片保留其自身日期。') }}</p>
     </div>
-  </div>
-
-  <!-- the non-fused sentence — the design's central honesty statement.
-       NO stance chip: this persistent chrome is a caveat about how the four readings
-       are PRESENTED, not a verdict on them, and it rides every mode — so a chip here
-       repeated the read's decision element on all four tabs. The page keeps exactly one
-       decision element (OIP_MASTERPLAN §3 verdict law); the sentence is the valuable
-       half and stays verbatim. Resolves the follow-up W1_DESIGN_SPEC §0.13 flagged. -->
-  <div class="oew-nofuse">
-    <span>{{ t('Four readings, shown side by side and never averaged into one score.',
-               '四项读数并列呈现，不会合成单一评分。') }}</span>
-  </div>
-
-  <!-- ★ THE CLOSE LINE — the filled portion IS the coverage number ★ -->
-  <div class="oew-closeline" style="--oew-cov:{{ cov_pct }}%" role="img"
-    data-tip-en="{{ sess.cov_tip_en }}" data-tip-zh="{{ sess.cov_tip_zh }}">
-    <span class="oew-cov-tick"></span>
-    <span class="oew-cov-label">
-      {% if sess.covered is not none %}
-      <span class="l-en">covered <b class="mono">{{ sess.covered }}</b>/<span class="mono">{{ sess.universe }}</span> names</span>
-      <span class="l-zh">已覆盖 <b class="mono">{{ sess.covered }}</b>/<span class="mono">{{ sess.universe }}</span> 个标的</span>
-      {% endif %}
-    </span>
-  </div>
-
-  <!-- MODE TABS -->
-  <nav class="oew-tabs" role="tablist" aria-label="Options workspace modes">
-    <button class="oew-tab" role="tab" aria-selected="true" data-mode="brief" id="tab-brief" aria-controls="mode-brief">
-      {{ t('Daily Brief', '每日简报') }}
-    </button>
-    {#- Tab order is PINNED: brief · flow · scanner · ticker · leaders — the five
-        evening questions in reading order (ONE_DOOR_RULING_AND_SPEC §2.0.1). The
-        .cnt figure is the covered-sector count, from the same filter the panel
-        it opens uses. -#}
-    <button class="oew-tab" role="tab" aria-selected="false" data-mode="flow" id="tab-flow" aria-controls="mode-flow">
-      {{ t('Flow', '资金流') }}{% if counts.flow %}<span class="cnt mono">{{ counts.flow }}</span>{% endif %}
-    </button>
-    <button class="oew-tab" role="tab" aria-selected="false" data-mode="scanner" id="tab-scanner" aria-controls="mode-scanner">
-      {{ t('Scanner', '筛选') }}{% if counts.scanner %}<span class="cnt mono">{{ counts.scanner }}</span>{% endif %}
-    </button>
-    <button class="oew-tab" role="tab" aria-selected="false" data-mode="ticker" id="tab-ticker" aria-controls="mode-ticker">
-      {{ t('Ticker', '个股') }}<span class="cnt mono" id="oew-tk-cnt">{{ counts.ticker }}</span>
-    </button>
-    <button class="oew-tab" role="tab" aria-selected="false" data-mode="leaders" id="tab-leaders" aria-controls="mode-leaders">
-      {{ t('Leaders', '领头股') }}{% if counts.leaders %}<span class="cnt mono">{{ counts.leaders }}</span>{% endif %}
-    </button>
+  </details>
+  <nav class="oew-tabs" role="tablist" aria-label="Options workspace modes" data-aria-en="Options workspace modes" data-aria-zh="期权工作台功能">
+    {% for key,en,zh,ic in [('brief','Daily Brief','每日简报','brief'),('flow','Flow','资金流','chart'),('scanner','Scanner','筛选','grid'),('ticker','Ticker','个股','search'),('leaders','Leaders','领头股','layers')] %}
+    <button type="button" class="oew-tab" role="tab" aria-selected="{{ 'true' if key == 'brief' else 'false' }}" tabindex="{{ '0' if key == 'brief' else '-1' }}" data-mode="{{ key }}" id="tab-{{ key }}" aria-controls="mode-{{ key }}">
+      {{ icon(ic) }}<span class="oew-tab-label">{{ t(en,zh) }}</span>{% if key == 'ticker' %}<span class="cnt mono" id="oew-tk-cnt">{{ counts.ticker }}</span>{% endif %}
+    </button>{% endfor %}
   </nav>
 </header>
 
@@ -1133,313 +1385,19 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
        site/options_intel_brief.json via scripts/build_options_command.py's `aib`
        context (build_aib()/`_aib_card()`).  No ranking, ordering or scoring happens
        in this template. -->
-  <div class="oew-panel oew-aib" id="aib"
-       data-aib-state="{{ aib.board_state or 'unavailable' }}"
-       data-aib-asof="{{ aib.freshness.asof_date or '' }}"
-       data-aib-receipt="{{ (aib.receipt_id or '')[:12] }}"
-       data-aib-fresh="{{ aib.freshness.level }}">
-    {%- if sess.quality_en == 'Stale' %}
-    <div class="oew-nofuse" role="status">
-      <span>{{ t('The latest completed session is ' ~ sess.target_session ~ '. The panels below are retained prior-session context; each footer keeps its actual source date and none describes the target close.',
-                 '最近完成场次为 ' ~ sess.target_session ~ '。以下面板仅保留为较早场次背景；每个页脚均保留真实数据源日期，均不代表目标收盘。') }}</span>
-    </div>
-    {%- endif %}
-    <div class="oew-phead">
-      <h2 class="oew-ph-title">{{ t('Options Intelligence Brief', '期权情报简报') }}</h2>
-      <span class="oew-ph-sub">{{ t('ranked priorities, event and crowding reads, and one quiet control', '优先级排序、事件与拥挤读数，以及一个平静对照') }}</span>
-      <div class="oew-ph-right">
-        <span class="oew-aib-honesty">{{ t('Research priority · not a probability or trade signal', '研究优先级 · 非概率或交易信号') }}</span>
-        <span class="oew-help" tabindex="0" role="button"
-          data-tip-en="Ranked by evidence strength and confidence — never a probability, an edge, or a buy/sell signal. Two independent facts (open-interest positioning and skew change) must agree before a card gets a direction; Prophet context is display-only and never changes this ranking."
-          data-tip-zh="按证据强度与置信度排序——绝非概率、优势或买卖信号。未平仓合约仓位与偏度变化两个独立事实须一致，卡片才会给出方向；Prophet 参考仅供展示，不影响本排序。">?</span>
-      </div>
-    </div>
-    {% if aib.available %}
-    <div class="oew-aib-stamps">
-      {% if aib.as_of_session %}<span class="mono">{{ t('Settled', '已结算') }} {{ aib.as_of_session }}</span>{% endif %}
-      {% if aib.oi_counted_date %}<span class="mono">{{ t('Positions counted', '持仓统计于') }} {{ aib.oi_counted_date }}</span>{% endif %}
-      {% if aib.pending_session %}
-      <span class="oew-aib-pending mono">{{ t('Newer session', '更新交易日') }} {{ aib.pending_session }} {{ t('awaiting position counts', '等待持仓统计') }}</span>
-      {% endif %}
-      {%- if aib.healthy %}
-      <span class="oew-aib-elig mono">{{ aib.eligible }}/{{ aib.present }} {{ t('names eligible', '名称符合条件') }}</span>
-      {%- endif %}
-    </div>
-    {% endif %}
-    {#- ── GLANCE TIER · lede ────────────────────────────────────────────────
-        The answer before the evidence: what today's brief says, what to do
-        about it, and how fresh it is.  Every string is a closed-vocabulary
-        lookup from build_aib() keyed on the payload's own board_state and
-        card count — no scoring, no ranking and no generated prose here. -#}
-    <div class="oew-aib-lede is-{{ aib.freshness.level }}">
-      <h3 class="oew-aib-lede-head">{{ t(aib.lede_head_en, aib.lede_head_zh) }}</h3>
-      <p class="oew-aib-lede-stance">
-        <span class="oew-aib-lede-todo">{{ t('What to do', '该怎么做') }}</span>
-        {%- if aib.lede_stance_slug == 'data' %}
-        <span class="oew-aib-lede-chip">{{ t(aib.lede_stance_word_en, aib.lede_stance_word_zh) }}</span>
-        {%- else %}
-        <span class="oew-stance st-{{ aib.lede_stance_slug }}">{{ t(aib.lede_stance_word_en, aib.lede_stance_word_zh) }}</span>
-        {%- endif %}
-        <span class="oew-aib-lede-said">{{ t(aib.lede_stance_en, aib.lede_stance_zh) }}</span>
-      </p>
-      <p class="oew-aib-fresh">
-        {%- if aib.freshness.asof_en %}
-        <span class="oew-aib-fresh-asof">{{ t('As of', '数据截至') }} {{ t(aib.freshness.asof_en, aib.freshness.asof_zh) }}</span>
-        {%- endif %}
-        <span class="oew-aib-fresh-age lvl-{{ aib.freshness.level }}">{{ t(aib.freshness.age_en, aib.freshness.age_zh) }}</span>
-        {%- if aib.freshness.built_en %}
-        <span class="oew-aib-fresh-built">{{ t(aib.freshness.built_en, aib.freshness.built_zh) }}</span>
-        {%- else %}
-        <span class="oew-aib-fresh-built">{{ t('Update time not recorded', '未记录更新时间') }}</span>
-        {%- endif %}
-      </p>
-    </div>
-    <div class="oew-pbody">
-      {% if aib.available and aib.healthy %}
-
-      {# ── BAND 1 · canon: the ranked top six, exactly as ranked ── #}
-      {% if aib.cards %}
-      <div class="oew-aib-grid">
-        {% for c in aib.cards %}
-        <article class="oew-aib-card is-{{ c.state_slug }}">
-          <header class="oew-aib-top">
-            <span class="oew-aib-rank mono">№{{ c.board_rank }}</span>
-            {# board_rank is machine-supplied (contract §5a); the template no longer derives rank from loop.index #}
-            <span class="oew-aib-sym mono">{{ c.symbol }}</span>
-            <span class="oew-aib-state">{{ t(c.display_state_en, c.display_state_zh) }}</span>
-          </header>
-          <div class="oew-aib-legs" role="img"
-            data-tip-en="Two independent facts must agree before we call a direction: how open interest grew (calls vs puts) and how the skew moved. One arrow per fact."
-            data-tip-zh="必须两个独立事实一致才判定方向：未平仓合约的增长结构（看涨与看跌）与偏度的变化。每个事实一个箭头。">
-            <span class="leg leg-oi {{ c.oi_cls }}">{{ c.oi_glyph }} OI</span>
-            <span class="leg leg-skew {{ c.skew_cls }}">{{ c.skew_glyph }} {{ t('Skew', '偏度') }}</span>
-            <span class="oew-aib-legverdict">{{ t(c.leg_verdict_en, c.leg_verdict_zh) }}</span>
-          </div>
-          <div class="oew-aib-meter">
-            <span class="lbl">{{ t('Evidence', '证据') }}</span>
-            <span class="oew-pips" role="img"
-              data-tip-en="Evidence strength, {{ c.pips }} of {{ c.pips_total }}."
-              data-tip-zh="证据强度，{{ c.pips_total }} 格中第 {{ c.pips }} 格。">
-              {% for i in range(c.pips_total) %}<i class="oew-pip{% if i < c.pips %} on{% endif %}"></i>{% endfor %}
-            </span>
-            <span class="oew-aib-band band-{{ c.band_slug }}">{{ t(c.band_en, c.band_zh) }}</span>
-          </div>
-          <p class="oew-aib-why">{{ t(c.why_lead_en, c.why_lead_zh) }}</p>
-          <div class="oew-aib-facts mono">
-            <span>{{ t('Horizon', '周期') }} {{ t(c.horizon_en, c.horizon_zh) }}</span>
-            {% if c.move_pct %}<span>±{{ c.move_pct }}% {{ t('implied', '隐含') }}</span>{% endif %}
-            <span>{{ t('Fresh until', '有效至') }} {{ c.fresh_until }}</span>
-          </div>
-          <div class="oew-aib-chips">
-            {% if c.crowding %}<span class="oew-aib-crowd">{{ t('Crowded tape', '拥挤交易') }}</span>{% endif %}
-            <span class="oew-aib-prophet"
-              data-tip-en="Prophet context only — it does not change this board's ranking.{% if c.prophet_asof %} As of {{ c.prophet_asof }}.{% endif %}"
-              data-tip-zh="仅为 Prophet 参考——不影响本板块排序。{% if c.prophet_asof %}截至 {{ c.prophet_asof }}。{% endif %}">Prophet · {{ t(c.prophet_en, c.prophet_zh) }}</span>
-          </div>
-          <details class="oew-aib-detail">
-            <summary>{{ t('Why & what would change it', '依据与变化条件') }}</summary>
-            <div class="oew-aib-detailbody">
-              <div class="oew-aib-dline">
-                <span class="k">{{ t('OI evidence', '未平仓量证据') }}</span>
-                <span class="v">{{ t(c.detail.oi_line_en, c.detail.oi_line_zh) }}</span>
-              </div>
-              <div class="oew-aib-dline">
-                <span class="k">{{ t('Skew evidence', '偏度证据') }}</span>
-                <span class="v">{{ t(c.detail.skew_line_en, c.detail.skew_line_zh) }}</span>
-              </div>
-              {% if c.detail.mechanics_en %}
-              <div class="oew-aib-dline">
-                <span class="k">{{ t('Mechanics', '机制背景') }}</span>
-                <span class="v">{{ t(c.detail.mechanics_en, c.detail.mechanics_zh) }}</span>
-              </div>
-              {% endif %}
-              {% for w in c.detail.why_now %}
-              <div class="oew-aib-dline">
-                <span class="k">{{ t('Evidence', '证据') }}</span>
-                <span class="v">{{ t(w.en, w.zh) }}</span>
-              </div>
-              {% endfor %}
-              <div class="oew-aib-dline">
-                <span class="k">{{ t('Would confirm', '确认条件') }}</span>
-                <span class="v">{{ t(c.detail.trigger_en, c.detail.trigger_zh) }}</span>
-              </div>
-              <div class="oew-aib-dline">
-                <span class="k">{{ t('Would change it', '变化条件') }}</span>
-                <span class="v">{{ t(c.detail.invalidation_en, c.detail.invalidation_zh) }}</span>
-              </div>
-              <div class="oew-aib-dline">
-                <span class="k">{{ t('Priority score', '优先级分数') }}</span>
-                <span class="v mono">{{ c.research_priority_score }}</span>
-              </div>
-              <div class="oew-aib-dline">
-                <span class="k">{{ t('Receipt', '回执') }}</span>
-                <span class="v mono">{{ c.signal_id }}</span>
-              </div>
-            </div>
-          </details>
-        </article>
-        {% endfor %}
-      </div>
-      {% else %}
-      <div class="oew-aib-empty">
-        <p class="oew-aib-empty-lead">{{ t('No name clears the research-priority threshold today.', '今日没有名称达到研究优先级门槛。') }}</p>
-        <p class="oew-aib-empty-sub">{{ aib.eligible }} {{ t('names fully eligible · source healthy', '个名称完全符合条件 · 数据源正常') }}</p>
-      </div>
-      {% endif %}
-
-      {# ── BAND 2 · directional watch — same ranked list, below the cut ── #}
-      {% if aib.watch %}
-      <div class="oew-aib-watch">
-        <span class="oew-aib-wlbl" tabindex="0" role="button"
-          data-tip-en="Names that met the same evidence bar as the six above but ranked below the cut. The numbers are their place in the full ranking, so a gap means a higher-ranked volatility name sits between them. Order comes from the board's own ranking and is never re-sorted here."
-          data-tip-zh="与上方六个达到同一证据标准、但排名未进前六的名称。编号为其在完整排序中的位次，因此编号跳跃表示中间有排名更高的波动率名称。顺序沿用板块自身排序，此处不重新排序。"
-        >{{ t('Qualified below the cut', '达标但未入前六') }}</span>
-        {% for w in aib.watch %}
-        <button class="oew-tkchip oew-aib-wchip is-{{ w.dir_slug }}" type="button" data-goto="{{ w.symbol }}">
-          <span class="rk">№{{ w.board_rank }}</span>
-          <span>{{ w.symbol }}</span>
-          <span class="dir">{{ t(w.dir_en, w.dir_zh) }}</span>
-        </button>
-        {% endfor %}
-        {% if aib.watch_overflow > 0 %}
-        <span class="oew-aib-rmore">+{{ aib.watch_overflow }} {{ t('more', '个') }}</span>
-        {% endif %}
-      </div>
-      {% elif aib.no_directional %}
-      <p class="oew-aib-wnull">{{ t('No upside or downside hypothesis qualified today.', '今日没有上行或下行假设达标。') }}</p>
-      {% endif %}
-
-      {# ── BAND 3 · evidence rail — event premium | crowded tape ── #}
-      <div class="oew-aib-rail">
-
-        <div class="oew-rg oew-aib-rgbody">
-          <div class="oew-aib-rghead">
-            <span class="oew-rg-h">{{ t('Ahead of an event', '事件前') }}</span>
-            <span class="oew-help" tabindex="0" role="button"
-              data-tip-en="Names with a known event inside the next 45 days, ordered by how far their event pricing sits from other event names today. Cross-sectional comparison only — it never says an event move is cheap or expensive."
-              data-tip-zh="未来 45 天内有已知事件的名称，按其事件定价与当前其他事件名称的偏离程度排序。仅为横截面比较——绝不表示某次事件变动是便宜还是昂贵。">?</span>
-          </div>
-          {% if aib.events %}
-            {% for e in aib.events %}
-            <div class="oew-aib-rrow">
-              <span class="oew-aib-rsym">{{ e.symbol }}</span>
-              <span class="oew-aib-rline">{{ t(e.state_en, e.state_zh) }}</span>
-              {% if e.board_rank %}<span class="oew-aib-rref">№{{ e.board_rank }} {{ t('above', '见上') }}</span>{% endif %}
-              <span class="oew-aib-rmeta">{{ t('Event', '事件') }} {{ e.event_date }}{% if e.move_pct %} · ±{{ e.move_pct }}%{% endif %}</span>
-            </div>
-            {% endfor %}
-            {% if aib.events_overflow > 0 %}
-            <div class="oew-aib-rmore">+{{ aib.events_overflow }} {{ t('more', '个') }}</div>
-            {% endif %}
-          {% else %}
-          <p class="oew-aib-rempty">{{ t(aib.events_empty_en, aib.events_empty_zh) }}</p>
-          {% endif %}
-        </div>
-
-        <div class="oew-rg oew-aib-rgbody">
-          <div class="oew-aib-rghead">
-            <span class="oew-rg-h">{{ t('Crowded tape', '拥挤交易') }}</span>
-            <span class="oew-help" tabindex="0" role="button"
-              data-tip-en="Names where activity looks crowded: same-day expiries dominating the tape, options costly while price sits at a high, or both running for days. Crowding cuts how tradeable an idea is; it never gives a direction."
-              data-tip-zh="活跃度显示拥挤的名称：当日到期主导盘面、价格高位时期权偏贵，或两者持续数日。拥挤会削弱想法的可执行性；它从不给出方向。">?</span>
-          </div>
-          {% if aib.risks %}
-            {% for r in aib.risks %}
-            <div class="oew-aib-rrow">
-              <span class="oew-aib-rsym">{{ r.symbol }}</span>
-              <span class="oew-aib-rline">{{ t(r.cause_en, r.cause_zh) }}</span>
-              {% if r.board_rank %}<span class="oew-aib-rref">№{{ r.board_rank }} {{ t('above', '见上') }}</span>{% endif %}
-            </div>
-            {% endfor %}
-            {% if aib.risks_overflow > 0 %}
-            <div class="oew-aib-rmore">+{{ aib.risks_overflow }} {{ t('more', '个') }}</div>
-            {% endif %}
-          {% else %}
-          <p class="oew-aib-rempty">{{ t('Nothing looks crowded today.', '今日无拥挤迹象。') }}</p>
-          {% endif %}
-        </div>
-
-      </div>
-
-      {# ── BAND 4 · the control — never a card, never clickable ── #}
-      <div class="oew-aib-control">
-        <span class="oew-aib-ctlk" tabindex="0" role="button"
-          data-tip-en="A healthy, fully covered name that cleared nothing today — shown so you can tell 'nothing here' apart from 'no data'. It is not a research priority and is never ranked."
-          data-tip-zh="一个数据完整、今日无任何状态达标的健康名称——用以区分「无信号」与「无数据」。它不是研究优先级，也从不参与排序。"
-        >{{ t('Control', '对照') }}</span>
-        {% if aib.control %}
-        <span class="oew-aib-ctlsym">{{ aib.control.symbol }}</span>
-        <span>— {{ t(aib.control.reason_en, aib.control.reason_zh) }}</span>
-        {% else %}
-        <span>— {{ t('no fully covered quiet name today.', '今日无数据完整的平静名称。') }}</span>
-        {% endif %}
-      </div>
-
-      {% else %}
-      <div class="oew-aib-degraded">
-        <p class="oew-aib-degraded-lead">{{ t(aib.degraded_en or 'This board is unavailable for this close.', aib.degraded_zh or '本次收盘该板块暂不可用。') }}</p>
-        <p class="oew-aib-degraded-why">{{ t(aib.degraded_why_en or 'This is a data gap, not a quiet market.',
-                                              aib.degraded_why_zh or '这是数据缺口，并非市场平静。') }}</p>
-        <details class="oew-aib-degraded-rcp">
-          <summary>{{ t('What we checked', '我们检查了什么') }}</summary>
-          <div class="oew-aib-detailbody">
-            <div class="oew-aib-dline"><span class="k">{{ t('Last settled close', '最近结算收盘') }}</span><span class="v mono">{{ aib.as_of_session or t('not recorded', '未记录') }}</span></div>
-            <div class="oew-aib-dline"><span class="k">{{ t('Positions counted', '持仓统计于') }}</span><span class="v mono">{{ aib.oi_counted_date or t('not recorded', '未记录') }}</span></div>
-            <div class="oew-aib-dline"><span class="k">{{ t('Built', '生成于') }}</span><span class="v">{% if aib.freshness.built_en %}{{ t(aib.freshness.built_en, aib.freshness.built_zh) }}{% else %}{{ t('not recorded', '未记录') }}{% endif %}</span></div>
-            <div class="oew-aib-dline"><span class="k">{{ t('Receipt', '回执') }}</span><span class="v mono">{{ (aib.receipt_id or '')[:12] or t('not recorded', '未记录') }}</span></div>
-          </div>
-        </details>
-      </div>
-      {% endif %}
-    </div>
-    <div class="oew-pfoot">
-      <span>{{ t('Hypotheses to research, ranked by evidence — none is a trade on its own.', '按证据排序的研究假设——均非独立交易信号。') }}</span>
-      {% if aib.overflow > 0 %}<span class="oew-aib-more"
-        data-tip-en="Counts every direction above the threshold, including volatility names. The strip above names only the upside and downside ones."
-        data-tip-zh="统计门槛之上的全部方向，含波动率名称。上方条带仅列出上行与下行名称。">{{ aib.overflow }} {{ t('more above threshold', '个更多超过门槛') }}</span>{% endif %}
-      {% if aib.as_of_session %}
-      <span class="oew-asof mono" data-tip-en="Receipt {{ aib.receipt_id[:12] }}" data-tip-zh="回执 {{ aib.receipt_id[:12] }}">{{ aib.as_of_session }}</span>
-      {% endif %}
-      {% if skew_source_note_en %}<p class="oew-aib-note" data-skew-source-note>{{ t(skew_source_note_en, skew_source_note_zh) }}</p>{% endif %}
-    </div>
+  {% if aib_current %}
+  {{ intelligence_brief() }}
+  {% else %}
+  <div class="oew-panel oew-availability" role="status">
+    <div><div class="oew-availability-title">{{ icon('clock') }}{{ t('Brief unavailable for the latest session', '最新场次简报暂不可用') }}</div>
+      <p>{% if aib.as_of_session %}{{ t('Latest brief', '最近简报') }} <time class="mono">{{ aib.as_of_session }}</time>. {% endif %}{{ t('Dealer levels are below. Earlier research is available.', '做市商价位见下方，亦可查看较早研究。') }}</p></div>
+    <div class="oew-actions"><button type="button" class="oew-secondary" data-open-details="oew-history">{{ t('View earlier research', '查看较早研究') }}{{ icon('arrow') }}</button><button type="button" class="oew-text-link" data-open-details="oew-sources">{{ t('Source details', '来源详情') }}</button></div>
   </div>
-
-  <div class="oew-panel">
+  {% endif %}
+  <section class="oew-index-section" id="oew-index-structure">
     <div class="oew-phead">
-      <h2 class="oew-ph-title">{{ t('What changed', '有何变化') }}</h2>
-      <div class="oew-ph-right">
-        <span class="oew-help" tabindex="0" role="button"
-          data-tip-en="Each chip compares this close with the previous close on one measure. Hover a chip for the two numbers behind it."
-          data-tip-zh="每个标签在单一指标上比较本次收盘与上次收盘。将鼠标悬停在标签上可查看背后的两个数值。">?</span>
-      </div>
-    </div>
-    <div class="oew-pbody">
-      {% if changed.chips %}
-      <div class="oew-chips">
-        {% for c in changed.chips %}
-        <span class="oew-chg" data-tip-en="{{ c.tip_en }}" data-tip-zh="{{ c.tip_zh }}">
-          <span class="ar {{ c.arrow }}">{% if c.arrow == 'u' %}▲{% elif c.arrow == 'd' %}▼{% else %}▬{% endif %}</span>{{ t(c.en, c.zh) }}</span>
-        {% endfor %}
-      </div>
-      {% else %}
-      <p class="oew-empty">{{ t('Nothing moved enough between the two closes for us to flag it. This fills in as soon as a measure changes.',
-                               '两次收盘之间没有足够显著的变化需要标注。一旦某项指标发生变化，此处会立即填充。') }}</p>
-      {% endif %}
-    </div>
-    <div class="oew-pfoot">
-      <span class="oew-stance st-watch">{{ t("Watch — don't chase", '观察—勿追高') }}</span>
-      <span>{{ t("Nothing here is a trade on its own — these are the day's deltas, not signals.",
-                 '这些只是当日变化，本身并不构成交易信号。') }}</span>
-      {% if changed.asof %}<span class="oew-asof mono">{{ changed.asof }}</span>{% endif %}
-    </div>
-  </div>
-
-  <div class="oew-sec-h"><h2>{{ t('Where the indexes closed', '指数收盘位置') }}</h2></div>
-
-  <div class="oew-panel">
-    <div class="oew-phead">
-      <h2 class="oew-ph-title">{{ t('The four that set the tone', '定调的四大指数') }}</h2>
-      <span class="oew-ph-sub">{{ t('where price sits against the levels dealers hedge around', '价格相对做市商对冲水位的位置') }}</span>
+      <h2 class="oew-ph-title">{{ t('Dealer levels at the close', '收盘做市商价位') }}</h2>
+      <span class="oew-ph-sub">{{ t('Four index products · source dates shown on each card', '四个指数产品 · 每张卡片注明来源日期') }}</span>
       <div class="oew-ph-right">
         <span class="oew-help" tabindex="0" role="button"
           data-tip-en="The flip is the price where dealer hedging changes character: above it hedging damps moves, below it hedging amplifies them. Walls are the strikes with the most dealer gamma above and below. Expected move is what the options market is pricing for one session, at roughly a 2-in-3 chance. The stance chip follows the regime word — it is not a separate signal. Model estimate: real dealer books are unobservable."
@@ -1451,9 +1409,14 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
       <div class="oew-idx">
         {% for ix in indexes %}
         <div class="oew-ic">
-          <div class="oew-ic-top"><span class="oew-ic-sym mono">{{ ix.sym }}</span><span class="oew-ic-px mono">{{ ix.spot }}</span></div>
+          <div class="oew-ic-top"><div><button type="button" class="oew-ic-sym oew-name-link mono" data-goto="{{ ix.sym }}">{{ ix.sym }}<span aria-hidden="true"> ↗</span></button><div class="oew-ic-name">{{ t(ix.name_en, ix.name_zh) }}</div></div><span class="oew-ic-px mono">{{ ix.spot }}</span></div>
+          <div class="oew-ic-date"><time class="mono">{{ ix.asof or '—' }}</time><span>{{ t('Selected session', '所选场次') if ix.asof == sess.target_session else t('Earlier session', '较早场次') if ix.asof and ix.asof < sess.target_session else t('Date unavailable', '日期不可用') if not ix.asof else t('Later source', '较晚来源') }}</span></div>
           <div class="oew-ic-regime">{{ t(ix.head_en, ix.head_zh) }}</div>
           <div class="oew-ic-line">{{ t(ix.line_en, ix.line_zh) }}</div>
+          {% if ix.track %}
+          <div class="oew-index-track" aria-hidden="true"><span class="oew-index-track-line"></span>
+            {% for key in ['floor','ceiling','flip','spot'] %}{% if ix.track[key] is not none %}<i class="oew-index-mark is-{{ key }}" style="left:{{ ix.track[key] }}%"></i>{% endif %}{% endfor %}
+          </div>{% endif %}
           <div class="oew-ic-levels">
             <span class="oew-ic-lv"><span class="k">{{ t('Floor', '下方墙') }}</span><span class="v mono">{{ ix.floor }}</span></span>
             <span class="oew-ic-lv"><span class="k">{{ t('Flip', '翻转位') }}</span><span class="v mono">{{ ix.flip }}</span></span>
@@ -1462,17 +1425,18 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
           <div class="oew-ic-foot">
             {% if ix.stance == 'protect' %}<span class="oew-stance st-protect">{{ t('Protect gains', '保护利润') }}</span>
             {% else %}<span class="oew-stance st-watch">{{ t("Watch — don't chase", '观察—勿追高') }}</span>{% endif %}
-            <span class="oew-ic-em mono">{{ ix.em }}</span>
+            <span class="oew-ic-em">{{ t('1-day move', '1日预期波幅') }} <b class="mono">{{ ix.em }}</b></span>
           </div>
           {%- set lab = payoff_lab.get(ix.sym) if payoff_lab else None -%}
           {%- if lab -%}
           <details class="oew-aib-detail oew-lab"{% if payoff_lab_force_open %} open{% endif %}>
             <summary>{{ t(lab.summary_en, lab.summary_zh) }}</summary>
             <div class="oew-aib-detailbody oew-lab-body">
+              <p class="oew-lab-foot">{{ t('Structure prices', '结构定价') }} <time class="mono">{{ lab.source_session or '—' }}</time> · {{ t('Dealer levels', '做市商价位') }} <time class="mono">{{ lab.dealer_session or '—' }}</time>{% if lab.source_session != lab.dealer_session %} · {{ t('Different source sessions', '数据来源场次不同') }}{% endif %}</p>
               {%- if lab.bracket -%}
               <div class="oew-lab-track" role="img"
-                data-tip-en="The two dots are where a straddle bought at this close breaks even at expiry — the move the options market is charging for. The ticks are the dealer-hedging walls measured today. Walls can move before expiry; this compares a to-expiry price with a same-day map. Model estimate from end-of-day mid prices, no fees, not a quote."
-                data-tip-zh="两个圆点标示收盘时买入跨式到期盈亏平衡的价格——即期权市场正在定价的波动幅度。刻度为今日测算的做市商对冲墙位。墙位在到期前可能移动；这里比较的是到期价格与当日墙位。模型估算来自收盘中间价，不含费用，并非实时报价。">
+                data-tip-en="The two dots are where a straddle bought at this close breaks even at expiry — the move the options market is charging for. The ticks are the dealer-hedging walls. The two source dates are shown above; when they differ this is a historical comparison. Walls can move before expiry. Model estimate from end-of-day mid prices, no fees, not a quote."
+                data-tip-zh="两个圆点标示收盘时买入跨式到期盈亏平衡的价格——即期权市场正在定价的波动幅度。刻度为做市商对冲墙位。两项来源日期显示在上方；日期不同时仅作历史比较。墙位可能在到期前移动。模型估算来自收盘中间价，不含费用，并非实时报价。">
                 <i class="oew-lab-wall" style="left:{{ lab.bracket.floor_pct }}%"></i>
                 <i class="oew-lab-wall" style="left:{{ lab.bracket.ceiling_pct }}%"></i>
                 <i class="oew-lab-flip" style="left:{{ lab.bracket.flip_pct }}%"></i>
@@ -1513,10 +1477,41 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
                                '本次收盘没有指数期权链数据。待期权快照到位后，此处会显示 SPX、SPY、QQQ 与 IWM。') }}</p>
       {% endif %}
     </div>
+    <div class="oew-index-legend"><span><i class="oew-legend-dot"></i>{{ t('Last close', '收盘价') }}</span><span><i class="oew-legend-rule"></i>{{ t('Gamma flip', 'Gamma 翻转位') }}</span><span>{{ t('Model estimates from each dated close. Intraday moves do not confirm a level.', '基于各注明日期收盘的模型估算。盘中突破不能确认价位。') }}</span></div>
+  </section>
+
+  <details class="oew-history" id="oew-history"{% if brief_context_current %} open{% endif %}>
+    <summary><div><h2>{{ t('Research context', '研究背景') if brief_context_current else t('Earlier-session research', '较早场次研究') }}</h2><p>{{ t('Intelligence, changes, sector flows, and names to investigate. Each module keeps its source date.', '情报、变化、板块资金流及待研究标的。每个模块保留其来源日期。') }}</p></div>{{ icon('chevron') }}</summary>
+    <div class="oew-history-body">
+      {% if not aib_current %}{{ intelligence_brief() }}{% endif %}
+
+  <div class="oew-panel">
+    <div class="oew-phead">
+      <h2 class="oew-ph-title">{{ t('What changed', '有何变化') }}</h2>
+      <div class="oew-ph-right">
+        <span class="oew-help" tabindex="0" role="button"
+          data-tip-en="Each chip compares this close with the previous close on one measure. Hover a chip for the two numbers behind it."
+          data-tip-zh="每个标签在单一指标上比较本次收盘与上次收盘。将鼠标悬停在标签上可查看背后的两个数值。">?</span>
+      </div>
+    </div>
+    <div class="oew-pbody">
+      {% if changed.chips %}
+      <div class="oew-chips">
+        {% for c in changed.chips %}
+        <span class="oew-chg" data-tip-en="{{ c.tip_en }}" data-tip-zh="{{ c.tip_zh }}">
+          <span class="ar {{ c.arrow }}">{% if c.arrow == 'u' %}▲{% elif c.arrow == 'd' %}▼{% else %}▬{% endif %}</span>{{ t(c.en, c.zh) }} <time class="mono oew-change-date">{{ c.asof or '—' }}</time></span>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="oew-empty">{{ t('Nothing moved enough between the two closes for us to flag it. This fills in as soon as a measure changes.',
+                               '两次收盘之间没有足够显著的变化需要标注。一旦某项指标发生变化，此处会立即填充。') }}</p>
+      {% endif %}
+    </div>
     <div class="oew-pfoot">
-      <span>{{ t("Levels are measured from this close and hold until tomorrow's data run. A move through one intraday does not count until it closes there.",
-                 '水位以本次收盘计算，在明日数据更新前有效。盘中穿越某一水位，须以收盘站稳为准。') }}</span>
-      {% if indexes %}<span class="oew-asof mono">{{ indexes[0].asof }}</span>{% endif %}
+      <span class="oew-stance st-watch">{{ t("Watch — don't chase", '观察—勿追高') }}</span>
+      <span>{{ t("Nothing here is a trade on its own — these are the day's deltas, not signals.",
+                 '这些只是当日变化，本身并不构成交易信号。') }}</span>
+      <span>{{ t('Source date shown on each change', '每项变化均注明来源日期') }}</span>
     </div>
   </div>
 
@@ -1607,31 +1602,31 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
     </div>
   </div>
 
-  <div class="oew-sec-h"><h2>{{ t('For tomorrow', '明日关注') }}</h2></div>
+  <div class="oew-sec-h"><h2>{{ t('Research starting points', '研究起点') }}</h2></div>
 
   <div class="oew-panel">
     <div class="oew-phead">
-      <h2 class="oew-ph-title">{{ t('Names worth a look before the open', '开盘前值得关注的标的') }}</h2>
+      <h2 class="oew-ph-title">{{ t('Names to investigate', '待研究标的') }}</h2>
       <span class="oew-ph-sub">{{ t('a research list, not a buy list', '研究清单，非买入清单') }}</span>
     </div>
     <div class="oew-pbody">
       <div class="oew-rail">
         <div class="oew-rg">
-          <div class="oew-rg-h">{{ t('Money keeps showing up', '资金反复出现') }}</div>
+          <div class="oew-rg-h">{{ t('Money keeps showing up', '资金反复出现') }}</div><time class="oew-source-date mono">{{ rail.asof or '—' }}</time>
           <div class="oew-rg-s">{{ t('Heavy options buying on most of the last ten days.', '近十个交易日中多数出现大量期权买入。') }}</div>
           {% if rail.a %}<div class="oew-tkchips">
             {% for tk in rail.a %}<button class="oew-tkchip" type="button" data-goto="{{ tk }}">{{ tk }}</button>{% endfor %}
           </div>{% else %}<p class="oew-empty">{{ t('None yet — this fills in once enough sessions of options flow have accrued.', '暂无 — 待期权资金流场次积累足够后会填充。') }}</p>{% endif %}
         </div>
         <div class="oew-rg">
-          <div class="oew-rg-h">{{ t('Turned back up after a washout', '洗盘后重新转强') }}</div>
+          <div class="oew-rg-h">{{ t('Turned back up after a washout', '洗盘后重新转强') }}</div><time class="oew-source-date mono">{{ rail.asof or '—' }}</time>
           <div class="oew-rg-s">{{ t('Money flipped positive right after a run of selling.', '在连续卖出之后，资金刚刚转为流入。') }}</div>
           {% if rail.b %}<div class="oew-tkchips">
             {% for tk in rail.b %}<button class="oew-tkchip" type="button" data-goto="{{ tk }}">{{ tk }}</button>{% endfor %}
           </div>{% else %}<p class="oew-empty">{{ t('No fresh turns in this close.', '本次收盘没有新的转向。') }}</p>{% endif %}
         </div>
         <div class="oew-rg">
-          <div class="oew-rg-h">{{ t('Sitting near a flip level', '接近翻转位') }}</div>
+          <div class="oew-rg-h">{{ t('Sitting near a flip level', '接近翻转位') }}</div><time class="oew-source-date mono">{{ rail.near_asof or '—' }}</time>
           <div class="oew-rg-s">{{ t('Within 1% of the price where hedging changes character.', '距对冲性质改变的价格 1% 以内。') }}</div>
           {% if rail.c %}<div class="oew-tkchips">
             {% for tk in rail.c %}<button class="oew-tkchip" type="button" data-goto="{{ tk }}">{{ tk }}</button>{% endfor %}
@@ -1643,27 +1638,22 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
       <span class="oew-stance st-ready">{{ t('Get ready', '做好准备') }}</span>
       <span>{{ t('Tap a name to open its workbench. These are starting points for your own work.',
                  '点击标的可打开其工作台。这些只是你自行研究的起点。') }}</span>
-      {% if rail.asof %}<span class="oew-asof mono">{{ rail.asof }}</span>{% endif %}
+
     </div>
   </div>
 
+    </div>
+  </details>
+
   <div class="oew-handoff">
     <div>
-      <div class="oew-ho-t">{{ t('This page is the settled close', '本页呈现的是已结算的收盘') }}</div>
-      <div class="oew-ho-s">{{ t("Levels here hold until tomorrow's data run. For walls that move during the session, live tape and replay, the Terminal is the live surface.",
-                                 '此处水位在明日数据更新前保持不变。若需盘中实时移动的墙位、实时逐笔与回放，请使用交易终端。') }}
-        {#- The positioning sentence (ONE_DOOR §5): both desks ship on the same
-            subscription, so this states the DIVISION OF LABOUR, never an upsell. -#}
-        {{ t('Same subscription, two clocks — the Terminal is the live desk (tape, replay, alerts); this workspace is the settled record.',
-             '同一订阅，两种时钟 — 交易终端是盘中实时台（逐笔、回放、警报）；本工作台是收盘后的定格记录。') }}</div>
-      <div class="oew-ho-clock mono" id="oew-clock">
-        <span class="l-en">closed 16:00 ET</span><span class="l-zh">美东 16:00 收盘</span>
-      </div>
+      <div class="oew-ho-t">{{ t('Continue in the Terminal', '继续前往交易终端') }}</div>
+      <div class="oew-ho-s">{{ t('For live tape, replay, and alerts, open the Terminal. This workspace retains the dated end-of-day research.', '实时逐笔、回放及提醒请使用交易终端。本工作台保留注明日期的收盘研究。') }}</div>
     </div>
     {#- href is a working no-JS destination AND the fallback: the script below
         re-points it through MDXTerminal.url() once theme.js has defined the
         helper, so the &from=macro/&ret= stamp the Terminal reads is never lost. -#}
-    <a class="oew-cta" id="oew-brief-cta" href="https://app.mastermind-x.com" target="_blank" rel="noopener">{{ t('Open the Terminal', '打开交易终端') }} ↗</a>
+    <a class="oew-cta" id="oew-brief-cta" href="https://app.mastermind-x.com/terminal" target="_blank" rel="noopener">{{ t('Open the Terminal', '打开交易终端') }} ↗</a>
   </div>
 </section>
 
@@ -1680,11 +1670,11 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
 
 <!-- ══════════════════ MODE 4 · TICKER (lazy) ══════════════════ -->
 <section class="oew-mode" id="mode-ticker" role="tabpanel" aria-labelledby="tab-ticker">
-  <div class="oew-tktoolbar">
+  <div class="oew-tktoolbar"><button type="button" class="oew-text-link" id="oew-tk-back" data-workspace-mode="brief">← {{ t('Back to research', '返回研究') }}</button>
     <div class="oew-tksearch">
       <span class="mag" aria-hidden="true">⌕</span>
       <input id="oew-tk-q" type="text" autocomplete="off"
-        aria-label="Look up a ticker" aria-expanded="false" aria-controls="oew-tk-sugg" role="combobox"
+        aria-label="Look up a ticker" aria-expanded="false" aria-controls="oew-tk-sugg" role="combobox" aria-autocomplete="list"
         placeholder="Look up a ticker — SPY, NVDA, TSLA…" data-ph-zh="查询代码 — SPY、NVDA、TSLA…">
       <div class="oew-tksugg" id="oew-tk-sugg" role="listbox"></div>
     </div>
@@ -1721,7 +1711,7 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
 <section class="oew-mode" id="mode-leaders" role="tabpanel" aria-labelledby="tab-leaders"></section>
 
 </div><!-- /oew-wrap -->
-</div><!-- /oew -->
+</main><!-- /oew -->
 
 <script>
 /* Render-time DATA only — re-baked nightly, must stay inline (it can never ride
@@ -1738,6 +1728,7 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
 window.OEW_TICKER_MANIFEST = {{ ticker_manifest_json|safe }};
 window.OEW_DEFAULT_TICKER = {{ (counts.ticker or 'SPY') | tojson }};
 window.OEW_SECTOR_ZH = {{ sector_zh_json|safe }};
+window.OEW_TARGET_SESSION = {{ sess.target_session|tojson }};
 </script>
 <script data-externalize>
 /* ══════════════════════════════════════════════════════════════════════════
@@ -1756,6 +1747,8 @@ window.OEW_SECTOR_ZH = {{ sector_zh_json|safe }};
 var MODES = ['brief','flow','scanner','ticker','leaders'];
 var loaded = { brief: true };
 var cache  = {};
+var inFlight = {}, pendingModes = {}, tickerGeneration = 0;
+var currentMode = 'brief', previousTask = 'brief', returnFocus = null, optionalFailures = {};
 var tabs = Array.prototype.slice.call(document.querySelectorAll('.oew-tab'));
 var DEFAULT_TICKER = window.OEW_DEFAULT_TICKER || 'SPY';
 var curTicker = DEFAULT_TICKER;
@@ -1820,12 +1813,80 @@ function terminalUrl(sym){
   return 'https://app.mastermind-x.com/terminal' + (sym ? '?sym=' + encodeURIComponent(sym) + '&from=macro' : '');
 }
 
-function getJSON(url){
-  if(cache[url]) return Promise.resolve(cache[url]);
-  return fetch(url, { credentials:'same-origin' }).then(function(r){
-    if(!r.ok) throw new Error('HTTP ' + r.status);
-    return r.json();
-  }).then(function(j){ cache[url] = j; return j; });
+function getJSON(url, options){
+  options = options || {};
+  if(Object.prototype.hasOwnProperty.call(cache, url)) return Promise.resolve(cache[url]);
+  if(inFlight[url]) return inFlight[url];
+  var controller = typeof AbortController === 'function' ? new AbortController() : null;
+  var work = new Promise(function(resolve, reject){
+    var settled = false;
+    var timer = setTimeout(function(){
+      if(settled) return;
+      settled = true;
+      if(controller) controller.abort();
+      reject(new Error('REQUEST_TIMEOUT'));
+    }, options.timeout || 12000);
+    function finish(error, value){
+      if(settled) return;
+      settled = true; clearTimeout(timer);
+      if(error) reject(error);
+      else { cache[url] = value; resolve(value); }
+    }
+    try {
+      fetch(url, { credentials:'same-origin', signal:controller ? controller.signal : undefined })
+        .then(function(r){
+          if(!r.ok){ var e = new Error('HTTP ' + r.status); e.status = r.status; throw e; }
+          return r.json();
+        }).then(function(j){ finish(null, j); }, function(e){ finish(e); });
+    } catch(e) { finish(e); }
+  });
+  inFlight[url] = work.then(function(j){ delete inFlight[url]; return j; }, function(e){
+    delete inFlight[url]; throw e;
+  });
+  return inFlight[url];
+}
+function sourceDay(value){
+  if(typeof value !== 'string') return null;
+  var day = value.slice(0, 10);
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(day)) return null;
+  var d = new Date(day + 'T00:00:00Z');
+  return !isNaN(d.getTime()) && d.toISOString().slice(0, 10) === day ? day : null;
+}
+function sourceContext(en, zh, date){
+  var day = sourceDay(date), target = window.OEW_TARGET_SESSION;
+  var state = !day ? bi('Source date unavailable', '数据源日期不可用')
+    : day < target ? bi('Earlier session', '较早场次')
+    : day > target ? bi('After the selected session', '晚于所选场次') : bi('Selected session', '所选场次');
+  var descriptions = {
+    'Options flow':['Follow sector, theme, and ETF premium across the tape.', '追踪板块、主题及 ETF 的期权资金。'],
+    'Scanner':['Compare names, filter the evidence, and open a ticker.', '比较标的、筛选证据并打开个股工作台。'],
+    'Flow leaders':['Explore recurring flow and recent washout reversals.', '查看反复出现的资金流及近期洗盘反转。'],
+    'Ticker workbench':['Dealer structure, positioning, and the evidence behind it.', '做市商结构、持仓及其背后的证据。']
+  };
+  var description = descriptions[en] || ['Research from the source session shown here.', '研究内容对应此处显示的数据源场次。'];
+  return '<div class="oew-mode-context"><div><h2>' + bi(en, zh) + '</h2>'
+    + '<p>' + bi(description[0], description[1]) + '</p></div>'
+    + '<div class="oew-mode-date"><span>' + state + '</span><time class="mono">' + esc(day || '—') + '</time></div></div>';
+}
+function promotePanelDates(host){
+  if(!host || !host.querySelectorAll) return;
+  host.querySelectorAll('.oew-panel').forEach(function(panel){
+    var head = panel.querySelector('.oew-phead');
+    var date = panel.querySelector('.oew-pfoot .oew-asof');
+    if(head && date && !head.querySelector('.oew-source-date')){
+      var copy = document.createElement('span'); copy.className = 'oew-source-date mono';
+      copy.textContent = date.textContent; head.appendChild(copy);
+    }
+  });
+}
+function errorPanel(mode, ticker){
+  return '<div class="oew-panel oew-recovery" role="status"><div><h2>'
+    + bi('Unable to load ' + (mode === 'ticker' ? ticker : 'this workspace'),
+         '暂时无法加载' + (mode === 'ticker' ? ticker : '此工作区')) + '</h2><p>'
+    + bi('The request did not complete. Your other workspaces and filters are still available.',
+         '请求未完成，其他工作区和筛选条件仍可使用。') + '</p></div>'
+    + '<button class="oew-cta" type="button" data-retry-mode="' + esc(mode) + '">'
+    + bi('Try again', '重试') + '</button></div>';
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -2200,15 +2261,16 @@ function renderFlow(host, desk, cohorts){
   /* Section bands use the same .oew-sec-h idiom as Brief's baked sections —
      uppercase tracking in EN, dropped in zh by the existing CSS rule. */
   var flSecH = function(en, zh){ return '<div class="oew-sec-h"><h2>' + bi(en, zh) + '</h2></div>'; };
-  host.innerHTML = flSecH('Where the money went', '资金去向') + flSectorPanel(desk)
+  host.innerHTML = sourceContext('Options flow', '期权资金流', desk.session_date || desk.asof || desk.as_of)
+    + flSecH('Where the money went', '资金去向') + flSectorPanel(desk)
     + flSecH('Who moved together', '谁在同步移动') + flThemePanel(desk, cohorts)
     + flSecH('The passive tape', '被动资金') + flEtfPanel(desk)
     + flSecH("The day's arc", '当日轨迹') + flTidePanel(desk);
   flDrawSpark();
+  promotePanelDates(host);
   var url = r2Url('live_flow/tide_current.json');
   if(!url) return;                                   // no store configured — stay flat
-  fetch(url, { cache:'no-cache' })
-    .then(function(r){ return r.ok ? r.json() : null; })
+  getJSON(url, { timeout:4000 })
     .catch(function(){ return null; })
     .then(function(t){
       if(t && !flTideValidity(t)){ try{ flApplyTide(t); }catch(e){} }
@@ -2275,16 +2337,12 @@ function scSortDefault(){ return { key:'gross_premium_mn', dir:'desc', idx:7 }; 
 var scSort = scSortDefault();
 
 function ageCell(rowAsof, freshest){
-  var d = 0;
-  if(rowAsof && freshest && rowAsof !== freshest){
-    d = Math.round((Date.parse(freshest) - Date.parse(rowAsof)) / 86400000);
-    if(!(d > 0)) d = 1;
-  }
+  var rowDay = sourceDay(rowAsof), basis = sourceDay(freshest);
+  if(!rowDay || !basis || rowDay > basis) return '<span class="oew-age" data-tip-en="Source date is missing, invalid, or after the scanner snapshot." data-tip-zh="数据日期缺失、无效或晚于筛选快照。">' + bi('Unknown', '未知') + '</span>';
+  var d = Math.round((Date.parse(basis) - Date.parse(rowDay)) / 86400000);
   var on = d === 0 ? 3 : (d <= 3 ? 2 : 1);
-  var tipEn = d === 0 ? 'From the latest close.'
-    : 'The last complete options chain for this name is ' + d + ' day' + (d === 1 ? '' : 's') + ' old. Treat its levels as stale.';
-  var tipZh = d === 0 ? '来自最新一次收盘。'
-    : '该标的最近一次完整期权链已过去 ' + d + ' 天，其水位应视为陈旧。';
+  var tipEn = 'Chain dated ' + rowDay + '. ' + d + ' calendar days behind the scanner snapshot (' + basis + '), not the latest market close.';
+  var tipZh = '期权链日期 ' + rowDay + '；比筛选快照（' + basis + '）早 ' + d + ' 个自然日，并非相对最新市场收盘。';
   var s = '<span class="oew-age"><span class="oew-pips sm" role="img" data-tip-en="' + esc(tipEn) + '" data-tip-zh="' + esc(tipZh) + '">';
   for(var i = 0; i < 3; i++) s += '<i class="oew-pip' + (i < on ? ' on' : '') + '"></i>';
   return s + '</span><span class="d' + (d > 3 ? ' stale' : '') + ' mono">' + d + 'd</span></span>';
@@ -2434,9 +2492,9 @@ function scFiltersHTML(rows){
   });
   var ranges = SC_RANGES.map(function(R){
     return '<label class="oew-sc-f">' + bi(R[2], R[3]) + '<span class="oew-sc-pair">'
-      + '<input type="number" id="oew-f-' + R[0] + '-min" step="any" aria-label="' + esc(R[2]) + ' minimum">'
+      + '<input type="number" id="oew-f-' + R[0] + '-min" step="any" aria-label="' + esc(R[2]) + ' minimum" data-aria-en="' + esc(R[2]) + ' minimum" data-aria-zh="' + esc(R[3]) + '最小值">'
       + '<span class="sep">–</span>'
-      + '<input type="number" id="oew-f-' + R[0] + '-max" step="any" aria-label="' + esc(R[2]) + ' maximum">'
+      + '<input type="number" id="oew-f-' + R[0] + '-max" step="any" aria-label="' + esc(R[2]) + ' maximum" data-aria-en="' + esc(R[2]) + ' maximum" data-aria-zh="' + esc(R[3]) + '最大值">'
       + '</span></label>';
   }).join('');
   return '<details class="oew-sc-more" id="oew-sc-more">'
@@ -2450,7 +2508,7 @@ function scFiltersHTML(rows){
         + opts + '</select></label>'
       + ranges
       + '<label class="oew-sc-f">' + bi('From flip','距翻转位') + '<span class="oew-sc-pair">'
-        + '<input type="number" id="oew-f-flip-max" step="any" min="0" aria-label="Distance from flip, maximum">'
+        + '<input type="number" id="oew-f-flip-max" step="any" min="0" aria-label="Distance from flip, maximum" data-aria-en="Distance from flip, maximum" data-aria-zh="距翻转位的最大距离">'
         + '</span></label>'
     + '</div>'
     + '<div class="oew-sc-fbar">'
@@ -2512,6 +2570,16 @@ function scApplyLang(){
   Array.prototype.forEach.call(opts, function(o){
     o.textContent = zh ? o.getAttribute('data-zh') : (o.getAttribute('data-en') || o.textContent);
   });
+  var tickerSearch = document.getElementById('oew-tk-q');
+  if(tickerSearch){
+    tickerSearch.placeholder = zh ? '查询代码 — SPY、NVDA、TSLA…' : 'Look up a ticker — SPY, NVDA, TSLA…';
+    tickerSearch.setAttribute('aria-label', zh ? '查询股票代码' : 'Look up a ticker');
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.oew [data-aria-en]'), function(el){
+    el.setAttribute('aria-label', el.getAttribute(zh ? 'data-aria-zh' : 'data-aria-en'));
+  });
+
 }
 function renderScanner(host, payload){
   var rows = (payload && payload.rows) || [];
@@ -2521,12 +2589,12 @@ function renderScanner(host, payload){
     return;
   }
   scRows = rows; scSkew75 = null;
-  scAsof = rows.map(function(r){ return r.asof; }).filter(Boolean).sort().pop() || null;
+  scAsof = rows.map(function(r){ return sourceDay(r.asof); }).filter(Boolean).sort().pop() || null;
   var presets = SC_PRESETS.map(function(p){
     return '<button class="oew-preset" type="button" data-preset="' + p[0] + '" aria-pressed="' + (p[0] === scPreset) + '">'
       + bi(p[1], p[2]) + '</button>';
   }).join('');
-  host.innerHTML = ''
+  host.innerHTML = sourceContext('Scanner', '筛选工作台', scAsof)
     + '<div class="oew-sc-bar">' + presets + '</div>'
     + '<div class="oew-panel">'
       + '<div class="oew-phead">'
@@ -2563,6 +2631,7 @@ function renderScanner(host, payload){
       + '</div>'
     + '</div>';
   scApplyLang();
+  promotePanelDates(host);
 }
 
 /* ══════════ TICKER ══════════ */
@@ -2571,9 +2640,9 @@ var REGIME_HEAD = {
   'short': ['Jumpy — moves get amplified', '剧烈 — 波动被放大']
 };
 var REGIME_SAY = {
-  'long':  ['Dealer hedging is trading against the market today, so dips tend to get bought back and swings stay contained.',
+  'long':  ['Dealer hedging at this source close trades against the market, so dips tend to get bought back and swings stay contained.',
             '今日做市商对冲与市场反向，因此回调通常被买回，波动幅度受限。'],
-  'short': ['Dealer hedging is trading with the market today, so swings run larger and sell-offs can pick up speed. Do not assume dips get bought back the way they do on calm days.',
+  'short': ['Dealer hedging at this source close trades with the market, so swings run larger and sell-offs can pick up speed. Do not assume dips get bought back the way they do on calm days.',
             '今日做市商对冲与市场同向，因此波动更大，抛售可能加速。不要想当然地认为回调会像平静日那样被买回。']
 };
 function pipRow(strength){
@@ -3276,7 +3345,7 @@ function renderTicker(host, tk, gx, fl, sess){
   var rangeTxt = (spot !== null && dailyPct !== null)
     ? px(spot * (1 - dailyPct/100)) + '–' + px(spot * (1 + dailyPct/100)) : '';
 
-  host.innerHTML = ''
+  host.innerHTML = sourceContext('Ticker workbench', '个股工作台', meta.asof)
   + '<div class="oew-panel"><div class="oew-pbody">'
     + '<div class="oew-tk-head">'
       + '<div><div class="oew-tk-sym mono">' + esc(tk) + '</div>'
@@ -3292,7 +3361,7 @@ function renderTicker(host, tk, gx, fl, sess){
       + (reg === 'short'
           ? '<span class="oew-stance st-protect">' + bi('Protect gains','保护利润') + '</span>'
           : '<span class="oew-stance st-watch">' + bi("Watch — don't chase",'观察—勿追高') + '</span>')
-      + (rangeTxt ? '<span class="oew-ic-em">' + bi('expected tomorrow','明日预期区间')
+      + (rangeTxt ? '<span class="oew-ic-em">' + bi('1-day implied range','1日隐含区间')
           + ' <b class="mono">' + rangeTxt + '</b> <span class="mono">±' + dailyPct.toFixed(2) + '%</span></span>' : '')
     + '</div>'
   + '</div></div>'
@@ -3327,8 +3396,8 @@ function renderTicker(host, tk, gx, fl, sess){
       + '</div>'
     + '</div>'
     + '<div class="oew-pfoot">'
-      + '<span>' + bi('Walls are measured from this close, so price always starts inside the band. Only a full day’s close beyond a level counts — an intraday poke does not.',
-          '墙位以本次收盘计算，因此价格始终从区间内开始。只有整日收盘突破某一水位才算数 — 盘中触及不算。') + '</span>'
+      + '<span>' + bi('Model estimates from the source close shown here. Only a daily close beyond a level counts; intraday moves do not confirm it.',
+          '基于此处所示来源收盘的模型估算。仅日线收盘突破价位才算数，盘中突破不能确认。') + '</span>'
       + (meta.asof ? '<span class="oew-asof mono">' + esc(meta.asof) + '</span>' : '')
     + '</div>'
   + '</div>'
@@ -3359,7 +3428,7 @@ function renderTicker(host, tk, gx, fl, sess){
 
   + (fl && fl.available !== false ? '<div class="oew-panel">'
     + '<div class="oew-phead">'
-      + '<h2 class="oew-ph-title">' + bi('Today’s measured flow','今日实测资金') + '</h2>'
+      + '<h2 class="oew-ph-title">' + bi('Measured options flow','期权实测资金流') + '</h2>'
       + '<span class="oew-ph-sub">' + bi('what actually traded, before any interpretation','实际成交数据，未经任何解读') + '</span>'
     + '</div>'
     + '<div class="oew-pbody"><div class="oew-metrics">'
@@ -3513,7 +3582,7 @@ function ldRows(rows, legs, fireKey, ctx, shown){
     var c = ctx(r);
     return '<div class="oew-ldrow' + ((shown && i >= shown) ? ' oew-ld-more' : '') + '">'
       + '<span class="oew-ld-rank">' + ('0' + (i+1)).slice(-2) + '</span>'
-      + '<span class="oew-ld-tk"><span class="sym">' + esc(r.ticker) + '</span>'
+      + '<span class="oew-ld-tk"><button type="button" class="sym oew-name-link" data-goto="' + esc(r.ticker) + '">' + esc(r.ticker) + '</button>'
         + '<span class="sec">' + esc(r.sector || '') + '</span></span>'
       + '<span class="oew-ld-state ' + st[0] + '">' + bi(st[1], st[2]) + '</span>'
       + '<span>' + ladder(r, legs) + '</span>'
@@ -3558,13 +3627,13 @@ function renderLeaders(host, L){
       + '<span class="l-zh">显示全部 ' + total + ' 项</span></button>';
   }
   var etf = L.etf_strip || [];
-  var asof = (L.as_of || '').slice(0, 10);
+  var asof = sourceDay(L.session_date);
   var stamp = asof ? '<span class="oew-asof mono">' + esc(asof) + '</span>' : '';
   var stale = L.stale ? '<div class="oew-banner"><span class="ico">!</span><span>'
     + bi('These boards are from an earlier session. Showing them anyway — treat the names as stale.',
          '这些榜单来自更早的场次。仍予显示 — 请将标的视为陈旧。') + '</span></div>' : '';
 
-  host.innerHTML = stale
+  host.innerHTML = sourceContext('Flow leaders', '资金领头股', asof) + stale
   + '<div class="oew-panel">'
     + '<div class="oew-phead">'
       + '<h2 class="oew-ph-title">' + bi('Money keeps showing up','资金反复出现') + '</h2>'
@@ -3636,77 +3705,173 @@ function renderLeaders(host, L){
 }
 
 /* ══════════ mode switching + routing ══════════ */
-function loadMode(mode){
+function modeRequestURLs(mode, ticker){
+  if(mode === 'flow') return ['flow_desk.json', 'flowdata/cohorts.json'];
+  if(mode === 'scanner') return ['screenerdata/rows.json'];
+  if(mode === 'leaders') return ['flowleaders/leaders.json'];
+  return ['gex/', 'flow/', 'session/'].map(function(prefix){ return prefix + encodeURIComponent(ticker) + '.json'; });
+}
+function loadMode(mode, options){
+  options = options || {};
   var host = document.getElementById('mode-' + mode);
-  if(!host) return;
-  // OIP W1 §0.15: Ticker mode's render target is #oew-tk-body, a sibling of the
-  // static search toolbar — NEVER #mode-ticker itself, which would wipe the
-  // toolbar (and re-trigger its "/" focus race) on every skeleton paint and every
-  // ticker change.
-  var tgt = (mode === 'ticker') ? (document.getElementById('oew-tk-body') || host) : host;
-  tgt.innerHTML = skeleton(SKEL[mode][0], SKEL[mode][1]);
-  var fail = function(){
-    tgt.innerHTML = emptyPanel('That data did not load. Reload the page to try again — nothing above depends on it.',
-      '该数据未能加载。请重新加载页面重试 — 上方内容不依赖于它。');
-  };
+  if(!host || mode === 'brief') return;
+  var tk = mode === 'ticker' ? curTicker : '';
+  var existing = pendingModes[mode];
+  if(existing && existing.ticker === tk) return;
+  var ticket = { ticker:tk, generation:mode === 'ticker' ? ++tickerGeneration : 0 };
+  pendingModes[mode] = ticket;
+  if(!options.preserve) loaded[mode] = false;
+  var failedOptional = [];
+  function optional(url){
+    return getJSON(url, {timeout:4000}).catch(function(e){
+      if(e.status !== 404) failedOptional.push(url);
+      return null;
+    });
+  }
+  // The search toolbar survives every loading, error, and ticker transition.
+  var tgt = mode === 'ticker' ? document.getElementById('oew-tk-body') : host;
+  tgt.setAttribute('aria-busy', 'true');
+  if(!options.preserve) tgt.innerHTML = skeleton(SKEL[mode][0], SKEL[mode][1]);
+  function current(){
+    return pendingModes[mode] === ticket && (mode !== 'ticker' ||
+      (curTicker === tk && tickerGeneration === ticket.generation));
+  }
+  function finish(){
+    if(pendingModes[mode] !== ticket) return;
+    delete pendingModes[mode];
+    tgt.removeAttribute('aria-busy');
+  }
+  function fail(){
+    if(!current()) return;
+    loaded[mode] = false;
+    tgt.innerHTML = errorPanel(mode, tk);
+    finish();
+  }
+  function paint(render){
+    if(!current()) return;
+    render();
+    promotePanelDates(tgt);
+    optionalFailures[mode + ':' + tk] = failedOptional;
+    if(failedOptional.length){
+      tgt.insertAdjacentHTML('beforeend', '<div class="oew-partial-recovery" role="status"><span>'
+        + bi('Some supporting data did not load. The available evidence remains visible.', '部分辅助数据未加载，已有证据仍可查看。')
+        + '</span><button type="button" class="oew-text-link" data-retry-optional="' + mode + '">'
+        + bi('Retry supporting data', '重试辅助数据') + '</button></div>');
+    }
+    loaded[mode] = mode === 'ticker' ? tk : true;
+    finish();
+  }
   if(mode === 'flow'){
-    /* Both stores are lazy and BOTH are optional: cohorts.json missing costs the
-       theme-group panel and nothing else (renderFlow falls back to flow_desk's
-       own cohorts array), while flow_desk.json missing is what `fail` is for. */
     Promise.all([
       getJSON('flow_desk.json'),
-      getJSON('flowdata/cohorts.json').catch(function(){ return null; })
-    ]).then(function(res){ renderFlow(tgt, res[0], res[1]); loaded.flow = true; }).catch(fail);
+      optional('flowdata/cohorts.json')
+    ]).then(function(res){ paint(function(){ renderFlow(tgt, res[0], res[1]); }); }).catch(fail);
   } else if(mode === 'scanner'){
-    getJSON('screenerdata/rows.json').then(function(j){ renderScanner(tgt, j); loaded.scanner = true; }).catch(fail);
+    getJSON('screenerdata/rows.json').then(function(j){
+      paint(function(){ renderScanner(tgt, j); });
+    }).catch(fail);
   } else if(mode === 'leaders'){
-    getJSON('flowleaders/leaders.json').then(function(j){ renderLeaders(tgt, j); loaded.leaders = true; }).catch(fail);
+    getJSON('flowleaders/leaders.json').then(function(j){
+      paint(function(){ renderLeaders(tgt, j); });
+    }).catch(fail);
   } else if(mode === 'ticker'){
-    var tk = curTicker;
     Promise.all([
-      getJSON('gex/' + encodeURIComponent(tk) + '.json').catch(function(){ return null; }),
-      getJSON('flow/' + encodeURIComponent(tk) + '.json').catch(function(){ return null; }),
-      // OIP W1 §3.5/§7: additive third fetch, same .catch(() => null) pattern as
-      // the flow fetch above — a 404 (outside the digest's coverage, or before the
-      // first nightly populates the store) degrades the filmstrip to its honest-
-      // null variant and changes nothing else on the page.
-      getJSON('session/' + encodeURIComponent(tk) + '.json').catch(function(){ return null; })
+      getJSON('gex/' + encodeURIComponent(tk) + '.json').catch(function(e){
+        if(e.status === 404) return null;
+        throw e;
+      }),
+      optional('flow/' + encodeURIComponent(tk) + '.json'),
+      optional('session/' + encodeURIComponent(tk) + '.json')
     ]).then(function(res){
-      renderTicker(tgt, tk, res[0], res[1], res[2]);
-      loaded.ticker = tk;
-      var c = document.getElementById('oew-tk-cnt'); if(c) c.textContent = tk;
+      paint(function(){
+        renderTicker(tgt, tk, res[0], res[1], res[2]);
+        var c = document.getElementById('oew-tk-cnt');
+        if(c) c.textContent = tk;
+      });
     }).catch(fail);
   }
 }
 function activate(mode, opts){
+  opts = opts || {};
   if(MODES.indexOf(mode) < 0) mode = 'brief';
-  tabs.forEach(function(t){ t.setAttribute('aria-selected', String(t.getAttribute('data-mode') === mode)); });
-  MODES.forEach(function(m){
-    var s = document.getElementById('mode-' + m);
-    if(s) s.classList.toggle('active', m === mode);
+  if(!opts.restoring && currentMode !== 'ticker' && mode === 'ticker') previousTask = currentMode;
+  currentMode = mode;
+  tabs.forEach(function(t){
+    var selected = t.getAttribute('data-mode') === mode;
+    t.setAttribute('aria-selected', String(selected));
+    t.tabIndex = selected ? 0 : -1;
+    if(selected && opts.focus) t.focus();
   });
-  var need = (mode === 'ticker') ? (loaded.ticker !== curTicker) : !loaded[mode];
+  MODES.forEach(function(m){
+    var section = document.getElementById('mode-' + m);
+    if(section){ section.classList.toggle('active', m === mode); section.hidden = m !== mode; }
+  });
+  var need = mode === 'ticker' ? loaded.ticker !== curTicker : !loaded[mode];
   if(need) loadMode(mode);
-  /* BL-1: a langchange/themechange that fired while Flow was display:none hit
-     the canvases' zero-size guard and drew nothing — returning to the tab then
-     showed the OLD palette (a rising tide stayed green under zh). Canvas draws
-     are one-shot and cheap, so re-entering an already-loaded Flow always
-     repaints; the draw functions no-op when the canvases are absent. */
-  if(mode === 'flow' && !need) { flDrawSpark(); flDrawUnfold(); }
-  if(!opts || !opts.silent){
-    try{ history.replaceState(null, '', '#' + mode + (mode === 'ticker' ? '?t=' + curTicker : '')); }catch(e){}
+  if(mode === 'flow' && !need){ flDrawSpark(); flDrawUnfold(); }
+  if(mode === 'ticker'){
+    var selectedTicker = document.getElementById('oew-tk-cnt');
+    if(selectedTicker) selectedTicker.textContent = curTicker;
+    var back = document.getElementById('oew-tk-back');
+    if(back){ back.setAttribute('data-workspace-mode', previousTask); }
+  }
+  if(!opts.silent){
+    var hash = '#' + mode + (mode === 'ticker' ? '?t=' + encodeURIComponent(curTicker) : '');
+    if(location.hash !== hash){ try{ history.pushState({oew:{mode:mode,ticker:curTicker,origin:previousTask}}, '', hash); }catch(e){} }
   }
 }
-tabs.forEach(function(t){
+tabs.forEach(function(t, index){
   t.addEventListener('click', function(){ activate(t.getAttribute('data-mode')); });
+  t.addEventListener('keydown', function(e){
+    var next = null;
+    if(e.key === 'ArrowRight') next = (index + 1) % tabs.length;
+    else if(e.key === 'ArrowLeft') next = (index + tabs.length - 1) % tabs.length;
+    else if(e.key === 'Home') next = 0;
+    else if(e.key === 'End') next = tabs.length - 1;
+    if(next === null) return;
+    e.preventDefault();
+    activate(tabs[next].getAttribute('data-mode'), {focus:true});
+  });
+});
+document.addEventListener('click', function(e){
+  var retry = e.target.closest && e.target.closest('[data-retry-mode]');
+  if(retry){
+    e.preventDefault();
+    var retryMode = retry.getAttribute('data-retry-mode');
+    modeRequestURLs(retryMode, curTicker).forEach(function(url){ delete cache[url]; });
+    loadMode(retryMode); return;
+  }
+  var partial = e.target.closest && e.target.closest('[data-retry-optional]');
+  if(partial){
+    e.preventDefault();
+    var partialMode = partial.getAttribute('data-retry-optional');
+    var partialKey = partialMode + ':' + (partialMode === 'ticker' ? curTicker : '');
+    (optionalFailures[partialKey] || []).forEach(function(url){ delete cache[url]; });
+    partial.disabled = true;
+    partial.innerHTML = bi('Loading…', '加载中…');
+    loadMode(partialMode, {preserve:true}); return;
+  }
+  var task = e.target.closest && e.target.closest('[data-workspace-mode]');
+  if(task){
+    e.preventDefault(); activate(task.getAttribute('data-workspace-mode'), {focus:true});
+    if(task.id === 'oew-tk-back' && returnFocus && returnFocus.isConnected && returnFocus.closest('.oew-mode.active')) returnFocus.focus();
+    return;
+  }
+  var disclosure = e.target.closest && e.target.closest('[data-open-details]');
+  if(disclosure){
+    var details = document.getElementById(disclosure.getAttribute('data-open-details'));
+    if(details){ details.open = true; details.scrollIntoView({behavior:'smooth', block:'start'}); details.querySelector('summary').focus(); }
+  }
 });
 /* ticker deep-links from the Brief rail and the Scanner table */
 document.addEventListener('click', function(e){
   var b = e.target.closest && e.target.closest('[data-goto]');
   if(!b) return;
   e.preventDefault();
+  returnFocus = b;
   curTicker = b.getAttribute('data-goto') || curTicker;
-  activate('ticker');
+  activate('ticker', {focus:true});
+  if(e.detail === 0){ var input = document.getElementById('oew-tk-q'); if(input) input.focus(); }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 /* scanner controls (delegated — the table is rendered after this binds) */
@@ -3806,8 +3971,8 @@ function setupTickerSearch(){
   var inp = document.getElementById('oew-tk-q'), sg = document.getElementById('oew-tk-sugg');
   if(!inp || !sg) return;
   var M = window.OEW_TICKER_MANIFEST || [];
-  var hl = -1, shown = [];
-  function close(){ sg.classList.remove('on'); inp.setAttribute('aria-expanded', 'false'); hl = -1; }
+  var hl = -1, shown = [], blurTimer;
+  function close(){ sg.classList.remove('on'); inp.setAttribute('aria-expanded', 'false'); inp.removeAttribute('aria-activedescendant'); hl = -1; }
   function render(q){
     q = q.trim().toUpperCase();
     shown = M.filter(function(m){
@@ -3815,11 +3980,13 @@ function setupTickerSearch(){
     }).slice(0, 12);
     if(!shown.length){ close(); return; }
     sg.innerHTML = shown.map(function(m, i){
-      return '<div class="row' + (i === hl ? ' hl' : '') + '" data-key="' + esc(m.key) + '" role="option">'
+      return '<div class="row' + (i === hl ? ' hl' : '') + '" data-key="' + esc(m.key) + '" id="oew-tk-option-' + i + '" role="option" aria-selected="' + (i === hl) + '">'
         + '<span><b>' + esc(m.key) + '</b> <span class="g">' + bi(m.en || m.key, m.zh || m.en || m.key) + '</span></span>'
       + '</div>';
     }).join('');
     sg.classList.add('on'); inp.setAttribute('aria-expanded', 'true');
+    if(hl >= 0) inp.setAttribute('aria-activedescendant', 'oew-tk-option-' + hl);
+    else inp.removeAttribute('aria-activedescendant');
     sg.querySelectorAll('.row').forEach(function(r){
       r.addEventListener('mousedown', function(e){
         e.preventDefault();
@@ -3830,13 +3997,18 @@ function setupTickerSearch(){
     });
   }
   inp.addEventListener('input', function(){ hl = -1; render(inp.value); });
-  inp.addEventListener('focus', function(){ render(inp.value); });
-  inp.addEventListener('blur', function(){ setTimeout(close, 150); });
+  inp.addEventListener('focus', function(){ clearTimeout(blurTimer); render(inp.value); });
+  inp.addEventListener('blur', function(){ clearTimeout(blurTimer); blurTimer = setTimeout(close, 150); });
   inp.addEventListener('keydown', function(e){
-    if(!sg.classList.contains('on')) return;
+    if(!sg.classList.contains('on')){
+      if(e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      hl = -1; render(inp.value);
+      if(!shown.length) return;
+    }
     if(e.key === 'ArrowDown'){ hl = Math.min(shown.length - 1, hl + 1); render(inp.value); e.preventDefault(); }
     else if(e.key === 'ArrowUp'){ hl = Math.max(0, hl - 1); render(inp.value); e.preventDefault(); }
     else if(e.key === 'Enter'){
+      e.preventDefault();
       var pick = shown[hl < 0 ? 0 : hl];
       if(pick){ curTicker = pick.key; activate('ticker'); inp.value = ''; close(); }
     }
@@ -3888,33 +4060,28 @@ document.addEventListener('themechange', function(){
   setTimeout(function(){ flDrawSpark(); flDrawUnfold(); }, 0);
 });
 
-/* Terminal handoff clock — computed at READ time, never baked. A countdown
-   frozen into static HTML is wrong by morning. */
-(function(){
-  var el = document.getElementById('oew-clock');
-  if(!el) return;
-  var now = new Date();
-  var etNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-  var open = new Date(etNow); open.setHours(9, 30, 0, 0);
-  while(open <= etNow || open.getDay() === 0 || open.getDay() === 6){
-    open.setDate(open.getDate() + 1); open.setHours(9, 30, 0, 0);
+/* Each browser-history entry restores the task and ticker. Loaded tables stay
+   mounted, preserving their filters, view, and sort when research returns. */
+function readRoute(event){
+  var h = (location.hash || '').slice(1), parts = h.split('?');
+  var mode = MODES.indexOf(parts[0]) >= 0 ? parts[0] : 'brief';
+  var hashQuery = new URLSearchParams(parts.slice(1).join('?'));
+  var query = new URLSearchParams(location.search);
+  var symbol = hashQuery.get('t') || query.get('t');
+  if(mode === 'ticker') curTicker = symbol && /^[A-Za-z0-9.^:_-]{1,24}$/.test(symbol) ? symbol.toUpperCase() : DEFAULT_TICKER;
+  var state = history.state && history.state.oew;
+  if(state && MODES.indexOf(state.origin) >= 0 && state.origin !== 'ticker') previousTask = state.origin;
+  else if(mode === 'ticker') previousTask = currentMode !== 'ticker' ? currentMode : 'brief';
+  activate(mode, {silent:true, restoring:true, focus:!!event});
+  if(!state){
+    try{ history.replaceState(Object.assign({}, history.state, {oew:{mode:mode,ticker:curTicker,origin:previousTask}}), '', location.href); }catch(e){}
   }
-  var mins = Math.max(0, Math.round((open - etNow) / 60000));
-  var h = Math.floor(mins / 60), m = mins % 60;
-  el.innerHTML = '<span class="l-en">closed 16:00 ET · next open in ' + h + 'h ' + m + 'm</span>'
-    + '<span class="l-zh">美东 16:00 收盘 · 距下次开盘 ' + h + ' 小时 ' + m + ' 分</span>';
-})();
+}
+window.addEventListener('popstate', readRoute);
+window.addEventListener('hashchange', readRoute);
+promotePanelDates(document.getElementById('mode-brief'));
+readRoute();
 
-/* hash routing: #brief / #scanner / #ticker?t=SYM / #leaders */
-(function(){
-  var h = (location.hash || '').replace('#', '');
-  var mode = h.split('?')[0];
-  var q = h.indexOf('?t=');
-  if(q > -1) curTicker = decodeURIComponent(h.slice(q + 3)).toUpperCase() || curTicker;
-  var qs = new URLSearchParams(location.search);
-  if(qs.get('t')) curTicker = qs.get('t').toUpperCase();
-  if(MODES.indexOf(mode) >= 0 && mode !== 'brief') activate(mode, { silent: true });
-})();
 })();
 </script>
 <script defer src="illus.js"></script>

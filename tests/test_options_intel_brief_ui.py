@@ -26,10 +26,10 @@ Run: python3 -m pytest tests/test_options_intel_brief_ui.py -q
 """
 from __future__ import annotations
 
-import hashlib
 import json
 import re
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -47,8 +47,7 @@ from scripts.build_options_command import (  # noqa: E402
 
 # Reuse the house's own legacy-Workspace fixtures rather than inventing a second
 # synthetic-store shape — test 36 needs a REAL legacy render to prove against.
-# Importing (never modifying) tests/test_build_options_command.py, which is out
-# of scope for this packet's edits.
+# Keep the same fixture contract used by the workspace's interaction suite.
 from tests.test_build_options_command import EMPTY_STORES, MODES, _stores  # noqa: E402
 
 
@@ -114,7 +113,9 @@ def _sym_order(page: str) -> list[str]:
 
 
 def _workspace(page: str) -> str:
-    start = page.index('<div class="oew">')
+    landmark = re.search(r'<main\b[^>]*\bid="options-workspace"[^>]*>', page)
+    assert landmark, "the Options workspace must retain its main landmark"
+    start = landmark.start()
     end = page.index("<!-- /oew -->")
     return page[start:end]
 
@@ -248,8 +249,8 @@ def test_37_band_word_is_the_artifacts_own_confidence_band_verbatim():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Test 38 — the generated site/options.html places the Brief board BEFORE the
-# What-changed panel (design spec: FIRST child of #mode-brief).
+# Test 38 — current intelligence leads the Brief; earlier intelligence stays
+# complete and dated in its disclosure, ahead of the other historical research.
 # ─────────────────────────────────────────────────────────────────────────────
 def test_38_generated_site_page_orders_the_board_before_what_changed():
     site_page = (REPO / "site" / "options.html")
@@ -263,8 +264,9 @@ def test_38_generated_site_page_orders_the_board_before_what_changed():
     )
 
 
-def test_38_board_is_the_first_child_of_mode_brief():
-    page = render(REPO, stores=dict(EMPTY_STORES), intel_brief=_brief())
+def test_38_current_healthy_board_is_the_first_child_of_mode_brief():
+    page = render(REPO, stores=dict(EMPTY_STORES), intel_brief=_brief(),
+                  now=datetime(2026, 8, 13, 10, tzinfo=timezone.utc))
     marker = '<section class="oew-mode active" id="mode-brief" role="tabpanel" aria-labelledby="tab-brief">'
     idx = page.index(marker) + len(marker)
     tail = page[idx:idx + 1200]
@@ -274,19 +276,25 @@ def test_38_board_is_the_first_child_of_mode_brief():
     # quote rather than requiring the tag to close immediately after it.
     stripped = re.sub(r"<!--.*?-->", "", tail, flags=re.S).strip()
     assert stripped.startswith('<div class="oew-panel oew-aib" id="aib"')
+    assert page.count('id="aib"') == 1
+
+
+def test_38_earlier_board_is_retained_in_dated_research_disclosure():
+    card = _card("AAPL", direction="LONG", r=344)
+    page = render(REPO, stores=dict(EMPTY_STORES),
+                  intel_brief=_brief(opportunities=[card]),
+                  now=datetime(2026, 8, 14, 10, tzinfo=timezone.utc))
+    assert "Brief unavailable for the latest session" in page
+    assert "2026-08-12" in page
+    assert page.count('id="aib"') == 1
+    assert page.index('id="oew-index-structure"') < page.index('id="oew-history"') < page.index('id="aib"')
+    assert _sym_order(page) == ["AAPL"], "the disclosure must retain the complete brief"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Test 39 — Scanner/Ticker/Leaders markup is BYTE-IDENTICAL to a pre-change
-# snapshot: this packet's OWNED FILES are scoped to #mode-brief only.
+# Test 39 — the lazy workspaces remain independent of the intelligence state.
+# Their static search and detail controls survive the full-workspace redesign.
 # ─────────────────────────────────────────────────────────────────────────────
-_SNAPSHOT_HASHES = {
-    "mode-scanner": "11b87776c8bee03ac18c5a01cd1ea995510986dc557a479fed229e48a9bd90cf",
-    "mode-ticker": "d18066a721fb6f0ecbf17936f9104b5b1c6ce5a11bb608c635414d1762fe3dc5",
-    "mode-leaders": "5e09876f830fc2e201237f53eddf6afa6e94aec2f13e36113a3fe3acb84506c1",
-}
-
-
 def _extract_section(page: str, mode_id: str) -> str:
     marker = f'<section class="oew-mode" id="{mode_id}"'
     start = page.index(marker)
@@ -294,15 +302,25 @@ def _extract_section(page: str, mode_id: str) -> str:
     return page[start:end]
 
 
-@pytest.mark.parametrize("mode_id", sorted(_SNAPSHOT_HASHES))
-def test_39_scanner_ticker_leaders_markup_is_byte_identical_to_snapshot(mode_id):
-    page = render(REPO, stores=dict(EMPTY_STORES), intel_brief=None)
-    block = _extract_section(page, mode_id)
-    digest = hashlib.sha256(block.encode("utf-8")).hexdigest()
-    assert digest == _SNAPSHOT_HASHES[mode_id], (
-        f"{mode_id} markup changed — this packet's scope is #mode-brief only; "
-        f"got {digest}"
+@pytest.mark.parametrize("mode_id", ("mode-scanner", "mode-ticker", "mode-leaders"))
+def test_39_lazy_workspaces_are_independent_of_brief_state(mode_id):
+    unavailable = render(REPO, stores=dict(EMPTY_STORES), intel_brief=None)
+    populated = render(REPO, stores=dict(EMPTY_STORES),
+                       intel_brief=_brief(opportunities=[_card("AAPL", direction="LONG", r=300)]))
+    block = _extract_section(unavailable, mode_id)
+    assert block == _extract_section(populated, mode_id), (
+        f"{mode_id} must not depend on the research brief's content or availability"
     )
+    assert 'role="tabpanel"' in block
+    assert f'aria-labelledby="tab-{mode_id.removeprefix("mode-")}"' in block
+    if mode_id != "mode-ticker":
+        assert re.fullmatch(r'<section\b[^>]*>\s*</section>', block), "lazy data must not be embedded"
+    else:
+        for marker in ('id="oew-tk-q"', 'role="combobox"', 'aria-autocomplete="list"',
+                       'aria-controls="oew-tk-sugg"', 'id="oew-tk-sugg"', 'role="listbox"',
+                       'id="oew-tk-body"', 'id="oew-tk-back"', 'oew-primer'):
+            assert marker in block, f"Ticker lost its static control: {marker}"
+        assert block.index('id="oew-tk-q"') < block.index('id="oew-tk-body"') < block.index('oew-primer')
 
 
 def test_39_scanner_ticker_leaders_tabs_and_ids_still_present():

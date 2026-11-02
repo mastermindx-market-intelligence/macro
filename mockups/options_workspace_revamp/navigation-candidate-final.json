@@ -1,0 +1,64 @@
+{
+  "fixture": "synthetic",
+  "label": "candidate-final",
+  "checks": [
+    {
+      "name": "ticker_deep_link_and_reload",
+      "pass": true,
+      "initial": "QQQ",
+      "reloaded": "QQQ",
+      "url": "http://127.0.0.1:8768/mockups/options_workspace_revamp/fixtures/workspace-current.html#ticker?t=QQQ"
+    },
+    {
+      "name": "typeahead_exposes_keyboard_selection",
+      "pass": true,
+      "active_descendant": "oew-tk-option-0"
+    },
+    {
+      "name": "typeahead_escape_closes",
+      "pass": true
+    },
+    {
+      "name": "ticker_shortcut_scoped_to_visible_task",
+      "pass": true,
+      "focused_outside": false,
+      "focused_inside": true
+    },
+    {
+      "name": "typeahead_keyboard_selection",
+      "pass": true,
+      "url": "http://127.0.0.1:8768/mockups/options_workspace_revamp/fixtures/workspace-current.html#ticker?t=QQQ"
+    },
+    {
+      "name": "task_back_forward_history",
+      "pass": true,
+      "added_history_entries": 2,
+      "back": "scanner",
+      "forward": "leaders"
+    },
+    {
+      "name": "hash_change_updates_visible_task",
+      "pass": true,
+      "observed": "leaders",
+      "url": "http://127.0.0.1:8768/mockups/options_workspace_revamp/fixtures/workspace-current.html#leaders"
+    },
+    {
+      "name": "new_ticker_survives_old_success",
+      "pass": true,
+      "observed": "QQQ",
+      "url": "http://127.0.0.1:8768/mockups/options_workspace_revamp/fixtures/workspace-current.html#ticker?t=QQQ",
+      "spy_requests": 1,
+      "qqq_requests": 1
+    },
+    {
+      "name": "new_ticker_survives_old_failure",
+      "pass": true,
+      "observed": "QQQ",
+      "url": "http://127.0.0.1:8768/mockups/options_workspace_revamp/fixtures/workspace-current.html#ticker?t=QQQ",
+      "spy_requests": 1,
+      "qqq_requests": 1
+    }
+  ],
+  "passed": 9,
+  "failed": []
+}

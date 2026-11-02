@@ -25,6 +25,8 @@ paths=[
 ]+["site/gex/"+s+".json" for s in ["SPX","SPY","QQQ","IWM"]]+[
 "site/flow/SPY.json","site/session/SPY.json"]
 records={};manifest={"source_pin":PIN,"template_head":subprocess.check_output(["git","rev-parse","HEAD"],cwd=ROOT,text=True).strip(),"reads":[]}
+manifest["template_sha256"]=hashlib.sha256((ROOT/"templates/options.html.j2").read_bytes()).hexdigest()
+manifest["builder_sha256"]=hashlib.sha256((ROOT/"scripts/build_options_command.py").read_bytes()).hexdigest()
 for path in paths:
     p=subprocess.run(["git","show",PIN+":"+path],cwd=ROOT,capture_output=True,timeout=35)
     if p.returncode:

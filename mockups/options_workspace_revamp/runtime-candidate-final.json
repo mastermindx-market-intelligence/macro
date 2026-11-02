@@ -1,0 +1,66 @@
+{
+  "fixture": "synthetic",
+  "label": "candidate-final",
+  "checks": [
+    {
+      "name": "keyboard_tabs",
+      "pass": true,
+      "observed": "flow"
+    },
+    {
+      "name": "scanner_filter_csv",
+      "pass": true,
+      "rows": 1,
+      "csv_rows": 2
+    },
+    {
+      "name": "scanner_clear",
+      "pass": true,
+      "rows": 4
+    },
+    {
+      "name": "flow_loads",
+      "pass": true,
+      "characters": 821
+    },
+    {
+      "name": "leaders_loads",
+      "pass": true,
+      "characters": 807
+    },
+    {
+      "name": "ticker_loads",
+      "pass": true,
+      "characters": 3123
+    },
+    {
+      "name": "leaders_session_not_build_clock",
+      "pass": true,
+      "observed_dates": [
+        "2026-08-12",
+        "2026-08-12",
+        "2026-08-12"
+      ],
+      "session_date": "2026-08-12",
+      "build_date": "2026-11-02"
+    },
+    {
+      "name": "ticker_latest_request_wins",
+      "pass": true,
+      "observed": "QQQ",
+      "url": "http://127.0.0.1:8768/mockups/options_workspace_revamp/fixtures/workspace-current.html#ticker?t=QQQ"
+    },
+    {
+      "name": "dedupe_inflight_scanner",
+      "pass": true,
+      "requests": 1
+    },
+    {
+      "name": "hanging_request_recovers_with_retry",
+      "pass": true,
+      "requests": 2
+    }
+  ],
+  "passed": 10,
+  "failed": []
+}

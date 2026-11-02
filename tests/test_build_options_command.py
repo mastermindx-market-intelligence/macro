@@ -6,10 +6,10 @@ trees (MM_DATA_GUARD stays clean).  One smoke test runs against the real stores
 when they happen to be present and skips otherwise.
 
 What these pins protect (each maps to a law the surface must not drift off):
-  · all four mode containers render, always — the workspace IS the four modes
+  · all five mode containers render, always — the workspace IS the five modes
   · bilingual parity + no translated title= (CI-guarded house rule)
-  · the close line's fill is EXACTLY the coverage share — no floor, no rounding,
-    and an UNKNOWN coverage renders empty rather than full
+  · scanner coverage retains its exact numerator, denominator and source date;
+    unknown coverage stays unknown and cannot qualify the latest market close
   · the four posture readings are co-displayed and never fused into a score
   · absent stores degrade to honest empty states instead of crashing or faking
   · the payload law: plain fetch(), never a JS-injected <script> loader (#3372)
@@ -18,6 +18,7 @@ What these pins protect (each maps to a law the surface must not drift off):
 from __future__ import annotations
 
 import html
+import math
 import re
 import sys
 from datetime import datetime, timezone
@@ -211,7 +212,9 @@ def _stores() -> dict:
 
 def _workspace(page: str) -> str:
     """Only the page's OWN subtree — the shared nav is not this lane's copy."""
-    start = page.index('<div class="oew">')
+    landmark = re.search(r'<main\b[^>]*\bid="options-workspace"[^>]*>', page)
+    assert landmark, "the Options workspace must retain its main landmark"
+    start = landmark.start()
     end = page.index("<!-- /oew -->")
     return page[start:end]
 
@@ -374,16 +377,24 @@ def test_mode_order_is_the_pinned_reading_order(page):
 def test_brief_is_the_default_active_mode(page):
     """The Brief is baked inline and must be visible without any fetch."""
     assert 'class="oew-mode active" id="mode-brief"' in page
-    assert '<button class="oew-tab" role="tab" aria-selected="true" data-mode="brief"' in page
+    tab = re.search(r'<button\b[^>]*\bid="tab-brief"[^>]*>', page)
+    assert tab
+    for attribute in ('role="tab"', 'aria-selected="true"', 'data-mode="brief"',
+                      'aria-controls="mode-brief"', 'tabindex="0"'):
+        assert attribute in tab.group(0), attribute
     for mode in ("scanner", "ticker", "leaders"):
         assert f'<section class="oew-mode" id="mode-{mode}"' in page
 
 
 def test_persistent_chrome_never_depends_on_a_fetch(page):
-    """Stamp, posture console and close line are baked — the honesty layer
-    must never flash empty while a payload is in flight."""
-    for marker in ("oew-stampblock", "oew-console", "oew-closeline", "oew-nofuse"):
-        assert marker in page, marker
+    """Session identity and the expandable source receipt are baked inline."""
+    header = re.search(r'<header class="oew-chrome">(.*?)</header>', page, re.S)
+    assert header
+    for marker in ("oew-session", 'id="oew-sources"', "oew-console-grid",
+                   "oew-source-grid", "oew-nofuse"):
+        assert marker in header.group(1), marker
+    assert header.group(1).count('class="oew-read"') == 4
+    assert "2026-07-24" in header.group(1)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -415,26 +426,33 @@ def test_no_translated_text_in_title_attributes(page):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# The close line — the signature carries the honesty fact
+# Scanner coverage — the exact fraction stays attached to its own snapshot
 # ─────────────────────────────────────────────────────────────────────────────
-def test_close_line_fill_is_exactly_the_coverage_share(page):
-    """3 of 4 synthetic rows are dated to the latest close -> 75.0%, exactly.
-    No floor, no minimum, no threshold colour change, no 'looks better' rounding."""
+def test_scanner_coverage_retains_its_exact_fraction_and_source_date(page):
+    """3 of 4 rows belong to the scanner's latest snapshot, not a global grade."""
     ctx = build_context(REPO, _stores())
     assert ctx["session"]["covered"] == 3
     assert ctx["session"]["universe"] == 4
     assert ctx["session"]["coverage_pct"] == 75.0
-    assert 'style="--oew-cov:75.0%"' in page
+    receipt = re.search(r'<p class="oew-source-note">(.*?)</p>', page, re.S)
+    assert receipt
+    text = _visible_text(receipt.group(1))
+    assert "3/4" in text and "2026-07-24" in text
+    assert "Coverage belongs to that scanner snapshot" in text
+    assert "覆盖数对应该筛选快照" in text
 
 
-def test_unknown_coverage_renders_empty_not_full():
-    """A missing coverage number must NOT paint a complete line."""
+def test_unknown_coverage_renders_unknown_not_complete():
+    """Missing source coverage must not become zero or a complete-market claim."""
     page = render(REPO, dict(EMPTY_STORES))
-    assert 'style="--oew-cov:0%"' in page
-    assert "--oew-cov:100%" not in page
+    receipt = re.search(r'<p class="oew-source-note">(.*?)</p>', page, re.S)
+    assert receipt
+    text = _visible_text(receipt.group(1))
+    assert "—/—" in text
+    assert "100%" not in text and "0/0" not in text
 
 
-def test_stale_rows_are_the_close_line_remainder():
+def test_stale_rows_remain_in_the_coverage_denominator():
     """The one 2026-06-22 row is excluded from `covered` but stays in `universe`."""
     ctx = build_context(REPO, _stores())
     assert ctx["session"]["universe"] - ctx["session"]["covered"] == 1
@@ -577,6 +595,107 @@ def test_index_row_covers_the_four_pinned_products(page):
         assert ix["head_zh"] == "剧烈 — 波动被放大"
         assert ix["stance"] == "protect"      # follows the regime word 1:1
         assert "below the flip" in ix["line_en"]
+
+
+@pytest.mark.parametrize("values, absent, order", [
+    ((None, None, None, None), {"spot", "floor", "flip", "ceiling"}, ()),
+    ((105, None, 100, 110), {"floor"}, ("flip", "spot", "ceiling")),
+    ((float("inf"), 90, float("-inf"), 110), {"spot", "flip"}, ("floor", "ceiling")),
+    ((100, 100, 100, 100), set(), ()),
+    ((120, 90, 100, 110), set(), ("floor", "flip", "ceiling", "spot")),
+], ids=["all-missing", "partial", "nonfinite", "coincident", "close-beyond-wall"])
+def test_index_level_diagram_preserves_missing_values_and_price_order(values, absent, order):
+    """Geometry stays usable without clipping an outlying close or inventing levels."""
+    stores = _stores()
+    stores["gex"]["SPY"]["summary"].update(zip(
+        ("spot", "put_wall", "gamma_flip", "call_wall"), values))
+    card = next(row for row in build_context(REPO, stores)["indexes"] if row["sym"] == "SPY")
+    track = card["track"]
+    if len(absent) == 4:
+        assert track is None
+        return
+    assert {key for key, value in track.items() if value is None} == absent
+    coordinates = [value for value in track.values() if value is not None]
+    assert all(math.isfinite(value) and 0 < value < 100 for value in coordinates)
+    assert all(track[left] < track[right] for left, right in zip(order, order[1:]))
+    if values == (100, 100, 100, 100):
+        assert len(set(coordinates)) == 1, "equal prices must share one position"
+
+
+def test_leaders_rebuild_clock_cannot_replace_a_missing_source_session():
+    stores = _stores()
+    del stores["leaders"]["session_date"]
+    stores["leaders"].update(as_of="2026-11-02T03:00:00+00:00", built="2026-11-02T03:10:00+00:00")
+    context = build_context(REPO, stores)
+    session = context["session"]
+    primary = next(row for row in session["sources"] if row["key"] == "leaders")
+    coverage = next(row for row in session["coverage_v1"]["sources"] if row["key"] == "leaders")
+    assert primary["source_session"] is None and primary["status"] == "unavailable"
+    assert coverage["asof"] is None
+    assert context["rail"]["asof"] is None
+
+
+def test_mixed_index_dates_keep_their_own_visible_session_labels():
+    stores = _stores()
+    for payload in stores["gex"].values():
+        payload["meta"]["asof"] = "2026-07-24"
+    stores["gex"]["SPY"]["meta"]["asof"] = "2026-07-23"
+    stores["gex"]["QQQ"]["meta"]["asof"] = None
+    context = build_context(REPO, stores)
+    assert context["session"]["mixed_dates"] is True
+    page = render(REPO, stores)
+    section = page[page.index('id="oew-index-structure"'):page.index('id="oew-history"')]
+    dates = dict(re.findall(
+        r'data-goto="(SPX|SPY|QQQ|IWM)".*?<div class="oew-ic-date">(.*?)</div>', section, re.S))
+    assert set(dates) == set(INDEX_KEYS)
+    assert "2026-07-24" in dates["SPX"] and "Selected session" in dates["SPX"]
+    assert "2026-07-23" in dates["SPY"] and "Earlier session" in dates["SPY"]
+    assert "Date unavailable" in dates["QQQ"]
+    assert "Selected session" not in dates["SPY"] + dates["QQQ"]
+    assert "Sources have different dates" in _visible_text(_workspace(page))
+
+
+def test_tape_and_dealer_changes_keep_distinct_producing_sessions():
+    stores = _stores()
+    stores["market_structure"]["asof"] = "2026-07-23"
+    stores["market_structure"]["state_changes"]["vs_asof"] = "2026-07-22"
+    context = build_context(REPO, stores)
+    dates = {chip["en"]: chip["asof"] for chip in context["changed"]["chips"]}
+    assert dates["Tape got heavier"] == "2026-07-24"
+    assert dates["Dealers now amplify moves"] == "2026-07-23"
+    assert context["brief_context_current"] is False
+    page = render(REPO, stores)
+    chips = re.findall(
+        r'<span class="oew-chg"[^>]*>.*?<time class="mono oew-change-date">.*?</time></span>', page, re.S)
+    assert len(chips) == 2
+    for label, day in dates.items():
+        fragment = next(chip for chip in chips if label in chip)
+        assert re.search(r'<time class="mono oew-change-date">' + day + r'</time>', fragment)
+
+
+def test_payoff_fold_discloses_both_pricing_and_dealer_sessions():
+    stores = _stores()
+    stores["gex"]["SPY"]["meta"]["asof"] = "2026-07-24"
+    payoff = {
+        "asof": "2026-07-23", "ledger_asof": "2026-07-23",
+        "roots": [{"root": "SPY", "expiration": "2026-08-21", "spot": 740,
+                   "structures": [{"name": "atm_straddle",
+                                   "summary": {"cost": 2000, "breakevens": [720, 760]},
+                                   "expiry_payoff": {"max_gain": "UNBOUNDED", "max_loss": -2000}}]}],
+    }
+    context = build_context(REPO, stores, payoff_lab=payoff)
+    lab = context["payoff_lab"]["SPY"]
+    assert lab["source_session"] == "2026-07-23"
+    assert lab["dealer_session"] == "2026-07-24"
+    page = render(REPO, stores, payoff_lab=payoff)
+    fold = re.search(r'<details class="oew-aib-detail oew-lab"[^>]*>(.*?)</details>', page, re.S)
+    assert fold, "the advanced payoff view must remain available"
+    receipt = re.search(r'<p class="oew-lab-foot">(.*?)</p>', fold.group(1), re.S)
+    assert receipt
+    assert re.findall(r'<time class="mono">([^<]+)</time>', receipt.group(1)) == ["2026-07-23", "2026-07-24"]
+    for label in ("Structure prices", "结构定价", "Dealer levels", "做市商价位",
+                  "Different source sessions", "数据来源场次不同"):
+        assert label in receipt.group(1), label
 
 
 def test_sector_bars_share_one_scale():
@@ -988,20 +1107,20 @@ def test_chrome_caveats_keep_the_sentence_and_drop_the_chip(page):
     """The two pre-existing chrome spots state their caveat and cast no second verdict.
 
     Both duplicated the read's decision element: `.oew-nofuse` rides the persistent
-    header, so its chip repeated on all four mode tabs, and "Today's measured flow"
+    header, so its chip repeated on all five mode tabs, and "Measured options flow"
     sits below the name header that already carries the marker.  The SENTENCES are
     the valuable half — they survive verbatim in both languages, with the as-of stamp
     where there is one.  (Follow-up flagged by `W1_DESIGN_SPEC.md` §0.13.)
     """
-    nofuse = re.search(r'<div class="oew-nofuse">(.*?)</div>', page, re.S)
+    nofuse = re.search(r'<p class="oew-nofuse">(.*?)</p>', page, re.S)
     assert nofuse, "the non-fusion banner is gone"
     banner = nofuse.group(1)
     assert "oew-stance" not in banner, "non-fusion banner still ships a stance chip"
-    assert "Four readings, shown side by side and never averaged into one score." in banner
-    assert "四项读数并列呈现，不会合成单一评分。" in banner
+    assert "Four independent readings, never averaged into one score." in banner
+    assert "四项独立读数，不会合成单一评分。" in banner
 
-    # "Today's measured flow" is JS-built, so assert against the script source.
-    flow = re.search(r"Today’s measured flow(.*?)oew-shelf", page, re.S)
+    # The independently dated measured-flow panel is JS-built.
+    flow = re.search(r"Measured options flow(.*?)oew-shelf", page, re.S)
     assert flow, "the measured-flow panel is gone"
     seg = flow.group(1)
     assert "oew-stance" not in seg, "measured-flow footer still ships a stance chip"
@@ -1168,7 +1287,7 @@ var document = { querySelectorAll: function(){ return []; },
                   getElementById: function(){ return null; },
                   addEventListener: function(){} };
 var location = { hash: '', search: '' };
-var history = { replaceState: function(){} };
+var history = { replaceState: function(){}, pushState: function(){} };
 var fetch = function(){ return Promise.reject(new Error('fetch disabled in test')); };
 // OIP W1: window.OEW_TICKER_MANIFEST / window.OEW_DEFAULT_TICKER are the
 // workspace's render-time data script — its own inline <script> tag, ahead of
@@ -1737,10 +1856,16 @@ def test_search_behavior_end_to_end():
         add: (c) => { this._classes[c] = true; },
         remove: (c) => { delete this._classes[c]; },
         contains: (c) => !!this._classes[c],
+        toggle: (c, force) => {
+          var on = force === undefined ? !this._classes[c] : !!force;
+          if(on) this._classes[c] = true; else delete this._classes[c];
+          return on;
+        },
       };
     }
     FakeEl.prototype.addEventListener = function(t, fn){ (this._listeners[t] = this._listeners[t] || []).push(fn); };
     FakeEl.prototype.setAttribute = function(k, v){ this._attrs[k] = String(v); };
+    FakeEl.prototype.removeAttribute = function(k){ delete this._attrs[k]; };
     FakeEl.prototype.getAttribute = function(k){ return this._attrs[k] === undefined ? null : this._attrs[k]; };
     FakeEl.prototype.fire = function(t, evt){ (this._listeners[t] || []).forEach((fn) => fn(evt || { preventDefault(){} })); };
     FakeEl.prototype.querySelectorAll = function(sel){ return sel === '.row' ? (this._rowEls || []) : []; };
@@ -1756,11 +1881,13 @@ def test_search_behavior_end_to_end():
     });
 
     var inp = new FakeEl('input'), sg = new FakeEl('div');
+    var tickerMode = new FakeEl('section'), tickerBody = new FakeEl('div');
     var docStub = {
       getElementById(id){
         if (id === 'oew-tk-q') return inp;
         if (id === 'oew-tk-sugg') return sg;
-        if (id === 'mode-ticker') return { classList: { contains: () => true, toggle: () => {} } };
+        if (id === 'mode-ticker') return tickerMode;
+        if (id === 'oew-tk-body') return tickerBody;
         return null;
       },
       querySelectorAll(){ return []; },
@@ -1769,7 +1896,10 @@ def test_search_behavior_end_to_end():
     };
     document = docStub;
     var histCalls = [];
-    history = { replaceState(a, b, c){ histCalls.push(c); } };
+    history = {
+      replaceState(a, b, c){ histCalls.push(c); location.hash = c; },
+      pushState(a, b, c){ histCalls.push(c); location.hash = c; }
+    };
 
     """ + _extract_workspace_script(page) + """
     var results = {};
@@ -2381,14 +2511,14 @@ def test_flow_mode_ships_an_empty_shell_and_fetches_lazily(page):
     assert ('<section class="oew-mode" id="mode-flow" role="tabpanel" '
             'aria-labelledby="tab-flow"></section>') in page
     assert "getJSON('flow_desk.json')" in page
-    assert "getJSON('flowdata/cohorts.json')" in page
+    assert re.search(r"(?:getJSON|optional)\('flowdata/cohorts\.json'(?:,|\))", page)
     # the skeleton copy is pinned, and the loader routes through it
     assert "Loading the flow desk for this close…" in page
     assert "正在加载本次收盘的资金流台…" in page
     # exactly one fetch per store, and NOTHING inlined: an object literal for
     # either payload in the page would be the manifest-weight regression again
     assert page.count("getJSON('flow_desk.json')") == 1
-    assert page.count("getJSON('flowdata/cohorts.json')") == 1
+    assert len(re.findall(r"(?:getJSON|optional)\('flowdata/cohorts\.json'(?:,|\))", page)) == 1
     assert "sector_heatmap:" not in page, "the sector rows must not be baked into the page"
     assert "market_tide:" not in page, "the tide series must not be baked into the page"
 
@@ -2729,9 +2859,16 @@ def test_terminal_ctas_route_through_the_house_helper(page):
     # theme.js defines the helper and is the LAST body script, so the Brief's
     # static CTA can only be re-pointed once the document is parsed
     assert "document.addEventListener('DOMContentLoaded', wireBriefCta)" in page
-    # the positioning sentence rides both handoffs
-    assert page.count("Same subscription, two clocks") == 2
-    assert page.count("同一订阅，两种时钟") == 2
+    # Both handoffs still explain the dated research / live Terminal split.
+    # The Brief now uses shorter copy rather than repeating the old paragraph.
+    brief = _workspace(page)
+    assert "For live tape, replay, and alerts, open the Terminal." in brief
+    assert "This workspace retains the dated end-of-day research." in brief
+    assert "实时逐笔、回放及提醒请使用交易终端" in brief
+    assert "本工作台保留注明日期的收盘研究" in brief
+    assert 'id="oew-brief-cta" href="https://app.mastermind-x.com/terminal"' in brief
+    assert "Same subscription, two clocks" in page
+    assert "同一订阅，两种时钟" in page
 
 
 @_needs_node
@@ -2935,7 +3072,7 @@ def test_flow_canvases_repaint_on_reactivation_and_themechange(page):
     added: re-entering a loaded Flow repaints, and themechange repaints —
     execution of the draw path itself is covered by
     test_direction_tokens_bind_to_the_sign_not_just_appear."""
-    assert "if(mode === 'flow' && !need) { flDrawSpark(); flDrawUnfold(); }" in page
+    assert re.search(r"if\(mode === 'flow' && !need\)\s*\{\s*flDrawSpark\(\);\s*flDrawUnfold\(\);\s*\}", page)
     assert "document.addEventListener('themechange'" in page
     # premium preset re-arms its ordering (MA-1) — the chip is a sort, not a filter
     assert "if(scPreset === 'premium') scSort = scSortDefault();" in page
@@ -2951,7 +3088,8 @@ def test_workspace_reads_the_gex_stubs_search_param_contract(page):
     asserts the workspace fetches the carried symbol, not the default."""
     driver = """
     function el(){ return { innerHTML: '', classList: { toggle: function(){} },
-                            setAttribute: function(){}, addEventListener: function(){} }; }
+                            setAttribute: function(){}, removeAttribute: function(){},
+                            addEventListener: function(){} }; }
     var els = {};
     var document = { querySelectorAll: function(){ return []; },
                      getElementById: function(id){
@@ -2960,7 +3098,7 @@ def test_workspace_reads_the_gex_stubs_search_param_contract(page):
                      },
                      addEventListener: function(){} };
     var location = { hash: '#ticker', search: '?t=NVDA' };
-    var history = { replaceState: function(){} };
+    var history = { replaceState: function(){}, pushState: function(){} };
     var fetched = [];
     var fetch = function(url){ fetched.push(String(url)); return Promise.reject(new Error('no net in test')); };
     var window = { addEventListener: function(){} };

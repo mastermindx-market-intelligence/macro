@@ -11,7 +11,7 @@ Protected procedure: Mastermind@19cb00cfed26b68f0a8a5cdc0f2f1a9463a3feec.
 Reference files: reference.html.j2 + reference.css, rendered by render_reference.py in this directory.
 The supporting reference contains captured examples and explicitly illustrative failure views. Never transplant its fixtures or placeholder actions into production.
 Paper target: MASTERMIND PAGES / 01M2WGNCX9475G79JRKJTCM08P.
-Paper write gate: live catalog 16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd is unreviewed; accepted catalog 1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db. No content mutation has been attempted. Source work is useful supporting work, not a substitute claimed as Paper.
+Paper write gate: live catalog 16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd has passed independent review in Mastermind #1925 and is awaiting protected integration/runtime qualification; accepted catalog 1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db. No content mutation has been attempted. Source work is useful supporting work, not a substitute claimed as Paper.
 No compliant=true, accepted-reference receipt, merge, deployment, or completion claim before actual Paper, independent reference integrity review, exact-source checks, and real-path proof.
 
 ## Evidence corrections that govern implementation
@@ -97,3 +97,7 @@ Actual main.ref captures were inspected at desktop light EN and 390 dark ZH. Thi
 Live Leaders showed 2026-11-02 while the baked receipt said 2026-08-12. Source inspection proves templates/options.html.j2 renderLeaders uses L.as_of; scripts/build_flow_leaders.py explicitly documents as_of as the BUILD wall clock and provides session_date for the underlying research session. Use session_date as the research clock; missing session_date is unknown, never substitute the build clock. A build timestamp may remain separately labelled in a receipt. Do not change the producer or restamp records. Independent synthetic acceptance deliberately sets these clocks apart. The frozen child packet preceded this observed defect; principal must adjudicate this against the implementation return before acceptance.
 
 Scanner age labels must state their basis: ageCell currently compares a row to the newest scanner-row date. A zero lag in an old snapshot is not the latest market close; an absent/invalid row date is unknown, never zero-day fresh. Preserve the existing numeric convention where valid, label calendar lag versus scanner snapshot, and expose each actual date. The independent published fixture confirms the live snapshot is August 13 while its newest-row tooltip claims latest close.
+
+
+## Principal implementation checkpoint — 2026-11-02
+The full production template and display builder now implement this composition with all five tasks retained. See VERIFICATION.md for 199 source tests, 26 browser interaction checks, and the 40-view actual-data matrix. Paper remains NOT_APPLIED_TO_PAPER until the original C1 direct runtime admits the reviewed catalog and the editable Options boards are actually created. The working HTML/CSS and reference are supporting implementation evidence, not a fabricated Paper export.
