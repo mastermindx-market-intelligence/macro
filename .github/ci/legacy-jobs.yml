@@ -7187,6 +7187,7 @@ jobs:
       - "scripts/build_sector_cycles.py"
       - "scripts/validate_regime_fwd.py"
       - "templates/country_cycles.html.j2"
+      - "templates/sector_cycles.css"
       - "templates/sector_cycles.html.j2"
       - "templates/sector_cycles.js"
       - "templates/sector_cycles_china.html.j2"
