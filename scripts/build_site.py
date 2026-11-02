@@ -29,6 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from collectors.sponsors import flows_table  # noqa: E402
 from engine.i18n import prettify as _prettify, t as T  # noqa: E402
 from engine.inputs import build_features  # noqa: E402
+from engine.prophet_source_epochs import read_source_epochs  # noqa: E402
 from engine.market_gamma import view as market_gamma_view  # noqa: E402 — SHARED deriver: FE banner + contract (engine/run.py) call the SAME function so they can't drift
 # P-MP1-SHELL §8a (MP-1-prophet-board.md, b1 ruling): the SAME Q7 bucket table
 # engine/us_board_rank.py already ships for the entry/actionability axis — imported
@@ -5605,17 +5606,24 @@ def _us_board_row_flat(n: dict) -> dict:
     }
 
 
-def _read_us_prophet_book(path: Path) -> "tuple[dict | None, bool]":
+def _read_us_prophet_book(
+    path: Path, *, source_capture: "dict | None" = None,
+) -> "tuple[dict | None, bool]":
     """Admit the published book before its stock-route consumers use it.
 
     A missing file retains the existing loading state. An unreadable collection
     uses the existing error state, rather than masquerading as an empty book.
     Valid books pass through unchanged, including published order and totals.
+    The optional private capture binds the displayed book to the SAME raw read;
+    missing or rejected books leave no admitted bytes in the capture.
     """
+    if source_capture is not None:
+        source_capture.clear()
     if not path.exists():
         return None, False
     try:
-        book = json.loads(path.read_text())
+        source_bytes = path.read_bytes()
+        book = json.loads(source_bytes.decode("utf-8"))
         if not isinstance(book, dict):
             raise ValueError("plan book must be an object")
         counts = book.get("lifecycle_counts")
@@ -5641,6 +5649,8 @@ def _read_us_prophet_book(path: Path) -> "tuple[dict | None, bool]":
             # Existing lifecycle labels use this value as a dictionary key.
             # Preserve hashable historical values; reject collection values.
             hash(plan.get("lifecycle_state"))
+        if source_capture is not None:
+            source_capture["raw"] = source_bytes
         return book, False
     except Exception as exc:  # noqa: BLE001 — unreadable books never stop the build
         log.warning("prophet/index.json unreadable (%s)", exc)
@@ -5743,6 +5753,7 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
                        top_setups: "dict | None", built: str,
                        today_rows: "list[dict] | None" = None,
                        today_source_binding: "dict | None" = None,
+                       source_epochs: "dict | None" = None,
                        pgate: "dict | None" = None,
                        panel_blocks: "dict | None" = None,
                        life_gate: "dict | None" = None,
@@ -5926,6 +5937,9 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
         plan_cards_html = ""
     payload["life_gate"] = life_gate
     payload["plan_cards_html"] = plan_cards_html
+    # Same reader metadata as the shell, before any paid rows can hydrate.
+    # This is a source-identity fence, never a four-family settlement receipt.
+    payload["source_epochs"] = source_epochs
     path.write_text(json.dumps(payload), encoding="utf-8")
     log.info("us_stocks: premium payload %s (%d locked board rows, %d locked plans, %d locked panels)",
               US_PAYLOAD_URL, len(locked_rows), len(locked_plans),
@@ -6633,8 +6647,12 @@ def main() -> int:
     #     (§10's ".mx-error" state, names what failed, offers Retry).
     # Both leave us_prophet_book None; only the flag differs, and only the
     # flag decides which of the two non-live states the ladder renders.
+    _us_prophet_source_capture: dict = {}
     us_prophet_book, us_prophet_book_error = _read_us_prophet_book(
-        site / "prophet" / "index.json")
+        site / "prophet" / "index.json", source_capture=_us_prophet_source_capture)
+    us_prophet_source_epochs = read_source_epochs(
+        board_bytes=_us_source_bytes,
+        index_bytes=_us_prophet_source_capture.get("raw"), data_dir=config.data_dir())
 
     # P1 — read the incumbent leader-pullback coverage independently of Candidates and
     # Plans. The full roster exists only in this in-memory view and the existing protected
@@ -7493,6 +7511,7 @@ def main() -> int:
         us_today_native_binding=_us_today_native,
         us_candidate_visibility=us_candidate_visibility,
         us_prophet_book=us_prophet_book,
+        us_prophet_source_epochs=us_prophet_source_epochs,
         us_leader_observations=us_leader_observations,
         us_prophet_refusals=us_prophet_refusals,
         theme_tape=theme_tape,
@@ -7849,6 +7868,7 @@ def main() -> int:
                        top_setups=vm.get("top_setups"), built=generated,
                        today_rows=_us_today_featured,
                        today_source_binding=vm.get("us_today_source_binding"),
+                       source_epochs=vm.get("us_prophet_source_epochs"),
                        pgate=_us_pgate,
                        panel_blocks=_render_us_panel_payload(
                                        env, _us_pgate, _us_plocked, vm,
@@ -8186,6 +8206,12 @@ def main() -> int:
         try:
             _us_path = site / "factordata" / "us_standouts.json"
             _fresh_source_bytes = _us_path.read_bytes() if _us_path.exists() else None
+            # Board publishers may advance independently; retain the exact index
+            # bytes that admitted the displayed plan book in the first pass.
+            _fresh_source_epochs = read_source_epochs(
+                board_bytes=_fresh_source_bytes,
+                index_bytes=_us_prophet_source_capture.get("raw"),
+                data_dir=config.data_dir())
             _fresh_w3c = None
             _fresh_w3c_refusal = None
             _fresh_w3c_binding = None
@@ -8248,10 +8274,12 @@ def main() -> int:
                     # Same-session source/reason/explanation corrections cannot pair
                     # the fresh board with an older first-pass internal context.
                     or _fresh_w3c_binding != _us_w3c_binding
+                    or _fresh_source_epochs != vm.get("us_prophet_source_epochs")
                     or _fresh_w3c != vm.get("us_selection_cohort_internal")
                     # A same-session native binding change (availability or value)
                     # must not pair a fresh source with older Today metadata.
                     or _fresh_today_native != vm.get("us_today_native_binding")):
+                vm["us_prophet_source_epochs"] = _fresh_source_epochs
                 vm["us_selection_cohort_internal"] = _fresh_w3c
                 _us_w3c_binding = _fresh_w3c_binding
                 _us_w3c_refusal = _fresh_w3c_refusal
@@ -8346,6 +8374,7 @@ def main() -> int:
                                    top_setups=vm.get("top_setups"), built=generated,
                                    today_rows=_us_today_featured2,
                                    today_source_binding=vm.get("us_today_source_binding"),
+                                   source_epochs=vm.get("us_prophet_source_epochs"),
                                    pgate=_us_pgate2,
                                    panel_blocks=_render_us_panel_payload(
                                        env, _us_pgate2, _us_plocked2, vm,

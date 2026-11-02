@@ -124,16 +124,44 @@ Independent reviewer must not author implementation. Bind review to exact PR hea
 source base, diff, tests, browser evidence and all forbidden effects.
 Post the actual independent verdict with run/reviewer provenance; do not self-approve.
 
-Tasks: E1 complete; E2 design decided / implementation pending; E3 pending;
-E4 pending. These are editorial task labels, not Runtime Job states.
+Tasks: E1 complete; E2 implemented and pre-audit adjudicated; E3 selected local
+checks green (545 passed, 2 skipped, 5 deselected) and preliminary browser 8-cell /
+5-refusal matrix passed; final immutable-commit browser receipt next; E4 PR/CI and
+final independent non-author review pending. These are editorial task labels,
+not Runtime Job states.
+
+Current main was reconciled at b394a98baf2d4a695fb05a276d72dd739fd7eb72.
+Among the specified source surfaces only .github/ci/legacy-jobs.yml changed,
+through unrelated additions outside the modified board-test step. The reader,
+template and producer source used for the design remain unchanged.
 
 ## Recoverable frontier
 
-Last confirmed effects: isolated workspace acquisition; no source implementation
-or test result yet. The plan/census commit is the first source checkpoint.
-No unresolved modifying effect. Next action after verified GitHub readback:
-dispatch a bounded Fabric implementation leaf and a separate read-only contract
-audit, then integrate the reader, obtain proof, open the held PR, and finish CI/review.
+Initial plan/census published at 6343a18748e4ce2bed5a34b2e015acdb39a5d7a7 and
+read back through GitHub. The installed typed Studio Git wrapper was unsupported
+for Macro: its legacy Mastermind-only workspace lookup failed before any effect.
+Exact repository-qualified workspace status succeeded. Ordinary Git in the same
+acquired Macro workspace committed/pushed successfully, preserving hooks and
+configuration; no gateway/security settings changed.
+
+Original Fabric requests completed and were accepted after parent verification:
+- helper: prophet-epoch-helper-20261102-01, controller PID 96833;
+- audit: prophet-epoch-audit-20261102-01, controller PID 98322.
+
+Both terminal results have verified root linkage. No retry, alternate carrier,
+cancellation or duplicate labor occurred. Their exact response digests and the
+adopted/declined audit findings are in FABRIC_ADJUDICATION.md.
+
+The implementation captures first/fresh reader identity, fences the existing
+paid payload, and discloses the index used by this page. The immutable pickup-tree
+projector proof is SEPARATE_EPOCHS/PENDING with a verified frozen source. Focused
+regressions, existing consumer checks and preliminary actual browser proof pass;
+see VERIFICATION.md for commands and honest exclusions. Agent OS validates with
+zero errors (unrelated existing warnings).
+
+Next: commit the candidate, record the browser matrix against that immutable
+source, open the held PR, and finish green CI plus the exact-head independent
+non-author review. No deployment or served-production acceptance is claimed.
 
 Milestones stay in Slack C0CBC6AEAQZ thread 1793583933.705299, mentioning
 <@U0BTCHX8HMF>; never DM. GitHub remains implementation/evidence authority.

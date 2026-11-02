@@ -30525,6 +30525,7 @@ jobs:
         run: >-
           python -m pytest tests/test_us_today_source_binding.py
           tests/test_us_board_gate.py tests/test_us_board_hydration_merge.py
+          tests/test_prophet_source_epochs.py tests/test_prophet_source_epochs_reader.py
           -q -k "not test_shipped"
         # The nightly recorded nothing for nine days (2026-07-31..08-06) while the step
         # concluded `success`; these pin that the alarms fire, name the cause, and stay

@@ -417,6 +417,24 @@ def _native_source(rows):
     return today_selection_source_binding(raw), raw
 
 
+def _bind_reader_epochs(vm, raw):
+    """Hold the independent reader fence valid while testing Today admission."""
+    from hashlib import sha256
+    from engine.prophet_source_epochs import project_source_epochs
+    day = json.loads(raw)["as_of"]
+    digest = sha256(raw).hexdigest()
+    book = {**vm["us_prophet_book"], "asof": day, "source_asof": day,
+            "source_board_asof": day, "source_board_sha256": digest,
+            "source_board_snapshot_path": f"data/prophet/origination_sources/{digest}.json.gz",
+            "source_board_snapshot_encoding": "gzip"}
+    vm["us_prophet_book"] = book
+    epochs = project_source_epochs(
+        board_bytes=raw, index_bytes=json.dumps(book).encode(), snapshot_bytes=raw)
+    assert epochs["relation"] == "SAME_SOURCE"
+    vm["us_prophet_source_epochs"] = epochs
+    return epochs
+
+
 def _bound(row, position, binding):
     return {**row, "_today_selection_index": position,
             "_today_row_receipt": binding["ordered_rows"][position]["row_receipt"]}
@@ -471,6 +489,7 @@ def loader_scene():
                     "preview": 2, "total": 3, "locked": 1,
                     "stage_counts": {"live": 3}}, pgate=None, life_gate=None,
               us_today_source_binding=binding)
+    epochs = _bind_reader_epochs(vm, _raw)
     env = _env()
     env.autoescape = True
     page = env.get_template("dashboard.html.j2").render(**vm, mode="stocks")
@@ -494,6 +513,7 @@ def loader_scene():
                         "today_cards_html": cards, "today_preview": 3,
                         "today_total": 3,
                         "today_rows_meta": _meta(binding, [0, 1, 2]),
+                        "source_epochs": epochs,
                         "today_source_binding": binding,
                         "rows": copy.deepcopy(rows[2:])}}
 
@@ -511,6 +531,7 @@ def _ungated_scene():
               pgate=None, life_gate=None,
               us_today_native_emit=PAYLOAD_URL,
               us_today_source_binding=binding)
+    epochs = _bind_reader_epochs(vm, _raw)
     env = _env()
     env.autoescape = True
     page = env.get_template("dashboard.html.j2").render(**vm, mode="stocks")
@@ -527,6 +548,7 @@ def _ungated_scene():
                         "cards_html": "", "rows": [],
                         "today_cards_html": "", "today_preview": 0,
                         "today_total": 0, "today_rows_meta": [],
+                        "source_epochs": epochs,
                         "today_source_binding": binding}}
 
 
@@ -963,6 +985,7 @@ def _empty_shelf_scene():
               pgate=None, life_gate=None,
               us_today_native_emit=PAYLOAD_URL,
               us_today_source_binding=binding)
+    epochs = _bind_reader_epochs(vm, _raw)
     env = _env()
     env.autoescape = True
     page = env.get_template("dashboard.html.j2").render(**vm, mode="stocks")
@@ -984,6 +1007,7 @@ def _empty_shelf_scene():
                         "cards_html": "", "rows": [],
                         "today_cards_html": "", "today_preview": 0,
                         "today_total": 0, "today_rows_meta": [],
+                        "source_epochs": epochs,
                         "today_source_binding": binding}}
 
 

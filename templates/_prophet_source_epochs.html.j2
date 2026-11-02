@@ -1,0 +1,44 @@
+{# Reader metadata only: no plan, candidate, score or entitlement data. #}
+{%- set _epochs = us_prophet_source_epochs | default(none) or {} -%}
+{%- set _epoch_relation = _epochs.get('relation', 'UNAVAILABLE') -%}
+{%- set _epoch_board = _epochs.get('current_board') or {} -%}
+{%- set _epoch_index = _epochs.get('index') or {} -%}
+{%- set _epoch_origin = _epochs.get('origination_board') or {} -%}
+<style>
+  .mx-source-epochs{margin:8px 0 18px;color:var(--text);font-size:13px;line-height:1.5;min-width:0}
+  .mx-source-epochs details{border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+  .mx-source-epochs summary{min-height:40px;padding:10px 12px;cursor:pointer;font-weight:600;box-sizing:border-box}
+  .mx-source-epochs summary:focus-visible{outline:2px solid var(--info);outline-offset:2px}
+  .mx-source-epochs .epoch-body{padding:0 12px 12px}
+  .mx-source-epochs p{margin:6px 0}
+  .mx-source-epochs .epoch-pending{color:var(--muted)}
+  .mx-source-epochs dl{display:grid;grid-template-columns:minmax(100px,1fr) minmax(0,3fr);gap:8px 12px;margin:12px 0 0}
+  .mx-source-epochs dt{font-weight:600}
+  .mx-source-epochs dd{margin:0;min-width:0}
+  .mx-source-epochs code{display:block;font-size:11px;overflow-wrap:anywhere;white-space:normal;color:var(--muted)}
+  .mx-source-epochs .epoch-refusal{padding:10px 12px;border-left:3px solid var(--warn);background:var(--surface-warn-subtle)}
+  @media(max-width:480px){.mx-source-epochs dl{grid-template-columns:1fr;gap:4px}.mx-source-epochs dd{margin-bottom:8px}}
+</style>
+<section class="mx-source-epochs" id="us-prophet-source-epochs"
+         data-source-relation="{{ _epoch_relation }}" data-settlement-status="PENDING">
+  <details>
+    <summary>
+      <span class="l-en">{% if _epoch_relation == 'SEPARATE_EPOCHS' %}Board and plans use separate source snapshots{% elif _epoch_relation == 'SAME_SOURCE' %}Board matches the frozen plan source{% else %}Source identity could not be verified{% endif %}</span>
+      <span class="l-zh">{% if _epoch_relation == 'SEPARATE_EPOCHS' %}榜单与计划采用不同的来源快照{% elif _epoch_relation == 'SAME_SOURCE' %}榜单与计划的冻结来源一致{% else %}无法验证来源身份{% endif %}</span>
+    </summary>
+    <div class="epoch-body">
+      <p><span class="l-en">{% if _epoch_relation == 'SEPARATE_EPOCHS' %}The board has a different source snapshot. Plans retain the origination source captured by their published index. Matching market dates do not establish matching source bytes.{% elif _epoch_relation == 'SAME_SOURCE' %}The board bytes match the verified origination snapshot bound to this plan index.{% else %}A required source or its exact binding is unavailable. The dated preview remains visible; additional rows are held until their source identities can be verified.{% endif %}</span><span class="l-zh">{% if _epoch_relation == 'SEPARATE_EPOCHS' %}榜单采用不同的来源快照。计划保留其已发布索引所绑定的初始来源。市场日期相同不代表来源内容完全一致。{% elif _epoch_relation == 'SAME_SOURCE' %}榜单字节与此计划索引绑定的、已验证的初始来源快照一致。{% else %}所需来源或其精确绑定不可用。带日期的预览仍然可见；在来源身份得到验证前，不加载其他记录。{% endif %}</span></p>
+      <p class="epoch-pending"><span class="l-en">Full publication verification: <strong>PENDING</strong>. This comparison covers the board, index and frozen origination source.</span><span class="l-zh">完整发布验证：<strong>PENDING（待确认）</strong>。此比较涵盖榜单、索引和冻结的初始来源。</span></p>
+      {% if generated_utc | default(none) %}<p class="epoch-pending"><span class="l-en">Page rendered {{ generated_utc }} UTC</span><span class="l-zh">页面生成于 {{ generated_utc }} UTC</span></p>{% endif %}
+      <dl>
+        <dt><span class="l-en">Board shown here</span><span class="l-zh">本页榜单</span></dt>
+        <dd data-epoch="board">{{ _epoch_board.get('source_asof') or '—' }}<code>{{ _epoch_board.get('sha256') or '—' }}</code></dd>
+        <dt><span class="l-en">Frozen plan source</span><span class="l-zh">计划冻结来源</span></dt>
+        <dd data-epoch="origination">{{ _epoch_origin.get('source_asof') or '—' }} · <span class="l-en">{{ 'snapshot verified' if _epoch_origin.get('snapshot_verified') else 'snapshot unverified' }}</span><span class="l-zh">{{ '快照已验证' if _epoch_origin.get('snapshot_verified') else '快照未验证' }}</span><code>{{ _epoch_origin.get('sha256') or '—' }}</code></dd>
+        <dt><span class="l-en">Index used by this page</span><span class="l-zh">本页采用的索引</span></dt>
+        <dd data-epoch="index"><span class="l-en">Source {{ _epoch_index.get('source_asof') or '—' }} · published {{ _epoch_index.get('asof') or '—' }}</span><span class="l-zh">来源 {{ _epoch_index.get('source_asof') or '—' }} · 发布 {{ _epoch_index.get('asof') or '—' }}</span><code>{{ _epoch_index.get('sha256') or '—' }}</code></dd>
+      </dl>
+    </div>
+  </details>
+  <p class="epoch-refusal" id="us-prophet-epoch-refusal" role="status" hidden><span class="l-en">Additional rows were held because their source identities could not be matched to this page. Reload to check the current publication.</span><span class="l-zh">其他记录的来源身份与此页面不匹配，因此暂不加载。请重新加载以检查当前发布内容。</span></p>
+</section>

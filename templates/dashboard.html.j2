@@ -17151,6 +17151,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {%- set _upb_source_day = _upb_board_asof if _upb_day and _upb_board_asof is string and _upb_board_asof|length == 10 and _upb_board_asof[4] == '-' and _upb_board_asof[7] == '-' and _upb_board_asof[0:4].isdigit() and _upb_board_asof[5:7].isdigit() and _upb_board_asof[8:10].isdigit() else none %}
       <p class="mx-book-clock" id="us-plan-book-asof" data-plan-book-asof="{{ _upb_day if _upb_day is string else '' }}" data-plan-book-published="{{ _upb_published_day if _upb_published_day is string else '' }}" data-plan-book-source-asof="{{ _upb_source_day if _upb_source_day is string else '' }}"><span class="l-en">{% if _upb_day %}Plan records as of {{ _upb_day }}{% if _upb_source_day %} · source board {{ _upb_source_day }}{% endif %}{% if _upb_published_day %} · published {{ _upb_published_day }}{% endif %}{% else %}Plan record date unavailable{% endif %}</span><span class="l-zh">{% if _upb_day %}计划记录截至 {{ _upb_day }}{% if _upb_source_day %} · 来源榜单 {{ _upb_source_day }}{% endif %}{% if _upb_published_day %} · 发布于 {{ _upb_published_day }}{% endif %}{% else %}计划记录日期不可用{% endif %}</span></p>
       {%- if _upb and not _upb_err %}
+      {% include "_prophet_source_epochs.html.j2" %}
       {%- if not _upb.get('plans') %}
       {#- Repair round, finding S4: theme.css:1983-1988 states the law —
          ".mx-empty-why is REQUIRED alongside .mx-empty". The line above was
@@ -21411,9 +21412,17 @@ if (document.readyState === 'loading') {
     }
   }
 
+  {% include "_prophet_source_epochs.js.j2" %}
+  var SOURCE_EPOCHS = {{ us_prophet_source_epochs | default(none) | tojson }};
+
   function hydrate(payload){
     if (!payload || payload.schema !== 'tier_payload.v1' || payload.page !== 'us_stocks'){
       throw new Error('invalid payload');
+    }
+    // Check both source epochs before ANY paid row, panel or table mutation.
+    if (!sourceEpochsMatch(SOURCE_EPOCHS, payload.source_epochs)){
+      sourceEpochsRefuse();
+      throw new Error('source epochs unavailable or different from page');
     }
     var admitted = hydratePanels(payload);
     /* P-MP1-SHELL §8b — the migrated Setups grid's own locked remainder.

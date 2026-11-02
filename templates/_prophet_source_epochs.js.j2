@@ -1,0 +1,35 @@
+/* Existing US payload admission only; this is not a settlement authority. */
+function sourceEpochsMatch(expected, actual){
+  function valid(value){
+    if (!value || value.schema !== 'prophet_source_epochs.v1' ||
+        value.settlement_status !== 'PENDING' ||
+        (value.relation !== 'SAME_SOURCE' && value.relation !== 'SEPARATE_EPOCHS')) return false;
+    var board = value.current_board, index = value.index, origin = value.origination_board;
+    var sha = /^[0-9a-f]{64}$/, day = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+    function pin(v){ return typeof v === 'string' && sha.test(v); }
+    function date(v){ return typeof v === 'string' && day.test(v); }
+    if (!board || !index || !origin || origin.snapshot_verified !== true ||
+        !pin(board.sha256) || !pin(index.sha256) || !pin(origin.sha256) ||
+        !date(board.source_asof) || !date(index.asof) ||
+        !date(index.source_asof) || !date(origin.source_asof)) return false;
+    return value.relation === (board.sha256 === origin.sha256 ? 'SAME_SOURCE' : 'SEPARATE_EPOCHS');
+  }
+  if (!valid(expected) || !valid(actual)) return false;
+  return expected.relation === actual.relation &&
+    expected.current_board.sha256 === actual.current_board.sha256 &&
+    expected.current_board.source_asof === actual.current_board.source_asof &&
+    expected.index.sha256 === actual.index.sha256 &&
+    expected.index.asof === actual.index.asof &&
+    expected.index.source_asof === actual.index.source_asof &&
+    expected.origination_board.sha256 === actual.origination_board.sha256 &&
+    expected.origination_board.source_asof === actual.origination_board.source_asof;
+}
+function sourceEpochsRefuse(){
+  var source = document.getElementById('us-prophet-source-epochs');
+  if (source){
+    source.setAttribute('data-hydration-state', 'unavailable');
+    source.setAttribute('data-settlement-status', 'PENDING');
+  }
+  var refusal = document.getElementById('us-prophet-epoch-refusal');
+  if (refusal) refusal.hidden = false;
+}
