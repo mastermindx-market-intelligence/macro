@@ -850,3 +850,100 @@ def test_function_calls_have_no_side_effects():
         veb.bridge_for_issuer(42)
         veb.classified_event_domain()
     assert veb.classified_event_domain() == snapshot, "closed map mutated"
+
+# P17.T27: the issuer panel must order source clocks as instants, not text.
+def _clock_event(event_id, timestamp, kind="Tender Offers", ticker="AAPL"):
+    return {
+        "id": event_id, "tickers": [ticker], "kind": kind, "ts": timestamp,
+        "links": {"source": "https://www.sec.gov/Archives/synthetic/" + event_id + ".htm"},
+        "source_ref": event_id,
+    }
+
+
+def _mock_clock_readers(monkeypatch, events, capital_events=()):
+    from engine.chronicle import spine
+    from engine.capital_structure import event_versions_io
+    monkeypatch.setattr(spine, "load_events_jsonl", lambda path: events)
+    monkeypatch.setattr(event_versions_io, "iter_classified_spine_events",
+                        lambda ticker: iter(capital_events))
+    monkeypatch.setattr(va, "issuer_guidance_hits", lambda ticker, **kwargs: [])
+
+
+@pytest.mark.parametrize("older,newer", [
+    ("2026-08-03T18:00:00+09:00", "2026-08-03T16:30:00Z"),
+    ("2026-08-04T00:30:00+09:00", "2026-08-03T12:00:00-07:00"),
+    ("2026-08-03T16:30:00Z", "2026-08-03T16:30:00.5Z"),
+])
+@pytest.mark.parametrize("reverse", [False, True])
+def test_issuer_event_selectors_use_instants(monkeypatch, older, newer, reverse):
+    from copy import deepcopy
+    events = [_clock_event("newer", newer),
+              _clock_event("older", older, "Restructuring")]
+    if reverse:
+        events.reverse()
+    original = deepcopy(events)
+    _mock_clock_readers(monkeypatch, events)
+    record, ok = va.latest_issuer_event_record("aapl")
+    assert ok and record["id"] == "newer"
+    assert record["ts"] == newer
+    assert va.latest_issuer_spine_event_class("AAPL") == "Tender Offers"
+    assert events == original
+
+
+@pytest.mark.parametrize("bad", ["unknown", "2026-99-99", "2026-08-03T19:00:00", "", None])
+def test_unqualified_event_clock_cannot_displace_dated_event(monkeypatch, bad):
+    _mock_clock_readers(monkeypatch, [
+        _clock_event("valid", "2026-08-03T16:30:00Z"),
+        _clock_event("invalid", bad, "Restructuring"),
+    ])
+    record, ok = va.latest_issuer_event_record("AAPL")
+    assert ok and record["id"] == "valid"
+    assert va.latest_issuer_spine_event_class("AAPL") == "Tender Offers"
+
+
+def test_event_date_only_compatibility_and_issuer_binding(monkeypatch):
+    day = _clock_event("date-only", None, "Restructuring")
+    day.pop("ts")
+    day["date"] = "2026-08-03"
+    _mock_clock_readers(monkeypatch, [
+        day, _clock_event("same-day-later", "2026-08-03T00:00:01Z"),
+        _clock_event("other-issuer", "2026-08-04T00:00:00Z", "Restructuring", "MSFT"),
+    ])
+    record, ok = va.latest_issuer_event_record("AAPL")
+    assert ok and record["id"] == "same-day-later"
+    _mock_clock_readers(monkeypatch, [day])
+    assert va.latest_issuer_event_record("AAPL") == (day, True)
+    assert va.latest_issuer_spine_event_class("AAPL") == "Restructuring"
+
+
+def test_equal_instants_preserve_each_selector_tie_contract(monkeypatch):
+    events = [_clock_event("a-first", "2026-08-03T16:00:00Z"),
+              _clock_event("z-last", "2026-08-04T01:00:00+09:00", "Restructuring")]
+    _mock_clock_readers(monkeypatch, events)
+    # Record selection is stable; class selection already uses event ID.
+    assert va.latest_issuer_event_record("AAPL") == (events[0], True)
+    assert va.latest_issuer_spine_event_class("AAPL") == "Restructuring"
+
+
+def test_controls_proposal_binds_to_latest_cross_spine_instant(monkeypatch):
+    chronicle = _clock_event("later-chronicle", "2026-08-03T16:30:00Z")
+    capital = {
+        "event_id": "earlier-capital", "issuer": {"ticker": "AAPL"},
+        "event": {"subtype": "registration_statement"},
+        "point_in_time": {"available_at": "2026-08-03T18:00:00+09:00"},
+        "filing": {"primary_document_url": "https://www.sec.gov/Archives/synthetic/earlier.htm",
+                   "accession": "synthetic-earlier"},
+    }
+    _mock_clock_readers(monkeypatch, [chronicle], [capital])
+    controls = va.controls_blob(vs.compute(_rows(), ticker="AAPL"), as_of="2026-08-04")
+    assert controls["latest_event_bridge"]["event_class"] == "Tender Offers"
+    proposal = controls["event_assumption_proposal"]
+    assert proposal["event"]["event_id"] == "later-chronicle"
+    assert proposal["event"]["source_refs"][0]["url"] == chronicle["links"]["source"]
+    assert proposal["assumption_name"] == "earnings_multiple"
+    assert proposal["tier"] == "research_display_only"
+    html = _render(controls)
+    assert chronicle["links"]["source"] in html
+    assert capital["filing"]["primary_document_url"] not in html
+    assert "not a number the company gave" in html
+    assert "并非公司给出的数字" in html

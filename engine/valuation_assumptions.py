@@ -29,7 +29,7 @@ import hashlib
 import json
 import logging
 import math
-from datetime import datetime
+from datetime import datetime, timezone
 
 from engine.valuation_scenario import MISSING_LABELS, SCENARIOS
 
@@ -656,6 +656,26 @@ def _bridge_for_issuer(event_class: object):
     return _veb.bridge_for_issuer(event_class)
 
 
+def _issuer_event_instant(value: object) -> datetime | None:
+    """Order source clocks by instant; legacy dates mean UTC day start.
+
+    Malformed clocks and timezone-less datetimes cannot establish ordering.
+    The source record and its original clock spelling remain unchanged.
+    """
+    if not isinstance(value, str):
+        return None
+    text = value.strip()
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+        if len(text) == 10 and text[4] == "-" and text[7] == "-":
+            return parsed.replace(tzinfo=timezone.utc)
+        if parsed.tzinfo is None:
+            return None
+        return parsed.astimezone(timezone.utc)
+    except (ValueError, OverflowError):
+        return None
+
+
 def latest_issuer_spine_event_class(ticker: object) -> str | None:
     """Read the latest non-null issuer class from the local event spines.
 
@@ -701,7 +721,10 @@ def _select_latest_classified_event_class(wanted: str) -> str | None:
         available = event.get("ts") or event.get("date")
         if not available:
             continue
-        key = (str(available), str(event.get("id") or ""))
+        instant = _issuer_event_instant(available)
+        if instant is None:
+            continue
+        key = (instant, str(event.get("id") or ""))
         if latest_key is None or key > latest_key:
             latest_key = key
             latest_event = event
@@ -752,10 +775,15 @@ def latest_issuer_event_record(ticker: object) -> tuple[dict | None, bool]:
     except Exception as exc:
         log.warning("valuation: issuer event record lookup failed: %s", exc)
         return None, False
-    dated = [e for e in events if (e.get("ts") or e.get("date"))]
+    dated = []
+    for event in events:
+        instant = _issuer_event_instant(event.get("ts") or event.get("date"))
+        if instant is not None:
+            dated.append((instant, event))
     if not dated:
         return None, True
-    return max(dated, key=lambda e: str(e.get("ts") or e.get("date"))), True
+    # max preserves the original input order on equal instants.
+    return max(dated, key=lambda item: item[0])[1], True
 
 
 def issuer_guidance_hits(ticker: object, *, as_of: object = None) -> list[dict]:
