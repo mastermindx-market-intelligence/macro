@@ -5434,9 +5434,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_906),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_921),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_662),
+    ("templates/index.html", 137, 5_909),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_924),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_665),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6982,6 +6982,21 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5,919 -> 5,921, 5,660 -> 5,662; job-count ceilings, selectors and the
     ten-pack bound stay unchanged. Planning weights are not measured execution
     times.
+
+    Sector Intelligence P21 round 5 (2026-11-02, #9917 head c34dae8a62cd): the
+    contract-delta gate on the PR merge ref (ci run 41532187369, base main
+    90e0644f9f08) measured index 137 jobs / 5,909, free-content 137 jobs /
+    5,924 and plan-book 131 jobs / 5,665 on ten packs against the round-1
+    ceilings 5,906 / 5,921 / 5,662. The three units per probe are one
+    main-side job: ruling-graph, which rides all three probes, went from
+    weight 13 to 16 when its conflict-checker step became a pinned-base shell
+    script. The pre-merge branch tree still measures 5,906 / 5,921 / 5,662;
+    the merged trees with main 90e0644f9f08 and 68eebcdb1faa both measure
+    5,909 / 5,924 / 5,665 with job sets identical to the branch tree (no job
+    enters or leaves any probe). Fund exactly the measured values:
+    5,906 -> 5,909, 5,921 -> 5,924, 5,662 -> 5,665; job-count ceilings,
+    selectors and the ten-pack bound stay unchanged. Planning weights are not
+    measured execution times.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
