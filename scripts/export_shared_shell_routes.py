@@ -292,9 +292,19 @@ def main() -> int:
     problems = registry_owner.validate(registry)
     if problems:
         raise ValueError("invalid canonical registry: " + "; ".join(problems[:5]))
-    source_pin = ((registry.get("sources") or {}).get("macro") or {}).get("sha")
-    if not re.fullmatch(r"[0-9a-f]{40}", source_pin or ""):
-        raise ValueError("Macro source must be an immutable commit")
+    # The registry also serves partial diagnostic censuses. Publication needs all
+    # three inputs, while older source records may omit the availability flag.
+    sources = registry.get("sources")
+    for repo in ("macro", "terminal", "mastermind"):
+        source = sources.get(repo) if isinstance(sources, dict) else None
+        if not isinstance(source, dict):
+            raise ValueError(repo.title() + " source must be an immutable commit")
+        if source.get("available", True) is not True:
+            raise ValueError(repo.title() + " source must be available for publication")
+        pin = source.get("sha")
+        if not isinstance(pin, str) or not re.fullmatch(r"[0-9a-f]{40}", pin):
+            raise ValueError(repo.title() + " source must be an immutable commit")
+    source_pin = sources["macro"]["sha"]
     # Same-revision default, or the proven cross-revision inventory. Everything
     # below (enumeration, policy, labels, document bytes) reads `ref`.
     ref = source_pin if args.inventory_ref is None else bind_inventory_commit(
