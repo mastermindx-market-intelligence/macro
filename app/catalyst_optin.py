@@ -122,9 +122,9 @@ class UnwiredScanAuthority(ScanAuthority):
 def verify_optin(body: VerifyOptin, request: Request) -> dict:
     if body.honeypot:
         raise HTTPException(status_code=400, detail="ABUSE_CHECK_FAILED")
-    _abuse_guard(request)
     if not _optin_enabled():
         raise HTTPException(status_code=503, detail="CATALYST_OPTIN_DISABLED")
+    _abuse_guard(request)
     try:
         return _active().verify(email=body.email, otp=body.otp,
                                 public_ref=body.public_ref, now=datetime.now(timezone.utc))

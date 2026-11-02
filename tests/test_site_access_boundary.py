@@ -170,7 +170,7 @@ def test_biocatalyst_shell_assets_are_public_but_payload_api_stays_paid():
         }
         assert {"/biocatalyst.css", "/biocatalyst.js"} <= paths
 
-    api_source = (ROOT / "app" / "biocatalyst.py").read_text()
+    api_source = (ROOT / "app" / "biocatalyst.py").read_text()  # ci-trigger-closure: data - this test checks the file's text, not its imports; the job's paths: list it
     assert "def require_site_full_user(" in api_source
     assert "Depends(require_site_full_user)" in api_source
     assert "enforce_site_full" in api_source
@@ -210,7 +210,7 @@ def test_ontology_trace_assets_are_public_but_the_snapshot_api_stays_paid():
     # the router resolves the shared authority rather than declaring a second one.
     public_exact = set(POLICY["public"]["exact"])
     assert not any(path.startswith("/api/ontology") for path in public_exact)
-    api_source = (ROOT / "app" / "ontology_explorer.py").read_text()
+    api_source = (ROOT / "app" / "ontology_explorer.py").read_text()  # ci-trigger-closure: data - this test checks the file's text, not its imports; the job's paths: list it
     assert "from app.main import require_user" in api_source
     assert "enforce_site_full" in api_source
     assert "always=True" in api_source
@@ -542,7 +542,7 @@ def test_tier_gate_is_reachable_from_its_own_inputs():
     # Subjects under test that no `run:` line names: the two halves of the boundary
     # this module diffs, plus the routers the regwall/paywall suites exercise.
     required |= {"config/site_access.yml", "app/deploy/Caddyfile",
-                 "app/regwall.py", "app/paywall.py"}
+                 "app/regwall.py", "app/paywall.py"}  # ci-trigger-closure: data - a file NAME, never opened here
 
     unreachable = sorted(t for t in required if not any(m.match(t) for m in matchers))
     assert unreachable == [], (
@@ -577,6 +577,16 @@ def test_boundary_suites_report_apart_from_the_tier_preview_step():
         assert owners("tests/test_paywall.py") == ["paywall-contracts"], path
         assert owners("tests/test_regwall.py") == ["paywall-contracts"], path
         assert "tier-gate" in owners("tests/test_us_board_gate.py"), path
+
+
+def test_boundary_suite_is_on_the_merge_gate():
+    """ci.yml packs `gate: code` only. On `gate: data` a breach of the public list merges on green."""
+    job = yaml.safe_load((ROOT / ".github/ci/legacy-jobs.yml").read_text())["jobs"]["site-access-boundary"]
+    assert job["gate"] == "code"
+    assert job["scope"] == "exclusive"
+    # The closure notes above excuse these two text reads because the job lists them.
+    for name in ("biocatalyst", "ontology_explorer"):
+        assert f"app/{name}.py" in job["paths"]
 
 
 def test_generated_data_is_not_accidentally_public():

@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-01T17:15:43.542907+00:00",
+  "generated_utc": "2026-11-01T22:48:29.666784+00:00",
   "as_of": "2026-11-01",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -28769,10 +28769,10 @@
         {
           "ticker": "ILMN",
           "buy_usd": 0.0,
-          "sell_usd": 724475263.0,
-          "net_usd": -724475263.0,
+          "sell_usd": 724352263.0,
+          "net_usd": -724352263.0,
           "buyers": 0,
-          "sellers": 122
+          "sellers": 121
         },
         {
           "ticker": "ACCV",
