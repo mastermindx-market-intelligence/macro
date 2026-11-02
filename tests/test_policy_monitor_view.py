@@ -843,6 +843,33 @@ class TestReviewedRegressions:
 
 
 
+class TestReviewProvenanceBasis:
+    @pytest.mark.parametrize("policy_rate,target_mid,spread,en,zh", [
+        (None, 4.375, -38, "target range midpoint", "目标区间中值"),
+        (4.33, 4.375, -33, "effective fed funds", "有效联邦基金利率"),
+        (0, 4.375, 400, "effective fed funds", "有效联邦基金利率"),
+        (4.0, None, 0, "effective fed funds", "有效联邦基金利率"),
+    ])
+    def test_spread_names_the_producers_actual_reference(self, policy_rate, target_mid, spread, en, zh):
+        fp = _fed_path(policy_rate=policy_rate, target_mid=target_mid, implied_bp_12m=spread)
+        fp["implied"]["m12"] = 4.0
+        v = pmv.build_view(_policy_lever(), _latest(fed_path=fp))
+        assert v["rates"]["bp_12m"] == spread
+        assert f"12-month rate vs {en} {spread:+.0f} bp" == v["move_en"]
+        assert f"12个月利率相对{zh} {spread:+.0f} 基点" == v["move_zh"]
+
+    @pytest.mark.parametrize("policy_rate,target_mid", [
+        (None, None), (None, float("nan")), (float("nan"), 4.375),
+        (float("inf"), 4.375), (True, 4.375), ("4.33", 4.375),
+    ])
+    def test_unqualified_reference_cannot_support_a_stored_spread(self, policy_rate, target_mid):
+        fp = _fed_path(policy_rate=policy_rate, target_mid=target_mid, implied_bp_12m=-38)
+        v = pmv.build_view(_policy_lever(), _latest(fed_path=fp))
+        assert v["rates"]["bp_12m"] is None
+        assert "-38" not in v["move_en"] + v["move_zh"]
+        assert v["rates"]["terminal_rate"] == 4.44
+
+
 class TestProducerContractIntegration:
     @pytest.mark.parametrize('status', ['missing', 'unreadable', 'unusable', 'unexpected', None, []])
     def test_unusable_source_cannot_masquerade_as_zero(self, status):

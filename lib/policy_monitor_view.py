@@ -766,6 +766,15 @@ def _read_rates(latest: dict, snapshot_date: date | None) -> dict:
 
     policy_rate = _rate(fp.get("policy_rate"))
     target_mid = _rate(fp.get("target_mid"))
+    # The producer uses the effective rate when present, and falls back to
+    # the target midpoint only for an absent policy rate. A malformed explicit
+    # policy rate cannot establish that its stored spread used the fallback.
+    if policy_rate is not None:
+        bp_reference = ("effective fed funds", "有效联邦基金利率")
+    elif fp.get("policy_rate") is None and target_mid is not None:
+        bp_reference = ("target range midpoint", "目标区间中值")
+    else:
+        bp_reference = (None, None)
     current = target_mid if target_mid is not None else policy_rate
     current_label = ("Target range midpoint", "目标区间中值") if target_mid is not None else ("Effective fed funds rate", "有效联邦基金利率")
     extras = [d["median"] for d in dots_on_axis]
@@ -909,7 +918,10 @@ def _read_rates(latest: dict, snapshot_date: date | None) -> dict:
         "source_en": source_en,
         "source_zh": source_zh,
         "as_of": snapshot_date.isoformat() if snapshot_date else None,
-        "bp_12m": _rate(fp.get("implied_bp_12m")) if selected_is_effr is True else None,
+        "bp_12m": (_rate(fp.get("implied_bp_12m"))
+                   if selected_is_effr is True and bp_reference[0] else None),
+        "bp_12m_basis_en": bp_reference[0],
+        "bp_12m_basis_zh": bp_reference[1],
         "terminal_rate": _rate(implied.get("m12")),
         "projection_date": (_projection_date(meta, snapshot_date).isoformat()
                             if _projection_date(meta, snapshot_date) else None),
@@ -1250,8 +1262,8 @@ def build_view(policy_lever: Any = None, latest: Any = None, *,
     # --- the card/dialog headline reads (no hike counts, no timing claims) --- #
     bp12 = rates.get("bp_12m")
     if bp12 is not None:
-        move_en = f"12-month rate vs effective fed funds {bp12:+.0f} bp"
-        move_zh = f"12个月利率相对有效联邦基金利率 {bp12:+.0f} 基点"
+        move_en = f"12-month rate vs {rates['bp_12m_basis_en']} {bp12:+.0f} bp"
+        move_zh = f"12个月利率相对{rates['bp_12m_basis_zh']} {bp12:+.0f} 基点"
     else:
         move_en = "Rate path change not recorded"
         move_zh = "未记录利率路径变动"

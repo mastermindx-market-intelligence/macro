@@ -469,3 +469,14 @@ Original review19eea495 is still on its original active carrier and is not
 represented as final-head approval. R5's four-file functional delta (dialog,
 stylesheet, UI test and one render-trigger path) remains for independent delta
 review after that return. Required normal CI/release/live-path gates remain.
+
+
+## R6 — Close the independent review's two provenance-label blockers (2026-11-02)
+
+- Original paid review `policy-monitor-r4-independent-review-20261101` returned TERMINAL, rc=0, root_verified=true from Grok 4.7 / ubuntu0, isolated workspace `/home/ubuntu0/lanes/tmp/policy-monitor-r4-grok-review-19eea495`. Exact response digest: `192da480e13b04c9efeaf2243dedad9951fed166a0f38f65ad64cbb6aa709a3d`. Verdict BLOCKED on source `19eea495290e5df443984f820e49bb0b26d3b97f`; no source effects, GitHub approval, merge or release claimed.
+- Root independently confirmed both findings against the unchanged canonical producers. `engine/fed_stance.py` combines futures pricing and statement guidance; the market-only label was false. `engine/fed_path.py` uses the effective policy rate when present, otherwise the target midpoint; the unconditional effective-rate spread label was false on the fallback.
+- Bounded root corrective route: LOWER_TOTAL_OVERHEAD / PRINCIPAL_JUDGMENT, same original branch and PR, all prior writers and original reviewer terminal, root remains sole source writer. No new architecture, producer score change, signal recomputation, dependency, CI waiver or publication side effect.
+- The combined stance and its guidance component are now described accurately in English and Chinese. The existing basis-point value is retained with the producer's actual qualified reference. Missing or malformed references cannot support the stored spread; valid effective-rate and spread zeros survive. The producer's midpoint fallback is recognized only when policy_rate is absent, not when it is an invalid explicit value.
+- Discriminating reproduction on `afc33cb3`: twelve new cases, nine failed / three passed in 2.79s. After the bounded fix: twelve passed in 2.68s. Tests exercise the guidance-only hawkish descriptor, both face and dialog languages, target midpoint versus effective rate, zero values, and absent/non-finite/bool/string references.
+- Final clean-head focused tests and affected browser proof are pending at this commit. Earlier 306-test and forty-capture evidence remains scoped to `afc33cb3`; it is not claimed as current-head proof.
+- Final-head independent review must include both R4 findings and the preceding R5 four-file delta (stochastic label/endpoints/fill, duplicate date, exact render push path). Original review findings and nonblocking observations are retained; no cosmetic expansion is commissioned. Full hosted gates, normal release and served-page proof remain outstanding. No draft or technical review is represented as shipped.

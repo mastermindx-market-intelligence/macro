@@ -10,7 +10,7 @@
          elapsed-time x axis, legend, an equivalent values table, and a
          supporting rail carrying the source-qualified current rate, the
          supported market horizon and the Fed comparison
-     4 · stance and guidance as separate fields
+     4 · combined stance with its statement-guidance component
      5 · recorded policy activity (counts labelled for what the producer
          actually collects; the last recorded alert is NOT a Fed speech)
      6 · transmission watch rows — observed technical state kept apart from
@@ -314,15 +314,15 @@
         {% endif %}
 
 
-        {# ══ 3 · Stance and guidance — separate fields ═══════════════════ #}
+        {# ══ 3 · Combined stance and its guidance component ═════════════ #}
         <div class="mx5-dlg-sep"></div>
         <div class="plm-split">
           <div class="plm-surface plm-split-cell">
-            <div class="plm-split-label"><span class="l-en">Market pricing stance</span><span class="l-zh">市场定价倾向</span></div>
+            <div class="plm-split-label"><span class="l-en">Policy stance read</span><span class="l-zh">政策立场解读</span></div>
             <div class="plm-split-value">
               <span class="l-en">{{ pmv.stance.label_en }}</span><span class="l-zh">{{ pmv.stance.label_zh }}</span>
             </div>
-            <div class="plm-split-sub"><span class="l-en">Derived from market rates; separate from official guidance.</span><span class="l-zh">依据市场利率，与官方指引分开呈现。</span></div>
+            <div class="plm-split-sub"><span class="l-en">Combined reading of available futures pricing and statement guidance.</span><span class="l-zh">综合可用的期货定价与声明指引。</span></div>
           </div>
           <div class="plm-surface plm-split-cell">
             <div class="plm-split-label"><span class="l-en">Fed guidance</span><span class="l-zh">美联储指引</span></div>
@@ -331,8 +331,8 @@
             </div>
             <div class="plm-split-sub">
               {% if pmv.guidance.known %}
-              <span class="l-en">Recorded from the current snapshot.</span>
-              <span class="l-zh">来自本次快照的记录。</span>
+              <span class="l-en">Statement guidance component of the combined reading.</span>
+              <span class="l-zh">综合解读中的声明指引部分。</span>
               {% else %}
               <span class="l-en">This snapshot carries no usable guidance reading, so no direction is implied.</span>
               <span class="l-zh">本次快照没有可用的指引读数，因此不隐含任何方向判断。</span>

@@ -363,6 +363,35 @@ class TestDegradation:
 # bilingual + theme discipline
 # --------------------------------------------------------------------------- #
 
+class TestReviewProvenanceBasis:
+    def test_guidance_driven_stance_is_not_presented_as_an_independent_market_signal(self):
+        # The producer can report hawkish on statement guidance alone, even
+        # when its futures input prices no change. Preserve that descriptor.
+        lt = _latest()
+        lt["fed_path"]["implied_cuts_12m"] = 0
+        lt["fed_stance"].update(stance="hawkish", guidance="tightening")
+        html = _render(_policy_lever(), lt)
+        dlg = _panel(html, 'id="dlg-policy"', "</body>")
+        assert "Hawkish" in dlg and "鹰派" in dlg
+        assert "Policy stance read" in dlg and "政策立场解读" in dlg
+        assert "Combined reading of available futures pricing and statement guidance." in dlg
+        assert "综合可用的期货定价与声明指引。" in dlg
+        assert "Statement guidance component of the combined reading." in dlg
+        assert "综合解读中的声明指引部分。" in dlg
+        assert "Market pricing stance" not in dlg
+        assert "separate from official guidance" not in dlg
+
+    def test_target_midpoint_fallback_is_named_on_both_face_and_dialog(self):
+        lt = _latest()
+        lt["fed_path"].update(policy_rate=None, target_mid=4.375, implied_bp_12m=-38)
+        lt["fed_path"]["implied"]["m12"] = 4.0
+        html = _render(_policy_lever(), lt)
+        for part in (_face(html), _panel(html, 'id="dlg-policy"', "</body>")):
+            assert "12-month rate vs target range midpoint -38 bp" in part
+            assert "12个月利率相对目标区间中值 -38 基点" in part
+            assert "vs effective fed funds -38 bp" not in part
+
+
 class TestBilingual:
     def test_every_policy_label_has_a_zh_twin(self):
         html = _render(_policy_lever(), _latest())
