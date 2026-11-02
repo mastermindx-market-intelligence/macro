@@ -249,6 +249,21 @@ def test_v0_bench_records_what_evaluate_answered(record: dict[str, Any]) -> None
     assert (outcome["status"], outcome["answer"], outcome["refusal_code"]) == (200, "evaluated", None)
 
 
+def test_v0_bench_counts_an_issuer_evaluable_only_when_rules_are_too() -> None:
+    supported = {"support": "supported"}
+    inputs_doc = {
+        "rules": {"support": "supported"},
+        "issuers": {
+            "A": {"instruments": supported, "share_basis": supported, "financials": supported, "commitments": supported},
+            "B": {"instruments": supported, "share_basis": {"support": "unavailable"}},
+        },
+    }
+    assert bench._evaluable_issuers(inputs_doc, ["B", "A", "C"]) == ["A"]
+
+    inputs_doc["rules"] = {"support": "unavailable", "reason_codes": ["rules_unavailable"]}
+    assert bench._evaluable_issuers(inputs_doc, ["B", "A", "C"]) == []
+
+
 class _Answer:
     """A served answer the outcome probe classifies (status and JSON body only)."""
 

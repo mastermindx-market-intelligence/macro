@@ -60,7 +60,7 @@ So, against the V0 proposal:
 - **Evaluation p95 at 10 readers: not measured.** No real issuer can be evaluated yet. The 117 ms p95 shows that the warm refusal path is cheap, which is all it shows.
 - **Fixture evaluation.** The fixture world, which is evaluable by construction, is exercised by `tests/test_capital_structure_v0_serving.py` for correctness. Its timings are not evidence about the real corpus.
 
-The bench now records this in the report. `evaluate_outcome` states whether evaluate answered 200 or the typed inputs refusal, with the components, before any wave is timed. The bench also picks an evaluable issuer whenever the corpus has one. It stops with a named error on any other refusal (a 422, a 503 or another 409), so a misdated or unbound request can no longer be timed silently.
+The bench now records this in the report. `evaluate_outcome` states whether evaluate answered 200 or the typed inputs refusal, with the components, before any wave is timed. The bench also picks an evaluable issuer whenever the corpus has one: an issuer counts as evaluable only when none of its families and not the bundle's `rules` entry is unavailable, the same gate `assemble_scenario_inputs` applies. It stops with a named error on any other refusal (a 422, a 503 or another 409), so a misdated or unbound request can no longer be timed silently.
 
 Measuring evaluation p95 needs the input families filled: candidate instrument terms (U1C fee terms and the I1b/I2b extractors), admitted share observations, and admitted financials (X0b). When the census shows at least one evaluable issuer, rerun the bench. It will select that issuer and time real evaluations.
 

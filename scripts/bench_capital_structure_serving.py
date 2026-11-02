@@ -387,6 +387,26 @@ def _fixture_corpus(work: Path) -> dict[str, Any]:
     }
 
 
+def _evaluable_issuers(inputs_doc: dict[str, Any], issuer_rows: list[str]) -> list[str]:
+    """Served issuers whose capacity inputs leave no family unavailable.
+
+    ``assemble_scenario_inputs`` refuses an issuer when any of its own families
+    or the bundle-level ``rules`` entry is unavailable, so both gate here.
+    """
+    if (inputs_doc.get("rules") or {}).get("support") == "unavailable":
+        return []
+    inputs_issuers = inputs_doc.get("issuers") or {}
+    return [
+        issuer_id
+        for issuer_id in issuer_rows
+        if issuer_id in inputs_issuers
+        and all(
+            (family or {}).get("support") != "unavailable"
+            for family in inputs_issuers[issuer_id].values()
+        )
+    ]
+
+
 def _real_corpus(work: Path, data_root: Path) -> dict[str, Any]:
     """Build the state bundle and its capacity inputs over a COPY of a data root.
 
@@ -434,18 +454,9 @@ def _real_corpus(work: Path, data_root: Path) -> dict[str, Any]:
     # so the bench times an evaluation once the corpus can answer one.  Until
     # then the first served issuer is evaluated, and the outcome probe records
     # the typed refusal it answers (never a timed evaluation).
-    inputs_issuers = (
-        json.loads((copy / "capacity_inputs.json").read_text(encoding="utf-8")).get("issuers") or {}
+    evaluable = _evaluable_issuers(
+        json.loads((copy / "capacity_inputs.json").read_text(encoding="utf-8")), issuer_rows
     )
-    evaluable = [
-        issuer_id
-        for issuer_id in issuer_rows
-        if issuer_id in inputs_issuers
-        and all(
-            (family or {}).get("support") != "unavailable"
-            for family in inputs_issuers[issuer_id].values()
-        )
-    ]
     evaluate_issuer = evaluable[0] if evaluable else issuer_rows[0]
     evaluate_state = next(
         state for state in bundle["issuers"] if str(state["request"]["issuer_id"]) == evaluate_issuer
