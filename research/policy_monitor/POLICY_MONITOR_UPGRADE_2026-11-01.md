@@ -152,3 +152,73 @@ the trigger, and no page-level horizontal overflow at 390.
 * The separate stocks-mode `policy-lever-card` fallback band is outside the
   named scope of this task. Its QUIET fallback and its malformed-row crash
   were hardened in passing; its layout and labels are unchanged.
+
+## R3 — principal review corrections and integration (2026-11-01)
+
+Owner: active Sol principal, original root `policy-monitor-upgrade-20261101-sol-001`.
+Follow-on operation: `policy-monitor-r3-review-repair-20261101`.
+Source: `claude/policy-monitor-upgrade-20261101`, recovered pushed head
+`2184d1d12fcb5f662669b966a7ca76d87739a1ae`, draft PR #10493.
+
+### Custody and routing
+
+R1 reached VERIFIED_TERMINAL, rc=1 / provider turn_limit. Its retained response
+digest is `d2683e6b9a81a08ff66695353c23fb1505344fdc7fcdac68eb0be2fa6f7f1816`.
+This is a failed execution return, not accepted implementation evidence.
+The original worker process chain is absent and its active lane lease is absent.
+The pushed GitHub candidate and committed evidence are recoverable. The old
+worktree is outside the device file-read boundary; it is preserved and is not
+claimed clean. The last accessible /tmp diff additionally preserves a narrow
+Fed-dialog chip style restoration; it will be reviewed before incorporation.
+No retry, provider failover, lease mutation or overlapping writer is authorized.
+
+Direct bounded principal repair reason: LOWER_TOTAL_OVERHEAD and
+PRINCIPAL_JUDGMENT. The principal has reproduced specific semantic and parser
+defects against the exact pushed candidate and already owns the interpretation
+decision; another full builder dispatch would repeat that adjudication.
+This is a corrective follow-on after terminal custody reconciliation, not
+shadow implementation. Independent read-only Fabric source/product review of
+the corrected integrated head remains required before acceptance; the principal
+cannot independently approve their own changes.
+
+The existing R2 producer run has acquired its lease and continues solely on
+`claude/policy-monitor-integrity-20261101`. Do not alter its source branch or
+producer paths while active. The two branches share the plan file and
+tests/test_policy_lever.py: R1's test edits are limited to TestTemplateRender,
+while R2 owns producer tests. Integrate their actual hunks deliberately after
+R2 is terminal; do not overwrite either return.
+
+### Confirmed blockers in the first candidate
+
+- Padded valid state strings raise KeyError; mixed horizon keys, malformed
+  missing-source metadata and finite-but-overflowing chart values can crash.
+  ISO date strings with trailing junk are accepted.
+- Raw QUIET without either predicate and raw ARMED with missing arming evidence
+  retain authoritative complete headlines. Display qualification must preserve
+  observed conditions without calculating a replacement producer score.
+- Missing SEP vintage/publication evidence still permits the precise -14 bp
+  comparison and a current chart marker. Require the existing qualified basis,
+  horizon and source dates; keep unqualified observations separately useful.
+- Current effective rate and target midpoint labels can be confused. A policy
+  observation must not be joined into a SOFR futures curve. Rate geometry uses
+  the rate observation date, not the semis snapshot date.
+- Aggregate snapshot copy incorrectly dates independent activity/calendar
+  components. Consume R2's explicit evaluation/source-quality fields.
+- Desktop metric rail belongs beside the chart; remove repeated explanatory
+  paragraphs, preserve a compact visible stale-evidence notice, complete
+  bilingual labels and keyboard disclosure traversal, and prevent the floating
+  assistant control from covering the mobile modal.
+
+### Revised remaining task tree
+
+| ID | Depends on | State | Acceptance |
+|---|---|---|---|
+| P3.R3 | R1 terminal/reconciled | active | Fix the reproduced display/parser defects and focused layout/accessibility findings; add regression cases that fail on R1. |
+| P2.R2 | R2 existing run | active | Consume the original producer return; validate record filtering, zero/unknown semantics and component evaluation dates. |
+| P4.I | P3.R3,P2.R2 | proposed | Integrate both exact heads, run meaningful existing regressions, capture and inspect the actual production template at the corrected head. |
+| P4.R | P4.I | proposed | Separate qualified Fabric reviewer challenges source and real user-path evidence on the exact integrated head. |
+| P5 | P4.R | proposed | Hosted gates and normal independent release, then served macro.html verification; no self-approval or manual self-merge. |
+
+The implementation-record claims above describe R1's own reported results.
+They are superseded where contradicted by this review. The candidate remains
+NOT_ACCEPTED until these material findings and integrated proof are resolved.
