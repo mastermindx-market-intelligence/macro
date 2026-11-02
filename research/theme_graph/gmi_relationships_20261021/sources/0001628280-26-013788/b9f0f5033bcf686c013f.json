@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-03T21:07:32Z",
+ "accession": "0001628280-26-013788",
+ "cik": "0000949157",
+ "doc_byte_length": 3845651,
+ "doc_sha256": "6027eaed123148b4beb7146528d579b25457c34fd2a0f2daedbd6e37d3e119f5",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-03",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "cenx-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 598625,
+  "byte_start": 598084,
+  "normalized": "In addition, one of our seven directors is a Glencore employee. During the year ended December 31, 2025, we derived approximately 54.0% of our consolidated sales from Glencore and we expect to sell a significant portion of our production to Glencore in 2026. Century and Glencore enter into various transactions from time to time such as the purchase and sale of primary aluminum, purchase and sale of alumina and other raw materials, tolling agreements as well as forward financial contracts and borrowing and other debt transactions.",
+  "normalized_sha256": "bcc419f86d8bc9a26e9014484154f26e086742a701b41571ec0abaac72691a23",
+  "raw": " In addition, one of our seven directors is a Glencore employee. During the year ended December&#160;31, 2025, we derived approximately 54.0% of our consolidated sales from Glencore and we expect to sell a significant portion of our production to Glencore in 2026. Century and Glencore enter into various transactions from time to time such as the purchase and sale of primary aluminum, purchase and sale of alumina and other raw materials, tolling agreements as well as forward financial contracts and borrowing and other debt transactions.",
+  "raw_sha256": "b9f0f5033bcf686c013fcd0fd0e541b2be0797e2b7554c930be2b2a6af7cae0f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/949157/000162828026013788/cenx-20251231.htm",
+ "xbrl_contexts": []
+}

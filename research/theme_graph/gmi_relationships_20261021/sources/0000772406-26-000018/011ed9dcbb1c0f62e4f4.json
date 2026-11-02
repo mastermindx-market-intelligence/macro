@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-21T20:11:56Z",
+ "accession": "0000772406-26-000018",
+ "cik": "0000772406",
+ "doc_byte_length": 1688324,
+ "doc_sha256": "38603376827b247d3b9116ab5efe18c85aac83feddcf709371908d03fc7895e6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-28",
+ "primary_document": "crus-20260328.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 251492,
+  "byte_start": 250935,
+  "normalized": "Outside of our long-term supply agreement for wafer fabrication supply with GlobalFoundries, our outside foundries and assembly and test suppliers generally manufacture our products on a purchase order basis, and we have few other long-term supply arrangements with these suppliers. Therefore, our third-party manufacturers and suppliers are not obligated to supply us with products for any specific period of time, quantity, or price, except as may be provided in any particular purchase order or in relation to an existing supply agreement.",
+  "normalized_sha256": "43cabb7ffefcd9fde0fa2409761fa16a817f1c64f34c6b9159b66d9f8bfd0b31",
+  "raw": "              Outside of our long-term supply agreement for wafer fabrication supply with GlobalFoundries, our outside foundries and assembly and test suppliers generally manufacture our products on a purchase order basis, and we have few other long-term supply arrangements with these suppliers.  Therefore, our third-party manufacturers and suppliers are not obligated to supply us with products for any specific period of time, quantity, or price, except as may be provided in any particular purchase order or in relation to an existing supply agreement.",
+  "raw_sha256": "011ed9dcbb1c0f62e4f4f85ae2e0ab22678ed36bc3ddc2d36f9d83274d572cc1"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/772406/000077240626000018/crus-20260328.htm",
+ "xbrl_contexts": []
+}
