@@ -96,12 +96,27 @@ def _populate_prophet(root: Path, *, plans: int = 3, computed_at=COMPUTED_AT) ->
     return board_sha, snapshot_rel
 
 
+def _freeze_baseline(tmp_path: Path, root: Path) -> Path:
+    """Persist PROPHET_BASELINE exactly as the nightly's first heredoc does."""
+    baseline = tmp_path / "baseline.json"
+    baseline.write_text(json.dumps(snapshot(root), sort_keys=True), encoding="utf-8")
+    return baseline
+
+
 def _freeze_evidence(tmp_path: Path, root: Path) -> tuple[Path, Path, Path, Path]:
-    """Persist the nightly evidence files exactly as the extended step would."""
+    """Persist the nightly evidence files exactly as the extended step would.
+
+    The baseline is frozen at the same instant as the inventory, so the
+    authentic delta for this fixture is the empty TSV below.
+    """
     board = (root / BOARD_REL).read_bytes()
     board_sha = hashlib.sha256(board).hexdigest()
     inventory = tmp_path / "inventory.json"
     inventory.write_text(json.dumps(snapshot(root), sort_keys=True), encoding="utf-8")
+    # The nightly freezes the baseline BEFORE the build; a delta scenario that
+    # already froze it keeps that pre-build snapshot (freeze-once).
+    if not (tmp_path / "baseline.json").exists():
+        _freeze_baseline(tmp_path, root)
     source_snapshot = tmp_path / "source.json"
     source_snapshot.write_text(
         json.dumps(
@@ -132,9 +147,11 @@ def _freeze_evidence(tmp_path: Path, root: Path) -> tuple[Path, Path, Path, Path
 
 def _preflight(root: Path, evidence: tuple[Path, Path, Path, Path], **kw) -> dict:
     inventory, source_snapshot, blob, delta = evidence
+    kw.setdefault("baseline_path", inventory.parent / "baseline.json")
     return run_preflight(
         root,
         inventory_path=inventory,
+        baseline_path=kw.pop("baseline_path"),
         source_snapshot_path=source_snapshot,
         source_blob_path=blob,
         delta_path=delta,
@@ -826,6 +843,7 @@ def test_cli_writes_the_typed_receipt_runner_locally(tmp_path) -> None:
         {
             "GITHUB_WORKSPACE": str(root),
             "PROPHET_INVENTORY": str(evidence[0]),
+            "PROPHET_BASELINE": str(evidence[0].parent / "baseline.json"),
             "PROPHET_SOURCE_SNAPSHOT": str(evidence[1]),
             "PROPHET_SOURCE_BLOB": str(evidence[2]),
             "PROPHET_DELTA": str(evidence[3]),
@@ -1040,6 +1058,7 @@ def test_missing_or_unbound_source_snapshot_leaves_a_typed_receipt(tmp_path) -> 
     env = os.environ.copy()
     env.update({
         "GITHUB_WORKSPACE": str(root), "PROPHET_INVENTORY": str(inventory),
+        "PROPHET_BASELINE": str(inventory.parent / "baseline.json"),
         "PROPHET_SOURCE_SNAPSHOT": str(gone), "PROPHET_SOURCE_BLOB": str(blob),
         "PROPHET_DELTA": str(delta), "PROPHET_PREFLIGHT_RECEIPT": str(receipt_path),
         "PYTHONPATH": str(Path(__file__).resolve().parents[1]),
@@ -1170,3 +1189,599 @@ def test_nightly_inventory_write_failure_never_flips_the_checkpoint(tmp_path, mo
         exec(compile(tail, "nightly-inventory-block", "exec"), {"os": os, "json": json, "Path": Path, "after": {"k": 1}})
     assert "::warning title=prophet full-population inventory" in out.getvalue()
     assert not (blocker / "inventory.json").exists()
+
+
+# --- round-4 repairs (review of #10289 findings 1-3 + the bounded alarm) --------
+
+
+DELTA_CODES = {
+    "BASELINE_MISSING",
+    "BASELINE_UNREADABLE",
+    "BASELINE_MALFORMED",
+    "DELTA_MANIFEST_MISSING",
+    "PATH_NOT_NORMALIZED",
+    "SPLIT_CHECKPOINT_INDEX_MISMATCH",
+    "SPLIT_CHECKPOINT_TSV_STALE",
+    "DELTA_OUTPUT_DELETED",
+    "DELTA_ROW_MISSING",
+    "DELTA_ROW_UNEXPECTED",
+    "DELTA_BEFORE_MISMATCH",
+    "DELTA_ROW_DUPLICATE",
+}
+
+
+def _symmetric_difference_tsv(before: dict, after: dict) -> str:
+    """The nightly delta writer's exact output: one row per changed or
+    first-seen path, ``rel<TAB>before<TAB>after``, before MISSING when new.
+    Deleted paths get no row at all — the writer aborts before writing any."""
+    rows = []
+    for rel in sorted(after):
+        old = before.get(rel, "MISSING")
+        if old != after[rel]:
+            rows.append(f"{rel}\t{old}\t{after[rel]}")
+    return "".join(row + "\n" for row in rows)
+
+
+def _advance_build_outputs(root: Path) -> None:
+    """Mutate the build-owned set exactly as a real build would: bump the
+    index clock, add a plan, advance one state."""
+    doc = json.loads((root / "site/prophet/index.json").read_text(encoding="utf-8"))
+    doc["computed_at"] = "2026-10-31T02:16:00Z"
+    (root / "site/prophet/index.json").write_text(
+        json.dumps(doc, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+    )
+    (root / "site/prophet/plans/PLAN-3-BULL-20261030.json").write_text(
+        '{"id":"PLAN-3"}\n', encoding="utf-8"
+    )
+    (root / "site/prophet/states/PLAN-1.json").write_text(
+        '{"id":"PLAN-1","v":2}\n', encoding="utf-8"
+    )
+
+
+def _changed_world(tmp_path: Path, root: Path) -> tuple[Path, str]:
+    """Freeze the pre-build baseline, run the build-like mutation, freeze the
+    rest of the evidence, and return (baseline_path, authentic_delta_tsv)."""
+    baseline = _freeze_baseline(tmp_path, root)
+    _advance_build_outputs(root)
+    evidence = _freeze_evidence(tmp_path, root)
+    before = json.loads(baseline.read_text(encoding="utf-8"))
+    after = json.loads(evidence[0].read_text(encoding="utf-8"))
+    return baseline, _symmetric_difference_tsv(before, after)
+
+
+def test_complete_delta_as_the_exact_symmetric_difference_leaves_no_delta_code(
+    tmp_path,
+) -> None:
+    root = tmp_path / "repo"
+    root.mkdir()
+    _populate_prophet(root, plans=3)
+    _baseline, authentic = _changed_world(tmp_path, root)
+    evidence = _freeze_evidence(tmp_path, root)
+    assert "site/prophet/index.json" in authentic          # a genuinely non-empty delta
+    assert "site/prophet/plans/PLAN-3-BULL-20261030.json" in authentic
+    evidence[3].write_text(authentic, encoding="utf-8")
+
+    receipt = _preflight(root, evidence)
+
+    assert receipt["leg_detail"]["index"]["reason_codes"] == []
+    assert not (set(receipt["reason_codes"]) & DELTA_CODES)
+    assert receipt["artifact_hashes"]["index"] is not None
+    assert receipt["artifact_hashes"]["board"] is not None
+
+
+@pytest.mark.parametrize(
+    "dropped",
+    ["site/prophet/index.json", "site/prophet/plans/PLAN-3-BULL-20261030.json"],
+)
+def test_omitted_delta_row_for_a_changed_or_first_seen_output_is_refused(
+    tmp_path, dropped
+) -> None:
+    """Finding 1: the retained checkpoint publisher processes ONLY the TSV
+    rows, so an omitted row silently skips publication — the old code passed
+    such a manifest because it validated only the rows actually present."""
+    root = tmp_path / "repo"
+    root.mkdir()
+    _populate_prophet(root, plans=3)
+    _baseline, authentic = _changed_world(tmp_path, root)
+    evidence = _freeze_evidence(tmp_path, root)
+    assert f"{dropped}\t" in authentic
+    survivor = "\n".join(
+        line for line in authentic.splitlines() if not line.startswith(f"{dropped}\t")
+    ) + "\n"
+    evidence[3].write_text(survivor, encoding="utf-8")
+
+    receipt = _preflight(root, evidence)
+    index_leg = receipt["leg_detail"]["index"]
+
+    assert "DELTA_ROW_MISSING" in index_leg["reason_codes"]
+    assert index_leg["detail"]["delta_rows_missing"] == [dropped]
+    assert receipt["artifact_hashes"]["index"] is None
+    assert receipt["bundle_id"] is None
+
+
+def test_duplicate_delta_row_is_refused_even_when_the_last_row_is_correct(
+    tmp_path,
+) -> None:
+    """Finding 1: _parse_delta used to overwrite duplicates, so a
+    contradictory row followed by the correct one qualified."""
+    root = tmp_path / "repo"
+    root.mkdir()
+    _populate_prophet(root, plans=3)
+    _baseline, authentic = _changed_world(tmp_path, root)
+    evidence = _freeze_evidence(tmp_path, root)
+    correct = next(
+        line for line in authentic.splitlines()
+        if line.startswith("site/prophet/index.json\t")
+    )
+    contradictory = f"site/prophet/index.json\tMISSING\t0400:{'1' * 64}"
+    # wrong row FIRST, correct row LAST — exactly the ordering the old
+    # dict-overwrite silently collapsed into a pass.
+    evidence[3].write_text(authentic + contradictory + "\n" + correct + "\n",
+                           encoding="utf-8")
+
+    receipt = _preflight(root, evidence)
+    index_leg = receipt["leg_detail"]["index"]
+
+    assert index_leg["reason_codes"] == ["DELTA_ROW_DUPLICATE"]
+    assert index_leg["detail"]["delta_duplicate_paths"] == ["site/prophet/index.json"]
+    assert receipt["artifact_hashes"]["index"] is None
+
+
+def test_delta_before_fingerprint_mismatch_is_refused(tmp_path) -> None:
+    root = tmp_path / "repo"
+    root.mkdir()
+    _populate_prophet(root, plans=3)
+    baseline, authentic = _changed_world(tmp_path, root)
+    evidence = _freeze_evidence(tmp_path, root)
+    after_fp = json.loads(evidence[0].read_text(encoding="utf-8"))["site/prophet/index.json"]
+    survivor = "\n".join(
+        f"site/prophet/index.json\t0400:{'9' * 64}\t{after_fp}"
+        if line.startswith("site/prophet/index.json\t") else line
+        for line in authentic.splitlines()
+    ) + "\n"
+    assert survivor != authentic
+    evidence[3].write_text(survivor, encoding="utf-8")
+    assert json.loads(baseline.read_text(encoding="utf-8"))["site/prophet/index.json"] != (
+        f"0400:{'9' * 64}"
+    )
+
+    receipt = _preflight(root, evidence)
+
+    assert receipt["leg_detail"]["index"]["reason_codes"] == ["DELTA_BEFORE_MISMATCH"]
+    assert receipt["leg_detail"]["index"]["detail"]["delta_before_mismatch"] == [
+        "site/prophet/index.json"
+    ]
+
+
+def test_delta_row_outside_the_symmetric_difference_is_refused(tmp_path) -> None:
+    """A no-op row (before == after) is not part of any real change; the
+    exact-symmetric-difference binding refuses it while every legacy per-row
+    check still passes."""
+    root = tmp_path / "repo"
+    root.mkdir()
+    _populate_prophet(root)
+    evidence = _freeze_evidence(tmp_path, root)
+    noop_fp = json.loads(evidence[0].read_text(encoding="utf-8"))[
+        "site/prophet/states/PLAN-0.json"
+    ]
+    evidence[3].write_text(
+        f"site/prophet/states/PLAN-0.json\t{noop_fp}\t{noop_fp}\n", encoding="utf-8"
+    )
+
+    receipt = _preflight(root, evidence)
+
+    assert receipt["leg_detail"]["index"]["reason_codes"] == ["DELTA_ROW_UNEXPECTED"]
+    assert receipt["leg_detail"]["index"]["detail"]["delta_rows_unexpected"] == [
+        "site/prophet/states/PLAN-0.json"
+    ]
+    assert receipt["artifact_hashes"]["index"] is None
+
+
+def test_deleted_output_between_baseline_and_inventory_is_refused(tmp_path) -> None:
+    """Deletion is never a supported Prophet operation; the writer aborts
+    before writing any TSV, and the preflight independently fails closed."""
+    root = tmp_path / "repo"
+    root.mkdir()
+    _populate_prophet(root)
+    baseline = _freeze_baseline(tmp_path, root)
+    (root / "site/prophet/states/PLAN-0.json").unlink()
+    evidence = _freeze_evidence(tmp_path, root)
+    before = json.loads(baseline.read_text(encoding="utf-8"))
+    after = json.loads(evidence[0].read_text(encoding="utf-8"))
+    evidence[3].write_text(_symmetric_difference_tsv(before, after), encoding="utf-8")
+
+    receipt = _preflight(root, evidence)
+
+    assert receipt["leg_detail"]["index"]["reason_codes"] == ["DELTA_OUTPUT_DELETED"]
+    assert receipt["leg_detail"]["index"]["detail"]["deleted_outputs"] == [
+        "site/prophet/states/PLAN-0.json"
+    ]
+    assert receipt["artifact_hashes"]["index"] is None
+
+    # Even a tampered TSV that DOES carry the deletion row stays refused.
+    deleted_fp = before["site/prophet/states/PLAN-0.json"]
+    evidence[3].write_text(
+        f"site/prophet/states/PLAN-0.json\t{deleted_fp}\tMISSING\n", encoding="utf-8"
+    )
+    tampered = _preflight(root, evidence)
+    tampered_codes = set(tampered["leg_detail"]["index"]["reason_codes"])
+    assert {"DELTA_OUTPUT_DELETED", "PATH_MISSING", "DELTA_ROW_UNEXPECTED"} <= tampered_codes
+    assert tampered["artifact_hashes"]["index"] is None
+
+
+def test_missing_unreadable_or_malformed_baseline_fails_closed(tmp_path) -> None:
+    """Without qualified baseline evidence the delta can never be proven to be
+    the exact symmetric difference — refuse, never skip the qualification."""
+    import subprocess
+    import sys
+
+    root = tmp_path / "repo"
+    root.mkdir()
+    _populate_prophet(root)
+    evidence = _freeze_evidence(tmp_path, root)
+    baseline = evidence[0].parent / "baseline.json"
+
+    gone = _preflight(root, evidence, baseline_path=tmp_path / "nope.json")
+    assert gone["leg_detail"]["index"]["reason_codes"] == ["BASELINE_MISSING"]
+    assert gone["artifact_hashes"]["index"] is None
+
+    baseline.write_text("{not json", encoding="utf-8")
+    unreadable = _preflight(root, evidence)
+    assert unreadable["leg_detail"]["index"]["reason_codes"] == ["BASELINE_UNREADABLE"]
+
+    baseline.write_text(json.dumps(["not", "a", "fingerprint", "map"]), encoding="utf-8")
+    malformed = _preflight(root, evidence)
+    assert malformed["leg_detail"]["index"]["reason_codes"] == ["BASELINE_MALFORMED"]
+    assert malformed["bundle_id"] is None
+
+    # The CLI refuses a run with no baseline evidence at all (rc 2, typed
+    # error) — a missing PROPHET_BASELINE can never fail open.
+    receipt_path = tmp_path / "receipt-baseline.json"
+    env = os.environ.copy()
+    env.update({
+        "GITHUB_WORKSPACE": str(root),
+        "PROPHET_INVENTORY": str(evidence[0]),
+        "PROPHET_SOURCE_SNAPSHOT": str(evidence[1]),
+        "PROPHET_SOURCE_BLOB": str(evidence[2]),
+        "PROPHET_DELTA": str(evidence[3]),
+        "PROPHET_PREFLIGHT_RECEIPT": str(receipt_path),
+        "PYTHONPATH": str(Path(__file__).resolve().parents[1]),
+    })
+    env.pop("PROPHET_BASELINE", None)
+    failed = subprocess.run(
+        [sys.executable, "-m", "scripts.prophet_settlement_preflight"],
+        cwd=Path(__file__).resolve().parents[1], env=env, capture_output=True,
+        text=True, check=False,
+    )
+    assert failed.returncode == 2
+    assert "::error title=prophet accepted-source preflight::missing required evidence paths" in (
+        failed.stdout
+    )
+    assert "--baseline" in failed.stdout
+    assert not receipt_path.exists()
+
+
+def test_index_identity_is_one_read_and_refuses_an_intervening_mutation(
+    tmp_path, monkeypatch
+) -> None:
+    """Finding 2, controlled fault injection: the old code took a second
+    digest() read for identity, so an intervening rewrite desynchronized the
+    receipt's artifact hash from the inventory's bytes and still qualified."""
+    import types
+
+    import scripts.prophet_settlement_preflight as module
+
+    root = tmp_path / "repo"
+    root.mkdir()
+    _populate_prophet(root)
+    evidence = _freeze_evidence(tmp_path, root)
+    real_stat = module._stat
+    captures = {"n": 0}
+    index_path = root / "site/prophet/index.json"
+
+    def two_face_stat(path):
+        result = real_stat(path)
+        if os.fspath(path) == os.fspath(index_path):
+            captures["n"] += 1
+            if captures["n"] == 2:  # the post-read fence: a rewrite slipped in
+                return types.SimpleNamespace(
+                    st_mode=result.st_mode, st_ino=result.st_ino,
+                    st_size=result.st_size, st_mtime_ns=result.st_mtime_ns + 1,
+                )
+        return result
+
+    monkeypatch.setattr(module, "_stat", two_face_stat)
+
+    receipt = _preflight(root, evidence)
+
+    assert captures["n"] == 2, "the index identity read must be fenced once"
+    index_leg = receipt["leg_detail"]["index"]
+    assert index_leg["reason_codes"] == ["INDEX_MUTATED_DURING_READ"]
+    assert receipt["artifact_hashes"]["index"] is None
+    assert receipt["bundle_id"] is None and receipt["accepted"] is False
+
+
+def test_index_identity_never_takes_a_second_digest_read(tmp_path, monkeypatch) -> None:
+    """Finding 2: the receipt's index hash and the inventory fingerprint must
+    come from the SAME single read — a second digest() call is a regression."""
+    import scripts.prophet_settlement_preflight as module
+
+    root = tmp_path / "repo"
+    root.mkdir()
+    _populate_prophet(root)
+    evidence = _freeze_evidence(tmp_path, root)
+
+    def forbidden_identity_read(_path):
+        raise AssertionError("second digest() identity read — finding-2 regression")
+
+    monkeypatch.setattr(module, "digest", forbidden_identity_read)
+
+    receipt = _preflight(root, evidence)
+
+    assert receipt["leg_detail"]["index"]["reason_codes"] == []
+    assert receipt["artifact_hashes"]["index"] == hashlib.sha256(
+        (root / "site/prophet/index.json").read_bytes()
+    ).hexdigest()
+
+
+def test_source_snapshot_is_parsed_once_across_board_and_index_legs(
+    tmp_path, monkeypatch
+) -> None:
+    """Finding 2: one parsed frozen source object feeds both legs; the old
+    code parsed the snapshot file twice."""
+    import scripts.prophet_settlement_preflight as module
+
+    root = tmp_path / "repo"
+    root.mkdir()
+    _populate_prophet(root)
+    evidence = _freeze_evidence(tmp_path, root)
+    real_binding = module._source_binding
+    parses = {"n": 0}
+
+    def counted(path):
+        parses["n"] += 1
+        return real_binding(path)
+
+    monkeypatch.setattr(module, "_source_binding", counted)
+
+    receipt = _preflight(root, evidence)
+
+    assert parses["n"] == 1
+    assert receipt["leg_detail"]["board"]["reason_codes"] == []
+    assert receipt["artifact_hashes"]["board"] is not None
+
+
+def test_index_snapshot_path_mismatch_is_refused(tmp_path) -> None:
+    """Finding 3, wrong-path negative: the index may not send readers to a
+    durable copy other than the one the board leg proved recovers the frozen
+    bytes — even when the board SHA itself still matches."""
+    root = tmp_path / "repo"
+    root.mkdir()
+    board_sha, snapshot_rel = _populate_prophet(root)
+    doc = json.loads(
+        (root / "site/prophet/index.json").read_text(encoding="utf-8")
+    )
+    doc["source_board_snapshot_path"] = "data/prophet/origination_sources/wrong.json.gz"
+    (root / "site/prophet/index.json").write_text(
+        json.dumps(doc, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+    )
+    evidence = _freeze_evidence(tmp_path, root)
+    assert snapshot_rel != doc["source_board_snapshot_path"]
+
+    receipt = _preflight(root, evidence)
+    index_leg = receipt["leg_detail"]["index"]
+
+    assert index_leg["reason_codes"] == ["INDEX_SNAPSHOT_PATH_MISMATCH"]
+    # the SHA leg of the binding is intact — only the old code ever checked it
+    assert "INDEX_BOARD_BINDING_MISMATCH" not in index_leg["reason_codes"]
+    assert receipt["artifact_hashes"]["index"] is None
+    # the frozen source itself stays bound: the durable copy it names is real
+    assert receipt["leg_detail"]["board"]["reason_codes"] == []
+    assert receipt["artifact_hashes"]["board"] == board_sha
+
+
+@pytest.mark.parametrize("encoding", ["identity", "gz", None])
+def test_index_snapshot_encoding_mismatch_is_refused(tmp_path, encoding) -> None:
+    """Finding 3, wrong-encoding negative: only the exact gzip recovery the
+    board leg proves is a qualified index encoding."""
+    root = tmp_path / "repo"
+    root.mkdir()
+    _populate_prophet(root)
+    doc = json.loads(
+        (root / "site/prophet/index.json").read_text(encoding="utf-8")
+    )
+    doc["source_board_snapshot_encoding"] = encoding
+    (root / "site/prophet/index.json").write_text(
+        json.dumps(doc, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+    )
+    evidence = _freeze_evidence(tmp_path, root)
+
+    receipt = _preflight(root, evidence)
+    index_leg = receipt["leg_detail"]["index"]
+
+    assert index_leg["reason_codes"] == ["INDEX_SNAPSHOT_ENCODING_MISMATCH"]
+    assert "INDEX_BOARD_BINDING_MISMATCH" not in index_leg["reason_codes"]
+    assert receipt["artifact_hashes"]["index"] is None
+
+
+def test_non_gzip_source_snapshot_encoding_is_unqualified(tmp_path) -> None:
+    """Finding 3: the durable recovery speaks exactly one encoding; a source
+    snapshot declaring anything else is unqualified end to end."""
+    root = tmp_path / "repo"
+    root.mkdir()
+    _populate_prophet(root)
+    evidence = _freeze_evidence(tmp_path, root)
+    doc = json.loads(evidence[1].read_text(encoding="utf-8"))
+    doc["source"]["snapshot_encoding"] = "identity"
+    tampered = tmp_path / "source-tampered.json"
+    tampered.write_text(json.dumps(doc), encoding="utf-8")
+
+    receipt = _preflight(root, (evidence[0], tampered, evidence[2], evidence[3]))
+
+    board = receipt["leg_detail"]["board"]
+    assert "SNAPSHOT_ENCODING_UNQUALIFIED" in board["reason_codes"]
+    assert "DURABLE_SOURCE_SNAPSHOT_MISSING" in board["reason_codes"]
+    assert receipt["artifact_hashes"]["board"] is None
+    assert "INDEX_SNAPSHOT_ENCODING_MISMATCH" in receipt["leg_detail"]["index"]["reason_codes"]
+    assert receipt["bundle_id"] is None
+
+
+# --- bounded alarm (review: "Bound and test this alarm before claiming
+# 'never a gate'") ----------------------------------------------------------------
+
+
+def _alarm_block() -> str:
+    source = _nightly_source()
+    start = source.index("# >>> PROPHET PREFLIGHT ALARM (bounded) >>>")
+    end = source.index("# <<< PROPHET PREFLIGHT ALARM <<<")
+    return source[start:end]
+
+
+def _run_alarm(block: str, tmp_path: Path, module_body: str, budget=None, no_timeout_binary=False):
+    """Run the extracted bounded-alarm shell against a stub preflight module."""
+    import subprocess
+    import sys
+    import time
+
+    stub_root = tmp_path / "stub"
+    (stub_root / "scripts").mkdir(parents=True, exist_ok=True)
+    (stub_root / "scripts" / "__init__.py").write_text("", encoding="utf-8")
+    (stub_root / "scripts" / "prophet_settlement_preflight.py").write_text(
+        module_body, encoding="utf-8"
+    )
+    outputs = tmp_path / "github-output.txt"
+    env = os.environ.copy()
+    env.update({"GITHUB_OUTPUT": str(outputs), "PYTHONPATH": str(stub_root)})
+    if budget is not None:
+        env["PROPHET_PREFLIGHT_BUDGET_SECONDS"] = budget
+    if no_timeout_binary:
+        # Simulate macstudio's real Darwin PATH: bash and Python are present,
+        # but neither GNU timeout nor gtimeout exists as a command.
+        import shutil
+        minimal_bin = tmp_path / "minimal-bin"
+        minimal_bin.mkdir(parents=True, exist_ok=True)
+        for name, target in (("bash", shutil.which("bash")), ("python3", sys.executable)):
+            assert target is not None
+            link = minimal_bin / name
+            if not link.exists():
+                link.symlink_to(target)
+        env["PATH"] = str(minimal_bin)
+    started = time.monotonic()
+    result = subprocess.run(
+        ["bash", "-c", block], cwd=stub_root, env=env, capture_output=True,
+        text=True, check=False,
+    )
+    return result, outputs, time.monotonic() - started
+
+
+def test_nightly_preflight_alarm_is_explicitly_bounded_and_never_overrides() -> None:
+    source = _nightly_source()
+    assert source.count("# >>> PROPHET PREFLIGHT ALARM (bounded) >>>") == 1
+    assert source.count("# <<< PROPHET PREFLIGHT ALARM <<<") == 1
+    block = _alarm_block()
+
+    # The actual macstudio nightly runs on Darwin, without GNU timeout(1).
+    # Execute the preflight through a bounded stdlib Python subprocess instead.
+    assert "python3 -c '" in block
+    assert "subprocess.run(" in block
+    assert '[sys.executable, "-m", "scripts.prophet_settlement_preflight"]' in block
+    assert "timeout=budget" in block
+    assert "0 < budget <= 120" in block
+    assert '    timeout "$preflight_budget_seconds"' not in block
+    assert "preflight_rc=$?" in block
+    assert "rc=124" in block
+    default = block.split("${PROPHET_PREFLIGHT_BUDGET_SECONDS:-", 1)[1].split("}", 1)[0]
+    assert default.isdigit() and 0 < int(default) < 900, (
+        "the default child budget must be finite and well inside the 15-minute step"
+    )
+
+    # Terminal unknown is a typed warning that never touches the job outputs:
+    # the checkpoint contract above the block is never overridden.
+    assert "GITHUB_OUTPUT" not in block
+    assert "succeeded=" not in block
+
+
+def test_nightly_preflight_alarm_budget_kills_a_hung_child_with_a_typed_warning(
+    tmp_path,
+) -> None:
+    """The unbounded incumbent ran the alarm child to completion however long
+    it took; a hung alarm now dies on the budget and stays a typed warning."""
+    block = _alarm_block()
+    result, outputs, elapsed = _run_alarm(
+        block, tmp_path, "import time\nwhile True:\n    time.sleep(0.1)\n", budget="1",
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert elapsed < 20, f"hung child was not bounded (took {elapsed:.1f}s)"
+    assert "::warning title=prophet accepted-source preflight" in result.stdout
+    assert "execution budget" in result.stdout
+    assert "rc=124" in result.stdout
+    assert not outputs.exists() or "succeeded=" not in outputs.read_text(encoding="utf-8")
+
+
+def test_nightly_preflight_alarm_error_and_success_stay_typed_and_alarm_only(
+    tmp_path,
+) -> None:
+    block = _alarm_block()
+
+    failed, failed_outputs, _ = _run_alarm(
+        block, tmp_path, "import sys\nsys.stderr.write('boom\\n')\nraise SystemExit(3)\n",
+    )
+    assert failed.returncode == 0
+    assert "::warning title=prophet accepted-source preflight" in failed.stdout
+    assert "could not produce its typed receipt (rc=3)" in failed.stdout
+
+    ok, ok_outputs, _ = _run_alarm(block, tmp_path, "print('typed receipt written')\n")
+    assert ok.returncode == 0
+    assert "::warning title=prophet accepted-source preflight" not in ok.stdout
+
+    for outputs in (failed_outputs, ok_outputs):
+        assert not outputs.exists() or "succeeded=" not in outputs.read_text(
+            encoding="utf-8"
+        )
+
+
+def test_darwin_alarm_without_gnu_timeout_still_runs_the_real_child(tmp_path) -> None:
+    """A macstudio PATH without timeout/gtimeout must execute, not warn rc127."""
+    block = _alarm_block()
+    result, outputs, elapsed = _run_alarm(
+        block, tmp_path / "portable-pass", "print('PORTABLE_PREFLIGHT_RAN')\n",
+        no_timeout_binary=True,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "PORTABLE_PREFLIGHT_RAN" in result.stdout
+    assert "::warning title=prophet accepted-source preflight" not in result.stdout
+    assert "command not found" not in result.stderr
+    assert elapsed < 5
+    assert not outputs.exists()
+
+
+def test_darwin_alarm_without_gnu_timeout_kills_hung_child(tmp_path) -> None:
+    """The stdlib supervisor must enforce a short budget without GNU commands."""
+    block = _alarm_block()
+    result, outputs, elapsed = _run_alarm(
+        block, tmp_path / "portable-hang", "import time\ntime.sleep(4)\n",
+        budget="0.2", no_timeout_binary=True,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert elapsed < 5, f"unbounded alarm child took {elapsed:.2f}s"
+    assert "execution budget (timeout rc=124)" in result.stdout
+    assert "command not found" not in result.stderr
+    assert not outputs.exists()
+
+
+def test_darwin_alarm_rejects_unbounded_budget_without_starting_child(tmp_path) -> None:
+    """A caller override must not extend the 120-second ceiling."""
+    block = _alarm_block()
+    result, outputs, elapsed = _run_alarm(
+        block, tmp_path / "portable-invalid", "print('CHILD_SHOULD_NOT_RUN')\n",
+        budget="9999", no_timeout_binary=True,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "CHILD_SHOULD_NOT_RUN" not in result.stdout
+    assert "could not produce its typed receipt (rc=2)" in result.stdout
+    assert elapsed < 5
+    assert not outputs.exists()
