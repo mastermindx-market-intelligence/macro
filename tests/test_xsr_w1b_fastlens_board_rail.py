@@ -177,7 +177,7 @@ def test_attach_rotation_unknown_state_guard_rail():
 
 def test_attach_rotation_absent_artifact_sets_null():
     """When rotation_raw is empty {}, all records get rotation=None (quiet placeholder
-    for the 'awaiting tonight's data' branch in the template)."""
+    for the no-rank branch in the template)."""
     recs = [_sector_rec("XLK"), _sector_rec("XLV")]
     result = sc._attach_rotation(recs, {}, kind="sector")
     assert all(r["rotation"] is None for r in result), (

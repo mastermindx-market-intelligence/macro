@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-19T21:18:40Z",
+ "accession": "0001164727-26-000010",
+ "cik": "0001164727",
+ "doc_byte_length": 9143821,
+ "doc_sha256": "fcf04bd0483c384f1bc2b16052dcced2265a321f9561a15f3cb7218278f7352d",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-19",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "nem-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 7394673,
+  "byte_start": 7392874,
+  "normalized": "Royal Bank of Canada **$1,897 10",
+  "normalized_sha256": "2904cd62c667a098c11a614de80c2f2e117bf00ad256c1f6be5c67d6da43b04b",
+  "raw": "Royal Bank of Canada </span></div></td><td colspan=\"3\" style=\"background-color:#d9e8ec;padding:2px 1pt;text-align:left;vertical-align:bottom\"><div style=\"text-align:right\"><span style=\"color:#000000;font-family:'Tahoma',sans-serif;font-size:8pt;font-weight:400;line-height:120%\">*</span></div></td><td colspan=\"3\" style=\"background-color:#d9e8ec;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#d9e8ec;padding:2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Tahoma',sans-serif;font-size:8pt;font-weight:400;line-height:120%\">*</span></td><td colspan=\"3\" style=\"background-color:#d9e8ec;padding:0 1pt\"/><td style=\"background-color:#d9e8ec;padding:2px 0 2px 1pt;text-align:left;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Tahoma',sans-serif;font-size:8pt;font-weight:400;line-height:120%\">$</span></td><td style=\"background-color:#d9e8ec;padding:2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Tahoma',sans-serif;font-size:8pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"usd\" contextRef=\"c-616\" decimals=\"-6\" name=\"us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax\" format=\"ixt:num-dot-decimal\" scale=\"6\" id=\"f-1918\">1,897</ix:nonFraction>&#160;</span></td><td style=\"background-color:#d9e8ec;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"/><td colspan=\"3\" style=\"background-color:#d9e8ec;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#d9e8ec;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Tahoma',sans-serif;font-size:8pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-616\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1919\">10",
+  "raw_sha256": "c15f8471e65f86cc0965f1ecbd60b414ad8105a088ef84002acfadcb7ac93f53"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1164727/000116472726000010/nem-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 399851,
+   "byte_start": 399039,
+   "context_ref": "c-616",
+   "raw": "<xbrli:context id=\"c-616\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001164727</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:ProductOrServiceAxis\">us-gaap:GoldMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">nem:RoyalBankOfCanadaMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerProductAndServiceBenchmarkMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "d744b1e6f763a200bb76ec9584c447067e4f1dfb705d1f3e8ea237816ad76c3c"
+  }
+ ]
+}

@@ -35,6 +35,9 @@ EXPECTED_FETCH_DEPTH_ZERO_CONSUMERS = {
     # W2F #9949 (2026-10-22): the frozen-file guard in tests/test_intl_gs_foundation.py
     # compares against origin/<base_ref>, which this job fetches in its own fail-closed step.
     "international-workspace-browser",
+    # W3U: the frozen-seam guard in tests/test_intl_gs_dislocations_view.py
+    # compares against origin/<base_ref>, fetched by this job's fail-closed step.
+    "international-dislocation-explorer",
 }
 
 
@@ -270,7 +273,39 @@ prepare_canonical_main(
 '''
 
 
-def _assert_international_canonical_fetch(definition: dict[str, object]) -> None:
+_DISLOCATION_CANONICAL_PYTHON = '''\
+import os
+from pathlib import Path
+from scripts.run_ci_pack import prepare_canonical_main
+
+prepare_canonical_main(
+    Path.cwd(),
+    tested_tree_sha=os.environ.get("CI_TESTED_TREE_SHA") or os.environ["TESTED_TREE_SHA"],
+    base_ref="${{ github.base_ref || 'main' }}",
+    frozen_paths=(
+        "templates/intl_workspace_surveillance.css",
+        "lib/intl_surveillance_mount.py",
+        "scripts/build_intl.py",
+    ),
+)
+'''
+
+# Jobs whose frozen-file guard compares against canonical main through the
+# fail-closed helper: the test module the gate must precede and the exact
+# helper invocation (the dislocation job names its own compared paths; F10).
+_INTERNATIONAL_CANONICAL_JOBS = {
+    "international-workspace-browser": (
+        "test_intl_gs_foundation.py", _INTERNATIONAL_CANONICAL_PYTHON),
+    "international-dislocation-explorer": (
+        "test_intl_gs_dislocations_view.py", _DISLOCATION_CANONICAL_PYTHON),
+}
+
+
+def _assert_international_canonical_fetch(
+    definition: dict[str, object],
+    frozen_test: str = "test_intl_gs_foundation.py",
+    expected_python: str = _INTERNATIONAL_CANONICAL_PYTHON,
+) -> None:
     """Pin the required gate, its uncaught helper call, and its shell envelope."""
     gates = [step for step in definition.get('steps', [])
              if isinstance(step, dict) and step.get('name') == _INTERNATIONAL_CANONICAL_STEP]
@@ -279,7 +314,7 @@ def _assert_international_canonical_fetch(definition: dict[str, object]) -> None
     steps = definition['steps']
     frozen_steps = [index for index, step in enumerate(steps)
                     if isinstance(step, dict) and
-                    'test_intl_gs_foundation.py' in str(step.get('run', ''))]
+                    frozen_test in str(step.get('run', ''))]
     assert len(frozen_steps) == 1 and steps.index(gate) < frozen_steps[0], (
         'International canonical gate must precede its frozen-file test'
     )
@@ -293,7 +328,7 @@ def _assert_international_canonical_fetch(definition: dict[str, object]) -> None
         actual = ast.parse('\n'.join(lines[1:-1]))
     except SyntaxError as error:
         raise AssertionError('International canonical gate must be valid Python') from error
-    expected = ast.parse(_INTERNATIONAL_CANONICAL_PYTHON)
+    expected = ast.parse(expected_python)
     assert ast.dump(actual, include_attributes=False) == ast.dump(
         expected, include_attributes=False,
     ), 'International must invoke the exact canonical-main helper without swallowing failure'
@@ -320,8 +355,9 @@ def test_fetch_depth_zero_consumers_own_the_narrow_history_contract() -> None:
             for step in definition.get("steps", [])
             if isinstance(step, dict) and "run" in step
         ]
-        if job_id == "international-workspace-browser":
-            _assert_international_canonical_fetch(definition)
+        if job_id in _INTERNATIONAL_CANONICAL_JOBS:
+            _assert_international_canonical_fetch(
+                definition, *_INTERNATIONAL_CANONICAL_JOBS[job_id])
         else:
             assert any(
                 "git fetch origin " in run and "github.base_ref" in run for run in runs

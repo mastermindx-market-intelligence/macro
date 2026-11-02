@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-30T22:10:25Z",
+ "accession": "0001628280-26-022120",
+ "cik": "0001756607",
+ "doc_byte_length": 2494077,
+ "doc_sha256": "9f7224d3c8328e67946c1f1f36649b2add087fac44fb2de09e7e5eadd246e07c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "eqx-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 773081,
+  "byte_start": 772186,
+  "normalized": "The Company’s gold prepay transactions with a syndicate of its existing lenders (the “Gold Prepay Transactions”) and gold purchase and sale arrangement with Versamet and another counterparty (the “Gold Purchase and Sale Arrangement”) under which it received upfront cash prepayments in exchange for delivering a specified number of gold ounces over a specified delivery period are held for the purpose of delivery of gold in accordance with the Company’s expected sale requirements and are accounted for as contracts with customers. The Company’s obligation under the gold stream arrangement assumed as part of the Greenstone Acquisition (the “Stream Arrangement”) and the gold prepay arrangement assumed as part of the Calibre Acquisition (the “Other Gold Prepay Arrangement”) are also accounted for as contracts with customers.",
+  "normalized_sha256": "5ea73b1a14ad8281aff30a0576c690284b7576ee10c20b6ffb90adc80ba9f759",
+  "raw": "The Company&#8217;s gold prepay transactions with a syndicate of its existing lenders (the &#8220;Gold Prepay Transactions&#8221;) and gold purchase and sale arrangement with Versamet and another counterparty (the &#8220;Gold Purchase and Sale Arrangement&#8221;) under which it received upfront cash prepayments in exchange for delivering a specified number of gold ounces over a specified delivery period are held for the purpose of delivery of gold in accordance with the Company&#8217;s expected sale requirements and are accounted for as contracts with customers. The Company&#8217;s obligation under the gold stream arrangement assumed as part of the Greenstone Acquisition (the &#8220;Stream Arrangement&#8221;) and the gold prepay arrangement assumed as part of the Calibre Acquisition (the &#8220;Other Gold Prepay Arrangement&#8221;) are also accounted for as contracts with customers.",
+  "raw_sha256": "83b9c6dd1c278dc2fd47d4bd8b608117ae1123cad8277be09504d25986942c2c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1756607/000162828026022120/eqx-20251231.htm",
+ "xbrl_contexts": []
+}
