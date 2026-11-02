@@ -458,3 +458,64 @@ def test_inventory_tag_object_is_refused_before_output(tmp_path, inventory_fixtu
     assert done.returncode != 0
     assert "must identify a commit directly" in done.stderr
     assert not output.exists()
+
+
+@pytest.mark.parametrize("repo", ["terminal", "mastermind"])
+@pytest.mark.parametrize("source", [None, {}, {"available": False, "sha": "b" * 40},
+                                   {"available": None, "sha": "b" * 40},
+                                   {"sha": None}, {"sha": "unknown"}, {"sha": "b" * 39},
+                                   {"sha": 42}])
+@pytest.mark.parametrize("inventory", [False, True])
+def test_cli_requires_complete_sources_before_replacing_output(
+        tmp_path, inventory_fixture, repo, source, inventory):
+    fx = inventory_fixture
+    broken = copy.deepcopy(fx.registry)
+    if source is None:
+        del broken["sources"][repo]
+    else:
+        broken["sources"][repo] = source
+    # The diagnostic registry deliberately allows unavailable sister inputs.
+    assert registry_owner.validate(broken) == []
+    raw = json.dumps(broken, ensure_ascii=False, indent=2) + "\n"
+    fx.registry_path.write_text(raw, encoding="utf-8")
+    flags = []
+    if inventory:
+        # Prove a source refusal rather than a mismatched inventory-registry blob.
+        _write(fx.repo, REGISTRY_PATH_IN_REPO, raw)
+        tip = _commit(fx.repo, "incomplete registry input")
+        _git(fx.repo, "update-ref", "refs/remotes/origin/main", tip)
+        flags = ["--inventory-ref", tip]
+    output = tmp_path / "projection.json"
+    sentinel = b"keep the previously published projection\n"
+    output.write_bytes(sentinel)
+    done, actual = run_exporter(tmp_path, fx, *flags)
+    assert done.returncode != 0
+    assert repo.title() + " source" in done.stderr
+    assert actual.read_bytes() == sentinel
+
+
+@pytest.mark.parametrize("inventory", [False, True])
+def test_cli_positive_source_metadata_preserves_projection_and_check(
+        tmp_path, inventory_fixture, inventory):
+    fx = inventory_fixture
+    for source in fx.registry["sources"].values():
+        source["available"] = True
+    fx.registry_bytes = (json.dumps(fx.registry, ensure_ascii=False, indent=2) + "\n").encode()
+    fx.registry_path.write_bytes(fx.registry_bytes)
+    flags = []
+    ref = fx.pin
+    if inventory:
+        _write(fx.repo, REGISTRY_PATH_IN_REPO, fx.registry_bytes.decode())
+        ref = _commit(fx.repo, "complete registry inputs")
+        _git(fx.repo, "update-ref", "refs/remotes/origin/main", ref)
+        flags = ["--inventory-ref", ref]
+    done, output = run_exporter(tmp_path, fx, *flags)
+    assert done.returncode == 0, done.stderr
+    expected = expected_projection(fx, ref)
+    if inventory:
+        expected["sources"]["inventory"] = ref
+    before = output.read_bytes()
+    assert before == (json.dumps(expected, ensure_ascii=False, indent=2) + "\n").encode()
+    checked, _ = run_exporter(tmp_path, fx, *flags, "--check")
+    assert checked.returncode == 0, checked.stderr
+    assert output.read_bytes() == before
