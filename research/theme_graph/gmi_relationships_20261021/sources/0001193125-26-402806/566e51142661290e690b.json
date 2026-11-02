@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-09-25T20:02:38Z",
+ "accession": "0001193125-26-402806",
+ "cik": "0001512228",
+ "doc_byte_length": 4172254,
+ "doc_sha256": "8916b4f70a3c6d89f22b7b29bb1ba5d865c08503ac0d0e9de433ec06bf1f1527",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-09-25",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "nb-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1451232,
+  "byte_start": 1450395,
+  "normalized": "In March 2015, the Company obtained in-principle eligibility approval for a loan guarantee to be provided by the Federal Republic of Germany under its untied loan guarantee program, which supports financing for projects that contribute to securing supplies of strategic raw materials in the economic interest of Germany. That approval was based on the Company’s offtake agreement with ThyssenKrupp Metallurgical Products GmbH for the purchase of approximately 50% of planned ferroniobium production from the Elk Creek Project, and constituted the first of the approvals required under the program. The Company received a reiteration of in-principle eligibility in 2017 following completion of the then-current feasibility study for the Elk Creek Project, and received a further reiteration of in-principle eligibility in June 2026.",
+  "normalized_sha256": "cdb582efbdcf43bac376c633825055186d56f091e951cdd32deb27c07694b68d",
+  "raw": "In March 2015, the Company obtained in-principle eligibility approval for a loan guarantee to be provided by the Federal Republic of Germany under its untied loan guarantee program, which supports financing for projects that contribute to securing supplies of strategic raw materials in the economic interest of Germany. That approval was based on the Company&#8217;s offtake agreement with ThyssenKrupp Metallurgical Products GmbH for the purchase of approximately 50% of planned ferroniobium production from the Elk Creek Project, and constituted the first of the approvals required under the program. The Company received a reiteration of in-principle eligibility in 2017 following completion of the then-current feasibility study for the Elk Creek Project, and received a further reiteration of in-principle eligibility in June 2026.",
+  "raw_sha256": "566e51142661290e690b1df556de7e44658b2311e95122c4c010d79bd7bc7e1a"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1512228/000119312526402806/nb-20260630.htm",
+ "xbrl_contexts": []
+}

@@ -1409,8 +1409,8 @@ def _rotation_direction_lines(obs) -> tuple[str, str]:
         zh = (f"两个交易日内两者均下跌：{obs.num} {_pct(n)}，{obs.den} {_pct(d)}。"
               f"{obs.num} 的相对财富变化为 {_pct(r)}。")
         if relative > 0:
-            return (en + f"{obs.num} fell less: relative shelter only, not an absolute gain.",
-                    zh + f"{obs.num} 跌幅较小：仅相对抗跌，不代表绝对收益为正。")
+            return (en + f"{obs.num} fell less: a smaller loss is still a loss, not a gain.",
+                    zh + f"{obs.num} 跌幅较小：较小的跌幅仍是亏损，不是收益。")
         if relative < 0:
             return (en + f"{obs.num} fell more; both its absolute and relative returns were negative.",
                     zh + f"{obs.num} 跌幅更大；其绝对收益与相对收益均为负。")

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-09-29T01:39:19Z",
+ "accession": "0001437749-26-031414",
+ "cik": "0001334933",
+ "doc_byte_length": 5612639,
+ "doc_sha256": "ee6141c9e996561acc71f6e400ab462b98008008a489c0903bdd8d5f4ff28bed",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-09-29",
+ "form": "10-K",
+ "period_of_report": "2026-07-31",
+ "primary_document": "uec20260731_10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 313608,
+  "byte_start": 313116,
+  "normalized": "On March 18, 2026, UR&C received a docket number from the U.S. Nuclear Regulatory Commission for its planned uranium conversion facility. The formal license application is expected to be submitted once engineering and design activities, currently underway with Fluor, are at a sufficient level of detail and a site has been selected. Ongoing discussions with the DOE regarding strategic nuclear fuel cycle infrastructure have led UR&C to broaden its site selection process.",
+  "normalized_sha256": "03c0a4fa3d401be5a22ec49a473a77d34d1071ee74dae478f9f1d5e7617fb6af",
+  "raw": " On March 18, 2026, UR&amp;C received a docket number from the U.S. Nuclear Regulatory Commission for its planned uranium conversion facility.&#160;The formal license application is expected to be submitted once engineering and design activities, currently underway with Fluor, are at a sufficient level of detail and a site has been selected.&#160;Ongoing discussions with the DOE regarding strategic nuclear fuel cycle infrastructure have led UR&amp;C to broaden its site selection process.",
+  "raw_sha256": "32aae1a121e3032e11fee1d0647cf84b4dc63441de790de70318febf2096acfa"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1334933/000143774926031414/uec20260731_10k.htm",
+ "xbrl_contexts": []
+}

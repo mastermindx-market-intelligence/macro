@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-10T21:25:50Z",
+ "accession": "0000817720-26-000055",
+ "cik": "0000817720",
+ "doc_byte_length": 1875971,
+ "doc_sha256": "d8cd914f29821b0d7d4fdc030a185c1d839cbe4f77e078495cc32f50abb2a5bb",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-10",
+ "form": "10-K",
+ "period_of_report": "2026-06-27",
+ "primary_document": "syna-20260627.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 963722,
+  "byte_start": 962646,
+  "normalized": "These assets include non-exclusive licenses to three developed technology products, property and equipment and the right to obtain licenses for eight roadmap technology intangible assets (“roadmap IP”) expected to be delivered at various dates through May 2028. We also entered into transition agreements with Broadcom, under which both parties will provide one another with certain transition services (including one year inventory supply agreement in which Broadcom will facilitate Synaptics to place purchase orders with respective suppliers) following the Closing Date. We acquired these assets from Broadcom in order to solidify our leadership position for end-to-end AI IoT connectivity.",
+  "normalized_sha256": "c2d989112fd2b6f136fa31eafe504f176be3267420cd3bba982544cb56f9734d",
+  "raw": " These assets include non-exclusive licenses to <ix:nonFraction unitRef=\"developedtechnology\" contextRef=\"c-61\" decimals=\"INF\" name=\"syna:NumberOfDevelopedTechnologyProducts\" format=\"ixt-sec:numwordsen\" id=\"f-469\">three</ix:nonFraction> developed technology products, property and equipment and the right to obtain licenses for <ix:nonFraction unitRef=\"roadmaptechnology\" contextRef=\"c-61\" decimals=\"INF\" name=\"syna:NumberOfRoadmapTechnologyIntangibleAssets\" format=\"ixt-sec:numwordsen\" id=\"f-470\">eight</ix:nonFraction> roadmap technology intangible assets (&#8220;roadmap IP&#8221;) expected to be delivered at various dates through May 2028. We also entered into transition agreements with Broadcom, under which both parties will provide one another with certain transition services (including one year inventory supply agreement in which Broadcom will facilitate Synaptics to place purchase orders with respective suppliers) following the Closing Date. We acquired these assets from Broadcom in order to solidify our leadership position for end-to-end AI IoT connectivity.",
+  "raw_sha256": "36e7c5eaae4ddb597a2df20598b6af431b525a3af3220954d283e74089ff856e"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/817720/000081772026000055/syna-20260627.htm",
+ "xbrl_contexts": []
+}

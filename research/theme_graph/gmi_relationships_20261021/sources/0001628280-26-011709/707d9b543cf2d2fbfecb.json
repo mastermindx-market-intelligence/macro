@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-25T21:30:50Z",
+ "accession": "0001628280-26-011709",
+ "cik": "0000717423",
+ "doc_byte_length": 4704356,
+ "doc_sha256": "68919b820a9786e5d6fdaa76b2aeadaf7588d8bfc9840a12d7e1fb3ef5af0b0f",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mur-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3242848,
+  "byte_start": 3241545,
+  "normalized": "Chevron Corporation19 %13",
+  "normalized_sha256": "844494c23db0774e2c08f57935149933572f4541c97f42211cd87b2d0dab87d4",
+  "raw": "Chevron Corporation</span></td><td colspan=\"2\" style=\"background-color:#cceeff;border-top:1pt solid #000000;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Avenir Next LT Pro',sans-serif;font-size:10pt;font-weight:700;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-492\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1705\">19</ix:nonFraction></span><span style=\"color:#000000;font-family:'Avenir Next LT Pro',sans-serif;font-size:10pt;font-weight:400;line-height:100%\">&#160;</span></td><td style=\"background-color:#cceeff;border-top:1pt solid #000000;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Avenir Next LT Pro',sans-serif;font-size:10pt;font-weight:700;line-height:100%\">%</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#cceeff;border-top:1pt solid #000000;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Avenir Next LT Pro',sans-serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-493\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1706\">13",
+  "raw_sha256": "707d9b543cf2d2fbfecb37f7a49843f4e3b3fbbd5d0e4a68589f2fc0b11c8347"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/717423/000162828026011709/mur-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 250830,
+   "byte_start": 250172,
+   "context_ref": "c-493",
+   "raw": "<xbrli:context id=\"c-493\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000717423</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mur:ChevronMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "fbac0fd67725926be13eddcad58deb1c65a7576dc46848fb06734a21dd674f47"
+  }
+ ]
+}
