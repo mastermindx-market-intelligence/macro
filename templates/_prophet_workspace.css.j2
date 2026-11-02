@@ -232,6 +232,33 @@ html[data-theme="light"] .pv-setup-body .pvs-section-tab[aria-selected="true"] {
   .pv-setup-body .pvs-section-tab { flex: 1 1 auto; padding: 8px 10px; }
 }
 
+/* Sources pairs the Plan relation with its dates beside the setup facts on a wide
+   dialog. Small screens and the unenhanced disclosure retain document order. */
+.pv-setup-dialog [role="tabpanel"] .pvs-source-panels > section { min-width: 0; }
+.pv-setup-dialog [role="tabpanel"] .pvs-source-dates { border-bottom: 0; }
+@media (min-width: 800px) {
+  .pv-setup-dialog [role="tabpanel"] .pvs-source-panels {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    grid-template-areas: "setup plan" "setup dates";
+    gap: 0 var(--sp-5, 20px);
+    align-items: start;
+  }
+  .pvs-source-setup { grid-area: setup; }
+  .pvs-source-dates { grid-area: dates; }
+  .pv-setup-dialog .pvs-source-panels > .pvs-plan-relation {
+    grid-area: plan;
+    padding: var(--sp-4, 16px);
+    border: 1px solid var(--line);
+    border-radius: var(--r-ctl, 8px);
+    background: var(--panel2);
+  }
+  html[data-theme="light"] .pv-setup-dialog .pvs-source-panels > .pvs-plan-relation {
+    background: var(--panel);
+    box-shadow: var(--card-shadow);
+  }
+}
+
 /* Legacy compact cards retain their original interactive overlays. */
 {# 2026-10-17: Restore the original compact chart-first US Prophet card.
    PR #9260's opportunity-workspace card enlargement is intentionally withdrawn.

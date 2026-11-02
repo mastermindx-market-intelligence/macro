@@ -99,7 +99,8 @@
     {%- endif %}
     <div class="pvs-group" data-pvs-section="sources">
       <details class="pvs-audit"><summary>{{ t('Evidence & source details','证据与来源详情') }}</summary>
-        <section class="pvs-section"><h3>{{ t('Setup information','形态信息') }}</h3>
+        <div class="pvs-source-panels">
+        <section class="pvs-section pvs-source-setup"><h3>{{ t('Setup information','形态信息') }}</h3>
         <p class="pvs-status-read">{{ status_name(row.get('stage'), {'live': ('Active setups','活跃形态'), 'setting_up': ('Developing','形态形成中'), 'ran': ('Ran — don’t chase','已启动 — 勿追'), 'basing': ('Basing','筑底中'), 'blocked': ('Blocked','受阻')}) }} · {{ status_name(row.get('lane') if kind == 'board' else none, {'bottoming': ('Base formation','筑底'), 'continuation': ('Continuation','延续'), 'trend': ('Trend','趋势'), 'recovery': ('Recovery','复苏'), 'watch': ('Watch','观察')}) }}</p>
         <dl class="pvs-facts">
           {{ field('Source setup type','来源形态类别',row.get('lane') if kind == 'board' else none,'lane') }}
@@ -151,12 +152,13 @@
           <p class="pvs-note">{{ t('Exact plan relation: not available from the source.','精确计划关联：来源未提供。') }}</p>
           {% endif %}
         </section>
-        <section class="pvs-section"><h3>{{ t('Source dates','来源时间') }}</h3><dl class="pvs-facts">
+        <section class="pvs-section pvs-source-dates"><h3>{{ t('Source dates','来源时间') }}</h3><dl class="pvs-facts">
           {{ field('Source as-of','来源日期',as_of,'envelope.as_of') }}
           {{ field('Signal as-of','信号日期',row.get('signal_asof') if kind == 'board' else none,'signal_asof') }}
           {{ field('Price observations through','价格观测截至',sig.get('tier_observed_date'),'signal.tier_observed_date') }}
           {{ field('Quote timestamp','报价时间',row.get('price_as_of') if kind == 'board' else none,'price_as_of') }}
         </dl><p class="pvs-note">{{ t('Source date is not a quote timestamp. Missing clocks remain missing.','来源日期不是报价时间，缺失时间保持缺失。') }}</p></section>
+        </div>
       </details>
     </div>
   </div>
