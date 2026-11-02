@@ -32,6 +32,29 @@ SHA_HEAD = "2" * 40
 SHA_BASE = "3" * 40
 
 
+@pytest.fixture(autouse=True)
+def _isolate_tested_tree_sha():
+    """``execute_pack`` publishes the plan-bound tree as ``TESTED_TREE_SHA`` in
+    the runner's own ``os.environ`` (F10 #10367) and never overrides a value that
+    is already there. Without isolation the first plan-driven ``execute_pack`` in
+    a pytest run would leave its tree ambient for every later test and every
+    child they spawn (review INTL-GS-F10-AUDIT-2, N5).
+
+    Explicit snapshot/restore on purpose: ``monkeypatch.delenv`` records an undo
+    entry only when the key EXISTS before the test, so a value that the test body
+    (or ``execute_pack``) sets afterwards would survive teardown and the leak
+    would simply move to the end of the module (review INTL-GS-F10-HYGIENE-AUDIT).
+    """
+    before = os.environ.pop("TESTED_TREE_SHA", None)
+    try:
+        yield
+    finally:
+        if before is None:
+            os.environ.pop("TESTED_TREE_SHA", None)
+        else:
+            os.environ["TESTED_TREE_SHA"] = before
+
+
 def _job(
     job_id: str,
     steps: list[dict[str, object]],
@@ -2306,6 +2329,67 @@ def test_unknown_timeout_stops_environment_reuse_restore_and_base_replay(tmp_pat
     assert SEMANTIC.semantic_gate_verdict(evidence).clear is False
     assert evidence["status"] != "clear"
 
+
+def _capture_run_job_env(monkeypatch, tmp_path, seen):
+    monkeypatch.setattr(PACK, "_workspace_root", lambda: tmp_path)
+    monkeypatch.setattr(PACK, "_current_commit_sha", lambda *_a: SHA_TREE)
+    # Production builds every job's command_env from os.environ: ``_child_environment``
+    # right after the export, and ``_dependency_environment`` (which starts from the
+    # same copy) whenever the dependency set changes. A ``{}`` stub would hide the
+    # export this test exists to prove.
+    monkeypatch.setattr(PACK, "_dependency_environment", lambda dep, **_k: PACK._child_environment())
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_a: None)
+    monkeypatch.setattr(PACK, "_run_exact_base_replays", lambda **_k: None)
+
+    def run(job, **kwargs):
+        seen["command_env"] = dict(kwargs["command_env"])
+        seen["tested_tree_sha"] = kwargs["tested_tree_sha"]
+        steps = tuple(
+            {**spec.plan_dict(), "outcome": "timed_out", "failure_signature": None}
+            for spec in PACK.semantic_step_specs(job)
+        )
+        result = PACK.JobExecution(
+            job.job_id,
+            PACK.semantic_job_digest(job),
+            {"outcome": "unknown", "detail": "stub"},
+            steps,
+            "stub",
+        )
+        object.__setattr__(result, "timeout_settlement", "unknown")
+        return result
+
+    monkeypatch.setattr(PACK, "_run_job", run)
+
+
+def test_execute_pack_publishes_plan_tree_to_legacy_step_environment(tmp_path, monkeypatch):
+    """F10 #10367 / review AUDIT-2 N6: the trusted and canary executors pass only
+    CLI flags, so the pack itself must hand ``TESTED_TREE_SHA`` to legacy steps.
+    Deleting the ``_export_tested_tree_sha`` call in ``execute_pack`` fails here."""
+    jobs = [_job("alpha", [{"name": "proof", "run": "true"}])]
+    plan = _plan(jobs, changed=[".github/ci/legacy-jobs.yml"])
+    seen: dict[str, object] = {}
+    _capture_run_job_env(monkeypatch, tmp_path, seen)
+    assert "TESTED_TREE_SHA" not in os.environ
+    PACK.execute_pack(jobs, plan=plan, emit_semantic_fragment=tmp_path / "fragment.json")
+    assert seen["tested_tree_sha"] == SHA_TREE
+    assert seen["command_env"]["TESTED_TREE_SHA"] == SHA_TREE
+    assert os.environ["TESTED_TREE_SHA"] == SHA_TREE  # _isolate_tested_tree_sha pops it at teardown
+
+
+def test_execute_pack_never_overrides_an_explicit_tested_tree_sha(tmp_path, monkeypatch):
+    """ci.yml exports ``TESTED_TREE_SHA`` itself; the pack must not replace it."""
+    jobs = [_job("alpha", [{"name": "proof", "run": "true"}])]
+    plan = _plan(jobs, changed=[".github/ci/legacy-jobs.yml"])
+    explicit = "c" * 40
+    monkeypatch.setenv("TESTED_TREE_SHA", explicit)
+    seen: dict[str, object] = {}
+    _capture_run_job_env(monkeypatch, tmp_path, seen)
+    PACK.execute_pack(jobs, plan=plan, emit_semantic_fragment=tmp_path / "fragment.json")
+    assert seen["tested_tree_sha"] == SHA_TREE
+    assert seen["command_env"]["TESTED_TREE_SHA"] == explicit
+    assert os.environ["TESTED_TREE_SHA"] == explicit
+
+
 def test_unsettled_base_boundary_preserves_original_checkout(tmp_path, monkeypatch):
     source = tmp_path / "source"
     exact, _ = _small_repository(source)
@@ -3336,13 +3420,14 @@ def test_unmarked_brain_unknown_installer_preserves_settlement_fence(monkeypatch
     assert result.steps[0]["outcome"] == "infrastructure_blocked"
 
 
-def test_explicit_owner_manifest_activation_keeps_brain900_and_international720():
+def test_explicit_owner_manifest_activation_keeps_brain900_and_international1200():
     jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
     native = [job.job_id for job in jobs.values()
               if any(spec.get("acquisition") == "native_parallel" for spec in PACK._browser_setup_contract(job))]
     assert native == ["bea-gvc-current-descriptive-consumer", "ontology-explorer", "unrun-brain-gateway"]
     assert jobs["unrun-brain-gateway"].definition["timeout-minutes"] == 15
-    assert jobs["international-workspace-browser"].definition["timeout-minutes"] == 12
+    # DEC:INTL-GS-W2A-CI-BUDGET-RAISE-IS-W2A-SCOPE-20261031 (c1): pin tracks a deliberate manifest change (W2A IM13 cost + measured hosted-runner slowdown).
+    assert jobs["international-workspace-browser"].definition["timeout-minutes"] == 20
     brain = PACK._browser_setup_contract(jobs["unrun-brain-gateway"])[0]
     assert brain["activation_job_id"] == "unrun-brain-gateway"
     assert brain["logical_job_timeout_minutes"] == 15 and brain["timeout_minutes"] == 10
@@ -3691,6 +3776,13 @@ _CM_FROZEN_PATHS = (
     'lib/intl_global_observation_adapter.py',
 )
 
+# F10: W3U compares these explicit paths, independently of W2F's default.
+_CM_W3U_FROZEN_PATHS = (
+    'templates/intl_workspace_surveillance.css',
+    'lib/intl_surveillance_mount.py',
+    'scripts/build_intl.py',
+)
+
 
 def _cm_git(root, *args):
     return _cm_subprocess.run(
@@ -3724,7 +3816,7 @@ def _cm_fixture(parent, *, changed_frozen=False, shallow_remote=False, full_chec
     _cm_git(source, 'config', '--local', 'maintenance.auto', 'false')
     _cm_git(source, 'config', 'user.name', 'Canonical Fixture')
     _cm_git(source, 'config', 'user.email', 'canonical@example.invalid')
-    for path in _CM_FROZEN_PATHS:
+    for path in _CM_FROZEN_PATHS + _CM_W3U_FROZEN_PATHS:
         dest = source / path
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text('frozen baseline\n', encoding='utf-8')
@@ -3741,6 +3833,12 @@ def _cm_fixture(parent, *, changed_frozen=False, shallow_remote=False, full_chec
     for number in range(4):
         _cm_commit(source, 'feature.txt', f'{number}\n', f'feature-{number}')
     if changed_frozen:
+        # _CM_FROZEN_PATHS[0] is a SHARED theme/nav entry: the foundation guard
+        # freezes it only when the same change also touches an International GS
+        # production surface (tests/test_intl_gs_foundation.py, 2026-10-22), so
+        # the fixture's feature change carries one such surface alongside it.
+        _cm_commit(source, 'templates/intl/fixture-surface.html.j2', 'gs surface\n',
+                   'change gs surface')
         _cm_commit(source, _CM_FROZEN_PATHS[0], 'changed by feature\n', 'change frozen file')
     feature = _cm_git(source, 'rev-parse', 'HEAD')
     _cm_git(source, 'switch', '-qc', 'tested', commits[24])
@@ -3881,7 +3979,8 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
         """
         jobs = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))["jobs"]
         job = jobs["international-dislocation-explorer"]
-        self.assertEqual(job["timeout-minutes"], 8)
+        # Main's protected GS/W2A decision and F10 hosted ~9m12 gate require 15.
+        self.assertEqual(job["timeout-minutes"], 15)
         self.assertEqual(job["scope"], "exclusive")
         self.assertEqual(job["steps"][0]["with"]["fetch-depth"], 0)
         steps = {item.get("name"): item for item in job["steps"]}
@@ -3891,8 +3990,14 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
                          "node --test tests/intl_gs_dislocations_browser.test.cjs")
         name = "canonical base for the frozen-file guard (fail closed)"
         run = steps[name]["run"]
-        self.assertEqual(run, next(item["run"] for item in
-            jobs["international-workspace-browser"]["steps"] if item.get("name") == name))
+        foundation_run = next(item["run"] for item in
+            jobs["international-workspace-browser"]["steps"] if item.get("name") == name)
+        # F10 kept the same helper and fail-closed gate but narrowed its frozen
+        # inputs to W3U-owned files, distinct from W2F's default comparison.
+        self.assertNotEqual(run, foundation_run)
+        self.assertIn("frozen_paths=(", run)
+        for frozen_path in _CM_W3U_FROZEN_PATHS:
+            self.assertIn(f'"{frozen_path}"', run)
         self.assertNotIn("git fetch origin", run)
         self.assertIn("from scripts.run_ci_pack import prepare_canonical_main", run)
 
@@ -4062,6 +4167,43 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
         guards = _cm_frozen_namespace(f['checkout'])
         for path in _CM_FROZEN_PATHS:
             guards['test_frozen_files_match_origin_main_or_exact_accepted_country_theme'](path)
+
+    def test_caller_frozen_paths_replace_the_foundation_default(self):
+        # F10: the dislocation job names its own compared paths; a path absent
+        # from the fixture's trees must refuse, and the default tuple is the
+        # unchanged foundation set.
+        self.assertEqual(PACK.INTERNATIONAL_FOUNDATION_FROZEN_PATHS, _CM_FROZEN_PATHS)
+        f = self.fixture()
+        with self.assertRaisesRegex(RuntimeError, 'required frozen object unavailable'):
+            PACK.prepare_canonical_main(
+                f['checkout'], tested_tree_sha=f['tested'],
+                frozen_paths=('templates/not_in_fixture_or_repo.css',))
+        for bad in ((), ('/abs/path',), ('../escape',), ['templates/theme.css']):
+            with self.assertRaisesRegex(RuntimeError, 'exact relative frozen paths'):
+                PACK.prepare_canonical_main(
+                    f['checkout'], tested_tree_sha=f['tested'], frozen_paths=bad)
+
+    def test_export_tested_tree_sha_publishes_once_and_never_overrides(self):
+        # F10 review F1: executors that pass only CLI flags still give legacy
+        # steps TESTED_TREE_SHA; an explicit value and an unknown tree are left alone.
+        tested = 'a' * 40
+        with _cm_mock.patch.dict(os.environ, {}, clear=False):
+            os.environ.pop('TESTED_TREE_SHA', None)
+            self.assertFalse(PACK._export_tested_tree_sha(None))
+            self.assertNotIn('TESTED_TREE_SHA', os.environ)
+            self.assertTrue(PACK._export_tested_tree_sha(tested))
+            self.assertEqual(os.environ['TESTED_TREE_SHA'], tested)
+            self.assertFalse(PACK._export_tested_tree_sha('b' * 40))
+            self.assertEqual(os.environ['TESTED_TREE_SHA'], tested)
+        with _cm_mock.patch.dict(os.environ, {'TESTED_TREE_SHA': 'c' * 40}, clear=False):
+            self.assertFalse(PACK._export_tested_tree_sha(tested))
+            self.assertEqual(os.environ['TESTED_TREE_SHA'], 'c' * 40)
+
+    def test_caller_frozen_paths_subset_prepares_canonical_main(self):
+        f = self.fixture()
+        self.assertEqual(PACK.prepare_canonical_main(
+            f['checkout'], tested_tree_sha=f['tested'],
+            frozen_paths=_CM_FROZEN_PATHS[:2]), f['canonical'])
 
     def test_missing_required_blob_refuses_after_fetch_without_lazy_fallback(self):
         f = self.fixture(full_checkout=True)

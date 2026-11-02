@@ -1019,15 +1019,34 @@ jobs:
           if [ -z "$qpaths" ]; then lost=" snapshot-unreadable:$QLEDGER_SNAPSHOT"; fi
           while IFS= read -r qpath; do
             [ -n "$qpath" ] || continue
-            if git cat-file -e "$QLEDGER_SNAPSHOT:$qpath" 2>/dev/null; then
+            # Classify against the snapshot TREE, never against a lookup exit code
+            # (#9556 post-merge findings 6285214966 + 6290288707): a readable tree
+            # that lacks the path is a deferred deletion; an unreadable tree
+            # (object store, lock, OOM) is LOST and the surviving bytes stay put.
+            if ! entry=$(git ls-tree --name-only "$QLEDGER_SNAPSHOT" -- "$qpath" 2>/dev/null); then
+              lost="$lost $qpath(lookup-failed)"; continue
+            fi
+            if [ -n "$entry" ]; then
               want=$(git rev-parse "$QLEDGER_SNAPSHOT:$qpath" 2>/dev/null) || want=""
+              if [ -z "$want" ]; then lost="$lost $qpath(lookup-failed)"; continue; fi
               have=$(git hash-object -- "$qpath" 2>/dev/null) || have=""
-              if [ -n "$want" ] && [ "$have" != "$want" ]; then
+              if [ "$have" != "$want" ]; then
+                # A non-file at the path (a directory) cannot be swapped: POSIX `mv`
+                # would move the temp INTO it and leak the blob. Report LOST, touch nothing.
+                if [ -e "$qpath" ] && [ ! -f "$qpath" ]; then lost="$lost $qpath(not-a-file)"; continue; fi
+                # Read into a sibling temp file and swap in only a hash-verified
+                # copy: a failed blob read must never truncate the surviving file.
                 mkdir -p -- "$(dirname -- "$qpath")" 2>/dev/null || true
-                git cat-file blob "$QLEDGER_SNAPSHOT:$qpath" > "$qpath" 2>/dev/null || true
+                tmp=$(mktemp "$qpath.restore.XXXXXX" 2>/dev/null) || tmp=""
+                if [ -n "$tmp" ] && git cat-file blob "$QLEDGER_SNAPSHOT:$qpath" > "$tmp" 2>/dev/null \
+                   && [ "$(git hash-object -- "$tmp" 2>/dev/null)" = "$want" ]; then
+                  chmod u=rw,go=r -- "$tmp" 2>/dev/null || true
+                  mv -f -- "$tmp" "$qpath" 2>/dev/null || true
+                fi
+                if [ -n "$tmp" ]; then rm -f -- "$tmp" 2>/dev/null || true; fi
                 have=$(git hash-object -- "$qpath" 2>/dev/null) || have=""
               fi
-              if [ -n "$want" ] && [ "$have" = "$want" ]; then restored="$restored $qpath"; else lost="$lost $qpath"; fi
+              if [ "$have" = "$want" ]; then restored="$restored $qpath"; else lost="$lost $qpath"; fi
             else
               rm -f -- "$qpath" 2>/dev/null || true
               if [ -e "$qpath" ]; then lost="$lost $qpath(deleted)"; else restored="$restored $qpath(deleted)"; fi
@@ -1486,6 +1505,17 @@ jobs:
         # public twin; terms, capacity, runway, scores, probabilities, and Prophet
         # authority stay absent.
         run: python -m scripts.build_capital_structure_projection
+      - name: capture the previous capital-structure generation (for the change ledger)
+        # SPEC_U2 U2-3 (a): the change-ledger producer below diffs TONIGHT's
+        # state generation against the PREVIOUS published one, so the previous
+        # state bundle and capacity inputs must be copied to $RUNNER_TEMP
+        # BEFORE the state step overwrites them. Absence on a first night (or
+        # after a bundle that refused to publish) is the stated baseline, so
+        # every copy is `|| true` — this step can never red the lane.
+        id: cs_previous_state
+        run: |
+          cp data/capital_structure/state_bundle.json "$RUNNER_TEMP/previous_state_bundle.json" 2>/dev/null || true
+          cp data/capital_structure/capacity_inputs.json "$RUNNER_TEMP/previous_capacity_inputs.json" 2>/dev/null || true
       - name: build the capital-structure state bundle (registration family; whole generation or nothing)
         id: cs_state
         # Reads the same verified generation, the generation-bound health horizon
@@ -1521,6 +1551,49 @@ jobs:
         # leaves the previous bundle in place, and a bundle that does not bind the
         # served state generation must not ride this checkpoint (SPEC_U1B §3).
         run: python -m scripts.build_capital_structure_capacity_inputs
+      - name: build the capital-structure change ledger (one changeset or nothing)
+        # SPEC_U2 U2-3 (b): the typed change desk between the PREVIOUS
+        # published generation (captured by cs_previous_state above) and
+        # tonight's, derived by scripts.build_capital_structure_state_changes
+        # from the two published bundles alone — the same fact the change-desk
+        # API serves, produced once per generation so the monitor and the API
+        # never disagree about what changed. Fatal like the compilers above:
+        # one changeset or nothing — a failed derivation must not ride this
+        # checkpoint, and an absent/unreadable previous bundle is the stated
+        # BASELINE (exit 0), never a synthesized diff.
+        id: cs_changes
+        run: python -m scripts.build_capital_structure_state_changes --root data/capital_structure --previous "$RUNNER_TEMP/previous_state_bundle.json" --previous-inputs "$RUNNER_TEMP/previous_capacity_inputs.json"
+      - name: saved-scenario monitor (typed restore outcomes -> alert outbox; fail-soft)
+        # SPEC_U2 U2-3 (c): the enqueue-only monitor over the users' OWN saved
+        # rows — classified offline against tonight's generation through the
+        # same composition the evaluate route owes, deduped by a frozen
+        # fire_event_id, delivered by the incumbent alert_outbox drain. It
+        # writes NOTHING into the tree (never a staged-path producer). Fail-
+        # soft: absent creds/tables/inputs -> typed unavailable, 0 rows, exit
+        # 0. Dormant unless BOTH CS_SAVED_SCENARIO_ENABLE=1 AND
+        # ALERT_DRAIN_ENABLE=1 (checked before the producer is even imported);
+        # arming the secret is human-only enrollment (SPEC_U2 §3). Runs only
+        # when tonight's change ledger was produced: a failed derivation leaves
+        # no ledger to attribute against, so the monitor stays silent rather
+        # than classify every moved row as unattributed (step-level gate; the
+        # job's coupling to collect is unchanged).
+        id: cs_saved_monitor
+        if: always() && steps.cs_changes.outcome == 'success'
+        timeout-minutes: 3
+        continue-on-error: true
+        env:
+          # FIF producer precedent (engine job): reuse the incumbent repo
+          # service-role secret; the monitor's SUPABASE_URL has a reviewed
+          # project default, so it is NOT injected here.
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          CS_SAVED_SCENARIO_ENABLE: ${{ secrets.CS_SAVED_SCENARIO_ENABLE }}
+          ALERT_DRAIN_ENABLE: ${{ secrets.ALERT_DRAIN_ENABLE }}
+        run: '[ "${{ job.status }}" = "cancelled" ] && { echo "cs saved scenario monitor: job cancelled, skipping"; exit 0; }; python -m scripts.run_capital_structure_saved_scenario_monitor || echo "::warning::cs saved scenario monitor failed (non-fatal)"'
+      - name: summarize the capital-structure change-ledger steps (diagnostics only)
+        # One log line naming all three U2-3 outcomes, so a night's change
+        # ledger and monitor state are greppable without the job log.
+        if: always()
+        run: echo "cs_previous_state=${{ steps.cs_previous_state.outcome }} cs_changes=${{ steps.cs_changes.outcome }} cs_saved_monitor=${{ steps.cs_saved_monitor.outcome }}"
       # Diagnostics only — changes NO behavior. When the compiler above fails, the
       # ledger it rejected is the one artifact that identifies WHY, and today it is
       # unrecoverable: the failure skips every later step, so the post-collect tree
@@ -1616,6 +1689,7 @@ jobs:
           && steps.cs_state.outcome == 'success'
           && (steps.cs_candidates.outcome == 'success' || steps.cs_candidates.outcome == 'failure')
           && steps.cs_inputs.outcome == 'success'
+          && steps.cs_changes.outcome == 'success'
         id: commitcs
         run: |
           echo "committed=false" >> "$GITHUB_OUTPUT"
@@ -2154,6 +2228,8 @@ jobs:
           # circuit_breaker are written solely by collect-core's adapter sweep,
           # present in every job's base) — accepted at the 07-14 split review.
           git add data/ site/basketdata/
+          # GH001 carve (scripts/ci/qledger_carve.sh, #9556 parity): an oversize staged qledger blob sank this whole commit nightly from 10-21; withhold stays green.
+          . "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"; qledger_carve_staged || exit 0
           if git diff --cached --quiet; then echo "no tail data changes to commit"; exit 0; fi
           git commit -m "data: collect-tail accrual $(date -u +%F)"
           # best-effort push: same 5-retry rebase loop as the collect job's
@@ -3588,6 +3664,13 @@ jobs:
         timeout-minutes: 25
         continue-on-error: true
         run: bash scripts/ci/daily_engine_commit_outputs.sh
+      # QLEDGER CARVE CUSTODY (scripts/ci/qledger_carve.sh): the committer restores the
+      # carved runner-local ledger bytes from its EXIT trap; the 25m step timeout or a
+      # job cancel can SIGKILL it first, so this always() step restores from the
+      # recorded snapshot (idempotent; never stages, commits or pushes; LOST is ::error).
+      - name: restore carved qledger bytes after the core checkpoint (runner-local, never published)
+        if: always()
+        run: . scripts/ci/qledger_carve.sh; qledger_carve_restore_from_file
       # Runs AFTER the band that contains `build_baskets --snapshot`, so it grades THIS
       # run's stamp rather than last night's. The plane it watches can die with every
       # signal green: both snapshot writers are content-deduped, so "membership has not
@@ -5190,6 +5273,9 @@ jobs:
       - name: commit engine outputs
         if: always()   # commit the freshly-built pages even if a LATER optional builder times out or is cancelled. pages.yml deploys the COMMITTED main tree, so a skipped commit = stale live site. The builders are individually resilient (each leaves the prior page in place on its own error), so partial output is never broken — committing what built beats shipping nothing.
         run: bash scripts/ci/daily_engine_commit_outputs.sh
+      - name: restore carved qledger bytes after the engine commit (runner-local, never published)
+        if: always()
+        run: . scripts/ci/qledger_carve.sh; qledger_carve_restore_from_file
       - name: assemble machine-consumable feeds (site/feeds -> R2)
         if: always()
         # Handoff H4 (2026-07-02 incident): risk_radar snapshot, froth/dislocation
@@ -6431,6 +6517,8 @@ jobs:
           # data/qledger's one committed-file fence (the CONTROL clock, #5970) is a
           # .gitignore rule, so a plain add here can never re-commit it.
           git add data/qledger 2>/dev/null || true
+          # GH001 carve (scripts/ci/qledger_carve.sh, #9556 parity): an oversize staged qledger blob sank this whole commit nightly from 10-21; withhold stays green.
+          . "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"; qledger_carve_staged || exit 0
           if git diff --cached --quiet; then echo "no stock-brief changes"; exit 0; fi
           git commit -m "stock-briefs: AI research briefs + accountable leans $(date -u +%F)"
           # best-effort push (own files → rebases clean against engine/factor_series)

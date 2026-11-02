@@ -197,6 +197,46 @@ def test_impossible_negative_stock_does_not_become_a_tightness_claim():
     assert context["sources"]["crude_stocks"]["state"] == "invalid_negative_stock"
 
 
+def test_zero_stock_does_not_become_a_zero_barrel_reading():
+    s = _seasonal_weekly()
+    s.iloc[-1] = 0
+    context = sc.build_physical_context({"crude_stocks": s}, as_of=s.index[-1].date().isoformat())
+    assert "crude_stocks_mb" not in context
+    assert context["evidence"]["crude_stocks_mb"]["value"] is None
+    assert context["evidence"]["crude_z"]["value"] is None
+    assert "days_supply" not in context
+    assert context["asof"] is None
+    assert context["sources"]["crude_stocks"]["state"] == "invalid_zero_stock"
+
+
+def test_zero_in_one_stock_series_leaves_the_others_available():
+    crude = _seasonal_weekly()
+    gasoline = _seasonal_weekly(seed=1)
+    gasoline.iloc[-1] = 0
+    context = sc.build_physical_context({"crude_stocks": crude, "gasoline_stocks": gasoline},
+                                        as_of=crude.index[-1].date().isoformat())
+    assert context["sources"]["gasoline_stocks"]["state"] == "invalid_zero_stock"
+    assert "gasoline_stocks_mb" not in context
+    assert context["sources"]["crude_stocks"]["state"] == "available"
+    assert context["crude_stocks_mb"] == round(crude.iloc[-1] / 1000, 1)
+
+
+def test_zero_after_the_cutoff_is_not_seen():
+    s = _seasonal_weekly()
+    s.iloc[-1] = 0
+    context = sc.build_physical_context({"crude_stocks": s}, as_of=s.index[-2].date().isoformat())
+    assert context["sources"]["crude_stocks"]["state"] == "available"
+    assert context["crude_stocks_mb"] == round(s.iloc[-2] / 1000, 1)
+
+
+def test_negative_and_zero_together_keep_the_negative_token():
+    s = _seasonal_weekly()
+    s.iloc[-1] = -1
+    s.iloc[-2] = 0
+    context = sc.build_physical_context({"crude_stocks": s}, as_of=s.index[-1].date().isoformat())
+    assert context["sources"]["crude_stocks"]["state"] == "invalid_negative_stock"
+
+
 def test_builder_reader_and_pure_owner_have_identical_context(monkeypatch):
     from scripts import build_commodities
     from lib import store
@@ -209,3 +249,18 @@ def test_builder_reader_and_pure_owner_have_identical_context(monkeypatch):
     expected = sc.build_physical_context(raw, as_of=cutoff)
     assert build_commodities._oil_supply_read(cutoff) == expected
     assert build_commodities._oil_supply_read() == expected
+
+
+def test_builder_reader_refuses_a_zero_crude_level(monkeypatch):
+    from scripts import build_commodities
+    from lib import store
+
+    raw = {name: _seasonal_weekly() for name in sc.SERIES}
+    raw["crude_stocks"].iloc[-1] = 0
+    monkeypatch.setattr(store, "read", lambda group, name: raw[name].to_frame(name))
+    monkeypatch.setattr(build_commodities.config, "load",
+                        lambda: {"eia": {"supply": {"seasonal_years": 5, "dos_window_weeks": 4}}})
+    cutoff = raw["crude_stocks"].index[-1].date().isoformat()
+    context = build_commodities._oil_supply_read(cutoff)
+    assert context == sc.build_physical_context(raw, as_of=cutoff)
+    assert "crude_stocks_mb" not in context

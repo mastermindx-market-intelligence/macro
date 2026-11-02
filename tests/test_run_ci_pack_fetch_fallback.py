@@ -273,8 +273,37 @@ prepare_canonical_main(
 '''
 
 
+_DISLOCATION_CANONICAL_PYTHON = '''\
+import os
+from pathlib import Path
+from scripts.run_ci_pack import prepare_canonical_main
+
+prepare_canonical_main(
+    Path.cwd(),
+    tested_tree_sha=os.environ.get("CI_TESTED_TREE_SHA") or os.environ["TESTED_TREE_SHA"],
+    base_ref="${{ github.base_ref || 'main' }}",
+    frozen_paths=(
+        "templates/intl_workspace_surveillance.css",
+        "lib/intl_surveillance_mount.py",
+        "scripts/build_intl.py",
+    ),
+)
+'''
+
+# F10 gives W3U its explicit frozen paths without dropping the shared canonical
+# helper's fail-closed identity and gate ordering contracts.
+_INTERNATIONAL_CANONICAL_JOBS = {
+    "international-workspace-browser": (
+        "test_intl_gs_foundation.py", _INTERNATIONAL_CANONICAL_PYTHON),
+    "international-dislocation-explorer": (
+        "test_intl_gs_dislocations_view.py", _DISLOCATION_CANONICAL_PYTHON),
+}
+
+
 def _assert_international_canonical_fetch(
-    definition: dict[str, object], *, frozen_test: str = "tests/test_intl_gs_foundation.py"
+    definition: dict[str, object],
+    frozen_test: str = "test_intl_gs_foundation.py",
+    expected_python: str = _INTERNATIONAL_CANONICAL_PYTHON,
 ) -> None:
     """Pin the required gate, its uncaught helper call, and its shell envelope."""
     gates = [step for step in definition.get('steps', [])
@@ -298,7 +327,7 @@ def _assert_international_canonical_fetch(
         actual = ast.parse('\n'.join(lines[1:-1]))
     except SyntaxError as error:
         raise AssertionError('International canonical gate must be valid Python') from error
-    expected = ast.parse(_INTERNATIONAL_CANONICAL_PYTHON)
+    expected = ast.parse(expected_python)
     assert ast.dump(actual, include_attributes=False) == ast.dump(
         expected, include_attributes=False,
     ), 'International must invoke the exact canonical-main helper without swallowing failure'
@@ -325,14 +354,9 @@ def test_fetch_depth_zero_consumers_own_the_narrow_history_contract() -> None:
             for step in definition.get("steps", [])
             if isinstance(step, dict) and "run" in step
         ]
-        helper_consumers = {
-            "international-workspace-browser": "tests/test_intl_gs_foundation.py",
-            "international-dislocation-explorer": "tests/test_intl_gs_dislocations_view.py",
-        }
-        if job_id in helper_consumers:
+        if job_id in _INTERNATIONAL_CANONICAL_JOBS:
             _assert_international_canonical_fetch(
-                definition, frozen_test=helper_consumers[job_id]
-            )
+                definition, *_INTERNATIONAL_CANONICAL_JOBS[job_id])
         else:
             assert any(
                 "git fetch origin " in run and "github.base_ref" in run for run in runs
@@ -367,7 +391,9 @@ def test_w3u_bounded_canonical_fetch_rejects_contract_mutation(case: str) -> Non
     )
     with pytest.raises(AssertionError):
         _assert_international_canonical_fetch(
-            definition, frozen_test="tests/test_intl_gs_dislocations_view.py"
+            definition,
+            frozen_test="test_intl_gs_dislocations_view.py",
+            expected_python=_DISLOCATION_CANONICAL_PYTHON,
         )
 
 

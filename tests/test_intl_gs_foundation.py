@@ -512,6 +512,13 @@ def test_builder_status_ladder(monkeypatch):
     _install_builder(monkeypatch, "transmission", lambda **_kwargs: [])
     _install_builder(monkeypatch, "dossier", lambda **_kwargs: [
         dict(view="dossier", context_id="im-gs-dossier", context={}, generation=None, payload={"a": 1})])
+    # DEC:INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT (seat
+    # ruling A): the not_built rung needs a TRUE absent-module world. This
+    # branch ships a real coverage builder (W2A), so the rung redirects
+    # coverage's BUILDERS entry to an absent module — the W2B idiom — while
+    # scenario and replay are genuinely absent on every branch and pin the
+    # same rung without any patch.
+    monkeypatch.setitem(mount.BUILDERS, "coverage", "lib.intl_gs_absent_coverage")
     result = mount.attach_surveillance(_base_workspace(), universe_loader=lambda: {}, rights_loader=lambda: {})
     views = result["surveillance"]["views"]
     assert views["scanner"] == {"status": "error", "reason": "ValueError"}
@@ -520,6 +527,8 @@ def test_builder_status_ladder(monkeypatch):
     assert views["dossier"]["status"] == "available"
     assert result["surveillance_panels"] and result["surveillance_panels"][0]["view"] == "dossier"
     assert views["coverage"]["status"] == "not_built"
+    assert views["scenario"]["status"] == "not_built"
+    assert views["replay"]["status"] == "not_built"
 
 
 def test_no_network_or_file_writes(monkeypatch):
@@ -542,7 +551,24 @@ def test_no_network_or_file_writes(monkeypatch):
     monkeypatch.setattr(socket_module, "socket", no_socket)
     monkeypatch.setattr("builtins.open", guarded_open)
     result = mount.attach_surveillance(_base_workspace(), universe_loader=lambda: {}, rights_loader=lambda: {})
-    assert result["surveillance"]["views"]["scanner"]["status"] == "not_built"
+    views = result["surveillance"]["views"]
+    # DEC:INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT (seat
+    # ruling A): scanner not_built was the W2F world (no builder module
+    # existed). This branch ships the scanner builder, and over the empty
+    # universe it builds honest panels with neither network nor file writes,
+    # so it must NOT abstain to keep this test green (B1). The invariant is
+    # available-iff-panel across every view; scenario/replay keep the true
+    # not_built negative for views with no builder at all.
+    panels_by_view = {}
+    for panel in result["surveillance_panels"]:
+        panels_by_view[panel["view"]] = panels_by_view.get(panel["view"], 0) + 1
+    for view, entry in views.items():
+        assert (entry["status"] == "available") == (panels_by_view.get(view, 0) > 0), view
+    assert views["scanner"]["status"] == "available"
+    assert panels_by_view.get("scanner", 0) > 0, \
+        "the scanner builder produces panels without network or writes"
+    assert views["scenario"]["status"] == "not_built"
+    assert views["replay"]["status"] == "not_built"
 
 
 # ---------------------------------------------------------------- 2.8 build_intl
@@ -794,10 +820,9 @@ def _frozen_base() -> str:
     return sha
 
 
-# This exact, pre-GS country-token composition was independently accepted at
-# 51b217b3 (main_composition_6a4_20261022/theme_composition.json and its principal
-# review). It adds a comment and four declarations; no GS token-root edit is authorized.
-# Keep the directional pair pinned: future shared-theme changes require review.
+# Historical, independently accepted pre-GS directional country composition.
+# Preserve the exact reviewed fixture and its mutation regressions; the current
+# production guard below follows the protected main append-only rule.
 _ACCEPTED_COUNTRY_THEME_PAIR = (
     "29ec9caa2e2b8496a39ae2731eb228805bd28e8ad680bd7b0a549bbe3adc5f4e",
     "d7be48a71598c3c806deb271f346c996dc5136e1030f17546407092b6938e419",
@@ -821,6 +846,10 @@ def _git_frozen_bytes(ref: str, path: str) -> bytes:
     return result.stdout
 
 
+# Shared theme/nav surfaces are guarded only for GS production changes; owned
+# engine/lib surfaces always remain frozen. This scoping belongs inside the
+# guard function because the semantic CI harness compiles its AST in isolation.
+
 @pytest.mark.parametrize("path", [
     "templates/theme.css",
     "templates/_navlinks.html.j2",
@@ -829,15 +858,50 @@ def _git_frozen_bytes(ref: str, path: str) -> bytes:
     "lib/intl_global_observation_adapter.py",
 ])
 def test_frozen_files_match_origin_main_or_exact_accepted_country_theme(path):
+    # Preserve the existing callable's name for AST-based CI contract tests;
+    # current edits must satisfy main's scoped, append-only frozen-file guard.
+    shared_frozen = {"templates/theme.css", "templates/_navlinks.html.j2"}
+    gs_surface_prefixes = (
+        "engine/intl_global_",
+        "lib/intl_global_",
+        "lib/intl_gs_",
+        "lib/intl_surveillance_",
+        "scripts/build_intl.py",
+        "templates/intl",
+        "site/intl",
+    )
     base = _frozen_base()
+    if path in shared_frozen:
+        # Shared theme/nav surface: frozen only when the same change also
+        # touches an International GS production surface; FAILS CLOSED.
+        names = subprocess.run(["git", "diff", "--name-only", base, "--"],
+                               cwd=REPO, capture_output=True, text=True)
+        if names.returncode != 0:
+            pytest.fail(f"FAIL CLOSED: git diff --name-only {base} errored: {names.stderr.strip()}")
+        gs_changed = sorted(line.strip() for line in names.stdout.splitlines()
+                            if line.strip().startswith(gs_surface_prefixes))
+        if not gs_changed:
+            return
     result = subprocess.run(["git", "diff", "--quiet", base, "--", path],
                             cwd=REPO, capture_output=True, text=True)
     if result.returncode not in (0, 1):
         pytest.fail(f"FAIL CLOSED: git diff {base} -- {path} errored: {result.stderr.strip()}")
-    if result.returncode == 0:
+    # Narrowed on main: shared theme tokens can be extended only after all
+    # previous bytes, while nav and GS-owned frozen files remain exact.
+    # Keep this logic self-contained for tests/test_ci_pack_semantic.py's
+    # AST-only isolated harness (no reliance on module-level helpers).
+    append_only = frozenset({"templates/theme.css"})
+    if result.returncode == 1 and path in append_only:
+        shown = subprocess.run(["git", "show", f"{base}:{path}"], cwd=REPO,
+                               capture_output=True, text=True)
+        if shown.returncode != 0:
+            pytest.fail(f"FAIL CLOSED: git show {base}:{path} errored: {shown.stderr.strip()}")
+        after = (REPO / path).read_text(encoding="utf-8")
+        assert after.startswith(shown.stdout), (
+            f"{path} changed vs merge-base(origin/main, HEAD) {base}: only a pure end-of-file "
+            "append is permitted; an existing byte was removed, rewritten or displaced")
         return
-    assert _frozen_source_matches(path, _git_frozen_bytes(base, path), (REPO / path).read_bytes()), \
-        f"{path} changed outside the exact accepted country-theme composition vs {base}"
+    assert result.returncode == 0, f"{path} changed vs merge-base(origin/main, HEAD) {base}"
 
 
 @pytest.fixture(scope="module")
@@ -903,6 +967,7 @@ def test_frozen_theme_guard_preserves_only_reviewed_bytes(reviewed_country_theme
     elif case == "changed_baseline":
         baseline += b"\n"
     assert _frozen_source_matches(path, baseline, candidate) is expected
+
 
 
 # ---------------------------------------------------------------- 2.14 JS
@@ -1904,8 +1969,10 @@ def test_fx5_horizon_label_vocabulary():
     assert horizon_label("1m") == ("1M", "1月")
     assert horizon_label("3m") == ("3M", "3月")
     assert horizon_label("20d") == ("20D", "20日")
-    assert horizon_label("6m") == ("6m", "6m")
-    assert horizon_label("ytd") == ("ytd", "ytd")
+    assert horizon_label("6m") == ("6M", "6个月")
+    assert horizon_label("12m") == ("1Y", "1年")
+    assert horizon_label("ytd") == ("YTD", "年初至今")
+    assert horizon_label("2y") == ("2y", "2y")
 
 
 def test_fx5_snapshot_readout_and_control_share_one_vocabulary():

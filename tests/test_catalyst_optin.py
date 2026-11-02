@@ -490,3 +490,71 @@ def test_b02_optin_switch_off_between_request_and_verify_refuses_verify(web, mon
     again = client.post("/api/catalyst/optin/verify", json=body)
     assert again.status_code == 503 and again.json()["detail"] == "CATALYST_OPTIN_DISABLED"
     assert service.verifies == []
+
+
+# ---- G6-F1: verify checks the opt-in switch before booking the abuse guard ----
+
+_G6_BODY = {"email": "investor@example.com", "otp": "123456",
+            "public_ref": "opaque_testref_1234"}
+
+
+def _g6_flags(monkeypatch, value):
+    # setenv for OFF too: delenv on an absent key records no teardown.
+    monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", value)
+    monkeypatch.setenv("CATALYST_OPTIN_ENABLED", value)
+
+
+def _g6_counting_guard(monkeypatch, raise_exc=None):
+    calls = []
+
+    def guard(request):
+        calls.append(request)
+        if raise_exc is not None:
+            raise raise_exc
+    monkeypatch.setattr(catalyst_optin, "_abuse_guard", guard)
+    return calls
+
+
+def test_g6_verify_flag_off_refuses_before_abuse_guard(web, monkeypatch):
+    """Catches: verify booking the shared rate budget while the opt-in switch is OFF."""
+    client, service = web
+    _g6_flags(monkeypatch, "0")
+    calls = _g6_counting_guard(monkeypatch)
+    res = client.post("/api/catalyst/optin/verify", json=_G6_BODY)
+    assert res.status_code == 503 and res.json()["detail"] == "CATALYST_OPTIN_DISABLED"
+    assert calls == []
+    assert service.verifies == []
+
+
+def test_g6_verify_flag_on_still_runs_abuse_guard_once(web, monkeypatch):
+    """Catches: the reordering dropping the abuse guard from an enabled verify."""
+    client, service = web
+    _g6_flags(monkeypatch, "1")
+    calls = _g6_counting_guard(monkeypatch)
+    res = client.post("/api/catalyst/optin/verify", json=_G6_BODY)
+    assert res.status_code == 200
+    assert len(calls) == 1
+    assert len(service.verifies) == 1
+
+
+def test_g6_verify_rate_limited_never_reaches_verification(web, monkeypatch):
+    """Catches: an enabled verify reaching the OTP service after the abuse guard refused it."""
+    from fastapi import HTTPException
+    client, service = web
+    _g6_flags(monkeypatch, "1")
+    calls = _g6_counting_guard(monkeypatch, HTTPException(status_code=429, detail="RATE_LIMITED"))
+    res = client.post("/api/catalyst/optin/verify", json=_G6_BODY)
+    assert res.status_code == 429 and res.json()["detail"] == "RATE_LIMITED"
+    assert len(calls) == 1
+    assert service.verifies == []
+
+
+def test_g6_verify_honeypot_rejected_before_flag_and_guard(web, monkeypatch):
+    """Catches: a filled honeypot being judged after the switch or booking the abuse guard."""
+    client, service = web
+    _g6_flags(monkeypatch, "0")
+    calls = _g6_counting_guard(monkeypatch)
+    res = client.post("/api/catalyst/optin/verify", json={**_G6_BODY, "honeypot": "filled"})
+    assert res.status_code == 400 and res.json()["detail"] == "ABUSE_CHECK_FAILED"
+    assert calls == []
+    assert service.verifies == []

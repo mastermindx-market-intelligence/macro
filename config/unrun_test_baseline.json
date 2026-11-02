@@ -693,7 +693,6 @@
     "tests/test_sec_ftd.py",
     "tests/test_sector_bottom.py",
     "tests/test_sector_central_data_is_sync.py",
-    "tests/test_sector_cycles.py",
     "tests/test_sector_fragmentation.py",
     "tests/test_sector_ignition.py",
     "tests/test_sector_pulse.py",
