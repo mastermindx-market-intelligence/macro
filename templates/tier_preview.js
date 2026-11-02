@@ -13,6 +13,7 @@
   var verifiedUserId = null;
   var confirmedTier = null;
   var tierPublished = false;
+  var accessResolution = "initial";
 
   // `essential` is the WIRE value; `insider` is what the estate shipped before the
   // rename (lib/tiers.py is the server's copy of the same table). Named here, not just
@@ -296,7 +297,10 @@
         var surface = surfaceFor(group.root);
         if (surface) surfaces[surface] = true;
       });
-      placeSurfaceGates(surfaces);
+      // Pending verification is not a denial. Keep the unverified row cap,
+      // but never render an upgrade/check-access gate while a signed-in
+      // session and its server-side entitlement are still being resolved.
+      if (accessResolution !== "pending") placeSurfaceGates(surfaces);
       // Unconditional: tape member names sit outside the capped card grids.
       applyTapeMembers();
     } finally {
@@ -310,13 +314,18 @@
     // Resolution health is separate from the last confirmed summary entitlement.
     // In particular, a failed read is neither a fresh Free verdict nor a grant.
     document.documentElement.setAttribute("data-access-resolution", resolution);
-    var changed = !tierPublished || state.tier !== tier;
+    var tierChanged = !tierPublished || state.tier !== tier;
+    var presentationChanged = tierChanged || accessResolution !== resolution;
+    accessResolution = resolution;
     state.tier = tier;
     state.cap = capFor(tier);
     document.documentElement.setAttribute("data-access-tier", tier);
-    if (!changed) return;
+    if (!presentationChanged) return;
     tierPublished = true;
     apply();
+    // Repainting a pending/recovered gate must not dismiss an open native
+    // detail dialog when the effective entitlement has not actually changed.
+    if (!tierChanged) return;
     // Native detail dialogs dismiss on this event. A same-tier refresh must not
     // close an open detail or temporarily repaint a paid member as Free.
     try { window.dispatchEvent(new CustomEvent("mmx-access-tier", { detail: { tier: tier, cap: state.cap } })); } catch (e) {}
