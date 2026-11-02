@@ -1221,7 +1221,7 @@ def test_a_comparison_of_only_periods_and_the_same_basis_keeps_the_gaap_section(
         "Mark-to-Market Losses", "Participating Securities", "the Merger", "Spin-Off",
         "COVID-19", "Foreign Currency", "Share Repurchases", "Net Income", "TCJA", "Core",
         "Gain on Sale", "Q3 2025", "US Tax Reform", "Class A Common Stock", "Class A",
-        "Acme", "Acme Holdings",
+        "Acme", "Acme Holdings", "Acme Pro-Forma", "Proforma",
     ],
 )
 @pytest.mark.parametrize("issuer", ["", "Walmart Inc."], ids=["no-issuer", "other-issuer"])
