@@ -131,12 +131,21 @@ STANCES: dict[str, dict] = {
 # (Act / Get ready → --ink-ok; Watch / Protect → --ink-warn; Stand aside / Ignore
 # → --muted). Stance is not direction: a doctrine stance is never painted --up/--down.
 # ─────────────────────────────────────────────────────────────────────────────
+# One vocabulary, no second ZH fork (SIC-ADJ-02 / SIC-V4-C01; VTC-029, PRC-036). EN is
+# docs/DESIGN_DOCTRINE.md:44 verbatim (ASCII apostrophe). ZH is the exact string the
+# production templates already render for the same doctrine word: get_ready
+# templates/china_altdata.html.j2:227; watch / protect / aside
+# templates/stage_analysis.html.j2:1497 / :1499 / :1500 (stand-aside also
+# templates/_market_regime_strip.html.j2:8); ignore templates/options.html.j2:3630.
+# "act" has no production ZH origin and is the one NEW string. No doctrine ZH may equal
+# an engine STANCES zh word (WAIT 观望, GET READY 准备, AVOID 回避 …) and Watch never
+# carries the engine's WAIT word 观望 — asserted below and in tests/test_cycle_ontology.py.
 DOCTRINE_STANCES: dict[str, dict] = {
     "act":       {"en": "Act",                 "zh": "行动",         "ink": "ok"},
-    "get_ready": {"en": "Get ready",           "zh": "准备就绪",     "ink": "ok"},
-    "watch":     {"en": "Watch — don't chase", "zh": "观望——勿追高", "ink": "warn"},
-    "protect":   {"en": "Protect gains",       "zh": "保护收益",     "ink": "warn"},
-    "aside":     {"en": "Stand aside",         "zh": "暂时回避",     "ink": "muted"},
+    "get_ready": {"en": "Get ready",           "zh": "做好准备",     "ink": "ok"},
+    "watch":     {"en": "Watch — don't chase", "zh": "观察 —— 别追", "ink": "warn"},
+    "protect":   {"en": "Protect gains",       "zh": "保护利润",     "ink": "warn"},
+    "aside":     {"en": "Stand aside",         "zh": "暂时观望",     "ink": "muted"},
     "ignore":    {"en": "Ignore",              "zh": "忽略",         "ink": "muted"},
 }
 
@@ -147,8 +156,12 @@ DOCTRINE_STANCES: dict[str, dict] = {
 DOCTRINE_STANCE: dict[str, str] = {
     "BUY":               "act",        # bullish; the only fresh-entry stance in the matrix
     "GET READY":         "get_ready",  # anticipatory; pre-entry, turn signaled but not confirmed
-    "HOLD":              "watch",      # bullish but extended: every HOLD cell is a "don't-chase"
-                                       # read (Recovery/TOP WATCH, Peak softening) — never a fresh entry
+    "HOLD":              "watch",      # bullish, already held. HOLD is stamped on every RALLY ON
+                                       # row — the clean (non-divergent) Recovery/Expansion/Peak cells
+                                       # and the divergent Trough/Downturn cells — and on Recovery ×
+                                       # TOP WATCH. The doctrine word is knowingly "Watch — don't
+                                       # chase" in warn ink for all of them: a held position is never
+                                       # a fresh entry, and the chip is not an exit (SIC-ADJ-01a; PRC-037)
     "HIGH-RISK BOUNCE":  "watch",      # caution; a bounce is watched, never chased
     "COUNTERTREND ONLY": "watch",      # caution; tactical only — watch the trend, do not commit
     "TRIM":              "protect",    # caution; reduce — protect what was gained
@@ -174,6 +187,13 @@ for _s, _d in DOCTRINE_STANCE.items():
     assert _d in DOCTRINE_STANCES and _d != "ignore", (_s, _d)
     assert DOCTRINE_STANCES[_d]["ink"] in _TONE_INK_GROUPS[STANCES[_s]["tone"]], (_s, _d, STANCES[_s]["tone"])
 del _s, _d
+# SIC-ADJ-02: the doctrine vocabulary never collides with the engine's stance words, and
+# Watch never reads as the engine's WAIT (观望).
+_ENGINE_ZH = {_v["zh"] for _v in STANCES.values()}
+for _k, _v in DOCTRINE_STANCES.items():
+    assert _v["zh"] not in _ENGINE_ZH, ("doctrine ZH collides with an engine stance word", _k, _v["zh"])
+assert "观望" not in DOCTRINE_STANCES["watch"]["zh"], "Watch must not carry the engine's WAIT word (SIC-ADJ-02)"
+del _k, _v, _ENGINE_ZH
 
 
 def doctrine_for(stance: str | None) -> dict | None:

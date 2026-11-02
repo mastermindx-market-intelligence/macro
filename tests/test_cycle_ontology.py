@@ -1028,3 +1028,31 @@ def test_export_payload_carries_doctrine_without_logic():
     assert payload["doctrine_stance"] == DOCTRINE_STANCE
     for key, cell in payload["crosswalk"].items():
         assert cell["doctrine_stance"] == DOCTRINE_STANCE[cell["stance"]], key
+
+
+# SIC-ADJ-02 / SIC-V4-C01: the production template line that already renders each ZH word.
+_DOCTRINE_ZH_ORIGIN = {
+    "get_ready": ("templates/china_altdata.html.j2", 227),
+    "watch":     ("templates/stage_analysis.html.j2", 1497),
+    "protect":   ("templates/stage_analysis.html.j2", 1499),
+    "aside":     ("templates/stage_analysis.html.j2", 1500),
+    "ignore":    ("templates/options.html.j2", 3630),
+}
+
+
+def test_doctrine_vocabulary_is_the_production_vocabulary():
+    """EN is docs/DESIGN_DOCTRINE.md:44 verbatim and in order; every ZH word except ``act`` is the
+    exact string its cited production template renders; no doctrine ZH equals an engine stance
+    word; Watch never carries the engine's WAIT word (VTC-029 / PRC-036)."""
+    import re as _re
+    from pathlib import Path as _Path
+    from engine.cycle_ontology import DOCTRINE_STANCES, STANCES
+    repo = _Path(__file__).resolve().parents[1]
+    line = (repo / "docs" / "DESIGN_DOCTRINE.md").read_text(encoding="utf-8").split("\n")[43]
+    assert _re.findall(r"\*\*(.+?)\*\*", line) == [v["en"] for v in DOCTRINE_STANCES.values()]
+    for key, (rel, ln) in _DOCTRINE_ZH_ORIGIN.items():
+        src = (repo / rel).read_text(encoding="utf-8").split("\n")[ln - 1]
+        assert DOCTRINE_STANCES[key]["zh"] in src, (key, rel, ln, src[:120])
+    assert set(DOCTRINE_STANCES) - set(_DOCTRINE_ZH_ORIGIN) == {"act"}
+    assert not {v["zh"] for v in STANCES.values()} & {v["zh"] for v in DOCTRINE_STANCES.values()}
+    assert "观望" not in DOCTRINE_STANCES["watch"]["zh"]

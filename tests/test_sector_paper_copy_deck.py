@@ -28,21 +28,53 @@ BOARDS = [
     "authority",
 ]
 
-ROLES = {
-    "h1",
-    "subtitle",
-    "h2",
-    "label",
-    "body",
-    "cta",
-    "link",
-    "footnote",
-    "asof",
-    "chip",
-    "state_title",
-    "state_body",
-    "state_action",
+ROLES = {  # closed vocabulary; extended per RIG wave (wave 2/3 rows added the descriptive roles)
+    "alt",
     "aria",
+    "asof",
+    "board disclaimer",
+    "board footnote",
+    "body",
+    "caption",
+    "cell sub-label",
+    "chip",
+    "count line",
+    "cta",
+    "disclosure",
+    "drawer",
+    "eyebrow",
+    "facts",
+    "footnote",
+    "h1",
+    "h2",
+    "heading",
+    "label",
+    "lane title",
+    "lane_sub",
+    "legend",
+    "link",
+    "list body",
+    "list title",
+    "method",
+    "nav",
+    "note",
+    "pattern",
+    "placeholder",
+    "qualifier",
+    "row chip",
+    "screen-reader text",
+    "stance qualifier",
+    "stat basis",
+    "state",
+    "state_action",
+    "state_body",
+    "state_title",
+    "status body",
+    "status title",
+    "subtitle",
+    "tagline",
+    "text link",
+    "tier gate",
 }
 
 STATE_KEYS = [
@@ -121,17 +153,30 @@ def fragments(entry):
     return cands
 
 
+_CITE = re.compile(r"^(\S+?\.(?:j2|js|py|md|html|json|css|yml|yaml)):(\d+)(?:-(\d+))?(?=\s|$|[),;])")
+
+
+def is_note(source):
+    """A provenance note carries no string to find: NEW rows (with or without a rationale after
+    the word), derived rows, and fact citations that name a data/engine state or a DOM
+    observation rather than a file:line. They only have to be non-empty (well-formed test)."""
+    return source.startswith(("NEW", "derived:")) or _CITE.match(source) is None
+
+
 def source_window(source):
-    m = re.match(r"^(.+):(\d+)$", source)
+    """Lines around a ``path:line`` or ``path:lo-hi`` citation; annotations after the citation
+    (a finding id, a note in parentheses) are allowed and ignored."""
+    m = _CITE.match(source)
     if not m:
         return None
     path = REPO / m.group(1)
     if not path.is_file():
         return None
-    line_no = int(m.group(2))
+    lo_no = int(m.group(2))
+    hi_no = int(m.group(3) or lo_no)
     lines = path.read_text(encoding="utf-8").splitlines()
-    lo = max(0, line_no - 4)
-    hi = min(len(lines), line_no + 3)
+    lo = max(0, lo_no - 4)
+    hi = min(len(lines), hi_no + 3)
     return norm(" ".join(lines[lo:hi]))
 
 
@@ -186,7 +231,7 @@ def test_cited_sources_carry_a_fragment():
     missing = []
     for board, key, entry in entries(deck):
         src = entry["source"]
-        if src == "NEW":
+        if is_note(src):
             continue
         window = source_window(src)
         if window is None:
@@ -242,3 +287,15 @@ def test_placeholder_braces_balanced():
 
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))
+
+
+def test_stance_rows_equal_the_engine_doctrine_vocabulary():
+    """SIC-V4-C01: the deck's stance chips are the engine's DOCTRINE_STANCES, string for string,
+    so the specimen and the producer can never fork the vocabulary again (SIC-ADJ-02)."""
+    import sys
+    sys.path.insert(0, str(REPO))
+    from engine.cycle_ontology import DOCTRINE_STANCES
+    comp = load_deck()["components"]
+    for key, rec in DOCTRINE_STANCES.items():
+        row = comp[f"stance_{key}"]
+        assert (row["en"], row["zh"]) == (rec["en"], rec["zh"]), key

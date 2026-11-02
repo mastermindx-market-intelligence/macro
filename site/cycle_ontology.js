@@ -130,22 +130,22 @@
     },
     "get_ready": {
       "en": "Get ready",
-      "zh": "准备就绪",
+      "zh": "做好准备",
       "ink": "ok"
     },
     "watch": {
       "en": "Watch — don't chase",
-      "zh": "观望——勿追高",
+      "zh": "观察 —— 别追",
       "ink": "warn"
     },
     "protect": {
       "en": "Protect gains",
-      "zh": "保护收益",
+      "zh": "保护利润",
       "ink": "warn"
     },
     "aside": {
       "en": "Stand aside",
-      "zh": "暂时回避",
+      "zh": "暂时观望",
       "ink": "muted"
     },
     "ignore": {

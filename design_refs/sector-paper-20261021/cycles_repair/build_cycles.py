@@ -230,7 +230,7 @@ def methods():
     items = [
         ("now.hazard", D("cycles","hazard_label"), chip(D("cycles","hazard_parity_chip"), "cyc-warn"),
          mono(f'live_hazard_parity {lp["verdict"]} · {len(lp["failing"])} features · measured_on {lp["measured_on"][:8]}')),
-        ("rhythm", D("cycles","rhythm_kind"), "", mono(f'rhythm_version {META["rhythm_version"]} · {s0["rhythm"]["schema"]}')),
+        ("rhythm", D("cycles","rhythm_kind_body"), "", mono(f'rhythm_version {META["rhythm_version"]} · {s0["rhythm"]["schema"]}')),
         ("size_mult", D("cycles","sizing_inert"), "", SRC("cycles","sizing_inert")),
         ("lead_lag", D("cycles","leadlag_stop"), "", SRC("cycles","leadlag_stop")),
     ]
