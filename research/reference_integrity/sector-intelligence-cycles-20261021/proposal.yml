@@ -931,7 +931,8 @@ coverage_matrix:
     drawn: board numbers from boards_manifest.yml (0-40); since wave 2 the Brief and Cycles cells cite the R4 HTML specimen boards only
       — R3 Paper boards stay layout provenance and instrument homes (boards_manifest.yml capability_boards), not cell evidence (PRC-027/PRC-029)
     PAPER_CAPACITY_LIMITED: 'undrawn: the Paper file is at its size limit; the cell is proven on the rendered product in the named journey
-      cell, recorded under evidence/ before #9917 leaves draft (verdict C03/C10)'
+      cell — evidence/<cell>.png + evidence/cells.yml, captured on the production render tree at d86344b93a0b through
+      evidence/evidence_frame.html (method and facts in evidence/README.md); evidence_facts quotes the capture row (verdict C03/C10)'
   families:
   - family: Brief
     cells:
@@ -975,60 +976,102 @@ coverage_matrix:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Rotation · desktop · dark · en
+        evidence: evidence/rotation-desktop-dark-en.png
+        evidence_sha256: ccb61f0392c99b25d6b61aa3d6f9278c7c71c174ee7751ed1b07771887945f9e
+        evidence_facts: 'production d86344b93a0b · sector_central.html#map · [1440, 4809] · data-theme dark · data-lang en · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       desktop/dark/zh:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Rotation · desktop · dark · zh
+        evidence: evidence/rotation-desktop-dark-zh.png
+        evidence_sha256: 00b71d7d7653605b0f094b0429c5b1bca65c1e280e431fc1adc04dc684232d25
+        evidence_facts: 'production d86344b93a0b · sector_central.html#map · [1440, 4770] · data-theme dark · data-lang zh · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       desktop/light/zh:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Rotation · desktop · light · zh
+        evidence: evidence/rotation-desktop-light-zh.png
+        evidence_sha256: f87275889ceae042b41ad9b9d44990a5ad3b69b13dceecedf8e75aaeeddf5cbf
+        evidence_facts: 'production d86344b93a0b · sector_central.html#map · [1440, 4770] · data-theme light · data-lang zh · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       mobile/dark/en:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Rotation · mobile · dark · en
+        evidence: evidence/rotation-mobile-dark-en.png
+        evidence_sha256: f2a4947057bff5f37c7d450da3cde76922a29b9a51856ecdeb5cafe0504d04c9
+        evidence_facts: 'production d86344b93a0b · sector_central.html#map · [390, 14000] · data-theme dark · data-lang en · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       mobile/light/en:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Rotation · mobile · light · en
+        evidence: evidence/rotation-mobile-light-en.png
+        evidence_sha256: d5f1c3b35a5c3c90055a0a9bf6723a0f57573c40bc5216f7e2f337b30cbe141a
+        evidence_facts: 'production d86344b93a0b · sector_central.html#map · [390, 14000] · data-theme light · data-lang en · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       mobile/light/zh:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Rotation · mobile · light · zh
+        evidence: evidence/rotation-mobile-light-zh.png
+        evidence_sha256: ce4e9f8375d7b129e9f8f49acc925f46d9523d3649ce1ff265513ba74d3088da
+        evidence_facts: 'production d86344b93a0b · sector_central.html#map · [390, 13970] · data-theme light · data-lang zh · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
   - family: Explore · Lenses (table, chart, breadth & money, confluence, forming narratives, history)
     cells:
       desktop/dark/en:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · desktop · dark · en
+        evidence: evidence/lenses-desktop-dark-en.png
+        evidence_sha256: 7ae1be2565d8793cd89a6c974e27082ab9f50463bcd12fff6367cd7cc4dcf1f8
+        evidence_facts: 'production d86344b93a0b · sector_central.html#moving · [1440, 4934] · data-theme dark · data-lang en · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       desktop/dark/zh:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · desktop · dark · zh
+        evidence: evidence/lenses-desktop-dark-zh.png
+        evidence_sha256: 38d404b2a5e468984c15378272005928b4f4714a28431d916d69ac8faac9c947
+        evidence_facts: 'production d86344b93a0b · sector_central.html#moving · [1440, 4812] · data-theme dark · data-lang zh · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       desktop/light/en:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · desktop · light · en
+        evidence: evidence/lenses-desktop-light-en.png
+        evidence_sha256: 301802f71678244508193fe2de116ad7661d9acf0042e065e5154a94cc34897c
+        evidence_facts: 'production d86344b93a0b · sector_central.html#moving · [1440, 4934] · data-theme light · data-lang en · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       desktop/light/zh:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · desktop · light · zh
+        evidence: evidence/lenses-desktop-light-zh.png
+        evidence_sha256: 156b0e12b20fdfc6761408a888732febed5ba2c9bd2700067a10e52426746213
+        evidence_facts: 'production d86344b93a0b · sector_central.html#moving · [1440, 4812] · data-theme light · data-lang zh · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       mobile/dark/en:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · mobile · dark · en
+        evidence: evidence/lenses-mobile-dark-en.png
+        evidence_sha256: 22a8500050419514b62b9aa3f562eef727963bb17c7b91f554a1f2300a31a2a2
+        evidence_facts: 'production d86344b93a0b · sector_central.html#moving · [390, 6835] · data-theme dark · data-lang en · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       mobile/dark/zh:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · mobile · dark · zh
+        evidence: evidence/lenses-mobile-dark-zh.png
+        evidence_sha256: 3e07604f421554425c9a2bc319c5c38e899434f32758a01b0cecc360d2c2b1e6
+        evidence_facts: 'production d86344b93a0b · sector_central.html#moving · [390, 6482] · data-theme dark · data-lang zh · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       mobile/light/en:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · mobile · light · en
+        evidence: evidence/lenses-mobile-light-en.png
+        evidence_sha256: 9d47d84accf8a34c7543d32faa0ccea5e1b46548440fdc1c002a7600d88e06e9
+        evidence_facts: 'production d86344b93a0b · sector_central.html#moving · [390, 6835] · data-theme light · data-lang en · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       mobile/light/zh:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · mobile · light · zh
+        evidence: evidence/lenses-mobile-light-zh.png
+        evidence_sha256: feb618bea2166e82f81997bbc8bfb4fc8f7782050788e35f1805b331ee1a831a
+        evidence_facts: 'production d86344b93a0b · sector_central.html#moving · [390, 6482] · data-theme light · data-lang zh · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
   - family: Dossier
     cells:
       desktop/dark/en:
@@ -1041,26 +1084,44 @@ coverage_matrix:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Dossier · desktop · dark · zh
+        evidence: evidence/dossier-desktop-dark-zh.png
+        evidence_sha256: ecb261536df09581eae9c8885bfa956530ab8d5f5dbeda2e6648837bf878b333
+        evidence_facts: 'production d86344b93a0b · sectors/XLK.html · [1440, 9868] · data-theme dark · data-lang zh · as of as-of not id-exposed on the Dossier page (signal note ≈ 2026-10-19) · no horizontal overflow'
       desktop/light/en:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Dossier · desktop · light · en
+        evidence: evidence/dossier-desktop-light-en.png
+        evidence_sha256: b6c80d52785cfdcc9461ade364037ce6a5afb4d0d9b791cce31e631a648a7714
+        evidence_facts: 'production d86344b93a0b · sectors/XLK.html · [1440, 9961] · data-theme light · data-lang en · as of as-of not id-exposed on the Dossier page (signal note ≈ 2026-10-19) · no horizontal overflow'
       desktop/light/zh:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Dossier · desktop · light · zh
+        evidence: evidence/dossier-desktop-light-zh.png
+        evidence_sha256: e16ac837c13e89084316d0d8a79e77f239e893a4c8d5dd875443e54cea8b00aa
+        evidence_facts: 'production d86344b93a0b · sectors/XLK.html · [1440, 9868] · data-theme light · data-lang zh · as of as-of not id-exposed on the Dossier page (signal note ≈ 2026-10-19) · no horizontal overflow'
       mobile/dark/en:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Dossier · mobile · dark · en
+        evidence: evidence/dossier-mobile-dark-en.png
+        evidence_sha256: 380227a1d29ad7484adc3962535a4b4ddef8c79ce0a911b0b21b07bd7228eb00
+        evidence_facts: 'production d86344b93a0b · sectors/XLK.html · [390, 14000] · data-theme dark · data-lang en · as of as-of not id-exposed on the Dossier page (signal note ≈ 2026-10-19) · no horizontal overflow'
       mobile/dark/zh:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Dossier · mobile · dark · zh
+        evidence: evidence/dossier-mobile-dark-zh.png
+        evidence_sha256: df6c4073da830e1d8d8526d14dbf678ac01ff2a9d729a82b2a1af94dad72bc2a
+        evidence_facts: 'production d86344b93a0b · sectors/XLK.html · [390, 14000] · data-theme dark · data-lang zh · as of as-of not id-exposed on the Dossier page (signal note ≈ 2026-10-19) · no horizontal overflow'
       mobile/light/en:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Dossier · mobile · light · en
+        evidence: evidence/dossier-mobile-light-en.png
+        evidence_sha256: 85224776ece87d7ec18b2c4da6c986eb22a8de97ad4febcebe02ace1a4519fe1
+        evidence_facts: 'production d86344b93a0b · sectors/XLK.html · [390, 14000] · data-theme light · data-lang en · as of as-of not id-exposed on the Dossier page (signal note ≈ 2026-10-19) · no horizontal overflow'
   - family: Cycles
     cells:
       desktop/dark/en:
@@ -1103,26 +1164,44 @@ coverage_matrix:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Research · desktop · dark · en
+        evidence: evidence/research-desktop-dark-en.png
+        evidence_sha256: 67951b8448723384507344255b0a8c523c57ef3fe0e477eca43c87cbd62584f3
+        evidence_facts: 'production d86344b93a0b · sector_central.html#tm-mount · [1440, 3240] · data-theme dark · data-lang en · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       desktop/dark/zh:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Research · desktop · dark · zh
+        evidence: evidence/research-desktop-dark-zh.png
+        evidence_sha256: 638ef3ccc096f573bfa98bf0e19dd42c32cb82f8f46c23bdfa1ff5bd8d8f30d6
+        evidence_facts: 'production d86344b93a0b · sector_central.html#tm-mount · [1440, 3193] · data-theme dark · data-lang zh · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       desktop/light/zh:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Research · desktop · light · zh
+        evidence: evidence/research-desktop-light-zh.png
+        evidence_sha256: efee7d90d8fa40b6769a650befd292adc7df54d86826465450e1638502f4df38
+        evidence_facts: 'production d86344b93a0b · sector_central.html#tm-mount · [1440, 3193] · data-theme light · data-lang zh · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       mobile/dark/en:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Research · mobile · dark · en
+        evidence: evidence/research-mobile-dark-en.png
+        evidence_sha256: cdf374853fdc537085efefce028f428499e27cb1832b88b051e31b9fcf7dca75
+        evidence_facts: 'production d86344b93a0b · sector_central.html#tm-mount · [390, 5664] · data-theme dark · data-lang en · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       mobile/light/en:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Research · mobile · light · en
+        evidence: evidence/research-mobile-light-en.png
+        evidence_sha256: 0887d32b9d15a38e4bcc681b4a62bedac4f3fdce7e37af76e447733070e18791
+        evidence_facts: 'production d86344b93a0b · sector_central.html#tm-mount · [390, 5664] · data-theme light · data-lang en · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       mobile/light/zh:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Research · mobile · light · zh
+        evidence: evidence/research-mobile-light-zh.png
+        evidence_sha256: 190d2924be96ba936f20b9678df64fc0e7528708195cad4c0472b3f469e0a32f
+        evidence_facts: 'production d86344b93a0b · sector_central.html#tm-mount · [390, 5413] · data-theme light · data-lang zh · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
   - family: Watches
     cells:
       desktop/light/en:
@@ -1138,22 +1217,37 @@ coverage_matrix:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Watches · desktop · dark · zh
+        evidence: evidence/watches-desktop-dark-zh.png
+        evidence_sha256: d97345c1b5062bfe07470b4f2e851d3a768d51e4eab66b160babee2d4ae16553
+        evidence_facts: 'production d86344b93a0b · sector_central.html#accumulation-section · [1440, 4812] · data-theme dark · data-lang zh · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       desktop/light/zh:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Watches · desktop · light · zh
+        evidence: evidence/watches-desktop-light-zh.png
+        evidence_sha256: 4727250408e1926b4bcf5df45b825729e88ca63538ad8aa1b73f4c63b3cf030b
+        evidence_facts: 'production d86344b93a0b · sector_central.html#accumulation-section · [1440, 4812] · data-theme light · data-lang zh · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       mobile/dark/en:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Watches · mobile · dark · en
+        evidence: evidence/watches-mobile-dark-en.png
+        evidence_sha256: 5af6c03e907ac98e575bbc04039dfc8425aa2854283bd89f3f38f644a3eb0f30
+        evidence_facts: 'production d86344b93a0b · sector_central.html#accumulation-section · [390, 6835] · data-theme dark · data-lang en · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       mobile/light/en:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Watches · mobile · light · en
+        evidence: evidence/watches-mobile-light-en.png
+        evidence_sha256: 06e62df7446eb828e5d3ddcb115d938dda991347faf578624100968ee9961b63
+        evidence_facts: 'production d86344b93a0b · sector_central.html#accumulation-section · [390, 6835] · data-theme light · data-lang en · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
       mobile/light/zh:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Watches · mobile · light · zh
+        evidence: evidence/watches-mobile-light-zh.png
+        evidence_sha256: fa36c1749e29e7f4906dd589abfa617d4031c27e1e41d18db16defb7e40ddab9
+        evidence_facts: 'production d86344b93a0b · sector_central.html#accumulation-section · [390, 6482] · data-theme light · data-lang zh · as of 2026-10-19 | as of 2026-10-19截至 2026-10-19 · no horizontal overflow'
   - family: Components
     cells:
       desktop/dark+light/en:
