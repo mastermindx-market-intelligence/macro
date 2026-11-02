@@ -10342,9 +10342,9 @@ def test_a_commit_changing_another_check_definition_file_too_re_proves():
     [
         "scripts/run_ci_pack.py",
         "requirements.txt",
-        "app/requirements.txt",
+        "app/requirements.txt",  # ci-trigger-closure: data — a commit file name, never opened
         ".github/workflows/daily.yml",
-        "config/synapse.yml",
+        "config/synapse.yml",  # ci-trigger-closure: data — a commit file name, never opened
     ],
 )
 def test_a_manifest_commit_that_also_changes_planner_input_re_proves(extra):
