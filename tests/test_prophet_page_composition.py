@@ -72,3 +72,12 @@ def test_stand_aside_overlay_counts_rows_and_carries_explanation_separately():
     carry = lane.select_one(":scope > [data-ovl-carry]")
     assert carry and "+10 more" in carry.get_text()
     assert not rows.select("[data-ovl-carry]")
+
+
+def test_missing_regime_has_a_readable_status_in_both_languages():
+    vm = _base_vm()
+    vm["latest"] = {**vm["latest"], "quad_name": None}
+    status = next(el for el in render(vm).select("#stocks-header .stk-status")
+                  if el.select_one(":scope > .l-en") and el.select_one(":scope > .l-en").get_text() == "Regime")
+    assert status.select_one("strong .l-en").get_text(strip=True) == "Unavailable"
+    assert status.select_one("strong .l-zh").get_text(strip=True) == "暂无数据"

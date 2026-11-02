@@ -2624,7 +2624,7 @@
           {{ t('Board date unavailable', '榜单日期暂不可用') }}
           {%- endif %}
         </span>
-        <span class="stk-status"><span class="l-en">Regime</span><span class="l-zh">周期</span> <strong>{{ td(latest.quad_name) }}</strong></span>
+        <span class="stk-status"><span class="l-en">Regime</span><span class="l-zh">周期</span> <strong>{{ td(latest.quad_name|trim) if latest.quad_name is string and latest.quad_name|trim else t('Unavailable', '暂无数据') }}</strong></span>
         {% if pb and pb.dial %}<span class="stk-status"><span class="l-en">Posture</span><span class="l-zh">姿态</span> <strong>{{ td(pb.dial.posture) }}</strong></span>{% endif %}
       </div>
     </div>
