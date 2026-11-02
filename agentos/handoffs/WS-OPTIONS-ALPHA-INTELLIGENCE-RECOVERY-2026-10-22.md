@@ -2,7 +2,7 @@
 workstream: WS:OPTIONS-ALPHA-INTELLIGENCE-RECOVERY
 session: claude/r2-wire-scenario-surface-1021
 model: fable
-ended_because: ci_handoff
+ended_because: complete
 mission: >
   R2 TerraShade commission (acceptance.json schema mastermind.options.parity-research.v1,
   rows P01–P76, every row SPECIFIED_NOT_PRODUCTION_ACCEPTED): deliver the exposure
@@ -14,7 +14,7 @@ mission: >
   glm, pinned BASE sha, no fetch) and consumed by the parent, which wired them into the
   map. Delivery follows the Terminal chain commit → PR → merge-on-green → git-gated
   deploy → authenticated live verification.
-prs: [1098, 1109, 1112, 1116]
+prs: [1098, 1109, 1112, 1116, 1122]
 decisions: ["DEC:OPTIONS-R2-ORACLE-OUTRANKS-FREEZE-TEXT"]
 discoveries:
   - "DSC:TERMINAL-GLOBALS-CSS-EDIT-RELOCKS-THREE-EVIDENCE-PACKETS"
@@ -102,6 +102,15 @@ verified:
   - claim: The #1109 master is live on production through the git-gated build.
     command: ssh root@146.190.142.17 '/opt/terminal/terminal-build.sh --target-sha 38723cef63e87e478b1652d42322a69bdec462fd' then git -C /opt/terminal/.gitsrc rev-parse HEAD, cat /opt/terminal/terminal/.deployment-id, curl -s https://app.mastermind-x.com/options | grep -o 'data-dpl-id="[^"]*"'
     result: "\"[build] DONE — target=production live = origin/master @ 38723cef63e8 (app + runtime code, git-gated, healthy)\"; .gitsrc HEAD, the marker and the live data-dpl-id all equal 38723cef63e87e478b1652d42322a69bdec462fd; anonymous /options returns 200 (04:15Z)."
+  - claim: The #1098 master is live on production through the git-gated build.
+    command: ssh root@146.190.142.17 "nohup /opt/terminal/terminal-build.sh --target-sha e54fc7f02481d7f66ae962bf8ddf03453382a5cf" then the .gitsrc / .deployment-id / data-dpl-id triple
+    result: "\"[build] DONE — target=production live = origin/master @ e54fc7f02481\"; all three equal e54fc7f02481d7f66ae962bf8ddf03453382a5cf; anonymous /options 200 (05:12Z)."
+  - claim: The #1116 evidence-lock red was repaired by a real recapture, not a hash edit.
+    command: cd terminal && TERMINAL_CROP_PORT=3571 node e2e/tools/capture_eod_heatmap_flowdesk_load_failure.cjs; TERMINAL_CROP_PORT=3572 node e2e/tools/capture_gex_levels_heatmap_load_failure.cjs; npx vitest run lib/__tests__/eodHeatmapFlowdeskLoadFailureEvidence.test.ts lib/__tests__/gexLevelsHeatmapLoadFailureEvidence.test.ts lib/__tests__/conductorFitBadgeZhEvidence.test.ts
+    result: "126 + 114 crops rewritten at 9ef0160bb; 12 + 12 crops changed by one relative-age digit (21 px / 46 px bboxes); only the header and the GexDeskView.tsx row (0f7bd0a8 → 4d7b3ac3) changed among non-crop lines; 18/18 green; pushed as bb68cd7d8 with the diff explained on #1116."
+  - claim: The final R2 master is live on production through the git-gated build.
+    command: ssh root@146.190.142.17 "nohup /opt/terminal/terminal-build.sh --target-sha 4615f80dc8a6855041103c404e4457a6597445f0" then the .gitsrc / .deployment-id / data-dpl-id triple
+    result: "LIVE_MATCH 4615f80dc8a6855041103c404e4457a6597445f0 at 2026-10-22T06:52Z; anonymous /options 200."
   - claim: The new tabs render their honest states on the fixture book in a browser.
     command: preview of the W1 worktree with the Playwright fixture env (FLOW_FIXTURE=1, TERMINAL_E2E_FIXTURE=1) at /options?tab=prism&symbol=SPY&view=chart
     result: the fixture SPY book is legacy (session 2026-07-10), so Scenario shows not-admitted and Surface shows "No qualified projection for this session"; desktop and mobile screenshots of all four tabs are in the session report.
@@ -112,17 +121,14 @@ unverified:
     what_would_verify: a profiled run of buildExposureSurface and the map field at the largest stored QQQ book; not run in this program.
   - claim: The scan table ranks a qualified live book end to end.
     what_would_verify: "the Discover board on production after #1112 deploys, with a rollout root whose stored book carries exposure_projection; the dev fixture SPY book yields \"41 presets · 0 scored · 41 unscored\" because it is legacy."
-  - claim: The #1098 master (e54fc7f02) is live.
-    what_would_verify: the "[build] DONE" line in /opt/terminal/deploy-r2-pr1098.log (launched 04:49Z) and .gitsrc, the marker and the live data-dpl-id all equal e54fc7f02481d7f66ae962bf8ddf03453382a5cf.
 unresolved:
-  - "#1109 merged 03:45Z (master 38723cef6, deployed and verified live) and #1098 merged 04:45Z (master e54fc7f02, deploy launched 04:49Z, not yet verified)."
-  - "#1112 (scan mount, branch claude/r2-scan-mount-1021; the controller refreshed it to 42263cd20 after #1098) and #1116 (wiring, branch claude/r2-wire-scenario-surface-1021 at 9ef0160bb) are open with merge-on-green and native auto-merge armed; CI is running on both. Each still needs its deploy and live verification after it merges."
+  - "P76 (authenticated production journey) is still a human-only step: all four R2 PRs are merged (#1112 2026-10-22T05:35Z, #1116 2026-10-22T06:31Z) and master 4615f80dc is live, but anonymous production shows the paywall, so no acceptance row has closed."
   - Held rows P17, P25, P29–P31, P39, P48, P61–P67, P75 need owners outside this program (velocity history, alerts contract, annual anchor, calibration, path scenarios, producer schedule record, recap card, sharing/export, Discord adapter, prospective validation).
   - The second package in Downloads (R1 / GammaPulse MASTERPLAN and FABLE_HANDOFF) is a different commission and was not touched.
 next_actions:
-  - "Verify the #1098 deploy (deploy-r2-pr1098.log DONE line; .gitsrc, .deployment-id and data-dpl-id = e54fc7f02481d7f66ae962bf8ddf03453382a5cf) before launching the next build; the VPS runs one build at a time."
-  - After each R2 merge deploy that master sha through /opt/terminal/terminal-build.sh --target-sha <sha> on the VPS and verify .gitsrc, .deployment-id and data-dpl-id on https://app.mastermind-x.com, then the authenticated Exposure journey and the metric_units three-key check; record P76 per row in docs/OPTIONS_R2_ACCEPTANCE_COVERAGE_2026-10-22.md.
-  - "After #1112 merges delete claude/r2-scan-table-1021; after #1116 merges delete claude/r2-wire-replay-review-1021 and the four consumed lane branches (claude/r2-replay-frames-1021, claude/r2-session-review-1021, claude/r2-local-scenario-1021, claude/r2-exposure-surface-1021). The three PR-1 lane branches are already deleted."
+  - Run the authenticated Exposure journey on https://app.mastermind-x.com (master 4615f80dc): Replay / Review / Scenario / Surface tabs on a SPY or QQQ session whose book carries exposure_projection, the Discover scan table, and the metric_units three-key check; then move the P76 row from PENDING to its measured result in docs/OPTIONS_R2_ACCEPTANCE_COVERAGE_2026-10-22.md.
+  - Let Terminal #1122 (docs-only: the P76 row records master 4615f80dc live) merge through the controller; it needs no deploy.
+  - Find owners for the held rows (P17, P25, P29–P31, P39, P48, P61–P67, P75) and schedule the P74 13k-contract profile; none of them is Terminal wiring work.
   - Report holds as holds; nothing in the ledger closes a row until P76 is recorded against a deployed master.
 do_not_redo:
   - Do not rebuild distance_fit or scanner_score from the freeze prose; the oracle governs and the reducer already ports it (DEC:OPTIONS-R2-ORACLE-OUTRANKS-FREEZE-TEXT).
@@ -134,10 +140,11 @@ do_not_redo:
   - Do not treat the dev fixture SPY book as qualified; its legacy session is why the scenario and surface show their refusal states locally.
   - "Do not rebase or reopen #1116; it was opened after #1098 merged with master merged in. The ExposureMap.tsx / .module.css conflicts were resolved with the branch side because master's copies were byte-identical to 20825722f, the PR-2 content the branch carries (git diff 20825722f origin/master -- <files> was empty)."
   - "Do not re-run or re-consume the PR-5 lane; its six owned files were verified against BASE 52aa270aa at 29ffeb06b and mounted in #1112."
-  - Do not deploy 38723cef6 again; it is live and verified. Each later deploy targets the new master sha only.
+  - Do not deploy 38723cef6, e54fc7f02 or 4615f80dc again; each was built and verified live. A later deploy targets a newer master sha only.
+  - Do not delete the R2 branches again; claude/r2-scan-table-1021, claude/r2-wire-replay-review-1021 and the four consumed lane branches were removed after their PRs merged.
   - Do not create a Terminal-local mirror of these records; the Macro agentos/ store is canonical.
 danger_areas:
-  - Any edit to terminal/app/globals.css relocks three evidence packets (conductor-fit-badge-zh, eod-heatmap-flowdesk-load-failure, gex-levels-heatmap-load-failure); recapture serially.
+  - Any edit to terminal/app/globals.css relocks three evidence packets (conductor-fit-badge-zh, eod-heatmap-flowdesk-load-failure, gex-levels-heatmap-load-failure) and any edit to terminal/components/gexdesk/GexDeskView.tsx relocks the last two; recapture serially, and before pushing run the census (for each file in the branch diff, grep the docs/pr-crops/*/EVIDENCE.yml files) and the gates it names, not only the suites near the change.
   - Fetching origin/master on the fabric host while a lane runs drifts its base; packets must pin BASE=<sha> and forbid fetch.
   - The one-expiry lens's exp is optional (string | undefined); guard lens.kind === "one" && lens.exp before using it as a focus cell.
   - Next 16 allows one dev server per project directory and Turbopack refuses a symlinked node_modules; stop the preview before Playwright and run e2e only in a worktree with real node_modules.
@@ -148,18 +155,18 @@ danger_areas:
   - The Theta publication-only hold, the last-good full book rule (never replaced by a canary) and the no-parallel-store rule remain binding for anything that touches the options data plane.
 ---
 
-# R2 exposure intelligence: lanes consumed, map wired, delivery in flight
+# R2 exposure intelligence: all four PRs merged and live; P76 remains the human step
 
 ## Where the work is
 
-Seven slices, seven owners. PR-1 (#1109) merged at 03:45Z and is live on production;
-PR-2 (#1098) merged at 04:45Z and its build is running. PR-3, PR-4, PR-6 and PR-7 were
-built as fabric lanes, gate-checked at consumption and merged into
-`claude/r2-wire-scenario-surface-1021` together with the parent-owned wiring commits;
-that branch is open as #1116 with master merged in. PR-5 was consumed from its lane and
-mounted on the Discover board as #1112. Both open PRs carry merge-on-green with native
-auto-merge armed. The three governing documents (design pin, freeze with errata, coverage
-ledger) ride on #1116 under the Terminal `docs/` directory.
+Seven slices, seven owners. PR-1 (#1109, 03:45Z) and PR-2 (#1098, 04:45Z) merged and
+were each deployed and verified live. PR-3, PR-4, PR-6 and PR-7 were built as fabric
+lanes, gate-checked at consumption and merged into the wiring branch, which merged as
+#1116 (2026-10-22T06:31Z); PR-5 was consumed from its lane and mounted on the Discover board as
+#1112 (2026-10-22T05:35Z). Master 4615f80dc carries all of it and is live (LIVE_MATCH 2026-10-22T06:52Z).
+The three governing documents (design pin, freeze with errata, coverage ledger) are
+under the Terminal `docs/` directory. The only CI red in the program was #1116's
+evidence lock on GexDeskView.tsx, repaired by a real recapture of both packets.
 
 ## How the wiring stays honest
 

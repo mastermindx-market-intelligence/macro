@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -436,7 +437,7 @@ def _apply_remove(assigned: list[ChannelAssignment], remove: Sequence[Any]) -> l
 def _scan_injections(obj: Any, prefix: str = "") -> list[str]:
     hits: list[str] = []
     if isinstance(obj, str):
-        if INJECTION_RE.search(obj):
+        if INJECTION_RE.search(obj) or INJECTION_RE.search(unicodedata.normalize("NFKC", obj)):
             hits.append(prefix or "/")
         return hits
     if isinstance(obj, Mapping):

@@ -170,7 +170,7 @@ def test_biocatalyst_shell_assets_are_public_but_payload_api_stays_paid():
         }
         assert {"/biocatalyst.css", "/biocatalyst.js"} <= paths
 
-    api_source = (ROOT / "app" / "biocatalyst.py").read_text()
+    api_source = (ROOT / "app" / "biocatalyst.py").read_text()  # ci-trigger-closure: data - this test checks the file's text, not its imports; the job's paths: list it
     assert "def require_site_full_user(" in api_source
     assert "Depends(require_site_full_user)" in api_source
     assert "enforce_site_full" in api_source
@@ -210,7 +210,7 @@ def test_ontology_trace_assets_are_public_but_the_snapshot_api_stays_paid():
     # the router resolves the shared authority rather than declaring a second one.
     public_exact = set(POLICY["public"]["exact"])
     assert not any(path.startswith("/api/ontology") for path in public_exact)
-    api_source = (ROOT / "app" / "ontology_explorer.py").read_text()
+    api_source = (ROOT / "app" / "ontology_explorer.py").read_text()  # ci-trigger-closure: data - this test checks the file's text, not its imports; the job's paths: list it
     assert "from app.main import require_user" in api_source
     assert "enforce_site_full" in api_source
     assert "always=True" in api_source
@@ -220,11 +220,15 @@ def test_retired_movers_route_redirects_to_the_consolidated_hub_section():
     redirect_lines = [
         line.strip()
         for line in CADDY.splitlines()
-        if line.strip().startswith("redir /movers.html ")
+        if line.strip().startswith("redir @movers_seo_redirect ")
     ]
     assert redirect_lines == [
-        'redir /movers.html "/stocks/index.html#today-movers" 301'
+        'redir @movers_seo_redirect "/stocks/index.html#today-movers" 301'
     ]
+    # Only the trusted shell tuple is exempt; the separate matcher test and
+    # real Caddy boundary cases retain every standalone/negative SEO redirect.
+    assert 'path /movers.html' in CADDY
+    assert not re.search(r"^\s*redir /movers\.html ", CADDY, re.M)
 
 
 def test_html_documents_are_never_registration_gated():
@@ -525,7 +529,11 @@ def test_tier_gate_is_reachable_from_its_own_inputs():
     triggers = ci.get("on") or ci.get(True)
     matchers = [_gh_path_filter_to_re(p) for p in triggers["pull_request"]["paths"]]
 
-    steps = manifest["jobs"]["tier-gate"]["steps"]
+    steps = [
+        step
+        for job in ("tier-gate", "paywall-contracts", "site-access-boundary")
+        for step in manifest["jobs"][job]["steps"]
+    ]
     required = set(re.findall(
         r"tests/test_[A-Za-z0-9_]+\.py",
         "\n".join(s["run"] for s in steps if "run" in s),
@@ -534,7 +542,7 @@ def test_tier_gate_is_reachable_from_its_own_inputs():
     # Subjects under test that no `run:` line names: the two halves of the boundary
     # this module diffs, plus the routers the regwall/paywall suites exercise.
     required |= {"config/site_access.yml", "app/deploy/Caddyfile",
-                 "app/regwall.py", "app/paywall.py"}
+                 "app/regwall.py", "app/paywall.py"}  # ci-trigger-closure: data - a file NAME, never opened here
 
     unreachable = sorted(t for t in required if not any(m.match(t) for m in matchers))
     assert unreachable == [], (
@@ -542,6 +550,43 @@ def test_tier_gate_is_reachable_from_its_own_inputs():
         "A PR touching only these would run no serving-boundary guard at all — the "
         "#3488 failure mode. Add each to the paths list."
     )
+
+
+def test_boundary_suites_report_apart_from_the_tier_preview_step():
+    """A failed step skips the rest of its job, so no shell check may run ahead of these.
+
+    They used to follow the bake-dependent tier-preview step inside tier-gate, and
+    that step's reds kept them from running at all in the main heartbeat.
+    """
+    suite = "tests/test_site_access_boundary.py"
+    for path in (".github/ci/legacy-jobs.yml", ".github/workflows/ci-main-heartbeat.yml"):
+        jobs = yaml.safe_load((ROOT / path).read_text())["jobs"]
+
+        def owners(test_file):
+            return [
+                name
+                for name, job in jobs.items()
+                if any(test_file in step.get("run", "") for step in job["steps"])
+            ]
+
+        assert owners(suite) == ["site-access-boundary"], path
+        assert [
+            step["run"] for step in jobs["site-access-boundary"]["steps"]
+            if " -m pytest " in step.get("run", "")
+        ] == [f"python -m pytest {suite} -q"], path
+        assert owners("tests/test_paywall.py") == ["paywall-contracts"], path
+        assert owners("tests/test_regwall.py") == ["paywall-contracts"], path
+        assert "tier-gate" in owners("tests/test_us_board_gate.py"), path
+
+
+def test_boundary_suite_is_on_the_merge_gate():
+    """ci.yml packs `gate: code` only. On `gate: data` a breach of the public list merges on green."""
+    job = yaml.safe_load((ROOT / ".github/ci/legacy-jobs.yml").read_text())["jobs"]["site-access-boundary"]
+    assert job["gate"] == "code"
+    assert job["scope"] == "exclusive"
+    # The closure notes above excuse these two text reads because the job lists them.
+    for name in ("biocatalyst", "ontology_explorer"):
+        assert f"app/{name}.py" in job["paths"]
 
 
 def test_generated_data_is_not_accidentally_public():
@@ -616,13 +661,25 @@ def test_baskets_seo_redirect_preserves_exact_trusted_shell_admission():
     # successor generation. Query-preserving HTTP redirects still fail READY.
     match = re.search(r"@baskets_seo_redirect\s*\{(.*?)\n\t\}", CADDY, re.S)
     assert match
-    assert " ".join(match.group(1).split()) == " ".join("""path /baskets_china.html
+    assert " ".join(match.group(1).split()) == " ".join(r"""path /baskets_china.html
         not {
             query mmx_shell=1
-            header Referer https://beta.mastermind-x.com/*
+            header_regexp Referer ^https://(beta|app)\.mastermind-x\.com/
         }""".split())
     assert "redir @baskets_seo_redirect /sector_central_china.html 301" in CADDY
     assert "redir /baskets_china.html " not in CADDY
+
+
+def test_movers_seo_redirect_preserves_exact_trusted_shell_admission():
+    match = re.search(r"@movers_seo_redirect\s*\{(.*?)\n\t\}", CADDY, re.S)
+    assert match
+    assert " ".join(match.group(1).split()) == " ".join(r"""path /movers.html
+        not {
+            query mmx_shell=1
+            header_regexp Referer ^https://(beta|app)\.mastermind-x\.com/
+        }""".split())
+    assert 'redir @movers_seo_redirect "/stocks/index.html#today-movers" 301' in CADDY
+    assert "redir /movers.html " not in CADDY
 
 
 def test_fail_closed_and_browser_hardening_are_present():
@@ -827,3 +884,31 @@ def test_internal_document_denials_match_the_canonical_policy():
     declared = set(POLICY["deny"]["exact"])
     declared.update(prefix + "*" for prefix in POLICY["deny"].get("prefixes", []))
     assert set(shlex.split(matcher.group(1))) == declared
+
+
+def test_portfolio_state_cache_migration_covers_every_served_consumer():
+    """A path-wide immutable cache requires hash stamps on every consumer."""
+    from lib.pages import optimize_assets_text
+
+    asset = SITE / "portfolio_state.js"
+    digest = hashlib.sha256(asset.read_bytes()).hexdigest()[:8]
+    template = (ROOT / "templates/watchlist.html.j2").read_text()
+    tag = '<script src="portfolio_state.js" data-sync></script>'
+    assert tag in template  # Bare source joins the canonical re-stamping path.
+    stamped = optimize_assets_text(tag, lambda path: digest if path == "portfolio_state.js" else None)
+    served = (SITE / "watchlist.html").read_text()
+    assert stamped in served and "defer" not in stamped
+    for text, loading_tag in [(template, tag), (served, stamped)]:
+        assert text.index(loading_tag) < text.index('<script src="watchlist.js?')
+    refs = re.compile(r'<script\b[^>]*\bsrc="([^"]*portfolio_state\.js[^"]*)"[^>]*>')
+    consumers = set()
+    for page in SITE.rglob("*.html"):
+        for url in refs.findall(page.read_text(encoding="utf-8", errors="replace")):
+            if url.startswith(("http://", "https://", "//")):
+                continue
+            bare = url.split("?", 1)[0]
+            if (page.parent / bare).resolve() != asset.resolve():
+                continue
+            assert url == bare + "?v=" + digest, (page.relative_to(SITE), url)
+            consumers.add(str(page.relative_to(SITE)))
+    assert {"watchlist.html", "ontology.html"} <= consumers

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2025-10-31T15:52:20Z",
+ "accession": "0001628280-25-047726",
+ "cik": "0001023514",
+ "doc_byte_length": 6782173,
+ "doc_sha256": "b87518e50882b63c397591fc1fa194737d1b417c106b3a13c6725a0240422028",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-10-31",
+ "form": "20-F",
+ "period_of_report": "2025-06-30",
+ "primary_document": "hmy-20250630_d2.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 4139515,
+  "byte_start": 4139466,
+  "normalized": "Streaming arrangement with Franco-Nevada Barbados",
+  "normalized_sha256": "c539e8010c68f2e4517c512dd3737561db84b253a8dd96021c8b4eec7cb557ef",
+  "raw": "Streaming arrangement with Franco-Nevada Barbados",
+  "raw_sha256": "c539e8010c68f2e4517c512dd3737561db84b253a8dd96021c8b4eec7cb557ef"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1023514/000162828025047726/hmy-20250630_d2.htm",
+ "xbrl_contexts": []
+}

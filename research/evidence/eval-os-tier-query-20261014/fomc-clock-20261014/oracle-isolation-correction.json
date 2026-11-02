@@ -1,0 +1,7 @@
+{
+  "source_before_sha256": "2ba11b62355fd3f5a669c2149c8f4418bd27dbae4cfdec480a0bbdd29fe24f24",
+  "source_after_sha256": "51ffba4a234b6c056de9661100c2cba3dde062e73b021586121352e77de88c87",
+  "fixture_before_sha256": "6753086d9bcf98cb29d67107c50906daedef34bd09e093b85a6ec7ba4f0a86bd",
+  "reason": "Move root interpretation out of the answerer facts into judge-only adjudication; rebind exact excerpts and hashes.",
+  "source_branch_changed": false
+}

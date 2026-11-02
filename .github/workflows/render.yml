@@ -138,6 +138,7 @@ on:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_demand.py"
       - "scripts/build_discovery.py"
+      - "scripts/build_expectation_surface.py"
       - "scripts/build_flow_desk.py"
       - "scripts/build_flow_leaders.py"
       - "scripts/build_foresight.py"
@@ -543,7 +544,7 @@ jobs:
               templates/hk.html.j2|scripts/build_hk.py) echo hk;;
               templates/canada.html.j2|templates/canada_stock.html.j2|templates/canada_history.html.j2|templates/canada_sector.html.j2|scripts/build_canada.py|scripts/build_canada_library.py) echo canada;;
               templates/commodities.html.j2|templates/spr.html.j2|templates/sanctions_map.html.j2|templates/forex.html.j2|templates/bonds.html.j2|templates/crossasset.html.j2|templates/transmission.html.j2|templates/discovery.html.j2|templates/macro_context.html.j2|scripts/build_commodities.py|scripts/build_spr.py|scripts/build_sanctions_map.py|scripts/build_forex.py|scripts/build_bonds.py|scripts/build_crossasset.py|scripts/build_transmission.py|scripts/build_discovery.py|scripts/build_macro_context.py) echo markets;;
-              templates/gex.html.j2|templates/baskets_china.html.j2) echo stubs;;
+              templates/gex.html.j2|templates/baskets_china.html.j2|templates/movers.html) echo stubs;;
               scripts/build_gex_board.py|scripts/build_options_flow.py|scripts/build_options_skew.py|scripts/build_vol_regime.py) echo gex;;
               # OIP E8 leaf-page narrowing — rationale in the step's YAML comment block.
               templates/options.html.j2|templates/options_screener.html.j2|scripts/build_options_command.py|scripts/build_options_screener.py) echo gex;;
@@ -908,6 +909,7 @@ jobs:
             [ -n "$STUBS_DONE" ] && return 0; STUBS_DONE=1
             run_py "GEX redirect stub (page only)" scripts.build_gex_board --page-only
             run_py "China baskets redirect stub (page only)" scripts.build_baskets_china --page-only
+            run_py "Movers redirect stub (page only)" scripts.build_ticker_pages --movers-page-only
           }
 
           # ---- the parallel regional/desk band (mirrors daily, MINUS special-sits) ----

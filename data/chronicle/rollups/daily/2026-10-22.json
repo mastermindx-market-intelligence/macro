@@ -1,0 +1,245 @@
+{
+  "as_of": "2026-10-22",
+  "coverage": {
+    "end": "2026-10-22",
+    "note": "daily rollup covers 10 session-date(s) from 2026-10-12 to 2026-10-22; chronicle event store begins 2013-03-14; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-10-12"
+  },
+  "schema": "chronicle.rollup.daily/v1",
+  "sessions": [
+    {
+      "date": "2026-10-22",
+      "events": []
+    },
+    {
+      "date": "2026-10-21",
+      "events": []
+    },
+    {
+      "date": "2026-10-20",
+      "events": []
+    },
+    {
+      "date": "2026-10-19",
+      "events": []
+    },
+    {
+      "date": "2026-10-17",
+      "events": []
+    },
+    {
+      "date": "2026-10-16",
+      "events": []
+    },
+    {
+      "date": "2026-10-15",
+      "events": [
+        {
+          "date": "2026-10-15",
+          "id": "cev-regime_flip-cc70334b0cff",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-10-15#regime_canada",
+          "tickers": [],
+          "title": "CANADA regime: Q2 Reflation → Q3 Stagflation",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-15",
+          "id": "cev-research_vault-6dab5f979270",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-zarzrnqfgu6-29437b",
+          "tickers": [],
+          "title": "S&T: GS Novak GS U.S. Industrials & Materials tough EPS start 14 Oct 2026",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-15",
+          "id": "cev-research_vault-c6ef53e30dab",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-2vgkwavht24-a7588c",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Afternoon Briefing Oct 14",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-10-14",
+      "events": [
+        {
+          "date": "2026-10-14",
+          "id": "cev-regime_flip-01a7fce7e06a",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-10-14#regime_hk",
+          "tickers": [],
+          "title": "HK regime: Q4 Growth-scare → Q2 Reflation",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-14",
+          "id": "cev-research_vault-5c4104d034c2",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-zidfbw2dhyr-90424e",
+          "tickers": [],
+          "title": "S&T: GS Bartlett GS TMT TODAY 10.14.26 14 Oct 2026",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-14",
+          "id": "cev-research_vault-6b5616e57697",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-60kies6hqgh-b50195",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence Afternoon Briefing Oct 13",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-14",
+          "id": "cev-research_vault-9860c1d894e4",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-c0hubv6rxqd-061033",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Morning Briefing",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-10-13",
+      "events": [
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-14cdff40d738",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-jwvuj75ku1d-91707f",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence Afternoon Briefing Oct 12",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-6267fbceae3c",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-i2kdffan2hz-88e4fd",
+          "tickers": [],
+          "title": "Goldman Sachs: Americas Fintech 3Q26 Preview Weighing key investor debates and near term earnings setups",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-79268d4c2c88",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-uejhgzrho58-2d4f8c",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Afternoon Briefing",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-a016e2b55ce2",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-wwiddhpakjg-5f90c1",
+          "tickers": [],
+          "title": "Goldman Sachs: GS Early Morning Research Recap Ratings and Target Price Changes October 13, 2026 as of 5 30 AM ET",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-e8b1ba93a968",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-mltowfpejrj-13c4c0",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Morning Briefing",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-10-12",
+      "events": [
+        {
+          "date": "2026-10-12",
+          "id": "cev-research_vault-92ee430321ca",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-arbvfsvswas-96701d",
+          "tickers": [],
+          "title": "BlackRock: Weekly investment commentary en us 20261012 upgrading us treasuries to lock in income",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-12",
+          "id": "cev-research_vault-db2194a832f8",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-cucjl2nrsal-fbd798",
+          "tickers": [],
+          "title": "UBS: Equities Tactical Top Picks",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-10-12",
+          "id": "cev-research_vault-de5f5de087ff",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ldkix3lyxvh-f204cd",
+          "tickers": [],
+          "title": "Ashmore: Theme Commentary CORP DEBT 2026 09 30",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-10-12",
+          "id": "cev-research_vault-f0a1fbe30b61",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-9f7b08hhppb-f1ab7a",
+          "tickers": [],
+          "title": "Goldman Sachs: Americas Business & Information Services 3Q debt issuance moderates, but key growth drivers remain intact",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-10-12",
+          "id": "cev-research_vault-f1c57134564e",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-vwu0m6jvedw-616840",
+          "tickers": [],
+          "title": "Ashmore: weekly 12oct26",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-10-12",
+          "id": "cev-research_vault-f42adefbadb2",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-mub8by2pkvk-0c5c41",
+          "tickers": [],
+          "title": "American Century: Institutional investors insights us policy watch",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-10-12",
+          "id": "cev-research_vault-fb737d1dabd4",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-4sbw9xdvesv-09647d",
+          "tickers": [],
+          "title": "Goldman Sachs: Americas Homebuilders, Building Products & Wood Products 3Q26 Earnings Preview",
+          "weight_hint": 2
+        }
+      ]
+    }
+  ]
+}

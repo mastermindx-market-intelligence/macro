@@ -70,7 +70,8 @@ def test_shipped_caddyfile_line_numbers_match_known_blocks() -> None:
     three-line EdgeOne origin TLS clarification). The exact opt-in HTML
     cache selector adds eleven lines, moving it to line 860. The trusted
     Baskets moved-stub redirect matcher adds ten lines before the five fixed
-    rewrites: those move to 360, 369, 402, 440 and 870. The two peer-stamped
+    rewrites: those move to 360, 369, 402, 440 and 870. Movers adds nine
+    more lines before those blocks: 369, 378, 411, 449 and 879. The two peer-stamped
     lines (121, 146), proxy COUNT (7), every classification and topology guard
     are unchanged. If you find yourself changing a count or classification
     here, you almost certainly widened the static-access boundary — read
@@ -80,11 +81,11 @@ def test_shipped_caddyfile_line_numbers_match_known_blocks() -> None:
     assert proxies == {
         121: SAFE_PEER_STAMPED,
         146: SAFE_PEER_STAMPED,
-        360: SAFE_FIXED_REWRITE,
         369: SAFE_FIXED_REWRITE,
-        402: SAFE_FIXED_REWRITE,
-        440: SAFE_FIXED_REWRITE,
-        870: SAFE_FIXED_REWRITE,
+        378: SAFE_FIXED_REWRITE,
+        411: SAFE_FIXED_REWRITE,
+        449: SAFE_FIXED_REWRITE,
+        879: SAFE_FIXED_REWRITE,
     }
 
 

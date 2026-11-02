@@ -3,8 +3,10 @@ key: TERMINAL-GLOBALS-CSS-EDIT-RELOCKS-THREE-EVIDENCE-PACKETS
 claim: >
   Any edit to terminal/app/globals.css, even one added token line, invalidates the sha locks of three
   evidence packets under docs/pr-crops (conductor-fit-badge-zh, eod-heatmap-flowdesk-load-failure,
-  gex-levels-heatmap-load-failure) and turns the Terminal unit job red until each packet is recaptured with
-  its own dev server, one packet at a time.
+  gex-levels-heatmap-load-failure), and any edit to terminal/components/gexdesk/GexDeskView.tsx invalidates
+  the last two; either turns the Terminal unit job red until each packet is recaptured with its own dev
+  server, one packet at a time. The locked-file set is only discoverable by grepping every
+  docs/pr-crops/*/EVIDENCE.yml for the branch's changed files, not from the suites near the change.
 falsifier: >
   On a branch that touches terminal/app/globals.css run `cd terminal && npx vitest run
   lib/__tests__/conductorFitBadgeZhEvidence.test.ts lib/__tests__/eodHeatmapFlowdeskLoadFailureEvidence.test.ts
@@ -25,6 +27,7 @@ scope:
   - terminal
   - "terminal:terminal/app/globals.css"
   - "terminal:docs/pr-crops"
+  - "terminal:terminal/components/gexdesk/GexDeskView.tsx"
 confidence: verified
 ---
 
@@ -35,6 +38,18 @@ PR 1098 added one line to `terminal/app/globals.css` (`--exposure-positive`, `--
 `app/globals.css`, against the working tree; they failed on the first head and the sweeper labelled the PR
 `merge-blocked`. Recapturing each packet (its capture script starts a dev server) rewrote the EVIDENCE.yml
 shas and PNGs; the job went green on head 20825722f.
+
+## Second observed boundary (2026-10-22)
+
+Terminal PR 1116 changed one prop line in `terminal/components/gexdesk/GexDeskView.tsx`
+(`onLoadSession={loadSession}`). The local gate subset (exposure, replay and projection suites) was green,
+but the CI unit shard failed `eodHeatmapFlowdeskLoadFailureEvidence` and `gexLevelsHeatmapLoadFailureEvidence`
+with "GexDeskView.tsx changed without a recapture" at head 9ef0160bb. Both packets were recaptured with their
+capture tools (126 + 114 crops; 12 + 12 changed by one relative-age digit) and the job went green on head
+bb68cd7d8 (CI run 39729631520 green, merged 06:31Z). Falsifier for this boundary: a branch that edits GexDeskView.tsx and passes both gates with
+the stale EVIDENCE.yml refutes it. Pre-push census that would have caught it before CI:
+`for f in $(git diff --name-only origin/master...HEAD); do grep -l "$f" docs/pr-crops/*/EVIDENCE.yml; done | sort -u`
+and run the gates those packets name.
 
 ## Not claimed
 

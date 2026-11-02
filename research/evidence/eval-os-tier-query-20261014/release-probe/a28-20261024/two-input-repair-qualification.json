@@ -1,0 +1,28 @@
+{
+  "parent": "8d1c97a91579ecf0bbc0800f10dd23a13421503c",
+  "reported_hosted_missing_inputs_covered": true,
+  "local_qledger_closure_findings": {},
+  "all_355_definitions_other_than_two_additive_paths_preserved": true,
+  "hosted_tested_tree_full_closure_not_claimed": true,
+  "controls_passed": 44,
+  "hosted_run": 40081206102,
+  "hosted_tested": "a69e97ea70a231c25ab9a3bc6ff356799bc8d060",
+  "tested_direct_files_15_unchanged": {
+    "engine/intelligence_registry.py": true,
+    "scripts/build_intelligence_registry.py": true,
+    "engine/postmortem.py": true,
+    "scripts/build_output_health.py": true,
+    "engine/qledger_validity.py": true,
+    "scripts/check_qledger_metric_validity.py": true,
+    "scripts/agentos.py": true,
+    "engine/neuralweb/response_eval.py": true,
+    "engine/neuralweb/native_facts.py": true,
+    "engine/neuralweb/brain_gateway.py": true,
+    "lib/mastermind_response_log.py": true,
+    "app/deploy/update.sh": true,
+    "admin/intelligence_execution.py": true,
+    "admin/server.py": true,
+    "engine/qledger_store.py": true
+  },
+  "scope": "Two reported qledger path declarations only; local target closure and fragment/curation controls. Full tested-tree closure, packing and hosted terminal acceptance are not claimed."
+}
