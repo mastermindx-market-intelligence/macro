@@ -288,15 +288,58 @@ if ! cmp -s "$APP_DIR/app/deploy/update.sh" /usr/local/bin/macro-update; then
 	stop_reciprocal_market_memory_writers
 fi
 
+# BEGIN MACRO_UPDATE_FREE_SPACE_GUARD
+# Root-disk floor before the pull writes anything (2026-10-19 and 2026-11-01
+# refills). Every pull lands a new pack in $APP_DIR/.git/objects on the root
+# filesystem; on a full disk the next one fails half-way and journald, Caddy
+# and the API start failing with it. Below the floor, or when free space or the
+# floor cannot be read as a number, this tick skips the fetch: it says why on
+# stderr and in the system log, leaves a marker that names the shortfall, and
+# still runs the reconciliation below against the current checkout (so a timer
+# disarmed above is re-armed, as on any no-change tick), then exits 1. A refused
+# pull also holds back deploys of fixes, by design: recovering space is a
+# manual step (app/deploy/README.md, "Git store maintenance"), never something
+# this updater improvises. The 7 GiB floor is set above what the nightly repack
+# needed on a normal night (about 4 GiB measured 2026-11-01), so on most nights
+# the repack can still run below a refused pull; when it cannot, it refuses and
+# says so, and the recovery stays manual.
+MIN_FREE_KIB="${MACRO_UPDATE_MIN_FREE_KIB:-7340032}"
+DISK_REFUSED_MARKER="${MACRO_UPDATE_DISK_MARKER:-/run/macro-update-disk-refused}"
+DISK_REFUSED=0
+DISK_REFUSAL=""
+ROOT_FREE_KIB=$(df --output=avail -k "$APP_DIR/.git/objects" 2>/dev/null | tail -n 1 | tr -d ' ') || ROOT_FREE_KIB=""
+if ! [[ $ROOT_FREE_KIB =~ ^[0-9]+$ ]] || ! [[ $MIN_FREE_KIB =~ ^[0-9]+$ ]] || [ "$ROOT_FREE_KIB" -lt "$MIN_FREE_KIB" ]; then
+	DISK_REFUSED=1
+	DISK_REFUSAL="macro-update: REFUSED pull: ${ROOT_FREE_KIB:-unreadable} KiB free on $APP_DIR/.git/objects, floor ${MIN_FREE_KIB} KiB; nothing pulled; this tick reconciles the current checkout and exits 1 (recovery: app/deploy/README.md, 'Git store maintenance')"
+	echo "$DISK_REFUSAL" >&2
+	logger -p user.err -t macro-update "$DISK_REFUSAL" 2>/dev/null || true
+	echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) $DISK_REFUSAL" > "$DISK_REFUSED_MARKER" 2>/dev/null || true
+else
+	rm -f "$DISK_REFUSED_MARKER"
+fi
+# END MACRO_UPDATE_FREE_SPACE_GUARD
+
 # Do not add --depth here: depth-one fetches sever the new tip from previously
 # published revisions, breaking the native accepts_revision ancestry check even
 # when both commit objects remain present. Ordinary fetch preserves connectivity
 # for later updates. Existing shallow boundaries require a separate repair;
 # this updater never deepens or rewrites them. A fetch failure still aborts
-# under strict mode before OLD/NEW and reset.
-git -C "$APP_DIR" fetch -q origin main
+# under strict mode before OLD/NEW and reset. A disk-refused tick skips the
+# fetch and pins NEW to HEAD without reading FETCH_HEAD: a fetch that failed
+# part-way (as on a full disk) truncates FETCH_HEAD to empty, and reading it
+# would abort the tick here before the reconciliation below. From here on a
+# refused tick is a no-change tick: nothing below resets or pulls.
+# BEGIN MACRO_UPDATE_PULL_SELECT
+if [ "$DISK_REFUSED" -eq 0 ]; then
+	git -C "$APP_DIR" fetch -q origin main
+fi
 OLD=$(git -C "$APP_DIR" rev-parse HEAD)
-NEW=$(git -C "$APP_DIR" rev-parse FETCH_HEAD)
+if [ "$DISK_REFUSED" -eq 1 ]; then
+	NEW=$OLD
+else
+	NEW=$(git -C "$APP_DIR" rev-parse FETCH_HEAD)
+fi
+# END MACRO_UPDATE_PULL_SELECT
 CHANGED=""
 REPO_UPDATED=0
 RECONCILED=0
@@ -1383,6 +1426,11 @@ fi
 #                          rule-applicability and registration-integration kernels and
 #                          the verified-generation reader at module load; their
 #                          capacity/reference/collector helpers are pinned too.
+#                          U2 saved scenarios (SPEC_U2): saved_scenarios,
+#                          scenario_export and state_changes load with the module;
+#                          the saved-scenario store (and through it the alert
+#                          delivery drain and frozen delivery client) loads on
+#                          first use and then stays cached the same way.
 #   government_revenue/*   app/government_revenue.py imports workspace through
 #                          the non-inert package __init__, which loads the award,
 #                          dossier, exact entity-resolution, federation,
@@ -1487,7 +1535,7 @@ API_RESTART_NEEDED=0
 # Private Plan serving imports the exact identity/terms readers at load time and
 # the incumbent expiry bridge/payoff closure on request; all remain process-cached.
 # BEGIN MACRO_API_RESTART_TRIGGER
-if [ "$API_UNIT_UPDATED" -eq 1 ] || ! mm_api_fence_marker_ready || grep -qE '^(app/.*\.py|app/requirements\.txt|app/deploy/macro-api\.service|config\.yml|config/(site_access|dataset_registry|theme_sources|plans)\.yml|config/intelligence_workspace/datapoints\.v1\.json|contracts/intelligence_workspace/(datapoint_(registry|value)|ai_context_envelope\.v1)\.schema\.json|collectors/(equity_earnings|sec_document_spine|sec_request_pacer)\.py|engine/neuralweb/(ask_brain|cortex|brain_gateway|brain_visuals|brain_financial_views|brain_financial_reader|rotation_risk_context|brain_native_inputs|native_facts|chart_perception|chat_plain_words|company_intelligence_reader|earnings_context_reader|doctrine|analyst_doctrine|market_packet|market_memory|market_memory_pit|market_memory_playback|market_memory_projection|market_memory_trusted|market_memory_episode_comparison|market_memory_episode_features|market_memory_episode_retrieval|market_memory_operating_cortex_service|market_memory_retained_context_cohort|market_memory_retained_use|market_memory_retained_catalog|market_memory_retained_saved|market_memory_retained_legacy_guard|brain_market_intel|brain_analogues|brain_curve|brain_user_memory|envelope|key_pool|synapse)\.py|engine/intelligence_workspace/.*\.py|engine/theme_graph/(store|rights|economic_context|issuer_economic_context|native_disclosure_propagation|identity|identity_resolution|ontology|probation|security_navigation)\.py|engine/qbus_news_.*\.py|engine/qkernel\.py|engine/earnings_catalyst\.py|engine/sue\.py|engine/earnings_release/(__init__|binding|receipts|figures|filing_key)\.py|engine/earnings_narrative/(__init__|context_packets|contracts|digest|private_publication|promotion|public_wire|story|story_packets)\.py|engine/press/(__init__|earnings_adapter)\.py|engine/(codex_provider|llm_auth|news_events|ontology_explorer|ontology_portfolio|ontology_theme|ontology_scenario|ontology_scenario_runtime|transmission_chains|prophet_integrity|risk_envelope|options_issue_desk|options_matrix_retention|options_hub_retention|options_scenario_capture|options_nbbo_cohort|options_plan_expiry|options_payoff|greeks|intraday_greeks|portfolio_brief|portfolio_changes|portfolio_vocab|live_quotes|quote_resolution|tushare_freshness)\.py|engine/codex_lane/runner\.py|engine/prophet_lab/.*\.py|engine/(canon|confluence_tiers|entry_primitives|hysteresis|indicators|path_personality|path_risk_signals|prophet_early_observations|session_anchor|session_digest|stock_technicals|technicals|us_candidate_episode|us_candidate_episode_intake)\.py|engine/stock_identity/(__init__|authority|fingerprint|plane)\.py|engine/entry_radar/(__init__|c5_adapter|challengers|contracts|detectors|earnings_context|entry_events|four_hour|g0_adapter|indicator_core|indicator_ingest|live_ledger|live_pack|quote_context|readings|research_read|spool)\.py|engine/entry_radar/replay/identity_observation_snapshot\.py|engine/price_pressure/(__init__|research)\.py|lib/(options_source_receipts|quote_native_metadata|evidence_foundation|opportunity_case|opportunity_evidence|economic_propagation|economic_propagation_v2)\.py|contracts/opportunity_evidence/(vector\.v1\.schema|slot_registry\.v1)\.json|contracts/evidence_foundation/reference\.v1\.schema\.json|contracts/economic_propagation/(propagation_hypothesis\.v[12]\.schema|generator_registry\.v1)\.json|engine/prophet_live/(__init__|interval|live_states)\.py|engine/research_vault/.*\.py|engine/institutional_census/.*\.py|lib/(institutional_13f_adapter|institutional_intelligence|rotation_observation_notification)\.py|engine/fundamental_forensics/.*\.py|engine/biocatalyst/.*\.py|engine/sector_intelligence/.*\.py|engine/company_intelligence/.*\.py|engine/company_theme_exposure/(__init__|contracts)\.py|engine/market_ontology/(__init__|exposure_map|bea_gvc_current)\.py|engine/(expectation_state|k3e_expectation_surface|theme_context)\.py|scripts/query_k3e_expectation_surface\.py|engine/seasonality/(__init__|contracts|event_clock|model|multiplicity|program_watch|prophet_bridge|regime|screener|universe)\.py|engine/capital_structure/(__init__|authorized_shares|capacity|capacity_joint|document_terms|event_spine|funding|issuer_state_contracts|listing_facts|projection|reference_qualification|registration_integration|registration_lifecycle|rule_applicability|scenario_composition|scenario_inputs|share_basis|source_identity|state_bundle|supply_scenarios|transactions|variable_terms|verified_projection_generation)\.py|engine/government_revenue/(__init__|amount_semantics|award_events|budget_program|candidates|dossiers|entity_resolution|federation|fms_cases|freshness|idv_bridge|idv_dossiers|metrics|opportunities|point_in_time|sbir_progression|defense_economics|defense_interpretation|research_state|candidate_grader|program_theme_publication|program_theme_context|program_theme_disclosure|program_ontology|budget_allocation_context|identity_atlas|subaward_dossiers|workspace)\.py|contracts/government_revenue/(government_entity_coverage\.v1|government_idv_bridge\.v1|government_idv_dossiers\.v1|government_procurement_(event|workspace)\.v2|government_recipient_resolution_coverage\.v1|government_revenue_candidate(_queue|_historical_suppressions|_issuance_corrections)?\.v1|government_revenue_dossiers\.v1|government_subaward_dossiers\.v1|government_revenue_identity_atlas\.v1)\.schema\.json|contracts/theme_graph/(identity_resolution|probation_proposal)\.v1\.schema\.json|contracts/options/options\.(issue_desk(_proposal|_decision)?|issue_receipt)\.v1\.schema\.json|engine/context_index/(packet|fusion|gitinfo|lexical|structured)\.py|engine/marketing/(__init__|authority|chart_render|charter|claims|cmo|confluence_source|departments|economics|events|intelligence_history|ledgers|opportunity_bus|publication|state|catalyst_lifecycle|catalyst_packets|catalyst_admission|catalyst_scan|catalyst_source_adapter|catalyst_source_cycle|catalyst_source_store|attribution)\.py|config/catalyst_pilot_universe\.json|lib/dataos/.*\.py|lib/(config|shared_shell|ai_costs|commercial_path|growth_registry|help_directory|mastermind_response_log|nyse_calendar|cn_calendar|hk_calendar|market_session|tsx_calendar|us_cash_calendar|exchange_holidays|user_prefs|tiers|team_membership)\.py|engine/capital_need\.py|engine/coiled\.py|engine/conditions\.py|engine/cycles\.py|engine/dannytrades\.py|engine/dannytrades_chip\.py|engine/debt_maturity\.py|engine/demand_chain\.py|engine/dispersion\.py|engine/donor\.py|engine/earnings_blackout\.py|engine/entry_signal\.py|engine/event_atlas\.py|engine/extension\.py|engine/gex_confirm\.py|engine/grading\.py|engine/hold\.py|engine/htf_durability\.py|engine/i18n\.py|engine/ledger_lane\.py|engine/mtf_upturn\.py|engine/name_score\.py|engine/name_score_grader\.py|engine/options_ivspread\.py|engine/playbook\.py|engine/pullback_zone\.py|engine/risk_sizing\.py|engine/setups\.py|engine/signal_gate\.py|engine/signal_quality\.py|engine/stock_events\.py|engine/stock_fundamentals\.py|engine/stock_macro_sensitivity\.py|engine/stock_score\.py|engine/stock_view\.py|engine/ticker_alerts\.py|engine/us_board_rank\.py|engine/valuation\.py|engine/valuation_scenario\.py|engine/vol_forecast\.py|engine/vol_squeeze\.py|engine/washout_turn\.py|lib/delisted_symbols\.py|lib/store\.py|lib/ticker_popularity\.py|scripts/build_debt_maturity\.py|scripts/build_stock_library\.py|scripts/security_state_producer\.py|engine/news_common\.py|engine/medtech/(events|publication)\.py|engine/market_os/macro_workspaces/(__init__|contract|registry)\.py|engine/qual_extraction\.py|engine/research_intelligence/(__init__|extractor|projection|schema|selection|store|vault_adapter)\.py|lib/macro_suite_(disclosure|labels|view|zh_parity)\.py|scripts/build_macro_suite_pages\.py|contracts/market_os/macro_workspace_snapshot\.v1\.schema\.json|lib/treasury_daily_history\.py)$' <<<"$CHANGED" || \
+if [ "$API_UNIT_UPDATED" -eq 1 ] || ! mm_api_fence_marker_ready || grep -qE '^(app/.*\.py|app/requirements\.txt|app/deploy/macro-api\.service|config\.yml|config/(site_access|dataset_registry|theme_sources|plans)\.yml|config/intelligence_workspace/datapoints\.v1\.json|contracts/intelligence_workspace/(datapoint_(registry|value)|ai_context_envelope\.v1)\.schema\.json|collectors/(equity_earnings|sec_document_spine|sec_request_pacer)\.py|engine/neuralweb/(ask_brain|cortex|brain_gateway|brain_visuals|brain_financial_views|brain_financial_reader|rotation_risk_context|brain_native_inputs|native_facts|chart_perception|chat_plain_words|company_intelligence_reader|earnings_context_reader|doctrine|analyst_doctrine|market_packet|market_memory|market_memory_pit|market_memory_playback|market_memory_projection|market_memory_trusted|market_memory_episode_comparison|market_memory_episode_features|market_memory_episode_retrieval|market_memory_operating_cortex_service|market_memory_retained_context_cohort|market_memory_retained_use|market_memory_retained_catalog|market_memory_retained_saved|market_memory_retained_legacy_guard|brain_market_intel|brain_analogues|brain_curve|brain_user_memory|envelope|key_pool|synapse)\.py|engine/intelligence_workspace/.*\.py|engine/theme_graph/(store|rights|economic_context|issuer_economic_context|native_disclosure_propagation|identity|identity_resolution|ontology|probation|security_navigation)\.py|engine/qbus_news_.*\.py|engine/qkernel\.py|engine/earnings_catalyst\.py|engine/sue\.py|engine/earnings_release/(__init__|binding|receipts|figures|filing_key)\.py|engine/earnings_narrative/(__init__|context_packets|contracts|digest|private_publication|promotion|public_wire|story|story_packets)\.py|engine/press/(__init__|earnings_adapter)\.py|engine/(codex_provider|llm_auth|news_events|ontology_explorer|ontology_portfolio|ontology_theme|ontology_scenario|ontology_scenario_runtime|transmission_chains|prophet_integrity|risk_envelope|options_issue_desk|options_matrix_retention|options_hub_retention|options_scenario_capture|options_nbbo_cohort|options_plan_expiry|options_payoff|greeks|intraday_greeks|portfolio_brief|portfolio_changes|portfolio_vocab|live_quotes|quote_resolution|tushare_freshness)\.py|engine/codex_lane/runner\.py|engine/prophet_lab/.*\.py|engine/(canon|confluence_tiers|entry_primitives|hysteresis|indicators|path_personality|path_risk_signals|prophet_early_observations|session_anchor|session_digest|stock_technicals|technicals|us_candidate_episode|us_candidate_episode_intake)\.py|engine/stock_identity/(__init__|authority|fingerprint|plane)\.py|engine/entry_radar/(__init__|c5_adapter|challengers|contracts|detectors|earnings_context|entry_events|four_hour|g0_adapter|indicator_core|indicator_ingest|live_ledger|live_pack|quote_context|readings|research_read|spool)\.py|engine/entry_radar/replay/identity_observation_snapshot\.py|engine/price_pressure/(__init__|research)\.py|lib/(options_source_receipts|quote_native_metadata|evidence_foundation|opportunity_case|opportunity_evidence|economic_propagation|economic_propagation_v2)\.py|contracts/opportunity_evidence/(vector\.v1\.schema|slot_registry\.v1)\.json|contracts/evidence_foundation/reference\.v1\.schema\.json|contracts/economic_propagation/(propagation_hypothesis\.v[12]\.schema|generator_registry\.v1)\.json|engine/prophet_live/(__init__|interval|live_states)\.py|engine/research_vault/.*\.py|engine/institutional_census/.*\.py|lib/(institutional_13f_adapter|institutional_intelligence|rotation_observation_notification)\.py|engine/fundamental_forensics/.*\.py|engine/biocatalyst/.*\.py|engine/sector_intelligence/.*\.py|engine/company_intelligence/.*\.py|engine/company_theme_exposure/(__init__|contracts)\.py|engine/market_ontology/(__init__|exposure_map|bea_gvc_current)\.py|engine/(expectation_state|k3e_expectation_surface|theme_context)\.py|scripts/query_k3e_expectation_surface\.py|engine/seasonality/(__init__|contracts|event_clock|model|multiplicity|program_watch|prophet_bridge|regime|screener|universe)\.py|engine/capital_structure/(__init__|authorized_shares|capacity|capacity_joint|document_terms|event_spine|funding|issuer_state_contracts|listing_facts|projection|reference_qualification|registration_integration|registration_lifecycle|rule_applicability|saved_scenario_store|saved_scenarios|scenario_composition|scenario_export|scenario_inputs|share_basis|source_identity|state_bundle|state_changes|supply_scenarios|transactions|variable_terms|verified_projection_generation)\.py|engine/alert_delivery_drain\.py|lib/frozen_delivery_client\.py|engine/government_revenue/(__init__|amount_semantics|award_events|budget_program|candidates|dossiers|entity_resolution|federation|fms_cases|freshness|idv_bridge|idv_dossiers|metrics|opportunities|point_in_time|sbir_progression|defense_economics|defense_interpretation|research_state|candidate_grader|program_theme_publication|program_theme_context|program_theme_disclosure|program_ontology|budget_allocation_context|identity_atlas|subaward_dossiers|workspace)\.py|contracts/government_revenue/(government_entity_coverage\.v1|government_idv_bridge\.v1|government_idv_dossiers\.v1|government_procurement_(event|workspace)\.v2|government_recipient_resolution_coverage\.v1|government_revenue_candidate(_queue|_historical_suppressions|_issuance_corrections)?\.v1|government_revenue_dossiers\.v1|government_subaward_dossiers\.v1|government_revenue_identity_atlas\.v1)\.schema\.json|contracts/theme_graph/(identity_resolution|probation_proposal)\.v1\.schema\.json|contracts/options/options\.(issue_desk(_proposal|_decision)?|issue_receipt)\.v1\.schema\.json|engine/context_index/(packet|fusion|gitinfo|lexical|structured)\.py|engine/marketing/(__init__|authority|chart_render|charter|claims|cmo|confluence_source|departments|economics|events|ledgers|opportunity_bus|publication|state|catalyst_lifecycle|catalyst_packets|catalyst_admission|catalyst_scan|catalyst_source_adapter|catalyst_source_cycle|catalyst_source_store|attribution|intelligence_history)\.py|config/catalyst_pilot_universe\.json|lib/dataos/.*\.py|lib/(config|shared_shell|ai_costs|commercial_path|growth_registry|help_directory|mastermind_response_log|nyse_calendar|cn_calendar|hk_calendar|market_session|tsx_calendar|us_cash_calendar|exchange_holidays|user_prefs|tiers|team_membership)\.py|engine/capital_need\.py|engine/coiled\.py|engine/conditions\.py|engine/cycles\.py|engine/dannytrades\.py|engine/dannytrades_chip\.py|engine/debt_maturity\.py|engine/demand_chain\.py|engine/dispersion\.py|engine/donor\.py|engine/earnings_blackout\.py|engine/entry_signal\.py|engine/event_atlas\.py|engine/extension\.py|engine/gex_confirm\.py|engine/grading\.py|engine/hold\.py|engine/htf_durability\.py|engine/i18n\.py|engine/ledger_lane\.py|engine/mtf_upturn\.py|engine/name_score\.py|engine/name_score_grader\.py|engine/options_ivspread\.py|engine/playbook\.py|engine/pullback_zone\.py|engine/risk_sizing\.py|engine/setups\.py|engine/signal_gate\.py|engine/signal_quality\.py|engine/stock_events\.py|engine/stock_fundamentals\.py|engine/stock_macro_sensitivity\.py|engine/stock_score\.py|engine/stock_view\.py|engine/ticker_alerts\.py|engine/us_board_rank\.py|engine/valuation\.py|engine/valuation_scenario\.py|engine/vol_forecast\.py|engine/vol_squeeze\.py|engine/washout_turn\.py|lib/delisted_symbols\.py|lib/store\.py|lib/ticker_popularity\.py|scripts/build_debt_maturity\.py|scripts/build_stock_library\.py|scripts/security_state_producer\.py|engine/news_common\.py|engine/medtech/(events|publication)\.py|engine/market_os/macro_workspaces/(__init__|contract|registry)\.py|engine/qual_extraction\.py|engine/research_intelligence/(__init__|extractor|projection|schema|selection|store|vault_adapter)\.py|lib/macro_suite_(disclosure|labels|view|zh_parity)\.py|scripts/build_macro_suite_pages\.py|contracts/market_os/macro_workspace_snapshot\.v1\.schema\.json|lib/treasury_daily_history\.py)$' <<<"$CHANGED" || \
    [ "$API_DEPS_UPDATED" -eq 1 ]; then
 	API_RESTART_NEEDED=1
 
@@ -2557,6 +2605,68 @@ if systemctl is-enabled macro-api.service >/dev/null 2>&1 && \
 	fi
 fi
 
+# GIT STORE MAINTENANCE — 2026-10-19 root-disk incident: every pull lands a new
+# fetch pack and auto-gc is disabled on the box (gc.auto=0), so nothing ever
+# consolidated them; /opt/macro/.git reached 41G in 263 packs and filled the
+# root disk. Same self-arming contract as the backup timer above: gated on
+# macro-api.service, re-armed when a source changes or an installed copy is
+# absent. The script is installed BEFORE the units are verified because the
+# service's ExecStart names the installed path (and a running maintenance
+# keeps its old inode, as with this updater's own self-update). The .service
+# is a oneshot and is never started from here; only the timer is (re)armed.
+# The journald size cap rides the same block: without it the persistent
+# journal may take 10% of the root filesystem.
+if systemctl is-enabled macro-api.service >/dev/null 2>&1 && \
+   { echo "$CHANGED" | grep -qE '^app/deploy/(macro-git-store-maintenance\.(sh|service|timer)|journald-macro-vps\.conf)$' || \
+     [ ! -f /usr/local/sbin/macro-git-store-maintenance ] || \
+     [ ! -f /etc/systemd/system/macro-git-store-maintenance.timer ] || \
+     [ ! -f /etc/systemd/journald.conf.d/10-macro-vps-cap.conf ]; }; then
+	GIT_MAINT_SOURCE="$APP_DIR/app/deploy/macro-git-store-maintenance.sh"
+	GIT_MAINT_BIN=/usr/local/sbin/macro-git-store-maintenance
+	if ! cmp -s "$GIT_MAINT_SOURCE" "$GIT_MAINT_BIN"; then
+		if bash -n "$GIT_MAINT_SOURCE"; then
+			install -m 0755 "$GIT_MAINT_SOURCE" "$GIT_MAINT_BIN"
+			RECONCILED=1
+			echo "macro-update: macro-git-store-maintenance script updated"
+		else
+			echo "macro-update: refusing macro-git-store-maintenance script update — bash -n failed" >&2
+		fi
+	fi
+	GIT_MAINT_UNIT_SOURCES=(
+		"$APP_DIR/app/deploy/macro-git-store-maintenance.service"
+		"$APP_DIR/app/deploy/macro-git-store-maintenance.timer"
+	)
+	if [ -x "$GIT_MAINT_BIN" ] && systemd-analyze verify "${GIT_MAINT_UNIT_SOURCES[@]}"; then
+		GIT_MAINT_UNIT_UPDATED=0
+		for UNIT_SOURCE in "${GIT_MAINT_UNIT_SOURCES[@]}"; do
+			UNIT=$(basename "$UNIT_SOURCE")
+			if ! cmp -s "$UNIT_SOURCE" "/etc/systemd/system/$UNIT"; then
+				install -m 0644 "$UNIT_SOURCE" "/etc/systemd/system/$UNIT"
+				GIT_MAINT_UNIT_UPDATED=1
+			fi
+		done
+		if [ "$GIT_MAINT_UNIT_UPDATED" -eq 1 ]; then
+			systemctl daemon-reload
+			systemctl restart macro-git-store-maintenance.timer 2>/dev/null || true
+			RECONCILED=1
+			echo "macro-update: macro-git-store-maintenance units updated"
+		fi
+		systemctl enable --now macro-git-store-maintenance.timer >/dev/null 2>&1 || \
+			echo "macro-update: macro-git-store-maintenance.timer could not be enabled" >&2
+	else
+		echo "macro-update: refusing macro-git-store-maintenance unit update — script not installed or systemd-analyze verify failed" >&2
+	fi
+	JOURNALD_CAP_SOURCE="$APP_DIR/app/deploy/journald-macro-vps.conf"
+	JOURNALD_CAP=/etc/systemd/journald.conf.d/10-macro-vps-cap.conf
+	if ! cmp -s "$JOURNALD_CAP_SOURCE" "$JOURNALD_CAP"; then
+		install -D -m 0644 "$JOURNALD_CAP_SOURCE" "$JOURNALD_CAP"
+		systemctl restart systemd-journald 2>/dev/null || \
+			echo "macro-update: systemd-journald restart failed; the cap applies from its next start" >&2
+		RECONCILED=1
+		echo "macro-update: journald size cap updated"
+	fi
+fi
+
 # PRESS-FEEDS is a long-running daemon, unlike the oneshot live-plane timers
 # above. Arming remains an explicit operator choice: this block neither installs
 # an absent unit nor enables/starts an inactive one. Once the operator has
@@ -2752,6 +2862,14 @@ if [ "$OHLC_DELIVERY_EXIT_STATUS" -ne 0 ]; then
 	fi
 fi
 # END OHLC_DELIVERY_EXIT_STATUS
+# BEGIN DISK_REFUSAL_EXIT_STATUS
+if [ "${DISK_REFUSED:-0}" -eq 1 ]; then
+	echo "macro-update: tick reconciled without pulling: $DISK_REFUSAL" >&2
+	if [ "${DEPLOY_EXIT_STATUS:-0}" -eq 0 ]; then
+		DEPLOY_EXIT_STATUS=1
+	fi
+fi
+# END DISK_REFUSAL_EXIT_STATUS
 # BEGIN DEPLOY_EXIT_STATUS
 if [ "${W2C_LANE_FROZEN:-0}" -eq 1 ]; then
 	echo "macro-update: deploy finished with status ${DEPLOY_EXIT_STATUS:-1} (frozen lanes: w2c)" >&2

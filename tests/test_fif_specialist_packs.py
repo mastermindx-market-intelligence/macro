@@ -4935,7 +4935,7 @@ BASE_AAPL_ENVELOPE_SHA256 = {
     "PK02": "8d868ce982fff7c5e45693d4a81df9e07afee166df4f4996c3a4e141b2790869",
     "PK11": "f425680270c2a267d8dca5f44e6a1e3c2ac708b124e2d2a7723c0674056d9b2f",
     "PK12": "da96915b1d81f0f4417e6cb4d5acbc551f5fbfcc5975dc37091adfec9be5cceb",
-    "PK09": "69ad83052dcb482b8f96b9b070174f419222d23c0ca5981534c62734a3b4d062",
+    "PK09": "3d9130f6de6cc0c4b89760a14102dec6986f24c74b174c066d4aef10fddf81d3",
 }
 _BASE_PACK_METRICS = {
     "PK06": "leases",
@@ -5648,7 +5648,7 @@ BASE_PACK_ENVELOPE_SHA256 = {
         "b26d48b769b9be642b5deaeafbe2f853b5d6155eb2f079f4953642c417062629"
     ),
     "PK09": (
-        "2187281554bab6b0a6f55beb79c71d55097d8a00a431c3d0c28a8c12a16de3fc"
+        "c4b994c45080380e4166a2d4381f6a310588617a6c7d4db366f5661f59c1175d"
     ),
     "PK11": (
         "9660c82e6d14e70e9302b2dc2cdf2468da416886422892d5201cea0ff88a744d"
@@ -6595,7 +6595,7 @@ PK05_BASE_PACK_ENVELOPE_SHA256 = {
     "PK03": "17a26aa6d276414927f9c68ddbd37595e79bc6120a289abcb254f83f4095057d",
     "PK04": "e4746fbf9126b233d759caeb235dfec72d1895b20b6a6b13a20dd6d16802d5dd",
     "PK06": "2126d42b4a608ad2a9f8e9a48b8692fe8c11c8ed187d5beb33e27df68182df17",
-    "PK09": "23f8812b86ab91d92be553ca7e39bac0db6facbac4cc0eb05c62ccb19b7e5ff6",
+    "PK09": "1c75cbbe03fc59fac67f92f3f1532d7b3c83f4f33452765ce1b4309f645715b0",
     "PK10": "217702f0bb51ac1686a796422e72118655584064fd8b6585eb8f5aa640c230e1",
     "PK11": "1e8d160a7fb3402fd82c698333cd2d87ad3622fca5d70437800c692c3fb63620",
     "PK12": "d6bfa668b1a77819f0a2e8ff1d77fd75e8cacce96dbeba49b430d861fca9591d",
@@ -8382,7 +8382,7 @@ PK07_BASE_PACK_ENVELOPE_SHA256 = {
     "PK04": "281d84d196751caca6ac23a217004766fb1483e2d5fc729309eb1bc30f64dc8f",
     "PK05": "3628a5ddde284650978617bcd7ae7ff922dd32ac0bbb8ab6e8f35ad2545967ac",
     "PK06": "84f9aad2836afa5b397253ff27807345d6245edf8f765b60b6e21d68449890f5",
-    "PK09": "b1ce551426abeb83041f1bd9abcfe5e228cdb85096198de7346f3d235e1f8724",
+    "PK09": "c58d7263e4156f4c7f8acfa56aa9ed1a3b63402b5b9f6400960a460282a314b7",
     "PK10": "2ef05add8be8db7f9cb32a6fd55b47eab26fafdc2e603a2b7cbae9e074b234d0",
     "PK11": "140b630622b5e1ab49dd1743ad8eafb91be8872e7a20e9cfc72d2d59ffddaefc",
     "PK12": "4915af8ff2a916dd788d219de2329c6fc7703df5dfc3ac7a4e8dc7265f4ab48b",
@@ -9038,7 +9038,7 @@ PK08_BASE_PACK_ENVELOPE_SHA256 = {
     "PK05": "ac0cf6c6d5fb655b622d57317c376602ac357a7e3c075b60c8ef4fa7e6679740",
     "PK06": "1f78880eba88a185421ccc943e8e227bf7d264e5fea6ac8af1c96d75a793e229",
     "PK07": "0ff8a0e0ed118c716d3417e3765a131e94054fa57ab8eb9a2b0ade02fb89a153",
-    "PK09": "07cb38090c2ef76a29e49301e9192547e7dfbdf8324c25586e1604a524aebb5e",
+    "PK09": "d2f04e7e866f870b7e6e3e19af46a536d3c0b0d34ea77b15507154c006dba3b9",
     "PK10": "655d3ff540c539e2f2b2a20104f286d68baaa6a18990e1ec46d52cc7cd6f32ba",
     "PK11": "58e1c524a82210daffc392c855309c73b5d4ca55732c100c3a3a6babe7d41ba4",
     "PK12": "e3578db64f6e41c5ec5633b5b529fc87ca742a2857639bbaf2ba28ec4480f830",
@@ -12390,3 +12390,1513 @@ def test_pk07_guard_completion_after_the_fiscal_period_is_typed_absence() -> Non
     row = _row(result, "acquisition_date")
     assert row["quality_state"] != "valued"
     assert row["text_value"] is None
+
+
+# 31b. PK09 dev-corpus recall repairs (diversified_v1 + litigation_v1) --------
+# Synthetic probes for the 2026-11-01 repair lane fif-pk09dev-20261101-r1:
+# heading variants, the financial-statement index TOC line, the report's own
+# "under Item 9A" cross-reference, signature-block forms, the management
+# conclusion wordings, the Item 8 management-report fallback, and the
+# precision guards. Each behavior test fails on the pre-repair pack; the
+# going-concern case is a labeled pin.
+
+
+def test_pk09_item9a_title_only_heading_locates_controls() -> None:
+    # Heading variant (title-only shape): the real section carries only the
+    # all-caps title; the item number never reaches the heading text.
+    body = (
+        "<div>Table of contents Item 9A. Controls and Procedures 124 "
+        "Item 9B. Other Information 125</div>"
+        "<div>CONTROLS AND PROCEDURES Management concluded that the "
+        "Company&#8217;s internal control over financial reporting was "
+        "effective as of June 30, 2026.</div>"
+        "<div>Our disclosure controls and procedures were effective as of "
+        "June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "icfr_management_conclusion")["text_value"] == (
+        "effective"
+    )
+    assert _row(result, "disclosure_controls_effective")["text_value"] == (
+        "effective"
+    )
+    assert _row(result, "material_weakness_present")["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_item4_em_dash_heading_with_toc_page_number() -> None:
+    # Heading variant (10-Q em-dash shape): an em-dash between the item number
+    # and the title, with a contents line carrying the trailing page number.
+    body = (
+        "<div>Item 4 Controls and procedures 46 Part II Other information "
+        "47 Item 1 Legal proceedings 47</div>"
+        "<div>Item 4 &#8212; Controls and procedures Disclosure controls and "
+        "procedures. Based on an evaluation, the Company&#8217;s disclosure "
+        "controls and procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-Q", body)
+    row = _row(result, "disclosure_controls_effective")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "effective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_audit_index_line_and_item9a_cross_reference() -> None:
+    # Multi-heading audit section (multi-form shape): the financial-statement
+    # index lists the report heading with a trailing page number, and the
+    # report's own scope paragraph says "appearing under Item 9A" — the
+    # section must still reach the signature block.
+    body = (
+        "<div>Index of financial statements Report of Independent Registered "
+        "Public Accounting Firm 42 Consolidated Balance Sheets 45</div>"
+        "<div>Item 8. Financial Statements and Supplementary Data Report of "
+        "Independent Registered Public Accounting Firm To the Board of "
+        "Directors Opinion In our opinion, the consolidated financial "
+        "statements present fairly, in all material respects, the financial "
+        "position of the Company as of June 30, 2026.</div>"
+        "<div>We also have audited the Company&#8217;s internal control over "
+        "financial reporting appearing under Item 9A. Our responsibility is "
+        "to express opinions on the financial statements and on internal "
+        "control. In our opinion, the Company maintained, in all material "
+        "respects, effective internal control over financial reporting as of "
+        "June 30, 2026.</div>"
+        "<div>Critical Audit Matters The critical audit matter communicated "
+        "below is a matter arising from the current period audit.</div>"
+        "<div>/s/ Audit Partners LLP Springfield, Illinois February 1, "
+        "2027</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "Audit Partners LLP"
+    assert _row(result, "auditor_opinion_fs")["text_value"] == "unqualified"
+    assert _row(result, "auditor_opinion_icfr")["text_value"] == "effective"
+    assert _row(result, "critical_audit_matters")["quality_state"] == "valued"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_firm_signature_block_without_conformed_signature() -> None:
+    # Firm-name form (bare-office shape): the report signs with the bare office
+    # signature block and no conformed "/s/" prefix at all.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>Audit Partners LLP Springfield, Illinois February 1, 2027</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "Audit Partners LLP"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_uppercase_conformed_signature_names_the_firm() -> None:
+    # Firm-name form (conformed-signature shape): the conformed signature and the
+    # are set in capitals.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>/S/ AUDIT PARTNERS LLP Springfield, Illinois February 1, "
+        "2027</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "AUDIT PARTNERS LLP"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_icfr_conclusion_issuer_named_copula() -> None:
+    # Conclusion wording (issuer-copula shape): the issuer name sits between the
+    # phrase and the copula.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Based on this assessment, management believes that the internal "
+        "control over financial reporting of TestCo is effective as of June "
+        "30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_icfr_conclusion_adjective_first_maintained() -> None:
+    # Conclusion wording (adjective-first shape): the conclusion puts the
+    # front of the noun phrase.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Based on this assessment, management determined that the "
+        "Company maintained effective internal control over financial "
+        "reporting as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_icfr_conclusion_falls_back_to_management_report() -> None:
+    # Conclusion-sentence selection (Item 8 fallback shape): the conclusion lives
+    # in Management's own report inside Item 8, Item 9A only incorporates it
+    # by reference, and the report also carries the Section 404 requirement
+    # boilerplate ("... whether the Company's internal control over financial
+    # reporting is effective") that must not satisfy the field.
+    body = (
+        "<div>MANAGEMENT&#8217;S REPORT ON INTERNAL CONTROL OVER FINANCIAL "
+        "REPORTING Under Section 404 of the Sarbanes-Oxley Act of 2002, "
+        "management is required to assess the effectiveness of the "
+        "Company&#8217;s internal control over financial reporting and "
+        "report, based on that assessment, whether the Company&#8217;s "
+        "internal control over financial reporting is effective.</div>"
+        "<div>Based on the Company&#8217;s processes and assessment, "
+        "management has concluded that, as of June 30, 2026, the "
+        "Company&#8217;s internal control over financial reporting was "
+        "effective.</div>"
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the Company maintained, in all "
+        "material respects, effective internal control over financial "
+        "reporting as of June 30, 2026.</div>"
+        "<div>Item 9A. Controls and Procedures The information required by "
+        "this Item is incorporated herein by reference. Item 9B. Other "
+        "Information None.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert conclusion["mapping_rule_id"] == (
+        "PK09.icfr_management_conclusion.text_span/v1"
+    )
+    check = _check(result, "management_vs_auditor_icfr")
+    assert check["status"] == "pass"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_negated_adjective_conclusion_is_ineffective() -> None:
+    # Precision guard: a negated conclusion never resolves to effective.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Based on this assessment, management concluded that the Company "
+        "did not maintain effective internal control over financial reporting "
+        "as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "ineffective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_except_for_opinion_stays_typed_absent() -> None:
+    # Precision guard: an except-for qualified opinion phrase never resolves
+    # to unqualified/effective; the fields stay typed-absent.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, except for the effects of the "
+        "material weakness described above.</div>"
+        "<div>In our opinion, the Company maintained, in all material "
+        "respects, effective internal control over financial reporting as of "
+        "June 30, 2026, except for the effects of the material weakness "
+        "described above.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were not effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    fs = _row(result, "auditor_opinion_fs")
+    assert fs["quality_state"] == "missing"
+    assert fs["reason"] == "narrative_span_not_located"
+    icfr = _row(result, "auditor_opinion_icfr")
+    assert icfr["quality_state"] == "missing"
+    assert icfr["reason"] == "narrative_span_not_located"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_fs_only_report_leaves_icfr_opinion_typed_absent() -> None:
+    # Typed absence: a report carrying only the financial-statement opinion
+    # never mints an ICFR opinion; the field reports a located section with
+    # no matching span, not a missing section.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    icfr = _row(result, "auditor_opinion_icfr")
+    assert icfr["quality_state"] == "missing"
+    assert icfr["reason"] == "narrative_span_not_located"
+    assert _row(result, "auditor_opinion_fs")["text_value"] == "unqualified"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_icfr_change_capitalized_possessive() -> None:
+    # Change-sentence variant (capitalized-possessive shape): the possessive is
+    # own name or a lowercase "the company's".
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There were no changes in TestCo&#8217;s internal control over "
+        "financial reporting during the fourth quarter that have materially "
+        "affected, or are reasonably likely to materially affect, the "
+        "company&#8217;s internal control over financial reporting.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    change = _row(result, "icfr_change_in_period")
+    assert change["quality_state"] == "valued"
+    assert "no changes in TestCo" in change["text_value"]
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_going_concern_clean_report_stays_not_disclosed() -> None:
+    # PIN (going-concern family is not a repair target): a clean report with
+    # no substantial-doubt sentence keeps the valued absence. This pin holds
+    # on the pre-repair pack as well.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "not_disclosed"
+    assert _row(result, "going_concern_management_plan")["reason"] == (
+        "missing_dependency"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+# 31c. PK09 auditor-firm precedence repair (review follow-up, 2026-11-01) ----
+# The framework resolves a text-span selector with a single leftmost search,
+# so a predecessor auditor's bare dated signature block placed before the
+# incumbent's conformed block used to win auditor_firm. The resolver now
+# prefers the conformed-signature arm across the whole audit span and never
+# values a span whose chosen arm names two distinct firms.
+
+
+def test_pk09_predecessor_bare_block_never_wins_auditor_firm() -> None:
+    # Behavior: the predecessor's bare dated signature block precedes the
+    # incumbent's conformed block; the incumbent signs the report.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>Prior Auditor LLP Springfield, Illinois February 24, 2025</div>"
+        "<div>/s/ Current Auditor LLP Springfield, Illinois March 1, "
+        "2026</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "Current Auditor LLP"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_two_bare_blocks_from_different_firms_stay_typed_absent() -> None:
+    # Behavior: two bare dated signature blocks from two different firms and
+    # no conformed signature — never guess between two firms.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>Prior Auditor LLP Springfield, Illinois February 24, 2025</div>"
+        "<div>Northgate Audit LLP Capital City, New York March 1, 2026</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    firm = _row(result, "auditor_firm")
+    assert firm["quality_state"] == "missing"
+    assert firm["text_value"] is None
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_single_bare_block_still_names_the_firm() -> None:
+    # Pin: one bare dated signature block with no conformed signature still
+    # resolves to that firm. This pin holds on the pre-repair pack as well.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>Northgate Audit LLP Capital City, New York March 1, 2026</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "Northgate Audit LLP"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_predecessor_named_in_prose_never_displaces_incumbent() -> None:
+    # Pin: the predecessor appears only in report prose; the incumbent's
+    # conformed block still signs. This pin holds on the pre-repair pack.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors The consolidated financial statements as of "
+        "June 30, 2025 were audited by Prior Auditor LLP, our predecessor "
+        "auditor, whose report dated February 24, 2025 expressed an "
+        "unqualified opinion.</div>"
+        "<div>In our opinion, the financial statements present fairly, in "
+        "all material respects, the financial position of the Company as of "
+        "June 30, 2026.</div>"
+        "<div>/s/ Current Auditor LLP Springfield, Illinois March 1, "
+        "2026</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "Current Auditor LLP"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_single_conformed_signature_resolves_unchanged() -> None:
+    # Pin: a single conformed signature resolves exactly as before the
+    # repair. This pin holds on the pre-repair pack as well.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>/s/ Northgate Audit LLP Springfield, Illinois March 1, "
+        "2026</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "auditor_firm")["text_value"] == "Northgate Audit LLP"
+    assert contract.validate_pack_result(result) == []
+
+
+# 41. PK04 dev-corpus pins (diversified_v1: PG, TMO, DHR, VZ, HON) -------------
+#
+# Dev-corpus evidence lane (fif-pk04dev-20261101-r1). Every test below is a
+# PIN of verified-correct current behaviour, rebuilt synthetically from the
+# diversified_v1 filings' own fact shapes (no filing bytes):
+#
+#   - revenue alias selection: the undimensioned
+#     RevenueFromContractWithCustomerExcludingAssessedTax annual total wins
+#     (TMO/DHR/HON 10-K shape), a Revenues-only issuer resolves at alias 30
+#     (VZ/PG shape), and segment-dimensioned totals never leak into the
+#     consolidated row.
+#   - typed absences: an issuer that tags no contract-liability or RPO
+#     concepts (PG shape) gets exact missing_standard_fact reasons.
+#   - rollforward false-positive guard: an issuer that tags only the split
+#     balance-sheet contract liabilities and no bare
+#     ContractWithCustomerLiability (TMO 10-K shape) never gets an invented
+#     rollforward opening/closing from the balance-sheet lines.
+#   - rpo_percentage_next_12m: the earliest typed start date on/after the
+#     period of report is the within-12-months share (DHR two-bucket shape).
+#   - rpo_total typed-axis admit (pk04dev2, the repaired boundary): the
+#     framework helper ``base.py::_dimensions_admitted`` now compares
+#     dimension AXIS NAMES rather than (axis, member) pair tuples against
+#     the allowed tuple, and PK04 admits a filing's single typed-axis RPO
+#     aggregate through its finalize hook while multi-bucket ladders and
+#     Period1-marked buckets stay typed absences (never summed, never
+#     picked).
+
+from engine.fundamental_forensics.raw_ledger import make_raw_fact  # noqa: E402
+
+TESTREV_CIK = "0000000004"
+TESTREV_SIC = "3829"
+TESTREV_ENTITY = {
+    "entity_id": "ISS:US-TESTREV",
+    "cik": TESTREV_CIK,
+    "ticker": "TESTREV",
+    "name": "TESTREV SYNTHETIC CORP",
+    "identity_basis": "synthetic_in_test_ledger_v1",
+    "source_entity_id": TESTREV_CIK,
+}
+_RPO_AXIS = RPO_TIMING_AXIS_QNAME
+
+
+def _typed_member(day: str) -> str:
+    return f"<{_RPO_AXIS}.domain>{day}</{_RPO_AXIS}.domain>"
+
+
+def _testrev_packages() -> tuple:
+    return (
+        _SyntheticPackage(
+            {
+                "cik": TESTREV_CIK,  # R-F4: package issuer == packet entity
+                "form": "10-K",
+                "period_of_report": "2025-12-31",
+                "accession": "0000000004-26-000010",
+                "primary_document": "testrev-20251231.htm",
+            }
+        ),
+    )
+
+
+def _testrev_contexts() -> dict:
+    return {
+        "duration": FactContext(
+            context_id="c-fy",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTREV_CIK,
+            start="2025-01-01",
+            end="2025-12-31",
+        ),
+        "instant": FactContext(
+            context_id="c-i",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTREV_CIK,
+            instant="2025-12-31",
+        ),
+        "segment": FactContext(
+            context_id="c-seg",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTREV_CIK,
+            instant="2025-12-31",
+            explicit_dimensions=(
+                (
+                    "us-gaap:StatementBusinessSegmentsAxis",
+                    "us-gaap:OperatingSegmentsMember",
+                ),
+            ),
+        ),
+    }
+
+
+def _testrev_events(
+    *, facts: tuple[tuple[str, str, str, str, str], ...]
+) -> tuple:
+    """(key, concept, placement, value, unit_id) placements from the contexts."""
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+    contexts = _testrev_contexts()
+    units = {"USD": FactUnit("USD", ["iso4217:USD"]), "pure": FactUnit("xbrli:pure", ["xbrli:pure"])}
+    events = []
+    for key, concept, placement, value, unit_id in facts:
+        events.append(
+            make_raw_fact(
+                source=filing_row["source"],
+                concept_qname=concept,
+                context=contexts[placement],
+                unit=units[unit_id],
+                raw_token=value,
+                parsed_value=value,
+                dimensions_known=True,
+                decimals="0",
+                source_span=(0, len(value)),
+                source_occurrence_key=key,
+                accepted_at=filing_row["accepted_at"],
+                recorded_at=filing_row["recorded_at"],
+            )
+        )
+    return tuple(events)
+
+
+def _produce_testrev(monkeypatch: pytest.MonkeyPatch, facts) -> dict:
+    events = _testrev_events(facts=facts)
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    return produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+
+
+def _testrev_row(result: dict, field_id: str) -> dict:
+    return next(row for row in result["fields"] if row["field_id"] == field_id)
+
+
+# PIN: the TMO/DHR/HON 10-K shape — the undimensioned annual
+# RevenueFromContractWithCustomerExcludingAssessedTax total resolves at alias
+# 10 and a segment-dimensioned duplicate never leaks into the consolidated
+# row.
+def test_pk04dev_pin_revenue_first_alias_and_segment_guard(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _produce_testrev(
+        monkeypatch,
+        (
+            ("rev", "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax", "duration", "24568000000", "USD"),
+            (
+                "rev_segment",
+                "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+                "segment",
+                "15000000000",
+                "USD",
+            ),
+        ),
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _testrev_row(result, "revenue")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "24568000000"
+    assert row["concept"] == "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"
+    assert row["dimensions"] == []
+
+
+# PIN: the VZ/PG 10-K shape — an issuer tagging only Revenues resolves at
+# alias 30, again ignoring its segment-dimensioned totals.
+def test_pk04dev_pin_revenue_revenues_fallback_alias(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _produce_testrev(
+        monkeypatch,
+        (
+            ("rev", "us-gaap:Revenues", "duration", "138191000000", "USD"),
+            ("rev_segment", "us-gaap:Revenues", "segment", "40000000000", "USD"),
+        ),
+    )
+    row = _testrev_row(result, "revenue")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "138191000000"
+    assert row["concept"] == "us-gaap:Revenues"
+
+
+# PIN: the PG shape — an issuer that tags no contract-liability or RPO
+# concepts gets exact typed-absence reasons, never a narrative extraction.
+def test_pk04dev_pin_contract_liability_and_rpo_typed_absences(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _produce_testrev(
+        monkeypatch,
+        (("rev", "us-gaap:Revenues", "duration", "87032000000", "USD"),),
+    )
+    for field_id, concept in (
+        ("contract_liability_current", "us-gaap:ContractWithCustomerLiabilityCurrent"),
+        ("contract_liability_noncurrent", "us-gaap:ContractWithCustomerLiabilityNoncurrent"),
+        ("contract_liability_rollforward_opening", "us-gaap:ContractWithCustomerLiability"),
+        ("contract_liability_rollforward_closing", "us-gaap:ContractWithCustomerLiability"),
+        ("rpo_total", "us-gaap:RevenueRemainingPerformanceObligation"),
+        (
+            "rpo_percentage_next_12m",
+            "us-gaap:RevenueRemainingPerformanceObligationPercentage",
+        ),
+    ):
+        row = _testrev_row(result, field_id)
+        assert row["quality_state"] == "missing", field_id
+        assert row["reason"] == f"missing_standard_fact:{concept}", field_id
+        assert row["value"] is None, field_id
+
+
+# PIN (rollforward false-positive guard): the TMO 10-K shape — split
+# balance-sheet contract liabilities with no bare ContractWithCustomerLiability
+# rollforward never invents an opening/closing from the balance-sheet lines.
+def test_pk04dev_pin_rollforward_absent_without_bare_concept(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _produce_testrev(
+        monkeypatch,
+        (
+            ("rev", "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax", "duration", "44556000000", "USD"),
+            ("cl_cur", "us-gaap:ContractWithCustomerLiabilityCurrent", "instant", "2710000000", "USD"),
+            ("cl_nc", "us-gaap:ContractWithCustomerLiabilityNoncurrent", "instant", "1183000000", "USD"),
+        ),
+    )
+    assert _testrev_row(result, "contract_liability_current")["value"] == "2710000000"
+    assert _testrev_row(result, "contract_liability_noncurrent")["value"] == "1183000000"
+    for field_id in (
+        "contract_liability_rollforward_opening",
+        "contract_liability_rollforward_closing",
+    ):
+        row = _testrev_row(result, field_id)
+        assert row["quality_state"] == "missing", field_id
+        assert row["reason"] == (
+            "missing_standard_fact:us-gaap:ContractWithCustomerLiability"
+        ), field_id
+        assert row["value"] is None, field_id
+
+
+# PIN: the DHR shape — the earliest typed start date on/after the period of
+# report is the within-12-months share; the later bucket never wins, and the
+# undimensioned RPO total resolves alongside it.
+def test_pk04dev_pin_rpo_percentage_earliest_typed_bucket(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+    undimensioned = _testrev_contexts()
+    events = [
+        make_raw_fact(
+            source=filing_row["source"],
+            concept_qname="us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            context=undimensioned["duration"],
+            unit=FactUnit("USD", ["iso4217:USD"]),
+            raw_token="24568000000",
+            parsed_value="24568000000",
+            dimensions_known=True,
+            decimals="0",
+            source_span=(0, 10),
+            source_occurrence_key="rev",
+            accepted_at=filing_row["accepted_at"],
+            recorded_at=filing_row["recorded_at"],
+        ),
+        make_raw_fact(
+            source=filing_row["source"],
+            concept_qname="us-gaap:RevenueRemainingPerformanceObligation",
+            context=undimensioned["instant"],
+            unit=FactUnit("USD", ["iso4217:USD"]),
+            raw_token="5200000000",
+            parsed_value="5200000000",
+            dimensions_known=True,
+            decimals="0",
+            source_span=(0, 10),
+            source_occurrence_key="rpo",
+            accepted_at=filing_row["accepted_at"],
+            recorded_at=filing_row["recorded_at"],
+        ),
+    ]
+    for key, day, value in (
+        ("pct_next12", "2026-01-01", "0.47"),
+        ("pct_subsequent", "2027-01-01", "0.26"),
+    ):
+        events.append(
+            make_raw_fact(
+                source=filing_row["source"],
+                concept_qname=(
+                    "us-gaap:RevenueRemainingPerformanceObligationPercentage"
+                ),
+                context=FactContext(
+                    context_id=f"c-pct-{day}",
+                    entity_scheme="http://www.sec.gov/CIK",
+                    entity_identifier=TESTREV_CIK,
+                    instant="2025-12-31",
+                    typed_dimensions=((_RPO_AXIS, _typed_member(day)),),
+                ),
+                unit=FactUnit("xbrli:pure", ["xbrli:pure"]),
+                raw_token=value,
+                parsed_value=value,
+                dimensions_known=True,
+                decimals="2",
+                source_span=(0, 4),
+                source_occurrence_key=key,
+                accepted_at=filing_row["accepted_at"],
+                recorded_at=filing_row["recorded_at"],
+            )
+        )
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    result = produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+    assert _testrev_row(result, "rpo_total")["value"] == "5200000000"
+    percentage = _testrev_row(result, "rpo_percentage_next_12m")
+    assert percentage["quality_state"] == "valued"
+    assert percentage["value"] == "0.47"
+    assert percentage["dimensions"] == [
+        {"axis": _RPO_AXIS, "member": "2026-01-01"}
+    ]
+
+
+# pk04dev2 (diversified_v1 repair): the VZ FY25 10-K shape — the RPO total
+# tagged only on the standard typed start-date axis as ONE aggregate now
+# resolves. base.py::_dimensions_admitted compares AXIS NAMES (pair tuples
+# never matched), and the PK04 finalize hook admits the single aggregate:
+# the co-tagged product-or-service fact (an additional axis) never leaks in.
+# Multi-bucket ladders and Period1-marked buckets stay absent — the tests
+# below this one pin those refusals.
+def test_pk04dev2_rpo_total_single_typed_axis_aggregate_resolves(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    aggregate_context = FactContext(
+        context_id="c-rpo-typed",
+        entity_scheme="http://www.sec.gov/CIK",
+        entity_identifier=TESTREV_CIK,
+        instant="2025-12-31",
+        typed_dimensions=((_RPO_AXIS, _typed_member("2026-01-01")),),
+    )
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+
+    def _fact(key, context, concept, value):
+        return make_raw_fact(
+            source=filing_row["source"],
+            concept_qname=concept,
+            context=context,
+            unit=FactUnit("USD", ["iso4217:USD"]),
+            raw_token=value,
+            parsed_value=value,
+            dimensions_known=True,
+            decimals="-8",
+            source_span=(0, len(value)),
+            source_occurrence_key=key,
+            accepted_at=filing_row["accepted_at"],
+            recorded_at=filing_row["recorded_at"],
+        )
+
+    undimensioned_instant = FactContext(
+        context_id="c-i",
+        entity_scheme="http://www.sec.gov/CIK",
+        entity_identifier=TESTREV_CIK,
+        instant="2025-12-31",
+    )
+    aggregate = _fact(
+        "rpo_total",
+        aggregate_context,
+        "us-gaap:RevenueRemainingPerformanceObligation",
+        "58100000000",
+    )
+    events = [
+        aggregate,
+        # A product-or-service subset co-tagged on the same typed axis: two
+        # axes, so it is never admissible and never a source of the total.
+        _fact(
+            "rpo_product_subset",
+            FactContext(
+                context_id="c-rpo-product",
+                entity_scheme="http://www.sec.gov/CIK",
+                entity_identifier=TESTREV_CIK,
+                instant="2025-12-31",
+                explicit_dimensions=(
+                    (
+                        "{http://fasb.org/srt/2025}ProductOrServiceAxis",
+                        "{http://www.example.com/20251231}SubsetMember",
+                    ),
+                ),
+                typed_dimensions=((_RPO_AXIS, _typed_member("2026-01-01")),),
+            ),
+            "us-gaap:RevenueRemainingPerformanceObligation",
+            "1300000000",
+        ),
+        _fact(
+            "cl_cur",
+            undimensioned_instant,
+            "us-gaap:ContractWithCustomerLiabilityCurrent",
+            "7576000000",
+        ),
+        _fact(
+            "cl_nc",
+            undimensioned_instant,
+            "us-gaap:ContractWithCustomerLiabilityNoncurrent",
+            "1000000000",
+        ),
+    ]
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    result = produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+    assert contract.validate_pack_result(result) == []
+    rows = [row for row in result["fields"] if row["field_id"] == "rpo_total"]
+    assert len(rows) == 1
+    row = rows[0]
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "58100000000"
+    assert row["concept"] == "us-gaap:RevenueRemainingPerformanceObligation"
+    assert row["taxonomy"] == "us-gaap"
+    assert row["dimensions"] == [{"axis": _RPO_AXIS, "member": "2026-01-01"}]
+    assert row["source_occurrence_ids"] == [aggregate.occurrence_id]
+    assert row["mapping_rule_id"] == "PK04.rpo_total.fact/v1"
+    # The scope check re-runs over the finalized rows: the total covers the
+    # deferred contract liabilities at the facts' own precision.
+    check = next(
+        item
+        for item in result["checks"]
+        if item["check_id"] == "rpo_vs_deferred_scope"
+    )
+    assert check["status"] == "pass"
+    assert Decimal(check["tolerance"]) == Decimal("1E8")
+    assert result["coverage"]["valued_fields"] == 3
+
+
+# pk04dev2: the framework helper compares AXIS NAMES against the allowed
+# tuple — a pair-tuple set never matched an axis name, so a non-empty
+# ``dimensions_allowed`` was dead code. Fails on the parent commit (the
+# helper refused every dimensioned occurrence there).
+def test_pk04dev2_dimensions_admitted_compares_axis_names() -> None:
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+
+    def _occ(explicit=(), typed=(), known=True):
+        return make_raw_fact(
+            source=filing_row["source"],
+            concept_qname="us-gaap:RevenueRemainingPerformanceObligation",
+            context=FactContext(
+                context_id="c-axis",
+                entity_scheme="http://www.sec.gov/CIK",
+                entity_identifier=TESTREV_CIK,
+                instant="2025-12-31",
+                explicit_dimensions=explicit,
+                typed_dimensions=typed,
+            ),
+            unit=FactUnit("USD", ["iso4217:USD"]),
+            raw_token="1",
+            parsed_value="1",
+            dimensions_known=known,
+            decimals="0",
+            source_span=(0, 1),
+            source_occurrence_key="axis",
+            accepted_at=filing_row["accepted_at"],
+            recorded_at=filing_row["recorded_at"],
+        )
+
+    typed_only = _occ(typed=((_RPO_AXIS, _typed_member("2026-01-01")),))
+    extra_axis = _occ(
+        explicit=(
+            (
+                "{http://fasb.org/srt/2025}ProductOrServiceAxis",
+                "{http://www.example.com/20251231}SubsetMember",
+            ),
+        ),
+        typed=((_RPO_AXIS, _typed_member("2026-01-01")),),
+    )
+    # The only dimension is the named axis: admitted.
+    assert pack_base._dimensions_admitted(typed_only, (_RPO_AXIS,)) is True
+    # An additional axis is never admitted.
+    assert pack_base._dimensions_admitted(extra_axis, (_RPO_AXIS,)) is False
+    # R-F3 first and unchanged: an unknown-dimensional occurrence is never
+    # admitted, allowed axes or not.
+    assert (
+        pack_base._dimensions_admitted(
+            _occ(typed=((_RPO_AXIS, _typed_member("2026-01-01")),), known=False),
+            (_RPO_AXIS,),
+        )
+        is False
+    )
+    # Default ``dimensions_allowed=()`` semantics are unchanged: only an
+    # undimensioned occurrence passes an empty allowance.
+    assert pack_base._dimensions_admitted(_occ(), ()) is True
+    assert pack_base._dimensions_admitted(typed_only, ()) is False
+
+
+# pk04dev2: through the live pack, the default ``dimensions_allowed=()``
+# behaves exactly as before the repair — an undimensioned fact resolves, a
+# dimensioned one stays the disallowed-dimension typed absence. Pins that no
+# other PK04 mapping's behavior moved.
+def test_pk04dev2_default_dimensions_allowed_unchanged(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    valued = _produce_testrev(
+        monkeypatch,
+        (
+            ("rev", "us-gaap:Revenues", "duration", "138191000000", "USD"),
+            (
+                "cl_cur",
+                "us-gaap:ContractWithCustomerLiabilityCurrent",
+                "instant",
+                "7576000000",
+                "USD",
+            ),
+        ),
+    )
+    assert _testrev_row(valued, "contract_liability_current")["value"] == "7576000000"
+
+    # A contract-liability fact carried only on the RPO timing axis (a shape
+    # no real filing tags) is refused for this field: the axis is not named
+    # in the mapping's empty allowance.
+    events = list(
+        _testrev_events(
+            facts=(
+                ("rev", "us-gaap:Revenues", "duration", "138191000000", "USD"),
+            )
+        )
+    )
+    events.append(
+        make_raw_fact(
+            source=events[0].source,
+            concept_qname="us-gaap:ContractWithCustomerLiabilityCurrent",
+            context=FactContext(
+                context_id="c-cl-typed",
+                entity_scheme="http://www.sec.gov/CIK",
+                entity_identifier=TESTREV_CIK,
+                instant="2025-12-31",
+                typed_dimensions=((_RPO_AXIS, _typed_member("2026-01-01")),),
+            ),
+            unit=FactUnit("USD", ["iso4217:USD"]),
+            raw_token="7576000000",
+            parsed_value="7576000000",
+            dimensions_known=True,
+            decimals="-8",
+            source_span=(0, 10),
+            source_occurrence_key="cl_typed",
+            accepted_at=events[0].clocks.accepted_at,
+            recorded_at=events[0].clocks.recorded_at,
+        )
+    )
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    result = produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+    row = _testrev_row(result, "contract_liability_current")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+
+
+# pk04dev2: undimensioned-first — when an undimensioned RPO total and a
+# typed-axis aggregate both exist, the undimensioned fact wins and the
+# typed one is never a second source (no conflict, no blended value).
+def test_pk04dev2_rpo_total_undimensioned_wins_over_typed_axis(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+    undimensioned = make_raw_fact(
+        source=filing_row["source"],
+        concept_qname="us-gaap:RevenueRemainingPerformanceObligation",
+        context=FactContext(
+            context_id="c-rpo-bare",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTREV_CIK,
+            instant="2025-12-31",
+        ),
+        unit=FactUnit("USD", ["iso4217:USD"]),
+        raw_token="5200000000",
+        parsed_value="5200000000",
+        dimensions_known=True,
+        decimals="-8",
+        source_span=(0, 10),
+        source_occurrence_key="rpo_bare",
+        accepted_at=filing_row["accepted_at"],
+        recorded_at=filing_row["recorded_at"],
+    )
+    typed = make_raw_fact(
+        source=filing_row["source"],
+        concept_qname="us-gaap:RevenueRemainingPerformanceObligation",
+        context=FactContext(
+            context_id="c-rpo-typed",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTREV_CIK,
+            instant="2025-12-31",
+            typed_dimensions=((_RPO_AXIS, _typed_member("2026-01-01")),),
+        ),
+        unit=FactUnit("USD", ["iso4217:USD"]),
+        raw_token="58100000000",
+        parsed_value="58100000000",
+        dimensions_known=True,
+        decimals="-8",
+        source_span=(0, 11),
+        source_occurrence_key="rpo_typed",
+        accepted_at=filing_row["accepted_at"],
+        recorded_at=filing_row["recorded_at"],
+    )
+    events = [undimensioned, typed]
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    result = produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "5200000000"
+    assert row["source_occurrence_ids"] == [undimensioned.occurrence_id]
+    assert row["dimensions"] == []
+
+
+# pk04dev2: a timing ladder — two typed-axis buckets at the same period end
+# — stays the disallowed-dimension typed absence. Buckets are never summed
+# and neither bucket is picked as the total, whatever their values.
+def test_pk04dev2_rpo_total_two_bucket_ladder_stays_absent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+    events = []
+    for key, day, value in (
+        ("bucket_2026", "2026-01-01", "28500000000"),
+        ("bucket_2027", "2027-01-01", "17500000000"),
+    ):
+        events.append(
+            make_raw_fact(
+                source=filing_row["source"],
+                concept_qname="us-gaap:RevenueRemainingPerformanceObligation",
+                context=FactContext(
+                    context_id=f"c-rpo-{day}",
+                    entity_scheme="http://www.sec.gov/CIK",
+                    entity_identifier=TESTREV_CIK,
+                    instant="2025-12-31",
+                    typed_dimensions=((_RPO_AXIS, _typed_member(day)),),
+                ),
+                unit=FactUnit("USD", ["iso4217:USD"]),
+                raw_token=value,
+                parsed_value=value,
+                dimensions_known=True,
+                decimals="-8",
+                source_span=(0, len(value)),
+                source_occurrence_key=key,
+                accepted_at=filing_row["accepted_at"],
+                recorded_at=filing_row["recorded_at"],
+            )
+        )
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    result = produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
+
+
+# pk04dev2: the Period1 guard — a single typed-axis fact whose context also
+# carries the standard expected-timing Period1 duration element is ONE
+# TIMING BUCKET, not the disclosure's total, and stays a typed absence even
+# though it is the only numeric RPO fact on the axis. (The real duration is
+# a non-numeric iXBRL fact the converter excludes by design; a synthetic
+# ledger CAN carry the concept, so the row below stands in with a pure-unit
+# value — the guard matches the concept and the context, never the value.)
+def test_pk04dev2_rpo_total_period1_bucket_stays_absent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    bucket_context = FactContext(
+        context_id="c-rpo-period1",
+        entity_scheme="http://www.sec.gov/CIK",
+        entity_identifier=TESTREV_CIK,
+        instant="2025-12-31",
+        typed_dimensions=((_RPO_AXIS, _typed_member("2026-01-01")),),
+    )
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+    events = []
+    for key, concept, value, unit, decimals in (
+        (
+            "rpo_bucket",
+            "us-gaap:RevenueRemainingPerformanceObligation",
+            "28500000000",
+            "USD",
+            "-8",
+        ),
+        (
+            "period1_duration",
+            (
+                "us-gaap:RevenueRemainingPerformanceObligationExpectedTiming"
+                "OfSatisfactionPeriod1"
+            ),
+            "1",
+            "xbrli:pure",
+            "0",
+        ),
+    ):
+        events.append(
+            make_raw_fact(
+                source=filing_row["source"],
+                concept_qname=concept,
+                context=bucket_context,
+                unit=FactUnit(unit, [unit]),
+                raw_token=value,
+                parsed_value=value,
+                dimensions_known=True,
+                decimals=decimals,
+                source_span=(0, len(value)),
+                source_occurrence_key=key,
+                accepted_at=filing_row["accepted_at"],
+                recorded_at=filing_row["recorded_at"],
+            )
+        )
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    result = produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
+
+
+# pk04dev3 (guard-precision repair): two narrow guard defects in the
+# single-aggregate rule. (1) the admitted aggregate's TYPED MEMBER DATE was
+# never checked, so a lone far-future bucket could be valued as the total;
+# the member must sit in the period-adjacent window
+# ``por < member_date <= por + 92 days`` (both real filer conventions put it
+# at the day after the period end). (2) an occurrence carrying the timing
+# axis as an EXPLICIT member passed the axis-name check and then crashed the
+# mint's read of ``typed_dimensions[0]``, dropping the whole PK04 envelope;
+# the guard now requires the axis in typed_dimensions and skips explicit-
+# member occurrences — a typed absence, never an exception.
+def _pk04dev3_filing_row() -> dict:
+    return synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+
+
+def _pk04dev3_rpo_event(
+    filing_row: dict, key: str, member: str, *, explicit: bool = False
+):
+    """One RPO-total fact at the period end on the timing axis.
+
+    ``member`` is the serialized axis token; ``explicit`` puts the
+    (axis, member) pair in ``explicit_dimensions`` instead of
+    ``typed_dimensions``.
+    """
+    return make_raw_fact(
+        source=filing_row["source"],
+        concept_qname="us-gaap:RevenueRemainingPerformanceObligation",
+        context=FactContext(
+            context_id=f"c-rpo-{key}",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTREV_CIK,
+            instant="2025-12-31",
+            explicit_dimensions=((_RPO_AXIS, member),) if explicit else (),
+            typed_dimensions=() if explicit else ((_RPO_AXIS, member),),
+        ),
+        unit=FactUnit("USD", ["iso4217:USD"]),
+        raw_token="58100000000",
+        parsed_value="58100000000",
+        dimensions_known=True,
+        decimals="-8",
+        source_span=(0, 10),
+        source_occurrence_key=key,
+        accepted_at=filing_row["accepted_at"],
+        recorded_at=filing_row["recorded_at"],
+    )
+
+
+def _pk04dev3_produce(monkeypatch: pytest.MonkeyPatch, events) -> dict:
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    return produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+
+
+def test_pk04dev3_rpo_total_far_future_typed_member_stays_absent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = _pk04dev3_filing_row()
+    result = _pk04dev3_produce(
+        monkeypatch,
+        [_pk04dev3_rpo_event(filing_row, "rpo_2030", _typed_member("2030-01-01"))],
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
+
+
+def test_pk04dev3_rpo_total_explicit_member_occurrence_refused(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = _pk04dev3_filing_row()
+    base = list(
+        _testrev_events(
+            facts=(
+                ("rev", "us-gaap:Revenues", "duration", "138191000000", "USD"),
+                (
+                    "cl_cur",
+                    "us-gaap:ContractWithCustomerLiabilityCurrent",
+                    "instant",
+                    "7576000000",
+                    "USD",
+                ),
+            )
+        )
+    )
+    explicit_occ = _pk04dev3_rpo_event(
+        filing_row, "rpo_explicit", _typed_member("2026-01-01"), explicit=True
+    )
+    with_occ = _pk04dev3_produce(monkeypatch, base + [explicit_occ])
+    without = _pk04dev3_produce(monkeypatch, list(base))
+    row = _testrev_row(with_occ, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
+    others_with = [r for r in with_occ["fields"] if r["field_id"] != "rpo_total"]
+    others_without = [r for r in without["fields"] if r["field_id"] != "rpo_total"]
+    assert others_with == others_without
+
+
+def test_pk04dev3_rpo_total_period_end_plus_one_day_stays_valued(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = _pk04dev3_filing_row()
+    result = _pk04dev3_produce(
+        monkeypatch,
+        [_pk04dev3_rpo_event(filing_row, "rpo_agg", _typed_member("2026-01-01"))],
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "58100000000"
+    assert row["dimensions"] == [{"axis": _RPO_AXIS, "member": "2026-01-01"}]
+
+
+def test_pk04dev3_rpo_total_member_window_boundaries(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = _pk04dev3_filing_row()
+    # A member exactly AT the period end is not after it: refused.
+    result = _pk04dev3_produce(
+        monkeypatch,
+        [_pk04dev3_rpo_event(filing_row, "rpo_at_end", _typed_member("2025-12-31"))],
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
+    # Period end + 92 days is the last admitted day.
+    result = _pk04dev3_produce(
+        monkeypatch,
+        [_pk04dev3_rpo_event(filing_row, "rpo_92d", _typed_member("2026-04-02"))],
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "58100000000"
+    assert row["dimensions"] == [{"axis": _RPO_AXIS, "member": "2026-04-02"}]
+    # One day further is refused.
+    result = _pk04dev3_produce(
+        monkeypatch,
+        [_pk04dev3_rpo_event(filing_row, "rpo_93d", _typed_member("2026-04-03"))],
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
+
+
+def test_pk04dev3_rpo_total_unparseable_typed_member_stays_absent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = _pk04dev3_filing_row()
+    member = f"<{_RPO_AXIS}.domain>FY2026-and-thereafter</{_RPO_AXIS}.domain>"
+    result = _pk04dev3_produce(
+        monkeypatch,
+        [_pk04dev3_rpo_event(filing_row, "rpo_opaque", member)],
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
