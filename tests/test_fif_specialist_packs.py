@@ -15647,3 +15647,1186 @@ def test_pk04dev3_rpo_total_unparseable_typed_member_stays_absent(
     assert row["reason"] == "disallowed_dimension"
     assert row["value"] is None
     assert row["source_occurrence_ids"] == []
+
+
+# 51.6 dev-corpus repair (litigation_v1, DEC-FIF-PACK-GENERALIZATION-DEV-
+# CORPUS): synthetic coverage for the R1/R1b/R2/R3 narrative rules and the
+# R4/R5 dimension rules. Every non-pin test below fails on the parent pack
+# (verified against 8f806b042f1c during the repair).
+
+
+def _pk08_v2_context(
+    context_id: str, dimensions: tuple[tuple[str, str, str], ...] = ()
+) -> str:
+    """An instant context at 2025-12-31 carrying explicit/typed members.
+
+    ``dimensions`` entries are ``(axis qname, "explicit" | "typed",
+    member)``; the typed form mirrors the converter's own serialization
+    (the member value is the typedMember's element text).
+    """
+    scenario = ""
+    for axis, kind, member in dimensions:
+        if kind == "typed":
+            scenario += (
+                f'<xbrldi:typedMember dimension="{axis}">'
+                f"<test:domain>{member}</test:domain>"
+                "</xbrldi:typedMember>"
+            )
+        else:
+            scenario += (
+                f'<xbrldi:explicitMember dimension="{axis}">'
+                f"{member}</xbrldi:explicitMember>"
+            )
+    if scenario:
+        scenario = f"<xbrli:scenario>{scenario}</xbrli:scenario>"
+    return (
+        f'<xbrli:context id="{context_id}"><xbrli:entity><xbrli:identifier'
+        f' scheme="http://www.sec.gov/CIK">'
+        f"{PK08_TESTCO_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:instant>2025-12-31</xbrli:instant></xbrli:period>"
+        f"{scenario}</xbrli:context>"
+    )
+
+
+_PK08_AXIS_LITIGATION = "srt:LitigationCaseAxis"
+_PK08_AXIS_NATURE = "us-gaap:LossContingenciesByNatureOfContingencyAxis"
+_PK08_AXIS_LOCATION = "us-gaap:BalanceSheetLocationAxis"
+_PK08_AXIS_RANGE = "srt:RangeAxis"
+_PK08_ACCRUAL_CONCEPT = "us-gaap:LossContingencyAccrualAtCarryingValue"
+_PK08_ESTIMATE_CONCEPT = "us-gaap:LossContingencyEstimateOfPossibleLoss"
+
+
+def _pk08_v2_document(
+    facts: tuple[tuple[str, str, str | None, str], ...],
+    contexts: tuple[str, ...],
+    paragraphs: tuple[str, ...],
+) -> bytes:
+    """A TESTCO inline-XBRL filing with free-form contexts and paragraphs."""
+    rows = []
+    for index, (qname, context, value, unit) in enumerate(facts, start=1):
+        if value is None:
+            rows.append(
+                f'<tr><td>item {index}</td><td>'
+                f'<ix:nonFraction id="f-{index}" name="{qname}"'
+                f' contextRef="{context}" unitRef="{unit}" xsi:nil="true"/>'
+                "</td></tr>"
+            )
+        else:
+            rows.append(
+                f'<tr><td>item {index}</td><td>'
+                f'<ix:nonFraction id="f-{index}" name="{qname}"'
+                f' contextRef="{context}" unitRef="{unit}"'
+                f' decimals="0">{value}</ix:nonFraction></td></tr>'
+            )
+    template = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<html xmlns="http://www.w3.org/1999/xhtml"'
+        ' xmlns:ix="http://www.xbrl.org/2013/inlineXBRL"'
+        ' xmlns:xbrli="http://www.xbrl.org/2003/instance"'
+        ' xmlns:xbrldi="http://xbrl.org/2006/xbrldi"'
+        ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+        ' xmlns:iso4217="http://www.xbrl.org/2003/iso4217"'
+        ' xmlns:test="http://www.testco.com/2025"'
+        ' xmlns:srt="http://fasb.org/srt/2025"'
+        ' xmlns:us-gaap="http://fasb.org/us-gaap/2025">\n'
+        "<head><title>TESTCO filing</title></head>\n<body>\n"
+        '<div style="display:none"><ix:header><ix:resources>\n'
+        + "\n".join(contexts)
+        + '\n<xbrli:unit id="usd"><xbrli:measure>iso4217:USD</xbrli:measure>'
+        "</xbrli:unit>\n</ix:resources></ix:header></div>\n"
+        + "\n".join(paragraphs)
+        + f'\n<table>\n{chr(10).join(rows)}\n</table>\n</body></html>\n'
+    )
+    return template.encode("utf-8")
+
+
+def _pk08_v2_input(
+    *,
+    facts: tuple[tuple[str, str, str | None, str], ...],
+    contexts: tuple[str, ...],
+    paragraphs: tuple[str, ...],
+    form: str = "10-K",
+) -> PackInput:
+    document = _pk08_v2_document(facts, contexts, paragraphs)
+    manifest = {
+        "entity_id": PK08_TESTCO_CIK,
+        "cik": PK08_TESTCO_CIK,
+        "legal_name": "TESTCO TWO CORP",
+        "form": form,
+        "period_of_report": "2025-12-31",
+        "filing_date": "2026-02-15",
+        "accession": "0000000002-26-000012",
+        "primary_document": PK08_TESTCO_DOC,
+        "source_accepted_at": "2026-02-15T16:00:00Z",
+        "fixture_recorded_at": "2026-02-15T16:05:00Z",
+        "members": [
+            {
+                "name": PK08_TESTCO_DOC,
+                "state": "stored",
+                "content_sha256": sha256(document).hexdigest(),
+            }
+        ],
+    }
+    return PackInput(
+        packages=(
+            GoldenFilingPackage(manifest=manifest, members={PK08_TESTCO_DOC: document}),
+        ),
+        entity=PK08_TESTCO_ENTITY,
+        query=PK08_QUERY,
+        issuer_sic="3571",
+        sic_source="sec_submissions",
+    )
+
+
+_PK08_V2_BASE_CONTEXTS = (_pk08_v2_context("d-i"),)
+_PK08_V2_NIL_FACT = ("us-gaap:CommitmentsAndContingencies", "d-i", None, "usd")
+
+
+def _pk08_litigation_context(context_id: str, member: str) -> str:
+    return _pk08_v2_context(
+        context_id,
+        ((_PK08_AXIS_LITIGATION, "explicit", member),),
+    )
+
+
+# R4: the accrual reported only under contingency-identity axes ----------
+
+
+def test_pk08_accrual_dimension_rule_values_litigation_case_axis() -> None:
+    # A filer reports the whole accrual only under srt:LitigationCaseAxis
+    # (an issuer member naming the matter). With no undimensioned accrual
+    # the row values from that fact — the exact (axis, member) pair-tuple
+    # context shape that crashed the first repair draft's set() union.
+    pack_input = _pk08_v2_input(
+        facts=(
+            _PK08_V2_NIL_FACT,
+            (_PK08_ACCRUAL_CONCEPT, "d-lc", "3400000000", "usd"),
+        ),
+        contexts=(
+            *_PK08_V2_BASE_CONTEXTS,
+            _pk08_litigation_context("d-lc", "test:TalcMember"),
+        ),
+        paragraphs=(
+            "<p>Note 12 – Commitments and Contingencies. The Company has "
+            "entered into certain unconditional purchase obligations.</p>",
+            f"<p>{_PK08_CONTING_CLEAN}</p>",
+            "<p>Note 13 – Subsequent Events. None.</p>",
+            f"<p>{_PK08_ITEM3_BODY}</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    accrual = _row(result, "loss_contingency_accrual")
+    assert accrual["quality_state"] == "valued"
+    assert accrual["value"] == "3400000000"
+    assert accrual["evidence_kind"] == "xbrl_fact"
+    assert accrual["mapping_rule_id"] == (
+        "PK08.loss_contingency_accrual.fact_dimensioned/v1"
+    )
+    assert accrual["period"] == {"kind": "instant", "end": "2025-12-31"}
+    assert accrual["unit"] == "USD"
+    assert accrual["source_occurrence_ids"]
+    axis_names = {dim["axis"] for dim in accrual["dimensions"]}
+    assert any(axis.endswith("LitigationCaseAxis") for axis in axis_names)
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_accrual_dimension_rule_admits_typed_member_axis() -> None:
+    # The same rule over a context whose identity axis carries a typed
+    # member: the ledger hands both dimension containers as canonical
+    # (axis, member) pair tuples, so the rule must read the axis from the
+    # pair, never from a set() of the containers (the crash shape).
+    pack_input = _pk08_v2_input(
+        facts=(
+            _PK08_V2_NIL_FACT,
+            (_PK08_ACCRUAL_CONCEPT, "d-ty", "500000000", "usd"),
+        ),
+        contexts=(
+            *_PK08_V2_BASE_CONTEXTS,
+            _pk08_v2_context(
+                "d-ty", ((_PK08_AXIS_NATURE, "typed", "environmental"),)
+            ),
+        ),
+        paragraphs=(
+            "<p>Note 12 – Commitments and Contingencies. The Company has "
+            "entered into certain unconditional purchase obligations.</p>",
+            f"<p>{_PK08_CONTING_CLEAN}</p>",
+            "<p>Note 13 – Subsequent Events. None.</p>",
+            f"<p>{_PK08_ITEM3_BODY}</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    accrual = _row(result, "loss_contingency_accrual")
+    assert accrual["quality_state"] == "valued"
+    assert accrual["value"] == "500000000"
+    assert accrual["mapping_rule_id"] == (
+        "PK08.loss_contingency_accrual.fact_dimensioned/v1"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_accrual_dimension_rule_excludes_location_axis() -> None:
+    # Agreeing litigation-axis candidates pool; a differently-valued accrual
+    # under a balance-sheet-location axis is never in the pool.
+    pack_input = _pk08_v2_input(
+        facts=(
+            _PK08_V2_NIL_FACT,
+            (_PK08_ACCRUAL_CONCEPT, "d-lc", "3400000000", "usd"),
+            (_PK08_ACCRUAL_CONCEPT, "d-lc2", "3400000000", "usd"),
+            (_PK08_ACCRUAL_CONCEPT, "d-bs", "6600000000", "usd"),
+        ),
+        contexts=(
+            *_PK08_V2_BASE_CONTEXTS,
+            _pk08_litigation_context("d-lc", "test:TalcMember"),
+            _pk08_litigation_context("d-lc2", "test:OtherMatterMember"),
+            _pk08_v2_context(
+                "d-bs",
+                ((_PK08_AXIS_LOCATION, "explicit", "us-gaap:OtherCurrentLiabilitiesMember"),),
+            ),
+        ),
+        paragraphs=(
+            "<p>Note 12 – Commitments and Contingencies. The Company has "
+            "entered into certain unconditional purchase obligations.</p>",
+            f"<p>{_PK08_CONTING_CLEAN}</p>",
+            "<p>Note 13 – Subsequent Events. None.</p>",
+            f"<p>{_PK08_ITEM3_BODY}</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    accrual = _row(result, "loss_contingency_accrual")
+    assert accrual["quality_state"] == "valued"
+    assert accrual["value"] == "3400000000"
+    assert len(accrual["source_occurrence_ids"]) == 2
+    assert contract.validate_pack_result(result) == []
+
+
+# R5: range endpoints from srt:RangeAxis-dimensioned estimates -----------
+
+
+def _pk08_range_context(context_id: str, member: str) -> str:
+    return _pk08_v2_context(
+        context_id,
+        (
+            (_PK08_AXIS_LITIGATION, "explicit", "test:CaseMember"),
+            (_PK08_AXIS_RANGE, "explicit", member),
+        ),
+    )
+
+
+def test_pk08_range_axis_rule_values_endpoints_from_facts() -> None:
+    # EstimateOfPossibleLoss facts dimensioned by srt:RangeAxis with the
+    # minimum/maximum members value the range rows; the co-occurring
+    # matter axis is never consulted. A disagreeing accrual pool in the
+    # same filing keeps its typed absence (never pooled into one row).
+    pack_input = _pk08_v2_input(
+        facts=(
+            _PK08_V2_NIL_FACT,
+            (_PK08_ACCRUAL_CONCEPT, "d-lc", "3400000000", "usd"),
+            (_PK08_ACCRUAL_CONCEPT, "d-lc2", "9000000000", "usd"),
+            (_PK08_ESTIMATE_CONCEPT, "d-min", "10500000000", "usd"),
+            (_PK08_ESTIMATE_CONCEPT, "d-max", "12500000000", "usd"),
+        ),
+        contexts=(
+            *_PK08_V2_BASE_CONTEXTS,
+            _pk08_litigation_context("d-lc", "test:TalcMember"),
+            _pk08_litigation_context("d-lc2", "test:OtherMatterMember"),
+            _pk08_range_context("d-min", "srt:MinimumMember"),
+            _pk08_range_context("d-max", "srt:MaximumMember"),
+        ),
+        paragraphs=(
+            "<p>Note 12 – Commitments and Contingencies. The Company has "
+            "entered into certain unconditional purchase obligations.</p>",
+            f"<p>{_PK08_CONTING_CLEAN}</p>",
+            "<p>Note 13 – Subsequent Events. None.</p>",
+            f"<p>{_PK08_ITEM3_BODY}</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    rows = {row["field_id"]: row for row in result["fields"]}
+    accrual = rows["loss_contingency_accrual"]
+    assert accrual["quality_state"] == "missing"
+    assert accrual["reason"] == (
+        "disallowed_dimension"
+    )
+    low = rows["loss_contingency_range_low"]
+    high = rows["loss_contingency_range_high"]
+    assert low["quality_state"] == "valued"
+    assert low["value"] == "10500000000"
+    assert low["mapping_rule_id"] == (
+        "PK08.loss_contingency_range_low.fact_range_axis/v1"
+    )
+    assert high["quality_state"] == "valued"
+    assert high["value"] == "12500000000"
+    assert high["mapping_rule_id"] == (
+        "PK08.loss_contingency_range_high.fact_range_axis/v1"
+    )
+    assert _check(result, "accrual_vs_range")["status"] == "not_evaluable"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_range_axis_rule_skips_disagreeing_endpoint() -> None:
+    # Two minimum members carrying different estimates never value the low
+    # row; the agreeing maximum still values the high row.
+    pack_input = _pk08_v2_input(
+        facts=(
+            _PK08_V2_NIL_FACT,
+            (_PK08_ESTIMATE_CONCEPT, "d-min", "10500000000", "usd"),
+            (_PK08_ESTIMATE_CONCEPT, "d-min2", "99000000", "usd"),
+            (_PK08_ESTIMATE_CONCEPT, "d-max", "12500000000", "usd"),
+        ),
+        contexts=(
+            *_PK08_V2_BASE_CONTEXTS,
+            _pk08_range_context("d-min", "srt:MinimumMember"),
+            _pk08_range_context("d-min2", "srt:MinimumMember"),
+            _pk08_range_context("d-max", "srt:MaximumMember"),
+        ),
+        paragraphs=(
+            "<p>Note 12 – Commitments and Contingencies. The Company has "
+            "entered into certain unconditional purchase obligations.</p>",
+            f"<p>{_PK08_CONTING_CLEAN}</p>",
+            "<p>Note 13 – Subsequent Events. None.</p>",
+            f"<p>{_PK08_ITEM3_BODY}</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    rows = {row["field_id"]: row for row in result["fields"]}
+    assert rows["loss_contingency_range_low"]["quality_state"] == "missing"
+    high = rows["loss_contingency_range_high"]
+    assert high["quality_state"] == "valued"
+    assert high["value"] == "12500000000"
+    assert contract.validate_pack_result(result) == []
+
+
+# R1b: range-arm v3 refuses the negated range idiom ----------------------
+
+
+def test_pk08_range_arm_v3_negated_idiom_is_not_estimable() -> None:
+    # The ASC 450 refusal sentence carries the disclosed arm's phrase
+    # inside its own negation ("unable to reasonably estimate a possible
+    # loss or range of possible loss"); without an amount after the phrase
+    # it is not_estimable, never disclosed_range.
+    prose = (
+        "Contingencies The Company is a party to certain pending legal "
+        "matters. Given the nature of the litigation and the complexities "
+        "involved in these matters, the Company is unable to reasonably "
+        "estimate a possible loss or range of possible loss for such "
+        "matters until the remaining claims are resolved."
+    )
+    result = produce_pack("PK08", _pk08_testco_input(contingencies_prose=prose))
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["text_value"] == "not_estimable"
+    assert contract.validate_pack_result(result) == []
+
+
+# R1: note-title v2 locates real filings' note headings ------------------
+
+
+def test_pk08_note_title_v2_resolves_note_fields() -> None:
+    # Real litigation filings title the contingencies note without the v1
+    # heading's shape ("19. Legal proceedings", no "Note" word, no
+    # "Commitments"); the v2 fallback locates it and the note-ledger
+    # fields resolve. A note with no title-shaped "Contingencies" uses the
+    # whole note as its contingencies subsection.
+    pack_input = _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        paragraphs=(
+            "<p>19. Legal proceedings The Company and its subsidiaries are "
+            "involved in various lawsuits and claims regarding product "
+            "liability that arise from time to time in the ordinary course "
+            "of their business.</p>",
+            "<p>20. Subsequent Events None.</p>",
+            f"<p>{_PK08_ITEM3_BODY}</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    rows = {row["field_id"]: row for row in result["fields"]}
+    block = rows["commitments_text_block"]
+    assert block["quality_state"] == "valued"
+    assert block["text_value"].startswith(
+        "19. Legal proceedings The Company and its subsidiaries"
+    )
+    assert rows["commitments_and_contingencies_bs_state"]["text_value"] == (
+        "nil_disclosed"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+# R2: a table-of-contents line is never the governing item section -------
+
+
+def test_pk08_item3_toc_line_is_not_the_governing_section() -> None:
+    # A 10-K whose only "Item 3. Legal Proceedings" match is the table of
+    # contents (a page number, then the next item heading) keeps the item
+    # fields typed absent instead of valuing them on the remnant.
+    pack_input = _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        paragraphs=(
+            "<p>Note 12 – Commitments and Contingencies. The Company has "
+            "entered into certain unconditional purchase obligations.</p>",
+            f"<p>{_PK08_CONTING_CLEAN}</p>",
+            "<p>Note 13 – Subsequent Events. None.</p>",
+            "<p>Item 3. Legal Proceedings 114 Item 4. Mine Safety "
+            "Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    item3 = _row(result, "legal_proceedings_item3")
+    assert item3["quality_state"] == "not_evaluable"
+    assert item3["reason"] == "missing_dependency"
+    assert any(
+        line.startswith("pk08.legal_proceedings_item3: governing_section_")
+        for line in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+# R3: the item section's cross-reference into the note --------------------
+
+
+def test_pk08_note_fallback_resolves_spans_and_skips_boilerplate() -> None:
+    # An item section that only incorporates the note by reference leaves
+    # the span fields to the contingencies note; the procedural guard
+    # skips the estimation-methodology keyword collision ("a complex
+    # series of judgments about future events") and lands on the sentence
+    # that actually reports the proceeding's status.
+    pack_input = _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        paragraphs=(
+            "<p>19. Legal proceedings The Company and certain of its "
+            "subsidiaries are involved in various lawsuits and claims. "
+            "Amounts accrued for legal contingencies often result from a "
+            "complex series of judgments about future events and "
+            "uncertainties that rely heavily on estimates and assumptions. "
+            "A significant number of personal injury claims alleging that "
+            "the product causes cancer have been asserted against the "
+            "Company. In cases that have gone to trial, the Company has "
+            "obtained a number of defense verdicts.</p>",
+            "<p>20. Subsequent Events None.</p>",
+            "<p>Item 3. Legal Proceedings The information called for by "
+            "this item is incorporated herein by reference to Note 19 of "
+            "the financial statements.</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    rows = {row["field_id"]: row for row in result["fields"]}
+    allegation = rows["allegation_span"]
+    assert allegation["quality_state"] == "valued"
+    assert allegation["mapping_rule_id"] == "pk08.allegation_span.text_span_note/v1"
+    assert "alleging that the product causes cancer" in allegation["text_value"]
+    procedural = rows["procedural_status_span"]
+    assert procedural["quality_state"] == "valued"
+    assert procedural["mapping_rule_id"] == (
+        "pk08.procedural_status_span.text_span_note/v1"
+    )
+    assert procedural["text_value"].startswith(
+        "In cases that have gone to trial"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_note_fallback_without_qualifying_sentence_stays_absent() -> None:
+    # A note whose only keyword sentences are estimation boilerplate keeps
+    # the procedural row typed absent — never a methodology span.
+    pack_input = _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        paragraphs=(
+            "<p>19. Legal proceedings The Company is involved in various "
+            "claims. Amounts accrued for legal contingencies often result "
+            "from a complex series of judgments about future events and "
+            "uncertainties that rely heavily on estimates and "
+            "assumptions.</p>",
+            "<p>20. Subsequent Events None.</p>",
+            "<p>Item 3. Legal Proceedings The information called for by "
+            "this item is incorporated herein by reference to Note 19 of "
+            "the financial statements.</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    procedural = _row(result, "procedural_status_span")
+    assert procedural["quality_state"] == "missing"
+    assert procedural["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_allegation_note_guard_skips_methodology_boilerplate() -> None:
+    # A disclosure-process sentence whose "alleged actual damages" phrase
+    # collides with the allegation keyword is methodology, not an
+    # allegation; the note fallback continues to the later sentence that
+    # actually asserts claims against the issuer.
+    pack_input = _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        paragraphs=(
+            "<p>19. Legal proceedings The Company and certain of its "
+            "subsidiaries are involved in various lawsuits and claims. "
+            "Process for Disclosure and Recording of Liabilities Related "
+            "to Legal Proceedings: Many lawsuits and claims involve "
+            "complex issues relating to causation and alleged actual "
+            "damages, all of which are subject to substantial "
+            "uncertainties. A significant number of personal injury "
+            "claims alleging that the product causes cancer have been "
+            "asserted against the Company.</p>",
+            "<p>20. Subsequent Events None.</p>",
+            "<p>Item 3. Legal Proceedings The information called for by "
+            "this item is incorporated herein by reference to Note 19 of "
+            "the financial statements.</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    allegation = _row(result, "allegation_span")
+    assert allegation["quality_state"] == "valued"
+    assert allegation["mapping_rule_id"] == "pk08.allegation_span.text_span_note/v1"
+    assert allegation["text_value"].startswith("A significant number")
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_allegation_note_guard_boilerplate_only_stays_absent() -> None:
+    # A note whose only allegation-keyword sentence is the methodology
+    # boilerplate keeps the allegation row typed absent — never a process
+    # span valued as an allegation.
+    pack_input = _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        paragraphs=(
+            "<p>19. Legal proceedings The Company and certain of its "
+            "subsidiaries are involved in various lawsuits and claims. "
+            "Process for Disclosure and Recording of Liabilities Related "
+            "to Legal Proceedings: Many lawsuits and claims involve "
+            "complex issues relating to causation and alleged actual "
+            "damages, all of which are subject to substantial "
+            "uncertainties.</p>",
+            "<p>20. Subsequent Events None.</p>",
+            "<p>Item 3. Legal Proceedings The information called for by "
+            "this item is incorporated herein by reference to Note 19 of "
+            "the financial statements.</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    allegation = _row(result, "allegation_span")
+    assert allegation["quality_state"] == "missing"
+    assert allegation["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_procedural_note_guard_skips_possibility_sentence() -> None:
+    # A sentence whose only proceeding references sit in a modal clause
+    # ("can also lead to … proceedings … as well as to settlements")
+    # states a possibility, not a status; the fallback continues to the
+    # later sentence reporting actual tried and defended matters.
+    pack_input = _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        paragraphs=(
+            "<p>19. Legal proceedings The Company and certain of its "
+            "subsidiaries are involved in various lawsuits and claims. "
+            "Such requests can also lead to the assertion of claims or "
+            "the commencement of administrative, civil, or criminal "
+            "legal proceedings against the Company and others, as well "
+            "as to settlements. Over the past twenty years, the Company "
+            "has prevailed in nineteen of the twenty cases tried to a "
+            "jury and has successfully defended two later trials.</p>",
+            "<p>20. Subsequent Events None.</p>",
+            "<p>Item 3. Legal Proceedings The information called for by "
+            "this item is incorporated herein by reference to Note 19 of "
+            "the financial statements.</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    procedural = _row(result, "procedural_status_span")
+    assert procedural["quality_state"] == "valued"
+    assert procedural["mapping_rule_id"] == (
+        "pk08.procedural_status_span.text_span_note/v1"
+    )
+    assert procedural["text_value"].startswith("Over the past twenty years")
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_procedural_note_guard_possibility_only_stays_absent() -> None:
+    # A note whose only keyword sentence is the modal possibility statement
+    # keeps the procedural row typed absent — never a possibility span
+    # valued as a status.
+    pack_input = _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        paragraphs=(
+            "<p>19. Legal proceedings The Company and certain of its "
+            "subsidiaries are involved in various lawsuits and claims. "
+            "Such requests can also lead to the assertion of claims or "
+            "the commencement of administrative, civil, or criminal "
+            "legal proceedings against the Company and others, as well "
+            "as to settlements.</p>",
+            "<p>20. Subsequent Events None.</p>",
+            "<p>Item 3. Legal Proceedings The information called for by "
+            "this item is incorporated herein by reference to Note 19 of "
+            "the financial statements.</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    procedural = _row(result, "procedural_status_span")
+    assert procedural["quality_state"] == "missing"
+    assert procedural["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+# v3 note-guard closings: modal and forward-looking admissions ---------------
+
+
+def _pk08_v3_note_input(payload: str) -> PackInput:
+    """A contingencies note whose payload sentences follow the lead-in."""
+    return _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        paragraphs=(
+            "<p>19. Legal proceedings The Company and certain of its "
+            "subsidiaries are involved in various lawsuits and claims. "
+            + payload
+            + "</p>",
+            "<p>20. Subsequent Events None.</p>",
+            "<p>Item 3. Legal Proceedings The information called for by "
+            "this item is incorporated herein by reference to Note 19 of "
+            "the financial statements.</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+
+
+# Wrong-kind sentences from the second dev-corpus review: each states a
+# forward-looking possibility the v2 guards still admitted.
+_PK08_V3_MODAL_PROCEDURAL = (
+    "Any adverse judgment obtained at trial could be reversed on appeal.",
+    "Litigation outcomes are inherently uncertain, and a trial verdict "
+    "may be reversed on appeal.",
+    "Further proceedings could result in additional settlements.",
+    "Claims may be asserted in the future that could lead to trials.",
+)
+_PK08_V3_MODAL_ALLEGATION = (
+    "Future claims alleging fraud may be brought against the Company.",
+)
+# Genuine sentences the tightened guards must still accept.
+_PK08_V3_GENUINE_PROCEDURAL = (
+    "The court granted the Company's motion to dismiss the complaint.",
+    "The parties have settled the litigation.",
+    "Trial in the first case is scheduled to begin in March 2027.",
+    "The motion to dismiss was denied by the district court.",
+    "The lawsuit is pending trial in the Northern District.",
+)
+_PK08_V3_GENUINE_ALLEGATION = (
+    "A complaint filed in federal court asserts claims for breach of "
+    "contract against the Company.",
+    "Numerous lawsuits alleging failure to warn have been filed against "
+    "the Registrant.",
+    "In these actions, plaintiffs allege that they suffered personal "
+    "injuries.",
+)
+
+
+@pytest.mark.parametrize("sentence", _PK08_V3_MODAL_PROCEDURAL)
+def test_pk08_procedural_note_guard_rejects_modal_possibility(
+    sentence: str,
+) -> None:
+    # v3: a bare-participle anchor with a modal in its verb group
+    # ("obtained … could be reversed", "may be reversed") and proceeding
+    # nouns whose clauses carry a modal on either side state a
+    # possibility, never the status of a matter.
+    assert pk08_contingencies._procedural_note_sentence(sentence) is False
+
+
+@pytest.mark.parametrize("sentence", _PK08_V3_GENUINE_PROCEDURAL)
+def test_pk08_procedural_note_guard_accepts_genuine_status(
+    sentence: str,
+) -> None:
+    # The v3 tightening still accepts an indicative status sentence.
+    assert pk08_contingencies._procedural_note_sentence(sentence) is True
+
+
+@pytest.mark.parametrize("sentence", _PK08_V3_MODAL_ALLEGATION)
+def test_pk08_allegation_note_guard_rejects_forward_looking_possibility(
+    sentence: str,
+) -> None:
+    # v3: an against-issuer reference whose clause carries a modal and a
+    # forward-looking marker is a possibility, not a made claim.
+    assert pk08_contingencies._allegation_note_sentence(sentence) is False
+
+
+@pytest.mark.parametrize("sentence", _PK08_V3_GENUINE_ALLEGATION)
+def test_pk08_allegation_note_guard_accepts_genuine_claim(
+    sentence: str,
+) -> None:
+    # The v3 tightening still accepts an indicative made-against shape.
+    assert pk08_contingencies._allegation_note_sentence(sentence) is True
+
+
+@pytest.mark.parametrize("sentence", _PK08_V3_MODAL_PROCEDURAL)
+def test_pk08_procedural_note_modal_possibility_alone_stays_absent(
+    sentence: str,
+) -> None:
+    # Alone in the note, the possibility sentence leaves the procedural
+    # row typed absent — never a possibility span valued as a status.
+    result = produce_pack("PK08", _pk08_v3_note_input(sentence))
+    procedural = _row(result, "procedural_status_span")
+    assert procedural["quality_state"] == "missing"
+    assert procedural["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+@pytest.mark.parametrize(
+    ("possibility", "genuine"),
+    (
+        # anchor with the modal after it -> a granted motion
+        (_PK08_V3_MODAL_PROCEDURAL[0], _PK08_V3_GENUINE_PROCEDURAL[0]),
+        # anchor with the modal before it -> a denied motion
+        (_PK08_V3_MODAL_PROCEDURAL[1], _PK08_V3_GENUINE_PROCEDURAL[3]),
+        # no anchor, modal after the noun -> a settled litigation
+        (_PK08_V3_MODAL_PROCEDURAL[2], _PK08_V3_GENUINE_PROCEDURAL[1]),
+        # no anchor, modals after both nouns -> a pending lawsuit
+        (_PK08_V3_MODAL_PROCEDURAL[3], _PK08_V3_GENUINE_PROCEDURAL[4]),
+    ),
+)
+def test_pk08_procedural_note_guard_skips_modal_possibility(
+    possibility: str, genuine: str
+) -> None:
+    # The possibility sentence precedes the genuine status; the fallback
+    # skips it and selects the genuine sentence.
+    result = produce_pack("PK08", _pk08_v3_note_input(f"{possibility} {genuine}"))
+    procedural = _row(result, "procedural_status_span")
+    assert procedural["quality_state"] == "valued"
+    assert procedural["mapping_rule_id"] == (
+        "pk08.procedural_status_span.text_span_note/v1"
+    )
+    assert procedural["text_value"].startswith(genuine)
+    assert contract.validate_pack_result(result) == []
+
+
+@pytest.mark.parametrize("sentence", _PK08_V3_MODAL_ALLEGATION)
+def test_pk08_allegation_note_forward_looking_alone_stays_absent(
+    sentence: str,
+) -> None:
+    # Alone in the note, the possibility sentence leaves the allegation
+    # row typed absent — never a risk-factor span valued as a claim.
+    result = produce_pack("PK08", _pk08_v3_note_input(sentence))
+    allegation = _row(result, "allegation_span")
+    assert allegation["quality_state"] == "missing"
+    assert allegation["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_allegation_note_guard_skips_forward_looking_possibility() -> None:
+    # The possibility sentence precedes the genuine claim; the fallback
+    # skips it and selects the genuine sentence.
+    payload = (
+        _PK08_V3_MODAL_ALLEGATION[0] + " " + _PK08_V3_GENUINE_ALLEGATION[1]
+    )
+    result = produce_pack("PK08", _pk08_v3_note_input(payload))
+    allegation = _row(result, "allegation_span")
+    assert allegation["quality_state"] == "valued"
+    assert allegation["mapping_rule_id"] == "pk08.allegation_span.text_span_note/v1"
+    assert allegation["text_value"].startswith("Numerous lawsuits")
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_note_genuine_sentences_alone_stay_valued() -> None:
+    # The v3 tightening does not over-reject: alone in the note, the
+    # genuine status and claim sentences are still selected (these two
+    # also pass on the pre-v3 pack).
+    payload = (
+        _PK08_V3_GENUINE_PROCEDURAL[4] + " " + _PK08_V3_GENUINE_ALLEGATION[1]
+    )
+    result = produce_pack("PK08", _pk08_v3_note_input(payload))
+    procedural = _row(result, "procedural_status_span")
+    assert procedural["quality_state"] == "valued"
+    assert procedural["text_value"].startswith("The lawsuit is pending trial")
+    allegation = _row(result, "allegation_span")
+    assert allegation["quality_state"] == "valued"
+    assert allegation["text_value"].startswith("Numerous lawsuits")
+    assert contract.validate_pack_result(result) == []
+
+
+# v4 note-guard closings: whole-clause governance ------------------------------
+
+
+# Wrong-kind sentences from the third dev-corpus review: a modal or a
+# forward-looking marker anywhere in the anchor's clause — not only
+# inside a four-word verb-group window — states a possibility, never a
+# status. "should"/"shall" are modals, "expected to"/"likely" are
+# markers, and a demonstrative "that" ("in that matter could") shields
+# nothing.
+_PK08_V4_GOVERNED_PROCEDURAL = (
+    "The judgment entered by the trial court in that matter could, in "
+    "the event of an appeal, ultimately be reversed.",
+    "The injunction obtained by the three plaintiffs in the coordinated "
+    "proceedings may be dissolved on appeal.",
+    "Damages awarded at trial should be reduced on appeal.",
+    "The trial schedule for these actions should be confirmed next quarter.",
+    "Damages awarded to the prevailing plaintiffs in the trial actions "
+    "might, upon appeal, be reduced.",
+    "Any award granted in the derivative actions would be payable only "
+    "to the corporation.",
+    "Verdicts entered by courts of appeal can be appealed no further.",
+    "The judgment filed in the register of actions will be enforceable "
+    "only after the appeal period lapses.",
+    "No further trial proceedings are expected to occur in this litigation.",
+    # v5: the bare verb with a noun object or a negation (fourth review).
+    "The Company does not expect the pending cases to reach trial before "
+    "2027.",
+    "The Company does not anticipate further proceedings in the trial "
+    "court this year.",
+    "The Company expects a ruling on the dispositive motions in the cases "
+    "by year end.",
+)
+# Wrong-kind sentences the earlier guards already rejected: whole-clause
+# governance keeps every one of them rejected.
+_PK08_V4_STAY_REJECTED_PROCEDURAL = (
+    "Costs awarded may not be recoverable in these actions.",
+    "If the Company were to lose the bellwether trials, the judgment "
+    "amount could exceed insurance.",
+    "In the event that the appeals court reverses, a new trial could be "
+    "ordered in these actions.",
+    "There can be no assurance that the pending class actions will "
+    "settle within the policy limits.",
+    "Any adverse judgment obtained at trial could be reversed on appeal.",
+    "Further proceedings could result in additional settlements.",
+)
+_PK08_V4_REJECT_ALLEGATION = (
+    "No actions alleging securities fraud are expected to be brought "
+    "against the Company.",
+    # v5: the bare verb with a negation (fourth review).
+    "The Company does not expect further claims alleging antitrust "
+    "violations to be brought against the Registrant.",
+    "Counterclaims alleging breach that shall be asserted against the "
+    "Company in the bankruptcy proceedings are covered.",
+)
+_PK08_V4_STAY_REJECTED_ALLEGATION = (
+    "Potential claims alleging patent infringement have not been "
+    "asserted against the Company.",
+    "Plaintiffs will likely allege that the claims against the Company "
+    "are without merit.",
+    "Claims alleging new theories that may in the future be asserted "
+    "against us are not presently insured.",
+    "Future claims alleging fraud may be brought against the Company.",
+)
+# Genuine sentences whole-clause governance must still accept: a dated
+# report of another party's intention behind a complementizer "that", and
+# the calendar "May" the v3 window misread as a modal when the window cut
+# off the day number.
+_PK08_V4_GENUINE_PROCEDURAL = (
+    "On May 14, 2024, the court granted the Company's motion for summary "
+    "judgment.",
+    "The Company has been named as a defendant in the underlying litigation.",
+    "The jury returned a verdict of $118 million for the plaintiffs "
+    "after a six-week trial.",
+    "The Company's appeal in the infringement litigation is pending "
+    "before the Ninth Circuit.",
+    "The court approved the settlement of the class action claims.",
+    "The district court dismissed the complaint with prejudice in 2024.",
+    "The court granted final approval of the settlement on May 2.",
+    "The court granted the motion on May 2.",
+    "In March 2024 the agency notified the Company of its determination "
+    "that the Department would not move to dismiss the action.",
+)
+_PK08_V4_GENUINE_ALLEGATION = (
+    "In these actions, plaintiffs allege that they suffered personal "
+    "injuries.",
+    "The complaints allege breach-of-contract claims against the Company "
+    "in excess of $10 million.",
+    "The scope of the claims alleging misrepresentation against the "
+    "Company was narrowed in May 2024.",
+    "A complaint filed in federal court asserts claims for breach of "
+    "contract against the Company.",
+)
+
+
+@pytest.mark.parametrize(
+    "sentence",
+    _PK08_V4_GOVERNED_PROCEDURAL + _PK08_V4_STAY_REJECTED_PROCEDURAL,
+)
+def test_pk08_procedural_note_guard_rejects_clause_governed_possibility(
+    sentence: str,
+) -> None:
+    # v4: a modal or forward-looking marker anywhere in the anchor's
+    # clause, before or after it at any distance, states a possibility —
+    # the sentences the v3 four-word window let slip past included.
+    assert pk08_contingencies._procedural_note_sentence(sentence) is False
+
+
+@pytest.mark.parametrize("sentence", _PK08_V4_GENUINE_PROCEDURAL)
+def test_pk08_procedural_note_guard_accepts_clause_ungoverned_status(
+    sentence: str,
+) -> None:
+    # The v4 tightening still accepts an indicative status sentence,
+    # including a calendar "May" and a reported intention behind a
+    # complementizer "that".
+    assert pk08_contingencies._procedural_note_sentence(sentence) is True
+
+
+@pytest.mark.parametrize(
+    "sentence", _PK08_V4_REJECT_ALLEGATION + _PK08_V4_STAY_REJECTED_ALLEGATION
+)
+def test_pk08_allegation_note_guard_rejects_clause_governed_possibility(
+    sentence: str,
+) -> None:
+    # v4: an against-issuer reference whose whole clause carries a modal
+    # ("shall", the calendar rule excepted) or a forward-looking marker
+    # ("expected to", "likely") is a possibility, not a made claim.
+    assert pk08_contingencies._allegation_note_sentence(sentence) is False
+
+
+@pytest.mark.parametrize("sentence", _PK08_V4_GENUINE_ALLEGATION)
+def test_pk08_allegation_note_guard_accepts_clause_ungoverned_claim(
+    sentence: str,
+) -> None:
+    # The v4 tightening still accepts an indicative made-against shape,
+    # including the "narrowed in May 2024" sentence the calendar rule
+    # keeps modal-free.
+    assert pk08_contingencies._allegation_note_sentence(sentence) is True
+
+
+@pytest.mark.parametrize(
+    "sentence",
+    _PK08_V4_GOVERNED_PROCEDURAL + _PK08_V4_STAY_REJECTED_PROCEDURAL,
+)
+def test_pk08_procedural_note_clause_possibility_alone_stays_absent(
+    sentence: str,
+) -> None:
+    # Alone in the note, the possibility sentence leaves the procedural
+    # row typed absent — never a possibility span valued as a status.
+    # (The frozen keyword pattern itself never reaches the sentences it
+    # does not name; the guard-level tests above carry their rejection.)
+    result = produce_pack("PK08", _pk08_v3_note_input(sentence))
+    procedural = _row(result, "procedural_status_span")
+    assert procedural["quality_state"] == "missing"
+    assert procedural["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+@pytest.mark.parametrize(
+    "sentence",
+    _PK08_V4_GOVERNED_PROCEDURAL + _PK08_V4_STAY_REJECTED_PROCEDURAL,
+)
+def test_pk08_procedural_note_guard_skips_clause_possibility(
+    sentence: str,
+) -> None:
+    # The possibility sentence precedes the genuine status; the fallback
+    # skips it and selects the genuine sentence.
+    genuine = "The district court dismissed the complaint with prejudice in 2024."
+    result = produce_pack("PK08", _pk08_v3_note_input(f"{sentence} {genuine}"))
+    procedural = _row(result, "procedural_status_span")
+    assert procedural["quality_state"] == "valued"
+    assert procedural["mapping_rule_id"] == (
+        "pk08.procedural_status_span.text_span_note/v1"
+    )
+    assert procedural["text_value"].startswith(genuine)
+    assert contract.validate_pack_result(result) == []
+
+
+@pytest.mark.parametrize(
+    "sentence", _PK08_V4_REJECT_ALLEGATION + _PK08_V4_STAY_REJECTED_ALLEGATION
+)
+def test_pk08_allegation_note_clause_possibility_alone_stays_absent(
+    sentence: str,
+) -> None:
+    # Alone in the note, the possibility sentence leaves the allegation
+    # row typed absent — never a span valued as a made claim.
+    result = produce_pack("PK08", _pk08_v3_note_input(sentence))
+    allegation = _row(result, "allegation_span")
+    assert allegation["quality_state"] == "missing"
+    assert allegation["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+@pytest.mark.parametrize(
+    "sentence", _PK08_V4_REJECT_ALLEGATION + _PK08_V4_STAY_REJECTED_ALLEGATION
+)
+def test_pk08_allegation_note_guard_skips_clause_possibility(
+    sentence: str,
+) -> None:
+    # The possibility sentence precedes the genuine claim; the fallback
+    # skips it and selects the genuine sentence.
+    genuine = _PK08_V4_GENUINE_ALLEGATION[2]
+    result = produce_pack("PK08", _pk08_v3_note_input(f"{sentence} {genuine}"))
+    allegation = _row(result, "allegation_span")
+    assert allegation["quality_state"] == "valued"
+    assert allegation["mapping_rule_id"] == "pk08.allegation_span.text_span_note/v1"
+    assert allegation["text_value"].startswith("The scope of the claims")
+    assert contract.validate_pack_result(result) == []
+
+
+@pytest.mark.parametrize(
+    "sentence",
+    tuple(
+        s
+        for s in _PK08_V4_GENUINE_PROCEDURAL
+        if re.search(pk08_contingencies.PROCEDURAL_STATUS_PATTERN, s)
+    ),
+)
+def test_pk08_procedural_note_clause_genuine_alone_stays_valued(
+    sentence: str,
+) -> None:
+    # The v4 tightening does not over-reject: alone in the note, every
+    # genuine status sentence the frozen keyword pattern reaches is
+    # still selected.
+    result = produce_pack("PK08", _pk08_v3_note_input(sentence))
+    procedural = _row(result, "procedural_status_span")
+    assert procedural["quality_state"] == "valued"
+    assert procedural["text_value"].startswith(sentence[:30])
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_allegation_note_clause_genuine_alone_stays_valued() -> None:
+    # The "narrowed in May 2024" sentence — a genuine claim the v3
+    # window rejected as modal-governed — is selected alone in the note.
+    result = produce_pack("PK08", _pk08_v3_note_input(_PK08_V4_GENUINE_ALLEGATION[2]))
+    allegation = _row(result, "allegation_span")
+    assert allegation["quality_state"] == "valued"
+    assert allegation["mapping_rule_id"] == "pk08.allegation_span.text_span_note/v1"
+    assert allegation["text_value"].startswith("The scope of the claims")
+    assert contract.validate_pack_result(result) == []
+
+
+# K3K4: quarterly forms carry legal proceedings in Part II Item 1 --------
+
+
+def test_pk08_quarterly_item1_section_resolves_span_fields() -> None:
+    # On a 10-Q the two span fields search Part II Item 1 — Legal
+    # Proceedings; legal_proceedings_item3 itself stays form-excluded.
+    pack_input = _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        form="10-Q",
+        paragraphs=(
+            "<p>Note 12 – Commitments and Contingencies. The Company has "
+            "entered into certain unconditional purchase obligations.</p>",
+            f"<p>{_PK08_CONTING_CLEAN}</p>",
+            "<p>Item 1 — Legal Proceedings Within 120 days after a "
+            "putative class action was filed against the Company alleging "
+            "violations of federal antitrust laws, the Company has "
+            "appealed an adverse ruling in one proceeding.</p>",
+            "<p>Item 1A. Risk Factors None.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    rows = {row["field_id"]: row for row in result["fields"]}
+    assert rows["legal_proceedings_item3"]["quality_state"] == "not_applicable"
+    allegation = rows["allegation_span"]
+    assert allegation["quality_state"] == "valued"
+    assert allegation["mapping_rule_id"] == "pk08.allegation_span.text_span/v1"
+    assert "alleging" in allegation["text_value"]
+    procedural = rows["procedural_status_span"]
+    assert procedural["quality_state"] == "valued"
+    assert "appealed" in procedural["text_value"]
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_lossy_quarterly_without_item_section_stays_typed_absent() -> None:
+    # PIN (F6 lossy, parent-identical): a quarterly filing with no legal-
+    # proceedings item section at all keeps the two span rows typed absent
+    # (not_evaluable / missing_dependency with the governing-section
+    # limitation) — the quarterly v2 path never invents a span.
+    result = produce_pack("PK08", _pk08_testco_input(form="10-Q", item3=False))
+    rows = {row["field_id"]: row for row in result["fields"]}
+    for field_id in ("allegation_span", "procedural_status_span"):
+        assert rows[field_id]["quality_state"] == "not_evaluable", field_id
+        assert rows[field_id]["reason"] == "missing_dependency", field_id
+        assert any(
+            line.startswith(f"pk08.{field_id}: governing_section_not_supplied;")
+            for line in result["limitations"]
+        ), field_id
+    assert contract.validate_pack_result(result) == []
+
+
+# §TESTS (nil_bs_vs_note repair): a locator miss is "could not look" --------
+
+
+def test_pk08_nil_bs_line_with_unlocatable_note_is_not_evaluable() -> None:
+    # PIN (review): a nil balance-sheet line on a filing whose contingencies
+    # note heading the frozen NOTE_CC locator (and its v2 fallbacks) cannot
+    # find leaves the block row not_evaluable — "could not look" is never a
+    # finding against the issuer, so the check abstains with
+    # missing_dependency instead of asserting the nil line lacks a note
+    # explanation.
+    result = produce_pack(
+        "PK08",
+        _pk08_v2_input(
+            facts=(_PK08_V2_NIL_FACT,),
+            contexts=_PK08_V2_BASE_CONTEXTS,
+            paragraphs=(
+                "<p>The Company operates in a single reportable segment.</p>",
+                "<p>No amounts were recorded for loss contingencies in the "
+                "period.</p>",
+            ),
+        ),
+    )
+    rows = {row["field_id"]: row for row in result["fields"]}
+    bs_state = rows["commitments_and_contingencies_bs_state"]
+    assert bs_state["quality_state"] == "valued"
+    assert bs_state["text_value"] == "nil_disclosed"
+    block = rows["commitments_text_block"]
+    assert block["quality_state"] == "not_evaluable"
+    assert block["reason"] == "missing_dependency"
+    check = _check(result, "nil_bs_vs_note")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_nil_bs_line_with_confirmed_absent_note_fails() -> None:
+    # The retained fail arm: a nil balance-sheet line whose commitments
+    # block is a typed absence (a confirmed absence, not a locator miss) is
+    # a finding against the issuer. Row-level: through produce_pack a
+    # confirmed-absent block only arises without a retained narrative
+    # document, which also leaves the balance-sheet line unvalued.
+    catalogue = contract.load_pack_schema("PK08")
+    catalogue_check = {
+        check["check_id"]: check for check in catalogue["checks"]
+    }["nil_bs_vs_note"]
+    rows = {
+        "commitments_and_contingencies_bs_state": {
+            "quality_state": "valued",
+            "text_value": "nil_disclosed",
+        },
+        "commitments_text_block": {
+            "quality_state": "missing",
+            "reason": "missing_dependency",
+        },
+    }
+    check_row = pk08_contingencies._nil_bs_vs_note_row(rows, catalogue_check)
+    assert check_row["status"] == "fail"
+    assert check_row["reason"] is None
+
+
+def test_pk08_nil_bs_line_with_valued_note_passes() -> None:
+    # The unchanged pass arm: a located contingencies note explains the
+    # nil line.
+    result = produce_pack(
+        "PK08",
+        _pk08_v2_input(
+            facts=(_PK08_V2_NIL_FACT,),
+            contexts=_PK08_V2_BASE_CONTEXTS,
+            paragraphs=(
+                "<p>Note 12 – Commitments and Contingencies. The Company has "
+                "entered into certain unconditional purchase obligations.</p>",
+                f"<p>{_PK08_CONTING_CLEAN}</p>",
+            ),
+        ),
+    )
+    rows = {row["field_id"]: row for row in result["fields"]}
+    assert rows["commitments_text_block"]["quality_state"] == "valued"
+    check = _check(result, "nil_bs_vs_note")
+    assert check["status"] == "pass"
+    assert check["reason"] is None
+    assert contract.validate_pack_result(result) == []
