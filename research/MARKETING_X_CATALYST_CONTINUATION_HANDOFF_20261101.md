@@ -205,9 +205,9 @@ bound in memory under D4 and recorded as hashes and URLs only.
   the base was lost or changed value.
 - **Binder changes.** Failure classes A–E, G, the span rule S, segment
   footing T and share-class EPS K, each with a test in
-  `tests/test_earnings_release_binding.py`. The first independent review's
-  findings are closed as fail-closed rules with tests (census page,
-  "Fail-closed hardening").
+  `tests/test_earnings_release_binding.py`. The findings of both independent
+  reviews (nine, then N1–N8) are closed, each code fix as a fail-closed rule
+  with its test (census page, "Fail-closed hardening").
 - **Live six.** AMZN, MA, MSFT, GOOGL, KO and V, which production showed
   UNAVAILABLE on the `main` binder (reader proof above; V lacked EPS), all project `eps_actual` and
   `rev_actual` on this branch (re-fetched in memory via the writer's path).

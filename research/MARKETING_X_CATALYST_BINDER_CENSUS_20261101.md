@@ -18,7 +18,12 @@ same PR answers a failure class named here, and each class has its own test.
 - **Before vs after.** The same 40 exhibits were bound with the binder at the
   base (`0b441ec2523f`) and with this branch. The sha256 and URL of every
   exhibit match between the two runs, so the before/after difference comes
-  from the binder alone.
+  from the binder alone. The table below records those hashes.
+- **Re-run after the second review.** The final re-run (2026-11-01, after the
+  N1–N8 fixes) received every one of the 40 exhibits 2 bytes longer than the
+  eight earlier runs, each now ending in `</DOCUMENT>\n`. The census script
+  was unchanged, so the bytes changed on the SEC side. The URLs are the same,
+  and the bound figures, statuses and projections are identical on all 40.
 - **Projection.** A projected figure is what the Catalyst cycle
   (`project_release_figures`) would carry to a public card. Only
   `eps_actual` (GAAP diluted EPS) and `rev_actual` (reported revenue) are
@@ -107,7 +112,7 @@ shape the census found and refuses anything wider.
 | **G** — split columns | Two columns under one dated header read as two disagreeing values. Sometimes these are a reconciliation (as reported / adjusted); sometimes an amount and its percent change. | A reconciliation split of one period is **refused** (`value_ambiguous`), never guessed. An amount-and-percent split narrows to the amount. | `test_class_g_a_reconciliation_split_of_one_period_is_refused`, `test_class_g_an_amount_and_percent_split_narrows_to_the_amount` |
 | **S** — span rule | A quarter column and a year-to-date column ending on the same date were refused as a restatement conflict, so net income was lost (AAPL, MSFT, V, MA, KO, PEP, COST). | In `_resolve_restatements`, readings for one (concept, basis, period end) that disagree are resolved to the shortest span only if **every** reading declares a span. Weeks round to months: 13 weeks count as 3 months and 52 weeks as 12. Otherwise the readings are refused as before. | `test_the_quarter_wins_over_the_year_on_one_period_end` (months, weeks, mixed), `test_disagreeing_readings_without_a_shorter_declared_span_are_refused` (undeclared, one-declared, same-span) |
 | **F** — silent empties | An empty figure list looked the same whether the release reported nothing or the binder could not read its layout. | `ReleaseFigureSet.outcome` names why (see below). | `test_class_f_an_empty_figure_list_names_why_it_is_empty` (prose, no-roster-row, undated, refused, bound) |
-| **T** — segment footing | A statement listed segment lines above their total, every one matching the revenue (or operating income, gross profit) label, so the readings disagreed and were refused (AMZN revenue and operating income, MSFT …-436122 revenue and operating income, WMT gross profit). | Among disagreeing readings of one concept, basis and period, the one that the others sum to exactly binds. Footing must hold in every period column, on one scale, with no elimination row and exactly one total. Otherwise the readings stay `value_ambiguous`. | `test_a_segment_breakdown_binds_the_line_its_segments_sum_to`, `test_a_breakdown_that_does_not_cleanly_foot_stays_ambiguous` (no-footing, two-amounts, elimination, mixed-scale) |
+| **T** — segment footing | A statement listed segment lines above their total, every one matching the revenue (or operating income, gross profit) label, so the readings disagreed and were refused (AMZN revenue and operating income, MSFT …-436122 revenue and operating income, WMT gross profit). | Among disagreeing readings of one concept, basis and period end, the one that the others sum to exactly binds. Footing is checked per period end over every reading, so two segments with the same amount both count. It must hold on one scale, with no elimination row and one total amount (a total stated twice is one total). Otherwise the readings stay `value_ambiguous`. | `test_a_segment_breakdown_binds_the_line_its_segments_sum_to`, `test_a_breakdown_that_does_not_cleanly_foot_stays_ambiguous` (no-footing, two-amounts, elimination, mixed-scale), `test_footing_counts_every_reading_not_every_distinct_amount`, `test_a_total_stated_twice_still_foots` |
 | **K** — share-class EPS | EPS was stated per share class ("Class A common stock" and others) with no plain EPS row, so no EPS bound (V). | A share-class row binds as EPS only when the release's headline EPS names exactly one class whose value matches it. A direct EPS row always wins. A headline EPS alone binds nothing. | `test_the_headline_eps_names_which_share_class_is_the_release_eps`, `test_share_class_eps_without_one_matching_class_is_refused` (no-headline, two-classes-match, classes-disagree), `test_a_direct_eps_row_wins_over_share_class_rows`, `test_a_headline_eps_alone_binds_neither_basic_nor_diluted` |
 
 The live diagnosis also needed two narrower header rules: a bare "GAAP"
@@ -123,14 +128,37 @@ correctly, with a test. None of these changes the census yield.
 
 | Finding | Shape | Now | Test |
 |---|---|---|---|
-| 1, 2 | An EPS label with words after "EPS" ("Diluted EPS excluding special items", "Diluted EPS growth") bound as GAAP EPS. | The label tail is a closed list: a basis tag, an attribution or a colon. Anything else is not EPS. | `test_an_eps_label_naming_a_different_number_is_not_eps`, `test_an_eps_label_with_an_attribution_or_basis_tag_is_still_eps` |
+| 1, 2 | An EPS label with words after "EPS" ("Diluted EPS excluding special items", "Diluted EPS growth") bound as GAAP EPS. | The label tail is a closed list: a basis tag, an attribution to the parent or its holders (see N1), or a colon. Anything else is not EPS. | `test_an_eps_label_naming_a_different_number_is_not_eps`, `test_an_eps_label_with_an_attribution_or_basis_tag_is_still_eps` |
 | 3 | A row with more values than period columns was mapped by position. | The row is refused. | `test_a_row_with_more_values_than_period_columns_is_refused` |
-| 4 | A statement title qualified as adjusted ("Adjusted …", "As Adjusted", "Excluding Special Items", "Pro Forma") declared GAAP. | The title declares non-GAAP. | `test_a_statement_title_qualified_as_adjusted_declares_non_gaap` |
+| 4 | A statement title qualified as adjusted ("Adjusted …", "As Adjusted", "Excluding Special Items", "Pro Forma") declared GAAP. | The title declares no basis (see N4). | `test_a_statement_title_qualified_as_adjusted_declares_no_basis` |
 | 5 | A small negative after a currency cell ("$ \| (5)") was skipped as a footnote, so the prior-year value shifted into the current period (also at the base). | A parenthesised value after a currency cell is a negative. | `test_a_parenthesized_value_after_a_currency_cell_is_negative` |
-| 6 | A placeholder ("—") or unclosed value in the current period dropped the row, so the outcome said `no_candidate_rows`. | The row is a refused candidate with a typed absence, and the outcome is `all_refused`. | `test_a_placeholder_in_the_current_period_is_a_refused_roster_row` |
+| 6 | A placeholder ("—") or unclosed value in the current period dropped the row, so the outcome said `no_candidate_rows`. | The row is a refused candidate with a typed absence, and the outcome is `all_refused` (see N5). | `test_a_placeholder_in_the_current_period_is_a_refused_roster_row` |
 | 7 | "Two Quarters Ended", "Q3 YTD" and "Three and Nine Months Ended" declared the wrong span. | A quarter count declares its span. A header that names two spans or a year to date declares none, so the span rule refuses rather than picks. | `test_a_quarter_count_header_declares_its_span`, `test_a_header_that_declares_no_single_span_is_never_the_longer_period` (two-spans, year-to-date) |
 | 8 | A class E test passed at the base. | Relabelled a regression guard (see class E). | — |
 | 9 | Short prose comparing against GAAP ("Compared with GAAP results") read as a GAAP caption. | Comparison prose is not a caption. | `test_prose_comparing_against_gaap_is_not_a_gaap_caption` |
+
+### Fail-closed hardening (second independent review)
+
+The re-review of the first fixes found eight more shapes (N1–N8). N7 is yield
+that now fails closed and needs no change. Every other finding has a fix and a
+test. None of these changes the census yield or the live six.
+
+| Finding | Shape | Now | Test |
+|---|---|---|---|
+| N1 | The EPS attribution slot took any text: "Diluted EPS attributable to discontinued operations", "… to continuing operations", "… to the Tax Act", "… to Acme - pro forma" and, under a reconciliation caption, "… to restructuring charges" all bound as EPS. | The attribution is a closed list: the parent's holders ("common stockholders", optionally "of Acme, Inc."), or a capitalised entity name of at most five words with an optional corporate suffix, optionally followed by its holders. A component word (operations, charges, tax, pro forma, adjusted, items, noncontrolling interests and others) refuses. | `test_an_eps_attributed_to_anything_but_the_parent_is_not_eps` (7 labels), `test_an_eps_attributed_to_the_parent_or_its_holders_is_eps` (5 controls) |
+| N2 | Narrowing a split beside a "Change" column ignored the amount column's own sub-header, so "Adjusted \| Change" and "Constant Currency \| Reported Change" bound the adjusted column as GAAP. | A split narrows only when the remaining sub-header names a plain amount (USD, $, Amount, As Reported, GAAP, in millions) or a declared non-GAAP basis, which then governs the figure. Any other sub-header is refused. | `test_a_split_whose_remaining_column_is_another_measure_is_refused` (Adjusted, Constant Currency, As Adjusted with % Change), `test_a_split_that_names_its_non_gaap_amount_narrows_to_a_non_gaap_figure` |
+| N3 | Segment footing summed the distinct amounts, so segments of 1,000 / 2,000 / 2,000 bound 3,000 as the total. | Footing sums every reading (a multiset), and a total stated twice still counts as one total. | `test_footing_counts_every_reading_not_every_distinct_amount`, `test_a_total_stated_twice_still_foots` |
+| N4 | The finding-4 fix declared "As Adjusted", "excluding discontinued operations" and "Pro Forma" titles non-GAAP, so their figures published as adjusted EPS. | A qualified statement title is neither the GAAP statement nor a declared non-GAAP measure: it declares no basis. A units qualifier ("excluding per share data") does not qualify the statement. | `test_a_statement_title_qualified_as_adjusted_declares_no_basis` (5 titles), `test_a_units_qualifier_does_not_qualify_the_statement` |
+| N5 | Finding 6 still dropped "Total net sales \| — \| 12%" under "Amount \| % Change" as `no_candidate_rows`, and an unclosed "(0.12" was described as a placeholder. | A placeholder beside a change column is a refused roster row. An unclosed parenthesis is `value_ambiguous` with the detail "the current-period cell opens a parenthesis it never closes; its sign cannot be read". | `test_a_placeholder_beside_a_change_column_is_a_refused_roster_row`, `test_an_unclosed_parenthesis_is_a_value_whose_sign_cannot_be_read` |
+| N6 | A comparison of periods ("Q3 2025 vs. Q3 2024", "Q4 FY25 versus Q4 FY24") or "Compared with GAAP results" under a GAAP caption closed the GAAP section. | Only a comparison whose object is a basis is read as one. The section keeps its basis when that basis is the one compared against and nothing else in the text names a basis; otherwise the basis is unknown. | `test_a_comparison_of_periods_or_of_the_same_basis_keeps_the_section` (periods-vs, periods-versus, gaap-compared-with-gaap) |
+| N8 | Span leftovers: "Fourth Quarter and Fiscal Year Ended" and "Q4 and Full Year" read as a quarter, "Twelve Weeks and Forty Weeks" read 3 months, "Twenty-Six Weeks" could read "Six Weeks", and "Two Quarters" beat "Twelve Months". | A header joining two periods declares no span. A hyphenated count is never read from its second half. The shortest span wins only when it is a quarter (at most four months). | `test_a_header_joining_two_periods_or_an_unread_count_declares_no_span` (4 headers), `test_the_shortest_span_wins_only_when_it_is_a_quarter` |
+
+N7 (fails closed, recorded as residual yield): "Diluted EPS, as reported" is
+`no_candidate_rows`; three bare values in two dated slots are refused; and
+`$ | (1) | 8,412 | $ | 7,900` is refused. A ten-word statement title such as
+"Consolidated Statements of Income (In millions, excluding per share data)" is
+not caption-shaped (at most nine words), so it declares no basis; this is
+fail-closed and predates N4.
 
 A release that truly does not state EPS still fails closed on EPS:
 `test_a_release_that_states_no_eps_fails_closed_on_eps` (no-eps-row,

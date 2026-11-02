@@ -824,13 +824,25 @@ def test_a_row_with_more_values_than_period_columns_is_refused() -> None:
     [
         "ADJUSTED CONSOLIDATED STATEMENTS OF EARNINGS",
         "Consolidated Statements of Earnings, Excluding Special Items",
+        "CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (As Adjusted)",
+        "CONSOLIDATED STATEMENTS OF CASH FLOWS (excluding discontinued operations)",
+        "Consolidated Statements of Operations - Pro Forma",
     ],
 )
-def test_a_statement_title_qualified_as_adjusted_declares_non_gaap(caption: str) -> None:
+def test_a_statement_title_qualified_as_adjusted_declares_no_basis(caption: str) -> None:
+    """Neither the GAAP statement nor a declared non-GAAP measure: unknown basis."""
     rows = f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
-    revenue = _extract(_statement(rows, caption=f"<div>{caption}</div>")).figure("revenue")
+    result = _extract(_statement(rows, caption=f"<div>{caption}</div>"))
+    assert result.figure("revenue") is None
+    assert result.absence("revenue").reason == fig.AbsenceReason.BASIS_UNDECLARED.value
+
+
+def test_a_units_qualifier_does_not_qualify_the_statement() -> None:
+    caption = "<div>Consolidated Statements of Operations (excluding per share data)</div>"
+    rows = f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
+    revenue = _extract(_statement(rows, caption=caption)).figure("revenue")
     assert revenue is not None
-    assert revenue.basis == fig.Basis.NON_GAAP.value
+    assert revenue.basis == fig.Basis.GAAP.value
 
 
 def test_a_parenthesized_value_after_a_currency_cell_is_negative() -> None:
@@ -1005,6 +1017,159 @@ def test_a_release_that_states_no_eps_fails_closed_on_eps(eps_row: str) -> None:
     for concept in ("eps_basic", "eps_diluted"):
         assert result.figure(concept) is None
         assert result.absence(concept).reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# The second review's findings (N1-N8).
+# ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.mark.parametrize(
+    "label",
+    [
+        "Diluted EPS attributable to discontinued operations",
+        "Diluted earnings per share attributable to continuing operations",
+        "Diluted EPS attributable to the Tax Act",
+        "Diluted EPS attributable to Acme - pro forma",
+        "Diluted EPS attributable to restructuring charges",
+        "Diluted EPS attributable to noncontrolling interests",
+        "Diluted EPS attributable to items affecting comparability",
+    ],
+)
+def test_an_eps_attributed_to_anything_but_the_parent_is_not_eps(label: str) -> None:
+    result = _extract(_statement(f"{_DATED}<tr><td>{label}</td><td>$</td><td>0.12</td></tr>"))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+
+
+@pytest.mark.parametrize(
+    "label",
+    [
+        "Diluted earnings per share attributable to Walmart",
+        "Diluted EPS attributable to The Coca-Cola Company",
+        "Diluted earnings per share attributable to Procter &amp; Gamble",
+        "Diluted earnings per share attributable to common stockholders of Acme, Inc.",
+        "Diluted EPS attributable to common stockholders",
+    ],
+)
+def test_an_eps_attributed_to_the_parent_or_its_holders_is_eps(label: str) -> None:
+    eps = _extract(
+        _statement(f"{_DATED}<tr><td>{label}</td><td>$</td><td>1.23</td></tr>")
+    ).figure("eps_diluted")
+    assert eps is not None
+    assert eps.value == 1.23
+
+
+@pytest.mark.parametrize(
+    ("amount", "change"),
+    [("Adjusted", "Change"), ("Constant Currency", "Reported Change"),
+     ("As Adjusted", "% Change")],
+)
+def test_a_split_whose_remaining_column_is_another_measure_is_refused(
+    amount: str, change: str
+) -> None:
+    rows = (
+        '<tr><td></td><td colspan="2">Three Months Ended September 30, 2025</td></tr>'
+        f"<tr><td></td><td>{amount}</td><td>{change}</td></tr>"
+        "<tr><td>Total net sales</td><td>$8,412</td><td>12%</td></tr>"
+    )
+    result = _extract(_statement(rows))
+    assert result.figure("revenue") is None
+    assert result.absence("revenue").reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
+
+
+def test_a_split_that_names_its_non_gaap_amount_narrows_to_a_non_gaap_figure() -> None:
+    rows = (
+        '<tr><td></td><td colspan="2">Three Months Ended September 30, 2025</td></tr>'
+        "<tr><td></td><td>Non-GAAP</td><td>YoY Change</td></tr>"
+        "<tr><td>Total net sales</td><td>$8,412</td><td>12%</td></tr>"
+    )
+    revenue = _extract(_statement(rows)).figure("revenue")
+    assert revenue is not None
+    assert (revenue.value, revenue.basis) == (8412.0, fig.Basis.NON_GAAP.value)
+
+
+def test_footing_counts_every_reading_not_every_distinct_amount() -> None:
+    """1,000 + 2,000 + 2,000 is 5,000: the 3,000 segment is not the total."""
+    rows = _DATED + _segments(
+        ("North America", "1,000"), ("Europe", "2,000"), ("Asia", "2,000"), ("Other", "3,000")
+    )
+    result = _extract(_statement(rows))
+    assert result.figure("revenue") is None
+    assert result.absence("revenue").reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
+
+
+def test_a_total_stated_twice_still_foots() -> None:
+    rows = _DATED + _segments(
+        ("North America", "5,000"), ("International", "3,000"),
+        ("Consolidated", "8,000"), ("Total", "8,000"),
+    )
+    revenue = _extract(_statement(rows)).figure("revenue")
+    assert revenue is not None
+    assert revenue.value == 8000.0
+
+
+def test_a_placeholder_beside_a_change_column_is_a_refused_roster_row() -> None:
+    """The percent beside the placeholder must not hide the revenue row."""
+    rows = (
+        '<tr><td></td><td colspan="2">Three Months Ended September 30, 2025</td></tr>'
+        "<tr><td></td><td>Amount</td><td>% Change</td></tr>"
+        "<tr><td>Total net sales</td><td>—</td><td>12%</td></tr>"
+    )
+    result = _extract(_statement(rows))
+    assert result.figure("revenue") is None
+    assert result.absence("revenue").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+    assert result.outcome == fig.BindingOutcome.ALL_REFUSED.value
+
+
+def test_an_unclosed_parenthesis_is_a_value_whose_sign_cannot_be_read() -> None:
+    rows = _TWO_PERIODS + "<tr><td>Diluted EPS</td><td>$</td><td>(0.12</td><td>$</td><td>1.10</td></tr>"
+    result = _extract(_statement(rows))
+    assert result.figure("eps_diluted") is None
+    absence = result.absence("eps_diluted")
+    assert absence.reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
+    assert "parenthesis" in absence.detail
+    assert result.outcome == fig.BindingOutcome.ALL_REFUSED.value
+
+
+@pytest.mark.parametrize(
+    "caption",
+    [
+        "GAAP Results: Q3 2025 vs. Q3 2024",
+        "CONSOLIDATED STATEMENTS OF OPERATIONS Q4 FY25 versus Q4 FY24",
+        "CONSOLIDATED STATEMENTS OF OPERATIONS</div><div>Compared with GAAP results",
+    ],
+    ids=["periods-vs", "periods-versus", "gaap-compared-with-gaap"],
+)
+def test_a_comparison_of_periods_or_of_the_same_basis_keeps_the_section(caption: str) -> None:
+    rows = f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
+    revenue = _extract(_statement(rows, caption=f"<div>{caption}</div>")).figure("revenue")
+    assert revenue is not None
+    assert revenue.basis == fig.Basis.GAAP.value
+
+
+@pytest.mark.parametrize(
+    "header",
+    [
+        "Fourth Quarter and Fiscal Year Ended December 28, 2025",
+        "Q4 and Full Year Ended December 28, 2025",
+        "Twelve Weeks and Forty Weeks Ended December 28, 2025",
+        "Twenty-Six Weeks Ended December 28, 2025",
+    ],
+    ids=["quarter-and-year", "q4-and-full-year", "unlisted-week-count", "hyphenated-count"],
+)
+def test_a_header_joining_two_periods_or_an_unread_count_declares_no_span(header: str) -> None:
+    result = _extract(_quarter_beside_cash_flow(header, "Twelve Months Ended December 28, 2025"))
+    assert result.figure("net_income") is None
+    assert result.absence("net_income").reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
+
+
+def test_the_shortest_span_wins_only_when_it_is_a_quarter() -> None:
+    """Six months against twelve: two cumulative columns, neither is the quarter."""
+    result = _extract(_quarter_beside_cash_flow(
+        "Two Quarters Ended December 28, 2025", "Twelve Months Ended December 28, 2025"
+    ))
+    assert result.figure("net_income") is None
+    assert result.absence("net_income").reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
 
 
 # ─────────────────────────────────────────────────────────────────────────────

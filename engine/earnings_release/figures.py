@@ -133,14 +133,24 @@ _NON_GAAP_INLINE_RE = re.compile(r"non-?GAAP|\badjusted\b", re.I)
 # real caption is at most nine words and none is punctuated as a sentence.
 _CAPTION_MAX_WORDS = 9
 _SENTENCE_PUNCTUATION_RE = re.compile(r";|\.\s*\Z")
-# "Compared with GAAP results" is a clause about two bases, not a heading.
-_COMPARISON_PHRASE_RE = re.compile(r"\bcompared\s+(?:with|to)\b|\bversus\b|\bvs\.?(?=\s)", re.I)
+# "Compared with GAAP results" is a clause about two bases, not a heading.  A
+# comparison between periods ("Q3 2025 vs. Q3 2024") is not; only one whose
+# object is a basis is read this way.
+_BASIS_COMPARISON_RE = re.compile(
+    r"(?:\bcompared\s+(?:with|to)|\bversus|\bvs\.?)\s+(?:the\s+)?(non-?GAAP|GAAP|adjusted)\b", re.I
+)
 # A GAAP statement title that is qualified is an adjusted presentation of that
 # statement: "Adjusted Consolidated Statements of Earnings", "... - As
-# Adjusted", "..., Excluding Special Items".  Kept apart from
+# Adjusted", "..., Excluding Special Items".  It is neither the GAAP statement
+# nor a declared non-GAAP measure, so it declares no basis.  Kept apart from
 # _NON_GAAP_CAPTION_RE because only a GAAP-titled caption is read this way;
-# prose that merely says "excluding" declares nothing.
-_ADJUSTED_QUALIFIER_RE = re.compile(r"\badjusted\b|\bexcluding\b|\bpro\s+forma\b|\bspecial\s+items\b", re.I)
+# prose that merely says "excluding" declares nothing.  "(In millions,
+# excluding per share amounts)" qualifies the units, not the statement.
+_ADJUSTED_QUALIFIER_RE = re.compile(
+    r"\badjusted\b|\bexcluding\b(?!\s+(?:share\s+and\s+)?per[\s-]+share)|\bpro\s+forma\b|"
+    r"\bspecial\s+items\b",
+    re.I,
+)
 
 _NUMERIC_CELL_RE = re.compile(r"\A\(?-?\d{1,3}(?:,\d{3})*(?:\.\d+)?\)?%?\Z")
 _BARE_NUMERIC_RE = re.compile(r"\A\(?-?\d+(?:\.\d+)?\)?%?\Z")
@@ -166,8 +176,10 @@ _PERIOD_PREFIX_RE = re.compile(
 # How long a period header says its period runs: "Three Months Ended",
 # "12 Weeks Ended", "Fiscal Year Ended", "Fourth Quarter".
 _SPAN_WORDS = {"three": 3, "six": 6, "nine": 9, "twelve": 12, "thirteen": 13, "sixteen": 16}
+# A count after a hyphen is the tail of a larger number: "Twenty-Six Weeks" is
+# not six weeks.
 _PERIOD_SPAN_RE = re.compile(
-    r"\b(three|six|nine|twelve|thirteen|sixteen|\d{1,2})[\s-]+(month|week)s?\b", re.I
+    r"\b(?<!-)(three|six|nine|twelve|thirteen|sixteen|\d{1,2})[\s-]+(month|week)s?\b", re.I
 )
 _YEAR_SPAN_RE = re.compile(r"\byears?\s+(?:ended|ending)\b|\bfiscal\s+(?:year\b|\d{4})", re.I)
 _QUARTER_SPAN_RE = re.compile(
@@ -177,13 +189,21 @@ _QUARTER_SPAN_RE = re.compile(
 # "Three and Nine Months Ended" heads two spans; "Three Quarters Ended" is nine
 # months; a year-to-date column's length depends on the quarter it closes.
 _SPAN_PAIR_RE = re.compile(
-    r"\b(three|six|nine|twelve|thirteen|sixteen|\d{1,2})\s+and\s+"
+    r"\b(?<!-)(three|six|nine|twelve|thirteen|sixteen|\d{1,2})\s+and\s+"
     r"(three|six|nine|twelve|thirteen|sixteen|\d{1,2})[\s-]+(month|week)s?\b",
     re.I,
 )
 _QUARTER_COUNT_RE = re.compile(r"\b(two|three|four|[1-4])\s+quarters\b", re.I)
 _QUARTER_COUNTS = {"two": 2, "three": 3, "four": 4}
 _YEAR_TO_DATE_RE = re.compile(r"\bYTD\b|\byear[\s-]+to[\s-]+date\b", re.I)
+# "Fourth Quarter and Fiscal Year Ended", "Q4 and Full Year 2025", "Twelve
+# Weeks and Forty Weeks Ended": a header that joins two periods.  "Ended
+# September 30, 2025 and 2024" joins two years of one period, not two periods.
+_TWO_PERIOD_HEADER_RE = re.compile(
+    r"\b(?:quarter|Q[1-4]|year|half|months?|weeks?)\b[^,]*?\band\b[^,]*?"
+    r"\b(?:quarter|year|half|months?|weeks?|fiscal)\b",
+    re.I,
+)
 # A cell that holds a column's place but no value: "—", "n/m", "*".
 _PLACEHOLDER_CELL_RE = re.compile(r"\A(?:[-–—]+|n\.?/?m\.?|n\.?/?a\.?|\*+)\s*%?\Z", re.I)
 # The closing half of a value typeset across cells: "(0.12" + ")", "12.5" + "%".
@@ -192,6 +212,13 @@ _PERCENT_HEADER_RE = re.compile(r"%|\bpercent", re.I)
 # "USD | YoY Change": a change column reports the difference between two
 # periods, never either period's amount, whether it is typeset in % or $.
 _CHANGE_HEADER_RE = re.compile(r"\bchange\b", re.I)
+# The sub-header that names a period's own amount: "USD", "$", "Amount",
+# "As Reported", "GAAP", "(in millions)".
+_AMOUNT_HEADER_RE = re.compile(
+    r"\A\s*\(?\s*(?:US\$|\$|USD|amounts?|dollars|(?:as\s+)?reported|GAAP|"
+    r"(?:\$\s*)?in\s+(?:millions|thousands|billions))\s*\)?\s*\Z",
+    re.I,
+)
 # "Net revenues1": a footnote reference glued to the label word.
 _GLUED_FOOTNOTE_RE = re.compile(r"(?<=[a-z])\d{1,2}\Z")
 _EPS_LABEL_RE = re.compile(r"\bEPS\b", re.I)
@@ -222,11 +249,25 @@ _GUIDANCE_MAGNITUDE = {"thousand": "usd_thousands", "million": "usd_millions", "
 # closed list because anything else names a different number: "Diluted EPS
 # excluding special items" is an adjusted measure and "Diluted EPS growth" is a
 # percentage, and both would otherwise bind as the GAAP per-share amount.
+# The attribution is closed too: it names the parent's holders ("Acme common
+# stockholders") or the parent by its proper name ("Walmart", "Acme Inc.").
+# "attributable to discontinued operations" and "... to the Tax Act" name a
+# component of EPS, not EPS, so a lowercase or component word refuses.
 _EPS_BASIS_TAG = r"(?:\s*\((?:GAAP|non-?GAAP|EPS)\))?"
+_EPS_HOLDERS = r"(?:common\s+)?(?:stockholders|shareholders|shareowners|share\s*owners|equity\s+holders)"
+_EPS_NAME_WORD = r"(?:(?-i:[A-Z][\w&.'’-]*)|&)"
+_EPS_ENTITY = (
+    _EPS_NAME_WORD + r"(?:\s+" + _EPS_NAME_WORD + r"){0,4}"
+    r"(?:,?\s+(?:Inc|Corp|Corporation|Co|Company|plc|N\.V|Ltd|LLC|L\.P|S\.A|AG|SE)\.?)?"
+)
 _EPS_LABEL_TAIL = (
     _EPS_BASIS_TAG
     + r"(?:\s*,?\s+attributable\s+to\s+"
-    r"(?![^()%:]*\b(?:excluding|before|after|from|growth|change)\b)[^()%:]{1,60}?)?"
+    r"(?![^()%:]*\b(?:excluding|before|after|from|growth|change|operations|continuing|"
+    r"discontinued|charges|act|tax|pro\s+forma|adjusted|restructuring|items|special|"
+    r"non-?controlling|minority|interests?|preferred)\b)"
+    r"(?:" + _EPS_HOLDERS + r"(?:\s+of\s+(?:the\s+)?" + _EPS_ENTITY + r")?"
+    r"|(?:the\s+)?" + _EPS_ENTITY + r"(?:\s+" + _EPS_HOLDERS + r")?))?"
     + _EPS_BASIS_TAG
     + r"\s*:?\Z"
 )
@@ -542,22 +583,33 @@ class _Context:
                 self.currency_from_caption = "USD"
         if _CURRENCY_WORD_RE.search(text):
             self.currency_from_caption = "USD"
+        comparison = _BASIS_COMPARISON_RE.search(text)
+        if comparison:
+            # A comparison declares no basis.  The section stays what it was
+            # only when it is the basis compared against and nothing else in
+            # the text names one; otherwise the basis is unknown.
+            compared = (Basis.GAAP.value if comparison.group(1).lower() == "gaap"
+                        else Basis.NON_GAAP.value)
+            remainder = f"{text[:comparison.start()]} {text[comparison.end():]}"
+            if self.basis != compared or _names_basis(remainder):
+                self.basis, self.basis_source = None, ""
+            return
         # Non-GAAP is checked first: "Reconciliation of GAAP to non-GAAP"
         # matches both patterns and is a non-GAAP scope.
         if _NON_GAAP_CAPTION_RE.search(text):
             declared = Basis.NON_GAAP.value
         elif _GAAP_CAPTION_RE.search(text):
-            declared = (Basis.NON_GAAP.value if _ADJUSTED_QUALIFIER_RE.search(text)
-                        else Basis.GAAP.value)
+            declared = None if _ADJUSTED_QUALIFIER_RE.search(text) else Basis.GAAP.value
         else:
             return
-        if _is_caption_shaped(text):
+        if declared is not None and _is_caption_shaped(text):
             self.basis, self.basis_source = declared, text
         else:
             # Prose that mentions a basis declares nothing, but it does tell us
             # the section is no longer the one the last caption opened: a
             # footnote about non-GAAP measures under a GAAP statement is where a
             # release turns to its non-GAAP tables.  Unknown, not the old basis.
+            # A qualified statement title closes the section the same way.
             self.basis, self.basis_source = None, ""
 
     def reset_table_scope(self, *, entry_basis: str | None, reported: bool) -> None:
@@ -585,9 +637,12 @@ class _Context:
 
 def _is_caption_shaped(text: str) -> bool:
     stripped = text.strip()
-    return (len(stripped.split()) <= _CAPTION_MAX_WORDS
-            and not _SENTENCE_PUNCTUATION_RE.search(stripped)
-            and not _COMPARISON_PHRASE_RE.search(stripped))
+    return len(stripped.split()) <= _CAPTION_MAX_WORDS and not _SENTENCE_PUNCTUATION_RE.search(stripped)
+
+
+def _names_basis(text: str) -> bool:
+    return bool(_NON_GAAP_CAPTION_RE.search(text) or _GAAP_CAPTION_RE.search(text)
+                or _NON_GAAP_INLINE_RE.search(text))
 
 
 _INLINE_CURRENCY_RE = re.compile(r"\A(US\$|\$|€|£|¥)\s*")
@@ -638,7 +693,8 @@ class _Group:
     """One value position in a data row: its cells' grid span and what they read.
 
     ``value`` None is a placeholder ("—", "n/m") — a cell that holds a column's
-    place but reports nothing.
+    place but reports nothing — or, with ``unclosed``, a value whose sign
+    cannot be read.
     """
 
     start: int
@@ -649,6 +705,7 @@ class _Group:
     currency: str | None = None
     literals: tuple[str, ...] = ()
     open_paren: bool = False
+    unclosed: bool = False
 
 
 @dataclass
@@ -884,7 +941,11 @@ def _header_layout(block: DisclosureBlock) -> _HeaderLayout:
         if len(subs) >= 2:
             amounts = [sub for sub in subs if not _PERCENT_HEADER_RE.search(sub[2])
                        and not _CHANGE_HEADER_RE.search(sub[2])]
-            if len(amounts) == 1:
+            # The one sub-column left must SAY it is the period's amount.
+            # "Adjusted | Change" or "Constant Currency | Reported Change"
+            # leaves a column that is some other measure of the period.
+            if len(amounts) == 1 and (_AMOUNT_HEADER_RE.match(amounts[0][2])
+                                      or _NON_GAAP_CAPTION_RE.search(amounts[0][2])):
                 column = _Column(amounts[0][0], amounts[0][1], column.period_label,
                                  column.period_end)
                 sub_slots.extend(sub[:2] for sub in subs if sub is not amounts[0])
@@ -1022,6 +1083,7 @@ def _row_groups(placed: Sequence[tuple[int, int, TableCell]]) -> list[_Group]:
         # "(0.12" whose ")" never arrived is not a number we can sign.
         if group.open_paren:
             group.value, group.cell, group.literals, group.open_paren = None, None, (), False
+            group.unclosed = True
     return groups
 
 
@@ -1171,15 +1233,21 @@ def _extract_table(
             # names a figure the release does not report for this period.  It
             # is a candidate row with a finding, not a row that never existed,
             # or a table of placeholders would read as "no candidate rows".
-            kind_hint = next(item.kind for item in groups if item.value is not None)
+            # A percent beside it ("— | 12%") is a change column and says
+            # nothing about the kind of the missing amount.
+            kind_hint = next((item.kind for item in groups if item.value is not None
+                              and item.kind != ValueKind.PERCENT.value), "")
             concept = _concept_for(label=label, scope=scope, kind=_observed_kind(
                 kind_hint=kind_hint, label=label, scope=scope, currency=None, context=context))
             if concept is not None and concept != _HEADLINE_EPS:
                 absences.append(TypedAbsence(
                     concept=concept,
-                    reason=AbsenceReason.CONCEPT_NOT_PRESENT.value,
-                    detail="the current-period cell is a placeholder; the row reports "
-                           "no value for this period",
+                    reason=(AbsenceReason.VALUE_AMBIGUOUS.value if group.unclosed
+                            else AbsenceReason.CONCEPT_NOT_PRESENT.value),
+                    detail=("the current-period cell opens a parenthesis it never closes; "
+                            "its sign cannot be read" if group.unclosed
+                            else "the current-period cell is a placeholder; the row reports "
+                                 "no value for this period"),
                     label=label,
                 ))
                 stats.candidate_rows += 1
@@ -1483,13 +1551,14 @@ def _declared_period_months(period_label: str) -> int | None:
     Months Ended" and "Fiscal Year Ended" are all 12: two names for one span
     stay one span, and readings that disagree on it stay a conflict.
 
-    A header that names more than one span ("Three and Nine Months Ended")
-    or a year-to-date column declares no single length, so it is None: the
-    shortest-period rule must not read a cumulative column as the quarter.
+    A header that names more than one span ("Three and Nine Months Ended",
+    "Fourth Quarter and Fiscal Year Ended") or a year-to-date column declares
+    no single length, so it is None: the shortest-period rule must not read a
+    cumulative column as the quarter.
     A year phrase ("Fiscal 2026") only counts when nothing shorter is named,
     because "Fourth Quarter Fiscal 2026" is a quarter.
     """
-    if _YEAR_TO_DATE_RE.search(period_label):
+    if _YEAR_TO_DATE_RE.search(period_label) or _TWO_PERIOD_HEADER_RE.search(period_label):
         return None
 
     def months(count: str, unit: str) -> int:
@@ -1521,6 +1590,11 @@ def _footing_total(rows: Sequence[ReleaseFigure], values: set[float]) -> float |
     from a component, and a single other amount equal to the total is a
     restatement, not a breakdown.  The sum must be exact to float precision; a
     breakdown that misses by rounding stays ambiguous.
+
+    The sum runs over every reading, not every distinct amount: two segments
+    that each report 2,000 are two components, so 1,000 + 2,000 + 2,000 does
+    not foot to 3,000.  Every reading of the total itself is left out of the
+    sum, so a total that appears in two tables still foots.
     """
     if len(values) < 3 or min(values) <= 0:
         return None
@@ -1528,8 +1602,11 @@ def _footing_total(rows: Sequence[ReleaseFigure], values: set[float]) -> float |
         return None
     if rows[0].units not in _SCALE_FACTOR:
         return None
-    grand = sum(values)
-    totals = [value for value in values if math.isclose(value, grand - value, rel_tol=1e-9)]
+    amounts = [row.value for row in rows]
+    totals = [
+        value for value in values
+        if math.isclose(value, sum(amount for amount in amounts if amount != value), rel_tol=1e-9)
+    ]
     return totals[0] if len(totals) == 1 else None
 
 
@@ -1631,7 +1708,8 @@ def _resolve_restatements(
     statement of operations "Three Months Ended September 30" and its
     cash-flow statement "Twelve Months Ended September 30".  Both end on the
     same day, but they are two periods.  When every reading declares how long
-    its period runs, the shortest is the release's own period, which is the
+    its period runs and the shortest is a quarter, it is the release's own
+    period, which is the
     in-table rule (the quarter precedes the year-to-date column) applied
     across tables.  The longer readings are cumulative facts that this
     figure's identity cannot hold, so they are not reported.
@@ -1651,7 +1729,10 @@ def _resolve_restatements(
         values = {row.value for row in rows}
         if len(values) > 1:
             lengths = [_declared_period_months(row.period_label) for row in rows]
-            if None not in lengths:
+            # The shortest span wins only when it is a quarter (a 16-week
+            # quarter rounds to 4): "Two Quarters" against "Twelve Months" is
+            # two cumulative columns, and neither is this period's quarter.
+            if None not in lengths and min(lengths) <= 4:
                 rows = [row for row, days in zip(rows, lengths) if days == min(lengths)]
                 values = {row.value for row in rows}
         if len(values) > 1:
