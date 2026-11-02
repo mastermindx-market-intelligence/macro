@@ -1,0 +1,127 @@
+{
+  "phase": "final",
+  "sourceTemplateSha256": "f2ac57e888605c74074e55bc9dff2d537b7e2ec1e4998c865def6398022b1161",
+  "kind": "CAPTURED_CURRENT_TEMPLATE_JS_ACTUAL_LOCAL_CHROMIUM_MOCKED_FEED_NO_PROVIDER",
+  "results": [
+    {
+      "width": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "healthy": "Desk is ingesting",
+      "sourceUpdateBefore": "Updated 2h",
+      "failed": {
+        "state": "degraded",
+        "health": "Refresh failed — showing the last loaded desk",
+        "updated": "Last good update 2h",
+        "drawerRetained": true,
+        "storyCount": 1
+      },
+      "externalRequests": []
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "healthy": "工作台正在接收数据",
+      "sourceUpdateBefore": "更新于 2小时",
+      "failed": {
+        "state": "degraded",
+        "health": "刷新失败——显示最后加载的工作台",
+        "updated": "最后成功更新 2小时",
+        "drawerRetained": true,
+        "storyCount": 1
+      },
+      "externalRequests": []
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "lang": "en",
+      "healthy": "Desk is ingesting",
+      "sourceUpdateBefore": "Updated 2h",
+      "failed": {
+        "state": "degraded",
+        "health": "Refresh failed — showing the last loaded desk",
+        "updated": "Last good update 2h",
+        "drawerRetained": true,
+        "storyCount": 1
+      },
+      "externalRequests": []
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "healthy": "工作台正在接收数据",
+      "sourceUpdateBefore": "更新于 2小时",
+      "failed": {
+        "state": "degraded",
+        "health": "刷新失败——显示最后加载的工作台",
+        "updated": "最后成功更新 2小时",
+        "drawerRetained": true,
+        "storyCount": 1
+      },
+      "externalRequests": []
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "lang": "en",
+      "healthy": "Desk is ingesting",
+      "sourceUpdateBefore": "Updated 2h",
+      "failed": {
+        "state": "degraded",
+        "health": "Refresh failed — showing the last loaded desk",
+        "updated": "Last good update 2h",
+        "drawerRetained": true,
+        "storyCount": 1
+      },
+      "externalRequests": []
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "lang": "zh",
+      "healthy": "工作台正在接收数据",
+      "sourceUpdateBefore": "更新于 2小时",
+      "failed": {
+        "state": "degraded",
+        "health": "刷新失败——显示最后加载的工作台",
+        "updated": "最后成功更新 2小时",
+        "drawerRetained": true,
+        "storyCount": 1
+      },
+      "externalRequests": []
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "lang": "en",
+      "healthy": "Desk is ingesting",
+      "sourceUpdateBefore": "Updated 2h",
+      "failed": {
+        "state": "degraded",
+        "health": "Refresh failed — showing the last loaded desk",
+        "updated": "Last good update 2h",
+        "drawerRetained": true,
+        "storyCount": 1
+      },
+      "externalRequests": []
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "lang": "zh",
+      "healthy": "工作台正在接收数据",
+      "sourceUpdateBefore": "更新于 2小时",
+      "failed": {
+        "state": "degraded",
+        "health": "刷新失败——显示最后加载的工作台",
+        "updated": "最后成功更新 2小时",
+        "drawerRetained": true,
+        "storyCount": 1
+      },
+      "externalRequests": []
+    }
+  ]
+}

@@ -962,6 +962,253 @@ console.log(JSON.stringify({passed:true}));
 
 
 # --------------------------------------------------------------------------- #
+# 19DV-1 / 19FB-1 — degraded refresh on the News Intelligence Desk. A desk
+# that already rendered a good payload must keep its evidence (stories,
+# stamps, open drawer, filters) and SAY that the refresh failed — explicitly
+# degraded, never quiet, never still "live" — across a locale switch, until a
+# later valid payload clears it. A FIRST-poll failure keeps the existing
+# distinct reconnecting state. Runs the template's own desk script in a
+# deterministic Node DOM harness with mocked fetch and timers (no real
+# network, no real clock).
+# --------------------------------------------------------------------------- #
+def _news_desk_script() -> str:
+    src = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
+    start = src.index("(function(){", src.index("// ---- INTELLIGENCE DESK"))
+    return src[start:src.index("// ---- LIVE WIRE", start)]
+
+
+def _run_news_desk_checks(seed: str, checks: str):
+    import json
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("Node is needed for the source-owned DOM interaction contract")
+    # The desk polls once as soon as it evaluates, so the scenario is seeded
+    # between the harness and the script under test.
+    program = (_NEWS_DESK_HARNESS + "\n" + seed + "\n"
+               + _news_desk_script() + "\n" + checks)
+    return subprocess.run([node, "-e", program], capture_output=True,
+                          text=True, timeout=20)
+
+
+_NEWS_DESK_HARNESS = r'''const assert=require('assert');
+class El {
+  constructor(tag,attrs){ this.attrs=Object.assign({},attrs||{}); this.handlers={};
+    this.classes=new Set(); this.children=[]; this.parentNode=null; this.hidden=false;
+    this._text=''; this.value=''; }
+  get textContent(){ return this.children.length
+    ? this.children.map(c=>c.textContent).join('') : this._text; }
+  set textContent(v){ this._text=String(v); this.children=[]; }
+  get className(){ return Array.from(this.classes).join(' '); }
+  set className(v){ this.classes=new Set(String(v).split(/\s+/).filter(Boolean)); }
+  get classList(){ const s=this.classes; return {
+    add:(...x)=>x.forEach(v=>s.add(v)), remove:(...x)=>x.forEach(v=>s.delete(v)),
+    toggle:(x,v)=>{ const on=(v===undefined)?!s.has(x):!!v; if(on) s.add(x); else s.delete(x); },
+    contains:x=>s.has(x) }; }
+  getAttribute(k){ return (k in this.attrs)?String(this.attrs[k]):null; }
+  setAttribute(k,v){ this.attrs[k]=String(v); }
+  addEventListener(k,fn){ (this.handlers[k]??=[]).push(fn); }
+  emit(k,e){ (this.handlers[k]||[]).slice().forEach(fn=>fn.call(this,e||{})); }
+  appendChild(c){ c.parentNode=this; this.children.push(c); return c; }
+  focus(){ document.activeElement=this; }
+  querySelectorAll(sel){ const cls=String(sel).replace(/^\./,''); const out=[];
+    const walk=n=>n.children.forEach(c=>{ if(c.classes.has(cls)) out.push(c); walk(c); });
+    walk(this); return out; }
+}
+// deterministic clock: no real timers; time only moves when advance() says so
+let clock=0; const timers=new Map(); let tidSeq=0;
+global.setTimeout=(fn,ms)=>{ tidSeq+=1; timers.set(tidSeq,{fn,at:clock+(ms||0)}); return tidSeq; };
+global.clearTimeout=id=>{ timers.delete(id); };
+global.setInterval=()=>0; global.clearInterval=()=>{};
+function advance(ms){ const end=clock+ms;
+  for(;;){ let pick=null;
+    for(const t of timers.values()) if(t.at<=end && (!pick || t.at<pick.at)) pick=t;
+    if(!pick) break; clock=pick.at;
+    for(const [id,t] of timers) if(t===pick){ timers.delete(id); break; }
+    pick.fn(); }
+  clock=end; }
+class FakeSignal{ constructor(){ this.aborted=false; this.listeners=[]; }
+  addEventListener(k,fn){ this.listeners.push(fn); } }
+class FakeAbort{ constructor(){ this.signal=new FakeSignal(); }
+  abort(){ this.signal.aborted=true; this.signal.listeners.slice().forEach(f=>f()); } }
+const documentEl=new El('#document'); documentEl.hidden=false; documentEl.activeElement=null;
+const root=new El('html',{'data-lang':'en'}); documentEl.documentElement=root;
+documentEl.body=new El('body');
+const ids={};
+['nxIntel','nxIntelList','nxIntelState','nxIntelMetrics','nxIntelToolbar','nxIntelFooter',
+ 'nxIntelMore','nxIntelCount','nxIntelClear','nxIntelHealth','nxIntelUpdated',
+ 'nxIntelDrawer','nxIntelDrawerBody','nxIntelClose','nxIntelBackdrop','nxIntelCadence',
+ 'nxiActive','nxiConfirmed','nxiDeveloping','nxiSources']
+ .forEach(id=>{ ids[id]=new El('div'); });
+const filterBtns=['all','high_impact','confirmed'].map((f,i)=>{
+  const b=new El('button'); b.className='nxi-filter'+(i===0?' on':'');
+  b.setAttribute('data-intel-filter',f); b.setAttribute('aria-pressed',i===0?'true':'false');
+  b.closest=()=>b; ids.nxIntelToolbar.appendChild(b); return b; });
+documentEl.getElementById=id=>ids[id]||null;
+documentEl.createElement=tag=>new El(tag);
+global.document=documentEl;
+const win={ LIVE_POLL_SEC:100000, AbortController:FakeAbort };
+global.window=win; global.AbortController=FakeAbort;
+const scripted=[];   // {payload} | {fail:'network'} | {hang:true} | {badSchema:true}
+win.fetch=(url,opts)=>{
+  const step=scripted.shift(); assert(step,'unexpected fetch — script exhausted');
+  if(step.hang) return new Promise((resolve,reject)=>{
+    opts.signal.addEventListener('abort',()=>reject(new Error('abort timeout'))); });
+  if(step.fail==='network') return Promise.reject(new Error('network down'));
+  const body=step.badSchema
+    ? Object.assign({},step.payload,{schema:'intelligence.desk/v0'}) : step.payload;
+  return Promise.resolve({ ok:true, status:200,
+    json:()=>Promise.resolve(body), text:()=>Promise.resolve('') });
+};
+function payload(){ return { schema:'intelligence.desk/v1', updated_at:'2026-11-02T09:00:00Z',
+  health:{state:'live',active_stories:2,confirmed:1,developing:1,sources_online:4},
+  stories:[
+    { id:'s1', headline:'Fed holds rates steady',
+      brief:'The committee left the target range unchanged.',
+      stage:'confirmed', lane_label_en:'Fed', source_count:3,
+      updated_at:'2026-11-02T08:45:00Z',
+      evidence:[{name:'Reuters',url:'https://reuters.com/x',
+                 published_at:'2026-11-02T08:40:00Z'}] },
+    { id:'s2', headline:'Payrolls cool at the margin', stage:'developing',
+      lane_label_en:'Macro', source_count:1, updated_at:'2026-11-02T08:30:00Z' } ] }; }
+async function settle(){ for(let i=0;i<40;i++) await Promise.resolve(); }
+async function pollOnce(){ documentEl.emit('visibilitychange'); await settle(); }
+function storyCount(){ return ids.nxIntelList.children.filter(n=>n.classes.has('nxi-story')).length; }
+global.fetch=win.fetch;   // the desk calls bare fetch, not window.fetch
+'''
+
+_DESK_SEED_POPULATED = (
+    "scripted.push({payload:payload()});   // seed: initial poll loads a good desk")
+_DESK_SEED_FAILING = (
+    "scripted.push({fail:'network'});   // seed: the very first poll fails")
+
+_DESK_CHECKS_DEGRADED = r'''(async()=>{
+  const box=ids.nxIntel, health=ids.nxIntelHealth, upd=ids.nxIntelUpdated;
+  const drawer=ids.nxIntelDrawer, drawerBody=ids.nxIntelDrawerBody;
+  // the seeded valid populated 200 rendered during desk evaluation
+  await settle();
+  assert.equal(box.getAttribute('data-state'),'live');
+  assert.equal(box.hidden,false);
+  assert.equal(storyCount(),2);
+  assert.equal(health.textContent,'Desk is ingesting');
+  ids.nxIntelList.querySelectorAll('.nxi-open')[0].emit('click');
+  assert.equal(drawer.hidden,false);
+  assert.ok(drawerBody.textContent.includes('Fed holds rates steady'));
+  // transient NETWORK failure -> explicit degraded, evidence retained, usable
+  scripted.push({fail:'network'}); await pollOnce();
+  assert.equal(box.getAttribute('data-state'),'degraded');
+  assert.notEqual(box.getAttribute('data-state'),'quiet');
+  assert.ok(health.textContent.includes('Refresh failed'),health.textContent);
+  assert.ok(health.textContent.indexOf('Desk is ingesting')<0);
+  assert.ok(upd.textContent.indexOf('Last good update')===0,upd.textContent);
+  assert.equal(box.hidden,false);
+  assert.equal(storyCount(),2);
+  assert.equal(drawer.hidden,false);
+  // interactions still usable while degraded
+  ids.nxIntelToolbar.emit('click',{target:filterBtns[1]});
+  assert.ok(ids.nxIntelState.textContent.includes('No stories match this filter'));
+  ids.nxIntelToolbar.emit('click',{target:filterBtns[0]});
+  assert.equal(storyCount(),2);
+  assert.equal(box.getAttribute('data-state'),'degraded');
+  assert.ok(health.textContent.includes('Refresh failed'));
+  // TIMEOUT failure while degraded -> stays degraded, nothing lost
+  scripted.push({hang:true}); await pollOnce(); advance(10000); await settle();
+  assert.equal(box.getAttribute('data-state'),'degraded');
+  assert.equal(storyCount(),2);
+  assert.equal(drawer.hidden,false);
+  // SCHEMA violation -> still degraded, never quiet or healthy
+  scripted.push({badSchema:true,payload:payload()}); await pollOnce();
+  assert.equal(box.getAttribute('data-state'),'degraded');
+  assert.notEqual(box.getAttribute('data-state'),'quiet');
+  assert.equal(storyCount(),2);
+  // locale switch stays degraded, copy flips, stories kept
+  root.setAttribute('data-lang','zh'); documentEl.emit('langchange');
+  assert.equal(box.getAttribute('data-state'),'degraded');
+  assert.equal(health.textContent,'刷新失败——显示最后加载的工作台');
+  assert.ok(upd.textContent.indexOf('最后成功更新')===0,upd.textContent);
+  assert.equal(storyCount(),2);
+  root.setAttribute('data-lang','en'); documentEl.emit('langchange');
+  // a later valid 200 clears degradation
+  scripted.push({payload:payload()}); await pollOnce();
+  assert.equal(box.getAttribute('data-state'),'live');
+  assert.equal(health.textContent,'Desk is ingesting');
+  assert.ok(upd.textContent.indexOf('Updated ')===0,upd.textContent);
+  assert.equal(drawer.hidden,false);
+  console.log(JSON.stringify({passed:true}));
+})().catch(e=>{ console.error(String(e&&e.stack||e)); process.exit(1); });
+'''
+
+_DESK_CHECKS_FIRST_FAILURE = r'''(async()=>{
+  const box=ids.nxIntel, health=ids.nxIntelHealth;
+  // FIRST-poll failure: nothing loaded yet -> the existing reconnecting state,
+  // distinct from the post-load degraded state
+  await settle();
+  assert.equal(box.getAttribute('data-state'),'quiet');
+  assert.notEqual(box.getAttribute('data-state'),'degraded');
+  assert.equal(box.hidden,false);
+  assert.ok(health.textContent.includes('reconnecting'),health.textContent);
+  assert.ok(ids.nxIntelState.textContent.includes('The Intelligence Desk is reconnecting'));
+  // a later valid payload still recovers the desk
+  scripted.push({payload:payload()}); await pollOnce();
+  assert.equal(box.getAttribute('data-state'),'live');
+  assert.equal(health.textContent,'Desk is ingesting');
+  console.log(JSON.stringify({passed:true}));
+})().catch(e=>{ console.error(String(e&&e.stack||e)); process.exit(1); });
+'''
+
+
+def test_news_intelligence_desk_transient_refresh_failure_degrades_and_preserves():
+    """Populated desk + failed refresh = explicit degraded, evidence retained.
+
+    A valid populated 200 renders the desk; then network, timeout and schema
+    failures must each leave the desk in an explicit degraded state — never
+    quiet, never still "live", never called healthy — while the last good
+    stories, the open story drawer and the filters stay usable, and the
+    health line ages the desk off the last good update (not the failed
+    request). A locale switch stays degraded with translated copy; a later
+    valid 200 clears degradation. Asserts the rendered DOM, not the code."""
+    result = _run_news_desk_checks(_DESK_SEED_POPULATED, _DESK_CHECKS_DEGRADED)
+    assert result.returncode == 0, result.stdout + result.stderr
+    import json
+    assert json.loads(result.stdout)["passed"]
+
+
+def test_news_intelligence_desk_first_failure_keeps_reconnecting_state():
+    """Nothing loaded yet + failed poll = the existing reconnecting state.
+
+    The degraded story-retention state is only for a desk that already had a
+    good payload; a first-poll failure keeps the distinct 'down' copy, and a
+    later valid payload still recovers the desk."""
+    result = _run_news_desk_checks(_DESK_SEED_FAILING, _DESK_CHECKS_FIRST_FAILURE)
+    assert result.returncode == 0, result.stdout + result.stderr
+    import json
+    assert json.loads(result.stdout)["passed"]
+
+
+def test_news_intelligence_degraded_refresh_uses_source_clock_and_last_loaded_ranking():
+    checks = r'''(async()=>{
+      await settle();
+      scripted.push({fail:'network'}); await pollOnce();
+      assert.equal(ids.nxIntelCadence.textContent,'Last loaded ranking · evidence attached');
+      root.setAttribute('data-lang','zh'); documentEl.emit('langchange');
+      assert.equal(ids.nxIntelCadence.textContent,'上次载入的排序 · 附带依据');
+      root.setAttribute('data-lang','en'); documentEl.emit('langchange');
+      // A missing source clock must not turn into an invented recent update.
+      const missingClock=payload(); missingClock.updated_at='';
+      scripted.push({payload:missingClock}); await pollOnce();
+      assert.equal(ids.nxIntelUpdated.textContent,'Source update time unavailable');
+      scripted.push({fail:'network'}); await pollOnce();
+      assert.equal(ids.nxIntelUpdated.textContent,'Source update time unavailable');
+      assert.equal(storyCount(),2);
+      console.log(JSON.stringify({passed:true}));
+    })().catch(e=>{console.error(String(e&&e.stack||e));process.exit(1)});'''
+    result = _run_news_desk_checks(_DESK_SEED_POPULATED, checks)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+# --------------------------------------------------------------------------- #
 # F05 per-family inspection uses the existing producer and card contract.
 def _family_inspection_surface():
     from engine.chronicle import impact, schema
