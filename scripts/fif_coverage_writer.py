@@ -615,23 +615,26 @@ def _np_alias_fact_other_accession(
     facts: Mapping[str, Any],
     slot: Mapping[str, Any],
 ) -> bool:
-    """Defect 1 (review 2026-11-02): True when an accession outside the slot's
-    own carries a USD fact for one of the metric's alias concepts with
-    ``end == report_date``.
+    """Defect 1 (review 2026-11-02, broadened): True when ANY accession -
+    including the slot's own - carries a fact, in ANY unit, for one of the
+    metric's alias concepts with ``end == report_date``.
 
     The served precondition (query.py:7159-7167) attempts not-presented only
-    when no alias fact is visible from ANY accession at the period, so such a
-    fact makes served print VALUE (or stay missing) where the writer would
-    have printed ``not_applicable``.  The check is deliberately broader than
-    served - it ignores the span and the duration class - so it can only turn
-    a would-be ``not_applicable`` into the original absent result, never the
-    reverse.  A fact with no accession is treated as outside the slot.
+    when no alias fact is visible in ANY unit from ANY accession at the
+    period, so such a fact makes served print VALUE, stay missing, or print
+    NOT_EVALUABLE (an unexpected unit) where the writer would have printed
+    ``not_applicable``.  The check is deliberately broader than served - it
+    ignores the unit, the accession, the span and the duration class - so it
+    can only turn a would-be ``not_applicable`` into the original absent
+    result, never the reverse.  A USD fact in the slot's own accession that
+    satisfies the strict pass never reaches this check (``evaluate_cell``
+    already returned present), so admitting own accessions here cannot
+    suppress a present cell.
     """
     aliases = spec.get("aliases") or []
     report_date = slot.get("report_date") or ""
     if not aliases or not report_date:
         return False
-    own = slot_accessions(slot)
     wanted = {(taxonomy, concept) for _priority, taxonomy, concept in aliases}
     for taxonomy, payload in facts.items():
         if not isinstance(payload, dict):
@@ -642,14 +645,14 @@ def _np_alias_fact_other_accession(
             units = entry.get("units")
             if not isinstance(units, dict):
                 continue
-            fact_list = units.get("USD")
-            if not isinstance(fact_list, list):
-                continue
-            for fact in fact_list:
-                if not isinstance(fact, dict) or fact.get("accn") in own:
+            for fact_list in units.values():
+                if not isinstance(fact_list, list):
                     continue
-                if fact.get("end") == report_date:
-                    return True
+                for fact in fact_list:
+                    if not isinstance(fact, dict):
+                        continue
+                    if fact.get("end") == report_date:
+                        return True
     return False
 
 
@@ -665,7 +668,11 @@ def _np_duration_universe(
     whatever accession or unit filed it.  A divergence from the census's own
     ledger universe can only change which span ``duration_for_slot`` requests,
     and the NP gate in ``_np_facts_in_context`` fails closed on any such
-    change.
+    change.  Residual (review 2026-11-02): the universe is only as complete
+    as the writer's ``--facts-cache`` - a governed duration fact the
+    production ledger has but that cache lacks can make the writer choose a
+    different span than served, so the ``--facts-cache`` must be the same
+    companyfacts vintage the census used.
     """
     keys: dict[tuple[str, str], None] = {}
     for taxonomy, payload in facts.items():

@@ -1504,3 +1504,147 @@ def test_t11_single_accession_single_span_still_not_applicable(tmp_path):
         assert cell_b[key] == cell[key]
     assert ctx.counters.get("np_span_not_requested") is None
     assert ctx.counters.get("np_outcome:not_presented") == 1
+
+
+# T12-T14 (defect 1 broadened): the served precondition refuses NP for a
+# visible alias fact in ANY unit from ANY accession, not only other-accession
+# USD; an EUR or shares fact at the report date made served print
+# NOT_EVALUABLE (unexpected_unit) where the writer printed not_applicable.
+
+
+def test_t12_other_accession_eur_alias_fact_keeps_the_absent_result(tmp_path):
+    slot = _slot()
+    other = _accn(1, 42)
+    leaked_eur = ("us-gaap", "SyntheticShortTermDebtLine", "EUR",
+                  [_fact(other, slot["report_date"], val=5000)])
+    ctx = _np_ctx(tmp_path, {slot["accession"]: (_NP_CAL, _NP_PRE)})
+    cell = w.evaluate_cell(_ST_DEBT, {"short_term_debt": _ST_DEBT},
+                           _bs_facts(slot, extra=[leaked_eur]), slot,
+                           recorded_at=NP_CLOCK, np_context=ctx)
+    assert cell == {"status": "absent", "reason_code": "absent_no_alias_fact"}
+    assert ctx.counters.get("np_alias_fact_other_accession") == 1
+
+
+def test_t13_other_accession_shares_alias_fact_keeps_the_absent_result(tmp_path):
+    slot = _slot()
+    other = _accn(1, 42)
+    leaked_shares = ("us-gaap", "SyntheticShortTermDebtLine", "shares",
+                     [_fact(other, slot["report_date"], val=5000)])
+    ctx = _np_ctx(tmp_path, {slot["accession"]: (_NP_CAL, _NP_PRE)})
+    cell = w.evaluate_cell(_ST_DEBT, {"short_term_debt": _ST_DEBT},
+                           _bs_facts(slot, extra=[leaked_shares]), slot,
+                           recorded_at=NP_CLOCK, np_context=ctx)
+    assert cell == {"status": "absent", "reason_code": "absent_no_alias_fact"}
+    assert ctx.counters.get("np_alias_fact_other_accession") == 1
+
+
+def test_t14_own_accession_eur_alias_fact_keeps_the_absent_result(tmp_path):
+    slot = _slot()
+    # No USD alias fact anywhere: the only alias fact at the report date is an
+    # EUR one filed by the slot's own accession, which the strict pass cannot
+    # match (wrong unit) and served would print NOT_EVALUABLE for.
+    own_eur = ("us-gaap", "SyntheticShortTermDebtLine", "EUR",
+               [_fact(slot["accession"], slot["report_date"], val=5000)])
+    ctx = _np_ctx(tmp_path, {slot["accession"]: (_NP_CAL, _NP_PRE)})
+    cell = w.evaluate_cell(_ST_DEBT, {"short_term_debt": _ST_DEBT},
+                           _bs_facts(slot, extra=[own_eur]), slot,
+                           recorded_at=NP_CLOCK, np_context=ctx)
+    assert cell == {"status": "absent", "reason_code": "absent_no_alias_fact"}
+    assert ctx.counters.get("np_alias_fact_other_accession") == 1
+
+
+# T15 (defect 1 broadened, formula funnel): an operand that fails the alias
+# gate is OTHER, so the formula keeps its existing absent_dependency result.
+
+
+def test_t15_formula_operand_with_eur_alias_fact_keeps_absent_dependency(tmp_path):
+    slot = _slot()
+    other = _accn(1, 42)
+    leaked_eur = ("us-gaap", "SyntheticShortTermDebtLine", "EUR",
+                  [_fact(other, slot["report_date"], val=5000)])
+    cash_entry = ("us-gaap", "CashAndCashEquivalentsAtCarryingValue", "USD",
+                  [_fact(slot["accession"], slot["report_date"], val=250000)])
+    specs = {
+        "short_term_debt": _ST_DEBT,
+        "long_term_debt_current": _LTD_CURRENT,
+        "long_term_debt": _LTD,
+        "total_debt": _formula_spec(
+            "total_debt",
+            ("short_term_debt", "long_term_debt_current", "long_term_debt"),
+            _TOTAL_DEBT_POLICY,
+        ),
+    }
+    ctx = _np_ctx(tmp_path, {slot["accession"]: (_NP_CAL, _NP_PRE)})
+    cell = w.evaluate_cell(specs["total_debt"], specs,
+                           _bs_facts(slot, extra=[cash_entry, leaked_eur]), slot,
+                           recorded_at=NP_CLOCK, np_context=ctx)
+    assert cell == {"status": "absent", "reason_code": "absent_dependency"}
+    assert ctx.counters.get("np_alias_fact_other_accession") == 1
+
+
+# T16 (regression): the broadened gate changes no single-accession verdict.
+
+
+def test_t16_regression_single_accession_item_not_presented_still_np(tmp_path):
+    slot = _slot()
+    ctx = _np_ctx(tmp_path, {slot["accession"]: (_NP_CAL, _NP_PRE)})
+    cell = w.evaluate_cell(_ST_DEBT, {"short_term_debt": _ST_DEBT}, _bs_facts(slot), slot,
+                           recorded_at=NP_CLOCK, np_context=ctx)
+    assert cell["status"] == "not_applicable"
+    assert (cell["reason_code"], cell["kernel_reason"]) == ("not_presented", "not_presented")
+    assert cell["na_basis"] == "not_presented_item"
+    assert cell["np_rule_id"] == "not_presented.short_term_debt/v1"
+    assert cell["np_accession"] == slot["accession"]
+    assert cell["np_cal_sha256"] == hashlib.sha256(_NP_CAL).hexdigest()
+    assert cell["np_pre_sha256"] == hashlib.sha256(_NP_PRE).hexdigest()
+    assert cell["np_footing"] == "exact"
+    assert cell["np_parent_concepts"] == ["us-gaap:LiabilitiesCurrent"]
+    assert set(cell) == {
+        "status", "reason_code", "kernel_reason", "na_basis",
+        "np_kind", "np_rule_id", "np_rule_version", "np_rules_sha256",
+        "np_parent_concepts", "np_roles_checked", "np_children_n",
+        "np_children_with_fact_n", "np_footing", "np_cal_sha256", "np_pre_sha256",
+        "np_accession",
+    }
+    assert ctx.counters.get("np_alias_fact_other_accession") is None
+    assert ctx.counters.get("np_span_not_requested") is None
+    assert ctx.counters.get("np_outcome:not_presented") == 1
+
+    # A USD alias fact in the slot's own accession at the report date matches
+    # the strict pass, so evaluate_cell returns present before any NP gate:
+    # admitting own accessions into the gate cannot suppress a present cell.
+    own_usd = ("us-gaap", "SyntheticShortTermDebtLine", "USD",
+               [_fact(slot["accession"], slot["report_date"], val=5000)])
+    strict = w.evaluate_cell(_ST_DEBT, {"short_term_debt": _ST_DEBT},
+                             _bs_facts(slot, extra=[own_usd]), slot, {},
+                             recorded_at=NP_CLOCK, np_context=ctx)
+    assert strict == {"status": "present", "reason_code": "present"}
+
+
+# T17 (frozen-spec item 2): malformed units levels are skipped, never raised.
+
+
+def test_t17_malformed_units_levels_are_skipped_never_raise():
+    slot = _slot()
+    other = _accn(1, 42)
+    malformed = {
+        "not-a-payload": "nope",
+        "us-gaap": {
+            "SyntheticShortTermDebtLine": {"units": {
+                "EUR": "not-a-list",
+                "shares": [_fact(other, slot["report_date"])],
+            }},
+            "UnrelatedConcept": {"units": "not-a-dict"},
+        },
+    }
+    # The any-unit walk skips the malformed EUR list and still fires on the
+    # well-formed shares list; no level raises.
+    assert w._np_alias_fact_other_accession(_ST_DEBT, malformed, slot) is True
+    only_malformed = {
+        "not-a-payload": "nope",
+        "us-gaap": {
+            "SyntheticShortTermDebtLine": {"units": {"EUR": "not-a-list"}},
+            "UnrelatedConcept": {"units": "not-a-dict"},
+        },
+    }
+    assert w._np_alias_fact_other_accession(_ST_DEBT, only_malformed, slot) is False
