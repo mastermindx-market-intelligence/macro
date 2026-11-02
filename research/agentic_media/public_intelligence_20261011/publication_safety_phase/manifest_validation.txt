@@ -1,0 +1,2 @@
+::notice title=ci-pack-scope::full suite: changed-file set unavailable; scope inference not needed
+Validated 300 legacy jobs; 300 in scope (full suite: changed-file set unavailable); pack weights=[5401, 5400]; selected pack 0 (150 jobs).

@@ -1,0 +1,103 @@
+{
+  "operation": "gmi-theme-accept-d2e-20260827-sol-001",
+  "workstream": "WS:GMI-THEME-GRAPH",
+  "census_date": "2026-10-05",
+  "carrier_heads": {
+    "origin_main": "20eb503a09aef8bc2ccc8945f1ea140bdc9aeace",
+    "pr_8432": "54d17ebcb1c11471fffbbdea6888f97db6c9fbbb",
+    "pr_8435": "7429a3e5f6da9b66787ead24119a238a2a36858d",
+    "heads_match_spec": true
+  },
+  "scratch": {
+    "head_sha": "a58905e0da4de0f191acb81c54c1fda4317c2e27",
+    "includes_pr_8432": true,
+    "includes_pr_8435": false,
+    "merge_conflict_paths": [".github/ci/legacy-jobs.yml"],
+    "pushed": false
+  },
+  "d2b3_natural_proof": {
+    "contract": "research/prophet_v4/d2/D2B3_FROZEN_CONTRACT_2026-08-21.md",
+    "handoff": "agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-22-D2B3-IMPL.md",
+    "main_meta_receipt": {
+      "path": "data/theme_graph/_meta.json",
+      "computed_at": "2026-10-05T07:55:06Z",
+      "belief_time": "2026-10-05",
+      "lane": "nightly",
+      "node_count": 3882
+    },
+    "reconciled_in_this_lane": false
+  },
+  "test_summary": {
+    "command": "TZ=UTC python -m pytest tests/test_basket_membership_pit.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_materialize.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_sources_registry.py -q -p no:cacheprovider",
+    "scratch_head": "a58905e0da4de0f191acb81c54c1fda4317c2e27",
+    "passed": 524,
+    "skipped": 1,
+    "failed": 0,
+    "failures": [],
+    "spec_files_missing_on_scratch": [
+      "tests/test_theme_graph_structural_owner_binding.py",
+      "tests/test_theme_graph_rights.py",
+      "tests/test_theme_graph_rights_use.py"
+    ]
+  },
+  "contracts_guard": {
+    "default": "INDETERMINATE (sparse data/theme_graph)",
+    "strict_rc": 0,
+    "selftest": "OK"
+  },
+  "source_families": [
+    {
+      "family": "mastermind_curated",
+      "rights_class": "direct_display_ok",
+      "emission_allowed": true
+    },
+    {
+      "family": "finviz_themes",
+      "rights_class": "unresolved",
+      "emission_allowed": false
+    },
+    {
+      "family": "ths_concepts",
+      "rights_class": "unresolved",
+      "emission_allowed": false
+    }
+  ],
+  "unresolved_source_refs": [
+    {
+      "source_ref": "data/theme_graph/probation/relation_events.v2.jsonl#",
+      "family_for_source_ref": null,
+      "note": "No SOURCE_PREFIX_FAMILY mapping"
+    },
+    {
+      "source_ref": "site/factordata/us_standouts.json",
+      "family_for_source_ref": null,
+      "note": "Coverage-gap provenance only; not materialize evidence ref on scratch"
+    }
+  ],
+  "main_theme_graph_artifacts": [
+    {"name": "_meta.json", "size": 3482, "sha": "523c8505cc51298de4f2275a3d107cd41c985103"},
+    {"name": "capability.parquet", "size": 17952, "sha": "2df59fd5c447a05387a68ab7e6b56eed61099f23"},
+    {"name": "edges.parquet", "size": 292939, "sha": "4b53aafdd72970a3bf66914a7b2ab12a84b80658"},
+    {"name": "evidence.parquet", "size": 8381, "sha": "8b414dbbe533a2e98df2e47cce3ea278f96bd783"},
+    {"name": "identity_resolution.parquet", "size": 207858, "sha": "29dde1f62f9ce89ac50b4191a59ea05313d38dd0"},
+    {"name": "node_lifecycle.parquet", "size": 8049, "sha": "2a7219afc61d3d7154de7b261af115d4beeefe3e"},
+    {"name": "nodes.parquet", "size": 137781, "sha": "2dcac135e78cbf32c52c531488fd4a475f7c30cf"},
+    {"name": "probation", "size": 0, "sha": "5a4af8e1d366e0413dd33b4b10e298959952eab6"}
+  ],
+  "missing_test_files_on_scratch": [
+    "tests/test_theme_graph_structural_owner_binding.py"
+  ],
+  "decisions_required": [
+    "finviz_themes: unresolved → derived_display_ok vs internal_only (Sol/Chairman)",
+    "ths_concepts: unresolved → bundle with finviz W6 escalation (Sol/Chairman)",
+    "site/factordata/us_standouts.json: GMI family row or explicit non-source (Chairman)",
+    "probation relation_events source_ref prefix in rights.SOURCE_PREFIX_FAMILY (Sol/engine owner)",
+    "Sol release D2C (#8432) + D2D (#8435) after legacy-jobs.yml merge resolution"
+  ],
+  "defects": [
+    {"id": 1, "summary": "8435 merge conflict in legacy-jobs.yml", "owner": "PR #8435"},
+    {"id": 2, "summary": "structural_owner_binding test absent until #8435", "owner": "PR #8435"},
+    {"id": 3, "summary": "D2B3 natural proof not reconciled in census lane", "owner": "WS:PROPHET-US-V4-RECOVERY"},
+    {"id": 4, "summary": "D2E held until D2C+D2D Sol acceptance", "owner": "Sol"}
+  ]
+}

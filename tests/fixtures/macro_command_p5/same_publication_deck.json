@@ -1,0 +1,23 @@
+{
+  "workspace": {
+    "id": "liquidity_regime",
+    "title": {"en": "Liquidity", "zh": "流动性"},
+    "subtitle": {"en": "", "zh": ""}
+  },
+  "region": {"code": "US", "display_name": "United States", "supported": true},
+  "availability": {"state": "CURRENT"},
+  "headline": {
+    "status": "PRESENT",
+    "state_id": "A",
+    "effective_date": "2026-09-04",
+    "state_label": {"en": "Easy", "zh": "宽松"}
+  },
+  "changes": {
+    "comparability": "COMPARABLE",
+    "prior_effective_date": "2026-09-04",
+    "deltas": [
+      {"metric_id": "funding_pressure", "prior_value": 1.0, "current_value": 2.0, "delta": 1.0}
+    ]
+  },
+  "axes": {"items": []}
+}

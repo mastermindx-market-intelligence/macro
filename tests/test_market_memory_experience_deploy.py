@@ -43,6 +43,153 @@ MASKED_MARKET_MEMORY_SIBLINGS = {
     "/var/lib/macro-market-memory/state/breadth-v1",
     "/var/lib/macro-market-memory/state/production-record-options-episode-v1",
 }
+
+
+def _population_fixture(tmp_path, monkeypatch):
+    from tests.test_market_memory_population import _real_store
+    experience, trusted, technical = _real_store(tmp_path, monkeypatch, runs=1)
+    roots = (ROOT, experience, trusted, technical)
+    monkeypatch.setattr(cli, "_POPULATION_ROOTS", roots)
+    source_checks = []
+
+    def verify(root, **kwargs):
+        source_checks.append((root, kwargs))
+        return "a" * 40
+
+    monkeypatch.setattr(cli, "_verified_repository_commit", verify)
+    return roots, source_checks
+
+
+def _diagnose(roots):
+    return cli.diagnose_registered_spy_population(
+        roots[0], experience_root=roots[1], trusted_root=roots[2],
+        technical_root=roots[3], through_session="2026-08-20")
+
+
+def test_population_diagnostic_real_owner_is_read_only_and_rechecks_policy(tmp_path, monkeypatch):
+    import hashlib
+    from engine.neuralweb import market_memory_experience_accrual as owner
+    roots, checks = _population_fixture(tmp_path, monkeypatch)
+
+    def snapshot():
+        return {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                for root in roots[1:] for p in root.rglob("*") if p.is_file()}
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("population diagnostic must not accrue or read outcomes")
+    monkeypatch.setattr(owner, "accrue_spy_experience", forbidden)
+    monkeypatch.setattr(owner, "verify_terminal_ledger", forbidden)
+    monkeypatch.setattr(cli, "accrue_registered_spy_experience", forbidden)
+    before = snapshot()
+    result = _diagnose(roots)
+    assert snapshot() == before
+    assert result["operational_study_admission"] is False
+    assert result["scope"] == "internal_operator_outcome_blind_v1_census"
+    assert result["manifest"]["census"]["counts"]["expected"] == 4
+    assert result["manifest"]["census"]["counts"]["unrecorded"] == 3
+    assert len(checks) == 4  # Before import + two bound build checks + final disclosure.
+    assert all(call[1]["extra_inputs"] == ("engine/neuralweb/market_memory_population.py",)
+               for call in checks)
+
+
+@pytest.mark.parametrize("changed", ["registration", "store", "installation", "source"])
+def test_population_diagnostic_drift_fails_before_final_disclosure(tmp_path, monkeypatch, changed):
+    from engine.neuralweb import market_memory_experience_accrual as owner
+    roots, checks = _population_fixture(tmp_path, monkeypatch)
+    original = owner.verify_experience_installation
+    count = 0
+
+    def verify(*args, **kwargs):
+        nonlocal count
+        count += 1
+        value = original(*args, **kwargs)
+        if count >= 3:
+            key = {"registration": "registration_id", "store": "store_id",
+                   "installation": "installation_id", "source": "store_id"}[changed]
+            value[key] = "changed-owner"
+        return value
+
+    monkeypatch.setattr(owner, "verify_experience_installation", verify)
+    if changed == "source":
+        def source(*args, **kwargs):
+            checks.append((args, kwargs))
+            return ("a" if len(checks) < 4 else "b") * 40
+        monkeypatch.setattr(cli, "_verified_repository_commit", source)
+    with pytest.raises(Exception, match="changed|owner required"):
+        _diagnose(roots)
+
+
+@pytest.mark.parametrize("index", range(4))
+def test_population_diagnostic_rejects_alternate_roots_before_owner_io(monkeypatch, index):
+    def forbidden(*args, **kwargs):
+        pytest.fail("root validation must precede source/owner access")
+    monkeypatch.setattr(cli, "_verified_repository_commit", forbidden)
+    roots = list(cli._POPULATION_ROOTS)
+    roots[index] = Path("/unadmitted-v2-root")
+    with pytest.raises(cli.MarketMemoryExperienceCliError, match="exact installed v1 roots"):
+        _diagnose(roots)
+
+
+def test_population_cli_mode_never_falls_through_to_writer(monkeypatch, capsys):
+    def forbidden(*args, **kwargs):
+        pytest.fail("diagnostic must not fall through to writer")
+    monkeypatch.setattr(cli, "accrue_registered_spy_experience", forbidden)
+    monkeypatch.setattr(cli, "diagnose_registered_spy_population", lambda *a, **k: {"diagnostic": True})
+    args = ["--experience-root", str(cli._POPULATION_ROOTS[1]), "--diagnose-population",
+            "--trusted-root", str(cli._POPULATION_ROOTS[2]), "--technical-root", str(cli._POPULATION_ROOTS[3]),
+            "--through-session", "2026-08-20"]
+    assert cli.main(args) == 0
+    assert '"diagnostic":true' in capsys.readouterr().out
+    for invalid in (args + ["--verify-terminal"], args[:-2], args[0:2] + args[-2:]):
+        with pytest.raises(SystemExit):
+            cli.main(invalid)
+
+
+def test_population_unbound_rights_check_never_opens_owner_paths(tmp_path, monkeypatch):
+    from engine.neuralweb import market_memory_experience_accrual as owner
+    from engine.neuralweb import market_memory_population as population
+    roots, checks = _population_fixture(tmp_path, monkeypatch)
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("unbound rights decision must precede owner I/O")
+    monkeypatch.setattr(owner, "load_registration", forbidden)
+    monkeypatch.setattr(owner, "verify_experience_installation", forbidden)
+
+    class ScopeChecked(Exception):
+        pass
+
+    def before_owner(root, **kwargs):
+        policy = kwargs["policy"]
+        grant = policy.authorize_population_manifest(
+            repository_root=str(root), experience_root=str(roots[1]),
+            through_session="2026-08-20", registration_id=None, store_id=None)
+        assert grant.granted is True
+        assert grant.registration_id is grant.store_id is None
+        assert len(checks) == 1  # Only pre-import verification, not policy I/O.
+        raise ScopeChecked()
+    monkeypatch.setattr(population, "read_population_manifest_capability", before_owner)
+    with pytest.raises(ScopeChecked):
+        _diagnose(roots)
+
+
+def test_population_refuses_noninstalled_cli_before_source_verification(tmp_path, monkeypatch):
+    roots, _checks = _population_fixture(tmp_path, monkeypatch)
+    monkeypatch.setattr(cli, "_ROOT", tmp_path / "unreviewed-cli")
+    def forbidden(*args, **kwargs):
+        pytest.fail("executing CLI root must match before source verification")
+    monkeypatch.setattr(cli, "_verified_repository_commit", forbidden)
+    with pytest.raises(cli.MarketMemoryExperienceCliError, match="installed CLI"):
+        _diagnose(roots)
+
+
+@pytest.mark.parametrize("module_name", ["market_memory_population", "market_memory_experience_accrual"])
+def test_population_refuses_imported_code_outside_verified_root(tmp_path, monkeypatch, module_name):
+    import engine.neuralweb as neuralweb
+    roots, _checks = _population_fixture(tmp_path, monkeypatch)
+    module = getattr(neuralweb, module_name)
+    monkeypatch.setattr(module, "__file__", str(tmp_path / "unreviewed/engine/neuralweb/module.py"))
+    with pytest.raises(cli.MarketMemoryExperienceCliError, match="imports differ"):
+        _diagnose(roots)
 SIBLING_PROFILES = ("source", "context", "identity", "breadth", "technicals")
 
 
@@ -729,6 +876,8 @@ def test_updater_deferred_replay_is_ordered_and_owner_failure_suppresses_w2c(
 ) -> None:
     helpers = _marked_shell(UPDATE, "W2C_DEPLOY_HELPERS")
     replay = _marked_shell(UPDATE, "W2C_DEFERRED_REPLAY")
+    freeze = _marked_shell(UPDATE, "W2C_LANE_FREEZE")
+    exit_status = _marked_shell(UPDATE, "DEPLOY_EXIT_STATUS")
 
     def run(*, fail_unit: str, installation_required: int, publish: str):
         state = tmp_path / f"run-{fail_unit or 'ok'}-{installation_required}-{publish}"
@@ -743,6 +892,7 @@ API_DEPS_OK=1
 MARKET_MEMORY_EXPERIENCE_RUN_NEEDED=1
 MARKET_MEMORY_EXPERIENCE_INSTALLATION_REQUIRED={installation_required}
 MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE=3
+{freeze}
 {_SYSTEMCTL_HARNESS}
 {helpers}
 w2c_terminal_ledger_state() {{ return 3; }}
@@ -751,6 +901,7 @@ w2c_verify_installation() {{
     [ ! -L "$MARKET_MEMORY_EXPERIENCE_INSTALLATION" ]
 }}
 {replay}
+{exit_status}
 """
         result = _run_shell(
             source,
@@ -796,6 +947,8 @@ def test_updater_no_diff_attests_and_rearm_requires_synchronous_owner_replay(
 ) -> None:
     helpers = _marked_shell(UPDATE, "W2C_DEPLOY_HELPERS")
     attestation = _marked_shell(UPDATE, "W2C_RUNTIME_ATTESTATION")
+    freeze = _marked_shell(UPDATE, "W2C_LANE_FREEZE")
+    exit_status = _marked_shell(UPDATE, "DEPLOY_EXIT_STATUS")
 
     def run(
         name: str,
@@ -824,6 +977,7 @@ API_DEPS_OK=1
 CHANGED=''
 W2C_TIMER_ENABLED={enabled}
 W2C_TIMER_ACTIVE={active}
+{freeze}
 {_SYSTEMCTL_HARNESS}
 {helpers}
 w2c_terminal_ledger_state() {{
@@ -835,6 +989,7 @@ w2c_verify_installation() {{
   [ {installation_valid} -eq 1 ]
 }}
 {attestation}
+{exit_status}
 """
         result = _run_shell(
             source,
@@ -1069,8 +1224,11 @@ def _run_api_w2c_slice(
         UPDATE, "MACRO_API_RESTART_TRANSACTION"
     )
     attestation = attestation or _marked_shell(UPDATE, "W2C_RUNTIME_ATTESTATION")
+    freeze = _marked_shell(UPDATE, "W2C_LANE_FREEZE")
+    exit_status = _marked_shell(UPDATE, "DEPLOY_EXIT_STATUS")
     source = f"""
 {_API_W2C_SLICE_HARNESS}
+{freeze}
 MARKET_MEMORY_EXPERIENCE_ROOT={shlex.quote(str(state / "experience"))}
 MARKET_MEMORY_EXPERIENCE_INSTALLATION="$MARKET_MEMORY_EXPERIENCE_ROOT/registration_installation.json"
 MARKET_MEMORY_EXPERIENCE_TERMINAL="$MARKET_MEMORY_EXPERIENCE_ROOT/TERMINAL.json"
@@ -1083,6 +1241,7 @@ w2c_verify_installation() {{
 }}
 {transaction}
 {attestation}
+{exit_status}
 """
     result = _run_shell(
         source,
@@ -1242,12 +1401,181 @@ def test_mutation_api_restart_below_w2c_misses_biocatalyst_restart(
         fail_unit="macro-market-memory-context.service",
         helpers=helpers,
         transaction=attestation,
-        attestation=transaction,
+        # Below W2C = inside the W2C-dependent region that a frozen W2C lane
+        # skips (attestation end .. W1B5_TIMER_FINALIZATION end).
+        attestation=(
+            'if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then\n' + transaction + "\nfi\n"
+        ),
     )
     assert result.returncode == 1, result.stderr
     assert _restart_count(events) == 0
     assert "start macro-market-memory-experience.service" not in events
     assert not marker.exists()
+
+
+_TICKER_NEWS_HEAD = "# TICKER NEWS is a long-running, operator-armed source service."
+_BIOCATALYST_HEAD = "# BioCatalyst B1 is a separate source-canonical lane."
+
+
+def test_owner_replay_refusal_freezes_w2c_lane_and_still_restarts_ticker_news(
+    tmp_path: Path,
+) -> None:
+    """A W2C owner-replay refusal must not swallow lane-independent steps.
+
+    Live 2026-10-11: the technicals owner refused, update.sh exited at
+    "refusing W2C activation before owner replay completion", and the
+    ticker-news restart owed to a merged scripts/run_qbus_news.py change never
+    ran; CHANGED is per-run, so that restart was lost for good.  Run the real
+    attestation -> W2C-dependent region -> frozen-lane continue -> ticker news
+    -> final exit status path in source order; only systemd is simulated.
+    """
+    text = _text(UPDATE)
+    exit_guard = _marked_shell(UPDATE, "W1B5_TIMER_EXIT_GUARD")
+    freeze = _marked_shell(UPDATE, "W2C_LANE_FREEZE")
+    helpers = _marked_shell(UPDATE, "W2C_DEPLOY_HELPERS")
+    region_start = text.index("# BEGIN W2C_RUNTIME_ATTESTATION\n")
+    region_end = text.index("# Live-plane systemd definitions", region_start)
+    w2c_region = text[region_start:region_end]
+    ticker_start = text.index(_TICKER_NEWS_HEAD, region_end)
+    ticker = text[ticker_start : text.index(_BIOCATALYST_HEAD, ticker_start)]
+    exit_status = _marked_shell(UPDATE, "DEPLOY_EXIT_STATUS")
+
+    state = tmp_path / "state"
+    (state / "app" / "deploy").mkdir(parents=True)
+    unit_body = "[Service]\nExecStart=/bin/true\n"
+    (state / "app" / "deploy" / "macro-ticker-news.service").write_text(
+        unit_body, encoding="utf-8"
+    )
+    installed = tmp_path / "installed-macro-ticker-news.service"
+    installed.write_text(unit_body, encoding="utf-8")
+    ticker = ticker.replace(
+        "/etc/systemd/system/macro-ticker-news.service", shlex.quote(str(installed))
+    )
+    assert "/etc/systemd/system/macro-ticker-news.service" not in ticker
+    (state / "registration_installation.json").write_text("{}\n", encoding="utf-8")
+    event_log = tmp_path / "events"
+    source = f"""
+set -euo pipefail
+APP_DIR={shlex.quote(str(state))}
+CHANGED='scripts/run_qbus_news.py'
+RECONCILED=0
+OPTIONS_TIMER_DISARMED=0
+MARKET_MEMORY_EXPERIENCE_ROOT={shlex.quote(str(state))}
+MARKET_MEMORY_EXPERIENCE_INSTALLATION="$MARKET_MEMORY_EXPERIENCE_ROOT/registration_installation.json"
+MARKET_MEMORY_EXPERIENCE_TERMINAL="$MARKET_MEMORY_EXPERIENCE_ROOT/TERMINAL.json"
+MARKET_MEMORY_EXPERIENCE_RUNTIME_REGEX='^runtime-change$'
+MARKET_MEMORY_EXPERIENCE_UNIT_UPDATED=0
+RECIPROCAL_TIMERS_PAUSED=0
+API_DEPS_OK=1
+disarm_options_timer() {{
+  if [ "$OPTIONS_TIMER_DISARMED" -eq 1 ]; then
+    return 0
+  fi
+  printf '%s\n' disarm_options_timer >> "$EVENT_LOG"
+  OPTIONS_TIMER_DISARMED=1
+}}
+OPTIONS_RECONCILIATION_COMPLETE=0
+{exit_guard}
+{freeze}
+systemctl() {{
+  printf '%s\n' "$*" >> "$EVENT_LOG"
+  case "$1" in
+    start) [ "$2" != "${{FAIL_UNIT:-}}" ] || return 23 ;;
+    is-enabled) return 1 ;;
+    is-active) [ "${{3:-}}" = macro-ticker-news.service ]; return ;;
+  esac
+}}
+{helpers}
+w2c_terminal_ledger_state() {{ return 3; }}
+w2c_verify_installation() {{
+  [ -f "$MARKET_MEMORY_EXPERIENCE_INSTALLATION" ]
+}}
+{w2c_region}
+{ticker}
+{exit_status}
+"""
+    result = _run_shell(
+        source,
+        environment={
+            "EVENT_LOG": str(event_log),
+            "FAIL_UNIT": "macro-market-memory-context.service",
+        },
+    )
+    events = event_log.read_text(encoding="utf-8").splitlines()
+    stderr = result.stderr
+
+    assert result.returncode == 1, stderr
+    assert "macro-update: refusing W2C activation before owner replay completion" in stderr
+    assert "restart macro-ticker-news.service" in events
+    assert (
+        "macro-update: W2C lane frozen — refusing W2C activation before owner "
+        "replay completion; continuing lane-independent deploy steps"
+    ) in stderr
+    assert "macro-update: deploy finished with status 1 (frozen lanes: w2c)" in stderr
+    assert (
+        stderr.index("refusing W2C activation")
+        < stderr.index("W2C lane frozen")
+        < stderr.index("deploy finished with status 1")
+    )
+    # W2C semantics are unchanged: the owner chain stopped at the failed owner,
+    # the W2C writer never ran, and no timer was armed or disarmed.
+    assert "start macro-market-memory-context.service" in events
+    assert "start macro-market-memory-technicals.service" not in events
+    assert "start macro-market-memory-experience.service" not in events
+    assert not any(event.startswith(("enable ", "disable ")) for event in events)
+    # Nothing in the W2C-dependent region (option-OI, production records) ran.
+    assert not any(
+        "macro-market-memory-options" in event or "production-records" in event
+        for event in events
+    )
+    # The option-OI timer goes down once, before any lane-independent step,
+    # and the still-armed EXIT trap's second disarm is a latched no-op.
+    assert events.count("disarm_options_timer") == 1
+    assert events.index("disarm_options_timer") < events.index(
+        "restart macro-ticker-news.service"
+    )
+
+
+def test_w2c_lane_freeze_brackets_only_the_w2c_dependent_region(
+    tmp_path: Path,
+) -> None:
+    text = _text(UPDATE)
+    attestation_end = text.index("# END W2C_RUNTIME_ATTESTATION\n")
+    wrapper = text.index('\nif [ "$W2C_LANE_FROZEN" -eq 0 ]; then\n', attestation_end)
+    between = text[attestation_end:wrapper].splitlines()[1:]
+    assert all(line.startswith("#") for line in between), between
+    assert (
+        "# END W1B5_TIMER_FINALIZATION\nfi\n# BEGIN W2C_LANE_FROZEN_CONTINUE\n"
+        in text
+    )
+    continue_at = text.index("# BEGIN W2C_LANE_FROZEN_CONTINUE")
+    assert continue_at < text.index("# Live-plane systemd definitions", continue_at)
+    assert (
+        continue_at
+        < text.index(_TICKER_NEWS_HEAD, continue_at)
+        < text.index("# BEGIN DEPLOY_EXIT_STATUS")
+    )
+    assert text.endswith("# END DEPLOY_EXIT_STATUS\n")
+    for marker in (
+        "W2C_RUNTIME_ATTESTATION",
+        "W2C_DEFERRED_REPLAY",
+        "W1B5_TIMER_FINALIZATION",
+    ):
+        assert "exit 1" not in _marked_shell(UPDATE, marker), marker
+
+    freeze = _marked_shell(UPDATE, "W2C_LANE_FREEZE")
+    exit_status = _marked_shell(UPDATE, "DEPLOY_EXIT_STATUS")
+    for action, expected in (("", 0), ('freeze_w2c_lane "first"\nfreeze_w2c_lane "second"', 1)):
+        result = _run_shell(
+            f"set -euo pipefail\n{freeze}\n{action}\n"
+            'printf "%s\\n" "$W2C_LANE_FROZEN_REASON"\n'
+            f"{exit_status}",
+            environment={},
+        )
+        assert result.returncode == expected, result.stderr
+        finished = "macro-update: deploy finished with status 1 (frozen lanes: w2c)"
+        assert (finished in result.stderr) is bool(expected)
+        assert result.stdout.strip() == ("first" if expected else "")
 
 
 def test_terminal_installation_path_never_restarts_owners_or_w2c(

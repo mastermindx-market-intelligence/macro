@@ -1,0 +1,53 @@
+{
+  "schema": "fundamental_forensics.financial_query_response/v1",
+  "entity": {
+    "entity_id": "ISS:US-XNAS-AAPL",
+    "cik": "0000320193",
+    "ticker": "AAPL",
+    "source_entity_id": "0000320193"
+  },
+  "authority": {
+    "class": "context_only",
+    "display_only": true
+  },
+  "coverage": {
+    "requested_cells": 16,
+    "value_cells": 16,
+    "missing_cells": 0,
+    "not_evaluable_cells": 0
+  },
+  "receipt": {
+    "nodes": [
+      {
+        "cell_id": "metric_cell_aapl_revenue_fy2024",
+        "metric_id": "revenue",
+        "period_label": "FY2024",
+        "state": "value",
+        "value": "391035000000",
+        "unit": "USD",
+        "display_excerpt": "Total net sales",
+        "provenance": {
+          "selected_raw_fact": {
+            "occurrence_id": "rawfact_aapl_rev_fy2024",
+            "accession": "0000320193-25-000073"
+          }
+        }
+      },
+      {
+        "cell_id": "metric_cell_aapl_revenue_fy2023",
+        "metric_id": "revenue",
+        "period_label": "FY2023",
+        "state": "value",
+        "value": "383285000000",
+        "unit": "USD",
+        "display_excerpt": "Total net sales",
+        "provenance": {
+          "selected_raw_fact": {
+            "occurrence_id": "rawfact_aapl_rev_fy2023",
+            "accession": "0000320193-24-000123"
+          }
+        }
+      }
+    ]
+  }
+}

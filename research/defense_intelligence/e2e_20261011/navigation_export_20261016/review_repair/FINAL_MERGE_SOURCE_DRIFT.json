@@ -1,0 +1,61 @@
+{
+  "source_head": "e4de35bdf5d7",
+  "changed_dependencies": [
+    {
+      "path": "scripts/run_press.py",
+      "old": "9a7417be2bd39e2e8c244e791bb99824e89573e68ef8be5916b81865bd2a45e5",
+      "current": "6d8d4a566d44ad3f7bb6c42763b0d1d951f6d3d850594525e85f10e84afed1fb"
+    },
+    {
+      "path": "scripts/stage_official_feed_press.py",
+      "old": "523005e2e0f2c60b3229973a7a17cc4abb2f3d94dbbfd243ee5918b7e2583840",
+      "current": "8c3b19d7186e15efc3eb6205ffed24b322b5ae1215801bf394f3a1c98425990a"
+    },
+    {
+      "path": "tests/test_earnings_canonical_story.py",
+      "old": "4adad58d35b5ae90a6a24139423e7ef75a9ddd9df0396f6485c06fe9e673ff83",
+      "current": "a3af6cacb96fa739e72ac048e6ed39223dd6b0c81465472e1cb4ea26730cd625"
+    },
+    {
+      "path": "tests/test_press_external_candidate.py",
+      "old": "01e1139997d32b5f1429ecbe379ba777b4a3a9e6dbf6fb73e84ad597a81758fc",
+      "current": "d77ee338cacad2d4f1e04b18ade9388eb06023ce6e08e031108b4b887bd261ca"
+    },
+    {
+      "path": "tests/test_press_official_feed_candidate.py",
+      "old": "0e5da284b0a6b87cb18ed85623dd1723f696027b679bafd10a9cd7433892769b",
+      "current": "b3747edcb794fd2d4fd79cd8a9abbd87682e5bf4f90109be4ddb179c41a22763"
+    },
+    {
+      "path": "tests/test_press_official_staging.py",
+      "old": "2df6171e7b8d477e539ab444ef6c00936e6cc2be34b221045c340be0610f76a2",
+      "current": "323019e6048030fc66e8c809e5bdef04e5458dd8ee5c4c00aa93d8da6ba7a0fa"
+    },
+    {
+      "path": "tests/test_press_planner.py",
+      "old": "0811fccea60149bcda19b57491327d01dfb8a211894a5706c65586b4d431f2a3",
+      "current": "90fc971469ddbf12f6feacec2605de95a614eae4215f327c7186c4a8c18859da"
+    },
+    {
+      "path": "tests/test_press_research_triage.py",
+      "old": "9105d60163340432fba62e51106af794e199fd35f778312a60f6f5a48376a87c",
+      "current": "0f3b39c1edca264c9bca3787e30e8ea7e56fcd42ce2dfa19d79b8a852a8890d2"
+    },
+    {
+      "path": "tests/test_press_validators.py",
+      "old": "50cb2e05594172cd6f889043b4dfd3010000ad73c693c8a380852cd2b9c4c694",
+      "current": "f2cbceef9d879ebe6d287c3216b2c1c0d7d0d724bf29f3e589250ab17165554f"
+    },
+    {
+      "path": "tests/test_press_workflow.py",
+      "old": "022e5371a3b117428ebad81e8738dd1d6a5df505900149f29eed58362a6c9f7e",
+      "current": "e1f7aa5c272e28ce0bc23c9bf8aa316ab48981dc38988e0bacfcfbbf30cf648f"
+    },
+    {
+      "path": "tests/test_press_writer.py",
+      "old": "0a928aad51ed433666e0e461dd67c63e4b1191ebe1ffeb07835e234c07e3ef72",
+      "current": "87007dd3a5a7a686d7672ea6f94efaacf3cfe5267ca919144ba14b591757729c"
+    }
+  ],
+  "reason": "Main Press9468 source and tests participate in the existing native proof dependency closure. Exact witness refuses; rerun same native proof on final composition."
+}

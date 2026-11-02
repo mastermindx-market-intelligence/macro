@@ -1,0 +1,257 @@
+{
+  "caveats": [
+    "Public methods are not Prophet performance proof.",
+    "No full private market corpus is bundled.",
+    "Branch snapshot is not a deployed release claim.",
+    "Source blob IDs are connector-reported except local excerpt hash."
+  ],
+  "document_type": "R3_RESEARCH_SOURCE_MAP",
+  "internal_sources": [
+    {
+      "connector_reported_git_blob": "e82575fa77332342e1d64094e8e00f4ce8083a3f",
+      "evidence_class": "SOURCE_INSPECTION_NOT_PRODUCTION_PROOF",
+      "full_blob_locally_reproduced": false,
+      "id": "S1",
+      "inspected_ranges": [
+        [
+          1,
+          245
+        ]
+      ],
+      "path": "engine/prophet_strategy_definition.py",
+      "ref": "b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d",
+      "repo": "mastermindx-market-intelligence/macro",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d/engine/prophet_strategy_definition.py"
+    },
+    {
+      "connector_reported_git_blob": "efa6b168cd727e988eddf8386fb0ea04ba8942d7",
+      "evidence_class": "SOURCE_INSPECTION_NOT_PRODUCTION_PROOF",
+      "full_blob_locally_reproduced": false,
+      "id": "S2",
+      "inspected_ranges": [
+        [
+          1,
+          470
+        ]
+      ],
+      "path": "engine/us_candidate_episode_intake.py",
+      "ref": "b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d",
+      "repo": "mastermindx-market-intelligence/macro",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d/engine/us_candidate_episode_intake.py"
+    },
+    {
+      "connector_reported_git_blob": "a34f2c2bf80411ffaa9800774abb4cc7238c90d1",
+      "evidence_class": "SOURCE_INSPECTION_NOT_PRODUCTION_PROOF",
+      "full_blob_locally_reproduced": false,
+      "id": "S3",
+      "inspected_ranges": [
+        [
+          820,
+          995
+        ]
+      ],
+      "path": "engine/us_candidate_episode.py",
+      "ref": "b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d",
+      "repo": "mastermindx-market-intelligence/macro",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d/engine/us_candidate_episode.py"
+    },
+    {
+      "connector_reported_git_blob": "68617ade50365c9cbe849dc2fd66c4e50ed551c4",
+      "evidence_class": "SOURCE_INSPECTION_NOT_PRODUCTION_PROOF",
+      "full_blob_locally_reproduced": false,
+      "id": "S4",
+      "inspected_ranges": [
+        [
+          1,
+          230
+        ]
+      ],
+      "path": "engine/us_turn_watch.py",
+      "ref": "b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d",
+      "repo": "mastermindx-market-intelligence/macro",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d/engine/us_turn_watch.py"
+    },
+    {
+      "connector_reported_git_blob": "5a3a192ac1ba685e5c102bc06393687db5c6283b",
+      "evidence_class": "SOURCE_INSPECTION_NOT_PRODUCTION_PROOF",
+      "full_blob_locally_reproduced": false,
+      "id": "S5",
+      "inspected_ranges": [
+        [
+          1,
+          125
+        ]
+      ],
+      "path": "scripts/build_turn_watch.py",
+      "ref": "b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d",
+      "repo": "mastermindx-market-intelligence/macro",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d/scripts/build_turn_watch.py"
+    },
+    {
+      "connector_reported_git_blob": "9af3170a959b00721fb40af91ca087aa6bbe7406",
+      "evidence_class": "SOURCE_INSPECTION_NOT_PRODUCTION_PROOF",
+      "full_blob_locally_reproduced": false,
+      "id": "S6",
+      "inspected_ranges": [
+        [
+          1,
+          220
+        ]
+      ],
+      "path": "engine/prophet_entry_availability_sources.py",
+      "ref": "39ef2cd48e091d90f12771aab142c2197022aa79",
+      "repo": "mastermindx-market-intelligence/macro",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/39ef2cd48e091d90f12771aab142c2197022aa79/engine/prophet_entry_availability_sources.py"
+    },
+    {
+      "connector_reported_git_blob": "582feca914e0707af4e3f521f3b899a58cf7ecf9",
+      "evidence_class": "SOURCE_INSPECTION_NOT_PRODUCTION_PROOF",
+      "full_blob_locally_reproduced": false,
+      "id": "S7",
+      "inspected_ranges": [
+        [
+          1,
+          185
+        ]
+      ],
+      "path": "engine/prophet_entry_policy.py",
+      "ref": "b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d",
+      "repo": "mastermindx-market-intelligence/macro",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d/engine/prophet_entry_policy.py"
+    },
+    {
+      "connector_reported_git_blob": "d49899fa4a3fbb201fc0161b3df3b933c1f075f9",
+      "evidence_class": "SOURCE_INSPECTION_NOT_PRODUCTION_PROOF",
+      "full_blob_locally_reproduced": false,
+      "id": "S8",
+      "inspected_ranges": [
+        [
+          1,
+          190
+        ],
+        [
+          305,
+          560
+        ]
+      ],
+      "path": "engine/prophet_entry_availability.py",
+      "ref": "b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d",
+      "repo": "mastermindx-market-intelligence/macro",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d/engine/prophet_entry_availability.py"
+    },
+    {
+      "connector_reported_git_blob": "acba294f9c0a948ec32d4c14b6f25644b501453e",
+      "evidence_class": "SOURCE_INSPECTION_NOT_PRODUCTION_PROOF",
+      "full_blob_locally_reproduced": false,
+      "id": "S11",
+      "inspected_ranges": [
+        [
+          1,
+          150
+        ]
+      ],
+      "path": "app/prophet_lab.py",
+      "ref": "b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d",
+      "repo": "mastermindx-market-intelligence/macro",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d/app/prophet_lab.py"
+    },
+    {
+      "connector_reported_git_blob": "46390e6047f9f2e013daa80223c7057534de70ac",
+      "evidence_class": "SOURCE_INSPECTION_NOT_PRODUCTION_PROOF",
+      "full_blob_locally_reproduced": false,
+      "id": "S13",
+      "inspected_ranges": [
+        [
+          1,
+          165
+        ]
+      ],
+      "path": "WATCHLIST.md",
+      "ref": "b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d",
+      "repo": "mastermindx-market-intelligence/macro",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d/WATCHLIST.md"
+    },
+    {
+      "connector_reported_git_blob": "34882968870e4882e2f31a9def1fcd157dadd633",
+      "evidence_class": "SOURCE_INSPECTION_NOT_PRODUCTION_PROOF",
+      "full_blob_locally_reproduced": false,
+      "id": "S14",
+      "inspected_ranges": [
+        [
+          1,
+          210
+        ]
+      ],
+      "path": "engine/prophet_candidate_state_sources.py",
+      "ref": "b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d",
+      "repo": "mastermindx-market-intelligence/macro",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d/engine/prophet_candidate_state_sources.py"
+    },
+    {
+      "comment_id": 5789777976,
+      "evidence_class": "VERIFIED_RESEARCH_COMMENT_NOT_OWNER_ACCEPTANCE",
+      "id": "S9",
+      "pr": 7581,
+      "repo": "mastermindx-market-intelligence/macro",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7581#issuecomment-5789777976",
+      "verified_readback": true
+    },
+    {
+      "evidence_class": "PR_METADATA_AND_AUTHOR_SCOPE_NOT_RELEASE_PROOF",
+      "id": "S10",
+      "native_head": "fdd731f18a7634c57cdc83fc80cbe13811ec745e",
+      "pr": 7455,
+      "repo": "mastermindx-market-intelligence/macro",
+      "state_at_read": "OPEN_DRAFT"
+    },
+    {
+      "body_proof_head_differs": true,
+      "evidence_class": "PR_METADATA_NOT_NEW_HEAD_QUALIFICATION",
+      "id": "S12",
+      "native_head": "5e43db462b5ffa4912874c0be32549f8e26baeda",
+      "pr": 7572,
+      "repo": "mastermindx-market-intelligence/macro",
+      "state_at_read": "OPEN_DRAFT"
+    }
+  ],
+  "procedure_ref": "a5aa42d15c3e5cbfe785b415511de188cff66bd0",
+  "public_sources": [
+    {
+      "id": "P1",
+      "inspection_depth": "AUTHOR_SUMMARY",
+      "title": "Moskowitz and Grinblatt, Do Industries Explain Momentum? (1999)",
+      "url": "https://www.aqr.com/Insights/Research/Journal-Article/Do-Industries-Explain-Momentum"
+    },
+    {
+      "id": "P2",
+      "inspection_depth": "OFFICIAL_DOCUMENTATION",
+      "title": "XGBoost Learning to Rank",
+      "url": "https://xgboost.readthedocs.io/en/stable/tutorials/learning_to_rank.html"
+    },
+    {
+      "id": "P3",
+      "inspection_depth": "PUBLISHER_ABSTRACT",
+      "title": "Guo et al., On Calibration of Modern Neural Networks (2017)",
+      "url": "https://proceedings.mlr.press/v70/guo17a.html"
+    },
+    {
+      "id": "P4",
+      "inspection_depth": "PUBLISHER_ABSTRACT",
+      "title": "Geifman and El-Yaniv, SelectiveNet (2019)",
+      "url": "https://proceedings.mlr.press/v97/geifman19a.html"
+    },
+    {
+      "id": "P5",
+      "inspection_depth": "OFFICIAL_REFERENCE",
+      "title": "NYSE hours and calendars",
+      "url": "https://www.nyse.com/markets/hours-calendars"
+    },
+    {
+      "id": "P6",
+      "inspection_depth": "OFFICIAL_GUIDANCE",
+      "title": "W3C Understanding SC4.1.3 Status Messages",
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html"
+    }
+  ],
+  "source_snapshot": "b3c684ede8bee90dd0ca11e8054dbcb8d5fcef9d"
+}

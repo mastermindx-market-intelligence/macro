@@ -1,0 +1,107 @@
+{
+  "started_at": "2026-10-20T05:52:48.286690+00:00",
+  "head": "e2d10f933587f58be8716505529a37f8839901f7",
+  "branch": "sol/market-os-shared-shell-design-20260924",
+  "owner": "existing merge-on-green workflow/controller",
+  "operation": "add existing merge-on-green label only",
+  "label_write_attempted": false,
+  "source_mutation": false,
+  "production_mutation": false,
+  "reads": [
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stdout": "e2d10f933587f58be8716505529a37f8839901f7\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "branch",
+        "--show-current"
+      ],
+      "exit": 0,
+      "stdout": "sol/market-os-shared-shell-design-20260924\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "status",
+        "--porcelain=v1"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "ls-remote",
+        "origin",
+        "refs/heads/sol/market-os-shared-shell-design-20260924"
+      ],
+      "exit": 0,
+      "stdout": "e2d10f933587f58be8716505529a37f8839901f7\trefs/heads/sol/market-os-shared-shell-design-20260924\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "gh",
+        "pr",
+        "view",
+        "7949",
+        "--json",
+        "url,state,isDraft,headRefOid,baseRefName,labels,autoMergeRequest,statusCheckRollup"
+      ],
+      "exit": 0,
+      "stdout": "{\"autoMergeRequest\":null,\"baseRefName\":\"main\",\"headRefOid\":\"e2d10f933587f58be8716505529a37f8839901f7\",\"isDraft\":false,\"labels\":[],\"state\":\"OPEN\",\"statusCheckRollup\":[{\"__typename\":\"CheckRun\",\"completedAt\":\"2026-10-20T05:29:25Z\",\"conclusion\":\"SUCCESS\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374941046/job/118471213546\",\"name\":\"ci-plan\",\"startedAt\":\"2026-10-20T05:28:11Z\",\"status\":\"COMPLETED\",\"workflowName\":\"ci\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"2026-10-20T05:27:15Z\",\"conclusion\":\"SUCCESS\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374937354/job/118470863164\",\"name\":\"ci-authority\",\"startedAt\":\"2026-10-20T05:26:54Z\",\"status\":\"COMPLETED\",\"workflowName\":\"ci-authority\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"2026-10-20T05:30:53Z\",\"conclusion\":\"SUCCESS\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39375272683/job/118471898193\",\"name\":\"ci-authority\",\"startedAt\":\"2026-10-20T05:30:39Z\",\"status\":\"COMPLETED\",\"workflowName\":\"ci-authority\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"2026-10-20T05:28:22Z\",\"conclusion\":\"SUCCESS\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374940935/job/118470873291\",\"name\":\"fence-pack\",\"startedAt\":\"2026-10-20T05:26:56Z\",\"status\":\"COMPLETED\",\"workflowName\":\"fences\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"2026-10-20T05:26:54Z\",\"conclusion\":\"SKIPPED\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374940935/job/118470874484\",\"name\":\"github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'\",\"startedAt\":\"2026-10-20T05:26:54Z\",\"status\":\"COMPLETED\",\"workflowName\":\"fences\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"2026-10-20T05:35:32Z\",\"conclusion\":\"SUCCESS\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374941046/job/118471213856\",\"name\":\"contract-delta\",\"startedAt\":\"2026-10-20T05:28:11Z\",\"status\":\"COMPLETED\",\"workflowName\":\"ci\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"2026-10-20T05:29:25Z\",\"conclusion\":\"SKIPPED\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374941046/job/118471565229\",\"name\":\"trusted-ci\",\"startedAt\":\"2026-10-20T05:29:26Z\",\"status\":\"COMPLETED\",\"workflowName\":\"ci\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"2026-10-20T05:26:54Z\",\"conclusion\":\"SKIPPED\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374940935/job/118470874561\",\"name\":\"github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'\",\"startedAt\":\"2026-10-20T05:26:54Z\",\"status\":\"COMPLETED\",\"workflowName\":\"fences\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"2026-10-20T05:26:54Z\",\"conclusion\":\"SKIPPED\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374940935/job/118470874621\",\"name\":\"github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'\",\"startedAt\":\"2026-10-20T05:26:54Z\",\"status\":\"COMPLETED\",\"workflowName\":\"fences\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"0001-01-01T00:00:00Z\",\"conclusion\":\"\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374941046/job/118471564077\",\"name\":\"ci-pack-0\",\"startedAt\":\"2026-10-20T05:29:27Z\",\"status\":\"IN_PROGRESS\",\"workflowName\":\"ci\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"0001-01-01T00:00:00Z\",\"conclusion\":\"\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374941046/job/118471563890\",\"name\":\"ci-pack-1\",\"startedAt\":\"2026-10-20T05:29:27Z\",\"status\":\"IN_PROGRESS\",\"workflowName\":\"ci\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"2026-10-20T05:50:04Z\",\"conclusion\":\"SUCCESS\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374941046/job/118471564076\",\"name\":\"ci-pack-2\",\"startedAt\":\"2026-10-20T05:29:27Z\",\"status\":\"COMPLETED\",\"workflowName\":\"ci\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"0001-01-01T00:00:00Z\",\"conclusion\":\"\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374941046/job/118471564027\",\"name\":\"ci-pack-3\",\"startedAt\":\"2026-10-20T05:29:28Z\",\"status\":\"IN_PROGRESS\",\"workflowName\":\"ci\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"0001-01-01T00:00:00Z\",\"conclusion\":\"\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374941046/job/118471563982\",\"name\":\"ci-pack-4\",\"startedAt\":\"2026-10-20T05:29:27Z\",\"status\":\"IN_PROGRESS\",\"workflowName\":\"ci\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"0001-01-01T00:00:00Z\",\"conclusion\":\"\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374941046/job/118471564031\",\"name\":\"ci-pack-5\",\"startedAt\":\"2026-10-20T05:29:28Z\",\"status\":\"IN_PROGRESS\",\"workflowName\":\"ci\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"2026-10-20T05:51:51Z\",\"conclusion\":\"SUCCESS\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374941046/job/118471563963\",\"name\":\"ci-pack-6\",\"startedAt\":\"2026-10-20T05:29:28Z\",\"status\":\"COMPLETED\",\"workflowName\":\"ci\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"0001-01-01T00:00:00Z\",\"conclusion\":\"\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374941046/job/118471563878\",\"name\":\"ci-pack-7\",\"startedAt\":\"2026-10-20T05:29:27Z\",\"status\":\"IN_PROGRESS\",\"workflowName\":\"ci\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"0001-01-01T00:00:00Z\",\"conclusion\":\"\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374941046/job/118471564007\",\"name\":\"ci-pack-8\",\"startedAt\":\"2026-10-20T05:29:28Z\",\"status\":\"IN_PROGRESS\",\"workflowName\":\"ci\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"0001-01-01T00:00:00Z\",\"conclusion\":\"\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374941046/job/118471563929\",\"name\":\"ci-pack-9\",\"startedAt\":\"2026-10-20T05:29:28Z\",\"status\":\"IN_PROGRESS\",\"workflowName\":\"ci\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"0001-01-01T00:00:00Z\",\"conclusion\":\"\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374941046/job/118471563999\",\"name\":\"ci-pack-10\",\"startedAt\":\"2026-10-20T05:29:28Z\",\"status\":\"IN_PROGRESS\",\"workflowName\":\"ci\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"0001-01-01T00:00:00Z\",\"conclusion\":\"\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374941046/job/118471563954\",\"name\":\"ci-pack-11\",\"startedAt\":\"2026-10-20T05:29:28Z\",\"status\":\"IN_PROGRESS\",\"workflowName\":\"ci\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"2026-10-20T05:30:51Z\",\"conclusion\":\"FAILURE\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/runs/118471963714\",\"name\":\"ci-authority/codex/merge-queue-pilot\",\"startedAt\":\"2026-10-20T05:30:51Z\",\"status\":\"COMPLETED\",\"workflowName\":\"ci-authority\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"2026-10-20T05:28:18Z\",\"conclusion\":\"SUCCESS\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/runs/118471255573\",\"name\":\"capability-broker\",\"startedAt\":\"2026-10-20T05:28:18Z\",\"status\":\"COMPLETED\",\"workflowName\":\"ci-authority\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"2026-10-20T05:30:51Z\",\"conclusion\":\"SUCCESS\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/runs/118471965678\",\"name\":\"ci-authority/main\",\"startedAt\":\"2026-10-20T05:30:51Z\",\"status\":\"COMPLETED\",\"workflowName\":\"ci-authority\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"2026-10-20T05:28:18Z\",\"conclusion\":\"SUCCESS\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/runs/118471257468\",\"name\":\"grader-manifest\",\"startedAt\":\"2026-10-20T05:28:18Z\",\"status\":\"COMPLETED\",\"workflowName\":\"ci-authority\"},{\"__typename\":\"CheckRun\",\"completedAt\":\"2026-10-20T05:28:17Z\",\"conclusion\":\"SUCCESS\",\"detailsUrl\":\"https://github.com/mastermindx-market-intelligence/macro/runs/118471253070\",\"name\":\"self-mod-fence\",\"startedAt\":\"2026-10-20T05:28:17Z\",\"status\":\"COMPLETED\",\"workflowName\":\"ci-authority\"}],\"url\":\"https://github.com/mastermindx-market-intelligence/macro/pull/7949\"}\n",
+      "stderr": ""
+    }
+  ],
+  "incoming_preview": {
+    "main": "1f44ac1873ac8dba2147ad91567446fbbe0a83ea",
+    "tree": "033b4be997c628cd8aa0d2c90b53cab4ba8695e2",
+    "all_job_weight_differences": [],
+    "fresh_selection_run": false
+  },
+  "health": {
+    "ssh_exit": 0,
+    "stdout_bytes": 11881,
+    "stdout_sha256": "0eaf1d78db12bba0a542345d31af63d4e74e16d20dfb1239223a9db5887adb95",
+    "stderr_bytes": 0,
+    "observed_at": "2026-10-20T05:52:59.962056+00:00",
+    "beta_service": {
+      "MainPID": "2427329",
+      "ExecMainStartTimestampMonotonic": "7560285026653",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled"
+    },
+    "production_service": "MainPID=2336355\nExecMainStartTimestampMonotonic=7552363880288\nActiveState=active\nSubState=running\nUnitFileState=enabled\n",
+    "production_build": "50a8c01553ee92731a53dfcff36256308cfb5f0e",
+    "production_owner_sha256": "6d05d3d5745e0e0a29262c89ba61cf881c2605201cce5b0fc85a52bde0e42ec8",
+    "caddy_sha256": "17aefed0146aad5e022062873c1a36fd5416176e8ae7c02cc965454c2bda3023",
+    "root_free": 36720148480,
+    "terminal_mount_free": 16171892736,
+    "macro_head": "270537f66abaf4e584ddbeafb8ea12c84af06270"
+  },
+  "blocking_checks": [
+    {
+      "name": "ci-authority/codex/merge-queue-pilot",
+      "status": "COMPLETED",
+      "conclusion": "FAILURE",
+      "state": null
+    }
+  ],
+  "error": "AssertionError: ",
+  "finished_at": "2026-10-20T05:53:00.988745+00:00",
+  "disposition": "PREFLIGHT_REFUSED_NO_LABEL_WRITE"
+}

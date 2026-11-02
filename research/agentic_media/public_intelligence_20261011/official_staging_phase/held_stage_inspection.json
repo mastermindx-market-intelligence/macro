@@ -1,0 +1,395 @@
+{
+  "schema": "press.staging_inspection.v1",
+  "config_sha256": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc",
+  "cutover": false,
+  "items": [
+    {
+      "path": "data/press/staging/press-research_desk-2026-10-13-6baf3247f154.json",
+      "sha256": "2aef46759c72b4621e772d0da04d2eeee4025b525988f8dd7f1ae1f207206c0a",
+      "id": "press-research_desk-2026-10-13-6baf3247f154",
+      "saved_status": "quarantined",
+      "validator_report": {
+        "ok": true,
+        "failed": [],
+        "checks": [
+          {
+            "name": "markup_safety",
+            "ok": true,
+            "detail": "static article fragment with allowed tags and attributes",
+            "metrics": {}
+          },
+          {
+            "name": "fact_anchor",
+            "ok": true,
+            "detail": "every number and quote resolves to a source fact",
+            "metrics": {
+              "numbers_checked": 22,
+              "unanchored": [],
+              "source_pool_size": 98,
+              "unsourced_quotes": []
+            }
+          },
+          {
+            "name": "claim_scope",
+            "ok": true,
+            "detail": "not a canonical claim-scoped slot",
+            "metrics": {
+              "active": false
+            }
+          },
+          {
+            "name": "close_paraphrase",
+            "ok": true,
+            "detail": "max block/source overlap 0.018 <= 0.18",
+            "metrics": {
+              "max_block_jaccard": 0.0179,
+              "doc_jaccard": 0.0031,
+              "threshold": 0.18,
+              "shingle_n": 5,
+              "worst_source": "research_vault:marketdesk-ergkmhwhsow-e05c9a",
+              "worst_block": "That argument rests on execution rather than on demand alone. Ceres Power, Weichai Power and Delta Electronics are prese"
+            }
+          },
+          {
+            "name": "our_value",
+            "ok": true,
+            "detail": "our-value share 45.6% (>= floor 40%) over 33 sentence(s); 18 distinct receipt(s)",
+            "metrics": {
+              "our_value_share": 0.4557,
+              "floor": 0.4,
+              "our_words": 257,
+              "total_words": 564,
+              "granularity": "sentence",
+              "receipts": 18,
+              "receipt_values": [
+                55.0,
+                67.0,
+                15.0,
+                20.0,
+                2.5,
+                50.0,
+                100.0,
+                70.0,
+                27.0,
+                84.0,
+                62.3,
+                35.3,
+                70.3,
+                21.0,
+                0.19,
+                76.9,
+                -4.45,
+                -2.51
+              ],
+              "sentences": [
+                {
+                  "words": 4,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 22,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 28,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 10,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 22,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 29,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 19,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 14,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 32,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 20,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 9,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 4,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 11,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 18,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 9,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 12,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 8,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 20,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 11,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 22,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 14,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 25,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 25,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 9,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 21,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 21,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 5,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 17,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 25,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 13,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 30,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 25,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 10,
+                  "tier": "neutral"
+                }
+              ]
+            }
+          },
+          {
+            "name": "receipts",
+            "ok": true,
+            "detail": "19 distinct anchored receipt(s) (>= minimum 4)",
+            "metrics": {
+              "receipts": 19,
+              "minimum": 4,
+              "values": [
+                55.0,
+                67.0,
+                15.0,
+                20.0,
+                2.5,
+                50.0,
+                100.0,
+                70.0,
+                27.0,
+                84.0,
+                62.3,
+                35.3,
+                70.3,
+                21.0,
+                0.19,
+                76.9,
+                -4.45,
+                -2.51,
+                2.51
+              ]
+            }
+          },
+          {
+            "name": "quote_lint",
+            "ok": true,
+            "detail": "0 quote(s), longest 0 words",
+            "metrics": {
+              "quotes": 0,
+              "max_quotes": 2,
+              "max_quote_words": 25,
+              "oversized": []
+            }
+          },
+          {
+            "name": "banned_lexicon",
+            "ok": true,
+            "detail": "clean",
+            "metrics": {
+              "hits": []
+            }
+          },
+          {
+            "name": "advice_lexicon",
+            "ok": true,
+            "detail": "clean",
+            "metrics": {
+              "hits": []
+            }
+          },
+          {
+            "name": "cheese_test",
+            "ok": true,
+            "detail": "clean",
+            "metrics": {
+              "hits": []
+            }
+          },
+          {
+            "name": "ai_tells",
+            "ok": true,
+            "detail": "clean",
+            "metrics": {
+              "hits": [],
+              "not_only_but_also": 0,
+              "budget": 1
+            }
+          },
+          {
+            "name": "primary_source",
+            "ok": true,
+            "detail": "first-party slot: receipts carried inline (see our_value / receipts); no above-the-fold source link required",
+            "metrics": {
+              "kind": "first_party",
+              "url": "https://www.mastermind-x.com/research/gs-european-express-carbonomics-telcos-daimler-heidelberg-abi-macro-gl-e05c9a.html",
+              "named": null,
+              "linked": null
+            }
+          },
+          {
+            "name": "link_allowlist",
+            "ok": true,
+            "detail": "1 internal link(s), all public",
+            "metrics": {
+              "internal_links": 1,
+              "offenders": [],
+              "prefixes": [
+                "/research/",
+                "/blog/",
+                "/stocks/"
+              ]
+            }
+          },
+          {
+            "name": "byline",
+            "ok": true,
+            "detail": "desk byline present",
+            "metrics": {
+              "byline": "Research Desk — Mastermind Research",
+              "block": true,
+              "text": true
+            }
+          },
+          {
+            "name": "footer",
+            "ok": true,
+            "detail": "standing footer present",
+            "metrics": {
+              "block": true,
+              "text": true,
+              "required_text": "Educational content — not investment advice. Markets involve risk."
+            }
+          },
+          {
+            "name": "frontmatter",
+            "ok": true,
+            "detail": "frontmatter matches the free-estate contract",
+            "metrics": {
+              "title_len": 37,
+              "description_len": 142,
+              "slug": "european-express-meets-a-mixed-market",
+              "problems": [],
+              "upstream": ""
+            }
+          },
+          {
+            "name": "length",
+            "ok": true,
+            "detail": "564 words (budget 500–900)",
+            "metrics": {
+              "words": 564,
+              "min_words": 500,
+              "max_words": 900
+            }
+          },
+          {
+            "name": "self_similarity",
+            "ok": true,
+            "detail": "no own posts in the last 30 days and nothing staged — nothing to compare",
+            "metrics": {
+              "max_jaccard": 0.0,
+              "threshold": 0.18,
+              "peers": 0
+            }
+          }
+        ],
+        "our_value_share": 0.4557,
+        "our_value_granularity": "sentence",
+        "receipts": 19,
+        "max_block_jaccard": 0.0179,
+        "doc_jaccard": 0.0031,
+        "words": 564,
+        "slug": "european-express-meets-a-mixed-market",
+        "desk": "research_desk",
+        "publication": "mastermind_research"
+      },
+      "validation_current": false,
+      "blockers": [
+        "saved_status_not_passed"
+      ]
+    }
+  ],
+  "total": 1,
+  "validation_current": 0,
+  "blocked": 1,
+  "publication_approved": false,
+  "source_freshness_verified": false,
+  "scope": "Current deterministic validator replay against staged facts and local peers only; source freshness, source rights, editorial acceptance, release controls and live delivery require their existing owners."
+}

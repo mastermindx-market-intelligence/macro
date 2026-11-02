@@ -147,3 +147,225 @@ def ecb_liquidity_impulse() -> dict | None:
             "read_en": ("QT — balance sheet still draining" if drain else "Balance sheet stabilising / expanding"),
             "read_zh": ("缩表 — 资产负债表仍在收缩" if drain else "资产负债表企稳／扩张"),
             "spark": _spark(w, n=52, years=4)}
+
+
+# Pure nominal-policy comparison. Observation acquisition and instrument admission
+# remain with their existing owners; these arguments carry already made decisions.
+def _policy_tree(value, ancestors=None, depth=0, count=None):
+    import math
+    if ancestors is None:
+        ancestors, count = set(), [0]
+    count[0] += 1
+    if depth > 32 or count[0] > 10000:
+        raise ValueError
+    if value is None or type(value) in (bool, int):
+        return
+    if type(value) is str:
+        if len(value) > 4096:
+            raise ValueError
+        return
+    if type(value) is float:
+        if not math.isfinite(value):
+            raise ValueError
+        return
+    if type(value) not in (dict, list) or id(value) in ancestors:
+        raise ValueError
+    ancestors.add(id(value))
+    try:
+        if type(value) is dict:
+            if any(type(key) is not str or len(key) > 4096 for key in value):
+                raise ValueError
+            children = value.values()
+        else:
+            children = value
+        for child in children:
+            _policy_tree(child, ancestors, depth + 1, count)
+    finally:
+        ancestors.remove(id(value))
+
+
+def _policy_shape(value, keys):
+    if type(value) is not dict or set(value) != set(keys.split()):
+        raise ValueError
+
+
+def _policy_text(value, nullable=False):
+    if value is None and nullable:
+        return
+    if type(value) is not str or not value or value.strip() != value:
+        raise ValueError
+
+
+def _policy_date(value):
+    import re
+    from datetime import date
+    if type(value) is not str or not re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}', value):
+        raise ValueError
+    date.fromisoformat(value)
+
+
+def _policy_number(value):
+    import math
+    if type(value) not in (int, float) or (type(value) is float and not math.isfinite(value)):
+        raise ValueError
+
+
+def _policy_instrument(value):
+    _policy_shape(value, 'economy instrument_id instrument_kind')
+    for item in value.values():
+        _policy_text(item)
+
+
+def _policy_validate(intent, observations, mapping_receipt):
+    import re
+    for value in (intent, observations, mapping_receipt):
+        _policy_tree(value)
+    _policy_shape(intent, 'economy_a economy_b lens definition method_version period vintage_policy identity')
+    for key in ('economy_a', 'economy_b'):
+        value = intent[key]
+        if type(value) is not str or not re.fullmatch(r'[A-Z]{2}', value):
+            raise ValueError
+    if intent['economy_a'] == intent['economy_b']:
+        raise ValueError
+    if intent['lens'] != 'nominal_policy_point_gap' or intent['definition'] != 'absolute_gap_change_bp':
+        raise ValueError
+    _policy_text(intent['method_version'])
+    if intent['vintage_policy'] not in ('latest_vintage', 'original_known'):
+        raise ValueError
+    _policy_shape(intent['identity'], 'principal_partition saved_id saved_revision source_generation')
+    for key in ('principal_partition', 'saved_id', 'source_generation'):
+        _policy_text(intent['identity'][key], nullable=True)
+    revision = intent['identity']['saved_revision']
+    if revision is not None and (type(revision) is not int or revision < 1):
+        raise ValueError
+    period = intent['period']
+    if type(period) is not dict:
+        raise ValueError
+    if period.get('mode') == 'fixed_dates':
+        _policy_shape(period, 'mode start end')
+        _policy_date(period['start'])
+        _policy_date(period['end'])
+        if period['end'] < period['start']:
+            raise ValueError
+    elif period.get('mode') == 'owner_horizon':
+        _policy_shape(period, 'mode key')
+        _policy_text(period['key'])
+    else:
+        raise ValueError
+    _policy_shape(observations, 'a_start a_end b_start b_end')
+    for row in observations.values():
+        if row is None:
+            continue
+        _policy_shape(row, 'economy instrument_id instrument_kind observation_at unit value quality metadata value_permission source_reference qualification_ref')
+        _policy_number(row['value'])
+        _policy_date(row['observation_at'])
+        if row['unit'] not in ('percent', 'bp'):
+            raise ValueError
+        for key, value in row.items():
+            if key != 'value':
+                _policy_text(value)
+    if mapping_receipt is not None:
+        _policy_shape(mapping_receipt, 'status method_version instruments')
+        _policy_text(mapping_receipt['status'])
+        _policy_text(mapping_receipt['method_version'])
+        _policy_shape(mapping_receipt['instruments'], 'a b')
+        for entry in mapping_receipt['instruments'].values():
+            _policy_instrument(entry)
+
+
+def _policy_output_number(value):
+    import math
+    if value.denominator == 1:
+        return value.numerator
+    out = float(value)
+    if not math.isfinite(out) or (out == 0 and value != 0):
+        raise OverflowError
+    return out
+
+
+def compare_policy_points(intent, observations, mapping_receipt):
+    """Compare four supplied, qualified nominal point settings without I/O.
+
+    Fixed-date endpoints must match exactly. Mapping, freshness and disclosure
+    assertions come from the caller's admitted owners, never this arithmetic.
+    Inputs have a 32-level, 10,000-node, 4096-character resource boundary; no
+    financial magnitude cap is applied. Any incomplete comparison emits no
+    numeric answer or observation references. Original-known replay is withheld.
+    """
+    from copy import deepcopy
+    from fractions import Fraction
+    import json
+    invalid = dict(state='invalid', identity=None,
+                   reasons=['invalid_policy_comparison'], missing_refs=[])
+    try:
+        _policy_validate(intent, observations, mapping_receipt)
+    except (ValueError, TypeError, KeyError, OverflowError, RecursionError):
+        return invalid
+    try:
+        json.dumps(intent, allow_nan=False)
+    except (ValueError, OverflowError):
+        return invalid
+    identity = deepcopy(intent)
+
+    def unavailable(reasons, slots=()):
+        return dict(state='unavailable', identity=identity,
+                    reasons=list(dict.fromkeys(reasons)), missing_refs=list(slots))
+
+    if intent['vintage_policy'] != 'latest_vintage':
+        return unavailable(['original_known_unavailable'])
+    if intent['period']['mode'] != 'fixed_dates':
+        return unavailable(['unsupported_period_mode'])
+    if mapping_receipt is None:
+        return unavailable(['mapping_not_supplied'])
+    if mapping_receipt['status'] != 'qualified':
+        return unavailable(['mapping_unqualified'])
+    mapping = mapping_receipt['instruments']
+    if mapping_receipt['method_version'] != intent['method_version'] or any(
+        mapping[side]['economy'] != intent['economy_'+side]
+        or mapping[side]['instrument_kind'] != 'nominal_policy_point'
+        for side in ('a', 'b')
+    ):
+        return unavailable(['mapping_incompatible'])
+    slots = ('a_start', 'a_end', 'b_start', 'b_end')
+    reasons, missing = [], []
+    for slot in slots:
+        row = observations[slot]
+        reason = None
+        if row is None:
+            reason = 'observation_missing'
+        elif row['metadata'] != 'allowed' or row['value_permission'] != 'allowed':
+            reason = 'observation_not_disclosed'
+        elif row['quality'] != 'qualified':
+            reason = 'observation_unqualified'
+        elif any(row[key] != mapping[slot[0]][key] for key in ('economy','instrument_id','instrument_kind')):
+            reason = 'observation_identity_mismatch'
+        elif row['observation_at'] != intent['period'][slot.split('_')[1]]:
+            reason = 'observation_cutoff_mismatch'
+        if reason:
+            reasons.append(reason)
+            missing.append(slot)
+    if reasons:
+        return unavailable(reasons, missing)
+    values = [Fraction(observations[slot]['value']) * (100 if observations[slot]['unit'] == 'percent' else 1)
+              for slot in slots]
+    if intent['period']['start'] == intent['period']['end']:
+        conflicts = [slot for side, offset in (('a', 0), ('b', 2))
+                     if values[offset] != values[offset + 1]
+                     for slot in (side + '_start', side + '_end')]
+        if conflicts:
+            return unavailable(['observation_conflict'], conflicts)
+    start, end = values[0] - values[2], values[1] - values[3]
+    absolute_change = abs(end) - abs(start)
+    try:
+        result = dict(state='qualified', identity=identity,
+                      signed_start_bp=_policy_output_number(start), signed_end_bp=_policy_output_number(end),
+                      signed_change_bp=_policy_output_number(end - start),
+                      absolute_change_bp=_policy_output_number(absolute_change),
+                      direction='narrowed' if absolute_change < 0 else 'widened' if absolute_change > 0 else 'unchanged_at_endpoints',
+                      crosses_zero=(start < 0 < end or end < 0 < start),
+                      evidence_refs=[dict(slot=slot, **{key: observations[slot][key]
+                          for key in ('source_reference','qualification_ref','observation_at')}) for slot in slots])
+        json.dumps(result, allow_nan=False)
+        return result
+    except (ValueError, OverflowError):
+        return unavailable(['arithmetic_unrepresentable'])

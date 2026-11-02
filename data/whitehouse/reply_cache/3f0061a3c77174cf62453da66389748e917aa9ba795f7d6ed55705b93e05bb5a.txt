@@ -1,0 +1,91 @@
+{
+  "activate": true,
+  "importance": 68,
+  "banner_days": 2,
+  "tone": "mixed",
+  "banner_title": "Trump touts Venezuela oil majority control — 65B barrels reshapes supply, squeezes global prices",
+  "banner_title_zh": "特朗普宣称掌控委内瑞拉650亿桶石油——供应格局重塑，压制全球油价",
+  "summary": "The White House proclamation on National Energy Dominance Month marks a ceremonial commitment, but its fresh disclosure of a 'largest oil deal in human history' giving the U.S. majority control of 65+ billion barrels of proven Venezuelan reserves is a material supply-side event that pressures crude prices and reshapes the competitive landscape for global producers.",
+  "summary_zh": "白宫关于国家能源主导月的公告本身属仪式性宣示，但其中首次披露的“史上最大石油交易”——美国获得委内瑞拉650多亿桶已探明储量的多数控制权——是实质性的供给侧事件，对原油价格构成压力并重塑全球产油国的竞争格局。",
+  "analysis": "The proclamation is nominally ceremonial, but it contains a concrete market-relevant disclosure: the Administration claims to have secured 'majority control' of over 65 billion barrels of proven oil reserves in Venezuela as of last month. That scale — roughly half of U.S. proven reserves and comparable to the top tier of global fields — is not symbolic if operationalized. It signals a structural expansion of U.S.-influenced supply that could cap any OPEC-driven price discipline and extend the current reflation regime's energy-price ceiling.\n\nThe transmission mechanism runs through global crude balances. If Venezuelan heavy crude is brought under U.S.-aligned operatorship, sanctions-compliance issues fade and barrels flow, pressuring Brent/WTI spreads and squeezing higher-cost producers internationally. U.S. refiners configured for heavy sour crude — particularly on the Gulf Coast — would benefit from restored feedstock access. Conversely, non-U.S. producers, especially those with high marginal costs or heavy-crude export dependence, face a structural headwind, as do oilfield service names whose revenue depends on tight global supply and high capex in marginal basins.\n\nThe key uncertainty is enforcement and execution. 'Majority control' is a political claim, not a contractual term. Venezuela's production capacity is degraded, and actual export volumes depend on infrastructure, security, and regulatory follow-through. Until barrels are visibly flowing into U.S. refineries, the market may discount the announcement. Still, even the credible threat of 65B barrels entering the Western-aligned supply pool is enough to shift long-dated oil sentiment.",
+  "sectors": [
+    {
+      "name": "U.S. Gulf Coast refining",
+      "impact": "tailwind",
+      "rationale": "Access to heavy Venezuelan crude improves feedstock optionality and margins for heavy-sour configured refineries."
+    },
+    {
+      "name": "Integrated oil majors with U.S. heavy downstream exposure",
+      "impact": "mixed",
+      "rationale": "Downstream benefits from cheaper heavy feedstock, but upstream earnings face lower global crude price ceilings."
+    },
+    {
+      "name": "International oil producers (non-US heavy crude exporters)",
+      "impact": "headwind",
+      "rationale": "A credible 65B-barrel supply addition weakens pricing power for OPEC+ and other high-cost global producers."
+    },
+    {
+      "name": "Oilfield services",
+      "impact": "headwind",
+      "rationale": "Structural supply expansion caps global capex and rig-count upside."
+    },
+    {
+      "name": "U.S. LNG exporters and gas producers",
+      "impact": "tailwind",
+      "rationale": "Proclamation reaffirms the end of the LNG export freeze and signals continued permitting for export terminals."
+    },
+    {
+      "name": "Coal producers",
+      "impact": "tailwind",
+      "rationale": "$1B committed to clean coal and 100+ coal plants saved sustains U.S. thermal coal demand."
+    }
+  ],
+  "tickers": [
+    {
+      "symbol": "VLO",
+      "direction": "benefit",
+      "rationale": "Gulf Coast heavy-sour refiner with direct capacity to process Venezuelan barrels if flows normalize."
+    },
+    {
+      "symbol": "PSX",
+      "direction": "benefit",
+      "rationale": "Large Gulf Coast heavy crude refining footprint stands to gain from restored heavy feedstock supply."
+    },
+    {
+      "symbol": "MPC",
+      "direction": "benefit",
+      "rationale": "Heavy-sour refining capacity in the Gulf region benefits from cheaper heavy crude access."
+    },
+    {
+      "symbol": "XOM",
+      "direction": "mixed",
+      "rationale": "Downstream heavy-crude optionality improves, but upstream crude price pressure partially offsets."
+    },
+    {
+      "symbol": "CVX",
+      "direction": "mixed",
+      "rationale": "Similar balance: refining margin upside against lower global benchmark pressure."
+    },
+    {
+      "symbol": "OXY",
+      "direction": "hurt",
+      "rationale": "Pure-play U.S. upstream producer with high exposure to crude price levels; supply expansion pressures realized prices."
+    },
+    {
+      "symbol": "COP",
+      "direction": "hurt",
+      "rationale": "Upstream-heavy independent vulnerable to lower long-dated crude sentiment from structural supply growth."
+    },
+    {
+      "symbol": "SLB",
+      "direction": "hurt",
+      "rationale": "Global oilfield services leader faces softer capex expectations if supply expansion caps prices."
+    },
+    {
+      "symbol": "HAL",
+      "direction": "hurt",
+      "rationale": "U.S. onshore and international service revenue at risk from lower marginal producer economics."
+    }
+  ],
+  "confidence": "medium"
+}

@@ -1,0 +1,9 @@
+split,censoring_class,reason,n_paths
+TEST,administrative_pending,10d_row_absent_shorter_present,122
+TEST,informative_unknown,no_session_row,402
+TEST,invalid,path_rows_disagree,12
+TEST,observed,,705
+TRAIN,informative_unknown,no_session_row,241
+TRAIN,invalid,path_rows_disagree,11
+TRAIN,observed,,529
+UNDATED,administrative_pending,10d_row_absent_shorter_present,26

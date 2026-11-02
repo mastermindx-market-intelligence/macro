@@ -11,15 +11,20 @@ within the next `fwd_bd` business days | elevated) / base rate. All leak-free.
 """
 from __future__ import annotations
 
+import hashlib
+import json
+
 import numpy as np
 import pandas as pd
 
 from lib import store
 
 
-def _spy():
+def _spy(*, drop_missing: bool = True):
     df = store.read("yahoo", "SPY")
-    s = df["close"].dropna()
+    if df is None or "close" not in df:
+        return pd.Series(dtype=float, index=pd.DatetimeIndex([]))
+    s = df["close"].dropna() if drop_missing else df["close"].copy()
     s.index = pd.to_datetime(s.index)
     return s.sort_index()
 
@@ -130,76 +135,328 @@ def band_delta_series(idx) -> pd.Series:
     return pd.Series(0.0, index=index)
 
 
-def state_series(subs: pd.DataFrame, calib: dict) -> pd.Series:
-    """Daily engine STATE (calm..risk-off) under a given calibration — vectorized replica of
-    compute()'s tier-aware logic: Tier-A scares originate the state (max band), conjunction
-    (>=2 Tier-A >= caution) escalates one band, and Tier-B (vol) escalates a hot Tier-A. Used by
-    the do-no-harm gate so a proposed recalibration can be scored over full history.
+def state_series(subs: pd.DataFrame, calib: dict,
+                 sigs: pd.DataFrame | None = None) -> pd.Series:
+    """Daily engine state using the exact live transition owner.
 
-    Calendar context is sizing-only, so the replica uses the same fixed measured bands as live."""
-    bands = calib["bands"]
-    scares = calib["scares"]
-    tierA = [s for s, v in scares.items() if v.get("tier") == "A" and s in subs.columns]
-    tierB = [s for s, v in scares.items() if v.get("tier") == "B" and s in subs.columns]
-    if not tierA:
-        return pd.Series("calm", index=subs.index)
-    a_idx = pd.concat([_band_idx(subs[s], bands) for s in tierA], axis=1)
-    maxA = a_idx.max(axis=1)
-    n_hotA = pd.concat([(subs[s] >= bands["caution"]).astype(int) for s in tierA], axis=1).sum(axis=1)
-    conj = n_hotA >= 2
-    b_hot = (pd.concat([(subs[s] >= bands["caution"]) for s in tierB], axis=1).any(axis=1)
-             if tierB else pd.Series(False, index=subs.index))
-    esc = (conj | (b_hot & (maxA > 0)))
-    st = maxA + (esc & (maxA < 4) & (maxA > 0)).astype(int)
-    st = st.clip(0, 4)
-    # CONTEXT GATE: cap the loud (elevated+) state at caution where the broad tape isn't breaking
-    # (SPY<200dma AND breadth weak). The verified #1 false-positive lever; mirrors compute().
+    The armed+confirm conjunction and Tier-B eligibility depend on the raw
+    causal leg percentiles, so sub-scores alone are not sufficient to reproduce
+    production semantics. Canonical callers pass the same signal frame used to
+    build the sub-scores. A compatibility fallback reloads leading_signals()
+    only when older callers omit sigs.
+    """
+    from engine import risk_radar as rr
+
+    if subs is None or subs.empty:
+        return pd.Series(dtype=object, index=getattr(subs, "index", None))
+    if sigs is None:
+        try:
+            sigs = rr.leading_signals().reindex(subs.index)
+        except Exception:  # noqa: BLE001
+            sigs = pd.DataFrame(index=subs.index)
+    else:
+        sigs = sigs.reindex(subs.index)
+
     try:
-        from engine.risk_radar import context_gate_series
-        gate = context_gate_series(subs.index).reindex(subs.index).fillna(False)
-        cap = _ORDER.index("caution")
-        st = st.mask((~gate) & (st > cap), cap)
+        gate = rr.context_gate_series(subs.index).reindex(subs.index)
     except Exception:  # noqa: BLE001
-        pass
-    return st.map(lambda i: _ORDER[int(i)])
+        gate = pd.Series(False, index=subs.index)
+
+    states = []
+    for day, subrow in subs.iterrows():
+        sigrow = sigs.loc[day] if day in sigs.index else pd.Series(dtype=float)
+        gate_value = gate.loc[day] if day in gate.index else False
+        gate_met = False if pd.isna(gate_value) else bool(gate_value)
+        states.append(
+            rr._resolve_state_row(subrow, sigrow, calib, gate_met=gate_met)["state"]
+        )
+    return pd.Series(states, index=subs.index, dtype=object)
 
 
 def state_accuracy(calib: dict, *, onsets=None, dd: float = 0.05, H: int = 21,
                    alert_from: str = "elevated", lo=None) -> dict:
-    """Precision / recall / F1 / fire-rate of the ALERT state (>= alert_from) vs a forward
-    >= dd SPY drawdown within H bd, under `calib`. The do-no-harm objective for recalibration."""
+    """State-replay accuracy on complete native SPY observation windows.
+
+    The supplied price index is not an exchange-calendar completeness claim.
+    Different forecast coverage must not resample prices or erase intervening losses.
+    """
+    if type(H) is not int or H <= 0:
+        raise ValueError("H must be a positive integer number of future observations")
+    if type(dd) not in (int, float) or not np.isfinite(dd) or not 0 < dd < 1:
+        raise ValueError("dd must be a finite loss fraction strictly between zero and one")
+    if alert_from not in _ORDER:
+        raise ValueError("alert_from must name an existing Risk Radar state")
     from engine.risk_radar import subscore_series, leading_signals
-    subs = subscore_series(leading_signals(), calib)
+    sigs = leading_signals()
+    subs = subscore_series(sigs, calib)
     if subs is None or subs.empty:
         return {"f1": None}
-    spy = _spy().reindex(subs.index).ffill()
-    fdd = pd.Series({d: (spy.iloc[i + 1:i + 1 + H].min() / spy.iloc[i] - 1.0)
-                     if i + 1 < len(spy) else np.nan
-                     for i, d in enumerate(spy.index)})
-    label = (fdd <= -dd)
-    state = state_series(subs, calib)
-    alert = state.map(lambda s: _ORDER.index(s) >= _ORDER.index(alert_from))
-    common = alert.index.intersection(label.dropna().index)
+    spy = _spy(drop_missing=False)
+    for index in (spy.index, subs.index):
+        if (not isinstance(index, pd.DatetimeIndex) or index.hasnans or
+                not index.is_unique or not index.is_monotonic_increasing):
+            raise ValueError("Replay inputs require unique ordered dated observations")
+    # Preserve missing prices: neither forward-fill nor skip invalid observations.
+    bools = spy.map(lambda value: isinstance(value, (bool, np.bool_)))
+    px = pd.to_numeric(spy, errors="coerce").where(~bools).to_numpy(dtype=float)
+    good = np.isfinite(px) & (px > 0)
+    losses, ends = {}, {}
+    for day, loc in zip(subs.index, spy.index.get_indexer(subs.index)):
+        if loc < 0 or loc + H >= len(px) or not good[loc:loc + H + 1].all():
+            continue
+        loss = float(px[loc + 1:loc + H + 1].min() / px[loc] - 1.)
+        if np.isfinite(loss):
+            losses[day], ends[day] = loss, spy.index[loc + H]
+    fdd = pd.Series(losses, dtype=float).reindex(subs.index)
+    state = state_series(subs, calib, sigs=sigs).reindex(subs.index)
+    known = state.isin(_ORDER) & subs.notna().any(axis=1)
+    alert = state.map(lambda value: value in _ORDER and
+                      _ORDER.index(value) >= _ORDER.index(alert_from))
+    population = subs.index
     if lo is not None:
-        common = common[common >= pd.Timestamp(lo)]
-    a = alert.reindex(common).fillna(False); y = label.reindex(common).fillna(False)
-    tp = int((a & y).sum()); fp = int((a & ~y).sum()); fn = int((~a & y).sum())
-    prec = tp / (tp + fp) if (tp + fp) else None
-    rec = tp / (tp + fn) if (tp + fn) else None
-    f1 = (2 * prec * rec / (prec + rec)) if (prec and rec) else 0.0
+        population = population[population >= pd.Timestamp(lo)]
+    common = population.intersection(fdd[known & fdd.notna()].index)
+    a, y = alert.reindex(common), (fdd.reindex(common) <= -dd)
+    tp, fp = int((a & y).sum()), int((a & ~y).sum())
+    fn, tn = int((~a & y).sum()), int((~a & ~y).sum())
+    rows = [[day.isoformat(), ends[day].isoformat(), float(fdd[day]).hex(), bool(y[day])]
+            for day in common]
+    evidence = {
+        "definition": "risk_radar_state_replay.v2", "horizon_observations": H,
+        "loss_threshold": float(dd), "alert_from": alert_from,
+        "outcomes_sha256": hashlib.sha256(json.dumps(rows, separators=(",", ":")).encode()).hexdigest(),
+        "from": common[0].isoformat() if len(common) else None,
+        "through": common[-1].isoformat() if len(common) else None,
+        "n_events": tp + fn, "n_nonevents": fp + tn,
+        "confusion": {"tp": tp, "fp": fp, "fn": fn, "tn": tn},
+    }
+    prec = tp / (tp + fp) if tp + fp else None
+    rec = tp / (tp + fn) if tp + fn else None
+    f1 = 2 * prec * rec / (prec + rec) if prec and rec else 0.
     return {"precision": None if prec is None else round(prec, 3),
             "recall": None if rec is None else round(rec, 3),
-            "f1": round(f1, 3), "fire_rate": round(float(a.mean()), 4),
-            "n_alert": int(a.sum()), "n_days": int(len(common))}
+            "f1": round(f1, 3) if len(common) else None,
+            "fire_rate": round(float(a.mean()), 4) if len(common) else None,
+            "n_alert": int(a.sum()), "n_days": int(len(common)),
+            "n_unscored": int(len(population) - len(common)), "evaluation": evidence}
 
+
+
+def probability_quality_report(calib: dict, *, dd: float = 0.05,
+                               horizons=(5, 10, 21)) -> dict:
+    """Displayed-probability quality on complete native SPY windows.
+
+    This is the probability-side do-no-harm evidence used by the self-correction
+    loop. It evaluates the *actual displayed surface* (gated state + current
+    Tier-A hot-count conjunction bump), never a state-only surrogate.
+
+    The report is descriptive and read-only. It writes no calibration, ledger,
+    policy, sizing or authority state.
+    """
+    if type(dd) not in (int, float) or not np.isfinite(dd) or not 0 < dd < 1:
+        raise ValueError("dd must be a finite loss fraction strictly between zero and one")
+    horizons = tuple(int(h) for h in horizons)
+    if not horizons or any(h <= 0 for h in horizons):
+        raise ValueError("horizons must contain positive observation counts")
+
+    from engine import risk_radar as rr
+
+    sigs = rr.leading_signals()
+    subs = rr.subscore_series(sigs, calib)
+    if sigs is None or sigs.empty or subs is None or subs.empty:
+        return {"horizons": {}, "authority_partition_h21": {}, "ready": False}
+
+    spy = _spy(drop_missing=False)
+    for index in (spy.index, subs.index):
+        if (not isinstance(index, pd.DatetimeIndex) or index.hasnans or
+                not index.is_unique or not index.is_monotonic_increasing):
+            raise ValueError("Replay inputs require unique ordered dated observations")
+
+    state = state_series(subs, calib, sigs=sigs).reindex(subs.index)
+    known = state.isin(_ORDER) & subs.notna().any(axis=1)
+
+    tier_a = [
+        scare for scare, spec in calib.get("scares", {}).items()
+        if spec.get("tier") == "A" and scare in subs.columns
+    ]
+    if tier_a:
+        hot_count = sum(
+            (subs[scare] >= calib["bands"]["caution"]).astype(int)
+            for scare in tier_a
+        ).astype(int)
+    else:
+        hot_count = pd.Series(0, index=subs.index, dtype=int)
+
+    bools = spy.map(lambda value: isinstance(value, (bool, np.bool_)))
+    px = pd.to_numeric(spy, errors="coerce").where(~bools).to_numpy(dtype=float)
+    good = np.isfinite(px) & (px > 0)
+
+    prob_cal = calib.get("prob_cal") or rr._PROB_CAL
+    h21 = prob_cal.get("h21", rr._PROB_CAL["h21"])
+    authority_partition = {
+        st: bool(float(h21.get(st, rr._PROB_CAL["h21"][st])) > rr._PROB_BASE["h21"])
+        for st in _ORDER
+    }
+
+    result = {
+        "horizons": {},
+        "authority_partition_h21": authority_partition,
+        "ready": True,
+    }
+    for H in horizons:
+        losses, ends = {}, {}
+        for day, loc in zip(subs.index, spy.index.get_indexer(subs.index)):
+            if loc < 0 or loc + H >= len(px) or not good[loc:loc + H + 1].all():
+                continue
+            loss = float(px[loc + 1:loc + H + 1].min() / px[loc] - 1.)
+            if np.isfinite(loss):
+                losses[day], ends[day] = loss, spy.index[loc + H]
+        fdd = pd.Series(losses, dtype=float).reindex(subs.index)
+        hkey = f"h{H}"
+        result["horizons"][hkey] = {}
+
+        for window, lo in (("full", None), ("y2020", "2020-01-01")):
+            population = subs.index
+            if lo is not None:
+                population = population[population >= pd.Timestamp(lo)]
+            common = population.intersection(fdd[known & fdd.notna()].index)
+            y = (fdd.reindex(common) <= -dd).astype(float)
+            probs = pd.Series(
+                [
+                    float(rr._drawdown_prob(
+                        str(state.loc[day]), int(hot_count.loc[day]), calib
+                    )[hkey])
+                    for day in common
+                ],
+                index=common,
+                dtype=float,
+            )
+            brier = float(np.mean((probs - y) ** 2)) if len(common) else None
+            base_rate = float(y.mean()) if len(common) else None
+            base_brier = (
+                float(np.mean((base_rate - y) ** 2))
+                if len(common) and base_rate is not None else None
+            )
+            rows = [
+                [day.isoformat(), ends[day].isoformat(), float(fdd[day]).hex(), bool(y[day])]
+                for day in common
+            ]
+            evidence = {
+                "definition": "risk_radar_probability_replay.v1",
+                "horizon_observations": H,
+                "loss_threshold": float(dd),
+                "outcomes_sha256": hashlib.sha256(
+                    json.dumps(rows, separators=(",", ":")).encode()
+                ).hexdigest(),
+                "from": common[0].isoformat() if len(common) else None,
+                "through": common[-1].isoformat() if len(common) else None,
+            }
+            result["horizons"][hkey][window] = {
+                "brier_score": brier,
+                "base_rate_brier_score": base_brier,
+                "mean_displayed_probability": float(probs.mean()) if len(common) else None,
+                "base_rate": base_rate,
+                "n_days": int(len(common)),
+                "evaluation": evidence,
+            }
+            if brier is None or not np.isfinite(brier):
+                result["ready"] = False
+    return result
+
+
+def _probability_do_no_harm(proposed: dict, base: dict, *, dd: float = 0.05,
+                            evaluator=None) -> dict:
+    """Guard prob_cal changes with paired Brier + authority-partition evidence."""
+    if proposed.get("prob_cal") == base.get("prob_cal"):
+        return {"required": False, "passes": True, "reason": "prob_cal_unchanged"}
+
+    evaluator = evaluator or probability_quality_report
+    before = evaluator(base, dd=dd)
+    after = evaluator(proposed, dd=dd)
+    rows = {}
+    ready = bool(before.get("ready", True) and after.get("ready", True))
+    populations_match = True
+    brier_nonworse = True
+    strict = False
+
+    for hkey in ("h5", "h10", "h21"):
+        rows[hkey] = {}
+        for window in ("full", "y2020"):
+            b = ((before.get("horizons") or {}).get(hkey) or {}).get(window) or {}
+            p = ((after.get("horizons") or {}).get(hkey) or {}).get(window) or {}
+            bb, pb = b.get("brier_score"), p.get("brier_score")
+            be = b.get("evaluation") or {}
+            pe = p.get("evaluation") or {}
+            same_population = (
+                b.get("n_days") == p.get("n_days")
+                and be.get("outcomes_sha256")
+                and be.get("outcomes_sha256") == pe.get("outcomes_sha256")
+            )
+            valid = all(
+                type(v) in (int, float) and np.isfinite(v) and 0 <= float(v) <= 1
+                for v in (bb, pb)
+            )
+            delta = float(pb - bb) if valid else None
+            nonworse = bool(valid and delta <= 1e-12)
+            improved = bool(valid and delta < -1e-12)
+            ready = bool(ready and valid)
+            populations_match = bool(populations_match and same_population)
+            brier_nonworse = bool(brier_nonworse and nonworse)
+            strict = bool(strict or improved)
+            rows[hkey][window] = {
+                "base_brier": bb,
+                "proposed_brier": pb,
+                "delta": delta,
+                "same_population": bool(same_population),
+                "nonworse": nonworse,
+            }
+
+    authority_before = before.get("authority_partition_h21") or {}
+    authority_after = after.get("authority_partition_h21") or {}
+    authority_ok = bool(authority_before and authority_before == authority_after)
+
+    passes = bool(
+        ready and populations_match and brier_nonworse and strict and authority_ok
+    )
+    if not ready:
+        reason = "probability_evidence_unready"
+    elif not populations_match:
+        reason = "probability_population_mismatch"
+    elif not brier_nonworse:
+        reason = "probability_brier_worse"
+    elif not strict:
+        reason = "probability_no_strict_brier_gain"
+    elif not authority_ok:
+        reason = "probability_authority_partition_changed"
+    else:
+        reason = "probability_do_no_harm_passed"
+
+    return {
+        "required": True,
+        "passes": passes,
+        "reason": reason,
+        "comparison_ready": ready,
+        "populations_match": populations_match,
+        "brier_nonworse": brier_nonworse,
+        "strict_brier_improvement": strict,
+        "authority_partition_ok": authority_ok,
+        "authority_partition_before": authority_before,
+        "authority_partition_after": authority_after,
+        "windows": rows,
+    }
 
 def compare_calib(proposed: dict, base: dict | None = None, *, dd: float = 0.05, H: int = 21) -> dict:
-    """Do-no-harm gate: is `proposed` calibration at least as good as `base` (full + 2020+ F1),
-    without breaking the evidence gate (validated legs still lead)? Returns the verdict + numbers."""
+    """Composite do-no-harm gate for the self-correction loop.
+
+    Every proposal must preserve/improve full + 2020+ alert F1 and the validated-leg
+    evidence gate. If `prob_cal` changes, it must ALSO pass the probability-specific
+    gate: paired H5/H10/H21 Brier non-worsening on full + 2020+, at least one strict
+    Brier improvement, identical scored populations, and an unchanged H21 authority
+    partition. This prevents a probability change from piggybacking on a band/leg F1 win.
+    """
     from engine.risk_radar import _calib
     base = base or _calib()
     onsets = detect_events()
-    sigs = None
     out = {}
     for label, c in (("base", base), ("proposed", proposed)):
         out[label] = {"full": state_accuracy(c, onsets=onsets, dd=dd, H=H),
@@ -209,11 +466,27 @@ def compare_calib(proposed: dict, base: dict | None = None, *, dd: float = 0.05,
     legs_ok = all((rep.get(leg, {}).get("lift_2020") or 0) >= 1.0
                   for leg, lc in proposed.get("legs", {}).items()
                   if (lc.get("lift_2020") or 0) >= 1.2)
+    scores = [out[label][window].get("f1")
+              for label in ("base", "proposed") for window in ("full", "y2020")]
+    ready = all(type(score) in (int, float) and np.isfinite(score) and 0 <= score <= 1
+                for score in scores)
     bf = out["base"]["full"]["f1"] or 0; pf = out["proposed"]["full"]["f1"] or 0
     b20 = out["base"]["y2020"]["f1"] or 0; p20 = out["proposed"]["y2020"]["f1"] or 0
-    improves = (pf >= bf - 1e-9) and (p20 >= b20 - 1e-9) and legs_ok and (pf + p20) > (bf + b20)
+    alert_gate = bool(
+        ready
+        and (pf >= bf - 1e-9)
+        and (p20 >= b20 - 1e-9)
+        and legs_ok
+        and (pf + p20) > (bf + b20)
+    )
+    probability_gate = _probability_do_no_harm(proposed, base, dd=dd)
+    improves = bool(alert_gate and probability_gate.get("passes"))
+
+    out["comparison_ready"] = bool(ready)
     out["legs_ok"] = legs_ok
-    out["improves"] = bool(improves)
+    out["alert_gate"] = alert_gate
+    out["probability_gate"] = probability_gate
+    out["improves"] = improves
     return out
 
 

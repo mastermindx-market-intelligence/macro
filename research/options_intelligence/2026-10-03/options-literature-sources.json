@@ -1,0 +1,558 @@
+{
+  "title": "Mastermind Options Intelligence — academic evidence ledger",
+  "retrieved_at": "2026-10-03",
+  "scope": "18 primary academic/regulator research entries; public research only; no data analysis, production action, or external write performed by this worker",
+  "source_policy": "Full-text availability is distinct from peer review and from complete methodological replication. Earlier drafts never silently substitute for final published tables.",
+  "papers": [
+    {
+      "id": "L01",
+      "authors": "Easley, O’Hara, and Srinivas",
+      "year": "1998",
+      "title": "Option Volume and Stock Prices: Evidence on Where Informed Traders Trade",
+      "publication": "Journal of Finance 53(2), 431–465",
+      "doi": "10.1111/0022-1082.194060",
+      "access": "Primary publisher abstract; full text not retrieved",
+      "sources": [
+        {
+          "label": "Publisher/AFA abstract",
+          "url": "https://afajof.org/issue/volume-53-issue-2/",
+          "tool_ref": "turn11view3"
+        },
+        {
+          "label": "Publisher record",
+          "url": "https://onlinelibrary.wiley.com/doi/abs/10.1111/0022-1082.194060",
+          "tool_ref": "turn59view3"
+        }
+      ],
+      "question": "Can informed traders choose options and reveal information through trading activity?",
+      "sample": "Historical intraday equity/options observations; exact dates and selection criteria were not verified from accessible primary text.",
+      "signal": "Directional option-volume categories distinguish bullish combinations (call buys/put sales) from bearish combinations (put buys/call sales).",
+      "horizon": "Intraday lead–lag relations; exact lag grid not verified.",
+      "result": "The publisher abstract reports information in option activity about subsequent stock prices. No numerical effect is admitted here.",
+      "controls": "Theoretical endogenous trading-location model; complete empirical controls require full-text review.",
+      "observability": "Trade-side information is necessary; total call/put volume is a different observable.",
+      "limitations": "Foundational evidence, with incomplete methodological access in this pass; not evidence that every options feature leads equities.",
+      "implication": "Use as a directional-flow hypothesis and historical motivation, not a production calibration or priority claim.",
+      "anchors": "Published abstract; empirical-table audit remains open.",
+      "retrieved_at": "2026-10-03"
+    },
+    {
+      "id": "L02",
+      "authors": "Pan and Poteshman",
+      "year": "2006",
+      "title": "The Information in Option Volume for Future Stock Prices",
+      "publication": "Review of Financial Studies 19(3), 871–908",
+      "doi": "10.1093/rfs/hhj024",
+      "access": "Full published paper retrieved; targeted methods and results reviewed",
+      "sources": [
+        {
+          "label": "Author full paper",
+          "url": "https://www.mit.edu/~junpan/volume.pdf",
+          "tool_ref": "turn5view0"
+        }
+      ],
+      "question": "Does informed opening demand forecast stock returns?",
+      "sample": "CBOE non-market-maker volume, January 1990–December 2001; actual buy/sell, opening/closing, and investor-type categories.",
+      "signal": "Buyer-opening puts divided by buyer-opening puts plus calls; daily cross-sectional quintiles.",
+      "horizon": "Next trading day and next week, with subsequent decay examined.",
+      "result": "Low-ratio stocks outperform high-ratio stocks by over 40 basis points next day and over 1% next week on a risk-adjusted basis.",
+      "controls": "Market, size, value, momentum; information-asymmetry, leverage and liquidity comparisons.",
+      "observability": "The central signal uses nonpublic exchange classifications. Public quote-inferred trade direction does not recover opening status or investor identity.",
+      "limitations": "Publicly reconstructed flow predicts briefly then reverses; its incremental predictability disappears when the private component is included. Historical gross spreads are not current executable returns.",
+      "implication": "Label OPRA reconstructions as proxies. Require labeled-data validation before claiming replication of the headline result.",
+      "anchors": "Abstract; data section; public-versus-private volume analysis.",
+      "retrieved_at": "2026-10-03"
+    },
+    {
+      "id": "L03",
+      "authors": "Ni, Pan, and Poteshman",
+      "year": "2008",
+      "title": "Volatility Information Trading in the Option Market",
+      "publication": "Journal of Finance 63(3), 1059–1091",
+      "doi": "10.1111/j.1540-6261.2008.01352.x",
+      "access": "Full published paper retrieved; targeted methods and results reviewed",
+      "sources": [
+        {
+          "label": "Author full paper",
+          "url": "https://web.mit.edu/people/junpan/npp.pdf",
+          "tool_ref": "turn25view2"
+        }
+      ],
+      "question": "Does option demand reveal future volatility?",
+      "sample": "CBOE non-market-maker activity, January 2, 1990–December 31, 2001.",
+      "signal": "Sum of signed call and put contracts weighted by vega/option price, approximating the derivative of log option price with respect to volatility; baseline maturities exceed one week.",
+      "horizon": "Individual future trading days at lags 1–5.",
+      "result": "Volatility demand positively predicts subsequent high–low-based realized-volatility measures after controls. No portable numerical forecast coefficient is asserted.",
+      "controls": "Implied volatility, lagged realized volatility, absolute delta imbalance, option/stock activity, and earnings specifications.",
+      "observability": "Actual non-market-maker buys and sells; Black–Scholes weighting uses volatility from the preceding 60 trading days.",
+      "limitations": "This is volatility demand, not a bullish/bearish score. Plain vega flow is a different feature; inferred aggressor side is not investor identity.",
+      "implication": "Preregister range/volatility endpoints separately and preserve the exact elasticity weighting as a named benchmark.",
+      "anchors": "Equation (1), pp. 1064–65; forecasting regressions.",
+      "retrieved_at": "2026-10-03"
+    },
+    {
+      "id": "L04",
+      "authors": "Johnson and So",
+      "year": "2012",
+      "title": "The option to stock volume ratio and future returns",
+      "publication": "Journal of Financial Economics 106(2), 262–286",
+      "doi": "10.1016/j.jfineco.2012.05.008",
+      "access": "Full published paper downloaded from author-hosted PDF; targeted sections reviewed",
+      "sources": [
+        {
+          "label": "Author full paper",
+          "url": "https://eso.scripts.mit.edu/docs/The-option-to-stock-volume.pdf",
+          "tool_ref": "turn2search49"
+        },
+        {
+          "label": "Publisher record",
+          "url": "https://www.sciencedirect.com/science/article/pii/S0304405X12000797",
+          "tool_ref": "turn2search3"
+        }
+      ],
+      "question": "Can unsigned relative option activity predict returns?",
+      "sample": "1996–2010; 611,173 firm-weeks combining OptionMetrics, CRSP and Compustat.",
+      "signal": "Weekly option contracts across strikes, expiring within the 30-trading-day window beginning five days after trade, divided by equity volume in 100-share lots.",
+      "horizon": "Skip one trading day, then measure the following five trading days.",
+      "result": "Low-minus-high O/S decile four-factor alpha is approximately 0.34% per week in the historical sample.",
+      "controls": "Factor returns, stock characteristics, prior returns, separate activity measures and short-sale-cost comparisons.",
+      "observability": "Volume and contract definitions are observable; historical universe, adjustments and maturity filters must match.",
+      "limitations": "High O/S predicts lower returns in this specification. It excludes same-day expirations and does not justify treating all option activity as bullish.",
+      "implication": "A feasible public-data baseline, with original versus modern maturity buckets kept separate and borrowing conditions controlled.",
+      "anchors": "Section 3 and equation (7), pp. 267–68; Table 2.",
+      "retrieved_at": "2026-10-03"
+    },
+    {
+      "id": "L05",
+      "authors": "Ge, Lin, and Pearson",
+      "year": "2016",
+      "title": "Why does the option to stock volume ratio predict stock returns?",
+      "publication": "Journal of Financial Economics 120, 601–622",
+      "doi": "10.1016/j.jfineco.2015.08.019",
+      "access": "Primary institutional abstract and indexed publisher excerpts; full text not retrieved",
+      "sources": [
+        {
+          "label": "Author institution record",
+          "url": "https://hub.hku.hk/handle/10722/227461",
+          "tool_ref": "turn50view4"
+        },
+        {
+          "label": "Publisher record",
+          "url": "https://www.sciencedirect.com/science/article/pii/S0304405X16000167",
+          "tool_ref": "turn55search0"
+        }
+      ],
+      "question": "Which transactions explain O/S predictability?",
+      "sample": "ISE Open/Close Trade Profile observations; exact sample dates were not verified from accessible primary text.",
+      "signal": "Decomposition of relative volume into signed opening/closing transaction categories.",
+      "horizon": "Weekly stock-return predictability; precise skip/formation convention requires full-text verification.",
+      "result": "Opening call purchases are especially informative; closing call sales also contribute. Results do not support synthetic shorts being uniformly more informative than synthetic longs. No numerical magnitude admitted.",
+      "controls": "Accessible results compare trade categories and expiration weeks; complete regression specification remains unverified.",
+      "observability": "Exchange buy/sell and open/close classifications, not public aggregate volume alone.",
+      "limitations": "The decomposition challenges a single short-sale-friction explanation. Missing full text prevents a replication-grade specification.",
+      "implication": "Preserve transaction type and strategy ambiguity; do not substitute subsequent open-interest changes for observed opening intent.",
+      "anchors": "Institutional abstract and publisher indexed passages; table audit open.",
+      "retrieved_at": "2026-10-03"
+    },
+    {
+      "id": "L06",
+      "authors": "Cremers and Weinbaum",
+      "year": "2010",
+      "title": "Deviations from Put-Call Parity and Stock Return Predictability",
+      "publication": "Journal of Financial and Quantitative Analysis 45(2), 335–367",
+      "doi": "10.1017/S002210901000013X",
+      "access": "Published abstract plus full March 2007 working-paper version; final tables not retrieved",
+      "sources": [
+        {
+          "label": "Published record",
+          "url": "https://doi.org/10.1017/S002210901000013X",
+          "tool_ref": "turn11view2"
+        },
+        {
+          "label": "Earlier full manuscript, third-party mirror",
+          "url": "https://chesler.us/resources/academia/Deviations%20from%20Put-Call%20Parity%20and%20Stock%20Returns.pdf",
+          "tool_ref": "turn56view2"
+        }
+      ],
+      "question": "Do relative call/put prices forecast returns?",
+      "sample": "Earlier draft: January 1996–December 2005. Do not assume every final-paper filter matches this version.",
+      "signal": "Open-interest-weighted call-minus-put implied volatility for matched strike/expiration pairs.",
+      "horizon": "Weekly subsequent stock returns.",
+      "result": "Published abstract reports approximately 50 basis points per week between expensive-call and expensive-put portfolios and declining predictability over time.",
+      "controls": "Option versus equity liquidity; borrowing/rebate considerations. Final detailed specifications require final-text audit.",
+      "observability": "Paired option quotes, time-aligned stock price, valuation inputs and lag-appropriate open interest.",
+      "limitations": "Parity deviations can embed borrow costs and valuation conventions. Later evidence L17 materially qualifies the informational interpretation.",
+      "implication": "Build a borrow-aware relative-price feature and a temporal-decay test; do not translate the old spread directly into forecast probability.",
+      "anchors": "Published abstract; earlier working-paper data and signal definition.",
+      "retrieved_at": "2026-10-03"
+    },
+    {
+      "id": "L07",
+      "authors": "Xing, Zhang, and Zhao",
+      "year": "2010",
+      "title": "What Does the Individual Option Volatility Smirk Tell Us About Future Equity Returns?",
+      "publication": "Journal of Financial and Quantitative Analysis 45(3), 641–662",
+      "doi": "10.1017/S0022109010000220",
+      "access": "Full author-hosted accepted manuscript retrieved; targeted sections reviewed",
+      "sources": [
+        {
+          "label": "Author accepted manuscript",
+          "url": "https://www.ruf.rice.edu/~yxing/option-skew-FINAL.pdf",
+          "tool_ref": "turn11view0"
+        }
+      ],
+      "question": "Does downside option pricing identify weak future stocks?",
+      "sample": "January 1996–December 2005, OptionMetrics with equity, fundamentals and earnings data.",
+      "signal": "IV of an OTM put with K/S in 0.80–0.95 minus an ATM call with K/S in 0.95–1.05; choose contracts closest to 0.95 and 1.00, respectively; 10–60 calendar days to expiration.",
+      "horizon": "Weekly formation with a one-day skip; persistence beyond the next week is examined.",
+      "result": "Low-skew stocks outperform high-skew stocks by approximately 10.9% annually after risk adjustment in the manuscript.",
+      "controls": "Size, value, momentum, volatility, turnover, historical skewness, option activity and related option signals.",
+      "observability": "Quoted surface and positive open interest; matched clocks and contract filters matter.",
+      "limitations": "The variable combines information, downside-insurance demand and pricing frictions; it is not a calibrated physical crash probability.",
+      "implication": "Test incremental candidate deterioration after borrow, volatility and catalyst adjustment; maintain risk-premium versus information hypotheses.",
+      "anchors": "Abstract; variable construction; cross-sectional controls.",
+      "retrieved_at": "2026-10-03"
+    },
+    {
+      "id": "L08",
+      "authors": "Bollerslev, Tauchen, and Zhou",
+      "year": "2009",
+      "title": "Expected Stock Returns and Variance Risk Premia",
+      "publication": "Review of Financial Studies 22(11), 4463–4492",
+      "doi": "10.1093/rfs/hhp008",
+      "access": "Full published paper retrieved; targeted methods and results reviewed",
+      "sources": [
+        {
+          "label": "Author full paper",
+          "url": "https://public.econ.duke.edu/~boller/Published_Papers/rfs_09.pdf",
+          "tool_ref": "turn25view0"
+        }
+      ],
+      "question": "Does the aggregate price of variance risk predict equity returns?",
+      "sample": "Monthly S&P 500 observations, January 1990–December 2007.",
+      "signal": "Squared 30-day VIX minus preceding-month realized variance constructed from five-minute returns; both terms are observable at formation time. A forecast-based physical-variance alternative is also studied.",
+      "horizon": "Monthly through multi-year, with strongest principal evidence around one quarter.",
+      "result": "Quarterly regression adjusted R-squared is approximately 6.82%; higher variance premium predicts higher subsequent aggregate returns.",
+      "controls": "Valuation and macro-finance predictors; heteroskedasticity/overlap-robust inference.",
+      "observability": "Implied variance and already-realized variance on compatible scales; future realized variance is an outcome, not an available feature.",
+      "limitations": "Aggregate quarterly evidence does not establish next-day single-name direction. Variance and volatility spreads are distinct.",
+      "implication": "Use as a market-risk-state benchmark with an explicit horizon and unit contract, separate from short-term deterioration alerts.",
+      "anchors": "Equation (22), data section 2.2, return-predictability tables.",
+      "retrieved_at": "2026-10-03"
+    },
+    {
+      "id": "L09",
+      "authors": "Bollerslev and Todorov",
+      "year": "2011",
+      "title": "Tails, Fears, and Risk Premia",
+      "publication": "Journal of Finance 66(6), 2165–2211",
+      "doi": "10.1111/j.1540-6261.2011.01695.x",
+      "access": "Full published paper retrieved; targeted methods and results reviewed",
+      "sources": [
+        {
+          "label": "Author full paper",
+          "url": "https://public.econ.duke.edu/~boller/Published_Papers/jf_11.pdf",
+          "tool_ref": "turn56view3"
+        }
+      ],
+      "question": "How much compensation reflects extreme-tail risk and changing fear?",
+      "sample": "High-frequency S&P futures, 1990–2008; index options, 1996–2008. Baseline estimation through June 2007 is applied to the later crisis interval.",
+      "signal": "Physical jump-tail estimates from high-frequency returns compared with risk-neutral tails from short-maturity deep-OTM option prices.",
+      "horizon": "Risk-premium decomposition and state variation, rather than a single next-day forecast target.",
+      "result": "Tail compensation is economically material and fear varies beyond ordinary volatility. No tradable-alpha estimate is claimed here.",
+      "controls": "Separate physical and risk-neutral measures, jump/continuous components and crisis comparisons.",
+      "observability": "Requires broad option tails plus high-frequency history; tail estimation extrapolates from more frequent movements.",
+      "limitations": "Sparse extremes and extrapolation assumptions matter. Risk-neutral tail prices include compensation and cannot be equated with physical event frequencies.",
+      "implication": "Expose downside-insurance state first; calibrate actual adverse-move probabilities separately on unseen outcomes.",
+      "anchors": "Tail estimation framework; empirical data and crisis analysis.",
+      "retrieved_at": "2026-10-03"
+    },
+    {
+      "id": "L10",
+      "authors": "Muravyev, Pearson, and Broussard",
+      "year": "2013",
+      "title": "Is there price discovery in equity options?",
+      "publication": "Journal of Financial Economics 107(2), 259–283",
+      "doi": "10.1016/j.jfineco.2012.09.003",
+      "access": "Primary abstracts and indexed publisher methods passages; full text not retrieved",
+      "sources": [
+        {
+          "label": "Publisher abstract and methods excerpt",
+          "url": "https://www.sciencedirect.com/science/article/abs/pii/S0304405X12001882",
+          "tool_ref": "turn72search17"
+        },
+        {
+          "label": "Author institution record",
+          "url": "https://experts.illinois.edu/en/publications/is-there-price-discovery-in-equity-options/",
+          "tool_ref": "turn22search11"
+        }
+      ],
+      "question": "Do option quotes add price information beyond current equities?",
+      "sample": "Tick-level quotes for 36 liquid U.S. stocks and three ETFs, April 17, 2003–October 18, 2006 (882 trading days), verified in indexed publisher text.",
+      "signal": "Disagreement between stock prices and option-implied stock prices from matched call/put quotes.",
+      "horizon": "Immediate microstructure adjustment after disagreement.",
+      "result": "The abstract finds no economically meaningful incremental option-price information; options adjust to the equity market. No numerical effect admitted.",
+      "controls": "Disagreement events are compared with similar control events; a larger, weaker-disagreement sample checks event-selection sensitivity. Complete filters still need full text.",
+      "observability": "Synchronized stock and options quotes with parity inputs.",
+      "limitations": "This null concerns a particular quote-level price-discovery question, not all future-return information in classified option flow.",
+      "implication": "Require quote-age, asynchronous-update and contemporaneous-stock baselines before calling option prices leading indicators.",
+      "anchors": "Publisher and institution abstracts; full-method audit open.",
+      "retrieved_at": "2026-10-03"
+    },
+    {
+      "id": "L11",
+      "authors": "Savickas and Wilson",
+      "year": "2003",
+      "title": "On Inferring the Direction of Option Trades",
+      "publication": "Journal of Financial and Quantitative Analysis 38(4), 881–902",
+      "doi": "10.2307/4126747",
+      "access": "Detailed primary publisher abstract; full text not retrieved",
+      "sources": [
+        {
+          "label": "Publisher abstract",
+          "url": "https://www.cambridge.org/core/journals/journal-of-financial-and-quantitative-analysis/article/abs/on-inferring-the-direction-of-option-trades/FDA4541B57F78B2C8DCE129AFC25AAF0",
+          "tool_ref": "turn41view0"
+        }
+      ],
+      "question": "How reliable are common option trade-signing rules?",
+      "sample": "Historical options with known true direction; exact dates not verified from accessible primary text.",
+      "signal": "Quote, Lee–Ready, Ellis–Michaely–O’Hara and tick-rule classifications.",
+      "horizon": "Trade classification, not a return forecast.",
+      "result": "Reported correct classifications are 83%, 80%, 77% and 59%, respectively, for each method’s classifiable subset; these are not identical-coverage comparisons.",
+      "controls": "Trade/quote location, size, moneyness, maturity, activity and complex index trades are examined.",
+      "observability": "True direction is needed for validation. Complex packages can make individual-leg execution prices misleading.",
+      "limitations": "Historical accuracy does not establish current vendor-feed accuracy. Excluding difficult observations changes coverage as well as accuracy.",
+      "implication": "Return sign probability, abstention and coverage; validate modern feed-specific calibration and retain a separate complex/ambiguous category.",
+      "anchors": "Published abstract numerical results and qualification by classified subset.",
+      "retrieved_at": "2026-10-03"
+    },
+    {
+      "id": "L12",
+      "authors": "Londono and Samadi",
+      "year": "2023, revised record 2024",
+      "title": "The Price of Macroeconomic Uncertainty: Evidence from Daily Options",
+      "publication": "Federal Reserve International Finance Discussion Papers 1376",
+      "doi": "10.17016/IFDP.2023.1376",
+      "access": "Full regulator working paper retrieved; targeted methods and results reviewed",
+      "sources": [
+        {
+          "label": "Federal Reserve publication page",
+          "url": "https://www.federalreserve.gov/econres/ifdp/the-price-of-macroeconomic-uncertainty-evidence-from-daily-options.htm",
+          "tool_ref": "turn5view2"
+        },
+        {
+          "label": "Full paper",
+          "url": "https://www.federalreserve.gov/econres/ifdp/files/ifdp1376.pdf",
+          "tool_ref": "turn25view4"
+        }
+      ],
+      "question": "How do options price scheduled macroeconomic uncertainty?",
+      "sample": "Daily S&P 500 option expirations, January 2017–May 2023; CPI, FOMC, payroll and GDP releases.",
+      "signal": "Insurance/variance and related premium measures for expirations spanning announcements versus nearby expirations without them; principal contracts have 7–21 calendar days remaining.",
+      "horizon": "Event insurance, evaluated before known releases; not necessarily same-day 0DTE trading.",
+      "result": "Options spanning important announcements command greater insurance premia; the effect varies with uncertainty and risk-aversion state. No numerical estimate admitted.",
+      "controls": "Adjacent expiry comparisons and alternative maturity, strike and event specifications.",
+      "observability": "Surface snapshots plus the event calendar as known at formation time.",
+      "limitations": "Priced uncertainty does not reveal the sign of the announcement surprise. Working-paper author findings are not Federal Reserve policy.",
+      "implication": "Make catalyst conditioning and event-specific variance normalization prerequisites for directional interpretations of elevated IV.",
+      "anchors": "Sample construction and treatment/control design; paper-page version metadata.",
+      "retrieved_at": "2026-10-03"
+    },
+    {
+      "id": "L13",
+      "authors": "Brogaard, Han, and Won",
+      "year": "2026 current author listing",
+      "title": "Does 0DTE Options Trading Increase Volatility?",
+      "publication": "Working paper; presented at 2026 Conference on Financial Market Regulation",
+      "doi": null,
+      "access": "Current author summary and primary conference agenda; full current manuscript not retrieved",
+      "sources": [
+        {
+          "label": "Author current summary",
+          "url": "https://peterywon.github.io/",
+          "tool_ref": "turn68view0"
+        },
+        {
+          "label": "SEC conference agenda",
+          "url": "https://www.sec.gov/newsroom/meetings-events/13th-annual-conference-financial-market-regulation/13th-annual-conference-financial-market-regulation-day-one-agenda",
+          "tool_ref": "turn63view0"
+        }
+      ],
+      "question": "Does greater 0DTE trading raise underlying volatility?",
+      "sample": "Author chart covers January 2011–August 2023; the exact current estimation sample remains unverified.",
+      "signal": "0DTE trading activity instrumented by staggered introduction of index weekly options.",
+      "horizon": "Underlying volatility; exact current outcome aggregation requires the full manuscript.",
+      "result": "Current author summary reports that a one-standard-deviation trading increase raises volatility by 9.10% of its mean, remaining positive after gamma-hedging controls.",
+      "controls": "Instrumental-variable design and market-maker gamma controls are stated; complete specifications not verified.",
+      "observability": "Trading volume is observable; causal interpretation requires instrument/exclusion-assumption review.",
+      "limitations": "Older circulating versions report different magnitudes. This entry uses only the current author summary and does not treat it as full-method verification.",
+      "implication": "Preserve an amplification hypothesis alongside L14–L15; compare estimands and regimes before resolving the apparent conflict.",
+      "anchors": "Author page updated August 2026; SEC May 7, 2026 agenda confirms presentation, not findings.",
+      "retrieved_at": "2026-10-03"
+    },
+    {
+      "id": "L14",
+      "authors": "Adams, Dim, Eraker, Fontaine, Ornthanalai, and Vilkov",
+      "year": "2026-07-15",
+      "title": "Do S&P 500 Options Increase Market Volatility? Evidence from 0DTEs",
+      "publication": "Merged working paper",
+      "doi": null,
+      "access": "Full July 15, 2026 author-hosted manuscript retrieved; targeted methods and results reviewed",
+      "sources": [
+        {
+          "label": "Current full manuscript",
+          "url": "https://www.jean-sebastienfontaine.com/papers/0dte-options-volatility.pdf",
+          "tool_ref": "turn51view0"
+        },
+        {
+          "label": "Author version/lineage listing",
+          "url": "https://www.vilkov.net/research.html",
+          "tool_ref": "turn51view4"
+        }
+      ],
+      "question": "How do expiring options and dealer positions affect intraday volatility?",
+      "sample": "January 2018–December 2024; baseline calendar identification ends May 19, 2022; classified Cboe activity and futures observations.",
+      "signal": "Presence of expiring contracts; market-maker gamma/hedging needs reconstructed from signed opening/closing histories, split into existing inventory and new trades.",
+      "horizon": "Ten-minute realized volatility and subsequent intraday intervals.",
+      "result": "Expiring-contract presence lowers ten-minute annualized realized volatility by 61 basis points on average. Earlier-established inventory drives the hedging shift, rather than new same-day positions.",
+      "controls": "Calendar variation and introduction comparisons; time effects; separate predictive intraday analysis is explicitly noncausal.",
+      "observability": "Exchange participant categories and position history, not a generic open-interest-times-gamma calculation.",
+      "limitations": "An average dampening effect does not rule out amplification in particular states. The manuscript supersedes two prior papers, which must not count as independent confirmations.",
+      "implication": "Keep starting inventory separate from fresh flow; test state-dependent intraday mechanisms without projecting them onto five-day stock direction.",
+      "anchors": "Title-page lineage; introduction; calendar design and inventory construction.",
+      "retrieved_at": "2026-10-03"
+    },
+    {
+      "id": "L15",
+      "authors": "Amaya, Garcia-Ares, Pearson, and Vasquez",
+      "year": "2025-01-25",
+      "title": "0DTE Index Options and Market Volatility: How Large is Their Impact?",
+      "publication": "Working paper",
+      "doi": null,
+      "access": "Full Cboe-hosted academic manuscript retrieved; targeted methods and results reviewed",
+      "sources": [
+        {
+          "label": "Full academic paper",
+          "url": "https://cdn.cboe.com/resources/education/research_publications/gammasqueezes.pdf",
+          "tool_ref": "turn35view1"
+        }
+      ],
+      "question": "How large can measured dealer-gamma effects be?",
+      "sample": "July 2020–June 2023; proprietary Cboe SPX/SPXW transactions and intraday underlying data.",
+      "signal": "Market-maker inventory and gamma reconstructed using actual trade capacities; modeled hedging contribution to realized volatility.",
+      "horizon": "Intraday, including 30-minute and full-day volatility.",
+      "result": "Typical positive gamma dampens volatility; negative-gamma episodes amplify it. The estimated largest daily increase is 3.3 annualized volatility percentage points in this sample.",
+      "controls": "Inventory-based regressions and a model counterfactual removing the gamma contribution.",
+      "observability": "Detailed participant-side transaction data and accumulated positions are central.",
+      "limitations": "The maximum is a model-dependent historical counterfactual, not a universal upper bound or experimentally identified causal estimate. Cboe data support and research funding are disclosed.",
+      "implication": "Use inventory uncertainty and state sensitivity, with explicit units; do not convert this estimate into a blanket safety claim about 0DTE.",
+      "anchors": "Abstract; sample and inventory construction; volatility-impact counterfactual.",
+      "retrieved_at": "2026-10-03"
+    },
+    {
+      "id": "L16",
+      "authors": "Fu, Li, Musto, and Pearson",
+      "year": "2025-03-16",
+      "title": "Hope at a Reasonable Price: Customer Use of Limit Orders in the 0DTE Market",
+      "publication": "SEC DERA Working Paper",
+      "doi": null,
+      "access": "Full regulator working paper retrieved; targeted methods and results reviewed",
+      "sources": [
+        {
+          "label": "SEC full paper",
+          "url": "https://www.sec.gov/files/dera-hope-reasonable-prc-2503.pdf",
+          "tool_ref": "turn41view4"
+        }
+      ],
+      "question": "Can public data identify customer passive liquidity and execution costs?",
+      "sample": "SPXW, July 1, 2020–September 28, 2023; OPRA with proprietary Cboe transaction validation.",
+      "signal": "Customer limit-order presence from quote-condition codes, after correcting trade/quote sequencing problems.",
+      "horizon": "Trade-level execution and intraday customer liquidity provision.",
+      "result": "Customers frequently supply the best quotes; for actively traded slightly OTM contracts, their presence exceeds half the time in recent observations. No profitability claim about all retail traders follows.",
+      "controls": "Detailed trade/quote matching, sequencing reconstruction and participant-data comparisons.",
+      "observability": "Raw quote codes B/O/C identify customer interest at bid/offer/both when preserved; economic ordering can differ from naive timestamp sorting.",
+      "limitations": "Trade matching coverage is not side-classification accuracy. Reconstructing economic sequences must respect historical availability. DERA findings are authors’ views, not SEC policy.",
+      "implication": "Audit vendor quote conditions and sequence semantics before signing flow; passive counterparty must not automatically be labeled dealer.",
+      "anchors": "Abstract; sequencing problem and quote-condition methodology.",
+      "retrieved_at": "2026-10-03"
+    },
+    {
+      "id": "L17",
+      "authors": "Muravyev, Pearson, and Pollet",
+      "year": "2025",
+      "title": "Why does options market information predict stock returns?",
+      "publication": "Journal of Financial Economics 172, 104153",
+      "doi": "10.1016/j.jfineco.2025.104153",
+      "access": "Current published abstract plus full March 15, 2022 precursor; final tables not retrieved",
+      "sources": [
+        {
+          "label": "Current institutional published abstract",
+          "url": "https://experts.illinois.edu/en/publications/why-does-options-market-information-predict-stock-returns-3/",
+          "tool_ref": "turn66view0"
+        },
+        {
+          "label": "Earlier full manuscript",
+          "url": "https://www.aeaweb.org/conference/2023/program/paper/RsBt64RZ",
+          "tool_ref": "turn59view1"
+        },
+        {
+          "label": "Published record",
+          "url": "https://www.sciencedirect.com/science/article/pii/S0304405X25001618",
+          "tool_ref": "turn57search0"
+        }
+      ],
+      "question": "Do familiar option-IV predictors embed borrowing costs?",
+      "sample": "2022 precursor: July 2006–August 2015, Markit lending fees with OptionMetrics/CRSP. Final sample details require current full text.",
+      "signal": "Call–put IV spread and skew, related analytically and empirically to stock-borrow fees.",
+      "horizon": "Subsequent stock returns; monthly specifications inspected in the precursor, not asserted as the only final horizon.",
+      "result": "The October 2025 published abstract reports at least a two-thirds reduction in IV-spread/skew predictability after excluding high-fee stocks.",
+      "controls": "Borrow-fee adjustment and low-fee comparisons; earlier regressions also examine familiar return characteristics.",
+      "observability": "Contemporaneous borrow fees or clearly marked missingness; rates/dividends and pricing inputs must align.",
+      "limitations": "The result substantially qualifies L06–L07; it neither proves zero remaining information nor measures Mastermind’s candidate-risk utility.",
+      "implication": "Require borrow-conditioned incremental tests. A warning signal can retain decision value even when a short portfolio is uneconomic, but that value must be measured separately.",
+      "anchors": "Published abstract; 2022 precursor data and methodology; versions deliberately separated.",
+      "retrieved_at": "2026-10-03"
+    },
+    {
+      "id": "L18",
+      "authors": "Weinbaum, Fodor, Muravyev, and Cremers",
+      "year": "2023",
+      "title": "Option Trading Activity, News Releases, and Stock Return Predictability",
+      "publication": "Management Science 69(8), 4810–4827",
+      "doi": "10.1287/mnsc.2022.4543",
+      "access": "Primary institutional published abstract; full text not retrieved",
+      "sources": [
+        {
+          "label": "Author institution published abstract",
+          "url": "https://experts.illinois.edu/en/publications/option-trading-activity-news-releases-and-stock-return-predictabi/",
+          "tool_ref": "turn64view0"
+        }
+      ],
+      "question": "Does news scheduling change which option transactions are informative?",
+      "sample": "Corporate-news and classified option-activity sample; exact dates and full filters not verified from accessible primary text.",
+      "signal": "Purchases versus sales of options, conditioned on scheduled/unscheduled announcements and timing relative to release.",
+      "horizon": "News days and periods before releases; exact windows require full text.",
+      "result": "Purchases are informative on news days and before unscheduled news, while pre-scheduled-release information appears in sales. No numerical effect admitted.",
+      "controls": "News scheduling and trading/margin-cost analyses are stated; complete specifications remain unverified.",
+      "observability": "Transaction categories and a point-in-time event/news calendar; future surprise labels are outcomes only.",
+      "limitations": "Missing full text prevents replication-grade implementation. The result rejects a uniform interpretation of elevated option purchases before known events.",
+      "implication": "Preregister event interactions and keep purchases/sales separate; avoid treating earnings-related option activity as automatic directional confirmation.",
+      "anchors": "Published abstract; full-method audit open.",
+      "retrieved_at": "2026-10-03"
+    }
+  ],
+  "supplementary_sources": [
+    {
+      "label": "Stock price clustering on option expiration dates — published primary record",
+      "url": "https://experts.illinois.edu/en/publications/stock-price-clustering-on-option-expiration-dates/",
+      "tool_ref": "turn31search7",
+      "note": "Discovery only; pinning evidence must not be generalized to deterministic max-pain targets."
+    },
+    {
+      "label": "Muravyev–Pearson–Pollet author replication package",
+      "url": "https://www.dropbox.com/scl/fi/7s2ah1txp9qb691ohco98/OptionSignalsStockReturnsReplicationPackage.zip?dl=0&rlkey=c5afyzewszf6ljb5tm9z9zcjm",
+      "tool_ref": "turn57view1",
+      "note": "Located from author page; not downloaded, inspected, or executed."
+    }
+  ]
+}

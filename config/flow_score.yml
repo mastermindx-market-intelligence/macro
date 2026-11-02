@@ -40,12 +40,26 @@ model_bucket_map:
   "31_90d": "8_90"
   "90p":   "90p"
 
+# Frozen per-bucket label rulers; 90p requires both the primary and secondary
+# horizons. A missing 126 ruler is a no-fit, never a substitution for 63.
+bucket_horizons:
+  "0_7":  [5]
+  "8_90": [21]
+  "90p":  [63, 126]
+
 # ── embargo days per bucket (≥ primary ruler horizon, amendment §4.1) ────────────
+# The trainer pins the actual embargo to max(configured, max(BUCKET_HORIZONS[bucket]))
+# — i.e. for 90p the 126-day secondary horizon is the binding target. The values
+# below MUST satisfy: configured ≥ max(BUCKET_HORIZONS[bucket]). 90p secondary
+# is 126 NYSE sessions by registered rule; the trainer uses 126 regardless of
+# what is configured here, so this config mirrors that binding target for
+# clarity rather than silently raising it at fit time.
 embargo_days:
   "0_7":  5     # ≥ 5d primary ruler (S-FLOWML-0_7)
   "8_90": 21    # ≥ 21d primary ruler (S-FLOWML-8_90)
-  "90p":  63    # ≥ 63d primary ruler / 90p; 126d secondary not embargoed separately
-                # (126d cell flagged building_history until ≥126d embargo clean)
+  "90p":  126   # ≥ 126 NYSE sessions; 90p secondary 126-session target. The
+                # trainer's max(configured, max((63, 126))) = 126 binding is
+                # explicit, not silent.
   # Secondary bucket for 90p (used only where the 126d ruler has matured):
   "90p_secondary": 126
 
@@ -90,9 +104,7 @@ dte_interaction:
 # ── monotone constraints (mechanism-known only, amendment §4.5 / masterplan FS-4 row) ──
 # Only at-ask/aggression share and vol-over-OI ratio qualify as mechanism-known
 # monotone features. All other features have no registered constraint.
-monotone_constraints:
-  at_ask_share: 1      # higher aggression share → stronger conviction; +1 = non-decreasing
-  vol_gt_oi_ratio: 1   # higher vol/OI → more notable; +1 = non-decreasing
+monotone_constraints: {}   # removed by the 2026-09-19 FS evaluation amendment
 
 # ── decay-monitor window (amendment §8 #4 — shadow calibration-decay sentinel) ──
 decay_monitor:

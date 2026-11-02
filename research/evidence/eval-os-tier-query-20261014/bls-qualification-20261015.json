@@ -1,0 +1,45 @@
+{
+  "head": "d9c1cf80a7aac6b6773b9458147c71758b729493",
+  "at": "2026-10-15T08:04:17.458310+00:00",
+  "affected_response_tests": 123,
+  "focused_exit": 0,
+  "closure_misses": {},
+  "packing": [
+    {
+      "probe": "templates/index.html",
+      "jobs": 134,
+      "weight": 5621,
+      "packs": 10,
+      "max_jobs": 136,
+      "max_weight": 5803,
+      "max_packs": 10
+    },
+    {
+      "probe": "scripts/build_free_content.py",
+      "jobs": 134,
+      "weight": 5441,
+      "packs": 10,
+      "max_jobs": 134,
+      "max_weight": 5600,
+      "max_packs": 10
+    },
+    {
+      "probe": "engine/prophet/plan_book.py",
+      "jobs": 128,
+      "weight": 5384,
+      "packs": 9,
+      "max_jobs": 130,
+      "max_weight": 5600,
+      "max_packs": 10
+    }
+  ],
+  "packing_breaches": [],
+  "claim": "Source qualification only; no model/PIT/adoption or release claim.",
+  "worker": {
+    "id": "eval-t6-bls-fixture-01a1333d-c1",
+    "result_stdout_sha256": "e170507c0e602ad535a170d9c16f385ad825c7d671b453a0c87702931cc5529a",
+    "accepted_by": "reviewer",
+    "disposition": "Parent accepted after clarifying the gold sentence threshold attribution and adding the official source URL. Not independent review or model-answer proof."
+  },
+  "detailed_local_output": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/t6-bls-20261015/qualification.json"
+}

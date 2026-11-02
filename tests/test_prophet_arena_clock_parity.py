@@ -133,6 +133,57 @@ def test_c0_and_c6_fail_closed_on_the_same_stale_or_mixed_board_as_live(
     assert board["harness_validity"]["harness_ok"] is True
 
 
+def test_preclose_observation_clock_is_shared_by_live_and_arena(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    row = _tier_row(
+        "PRECLOSE",
+        "T1",
+        formation_date="2026-08-20",
+        event_date="2026-09-14",
+        observed_date="2026-09-14",
+        provisional=False,
+    )
+    standouts = {
+        "as_of": "2026-09-14",
+        "gate_go": True,
+        "buy": [row],
+        "staleness": {
+            "price_through": "2026-09-14",
+            "observed_at_utc": "2026-09-15T15:09:00+00:00",
+            "expected_session": "2026-09-14",
+            "delayed": False,
+            "unknown": False,
+            "basis": "panel_majority",
+            "inputs": {"panel": {"mixed_vintage": False}},
+        },
+    }
+    monkeypatch.setattr(
+        "engine.prophet_doors.door_w_candidates",
+        lambda root=None: {"candidates": [], "disclosure": {}},
+        raising=True,
+    )
+
+    board = pa.run_arena(
+        standouts,
+        asof="2026-09-15",
+        existing_ids=set(),
+        live_plan_ids={"PRECLOSE-BULL-20260820"},
+        repo_root=tmp_path,
+        write=False,
+        tilt_inputs=None,
+    )
+
+    champion = board["tonight"]["policies"][pa.CHAMPION_KEY]
+    assert champion["n_plans"] == 1
+    assert champion["origination"]["clock_errors"] == []
+    assert champion["origination"]["recorded_at"] == "2026-09-15"
+    assert champion["origination"]["price_basis_date"] == "2026-09-14"
+    assert board["tonight"]["observed_at_utc"] == "2026-09-15T15:09:00+00:00"
+    assert board["harness_validity"]["harness_ok"] is True
+
+
 @pytest.mark.parametrize(
     "source_basis,originates",
     [("panel_majority", True), ("board_asof", False), (None, False)],

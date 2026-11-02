@@ -103,7 +103,9 @@ NO LLM ANYWHERE (constitution A7). Every label is a threshold rule in engine/pos
 from __future__ import annotations
 
 import argparse
+import datetime
 import json
+import math
 import subprocess
 import sys
 from pathlib import Path
@@ -433,6 +435,415 @@ def membership_map(root: Path) -> dict[str, list[str]]:
             if tk:
                 out.setdefault(str(tk), set()).add(str(bid))
     return {tk: sorted(v) for tk, v in sorted(out.items())}
+
+
+# --------------------------------------------------------------------------- #
+# cohort integrity — original source membership + era stamps (descriptive only)
+# --------------------------------------------------------------------------- #
+# Q02/B22: a receipt of which board definition each existing episode was ORIGINALLY
+# admitted under, read from the two original buy-membership sources. Purely additive
+# and descriptive: nothing here re-grades, re-partitions or merges episodes, and no
+# rank_by is date-inferred, back-filled from the current definition, or renamed into a
+# manufactured legacy era — an absent/empty/null-like stamp stays MISSING ATTRIBUTION.
+# Every status dict is published on the artifact (`cohort_integrity.sources_read`) so a
+# malformed or unreadable source can never look like validated source absence.
+
+
+def _iso_date_key(value: Any) -> str | None:
+    """A strict ISO calendar-date key from a source date value, or None.
+
+    Strings must already be canonical YYYY-MM-DD; pandas/datetime timestamps are
+    converted through their OWN calendar date — never stringified into
+    "2026-07-01 00:00:00" (a malformed key), never sliced. Anything else, nullish
+    spellings included, comes back None for the caller to count and disclose. No
+    lexical comparison in the integrity path ever sees a malformed key.
+    """
+    # pandas NaT is also a datetime instance; reject nulls before native date logic.
+    if value is None or value is pd.NaT or value is pd.NA:
+        return None
+    if isinstance(value, float) and math.isnan(value):
+        return None
+    if isinstance(value, str):
+        try:
+            parsed = datetime.date.fromisoformat(value)
+        except ValueError:
+            return None
+        return value if parsed.isoformat() == value else None
+    if isinstance(value, datetime.datetime):
+        return value.date().isoformat()
+    if isinstance(value, datetime.date):
+        return value.isoformat()
+    return None
+
+
+def _integrity_ticker_key(value: Any) -> str | None:
+    """A usable ticker key, or None. Nullish spellings are missing/invalid records,
+    never tickers, and are counted and disclosed by the caller."""
+    if not isinstance(value, str):
+        return None
+    if value.strip() in ("", "None", "nan", "NaT", "<NA>", "null"):
+        return None
+    return value
+
+
+def load_retro_membership(root: Path) -> tuple[dict[str, dict[str, list[str | None]]], dict]:
+    """{date: {ticker: [rank_by|None, ...]}} for the buy lane, ONE entry per source record.
+
+    The ledger stores one row per (as_of, ticker, horizon), so two horizons on one night
+    are two records here; a stamp that differs between them is a real same-source,
+    same-date conflict and is deliberately NOT deduped away the way `_retro_index`
+    dedupes entry-time state for the existing context fields.
+
+    `rank_by` is kept EXACTLY as recorded (pm.integrity_stamp only folds
+    true null spellings to missing). A missing `rank_by` COLUMN means every record
+    is stamped missing — disclosed in the status, never filled.
+
+    Date keys are strict ISO calendar dates: timestamp values are converted through
+    their own date; malformed ones are COUNTED (`n_malformed_dates`) and skipped —
+    never stringified into a key any comparison could mis-order.
+    """
+    status: dict[str, Any] = {
+        "source": "retro", "path": str(RETRO_REL), "readable": False, "error": None,
+        "n_rows": 0, "n_buy_records": 0, "rank_by_column_present": False,
+        "n_invalid_membership_records": 0, "n_malformed_dates": 0,
+        "n_missing_stamp_records": 0,
+    }
+    out: dict[str, dict[str, list[str | None]]] = {}
+    p = root / RETRO_REL
+    if not p.exists():
+        status["error"] = "missing"
+        return out, status
+    try:
+        # Inspect metadata and project only provenance. Receipt-only inspection must
+        # not load outcome/return columns even when the original ledger carries them.
+        from pyarrow.parquet import read_schema
+        available = set(read_schema(p).names)
+        required = {"as_of", "ticker", "lane"}
+        missing = sorted(required - available)
+        if missing:
+            status["error"] = "missing_membership_columns: " + ", ".join(missing)
+            return out, status
+        columns = [name for name in ("as_of", "ticker", "lane", "rank_by")
+                   if name in available]
+        df = pd.read_parquet(p, columns=columns)
+    except Exception as e:  # noqa: BLE001 — an unreadable source is receipt evidence
+        status["error"] = f"{type(e).__name__}: {e}"[:300]
+        return out, status
+    status["readable"] = True
+    status["n_rows"] = int(len(df))
+    if df.empty:
+        return out, status
+    # A recorded date with no buy rows still supplies source reach. It must differ
+    # from an unobserved date when checking the other source's membership. A
+    # malformed date value cannot seed a key; the buy-row pass below counts it.
+    for date in df["as_of"]:
+        recorded_date = _iso_date_key(date)
+        if recorded_date is not None:
+            out.setdefault(recorded_date, {})
+    sub = df[df["lane"].astype(str) == LANE]
+    stamps = sub["rank_by"] if "rank_by" in sub.columns else pd.Series(
+        [None] * len(sub), index=sub.index)
+    status["rank_by_column_present"] = bool("rank_by" in sub.columns)
+    for d, tk, raw in zip(sub["as_of"], sub["ticker"], stamps):
+        d_s = _iso_date_key(d)
+        if d_s is None:
+            status["n_malformed_dates"] += 1
+            continue
+        tk_s = _integrity_ticker_key(tk)
+        if tk_s is None:
+            status["n_invalid_membership_records"] += 1
+            continue
+        stamp = pm.integrity_stamp(raw)
+        if stamp is None:
+            status["n_missing_stamp_records"] += 1
+        out.setdefault(d_s, {}).setdefault(tk_s, []).append(stamp)
+        status["n_buy_records"] += 1
+    return out, status
+
+
+def load_snapshot_membership(root: Path) -> tuple[dict[str, dict[str, list[str | None]]], dict]:
+    """{date: {ticker: [rank_by|None]}} for the buy lane from snapshots.jsonl.
+
+    The nightly snapshot carries the board-page `rank_by` stamp at the top level
+    (written by scripts.grade_us_board.snapshot_today), so every buy-lane ticker on that
+    date inherits the SAME recorded page stamp for that date — one record per ticker.
+    Buy lane only: non-buy lanes never add integrity membership.
+
+    Malformed lines, lines without a usable `as_of`, malformed dates and invalid
+    membership rows are COUNTED on the status instead of being dropped silently, so a
+    truncated archive is visible on the receipt. A second document for an already-seen
+    date is a DUPLICATE OBSERVATION: identical duplicates are disclosed and harmless,
+    but one whose page stamp or buy membership set differs is a same-source conflict
+    (`n_conflicting_duplicate_observations`) that blocks clean assignment and per-era
+    rates. Original records are never deduped away either way.
+    """
+    status: dict[str, Any] = {
+        "source": "snapshot", "path": str(SNAPSHOTS_REL), "readable": False, "error": None,
+        "n_lines": 0, "n_docs": 0, "n_malformed_lines": 0, "n_lines_without_as_of": 0,
+        "n_buy_records": 0, "rank_by_column_present": False,
+        "n_invalid_membership_records": 0, "n_malformed_dates": 0,
+        "n_missing_stamp_records": 0, "n_duplicate_as_of_docs": 0,
+        "n_conflicting_duplicate_observations": 0,
+        "conflicting_duplicate_dates": [],
+    }
+    out: dict[str, dict[str, list[str | None]]] = {}
+    p = root / SNAPSHOTS_REL
+    if not p.exists():
+        status["error"] = "missing"
+        return out, status
+    try:
+        fh = p.open(encoding="utf-8")
+    except OSError as e:
+        status["error"] = f"{type(e).__name__}: {e}"[:300]
+        return out, status
+    seen: dict[str, tuple[str | None, frozenset[str]]] = {}
+    try:
+        with fh:
+            for line in fh:
+                status["n_lines"] += 1
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    doc = json.loads(line)
+                except json.JSONDecodeError:
+                    status["n_malformed_lines"] += 1
+                    continue
+                if not isinstance(doc, dict):
+                    status["n_malformed_lines"] += 1
+                    continue
+                d = _iso_date_key(doc.get("as_of"))
+                if d is None:
+                    status["n_lines_without_as_of"] += 1
+                    continue
+                status["n_docs"] += 1
+                out.setdefault(d, {})
+                stamp = pm.integrity_stamp(doc.get("rank_by"))
+                if stamp is not None:
+                    status["rank_by_column_present"] = True
+                buy_rows = doc.get(LANE, [])
+                members: set[str] = set()
+                if not isinstance(buy_rows, list):
+                    status["n_invalid_membership_records"] += 1
+                else:
+                    for row in buy_rows:
+                        if not isinstance(row, dict):
+                            status["n_invalid_membership_records"] += 1
+                            continue
+                        tk = _integrity_ticker_key(row.get("ticker"))
+                        if tk is None:
+                            status["n_invalid_membership_records"] += 1
+                            continue
+                        members.add(tk)
+                        out.setdefault(d, {}).setdefault(tk, []).append(stamp)
+                        status["n_buy_records"] += 1
+                        if stamp is None:
+                            status["n_missing_stamp_records"] += 1
+                if d in seen:
+                    status["n_duplicate_as_of_docs"] += 1
+                    prev_stamp, prev_members = seen[d]
+                    if prev_stamp != stamp or prev_members != frozenset(members):
+                        status["n_conflicting_duplicate_observations"] += 1
+                        status["conflicting_duplicate_dates"].append(d)
+                else:
+                    seen[d] = (stamp, frozenset(members))
+    except (OSError, UnicodeError) as exc:
+        status["error"] = f"{type(exc).__name__}: {exc}"[:300]
+        return out, status
+    status["readable"] = True
+    return out, status
+
+
+def _integrity_warnings(retro_status: dict, snap_status: dict) -> list[str]:
+    """Plain warnings for what the receipt must not hide.
+
+    Read/schema integrity only: a missing `rank_by` column or unstamped records stay
+    unknown/partial ATTRIBUTION and are warned about — they are neither an era nor a
+    verified absence, and they carry no scientific or promotion meaning either way.
+    """
+    out: list[str] = []
+    for name, st in (("retro", retro_status), ("snapshot", snap_status)):
+        if not st.get("readable") or st.get("error"):
+            out.append(f"source `{name}` unreadable or missing ({st.get('error')}); "
+                       "its stamps are absent, never verified absent")
+            continue
+        if st.get("n_malformed_lines"):
+            out.append(f"source `{name}`: {st['n_malformed_lines']} malformed line(s) "
+                       "skipped and counted")
+        if st.get("n_lines_without_as_of"):
+            out.append(f"source `{name}`: {st['n_lines_without_as_of']} line(s) without "
+                       "a usable as_of skipped and counted")
+        if st.get("n_malformed_dates"):
+            out.append(f"source `{name}`: {st['n_malformed_dates']} malformed/non-ISO "
+                       "membership date(s) skipped and counted")
+        if st.get("n_invalid_membership_records"):
+            out.append(f"source `{name}`: {st['n_invalid_membership_records']} invalid "
+                       "membership record(s) skipped and counted")
+        if st.get("n_conflicting_duplicate_observations"):
+            out.append(f"source `{name}`: "
+                       f"{st['n_conflicting_duplicate_observations']} same-date duplicate "
+                       "observation(s) with differing stamp or membership sets — clean "
+                       "assignment and per-era rates are blocked")
+        if st.get("rank_by_column_present") is False:
+            out.append(f"source `{name}`: no `rank_by` column — every stamp is missing "
+                       "attribution (unknown/partial), never an era")
+        elif st.get("n_missing_stamp_records"):
+            out.append(f"source `{name}`: {st['n_missing_stamp_records']} membership "
+                       "record(s) carry no stamp — missing attribution")
+    return out
+
+
+def _cohort_integrity_block(root: Path, episodes: list[dict], *, as_of: str,
+                            include_era_rates: bool = True) -> dict:
+    """Build the descriptive integrity block for ``episodes`` (read-only, no scoring).
+
+    ``as_of`` is REQUIRED: the frozen original cut every membership observation is read
+    through — the generation path's real board as_of, or a preserved artifact's
+    validated as_of. Never the clock, the current config, or the membership sources'
+    latest vintage.
+
+    ``episodes`` rows are read for identity only — ticker, entry_date, board_exit_date,
+    maturity. On the generation path (`include_era_rates=True`) the descriptive per-era
+    summaries are computed by the engine with the existing `pm.aggregate` over those
+    already-graded rows. The receipt-only path passes False: no aggregator runs there
+    at all.
+    """
+    retro_m, retro_status = load_retro_membership(root)
+    snap_m, snap_status = load_snapshot_membership(root)
+    source_complete = all(
+        status.get("readable") and not status.get("error")
+        and not status.get("n_malformed_lines")
+        and not status.get("n_lines_without_as_of")
+        and not status.get("n_invalid_membership_records")
+        and not status.get("n_malformed_dates")
+        and not any(d <= as_of for d in status.get("conflicting_duplicate_dates", []))
+        for status in (retro_status, snap_status)
+    )
+    block = pm.cohort_integrity_block({"retro": retro_m, "snapshot": snap_m}, episodes,
+                                      as_of=as_of,
+                                      include_era_rates=include_era_rates and source_complete)
+    block["sources_read"] = {"retro": retro_status, "snapshot": snap_status}
+    block["source_validation"] = {
+        "state": "complete" if source_complete else "incomplete",
+        "as_of": as_of,
+        "meaning": ("Original source READ and schema integrity only — this state "
+                    "carries no scientific or promotion authority."),
+    }
+    if include_era_rates and not source_complete:
+        block["per_era_unavailable_reason"] = "original_membership_source_incomplete"
+    block["warnings"] = _integrity_warnings(retro_status, snap_status)
+    return block
+
+
+def _validated_inspection_artifact(path: Path) -> tuple[dict, str]:
+    """Read and validate a PRESERVED artifact for read-only inspection.
+
+    Refuses — with a clear nonzero SystemExit, BEFORE any scoring, classification,
+    aggregation or write — unreadable, undecodable, non-object, foreign-schema,
+    invalid-as_of, non-list or empty episode lists, and malformed identity rows.
+    Nothing is repaired: an artifact that cannot be validated is not inspected. The
+    artifact's own `as_of` is the frozen membership cut for the receipt; it is never
+    re-derived from the current sources or the clock.
+    """
+    try:
+        raw = path.read_bytes()
+    except OSError as exc:
+        raise SystemExit(f"--artifact unreadable: {type(exc).__name__}: {exc}") from None
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise SystemExit(f"--artifact is not decodable UTF-8: {exc}") from None
+    try:
+        doc = json.loads(text)
+    except json.JSONDecodeError as exc:
+        raise SystemExit(f"--artifact is not decodable JSON: {exc}") from None
+    if not isinstance(doc, dict):
+        raise SystemExit(
+            "--artifact must be a prophet_postmortem/v1 artifact with episode rows "
+            f"(a JSON object), got {type(doc).__name__}")
+    if doc.get("schema") != SCHEMA:
+        raise SystemExit(
+            "--artifact must be a prophet_postmortem/v1 artifact with episode rows "
+            f"(got schema {doc.get('schema')!r})")
+    rows = doc.get("episodes")
+    if not isinstance(rows, list) or not rows:
+        raise SystemExit(
+            "--artifact must be a prophet_postmortem/v1 artifact with a NON-EMPTY "
+            "episode list")
+    try:
+        as_of = pm.iso_calendar_date(doc.get("as_of"), field="artifact as_of")
+    except ValueError as exc:
+        raise SystemExit(f"--artifact {exc} (prophet_postmortem/v1)") from None
+    seen_identity: set[tuple[str, str]] = set()
+    for i, row in enumerate(rows):
+        if not isinstance(row, dict):
+            raise SystemExit(
+                f"--artifact episode row {i} is not an object; malformed identity rows "
+                "are refused (prophet_postmortem/v1)")
+        ticker = row.get("ticker")
+        if not isinstance(ticker, str) or not ticker.strip():
+            raise SystemExit(
+                f"--artifact episode row {i} has an invalid ticker {ticker!r}; "
+                "malformed identity rows are refused (prophet_postmortem/v1)")
+        for field in ("entry_date", "board_exit_date"):
+            value = row.get(field)
+            if field == "board_exit_date" and value is None:
+                continue          # None is the actual open sentinel
+            try:
+                pm.iso_calendar_date(value, field=f"episodes[{i}].{field}")
+            except ValueError as exc:
+                raise SystemExit(
+                    f"--artifact episode row {i}: {exc} (prophet_postmortem/v1)") from None
+        entry, exit_ = row["entry_date"], row.get("board_exit_date")
+        if entry > as_of:
+            raise SystemExit(f"--artifact episode row {i}: entry_date after artifact as_of")
+        if exit_ is not None and exit_ <= entry:
+            raise SystemExit(f"--artifact episode row {i}: invalid exclusive episode interval")
+        identity = (ticker, entry)
+        if identity in seen_identity:
+            raise SystemExit(f"--artifact episode row {i}: ambiguous repeated episode identity")
+        seen_identity.add(identity)
+    invalid = [a for a in pm.integrity_assignments({}, rows, as_of=as_of)
+               if a.get("unavailable")]
+    if invalid:
+        raise SystemExit(f"--artifact invalid episode identity or interval: {invalid[0]['unavailable_reason']}")
+    return doc, as_of
+
+
+def _cohort_integrity_only(root: Path, artifact: str | None) -> int:
+    """`--cohort-integrity-only`: print the receipt for a PRESERVED artifact, write nothing.
+
+    Reads the artifact's episode list (identity + maturity, strictly validated) and the
+    two original membership/stamp sources, and prints the integrity receipt as JSON to
+    stdout, read through the PRESERVED artifact's own validated as_of as the frozen
+    membership cut. The scorer, the classifier, the aggregator and `build_rows` are
+    never called, and no byte is written anywhere — tests pin this by monkeypatching
+    every one of those entrypoints to raise and by diffing every input byte (including
+    data/us_board_ledger) across the run.
+    """
+    if not artifact:
+        raise SystemExit(
+            "--cohort-integrity-only requires --artifact PATH (the preserved "
+            "summary.json to inspect read-only)")
+    doc, as_of = _validated_inspection_artifact(Path(artifact))
+    episodes = [
+        {"ticker": r.get("ticker"),
+         "entry_date": r.get("entry_date"),
+         "board_exit_date": r.get("board_exit_date"),
+         "maturity": r.get("maturity")}
+        for r in (doc.get("episodes") or [])
+    ]
+    block = _cohort_integrity_block(root, episodes, as_of=as_of,
+                                    include_era_rates=False)
+    block["as_of"] = as_of
+    block["artifact"] = str(artifact)
+    block["receipt_only_note_en"] = (
+        "Receipt only: the per-era descriptive summaries are deliberately absent here — "
+        "they are computed on generation from full graded rows, and this read-only path "
+        "never re-aggregates outcomes. Membership is read through the preserved "
+        "artifact's own as_of as the frozen cut.")
+    print(json.dumps(block, ensure_ascii=False, indent=1))
+    return 0
 
 
 # --------------------------------------------------------------------------- #
@@ -876,6 +1287,15 @@ def build_rows(root: Path = ROOT, horizon: int = ts.DEFAULT_HORIZON) -> dict:
                 "由此产生的任何规则都必须先走独立的预注册研究，不得直接上线。")},
     ]
 
+    # ── cohort integrity — descriptive source-stamp receipt (strictly additive) ──
+    # Re-reads the two ORIGINAL membership sources (the rows above already consumed
+    # their entry-state columns through different, deduped indexes) and stamps every
+    # episode with the partition its ORIGINAL rank_by record resolves to. Read-only:
+    # `summary` above and every field on `rows` are untouched by it. The cut is THIS
+    # run's own board as_of — the real existing generation date, never a clock and
+    # never the membership sources' latest vintage.
+    cohort_integrity = _cohort_integrity_block(root, rows, as_of=as_of)
+
     return {
         "schema": SCHEMA,
         "as_of": as_of,
@@ -928,6 +1348,7 @@ def build_rows(root: Path = ROOT, horizon: int = ts.DEFAULT_HORIZON) -> dict:
         "coverage": coverage,
         "caveats": caveats,
         "summary": summary,
+        "cohort_integrity": cohort_integrity,
         "episodes": rows,
     }
 
@@ -977,6 +1398,107 @@ def render_report(doc: dict) -> str:
     A(f"- theme state reconstructed from {cov['basket_revisions']} committed revisions of "
       f"`{BASKETS_REL}` ({cov['basket_asof_first']} → {cov['basket_asof_last']})")
     A("")
+
+    # ── cohort integrity — BEFORE the pooled rates, and additive by contract ──
+    # An artifact produced before this block existed carries no `cohort_integrity` key
+    # and renders exactly as it always did; a `render_report` over an old frozen doc
+    # must never grow this section.
+    integrity = doc.get("cohort_integrity")
+    if integrity:
+        parts_ = integrity.get("partitions") or {}
+        A("## Cohort integrity — original source eras (descriptive receipt)")
+        A("")
+        A("The pooled rates in every section below are the **legacy summary, retained "
+          "unchanged for compatibility**. They are **not** a cross-era comparison of "
+          "any kind: episodes whose original board definition differs, disagrees or "
+          "was never recorded are different board products and are never pooled into "
+          "a cross-era rate here. This section is descriptive only — no grade, no "
+          "verdict, no promotion read, no winner/loser selection.")
+        A("")
+        A("| Partition | Episodes | Matured | In flight | Unscored | Entry dates |")
+        A("|---|---|---|---|---|---|")
+        for name in pm.INTEGRITY_PARTITIONS:
+            c = parts_.get(name) or {}
+            mat = c.get("maturity") or {}
+            A(f"| {name} | {c.get('n_episodes', 0)} | {mat.get('matured', 0)} "
+              f"| {mat.get('in_flight', 0)} | {mat.get('unscored', 0)} "
+              f"| {c.get('n_entry_dates', 0)} |")
+        A("")
+        un = (parts_.get(pm.INTEGRITY_UNASSIGNED) or {}).get("n_episodes", 0)
+        mx = (parts_.get(pm.INTEGRITY_MIXED) or {}).get("n_episodes", 0)
+        cf = (parts_.get(pm.INTEGRITY_CONFLICT) or {}).get("n_episodes", 0)
+        pt = (parts_.get(pm.INTEGRITY_PARTIAL) or {}).get("n_episodes", 0)
+        A(f"- **{un} unassigned** — no recorded stamp anywhere in the episode's "
+          "membership window: missing attribution, never a manufactured legacy era.")
+        A(f"- **{pt} partial** — agreeing stamps plus a missing membership stamp "
+          "or missing original entry-day attribution (the gap is disclosed, not absorbed).")
+        A(f"- **{mx} mixed** — different recorded stamps on different membership days: "
+          "an existing episode crossing an era boundary, with its score untouched.")
+        A(f"- **{cf} conflict** — differing stamps on the SAME membership date, within "
+          "one source (e.g. across horizons) or between the two sources.")
+        cut = integrity.get("as_of_cut") or {}
+        if cut:
+            A(f"- Frozen membership cut: attribution is read only up to the artifact's "
+              f"own as_of **{cut.get('as_of')}**; "
+              f"{cut.get('n_membership_records_after_cut', 0)} later membership record(s) "
+              f"on {len(cut.get('dates_after_cut') or [])} later source date(s) are "
+              "excluded from every assignment and disclosed — a later source vintage "
+              "never assigns, conflicts or re-eras an episode.")
+        gap_rows = [a for a in (integrity.get("episodes") or []) if a.get("observed_gap")]
+        if gap_rows:
+            A(f"- **{len(gap_rows)} episode(s) with an observed membership gap** — a "
+              "recorded in-window board date absent from ALL original sources for that "
+              "ticker. Records after the gap belong to a later admission: they are "
+              "excluded from attribution and such an episode is never single-assigned "
+              "(`observed_gap` on each row names the date and the excluded record count).")
+        if integrity.get("membership_conflict_free") is False:
+            A(f"- The original sources' membership observations conflict on at least "
+              f"one record; per-era descriptive summaries are therefore withheld "
+              f"(`{integrity.get('per_era_unavailable_reason')}`).")
+        A("")
+        per_era = integrity.get("per_era") or {}
+        if per_era:
+            A("Per-era descriptions — `single` explicitly assigned only. Each "
+              "era's full descriptive summary lives in "
+              "`cohort_integrity.per_era[<stamp>].aggregate`, computed with the "
+              "existing aggregate on that era's episodes ALONE: two eras never share "
+              "a rate denominator, nothing pooled is published, and every block is "
+              "stamped `descriptive_only` with an explicit no-promotion authority.")
+            A("")
+            A("| Era stamp (exactly as recorded) | Episodes | Matured | In flight | "
+              "Unscored | Entry dates |")
+            A("|---|---|---|---|---|---|")
+            for era in sorted(per_era):
+                wrap = per_era[era]
+                agg = wrap.get("aggregate") or {}
+                A(f"| `{era}` | {agg.get('n_episodes', 0)} | {agg.get('n_matured', 0)} "
+                  f"| {agg.get('n_in_flight', 0)} | {agg.get('n_unscored', 0)} "
+                  f"| {agg.get('n_board_dates', 0)} |")
+            A("")
+        srcs = integrity.get("sources") or {}
+        reach = " · ".join(
+            f"`{name}` {v.get('n_dates', 0)} dates ({v.get('first_date')} → "
+            f"{v.get('last_date')})"
+            for name, v in sorted((srcs.get("sources") or {}).items()))
+        A(f"Source reach: {reach or 'none'}.")
+        A("")
+        A(f"- {srcs.get('n_overlap_dates', 0)} board date(s) carried by both sources; "
+          f"{len(srcs.get('dates_in_one_source_only') or [])} date(s) reachable by a "
+          "single source only — disjoint reach is that source's documented coverage, "
+          "NOT a disagreement.")
+        A(f"- {srcs.get('n_overlap_dates_with_membership_difference', 0)} overlap "
+          "date(s) where the two sources' buy memberships differ; the per-date "
+          "retro-only / snapshot-only ticker sets and any stamp disagreements are "
+          "listed in `cohort_integrity.sources.membership_on_overlap_dates`.")
+        for warning in (integrity.get("warnings") or []):
+            A(f"- **WARNING** — {warning}")
+        if integrity.get("per_era_unavailable_reason"):
+            A(f"- Per-era descriptive summaries unavailable "
+              f"(`{integrity['per_era_unavailable_reason']}`): an original membership "
+              "source read is incomplete, or the sources' membership observations "
+              "conflict — observed stamps cannot stand in for missing or conflicting "
+              "ones.")
+        A("")
 
     A("## Failure taxonomy — both tails")
     A("")
@@ -1265,9 +1787,35 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--out", default=None, help=f"default {OUT_REL}")
     ap.add_argument("--report-dir", default=None, help=f"default {REPORT_DIR_REL}")
     ap.add_argument("--dry-run", action="store_true", help="print the headline, write nothing")
+    ap.add_argument("--cohort-integrity-only", action="store_true",
+                    help="print only the descriptive cohort-integrity receipt for an "
+                         "EXISTING artifact; reads the preserved artifact plus the "
+                         "membership sources, never scores, never writes")
+    ap.add_argument("--artifact", default=None,
+                    help="with --cohort-integrity-only: path to the preserved "
+                         "summary.json to inspect")
     args = ap.parse_args(argv)
 
     root = Path(args.root).resolve()
+    # Flag pairing, decided BEFORE any generation path. `--artifact` belongs to the
+    # read-only bypass alone, and incompatible explicit generation flags are refused
+    # rather than silently ignored.
+    if args.artifact and not args.cohort_integrity_only:
+        raise SystemExit(
+            "--artifact is only meaningful with --cohort-integrity-only (read-only "
+            "inspection); refusing to attach it to the generation path")
+    if args.cohort_integrity_only:
+        incompatible = [flag for flag, given in (
+            ("--out", args.out),
+            ("--report-dir", args.report_dir),
+            ("--dry-run", args.dry_run),
+            ("--horizon", args.horizon != ts.DEFAULT_HORIZON),
+        ) if given]
+        if incompatible:
+            raise SystemExit(
+                "--cohort-integrity-only never scores and never writes; incompatible "
+                "explicit flag(s): " + ", ".join(incompatible))
+        return _cohort_integrity_only(root, args.artifact)
     doc = build_rows(root, horizon=args.horizon)
     s = doc["summary"]
 

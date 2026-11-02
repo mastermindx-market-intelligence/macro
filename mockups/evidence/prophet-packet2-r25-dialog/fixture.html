@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prophet R25 dialog visual evidence</title>
+<link rel="stylesheet" href="/site/theme.css">
+
+<style>
+.pvcard{position:relative;display:flex;flex-direction:column;background:var(--panel2);border:1px solid var(--line);border-radius:12px;overflow:hidden;text-decoration:none;color:var(--text);min-width:0;transition:transform .12s,box-shadow .12s,border-color .12s}
+.pvcard:hover{transform:translateY(-2px);box-shadow:0 5px 18px rgba(0,0,0,.22);border-color:color-mix(in srgb,var(--pvh) 55%,var(--line))}
+.pv-buy{--pvh:var(--pv-buy);--pvh-ink:var(--ink-pv-buy,var(--pvh))}.pv-near{--pvh:var(--pv-near);--pvh-ink:var(--ink-pv-near,var(--pvh))}.pv-wait{--pvh:var(--pv-wait);--pvh-ink:var(--ink-pv-wait,var(--pvh))}.pv-hold{--pvh:var(--pv-hold);--pvh-ink:var(--pv-hold)}.pv-avoid{--pvh:var(--pv-avoid);--pvh-ink:var(--ink-pv-avoid,var(--pvh))}
+
+.pv-noread{--pvh:var(--muted);--pvh-ink:var(--muted)}
+
+.pv-chip[data-noread]{border-style:dashed;background:transparent}
+.pvcard::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;z-index:3;pointer-events:none;border-radius:12px 12px 0 0;background:linear-gradient(90deg,var(--pvh),color-mix(in srgb,var(--pvh) 12%,transparent) 90%);box-shadow:0 1px 8px color-mix(in srgb,var(--pvh) 45%,transparent)}
+.pvcard.pv-triage::before{box-shadow:0 1px 12px color-mix(in srgb,var(--pvh) 70%,transparent)}
+
+
+.pvcard.pv-featured{background:color-mix(in srgb,var(--pv-buy) 2.5%,var(--panel2));
+  border-color:color-mix(in srgb,var(--pv-buy) 38%,var(--line));
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--pv-buy) 24%,transparent),
+             0 0 16px -6px color-mix(in srgb,var(--pv-buy) 32%,transparent),
+             0 10px 26px -14px rgba(0,0,0,.7)}
+
+.pvcard.pv-featured:hover{border-color:color-mix(in srgb,var(--pv-buy) 48%,var(--line));
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--pv-buy) 30%,transparent),
+             0 0 20px -6px color-mix(in srgb,var(--pv-buy) 40%,transparent),
+             0 8px 22px -8px rgba(0,0,0,.5)}
+.pvcard.pv-featured::before{background:linear-gradient(90deg,var(--pvh),color-mix(in srgb,var(--pvh) 55%,transparent));
+  box-shadow:0 1px 10px color-mix(in srgb,var(--pvh) 40%,transparent)}
+
+html[data-theme="light"] .pvcard.pv-featured{background:#fff;
+  border-color:color-mix(in srgb,var(--pv-buy) 30%,var(--line));
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--pv-buy) 16%,transparent),
+             0 0 12px -6px color-mix(in srgb,var(--pv-buy) 22%,transparent),
+             0 8px 20px -14px rgba(24,58,40,.22)}
+html[data-theme="light"] .pvcard.pv-featured:hover{border-color:color-mix(in srgb,var(--pv-buy) 40%,var(--line));
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--pv-buy) 22%,transparent),
+             0 0 16px -6px color-mix(in srgb,var(--pv-buy) 30%,transparent),
+             0 8px 20px -10px rgba(24,58,40,.18)}
+
+.pvcard:has(.pv-cau:hover),.pvcard:has(.pv-cau:focus-within){overflow:visible;z-index:40}
+.pv-chart{position:relative;min-width:0;border-radius:11px 11px 0 0;background:color-mix(in srgb,var(--pvh) 3%,transparent)}
+.pv-chart svg{display:block;width:100%;height:74px;border-radius:11px 11px 0 0}
+
+.pv-chart svg *{stroke:var(--pvh)!important}
+.pv-chart svg [fill]:not([fill="none"]){fill:var(--pvh)!important;stroke:none!important}
+.pv-nochart{height:74px}
+.pv-ov{position:absolute;top:8px;display:flex;gap:5px;align-items:center;z-index:2;max-width:70%}
+
+.pv-ov.pv-ovl{flex-wrap:wrap;row-gap:3px}
+.pv-ovl{left:9px}.pv-ovr{right:9px}
+.pv-chip{font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;line-height:1.35;padding:2px 9px;border-radius:999px;white-space:nowrap;background:color-mix(in srgb,var(--pvh,var(--muted)) 13%,var(--panel,#fff));color:var(--pvh-ink,var(--pvh,var(--muted)));border:1px solid color-mix(in srgb,var(--pvh-ink,var(--pvh,var(--muted))) 40%,transparent)}
+/* solid Buy chip: ink-grade fill + panel ink — white on the raw hue was 3.61:1
+   light / 2.51:1 dark at 10px/800 (the worst white-on-hue chip in the estate
+   audit); panel-on-ink clears 4.5 in both themes and keeps the solid identity. */
+.pv-buy .pv-chip{background:var(--pvh-ink,var(--pvh,var(--up)));color:var(--panel,#fff);border-color:transparent}
+.pvcard .pv-quote{display:inline-flex;align-items:baseline;gap:6px;background:color-mix(in srgb,var(--panel) 86%,transparent);border:1px solid var(--line);border-radius:7px;padding:1px 6px;white-space:nowrap}
+.pvcard .nb-px.pv-px,.pvcard .nb-chg.pv-chg{font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.35;white-space:nowrap;margin:0}
+.pvcard .nb-px.pv-px{color:var(--text)}
+.pvcard .pv-ovr>.nb-px.pv-px{background:color-mix(in srgb,var(--panel) 86%,transparent);border:1px solid var(--line);border-radius:7px;padding:1px 6px}
+.pvcard .pv-quote .pv-chg{color:var(--muted)}
+
+.pvcard .pv-quote .pv-chg.up{color:var(--ink-up,var(--up))}
+.pvcard .pv-quote .pv-chg.down{color:var(--ink-down,var(--down))}
+.pvcard .pv-quote .pv-chg.stale{color:var(--muted);font-weight:700}
+.pv-bd{padding:8px 11px 9px;display:flex;flex-direction:column;min-width:0;flex:1}
+.pv-hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px;min-width:0}
+.pv-idw{display:flex;align-items:baseline;gap:6px;min-width:0;overflow:hidden}
+.pv-tk{font-size:13px;font-weight:800;letter-spacing:.01em;white-space:nowrap}
+.pv-flg{font-size:12px;flex:none}
+.pv-nm{font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.pv-edge{display:inline-flex;align-items:baseline;gap:4px;flex:none}
+.pv-edl{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.pv-edn{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--pvh-ink,var(--pvh));line-height:1}
+.pv-edn.pv-edna{color:var(--muted);font-weight:600;font-size:12px}
+.pv-ind{font-size:10.5px;color:var(--muted);opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+
+
+.pv-mk{display:flex;flex-wrap:wrap;align-items:center;gap:3px 4px;margin-top:4px;min-width:0;min-height:18px}
+.pv-mk-i{font-size:9.5px;font-weight:700;line-height:1.45;padding:1px 6px;border-radius:6px;
+  white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;
+  color:var(--muted);background:color-mix(in srgb,var(--muted) 10%,transparent);
+  border:1px solid color-mix(in srgb,var(--muted) 22%,transparent)}
+.pv-mk-feat{font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  color:color-mix(in srgb,var(--pv-buy) 60%,var(--text));
+  background:color-mix(in srgb,var(--pv-buy) 16%,var(--panel2));
+  border-color:color-mix(in srgb,var(--pv-buy) 44%,transparent)}
+.pv-mk-new{font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  color:color-mix(in srgb,var(--info) 60%,var(--text));
+  background:color-mix(in srgb,var(--info) 13%,var(--panel2));
+  border-color:color-mix(in srgb,var(--info) 38%,transparent)}
+.pv-mk-warm{color:color-mix(in srgb,var(--warn) 60%,var(--text));
+  background:color-mix(in srgb,var(--warn) 15%,var(--panel2));
+  border-color:color-mix(in srgb,var(--warn) 38%,transparent)}
+.pv-mk-theme{color:color-mix(in srgb,var(--muted) 55%,var(--text));
+  border-color:color-mix(in srgb,var(--muted) 34%,transparent)}
+
+
+.pv-mk-blow{font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--ink-warn,var(--warn));
+  background:color-mix(in srgb,var(--warn) 8%,var(--panel));
+  border-color:color-mix(in srgb,var(--ink-warn,var(--warn)) 50%,transparent)}
+
+.pv-mk-adj{font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  color:color-mix(in srgb,var(--prov-ink) 42%,var(--muted));
+  background:color-mix(in srgb,var(--prov) 7%,transparent);
+  border-color:color-mix(in srgb,var(--prov) 30%,transparent)}
+
+.pv-mk-nck{background:transparent;color:var(--muted);
+  border-style:dashed;border-color:color-mix(in srgb,var(--muted) 42%,transparent)}
+
+.pv-mk-i[data-tip-en]{cursor:help}
+.pv-stp{display:flex;align-items:center;margin:7px 1px 0}
+.pv-dot{width:6.5px;height:6.5px;border-radius:50%;background:var(--line);flex:none}
+.pv-seg{flex:1;height:2px;background:var(--line);opacity:.75}
+.pv-dot.pa,.pv-seg.pa{background:color-mix(in srgb,var(--pvh) 45%,var(--line));opacity:1}
+.pv-dot.on{background:var(--pvh);box-shadow:0 0 0 3px color-mix(in srgb,var(--pvh) 18%,transparent)}
+.pv-stl{display:flex;justify-content:space-between;gap:3px;margin-top:3px;min-width:0}
+.pv-stl span{font-size:9.5px;color:var(--muted);opacity:.7;white-space:nowrap}
+.pv-stl span.on{color:var(--pvh);opacity:1;font-weight:700}.pv-zn{display:flex;flex-wrap:wrap;align-items:center;gap:2px 5px;background:color-mix(in srgb,var(--panel) 55%,var(--bg));border-top:1px solid var(--line);padding:6px 10px 7px;font-size:10.5px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;margin-top:auto}
+.pv-znl{font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--pvh-ink,var(--pvh));flex:none}
+.pv-znr{font-weight:700;flex:none;max-width:100%;overflow:hidden;text-overflow:ellipsis}.pv-znm{color:var(--muted);flex:none;max-width:100%;overflow:hidden;text-overflow:ellipsis}.pv-dt{margin-left:auto;color:var(--muted);flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:9.5px;padding-left:5px}.pv-added{margin-left:auto;color:var(--muted);flex:0 0 auto;font-size:9.5px;line-height:1.3}
+.pv-dt+.pv-added{margin-left:5px}
+.pv-trg{display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:800;line-height:1.35;padding:2px 8px;border-radius:999px;white-space:nowrap;background:color-mix(in srgb,var(--pvh) 9%,var(--panel));color:var(--pvh-ink,var(--pvh));border:1px solid color-mix(in srgb,var(--pvh-ink,var(--pvh)) 45%,transparent)}
+.pv-trg.pv-trg-soon{border-style:dashed;opacity:.92}
+.pv-cau{position:relative;display:inline-flex}
+.pv-cau-btn{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;line-height:1.35;padding:2px 7px;border-radius:999px;cursor:pointer;background:color-mix(in srgb,var(--warn) 14%,var(--panel));color:var(--ink-warn,var(--warn));border:1px solid color-mix(in srgb,var(--ink-warn,var(--warn)) 40%,transparent);font-family:inherit}
+
+.pv-cau-pop{display:none;position:absolute;top:calc(100% + 6px);left:0;z-index:30;width:264px;max-width:min(264px,78vw);max-height:min(300px,58vh);overflow-y:auto;overscroll-behavior:contain;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 11px 10px;box-shadow:var(--popover-shadow);white-space:normal;text-align:left}
+.pv-cau:hover .pv-cau-pop,.pv-cau:focus-within .pv-cau-pop{display:block}
+.pv-cau-hd{display:block;margin:0 0 7px;font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-warn, var(--warn))}
+
+.pv-cau-row{position:relative;display:block;padding-left:12px;font-size:10.5px;line-height:1.5;color:var(--text)}
+.pv-cau-row::before{content:"";position:absolute;left:2px;top:6.5px;width:4px;height:4px;border-radius:50%;background:var(--warn);opacity:.7}
+.pv-cau-row + .pv-cau-row{margin-top:7px}
+
+.pv-live{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;line-height:1.35;padding:2px 8px;border-radius:999px;white-space:nowrap;--plvc:#62a0e8;background:color-mix(in srgb,var(--plvc) 12%,var(--panel));color:var(--plvc);border:1px solid color-mix(in srgb,var(--plvc) 44%,transparent)}
+
+.pv-live[hidden]{display:none}
+html[data-theme="light"] .pv-live{--plvc:#2f6fd0}
+
+.pv-live--close{background:color-mix(in srgb,var(--plvc) 18%,var(--panel));border-color:color-mix(in srgb,var(--plvc) 70%,transparent)}
+.pv-live--drop,.pv-live--over{--plvc:var(--pv-wait)}
+[data-showmore-rows] .pvcard .pv-chart svg,[data-showmore-rows] .pvcard .pv-nochart{height:56px}
+[data-showmore-rows] .pvcard .pv-tk{font-size:11.5px}
+[data-showmore-rows] .pvcard .pv-stl span{font-size:9px}
+[data-showmore-rows] .pvcard .pv-mk{margin-top:3px}
+@media (min-width:681px){
+  .nbgrid:has(> .pvcard),.cards:has(> .pvcard),.rip-grid:has(> .pvcard){grid-template-columns:repeat(auto-fill,minmax(246px,1fr))!important}
+}
+@media (max-width:680px){
+  .pvcard .pv-chart svg,.pvcard .pv-nochart{height:58px}
+
+  .pv-hd{align-items:flex-start}
+  .pv-idw{flex:1 1 auto;flex-wrap:wrap;row-gap:1px;overflow:visible}
+  .pv-nm{flex-basis:100%;width:100%}
+  .pv-stl span{font-size:9px}
+  .pv-zn{font-size:10px}
+  /* narrow cards: trigger chip collapses to the bare ⚡ glyph (the board copy
+     teaches "marked ⚡"); !important outranks the html[data-lang] l-en/l-zh
+     visibility rules, which otherwise win at any width. The overlay's own
+     flex-wrap now applies at EVERY width (promoted above — it was a desktop
+     clipping bug), so it is no longer repeated here. */
+  .pv-trg .l-en,.pv-trg .l-zh{display:none!important}
+  .pv-trg{padding:2px 5px;gap:0}
+  /* same collapse-to-glyph rule for the ◐ live chip */
+  .pv-live .l-en,.pv-live .l-zh{display:none!important}
+  .pv-live{padding:2px 5px;gap:0}
+  /* marks chips do NOT collapse to a glyph — "Featured" and the theme name are
+     the words that make the row non-colour-only; they get one size UP instead,
+     because a phone is where 9.5px stops being readable. */
+  .pv-mk-i{font-size:10px;padding:2px 7px}
+}
+/* Opt-in Prophet detail. Existing non-opted card geometry/semantics are unchanged. */
+.pvcard.pv-has-setup{position:relative}.pv-setup-stock-link{position:absolute;inset:0;z-index:4;border-radius:inherit}.pv-setup-inline{position:relative;z-index:5;margin-top:10px}.pv-setup-inline>summary{width:fit-content;cursor:pointer;border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:7px 10px;color:var(--text);font-size:12px;list-style:none;background:var(--panel2,var(--panel))}.pv-setup-inline>summary:focus-visible,.pv-setup-stock-link:focus-visible{outline:2px solid var(--link);outline-offset:2px}.pv-setup-inline[open]{z-index:6}.pv-setup-inline[open]>.pv-setup-body{margin-top:12px}
+.pvs-availability{font-size:12px;line-height:1.5;padding:10px 12px;border-inline-start:2px solid var(--muted);background:var(--panel2,var(--panel));color:var(--muted)}.pvs-audit{margin:14px 0;border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:0 12px}.pvs-audit>summary{padding:12px 0;cursor:pointer;color:var(--text);font-size:12px;font-weight:650}.pvs-audit>summary:focus-visible{outline:2px solid var(--link);outline-offset:3px}.pvs-audit>.pvs-section:last-child{border-bottom:0}
+.pv-setup-body,.pv-setup-body *{box-sizing:border-box}.pvs-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:22px}.pvs-grid>div{min-width:0}.pvs-section{padding:14px 0;border-bottom:1px solid var(--line)}.pvs-section h3{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}.pvs-section p{line-height:1.55;margin:8px 0;overflow-wrap:anywhere}.pvs-note{font-size:12px;color:var(--muted)}.pvs-read{font-size:16px;font-weight:750;color:var(--text)}.pvs-levels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:0}.pvs-levels .pvs-field{padding:10px;background:var(--panel2,var(--panel));border:1px solid var(--line);border-radius:var(--r-ctl,8px)}.pvs-field dt{font-size:11px;color:var(--muted);margin-bottom:4px}.pvs-field dd{margin:0;font-size:14px;color:var(--text);overflow-wrap:anywhere}.pvs-levels dd{font-size:17px;font-weight:750}.pvs-facts{margin:0}.pvs-facts .pvs-field{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--line)}.pvs-facts dt{flex:1}.pvs-facts dd{flex:1;text-align:right;font-size:12px}.pvs-chart-slot{background:var(--panel2,var(--panel));border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:12px;margin:14px 0}.pvs-chart-slot>svg{display:block;width:100%;height:150px}.pvs-chart-slot>p{font-size:10px;color:var(--muted);margin:8px 0 0}
+html.pv-setup-lock{overflow:hidden}.pv-setup-dialog{box-sizing:border-box;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);color:var(--text);width:min(1040px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:0;overflow:auto;overscroll-behavior:contain;box-shadow:var(--pv-dialog-shadow)}.pv-setup-dialog::backdrop{background:var(--pv-dialog-backdrop)}.pv-setup-dialog *{box-sizing:border-box}.pvs-dialog-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;position:sticky;top:0;padding:18px 22px;border-bottom:1px solid var(--line);background:var(--panel);z-index:8}.pvs-dialog-head h2{font-size:23px;line-height:1.2;margin:0;overflow-wrap:anywhere}.pvs-dialog-head p{font-size:12px;color:var(--muted);margin:5px 0}.pvs-close{border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:8px 12px;background:var(--panel2,var(--panel));color:var(--text);cursor:pointer}.pvs-close:focus-visible,.pvs-native-link:focus-visible{outline:2px solid var(--link);outline-offset:2px}.pvs-dialog-content{padding:4px 22px 20px}.pvs-dialog-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;font-size:12px}.pvs-native-link{color:var(--link)}.pvs-dialog-content>.pv-setup-body{margin:0}.pv-setup-dialog .pv-record-detail{position:static!important}
+@media(max-width:680px){.pvs-grid{grid-template-columns:1fr;gap:0}.pv-setup-dialog{width:calc(100vw - 16px);max-height:calc(100dvh - 16px)}.pvs-dialog-head{padding:16px}.pvs-dialog-content{padding:0 16px 16px}.pvs-dialog-foot{padding:12px 16px;flex-wrap:wrap}.pvs-levels{gap:7px}.pvs-levels dd{font-size:15px}.pvs-chart-slot>svg{height:120px}}
+
+</style>
+
+<style>
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--font-ui);}
+.ve-shell{padding:48px;max-width:1180px;margin:auto}
+.ve-kicker{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.ve-row{margin-top:18px;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.ve-cell{height:90px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+@media(max-width:680px){.ve-shell{padding:18px}.ve-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body class="page-stocks">
+<main class="ve-shell">
+<p class="ve-kicker"><span class="l-en">Underlying Prophet screener · visual evidence fixture</span><span class="l-zh">Prophet 筛选器底层 · 视觉证据夹具</span></p>
+<h1><span class="l-en">Setup disclosure</span><span class="l-zh">形态详情</span></h1>
+<div class="ve-row"><div class="ve-cell"></div><div class="ve-cell"></div></div>
+</main>
+<dialog class="pv-setup-dialog" aria-labelledby="pvs-dialog-title">
+<header class="pvs-dialog-head"><div><h2 id="pvs-dialog-title">AMD</h2><p><span class="l-en">Setup detail · read only</span><span class="l-zh">形态详情 · 只读</span></p></div><button class="pvs-close" type="button"><span class="l-en">Close ×</span><span class="l-zh">关闭 ×</span></button></header>
+<div class="pvs-dialog-content">
+
+
+
+<div class="pv-setup-body" data-setup-kind="board" data-native-id="AMD">
+  <p class="pvs-note pvs-summary-clock"><span class="l-en">Source as-of</span><span class="l-zh">来源日期</span> 2026-09-27 · <span class="l-en">Quote time</span><span class="l-zh">报价时间</span> 2026-09-27T09:30:00Z</p>
+  <div class="pvs-grid">
+    <div>
+      <section class="pvs-section">
+        <h3><span class="l-en">Entry conditions</span><span class="l-zh">入场条件</span></h3>
+
+        <p class="pvs-read" data-entry-status="bounce_wait"><span class="l-en">Wait for confirmation</span><span class="l-zh">等待确认</span></p>
+        <div class="pvs-chart-slot" data-pvs-chart><p><span class="l-en">Chart available on the setup card.</span><span class="l-zh">可在形态卡片上查看图表。</span></p></div>
+
+      </section>
+
+      <section class="pvs-section"><h3><span class="l-en">Price levels</span><span class="l-zh">关键价位</span></h3>
+      <dl class="pvs-levels">
+        <div class="pvs-field" data-source-field="price"><dt><span class="l-en">Snapshot price</span><span class="l-zh">快照价格</span></dt><dd>$178.42</dd></div>
+        <div class="pvs-field" data-source-field="entry_signal.buy_zone.low"><dt><span class="l-en">Entry zone · low</span><span class="l-zh">入场区间下沿</span></dt><dd>$171.00</dd></div>
+        <div class="pvs-field" data-source-field="entry_signal.buy_zone.high"><dt><span class="l-en">Entry zone · high</span><span class="l-zh">入场区间上沿</span></dt><dd>$176.00</dd></div>
+        <div class="pvs-field" data-source-field="entry_signal.stop"><dt><span class="l-en">Entry-method stop</span><span class="l-zh">入场方法止损位</span></dt><dd>$164.00</dd></div>
+        <div class="pvs-field" data-source-field="hold.invalidation"><dt><span class="l-en">Base invalidation</span><span class="l-zh">筑底失效位</span></dt><dd>$158.00</dd></div>
+        <div class="pvs-field" data-source-field="entry_signal.chase_above"><dt><span class="l-en">Chase boundary</span><span class="l-zh">追高边界</span></dt><dd>$184.00</dd></div>
+      </dl><p class="pvs-note"><span class="l-en">Entry stop and base invalidation are different. Chase boundary is not a target.</span><span class="l-zh">入场止损与筑底失效不同；追高边界不是目标价。</span></p></section>
+
+    </div>
+    <div>
+      <section class="pvs-section"><h3><span class="l-en">Why it is here</span><span class="l-zh">入选理由</span></h3>
+        <p><span class="pvs-original-source"><span class="l-en">Original source</span><span class="l-zh">来源原文</span> · Original detector: reclaim and hold the entry zone before entry.</span></p>
+      </section>
+
+      <section class="pvs-section"><h3><span class="l-en">Technical context</span><span class="l-zh">技术背景</span></h3><dl class="pvs-facts">
+        <div class="pvs-field" data-source-field="signal.above200"><dt><span class="l-en">Above 200-day trend</span><span class="l-zh">高于 200 日趋势</span></dt><dd><span class="l-en">Yes</span><span class="l-zh">是</span></dd></div>
+        <div class="pvs-field" data-source-field="signal.weekly_bull"><dt><span class="l-en">Weekly confirmation</span><span class="l-zh">周线确认</span></dt><dd><span class="l-en">Yes</span><span class="l-zh">是</span></dd></div>
+        <div class="pvs-field" data-source-field="signal.provisional"><dt><span class="l-en">Provisional observation</span><span class="l-zh">暂定观察</span></dt><dd><span class="l-en">Not supplied</span><span class="l-zh">来源未提供</span></dd></div>
+      </dl></section>
+      <p class="pvs-availability"><span class="l-en">Target and holding period unavailable in this view. Reward/risk and win probability are not calculated.</span><span class="l-zh">此视图暂无目标价与持有周期，不计算收益风险比或成功概率。</span></p>
+      <details class="pvs-audit"><summary><span class="l-en">Evidence &amp; source details</span><span class="l-zh">证据与来源详情</span></summary>
+        <section class="pvs-section"><h3><span class="l-en">Setup information</span><span class="l-zh">形态信息</span></h3>
+        <p class="pvs-status-read"><span class="l-en">Developing</span><span class="l-zh">形态形成中</span> · <span class="l-en">Base formation</span><span class="l-zh">筑底</span></p>
+        <dl class="pvs-facts">
+          <div class="pvs-field" data-source-field="lane"><dt><span class="l-en">Source setup type</span><span class="l-zh">来源形态类别</span></dt><dd>bottoming</dd></div>
+          <div class="pvs-field" data-source-field="stage"><dt><span class="l-en">Source stage</span><span class="l-zh">来源阶段</span></dt><dd>setting_up</dd></div>
+          <div class="pvs-field" data-source-field="canonical strategy binding not supplied"><dt><span class="l-en">Strategy sleeve</span><span class="l-zh">策略分组</span></dt><dd><span class="l-en">Not supplied</span><span class="l-zh">来源未提供</span></dd></div>
+          <div class="pvs-field" data-source-field="holding duration not supplied"><dt><span class="l-en">Holding horizon</span><span class="l-zh">持有周期</span></dt><dd><span class="l-en">Not supplied</span><span class="l-zh">来源未提供</span></dd></div>
+        </dl><p class="pvs-note"><span class="l-en">Selection is not entry permission. Setup type is not an assigned strategy.</span><span class="l-zh">精选不等于入场许可，形态类别不是已分配的策略。</span></p></section>
+        <section class="pvs-section"><h3><span class="l-en">Plan connection</span><span class="l-zh">计划关联</span></h3><p class="pvs-note"><span class="l-en">No model-plan link is available for this candidate. No plan or position is created here.</span><span class="l-zh">此候选暂无模型计划关联，不在此创建计划或持仓。</span></p></section>
+        <section class="pvs-section"><h3><span class="l-en">Source dates</span><span class="l-zh">来源时间</span></h3><dl class="pvs-facts">
+          <div class="pvs-field" data-source-field="envelope.as_of"><dt><span class="l-en">Source as-of</span><span class="l-zh">来源日期</span></dt><dd>2026-09-27</dd></div>
+          <div class="pvs-field" data-source-field="signal_asof"><dt><span class="l-en">Signal as-of</span><span class="l-zh">信号日期</span></dt><dd><span class="l-en">Not supplied</span><span class="l-zh">来源未提供</span></dd></div>
+          <div class="pvs-field" data-source-field="signal.tier_observed_date"><dt><span class="l-en">Observed date</span><span class="l-zh">观察日期</span></dt><dd><span class="l-en">Not supplied</span><span class="l-zh">来源未提供</span></dd></div>
+          <div class="pvs-field" data-source-field="price_as_of"><dt><span class="l-en">Quote timestamp</span><span class="l-zh">报价时间</span></dt><dd>2026-09-27T09:30:00Z</dd></div>
+        </dl><p class="pvs-note"><span class="l-en">Source date is not a quote timestamp. Missing clocks remain missing.</span><span class="l-zh">来源日期不是报价时间，缺失时间保持缺失。</span></p></section>
+      </details>
+    </div>
+  </div>
+</div></div>
+<footer class="pvs-dialog-foot"><a class="pvs-native-link" href="#"><span class="l-en">Open stock page ↗</span><span class="l-zh">打开个股页面 ↗</span></a><span><span class="l-en">Close to return to the same row</span><span class="l-zh">关闭后返回同一行</span></span></footer>
+</dialog>
+<script>
+addEventListener('DOMContentLoaded',()=>{const d=document.querySelector('dialog'); if(!d.open)d.showModal();});
+</script>
+</body></html>

@@ -1,0 +1,30 @@
+{
+  "files": [
+    {
+      "bytes": 31323,
+      "name": "RECOMMENDED_SELECTION_POLICY.json",
+      "sha256": "03881ee568f6f08f06ef88a2fad0e33ff2fe14b3ab1db526c35221d642cfe9fd"
+    },
+    {
+      "bytes": 15881,
+      "name": "PRIMARY_SOURCE_REGISTER.json",
+      "sha256": "cf2521ad18316785ecd48c34cbdd132ab4606214041132548b0ff4898cfa2b43"
+    },
+    {
+      "bytes": 38864,
+      "name": "SELECTION_POLICY_ADJUDICATION_MEMO.md",
+      "sha256": "763f8724b1ec9e88a60b94dd65b3d61befe6af79ff28f64f472f0a87ecf9a582"
+    },
+    {
+      "bytes": 2102,
+      "name": "ARTIFACT_VALIDATION.json",
+      "sha256": "8042fa90e6cd48d80abdcd9a171dcc462914ed2313b1e8dc2c2d0313fbe480c3"
+    },
+    {
+      "bytes": 1219,
+      "name": "PACKAGE_MANIFEST.json",
+      "sha256": "eee4790063d4ae92d3b1b97cd3730daa4f87f0a47ad906bf1b478d8dde20951d"
+    }
+  ],
+  "stage": "AUTHOR_FROZEN_AND_REVIEWER_HASH_RECHECKED"
+}

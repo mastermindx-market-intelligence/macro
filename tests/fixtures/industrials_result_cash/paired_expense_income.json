@@ -1,0 +1,91 @@
+{
+  "synthetic": true,
+  "issuer": {
+    "company_id": "synthetic:northgate",
+    "display_name": "Northgate Testing Services",
+    "external_ids": {
+      "cik": "0000987654"
+    }
+  },
+  "sources": [
+    {
+      "source_id": "northgate-filing",
+      "url": "https://example.invalid/service-filing.json",
+      "mode": "filing",
+      "rights_state": "unknown",
+      "recorded_at": "2026-08-01T12:00:00Z"
+    }
+  ],
+  "cells": [
+    {
+      "owner_ref": "synthetic:cell:compensation-expense",
+      "revision": "r1",
+      "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "semantic_selector": {
+        "statement": "income-statement",
+        "row": "performance-compensation",
+        "column": "quarter"
+      },
+      "value": "-4",
+      "metric": "performance_compensation_expense",
+      "unit": "USD_millions",
+      "scale": 1,
+      "currency": "USD",
+      "stock_or_flow": "flow",
+      "period": {
+        "start": "2026-04-02",
+        "end": "2026-07-03",
+        "fiscal_label": "FY2026 Q2",
+        "duration": "quarter"
+      },
+      "business_dimensions": {
+        "segment": "testing"
+      },
+      "basis": {
+        "accounting": "GAAP",
+        "recast": "as_reported"
+      },
+      "source_mode": "filing",
+      "quality": {
+        "rights_profile": "rp_unknown_v1",
+        "rights_state": "unknown",
+        "definition": "recognized_employee_performance-cost expense"
+      }
+    },
+    {
+      "owner_ref": "synthetic:cell:compensation-income",
+      "revision": "r1",
+      "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "semantic_selector": {
+        "statement": "income-statement",
+        "row": "performance-compensation-income",
+        "column": "quarter"
+      },
+      "value": "5",
+      "metric": "performance_compensation_income",
+      "unit": "USD_millions",
+      "scale": 1,
+      "currency": "USD",
+      "stock_or_flow": "flow",
+      "period": {
+        "start": "2026-04-02",
+        "end": "2026-07-03",
+        "fiscal_label": "FY2026 Q2",
+        "duration": "quarter"
+      },
+      "business_dimensions": {
+        "segment": "testing"
+      },
+      "basis": {
+        "accounting": "GAAP",
+        "recast": "as_reported"
+      },
+      "source_mode": "filing",
+      "quality": {
+        "rights_profile": "rp_unknown_v1",
+        "rights_state": "unknown",
+        "definition": "recognized_employee-performance income"
+      }
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "cost_one_way": 0.001,
+  "published": {
+    "aggressive": {
+      "cagr_pct": 62.2,
+      "hodl_cagr_pct": 61.0,
+      "hodl_sharpe": 1.05,
+      "n_obs": 4287,
+      "sharpe": 1.32
+    },
+    "conservative": {
+      "cagr_pct": 50.4,
+      "hodl_cagr_pct": 61.0,
+      "hodl_sharpe": 1.05,
+      "n_obs": 4287,
+      "sharpe": 1.38
+    },
+    "moderate": {
+      "cagr_pct": 62.9,
+      "hodl_cagr_pct": 61.0,
+      "hodl_sharpe": 1.05,
+      "n_obs": 4287,
+      "sharpe": 1.44
+    },
+    "optimal": {
+      "cagr_pct": 61.5,
+      "hodl_cagr_pct": 61.0,
+      "hodl_sharpe": 1.05,
+      "n_obs": 4287,
+      "sharpe": 1.42
+    }
+  },
+  "published_allocation_bootstrap": [
+    0.79,
+    1.41,
+    2.01
+  ],
+  "published_multiple_testing": {
+    "dsr": 0.9601,
+    "dsr_effN": {
+      "T_eff": 2561.8,
+      "T_raw": 4287,
+      "dsr_effN": 0.9186,
+      "dsr_legacy": 0.994,
+      "note": "Newey-West effective-N: T_eff=2562 vs raw T=4287 (rho_sum_K20=0.3367). dsr_effN is the haircut using T_eff; dsr_legacy uses raw T. Block-bootstrap refinement deferred to W5.",
+      "rho_sum_K20": 0.3367
+    },
+    "n_trials": 71,
+    "selected_variant": "optimal",
+    "t_eff": 3062,
+    "verdict": "SURVIVES multiple-testing (DSR\u22650.95)"
+  },
+  "reproduced_hodl": {
+    "cagr_pct": 60.71,
+    "n": 4297,
+    "sharpe": 1.0467
+  },
+  "reproduced_lag0_diagnostic": {
+    "aggressive": {
+      "cagr_pct": 61.16,
+      "n": 4297,
+      "sharpe": 1.3217
+    },
+    "conservative": {
+      "cagr_pct": 33.83,
+      "n": 4297,
+      "sharpe": 1.0469
+    },
+    "moderate": {
+      "cagr_pct": 50.69,
+      "n": 4297,
+      "sharpe": 1.2535
+    },
+    "optimal": {
+      "cagr_pct": 52.0,
+      "n": 4297,
+      "sharpe": 1.2746
+    }
+  },
+  "reproduced_lag1": {
+    "aggressive": {
+      "abs_diff_cagr_pp": 0.27,
+      "abs_diff_sharpe": 0.0026,
+      "cagr_pct": 61.93,
+      "n": 4296,
+      "sharpe": 1.3226
+    },
+    "conservative": {
+      "abs_diff_cagr_pp": 0.26,
+      "abs_diff_sharpe": 0.0037,
+      "cagr_pct": 50.14,
+      "n": 4296,
+      "sharpe": 1.3763
+    },
+    "moderate": {
+      "abs_diff_cagr_pp": 0.27,
+      "abs_diff_sharpe": 0.0022,
+      "cagr_pct": 62.63,
+      "n": 4296,
+      "sharpe": 1.4378
+    },
+    "optimal": {
+      "abs_diff_cagr_pp": 0.25,
+      "abs_diff_sharpe": 0.0071,
+      "cagr_pct": 61.25,
+      "n": 4296,
+      "sharpe": 1.4129
+    }
+  },
+  "reproduced_within_tolerance": true,
+  "support": {
+    "excluded_columns": {
+      "alloc_aggressive_raw": "not itemized in the trial ledger (no generation-time trial identity) \u2014 not a candidate",
+      "alloc_conservative_raw": "not itemized in the trial ledger (no generation-time trial identity) \u2014 not a candidate",
+      "alloc_moderate_raw": "not itemized in the trial ledger (no generation-time trial identity) \u2014 not a candidate",
+      "alloc_optimal_raw": "not itemized in the trial ledger (no generation-time trial identity) \u2014 not a candidate"
+    },
+    "nan_rows_from_start": 0,
+    "rows_export": 4404,
+    "rows_from_start": 4298
+  },
+  "tolerance": {
+    "cagr_pp": 3.0,
+    "sharpe": 0.05
+  }
+}

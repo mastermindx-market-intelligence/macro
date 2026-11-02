@@ -1,0 +1,63 @@
+import pathlib,subprocess,json,hashlib,datetime,os,sys,platform
+ROOT=pathlib.Path('/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-source-diagnostic-20261009-pro-004')
+CACHE=pathlib.Path('/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009')
+PREFIX='research/theme_graph/economic_network_execution_20261009/continuation_pro_004/'
+WORK=CACHE/'pro004-kernel-native-validation-001'
+HEAD='07e663731b7ad7f1854b181180fee5855746d237'
+env=dict(os.environ,GIT_OPTIONAL_LOCKS='0',GIT_NO_LAZY_FETCH='1',PYTHONDONTWRITEBYTECODE='1')
+def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+def sha(b):return hashlib.sha256(b).hexdigest()
+def git(*args):
+ p=subprocess.run(['git','--no-lazy-fetch','--no-optional-locks','-C',str(ROOT),*args],capture_output=True,env=env)
+ assert p.returncode==0,(args,p.returncode,p.stderr.decode(errors='replace')[:500]);return p.stdout
+def new(p,b):
+ assert not p.exists(),str(p);p.parent.mkdir(parents=True,exist_ok=True)
+ with p.open('xb') as f:f.write(b)
+ assert p.read_bytes()==b
+started=now();ib=(CACHE/'pro004-kernel-integration-004.json').read_bytes()
+assert sha(ib)=='646f28c132bf3bd57b03983f0eee5db6eef4eeea1b26d8d2f35a401ce81e7032'
+integration=json.loads(ib)
+assert git('rev-parse','HEAD').decode().strip()==HEAD
+assert not git('ls-files','--others','--ignored','--exclude-standard').strip()
+pins={r['path']:r['sha256'] for r in integration['applied_files']}
+pins.update(integration['existing_owned_files_preserved'])
+pins['.github/ci/legacy-jobs.yml']=integration['ci_delta']['legacy_manifest_after_sha256']
+pins['tests/test_ci_pack.py']=integration['ci_delta']['curated_after_sha256']
+assert all(sha((ROOT/p).read_bytes())==h for p,h in pins.items())
+initial_status=git('status','--porcelain=v1','--untracked-files=all').decode()
+assert len(initial_status.splitlines())==42
+assert not WORK.exists();WORK.mkdir()
+env['GMI_KERNEL_TEST_TMPDIR']=str(WORK/'kernel-temporary-files')
+pathlib.Path(env['GMI_KERNEL_TEST_TMPDIR']).mkdir()
+commands=[
+ ('kernel-suite',[sys.executable,'-B','-m','pytest','tests/test_gmi_source_diagnostic_kernel.py','-q','-p','no:cacheprovider','--basetemp',str(WORK/'pytest-kernel')]),
+ ('ci-manifest-validation',[sys.executable,'-B','scripts/run_ci_pack.py','--workflow','.github/ci/legacy-jobs.yml','--validate-only']),
+ ('ci-contract-suite',[sys.executable,'-B','-m','pytest',
+  'tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared',
+  'tests/test_ci_pack.py::test_every_declared_scope_in_the_real_manifest_is_covered',
+  'tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure',
+  'tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs',
+  '-q','-p','no:cacheprovider','--basetemp',str(WORK/'pytest-ci')])
+]
+executions=[]
+for label,cmd in commands:
+ at=now()
+ p=subprocess.run(cmd,cwd=ROOT,env=env,capture_output=True)
+ ends=now();streams={}
+ for stream,b in [('stdout',p.stdout),('stderr',p.stderr)]:
+  filename='kernel-'+label+'-001.'+stream+'.log'
+  new(WORK/filename,b);new(ROOT/(PREFIX+'native_validation/'+filename),b)
+  streams[stream]={'path':PREFIX+'native_validation/'+filename,'byte_length':len(b),'sha256':sha(b)}
+ row={'label':label,'command':cmd,'started_at':at,'finished_at':ends,'exit_code':p.returncode,'streams':streams}
+ executions.append(row)
+ print(json.dumps({'stage':label,'exit':p.returncode,'stdout_bytes':len(p.stdout),'stderr_bytes':len(p.stderr),'stdout_tail':p.stdout.decode(errors='replace')[-1600:]}),flush=True)
+ if p.returncode!=0:break
+unchanged=all(sha((ROOT/p).read_bytes())==h for p,h in pins.items())
+ignored=git('ls-files','--others','--ignored','--exclude-standard').decode()
+head_after=git('rev-parse','HEAD').decode().strip()
+record={'schema':'economic_network.kernel_native_validation/v1','operation_id':'gmi-economic-source-diagnostic-20261009-pro-004','started_at':started,'finished_at':now(),'head_before':HEAD,'head_after':head_after,'integration_receipt_sha256':sha(ib),'python_version':sys.version,'python_executable':sys.executable,'platform':platform.platform(),'commands':executions,'requested_commands':len(commands),'completed_commands':len(executions),'all_requested_commands_passed':len(executions)==len(commands) and all(x['exit_code']==0 for x in executions),'source_and_ci_pins':pins,'source_and_ci_bytes_unchanged':unchanged,'initial_status':initial_status,'status_after_commands':git('status','--porcelain=v1','--untracked-files=all').decode(),'ignored_paths_after_commands':ignored,'fresh_test_storage':str(WORK),'prior_temporary_garbage_removed':False,'bytecode_disabled':True,'pytest_cache_provider_disabled':True,'full_ci_pack_execute_called':False,'real_source_acquisition_or_admission':False,'hosted_ci_claim':False,'git_commit_or_push':False}
+rb=(json.dumps(record,indent=2,sort_keys=True)+'\n').encode()
+new(CACHE/'pro004-kernel-native-validation-001.json',rb)
+new(ROOT/(PREFIX+'native_validation/kernel-native-validation-001.json'),rb)
+print(json.dumps({'stage':'NATIVE_VALIDATION_COMPLETE','all_requested_commands_passed':record['all_requested_commands_passed'],'source_pins_unchanged':unchanged,'pin_count':len(pins),'head_unchanged':head_after==HEAD,'ignored_path_count':len(ignored.splitlines()),'receipt_sha256':sha(rb)}),flush=True)
+assert record['all_requested_commands_passed'] and unchanged and head_after==HEAD and not ignored

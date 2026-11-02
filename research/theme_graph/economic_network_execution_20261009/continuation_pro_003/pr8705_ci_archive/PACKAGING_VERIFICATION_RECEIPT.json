@@ -1,0 +1,234 @@
+{
+  "added_packaging_files": 3,
+  "all_fifteen_inner_archives_and_members_verified": true,
+  "application_imports_or_tests_performed": false,
+  "archive": {
+    "bytes": 390593,
+    "filename": "PR8705_CONCLUDED_CI_EVIDENCE_93012584.tar.gz",
+    "format": "gzip/ustar",
+    "normalization": {
+      "compression_level": 9,
+      "entry_order": "lexicographic",
+      "gid": 0,
+      "gname": "",
+      "gzip_filename": "",
+      "gzip_mtime": 0,
+      "mode": "0644",
+      "mtime": 0,
+      "type": "regular",
+      "uid": 0,
+      "uname": ""
+    },
+    "sha256": "ca65d83a987fc11197c3e66eb58670dc40d887ca1fcd66c3167df4773b6368e6",
+    "uncompressed_tar_bytes": 1505280
+  },
+  "cached_or_unrelated_inputs_included": false,
+  "content_scan": {
+    "credential_pattern_matches": 0,
+    "distinct_unsigned_query_urls": [
+      "https://api.github.com/repos/mastermindx-market-intelligence/macro/notifications{?since,all,participating}",
+      "https://avatars.githubusercontent.com/u/312036563?v=4",
+      "https://avatars.githubusercontent.com/u/330878776?v=4",
+      "https://avatars.githubusercontent.com/u/9919?v=4"
+    ],
+    "http_url_occurrences": 1611,
+    "scope": "Finite credential/signature pattern scan plus explicit evidence-file selection; no token or credential source was read.",
+    "signed_urls_detected": 0
+  },
+  "disposition": "PASS_DETERMINISTIC_ARCHIVE_EXTRACTION_AND_PRESERVED_VERIFIER",
+  "duplicate_outer_members": 0,
+  "entry_count": 54,
+  "extracted_regular_files_verified": 54,
+  "extracted_verifier": {
+    "aggregate": {
+      "classifications": {
+        "passed": 324
+      },
+      "evidence_sha256": "8ece88df014de230f2c2817d2489777ba78953ef757e72b7ca99b5c7f14047d6",
+      "file": "ci-semantic-evidence.json",
+      "job_count": 99,
+      "proof_steps": 324,
+      "raw_bytes": 94642,
+      "raw_sha256": "7f6fd60c5e3f2503ca9cd0cc8deb39ea0fccbe503a655e65aaff77de17599d11",
+      "status": "clear"
+    },
+    "checks_run": 1871,
+    "disposition": "ALL_ARTIFACT_BINDINGS_AND_ALL_PASS_RECONCILIATION_VALID",
+    "observed": {
+      "logical_jobs": 99,
+      "missing_jobs": [],
+      "missing_packs": [],
+      "outcomes": {
+        "passed": 324
+      },
+      "packs": 12,
+      "proof_steps": 324
+    },
+    "receipt_bytes": 9278,
+    "receipt_equals_frozen_except_created_at": true,
+    "receipt_relative_path": "lanes/pr8705_final_ci_review/packaging_replay_verification_001.json",
+    "receipt_sha256": "d108cd6fe26c7052ab0aa74adb04b4a9cddfac8461903a7687cc1ab8aed2e9e5",
+    "returncode": 0,
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 926,
+    "stdout_sha256": "f310c3d550e159fd0535a69cf36f36b973e968bb599a5c552b98fd1f7e8753a5"
+  },
+  "inner_artifacts": [
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11610115675.zip",
+      "member_bytes": 3614,
+      "member_name": "pack-2.json",
+      "member_sha256": "7eeb77c26b4f8657240b53323c67d9dfa3f5530dce5ef83c1d64f4f43d6e3075",
+      "preserved_member": "lanes/pr8705_final_ci_review/pack-2.json",
+      "zip_bytes": 1604,
+      "zip_sha256": "ff8acd5785df5cd5667fcee2e1ae972b6b06a20d0d9d5ada21194709454f5398"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11610275768.zip",
+      "member_bytes": 10296,
+      "member_name": "pack-11.json",
+      "member_sha256": "b2202aa81a514e617cf4a119d924d8aede4662aa5c5dbe8a98f9a8c490ee714e",
+      "preserved_member": "lanes/pr8705_final_ci_review/pack-11.json",
+      "zip_bytes": 3991,
+      "zip_sha256": "84c6de04521398966c5a133e9b811b177ef55d16c01bd933bf0dd79ca4f05e8b"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11610309828.zip",
+      "member_bytes": 10909,
+      "member_name": "pack-6.json",
+      "member_sha256": "63df19bc2097951187f2dbf4e990e1a65794425172a0611378ee02e8187d2793",
+      "preserved_member": "lanes/pr8705_final_ci_review/pack-6.json",
+      "zip_bytes": 4338,
+      "zip_sha256": "c9a7c66934960927312607d81fc4f04aac06c33f944c2b7007d0c8a468b3aabc"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11610391276.zip",
+      "member_bytes": 10653,
+      "member_name": "pack-10.json",
+      "member_sha256": "03cc578600b33ad5e0b674d2e6521b71931a1d8a25daeed1074a36fd55f2cb88",
+      "preserved_member": "lanes/pr8705_final_ci_review/pack-10.json",
+      "zip_bytes": 4183,
+      "zip_sha256": "f9ac42082b2ccb8d88a8875089cc6000a2e7d90c0677c346a7fb86b11871fb1e"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11610656413.zip",
+      "member_bytes": 9707,
+      "member_name": "pack-5.json",
+      "member_sha256": "2a5c99a1c269540ad83892d29a4a144a633904f9ddcb2ad92d2efa295a91c941",
+      "preserved_member": "lanes/pr8705_final_ci_review/pack-5.json",
+      "zip_bytes": 3880,
+      "zip_sha256": "96651b732ef2f0c98f804eb5bf2ec6608fbab25ef406ab99776d6dd19563bf2c"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11610852161.zip",
+      "member_bytes": 8488,
+      "member_name": "pack-4.json",
+      "member_sha256": "3efc14e9eac6a59c63f0f120bb76abff88ddad69de9f175431d9029cb690f77b",
+      "preserved_member": "lanes/pr8705_final_ci_review/pack-4.json",
+      "zip_bytes": 3442,
+      "zip_sha256": "8dfc85ae072d3f857699ebb7139cb8cce31c2d41f8bf9e1c2d18698e3205bf19"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11610870530.zip",
+      "member_bytes": 9201,
+      "member_name": "pack-3.json",
+      "member_sha256": "8fe4105881e97e067f2995b780e1477efda5ea11d0ae6dfd594a2af44f7682b6",
+      "preserved_member": "lanes/pr8705_final_ci_review/pack-3.json",
+      "zip_bytes": 3569,
+      "zip_sha256": "38583737e445c2d12466aeb90437c08ebfd6e39dceda390c9ecfc4e5829d17b8"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11610906740.zip",
+      "member_bytes": 3630,
+      "member_name": "pack-0.json",
+      "member_sha256": "d4508e6493416874a7d89ec8a159ccdc0ba2705f638a910130b5908cb74a5d44",
+      "preserved_member": "lanes/pr8705_final_ci_review/pack-0.json",
+      "zip_bytes": 1593,
+      "zip_sha256": "33fe0f36ad222c571b7984332c842f36cdb55621e599c2526171785ead6b1824"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11611011680.zip",
+      "member_bytes": 6743,
+      "member_name": "pack-7.json",
+      "member_sha256": "2301df56ebab64defa473998e0e3206b28f8ac842cb2ff5a3711b119f8e78be3",
+      "preserved_member": "lanes/pr8705_final_ci_review/pack-7.json",
+      "zip_bytes": 2723,
+      "zip_sha256": "8f2aa1425abf62d1bfc08c8c75c5e1b3f5c54c420b72851a655f170285d8cc87"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11611015908.zip",
+      "member_bytes": 9664,
+      "member_name": "pack-8.json",
+      "member_sha256": "d5d7b55dceaad7b7cf15d1612c94d03fd9fdfc908f3f0a9ccffc642f1bf44f0c",
+      "preserved_member": "lanes/pr8705_final_ci_review/pack-8.json",
+      "zip_bytes": 3835,
+      "zip_sha256": "b498d70861b03e45efc614f3a1c2d5cdbe594a7f0bf6589e850d612663d4c12a"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11611168469.zip",
+      "member_bytes": 94642,
+      "member_name": "ci-semantic-evidence.json",
+      "member_sha256": "7f6fd60c5e3f2503ca9cd0cc8deb39ea0fccbe503a655e65aaff77de17599d11",
+      "preserved_member": "lanes/pr8705_final_ci_review/ci-semantic-evidence.json",
+      "zip_bytes": 28383,
+      "zip_sha256": "71eaa2c409eb766501ce0ebc09a9a7beda42c0812a5a80012e7297b53bb22227"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11611180347.zip",
+      "member_bytes": 806,
+      "member_name": "pack-1.json",
+      "member_sha256": "319b01f8b1b279e28dabb0f36ab8bfac233604303498bb12fcd365fbc3ba4c77",
+      "preserved_member": "lanes/pr8705_final_ci_review/pack-1.json",
+      "zip_bytes": 644,
+      "zip_sha256": "d2eeeea4561423520f7f289376206c1ac49c6caabfc838f824e8bb908b1afac2"
+    },
+    {
+      "archive_name": "lanes/pr8705_final_ci_review/artifact_11611241809.zip",
+      "member_bytes": 5834,
+      "member_name": "pack-9.json",
+      "member_sha256": "b531a6b1f3084dd0d70bd9ccf85bbf1182b577f4c57ae7fce59d8d26dd34478f",
+      "preserved_member": "lanes/pr8705_final_ci_review/pack-9.json",
+      "zip_bytes": 2349,
+      "zip_sha256": "b3c299d901b0145c1156918c8620fd4e08a6242d593c9436750b8522fa6aa90e"
+    },
+    {
+      "archive_name": "lanes/pr8705_release_audit_evidence/artifact_11608754261.zip",
+      "member_bytes": 97293,
+      "member_name": "ci-plan.json",
+      "member_sha256": "4c1d87d65f4deb353075556c6ab25bcacfcf918d4924f8f934ef5e99ff74cb92",
+      "preserved_member": "lanes/pr8705_release_audit_evidence/ci-plan.json",
+      "zip_bytes": 30989,
+      "zip_sha256": "42eabf12152cd190ad6d2d4ea2db5eb95e9e329752cff4e0586b87b81d04f889"
+    },
+    {
+      "archive_name": "lanes/pr8705_release_audit_evidence/artifact_11608789344.zip",
+      "member_bytes": 2918,
+      "member_name": "changed-files.json",
+      "member_sha256": "a1a276181e5d2c2d0b8568220066fe17a78d94ffa9ef44994186d75ffb1156af",
+      "preserved_member": "lanes/pr8705_release_audit_evidence/changed-files.json",
+      "zip_bytes": 765,
+      "zip_sha256": "2874da0336c6b1810eb73c0f0adf8956b9ae198d293ae3600bac75cf178bc8a3"
+    }
+  ],
+  "links_or_traversal_or_nonregular_outer_entries": 0,
+  "manifest": {
+    "bytes": 12776,
+    "filename": "PR8705_CONCLUDED_CI_EVIDENCE_MANIFEST.json",
+    "sha256": "5ae19794c42fd025415e20d84490e7cf3b510641de481aa4be3c1216f87b5c49"
+  },
+  "network_or_native_or_git_actions_performed": false,
+  "original_inputs_unchanged_after_verification": true,
+  "payload_bytes": 1458318,
+  "raw_log_body_included": false,
+  "runtime": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "zlib_compile_version": "1.3.2",
+    "zlib_runtime_version": "1.3.2"
+  },
+  "schema": "gmi.pr8705.durable_ci_archive_verification/v1",
+  "source_evidence_bytes": 1434053,
+  "source_evidence_file_count": 51,
+  "two_independent_encodings_byte_identical": true,
+  "verified_at_utc": "2026-10-09T10:55:14.860813+00:00"
+}

@@ -1,0 +1,169 @@
+{
+  "all35_capture_source_paths_preserved": true,
+  "all36_kernel_delivery_files_preserved": true,
+  "archive_all27_members_verified": true,
+  "direct_files_before_this_receipt": [
+    {
+      "byte_length": 9240,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/EXECUTION_STATUS_20261009_008.md",
+      "reused_exact_prior_partial_write_without_rewrite": true,
+      "sha256": "06c34317ec15bd576bd5f6ac903d8b5e9bc5de1b6d6cc9566b800b4072e0fb62"
+    },
+    {
+      "byte_length": 3081,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/README.md",
+      "sha256": "5166dcaa8c257158f38481769d86bf5c8428376b3032d826e92b47aae6cd823d"
+    },
+    {
+      "byte_length": 4261,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/ACTUAL_OUTER_RESULT_001.json",
+      "sha256": "6ea1031084e6948ee284222201158227ec5cc111874e08ebcd9d6a2b00d56040"
+    },
+    {
+      "byte_length": 26399,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/ACTUAL_PUBLIC_CAPTURE_RESULT_001.json",
+      "sha256": "3fe5f660d92703e370c716135bd078d57fd281b8f30da611c65b5a6d8346414d"
+    },
+    {
+      "byte_length": 22084,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/FAILED_NATIVE_APPLY_RUNNER_008.py.txt",
+      "sha256": "1751120dc7d4c4a7992dfc60e727455dc47c25190770fdcc801cd2c4b32dfb0f"
+    },
+    {
+      "byte_length": 1058,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/FAILED_NATIVE_APPLY_TOOL_COMPLETION_008.json",
+      "sha256": "71ebe2746b631be8ef22a388f7994b82a1fb02b4f0c52b11f46c20910f9a5a60"
+    },
+    {
+      "byte_length": 9031,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/INDEPENDENT_ACTUAL_REVIEW_001.md",
+      "sha256": "870cc8bda77203937519e6fb0a213edad7e15814101a77021a13e63a0558c443"
+    },
+    {
+      "byte_length": 2292,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/ISSUER_COORDINATES_AND_LIMITS_006.md",
+      "sha256": "83d3784e6b6b0c091faa2a526d4a3581b349ef708f0eeebb308f80244831bddd"
+    },
+    {
+      "byte_length": 1238,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/NATIVE_APPLY_CORRECTION_010.md",
+      "sha256": "e27890e4af72f9692aa27c76c9f6b7b8343f484e482aa1f91585b88f2b3e58f3"
+    },
+    {
+      "byte_length": 24650,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/NATIVE_CHECKPOINT_APPLY_RUNNER_010.py",
+      "sha256": "b1d6406c94bc4a75292092a86a22f3db7a490e0701a21e05872f73d73e5c718e"
+    },
+    {
+      "byte_length": 48061,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/NATIVE_PUBLICATION_PREFLIGHT_005.json",
+      "sha256": "429f353b4e8eba46d726f570456097dae8c4d3edadf22d414d12360e5a9173cb"
+    },
+    {
+      "byte_length": 121020,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/NVDA_PUBLIC_EVIDENCE_002.tar.gz",
+      "sha256": "961c2154687d89a6c4505c2b5df64b4acfa1434bc8ce0a18f7f8b7b0e4194de4"
+    },
+    {
+      "byte_length": 5452,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/NVDA_PUBLIC_EVIDENCE_MANIFEST_002.json",
+      "sha256": "71b011b1b9d1625953e427cb005f95f4be017793c56db78214395a3d1b3533e8"
+    },
+    {
+      "byte_length": 1681,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/PARTIAL_APPLY_RECONCILIATION_009.json",
+      "sha256": "546218deaa76dc4643b1805957a41aee71f0adb4402605dfe2efcb56b70050d4"
+    },
+    {
+      "byte_length": 17235,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/PRINCIPAL_PROSE_TRANSPORT_008.json",
+      "sha256": "9d1f19677b32f2189cd74202964d40ba796b8f6eb605a2d366f3523caffa3ca7"
+    },
+    {
+      "byte_length": 2514,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/PUBLIC_PACKET_INDEX_002.json",
+      "sha256": "b254263646c3ab46f117db6c11f58526533f3316acb22f8f7382ca574de3d857"
+    },
+    {
+      "byte_length": 6818,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/PUBLIC_PACKET_PREPARATION_FINDINGS_002.md",
+      "sha256": "77f3f654a0c3817efb89858e6b1e9a864afbd9d4070fedb2e681411735ac8b42"
+    },
+    {
+      "byte_length": 6025,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/PUBLIC_PACKET_STAGING_INPUT_INVENTORY_002.json",
+      "sha256": "70431cf98e415e677d974869c0b05e415e66f90af8e4dd7b743074fe71c2acc7"
+    },
+    {
+      "byte_length": 11079,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/PUBLIC_PACKET_STAGING_PROCESS_COMPLETION_002.json",
+      "sha256": "4cd31b795617845239682ec68bf1dc16526bfe8796a6cdc9f2c53681870f9886"
+    },
+    {
+      "byte_length": 417129,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/PUBLIC_PACKET_STAGING_RECEIPT_002.json",
+      "sha256": "2084348bad5ad2d4cb823109352b09deb7f3451580903c66eea4db5eb46a8427"
+    },
+    {
+      "byte_length": 1721,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/README.md",
+      "sha256": "c0790856c9630586d87df3a494b1960831455728363a414e43aa30944237743e"
+    },
+    {
+      "byte_length": 3782,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/README_BEFORE_NVDA_PUBLICATION_007.md",
+      "sha256": "db8caf97814d4a6961e3de4788c0745b8abf70dbbda814352963ed8a3531d180"
+    },
+    {
+      "byte_length": 31167,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/principal_addition_003/NVDA_ACTUAL_LAUNCHER_001.py.txt",
+      "sha256": "c1745bbce8934986ad0a218818b2f435121ed405d48a7ed1200a92272337e221"
+    },
+    {
+      "byte_length": 97579,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/principal_addition_003/PRINCIPAL_PUBLIC_TRANSPORT_003.json",
+      "sha256": "350e6d8ffc269451216e5f3c40a4cd8ad883289170a2b2c1e8318eae8dfe5e0e"
+    },
+    {
+      "byte_length": 2068,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/principal_addition_003/TRANSPORT_READBACK_RECEIPT_003.json",
+      "sha256": "696c5c579bcac432603bc03f09321b67f8ce558f00a0256011edebaa480b59bd"
+    },
+    {
+      "byte_length": 11337,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/principal_addition_003/resume8_nvda_independent_process_completion_001.json",
+      "sha256": "13f619d99a9ed23895225a4a853b1036131fd38acc2fec8c12a4e463636d6373"
+    },
+    {
+      "byte_length": 39547,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/principal_addition_003/resume8_nvda_launch_command_001.json",
+      "sha256": "c687576dd37d7c9ef5aec651262318cdfaac6874ae6910f0f74bb8940bd4527d"
+    },
+    {
+      "byte_length": 2616,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/principal_addition_003/resume8_nvda_native_poll_001.json",
+      "sha256": "451e2544674c77dd2e1e745e887d751ccc8ce5ae01f4a5430a9d9ca8e6f5b8b9"
+    },
+    {
+      "byte_length": 682,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/principal_addition_003/resume8_nvda_native_start_001.json",
+      "sha256": "020e82b277fde4b58c80243149f993c7c5913638fd37f98042594c9e06758a1a"
+    }
+  ],
+  "finished_at": "2026-10-09T17:10:14.711504+00:00",
+  "git_ref_or_index_mutation": false,
+  "head": "74c542beb6e137958e3babe91a78b50aef651768",
+  "original_index_alias": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_nvda_execution_008/README_BEFORE_NVDA_PUBLICATION_007.md",
+  "partial_apply_reconciliation_sha256": "546218deaa76dc4643b1805957a41aee71f0adb4402605dfe2efcb56b70050d4",
+  "prior149_checkpoint_files_preserved": true,
+  "prior151_manifest_members_preserved": true,
+  "prior_partial_write_reused_without_rewrite": true,
+  "private_payload_or_provider_or_application_execution": false,
+  "protected_revision": "326c8469a21d7f50fc9ecb1848196bf1c6e66685",
+  "public_packet_exit_code": 0,
+  "public_packet_pid": 38923,
+  "public_packet_runtime_seconds": 0.16,
+  "schema": "economic_network.nvda_checkpoint_apply/v1",
+  "started_at": "2026-10-09T17:10:10.928061+00:00",
+  "status": "APPLIED_VERIFIED_NOT_COMMITTED"
+}

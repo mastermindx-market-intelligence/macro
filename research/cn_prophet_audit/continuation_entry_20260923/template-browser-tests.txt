@@ -1,0 +1,9 @@
+{
+  "input_commit": "d34993def9fa00e88c930f39a498b6ecad97455b",
+  "input_as_of": "2026-09-22",
+  "continuations": [
+    "cn_pharma_cxo"
+  ],
+  "raw_lanes_unchanged": true
+}
+CAPTURES 48 OVERFLOWS 0 PAGE_ERRORS 0

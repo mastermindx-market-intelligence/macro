@@ -1,0 +1,10 @@
+{
+  "availability": {"state": "CURRENT"},
+  "headline": {"effective_date": "2026-09-01"},
+  "changes": {
+    "deltas": [],
+    "comparability": "NO_PRIOR",
+    "status": "ABSENT",
+    "null_reason": "INSUFFICIENT_HISTORY"
+  }
+}

@@ -95,6 +95,9 @@ class _FakeSMTP:
     def login(self, user, password):
         pass
 
+    def noop(self):
+        return (250, b"ok")
+
     def send_message(self, msg):
         self._rec["messages"].append(msg)
 
@@ -133,8 +136,12 @@ class _Ledger:
             self.inserts.append(row)
             return None
         if method == "PATCH" and path.startswith("email_log"):
-            key = path.split("idem_key=eq.", 1)[1]
+            key = path.split("idem_key=eq.", 1)[1].split("&", 1)[0]
+            if key not in self.keys:
+                return []
             self.patches.append((key, body or {}))
+            if prefer == "return=representation":
+                return [dict(body or {})]
             return None
         return []
 
@@ -361,8 +368,10 @@ def catalog_with_new_tier(monkeypatch):
     """
     cat = {
         "currency": "usd",
-        "features": [{"key": "site_full", "name": "Full site access"},
-                     {"key": "chat_opus", "name": "Mastermind Pro chat (Opus)"}],
+        "features": [{"key": "site_full", "name": "Full site access",
+                      "name_zh": "整站访问权限"},
+                     {"key": "chat_opus", "name": "Mastermind Pro chat (Opus)",
+                      "name_zh": "Opus 模型的 Mastermind 对话"}],
         "products": {
             "starter": {"tier": "starter", "name": "Starter", "trial_days": 7,
                         "features": ["site_full"],
@@ -1162,11 +1171,38 @@ def test_unknown_feature_key_is_omitted_never_printed_as_a_slug(catalog_with_new
     assert "_" not in spec.lede_en                       # no slug shape at all
 
 
-def test_feature_with_no_zh_translation_uses_the_english_name_not_the_slug():
-    """A product NAME in a Chinese sentence is normal here ('你的 Essential 试用'); a slug is not."""
+def test_migrated_site_full_zh_label_stays_identical():
+    """Moving display labels into the catalog preserves the shipped Chinese copy."""
     en, zh = be._feature_label("site_full")
     assert zh == "整站访问权限"
     assert "site_full" not in zh
+
+
+def test_feature_labels_use_catalog_translation_and_preserve_human_name_fallback(monkeypatch):
+    assert be._feature_label("site_full") == ("Full site access", "整站访问权限")
+    assert be._feature_label("terminal_live_options") == (
+        "Terminal live options", "终端实时期权数据")
+    assert be._feature_label("chat_opus") == (
+        "Mastermind Pro chat (Opus)", "Opus 模型的 Mastermind 对话")
+    assert be._feature_label("company_intelligence_private_read") == (
+        "Private Company Intelligence access", "私有公司情报访问权限")
+    monkeypatch.setattr(billing, "_CATALOG", {"features": [
+        {"key": "bilingual", "name": " Bilingual surface ", "name_zh": " 双语界面 "},
+        {"key": "blank_zh", "name": "Blank label surface", "name_zh": " "},
+        {"key": "no_zh", "name": "English only surface"},
+        {"key": "no_name", "name_zh": "没有英文名"},
+    ]})
+    assert be._feature_label("bilingual") == ("Bilingual surface", "双语界面")
+    assert be._feature_label("blank_zh") == ("Blank label surface", "Blank label surface")
+    assert be._feature_label("no_zh") == ("English only surface", "English only surface")
+    assert be._feature_label("no_name") is None
+    assert be._feature_label("unknown_key") is None
+
+    def broken_catalog():
+        raise RuntimeError("offline simulated catalog failure")
+
+    monkeypatch.setattr(billing, "_catalog", broken_catalog)
+    assert be._feature_label("site_full") is None
 
 
 def test_incomplete_slip_rows_are_dropped_not_printed_blank():

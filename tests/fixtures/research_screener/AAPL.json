@@ -1,0 +1,57 @@
+{
+  "asof": "2026-09-04",
+  "ticker": "AAPL",
+  "name": "Apple",
+  "security_state": {
+    "schema": "security_state.v1",
+    "listing_key": "US-XNAS-AAPL",
+    "ticker_display": "AAPL",
+    "name": "Apple",
+    "as_of": {"market_at": "2026-09-04"},
+    "legs": {
+      "catalyst": {
+        "next_observables": [
+          {
+            "kind": "ESTIMATED_WINDOW",
+            "window_start": "2026-09-12",
+            "window_end": "2026-09-19",
+            "authoritative": false,
+            "basis": "no canonical earnings-calendar owner exists for this build"
+          }
+        ],
+        "deadlines": [],
+        "coverage_state": "PARTIAL"
+      },
+      "personal_impact": {
+        "state": "NO_USER_CONTEXT",
+        "coverage_state": "NOT_APPLICABLE"
+      }
+    },
+    "authority": {
+      "can_rank": false,
+      "can_gate": false,
+      "can_size": false
+    }
+  },
+  "valuation_scenario": {
+    "v1": {
+      "schema": "valuation_scenario.v1",
+      "ticker": "AAPL",
+      "price": {"value": 180, "unit": "USD"},
+      "scenarios": [
+        {
+          "key": "base",
+          "assumptions": {
+            "sales_growth_pct": 3,
+            "margin_delta_pp": 0,
+            "earnings_multiple": 18
+          },
+          "per_share": 220,
+          "computable": true,
+          "missing": []
+        }
+      ],
+      "any_computable": true
+    }
+  }
+}

@@ -1,0 +1,232 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-10-02T20:09:18Z",
+  "tool": {
+    "module_ref": "scripts/capture_am_edition_evidence.py",
+    "module_sha256": "0c30cba77b1af4ad5dc7e91d7803a880810a048a1cff0e890daf9abf8d09f185"
+  },
+  "target": "am_edition.html",
+  "head": "17bbc120bf638d49aa040653addf40fbc3271a12",
+  "axes": {
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "access": [
+      "anonymous"
+    ],
+    "subjects": [
+      "full"
+    ]
+  },
+  "selection": {
+    "page": "am_edition.html",
+    "access": "anonymous"
+  },
+  "aliases": {
+    "full-dark-en-desktop.png": "shots/538c0a7ac8499b46c415f4db697144d5b32b809dfc240c59f689f19a80b1a63c.png",
+    "full-light-en-desktop.png": "shots/b1cdadd9753926ca8156b025c931c42f83c537d597c9cfb3f0b1268ae85c35dc.png",
+    "full-dark-zh-desktop.png": "shots/40d6b19ff816d7c55a962997d22b3efab15aaf4433ce948f30f9bf41ce97ec90.png",
+    "full-light-zh-desktop.png": "shots/b8117f9ef03fd8b2af72404b1e7f2b62bd2e1b358b4596edf8f4901d8776d114.png",
+    "full-dark-en-mobile.png": "shots/1fccd4c40c103f14e440c69c67344f4384bfba5f8737ca5ac260276ec8ef032e.png",
+    "full-light-en-mobile.png": "shots/a3559ab2822f87e91e21b580e34d5100cafc91384549c4be1eb273710227a814.png",
+    "full-dark-zh-mobile.png": "shots/f5114cfdd3a10ac811cdf18e2e55f3b62f6d4d3ec2e53b03f12f89f22b9983d6.png",
+    "full-light-zh-mobile.png": "shots/fa8316c02f3463b66e2191b1e29b03dea45dfe6a634e281afd9754eef583e709.png"
+  },
+  "excluded": [],
+  "outcome": "captured",
+  "totals": {
+    "rest_cells": 8,
+    "rest_required": 8,
+    "pages": 1
+  },
+  "honesty": {
+    "access": "anonymous only",
+    "gaps": "Uncaptured cells are retained with a failure reason.",
+    "authority": "This tool captures screenshots; it scores nothing.",
+    "page": "templates/am_edition.html.j2 rendered from the am_edition.v1 fixture view-model (no live data/ or site/ reads). Omitted from live: the daily bake, write_page asset optimization, and dynamic live-quote hydration.",
+    "fixture": "R2: the research-watch fixture carries one translated row and one disclosed-English row so the ZH cells render the canonical .mx-rw-zh-note; cells are captured under prefers-reduced-motion so the theme-toggle flourish (skyToggleFx .sky-fx orb) is absent."
+  },
+  "pages": [
+    {
+      "page_id": "am_edition.html",
+      "route": "/am_edition.html",
+      "registry_route": "/am_edition.html",
+      "route_kind": "am_edition",
+      "subject": "full",
+      "selector": "body",
+      "states": [
+        {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": null,
+          "subject": "full",
+          "captured": true,
+          "file": "shots/538c0a7ac8499b46c415f4db697144d5b32b809dfc240c59f689f19a80b1a63c.png",
+          "alias": "full-dark-en-desktop.png",
+          "sha256": "538c0a7ac8499b46c415f4db697144d5b32b809dfc240c59f689f19a80b1a63c",
+          "bytes": 283743,
+          "width": 1440,
+          "height": 1809,
+          "applied_theme": "dark",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": null,
+          "subject": "full",
+          "captured": true,
+          "file": "shots/b1cdadd9753926ca8156b025c931c42f83c537d597c9cfb3f0b1268ae85c35dc.png",
+          "alias": "full-light-en-desktop.png",
+          "sha256": "b1cdadd9753926ca8156b025c931c42f83c537d597c9cfb3f0b1268ae85c35dc",
+          "bytes": 275801,
+          "width": 1440,
+          "height": 1809,
+          "applied_theme": "light",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "desktop",
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": null,
+          "subject": "full",
+          "captured": true,
+          "file": "shots/40d6b19ff816d7c55a962997d22b3efab15aaf4433ce948f30f9bf41ce97ec90.png",
+          "alias": "full-dark-zh-desktop.png",
+          "sha256": "40d6b19ff816d7c55a962997d22b3efab15aaf4433ce948f30f9bf41ce97ec90",
+          "bytes": 287044,
+          "width": 1440,
+          "height": 1833,
+          "applied_theme": "dark",
+          "applied_locale": "zh"
+        },
+        {
+          "viewport": "desktop",
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": null,
+          "subject": "full",
+          "captured": true,
+          "file": "shots/b8117f9ef03fd8b2af72404b1e7f2b62bd2e1b358b4596edf8f4901d8776d114.png",
+          "alias": "full-light-zh-desktop.png",
+          "sha256": "b8117f9ef03fd8b2af72404b1e7f2b62bd2e1b358b4596edf8f4901d8776d114",
+          "bytes": 282795,
+          "width": 1440,
+          "height": 1833,
+          "applied_theme": "light",
+          "applied_locale": "zh"
+        },
+        {
+          "viewport": "mobile",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "force_state": null,
+          "subject": "full",
+          "captured": true,
+          "file": "shots/1fccd4c40c103f14e440c69c67344f4384bfba5f8737ca5ac260276ec8ef032e.png",
+          "alias": "full-dark-en-mobile.png",
+          "sha256": "1fccd4c40c103f14e440c69c67344f4384bfba5f8737ca5ac260276ec8ef032e",
+          "bytes": 212377,
+          "width": 390,
+          "height": 2178,
+          "applied_theme": "dark",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "mobile",
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "force_state": null,
+          "subject": "full",
+          "captured": true,
+          "file": "shots/a3559ab2822f87e91e21b580e34d5100cafc91384549c4be1eb273710227a814.png",
+          "alias": "full-light-en-mobile.png",
+          "sha256": "a3559ab2822f87e91e21b580e34d5100cafc91384549c4be1eb273710227a814",
+          "bytes": 209924,
+          "width": 390,
+          "height": 2178,
+          "applied_theme": "light",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "mobile",
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "force_state": null,
+          "subject": "full",
+          "captured": true,
+          "file": "shots/f5114cfdd3a10ac811cdf18e2e55f3b62f6d4d3ec2e53b03f12f89f22b9983d6.png",
+          "alias": "full-dark-zh-mobile.png",
+          "sha256": "f5114cfdd3a10ac811cdf18e2e55f3b62f6d4d3ec2e53b03f12f89f22b9983d6",
+          "bytes": 216137,
+          "width": 390,
+          "height": 2131,
+          "applied_theme": "dark",
+          "applied_locale": "zh"
+        },
+        {
+          "viewport": "mobile",
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "force_state": null,
+          "subject": "full",
+          "captured": true,
+          "file": "shots/fa8316c02f3463b66e2191b1e29b03dea45dfe6a634e281afd9754eef583e709.png",
+          "alias": "full-light-zh-mobile.png",
+          "sha256": "fa8316c02f3463b66e2191b1e29b03dea45dfe6a634e281afd9754eef583e709",
+          "bytes": 215517,
+          "width": 390,
+          "height": 2131,
+          "applied_theme": "light",
+          "applied_locale": "zh"
+        }
+      ],
+      "metrics": {},
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": []
+    }
+  ]
+}

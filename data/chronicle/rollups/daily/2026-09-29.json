@@ -1,0 +1,256 @@
+{
+  "as_of": "2026-09-29",
+  "coverage": {
+    "end": "2026-09-28",
+    "note": "daily rollup covers 10 session-date(s) from 2026-09-17 to 2026-09-28; chronicle event store begins 2013-04-02; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-09-17"
+  },
+  "schema": "chronicle.rollup.daily/v1",
+  "sessions": [
+    {
+      "date": "2026-09-28",
+      "events": [
+        {
+          "date": "2026-09-28",
+          "id": "cev-regime_flip-94eb72732cfd",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-09-28#regime_china",
+          "tickers": [],
+          "title": "CHINA regime: Q4 Growth-scare → Q3 Stagflation",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-25",
+      "events": [
+        {
+          "date": "2026-09-25",
+          "id": "cev-regime_flip-13cfc7dee5af",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-09-25#regime_us",
+          "tickers": [],
+          "title": "US regime: Q3 Stagflation → Q2 Reflation",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-24",
+      "events": []
+    },
+    {
+      "date": "2026-09-23",
+      "events": [
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-4097e88c98cf",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-nmuie7j0as1-4f0c24",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Asia Pacific Equity Derivs",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-22",
+      "events": []
+    },
+    {
+      "date": "2026-09-21",
+      "events": []
+    },
+    {
+      "date": "2026-09-20",
+      "events": []
+    },
+    {
+      "date": "2026-09-19",
+      "events": []
+    },
+    {
+      "date": "2026-09-18",
+      "events": [
+        {
+          "date": "2026-09-18",
+          "id": "cev-research_vault-5afdefc17403",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-fip581gs8cw-ae1704",
+          "tickers": [],
+          "title": "S&T: GS Mourad post Fed what's working what's not working 17 Sep 2026",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-17",
+      "events": [
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-cf288ca2fb96",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-g3bugkjjgib-77331c",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM International Market Intelligence | Morning Briefing",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-c35869c61219",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-aybb3ogdul2-c7adbf",
+          "tickers": [],
+          "title": "S&T: Daily ShortActivity16Sept2026 US CLEARED",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-c74cb728e2d2",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-e8bh0pdjlpm-ce870e",
+          "tickers": [],
+          "title": "S&T: GS Johnstone GS TMT SPEC SALES EU Communacopia Day 2 wrap Nebius raises GPU prices Allegro OnSemi CMD PUB raise Ai Security 17 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-cbeb6afffdc6",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-yisfnkw53ht-c99833",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Europe Equity Research | Today’s Morning Meeting",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-ce94230c9e10",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-dumk753cf2w-385ca6",
+          "tickers": [],
+          "title": "UBS: Bond markets",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-d69cacc87e22",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-vby8jjpvg7b-d3855b",
+          "tickers": [],
+          "title": "Goldman Sachs: Taiwan CBC on Hold as Expected on Benign Inflation Outlook",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-dd9860d84ae9",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-jiygtqokz2z-5087e2",
+          "tickers": [],
+          "title": "Other: Equity Beat September 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-e6d57ce0b2ce",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ya9wdhgz1c6-a265c0",
+          "tickers": [],
+          "title": "Goldman Sachs: European Daily BoE Recap—Opening the Door to a November Hike",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-e9946d029bfd",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-xocchdticsi-edb564",
+          "tickers": [],
+          "title": "Wolfe Research: Wolfe Research A Brief History of the End of the World",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-ed06f315ca22",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-4pi9a20t0sx-49da66",
+          "tickers": [],
+          "title": "Goldman Sachs: Unite Group (UTG.L) Trading update 95 of beds booked for AY26 27, FY26 EPS guidance reaffirmed",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-f1ca42017975",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-gwetpnjg75e-a4b97d",
+          "tickers": [],
+          "title": "Goldman Sachs: AeroVironment Inc",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-f7d0f96eac2c",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-pmdrhkxkvax-652422",
+          "tickers": [],
+          "title": "S&T: GS Ratra Hedge Funds Crowding Monitor US 17 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-f807d84dc6b4",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-jedpyqnprym-8ba43c",
+          "tickers": [],
+          "title": "S&T: GS MidDay Color US Equities Mid Day Color 17 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-fb7a43e41ce5",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-dspexrpttyq-e99b46",
+          "tickers": [],
+          "title": "Goldman Sachs: China in Transition China's great Go Global expansion From peripheral to core Sept 14, 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-fee31f5c8c9a",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-zsz18m2j10k-205255",
+          "tickers": [],
+          "title": "Deutsche Bank: DB Early Morning Reid Macro Strategy",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-17",
+          "id": "cev-risk_band-bb90c6513891",
+          "kind": "state_flip",
+          "source": "risk_band",
+          "source_ref": "risk_radar_forward_log#2026-09-17",
+          "tickers": [],
+          "title": "Risk radar: caution → calm",
+          "weight_hint": 2
+        }
+      ]
+    }
+  ]
+}

@@ -44,6 +44,8 @@ SOURCE_HOST = "api.massive.com"
 SOURCE_PATH = "/v3/snapshot/options/SPY"
 SOURCE_QUERY = "limit=250"
 SOURCE_URL = f"https://{SOURCE_HOST}{SOURCE_PATH}?{SOURCE_QUERY}"
+HTTP_STATUS_CLASS_NOTE_PREFIX = "option-OI http status class="
+HTTP_STATUS_CLASSES = frozenset({"401", "403", "429", "3xx", "4xx", "5xx", "other"})
 
 MAX_ENTITY_BYTES = 4 * 1024 * 1024
 MAX_RESULTS = 250
@@ -723,6 +725,22 @@ def _default_fetcher(
 Fetcher = Callable[[str, str, Mapping[str, str]], HttpResponse]
 
 
+def _http_status_class(status: object) -> str:
+    """Bucket an HTTP status into a fixed, secret-free vocabulary."""
+
+    if type(status) is not int:
+        return "other"
+    if status in (401, 403, 429):
+        return str(status)
+    if 300 <= status < 400:
+        return "3xx"
+    if 400 <= status < 500:
+        return "4xx"
+    if 500 <= status < 600:
+        return "5xx"
+    return "other"
+
+
 def fetch_current_spy_option_oi_response(
     *,
     bearer_token: str,
@@ -751,9 +769,13 @@ def fetch_current_spy_option_oi_response(
             "option-OI fetcher must return the exact HttpResponse boundary"
         )
     if type(response.status) is not int or response.status != 200:
-        raise MarketMemoryOptionOiObservationError(
+        failure = MarketMemoryOptionOiObservationError(
             "option-OI source did not return HTTP 200"
         )
+        failure.add_note(
+            HTTP_STATUS_CLASS_NOTE_PREFIX + _http_status_class(response.status)
+        )
+        raise failure
     _canonical_source_url(response.url)
     if (
         type(response.body) is not bytes

@@ -96,6 +96,9 @@ def test_slopes_and_momentum_shapes():
         assert k in slp, k
         assert slp[k]["label"]["en"] and slp[k]["label"]["zh"]
         assert isinstance(slp[k]["inverted"], bool)
+    assert "heuristic" in slp["tp_adj"]["label"]["en"].lower()
+    assert "matched-maturity" in slp["tp_adj"]["method_note"]["en"].lower()
+    assert "expectations-only" in slp["tp_adj"]["method_note"]["en"].lower()
     mom = yc.momentum(f)
     assert mom["window_d"] == yc.MOM_WINDOW
     assert "real10y_speed_bp" in mom

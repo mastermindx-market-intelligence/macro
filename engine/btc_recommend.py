@@ -207,7 +207,7 @@ def recommend(sig: pd.DataFrame, master: dict | None, cones: dict | None,
     is_top = strong_top or soft_top
     if is_top:
         invalid = upside_90
-        invalid_label_en, invalid_label_zh = "thesis wrong above", "突破则判断失效"
+        invalid_label_en, invalid_label_zh = "read changes above", "突破则改变判断"
     elif tone == "bear":
         # defensive stance: the level that would flip us back constructive (reclaim)
         invalid = (round(sth) if (sth and price and price < sth) else upside_90)
@@ -218,7 +218,7 @@ def recommend(sig: pd.DataFrame, master: dict | None, cones: dict | None,
         # fall back to the cone-implied p5 downside.
         invalid = (round(sth) if (sth and price and price >= sth)
                    else (round(price * (1 + (p90_5 if p90_5 is not None else -25) / 100.0)) if price else None))
-        invalid_label_en, invalid_label_zh = "thesis breaks below", "跌破则判断失效"
+        invalid_label_en, invalid_label_zh = "read changes below", "跌破则改变判断"
 
     # --- rationale: lead with the drivers that BACK the decision, then the opposing
     # pull (so a REDUCE shows the cautionary drivers first, an ACCUMULATE the supportive)

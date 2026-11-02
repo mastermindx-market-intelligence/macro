@@ -1,0 +1,14 @@
+{
+  "previous_code_owners": [],
+  "owner": "washout-turn-organ",
+  "gate": "code",
+  "manifest_change": "one added run step; all other parsed YAML unchanged",
+  "new_job_count": 0,
+  "new_dependencies": 0,
+  "timeout_unchanged": true,
+  "returncode": 0,
+  "summary": "20 passed, 17 deselected in 26.94s",
+  "seconds": 27.66,
+  "command": "python -m pytest tests/test_p0_prophet_candidate_board.py -q -k \"candidate_heading_discloses_source_date or gated_candidate_journey or historical_plan_wall_does_not\"",
+  "production": false
+}

@@ -1,0 +1,123 @@
+{
+  "schema": "research.finite_acquisition_boundary.v1",
+  "status": "PROPOSED_OWNER_TASK_ENVELOPE_NOT_AUTHORIZATION_OR_JOB",
+  "D": "2026-09-30",
+  "K": "2026-10-09T00:00:00Z",
+  "mission": "Resolve the Canada R1 historical source dependency without sampling, cap ranking, new source law, or generic Graph1 promotion.",
+  "owners": [
+    {
+      "role": "Root / authorized execution principal",
+      "responsibility": "Confirm adopted policy version and authorize only the finite existing-entitlement acquisition after source-purpose permission."
+    },
+    {
+      "role": "Incumbent source and rights owner",
+      "responsibility": "Identify actual operative contract/source policy, approved product and allowed purposes; own raw retention, entitlement and source provenance. No new vendor or dataset owner is created."
+    },
+    {
+      "role": "Incumbent identity custodian",
+      "binding": "macro-dashboard/scripts/build_security_master.py as referenced by frozen source contracts",
+      "responsibility": "Resolve existing issuer/security IDs, validity intervals, class and primary ambiguity; no researcher-invented IDs."
+    },
+    {
+      "role": "Research/policy owner",
+      "responsibility": "Adopt corrected policy and adjudicate frame coverage/exclusions; sourcing research alone cannot adopt policy or certify selection."
+    }
+  ],
+  "first_action": {
+    "action": "Inspect existing entitlement and available historical-file metadata without acquiring security rows.",
+    "product_candidate": "Exact TMX TSX and TSXV security-master files for D, with operative specification and source-version metadata.",
+    "source_ids": [
+      "CA01",
+      "CA02",
+      "CA03",
+      "CA04",
+      "CA05",
+      "CA07"
+    ],
+    "not_required_now": [
+      "New contract",
+      "Paid purchase",
+      "Vendor message",
+      "Terms acceptance",
+      "Bulk data download",
+      "Symbol enumeration",
+      "Historical price series"
+    ]
+  },
+  "permission_gate": {
+    "required_purposes": [
+      "acquisition",
+      "internal processing for historical issuer-frame diagnostic",
+      "raw bytes retention and audit",
+      "computed capitalization/rank and classification use if subsequently proposed",
+      "access by actual contractors/cloud systems if applicable",
+      "sharing of allowed receipts or derived evidence in research/Git if intended"
+    ],
+    "identifier_conditions": "CUSIP/ISIN or proprietary identifiers require applicable separate entitlement or a source-supported permitted alternative; absence cannot be filled by guessing.",
+    "unknown_fails_closed": true,
+    "rule": "Inventory may record partial rights knowledge. Every proposed acquisition/retention/use must be affirmatively permitted or held. Public access and advertised paid availability are not customer permission."
+  },
+  "finite_first_acquisition_if_already_authorized": {
+    "objects": [
+      "Exact D TSX and TSXV masters, or exact source-defined anchor files sufficient for D reconstruction",
+      "Operative schema/field dictionary and file population statement",
+      "Original release/version evidence and K-admissible corrections; clearly distinguish original, K-reconstructed and today's revised file",
+      "Only necessary source-defined event/change interval from the last proved anchor through D and correction-publication cutoff K"
+    ],
+    "prohibited_expansion": "No all-history securities/price crawl, unaudited bulk mirrored archive, selected-cohort generation, or fallback to current membership.",
+    "temporal_rule": "Use source assertions with defensible public-availability upper bound <= K and fact validity at D. Later correction cannot replace an earlier public assertion without explicit revision link and policy treatment.",
+    "receipt_fields": [
+      "source_id",
+      "canonical_artifact_locator",
+      "actual_source_file_identifier_and_version",
+      "operative_schema_version",
+      "source_declared_population_and_record_total",
+      "source_snapshot_or_anchor_date",
+      "fact_validity_dates",
+      "first_publication_upper_bound_and_timezone_witness",
+      "revision_publication_upper_bounds_and_parent_links",
+      "actual_acquisition_at_F",
+      "lawfully_retained_raw_byte_sha256_or_explicit_retention_unavailable",
+      "rights_owner_attestation_and_contract_scope_reference",
+      "identity_owner_binding",
+      "security_key_uniqueness_and_unresolved_keys",
+      "interval_start_end_and_zero_change_day_evidence",
+      "anchor_plus_additions_minus_removals_plus_conversions_reconciliation",
+      "excluded_instrument_rows_with_source_reasons",
+      "primary_ordinary_equity_field_semantics_and_evidence",
+      "omission_conflict_and_unknown_row_log"
+    ],
+    "no_fabrication": "Unknown remains null with reason. A receipt timestamp cannot substitute for first publication. Neither file date nor retrieval date proves K availability.",
+    "witness_requirement": "Source population/completeness assertions must be attributable to a source owner or operative provider documentation; downstream schema validity alone is insufficient."
+  },
+  "first_witness_outcomes": [
+    {
+      "outcome": "ENTITLEMENT_UNRESOLVED",
+      "action": "Return missing permitted-purpose/contract/identifier fields; acquire no rows."
+    },
+    {
+      "outcome": "HISTORY_UNPROVEN",
+      "action": "Return missing exact D/anchor/version/publication/reconciliation facts; do not assert full Canada."
+    },
+    {
+      "outcome": "TSX_TSXV_ROSTER_INPUT_ACCEPTABLE",
+      "action": "Proves only the declared two-exchange source population and interval. Apply same bounded witness process to CSE and Cboe; do not mark Canada complete."
+    },
+    {
+      "outcome": "FULL_REQUIRED_CANADA_PERIMETER_RECONCILED",
+      "action": "Route identity, primary, exclusions, activity and cap component work to incumbent owners under adopted policy. No selection until all required pools and their denominators are complete."
+    }
+  ],
+  "holds_preserved": [
+    "POLICY_NOT_ADOPTED",
+    "SOURCE_USE_NOT_ENTITLED",
+    "FRAME_UNRESOLVED",
+    "PRIMARY_UNKNOWN",
+    "SECTOR_UNRESOLVED",
+    "SECTOR_CONFLICT",
+    "CAP_FRAME_INCOMPLETE",
+    "POST_CUTOFF_SOURCE",
+    "DUPLICATE_ECONOMIC_ISSUER"
+  ],
+  "closeout": "Record exact missing input, responsible existing role and next permissible action. This envelope neither starts a job nor grants publication/data rights."
+}

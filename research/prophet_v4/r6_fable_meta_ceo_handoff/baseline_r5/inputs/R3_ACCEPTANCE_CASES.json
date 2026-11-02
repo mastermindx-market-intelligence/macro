@@ -1,0 +1,425 @@
+{
+  "cases": [
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Separate identities/authority; no field mutation under the v1 ID.",
+      "id": "A01",
+      "setup": "Read the accepted control definition and a proposed enriched research selector.",
+      "slice": "EL0",
+      "source_refs": [
+        "S1"
+      ],
+      "title": "Frozen control versus proposed selector"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Existing owner either supplies accepted validity or explicit refusal; no date relabel.",
+      "id": "A02",
+      "setup": "Use real prior completed-session owner evidence and next-session RTH quote.",
+      "slice": "EL0",
+      "source_refs": [
+        "S6",
+        "S7"
+      ],
+      "title": "Completed source used during following RTH"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Reject positive decision proof and preserve the reason.",
+      "id": "A03",
+      "setup": "Provide a source emitted after decision or outside accepted validity.",
+      "slice": "EL0",
+      "source_refs": [
+        "S6",
+        "S7"
+      ],
+      "title": "Future emission or expired validity"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Refuse unsupported live policy; historical study requires its accepted policy.",
+      "id": "A04",
+      "setup": "Evaluate an execution session outside 2026 through current control.",
+      "slice": "EL0",
+      "source_refs": [
+        "S7"
+      ],
+      "title": "Unsupported calendar era"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Show owner suppression with original identity; no synthetic B1 episode.",
+      "id": "A05",
+      "setup": "Provide Radar/Door nomination with no current anchored B1 episode.",
+      "slice": "EL1",
+      "source_refs": [
+        "S2",
+        "S3"
+      ],
+      "title": "Unanchored independent nomination"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "No independent origination until B1 owner accepts that contract.",
+      "id": "A06",
+      "setup": "Provide a proposed new expert without an accepted anchor/rearm contract.",
+      "slice": "EL1",
+      "source_refs": [
+        "S2",
+        "S3"
+      ],
+      "title": "Additional expert anchor"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Complete accounting, searchable row, null score when never scored.",
+      "id": "A07",
+      "setup": "Take a permitted source row outside Featured/board cap.",
+      "slice": "EL1",
+      "source_refs": [
+        "S12"
+      ],
+      "title": "Displaced candidate remains visible"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Only real source observations shown; missing 4H is not inferred.",
+      "id": "A08",
+      "setup": "Request daily/two-day/basket/reset and absent four-hour observation.",
+      "slice": "EL1",
+      "source_refs": [
+        "S4",
+        "S5"
+      ],
+      "title": "Actual trigger roster"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Refuse incorrect join; symbol equality is not episode identity.",
+      "id": "A09",
+      "setup": "Mix alias or episode generation from another source snapshot.",
+      "slice": "EL1",
+      "source_refs": [
+        "S2",
+        "S3",
+        "S14"
+      ],
+      "title": "Identity and generation mismatch"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Preserve visibility and named absence; no fabricated zero/negative fact.",
+      "id": "A10",
+      "setup": "Remove transcript or optional group evidence from otherwise valid row.",
+      "slice": "EL2",
+      "source_refs": [
+        "S1",
+        "S11"
+      ],
+      "title": "Optional family absent"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Label non-PIT or refuse research admission, never historical contemporaneous truth.",
+      "id": "A11",
+      "setup": "Join current membership to an older decision.",
+      "slice": "EL2",
+      "source_refs": [
+        "S10"
+      ],
+      "title": "Current-only membership in historical query"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Disclose constituent contribution and separately compute eligible leave-one-out control.",
+      "id": "A12",
+      "setup": "Make subject stock drive most group performance.",
+      "slice": "EL2",
+      "source_refs": [
+        "S10"
+      ],
+      "title": "Self-confirming group"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Peer support not estimable/partial, not automatically neutral or strong.",
+      "id": "A13",
+      "setup": "Provide one member or incomplete weights.",
+      "slice": "EL2",
+      "source_refs": [
+        "S10"
+      ],
+      "title": "Single-member/sparse group"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Deduplicated evidence lineage, no repeated independent vote.",
+      "id": "A14",
+      "setup": "Same underlying group feeds several chips/narratives.",
+      "slice": "EL2",
+      "source_refs": [
+        "S10",
+        "S11"
+      ],
+      "title": "Overlapping thematic evidence"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "No positive action/recommendation produced by the client.",
+      "id": "A15",
+      "setup": "Provide high research priority with B4 missing basis or chase refusal.",
+      "slice": "EL3",
+      "source_refs": [
+        "S1",
+        "S8"
+      ],
+      "title": "Score cannot waive blocker"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Visible control/experimental status; no commercial BUY, sizing or origination.",
+      "id": "A16",
+      "setup": "Produce computational ENTRY_OPEN using control-only strategy.",
+      "slice": "EL3",
+      "source_refs": [
+        "S1",
+        "S8"
+      ],
+      "title": "Shadow entry-open disclosure"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Same episode/strategy/source clocks appear in table and drawer.",
+      "id": "A17",
+      "setup": "Use accepted real evidence through existing private transport.",
+      "slice": "EL3",
+      "source_refs": [
+        "S11",
+        "S12"
+      ],
+      "title": "Complete current row plus detail"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Refresh by content identity, preserve original history, no mixed-generation hydration.",
+      "id": "A18",
+      "setup": "Change accepted content while market date stays constant.",
+      "slice": "EL3",
+      "source_refs": [
+        "S12"
+      ],
+      "title": "Corrected same-date data"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Owner readback proves membership; portfolio and other lists unchanged.",
+      "id": "A19",
+      "setup": "Deliberately add symbol to chosen existing list through WatchStore.",
+      "slice": "EL3",
+      "source_refs": [
+        "S13"
+      ],
+      "title": "Watch add succeeds"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "No fabricated success; correct bound list; no unrelated membership deletion.",
+      "id": "A20",
+      "setup": "Simulate owner rejection or list switch during request.",
+      "slice": "EL3",
+      "source_refs": [
+        "S13"
+      ],
+      "title": "Watch add fails or user changes lists"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Do not claim durable cross-device episode thesis/notes.",
+      "id": "A21",
+      "setup": "Save symbol where only symbol membership is supported.",
+      "slice": "EL3",
+      "source_refs": [
+        "S13"
+      ],
+      "title": "Episode note is not cloud membership"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "No paid rows leak; existing owner auth/error semantics respected.",
+      "id": "A22",
+      "setup": "Traverse real protected route and payload for these callers.",
+      "slice": "EL3",
+      "source_refs": [
+        "S11",
+        "S12"
+      ],
+      "title": "Anonymous, expired and unentitled sessions"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Suppress/label rights limitation without new auth bypass.",
+      "id": "A23",
+      "setup": "Use entitled user lacking permissible display rights for a field.",
+      "slice": "EL3",
+      "source_refs": [
+        "S11"
+      ],
+      "title": "Vendor right absent despite paid login"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Critical validity updated; focus/selection stable; reordered list applied coherently.",
+      "id": "A24",
+      "setup": "Apply a new rank generation while a row is focused.",
+      "slice": "EL3",
+      "source_refs": [
+        "S11",
+        "S12"
+      ],
+      "title": "Reorder during focused reading"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "No overflow/obscured focus; meaningful accessible status; no every-tick speech.",
+      "id": "A25",
+      "setup": "Exercise required form factors, themes, languages and status announcements.",
+      "slice": "EL3",
+      "source_refs": [
+        "S11",
+        "S12"
+      ],
+      "title": "Accessibility/mobile/locales"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "No outcome-selected exclusion of never-confirmed/no-entry/unpriced cases.",
+      "id": "A26",
+      "setup": "Capture original admitted research cohort before comparing policies.",
+      "slice": "EL4",
+      "source_refs": [
+        "S2",
+        "S3"
+      ],
+      "title": "First origin and never-confirmers"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Keep units distinct and disclose zero/many matches; no silent frozen regrade.",
+      "id": "A27",
+      "setup": "Join legacy grade key and B1 identity.",
+      "slice": "EL4",
+      "source_refs": [
+        "S3"
+      ],
+      "title": "Native marks and episode labels"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "No double spread; no guaranteed limit fill; unresolved sequencing remains named.",
+      "id": "A28",
+      "setup": "Exercise spread/fill/basis and dual-hit bars on actual admissible tape.",
+      "slice": "EL4",
+      "source_refs": [
+        "S7",
+        "S8"
+      ],
+      "title": "Costs and ambiguous barrier sequence"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "No probability label on raw rank margin; maturity/coverage disclosed.",
+      "id": "A29",
+      "setup": "Use ranker relevance outputs beside calibrated risk/return heads.",
+      "slice": "EL5",
+      "source_refs": [
+        "S1"
+      ],
+      "title": "Rank output versus probability"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Original prediction immutable; current forecast uses its own admissible cutoff.",
+      "id": "A30",
+      "setup": "Observe same episode at first origin and later registered landmark.",
+      "slice": "EL5",
+      "source_refs": [
+        "S3"
+      ],
+      "title": "Origin versus landmark"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Time-safe folds and effective evidence accounting; no independent-N inflation.",
+      "id": "A31",
+      "setup": "Use overlapping episodes/dates and repeated intraday samples.",
+      "slice": "EL5",
+      "source_refs": [
+        "S3"
+      ],
+      "title": "Leakage and repeated observations"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Do not waive confluence; require separately accepted entry species/version.",
+      "id": "A32",
+      "setup": "Provide pre-confluence early evidence under unchanged control.",
+      "slice": "EL6",
+      "source_refs": [
+        "S1",
+        "S4",
+        "S8"
+      ],
+      "title": "Earlier trigger lacks entry permission"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "No automatic exit solely from new-entry status; apply holding owner.",
+      "id": "A33",
+      "setup": "Produce RAN_DONT_CHASE for an existing holding.",
+      "slice": "EL7",
+      "source_refs": [
+        "S1",
+        "S8"
+      ],
+      "title": "New-entry ran while position remains valid"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Preserve original thesis/policy; explicit new evaluation not retrospective excuse.",
+      "id": "A34",
+      "setup": "Attempt to change sleeve/horizon after adverse result.",
+      "slice": "EL7",
+      "source_refs": [
+        "S1"
+      ],
+      "title": "Tactical loss relabeled long term"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "Distinct unknown-data and breach states; no stale-data safety claim.",
+      "id": "A35",
+      "setup": "Remove current quote then separately provide actual binding breach.",
+      "slice": "EL7",
+      "source_refs": [
+        "S8"
+      ],
+      "title": "Data gap versus thesis breach"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "expected": "User completes workflow; exact source/served byte identities and second refresh proven.",
+      "id": "A36",
+      "setup": "Use accepted release/source generation with entitled real browser then ordinary scheduled refresh.",
+      "slice": "EL8",
+      "source_refs": [
+        "S11",
+        "S12",
+        "S13"
+      ],
+      "title": "Real final production path"
+    }
+  ],
+  "document_type": "R3_REQUIRED_ACCEPTANCE_CATALOGUE",
+  "limitation": "These are requirements, not passed tests. The separate eight-case excerpt probe is not production acceptance.",
+  "status": "PROPOSED_NOT_EXECUTED"
+}

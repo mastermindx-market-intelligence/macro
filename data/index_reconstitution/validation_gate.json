@@ -1,6 +1,6 @@
 {
   "schema": "index_reconstitution.gate.v1",
-  "generated_at": "2026-09-01 11:16 UTC",
+  "generated_at": "2026-11-01 12:42 UTC",
   "window_start": "2019-01-01",
   "recent_start": "2023-01-01",
   "scored": false,
@@ -11,131 +11,131 @@
     "add": {
       "n": 1541,
       "pre_runup": {
-        "n": 1218,
+        "n": 1206,
         "n_months": 88,
-        "mean_abn": 0.0203,
-        "median_abn": 0.0106,
+        "mean_abn": 0.02,
+        "median_abn": 0.0105,
         "hit_rate": 0.561,
-        "hac_t": 4.36,
+        "hac_t": 4.39,
         "p": 0.0
       },
       "post": {
         "5": {
-          "n": 1277,
+          "n": 1267,
           "n_months": 88,
-          "mean_abn": -0.0005,
-          "median_abn": -0.0019,
-          "hit_rate": 0.475,
-          "hac_t": 1.27,
-          "p": 0.2035
+          "mean_abn": -0.001,
+          "median_abn": -0.0018,
+          "hit_rate": 0.476,
+          "hac_t": 0.99,
+          "p": 0.3242
         },
         "10": {
-          "n": 1277,
+          "n": 1267,
           "n_months": 88,
-          "mean_abn": -0.0061,
-          "median_abn": -0.0102,
-          "hit_rate": 0.412,
-          "hac_t": 0.55,
-          "p": 0.5853
+          "mean_abn": -0.0072,
+          "median_abn": -0.0105,
+          "hit_rate": 0.41,
+          "hac_t": 0.34,
+          "p": 0.7335
         },
         "21": {
-          "n": 1277,
+          "n": 1267,
           "n_months": 88,
-          "mean_abn": -0.0081,
-          "median_abn": -0.0142,
-          "hit_rate": 0.437,
-          "hac_t": -0.34,
-          "p": 0.7315
+          "mean_abn": -0.0097,
+          "median_abn": -0.0144,
+          "hit_rate": 0.434,
+          "hac_t": -0.47,
+          "p": 0.6357
         }
       },
       "post_recent_21": {
-        "n": 464,
+        "n": 461,
         "n_months": 40,
-        "mean_abn": -0.0,
-        "median_abn": -0.0044,
-        "hit_rate": 0.483,
-        "hac_t": -0.3,
-        "p": 0.7672
+        "mean_abn": -0.0015,
+        "median_abn": -0.0045,
+        "hit_rate": 0.479,
+        "hac_t": -0.53,
+        "p": 0.5941
       }
     },
     "delete": {
       "n": 952,
       "pre_runup": {
-        "n": 513,
+        "n": 504,
         "n_months": 80,
-        "mean_abn": -0.0196,
-        "median_abn": -0.0175,
-        "hit_rate": 0.388,
-        "hac_t": -1.94,
-        "p": 0.0528
+        "mean_abn": -0.0186,
+        "median_abn": -0.0166,
+        "hit_rate": 0.391,
+        "hac_t": -1.82,
+        "p": 0.0681
       },
       "post": {
         "5": {
-          "n": 550,
-          "n_months": 83,
-          "mean_abn": 0.0058,
+          "n": 542,
+          "n_months": 82,
+          "mean_abn": 0.0051,
           "median_abn": -0.0006,
           "hit_rate": 0.496,
-          "hac_t": 2.03,
-          "p": 0.0427
+          "hac_t": 1.5,
+          "p": 0.135
         },
         "10": {
-          "n": 550,
-          "n_months": 83,
-          "mean_abn": 0.0031,
-          "median_abn": -0.0013,
-          "hit_rate": 0.485,
-          "hac_t": 1.83,
-          "p": 0.0669
+          "n": 542,
+          "n_months": 82,
+          "mean_abn": 0.0017,
+          "median_abn": -0.0015,
+          "hit_rate": 0.483,
+          "hac_t": 1.08,
+          "p": 0.2785
         },
         "21": {
-          "n": 550,
-          "n_months": 83,
-          "mean_abn": 0.0077,
-          "median_abn": -0.0005,
-          "hit_rate": 0.5,
-          "hac_t": 1.39,
-          "p": 0.1652
+          "n": 542,
+          "n_months": 82,
+          "mean_abn": 0.0052,
+          "median_abn": -0.0012,
+          "hit_rate": 0.498,
+          "hac_t": 0.64,
+          "p": 0.5197
         }
       },
       "post_recent_21": {
-        "n": 315,
+        "n": 311,
         "n_months": 38,
-        "mean_abn": -0.0015,
-        "median_abn": 0.0035,
-        "hit_rate": 0.514,
-        "hac_t": 0.44,
-        "p": 0.6581
+        "mean_abn": -0.0034,
+        "median_abn": 0.0023,
+        "hit_rate": 0.511,
+        "hac_t": 0.03,
+        "p": 0.9753
       }
     }
   },
   "add_by_index_post21": {
     "sp500": {
-      "n": 152,
+      "n": 150,
       "n_months": 69,
-      "mean_abn": -0.0066,
+      "mean_abn": -0.0082,
       "median_abn": -0.0107,
-      "hit_rate": 0.461,
-      "hac_t": -0.09,
-      "p": 0.932
+      "hit_rate": 0.46,
+      "hac_t": -0.21,
+      "p": 0.8358
     },
     "sp400": {
-      "n": 282,
+      "n": 281,
       "n_months": 83,
-      "mean_abn": 0.0154,
-      "median_abn": 0.0022,
-      "hit_rate": 0.514,
+      "mean_abn": 0.0152,
+      "median_abn": 0.0018,
+      "hit_rate": 0.512,
       "hac_t": 1.04,
-      "p": 0.2975
+      "p": 0.2993
     },
     "sp600": {
-      "n": 843,
+      "n": 836,
       "n_months": 74,
-      "mean_abn": -0.0163,
-      "median_abn": -0.0185,
-      "hit_rate": 0.407,
-      "hac_t": -1.22,
-      "p": 0.2228
+      "mean_abn": -0.0184,
+      "median_abn": -0.019,
+      "hit_rate": 0.403,
+      "hac_t": -1.23,
+      "p": 0.2186
     }
   },
   "runup_alive": true,
@@ -145,50 +145,50 @@
       0
     ],
     "all_cohorts": {
-      "n": 1233,
+      "n": 1221,
       "n_months": 88,
-      "mean_abn": 0.0128,
-      "median_abn": 0.0087,
-      "hit_rate": 0.569,
-      "hac_t": 5.51,
+      "mean_abn": 0.0124,
+      "median_abn": 0.0085,
+      "hit_rate": 0.568,
+      "hac_t": 5.64,
       "p": 0.0
     },
     "pure_gross": {
-      "n": 874,
+      "n": 865,
       "n_months": 86,
-      "mean_abn": 0.0167,
-      "median_abn": 0.0111,
+      "mean_abn": 0.0162,
+      "median_abn": 0.0108,
       "hit_rate": 0.588,
-      "hac_t": 4.67,
+      "hac_t": 4.73,
       "p": 0.0
     },
     "pure_gross_recent": {
-      "n": 266,
+      "n": 265,
       "n_months": 40,
-      "mean_abn": 0.0199,
-      "median_abn": 0.0198,
-      "hit_rate": 0.662,
-      "hac_t": 5.02,
+      "mean_abn": 0.0208,
+      "median_abn": 0.0201,
+      "hit_rate": 0.664,
+      "hac_t": 5.13,
       "p": 0.0
     },
     "migration_gross": {
-      "n": 339,
+      "n": 336,
       "n_months": 73,
-      "mean_abn": 0.0018,
+      "mean_abn": 0.0016,
       "median_abn": 0.0005,
-      "hit_rate": 0.507,
-      "hac_t": 1.07,
-      "p": 0.2857
+      "hit_rate": 0.506,
+      "hac_t": 1.03,
+      "p": 0.3025
     },
     "pure_by_index": {
       "sp500": {
-        "n": 77,
-        "n_months": 51,
-        "mean_abn": 0.0115,
-        "median_abn": 0.0088,
-        "hit_rate": 0.571,
-        "hac_t": 1.18,
-        "p": 0.2386
+        "n": 75,
+        "n_months": 49,
+        "mean_abn": 0.0147,
+        "median_abn": 0.0119,
+        "hit_rate": 0.587,
+        "hac_t": 1.43,
+        "p": 0.1533
       },
       "sp400": {
         "n": 162,
@@ -200,24 +200,24 @@
         "p": 0.0168
       },
       "sp600": {
-        "n": 635,
+        "n": 628,
         "n_months": 71,
-        "mean_abn": 0.0172,
-        "median_abn": 0.0102,
-        "hit_rate": 0.578,
-        "hac_t": 5.32,
+        "mean_abn": 0.0161,
+        "median_abn": 0.0099,
+        "hit_rate": 0.576,
+        "hac_t": 5.07,
         "p": 0.0
       }
     },
     "pure_net_by_index": {
       "sp500": {
-        "n": 77,
-        "n_months": 51,
-        "mean_abn": 0.0095,
-        "median_abn": 0.0068,
-        "hit_rate": 0.545,
-        "hac_t": 0.99,
-        "p": 0.321
+        "n": 75,
+        "n_months": 49,
+        "mean_abn": 0.0127,
+        "median_abn": 0.0099,
+        "hit_rate": 0.56,
+        "hac_t": 1.27,
+        "p": 0.2053
       },
       "sp400": {
         "n": 162,
@@ -229,13 +229,13 @@
         "p": 0.0624
       },
       "sp600": {
-        "n": 635,
+        "n": 628,
         "n_months": 71,
-        "mean_abn": 0.0052,
-        "median_abn": -0.0018,
-        "hit_rate": 0.483,
-        "hac_t": 4.22,
-        "p": 0.0
+        "mean_abn": 0.0041,
+        "median_abn": -0.0021,
+        "hit_rate": 0.479,
+        "hac_t": 3.95,
+        "p": 0.0001
       }
     },
     "net_cost_assumed": {
@@ -258,5 +258,5 @@
   },
   "min_events": 40,
   "t_bar": 2.0,
-  "note": "PURE/net-new ADD announcement\u2192effective [-5,0] run-up is real & recent (+0.0167, t=4.67; recent t=5.02); migrations are ~0 (t=1.07) \u2014 so screen to PURE adds. BUT net of small-cap cost the TYPICAL name loses (sp600 net median=-0.0018, hit=0.483) \u2192 a NET-OF-COST MIRAGE. Leg ships DISPLAY-ONLY context (fresh pure-add catalysts), scoring gate CLOSED; the net edge lives only in the announcement-overnight gap, which needs intraday opens to validate."
+  "note": "PURE/net-new ADD announcement\u2192effective [-5,0] run-up is real & recent (+0.0162, t=4.73; recent t=5.13); migrations are ~0 (t=1.03) \u2014 so screen to PURE adds. BUT net of small-cap cost the TYPICAL name loses (sp600 net median=-0.0021, hit=0.479) \u2192 a NET-OF-COST MIRAGE. Leg ships DISPLAY-ONLY context (fresh pure-add catalysts), scoring gate CLOSED; the net edge lives only in the announcement-overnight gap, which needs intraday opens to validate."
 }

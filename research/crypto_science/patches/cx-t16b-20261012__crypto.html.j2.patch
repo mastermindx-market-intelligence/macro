@@ -1,0 +1,11 @@
+--- a/templates/crypto.html.j2
++++ b/templates/crypto.html.j2
+@@ -449,7 +449,7 @@
+ 
+   <section class="crypto-shelf" data-shelf="H6" id="asset-lanes">
+     <div class="shelf-pad"><div class="shelf-head"><span class="shelf-index">H6</span><h2 class="shelf-title">{{ t('Asset Lanes','资产通道') }}</h2><span class="shelf-sub">{{ t('BTC authority · ETH/SOL states','BTC 权威 · ETH/SOL 状态') }}</span></div>
+-      <div class="lane-grid">{% for lane in lanes %}<a class="asset-lane {{ tone(lane.tone) }}" href="{{ lane.href }}"><div class="lane-top"><div><div class="lane-symbol">{{ lane.symbol }}</div><div class="lane-name">{{ t(lane.name,lane.name_zh) }}</div></div><div class="lane-price nb-px" data-sym="{{ lane.live_symbol }}">{{ lane.price }}<small class="nb-chg" data-sym="{{ lane.live_symbol }}">{{ lane.change }}</small></div></div><div class="lane-state">{{ t(lane.state,lane.state_zh) }}</div><p class="lane-copy">{{ t(lane.summary,lane.summary_zh) }}</p>{% if lane.coverage %}<p class="lane-coverage">{{ t(lane.coverage,lane.coverage_zh) }}</p>{% endif %}<span class="lane-cta">{{ t(lane.cta,lane.cta_zh) }} →</span></a>{% endfor %}</div>
++      <div class="lane-grid">{% for lane in lanes %}<a class="asset-lane {{ tone(lane.tone) }}" href="{{ lane.href }}"><div class="lane-top"><div><div class="lane-symbol">{{ lane.symbol }}</div><div class="lane-name">{{ t(lane.name,lane.name_zh) }}</div></div><div class="lane-price nb-px" data-sym="{{ lane.live_symbol }}">{{ lane.price }}<small class="nb-chg" data-sym="{{ lane.live_symbol }}">{{ lane.change }}</small></div></div><div class="lane-state">{{ t(lane.state,lane.state_zh) }}</div><p class="lane-copy">{{ t(lane.summary,lane.summary_zh) }}</p>{% if lane.coverage %}<p class="lane-coverage">{{ t(lane.coverage,lane.coverage_zh) }}</p>{% endif %}{% if lane.path_tier is defined %}<p class="lane-coverage">{{ t('Price path','价格路径') }} · {{ lane.path_momentum }} · {{ lane.path_risk }} · {{ t('display only, no authority','仅展示，无授权') }}</p>{% endif %}<span class="lane-cta">{{ t(lane.cta,lane.cta_zh) }} →</span></a>{% endfor %}</div>
+     </div>
+   </section>
+ 

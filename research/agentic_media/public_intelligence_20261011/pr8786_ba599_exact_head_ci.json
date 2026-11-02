@@ -1,0 +1,2177 @@
+{
+  "conclusion": "success",
+  "createdAt": "2026-10-12T21:21:04Z",
+  "databaseId": 38310079309,
+  "headSha": "ba599a70fb747290f54abdbd4f1e6acaed9b9d2e",
+  "jobs": [
+    {
+      "completedAt": "2026-10-12T21:22:09Z",
+      "conclusion": "success",
+      "databaseId": 115013367029,
+      "name": "ci-plan",
+      "startedAt": "2026-10-12T21:21:07Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-12T21:21:09Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-12T21:21:08Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:21:49Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 2,
+          "startedAt": "2026-10-12T21:21:09Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:21:56Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 3,
+          "startedAt": "2026-10-12T21:21:49Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:21:56Z",
+          "conclusion": "success",
+          "name": "bind the exact tested tree and base",
+          "number": 4,
+          "startedAt": "2026-10-12T21:21:56Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:21:59Z",
+          "conclusion": "success",
+          "name": "install isolated pack runner",
+          "number": 5,
+          "startedAt": "2026-10-12T21:21:56Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:21:59Z",
+          "conclusion": "success",
+          "name": "bind exact tested-tree path inventory",
+          "number": 6,
+          "startedAt": "2026-10-12T21:21:59Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:04Z",
+          "conclusion": "success",
+          "name": "plan the CI packs once",
+          "number": 7,
+          "startedAt": "2026-10-12T21:21:59Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:05Z",
+          "conclusion": "success",
+          "name": "publish the changed-file list",
+          "number": 8,
+          "startedAt": "2026-10-12T21:22:04Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:06Z",
+          "conclusion": "success",
+          "name": "publish the authoritative semantic plan",
+          "number": 9,
+          "startedAt": "2026-10-12T21:22:05Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:06Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 17,
+          "startedAt": "2026-10-12T21:22:06Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:06Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 18,
+          "startedAt": "2026-10-12T21:22:06Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:06Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 19,
+          "startedAt": "2026-10-12T21:22:06Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38310079309/job/115013367029"
+    },
+    {
+      "completedAt": "2026-10-12T21:34:46Z",
+      "conclusion": "success",
+      "databaseId": 115013367324,
+      "name": "contract-delta",
+      "startedAt": "2026-10-12T21:21:08Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-12T21:21:09Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-12T21:21:09Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:22Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 2,
+          "startedAt": "2026-10-12T21:21:09Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:29Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 3,
+          "startedAt": "2026-10-12T21:22:22Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:31Z",
+          "conclusion": "success",
+          "name": "install control-plane dependencies",
+          "number": 4,
+          "startedAt": "2026-10-12T21:22:29Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:31Z",
+          "conclusion": "success",
+          "name": "resolve the exact tested PR merge base",
+          "number": 5,
+          "startedAt": "2026-10-12T21:22:31Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:32Z",
+          "conclusion": "success",
+          "name": "fetch the exact tested PR merge base",
+          "number": 6,
+          "startedAt": "2026-10-12T21:22:31Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:34:43Z",
+          "conclusion": "success",
+          "name": "differential contract-delta gate",
+          "number": 7,
+          "startedAt": "2026-10-12T21:22:32Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:34:43Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 13,
+          "startedAt": "2026-10-12T21:34:43Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:34:43Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 14,
+          "startedAt": "2026-10-12T21:34:43Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:34:43Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 15,
+          "startedAt": "2026-10-12T21:34:43Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38310079309/job/115013367324"
+    },
+    {
+      "completedAt": "2026-10-12T21:31:30Z",
+      "conclusion": "success",
+      "databaseId": 115013737261,
+      "name": "ci-pack-2",
+      "startedAt": "2026-10-12T21:22:11Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-12T21:22:14Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-12T21:22:11Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:14Z",
+          "conclusion": "skipped",
+          "name": "clear any sparse checkout a sibling job left in this shared workspace",
+          "number": 2,
+          "startedAt": "2026-10-12T21:22:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:30Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 3,
+          "startedAt": "2026-10-12T21:22:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:37Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 4,
+          "startedAt": "2026-10-12T21:25:30Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:41Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@v4",
+          "number": 5,
+          "startedAt": "2026-10-12T21:25:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:44Z",
+          "conclusion": "success",
+          "name": "install isolated pack runner",
+          "number": 6,
+          "startedAt": "2026-10-12T21:25:41Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:44Z",
+          "conclusion": "success",
+          "name": "download the authoritative semantic plan",
+          "number": 7,
+          "startedAt": "2026-10-12T21:25:44Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:45Z",
+          "conclusion": "success",
+          "name": "download the planner's changed-file list",
+          "number": 8,
+          "startedAt": "2026-10-12T21:25:44Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:45Z",
+          "conclusion": "success",
+          "name": "publish the changed-file handle",
+          "number": 9,
+          "startedAt": "2026-10-12T21:25:45Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:31:25Z",
+          "conclusion": "success",
+          "name": "validate and run legacy CI pack",
+          "number": 10,
+          "startedAt": "2026-10-12T21:25:45Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:31:25Z",
+          "conclusion": "skipped",
+          "name": "fail-safe full suite when no authoritative plan was produced",
+          "number": 11,
+          "startedAt": "2026-10-12T21:31:25Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:31:25Z",
+          "conclusion": "skipped",
+          "name": "relay the trusted pack fragment under the existing check contract",
+          "number": 12,
+          "startedAt": "2026-10-12T21:31:25Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:31:25Z",
+          "conclusion": "skipped",
+          "name": "bind trusted execution to the hosted authoritative plan",
+          "number": 13,
+          "startedAt": "2026-10-12T21:31:25Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:31:26Z",
+          "conclusion": "success",
+          "name": "publish this pack's raw semantic fragment",
+          "number": 14,
+          "startedAt": "2026-10-12T21:31:25Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:31:26Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@v4",
+          "number": 26,
+          "startedAt": "2026-10-12T21:31:26Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:31:27Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 27,
+          "startedAt": "2026-10-12T21:31:26Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:31:27Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 28,
+          "startedAt": "2026-10-12T21:31:27Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:31:27Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 29,
+          "startedAt": "2026-10-12T21:31:27Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38310079309/job/115013737261"
+    },
+    {
+      "completedAt": "2026-10-12T21:45:53Z",
+      "conclusion": "success",
+      "databaseId": 115013737267,
+      "name": "ci-pack-1",
+      "startedAt": "2026-10-12T21:22:11Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-12T21:22:14Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-12T21:22:12Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:14Z",
+          "conclusion": "skipped",
+          "name": "clear any sparse checkout a sibling job left in this shared workspace",
+          "number": 2,
+          "startedAt": "2026-10-12T21:22:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:52Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 3,
+          "startedAt": "2026-10-12T21:22:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:00Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 4,
+          "startedAt": "2026-10-12T21:25:52Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:06Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@v4",
+          "number": 5,
+          "startedAt": "2026-10-12T21:26:00Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:10Z",
+          "conclusion": "success",
+          "name": "install isolated pack runner",
+          "number": 6,
+          "startedAt": "2026-10-12T21:26:06Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:10Z",
+          "conclusion": "success",
+          "name": "download the authoritative semantic plan",
+          "number": 7,
+          "startedAt": "2026-10-12T21:26:10Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:11Z",
+          "conclusion": "success",
+          "name": "download the planner's changed-file list",
+          "number": 8,
+          "startedAt": "2026-10-12T21:26:10Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:11Z",
+          "conclusion": "success",
+          "name": "publish the changed-file handle",
+          "number": 9,
+          "startedAt": "2026-10-12T21:26:11Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:45:48Z",
+          "conclusion": "success",
+          "name": "validate and run legacy CI pack",
+          "number": 10,
+          "startedAt": "2026-10-12T21:26:11Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:45:48Z",
+          "conclusion": "skipped",
+          "name": "fail-safe full suite when no authoritative plan was produced",
+          "number": 11,
+          "startedAt": "2026-10-12T21:45:48Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:45:48Z",
+          "conclusion": "skipped",
+          "name": "relay the trusted pack fragment under the existing check contract",
+          "number": 12,
+          "startedAt": "2026-10-12T21:45:48Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:45:48Z",
+          "conclusion": "skipped",
+          "name": "bind trusted execution to the hosted authoritative plan",
+          "number": 13,
+          "startedAt": "2026-10-12T21:45:48Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:45:49Z",
+          "conclusion": "success",
+          "name": "publish this pack's raw semantic fragment",
+          "number": 14,
+          "startedAt": "2026-10-12T21:45:48Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:45:49Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@v4",
+          "number": 26,
+          "startedAt": "2026-10-12T21:45:49Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:45:49Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 27,
+          "startedAt": "2026-10-12T21:45:49Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:45:50Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 28,
+          "startedAt": "2026-10-12T21:45:49Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:45:50Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 29,
+          "startedAt": "2026-10-12T21:45:50Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38310079309/job/115013737267"
+    },
+    {
+      "completedAt": "2026-10-12T21:50:08Z",
+      "conclusion": "success",
+      "databaseId": 115013737280,
+      "name": "ci-pack-0",
+      "startedAt": "2026-10-12T21:22:11Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-12T21:22:15Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-12T21:22:13Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:15Z",
+          "conclusion": "skipped",
+          "name": "clear any sparse checkout a sibling job left in this shared workspace",
+          "number": 2,
+          "startedAt": "2026-10-12T21:22:15Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:15Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 3,
+          "startedAt": "2026-10-12T21:22:15Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:23Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 4,
+          "startedAt": "2026-10-12T21:26:15Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:30Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@v4",
+          "number": 5,
+          "startedAt": "2026-10-12T21:26:23Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:33Z",
+          "conclusion": "success",
+          "name": "install isolated pack runner",
+          "number": 6,
+          "startedAt": "2026-10-12T21:26:30Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:34Z",
+          "conclusion": "success",
+          "name": "download the authoritative semantic plan",
+          "number": 7,
+          "startedAt": "2026-10-12T21:26:33Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:35Z",
+          "conclusion": "success",
+          "name": "download the planner's changed-file list",
+          "number": 8,
+          "startedAt": "2026-10-12T21:26:34Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:35Z",
+          "conclusion": "success",
+          "name": "publish the changed-file handle",
+          "number": 9,
+          "startedAt": "2026-10-12T21:26:35Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:50:03Z",
+          "conclusion": "success",
+          "name": "validate and run legacy CI pack",
+          "number": 10,
+          "startedAt": "2026-10-12T21:26:35Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:50:03Z",
+          "conclusion": "skipped",
+          "name": "fail-safe full suite when no authoritative plan was produced",
+          "number": 11,
+          "startedAt": "2026-10-12T21:50:03Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:50:03Z",
+          "conclusion": "skipped",
+          "name": "relay the trusted pack fragment under the existing check contract",
+          "number": 12,
+          "startedAt": "2026-10-12T21:50:03Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:50:03Z",
+          "conclusion": "skipped",
+          "name": "bind trusted execution to the hosted authoritative plan",
+          "number": 13,
+          "startedAt": "2026-10-12T21:50:03Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:50:04Z",
+          "conclusion": "success",
+          "name": "publish this pack's raw semantic fragment",
+          "number": 14,
+          "startedAt": "2026-10-12T21:50:03Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:50:04Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@v4",
+          "number": 26,
+          "startedAt": "2026-10-12T21:50:04Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:50:04Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 27,
+          "startedAt": "2026-10-12T21:50:04Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:50:05Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 28,
+          "startedAt": "2026-10-12T21:50:04Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:50:05Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 29,
+          "startedAt": "2026-10-12T21:50:05Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38310079309/job/115013737280"
+    },
+    {
+      "completedAt": "2026-10-12T21:40:35Z",
+      "conclusion": "success",
+      "databaseId": 115013737315,
+      "name": "ci-pack-6",
+      "startedAt": "2026-10-12T21:22:11Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-12T21:22:14Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-12T21:22:12Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:14Z",
+          "conclusion": "skipped",
+          "name": "clear any sparse checkout a sibling job left in this shared workspace",
+          "number": 2,
+          "startedAt": "2026-10-12T21:22:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:35Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 3,
+          "startedAt": "2026-10-12T21:22:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:44Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 4,
+          "startedAt": "2026-10-12T21:25:35Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:48Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@v4",
+          "number": 5,
+          "startedAt": "2026-10-12T21:25:44Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:50Z",
+          "conclusion": "success",
+          "name": "install isolated pack runner",
+          "number": 6,
+          "startedAt": "2026-10-12T21:25:48Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:51Z",
+          "conclusion": "success",
+          "name": "download the authoritative semantic plan",
+          "number": 7,
+          "startedAt": "2026-10-12T21:25:50Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:51Z",
+          "conclusion": "success",
+          "name": "download the planner's changed-file list",
+          "number": 8,
+          "startedAt": "2026-10-12T21:25:51Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:51Z",
+          "conclusion": "success",
+          "name": "publish the changed-file handle",
+          "number": 9,
+          "startedAt": "2026-10-12T21:25:51Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:40:31Z",
+          "conclusion": "success",
+          "name": "validate and run legacy CI pack",
+          "number": 10,
+          "startedAt": "2026-10-12T21:25:51Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:40:31Z",
+          "conclusion": "skipped",
+          "name": "fail-safe full suite when no authoritative plan was produced",
+          "number": 11,
+          "startedAt": "2026-10-12T21:40:31Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:40:31Z",
+          "conclusion": "skipped",
+          "name": "relay the trusted pack fragment under the existing check contract",
+          "number": 12,
+          "startedAt": "2026-10-12T21:40:31Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:40:31Z",
+          "conclusion": "skipped",
+          "name": "bind trusted execution to the hosted authoritative plan",
+          "number": 13,
+          "startedAt": "2026-10-12T21:40:31Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:40:32Z",
+          "conclusion": "success",
+          "name": "publish this pack's raw semantic fragment",
+          "number": 14,
+          "startedAt": "2026-10-12T21:40:31Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:40:32Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@v4",
+          "number": 26,
+          "startedAt": "2026-10-12T21:40:32Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:40:32Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 27,
+          "startedAt": "2026-10-12T21:40:32Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:40:32Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 28,
+          "startedAt": "2026-10-12T21:40:32Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:40:33Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 29,
+          "startedAt": "2026-10-12T21:40:32Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38310079309/job/115013737315"
+    },
+    {
+      "completedAt": "2026-10-12T21:32:44Z",
+      "conclusion": "success",
+      "databaseId": 115013737333,
+      "name": "ci-pack-5",
+      "startedAt": "2026-10-12T21:22:11Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-12T21:22:13Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-12T21:22:11Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:13Z",
+          "conclusion": "skipped",
+          "name": "clear any sparse checkout a sibling job left in this shared workspace",
+          "number": 2,
+          "startedAt": "2026-10-12T21:22:13Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:05Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 3,
+          "startedAt": "2026-10-12T21:22:13Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:19Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 4,
+          "startedAt": "2026-10-12T21:26:05Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:23Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@v4",
+          "number": 5,
+          "startedAt": "2026-10-12T21:26:19Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:25Z",
+          "conclusion": "success",
+          "name": "install isolated pack runner",
+          "number": 6,
+          "startedAt": "2026-10-12T21:26:23Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:26Z",
+          "conclusion": "success",
+          "name": "download the authoritative semantic plan",
+          "number": 7,
+          "startedAt": "2026-10-12T21:26:25Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:26Z",
+          "conclusion": "success",
+          "name": "download the planner's changed-file list",
+          "number": 8,
+          "startedAt": "2026-10-12T21:26:26Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:27Z",
+          "conclusion": "success",
+          "name": "publish the changed-file handle",
+          "number": 9,
+          "startedAt": "2026-10-12T21:26:26Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:32:39Z",
+          "conclusion": "success",
+          "name": "validate and run legacy CI pack",
+          "number": 10,
+          "startedAt": "2026-10-12T21:26:27Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:32:39Z",
+          "conclusion": "skipped",
+          "name": "fail-safe full suite when no authoritative plan was produced",
+          "number": 11,
+          "startedAt": "2026-10-12T21:32:39Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:32:39Z",
+          "conclusion": "skipped",
+          "name": "relay the trusted pack fragment under the existing check contract",
+          "number": 12,
+          "startedAt": "2026-10-12T21:32:39Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:32:39Z",
+          "conclusion": "skipped",
+          "name": "bind trusted execution to the hosted authoritative plan",
+          "number": 13,
+          "startedAt": "2026-10-12T21:32:39Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:32:40Z",
+          "conclusion": "success",
+          "name": "publish this pack's raw semantic fragment",
+          "number": 14,
+          "startedAt": "2026-10-12T21:32:39Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:32:40Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@v4",
+          "number": 26,
+          "startedAt": "2026-10-12T21:32:40Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:32:40Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 27,
+          "startedAt": "2026-10-12T21:32:40Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:32:41Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 28,
+          "startedAt": "2026-10-12T21:32:40Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:32:41Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 29,
+          "startedAt": "2026-10-12T21:32:41Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38310079309/job/115013737333"
+    },
+    {
+      "completedAt": "2026-10-12T21:46:27Z",
+      "conclusion": "success",
+      "databaseId": 115013737342,
+      "name": "ci-pack-4",
+      "startedAt": "2026-10-12T21:22:11Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-12T21:22:13Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-12T21:22:12Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:13Z",
+          "conclusion": "skipped",
+          "name": "clear any sparse checkout a sibling job left in this shared workspace",
+          "number": 2,
+          "startedAt": "2026-10-12T21:22:13Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:59Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 3,
+          "startedAt": "2026-10-12T21:22:13Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:07Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 4,
+          "startedAt": "2026-10-12T21:25:59Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:11Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@v4",
+          "number": 5,
+          "startedAt": "2026-10-12T21:26:07Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:14Z",
+          "conclusion": "success",
+          "name": "install isolated pack runner",
+          "number": 6,
+          "startedAt": "2026-10-12T21:26:11Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:15Z",
+          "conclusion": "success",
+          "name": "download the authoritative semantic plan",
+          "number": 7,
+          "startedAt": "2026-10-12T21:26:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:15Z",
+          "conclusion": "success",
+          "name": "download the planner's changed-file list",
+          "number": 8,
+          "startedAt": "2026-10-12T21:26:15Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:15Z",
+          "conclusion": "success",
+          "name": "publish the changed-file handle",
+          "number": 9,
+          "startedAt": "2026-10-12T21:26:15Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:46:24Z",
+          "conclusion": "success",
+          "name": "validate and run legacy CI pack",
+          "number": 10,
+          "startedAt": "2026-10-12T21:26:15Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:46:24Z",
+          "conclusion": "skipped",
+          "name": "fail-safe full suite when no authoritative plan was produced",
+          "number": 11,
+          "startedAt": "2026-10-12T21:46:24Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:46:24Z",
+          "conclusion": "skipped",
+          "name": "relay the trusted pack fragment under the existing check contract",
+          "number": 12,
+          "startedAt": "2026-10-12T21:46:24Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:46:24Z",
+          "conclusion": "skipped",
+          "name": "bind trusted execution to the hosted authoritative plan",
+          "number": 13,
+          "startedAt": "2026-10-12T21:46:24Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:46:25Z",
+          "conclusion": "success",
+          "name": "publish this pack's raw semantic fragment",
+          "number": 14,
+          "startedAt": "2026-10-12T21:46:24Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:46:25Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@v4",
+          "number": 26,
+          "startedAt": "2026-10-12T21:46:25Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:46:25Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 27,
+          "startedAt": "2026-10-12T21:46:25Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:46:25Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 28,
+          "startedAt": "2026-10-12T21:46:25Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:46:25Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 29,
+          "startedAt": "2026-10-12T21:46:25Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38310079309/job/115013737342"
+    },
+    {
+      "completedAt": "2026-10-12T21:49:51Z",
+      "conclusion": "success",
+      "databaseId": 115013737370,
+      "name": "ci-pack-8",
+      "startedAt": "2026-10-12T21:22:11Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-12T21:22:13Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-12T21:22:11Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:13Z",
+          "conclusion": "skipped",
+          "name": "clear any sparse checkout a sibling job left in this shared workspace",
+          "number": 2,
+          "startedAt": "2026-10-12T21:22:13Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:28:48Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 3,
+          "startedAt": "2026-10-12T21:22:13Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:28:57Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 4,
+          "startedAt": "2026-10-12T21:28:48Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:29:01Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@v4",
+          "number": 5,
+          "startedAt": "2026-10-12T21:28:57Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:29:04Z",
+          "conclusion": "success",
+          "name": "install isolated pack runner",
+          "number": 6,
+          "startedAt": "2026-10-12T21:29:01Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:29:05Z",
+          "conclusion": "success",
+          "name": "download the authoritative semantic plan",
+          "number": 7,
+          "startedAt": "2026-10-12T21:29:04Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:29:06Z",
+          "conclusion": "success",
+          "name": "download the planner's changed-file list",
+          "number": 8,
+          "startedAt": "2026-10-12T21:29:05Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:29:06Z",
+          "conclusion": "success",
+          "name": "publish the changed-file handle",
+          "number": 9,
+          "startedAt": "2026-10-12T21:29:06Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:49:47Z",
+          "conclusion": "success",
+          "name": "validate and run legacy CI pack",
+          "number": 10,
+          "startedAt": "2026-10-12T21:29:06Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:49:47Z",
+          "conclusion": "skipped",
+          "name": "fail-safe full suite when no authoritative plan was produced",
+          "number": 11,
+          "startedAt": "2026-10-12T21:49:47Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:49:47Z",
+          "conclusion": "skipped",
+          "name": "relay the trusted pack fragment under the existing check contract",
+          "number": 12,
+          "startedAt": "2026-10-12T21:49:47Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:49:47Z",
+          "conclusion": "skipped",
+          "name": "bind trusted execution to the hosted authoritative plan",
+          "number": 13,
+          "startedAt": "2026-10-12T21:49:47Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:49:48Z",
+          "conclusion": "success",
+          "name": "publish this pack's raw semantic fragment",
+          "number": 14,
+          "startedAt": "2026-10-12T21:49:47Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:49:48Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@v4",
+          "number": 26,
+          "startedAt": "2026-10-12T21:49:48Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:49:48Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 27,
+          "startedAt": "2026-10-12T21:49:48Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:49:48Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 28,
+          "startedAt": "2026-10-12T21:49:48Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:49:48Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 29,
+          "startedAt": "2026-10-12T21:49:48Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38310079309/job/115013737370"
+    },
+    {
+      "completedAt": "2026-10-12T21:34:16Z",
+      "conclusion": "success",
+      "databaseId": 115013737384,
+      "name": "ci-pack-10",
+      "startedAt": "2026-10-12T21:22:11Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-12T21:22:15Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-12T21:22:12Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:15Z",
+          "conclusion": "skipped",
+          "name": "clear any sparse checkout a sibling job left in this shared workspace",
+          "number": 2,
+          "startedAt": "2026-10-12T21:22:15Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:33Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 3,
+          "startedAt": "2026-10-12T21:22:15Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:40Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 4,
+          "startedAt": "2026-10-12T21:25:33Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:44Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@v4",
+          "number": 5,
+          "startedAt": "2026-10-12T21:25:40Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:47Z",
+          "conclusion": "success",
+          "name": "install isolated pack runner",
+          "number": 6,
+          "startedAt": "2026-10-12T21:25:44Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:48Z",
+          "conclusion": "success",
+          "name": "download the authoritative semantic plan",
+          "number": 7,
+          "startedAt": "2026-10-12T21:25:47Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:49Z",
+          "conclusion": "success",
+          "name": "download the planner's changed-file list",
+          "number": 8,
+          "startedAt": "2026-10-12T21:25:48Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:49Z",
+          "conclusion": "success",
+          "name": "publish the changed-file handle",
+          "number": 9,
+          "startedAt": "2026-10-12T21:25:49Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:34:12Z",
+          "conclusion": "success",
+          "name": "validate and run legacy CI pack",
+          "number": 10,
+          "startedAt": "2026-10-12T21:25:49Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:34:12Z",
+          "conclusion": "skipped",
+          "name": "fail-safe full suite when no authoritative plan was produced",
+          "number": 11,
+          "startedAt": "2026-10-12T21:34:12Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:34:12Z",
+          "conclusion": "skipped",
+          "name": "relay the trusted pack fragment under the existing check contract",
+          "number": 12,
+          "startedAt": "2026-10-12T21:34:12Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:34:12Z",
+          "conclusion": "skipped",
+          "name": "bind trusted execution to the hosted authoritative plan",
+          "number": 13,
+          "startedAt": "2026-10-12T21:34:12Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:34:13Z",
+          "conclusion": "success",
+          "name": "publish this pack's raw semantic fragment",
+          "number": 14,
+          "startedAt": "2026-10-12T21:34:12Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:34:13Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@v4",
+          "number": 26,
+          "startedAt": "2026-10-12T21:34:13Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:34:13Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 27,
+          "startedAt": "2026-10-12T21:34:13Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:34:13Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 28,
+          "startedAt": "2026-10-12T21:34:13Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:34:13Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 29,
+          "startedAt": "2026-10-12T21:34:13Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38310079309/job/115013737384"
+    },
+    {
+      "completedAt": "2026-10-12T21:35:11Z",
+      "conclusion": "success",
+      "databaseId": 115013737419,
+      "name": "ci-pack-3",
+      "startedAt": "2026-10-12T21:22:11Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-12T21:22:14Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-12T21:22:12Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:14Z",
+          "conclusion": "skipped",
+          "name": "clear any sparse checkout a sibling job left in this shared workspace",
+          "number": 2,
+          "startedAt": "2026-10-12T21:22:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:20Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 3,
+          "startedAt": "2026-10-12T21:22:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:30Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 4,
+          "startedAt": "2026-10-12T21:26:20Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:34Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@v4",
+          "number": 5,
+          "startedAt": "2026-10-12T21:26:30Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:36Z",
+          "conclusion": "success",
+          "name": "install isolated pack runner",
+          "number": 6,
+          "startedAt": "2026-10-12T21:26:34Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:37Z",
+          "conclusion": "success",
+          "name": "download the authoritative semantic plan",
+          "number": 7,
+          "startedAt": "2026-10-12T21:26:36Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:37Z",
+          "conclusion": "success",
+          "name": "download the planner's changed-file list",
+          "number": 8,
+          "startedAt": "2026-10-12T21:26:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:37Z",
+          "conclusion": "success",
+          "name": "publish the changed-file handle",
+          "number": 9,
+          "startedAt": "2026-10-12T21:26:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:35:06Z",
+          "conclusion": "success",
+          "name": "validate and run legacy CI pack",
+          "number": 10,
+          "startedAt": "2026-10-12T21:26:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:35:06Z",
+          "conclusion": "skipped",
+          "name": "fail-safe full suite when no authoritative plan was produced",
+          "number": 11,
+          "startedAt": "2026-10-12T21:35:06Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:35:06Z",
+          "conclusion": "skipped",
+          "name": "relay the trusted pack fragment under the existing check contract",
+          "number": 12,
+          "startedAt": "2026-10-12T21:35:06Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:35:06Z",
+          "conclusion": "skipped",
+          "name": "bind trusted execution to the hosted authoritative plan",
+          "number": 13,
+          "startedAt": "2026-10-12T21:35:06Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:35:07Z",
+          "conclusion": "success",
+          "name": "publish this pack's raw semantic fragment",
+          "number": 14,
+          "startedAt": "2026-10-12T21:35:06Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:35:07Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@v4",
+          "number": 26,
+          "startedAt": "2026-10-12T21:35:07Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:35:07Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 27,
+          "startedAt": "2026-10-12T21:35:07Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:35:08Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 28,
+          "startedAt": "2026-10-12T21:35:07Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:35:08Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 29,
+          "startedAt": "2026-10-12T21:35:08Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38310079309/job/115013737419"
+    },
+    {
+      "completedAt": "2026-10-12T21:46:05Z",
+      "conclusion": "success",
+      "databaseId": 115013737436,
+      "name": "ci-pack-11",
+      "startedAt": "2026-10-12T21:22:11Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-12T21:22:14Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-12T21:22:12Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:15Z",
+          "conclusion": "skipped",
+          "name": "clear any sparse checkout a sibling job left in this shared workspace",
+          "number": 2,
+          "startedAt": "2026-10-12T21:22:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:59Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 3,
+          "startedAt": "2026-10-12T21:22:15Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:08Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 4,
+          "startedAt": "2026-10-12T21:25:59Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:12Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@v4",
+          "number": 5,
+          "startedAt": "2026-10-12T21:26:08Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:16Z",
+          "conclusion": "success",
+          "name": "install isolated pack runner",
+          "number": 6,
+          "startedAt": "2026-10-12T21:26:12Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:17Z",
+          "conclusion": "success",
+          "name": "download the authoritative semantic plan",
+          "number": 7,
+          "startedAt": "2026-10-12T21:26:16Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:17Z",
+          "conclusion": "success",
+          "name": "download the planner's changed-file list",
+          "number": 8,
+          "startedAt": "2026-10-12T21:26:17Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:17Z",
+          "conclusion": "success",
+          "name": "publish the changed-file handle",
+          "number": 9,
+          "startedAt": "2026-10-12T21:26:17Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:46:00Z",
+          "conclusion": "success",
+          "name": "validate and run legacy CI pack",
+          "number": 10,
+          "startedAt": "2026-10-12T21:26:17Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:46:00Z",
+          "conclusion": "skipped",
+          "name": "fail-safe full suite when no authoritative plan was produced",
+          "number": 11,
+          "startedAt": "2026-10-12T21:46:00Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:46:00Z",
+          "conclusion": "skipped",
+          "name": "relay the trusted pack fragment under the existing check contract",
+          "number": 12,
+          "startedAt": "2026-10-12T21:46:00Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:46:00Z",
+          "conclusion": "skipped",
+          "name": "bind trusted execution to the hosted authoritative plan",
+          "number": 13,
+          "startedAt": "2026-10-12T21:46:00Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:46:01Z",
+          "conclusion": "success",
+          "name": "publish this pack's raw semantic fragment",
+          "number": 14,
+          "startedAt": "2026-10-12T21:46:00Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:46:01Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@v4",
+          "number": 26,
+          "startedAt": "2026-10-12T21:46:01Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:46:01Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 27,
+          "startedAt": "2026-10-12T21:46:01Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:46:01Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 28,
+          "startedAt": "2026-10-12T21:46:01Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:46:01Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 29,
+          "startedAt": "2026-10-12T21:46:01Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38310079309/job/115013737436"
+    },
+    {
+      "completedAt": "2026-10-12T21:55:31Z",
+      "conclusion": "success",
+      "databaseId": 115013737447,
+      "name": "ci-pack-9",
+      "startedAt": "2026-10-12T21:22:11Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-12T21:22:15Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-12T21:22:12Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:15Z",
+          "conclusion": "skipped",
+          "name": "clear any sparse checkout a sibling job left in this shared workspace",
+          "number": 2,
+          "startedAt": "2026-10-12T21:22:15Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:37Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 3,
+          "startedAt": "2026-10-12T21:22:15Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:44Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 4,
+          "startedAt": "2026-10-12T21:25:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:48Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@v4",
+          "number": 5,
+          "startedAt": "2026-10-12T21:25:44Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:52Z",
+          "conclusion": "success",
+          "name": "install isolated pack runner",
+          "number": 6,
+          "startedAt": "2026-10-12T21:25:48Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:52Z",
+          "conclusion": "success",
+          "name": "download the authoritative semantic plan",
+          "number": 7,
+          "startedAt": "2026-10-12T21:25:52Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:53Z",
+          "conclusion": "success",
+          "name": "download the planner's changed-file list",
+          "number": 8,
+          "startedAt": "2026-10-12T21:25:52Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:53Z",
+          "conclusion": "success",
+          "name": "publish the changed-file handle",
+          "number": 9,
+          "startedAt": "2026-10-12T21:25:53Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:26Z",
+          "conclusion": "success",
+          "name": "validate and run legacy CI pack",
+          "number": 10,
+          "startedAt": "2026-10-12T21:25:53Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:26Z",
+          "conclusion": "skipped",
+          "name": "fail-safe full suite when no authoritative plan was produced",
+          "number": 11,
+          "startedAt": "2026-10-12T21:55:26Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:26Z",
+          "conclusion": "skipped",
+          "name": "relay the trusted pack fragment under the existing check contract",
+          "number": 12,
+          "startedAt": "2026-10-12T21:55:26Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:26Z",
+          "conclusion": "skipped",
+          "name": "bind trusted execution to the hosted authoritative plan",
+          "number": 13,
+          "startedAt": "2026-10-12T21:55:26Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:28Z",
+          "conclusion": "success",
+          "name": "publish this pack's raw semantic fragment",
+          "number": 14,
+          "startedAt": "2026-10-12T21:55:26Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:28Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@v4",
+          "number": 26,
+          "startedAt": "2026-10-12T21:55:28Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:28Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 27,
+          "startedAt": "2026-10-12T21:55:28Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:28Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 28,
+          "startedAt": "2026-10-12T21:55:28Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:28Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 29,
+          "startedAt": "2026-10-12T21:55:28Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38310079309/job/115013737447"
+    },
+    {
+      "completedAt": "2026-10-12T21:38:01Z",
+      "conclusion": "success",
+      "databaseId": 115013737449,
+      "name": "ci-pack-7",
+      "startedAt": "2026-10-12T21:22:11Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-12T21:22:14Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-12T21:22:12Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:22:14Z",
+          "conclusion": "skipped",
+          "name": "clear any sparse checkout a sibling job left in this shared workspace",
+          "number": 2,
+          "startedAt": "2026-10-12T21:22:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:25:55Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 3,
+          "startedAt": "2026-10-12T21:22:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:03Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 4,
+          "startedAt": "2026-10-12T21:25:55Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:07Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@v4",
+          "number": 5,
+          "startedAt": "2026-10-12T21:26:03Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:09Z",
+          "conclusion": "success",
+          "name": "install isolated pack runner",
+          "number": 6,
+          "startedAt": "2026-10-12T21:26:07Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:10Z",
+          "conclusion": "success",
+          "name": "download the authoritative semantic plan",
+          "number": 7,
+          "startedAt": "2026-10-12T21:26:09Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:11Z",
+          "conclusion": "success",
+          "name": "download the planner's changed-file list",
+          "number": 8,
+          "startedAt": "2026-10-12T21:26:10Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:26:11Z",
+          "conclusion": "success",
+          "name": "publish the changed-file handle",
+          "number": 9,
+          "startedAt": "2026-10-12T21:26:11Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:37:57Z",
+          "conclusion": "success",
+          "name": "validate and run legacy CI pack",
+          "number": 10,
+          "startedAt": "2026-10-12T21:26:11Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:37:57Z",
+          "conclusion": "skipped",
+          "name": "fail-safe full suite when no authoritative plan was produced",
+          "number": 11,
+          "startedAt": "2026-10-12T21:37:57Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:37:57Z",
+          "conclusion": "skipped",
+          "name": "relay the trusted pack fragment under the existing check contract",
+          "number": 12,
+          "startedAt": "2026-10-12T21:37:57Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:37:57Z",
+          "conclusion": "skipped",
+          "name": "bind trusted execution to the hosted authoritative plan",
+          "number": 13,
+          "startedAt": "2026-10-12T21:37:57Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:37:58Z",
+          "conclusion": "success",
+          "name": "publish this pack's raw semantic fragment",
+          "number": 14,
+          "startedAt": "2026-10-12T21:37:57Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:37:58Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@v4",
+          "number": 26,
+          "startedAt": "2026-10-12T21:37:58Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:37:58Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 27,
+          "startedAt": "2026-10-12T21:37:58Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:37:58Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 28,
+          "startedAt": "2026-10-12T21:37:58Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:37:58Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 29,
+          "startedAt": "2026-10-12T21:37:58Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38310079309/job/115013737449"
+    },
+    {
+      "completedAt": "2026-10-12T21:22:09Z",
+      "conclusion": "skipped",
+      "databaseId": 115013738075,
+      "name": "trusted-ci",
+      "startedAt": "2026-10-12T21:22:09Z",
+      "status": "completed",
+      "steps": [],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38310079309/job/115013738075"
+    },
+    {
+      "completedAt": "2026-10-12T21:55:40Z",
+      "conclusion": "success",
+      "databaseId": 115024973677,
+      "name": "ci-gate",
+      "startedAt": "2026-10-12T21:55:33Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-12T21:55:34Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-12T21:55:34Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:36Z",
+          "conclusion": "success",
+          "name": "check out the one shared semantic-proof law",
+          "number": 2,
+          "startedAt": "2026-10-12T21:55:34Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:36Z",
+          "conclusion": "success",
+          "name": "download the authoritative semantic plan",
+          "number": 3,
+          "startedAt": "2026-10-12T21:55:36Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:37Z",
+          "conclusion": "success",
+          "name": "download every raw semantic pack fragment",
+          "number": 4,
+          "startedAt": "2026-10-12T21:55:36Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:37Z",
+          "conclusion": "success",
+          "name": "reconcile complete semantic evidence",
+          "number": 5,
+          "startedAt": "2026-10-12T21:55:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:38Z",
+          "conclusion": "success",
+          "name": "publish final semantic evidence",
+          "number": 6,
+          "startedAt": "2026-10-12T21:55:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:38Z",
+          "conclusion": "success",
+          "name": "summarize semantic verdict",
+          "number": 7,
+          "startedAt": "2026-10-12T21:55:38Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:38Z",
+          "conclusion": "success",
+          "name": "enforce semantic verdict",
+          "number": 8,
+          "startedAt": "2026-10-12T21:55:38Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:38Z",
+          "conclusion": "success",
+          "name": "enforce contract-delta verdict",
+          "number": 9,
+          "startedAt": "2026-10-12T21:55:38Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:38Z",
+          "conclusion": "success",
+          "name": "Post check out the one shared semantic-proof law",
+          "number": 18,
+          "startedAt": "2026-10-12T21:55:38Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T21:55:38Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 19,
+          "startedAt": "2026-10-12T21:55:38Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38310079309/job/115024973677"
+    }
+  ],
+  "status": "completed",
+  "updatedAt": "2026-10-12T21:55:40Z"
+}

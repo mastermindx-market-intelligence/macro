@@ -394,18 +394,50 @@ MARKET_BOARDS: tuple[dict, ...] = (
     {
         "market": "intl",
         "label": "International",
-        # NOTE: this board's ``as_of`` is None on every commit in main's history —
-        # compute_intl_alpha carries no as_of on any return path (documented at
-        # scripts/build_intl_library.py, adversarial review D1, PR #5674), so the
-        # stamp never reaches the artifact.  D therefore reports International as
-        # INDETERMINATE every run and says why, rather than inventing a verdict.
-        # tests/test_nightly_liveness.py pins that as a KNOWN blind spot so the day
-        # the builder starts stamping, the test is what tells us to expect a grade.
+        # build_intl_library stamps this board from its session anchor
+        # (alpha as_of -> max built-record asof -> wall-clock only as a last-resort).
+        # International spans disjoint exchange calendars, so the weekday-union
+        # approximation and its +2 tolerance remain the honest freshness ceiling.
         "path": "site/factordata/intl_setups.json",
-        "stamp_known_absent": True,
+        "stamp_known_absent": False,
         "field": "as_of",
         "calendar": "weekday",
         "max_sessions_behind": 3,   # 1 + the +2 weekday-approximation tolerance
+        "min_calendar_days": None,
+    },
+    # ── Sector Intelligence semantic generation ─────────────────────────────────────
+    # These three artifacts are written by different producers and can each be
+    # individually fresh while the composed overview is a mixed generation. The
+    # per-row checks grade ordinary NYSE-session staleness; the paired check below
+    # separately enforces exact date agreement.
+    {
+        "market": "si_baskets",
+        "label": "Sector Intelligence baskets",
+        "path": "site/basketdata/baskets.json",
+        "stamp_known_absent": False,
+        "field": "as_of",
+        "calendar": "nyse",
+        "max_sessions_behind": 1,
+        "min_calendar_days": None,
+    },
+    {
+        "market": "si_action",
+        "label": "Sector Intelligence action board",
+        "path": "site/basketdata/action_board.json",
+        "stamp_known_absent": False,
+        "field": "as_of",
+        "calendar": "nyse",
+        "max_sessions_behind": 1,
+        "min_calendar_days": None,
+    },
+    {
+        "market": "si_sector",
+        "label": "Sector Intelligence sector payload",
+        "path": "site/sectordata/sector_central.json",
+        "stamp_known_absent": False,
+        "field": "as_of",
+        "calendar": "nyse",
+        "max_sessions_behind": 1,
         "min_calendar_days": None,
     },
     # ── GD-4A.1 ledger-freshness entries ────────────────────────────────────────────
@@ -861,6 +893,29 @@ def evaluate_market_boards(
                 f"as_of={free_asof.isoformat()}. Not a paid-tier freeze — the direction "
                 "that harms a subscriber — so it does not page here; the US row above "
                 "grades whether the free board has fallen behind."
+            )
+
+    # Sector Intelligence is a three-producer composition. Each artifact can sit
+    # inside the same one-session freshness budget and still describe a different
+    # session. Only exact agreement makes the overview coherent. Missing or malformed
+    # stamps are already reported by the per-row checks above, so this paired check
+    # remains silent unless all three dates are positively known.
+    si_dates = {
+        market: _parse_date((states.get(market) or {}).get("as_of"))
+        for market in ("si_baskets", "si_action", "si_sector")
+    }
+    if all(value is not None for value in si_dates.values()):
+        unique_si_dates = set(si_dates.values())
+        if len(unique_si_dates) != 1:
+            detail = ", ".join(
+                f"{market}={value.isoformat()}"
+                for market, value in si_dates.items()
+                if value is not None
+            )
+            fail.append(
+                "SECTOR INTELLIGENCE VINTAGE SPLIT: "
+                f"{detail}. The basket, action-board, and sector payloads are each "
+                "individually readable but do not describe one market session."
             )
 
     return fail, warn, facts
@@ -1613,16 +1668,17 @@ def _selftest() -> int:
     _check("D/mainland-floor-is-not-always-on", r["ok"], False)
     assert any("STALE BOARD [China]" in f for f in r["fail_reasons"]), r
 
-    # Blindness, per market and independently: a missing artifact, an absent stamp
-    # (the live International shape — its as_of is None on every commit in history)
-    # and an unparseable stamp are all INDETERMINATE, and the other markets stay graded.
+    # Blindness, per market and independently: a missing artifact or an unparseable
+    # stamp is INDETERMINATE, and the other markets stay graded. A readable null stamp
+    # is a producer regression for every market now that International is stamped.
     r = evaluate(healthy_runs, d_index, d_now,
                  boards={"us": None, "cn": None, "hk": None,
-                         "ca": {"as_of": "2026-08-17"}, "intl": {"as_of": None}})
+                         "ca": {"as_of": "2026-08-17"}, "intl": None})
     _check("D/blind-markets-never-breach", r["ok"], True)
-    # 5 board-level blind markets (us, us_premium, cn, hk, intl) + 2 ledger entries
-    # absent from this fixture's ``boards`` dict entirely (cn_ledger, hk_ledger) = 7.
-    assert len([w for w in r["warnings"] if "INDETERMINATE [" in w]) == 7, r
+    # Canada is the one positively fresh row in this fixture. Every other registered
+    # board/ledger — including the three Sector Intelligence generation artifacts —
+    # is independently blind and must remain visible as INDETERMINATE.
+    assert len([w for w in r["warnings"] if "INDETERMINATE [" in w]) == len(MARKET_BOARDS) - 1, r
     assert r["facts"]["boards"]["ca"]["behind"] == 0, r
 
     # ...but an artifact we CAN read that publishes no stamp is a producer regression,
@@ -1632,8 +1688,9 @@ def _selftest() -> int:
     _check("D/unstamped-board-is-a-breach", r["ok"], False)
     assert any("BOARD PUBLISHED WITHOUT A STAMP [Canada]" in f
                for f in r["fail_reasons"]), r
-    # and the one board that has NEVER carried a stamp stays a named warning
-    assert any("INDETERMINATE [International]" in w for w in r["warnings"]), r
+    # International is no longer exempt: its readable null stamp is a breach too.
+    assert any("BOARD PUBLISHED WITHOUT A STAMP [International]" in f
+               for f in r["fail_reasons"]), r
 
     # A market absent from the payload entirely must warn, never vanish quietly —
     # that is what a forgotten sparse-checkout path looks like.

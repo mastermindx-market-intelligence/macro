@@ -69,6 +69,7 @@ def test_browser_style_uses_existing_tokens_and_exact_native_evidence_style():
     assert not re.search(r"#[0-9a-fA-F]{3,8}\b",s)
     assert 'html[data-theme="light"]' in s
 
+import os
 import subprocess
 import shutil
 from copy import deepcopy
@@ -96,6 +97,119 @@ def runtime_payload():
     views = {language: build_earnings_view(vector, language=language) for language in ('en', 'zh')}
     assert directory['episodes'][0]['episode_ref'] == views['en']['episode_ref']
     return {'directory': directory, 'view': views}
+
+def _broken_earnings(**_kwargs):
+    raise RuntimeError("private-path secret should not escape")
+
+
+@pytest.fixture(scope="module")
+def partial_payload(tmp_path_factory):
+    """The REAL degraded envelope, served by the REAL route over a REAL store.
+
+    The browser contract is proved against the bytes the route actually
+    emits, not against a hand-written imitation of them: a route change that
+    breaks the browser, or a browser change that stops understanding the
+    route, is visible here rather than in production.
+    """
+    from engine import prophet_candidate_state as b3_owner
+    from tests.test_prophet_candidate_state import ASSEMBLY_NOW, _load_snapshot
+    from tests.test_prophet_lab_research_opportunity_context import (
+        _build_store, _episode_id,
+    )
+
+    root = _build_store(tmp_path_factory.mktemp("browser_partial_store"))
+    snapshot = _load_snapshot(root)
+    directory = build_episode_directory(snapshot, query="", limit=25, offset=0)
+    ladder = {
+        "PROPHET_LAB_EPISODE_STORE_ROOT": str(root / "data/us_prophet_rank/episodes"),
+        "PROPHET_LAB_SECURITY_MASTER_PATH": str(root / "data/reference/security_master.parquet"),
+        "PROPHET_LAB_VENDOR_ALIASES_PATH": str(root / "data/reference/vendor_aliases.parquet"),
+    }
+    previous_env = {name: os.environ.get(name) for name in ladder}
+    previous_vector = api.build_earnings_intelligence_vector
+    previous_clock = b3_owner._assembly_now
+    views = {}
+    try:
+        os.environ.pop("PROPHET_LAB_DISABLED", None)
+        for name, value in ladder.items():
+            os.environ[name] = value
+        b3_owner._assembly_now = lambda: ASSEMBLY_NOW
+        api.build_earnings_intelligence_vector = _broken_earnings
+        for language in ("en", "zh"):
+            app = FastAPI()
+            app.include_router(api.router)
+            app.dependency_overrides[api.require_site_full_user] = lambda: {"id": "test-entitled"}
+            with TestClient(app) as c:
+                response = c.get(
+                    f"/api/prophet/lab/v1/episodes/{_episode_id(root)}/research-view",
+                    params={"language": language},
+                )
+            assert response.status_code == 200, response.text
+            views[language] = response.json()
+    finally:
+        api.build_earnings_intelligence_vector = previous_vector
+        b3_owner._assembly_now = previous_clock
+        for name, value in previous_env.items():
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
+    assert views["en"]["view_version"] == "research-opportunity-context/1"
+    return {"directory": directory, "view": views}
+
+
+@pytest.mark.parametrize('scenario', ['opportunity_partial','opportunity_zh','opportunity_injected',
+    'opportunity_wrongref','opportunity_nocontract','opportunity_nocontext','opportunity_badstate',
+    'opportunity_badentry','opportunity_badauthority','opportunity_focus'])
+def test_browser_runtime_degraded_opportunity_contract(partial_payload, scenario):
+    """The DEGRADED envelope drives the REAL browser consumer in REAL node."""
+    node = shutil.which('node')
+    assert node, 'Node is required by the existing frontend test owner'
+    payload = {'partial': partial_payload, 'scenario': scenario}
+    result = subprocess.run(
+        [node, str(ROOT/'tests/fixtures/prophet_lab/earnings_browser_runtime.mjs'),
+         str(T/'_prophet_earnings_browser.js.j2')],
+        input=json.dumps(payload), capture_output=True, text=True, timeout=15,
+    )
+    assert result.returncode == 0, result.stderr
+    receipt = json.loads(result.stdout)
+    assert receipt['scenario'] == scenario and receipt['status'] == 'PASS'
+
+
+def test_the_degraded_envelope_is_the_route_s_own_output(partial_payload):
+    """The browser fixture is the route's bytes, not an imitation of them."""
+    body = partial_payload['view']['en']
+    assert body['state'] == 'PARTIAL'
+    assert body['reason'] == 'EARNINGS_UNAVAILABLE'
+    assert body['earnings_source_state'] == {'state': 'UNAVAILABLE', 'reason': 'EARNINGS_UNAVAILABLE'}
+    assert body['opportunity_context']['status'] == 'PARTIAL'
+    assert body['opportunity_context']['context']['schema'] == 'prophet.lab_opportunity_context/v1'
+    # the envelope binds to the very episode the directory lists
+    listed = partial_payload['directory']['episodes'][0]['episode_ref']
+    assert body['episode_ref'] == listed
+    # and it carries no earnings payload at all
+    for key in ('metrics', 'summary', 'expectation_revision', 'availability', 'hold',
+                'source_projection_id', 'decision_cut', 'coverage'):
+        assert key not in body
+
+
+def test_the_browser_source_keeps_its_safety_contracts():
+    """The new branch may not weaken any incumbent browser guarantee."""
+    s = (T/'_prophet_earnings_browser.js.j2').read_text()
+    for bad in ("innerHTML", "outerHTML", "DOMParser", "localStorage", "sessionStorage",
+                "console.", "document.cookie", "setInterval"):
+        assert bad not in s
+    # the incumbent full-earnings validator is untouched: it still refuses
+    # anything that is not the earnings-detail/1 version.
+    assert "v.view_version!=='earnings-detail/1'" in s
+    # the degraded envelope has its own closed version and its own validator
+    assert "research-opportunity-context/1" in s
+    assert "validateOpportunityView" in s
+    assert "OPPORTUNITY_VIEW_VERSION" in s
+    # focus recovery is present and the focus ring survives
+    assert "pendingFocus" in s and "focusChosen" in s
+    assert "outline:2px solid var(--info)" in (T/'_prophet_earnings_browser.css.j2').read_text()
+
 
 @pytest.mark.parametrize('scenario', ['happy','anonymous','absent_auth','auth_race','timeout',
     'late_response','wronglink','rank','nonjson','oversize','search','pagination','distinct_episodes',

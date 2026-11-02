@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_risk_envelope_band.css.j2
+  - templates/_risk_envelope_band.html.j2
+manifest: mockups/evidence/risk-radar-probability-evidence-depth-20260922/manifest.json

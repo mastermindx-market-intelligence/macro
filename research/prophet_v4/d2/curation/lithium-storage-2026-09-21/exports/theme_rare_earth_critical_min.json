@@ -1,0 +1,564 @@
+{
+  "asof": "2026-09-21",
+  "authority_ceiling": "research_internal_only",
+  "availability": {
+    "reason": null,
+    "state": "OK"
+  },
+  "canonical_mapping": {
+    "state": "SUBJECT_IS_CANONICAL",
+    "theme_node_ids": [
+      "theme:rare_earth_critical_min"
+    ]
+  },
+  "counts": {
+    "future_beliefs_excluded": 0,
+    "proposals": 0,
+    "relations": 11
+  },
+  "curation": {
+    "counts": {
+      "proposed": 0,
+      "ratified": 0,
+      "rejected": 0
+    },
+    "proposal_ids": [],
+    "state": "NONE"
+  },
+  "knowledge_cutoff": "2026-09-21",
+  "limitations": [
+    "exact node_id only; labels are never fuzzy-matched",
+    "probation proposals have zero graph authority",
+    "internal research projection; public display still requires the cited rights receipts",
+    "no ranking, scoring, selection, trade, or ThemeState authority"
+  ],
+  "node_id": "theme:rare_earth_critical_min",
+  "ordering": "type,direction,peer_node_id,edge_id; never score",
+  "proposals": [],
+  "relations": [
+    {
+      "belief_time": "2026-08-11",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets:critical_minerals->theme:rare_earth_critical_min@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "critical_minerals",
+          "suite": "baskets"
+        },
+        "kind": "basket",
+        "market_scope": "us",
+        "merged_into": null,
+        "name_en": "Critical Minerals & Rare Earths",
+        "name_zh": "关键矿产与稀土",
+        "node_id": "basket:baskets:critical_minerals",
+        "provenance": "membership_doc:baskets",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets:critical_minerals",
+      "rights": [
+        {
+          "family": "mastermind_curated",
+          "public_display_allowed": true,
+          "rights_class": "direct_display_ok"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-08-11",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets_china:cn_rare_earth->theme:rare_earth_critical_min@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "cn_rare_earth",
+          "suite": "baskets_china"
+        },
+        "kind": "basket",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": "Rare Earth & Magnets",
+        "name_zh": "稀土永磁",
+        "node_id": "basket:baskets_china:cn_rare_earth",
+        "provenance": "membership_doc:baskets_china",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets_china:cn_rare_earth",
+      "rights": [
+        {
+          "family": "mastermind_curated",
+          "public_display_allowed": true,
+          "rights_class": "direct_display_ok"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets_china_ths:ths_rare_earth->theme:rare_earth_critical_min@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "ths_rare_earth",
+          "suite": "baskets_china_ths",
+          "ths_code": "300382"
+        },
+        "kind": "basket",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": "Rare-Earth & Magnets",
+        "name_zh": "稀土永磁",
+        "node_id": "basket:baskets_china_ths:ths_rare_earth",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets_china_ths:ths_rare_earth",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets_china_ths:thsc300809->theme:rare_earth_critical_min@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "thsc300809",
+          "suite": "baskets_china_ths",
+          "ths_code": "300809"
+        },
+        "kind": "basket",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": "Minor Metals",
+        "name_zh": "小金属概念",
+        "node_id": "basket:baskets_china_ths:thsc300809",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets_china_ths:thsc300809",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets_china_ths:thsc301511->theme:rare_earth_critical_min@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "thsc301511",
+          "suite": "baskets_china_ths",
+          "ths_code": "301511"
+        },
+        "kind": "basket",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": "Nickel",
+        "name_zh": "金属镍",
+        "node_id": "basket:baskets_china_ths:thsc301511",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets_china_ths:thsc301511",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets_china_ths:thsc302174->theme:rare_earth_critical_min@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "thsc302174",
+          "suite": "baskets_china_ths",
+          "ths_code": "302174"
+        },
+        "kind": "basket",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": "Cobalt Metal",
+        "name_zh": "金属钴",
+        "node_id": "basket:baskets_china_ths:thsc302174",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets_china_ths:thsc302174",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:300382->theme:rare_earth_critical_min@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "300382"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "稀土永磁",
+        "node_id": "ltheme:ths:300382",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "稀土永磁",
+          "source_local_id": "300382",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:300382",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:300809->theme:rare_earth_critical_min@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "300809"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "小金属概念",
+        "node_id": "ltheme:ths:300809",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "小金属概念",
+          "source_local_id": "300809",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:300809",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:301511->theme:rare_earth_critical_min@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "301511"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "金属镍",
+        "node_id": "ltheme:ths:301511",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "金属镍",
+          "source_local_id": "301511",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:301511",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:302174->theme:rare_earth_critical_min@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "302174"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "金属钴",
+        "node_id": "ltheme:ths:302174",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "金属钴",
+          "source_local_id": "302174",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:302174",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:307904->theme:rare_earth_critical_min@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "307904"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "盐湖提锂",
+        "node_id": "ltheme:ths:307904",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "盐湖提锂",
+          "source_local_id": "307904",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:307904",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    }
+  ],
+  "schema": "gmi.theme_ontology_neighborhood/v1",
+  "subject": {
+    "external_ids": {
+      "foresight_id": "rare_earth_critical_min"
+    },
+    "kind": "theme",
+    "market_scope": "global",
+    "merged_into": null,
+    "name_en": "Rare Earth & Critical Minerals",
+    "name_zh": "稀土与关键矿产",
+    "node_id": "theme:rare_earth_critical_min",
+    "provenance": "crosswalk:config/theme_crosswalk.yml",
+    "source_meta": null,
+    "status": "canonical",
+    "tier": "theme"
+  }
+}

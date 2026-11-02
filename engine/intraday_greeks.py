@@ -35,7 +35,15 @@ Coverage honesty (CLAUDE.md §Epistemics — honest nulls, no fabrication):
 Rate / dividend / multiplier conventions (mirror scripts/build_gex_board.py:151 +
 engine/gex_model.DEFAULTS): r=0.043, q=0.0, contract_multiplier=100, pct_move=0.01.
 These are the SAME constants the EOD board uses (a fixed short-rate default, not a live
-Treasury pull — build_gex_board hardcodes r=0.043).
+Treasury pull — build_gex_board hardcodes r=0.043). r and q are fixed defaults: there is
+no rate curve and no dividend source behind them, and KERNEL_CONVENTIONS says so.
+
+Model scope (KERNEL_CONVENTIONS / kernel_applicability): European-exercise
+Black-Scholes-Merton with continuous r and q on an ACT/365F calendar-seconds clock. The
+IV inversion REFUSES a contract inside MIN_T (under one minute to expiry) — NaN, never a
+floored clock — so a contract's IV and its greeks are always evaluated at the same T.
+kernel_applicability names the contracts this model cannot price honestly (American puts,
+American calls with a dividend before expiry or an unknown schedule, an unknown clock).
 """
 from __future__ import annotations
 
@@ -61,9 +69,82 @@ IV_SEED = 0.30        # initial vol guess (30%)
 # Quote-quality guards.
 MIN_MID = 0.02        # sub-2¢ mids are unreliable (penny wings) → skip
 MIN_EXTRINSIC = 1e-4  # a mid at/below intrinsic value has no time value → IV undefined
-MIN_T = 1.0 / (365.0 * 24.0 * 60.0)   # 1 minute in years — floor for T (0DTE late-day)
+MIN_T = 1.0 / (365.0 * 24.0 * 60.0)   # 1 minute in years — the IV solve refuses T below it
 
 SQRT2PI = np.sqrt(2.0 * np.pi)
+
+
+# ── kernel conventions and applicability (what this model is, and where it refuses) ──
+
+KERNEL_CONVENTIONS = {
+    "kernel": "engine.intraday_greeks",
+    "model": "black_scholes_merton",
+    "exercise": "european",
+    "carry": "continuous_r_and_q",
+    "r_source": "fixed_default_constant",
+    "q_source": "fixed_default_constant",
+    "year_basis": "ACT/365F_calendar_seconds",
+    "iv_unit": "decimal_annualized",
+    "price_unit": "per_underlying_unit",
+    "delta_unit": "per_underlying_unit",
+    "gamma_unit": "delta_per_underlying_price_unit",
+    "vega_unit": "price_per_1.00_vol",
+    "vanna_unit": "delta_per_1.00_vol",
+    "charm_unit": "delta_per_calendar_year",
+    "iv_inversion_min_t_years": MIN_T,
+    "inside_min_t": "refused_nan",
+}
+
+_MIN_T_SECONDS = round(MIN_T * 365.0 * 24.0 * 3600.0, 9)   # 60.0
+_RIGHTS = {"C": "C", "CALL": "C", "P": "P", "PUT": "P"}
+
+
+def kernel_applicability(*, exercise_style, right, seconds_to_economic_expiry,
+                         discrete_dividend_before_expiry) -> dict:
+    """Whether this European BSM kernel may price a contract — refusal only, no pricing.
+
+    Rules apply in order and the first match decides: an invalid right; an unknown
+    (None / bool / non-numeric / non-finite) economic clock; a clock at or past expiry;
+    a clock inside MIN_T; then by exercise style. European exercise is supported. An
+    American put is refused (early exercise has value the kernel cannot see). An American
+    call is supported as its European equivalent only when no discrete dividend falls
+    before expiry; True refuses it and anything but a strict bool is an unknown schedule.
+    Any other style is refused.
+    Returns {"status": "supported" | "refused", "reason": <rule>, "model": <name> | None}.
+    """
+    def refused(reason):
+        return {"status": "refused", "reason": reason, "model": None}
+
+    r = _RIGHTS.get(right.strip().upper()) if isinstance(right, str) else None
+    if r is None:
+        return refused("invalid_right")
+    if isinstance(seconds_to_economic_expiry, (bool, np.bool_)):
+        return refused("unknown_economic_clock")
+    try:
+        seconds = float(seconds_to_economic_expiry)
+    except (TypeError, ValueError, OverflowError):
+        return refused("unknown_economic_clock")
+    if not np.isfinite(seconds):
+        return refused("unknown_economic_clock")
+    if seconds <= 0.0:
+        return refused("at_or_after_economic_expiry")
+    if seconds < _MIN_T_SECONDS:
+        return refused("inside_min_t_indeterminate")
+
+    style = exercise_style.strip().lower() if isinstance(exercise_style, str) else None
+    if style == "european":
+        return {"status": "supported", "reason": "european_exercise",
+                "model": "black_scholes_merton"}
+    if style == "american":
+        if r == "P":
+            return refused("american_put_early_exercise")
+        if discrete_dividend_before_expiry is True:
+            return refused("american_call_dividend_before_expiry")
+        if discrete_dividend_before_expiry is False:
+            return {"status": "supported", "reason": "american_call_without_dividend",
+                    "model": "european_equivalent"}
+        return refused("unknown_dividend_schedule")
+    return refused("unknown_exercise_style")
 
 
 # ── vectorized Black-Scholes (twins of engine/greeks.py::bs_greeks) ─────────────────
@@ -194,7 +275,10 @@ def implied_vol_vec(mid, S, K, T, is_call, r=DEFAULT_R, q=DEFAULT_Q):
     Guards (return NaN, contribute nothing to coverage):
       • sub-MIN_MID mids (penny wings),
       • mids at/below intrinsic value + MIN_EXTRINSIC (no time value → IV undefined),
-      • non-positive / non-finite S,K,T.
+      • non-positive / non-finite S,K,T,
+      • T inside MIN_T (under one minute to expiry) — refused, never floored: solving the
+        IV on a floored clock while bs_greeks_vec evaluates the raw T would give one
+        contract two clocks.
 
     Returns an array of IVs (decimal, e.g. 0.18), NaN where unsolved.
     """
@@ -214,7 +298,7 @@ def implied_vol_vec(mid, S, K, T, is_call, r=DEFAULT_R, q=DEFAULT_Q):
     valid = (
         np.isfinite(mid) & (mid >= MIN_MID)
         & np.isfinite(K) & (K > 0)
-        & np.isfinite(T) & (T > 0)
+        & np.isfinite(T) & (T >= MIN_T)             # inside MIN_T: refused, not floored
         & (S > 0)
         & (mid > intrinsic + MIN_EXTRINSIC)          # must carry extrinsic value
     )
@@ -223,7 +307,7 @@ def implied_vol_vec(mid, S, K, T, is_call, r=DEFAULT_R, q=DEFAULT_Q):
 
     idx = np.where(valid)[0]
     Kv = K[idx]
-    Tv = np.maximum(T[idx], MIN_T)
+    Tv = T[idx]
     cv = is_call[idx]
     mv = mid[idx]
 
@@ -246,8 +330,9 @@ def implied_vol_vec(mid, S, K, T, is_call, r=DEFAULT_R, q=DEFAULT_Q):
         # np.where evaluates BOTH branches, so `diff / vega` must never see a zero
         # denominator even though step_ok would discard the result: vega is exactly 0.0
         # whenever _pdf(d1) UNDERFLOWS (|d1| > ~38.6 → exp(-d1²/2) == 0.0 in float64), which
-        # a late-day 0DTE wing reaches routinely — T floored at MIN_T (1 minute) makes
-        # σ·√T ≈ 4e-4, so a strike merely ~2% out of the money gives |d1| ≈ 49. That raised a
+        # a late-day 0DTE wing reaches routinely — T at MIN_T (1 minute, the shortest clock
+        # the solve accepts) makes σ·√T ≈ 4e-4, so a strike merely ~2% out of the money
+        # gives |d1| ≈ 49. That raised a
         # live `RuntimeWarning: divide by zero encountered in divide` on the M1 poller
         # (2026-07-29, during RTH), once per Newton iteration. Masking the denominator (the
         # same "compute on a safe copy, then mask" idiom as bs_greeks_vec above) is

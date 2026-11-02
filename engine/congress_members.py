@@ -270,6 +270,8 @@ def leaderboard(stats: dict[str, MemberStats], top_n: int = 20) -> list[dict]:
             "tier":             m.tier,
             "n_trades":         m.n_trades,
             "n_eff_valid":      m.n_eff_valid,
+            "n_hits":           m.n_hits,
+            "n_buys":           m.n_buys,
             "shrunk_hit_rate":  m.shrunk_hit_rate,
             "raw_hit_rate":     m.raw_hit_rate if m.n_eff_valid >= 3 else None,
             "er_median":        m.er_median,

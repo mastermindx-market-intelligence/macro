@@ -1,0 +1,208 @@
+{
+  "archive": {
+    "byte_length": 333956,
+    "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/NATIVE_SOURCE_EVIDENCE_006.tar.gz",
+    "sha256": "631890ba95d0fbaffe1f85d9e9c60edc9103be9b3b22d4f28bc3ab448e34d015"
+  },
+  "archive_manifest": {
+    "byte_length": 23335,
+    "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/ARCHIVE_MANIFEST.json",
+    "sha256": "b997e5fb2d23ab18ae29e4700a6161b7fae2357f48b91fa21c6116120a03c7d4"
+  },
+  "archive_member_equals_current_original_bytes": true,
+  "archived_native_or_application_scripts_executed": 0,
+  "browsable_copies_checked": [
+    {
+      "byte_length": 8144,
+      "original_archive_member": "lanes/native_mu_capture_principal_v1/FINDINGS.md",
+      "path": "FIRST_REFUSAL_FINDINGS_001.md",
+      "sha256": "3d2e019f389af2180a8baa807bd714c43bd67635f0f7f607461de8f84a6ac312"
+    },
+    {
+      "byte_length": 8368,
+      "original_archive_member": "lanes/native_mu_capture_review_v1/actual_result_001/ACTUAL_RESULT_REVIEW.md",
+      "path": "FIRST_REFUSAL_INDEPENDENT_REVIEW_001.md",
+      "sha256": "9dd1786c225af5740e1eec8c2b15ffb11caac5212944258535b21cf613f3a249"
+    },
+    {
+      "byte_length": 18962,
+      "original_archive_member": "lanes/native_massive_us_feasibility_v1/FINDINGS.md",
+      "path": "INCUMBENT_SOURCE_FEASIBILITY.md",
+      "sha256": "f08b3fe6d78b3ee298f7ee574995519e87b596e4ac6b1f9a90af1d4bf1019d68"
+    },
+    {
+      "byte_length": 15683,
+      "original_archive_member": "lanes/native_mu_owner_bootstrap_review_v1/actual_result_002/ACTUAL_RESULT_REVIEW.md",
+      "path": "INDEPENDENT_ACTUAL_RESULT_REVIEW_002.md",
+      "sha256": "86bd0edc071daaf7d70d6c9ef1b2e593209f8d74be52ee17c069afe5a88e25fa"
+    },
+    {
+      "byte_length": 9997,
+      "original_archive_member": "lanes/native_mu_owner_bootstrap_review_v1/actual_result_002/PUBLIC_VERIFICATION.json",
+      "path": "INDEPENDENT_PUBLIC_VERIFICATION_002.json",
+      "sha256": "edd0aa835b8ffa536edc6fca1a89c3d6b582967e8d3609368fa908d2aeb70153"
+    },
+    {
+      "byte_length": 6037,
+      "original_archive_member": "lanes/pro003_publication_recovery_v1/FINDINGS.md",
+      "path": "OBSERVATION_PUBLICATION_RECOVERY.md",
+      "sha256": "d4359db6ddb7b589cc3221a043dc0d1c0aba78f3fc436a214452147a8d19e98c"
+    },
+    {
+      "byte_length": 3405,
+      "original_archive_member": "lanes/native_mu_capture_principal_v2/OUTER_RESULT_002.json",
+      "path": "OUTER_RESULT_002.json",
+      "sha256": "ee07bb7e324f9fe00495832afdf482ba13668584ea7ddea6ebaecdbd022e7b52"
+    },
+    {
+      "byte_length": 9704,
+      "original_archive_member": "lanes/native_mu_owner_bootstrap_review_v1/REVIEW.md",
+      "path": "OWNER_BOOTSTRAP_SOURCE_REVIEW.md",
+      "sha256": "919a6f483ce8ab5ca428a5bf79180d08566fe5a3ee0b62a78caa3133125324ca"
+    },
+    {
+      "byte_length": 7235,
+      "original_archive_member": "lanes/native_us_slice_005/PRIMARY_SOURCE_CUTOFF_ADDENDUM_005.md",
+      "path": "PRIMARY_SOURCE_CUTOFF_ADDENDUM_005.md",
+      "sha256": "a32a5ce05a0db6b51fa07909b2c04ff281eb429289229456677e374e12915dab"
+    },
+    {
+      "byte_length": 25559,
+      "original_archive_member": "lanes/native_mu_capture_principal_v2/PUBLIC_RESULT_002.json",
+      "path": "PUBLIC_RESULT_002.json",
+      "sha256": "4fcd11f2d47e48748ab92461a01f778f0c767ae2b35db04efef6430422ee2a54"
+    },
+    {
+      "byte_length": 11274,
+      "original_archive_member": "lanes/native_mu_capture_principal_v2/FINDINGS.md",
+      "path": "SOURCE_CAPTURE_FINDINGS_002.md",
+      "sha256": "9d3647c93f3fff1fc399e006616f14eda2146e6e26ec39a015aa22105e80ec54"
+    },
+    {
+      "byte_length": 15589,
+      "original_archive_member": "lanes/native_massive_us_feasibility_v1/SOURCE_PINS.json",
+      "path": "SOURCE_PINS.json",
+      "sha256": "a4846212a1c7c6ea73f2be59e8dd8dc07a21232db8e99b8cc32b2c9be905ff8f"
+    }
+  ],
+  "delivery_file_count": 18,
+  "delivery_files": [
+    {
+      "byte_length": 11886,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/EXECUTION_STATUS_20261009_006.md",
+      "sha256": "efd78d83a47d3ef1aa4c8a32309d7e5925a5e1617e7772976b8813754b49ffad"
+    },
+    {
+      "byte_length": 3782,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/README.md",
+      "sha256": "db8caf97814d4a6961e3de4788c0745b8abf70dbbda814352963ed8a3531d180"
+    },
+    {
+      "byte_length": 23335,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/ARCHIVE_MANIFEST.json",
+      "sha256": "b997e5fb2d23ab18ae29e4700a6161b7fae2357f48b91fa21c6116120a03c7d4"
+    },
+    {
+      "byte_length": 8144,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/FIRST_REFUSAL_FINDINGS_001.md",
+      "sha256": "3d2e019f389af2180a8baa807bd714c43bd67635f0f7f607461de8f84a6ac312"
+    },
+    {
+      "byte_length": 8368,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/FIRST_REFUSAL_INDEPENDENT_REVIEW_001.md",
+      "sha256": "9dd1786c225af5740e1eec8c2b15ffb11caac5212944258535b21cf613f3a249"
+    },
+    {
+      "byte_length": 18962,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/INCUMBENT_SOURCE_FEASIBILITY.md",
+      "sha256": "f08b3fe6d78b3ee298f7ee574995519e87b596e4ac6b1f9a90af1d4bf1019d68"
+    },
+    {
+      "byte_length": 15683,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/INDEPENDENT_ACTUAL_RESULT_REVIEW_002.md",
+      "sha256": "86bd0edc071daaf7d70d6c9ef1b2e593209f8d74be52ee17c069afe5a88e25fa"
+    },
+    {
+      "byte_length": 9997,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/INDEPENDENT_PUBLIC_VERIFICATION_002.json",
+      "sha256": "edd0aa835b8ffa536edc6fca1a89c3d6b582967e8d3609368fa908d2aeb70153"
+    },
+    {
+      "byte_length": 333956,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/NATIVE_SOURCE_EVIDENCE_006.tar.gz",
+      "sha256": "631890ba95d0fbaffe1f85d9e9c60edc9103be9b3b22d4f28bc3ab448e34d015"
+    },
+    {
+      "byte_length": 6037,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/OBSERVATION_PUBLICATION_RECOVERY.md",
+      "sha256": "d4359db6ddb7b589cc3221a043dc0d1c0aba78f3fc436a214452147a8d19e98c"
+    },
+    {
+      "byte_length": 3405,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/OUTER_RESULT_002.json",
+      "sha256": "ee07bb7e324f9fe00495832afdf482ba13668584ea7ddea6ebaecdbd022e7b52"
+    },
+    {
+      "byte_length": 9704,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/OWNER_BOOTSTRAP_SOURCE_REVIEW.md",
+      "sha256": "919a6f483ce8ab5ca428a5bf79180d08566fe5a3ee0b62a78caa3133125324ca"
+    },
+    {
+      "byte_length": 9795,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/PRE_NATIVE_SOURCE_README_004.md",
+      "sha256": "f43a754931efba47098c108de029cb9de6574080628f256f0ea3859ef55859ef"
+    },
+    {
+      "byte_length": 7235,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/PRIMARY_SOURCE_CUTOFF_ADDENDUM_005.md",
+      "sha256": "a32a5ce05a0db6b51fa07909b2c04ff281eb429289229456677e374e12915dab"
+    },
+    {
+      "byte_length": 25559,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/PUBLIC_RESULT_002.json",
+      "sha256": "4fcd11f2d47e48748ab92461a01f778f0c767ae2b35db04efef6430422ee2a54"
+    },
+    {
+      "byte_length": 6412,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/README.md",
+      "sha256": "3af0d0b30756a822ed8e7fbf158b7feed6681f87bcc52bdfb22d99c5da969961"
+    },
+    {
+      "byte_length": 11274,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/SOURCE_CAPTURE_FINDINGS_002.md",
+      "sha256": "9d3647c93f3fff1fc399e006616f14eda2146e6e26ec39a015aa22105e80ec54"
+    },
+    {
+      "byte_length": 15589,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/SOURCE_PINS.json",
+      "sha256": "a4846212a1c7c6ea73f2be59e8dd8dc07a21232db8e99b8cc32b2c9be905ff8f"
+    }
+  ],
+  "draft_transport_index_precedes_correction": true,
+  "lane_count": 8,
+  "native_provider_app_git_operations": 0,
+  "one_status_wording_correction": {
+    "after": {
+      "byte_length": 11886,
+      "path": "lanes/pro004_native_source_delivery_006/research/theme_graph/economic_network_execution_20261009/continuation_pro_004/EXECUTION_STATUS_20261009_006.md",
+      "sha256": "efd78d83a47d3ef1aa4c8a32309d7e5925a5e1617e7772976b8813754b49ffad"
+    },
+    "before": {
+      "byte_length": 11883,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/EXECUTION_STATUS_20261009_006.md",
+      "sha256": "b0c70a22f26aeab788a79ba9935b7709b0284a846c1fc19690ca8f22295286f1"
+    },
+    "exact_single_replacement_verified": true
+  },
+  "original_member_bytes": 1309176,
+  "original_member_count": 87,
+  "principal_final_transport_manifest_pending": true,
+  "regular_safe_unique_members": true,
+  "schema": "economic_network.checkpoint_006_archive_independent_review/v1",
+  "scope": "Scratch-only byte hashes, JSON parsing, in-memory tar reads, exact inverse wording delta. No extraction, source execution or store reads.",
+  "v3_preparation_unchanged": {
+    "PREPARATION_SCOPE_V3.json": "2651f18e0c1d86f885850179a4a82b05635095b58c20923da1c120176d012ebe",
+    "verify_combined_candidate_ci_v3.py": "967c63de9e7270860a024e3168d8d0249a9bb0189d52f552aaa6e40132375df2"
+  },
+  "verdict": "PASS_ARCHIVE_AND_DELIVERY_IDENTITIES"
+}

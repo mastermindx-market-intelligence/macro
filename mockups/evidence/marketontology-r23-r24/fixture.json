@@ -1,0 +1,566 @@
+{
+  "bounds": {
+    "legs": 4,
+    "max_legs": 12,
+    "truncated": false
+  },
+  "clocks": {
+    "asof": "2026-01-02",
+    "built": "2026-01-03 02:10 UTC",
+    "composed_at": "2026-01-04T00:00:00Z",
+    "episode_id": null,
+    "hop_windows": [
+      {
+        "confirmed_asof": null,
+        "hop_id": "n1->n2",
+        "lag_d": [
+          5,
+          60
+        ]
+      },
+      {
+        "confirmed_asof": null,
+        "hop_id": "n2->n3",
+        "lag_d": [
+          10,
+          90
+        ]
+      },
+      {
+        "confirmed_asof": "2026-01-02",
+        "hop_id": "n3->n4",
+        "lag_d": [
+          0,
+          30
+        ]
+      }
+    ]
+  },
+  "contradiction": {
+    "blocking_upstream": "n1",
+    "code": "downstream_true_without_upstream",
+    "confirmed_downstream": [
+      "n3",
+      "n4"
+    ],
+    "note": {
+      "en": "A later leg reads true while an earlier one does not. The later reading has its own causes; it does not activate the path and it does not attribute back to the chain's root.",
+      "zh": "后段环节为真而前段为否。后段读数有其自身成因，既不代表路径已启动，也不能回溯归因于链条起点。"
+    }
+  },
+  "display_permission": {
+    "policy": "site_full entitlement, enforced at the transport layer",
+    "status": "not_determined_here"
+  },
+  "evidence": {
+    "k1": {
+      "detail": {
+        "current_head": "txi.chain_state",
+        "current_head_class": "excluded_derived_head",
+        "eligible_owner_store": "txi.episode_transition",
+        "eligible_transitions_found": 0,
+        "resolver": "none_in_this_module"
+      },
+      "reason_code": "excluded_derived_head_no_eligible_transition",
+      "recorded_transitions": 0,
+      "refs": [],
+      "refs_count": 0,
+      "status": "unavailable_for_object"
+    },
+    "receipts": [
+      {
+        "node_id": "n1",
+        "receipts": [
+          {
+            "metric": "ret",
+            "op": "gt",
+            "passed": false,
+            "series": "SYN-N1",
+            "threshold": 10.0,
+            "value": 0.0,
+            "window": 60
+          }
+        ]
+      },
+      {
+        "node_id": "n2",
+        "receipts": [
+          {
+            "metric": "ret",
+            "op": "gt",
+            "passed": false,
+            "series": "SYN-N2",
+            "threshold": 10.0,
+            "value": 1.0,
+            "window": 60
+          }
+        ]
+      },
+      {
+        "node_id": "n3",
+        "receipts": [
+          {
+            "metric": "ret",
+            "op": "gt",
+            "passed": true,
+            "series": "SYN-N3",
+            "threshold": 10.0,
+            "value": 2.0,
+            "window": 60
+          }
+        ]
+      },
+      {
+        "node_id": "n4",
+        "receipts": [
+          {
+            "metric": "ret",
+            "op": "gt",
+            "passed": true,
+            "series": "SYN-N4",
+            "threshold": 10.0,
+            "value": 3.0,
+            "window": 60
+          }
+        ]
+      }
+    ]
+  },
+  "exposure_screens": [
+    {
+      "id": "synthetic_screen",
+      "label": {
+        "en": "Synthetic screen",
+        "zh": "合成筛选"
+      },
+      "note": {
+        "en": "synthetic screen note",
+        "zh": "合成筛选说明"
+      }
+    }
+  ],
+  "first_blocking_leg": {
+    "basis": "path_order",
+    "index": 1,
+    "node_id": "n1",
+    "reason": "condition_false",
+    "receipts": [
+      {
+        "metric": "ret",
+        "op": "gt",
+        "passed": false,
+        "series": "SYN-N1",
+        "threshold": 10.0,
+        "value": 0.0,
+        "window": 60
+      }
+    ],
+    "title": {
+      "en": "Node one",
+      "zh": "节点一"
+    }
+  },
+  "gaps": [
+    {
+      "kind": "text_withheld",
+      "reason": "refutation_vocabulary",
+      "reason_label": {
+        "en": "worded as a verdict on the thesis rather than as a condition",
+        "zh": "措辞是对论点的裁定，而非对条件的描述"
+      },
+      "where": "falsifiers[0].note",
+      "where_label": {
+        "en": "What we are watching · note 1",
+        "zh": "我们正在观察 · 备注 1"
+      }
+    }
+  ],
+  "generated_at": "2026-01-04T00:00:00Z",
+  "invalidators": [
+    {
+      "id": "invalidator_0",
+      "note": null,
+      "note_status": "withheld",
+      "note_withheld_reason": "refutation_vocabulary",
+      "src": "synthetic",
+      "watched": {
+        "metric": "ret_bp",
+        "op": "lt",
+        "series": "SYN-B",
+        "value": 1,
+        "vs": null,
+        "window": 22
+      },
+      "when": {
+        "metric": "ret_bp",
+        "op": "lt",
+        "series": "SYN-B",
+        "value": 1,
+        "window": 22
+      }
+    }
+  ],
+  "next_action": {
+    "code": "inspect_contradiction",
+    "handler": "focus_leg",
+    "label": {
+      "en": "Inspect what is driving the later leg on its own terms",
+      "zh": "按其自身逻辑查证后段环节的驱动因素"
+    },
+    "target": "n3"
+  },
+  "path": {
+    "cycle": {
+      "detected": false,
+      "nodes": []
+    },
+    "hops": [
+      {
+        "base_rate": {
+          "interpretation": "historical_context",
+          "n": 10,
+          "p_confirm": 0.5,
+          "regime_split": "unavailable"
+        },
+        "condition": {
+          "en": "synthetic condition one",
+          "zh": "合成条件一"
+        },
+        "confirmed": false,
+        "confirmed_asof": null,
+        "from": "n1",
+        "hop_id": "n1->n2",
+        "label": {
+          "en": "Leg one -> leg two",
+          "zh": "环节一 -> 环节二"
+        },
+        "lag_d": [
+          5,
+          60
+        ],
+        "mechanism": {
+          "en": "synthetic mechanism one",
+          "zh": "合成机制一"
+        },
+        "sign": "+",
+        "to": "n2",
+        "value_receipt": [
+          {
+            "metric": "ret_bp",
+            "op": "gt",
+            "passed": false,
+            "series": "SYN-N2",
+            "threshold": 10,
+            "value": 1.0,
+            "window": 22
+          }
+        ]
+      },
+      {
+        "base_rate": {
+          "interpretation": "historical_context",
+          "n": 10,
+          "p_confirm": 0.5,
+          "regime_split": "unavailable"
+        },
+        "condition": {
+          "en": "synthetic condition two",
+          "zh": "合成条件二"
+        },
+        "confirmed": false,
+        "confirmed_asof": null,
+        "from": "n2",
+        "hop_id": "n2->n3",
+        "label": {
+          "en": "Leg two -> leg three",
+          "zh": "环节二 -> 环节三"
+        },
+        "lag_d": [
+          10,
+          90
+        ],
+        "mechanism": {
+          "en": "synthetic mechanism two",
+          "zh": "合成机制二"
+        },
+        "sign": "+",
+        "to": "n3",
+        "value_receipt": [
+          {
+            "metric": "ret_bp",
+            "op": "gt",
+            "passed": false,
+            "series": "SYN-N3",
+            "threshold": 10,
+            "value": 1.0,
+            "window": 22
+          }
+        ]
+      },
+      {
+        "base_rate": {
+          "interpretation": "historical_context",
+          "n": 10,
+          "p_confirm": 0.5,
+          "regime_split": "unavailable"
+        },
+        "condition": {
+          "en": "synthetic condition three",
+          "zh": "合成条件三"
+        },
+        "confirmed": true,
+        "confirmed_asof": "2026-01-02",
+        "from": "n3",
+        "hop_id": "n3->n4",
+        "label": {
+          "en": "Leg three -> leg four",
+          "zh": "环节三 -> 环节四"
+        },
+        "lag_d": [
+          0,
+          30
+        ],
+        "mechanism": {
+          "en": "synthetic mechanism three",
+          "zh": "合成机制三"
+        },
+        "sign": "-",
+        "to": "n4",
+        "value_receipt": [
+          {
+            "metric": "ret_bp",
+            "op": "gt",
+            "passed": true,
+            "series": "SYN-N4",
+            "threshold": 10,
+            "value": 1.0,
+            "window": 22
+          }
+        ]
+      }
+    ],
+    "legs": [
+      {
+        "confirmed": false,
+        "index": 1,
+        "node_id": "n1",
+        "observation": "observed",
+        "receipts": [
+          {
+            "metric": "ret",
+            "op": "gt",
+            "passed": false,
+            "series": "SYN-N1",
+            "threshold": 10.0,
+            "value": 0.0,
+            "window": 60
+          }
+        ],
+        "src": "synthetic",
+        "title": {
+          "en": "Node one",
+          "zh": "节点一"
+        }
+      },
+      {
+        "confirmed": false,
+        "index": 2,
+        "node_id": "n2",
+        "observation": "observed",
+        "receipts": [
+          {
+            "metric": "ret",
+            "op": "gt",
+            "passed": false,
+            "series": "SYN-N2",
+            "threshold": 10.0,
+            "value": 1.0,
+            "window": 60
+          }
+        ],
+        "src": "synthetic",
+        "title": {
+          "en": "Node two",
+          "zh": "节点二"
+        }
+      },
+      {
+        "confirmed": true,
+        "index": 3,
+        "node_id": "n3",
+        "observation": "observed",
+        "receipts": [
+          {
+            "metric": "ret",
+            "op": "gt",
+            "passed": true,
+            "series": "SYN-N3",
+            "threshold": 10.0,
+            "value": 2.0,
+            "window": 60
+          }
+        ],
+        "src": "synthetic",
+        "title": {
+          "en": "Node three",
+          "zh": "节点三"
+        }
+      },
+      {
+        "confirmed": true,
+        "index": 4,
+        "node_id": "n4",
+        "observation": "observed",
+        "receipts": [
+          {
+            "metric": "ret",
+            "op": "gt",
+            "passed": true,
+            "series": "SYN-N4",
+            "threshold": 10.0,
+            "value": 3.0,
+            "window": 60
+          }
+        ],
+        "src": "synthetic",
+        "title": {
+          "en": "Node four",
+          "zh": "节点四"
+        }
+      }
+    ],
+    "sequence": [
+      "n1",
+      "n2",
+      "n3",
+      "n4"
+    ],
+    "title": {
+      "en": "Synthetic linear probe",
+      "zh": "合成线性探针"
+    }
+  },
+  "schema": "ontology_explorer_snapshot.v1",
+  "source": {
+    "asof": "2026-01-02",
+    "built": "2026-01-03 02:10 UTC",
+    "chain": "synthetic_linear_probe",
+    "composer_method": "ontology_explorer.compose.v2",
+    "freshness": {
+      "compared_against": null,
+      "generation_age_basis": "chain_state.built",
+      "generation_age_seconds": 78600,
+      "note": {
+        "en": "Age is measured against this build's own artifact stamp. Whether it matches what the canonical transmission page is serving cannot be observed from here.",
+        "zh": "此处的时效以本次构建自身的产物时间戳衡量；能否与规范传导页面所提供的内容一致，无法在此判定。"
+      },
+      "observation_age_basis": "chain_state.asof",
+      "observation_age_days": 2,
+      "observation_asof": "2026-01-02",
+      "source_age_basis": "chain_state.built",
+      "source_age_seconds": 78600,
+      "status": "verification_unavailable"
+    },
+    "reads": [
+      {
+        "bytes": 2292,
+        "path": "knowledge/transmission/synthetic_linear_probe.yaml",
+        "sha256": "75303f253ca2ca16e41f376915ef6c4e9d2fd2f0076d048ca931a38d7577a1f2"
+      },
+      {
+        "bytes": 3138,
+        "path": "data/transmission/chain_state.json",
+        "sha256": "88796ac7d9814380be761b85a7b1f25f21f790aab59d980516d0d1cf95025700"
+      }
+    ],
+    "receipt_kind": "composed_read",
+    "rev": 2,
+    "source_manifest_hash": "sha256:d3a9f60e8da6673cde3dc23c2e137df304ad3972b294a3f089949dd63ca3efa6",
+    "state_schema": "transmission_chains.v1"
+  },
+  "state": {
+    "activation": false,
+    "arm_veto": false,
+    "basis": "owner_episode",
+    "code": "dormant",
+    "conditions": {
+      "all_current_met": false,
+      "describes": "current_readings_only"
+    },
+    "confirmed_hop_count": 1,
+    "coverage": {
+      "legs_declared": 4,
+      "legs_observed": 4,
+      "legs_unobserved": []
+    },
+    "display_only": true,
+    "episode_id": null,
+    "hop_count": 3,
+    "label": {
+      "en": "Dormant",
+      "zh": "休眠"
+    },
+    "owner_state": "dormant",
+    "owner_state_label": {
+      "en": "Dormant",
+      "zh": "合成状态"
+    },
+    "tier": "calibrated_context",
+    "watch_condition_fired": false
+  },
+  "what_changed": {
+    "items": [],
+    "note": {
+      "en": "The owners have recorded no transition for this path, so there is no accepted earlier print to compare against. That is a missing comparison, not a finding that the conditions held still.",
+      "zh": "所有者未记录该路径的任何状态转换，因此没有可比对的既往认定读数。这是比较缺失，而非条件未变动的结论。"
+    },
+    "reason": "no_recorded_transition",
+    "status": "comparison_unavailable"
+  },
+  "why_it_matters": {
+    "basis": "chain_mechanism",
+    "caution": {
+      "en": "Mechanism describes how these legs are theorised to connect. It is not a measurement that they are connecting now, and this surface carries no rank, sizing or trade authority.",
+      "zh": "机制说明的是各环节理论上的连接方式，并非当前确实连通的度量；本页面不提供排名、仓位或交易依据。"
+    },
+    "contradiction_present": true,
+    "legs": [
+      {
+        "condition": {
+          "en": "synthetic condition one",
+          "zh": "合成条件一"
+        },
+        "hop_id": "n1->n2",
+        "mechanism": {
+          "en": "synthetic mechanism one",
+          "zh": "合成机制一"
+        },
+        "observed": false
+      },
+      {
+        "condition": {
+          "en": "synthetic condition two",
+          "zh": "合成条件二"
+        },
+        "hop_id": "n2->n3",
+        "mechanism": {
+          "en": "synthetic mechanism two",
+          "zh": "合成机制二"
+        },
+        "observed": false
+      },
+      {
+        "condition": {
+          "en": "synthetic condition three",
+          "zh": "合成条件三"
+        },
+        "hop_id": "n3->n4",
+        "mechanism": {
+          "en": "synthetic mechanism three",
+          "zh": "合成机制三"
+        },
+        "observed": true
+      }
+    ]
+  }
+}

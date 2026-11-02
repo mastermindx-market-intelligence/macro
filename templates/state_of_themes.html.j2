@@ -150,6 +150,7 @@ html[data-theme="dark"]{
 .tc-top{padding:16px 17px 4px}
 .tc-nameline{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .tc-name{font-size:16px;font-weight:800;color:var(--text);letter-spacing:-.015em;line-height:1.2}
+.tc-nameline .tc-name{min-width:0;overflow-wrap:break-word}
 .stage-pill{flex:none;display:inline-block;padding:3px 10px;border-radius:8px;font-size:10.5px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;
   background:color-mix(in srgb,var(--sc,var(--quiet)) 15%,var(--panel));color:var(--sc,var(--quiet));border:1px solid color-mix(in srgb,var(--sc,var(--quiet)) 30%,var(--line))}
 .stage-WATCH{--sc:var(--lc-watch)} .stage-BROADENING{--sc:var(--lc-broad)} .stage-RE-RATING{--sc:var(--lc-rerate)}
@@ -334,7 +335,7 @@ html[data-theme="dark"] body::before{
 </div>
 
 {% if research_priority %}
-<section class="rp">
+<section class="rp" id="research-reading-order">
   <div class="sec-head">{{ t('What to look at first', '先看哪些主题') }}</div>
   {% if research_priority.state == 'empty' %}
   <p class="sec-sub">{{ t('We have not recorded new evidence for any theme yet. This list fills in after the next update.', '目前还没有记录到任何主题的新证据。下一次更新后，这里会显示内容。') }}</p>
@@ -463,7 +464,15 @@ html[data-theme="dark"] body::before{
         data-fired="{{ '1' if th.falsifier_any_fired else '0' }}">
       <div class="tc-top">
         <div class="tc-nameline">
-          <span class="tc-name"><span class="l-en">{{ th.name_en }}</span><span class="l-zh">{{ th.name_zh }}</span></span>
+          {% if th.basket_id %}
+          <a class="tc-name" href="basket/{{ th.basket_id }}.html">
+            <span class="l-en">{{ th.name_en }}</span><span class="l-zh">{{ th.name_zh }}</span>
+            <span class="l-en"> — See the companies</span><span class="l-zh"> — 查看这些公司</span>
+          </a>
+          {% else %}
+          <span class="tc-name"><span class="l-en">{{ th.name_en }}</span>{#
+          #}<span class="l-zh">{{ th.name_zh }}</span></span>
+          {% endif %}
           <span class="stage-pill stage-{{ th.stage_key }}"><span class="l-en">{{ th.stage_label_en }}</span><span class="l-zh">{{ th.stage_label_zh }}</span></span>
         </div>
         {% if th.story_en %}<p class="tc-story"><span class="l-en">{{ th.story_en }}</span><span class="l-zh">{{ th.story_zh }}</span></p>{% endif %}
@@ -599,6 +608,9 @@ html[data-theme="dark"] body::before{
   </div>
 </section>
 {% endfor %}
+
+{# ── FINANCE T9 ENTRY POINT · Sector deep dives (link only, outside the lanes) ── #}
+{% include "_finance_sector_deep_dive.html.j2" %}
 
 {# ── STUDY SHELF (tier 3) ── #}
 <div class="sec-head" style="margin-top:40px"><span class="sh-dot" style="--sh-c:var(--quiet)"></span>{{ t('The fine print', '细则与依据') }}</div>

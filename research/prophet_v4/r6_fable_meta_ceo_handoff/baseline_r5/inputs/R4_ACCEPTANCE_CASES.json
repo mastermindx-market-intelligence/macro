@@ -1,0 +1,343 @@
+{
+  "cases": [
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "SH01",
+      "production_proof": false,
+      "required_behavior": "Unknown strategy identity is not passed as the existing Early Leadership control",
+      "slice": "S0"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "SH02",
+      "production_proof": false,
+      "required_behavior": "New source event without accepted B1 anchor stays a nomination, not a surrogate episode",
+      "slice": "S0"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "SH03",
+      "production_proof": false,
+      "required_behavior": "Later source correction preserves earlier source-known decision belief",
+      "slice": "S1"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "SH04",
+      "production_proof": false,
+      "required_behavior": "Historical event discovery reports current-manifest selection limits",
+      "slice": "S1"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "SH05",
+      "production_proof": false,
+      "required_behavior": "Optional absent evidence differs from measured neutral and adverse evidence",
+      "slice": "S2"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "SH06",
+      "production_proof": false,
+      "required_behavior": "Unpromoted model or computational availability cannot grant product trading authority",
+      "slice": "S2"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "SH07",
+      "production_proof": false,
+      "required_behavior": "No parallel outcome/quote/geometry/thesis owner is introduced",
+      "slice": "S0"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "SH08",
+      "production_proof": false,
+      "required_behavior": "Public availability, system capture, model vintage and user visibility remain separate",
+      "slice": "S1"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "ER01",
+      "production_proof": false,
+      "required_behavior": "Actual and expectation with different fiscal periods are not compared as a beat",
+      "slice": "ER1"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "ER02",
+      "production_proof": false,
+      "required_behavior": "GAAP and issuer-adjusted values need explicit compatible definition",
+      "slice": "ER1"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "ER03",
+      "production_proof": false,
+      "required_behavior": "Currency, units, segment and share basis mismatch is disclosed",
+      "slice": "ER1"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "ER04",
+      "production_proof": false,
+      "required_behavior": "Absent/unlicensed consensus does not become zero or a statistical-forecast consensus",
+      "slice": "ER1"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "ER05",
+      "production_proof": false,
+      "required_behavior": "Contributor departure can change mean without a matched upward revision",
+      "slice": "ER1"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "ER06",
+      "production_proof": false,
+      "required_behavior": "No common contributor yields unmeasured matched revision, not zero",
+      "slice": "ER1"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "ER07",
+      "production_proof": false,
+      "required_behavior": "Fixed-period estimate changes are separated from forward-horizon roll",
+      "slice": "ER1"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "ER08",
+      "production_proof": false,
+      "required_behavior": "Near-zero/negative expectation does not manufacture a percent beat",
+      "slice": "ER1"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "ER09",
+      "production_proof": false,
+      "required_behavior": "Guidance withdrawal/range change is not an ordinary raise/cut scalar",
+      "slice": "ER1"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "ER10",
+      "production_proof": false,
+      "required_behavior": "Release, call, filing and later estimate observations use their own known clocks",
+      "slice": "ER2"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "ER11",
+      "production_proof": false,
+      "required_behavior": "Post-event revision cannot be substituted for pre-event expectation",
+      "slice": "ER2"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "ER12",
+      "production_proof": false,
+      "required_behavior": "Same-event correction does not mint a new independent opportunity",
+      "slice": "ER2"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "ER13",
+      "production_proof": false,
+      "required_behavior": "Post-release fill cannot earn the pre-fill announcement gap",
+      "slice": "ER3"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "ER14",
+      "production_proof": false,
+      "required_behavior": "Never-confirmed/no-pullback/unpriced events remain in the policy accounting",
+      "slice": "ER3"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "ER15",
+      "production_proof": false,
+      "required_behavior": "Next earnings event does not erase original forecast or reset its outcome horizon",
+      "slice": "ER4"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "ER16",
+      "production_proof": false,
+      "required_behavior": "Loss in a tactical/earnings trade cannot silently become a Cycle Capture position",
+      "slice": "ER4"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "CC01",
+      "production_proof": false,
+      "required_behavior": "Domain readiness is evaluated without selecting on future returns",
+      "slice": "CC1"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "CC02",
+      "production_proof": false,
+      "required_behavior": "Broad Census computers/electronics data is not labeled granular semiconductor evidence",
+      "slice": "CC1"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "CC03",
+      "production_proof": false,
+      "required_behavior": "Industry/segment membership and classifications are point-in-time or explicitly current-only",
+      "slice": "CC1"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "CC04",
+      "production_proof": false,
+      "required_behavior": "Revised industrial series cannot overwrite an original-vintage observation",
+      "slice": "CC1"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "CC05",
+      "production_proof": false,
+      "required_behavior": "Lower absolute inventory is distinguished from higher inventory relative to sales",
+      "slice": "CC1"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "CC06",
+      "production_proof": false,
+      "required_behavior": "Order cancellations and nominal-price effects are not unqualified demand improvement",
+      "slice": "CC1"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "CC07",
+      "production_proof": false,
+      "required_behavior": "Dated debt maturity can breach liquidity before headline cash runway expires",
+      "slice": "CC2"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "CC08",
+      "production_proof": false,
+      "required_behavior": "Restricted cash and conditional facilities cannot be assumed fully usable",
+      "slice": "CC2"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "CC09",
+      "production_proof": false,
+      "required_behavior": "Operating cash/obligations and financing proceeds are not double-counted",
+      "slice": "CC2"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "CC10",
+      "production_proof": false,
+      "required_behavior": "Higher enterprise value with dilution can lower per-share value",
+      "slice": "CC2"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "CC11",
+      "production_proof": false,
+      "required_behavior": "Original shares cancelled in restructuring do not inherit new-equity recovery",
+      "slice": "CC2"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "CC12",
+      "production_proof": false,
+      "required_behavior": "Joint recovery/funding/payoff is not a product of unverified independent scores",
+      "slice": "CC3"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "CC13",
+      "production_proof": false,
+      "required_behavior": "Future-smoothed economic state is excluded from live historical signal claims",
+      "slice": "CC3"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "CC14",
+      "production_proof": false,
+      "required_behavior": "Failed/delisted/censored cases and common-cycle dependence are retained",
+      "slice": "CC3"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "CC15",
+      "production_proof": false,
+      "required_behavior": "New-add chase refusal does not automatically terminate a valid core hold",
+      "slice": "CC4"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "CC16",
+      "production_proof": false,
+      "required_behavior": "Binding structural/funding invalidation cannot be waived by bullish narrative",
+      "slice": "CC4"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "UX01",
+      "production_proof": false,
+      "required_behavior": "Earnings drawer shows actual/prior/expectation basis and distinct source clocks",
+      "slice": "ER2"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "UX02",
+      "production_proof": false,
+      "required_behavior": "Cycle drawer shows funding milestone, assumptions and original-equity scenario",
+      "slice": "CC2"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "UX03",
+      "production_proof": false,
+      "required_behavior": "Uncalibrated forecasts render as unavailable/accruing, not invented probabilities",
+      "slice": "S2"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "UX04",
+      "production_proof": false,
+      "required_behavior": "Watch saves only to selected existing list and verifies actual owner readback",
+      "slice": "JOIN"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "UX05",
+      "production_proof": false,
+      "required_behavior": "Notes and episode actions are not falsely presented as cloud-persisted",
+      "slice": "JOIN"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "UX06",
+      "production_proof": false,
+      "required_behavior": "Shared event across sleeves does not duplicate portfolio exposure or independent N",
+      "slice": "JOIN"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "UX07",
+      "production_proof": false,
+      "required_behavior": "Rights/entitlement restrictions apply to numbers and generated explanations",
+      "slice": "JOIN"
+    },
+    {
+      "execution_status": "NOT_EXECUTED",
+      "id": "UX08",
+      "production_proof": false,
+      "required_behavior": "Accepted source to entitled browser and subsequent ordinary refresh preserve correction/identity truth",
+      "slice": "JOIN"
+    }
+  ],
+  "count": 48,
+  "document_kind": "FUTURE_ACCEPTANCE_NOT_TEST_RESULTS",
+  "executed": 0
+}

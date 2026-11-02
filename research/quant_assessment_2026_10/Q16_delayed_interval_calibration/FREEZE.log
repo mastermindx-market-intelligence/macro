@@ -1,0 +1,6 @@
+FREEZE Q16 PREREG.md
+date -u: Fri Oct  9 10:17:07 UTC 2026
+sha256: edc8a34a3a77878960cc0ae4a96bda7ea0b4036b3539a30b5420015c490853c0
+file: research/quant_assessment_2026_10/Q16_delayed_interval_calibration/PREREG.md
+state at freeze: no test-window outcome and no synthetic-control outcome read; only the training-window baseline (RUNS.log record 1) had been run.
+PREREG_SHA256=edc8a34a3a77878960cc0ae4a96bda7ea0b4036b3539a30b5420015c490853c0

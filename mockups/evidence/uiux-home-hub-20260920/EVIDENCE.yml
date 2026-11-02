@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - scripts/build_vector.py
+  - site/start.html
+  - site/assets/css/c5fc2df4.css
+manifest: mockups/evidence/uiux-home-hub-20260920/manifest.json

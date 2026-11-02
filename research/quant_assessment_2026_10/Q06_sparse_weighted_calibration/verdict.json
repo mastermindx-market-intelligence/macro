@@ -1,0 +1,10 @@
+{
+ "f0_crosscheck_clear": true,
+ "k1": false,
+ "k2": true,
+ "k3": "INSUFFICIENT_DATA",
+ "note": "F0 also requires the focused pytest to pass; that evidence is recorded separately",
+ "outcome_calibration": "INSUFFICIENT_DATA",
+ "reason": "K1 failed",
+ "verdict": "REJECT"
+}

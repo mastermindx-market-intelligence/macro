@@ -304,6 +304,183 @@ def _article(tmp_path: Path) -> tuple[dict, dict, bytes, bytes]:
     return article, manifest, manifest_raw, packet_raw
 
 
+def test_http_fetch_retries_transient_tls_failure_within_the_same_read(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    url = f"{DEFAULT_SOURCE_BASE}/earnings_story_packets/objects/example.json"
+    body = b'{"ok":true}\n'
+    attempts = 0
+
+    class _Response:
+        status_code = 200
+        is_redirect = False
+        headers = {"Content-Length": str(len(body))}
+
+        def __init__(self) -> None:
+            self.url = url
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args) -> None:
+            return None
+
+        def raise_for_status(self) -> None:
+            return None
+
+        def iter_content(self, *, chunk_size: int):
+            assert chunk_size == 65_536
+            yield body
+
+    def _get(*_args, **_kwargs):
+        nonlocal attempts
+        attempts += 1
+        if attempts == 1:
+            raise wire_builder.requests.exceptions.SSLError("transient EOF")
+        return _Response()
+
+    monkeypatch.setattr(wire_builder.requests, "get", _get)
+    monkeypatch.setattr(
+        wire_builder,
+        "HTTP_FETCH_RETRY_BACKOFF_SECONDS",
+        0.0,
+        raising=False,
+    )
+
+    assert wire_builder._http_fetch(url, timeout=5.0, max_bytes=1024) == body
+    assert attempts == 2
+
+
+def test_http_fetch_exhausts_a_bounded_transport_retry_budget(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    url = f"{DEFAULT_SOURCE_BASE}/earnings_story_packets/objects/example.json"
+    attempts = 0
+    sleeps: list[float] = []
+
+    def _get(*_args, **_kwargs):
+        nonlocal attempts
+        attempts += 1
+        raise wire_builder.requests.exceptions.SSLError("persistent EOF")
+
+    monkeypatch.setattr(wire_builder.requests, "get", _get)
+    monkeypatch.setattr(wire_builder.time, "sleep", sleeps.append)
+
+    with pytest.raises(PublicWireBuildError, match="persistent EOF"):
+        wire_builder._http_fetch(url, timeout=5.0, max_bytes=1024)
+    assert attempts == wire_builder.HTTP_FETCH_MAX_ATTEMPTS == 3
+    assert sleeps == [
+        wire_builder.HTTP_FETCH_RETRY_BACKOFF_SECONDS * attempt
+        for attempt in range(1, wire_builder.HTTP_FETCH_MAX_ATTEMPTS)
+    ]
+
+
+def test_http_fetch_does_not_retry_source_policy_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    url = f"{DEFAULT_SOURCE_BASE}/earnings_story_packets/objects/example.json"
+    attempts = 0
+
+    class _RedirectResponse:
+        status_code = 302
+        is_redirect = True
+        headers: dict[str, str] = {}
+
+        def __init__(self) -> None:
+            self.url = url
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args) -> None:
+            return None
+
+    def _get(*_args, **_kwargs):
+        nonlocal attempts
+        attempts += 1
+        return _RedirectResponse()
+
+    monkeypatch.setattr(wire_builder.requests, "get", _get)
+
+    with pytest.raises(PublicWireBuildError, match="redirected or changed origin"):
+        wire_builder._http_fetch(url, timeout=5.0, max_bytes=1024)
+    assert attempts == 1
+
+
+def test_http_fetch_does_not_retry_http_status_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    url = f"{DEFAULT_SOURCE_BASE}/earnings_story_packets/objects/example.json"
+    attempts = 0
+
+    class _ErrorResponse:
+        status_code = 503
+        is_redirect = False
+        headers: dict[str, str] = {}
+
+        def __init__(self) -> None:
+            self.url = url
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args) -> None:
+            return None
+
+        def raise_for_status(self) -> None:
+            raise wire_builder.requests.HTTPError("503 Server Error")
+
+    def _get(*_args, **_kwargs):
+        nonlocal attempts
+        attempts += 1
+        return _ErrorResponse()
+
+    monkeypatch.setattr(wire_builder.requests, "get", _get)
+
+    with pytest.raises(PublicWireBuildError, match="503 Server Error"):
+        wire_builder._http_fetch(url, timeout=5.0, max_bytes=1024)
+    assert attempts == 1
+
+
+def test_http_fetch_does_not_retry_streamed_byte_bound_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    url = f"{DEFAULT_SOURCE_BASE}/earnings_story_packets/objects/example.json"
+    attempts = 0
+
+    class _OversizeResponse:
+        status_code = 200
+        is_redirect = False
+        headers: dict[str, str] = {}
+
+        def __init__(self) -> None:
+            self.url = url
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args) -> None:
+            return None
+
+        def raise_for_status(self) -> None:
+            return None
+
+        def iter_content(self, *, chunk_size: int):
+            assert chunk_size == 65_536
+            yield b"x" * 1025
+
+    def _get(*_args, **_kwargs):
+        nonlocal attempts
+        attempts += 1
+        return _OversizeResponse()
+
+    monkeypatch.setattr(wire_builder.requests, "get", _get)
+
+    with pytest.raises(PublicWireBuildError, match="exceeds safe size bound"):
+        wire_builder._http_fetch(url, timeout=5.0, max_bytes=1024)
+    assert attempts == 1
+
+
 def test_public_wire_compiler_only_emits_exact_approved_evidence(tmp_path: Path) -> None:
     article, manifest, manifest_raw, _packet_raw = _article(tmp_path)
     verify_public_wire_article(article)
@@ -1696,11 +1873,37 @@ def test_public_wire_workflow_has_upstream_trigger_and_hourly_backstop() -> None
     assert "Sitemap: https://www.mastermind-x.com/stocks/earnings/sitemap.xml" in robots
 
 
-def test_public_wire_retry_budget_covers_fresh_main_regeneration_and_private_containment() -> None:
-    """The 420s shared deadline starts before a ~13-minute generation.
+def test_public_wire_checkout_materializes_required_full_tree_without_blobless_lazy_fetch() -> None:
+    """The publisher consumes the full tree; fetch it once as a shallow pack.
 
-    A ref-lock loss must buy one full rebuild from the winning main, not consume
-    the default budget before the loop reaches its first push.
+    `filter: blob:none` without a sparse profile still checks out every tracked
+    path, but materializes the blobs one-by-one. Production run 35020030398 spent
+    13m09s in checkout before the bounded two-attempt publication loop began.
+    """
+    repo = Path(__file__).resolve().parents[1]
+    workflow = yaml.safe_load(
+        (repo / ".github" / "workflows" / "earnings-public-wire.yml").read_text(
+            encoding="utf-8"
+        )
+    )
+    checkout = next(
+        step
+        for step in workflow["jobs"]["publish"]["steps"]
+        if step.get("uses") == "actions/checkout@v4"
+    )
+    options = checkout["with"]
+
+    assert options["fetch-depth"] == 1
+    assert "filter" not in options
+
+
+def test_public_wire_retry_budget_covers_consecutive_fresh_main_regenerations() -> None:
+    """The 2,400s loop must survive more than two consecutive ref races.
+
+    Production run 35161404497 completed two full builds and private promotions,
+    then lost both pushes to ordinary main contention.  Four allowed attempts
+    preserve an initial try plus three bounded regenerations.  The audited
+    attempt ceiling, loop budget, and outer timeout retain explicit margins.
     """
     repo = Path(__file__).resolve().parents[1]
     workflow = yaml.safe_load(
@@ -1710,12 +1913,14 @@ def test_public_wire_retry_budget_covers_fresh_main_regeneration_and_private_con
     publish = next(step for step in job["steps"] if step.get("name") == "regenerate current wire from latest main and publish")
     run = publish["run"]
 
-    assert job["timeout-minutes"] == 40
-    assert "PUSH_BUDGET_SECS=1980" in run
-    assert "PUSH_MAX_ATTEMPTS=2" in run
-    assert run.index("PUSH_BUDGET_SECS=1980") < run.index('push_retry_init "earnings public wire"')
-    assert run.index("PUSH_MAX_ATTEMPTS=2") < run.index('push_retry_init "earnings public wire"')
-    assert 2 * 13 * 60 < 1980 < job["timeout-minutes"] * 60
+    audited_max_attempt_seconds = 9 * 60
+    assert job["timeout-minutes"] == 50
+    assert "PUSH_BUDGET_SECS=2400" in run
+    assert "PUSH_MAX_ATTEMPTS=4" in run
+    assert run.index("PUSH_BUDGET_SECS=2400") < run.index('push_retry_init "earnings public wire"')
+    assert run.index("PUSH_MAX_ATTEMPTS=4") < run.index('push_retry_init "earnings public wire"')
+    assert 4 * audited_max_attempt_seconds < 2400
+    assert 2400 + 10 * 60 == job["timeout-minutes"] * 60
     assert run.index("git reset --hard origin/main") < run.index(
         "python -m scripts.build_earnings_public_wire"
     )

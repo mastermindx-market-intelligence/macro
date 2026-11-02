@@ -1,0 +1,130 @@
+{
+  "all_requested_checks_passed": true,
+  "correction": "Stage the already reviewed new files so the incumbent git-ls-files inventory can discover the canonical suite",
+  "executions": [
+    {
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+        "-B",
+        "-"
+      ],
+      "exit_code": 0,
+      "finished_at": "2026-10-09T13:56:26.491620+00:00",
+      "label": "native-selector-probe",
+      "started_at": "2026-10-09T13:56:15.991309+00:00",
+      "stdin_sha256": "2734c656da48e22ebdecdd0c257d488d5694a19b78674cb4949e6e832a682af0",
+      "streams": {
+        "stderr": {
+          "byte_length": 0,
+          "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/kernel-native-selector-probe-002.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "byte_length": 5783,
+          "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/kernel-native-selector-probe-002.stdout.log",
+          "sha256": "d266f926898abd6581a73af984697f084708bba21779b49fe4658c0cb989db17"
+        }
+      }
+    },
+    {
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp",
+        "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/pro004-kernel-ci-staged-validation-002/pytest-ci-closure"
+      ],
+      "exit_code": 0,
+      "finished_at": "2026-10-09T13:58:22.707597+00:00",
+      "label": "staged-closure-check",
+      "started_at": "2026-10-09T13:56:26.494336+00:00",
+      "stdin_sha256": null,
+      "streams": {
+        "stderr": {
+          "byte_length": 0,
+          "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/kernel-staged-closure-check-002.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "byte_length": 110,
+          "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/kernel-staged-closure-check-002.stdout.log",
+          "sha256": "9c3beebac686950a0d5d3700d8cc9f09ed91cedbb2eb097642c09aad0bc4154e"
+        }
+      }
+    }
+  ],
+  "finished_at": "2026-10-09T13:58:22.826194+00:00",
+  "fresh_test_storage": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/pro004-kernel-ci-staged-validation-002",
+  "full_pack_execute_called": false,
+  "git_commit_or_push": false,
+  "head_after": "07e663731b7ad7f1854b181180fee5855746d237",
+  "head_before": "07e663731b7ad7f1854b181180fee5855746d237",
+  "ignored_paths": "",
+  "operation_id": "gmi-economic-source-diagnostic-20261009-pro-004",
+  "previous_kernel_117_pass_not_repeated": true,
+  "previous_manifest_validation_and_three_other_ci_passes_not_repeated": true,
+  "prior_failed_receipt_sha256": "7ae2fd0082870f15aad38583c4b2dd066e0508c5f3151baaf4c9ab93146c3ed3",
+  "prior_failure_retained_unchanged": true,
+  "schema": "economic_network.kernel_native_staged_ci_validation/v1",
+  "selector_probe_sha256": "2734c656da48e22ebdecdd0c257d488d5694a19b78674cb4949e6e832a682af0",
+  "source_and_ci_pins_unchanged": true,
+  "source_change_for_correction": false,
+  "source_pin_count": 93,
+  "staged_paths": [
+    ".github/ci/legacy-jobs.yml",
+    "tests/test_ci_pack.py",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/KERNEL_SOURCE_MAP_004.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/ci_enrollment_review_v1/CI_ENROLLMENT_RECOMMENDATION.md",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/ci_enrollment_review_v1/CONTROL_SOURCE_IDENTITIES.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/ci_enrollment_review_v1/CURATED_EXCLUSIVE_INSERTION.txt",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/ci_enrollment_review_v1/FROZEN_SHARED_IMPORT_CLOSURE.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/ci_enrollment_review_v1/LEGACY_JOB_INSERTION.yaml",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/ci_enrollment_review_v1/MANIFEST.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/ci_enrollment_review_v1/RUNTIME_PATHS.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/kernel_delivery_preparation_v1/KERNEL_SOURCE_MAP_003.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/kernel_delivery_preparation_v1/RUNTIME_README_003.md",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/current-main-integration-004.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/kernel-ci-contract-suite-001.stderr.log",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/kernel-ci-contract-suite-001.stdout.log",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/kernel-ci-manifest-validation-001.stderr.log",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/kernel-ci-manifest-validation-001.stdout.log",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/kernel-integration-004.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/kernel-kernel-suite-001.stderr.log",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/kernel-kernel-suite-001.stdout.log",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/kernel-native-validation-001.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/main-integration-003.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/merge-summary-reconciliation-003.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_implementation/v1/ARCHIVE_MANIFEST.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_implementation/v1/IMPLEMENTATION_RETURN.md",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_implementation/v1/SOURCE_ARCHIVE.tar.gz",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_implementation/v2/ARCHIVE_MANIFEST.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_implementation/v2/CORRECTIVE_RETURN.md",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_implementation/v2/SOURCE_ARCHIVE.tar.gz",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_independent_vectors_v1/ARCHIVE_MANIFEST.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_independent_vectors_v1/EXPECTED_RESULTS.md",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_independent_vectors_v1/SOURCE_ARCHIVE.tar.gz",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_review_v1/ARCHIVE_MANIFEST.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_review_v1/REVIEW.md",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_review_v1/SOURCE_ARCHIVE.tar.gz",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_review_v2/ARCHIVE_MANIFEST.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_review_v2/CORRECTIVE_REVIEW.md",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_review_v2/SOURCE_ARCHIVE.tar.gz",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_v1/INPUT_CONTRACT.md",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_v1/README.md",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_v1/real_mode_synthetic_input.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_v1/source_diagnostic.py",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_v1/synthetic_example.py",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_v1/synthetic_input.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_output_bound_review_v1/ARCHIVE_MANIFEST.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_output_bound_review_v1/ARCHIVE_VERIFICATION.json",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_output_bound_review_v1/REVIEW.md",
+    "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_output_bound_review_v1/SOURCE_ARCHIVE.tar.gz",
+    "tests/test_gmi_source_diagnostic_kernel.py"
+  ],
+  "started_at": "2026-10-09T13:56:14.688823+00:00"
+}

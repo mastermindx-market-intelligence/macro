@@ -1,0 +1,1460 @@
+Deep Research Prompt: Mastermind Options
+Intelligence and Signaling System
+Role and mission
+You are conducting a deep institutional-grade research program on options-market information,
+options flow, options structure, dealer positioning, volatility surfaces, open interest, Greeks,
+expiration dynamics, and their predictive relationship with future price behavior.
+
+
+The objective is not merely to understand options or build another “unusual options activity” scanner. The
+objective is to determine, with empirical rigor, which information embedded in the options market is
+genuinely useful for forecasting direction, volatility, range, support/resistance behavior, regime
+changes, tail risk, candidate deterioration, and short-horizon market moves, and then turn that
+knowledge into a concrete architecture for Mastermind Terminal, Prophet, Mastermind candidate
+evaluation, risk monitoring, and future products.
+
+
+Treat options as a potentially independent information layer alongside price action, volume, market
+structure, macro, fundamentals, catalysts, sentiment, and other Mastermind inputs. Do not, however,
+assume that options are inherently more predictive because they are “forward looking.” The central
+scientific question is:
+
+
+       What incremental information does the options market contain that is not already
+       present in spot price action, equity volume, volatility, trend, momentum, catalyst
+       information, or broader market state—and under exactly what conditions, instruments,
+       horizons, and regimes does that incremental information remain statistically and
+       economically useful?
+
+
+Academic evidence gives good reason to investigate this seriously. Pan and Poteshman found that buyer-
+initiated option opening volume contained information about future stock prices, with their put/call signal
+showing meaningful next-day and next-week return differences. Easley, O’Hara, and Srinivas earlier
+documented the informational relationship between option volume and stock prices. Cremers and
+Weinbaum found predictive information in call-versus-put implied-volatility deviations, while Johnson and
+So studied predictive information in option-to-stock trading activity. These results strongly suggest that
+how option activity is classified matters much more than simply counting calls and puts. 1
+
+
+This research must end with a buildable Mastermind Options Intelligence architecture, a prioritized
+research/backtest program, explicit formulas and schemas for the first generation of signals, and a clear
+answer about what Mastermind should build first.
+
+
+Use information available through October 3, 2026, and explicitly date all research findings, product
+comparisons, API capabilities, and market-structure assumptions.
+
+
+
+
+                                                     1
+
+Research scope and questions
+Start from first principles and work upward. Explain not simply what each options metric means, but why it
+could cause, anticipate, reflect, or fail to predict future movement.
+
+
+Establish the information mechanics of options
+
+Research the complete information chain:
+
+
+Underlying information → participant expectation → option selection → strike/DTE selection → buy
+versus sell → opening versus closing → implied-volatility response → dealer/intermediary position →
+hedge adjustment → underlying-market impact → subsequent option repricing.
+
+
+Determine what information is present in each stage and what can realistically be observed from OPRA/
+ThetaData-style market data.
+
+
+Analyze in depth:
+
+
+     • Call and put mechanics.
+     • Intrinsic versus extrinsic value.
+     • Implied volatility versus realized volatility.
+     • Volatility risk premium.
+     • Volatility smile/smirk/skew.
+     • Risk reversals.
+     • Butterflies and convexity.
+     • Term structure.
+     • Expected move.
+     • Delta.
+     • Gamma.
+     • Vega.
+     • Theta.
+     • Vanna.
+     • Charm.
+     • Vomma/volga.
+     • Speed.
+     • Zomma.
+     • Color.
+     • Higher-order Greek effects where practically useful.
+     • Moneyness and delta buckets.
+     • Time-to-expiration effects.
+     • Liquidity, bid/ask spreads, quote age, execution location and trade size.
+     • Exercise, assignment and expiration mechanics.
+     • American versus European exercise.
+     • Cash-settled index options versus physically settled ETF/equity options.
+     • AM versus PM settlement where applicable.
+     • Corporate actions, dividends, splits, special dividends and early exercise.
+     • Pinning and expiration effects.
+
+
+
+                                                        2
+
+      • Dealer hedging dynamics.
+      • Gamma feedback.
+      • Vanna and charm hedging.
+      • Volatility-demand feedback.
+      • How these mechanisms change dramatically as DTE approaches zero.
+
+The research must distinguish information signals from mechanical market-impact signals. For
+example, an informed option buyer anticipating a future event is fundamentally different from dealers
+dynamically hedging large existing gamma exposure. Both may predict price behavior, but for different
+reasons and different horizons.
+
+
+Determine what “options flow” actually means
+
+Do not accept the retail definition of options flow as “large call trade = bullish” or “large put trade = bearish.”
+
+
+Research how professional desks classify and interpret flow. Determine what can and cannot be inferred
+from public market data.
+
+
+For every option print, conceptually distinguish:
+
+
+call/put × buyer/seller initiated × opening/closing × outright/spread/complex × directional/volatility/
+hedge/arbitrage × moneyness × DTE × size × premium × delta exposure × gamma exposure × vega
+exposure × execution aggressiveness × market regime.
+
+
+Explicitly study why:
+
+
+      • Buying calls can be bullish, hedging, volatility buying, spread construction, stock-replacement
+        activity or arbitrage.
+      • Selling calls can be bearish, covered-call supply, spread construction or volatility selling.
+      • Buying puts can be directional bearishness, portfolio protection, volatility buying or part of a spread.
+      • Selling puts can be bullish, volatility harvesting or a leg of another structure.
+      • Contract count can be far less informative than premium, delta-adjusted notional, vega notional or
+        gamma notional.
+      • A huge trade may be less meaningful than persistent coordinated smaller activity.
+      • Deep-ITM flow may behave like synthetic stock rather than a volatility or directional bet.
+      • A large print may be a closing position rather than new information.
+      • A “sweep” is not automatically informed.
+      • Multi-leg orders can generate individual prints that look directionally significant when interpreted in
+        isolation.
+
+The research should determine how accurately Mastermind can infer these categories from the data
+actually available.
+
+
+Investigate the major predictive horizons separately
+
+Do not attempt to build one generic “Options Bullish/Bearish” score.
+
+
+
+
+                                                         3
+
+Research distinct information horizons:
+
+
+Ultra-short: seconds to approximately 15 minutes.
+
+
+Intraday: approximately 15 minutes through close.
+
+
+0DTE / same-day: dynamic intraday pressure and expiration structure.
+
+
+Near-expiry: approximately 1–5 DTE.
+
+
+Short swing: approximately 1–10 trading days.
+
+
+Intermediate: approximately 2–8 weeks.
+
+
+Event-specific: earnings, FOMC, CPI, NFP, product announcements, FDA decisions, investor days, etc.
+
+
+Daily-expiring options are particularly important because research has shown that options surrounding
+scheduled macro releases contain observable ex-ante pricing of uncertainty, and the Federal Reserve has
+specifically studied institutional activity and risk management in 0DTE markets. 2
+
+
+Determine which features belong to which horizon. A feature that is useful for 30-minute prediction should
+not automatically influence a five-day Prophet candidate score, and vice versa.
+
+
+Mastermind current-state census
+Before proposing a new architecture, perform a forensic census of what Mastermind and Terminal
+already do with options.
+
+
+Use all available read-only project, repository, documentation, runtime, configuration, database-schema
+and Mastermind inspection tools. Do not modify production systems during the research phase.
+
+
+Search comprehensively for terms and components related to:
+
+
+option , options , theta , ThetaData , OPRA , greek , delta , gamma , vega , vanna ,
+charm , IV , implied volatility , open interest , OI , volume , flow , call , put ,
+expiration , strike , 0DTE , GEX , dealer , volatility , skew , term structure ,
+candidate , Prophet , Terminal , signal , admission , eligibility , warning , risk
+alert .
+
+
+Create a dependency map showing:
+
+
+ThetaData/other providers → ingestion → normalization → storage → computation → APIs →
+Terminal presentation → Mastermind reasoning → Prophet/candidate-selection logic → alerts →
+persisted candidate state.
+
+
+
+
+                                                    4
+
+For every existing options feature, determine:
+
+
+      • Source.
+      • Raw fields used.
+      • Sampling frequency.
+      • Update frequency.
+      • Computation/formula.
+      • Storage location.
+      • Consumers.
+      • UI presentation.
+      • Whether it is merely descriptive or actually changes decisions.
+      • Whether it is used before candidate admission.
+      • Whether it is used after admission.
+      • Whether historical values are retained.
+      • Whether it can be backtested point-in-time.
+      • Known failure modes.
+      • Missing context.
+      • Whether the implementation is theoretically justified.
+      • Whether the same information is already represented elsewhere.
+      • Whether any calculations are incorrect, simplistic, stale or redundant.
+
+Produce a Current-State Options Capability Matrix with statuses such as:
+
+
+Production / Experimental / UI-only / Data available but unused / Missing / Incorrect or
+questionable / Should retire.
+
+
+Specifically determine how options currently influence Prophet candidate selection and any other
+candidate-scoring systems. Identify where options are currently treated as informational decoration instead
+of as an actual decision feature.
+
+
+Perform a complete ThetaData capability audit
+
+Do not rely on assumptions about what ThetaData used to offer. Inspect the current 2026 documentation
+and, where possible, the actual Mastermind subscription/API implementation.
+
+
+ThetaData currently advertises comprehensive options trade and quote data, daily open interest, implied
+volatility, and first-, second- and third-order Greeks; its V3 Greeks interface includes delta, gamma, vanna,
+charm, vomma, speed, zomma, color and additional sensitivities. 3
+
+
+ThetaData also documents combined option trade/quote data, market-wide flat-file access for trade/quote
+records, open interest and EOD records, while noting that Greeks are not included in those flat files. 4
+
+
+Its current product tiers differ materially in request types, history depth, concurrency, tick-level access,
+snapshots and streaming capabilities, so establish exactly which tier and endpoints Mastermind
+currently has rather than designing against the theoretical maximum product. 5
+
+
+
+
+                                                        5
+
+Also investigate the architecture implications of ThetaData's 2026 Python library, which the vendor says can
+access its data without requiring the historical local Theta Terminal workflow. Determine whether
+Mastermind should retain, supplement or migrate its current integration. 6
+
+
+For every useful ThetaData field or endpoint, document:
+
+
+Field → raw availability → historical depth → real-time availability → latency → point-in-time
+correctness → required transformation → proposed Mastermind feature(s).
+
+
+Pay extraordinary attention to 0DTE Greeks. ThetaData's current V3 documentation states that its latest
+methodology uses real time-to-expiry but floors TTE at one hour, while an older methodology used a fixed
+0.15 DTE assumption. Investigate whether that creates unacceptable distortion for Mastermind's final-hour
+0DTE gamma/delta/vanna/charm analytics. Determine whether Mastermind needs to recalculate Greeks
+internally with exact seconds-to-settlement for this specific application. 7
+
+
+Data and signal engineering investigation
+Design a complete Options Intelligence Ontology rather than a single score.
+
+
+Build a candidate signal library
+
+For every proposed feature provide:
+
+
+Name
+Purpose
+Economic mechanism
+Exact mathematical definition
+Required source fields
+Frequency
+Minimum liquidity/data-quality requirements
+Normalization method
+Directional interpretation
+Prediction horizon
+Expected failure modes
+Known academic/professional support
+Backtest specification
+Whether useful for individual equities, ETFs, indices or all three
+
+
+Research at minimum the following families.
+
+
+Signed flow
+
+Investigate:
+
+
+     • Buyer-initiated call premium.
+     • Seller-initiated call premium.
+
+
+
+
+                                                     6
+
+     • Buyer-initiated put premium.
+     • Seller-initiated put premium.
+     • Net signed call premium.
+     • Net signed put premium.
+     • Net directional premium.
+     • Delta-adjusted signed flow.
+     • Dollar-delta flow.
+     • Gamma-weighted flow.
+     • Vega-weighted flow.
+     • Convexity-weighted flow.
+     • Flow by delta bucket.
+     • Flow by moneyness.
+     • Flow by DTE.
+     • Flow by expiration.
+     • Flow by strike.
+     • OTM-only flow.
+     • ATM flow.
+     • Deep-ITM flow.
+     • Block versus small-lot flow.
+     • Repeated-flow persistence.
+     • Flow acceleration.
+     • Flow reversal.
+     • Flow concentration.
+     • Cross-expiration confirmation.
+     • Same-direction versus contradictory expirations.
+     • Abnormal flow relative to each ticker's history.
+     • Abnormal flow cross-sectionally versus peers.
+
+Academic and professional work specifically indicates that signed/buyer-initiated activity can be
+substantially more informative than raw put/call contract counts. OptionMetrics, for example, describes
+signed volume classification based on execution relative to the bid/ask spread and has developed a
+TradeFlow framework for buyer-versus-seller initiation. 8
+
+
+Research multiple trade-classification algorithms rather than assuming executions at the ask are always
+purchases and executions at the bid always sales. Account for:
+
+
+     • Trades inside the spread.
+     • Midpoint executions.
+     • Locked/crossed markets.
+     • Quote staleness.
+     • Timestamp synchronization.
+     • Price improvement.
+     • Rapid quote changes.
+     • Exchange reporting delays.
+     • Trade-condition codes.
+
+Build confidence scores around aggressor classification.
+
+
+
+
+                                                     7
+
+Opening versus closing inference
+
+Determine the strongest practical method for estimating whether activity represents new positioning.
+
+
+Because open interest is updated on a clearing-cycle basis rather than providing a simple intraday “buy-to-
+open/sell-to-open” field, research probabilistic inference using:
+
+
+     • Yesterday's OI.
+     • Today's volume.
+     • Next-day OI change.
+     • Signed flow.
+     • Strike/expiration persistence.
+     • Repeated trade signatures.
+     • Price/IV changes.
+     • Multi-day position evolution.
+
+Separate real-time inference from next-day retrospective confirmation.
+
+
+Design an opening_probability and closing_probability rather than pretending certainty exists
+when the data cannot support it.
+
+
+Complex-order and spread reconstruction
+
+Investigate algorithms for clustering legs likely belonging to:
+
+
+     • Vertical spreads.
+     • Calendars.
+     • Diagonals.
+     • Straddles.
+     • Strangles.
+     • Butterflies.
+     • Condors.
+     • Risk reversals.
+     • Collars.
+     • Synthetic stock.
+     • Conversion/reversal/arbitrage.
+     • Covered-call-type behavior.
+     • Ratio spreads.
+
+Use timestamp proximity, quantity, exchange, expiration, strikes, premium relationships and known
+strategy geometry.
+
+
+The objective is to prevent Mastermind from reading one leg of a sophisticated strategy as a standalone
+directional bet.
+
+
+Every signal should carry something like:
+
+
+
+
+                                                       8
+
+outright_probability
+spread_probability
+hedge_probability
+directional_probability
+
+
+where empirically defensible.
+
+
+Open-interest structure
+
+Research:
+
+
+     • OI by strike.
+     • OI by expiration.
+     • Call OI versus put OI.
+     • Change in OI.
+     • OI concentration.
+     • OI migration through time.
+     • Spot distance to concentrated OI.
+     • OI walls.
+     • Expiration concentration.
+     • OI-weighted delta.
+     • OI-weighted gamma.
+     • OI-weighted vanna.
+     • OI-weighted charm.
+     • Pin-risk zones.
+     • Strike magnetism versus false “max pain” narratives.
+     • OPEX effects.
+     • Post-expiration structural reset.
+
+Test whether each concept actually predicts anything after appropriate controls. Do not retain popular
+concepts simply because traders talk about them.
+
+
+Implied-volatility structure
+
+Research:
+
+
+     • ATM IV.
+     • IV percentile/rank.
+     • IV minus realized volatility.
+     • Variance-risk premium.
+     • Call-versus-put IV.
+     • 25-delta and other risk reversals.
+     • Skew slope.
+     • Skew curvature.
+     • Tail IV.
+     • Put wing richness.
+     • Call wing richness.
+
+
+
+
+                                                     9
+
+     • Term structure.
+     • Calendar dislocations.
+     • Front-versus-back IV.
+     • Event-volatility premium.
+     • Expected move.
+     • Forward implied volatility.
+     • IV change conditioned on spot move.
+     • Sticky-strike versus sticky-delta behavior where useful.
+     • Volatility surface anomalies.
+
+Explicitly investigate the documented return-predictive literature around put-call implied-volatility
+differences and related volatility-smirk measures. 9
+
+
+Options-versus-underlying information
+
+Research:
+
+
+     • Option volume / stock volume.
+     • Option dollar volume / stock dollar volume.
+     • Option delta-equivalent volume / stock volume.
+     • Abnormal option-to-stock volume.
+     • Signed option-to-stock flow.
+     • Option price movement preceding spot movement.
+     • IV movement preceding spot movement.
+     • Option quote response versus underlying quote response.
+     • Lead/lag at different horizons.
+
+Include the literature on option-to-stock volume ratios and directly test whether its conclusions survive in
+the modern electronic and 0DTE-heavy market. 10
+
+
+Dealer-positioning and hedging pressure
+
+Study professional dealer-exposure approaches but treat inferred dealer positioning as a model, not
+directly observed truth.
+
+
+Research:
+
+
+     • Gross gamma exposure.
+     • Signed gamma exposure.
+     • Gamma-by-strike.
+     • Gamma-by-expiry.
+     • Estimated dealer gamma.
+     • Gamma flip / zero-gamma level.
+     • Call wall.
+     • Put wall.
+     • Vanna exposure.
+     • Charm exposure.
+     • Delta hedge requirement.
+
+
+
+
+                                                      10
+
+     • Hedge-flow sensitivity to spot.
+     • Hedge-flow sensitivity to IV.
+     • Hedge-flow sensitivity to time.
+     • Expected dealer rebalancing under hypothetical spot/volatility paths.
+
+Create multiple scenarios because public options data does not directly identify the complete dealer/
+customer inventory.
+
+
+For example:
+
+
+Scenario A: dealer opposite customer net flow
+Scenario B: OI-based conventional dealer-side approximation
+Scenario C: signed-flow-updated positioning
+Scenario D: conservative ambiguity model
+
+
+Compare their empirical usefulness rather than treating one GEX methodology as canonical.
+
+
+SpotGamma is an important professional benchmark because its public materials emphasize gamma
+positioning, gamma levels, dealer positioning, vanna and a short-horizon options-flow indicator known as
+HIRO. Analyze those concepts critically and determine which capabilities Mastermind should independently
+reproduce, improve or reject. 11
+
+
+Near-expiry and 0DTE intelligence
+
+Treat 0DTE as its own research domain.
+
+
+Develop and test features including:
+
+
+     • 0DTE call/put signed premium.
+     • 0DTE dollar delta.
+     • 0DTE gamma flow.
+     • 0DTE vanna/charm state.
+     • Net 0DTE directional impulse.
+     • 0DTE versus 1DTE divergence.
+     • 0DTE versus 1–5DTE divergence.
+     • Intraday change in gamma distribution.
+     • Strike gamma immediately above/below spot.
+     • Distance to major gamma concentrations.
+     • Spot movement through gamma concentrations.
+     • Flow acceleration in rolling 1/5/15-minute windows.
+     • Persistent same-direction flow.
+     • Sudden flow reversal.
+     • IV expansion without equivalent spot movement.
+     • Put-skew shock.
+     • Call-skew shock.
+     • Near-expiry expected range.
+     • Intraday dealer hedge-pressure estimate.
+
+
+
+
+                                                    11
+
+     • Expiration pin probability.
+     • Breakout-from-pin risk.
+     • Final-hour convexity.
+     • Final-30-minute convexity.
+     • Final-15-minute instability.
+
+Determine whether these can generate:
+
+
+0DTE_BULLISH_PRESSURE
+0DTE_BEARISH_PRESSURE
+UPSIDE_ACCELERATION_RISK
+DOWNSIDE_ACCELERATION_RISK
+PINNING_PROBABILITY_HIGH
+VOLATILITY_EXPANSION_WARNING
+OPTIONS_FLOW_REVERSAL
+GAMMA_REGIME_CHANGE
+
+
+Every one of these must have a quantitative threshold and confidence measure.
+
+
+Build cross-market context
+
+Options information should not remain ticker-isolated.
+
+
+Research a hierarchy such as:
+
+
+SPX/SPY → QQQ/NDX → IWM/RUT → sector ETF → individual candidate.
+
+
+Determine whether broad-index options state should operate as a market-regime prior for individual
+candidates.
+
+
+Examples to test:
+
+
+     • Bullish individual-stock options flow during strongly negative index-level options pressure.
+     • Bearish individual flow against supportive index structure.
+     • Candidate flow aligned with sector ETF flow.
+     • Candidate flow diverging from sector/index flow.
+     • Broad 0DTE downside acceleration affecting all admitted candidates.
+     • Index positive-gamma regime reducing expected breakout follow-through.
+     • Negative-gamma regime increasing the probability of trend extension or range expansion.
+
+Include VIX and volatility-index information where data access permits.
+
+
+Evidence and competitive research
+Conduct a serious literature review and professional-product benchmark.
+
+
+
+
+                                                     12
+
+Academic research
+
+At minimum, locate, read and synthesize the important literature around:
+
+
+     • Information in option volume.
+     • Informed trading in options versus equities.
+     • Buyer-initiated/opening options flow.
+     • Option-to-stock volume.
+     • Signed option volume.
+     • Put/call demand ratios.
+     • Call-put IV differentials.
+     • Volatility smirk/skew and future returns.
+     • Implied versus realized volatility.
+     • Variance risk premium.
+     • Option-implied tail risk.
+     • Risk-neutral distributions.
+     • Event pricing.
+     • Earnings options.
+     • Dealer gamma.
+     • Option-market liquidity.
+     • Lead/lag between options and stocks.
+     • Intraday options information.
+     • 0DTE options.
+     • Expiration and pinning.
+     • Volatility feedback.
+     • Market-maker hedging.
+     • Options and crash prediction.
+     • Machine learning using options surfaces/flow.
+     • Cross-sectional equity prediction using options.
+
+Seed the review with Pan & Poteshman; Easley, O’Hara & Srinivas; Cremers & Weinbaum; Johnson & So;
+related later work explaining option/stock-volume predictability; and contemporary work on daily-expiring
+options and state-dependent volatility forecasting. 12
+
+
+For each paper provide:
+
+
+Research question
+Dataset and time period
+Signal definition
+Prediction horizon
+Statistical result
+Economic magnitude
+Whether the signal survives controls
+Interpretation
+Limitations
+Whether modern market structure may invalidate or strengthen it
+Exact Mastermind implication
+
+
+
+
+                                                      13
+
+Pay special attention to replication risk. Many older option studies use proprietary data that can
+distinguish opening versus closing or customer categories that OPRA-derived datasets may not directly
+expose. State when Mastermind's data can only approximate an academic variable.
+
+
+Professional competitor analysis
+
+Perform a feature-level teardown of at least:
+
+
+      • SpotGamma.
+      • Cboe LiveVol.
+      • OptionMetrics / IvyDB / TradeFlow.
+      • Unusual Whales.
+      • Trade Alert.
+      • ORATS.
+      • Market Chameleon.
+      • FlowAlgo or Cheddar Flow where relevant.
+      • SqueezeMetrics where relevant.
+      • Any newer 2025–2026 institutional-quality options intelligence products uncovered during research.
+
+Do not merely produce a pricing/features table.
+
+
+For each determine:
+
+
+What problem does the product solve?
+What raw information does it appear to use?
+What proprietary transformation creates value?
+Does it focus on flow, IV, GEX, scanning, historical research, execution, or forecasting?
+Does it expose explicit directional signals?
+How does it classify trades?
+How does it visualize dealer positioning?
+Does it support 0DTE?
+Does it support historical testing?
+How does it communicate confidence?
+What would a professional trader learn from it that Terminal currently does not provide?
+Which capabilities can Mastermind reproduce from ThetaData?
+Which require unavailable proprietary data?
+What can Mastermind do substantially better by combining options with Prophet and the rest of
+Mastermind?
+
+
+Cboe LiveVol, for example, publicly advertises option time-and-sales history, live/scrolling trades, volatility
+analytics, event analysis, alerts, scanners and filters, making it a useful benchmark for Terminal's analytic
+and visualization layer. 13
+
+
+OptionMetrics should be examined particularly closely for research methodology and trade
+classification, while SpotGamma should be examined for dealer-positioning and intraday hedge-
+pressure abstractions. 14
+
+
+
+
+                                                       14
+
+Use only legally/publicly accessible information. Do not bypass access controls or attempt to obtain
+proprietary algorithms.
+
+
+Validation and architecture design
+The entire project must be designed around avoiding false discovery, look-ahead bias and beautiful-but-
+useless options dashboards.
+
+
+Establish rigorous prediction labels
+
+Test options signals against multiple outcomes:
+
+
+Directional returns
+
+
+     • 5 minutes.
+     • 15 minutes.
+     • 30 minutes.
+     • 60 minutes.
+     • Close.
+     • Next open.
+     • Next close.
+     • 2 trading days.
+     • 3 trading days.
+     • 5 trading days.
+     • 10 trading days.
+
+Volatility/range
+
+
+     • Absolute return.
+     • Realized volatility.
+     • High-low range.
+     • Upside excursion.
+     • Downside excursion.
+     • Gap probability.
+     • Tail move probability.
+
+Mastermind-specific
+
+
+     • Prophet candidate subsequently succeeds.
+     • Candidate reaches planned target.
+     • Candidate violates thesis.
+     • Candidate experiences daily-cycle failure.
+     • Candidate suffers large adverse excursion.
+     • Candidate should have been upgraded.
+     • Candidate should have been downgraded.
+     • Candidate should have been rejected.
+     • Candidate should have had its plan changed after admission.
+
+
+
+
+                                                     15
+
+Build hard baselines
+
+The critical comparison is not “does options signal correlate with future price?”
+
+
+It is:
+
+
+          Does the options signal improve prediction beyond what Mastermind already knows?
+
+
+Construct baselines using:
+
+
+         • Price trend.
+         • Momentum.
+         • Technical structure.
+         • Equity volume.
+         • ATR.
+         • Realized volatility.
+         • Market regime.
+         • Sector regime.
+         • Catalyst status.
+         • Existing Prophet features.
+
+Then compare:
+
+
+Baseline only
+Options only
+Baseline + options
+Baseline + options + interactions
+
+
+Perform feature ablation to quantify the incremental contribution of every options family.
+
+
+Use institutional-grade research controls
+
+Require:
+
+
+         • Point-in-time data only.
+         • Strict prevention of future OI leakage.
+         • Correct corporate-action handling.
+         • Delisted/security-history awareness where applicable.
+         • Walk-forward testing.
+         • Purging/embargo for overlapping labels where appropriate.
+         • Train/validation/test separation by time.
+         • Out-of-sample evaluation.
+         • Regime stratification.
+         • Liquidity stratification.
+         • Market-cap stratification.
+         • Event/non-event stratification.
+         • DTE stratification.
+
+
+
+
+                                                      16
+
+     • Multiple-testing correction.
+     • Signal-decay analysis.
+     • Calibration analysis.
+     • Stability across years.
+     • Stability across symbols.
+     • Transaction-cost awareness where outputs are directly tradable.
+     • Explicit missing-data and low-confidence states.
+
+Measure at least:
+
+
+     • Information coefficient.
+     • Rank IC.
+     • ROC-AUC where appropriate.
+     • Precision/recall for warnings.
+     • Brier score.
+     • Calibration curves.
+     • Conditional forward returns.
+     • Top/bottom decile spread.
+     • Hit rate.
+     • Maximum adverse/favorable excursion.
+     • Tail-event recall.
+     • Incremental explanatory/predictive power.
+     • Economic usefulness to candidate decision making.
+
+Avoid selecting signals on a single backtest. Account for the well-known dangers of backtest overfitting and
+multiple strategy testing. 15
+
+
+Design the Mastermind architecture
+
+Propose a layered architecture approximately of the form:
+
+
+Raw Options Market Data
+↓
+Normalized Options Event Store
+↓
+Trade Classification / Complex-Order Reconstruction
+↓
+Chain and Surface State Engine
+↓
+Positioning / Exposure Engine
+↓
+Options Feature Store
+↓
+Horizon-Specific Signal Engines
+↓
+Options Intelligence Ensemble
+↓
+Prophet / Candidate Eligibility / Candidate Monitoring / Alerts / Terminal UI
+
+
+
+                                                     17
+
+Keep raw observations, derived features, inferred states, and decision signals as separate layers.
+
+
+Every final signal object should ideally include fields resembling:
+
+
+
+  symbol
+  timestamp
+  signal_name
+  signal_family
+  prediction_horizon
+  direction
+  magnitude
+  confidence
+  data_quality
+  regime
+  supporting_features
+  contradicting_features
+  expiration_scope
+  dte_scope
+  flow_classification_confidence
+  positioning_model_confidence
+  valid_until
+  reason_codes
+  model_version
+
+
+Do not collapse the entire system into one opaque score.
+
+
+A useful higher-level state could contain:
+
+
+
+  OptionsDirectionalBias
+  OptionsDirectionalConfidence
+  OptionsVolatilityBias
+  OptionsTailRisk
+  OptionsStructureSupport
+  OptionsStructureResistance
+  DealerPressureBias
+  NearExpiryBias
+  ZeroDTEBias
+  FlowPersistence
+  FlowReversalRisk
+  DataQuality
+  OverallOptionsSupportForCandidate
+  OverallOptionsRiskForCandidate
+
+
+
+
+                                                       18
+
+Design Prophet integration explicitly
+
+Create a concrete architecture for options to influence the Prophet candidate lifecycle.
+
+
+Research at least four intervention points:
+
+
+Discovery: Does options activity help identify a stock before price action fully expresses the move?
+
+
+Admission: Does options structure support or contradict an otherwise valid candidate?
+
+
+Post-admission monitoring: Has the options state materially deteriorated or improved since admission?
+
+
+Plan modification: Should position eligibility, confidence, target expectations, timing or risk plan change
+because of an options regime shift?
+
+
+Prototype a bounded score such as:
+
+
+OPTIONS_SUPPORT_SCORE 0–100
+
+
+but ensure the score decomposes into explainable components rather than being arbitrary.
+
+
+For a long candidate, possible evidence might include:
+
+
+
+  positive signed directional premium
+  + persistent call demand rather than one isolated print
+  + favorable risk reversal/skew movement
+  + supportive near-term OI structure
+  + favorable dealer-pressure scenario
+  + supportive index/sector options context
+  + no major downside-tail bid
+  + confirmation across appropriate expirations
+
+
+Contradictory evidence might include:
+
+
+
+  persistent put buying
+  + bearish skew acceleration
+  + negative near-expiry pressure
+  + large downside-tail demand
+  + bearish index options regime
+  + deterioration since candidate admission
+
+
+Make the architecture produce explicit outcomes such as:
+
+
+
+
+                                                      19
+
+OPTIONS_STRONGLY_SUPPORTS
+OPTIONS_SUPPORTS
+OPTIONS_NEUTRAL
+OPTIONS_CONFLICTS
+OPTIONS_STRONGLY_CONFLICTS
+
+
+and independent alerts such as:
+
+
+OPTIONS_NEGATIVE_FLOW_RISK
+OPTIONS_STRUCTURE_DETERIORATION
+OPTIONS_REVERSAL_WARNING
+OPTIONS_CONFIRMATION_STRENGTHENED
+
+
+Critically evaluate whether options should ever veto a Prophet candidate, merely adjust confidence, or
+operate differently according to horizon and candidate class.
+
+
+Required final deliverables and decision bar
+The final research output must be written as a technical strategy document for Mastermind, not as a
+generic educational article.
+
+
+It must provide all of the following.
+
+
+Executive verdict
+
+Give a decisive answer to:
+
+
+How important should options intelligence become inside Mastermind?
+
+
+State:
+
+
+         • Where options demonstrably offer unique forward information.
+         • Where claims about options are overstated.
+         • Which information appears strongest.
+         • Which information is mostly noise.
+         • Which horizons are most promising.
+         • Which signals deserve immediate implementation.
+         • Which require substantial research.
+         • Which common retail options indicators should be rejected.
+
+Mastermind current-state audit
+
+Provide:
+
+
+         • Existing options architecture.
+         • Existing datasets.
+
+
+
+
+                                                     20
+
+     • Existing formulas.
+     • Existing Terminal functionality.
+     • Existing Prophet integration.
+     • Existing strengths.
+     • Existing weaknesses.
+     • Bugs or conceptual mistakes.
+     • Unused available data.
+     • Major data gaps.
+     • Technical debt.
+     • Recommended retirements/replacements.
+
+ThetaData data map
+
+Create a table mapping every useful current ThetaData capability to:
+
+
+endpoint/data type → fields → history → frequency → latency → proposed Mastermind usage →
+limitations → priority.
+
+
+Explicitly state any capabilities needed for the proposed system that ThetaData cannot provide.
+
+
+Options intelligence ontology
+
+Produce the canonical taxonomy Mastermind should use throughout code, databases, APIs, Terminal and
+LLM reasoning.
+
+
+Signal catalog
+
+Produce a prioritized catalog of approximately 30–60 serious candidate signals, not hundreds of
+speculative features.
+
+
+For each provide:
+
+
+     • Formula.
+     • Interpretation.
+     • Horizon.
+     • Data requirements.
+     • Normalization.
+     • Confidence methodology.
+     • Test methodology.
+     • Expected value.
+     • Implementation complexity.
+     • Priority.
+
+Identify a smaller Tier One signal set suitable for the first production release.
+
+
+
+
+                                                      21
+
+0DTE engine specification
+
+Deliver a dedicated design for a Mastermind 0DTE / Near-Expiry Intelligence Engine including:
+
+
+     • Required data frequency.
+     • Exact features.
+     • Greeks methodology.
+     • Dealer-pressure methodology.
+     • Intraday windows.
+     • Alert taxonomy.
+     • Confidence rules.
+     • Failure states.
+     • How it affects candidates.
+     • How it affects broad-market risk.
+     • UI requirements.
+     • Backtest plan.
+
+Dealer-positioning engine specification
+
+Define:
+
+
+     • GEX methodology.
+     • Alternative assumptions.
+     • Gamma-by-strike calculations.
+     • Vanna.
+     • Charm.
+     • Scenario analysis.
+     • Zero-gamma/gamma-flip concepts.
+     • Wall identification.
+     • Confidence bounds.
+     • How to avoid presenting inferred dealer positions as fact.
+
+Prophet integration specification
+
+Give an explicit candidate-state machine showing options effects:
+
+
+
+  candidate discovered
+         ↓
+  options pre-admission assessment
+         ↓
+  admit / reduce confidence / reject
+         ↓
+  continuous options monitoring
+         ↓
+  support strengthens / unchanged / deteriorates
+
+
+
+
+                                                     22
+
+         ↓
+  upgrade / maintain / downgrade / warning / thesis-risk event
+
+
+Define exact proposed fields in the Prophet candidate schema.
+
+
+Terminal product design
+
+Recommend the professional Terminal surfaces required, including possibilities such as:
+
+
+     • Options Intelligence Summary.
+     • Signed Flow.
+     • Flow Timeline.
+     • Chain Heatmap.
+     • OI Structure.
+     • Gamma Map.
+     • Near-Expiry Map.
+     • Volatility Surface.
+     • Skew.
+     • Term Structure.
+     • Major Strikes.
+     • Dealer Pressure.
+     • Candidate Options Support.
+     • Options Warning Timeline.
+     • Signal explanation.
+     • Historical options-state replay.
+
+Avoid creating information-dense dashboards without decision value. Each component must answer a
+specific trading/research question.
+
+
+Competitive gap analysis
+
+Produce a matrix:
+
+
+               Mastermind                                                 Unusual     ORATS /    Proposed
+ Capability                     SpotGamma     LiveVol    OptionMetrics
+               today                                                      Whales      others     Mastermind
+
+
+Then identify Mastermind's potential unique advantage.
+
+
+The key strategic possibility to investigate is that Mastermind does not need to become merely another
+options-flow terminal. It may be able to outperform standalone products by combining:
+
+
+options intelligence + price action + candidate context + market regime + catalyst knowledge + post-
+admission monitoring + autonomous reasoning.
+
+
+Determine whether the evidence supports that thesis.
+
+
+
+
+                                                    23
+
+Research and implementation roadmap
+
+Finish with a sequenced roadmap:
+
+
+Immediate research / data validation
+
+
+Prototype features
+
+
+Historical backtesting
+
+
+Shadow/live validation
+
+
+Prophet integration
+
+
+Terminal visualization
+
+
+Production alerts
+
+
+Advanced dealer/0DTE modeling
+
+
+For every stage provide:
+
+
+     • Required work.
+     • Dependencies.
+     • Engineering complexity.
+     • Research uncertainty.
+     • Expected benefit.
+     • Acceptance criteria.
+     • Kill criteria.
+
+Conclude with three lists:
+
+
+BUILD NOW — high-confidence, high-value features supported by evidence and available data.
+
+
+RESEARCH NEXT — promising features needing empirical confirmation.
+
+
+DO NOT BUILD YET / REJECT — popular but unsupported, unobservable, redundant or dangerously
+misleading concepts.
+
+
+The ultimate standard is not whether Mastermind can display more options information. The standard is:
+
+
+       Can Mastermind convert options-market activity into a point-in-time, statistically
+       validated, horizon-aware, explainable intelligence layer that improves candidate
+       selection, candidate monitoring, directional assessment, volatility/risk forecasting, and
+       real-time warning quality beyond what price action alone can provide?
+
+
+
+
+                                                   24
+
+Every recommendation must be tied back to that standard.
+
+
+
+ 1   Information in Option Volume for Future Stock Prices
+https://academic.oup.com/rfs/article-abstract/19/3/871/1646711?utm_source=chatgpt.com
+
+ 2   The Fed - The Price of Macroeconomic Uncertainty: Evidence from Daily Options
+https://www.federalreserve.gov/econres/ifdp/the-price-of-macroeconomic-uncertainty-evidence-from-daily-options.htm?
+utm_source=chatgpt.com
+
+ 3   Options Data | ThetaData
+https://www.thetadata.net/options-data?utm_source=chatgpt.com
+
+ 4   Flat Files | ThetaData v3
+https://thetadata.net/docs/Flat-Files/Getting-Started?utm_source=chatgpt.com
+
+ 5   Theta Data | Pricing
+https://www.thetadata.net/pricing?utm_source=chatgpt.com
+
+ 6   Introducing the Theta Data Python Library
+https://www.thetadata.net/blog/2026-05-05-introducing-the-theta-data-python-library?utm_source=chatgpt.com
+
+ 7   ThetaData v3
+https://docs.thetadata.us/operations/option_history_greeks_all.html?utm_source=chatgpt.com
+
+ 8   Teaching an Old Ratio New Tricks
+https://optionmetrics.com/blog/2023_teaching_an_old_ratio_new_tricks/?utm_source=chatgpt.com
+
+ 9   Deviations from Put-Call Parity and Stock Return Predictability
+https://www.cambridge.org/core/journals/journal-of-financial-and-quantitative-analysis/article/deviations-from-putcall-parity-
+and-stock-return-predictability/D9BA8F97580328AAFD7988B092FE5D50?utm_source=chatgpt.com
+
+10   The Option to Stock Volume Ratio and Future Returns
+https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1624062&utm_source=chatgpt.com
+
+11   Blog Archive | SpotGamma™
+https://spotgamma.com/blog/archive/?utm_source=chatgpt.com
+
+12   The Information in Option Volume for Future Stock Prices
+https://www.mit.edu/~junpan/volume.pdf?utm_source=chatgpt.com
+
+13   Stock Options Analysis & Options Trading Strategy Tools
+https://www.livevol.com/?utm_source=chatgpt.com
+
+14   Option Market and Volatility Research Papers
+https://optionmetrics.com/research/?utm_source=chatgpt.com
+
+15   Backtesting by Campbell R. Harvey, Yan Liu
+https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2345489&utm_source=chatgpt.com
+
+
+
+
+                                                               25
+

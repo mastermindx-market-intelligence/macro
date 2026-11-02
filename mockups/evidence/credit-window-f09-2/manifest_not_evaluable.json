@@ -3,7 +3,15 @@
     "access": [
       "anonymous"
     ],
-    "force_states": [],
+    "force_states": [
+      {
+        "attribute": "data-credit",
+        "kind": "attribute",
+        "name": "not-evaluable",
+        "spec": "not-evaluable:[data-credit=null]",
+        "value": "null"
+      }
+    ],
     "locales": [
       "en"
     ],
@@ -18,10 +26,11 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-07T00:00:00Z",
+  "generated_at": "2026-09-13T22:40:34Z",
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "force_states": "a forced state is a class/attribute toggled on <body> before the shot: it shows that state's styling, not data the page returned; metrics are measured on the rest cells only, and a hook that did not take is recorded as a gap",
     "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
   },
   "outcome": "captured",
@@ -103,7 +112,7 @@
           "viewport": "desktop"
         },
         "panel_count": 7,
-        "payload_bytes_total": 77823,
+        "payload_bytes_total": 598626,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 17,
@@ -112,7 +121,7 @@
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 806
+        "visible_word_count": 861
       },
       "page_id": "macro:ipo",
       "registry_route": "/ipo.html",
@@ -121,15 +130,16 @@
       "states": [
         {
           "access": "anonymous",
+          "applied_force_state": "not-evaluable",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 570949,
+          "bytes": 592604,
           "captured": true,
-          "file": "61cec68575a633a0.png",
-          "force_state": null,
+          "file": "986c8fb0087970db--not-evaluable.png",
+          "force_state": "not-evaluable",
           "height": 3317,
           "locale": "en",
-          "sha256": "61cec68575a633a0bd1925d16a409743bf576c97dcdac9183b5ccd7bee67cc34",
+          "sha256": "986c8fb0087970db670bf0df52db9a0ea1f157faed0237d595f1454eb65fec32",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -149,21 +159,21 @@
     "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
     "priority": null,
     "registry": "data/product_experience/page_registry.json",
-    "registry_rows": 325,
+    "registry_rows": 328,
     "repo": null,
     "selected": 1
   },
   "target": {
     "base_url": null,
     "kind": "site_dir",
-    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-fix-6904",
-    "resolved_sha_or_none": "73ac97f660502ec1395c08e290b39b9fb6be7e03",
-    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-fix-6904 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
-    "site_dir": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/mo-fix-6904/site"
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-m_6904_a1-3cfc2404826fcc75",
+    "resolved_sha_or_none": "6c444f6f35f86555ee5c6af291baf44132fab34d",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-m_6904_a1-3cfc2404826fcc75 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mo-ext-fix-m_6904_a1-3cfc2404826fcc75/site"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",
-    "module_sha256": "97b4435815440fde008cd35b73c551cf704ba01ea71f18f04a2b23ebc7a0a6b7",
+    "module_sha256": "3301a5f9f5a21b2bd6fada86b3c685af1f3f9baf9fa52cbd712ab5591e980b05",
     "user_agent": "mastermind-page-census/1.0 (internal product observability)",
     "version": "1.2.0"
   },

@@ -1167,7 +1167,6 @@ def test_multi_event_generation_resolves_aapl_and_dhi_independently(tmp_path: Pa
     generation_dir = write_workspace_generation(
         tmp_path,
         {aapl_payload["event_id"]: aapl_payload, dhi_payload["event_id"]: dhi_payload},
-        generated_at="2026-07-30T16:30:00Z",
     )
     manifest = __import__("json").loads((tmp_path / "event_workspaces" / "manifest.json").read_text())
     assert manifest["event_count"] == 2

@@ -1,0 +1,1231 @@
+{
+  "schema": "risk_radar_state_ladder_calibration.v1",
+  "protocol_commit": "e9ff3d234df1f50137bfa38a50995a70f06c1164",
+  "source_base": "7c6e35163c9f67087ffe174a7ab3810f47ce6a45",
+  "targets": {
+    "depth": 0.05,
+    "horizons": [
+      5,
+      10,
+      21
+    ]
+  },
+  "state_order": [
+    "calm",
+    "watch",
+    "caution",
+    "elevated",
+    "risk-off"
+  ],
+  "calibration_sha256": "801d15ae2b50d622c153b47863af0e27e1ce080d9fd7bc2d478cee2bc27ebc54",
+  "configured_probabilities": {
+    "h5": {
+      "calm": 0.02,
+      "watch": 0.02,
+      "caution": 0.03,
+      "elevated": 0.05,
+      "risk-off": 0.08
+    },
+    "h10": {
+      "calm": 0.06,
+      "watch": 0.06,
+      "caution": 0.08,
+      "elevated": 0.12,
+      "risk-off": 0.17
+    },
+    "h21": {
+      "calm": 0.13,
+      "watch": 0.13,
+      "caution": 0.16,
+      "elevated": 0.25,
+      "risk-off": 0.33
+    }
+  },
+  "source_hashes": {
+    "engine/risk_radar.py": "a2c347cd726646896c48ed7a4437ae64e371e1efc689fd176998f3d2d88158e1",
+    "engine/risk_radar_backtest.py": "77c2a5b7a4547ea96fd02e8be804e4f448facdeb42b707e63478836ff3d3c46a",
+    "scripts/research/risk_radar_state_ladder_calibration.py": "1ae55ad3295fc7c5a25918e97d6b80de35a23ee60b9e219bec92c82105762068",
+    "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_PREREG_2026-09-21.md": "9091faeea4b772c6c0d0fcdbae3cc87ccc7e84a22e9292134399ba69030c307b"
+  },
+  "input_hashes": {
+    "data/yahoo/SPY.parquet": "cb67cebc79518e6c8de3c558c5a0c18ec252389054b2f8394b354e88a7af0ea0",
+    "data/fred/BAMLH0A0HYM2.parquet": "dd60951fe1ef3e88b9202e4a0bef7c4a56d96382d6e2b28056fdf615786e4690",
+    "data/yahoo/HYG.parquet": "b89d528b2c8d7e3d3c2fa8f64b2b6992e95ca0f8b0d58933876730a4a9c1c8da",
+    "data/yahoo/TLT.parquet": "3d09f656e49ba4d3ee5f205fcd8a7c650c36e3f46d98295d2b29b9e3256bccd5",
+    "data/yahoo/_MOVE.parquet": "03bd5adfbf7c4ca75bed2584159621a3d20ed62387365c8a92ab745831dff125",
+    "data/fred/DFII10.parquet": "99984d0539e17de3e07aac6b7db7b80913ca43352084cfb701ff6ad9d2c7e2c2",
+    "data/yahoo/SMH.parquet": "d9b0aa2d02b4a480876002fbb640384ce49c00a0093488b4259bf09abeaff81b",
+    "data/yahoo/XLU.parquet": "60ba05b2d9b202e21eaaa788aba8540c46cabcd0f2b4d3b32e6ca40263aed2be",
+    "data/yahoo/XLP.parquet": "bcbe35e985ce39b120b9a93d9a26432c7aced21cb7d9b46315278049091a610c",
+    "data/yahoo/XLY.parquet": "48ba37b15e76c8a20c1bcb64350c72c86a852a1f0d24e18ad4190178dfbc3b27",
+    "data/yahoo/_VIX.parquet": "7899aa84d8b4cb5de1845df541f552dce2096af0b981fc91b2e655095b987b6c",
+    "data/yahoo/_VIX3M.parquet": "0304d258dd25725e6a8c03d50ec1e109da5871844bd24cd6f659a972ab3030d1",
+    "data/yahoo/_VIX9D.parquet": "2cda964c2314c661b0322ce3aeae7be84cf013656588b51f7c918240258a9d07",
+    "data/cboe/putcall.parquet": "a53c2342ce72f7ff580213318ca307df7d753e70d7a97eee8defa1c6d9788e61",
+    "data/cboe/gex.parquet": "0bfb04b88db610c14b7fcbd74d0dfbbcb5ac4fa5509758ed1b12dd242a0b8c94",
+    "data/fred/DEXJPUS.parquet": "79704861e8c851c81b4bb1b35a0d849e2dbfb063ff92d47c02f4581411563003",
+    "data/breadth/breadth.parquet": "9abc810d386888665697bce850a4d05498dbad61658a076bceea328174d55855"
+  },
+  "missing_optional_inputs": [
+    "data/risk_radar/calibration.json"
+  ],
+  "coverage": {
+    "from": "1993-01-29T00:00:00",
+    "through": "2026-09-18T00:00:00",
+    "rows": 8467,
+    "signal_columns": [
+      "credit_oas_roc",
+      "credit_hyg_tlt",
+      "rates_move",
+      "rates_realrate",
+      "bubble_ext",
+      "bubble_leadership",
+      "growth_defensives",
+      "growth_cyc_def",
+      "vol_term",
+      "jpy_carry",
+      "nh_contraction",
+      "corr_floor_break",
+      "ai_breadth_divergence"
+    ],
+    "subscore_columns": [
+      "credit",
+      "rates",
+      "bubble",
+      "growth",
+      "vol",
+      "global",
+      "internals"
+    ]
+  },
+  "results": {
+    "h5": {
+      "full": {
+        "from": "1994-01-26T00:00:00",
+        "through": "2026-09-11T00:00:00",
+        "n": 8211,
+        "events": 288,
+        "base_rate": 0.0350748995250274,
+        "population_sha256": "068bd8545ca554cfc2b792cf566dabd1b46f5ebf940bc7f641bd0082402e2aa1",
+        "states": {
+          "calm": {
+            "n": 1304,
+            "events": 28,
+            "event_rate": 0.02147239263803681,
+            "event_rate_ci90": [
+              0.012843,
+              0.032083
+            ],
+            "lift_vs_base": 0.6121868609406953,
+            "configured_state_probability": 0.02,
+            "observed_minus_configured": 0.0014723926380368103,
+            "thin": false
+          },
+          "watch": {
+            "n": 935,
+            "events": 12,
+            "event_rate": 0.012834224598930482,
+            "event_rate_ci90": [
+              0.005417,
+              0.021699
+            ],
+            "lift_vs_base": 0.3659090909090909,
+            "configured_state_probability": 0.02,
+            "observed_minus_configured": -0.007165775401069519,
+            "thin": false
+          },
+          "caution": {
+            "n": 4997,
+            "events": 101,
+            "event_rate": 0.02021212727636582,
+            "event_rate_ci90": [
+              0.01564,
+              0.025503
+            ],
+            "lift_vs_base": 0.576256170368888,
+            "configured_state_probability": 0.03,
+            "observed_minus_configured": -0.00978787272363418,
+            "thin": false
+          },
+          "elevated": {
+            "n": 204,
+            "events": 29,
+            "event_rate": 0.14215686274509803,
+            "event_rate_ci90": [
+              0.089424,
+              0.195253
+            ],
+            "lift_vs_base": 4.052951388888888,
+            "configured_state_probability": 0.05,
+            "observed_minus_configured": 0.09215686274509803,
+            "thin": false
+          },
+          "risk-off": {
+            "n": 771,
+            "events": 118,
+            "event_rate": 0.15304798962386512,
+            "event_rate_ci90": [
+              0.117151,
+              0.193242
+            ],
+            "lift_vs_base": 4.363461954172071,
+            "configured_state_probability": 0.08,
+            "observed_minus_configured": 0.07304798962386512,
+            "thin": false
+          }
+        },
+        "adjacent_differences": {
+          "calm->watch": {
+            "difference": -0.00863816803910633,
+            "difference_ci90": [
+              -0.020467,
+              0.002523
+            ]
+          },
+          "watch->caution": {
+            "difference": 0.007377902677435337,
+            "difference_ci90": [
+              -0.001636,
+              0.01525
+            ]
+          },
+          "caution->elevated": {
+            "difference": 0.12194473546873222,
+            "difference_ci90": [
+              0.069181,
+              0.174257
+            ]
+          },
+          "elevated->risk-off": {
+            "difference": 0.010891126878767088,
+            "difference_ci90": [
+              -0.052016,
+              0.076303
+            ]
+          }
+        },
+        "point_estimate_monotonic": false,
+        "bootstrap": {
+          "method": "circular_moving_block",
+          "block_observations": 5,
+          "draws": 1000,
+          "seed": 260971,
+          "ci": 0.9
+        }
+      },
+      "y2006": {
+        "from": "2006-01-03T00:00:00",
+        "through": "2026-09-11T00:00:00",
+        "n": 5205,
+        "events": 196,
+        "base_rate": 0.03765609990393852,
+        "population_sha256": "e207c88b3f0a2488c703b282bf7b3706f19c709d98bb10403ed3e3c589c77caa",
+        "states": {
+          "calm": {
+            "n": 397,
+            "events": 6,
+            "event_rate": 0.015113350125944584,
+            "event_rate_ci90": [
+              0.00452,
+              0.029424
+            ],
+            "lift_vs_base": 0.4013519765588855,
+            "configured_state_probability": 0.02,
+            "observed_minus_configured": -0.0048866498740554164,
+            "thin": false
+          },
+          "watch": {
+            "n": 630,
+            "events": 8,
+            "event_rate": 0.012698412698412698,
+            "event_rate_ci90": [
+              0.00343,
+              0.023078
+            ],
+            "lift_vs_base": 0.337220602526725,
+            "configured_state_probability": 0.02,
+            "observed_minus_configured": -0.007301587301587302,
+            "thin": false
+          },
+          "caution": {
+            "n": 3417,
+            "events": 69,
+            "event_rate": 0.02019315188762072,
+            "event_rate_ci90": [
+              0.014417,
+              0.025724
+            ],
+            "lift_vs_base": 0.5362518141584992,
+            "configured_state_probability": 0.03,
+            "observed_minus_configured": -0.00980684811237928,
+            "thin": false
+          },
+          "elevated": {
+            "n": 137,
+            "events": 20,
+            "event_rate": 0.145985401459854,
+            "event_rate_ci90": [
+              0.07585,
+              0.224646
+            ],
+            "lift_vs_base": 3.876806196931327,
+            "configured_state_probability": 0.05,
+            "observed_minus_configured": 0.095985401459854,
+            "thin": false
+          },
+          "risk-off": {
+            "n": 624,
+            "events": 93,
+            "event_rate": 0.14903846153846154,
+            "event_rate_ci90": [
+              0.110337,
+              0.1886
+            ],
+            "lift_vs_base": 3.9578836342229198,
+            "configured_state_probability": 0.08,
+            "observed_minus_configured": 0.06903846153846153,
+            "thin": false
+          }
+        },
+        "adjacent_differences": {
+          "calm->watch": {
+            "difference": -0.0024149374275318856,
+            "difference_ci90": [
+              -0.016947,
+              0.012053
+            ]
+          },
+          "watch->caution": {
+            "difference": 0.007494739189208021,
+            "difference_ci90": [
+              -0.003583,
+              0.01734
+            ]
+          },
+          "caution->elevated": {
+            "difference": 0.12579224957223328,
+            "difference_ci90": [
+              0.055747,
+              0.203519
+            ]
+          },
+          "elevated->risk-off": {
+            "difference": 0.0030530600786075335,
+            "difference_ci90": [
+              -0.084815,
+              0.080497
+            ]
+          }
+        },
+        "point_estimate_monotonic": false,
+        "bootstrap": {
+          "method": "circular_moving_block",
+          "block_observations": 5,
+          "draws": 1000,
+          "seed": 260972,
+          "ci": 0.9
+        }
+      },
+      "y2020": {
+        "from": "2020-01-02T00:00:00",
+        "through": "2026-09-11T00:00:00",
+        "n": 1682,
+        "events": 60,
+        "base_rate": 0.0356718192627824,
+        "population_sha256": "ccb420875fa715f368e90a6e01618262c998207d065fca574a2aa123a8ade85e",
+        "states": {
+          "calm": {
+            "n": 148,
+            "events": 0,
+            "event_rate": 0.0,
+            "event_rate_ci90": [
+              0.0,
+              0.0
+            ],
+            "lift_vs_base": 0.0,
+            "configured_state_probability": 0.02,
+            "observed_minus_configured": -0.02,
+            "thin": false
+          },
+          "watch": {
+            "n": 199,
+            "events": 0,
+            "event_rate": 0.0,
+            "event_rate_ci90": [
+              0.0,
+              0.0
+            ],
+            "lift_vs_base": 0.0,
+            "configured_state_probability": 0.02,
+            "observed_minus_configured": -0.02,
+            "thin": false
+          },
+          "caution": {
+            "n": 1078,
+            "events": 24,
+            "event_rate": 0.022263450834879406,
+            "event_rate_ci90": [
+              0.010998,
+              0.035031
+            ],
+            "lift_vs_base": 0.6241187384044528,
+            "configured_state_probability": 0.03,
+            "observed_minus_configured": -0.007736549165120593,
+            "thin": false
+          },
+          "elevated": {
+            "n": 33,
+            "events": 4,
+            "event_rate": 0.12121212121212122,
+            "event_rate_ci90": [
+              0.0,
+              0.277778
+            ],
+            "lift_vs_base": 3.397979797979798,
+            "configured_state_probability": 0.05,
+            "observed_minus_configured": 0.07121212121212121,
+            "thin": true
+          },
+          "risk-off": {
+            "n": 224,
+            "events": 32,
+            "event_rate": 0.14285714285714285,
+            "event_rate_ci90": [
+              0.083649,
+              0.205645
+            ],
+            "lift_vs_base": 4.004761904761905,
+            "configured_state_probability": 0.08,
+            "observed_minus_configured": 0.06285714285714285,
+            "thin": false
+          }
+        },
+        "adjacent_differences": {
+          "calm->watch": {
+            "difference": 0.0,
+            "difference_ci90": [
+              0.0,
+              0.0
+            ]
+          },
+          "watch->caution": {
+            "difference": 0.022263450834879406,
+            "difference_ci90": [
+              0.010998,
+              0.035031
+            ]
+          },
+          "caution->elevated": {
+            "difference": 0.09894867037724181,
+            "difference_ci90": [
+              -0.026098,
+              0.256306
+            ]
+          },
+          "elevated->risk-off": {
+            "difference": 0.021645021645021634,
+            "difference_ci90": [
+              -0.136266,
+              0.162793
+            ]
+          }
+        },
+        "point_estimate_monotonic": true,
+        "bootstrap": {
+          "method": "circular_moving_block",
+          "block_observations": 5,
+          "draws": 1000,
+          "seed": 260973,
+          "ci": 0.9
+        }
+      }
+    },
+    "h10": {
+      "full": {
+        "from": "1994-01-26T00:00:00",
+        "through": "2026-09-03T00:00:00",
+        "n": 8206,
+        "events": 698,
+        "base_rate": 0.0850597124055569,
+        "population_sha256": "e3875ca3d74abe20485ee7b5b3c3d62bb6987ddc28cbf2086ac5a76582947198",
+        "states": {
+          "calm": {
+            "n": 1304,
+            "events": 76,
+            "event_rate": 0.05828220858895705,
+            "event_rate_ci90": [
+              0.039245,
+              0.079812
+            ],
+            "lift_vs_base": 0.6851916958180252,
+            "configured_state_probability": 0.06,
+            "observed_minus_configured": -0.001717791411042946,
+            "thin": false
+          },
+          "watch": {
+            "n": 935,
+            "events": 44,
+            "event_rate": 0.047058823529411764,
+            "event_rate_ci90": [
+              0.029884,
+              0.065197
+            ],
+            "lift_vs_base": 0.5532445643013653,
+            "configured_state_probability": 0.06,
+            "observed_minus_configured": -0.012941176470588234,
+            "thin": false
+          },
+          "caution": {
+            "n": 4992,
+            "events": 321,
+            "event_rate": 0.06430288461538461,
+            "event_rate_ci90": [
+              0.053595,
+              0.076063
+            ],
+            "lift_vs_base": 0.7559734543751377,
+            "configured_state_probability": 0.08,
+            "observed_minus_configured": -0.015697115384615393,
+            "thin": false
+          },
+          "elevated": {
+            "n": 204,
+            "events": 51,
+            "event_rate": 0.25,
+            "event_rate_ci90": [
+              0.169,
+              0.338629
+            ],
+            "lift_vs_base": 2.939111747851003,
+            "configured_state_probability": 0.12,
+            "observed_minus_configured": 0.13,
+            "thin": false
+          },
+          "risk-off": {
+            "n": 771,
+            "events": 206,
+            "event_rate": 0.26718547341115434,
+            "event_rate_ci90": [
+              0.213084,
+              0.323658
+            ],
+            "lift_vs_base": 3.1411518550314224,
+            "configured_state_probability": 0.17,
+            "observed_minus_configured": 0.09718547341115433,
+            "thin": false
+          }
+        },
+        "adjacent_differences": {
+          "calm->watch": {
+            "difference": -0.011223385059545288,
+            "difference_ci90": [
+              -0.034072,
+              0.011349
+            ]
+          },
+          "watch->caution": {
+            "difference": 0.017244061085972845,
+            "difference_ci90": [
+              -0.001691,
+              0.03608
+            ]
+          },
+          "caution->elevated": {
+            "difference": 0.1856971153846154,
+            "difference_ci90": [
+              0.105306,
+              0.274536
+            ]
+          },
+          "elevated->risk-off": {
+            "difference": 0.01718547341115434,
+            "difference_ci90": [
+              -0.075399,
+              0.111761
+            ]
+          }
+        },
+        "point_estimate_monotonic": false,
+        "bootstrap": {
+          "method": "circular_moving_block",
+          "block_observations": 10,
+          "draws": 1000,
+          "seed": 261021,
+          "ci": 0.9
+        }
+      },
+      "y2006": {
+        "from": "2006-01-03T00:00:00",
+        "through": "2026-09-03T00:00:00",
+        "n": 5200,
+        "events": 438,
+        "base_rate": 0.08423076923076923,
+        "population_sha256": "83acf29d26b235ba410b0a5003c916031e6b9304e25b59153ad8eae699572551",
+        "states": {
+          "calm": {
+            "n": 397,
+            "events": 15,
+            "event_rate": 0.037783375314861464,
+            "event_rate_ci90": [
+              0.013636,
+              0.069594
+            ],
+            "lift_vs_base": 0.44856975259652876,
+            "configured_state_probability": 0.06,
+            "observed_minus_configured": -0.022216624685138534,
+            "thin": false
+          },
+          "watch": {
+            "n": 630,
+            "events": 20,
+            "event_rate": 0.031746031746031744,
+            "event_rate_ci90": [
+              0.015548,
+              0.05264
+            ],
+            "lift_vs_base": 0.37689352757845906,
+            "configured_state_probability": 0.06,
+            "observed_minus_configured": -0.028253968253968254,
+            "thin": false
+          },
+          "caution": {
+            "n": 3412,
+            "events": 201,
+            "event_rate": 0.058909730363423216,
+            "event_rate_ci90": [
+              0.046475,
+              0.073157
+            ],
+            "lift_vs_base": 0.6993849266890427,
+            "configured_state_probability": 0.08,
+            "observed_minus_configured": -0.021090269636576786,
+            "thin": false
+          },
+          "elevated": {
+            "n": 137,
+            "events": 36,
+            "event_rate": 0.26277372262773724,
+            "event_rate_ci90": [
+              0.154466,
+              0.37328
+            ],
+            "lift_vs_base": 3.11968803119688,
+            "configured_state_probability": 0.12,
+            "observed_minus_configured": 0.14277372262773724,
+            "thin": false
+          },
+          "risk-off": {
+            "n": 624,
+            "events": 166,
+            "event_rate": 0.266025641025641,
+            "event_rate_ci90": [
+              0.201218,
+              0.330695
+            ],
+            "lift_vs_base": 3.158295281582953,
+            "configured_state_probability": 0.17,
+            "observed_minus_configured": 0.09602564102564101,
+            "thin": false
+          }
+        },
+        "adjacent_differences": {
+          "calm->watch": {
+            "difference": -0.00603734356882972,
+            "difference_ci90": [
+              -0.035446,
+              0.022692
+            ]
+          },
+          "watch->caution": {
+            "difference": 0.02716369861739147,
+            "difference_ci90": [
+              0.007877,
+              0.046142
+            ]
+          },
+          "caution->elevated": {
+            "difference": 0.203863992264314,
+            "difference_ci90": [
+              0.096685,
+              0.311153
+            ]
+          },
+          "elevated->risk-off": {
+            "difference": 0.003251918397903786,
+            "difference_ci90": [
+              -0.113925,
+              0.120103
+            ]
+          }
+        },
+        "point_estimate_monotonic": false,
+        "bootstrap": {
+          "method": "circular_moving_block",
+          "block_observations": 10,
+          "draws": 1000,
+          "seed": 261022,
+          "ci": 0.9
+        }
+      },
+      "y2020": {
+        "from": "2020-01-02T00:00:00",
+        "through": "2026-09-03T00:00:00",
+        "n": 1677,
+        "events": 138,
+        "base_rate": 0.08228980322003578,
+        "population_sha256": "e3acaa6d7d8fe7b0db8ca3c1fde3619689b663a081689ad5b3aa3c3fa29e30af",
+        "states": {
+          "calm": {
+            "n": 148,
+            "events": 0,
+            "event_rate": 0.0,
+            "event_rate_ci90": [
+              0.0,
+              0.0
+            ],
+            "lift_vs_base": 0.0,
+            "configured_state_probability": 0.06,
+            "observed_minus_configured": -0.06,
+            "thin": false
+          },
+          "watch": {
+            "n": 199,
+            "events": 0,
+            "event_rate": 0.0,
+            "event_rate_ci90": [
+              0.0,
+              0.0
+            ],
+            "lift_vs_base": 0.0,
+            "configured_state_probability": 0.06,
+            "observed_minus_configured": -0.06,
+            "thin": false
+          },
+          "caution": {
+            "n": 1073,
+            "events": 68,
+            "event_rate": 0.06337371854613234,
+            "event_rate_ci90": [
+              0.039482,
+              0.089357
+            ],
+            "lift_vs_base": 0.7701284492888691,
+            "configured_state_probability": 0.08,
+            "observed_minus_configured": -0.01662628145386766,
+            "thin": false
+          },
+          "elevated": {
+            "n": 33,
+            "events": 8,
+            "event_rate": 0.24242424242424243,
+            "event_rate_ci90": [
+              0.05548,
+              0.466863
+            ],
+            "lift_vs_base": 2.945981554677207,
+            "configured_state_probability": 0.12,
+            "observed_minus_configured": 0.12242424242424244,
+            "thin": true
+          },
+          "risk-off": {
+            "n": 224,
+            "events": 62,
+            "event_rate": 0.2767857142857143,
+            "event_rate_ci90": [
+              0.165073,
+              0.382219
+            ],
+            "lift_vs_base": 3.363548136645963,
+            "configured_state_probability": 0.17,
+            "observed_minus_configured": 0.10678571428571429,
+            "thin": false
+          }
+        },
+        "adjacent_differences": {
+          "calm->watch": {
+            "difference": 0.0,
+            "difference_ci90": [
+              0.0,
+              0.0
+            ]
+          },
+          "watch->caution": {
+            "difference": 0.06337371854613234,
+            "difference_ci90": [
+              0.039482,
+              0.089357
+            ]
+          },
+          "caution->elevated": {
+            "difference": 0.1790505238781101,
+            "difference_ci90": [
+              -0.010321,
+              0.403258
+            ]
+          },
+          "elevated->risk-off": {
+            "difference": 0.03436147186147187,
+            "difference_ci90": [
+              -0.190718,
+              0.22773
+            ]
+          }
+        },
+        "point_estimate_monotonic": true,
+        "bootstrap": {
+          "method": "circular_moving_block",
+          "block_observations": 10,
+          "draws": 1000,
+          "seed": 261023,
+          "ci": 0.9
+        }
+      }
+    },
+    "h21": {
+      "full": {
+        "from": "1994-01-26T00:00:00",
+        "through": "2026-08-19T00:00:00",
+        "n": 8195,
+        "events": 1446,
+        "base_rate": 0.17644905430140329,
+        "population_sha256": "68f48021c4ef9e1a4f07207775ff4701818770c78f9a111f9a7b3d91aeb5346c",
+        "states": {
+          "calm": {
+            "n": 1297,
+            "events": 158,
+            "event_rate": 0.1218195836545875,
+            "event_rate_ci90": [
+              0.08431,
+              0.164709
+            ],
+            "lift_vs_base": 0.6903952199511374,
+            "configured_state_probability": 0.13,
+            "observed_minus_configured": -0.0081804163454125,
+            "thin": false
+          },
+          "watch": {
+            "n": 932,
+            "events": 93,
+            "event_rate": 0.09978540772532189,
+            "event_rate_ci90": [
+              0.071195,
+              0.129458
+            ],
+            "lift_vs_base": 0.5655196516659841,
+            "configured_state_probability": 0.13,
+            "observed_minus_configured": -0.030214592274678112,
+            "thin": false
+          },
+          "caution": {
+            "n": 4991,
+            "events": 786,
+            "event_rate": 0.1574834702464436,
+            "event_rate_ci90": [
+              0.133474,
+              0.183067
+            ],
+            "lift_vs_base": 0.8925152411269747,
+            "configured_state_probability": 0.16,
+            "observed_minus_configured": -0.0025165297535564013,
+            "thin": false
+          },
+          "elevated": {
+            "n": 204,
+            "events": 86,
+            "event_rate": 0.4215686274509804,
+            "event_rate_ci90": [
+              0.309123,
+              0.531401
+            ],
+            "lift_vs_base": 2.3891804301250237,
+            "configured_state_probability": 0.25,
+            "observed_minus_configured": 0.1715686274509804,
+            "thin": false
+          },
+          "risk-off": {
+            "n": 771,
+            "events": 323,
+            "event_rate": 0.41893644617380027,
+            "event_rate_ci90": [
+              0.338339,
+              0.494721
+            ],
+            "lift_vs_base": 2.374262915902001,
+            "configured_state_probability": 0.33,
+            "observed_minus_configured": 0.08893644617380025,
+            "thin": false
+          }
+        },
+        "adjacent_differences": {
+          "calm->watch": {
+            "difference": -0.022034175929265612,
+            "difference_ci90": [
+              -0.066188,
+              0.019388
+            ]
+          },
+          "watch->caution": {
+            "difference": 0.05769806252112171,
+            "difference_ci90": [
+              0.026249,
+              0.090262
+            ]
+          },
+          "caution->elevated": {
+            "difference": 0.2640851572045368,
+            "difference_ci90": [
+              0.148188,
+              0.372861
+            ]
+          },
+          "elevated->risk-off": {
+            "difference": -0.0026321812771801234,
+            "difference_ci90": [
+              -0.116936,
+              0.103696
+            ]
+          }
+        },
+        "point_estimate_monotonic": false,
+        "bootstrap": {
+          "method": "circular_moving_block",
+          "block_observations": 21,
+          "draws": 1000,
+          "seed": 261131,
+          "ci": 0.9
+        }
+      },
+      "y2006": {
+        "from": "2006-01-03T00:00:00",
+        "through": "2026-08-19T00:00:00",
+        "n": 5189,
+        "events": 908,
+        "base_rate": 0.17498554634804395,
+        "population_sha256": "61a0545c3ff8f1800cde6665b54a382901a10a2c3943f311cfb38c5166b29d65",
+        "states": {
+          "calm": {
+            "n": 390,
+            "events": 31,
+            "event_rate": 0.07948717948717948,
+            "event_rate_ci90": [
+              0.027565,
+              0.145409
+            ],
+            "lift_vs_base": 0.4542499717609849,
+            "configured_state_probability": 0.13,
+            "observed_minus_configured": -0.05051282051282052,
+            "thin": false
+          },
+          "watch": {
+            "n": 627,
+            "events": 46,
+            "event_rate": 0.0733652312599681,
+            "event_rate_ci90": [
+              0.041297,
+              0.10683
+            ],
+            "lift_vs_base": 0.4192645209338926,
+            "configured_state_probability": 0.13,
+            "observed_minus_configured": -0.0566347687400319,
+            "thin": false
+          },
+          "caution": {
+            "n": 3411,
+            "events": 506,
+            "event_rate": 0.1483435942538845,
+            "event_rate_ci90": [
+              0.121487,
+              0.178497
+            ],
+            "lift_vs_base": 0.8477476988804037,
+            "configured_state_probability": 0.16,
+            "observed_minus_configured": -0.011656405746115511,
+            "thin": false
+          },
+          "elevated": {
+            "n": 137,
+            "events": 60,
+            "event_rate": 0.43795620437956206,
+            "event_rate_ci90": [
+              0.291275,
+              0.58647
+            ],
+            "lift_vs_base": 2.5028135952924533,
+            "configured_state_probability": 0.25,
+            "observed_minus_configured": 0.18795620437956206,
+            "thin": false
+          },
+          "risk-off": {
+            "n": 624,
+            "events": 265,
+            "event_rate": 0.42467948717948717,
+            "event_rate_ci90": [
+              0.329367,
+              0.516404
+            ],
+            "lift_vs_base": 2.4269403733197783,
+            "configured_state_probability": 0.33,
+            "observed_minus_configured": 0.09467948717948715,
+            "thin": false
+          }
+        },
+        "adjacent_differences": {
+          "calm->watch": {
+            "difference": -0.006121948227211377,
+            "difference_ci90": [
+              -0.068968,
+              0.048407
+            ]
+          },
+          "watch->caution": {
+            "difference": 0.07497836299391639,
+            "difference_ci90": [
+              0.038444,
+              0.111899
+            ]
+          },
+          "caution->elevated": {
+            "difference": 0.28961261012567757,
+            "difference_ci90": [
+              0.140043,
+              0.442934
+            ]
+          },
+          "elevated->risk-off": {
+            "difference": -0.013276717200074895,
+            "difference_ci90": [
+              -0.14707,
+              0.128878
+            ]
+          }
+        },
+        "point_estimate_monotonic": false,
+        "bootstrap": {
+          "method": "circular_moving_block",
+          "block_observations": 21,
+          "draws": 1000,
+          "seed": 261132,
+          "ci": 0.9
+        }
+      },
+      "y2020": {
+        "from": "2020-01-02T00:00:00",
+        "through": "2026-08-19T00:00:00",
+        "n": 1666,
+        "events": 294,
+        "base_rate": 0.17647058823529413,
+        "population_sha256": "7c04d5ee085c01bb5c514fc2602141cd01b83cf4745da745ad2dca6fa9ee73ec",
+        "states": {
+          "calm": {
+            "n": 141,
+            "events": 0,
+            "event_rate": 0.0,
+            "event_rate_ci90": [
+              0.0,
+              0.0
+            ],
+            "lift_vs_base": 0.0,
+            "configured_state_probability": 0.13,
+            "observed_minus_configured": -0.13,
+            "thin": false
+          },
+          "watch": {
+            "n": 196,
+            "events": 9,
+            "event_rate": 0.04591836734693878,
+            "event_rate_ci90": [
+              0.0,
+              0.121514
+            ],
+            "lift_vs_base": 0.2602040816326531,
+            "configured_state_probability": 0.13,
+            "observed_minus_configured": -0.08408163265306123,
+            "thin": false
+          },
+          "caution": {
+            "n": 1072,
+            "events": 177,
+            "event_rate": 0.16511194029850745,
+            "event_rate_ci90": [
+              0.108346,
+              0.226107
+            ],
+            "lift_vs_base": 0.9356343283582088,
+            "configured_state_probability": 0.16,
+            "observed_minus_configured": 0.00511194029850745,
+            "thin": false
+          },
+          "elevated": {
+            "n": 33,
+            "events": 10,
+            "event_rate": 0.30303030303030304,
+            "event_rate_ci90": [
+              0.060517,
+              0.6
+            ],
+            "lift_vs_base": 1.7171717171717171,
+            "configured_state_probability": 0.25,
+            "observed_minus_configured": 0.05303030303030304,
+            "thin": true
+          },
+          "risk-off": {
+            "n": 224,
+            "events": 98,
+            "event_rate": 0.4375,
+            "event_rate_ci90": [
+              0.272139,
+              0.595615
+            ],
+            "lift_vs_base": 2.4791666666666665,
+            "configured_state_probability": 0.33,
+            "observed_minus_configured": 0.10749999999999998,
+            "thin": false
+          }
+        },
+        "adjacent_differences": {
+          "calm->watch": {
+            "difference": 0.04591836734693878,
+            "difference_ci90": [
+              0.0,
+              0.121514
+            ]
+          },
+          "watch->caution": {
+            "difference": 0.11919357295156868,
+            "difference_ci90": [
+              0.030715,
+              0.206237
+            ]
+          },
+          "caution->elevated": {
+            "difference": 0.13791836273179559,
+            "difference_ci90": [
+              -0.104802,
+              0.431173
+            ]
+          },
+          "elevated->risk-off": {
+            "difference": 0.13446969696969696,
+            "difference_ci90": [
+              -0.138032,
+              0.362143
+            ]
+          }
+        },
+        "point_estimate_monotonic": true,
+        "bootstrap": {
+          "method": "circular_moving_block",
+          "block_observations": 21,
+          "draws": 1000,
+          "seed": 261133,
+          "ci": 0.9
+        }
+      }
+    }
+  },
+  "canonical_crosscheck": {
+    "h5": {
+      "full": {
+        "n_days": 8211,
+        "confusion": {
+          "tp": 147,
+          "fp": 828,
+          "fn": 141,
+          "tn": 7095
+        },
+        "outcomes_sha256": "068bd8545ca554cfc2b792cf566dabd1b46f5ebf940bc7f641bd0082402e2aa1"
+      },
+      "y2006": {
+        "n_days": 5205,
+        "confusion": {
+          "tp": 113,
+          "fp": 648,
+          "fn": 83,
+          "tn": 4361
+        },
+        "outcomes_sha256": "e207c88b3f0a2488c703b282bf7b3706f19c709d98bb10403ed3e3c589c77caa"
+      },
+      "y2020": {
+        "n_days": 1682,
+        "confusion": {
+          "tp": 36,
+          "fp": 221,
+          "fn": 24,
+          "tn": 1401
+        },
+        "outcomes_sha256": "ccb420875fa715f368e90a6e01618262c998207d065fca574a2aa123a8ade85e"
+      }
+    },
+    "h10": {
+      "full": {
+        "n_days": 8206,
+        "confusion": {
+          "tp": 257,
+          "fp": 718,
+          "fn": 441,
+          "tn": 6790
+        },
+        "outcomes_sha256": "e3875ca3d74abe20485ee7b5b3c3d62bb6987ddc28cbf2086ac5a76582947198"
+      },
+      "y2006": {
+        "n_days": 5200,
+        "confusion": {
+          "tp": 202,
+          "fp": 559,
+          "fn": 236,
+          "tn": 4203
+        },
+        "outcomes_sha256": "83acf29d26b235ba410b0a5003c916031e6b9304e25b59153ad8eae699572551"
+      },
+      "y2020": {
+        "n_days": 1677,
+        "confusion": {
+          "tp": 70,
+          "fp": 187,
+          "fn": 68,
+          "tn": 1352
+        },
+        "outcomes_sha256": "e3acaa6d7d8fe7b0db8ca3c1fde3619689b663a081689ad5b3aa3c3fa29e30af"
+      }
+    },
+    "h21": {
+      "full": {
+        "n_days": 8195,
+        "confusion": {
+          "tp": 409,
+          "fp": 566,
+          "fn": 1037,
+          "tn": 6183
+        },
+        "outcomes_sha256": "68f48021c4ef9e1a4f07207775ff4701818770c78f9a111f9a7b3d91aeb5346c"
+      },
+      "y2006": {
+        "n_days": 5189,
+        "confusion": {
+          "tp": 325,
+          "fp": 436,
+          "fn": 583,
+          "tn": 3845
+        },
+        "outcomes_sha256": "61a0545c3ff8f1800cde6665b54a382901a10a2c3943f311cfb38c5166b29d65"
+      },
+      "y2020": {
+        "n_days": 1666,
+        "confusion": {
+          "tp": 108,
+          "fp": 149,
+          "fn": 186,
+          "tn": 1223
+        },
+        "outcomes_sha256": "7c04d5ee085c01bb5c514fc2602141cd01b83cf4745da745ad2dca6fa9ee73ec"
+      }
+    }
+  },
+  "authority": {
+    "status": "descriptive_only",
+    "live_model_changed": false,
+    "probability_changed": false,
+    "gate_changed": false,
+    "policy_changed": false
+  }
+}

@@ -1,0 +1,3 @@
+sweep	sweep merge-on-green pull requests	2026-10-12T23:13:41.8390022Z PR proof load: 5 indexed pull-request ci run(s) plus 0 unindexed durable reservation(s), global cap 8, 3 CI workload slot(s) available this sweep.
+sweep	sweep merge-on-green pull requests	2026-10-12T23:13:50.9175446Z PR #8786: proof still current — main took 1 commit(s) since the proof, none inside this pull request's tested surface.
+sweep	sweep merge-on-green pull requests	2026-10-12T23:13:56.0551394Z ##[notice]PR #8786: every check concluded clean — squash-merged (4aabf95fd050).

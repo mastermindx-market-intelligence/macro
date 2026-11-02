@@ -1,0 +1,12 @@
+{
+  "empty_id": "e4",
+  "section": "money",
+  "subtab": "central_banks",
+  "workspace_id": "liquidity_central_banks",
+  "region": "US",
+  "source": "site/macrodata/workspaces/liquidity_central_banks/US/latest.json",
+  "path_through": "scripts/build_macro_suite_pages.build_hub after read_workspace",
+  "trigger": "In-memory injection after read_workspace: snapshot.withheld_command_tabs=['central_banks']. The snapshot contract is additionalProperties:false, so this key cannot travel through validated JSON; the real builder's _command_tab_withheld reads it on the in-memory entry and emits E4 into the money fragment's central_banks tab body.",
+  "selector": "#money [data-mc-empty='e4']",
+  "expected_title_en": "Not open yet"
+}

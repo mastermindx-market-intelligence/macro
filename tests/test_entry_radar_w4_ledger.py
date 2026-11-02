@@ -237,6 +237,158 @@ def test_LED2_merge_deltas_dedups_by_address(tmp_path):
     assert len(merged.events) == len(delta.events)
 
 
+def _replayed_trace_row(ledger, run, *, session: date) -> ll.PendingDelta:
+    """The pack lane's shape: the SAME candidate trace re-produced by a stateless
+    replay, stamped with the pack's own ``freshness`` (a different canonical)."""
+    return ledger.apply_run(
+        ticker="WASH", as_of_session=session.isoformat(), runs=[run],
+        pass_id=ll.PACK_PASS_ID,
+        context={"freshness": {"pack_as_of": session.isoformat(),
+                               "source": "terminal_indicator_slice"}})
+
+
+def test_LED2_a_replayed_trace_with_new_freshness_is_a_row_not_a_noop(tmp_path):
+    # Positive control for the precedence tests below: the production shape IS a
+    # differing canonical — every pack re-stamps ``freshness`` — so ``apply_run``
+    # emits a CANDIDATE row for an episode the ledger already holds.
+    ledger, run, _delta = ledger_with_candidate(tmp_path)
+    first = ledger.episodes[0]
+    at_h = ll.session_at_offset(NEXT_SESSION, ll.RESOLVE_HORIZON_SESSIONS)
+    rows = {r["episode_id"]: r for r in _replayed_trace_row(ledger, run, session=at_h).episodes}
+    assert first.episode_id in rows
+    assert rows[first.episode_id]["state"] == "CANDIDATE"
+
+
+@pytest.mark.parametrize("overlay_first", [True, False])
+def test_LED2_merge_deltas_a_terminal_row_outranks_a_replayed_nonterminal_row(
+        tmp_path, overlay_first):
+    # Measured 2026-10-05 on the production ledger: the pack lane merged the §10
+    # overlay's RESOLVED row with the replay's re-stamped CANDIDATE row for the
+    # same episode_id, last-wins kept CANDIDATE, and 44,972 episodes back to
+    # 1965 stayed CANDIDATE forever while each carried its RESOLVED transition.
+    ledger, run, _delta = ledger_with_candidate(tmp_path)
+    first = ledger.episodes[0]
+    at_h = ll.session_at_offset(NEXT_SESSION, ll.RESOLVE_HORIZON_SESSIONS)
+    overlay = ll.apply_session_clocks(ledger, as_of_session=at_h.isoformat(),
+                                      confirmed_k_by_name={})
+    assert [r["state"] for r in overlay.episodes
+            if r["episode_id"] == first.episode_id] == ["RESOLVED"]
+    replay = _replayed_trace_row(ledger, run, session=at_h)
+    order = [overlay, replay] if overlay_first else [replay, overlay]
+    merged = ll.merge_deltas(order, as_of_session=at_h.isoformat(),
+                             pass_id=ll.PACK_PASS_ID)
+    row = next(r for r in merged.episodes if r["episode_id"] == first.episode_id)
+    assert row["state"] == "RESOLVED", \
+        "a replayed CANDIDATE must never overwrite the overlay's RESOLVED row"
+    assert len(merged.transitions) == 1  # the RESOLVED transition, admitted once
+    ledger.commit(merged, spool_receipt=RECEIPT)
+    assert ledger.get(first.episode_id).state == "RESOLVED"
+
+
+def test_LED2_merge_deltas_is_still_last_wins_between_two_nonterminal_rows(tmp_path):
+    # Mutation control: terminal-wins is NOT first-wins.  Two re-stamped
+    # non-terminal rows still merge to the later one.
+    ledger, run, _delta = ledger_with_candidate(tmp_path)
+    first = ledger.episodes[0]
+    s1 = ll.session_at_offset(NEXT_SESSION, 1)
+    s2 = ll.session_at_offset(NEXT_SESSION, 2)
+    merged = ll.merge_deltas([_replayed_trace_row(ledger, run, session=s1),
+                              _replayed_trace_row(ledger, run, session=s2)],
+                             as_of_session=s2.isoformat(), pass_id=ll.PACK_PASS_ID)
+    row = next(r for r in merged.episodes if r["episode_id"] == first.episode_id)
+    assert row["freshness"]["pack_as_of"] == s2.isoformat()
+
+
+def test_LED2_the_pack_lane_order_resolves_a_stale_candidate_end_to_end(tmp_path):
+    # scripts/entry_radar_live_pack.py step 4, verbatim: overlay FIRST, then every
+    # replay, ONE merge, ONE commit.  After the fix the episode is RESOLVED and
+    # the next pack's replay is superseded, not re-admitted.
+    ledger, run, _delta = ledger_with_candidate(tmp_path)
+    first = ledger.episodes[0]
+    at_h = ll.session_at_offset(NEXT_SESSION, ll.RESOLVE_HORIZON_SESSIONS)
+    deltas = [ll.apply_session_clocks(ledger, as_of_session=at_h.isoformat(),
+                                      confirmed_k_by_name={})]
+    deltas.append(_replayed_trace_row(ledger, run, session=at_h))
+    merged = ll.merge_deltas(deltas, as_of_session=at_h.isoformat(),
+                             pass_id=ll.PACK_PASS_ID)
+    ledger.commit(merged, spool_receipt=RECEIPT)
+    assert ledger.get(first.episode_id).state == "RESOLVED"
+    later = ll.session_at_offset(NEXT_SESSION, ll.RESOLVE_HORIZON_SESSIONS + 1)
+    again = _replayed_trace_row(ledger, run, session=later)
+    assert first.episode_id in again.superseded
+    assert not any(r["episode_id"] == first.episode_id for r in again.episodes)
+
+
+def test_LED2_a_trace_older_than_the_horizon_is_refused_at_the_door(tmp_path):
+    # A stateless full-history replay re-produces every candidate it ever saw.
+    # One older than HISTORICAL_TRACE_SESSIONS is history: no row, no
+    # transitions, its id reported in ``historical`` — never silently dropped.
+    ledger, run, _delta = ledger_with_candidate(tmp_path)
+    first = ledger.episodes[0]
+    beyond = ll.session_at_offset(NEXT_SESSION, ll.HISTORICAL_TRACE_SESSIONS + 1)
+    delta = _replayed_trace_row(ledger, run, session=beyond)
+    assert [r["episode_id"] for r in delta.historical] == [first.episode_id]
+    assert delta.historical[0]["state"] == "CANDIDATE"  # refused WITH its state
+    assert delta.episodes == () and delta.transitions == ()
+    assert first.episode_id not in delta.superseded
+    assert delta.to_dict()["historical"] == list(delta.historical)
+
+
+def test_LED2_a_trace_at_exactly_the_horizon_is_still_admitted(tmp_path):
+    ledger, run, _delta = ledger_with_candidate(tmp_path)
+    first = ledger.episodes[0]
+    edge = ll.session_at_offset(NEXT_SESSION, ll.HISTORICAL_TRACE_SESSIONS)
+    delta = _replayed_trace_row(ledger, run, session=edge)
+    assert delta.historical == ()
+    assert [r["episode_id"] for r in delta.episodes] == [first.episode_id]
+
+
+def test_LED2_merge_deltas_carries_historical_refusals(tmp_path):
+    ledger, run, _delta = ledger_with_candidate(tmp_path)
+    first = ledger.episodes[0]
+    beyond = ll.session_at_offset(NEXT_SESSION, ll.HISTORICAL_TRACE_SESSIONS + 1)
+    merged = ll.merge_deltas(
+        [ll.apply_session_clocks(ledger, as_of_session=beyond.isoformat(),
+                                 confirmed_k_by_name={}),
+         _replayed_trace_row(ledger, run, session=beyond)],
+        as_of_session=beyond.isoformat(), pass_id=ll.PACK_PASS_ID)
+    assert [r["episode_id"] for r in merged.historical] == [first.episode_id]
+
+
+def test_LED2_a_drained_then_archived_episode_is_not_resurrected_by_the_next_replay(
+        tmp_path, monkeypatch):
+    # The oscillation this guards against: day N the overlay resolves and
+    # compaction archives; day N+1 the replay finds NO stored record (archives
+    # are not consulted) and re-creates the same episode_id as a fresh
+    # CANDIDATE; day N+2 resolves it again.  The horizon closes the loop.
+    ledger, run, _delta = ledger_with_candidate(tmp_path)
+    first = ledger.episodes[0]
+    at_h = ll.session_at_offset(NEXT_SESSION, ll.RESOLVE_HORIZON_SESSIONS)
+    ledger.commit(ll.merge_deltas(
+        [ll.apply_session_clocks(ledger, as_of_session=at_h.isoformat(),
+                                 confirmed_k_by_name={}),
+         _replayed_trace_row(ledger, run, session=at_h)],
+        as_of_session=at_h.isoformat(), pass_id=ll.PACK_PASS_ID), spool_receipt=RECEIPT)
+    assert ledger.get(first.episode_id).state == "RESOLVED"
+    far = ll.session_at_offset(NEXT_SESSION, ll.COMPACTION_SESSIONS + 5)
+    assert sum(ledger.compact(as_of_session=far.isoformat())["archived"].values()) == 1
+    assert ledger.get(first.episode_id) is None  # archived, unknown to apply_run
+
+    # Positive control first: with the horizon neutralised the replay DOES
+    # resurrect the archived episode as a brand-new CANDIDATE.
+    monkeypatch.setattr(ll._SessionCut, "beyond", lambda self, earlier, n: False)
+    naive = _replayed_trace_row(ledger, run, session=far)
+    assert [r["episode_id"] for r in naive.episodes] == [first.episode_id]
+    assert naive.episodes[0]["state"] == "CANDIDATE"
+    monkeypatch.undo()
+
+    again = _replayed_trace_row(ledger, run, session=far)
+    assert [r["episode_id"] for r in again.historical] == [first.episode_id]
+    assert again.episodes == ()
+    ledger.commit(again, spool_receipt=RECEIPT)
+    assert ledger.get(first.episode_id) is None and ledger.episodes == ()
+
+
 # ---------------------------------------------------------------------------
 # LED-3 — append-only
 # ---------------------------------------------------------------------------
@@ -971,6 +1123,43 @@ def test_LED7_compaction_moves_old_terminal_episodes_and_loses_nothing(tmp_path)
     assert {**archived, **{e.episode_id: e.canonical for e in ledger.episodes}} == before
 
 
+def test_LED7_compaction_archives_old_transitions_too_and_loses_nothing(tmp_path):
+    # transitions were 58.9 MB of the 90 MB production ledger on 2026-10-05 and
+    # were never compacted.  Old rows move to the month file; a recent row and
+    # an undated row stay.
+    ledger, _run, _delta = ledger_with_candidate(tmp_path)
+    _session, _delta2 = _resolve(ledger)
+    old_rows = ledger.transitions
+    assert old_rows and all(r["at"] for r in old_rows)
+    # the resolve transition sits RESOLVE_HORIZON_SESSIONS after the candidate,
+    # so the cut must clear both: COMPACTION + horizon + 5 puts every old row
+    # beyond the window while the row stamped at ``far`` itself stays.
+    far = ll.session_at_offset(
+        NEXT_SESSION, ll.COMPACTION_SESSIONS + ll.RESOLVE_HORIZON_SESSIONS + 5)
+    recent = {"ticker": "WASH", "detector_id": ch.C1_DETECTOR_ID, "variant": None,
+              "from_state": "ARMED", "to_state": "EXPIRED", "reason": "test",
+              "pass_id": "rth", "at": f"{far.isoformat()}T20:00:00+00:00"}
+    undated = dict(recent, to_state="INVALIDATED", at=None)
+    ledger.commit(ll.PendingDelta(ticker="WASH", as_of_session=far.isoformat(),
+                                  pass_id="rth", transitions=(recent, undated)),
+                  spool_receipt=RECEIPT)
+    before = {ll.transition_address(r): r for r in ledger.transitions}
+
+    report = ledger.compact(as_of_session=far.isoformat())
+    assert sum(report["archived_transitions"].values()) == len(old_rows)
+    kept = {ll.transition_address(r) for r in ledger.transitions}
+    assert kept == {ll.transition_address(recent), ll.transition_address(undated)}
+
+    archived = {}
+    for path in sorted(tmp_path.rglob("episodes_archive_*.json")):
+        for row in json.loads(path.read_text())["transitions"]:
+            archived[ll.transition_address(row)] = row
+    assert set(archived) | kept == set(before)
+    # the archive is idempotent: compacting again moves nothing and keeps the file
+    assert ledger.compact(as_of_session=far.isoformat())["archived_transitions"] == {}
+    assert ledger.archived_episodes()  # the episode archive is unaffected
+
+
 def test_LED7_a_nonterminal_episode_is_never_compacted(tmp_path):
     ledger, _run, _delta = ledger_with_candidate(tmp_path)
     far = ll.session_at_offset(NEXT_SESSION, ll.COMPACTION_SESSIONS + 50)
@@ -1012,6 +1201,18 @@ def slice_store():
     return slice_, store
 
 
+def c5_window_as_of(run) -> str:
+    """The session after the newest knowable C5 candidate.
+
+    The fixture's candidates span 2000→2022, so against the pack's own AS_OF
+    every one of them is history: this puts the youngest inside the ledger's
+    admission horizon (LED-2) and leaves the rest beyond it.
+    """
+    newest = max(date.fromisoformat(str(c.signal_known_ts)[:10])
+                 for c in run.candidates if c.knowable)
+    return ll.session_at_offset(newest, 1).isoformat()
+
+
 def test_LED8_c5_candidates_land_as_episodes_referencing_preserved_events(tmp_path,
                                                                           slice_store):
     _slice_, store = slice_store
@@ -1021,10 +1222,16 @@ def test_LED8_c5_candidates_land_as_episodes_referencing_preserved_events(tmp_pa
     assert run.minted_events == ()
 
     ledger = ll.LiveEpisodeLedger(tmp_path)
-    delta = ledger.apply_run(ticker="NVDA", as_of_session=AS_OF.isoformat(),
+    as_of = c5_window_as_of(run)
+    delta = ledger.apply_run(ticker="NVDA", as_of_session=as_of,
                              runs=[run], pass_id=ll.PACK_PASS_ID)
     ledger.commit(delta, spool_receipt=RECEIPT)
-    assert len(ledger.episodes) == len(run.episodes) > 0
+    # Candidates inside the admission horizon become rows; the older ones are
+    # history, reported refused rather than silently dropped (LED-2 horizon).
+    live_ids = {e.episode_id for e in ledger.episodes}
+    refused = {r["episode_id"] for r in delta.historical}
+    assert live_ids and refused and not (live_ids & refused)
+    assert len(live_ids) + len(refused) == len(run.episodes) > 0
     # C5 mints NO event of its own: every reference is to a PRESERVED watch event.
     assert delta.events == ()
     known = {str(e.event_id) for e in store.events()}
@@ -1040,31 +1247,43 @@ def test_LED8_the_c5_episode_takes_its_session_from_the_knowability_clock(tmp_pa
     _slice_, store = slice_store
     run = run_c5(store)
     ledger = ll.LiveEpisodeLedger(tmp_path)
-    ledger.commit(ledger.apply_run(ticker="NVDA", as_of_session=AS_OF.isoformat(),
+    as_of = c5_window_as_of(run)
+    ledger.commit(ledger.apply_run(ticker="NVDA", as_of_session=as_of,
                                    runs=[run], pass_id=ll.PACK_PASS_ID),
                   spool_receipt=RECEIPT)
     by_id = {e.episode_id: e for e in ledger.episodes}
+    seen_live = 0
     for candidate in run.candidates:
         if not candidate.knowable:
             continue
         episode_id = ll.compute_episode_id(
             ticker="NVDA", detector_id=C5_DETECTOR_ID, variant=candidate.subtype,
             first_armed_at=candidate.signal_known_ts)
+        session = str(candidate.signal_known_ts)[:10]
+        if ll.sessions_elapsed(session, as_of) > ll.HISTORICAL_TRACE_SESSIONS:
+            assert episode_id not in by_id  # history: refused at the door
+            continue
+        seen_live += 1
         assert episode_id in by_id
-        assert by_id[episode_id].market_session == str(candidate.signal_known_ts)[:10]
-        assert by_id[episode_id].market_session != AS_OF.isoformat() or \
-            str(candidate.signal_known_ts).startswith(AS_OF.isoformat())
+        assert by_id[episode_id].market_session == session
+        assert by_id[episode_id].market_session != as_of or session == as_of
+    assert seen_live > 0
 
 
 def test_LED8_the_c5_lane_is_idempotent(tmp_path, slice_store):
     _slice_, store = slice_store
     run = run_c5(store)
     ledger = ll.LiveEpisodeLedger(tmp_path)
-    ledger.commit(ledger.apply_run(ticker="NVDA", as_of_session=AS_OF.isoformat(),
+    as_of = c5_window_as_of(run)
+    ledger.commit(ledger.apply_run(ticker="NVDA", as_of_session=as_of,
                                    runs=[run], pass_id=ll.PACK_PASS_ID),
                   spool_receipt=RECEIPT)
-    assert ledger.apply_run(ticker="NVDA", as_of_session=AS_OF.isoformat(),
-                            runs=[run_c5(store)], pass_id=ll.PACK_PASS_ID).empty
+    assert ledger.episodes
+    second = ledger.apply_run(ticker="NVDA", as_of_session=as_of,
+                              runs=[run_c5(store)], pass_id=ll.PACK_PASS_ID)
+    assert second.episodes == () and second.transitions == () and second.events == ()
+    # the refusals repeat (history is refused on every replay) but mint nothing
+    assert second.historical and second.superseded == ()
 
 
 def test_LED8_an_unconfigured_slice_store_reports_BOTH_lanes_unavailable():

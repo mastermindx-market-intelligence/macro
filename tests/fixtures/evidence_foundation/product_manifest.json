@@ -56,7 +56,7 @@
       "expected": "valid",
       "expected_violations": [],
       "size_bytes": 3077,
-      "sha256": "d22ea2b14b48ee8e8f28ab676ac838232f76db2ab630272368c08a9b73ad512d"
+      "sha256": "4d586144b602e7486cfe25b1a7644445ace337915036444121e268bf80e3228c"
     },
     {
       "file": "aapl_theme_context_block_valid.json",

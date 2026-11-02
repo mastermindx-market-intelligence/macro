@@ -337,3 +337,138 @@ def test_ledger_scores_matured_thesis(tmp_path):
     assert result["outcome"] in ("hit", "miss"), f"unexpected outcome: {result['outcome']}"
     # WIN beat SPY by +30pp → outcome should be 'hit' (name did NOT underperform)
     assert result["outcome"] == "hit", f"WIN beat SPY by 30pp but got outcome={result['outcome']}"
+
+
+# The page's related-news panel must not turn access/network failures into empty news.
+def _news_client_result(tmp_path, scenario, actions=None):
+    import json
+    import re
+    import shutil
+    import subprocess
+
+    root = Path(__file__).resolve().parents[1]
+    html = (root / "templates/alt_data.html.j2").read_text()
+    # Same harness consumes old and repaired scripts; before source is expected to fail.
+    scripts = re.findall(r"<script(?: [^>]*)?>(.*?)</script>", html, re.S)
+    source = next(s for s in scripts if 'news/by_ticker.json' in s)
+    harness = r"""
+const vm=require('node:vm'), fs=require('node:fs');
+const fixture=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+let lang='en', calls=[], attempt=0;
+const listeners={}; const elements={};
+for(const id of ['sid-news','sid-news-status','sid-news-results','sid-news-retry','sid-news-open']) {
+  elements[id]={id,innerHTML:'',textContent:'',hidden:false,disabled:false,dataset:{},attrs:{},handlers:{},
+    setAttribute(k,v){this.attrs[k]=v;},addEventListener(k,fn){this.handlers[k]=fn;},focus(){doc.activeElement=this;}};
+}
+const doc={activeElement:null,documentElement:{getAttribute(){return lang;}},getElementById(id){return elements[id]||null;},addEventListener(k,fn){listeners[k]=fn;}};
+Object.defineProperty(elements['sid-news-retry'],'disabled',{set(v){if(v&&doc.activeElement===this)doc.activeElement=null;}});
+const endpoints=['altdata/mastermind.json','news/by_ticker.json','news/financial.json'];
+const ctx={document:doc,window:{location:{href:'https://example.test/alt_data.html'}},URL,Promise,console,fetch:(url)=>{
+  calls.push(url);const spec=(fixture.attempts||[fixture.responses])[attempt][endpoints.indexOf(url)];
+  if(spec.network) return Promise.reject(new Error('network'));
+  return Promise.resolve({status:spec.status,ok:spec.status>=200&&spec.status<300,json:()=>spec.invalid?Promise.reject(new Error('json')):Promise.resolve(spec.data)});
+}};
+vm.runInNewContext(fixture.source,ctx);
+function settle(){return new Promise(r=>setImmediate(r));}
+(async()=>{
+ await settle();
+ const initial={html:elements['sid-news-results'].innerHTML||elements['sid-news'].innerHTML,status:elements['sid-news-status'].textContent,retry:!elements['sid-news-retry'].hidden};
+ for(const action of fixture.actions||[]){
+   if(action==='language'){lang='zh';if(listeners.langchange)listeners.langchange();}
+   if(action==='retry'){attempt++;doc.activeElement=elements['sid-news-retry'];const click=elements['sid-news-retry'].handlers.click;if(click){click();click();}await settle();}
+ }
+ await settle();
+ console.log(JSON.stringify({initial,state:elements['sid-news'].dataset.state,status:elements['sid-news-status'].textContent,html:elements['sid-news-results'].innerHTML||elements['sid-news'].innerHTML,hidden:elements['sid-news-results'].hidden,retry:!elements['sid-news-retry'].hidden,calls,focused:doc.activeElement?.id,busy:elements['sid-news'].attrs['aria-busy']}));
+})();
+"""
+    fixture = dict(scenario, source=source, actions=actions or [])
+    payload = tmp_path / "fixture.json"
+    script = tmp_path / "harness.cjs"
+    payload.write_text(json.dumps(fixture))
+    script.write_text(harness)
+    node = shutil.which("node")
+    assert node, "Node is required to execute the real page-script regression"
+    result = subprocess.run([node, str(script), str(payload)], capture_output=True, text=True, timeout=15)
+    assert result.returncode == 0, result.stderr
+    return json.loads(result.stdout)
+
+
+def _empty_news_responses():
+    return [{"status":200,"data":{"signals":[]}}, {"status":200,"data":{"tickers":{}}}, {"status":200,"data":{"market":[]}}]
+
+
+@pytest.mark.parametrize("code", [401, 403])
+def test_altdata_news_signin_is_not_missing_feature(tmp_path, code):
+    out = _news_client_result(tmp_path, {"responses":[{"status":code}]*3})
+    assert out.get("state") == ("gated" if code == 401 else "restricted")
+    assert ("Sign in" if code == 401 else "restricted") in out["status"]
+    assert "next daily build" not in out["html"]
+    assert not out["retry"]
+
+
+@pytest.mark.parametrize("failure", [{"status":503}, {"status":404}, {"network":True}, {"status":200,"invalid":True}, {"status":200,"data":[]}])
+def test_altdata_news_failure_is_not_no_headlines(tmp_path, failure):
+    out = _news_client_result(tmp_path, {"responses":[failure]*3})
+    assert out.get("state") == "unavailable"
+    assert out["retry"] and "unavailable" in out["status"]
+    assert "not built" not in out["html"]
+
+
+def test_altdata_news_successfully_empty_snapshot(tmp_path):
+    out = _news_client_result(tmp_path, {"responses":_empty_news_responses()})
+    assert out.get("state") == "empty" and "No headlines in this snapshot" in out["status"]
+    assert not out["retry"]
+
+
+def test_altdata_market_fallback_does_not_claim_no_related_news_on_401(tmp_path):
+    responses=[{"status":401}, {"status":401}, {"status":200,"data":{"market":[{"title":"Market headline","url":"https://example.test/story"}]}}]
+    out = _news_client_result(tmp_path, {"responses":responses}, ["language"])
+    assert out.get("state") == "market_gate" and "登录" in out["status"]
+    assert "Market headline" in out["html"] and "No news yet" not in out["html"]
+    assert len(out["calls"]) == 3  # translating does not refetch or widen access
+
+
+def test_altdata_related_headlines_keep_chinese_order_and_escape_markup(tmp_path):
+    responses=_empty_news_responses()
+    responses[0]["data"]["signals"]=[{"ticker":"BBB","signal_score":99},{"ticker":"AAA"}]
+    responses[1]["data"]["tickers"]={"BBB":{"top":[{"title":"<script>bad</script>","title_zh":"中文标题","url":"javascript:alert(1)","source":"<img>"}]},"AAA":{"top":[{"title":"Second story","url":"https://example.test/two"}]}}
+    out = _news_client_result(tmp_path, {"responses":responses})
+    assert out.get("state") == "related"
+    assert out["html"].index("BBB") < out["html"].index("AAA")
+    assert "中文标题" in out["html"] and "&lt;script&gt;" in out["html"]
+    assert '<script>' not in out["html"] and 'href="javascript:' not in out["html"]
+    assert "alt signal" not in out["html"]
+
+
+def test_altdata_news_retry_is_single_flight_and_restores_focus(tmp_path):
+    out = _news_client_result(tmp_path, {"attempts":[[{"status":503}]*3,_empty_news_responses()]}, ["retry"])
+    assert out.get("state") == "empty" and out["initial"]["retry"]
+    assert len(out["calls"]) == 6 and out["busy"] == "false"
+    assert out["focused"] == "sid-news-open" and not out["retry"]
+
+
+def test_altdata_news_template_preserves_native_loading_and_actions():
+    source=(Path(__file__).resolve().parents[1]/"templates/alt_data.html.j2").read_text()
+    assert 'id="sid-news-status" role="status"' in source
+    assert 'id="sid-news-retry" type="button"' in source
+    assert "document.addEventListener('langchange',localize)" in source
+    assert "News surface not built yet" not in source
+
+
+def test_altdata_news_generated_source_parity():
+    import hashlib
+    import re
+    root = Path(__file__).resolve().parents[1]
+    template = (root / "templates" / "alt_data.html.j2").read_text()
+    page = (root / "site" / "alt_data.html").read_text()
+    client = next(s for s in re.findall(r"<script(?: [^>]*)?>(.*?)</script>", template, re.S) if "news/by_ticker.json" in s)
+    assert client in page
+    body = re.search(r"{% block base_css %}(.*?){% endblock %}", template, re.S).group(1)
+    refs = re.findall(r"assets/css/([0-9a-f]{8})\.css\?v=\1", page)
+    matches = []
+    for digest in set(refs):
+        path = root / "site" / "assets" / "css" / (digest + ".css")
+        if path.exists() and body in path.read_text():
+            matches.append(digest)
+            assert hashlib.sha256(path.read_bytes()).hexdigest()[:8] == digest
+    assert len(matches) == 1, "page must bind the canonical inherited template CSS"

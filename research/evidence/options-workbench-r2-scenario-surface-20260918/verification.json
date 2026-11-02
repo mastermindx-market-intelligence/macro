@@ -1,0 +1,90 @@
+{
+  "carrier": "macro#7306",
+  "current_main": "36fbbbfcc045fa422ba3be94f3c29e5206d2e35d",
+  "findings_closed": [
+    {
+      "after": "GEX/VEX/CEX each expose all price-axis zero crossings per horizon",
+      "before": "only GEX/Gamma zero crossings were projected",
+      "green": "product-gaps-green.log",
+      "id": "ALL_METRIC_ZERO_CONTOURS",
+      "red": "product-gaps-red.log"
+    },
+    {
+      "after": "explicit solve_from_mid mode reuses incumbent implied_vol_vec, freezes solved IV, and matches incumbent horizon-zero aggregate exposures",
+      "before": "scenario builder required caller-supplied pre-solved IV",
+      "green": "product-gaps-green.log",
+      "id": "REAL_MID_OI_INPUT_SEAM",
+      "red": "product-gaps-red.log"
+    },
+    {
+      "after": "OI vintage, when supplied, must be strictly prior to the observation ET date; solve_from_mid requires explicit iv_observed_at no later than market_observed_at",
+      "before": "same-day OI vintage was accepted and solve_from_mid could omit the IV observation clock",
+      "green": "pit-and-seams-green.log",
+      "id": "PIT_SOURCE_CLOCK_ORDERING",
+      "red_observed": "test_scenario_rejects_same_day_oi_and_unknown_iv_clock_for_mid_solve failed before repair: same-day OI DID NOT RAISE ValueError"
+    },
+    {
+      "after": "exp_str is a canonical expiry alias, alias conflicts are rejected, contributing trade/quote envelopes are preserved with mixed-unknown fail-closed semantics, and future source clocks are rejected",
+      "before": "the #7279 exp_str contract shape failed expiry scoping, trade/NBBO envelopes were dropped, and conflicting expiry aliases were accepted",
+      "green": "live-contract-seam-green.log",
+      "id": "CANONICAL_LIVE_CONTRACT_ADAPTER",
+      "red_observed": "live-shape focused reproduction failed 2/2; conflicting-alias reproduction also failed before repair"
+    }
+  ],
+  "integrated_proof_commit": "d7b6514128bfcfe4eb11fc2f4c15797531080587",
+  "integrated_proof_tree": "b558ae1b0d34671edd9979f70b38be4fe5653fdc",
+  "non_claims": [
+    "production deployment",
+    "live freshness",
+    "observed participant inventory",
+    "predictive edge",
+    "full-chain Greek completeness",
+    "Terminal browser acceptance",
+    "QuantedOptions parity",
+    "parent #603 completion"
+  ],
+  "operation": "options-workbench-r2-scenario-surface-20260918-sol-001",
+  "parent": "mastermind-terminal#603",
+  "pre_hardening_head": "60ba087f7c476fa8b7a564dd191e0f83a004ec8a",
+  "pre_live_adapter_head": "6f2df12fe79d73a9b57feba4f62734551b956b59",
+  "pre_pit_head": "e2328d3e41ee1ded4433c72a1c9e4f3066f8958f",
+  "release_gates": {
+    "exact_head_ci": "requires refresh after canonical live-contract adapter head is pushed",
+    "independent_review": "requires refresh after canonical live-contract adapter head is pushed",
+    "production_proof": "not attempted",
+    "terminal_consumer": "not started in this carrier"
+  },
+  "schema": "mastermind.options_workbench.scenario_surface_r2_evidence.v1",
+  "skillpack_sha": "61a2ff79aba4e8a5685e779707ad5c4426cf5cc5",
+  "source_hashes": {
+    "engine/options_scenario_surface.py": "bf18b4a935230afaf4886d9ecea178b939587a7ed9f98a5805b776ce63486e14",
+    "research/OPTIONS_WORKBENCH_SCENARIO_SURFACE_R2_2026-09-18.md": "f57dae54a0a4dfe5f7b1e75f075b15a58e4c00a4f4774348bc53b1f6026a2f98",
+    "scripts/build_options_scenario_surface.py": "4c93c40dd2a0e93985c3ac2d611f023638d26e149dd45f02bffa5e53584a17a3",
+    "tests/test_options_scenario_surface.py": "33a40de080c638e74e4d039909170d151449f20370856117e1b8c6984883eefb"
+  },
+  "state": "BUILT_NOT_PROVEN",
+  "verification": {
+    "candidate_owner_pack": {
+      "failed": 0,
+      "passed": 91
+    },
+    "compileall_exit": 0,
+    "diff_check_exit": 0,
+    "focused_live_contract_adapter": {
+      "failed": 0,
+      "passed": 3
+    },
+    "focused_pit_and_input_hardening": {
+      "failed": 0,
+      "passed": 4
+    },
+    "focused_review_hardening": {
+      "failed": 0,
+      "passed": 3
+    },
+    "integrated_owner_pack": {
+      "failed": 0,
+      "passed": 91
+    }
+  }
+}

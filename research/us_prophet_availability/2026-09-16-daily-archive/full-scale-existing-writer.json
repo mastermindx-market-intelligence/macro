@@ -1,0 +1,278 @@
+{
+  "proof_class": "actual_existing_archive_writer_with_explicit_cli_equivalent_parameters",
+  "source_commit": "bd93ee84583e6c6bea2b342bbf38cba0b9eb23e9",
+  "source_sha256": "1fe8e84b6df586eeed9b7c039453c66d73ac8ac47221e19d8b2a8d336ca87dd3",
+  "expected_session": "2026-09-16",
+  "writer_seconds": 425.48,
+  "report": {
+    "started_utc": "2026-09-16T23:30:41+00:00",
+    "cap": 400,
+    "period": "max",
+    "batch_size": 160,
+    "budget_s": 480,
+    "dry_run": false,
+    "planned": 0,
+    "written": 0,
+    "short_history": 60,
+    "attempted": 5348,
+    "no_data": 9,
+    "parked": 84,
+    "schema_rejected": 115,
+    "ratio_anomalies": 19,
+    "batch_errors": 0,
+    "budget_exhausted": false,
+    "refresh_planned": 5348,
+    "refreshed": 5224,
+    "refreshable": 5348,
+    "refresh_cap": 6000,
+    "refresh_cadence_d": 0.9,
+    "refresh_ran": true,
+    "census": {
+      "ledger_tickers": 8476,
+      "hub_universe": 57,
+      "hub_current_surface": 41,
+      "union_needed": 8476,
+      "already_stored": 6167,
+      "missing": 2421,
+      "unsupported_symbols": 886,
+      "unsupported_sample": [
+        "()",
+        "0001",
+        "000100",
+        "000333",
+        "000488",
+        "0006",
+        "000620",
+        "000660",
+        "000803",
+        "000880",
+        "000930",
+        "0011"
+      ],
+      "parked": 1601,
+      "queue": 0,
+      "bucket_1_current": 0,
+      "bucket_2_recent": 0,
+      "bucket_3_rest": 0
+    },
+    "elapsed_s": 425.4,
+    "remaining": 0,
+    "ratio_anomaly_names": {
+      "BMNP": [
+        "20.6% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+      ],
+      "CHPY": [
+        "20.5% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+      ],
+      "GPTY": [
+        "20.3% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+      ],
+      "XBTY": [
+        "19.9% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+      ],
+      "XEY": [
+        "20.6% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+      ],
+      "YMAG": [
+        "17.0% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+      ],
+      "YMAX": [
+        "16.6% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+      ],
+      "LFGY": [
+        "20.5% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+      ],
+      "MINY": [
+        "19.6% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+      ],
+      "MSST": [
+        "20.4% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+      ],
+      "NVIT": [
+        "20.4% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+      ],
+      "NVYY": [
+        "19.9% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+      ],
+      "PRHIZ": [
+        "tip ratio 0.969893 != 1.0"
+      ],
+      "QDTY": [
+        "20.4% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+      ],
+      "SATA": [
+        "32.2% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+      ],
+      "SDTY": [
+        "20.3% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+      ],
+      "SLTY": [
+        "20.5% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+      ],
+      "TEST": [
+        "20.4% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+      ],
+      "TSYY": [
+        "16.8% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+      ]
+    }
+  },
+  "eligible": 5348,
+  "current_eligible": 4652,
+  "not_current_eligible": 696,
+  "rows_not_shrunk": true,
+  "maintained_source_changes": [],
+  "source_code_changes": 0,
+  "production": false,
+  "universe_reduced": false,
+  "calls_summary": {
+    "batches": 34,
+    "symbols_total": 5339,
+    "requested_periods": [
+      "max"
+    ]
+  },
+  "source_receipt_sha256": "29c3f65b2f046d4968e346a8cfdfe81833f296f183d3848e6dba6a70b8931495",
+  "date_histograms": {
+    "before": {
+      "2026-09-15": 1459,
+      "2026-09-14": 1429,
+      "2026-09-11": 2289,
+      "2026-08-31": 12,
+      "2026-09-16": 784,
+      "2026-07-27": 6,
+      "2026-08-07": 7,
+      "2026-08-19": 5,
+      "2026-08-13": 4,
+      "2026-07-10": 3,
+      "2026-08-17": 5,
+      "2026-07-17": 7,
+      "2026-09-08": 9,
+      "2026-05-07": 1,
+      "2026-08-21": 7,
+      "2026-08-27": 4,
+      "2025-04-08": 1,
+      "2026-07-23": 5,
+      "2026-07-29": 6,
+      "2026-08-11": 6,
+      "2026-08-10": 14,
+      "2025-01-08": 1,
+      "2026-09-04": 11,
+      "2026-08-24": 7,
+      "2026-08-03": 3,
+      "2026-06-29": 2,
+      "2026-07-02": 1,
+      "2026-09-03": 6,
+      "2026-07-28": 3,
+      "2026-08-14": 5,
+      "2024-10-16": 1,
+      "2023-12-13": 3,
+      "2026-07-16": 1,
+      "2026-07-20": 4,
+      "2026-09-01": 1,
+      "2026-07-09": 1,
+      "2026-09-02": 5,
+      "2026-07-21": 4,
+      "2026-07-13": 3,
+      "2026-07-30": 3,
+      "2026-08-06": 3,
+      "2018-10-18": 1,
+      "2026-09-10": 3,
+      "2023-07-25": 1,
+      "2026-08-20": 3,
+      "2018-04-25": 1,
+      "2026-08-28": 3,
+      "2020-06-12": 1,
+      "2026-06-12": 1,
+      "2026-08-04": 1,
+      "2026-05-13": 1,
+      "2026-08-12": 3,
+      "2026-08-26": 1,
+      "2024-02-21": 1,
+      "2018-03-08": 1,
+      "2026-07-31": 1,
+      "2018-04-30": 2,
+      "2026-06-18": 1,
+      "2023-07-21": 1,
+      "2025-05-28": 1,
+      "2026-09-09": 1,
+      "2021-01-05": 1,
+      "2026-07-24": 1,
+      "2026-06-22": 1,
+      "2026-08-18": 1,
+      "2022-10-31": 1,
+      "2019-01-23": 1,
+      "2026-07-22": 1
+    },
+    "after": {
+      "2026-09-15": 1220,
+      "2026-09-16": 4695,
+      "2026-08-31": 12,
+      "2026-07-27": 6,
+      "2026-08-07": 7,
+      "2026-09-11": 25,
+      "2026-08-19": 5,
+      "2026-08-13": 4,
+      "2026-09-14": 21,
+      "2026-07-10": 3,
+      "2026-08-17": 5,
+      "2026-07-17": 7,
+      "2026-09-08": 9,
+      "2026-05-07": 1,
+      "2026-08-21": 7,
+      "2026-08-27": 4,
+      "2025-04-08": 1,
+      "2026-07-23": 5,
+      "2026-07-29": 6,
+      "2026-08-11": 6,
+      "2026-08-10": 14,
+      "2025-01-08": 1,
+      "2026-09-04": 11,
+      "2026-08-24": 7,
+      "2026-08-03": 3,
+      "2026-06-29": 2,
+      "2026-07-02": 1,
+      "2026-09-03": 6,
+      "2026-07-28": 3,
+      "2026-08-14": 5,
+      "2024-10-16": 1,
+      "2023-12-13": 3,
+      "2026-07-16": 1,
+      "2026-07-20": 4,
+      "2026-09-01": 1,
+      "2026-07-09": 1,
+      "2026-09-02": 5,
+      "2026-07-21": 4,
+      "2026-07-13": 3,
+      "2026-07-30": 3,
+      "2026-08-06": 3,
+      "2018-10-18": 1,
+      "2026-09-10": 3,
+      "2023-07-25": 1,
+      "2026-08-20": 3,
+      "2018-04-25": 1,
+      "2026-08-28": 3,
+      "2020-06-12": 1,
+      "2026-06-12": 1,
+      "2026-08-04": 1,
+      "2026-05-13": 1,
+      "2026-08-12": 3,
+      "2026-08-26": 1,
+      "2024-02-21": 1,
+      "2018-03-08": 1,
+      "2026-07-31": 1,
+      "2018-04-30": 2,
+      "2026-06-18": 1,
+      "2023-07-21": 1,
+      "2025-05-28": 1,
+      "2026-09-09": 1,
+      "2021-01-05": 1,
+      "2026-07-24": 1,
+      "2026-06-22": 1,
+      "2026-08-18": 1,
+      "2022-10-31": 1,
+      "2019-01-23": 1,
+      "2026-07-22": 1
+    }
+  }
+}

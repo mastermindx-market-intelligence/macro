@@ -1,0 +1,38 @@
+.........F...........                                                    [100%]
+=================================== FAILURES ===================================
+______ test_all_evidence_anchors_are_pinned_to_reproducible_file_receipts ______
+
+    def test_all_evidence_anchors_are_pinned_to_reproducible_file_receipts() -> None:
+        registry = _registry()
+        snapshot, macro_receipts = _macro_receipts()
+        external = _external_evidence()
+        assert snapshot == registry["source_snapshots"]["macro"]
+        assert external["source_snapshots"] == registry["source_snapshots"]
+    
+        used_macro_paths: set[str] = set()
+        used_external_paths: set[str] = set()
+        for family_id, anchor in _all_anchors():
+            repo, path, line = _parse_anchor(anchor)
+            if repo == "macro":
+                assert path in macro_receipts, (family_id, anchor)
+                line_count, digest = macro_receipts[path]
+                used_macro_paths.add(path)
+                # Generated product/state artifacts move normally; their receipt stays tied
+                # to the audited SHA. Source and control evidence must not drift silently.
+                if not path.startswith(("data/", "site/")):
+                    current_bytes = (ROOT / path).read_bytes()
+>                   assert len(current_bytes.splitlines()) == line_count, (family_id, anchor)
+E                   AssertionError: ('extended_quotes_current', 'macro:scripts/build_ext_quotes.py:57')
+E                   assert 763 == 760
+E                    +  where 763 = len([b'"""Bounded BOATS archive-to-display publisher through the incumbent R2 key.', b'', b'The public publication boundar...a storage client. The retained Yahoo builder is', b'an unpublished local diagnostic; --publish requires --boats.', ...])
+E                    +    where [b'"""Bounded BOATS archive-to-display publisher through the incumbent R2 key.', b'', b'The public publication boundar...a storage client. The retained Yahoo builder is', b'an unpublished local diagnostic; --publish requires --boats.', ...] = <built-in method splitlines of bytes object at 0xa43030000>()
+E                    +      where <built-in method splitlines of bytes object at 0xa43030000> = b'"""Bounded BOATS archive-to-display publisher through the incumbent R2 key.\n\nThe public publication boundary accep...0 if result is not None or (not args.publish and not args.smoke) else 0)\n\n\nif __name__ == "__main__":\n    main()\n'.splitlines
+
+tests/test_r2_delivery_plane_classification.py:586: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data, site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_r2_delivery_plane_classification.py::test_all_evidence_anchors_are_pinned_to_reproducible_file_receipts
+1 failed, 20 passed in 4.56s

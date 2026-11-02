@@ -4,11 +4,13 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 const input=JSON.parse(fs.readFileSync(0,'utf8'));
 class Element {
-  constructor(tag='div'){this.tag=tag;this.children=[];this.listeners={};this.dataset={};this.attributes={};this.hidden=false;this.value='';this._text='';}
+  constructor(tag='div'){this.tag=tag;this.children=[];this.listeners={};this.dataset={};this.attributes={};this.hidden=false;this.value='';this._text='';this.parent=null;this.focused=false;}
   set textContent(value){this._text=String(value);this.children=[];}
   get textContent(){return this._text+this.children.map(c=>c.textContent).join(' ');}
-  append(...nodes){this.children.push(...nodes);}
-  replaceChildren(...nodes){this._text='';this.children=[...nodes];}
+  append(...nodes){for(const n of nodes){if(n&&typeof n==='object')n.parent=this;}this.children.push(...nodes);}
+  replaceChildren(...nodes){this._text='';for(const n of nodes){if(n&&typeof n==='object')n.parent=this;}this.children=[...nodes];}
+  contains(node){let cur=node;while(cur){if(cur===this)return true;cur=cur.parent||null;}return false;}
+  focus(){doc.activeElement=this;this.focused=true;}
   setAttribute(k,v){this.attributes[k]=String(v);}
   getAttribute(k){return this.attributes[k]??null;}
   removeAttribute(k){delete this.attributes[k];}
@@ -19,7 +21,7 @@ class Element {
 const controls=Object.fromEntries(['results','detail','status','query','next','first','signin','controls','search','refresh'].map(k=>[k,new Element()]));
 const root=new Element('details');root.open=false;
 root.querySelector=s=>controls[s.slice(9,-1)];
-const doc=new Element();doc.readyState='complete';doc.hidden=false;
+const doc=new Element();doc.readyState='complete';doc.hidden=false;doc.activeElement=null;
 doc.documentElement=new Element('html');doc.documentElement.setAttribute('data-lang','en');
 doc.createElement=tag=>new Element(tag);doc.querySelectorAll=()=>[root];
 const win=new Element();let session={access_token:'private-test-session-token',user:{id:'fixture-user'}};
@@ -30,13 +32,21 @@ const clone=x=>structuredClone(x);
 const response=(data,status=200,type='application/json')=>({status,ok:status===200,headers:{get:()=>type},text:async()=>JSON.stringify(data)});
 function answer(url){
   const u=new URL(url,'https://prophet.test'),isView=u.pathname.endsWith('/research-view');
+  const partial=String(input.scenario||'').startsWith('opportunity');
   if(mode.startsWith('http'))return response({},Number(mode.slice(4)));
   if(mode==='nonjson')return response({},200,'text/html');
   if(mode==='oversize')return {...response({}),text:async()=> ' '.repeat(1048577)};
   let data;
-  if(isView){data=clone(input.view[u.searchParams.get('language')||'en']);if(mode==='wrongref')data.episode_ref.generation_id='peg:'+'f'.repeat(64);}
+  if(isView){data=clone((partial?input.partial.view:input.view)[u.searchParams.get('language')||'en']);if(mode==='wrongref')data.episode_ref.generation_id='peg:'+'f'.repeat(64);
+    if(mode==='nocontract')delete data.opportunity_context;
+    if(mode==='nocontext')delete data.opportunity_context.context;
+    if(mode==='badstate')data.state='AVAILABLE';
+    if(mode==='badentry')data.opportunity_context.context.fresh_entry.entry_open=false;
+    if(mode==='badauthority')data.authority.can_rank=true;
+    if(mode==='injected')data.opportunity_context.context.fresh_entry.reason='<img src=x onerror=alert(1)>';
+  }
   else{
-    data=clone(input.directory);const q=u.searchParams.get('q')||'',offset=Number(u.searchParams.get('offset')||0);
+    data=clone(partial?input.partial.directory:input.directory);const q=u.searchParams.get('q')||'',offset=Number(u.searchParams.get('offset')||0);
     let all=data.episodes;if(q)all=all.filter(r=>r.security_id.toLowerCase().includes(q.toLowerCase()));
     data.selection={...data.selection,query:q,offset,limit:25,total_matches:all.length,next_offset:offset+25<all.length?offset+25:null};data.episodes=all.slice(offset,offset+25);
     if(mode==='wronglink')data.episodes[0].research_view_url='https://other.test/collect';
@@ -68,6 +78,39 @@ else if(scenario==='auth_race'){mode='authwait';await open();signout();authResol
 else if(scenario==='timeout'){mode='wait';await open();for(const fn of [...timers.values()])fn();await flush();assert.match(controls.status.textContent,/timed out/);noEvidence();}
 else if(scenario==='late_response'){mode='wait';await open();const release=fetchResolve;root.open=false;root.emit('toggle');mode='normal';release();await flush();noEvidence();}
 else if(['wronglink','rank','nonjson','oversize'].includes(scenario)){mode=scenario;await open();noEvidence();assert.match(controls.status.textContent,/could not be verified/);assert.equal(requests.length,1);}
+else if(scenario.startsWith('opportunity')){
+  if(scenario==='opportunity_zh'){doc.documentElement.setAttribute('data-lang','zh');observer();}
+  await open();
+  const rows=controls.results.querySelectorAll('button');
+  assert.equal(rows.length,1,'the partial fixture carries exactly one recorded episode');
+  const rejected=['opportunity_wrongref','opportunity_nocontract','opportunity_nocontext','opportunity_badstate','opportunity_badentry','opportunity_badauthority'];
+  if(scenario==='opportunity_injected')mode='injected';
+  if(rejected.includes(scenario)){mode=scenario.replace('opportunity_','');await choose();noEvidence();assert.match(controls.status.textContent,/could not be verified/);}
+  else if(scenario==='opportunity_focus'){
+    const row=rows[0];row.focus();assert.equal(doc.activeElement,row);
+    await choose();
+    assert.match(controls.detail.textContent,/Lifecycle context available/);
+    const summary=controls.detail.querySelectorAll('summary')[0];
+    assert.ok(summary,'the degraded card carries a lineage disclosure');
+    summary.focus();assert.equal(doc.activeElement,summary);
+    await choose();
+    assert.equal(doc.activeElement,row,'a repainted detail pane must return focus to the chosen row');
+  }
+  else{
+    await choose();
+    const heading=controls.detail.querySelectorAll('h2')[0];
+    assert.ok(heading,'the degraded card carries a heading');
+    const expectedHeading=scenario==='opportunity_zh'?/财报证据不可用/:/Lifecycle context available/;
+    assert.match(heading.textContent,expectedHeading);
+    assert.ok(!controls.detail.textContent.includes('109,417,000,000'),'no earnings figure may appear');
+    assert.ok(!controls.detail.textContent.includes('9 \u2013 11%'),'no guidance figure may appear');
+    assert.match(controls.detail.textContent,scenario==='opportunity_zh'?/不可用/:/Unavailable/);
+    if(scenario==='opportunity_injected'){
+      assert.ok(controls.detail.textContent.includes('<img src=x onerror=alert(1)>'),'an owner string is shown verbatim');
+      assert.equal(controls.detail.querySelectorAll('img').length,0,'an owner string must never become markup');
+    }
+  }
+}
 else{
   await open();assert.equal(controls.results.querySelectorAll('button').length,25,'bounded first page');
   if(scenario==='search'){controls.query.value='NO-SUCH-SECURITY';controls.search.emit('submit');await flush();assert.match(controls.status.textContent,/No recorded opportunities/);assert.equal(controls.results.children.length,0);assert.equal(new URL(requests.at(-1).url,'https://prophet.test').searchParams.get('q'),'NO-SUCH-SECURITY');}

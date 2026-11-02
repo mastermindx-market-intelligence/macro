@@ -46,6 +46,25 @@ Baseline (`--baseline`): reproduce the panel replay per-rung table from bottom_r
 (full history + since-2018) and write calibration/bottom_ruler_baseline.json — the committed
 yardstick live cohorts are compared against as they mature. Deterministic output.
 
+CLOCK CONTRACT (engine/ledger_clock.py — one lawful date representation, enforced at every
+boundary). Every date in the bottom-call lifecycle — capture (`flag_date`), maturity, grading,
+the persisted row, CLI `--as-of`, and historical replay — is a CIVIL CALENDAR DATE: `YYYY-MM-DD`
+on the wire and in the parquet, a tz-naive midnight `pd.Timestamp` in process. That module
+carries the proof this is the intended semantic contract (measured on the real stores: 41/41
+snapshot `as_of`, 422/422 Prophet plan dates, and every price index are date-only) plus the one
+coercion rule. Boundaries: `main` (CLI/today) → `run_pipeline` (all entry points) →
+`_load_store`/`_normalize_store_dates` (persisted) → `collect_flags`/`_flag_row` (producer) →
+`_read_prices` (price index) → `mature_rows` (the maturity comparison) → `build_emit`.
+
+FAILURE OBSERVABILITY. The nightly step is non-fatal to the enclosing engine by design, so the
+artifact must carry its own verdict: every emit contains `advance.status` ∈ {advanced,
+read_only, failed}. A forward advance that raises leaves the store untouched, re-emits from the
+last good store stamped `failed` with the error, prints a line-start `::error` annotation, and
+exits non-zero. This is what the old `|| true` hid: the advancer raised `TypeError: Cannot
+compare tz-naive and tz-aware timestamps` on EVERY run from birth — before its first write —
+so neither `data/bottom_ledger/rows.parquet` nor the display artifact has ever existed, while
+the nightly reported success.
+
 DISPLAY-TIER throughout; the word "validated" stays out of user-facing text; nulls printed.
 This advancer confers NO ranking/sizing/gate authority.
 
@@ -71,6 +90,14 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from engine import bottom_ruler as BR  # noqa: E402
+from engine.ledger_clock import (  # noqa: E402
+    ClockContractError,
+    ledger_date_str,
+    to_ledger_date,
+    to_ledger_date_index,
+    to_ledger_date_or_none,
+    today_ledger_date,
+)
 
 # --------------------------------------------------------------------------- #
 # paths
@@ -148,7 +175,8 @@ def _read_prices(ticker: str) -> tuple[pd.Series, pd.Series | None, pd.Series | 
         try:
             df = pd.read_parquet(sp)
             if {"close", "high", "low"} <= set(df.columns):
-                df.index = pd.to_datetime(df.index)
+                # CLOCK CONTRACT reader boundary: session dates, not instants.
+                df.index = to_ledger_date_index(df.index, field=f"{ticker} price index")
                 df = df.sort_index()
                 return df["close"], df["high"], df["low"]
         except Exception:
@@ -159,7 +187,7 @@ def _read_prices(ticker: str) -> tuple[pd.Series, pd.Series | None, pd.Series | 
             df = pd.read_parquet(yp)
             col = "close" if "close" in df.columns else df.columns[0]
             s = df[col]
-            s.index = pd.to_datetime(s.index)
+            s.index = to_ledger_date_index(s.index, field=f"{ticker} price index")
             s = s.sort_index()
             return s, None, None
         except Exception:
@@ -218,10 +246,20 @@ def _prophet_flag_date(plan: dict, *, canonical: bool) -> str | None:
 
 
 def _flag_row(**kw: Any) -> dict:
-    """Build a store row with every column present (missing → None), grade fields null."""
+    """Build a store row with every column present (missing → None), grade fields null.
+
+    CLOCK CONTRACT producer boundary: ``flag_date`` is canonicalized to ``YYYY-MM-DD`` here, so
+    the accrual identity ``(flag_date, ticker, source)`` has exactly ONE spelling per session.
+    Returns None when the source date is unreadable — such a flag is withheld and counted
+    rather than accrued as a row that could never mature (see ``collect_flags``).
+    """
     row = {c: None for c in STORE_COLS}
     row["graded"] = False
     row.update(kw)
+    fd = to_ledger_date_or_none(row.get("flag_date"))
+    if fd is None:
+        return None
+    row["flag_date"] = fd.strftime("%Y-%m-%d")
     return row
 
 
@@ -234,6 +272,14 @@ def collect_flags() -> list[dict]:
     a stable (flag_date, source, ticker) order by the caller's sort.
     """
     flags: list[dict] = []
+    withheld: list[str] = []
+
+    def _add(row: dict | None, what: str) -> None:
+        """Append an accrued flag, or record a withheld one (unreadable capture date)."""
+        if row is None:
+            withheld.append(what)
+            return
+        flags.append(row)
 
     # (a)+(b) board snapshots: buy-lane -> board_buy; watch-lane w/ washout payload -> washout_watch
     for snap in _read_snapshots():
@@ -252,10 +298,10 @@ def collect_flags() -> list[dict]:
             tier = None
             if isinstance(sig, dict):
                 tier = sig.get("tier_cascade") or sig.get("tier")
-            flags.append(_flag_row(
+            _add(_flag_row(
                 flag_date=as_of, ticker=tkr, source="board_buy",
                 lane=lane, tier=tier, conviction=conv_score,
-            ))
+            ), f"board_buy {tkr} as_of={as_of!r}")
         for r in snap.get("watch", []) or []:
             tkr = r.get("ticker")
             if not tkr:
@@ -263,13 +309,13 @@ def collect_flags() -> list[dict]:
             wash = r.get("washout")
             if not isinstance(wash, dict):
                 continue      # not a washout WAIT flag (payload not present yet)
-            flags.append(_flag_row(
+            _add(_flag_row(
                 flag_date=as_of, ticker=tkr, source="washout_watch",
                 lane=r.get("lane") or "washout",
                 washout_tier=wash.get("tier"),
                 weeks_at_floor=wash.get("weeks_at_floor"),
                 late_pct=wash.get("late_pct"),
-            ))
+            ), f"washout_watch {tkr} as_of={as_of!r}")
 
     # (c) Prophet plans -> prophet_plan.  Prefer the canonical append-only correction
     # projection so a known-wrong publication clock cannot seed a second learning ledger.
@@ -318,13 +364,19 @@ def collect_flags() -> list[dict]:
             tkr = d.get("asset") or d.get("ticker")
             if not sd or not tkr:
                 continue
-            flags.append(_flag_row(
+            _add(_flag_row(
                 flag_date=sd, ticker=tkr, source="prophet_plan",
                 source_ref=plan_id or None,
                 lane=(d.get("direction") or "").lower() or None,
                 conviction=d.get("_conviction_score"),
                 act=d.get("_act_level"),
-            ))
+            ), f"prophet_plan {plan_id or tkr} signal_date={sd!r}")
+    if withheld:
+        # Loud, never silent: a capture date the clock contract cannot read is a producer
+        # defect, not a row to accrue and forget. (Annotation must start the line — CLAUDE.md.)
+        print(f"::warning title=bottom-ledger-unreadable-capture-date::{len(withheld)} flag(s) "
+              f"withheld — capture date violates the ledger clock contract "
+              f"(YYYY-MM-DD civil date): {'; '.join(sorted(withheld)[:5])}", flush=True)
     return flags
 
 
@@ -335,17 +387,57 @@ def _empty_store() -> pd.DataFrame:
     return pd.DataFrame({c: pd.Series(dtype="object") for c in STORE_COLS})
 
 
-def _load_store(rows_path: Path) -> pd.DataFrame:
+def _normalize_store_dates(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
+    """CLOCK CONTRACT persisted boundary: re-spell stored dates as canonical ``YYYY-MM-DD``.
+
+    A historical store may hold ``flag_date``/``grade_asof`` as datetime64, as a tz-aware
+    value, or as a string carrying a clock — parquet round-trips preserve whatever the writer
+    used. Left alone, the SAME session would carry two spellings and the accrual identity
+    ``(flag_date, ticker, source)`` would double-accrue it. Re-spelling is a representation
+    repair ONLY: it touches no grade field and no ``graded`` flag, so the once-only frozen
+    grade law is untouched. A value the contract cannot read is left exactly as persisted (the
+    append-only evidence is never destroyed) and reported.
+
+    Returns (df, {"renormalized": n, "unreadable": [..]}).
+    """
+    report = {"renormalized": 0, "unreadable": []}
+    if df.empty:
+        return df, report
+    for col in ("flag_date", "grade_asof"):
+        if col not in df.columns:
+            continue
+        for idx in df.index:
+            raw = df.at[idx, col]
+            if raw is None or (not isinstance(raw, str) and pd.isna(raw)):
+                continue
+            ts = to_ledger_date_or_none(raw)
+            if ts is None:
+                report["unreadable"].append(f"{col}={raw!r}")
+                continue
+            canon = ts.strftime("%Y-%m-%d")
+            if canon != raw:
+                df.at[idx, col] = canon
+                report["renormalized"] += 1
+    return df, report
+
+
+def _load_store(rows_path: Path) -> tuple[pd.DataFrame, dict]:
+    """Read the persisted store and bring its dates onto the clock contract.
+
+    Returns (store, repair_report) — the report is surfaced in the display artifact so a
+    silent re-spelling can never happen behind the operator's back."""
     if rows_path.exists():
         try:
             df = pd.read_parquet(rows_path)
             for c in STORE_COLS:
                 if c not in df.columns:
                     df[c] = None
-            return df[STORE_COLS]
-        except Exception:
-            return _empty_store()
-    return _empty_store()
+            return _normalize_store_dates(df[STORE_COLS])
+        except Exception as exc:  # noqa: BLE001
+            # A store we cannot read is NOT an empty store: returning empty here would let the
+            # advancer re-accrue every row and re-grade frozen ones. Fail loudly instead.
+            raise RuntimeError(f"bottom-ledger store unreadable at {rows_path}: {exc}") from exc
+    return _empty_store(), {"renormalized": 0, "unreadable": []}
 
 
 def _project_effective_store(
@@ -446,15 +538,25 @@ def mature_rows(
     as_of: pd.Timestamp,
     *,
     eligible_indices: set[Any] | None = None,
-) -> tuple[pd.DataFrame, int]:
+) -> tuple[pd.DataFrame, int, list[str]]:
     """Grade every ungraded row whose flag_date + H trading days has closed on/before `as_of`.
 
     A row is graded ONCE and then frozen (graded=True); already-graded rows are skipped. The
     maturity gate is enforced by grade_call itself (it returns None when fewer than H bars
-    follow the signal in the price series). Returns (store, n_newly_graded)."""
+    follow the signal in the price series). Returns (store, n_newly_graded, unreadable_dates).
+
+    CLOCK CONTRACT: `as_of` and every `flag_date` are coerced to ledger dates (civil
+    YYYY-MM-DD, tz-naive, midnight) BEFORE they meet. This is the comparison that crashed
+    production with "Cannot compare tz-naive and tz-aware timestamps" — `as_of` arrived
+    tz-aware from `Timestamp.utcnow()` while `flag_date` is a plain date string. The maturity
+    ARITHMETIC is unchanged (still the conservative `flag + H calendar days` pre-check ahead of
+    grade_call, which remains the authority on H *trading* bars); only the types are made
+    lawful."""
+    as_of = to_ledger_date(as_of, field="as_of")
     if store.empty:
-        return store, 0
+        return store, 0, []
     price_cache: dict[str, Any] = {}
+    unreadable: list[str] = []
     n_graded = 0
     for idx in store.index:
         if eligible_indices is not None and idx not in eligible_indices:
@@ -472,9 +574,10 @@ def mature_rows(
         # Cheap pre-check: only attempt grading once as_of is well past flag+H calendar days.
         # grade_call is the authority on maturity (H *trading* bars must follow); this just
         # avoids grading rows that plainly cannot be mature yet.
-        try:
-            fts = pd.Timestamp(fdate)
-        except (ValueError, TypeError):
+        fts = to_ledger_date_or_none(fdate)
+        if fts is None:
+            # Never silently skip: an unreadable capture date is a row that can NEVER mature.
+            unreadable.append(f"{tkr}@{fdate!r}")
             continue
         if as_of < fts + pd.Timedelta(days=BR.H):     # < H calendar days → cannot be H trading days
             continue
@@ -484,9 +587,9 @@ def mature_rows(
         for k in GRADE_FIELDS:
             store.at[idx, k] = grade[k]
         store.at[idx, "graded"] = True
-        store.at[idx, "grade_asof"] = str(as_of.date())
+        store.at[idx, "grade_asof"] = ledger_date_str(as_of, field="grade_asof")
         n_graded += 1
-    return store, n_graded
+    return store, n_graded, unreadable
 
 
 # --------------------------------------------------------------------------- #
@@ -520,11 +623,48 @@ def _grades_from_store(store: pd.DataFrame) -> list[dict]:
     return out
 
 
-def build_emit(store: pd.DataFrame, as_of: pd.Timestamp) -> dict:
+# ---- forward-advance verdict (failure observability) ----------------------- #
+# The nightly step is deliberately non-fatal to the enclosing engine, so the ONLY way an
+# operator (or the Prophet governor, which reads this artifact) can tell a dead advancer from a
+# quiet night is for the artifact to say so itself. Before this block existed, the advancer
+# crashed on EVERY run for its whole life, `|| true` swallowed it, and the absence of any
+# output read as "nothing has matured yet".
+ADVANCE_ADVANCED = "advanced"      # nightly ran the full ACCRUE + MATURE and wrote the store
+ADVANCE_READ_ONLY = "read_only"    # non-nightly: display re-emit only, by design
+ADVANCE_FAILED = "failed"          # the forward advance raised; the store was NOT written
+ADVANCE_UNKNOWN = "unknown"        # caller did not state one (never emitted by run_pipeline)
+
+CLOCK_CONTRACT_NOTE = (
+    "ledger dates are civil calendar dates (YYYY-MM-DD, no clock, no timezone) — "
+    "engine/ledger_clock.py"
+)
+
+
+def _advance_record(status: str, as_of: pd.Timestamp, **fields: Any) -> dict:
+    """The per-run advance verdict embedded in the display artifact."""
+    rec: dict[str, Any] = {
+        "status": status,
+        "as_of": ledger_date_str(as_of, field="as_of"),
+        "n_new_flags": None,
+        "n_newly_graded": None,
+        "error": None,
+        "clock_contract": CLOCK_CONTRACT_NOTE,
+    }
+    rec.update(fields)
+    return rec
+
+
+def build_emit(store: pd.DataFrame, as_of: pd.Timestamp,
+               advance: dict | None = None) -> dict:
     """Assemble the site/factordata/us_bottom_ledger.json display doc (schema bottom_ledger/v1).
 
     Nulls printed while nothing is matured: cohorts is an empty list, the median/rate summaries
-    are null, and reliability language states the display-tier + first-maturity estimate."""
+    are null, and reliability language states the display-tier + first-maturity estimate.
+
+    `advance` is the truthful verdict on TONIGHT'S forward advance (see ADVANCE_* below). It is
+    always present, so a failed or read-only run can never be mistaken for a fresh successful
+    grading run: the artifact itself states which happened."""
+    as_of = to_ledger_date(as_of, field="as_of")
     n_total = int(len(store))
     n_matured = int((store["graded"] == True).sum()) if not store.empty else 0  # noqa: E712
     n_accruing = n_total - n_matured
@@ -549,8 +689,9 @@ def build_emit(store: pd.DataFrame, as_of: pd.Timestamp) -> dict:
 
     return {
         "schema": SCHEMA,
-        "as_of": str(as_of.date()),
+        "as_of": ledger_date_str(as_of, field="as_of"),
         "ledger_born": LEDGER_BORN,
+        "advance": advance if advance is not None else _advance_record(ADVANCE_UNKNOWN, as_of),
         "maturity_state": "accruing" if n_matured == 0 else "maturing",
         "n_accruing": n_accruing,
         "n_matured": n_matured,
@@ -756,34 +897,95 @@ def _print_baseline_table(doc: dict) -> None:
 # --------------------------------------------------------------------------- #
 # pipeline
 # --------------------------------------------------------------------------- #
+def _emit_failed_advance(emit_path: Path, rows_path: Path, n_rows_before: int,
+                         as_of: pd.Timestamp, exc: BaseException,
+                         store_repairs: dict) -> None:
+    """Stamp the display artifact truthfully when the forward advance died.
+
+    Re-emits from the LAST GOOD store (re-read from disk, so nothing half-advanced in memory
+    can leak out) with `advance.status = "failed"`. Best-effort: if even this fails, the
+    original exception still propagates — an emit failure must never replace the real cause.
+    """
+    print(f"::error title=bottom-ledger-advance-failed::Bottom Ledger forward advance FAILED "
+          f"({type(exc).__name__}: {exc}). The rows store was NOT written and no grade was "
+          f"frozen; site/factordata/us_bottom_ledger.json carries advance.status=failed.",
+          flush=True)
+    try:
+        last_good, _ = _load_store(rows_path)
+        effective, _, _ = _project_effective_store(last_good)
+        doc = build_emit(effective, as_of, _advance_record(
+            ADVANCE_FAILED, as_of,
+            n_rows=int(n_rows_before),
+            error=f"{type(exc).__name__}: {exc}",
+            store_repairs=store_repairs,
+        ))
+        doc["integrity_projection"] = {
+            "raw_rows": int(len(last_good)),
+            "effective_rows": int(len(effective)),
+            "excluded_prophet_rows": None,
+            "error": "forward advance failed — integrity projection not recomputed",
+            "effect": "store unchanged; no row was accrued, graded or regraded tonight",
+        }
+        _atomic_write_json(emit_path, doc)
+    except Exception as emit_exc:  # noqa: BLE001 — never mask the real failure
+        print(f"::error title=bottom-ledger-failure-emit-failed::could not stamp the display "
+              f"artifact with the failure ({type(emit_exc).__name__}: {emit_exc})", flush=True)
+
+
 def run_pipeline(rows_path: Path, emit_path: Path, *, accrue: bool, as_of: pd.Timestamp,
                  quiet: bool = False) -> dict:
     """ACCRUE (if nightly/forced) → MATURE → EMIT. Returns the emitted doc.
 
     `accrue` gates the forward advance (new flag rows + new frozen grades). When False the
-    store is read and the display artifact is re-emitted only — no forward state is written."""
-    store = _load_store(rows_path)
+    store is read and the display artifact is re-emitted only — no forward state is written.
+
+    CLOCK CONTRACT: `as_of` is coerced to a ledger date here, so EVERY entry point (nightly,
+    --force-local, --as-of replay, and the tests that call this directly) is normalized at one
+    boundary rather than each re-deriving its own notion of "now".
+
+    FAILURE OBSERVABILITY: if the forward advance raises, the store is left exactly as it was
+    (no partial advance, no regrade) and the display artifact is still re-emitted — but stamped
+    `advance.status = "failed"` with the error. The exception then propagates so the process
+    exits non-zero. A dead advancer can therefore never present as a fresh successful run."""
+    as_of = to_ledger_date(as_of, field="as_of")
+    store, store_repairs = _load_store(rows_path)
     n_before = len(store)
 
     if accrue:
-        flags = collect_flags()
-        store = merge_flags(store, flags)
-        n_new = len(store) - n_before
-        effective, _, _ = _project_effective_store(store)
-        store, n_graded = mature_rows(
-            store, as_of, eligible_indices=set(effective.index)
+        try:
+            flags = collect_flags()
+            store = merge_flags(store, flags)
+            n_new = len(store) - n_before
+            effective, _, _ = _project_effective_store(store)
+            store, n_graded, unreadable = mature_rows(
+                store, as_of, eligible_indices=set(effective.index)
+            )
+            _atomic_write_parquet(rows_path, store)
+        except Exception as exc:  # noqa: BLE001 — re-raised below, never swallowed
+            _emit_failed_advance(emit_path, rows_path, n_before, as_of, exc, store_repairs)
+            raise
+        advance = _advance_record(
+            ADVANCE_ADVANCED, as_of,
+            n_new_flags=int(n_new), n_newly_graded=int(n_graded),
+            n_rows=int(len(store)), store_repairs=store_repairs,
+            unreadable_flag_dates=unreadable,
         )
-        _atomic_write_parquet(rows_path, store)
+        if unreadable:
+            print(f"::warning title=bottom-ledger-unreadable-flag-date::{len(unreadable)} stored "
+                  f"row(s) can never mature — flag_date violates the ledger clock contract: "
+                  f"{'; '.join(sorted(unreadable)[:5])}", flush=True)
         if not quiet:
             print(f"[accrue] +{n_new} new flags (store {n_before}->{len(store)}); "
                   f"[mature] +{n_graded} newly graded rows -> {rows_path.name}")
     else:
         store = _sort_store(store)
+        advance = _advance_record(ADVANCE_READ_ONLY, as_of,
+                                  n_rows=int(len(store)), store_repairs=store_repairs)
         if not quiet:
             print(f"[read-only] store {len(store)} rows (no forward advance)")
 
     effective, n_integrity_excluded, integrity_error = _project_effective_store(store)
-    doc = build_emit(effective, as_of)
+    doc = build_emit(effective, as_of, advance)
     doc["integrity_projection"] = {
         "raw_rows": len(store),
         "effective_rows": len(effective),
@@ -817,11 +1019,23 @@ def main() -> None:
                          "never writes the real store)")
     ap.add_argument("--out-dir", default=None,
                     help="scratch dir for --force-local (default: a temp dir)")
-    ap.add_argument("--as-of", default=None, help="override as_of date (YYYY-MM-DD); default today")
+    ap.add_argument("--as-of", default=None,
+                    help="override as_of date (YYYY-MM-DD civil date; default: today's UTC "
+                         "civil date). A value carrying a clock/offset is read at its own "
+                         "offset's wall clock — see engine/ledger_clock.py")
     ap.add_argument("--quiet", action="store_true")
     args = ap.parse_args()
 
-    as_of = pd.Timestamp(args.as_of) if args.as_of else pd.Timestamp.utcnow().normalize()
+    # CLOCK CONTRACT: one derivation of "as_of", at one boundary. `today_ledger_date()` is the
+    # UTC civil date — the exact value the old `pd.Timestamp.utcnow().normalize()` produced,
+    # minus the tz-awareness that made every maturity comparison raise (and minus the pandas
+    # deprecation of `Timestamp.utcnow`). A malformed --as-of fails fast and loudly: a run that
+    # cannot say WHEN it is must not grade anything.
+    try:
+        as_of = to_ledger_date(args.as_of, field="--as-of") if args.as_of else today_ledger_date()
+    except ClockContractError as exc:
+        print(f"::error title=bottom-ledger-bad-as-of::{exc}", flush=True)
+        raise SystemExit(2) from exc
 
     if args.baseline:
         doc = build_baseline()

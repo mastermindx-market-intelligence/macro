@@ -1,0 +1,91 @@
+{
+  "activate": true,
+  "importance": 72,
+  "banner_days": 4,
+  "tone": "mixed",
+  "banner_title": "Trump touts $15B steel plant, $200B Korea energy deal, defense shipyard surge — reshoring tailwinds",
+  "banner_title_zh": "特朗普力推150亿美元钢厂、2000亿美元韩资能源协议及防务船厂扩张——本土化浪潮",
+  "summary": "The White House unveiled a package of industrial-policy wins — a $15B Iowa steel complex, a $200B South Korean energy/nuclear investment, Anduril's Arsenal-2 shipyard, and BD's $19B medical-manufacturing expansion — signaling sustained reshoring momentum across steel, defense, energy, and medtech.",
+  "summary_zh": "白宫公布一系列产业政策成果——150亿美元爱荷华州钢铁综合体、2000亿美元韩国能源/核能投资、Anduril的Arsenal-2造船厂以及BD的190亿美元医疗制造扩张——显示钢铁、防务、能源和医疗科技领域的本土化势头持续。",
+  "analysis": "This is a policy-signaling release rather than a new executive order: the White House is consolidating previously announced private commitments into a single narrative of industrial reshoring. The centerpiece for markets is the Mesabi Metallics $15B Iowa steel complex, explicitly attributed to the protective effect of Trump's steel tariffs. That makes the release a confirmation that tariff-driven capex is actually materializing — not just talk — which supports the 'reflation/reshoring' regime that has been a core driver of industrial and construction equities. The market transmission is straightforward: multi-year, capital-intensive projects in steel, nuclear, LNG, gas generation, transmission, shipbuilding, and medical device manufacturing create durable order books for engineering, construction, materials, and equipment suppliers. The $200B South Korean package is the largest single item; if executed, it is a structural boost for US nuclear construction capacity (eight plants), LNG infrastructure (Alaska LNG), and Texas gas power. Anduril's Arsenal-2 reinforces the defense-reshoring theme — private capital plus Navy funding into submarine component manufacturing. BD and AstraZeneca extend the reshoring story into medtech and pharma. The key uncertainty is execution: these are commitments and MOUs, not all fully funded or permitted. South Korean packages have historically over-promised; Mesabi has a checkered operational history. Markets will price the announcement premium but will need to see shovels in the ground to sustain it. The tone is mixed rather than a clean tailwind because foreign capital inflows and domestic capex are positive for industrial/construction names, but the explicit embrace of tariff-protected steel capacity is a mild headwind for steel-consuming manufacturers facing elevated input costs long-term.",
+  "sectors": [
+    {
+      "name": "Steel",
+      "impact": "tailwind",
+      "rationale": "Largest-ever US steel plant plus tariff-driven demand narrative supports domestic steel producers and construction demand."
+    },
+    {
+      "name": "Construction & Engineering",
+      "impact": "tailwind",
+      "rationale": "$15B steel complex, eight nuclear plants, LNG pipeline, and shipyard represent a multi-year capex pipeline for E&C firms."
+    },
+    {
+      "name": "Defense & Shipbuilding",
+      "impact": "tailwind",
+      "rationale": "Anduril's Arsenal-2 with Navy backing reshapes submarine-component capacity and defense industrial base."
+    },
+    {
+      "name": "Nuclear & Utilities",
+      "impact": "tailwind",
+      "rationale": "Eight large-scale nuclear plants and Alaska transmission investment support domestic nuclear construction and grid buildout."
+    },
+    {
+      "name": "Medtech & Pharma",
+      "impact": "tailwind",
+      "rationale": "BD's $19B and AstraZeneca's $1B investments affirm reshoring commitments in manufacturing and R&D."
+    },
+    {
+      "name": "Steel-consuming Manufacturers",
+      "impact": "headwind",
+      "rationale": "Entrenched tariff-protected steel pricing keeps input costs elevated for automakers and industrial goods makers."
+    }
+  ],
+  "tickers": [
+    {
+      "symbol": "NUE",
+      "direction": "benefit",
+      "rationale": "Largest US steel producer; directly benefits from tariff-protected pricing and the reshoring narrative."
+    },
+    {
+      "symbol": "STLD",
+      "direction": "benefit",
+      "rationale": "Major domestic steelmaker levered to US construction and infrastructure demand."
+    },
+    {
+      "symbol": "JCI",
+      "direction": "benefit",
+      "rationale": "Diversified engineering and construction leader with exposure to nuclear, LNG, and industrial projects."
+    },
+    {
+      "symbol": "FLR",
+      "direction": "benefit",
+      "rationale": "Engineering and construction firm with a large US government/defense and energy project franchise."
+    },
+    {
+      "symbol": "HII",
+      "direction": "benefit",
+      "rationale": "Major US shipbuilder; Navy submarine and shipyard capacity expansion is directly relevant."
+    },
+    {
+      "symbol": "CW",
+      "direction": "benefit",
+      "rationale": "Defense and shipbuilding components supplier exposed to naval industrial base growth."
+    },
+    {
+      "symbol": "BWXT",
+      "direction": "benefit",
+      "rationale": "US nuclear components and fuel supplier; new nuclear builds and Navy propulsion support long-term demand."
+    },
+    {
+      "symbol": "BDX",
+      "direction": "benefit",
+      "rationale": "Direct beneficiary of its own $19B US investment and 100% US needle manufacturing pledge."
+    },
+    {
+      "symbol": "PH",
+      "direction": "benefit",
+      "rationale": "Motion and control systems supplier with exposure to aerospace, defense, and industrial reshoring capex."
+    }
+  ],
+  "confidence": "medium"
+}

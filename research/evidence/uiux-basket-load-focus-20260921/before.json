@@ -1,0 +1,48 @@
+{
+  "method": "Local accepted HTML plus one delayed non-data image; actual window load, native Tab/Enter, no renderer invocation",
+  "before": {
+    "key": "recommend",
+    "wrapped": false,
+    "rows": [
+      "AVGO",
+      "MPWR",
+      "ANET",
+      "SMCI",
+      "MRVL",
+      "QCOM",
+      "NVDA",
+      "CBRS",
+      "ALAB",
+      "ARM",
+      "CRDO",
+      "AMD"
+    ]
+  },
+  "after": {
+    "key": null,
+    "tag": "BODY",
+    "wrapped": true,
+    "rows": [
+      "AVGO",
+      "MPWR",
+      "ANET",
+      "SMCI",
+      "MRVL",
+      "QCOM",
+      "NVDA",
+      "CBRS",
+      "ALAB",
+      "ARM",
+      "CRDO",
+      "AMD"
+    ],
+    "moves": [
+      {
+        "tag": "TABLE",
+        "key": "recommend",
+        "stack": "Error\n    at Node.appendChild (<anonymous>:2:372)\n    at http://127.0.0.1:50542/theme.js?v=48082a1e:5067:9\n    at NodeList.forEach (<anonymous>)\n    at wrapTables (http://127.0.0.1:50542/theme.js?v=48082a1e:5060:50)\n    at http://127.0.0.1:50542/theme.js?v=48082a1e:5135:64"
+      }
+    ]
+  },
+  "reproduced": true
+}

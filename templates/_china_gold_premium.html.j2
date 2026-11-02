@@ -1,0 +1,336 @@
+{# Gold-only China physical-premium panel. Expects g = d.china_gold_premium. #}
+{% set price_currency = g.get('price_currency') or 'USD' %}
+{% set chart_source = g.chart.get('display_source') if g.get('chart') else none %}
+{% set display_source = chart_source or 'canonical' %}
+{% if chart_source == 'proxy' %}
+  {% set history_rows = g.chart.get('proxy') or [] %}
+{% elif chart_source == 'canonical' %}
+  {% set history_rows = g.chart.get('canonical') or [] %}
+{% else %}
+  {% set history_rows = [] %}
+{% endif %}
+{% set sge_display = g.get('sge_price_oz') if g.get('sge_price_oz') is not none else g.get('sge_usd_oz') %}
+{% set reference_display = g.get('reference_price_oz') if g.get('reference_price_oz') is not none else g.get('london_usd_oz') %}
+{% if g.get('current_method') == 'close_proxy' %}
+  {% set proof_asof = g.get('close_proxy', {}).get('asof') %}
+{% elif g.get('current_method') == 'intraday' %}
+  {% set proof_asof = g.get('intraday', {}).get('asof') %}
+{% elif g.get('current_method') == 'canonical' %}
+  {% set proof_asof = g.get('canonical', {}).get('asof') %}
+{% else %}
+  {% set proof_asof = none %}
+{% endif %}
+<section class="panel cgp" id="gold-china-premium"
+         data-cgp-state="{{ g.state|default('unavailable') }}"
+         data-cgp-display-source="{{ display_source }}"
+         data-cgp-currency="{{ price_currency }}"
+         data-cgp-source-asof="{{ proof_asof or '' }}"
+         data-cgp-premium="{{ '%.6f'|format(g.get('premium_pct')) if g.get('premium_pct') is not none else '' }}"
+         aria-labelledby="cgp-title">
+  <div class="cgp-head">
+    <div>
+      <p class="kick"><span class="l-en">Physical market</span><span class="l-zh">实物市场</span></p>
+      <h3 id="cgp-title"><span class="l-en">China physical premium</span><span class="l-zh">中国实物黄金溢价</span></h3>
+      <p class="cgp-deck">
+        {% if g.current_method == 'close_proxy' %}
+        <span class="l-en">Shanghai Au99.99 versus global XAU/CNY at the Shanghai close.</span>
+        <span class="l-zh">上海 Au99.99 相对全球 XAU/CNY 的上海收盘价差。</span>
+        {% else %}
+        <span class="l-en">Shanghai versus London, currency-normalized.</span>
+        <span class="l-zh">上海相对伦敦，经汇率换算。</span>
+        {% endif %}
+      </p>
+    </div>
+    <div class="cgp-method-wrap">
+      <span class="cgp-method">
+        <span class="l-en">{{ g.methodology_label_en|default('China physical premium') }}</span>
+        <span class="l-zh">{{ g.methodology_label_zh|default('中国实物黄金溢价') }}</span>
+      </span>
+      {% if g.current_method == 'canonical' and g.canonical.available and not g.canonical.fresh %}
+      <span class="cgp-freshness cgp-stale">
+        <span class="l-en">Stale benchmark</span><span class="l-zh">基准数据已陈旧</span>
+      </span>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if g.available %}
+  <div class="cgp-hero">
+    <div class="cgp-number {{ 'cgp-positive' if g.premium_pct > 0 else ('cgp-negative' if g.premium_pct < 0 else 'cgp-flat') }}">
+      {{ '%+.2f%%'|format(g.premium_pct) }}
+    </div>
+    <span class="cgp-state cgp-state-{{ g.state }}">
+      <span class="l-en">{{ g.state_en }}</span><span class="l-zh">{{ g.state_zh }}</span>
+    </span>
+  </div>
+
+  <p class="cgp-stance">
+    {% if g.state == 'premium' %}
+      <span class="l-en">Shanghai is priced above {{ 'global spot' if g.current_method == 'close_proxy' else 'London' }} — firmer local physical-market pricing. The gap can reflect demand, import constraints, supply, or market structure. Context, not an entry signal.</span>
+      <span class="l-zh">上海价格高于{{ '全球现货' if g.current_method == 'close_proxy' else '伦敦' }}——本地实物市场定价更强。该价差可能反映需求、进口约束、供应或市场结构。仅作背景，不是入场信号。</span>
+    {% elif g.state == 'discount' %}
+      <span class="l-en">Shanghai is priced below {{ 'global spot' if g.current_method == 'close_proxy' else 'London' }} — softer local physical-market pricing. The gap can reflect demand, import constraints, supply, or market structure. Context, not an entry signal.</span>
+      <span class="l-zh">上海价格低于{{ '全球现货' if g.current_method == 'close_proxy' else '伦敦' }}——本地实物市场定价偏弱。该价差可能反映需求、进口约束、供应或市场结构。仅作背景，不是入场信号。</span>
+    {% else %}
+      <span class="l-en">Shanghai and {{ 'global spot' if g.current_method == 'close_proxy' else 'London' }} are near parity. Relative pricing can still shift with demand, import constraints, supply, or market structure. Context, not an entry signal.</span>
+      <span class="l-zh">上海与{{ '全球现货' if g.current_method == 'close_proxy' else '伦敦' }}接近平价。相对定价仍可能受需求、进口约束、供应或市场结构影响。仅作背景，不是入场信号。</span>
+    {% endif %}
+  </p>
+
+  <div class="cgp-stats" aria-label="China premium statistics">
+    <div><span class="cgp-k"><span class="l-en">5-session avg</span><span class="l-zh">5期均值</span></span>
+      <strong>{{ '%+.2f%%'|format(g.stats.avg_5) if g.stats.avg_5 is not none else '—' }}</strong></div>
+    <div><span class="cgp-k"><span class="l-en">30-session range</span><span class="l-zh">30期区间</span></span>
+      <strong>{% if g.stats.range_30 %}{{ '%+.2f%%'|format(g.stats.range_30[0]) }} / {{ '%+.2f%%'|format(g.stats.range_30[1]) }}{% else %}—{% endif %}</strong></div>
+    <div><span class="cgp-k"><span class="l-en">{{ 'Shanghai CNY/oz' if price_currency == 'CNY' else 'Shanghai USD-eq' }}</span><span class="l-zh">{{ '上海人民币/盎司' if price_currency == 'CNY' else '上海美元等值' }}</span></span>
+      <strong class="cgp-gold">{{ '¥' if price_currency == 'CNY' else '$' }}{{ '{:,.2f}'.format(sge_display) }}</strong></div>
+    <div><span class="cgp-k"><span class="l-en">{{ 'Global spot CNY/oz' if price_currency == 'CNY' else 'London reference' }}</span><span class="l-zh">{{ '全球现货人民币/盎司' if price_currency == 'CNY' else '伦敦参考价' }}</span></span>
+      <strong>{{ '¥' if price_currency == 'CNY' else '$' }}{{ '{:,.2f}'.format(reference_display) }}</strong></div>
+  </div>
+
+  {% if (chart_source == 'canonical' and g.chart.canonical) or (chart_source == 'proxy' and g.chart.get('proxy')) %}
+  <div class="cgp-controls" aria-label="China premium chart mode">
+    <div class="cgp-mode-tabs" role="group" aria-label="Chart metric">
+      <button type="button" class="cgp-btn is-active" data-cgp-mode="premium"><span class="l-en">% Premium</span><span class="l-zh">溢价率 %</span></button>
+      <button type="button" class="cgp-btn" data-cgp-mode="spread"><span class="l-en">{{ 'CNY/oz Spread' if price_currency == 'CNY' else '$/oz Spread' }}</span><span class="l-zh">{{ '人民币/盎司价差' if price_currency == 'CNY' else '美元/盎司价差' }}</span></button>
+      <button type="button" class="cgp-btn" data-cgp-mode="price"><span class="l-en">Price Level</span><span class="l-zh">价格水平</span></button>
+    </div>
+    <div class="cgp-range-tabs" role="group" aria-label="Chart range">
+      {% for key,label in [('1W','1W'),('1M','1M'),('3M','3M'),('6M','6M'),('1Y','1Y'),('3Y','3Y'),('MAX','Max')] %}
+      <button type="button" class="cgp-btn cgp-range{{ ' is-active' if key == '1M' else '' }}" data-cgp-range="{{ key }}">{{ label }}</button>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="cgp-chart-wrap" data-cgp-series='{{ g.chart | tojson }}'>
+    <svg class="cgp-chart" viewBox="0 0 800 260" role="img" aria-labelledby="cgp-chart-title cgp-chart-desc">
+      <title id="cgp-chart-title">China physical gold premium history</title>
+      <desc id="cgp-chart-desc">Canonical benchmark and indicative proxy histories remain methodologically separate.</desc>
+      <g class="cgp-grid">
+        <line x1="54" y1="28" x2="770" y2="28"></line>
+        <line x1="54" y1="126" x2="770" y2="126"></line>
+        <line x1="54" y1="224" x2="770" y2="224"></line>
+      </g>
+      <line class="cgp-zero" x1="54" x2="770" y1="126" y2="126"></line>
+      <path class="cgp-line cgp-line-pos" d=""></path>
+      <path class="cgp-line cgp-line-neg" d=""></path>
+      <path class="cgp-line cgp-line-main" d=""></path>
+      <path class="cgp-line cgp-line-alt" d=""></path>
+      <path class="cgp-line cgp-line-avg" d=""></path>
+      <text class="cgp-axis cgp-y-top" x="776" y="32"></text>
+      <text class="cgp-axis cgp-y-mid" x="776" y="130"></text>
+      <text class="cgp-axis cgp-y-bottom" x="776" y="228"></text>
+      <text class="cgp-axis cgp-x-left" x="54" y="250"></text>
+      <text class="cgp-axis cgp-x-right" x="770" y="250" text-anchor="end"></text>
+    </svg>
+    <div class="cgp-legend">
+      <span class="cgp-leg cgp-leg-main" data-cgp-legend-main
+            data-en-premium="Premium / discount" data-zh-premium="溢价 / 折价"
+            data-en-spread="Premium spread" data-zh-spread="溢价价差"
+            data-en-price="Shanghai price" data-zh-price="上海价格">
+        <i></i><span class="l-en">Premium / discount</span><span class="l-zh">溢价 / 折价</span>
+      </span>
+      <span class="cgp-leg cgp-leg-avg" data-cgp-legend-avg>
+        <i></i><span class="l-en">5-session avg</span><span class="l-zh">5期均值</span>
+      </span>
+      <span class="cgp-leg cgp-leg-alt" data-cgp-legend-alt hidden
+            data-en-price="{{ 'Global spot reference' if price_currency == 'CNY' else 'London reference' }}"
+            data-zh-price="{{ '全球现货参考价' if price_currency == 'CNY' else '伦敦参考价' }}">
+        <i></i><span class="l-en">{{ 'Global spot reference' if price_currency == 'CNY' else 'London reference' }}</span><span class="l-zh">{{ '全球现货参考价' if price_currency == 'CNY' else '伦敦参考价' }}</span>
+      </span>
+    </div>
+  </div>
+
+  <details class="cgp-data">
+    <summary><span class="l-en">View data table</span><span class="l-zh">查看数据表</span></summary>
+    <div class="cgp-data-scroll" tabindex="0">
+      <table class="cgp-data-table">
+        <caption><span class="l-en">China gold premium history table</span><span class="l-zh">中国黄金溢价历史表</span></caption>
+        <thead>
+          <tr>
+            <th scope="col"><span class="l-en">Observation</span><span class="l-zh">观测日期</span></th>
+            <th scope="col"><span class="l-en">Premium %</span><span class="l-zh">溢价率 %</span></th>
+            <th scope="col"><span class="l-en">Spread / oz</span><span class="l-zh">每盎司价差</span></th>
+            <th scope="col"><span class="l-en">Shanghai / oz</span><span class="l-zh">上海 / 盎司</span></th>
+            <th scope="col"><span class="l-en">Reference / oz</span><span class="l-zh">参考价 / 盎司</span></th>
+            <th scope="col"><span class="l-en">5-session avg</span><span class="l-zh">5期均值</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in history_rows[-120:] %}
+          <tr>
+            <th scope="row">{{ row.get('date') or row.get('ts') or '—' }}</th>
+            <td>{{ '%+.2f%%'|format(row.get('premium_pct')) if row.get('premium_pct') is not none else '—' }}</td>
+            <td>{{ '%+.2f'|format(row.get('spread_price_oz')) if row.get('spread_price_oz') is not none else '—' }}</td>
+            <td>{{ '{:,.2f}'.format(row.get('sge_price_oz')) if row.get('sge_price_oz') is not none else '—' }}</td>
+            <td>{{ '{:,.2f}'.format(row.get('reference_price_oz')) if row.get('reference_price_oz') is not none else '—' }}</td>
+            <td>{{ '%+.2f%%'|format(row.get('ma5_pct')) if row.get('ma5_pct') is not none else '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if history_rows|length > 120 %}
+    <p class="cgp-note"><span class="l-en">Showing the latest 120 observations.</span><span class="l-zh">显示最近120个观测值。</span></p>
+    {% endif %}
+  </details>
+  {% endif %}
+  {% if g.current_method == 'intraday' and chart_source is none %}
+  <p class="cgp-note cgp-history-note">
+    <span class="l-en">No compatible history for this intraday method yet. Proxy history remains methodologically separate.</span>
+    <span class="l-zh">当前日内方法尚无兼容的历史序列。代理历史仍按方法严格分离。</span>
+  </p>
+  {% endif %}
+
+  <details class="cgp-details">
+    <summary><span class="l-en">Method & sources</span><span class="l-zh">方法与数据源</span></summary>
+    <div class="cgp-detail-grid">
+      <div><span class="cgp-k"><span class="l-en">Canonical</span><span class="l-zh">官方基准</span></span>
+        <span>SHAUPM → USD/oz vs LBMA Gold Price AM</span></div>
+      <div><span class="cgp-k"><span class="l-en">Formula</span><span class="l-zh">公式</span></span>
+        <span>(SGE RMB/g × 31.1034768 ÷ USDCNY ÷ London − 1) × 100</span></div>
+      <div><span class="cgp-k"><span class="l-en">Canonical as of</span><span class="l-zh">官方基准截至</span></span>
+        <span>{{ g.canonical.asof or '—' }}{% if g.canonical.fresh %} · <span class="l-en">fresh</span><span class="l-zh">最新</span>{% endif %}</span></div>
+      <div><span class="cgp-k"><span class="l-en">Sources</span><span class="l-zh">数据源</span></span>
+        <span>{{ g.canonical.sources|join(' · ') if g.canonical.sources else '—' }}</span></div>
+      {% if g.close_proxy is defined and g.close_proxy.available %}
+      <div><span class="cgp-k"><span class="l-en">Shanghai-close proxy</span><span class="l-zh">上海收盘代理</span></span>
+        <span>{{ g.close_proxy.asof }} · {{ g.close_proxy.sources|join(' · ') }}</span></div>
+      <div><span class="cgp-k"><span class="l-en">Proxy formula</span><span class="l-zh">代理公式</span></span>
+        <span>(SGE RMB/g × 31.1034768 ÷ global XAU/CNY − 1) × 100</span></div>
+      {% endif %}
+      {% if g.intraday.available %}
+      <div><span class="cgp-k"><span class="l-en">Intraday snapshot</span><span class="l-zh">日内快照</span></span>
+        <span>{{ g.intraday.asof }} · {{ g.intraday.sources|join(' · ') }}</span></div>
+      {% endif %}
+    </div>
+    <p class="cgp-note">
+      <span class="l-en">Indicative Au99.99/spot methods are kept separate from the official daily benchmark history and never change commodity conviction or allocation.</span>
+      <span class="l-zh">Au99.99/现货指示性方法与官方日度基准历史严格分离，也不会改变商品信念度或配置。</span>
+    </p>
+  </details>
+
+  <script>
+  (function(){
+    var root=document.currentScript && document.currentScript.closest('.cgp');
+    if(!root) return;
+    var box=root.querySelector('[data-cgp-series]');
+    var svg=root.querySelector('.cgp-chart');
+    if(!box || !svg) return;
+    var payload;
+    try { payload=JSON.parse(box.getAttribute('data-cgp-series')); } catch(e) { return; }
+    var canonical=(payload && payload.canonical)||[];
+    var proxy=(payload && payload.proxy)||[];
+    var displaySource=(payload && payload.display_source)||'canonical';
+    var series=displaySource==='proxy' ? proxy : canonical;
+    if(!series.length) return;
+    var currency=root.getAttribute('data-cgp-currency')||'USD';
+    var mode='premium', range='1M';
+    var rangeDays={ '1W':7, '1M':31, '3M':93, '6M':186, '1Y':366, '3Y':1096 };
+    var mainLegend=root.querySelector('[data-cgp-legend-main]');
+    var avg=root.querySelector('[data-cgp-legend-avg]');
+    var alt=root.querySelector('[data-cgp-legend-alt]');
+
+    function legendLabel(el,key){
+      if(!el) return;
+      var en=el.querySelector('.l-en'), zh=el.querySelector('.l-zh');
+      if(en) en.textContent=el.getAttribute('data-en-'+key)||'';
+      if(zh) zh.textContent=el.getAttribute('data-zh-'+key)||'';
+    }
+    function updateLegend(){
+      var key=mode==='price'?'price':(mode==='spread'?'spread':'premium');
+      legendLabel(mainLegend,key);
+      avg.hidden=mode!=='premium';
+      alt.hidden=mode!=='price';
+      if(mode==='price') legendLabel(alt,'price');
+    }
+
+    function rowsForRange(){
+      if(range==='MAX') return series.slice();
+      var end=new Date(series[series.length-1].date+'T00:00:00Z');
+      var cutoff=new Date(end.getTime()-rangeDays[range]*86400000);
+      var rows=series.filter(function(r){return new Date(r.date+'T00:00:00Z')>=cutoff;});
+      return rows.length>1 ? rows : series.slice(-Math.min(2,series.length));
+    }
+    function path(rows,key,min,max,sign){
+      var d='', pen=false, n=Math.max(1,rows.length-1), span=(max-min)||1;
+      rows.forEach(function(r,i){
+        var v=Number(r[key]);
+        var allowed=isFinite(v) && (sign==null || (sign>0 ? v>=0 : v<0));
+        if(!allowed){ pen=false; return; }
+        var x=54+(i/n)*716, y=224-((v-min)/span)*196;
+        d+=(pen?' L':' M')+x.toFixed(1)+','+y.toFixed(1); pen=true;
+      });
+      return d;
+    }
+    function fmt(v){
+      if(mode==='price') return (currency==='CNY'?'¥':'$')+Math.round(v).toLocaleString();
+      if(mode==='spread') return (v>=0?'+':'')+v.toFixed(1);
+      return (v>=0?'+':'')+v.toFixed(2)+'%';
+    }
+    function draw(){
+      var rows=rowsForRange();
+      var keys=mode==='price' ? ['sge_price_oz','reference_price_oz'] : [mode==='spread'?'spread_price_oz':'premium_pct'];
+      var vals=[];
+      rows.forEach(function(r){keys.forEach(function(k){var v=Number(r[k]);if(isFinite(v)) vals.push(v);});});
+      if(!vals.length) return;
+      var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals);
+      if(mode!=='price'){ min=Math.min(min,0); max=Math.max(max,0); }
+      var pad=(max-min)*0.08 || Math.max(Math.abs(max)*0.08,0.1);
+      min-=pad; max+=pad;
+
+      var pos=svg.querySelector('.cgp-line-pos'), neg=svg.querySelector('.cgp-line-neg');
+      var main=svg.querySelector('.cgp-line-main'), alt=svg.querySelector('.cgp-line-alt');
+      var avg=svg.querySelector('.cgp-line-avg'), zero=svg.querySelector('.cgp-zero');
+      pos.setAttribute('d',''); neg.setAttribute('d',''); main.setAttribute('d',''); alt.setAttribute('d',''); avg.setAttribute('d','');
+
+      if(mode==='price'){
+        main.setAttribute('d',path(rows,'sge_price_oz',min,max,null));
+        alt.setAttribute('d',path(rows,'reference_price_oz',min,max,null));
+        zero.setAttribute('visibility','hidden');
+      } else {
+        var key=mode==='spread'?'spread_price_oz':'premium_pct';
+        // A full underlay keeps the series continuous at zero crossings; the
+        // sign-specific strokes above it provide the semantic color.
+        main.setAttribute('d',path(rows,key,min,max,null));
+        pos.setAttribute('d',path(rows,key,min,max,1));
+        neg.setAttribute('d',path(rows,key,min,max,-1));
+        if(mode==='premium') avg.setAttribute('d',path(rows,'ma5_pct',min,max,null));
+        var zy=224-((0-min)/(max-min))*196;
+        zero.setAttribute('y1',zy.toFixed(1)); zero.setAttribute('y2',zy.toFixed(1));
+        zero.setAttribute('visibility','visible');
+      }
+      svg.querySelector('.cgp-y-top').textContent=fmt(max);
+      svg.querySelector('.cgp-y-mid').textContent=fmt((max+min)/2);
+      svg.querySelector('.cgp-y-bottom').textContent=fmt(min);
+      svg.querySelector('.cgp-x-left').textContent=rows[0].date.slice(5);
+      svg.querySelector('.cgp-x-right').textContent=rows[rows.length-1].date.slice(5);
+      updateLegend();
+      root.setAttribute('data-cgp-mode',mode);
+    }
+
+    root.querySelectorAll('[data-cgp-mode]').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        root.querySelectorAll('[data-cgp-mode]').forEach(function(x){x.classList.remove('is-active');});
+        btn.classList.add('is-active'); mode=btn.getAttribute('data-cgp-mode'); draw();
+      });
+    });
+    root.querySelectorAll('[data-cgp-range]').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        root.querySelectorAll('[data-cgp-range]').forEach(function(x){x.classList.remove('is-active');});
+        btn.classList.add('is-active'); range=btn.getAttribute('data-cgp-range'); draw();
+      });
+    });
+    draw();
+  })();
+  </script>
+  {% else %}
+  <div class="cgp-empty">
+    <strong><span class="l-en">Benchmark feed unavailable</span><span class="l-zh">基准数据暂不可用</span></strong>
+    <p><span class="l-en">{{ g.reason_en|default('Entitled Shanghai/London benchmark sources are not configured yet.') }}</span>
+       <span class="l-zh">{{ g.reason_zh|default('尚未配置已获授权的上海／伦敦基准数据源。') }}</span></p>
+    <p class="cgp-note"><span class="l-en">No futures, ETF, or unofficial web quote is substituted.</span>
+       <span class="l-zh">不会用期货、ETF或非官方网页报价替代。</span></p>
+  </div>
+  {% endif %}
+</section>

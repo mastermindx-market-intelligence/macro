@@ -1,0 +1,712 @@
+{
+  "asof": "2026-09-21",
+  "authority_ceiling": "research_internal_only",
+  "availability": {
+    "reason": null,
+    "state": "OK"
+  },
+  "canonical_mapping": {
+    "state": "SUBJECT_IS_CANONICAL",
+    "theme_node_ids": [
+      "theme:grid_electrification"
+    ]
+  },
+  "counts": {
+    "future_beliefs_excluded": 0,
+    "proposals": 0,
+    "relations": 14
+  },
+  "curation": {
+    "counts": {
+      "proposed": 0,
+      "ratified": 0,
+      "rejected": 0
+    },
+    "proposal_ids": [],
+    "state": "NONE"
+  },
+  "knowledge_cutoff": "2026-09-21",
+  "limitations": [
+    "exact node_id only; labels are never fuzzy-matched",
+    "probation proposals have zero graph authority",
+    "internal research projection; public display still requires the cited rights receipts",
+    "no ranking, scoring, selection, trade, or ThemeState authority"
+  ],
+  "node_id": "theme:grid_electrification",
+  "ordering": "type,direction,peer_node_id,edge_id; never score",
+  "proposals": [],
+  "relations": [
+    {
+      "belief_time": "2026-08-11",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets:power_grid->theme:grid_electrification@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "power_grid",
+          "suite": "baskets"
+        },
+        "kind": "basket",
+        "market_scope": "us",
+        "merged_into": null,
+        "name_en": "Power & Grid Buildout",
+        "name_zh": "电力与电网",
+        "node_id": "basket:baskets:power_grid",
+        "provenance": "membership_doc:baskets",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets:power_grid",
+      "rights": [
+        {
+          "family": "mastermind_curated",
+          "public_display_allowed": true,
+          "rights_class": "direct_display_ok"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets_china_ths:ths_storage_ess->theme:grid_electrification@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "ths_storage_ess",
+          "suite": "baskets_china_ths",
+          "ths_code": "306380"
+        },
+        "kind": "basket",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": "Energy Storage",
+        "name_zh": "储能",
+        "node_id": "basket:baskets_china_ths:ths_storage_ess",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets_china_ths:ths_storage_ess",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets_china_ths:ths_uhv->theme:grid_electrification@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "ths_uhv",
+          "suite": "baskets_china_ths",
+          "ths_code": "300353"
+        },
+        "kind": "basket",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": "Ultra-High Voltage",
+        "name_zh": "特高压",
+        "node_id": "basket:baskets_china_ths:ths_uhv",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets_china_ths:ths_uhv",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets_china_ths:ths_vpp->theme:grid_electrification@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "ths_vpp",
+          "suite": "baskets_china_ths",
+          "ths_code": "308761"
+        },
+        "kind": "basket",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": "Virtual Power Plant",
+        "name_zh": "虚拟电厂",
+        "node_id": "basket:baskets_china_ths:ths_vpp",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets_china_ths:ths_vpp",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets_china_ths:thsc300037->theme:grid_electrification@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "thsc300037",
+          "suite": "baskets_china_ths",
+          "ths_code": "300037"
+        },
+        "kind": "basket",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": "Smart Grid",
+        "name_zh": "智能电网",
+        "node_id": "basket:baskets_china_ths:thsc300037",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets_china_ths:thsc300037",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets_china_ths:thsc308753->theme:grid_electrification@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "thsc308753",
+          "suite": "baskets_china_ths",
+          "ths_code": "308753"
+        },
+        "kind": "basket",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": "Pumped Hydro Storage",
+        "name_zh": "抽水蓄能",
+        "node_id": "basket:baskets_china_ths:thsc308753",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets_china_ths:thsc308753",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets_china_ths:thsc308810->theme:grid_electrification@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "thsc308810",
+          "suite": "baskets_china_ths",
+          "ths_code": "308810"
+        },
+        "kind": "basket",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": "Flexible HVDC Transmission",
+        "name_zh": "柔性直流输电",
+        "node_id": "basket:baskets_china_ths:thsc308810",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets_china_ths:thsc308810",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:300037->theme:grid_electrification@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "300037"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "智能电网",
+        "node_id": "ltheme:ths:300037",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "智能电网",
+          "source_local_id": "300037",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:300037",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:300353->theme:grid_electrification@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "300353"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "特高压",
+        "node_id": "ltheme:ths:300353",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "特高压",
+          "source_local_id": "300353",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:300353",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:306380->theme:grid_electrification@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "306380"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "储能",
+        "node_id": "ltheme:ths:306380",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "储能",
+          "source_local_id": "306380",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:306380",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:308477->theme:grid_electrification@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "308477"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "电力物联网",
+        "node_id": "ltheme:ths:308477",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "电力物联网",
+          "source_local_id": "308477",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:308477",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:308753->theme:grid_electrification@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "308753"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "抽水蓄能",
+        "node_id": "ltheme:ths:308753",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "抽水蓄能",
+          "source_local_id": "308753",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:308753",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:308761->theme:grid_electrification@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "308761"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "虚拟电厂",
+        "node_id": "ltheme:ths:308761",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "虚拟电厂",
+          "source_local_id": "308761",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:308761",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:308810->theme:grid_electrification@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "308810"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "柔性直流输电",
+        "node_id": "ltheme:ths:308810",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "柔性直流输电",
+          "source_local_id": "308810",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:308810",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    }
+  ],
+  "schema": "gmi.theme_ontology_neighborhood/v1",
+  "subject": {
+    "external_ids": {
+      "foresight_id": "grid_electrification"
+    },
+    "kind": "theme",
+    "market_scope": "global",
+    "merged_into": null,
+    "name_en": "Grid & Electrification",
+    "name_zh": "电网与电气化",
+    "node_id": "theme:grid_electrification",
+    "provenance": "crosswalk:config/theme_crosswalk.yml",
+    "source_meta": null,
+    "status": "canonical",
+    "tier": "theme"
+  }
+}

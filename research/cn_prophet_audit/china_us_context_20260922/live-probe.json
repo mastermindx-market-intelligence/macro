@@ -1,0 +1,35 @@
+{
+  "us": {
+    "url": "https://www.mastermind-x.com/basketdata/baskets.json",
+    "error": "HTTPError",
+    "detail": "HTTP Error 401: Authorization Required"
+  },
+  "china": {
+    "url": "https://www.mastermind-x.com/chinabasketdata/baskets.json",
+    "error": "HTTPError",
+    "detail": "HTTP Error 401: Authorization Required"
+  },
+  "observed_at_utc": "2026-09-23T01:18:23.233571+00:00",
+  "context_status": "UNAVAILABLE",
+  "context_sources": {
+    "us": {
+      "path": "site/basketdata/baskets.json",
+      "sha256": null,
+      "observation_session": null,
+      "expected_session": "2026-09-22",
+      "observed_at_utc": "2026-09-23T01:18:23.233571+00:00",
+      "status": "MISSING",
+      "availability_basis": "current_read_only"
+    },
+    "china": {
+      "path": "site/chinabasketdata/baskets.json",
+      "sha256": null,
+      "observation_session": null,
+      "expected_session": "2026-09-22",
+      "observed_at_utc": "2026-09-23T01:18:23.233571+00:00",
+      "status": "MISSING",
+      "availability_basis": "current_read_only"
+    }
+  },
+  "theme_states": {}
+}

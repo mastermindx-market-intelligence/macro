@@ -130,6 +130,51 @@ def test_incremental_already_current_short_circuits(store):
     assert store["calls"] == []
 
 
+def test_already_current_refreshes_stale_manifest(store):
+    """An already-current run must reconcile the committed manifest with the store on
+    disk: an R2 restore can hold days a cancelled run fetched but never committed, and
+    publish_r2 would ship the stale anchor beside a larger store (10-11 incident)."""
+    msd.backfill(start=DAYS[0], end=DAYS[9])
+    n_true = sum(1 for _ in msd.iter_artifact_paths(msd._store_dir()))
+    msd._manifest_path().write_text(json.dumps({
+        "store": "massive_stock_day",
+        "n_tickers": n_true - 6,
+        "latest_date": DAYS[4].isoformat(),
+        "updated_at": "2026-10-07T00:00:00+00:00",
+    }))
+    store["calls"].clear()
+    r = msd.run_incremental()
+    assert r.get("already_current") is True
+    assert store["calls"] == []
+    mf = json.loads(msd._manifest_path().read_text())
+    assert mf["n_tickers"] == sum(1 for _ in msd.iter_artifact_paths(msd._store_dir()))
+    assert mf["latest_date"] == max(msd._processed_days()).isoformat()
+
+
+def test_already_current_leaves_coherent_manifest_bytes_untouched(store):
+    """Idempotence: a coherent manifest is NOT rewritten on the already-current path —
+    an updated_at-only git diff every quiet nightly would be churn."""
+    msd.backfill(start=DAYS[0], end=DAYS[9])
+    before = msd._manifest_path().read_bytes()
+    store["calls"].clear()
+    r = msd.run_incremental()
+    assert r.get("already_current") is True
+    assert msd._manifest_path().read_bytes() == before
+
+
+def test_already_current_rewrites_missing_manifest(store):
+    """A missing manifest must be rebuilt too — its absence is the worst incoherence:
+    publish_r2 has no anchor at all to embed beside the store count."""
+    msd.backfill(start=DAYS[0], end=DAYS[9])
+    msd._manifest_path().unlink()
+    store["calls"].clear()
+    r = msd.run_incremental()
+    assert r.get("already_current") is True
+    mf = json.loads(msd._manifest_path().read_text())
+    assert mf["n_tickers"] == sum(1 for _ in msd.iter_artifact_paths(msd._store_dir()))
+    assert mf["latest_date"] == max(msd._processed_days()).isoformat()
+
+
 def test_legacy_v1_state_migrated_from_parquets_not_trusted(store):
     """A v1 state whose scalar claims the tip must be rebuilt from actual content."""
     msd.backfill(start=DAYS[0], end=DAYS[2])

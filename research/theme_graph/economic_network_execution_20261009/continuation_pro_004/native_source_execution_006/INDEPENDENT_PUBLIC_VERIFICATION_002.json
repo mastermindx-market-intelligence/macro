@@ -1,0 +1,273 @@
+{
+  "authentication_limit": "Content identities and consistent owner receipts do not self-authenticate provider truth, reviewer independence, contractual rights, historical publication, legal identity, or production authority.",
+  "authority": {
+    "context_only": true,
+    "horizon_role": "context",
+    "may_append_outcome": false,
+    "may_escalate": false,
+    "may_execute": false,
+    "may_gate": false,
+    "may_originate": false,
+    "may_rank": false,
+    "may_select_options_candidate": false,
+    "may_size": false,
+    "may_trade": false,
+    "may_train_prophet": false,
+    "may_write_options_episode": false,
+    "proposal_weight": 0,
+    "tier": "display"
+  },
+  "boundaries": {
+    "D_close_price_and_currency": "NOT_SUPPLIED",
+    "Graph1": null,
+    "K_public_vintage": "UNPROVED",
+    "Sol_CEO_architectural_adjudication": "NOT_ASSERTED",
+    "WP02_real_cohort": "NOT_ADMITTED",
+    "canonical_issuer_class_and_shares": "NOT_ADMITTED",
+    "gating": false,
+    "global_population_and_relative_cap": "NOT_ADMITTED",
+    "prediction": false,
+    "production_activation": false,
+    "ranking": false,
+    "sizing": false,
+    "source_registry_modified": false,
+    "trading": false
+  },
+  "clocks": {
+    "child_finished": {
+      "native_ns": "1791559136140644000",
+      "utc_display": "2026-10-09T15:18:56.140644000Z"
+    },
+    "child_started": {
+      "native_ns": "1791559129859112000",
+      "utc_display": "2026-10-09T15:18:49.859112000Z"
+    },
+    "outer_finished": {
+      "native_ns": "1791559141409435000",
+      "utc_display": "2026-10-09T15:19:01.409435000Z"
+    },
+    "outer_started": {
+      "native_ns": "1791559128262346000",
+      "utc_display": "2026-10-09T15:18:48.262346000Z"
+    },
+    "owner_intake_started": {
+      "native_ns": "1791559136121027000",
+      "utc_display": "2026-10-09T15:18:56.121027000Z"
+    },
+    "owner_receipt_assembled": {
+      "native_ns": "1791559136130442000",
+      "utc_display": "2026-10-09T15:18:56.130442000Z"
+    },
+    "producer_completed": {
+      "native_ns": "1791559136120920000",
+      "utc_display": "2026-10-09T15:18:56.120920000Z"
+    },
+    "producer_started": {
+      "native_ns": "1791559135461959000",
+      "utc_display": "2026-10-09T15:18:55.461959000Z"
+    },
+    "read_completed": {
+      "native_ns": "1791559136137306000",
+      "utc_display": "2026-10-09T15:18:56.137306000Z"
+    },
+    "read_started": {
+      "native_ns": "1791559136136389000",
+      "utc_display": "2026-10-09T15:18:56.136389000Z"
+    },
+    "request_started": {
+      "native_ns": "1791559135462023000",
+      "utc_display": "2026-10-09T15:18:55.462023000Z"
+    },
+    "response_completed": {
+      "native_ns": "1791559136120837000",
+      "utc_display": "2026-10-09T15:18:56.120837000Z"
+    }
+  },
+  "count_basis": {
+    "http_statuses": [
+      200
+    ],
+    "producer_calls": 1,
+    "provider_request_count_independently_network_instrumented": false,
+    "recorded_pages": 1,
+    "recorded_response_bytes": 76,
+    "requested_cases": 1,
+    "rows_received": 0,
+    "rows_retained": 0,
+    "same_artifact_intake_repeats": 1,
+    "selected_cohort_cases": 0
+  },
+  "evidence_limit": "Native operations are principal executions bound by archived source/tool/public receipts; this reviewer performed only local public-evidence arithmetic.",
+  "first_refusal_preserved": true,
+  "imported_repository_source_count": 21,
+  "input_bindings": [
+    {
+      "byte_length": 88492,
+      "path": "native_massive_us_feasibility_v1/READ_003_COMPLETION.json",
+      "sha256": "ca7f2bdc58d92db336eecb2f5548e54600d4b787ca7bc99ae0e434a27de37757"
+    },
+    {
+      "byte_length": 12773,
+      "path": "native_massive_us_feasibility_v1/READ_008_COMPLETION.json",
+      "sha256": "d602c804501b9584f584abb3643d01dcccf13856ca3e70217c8195b74874660c"
+    },
+    {
+      "byte_length": 15589,
+      "path": "native_massive_us_feasibility_v1/SOURCE_PINS.json",
+      "sha256": "a4846212a1c7c6ea73f2be59e8dd8dc07a21232db8e99b8cc32b2c9be905ff8f"
+    },
+    {
+      "byte_length": 16454,
+      "path": "native_mu_capture_principal_v1/PUBLIC_RESULT.json",
+      "sha256": "9e9a8368a7ecfb38bcbf1f1e7ca71ae29b242aa55f4cf293492c5da472190483"
+    },
+    {
+      "byte_length": 18367,
+      "path": "native_mu_capture_principal_v1/run_native_mu_capture_001.py",
+      "sha256": "6fe0f67b7335b31ef3e4a3eb9a914ac1557236689deb563ac8887b5bd2d53439"
+    },
+    {
+      "byte_length": 38556,
+      "path": "native_mu_capture_principal_v2/LAUNCH_COMMAND_002.json",
+      "sha256": "fca5a4679074c756405ac4dbb9522bea6b33acde7ebdf24331ce9b1e0aa8067c"
+    },
+    {
+      "byte_length": 30342,
+      "path": "native_mu_capture_principal_v2/LAUNCH_WRAPPER_002.py",
+      "sha256": "f6469aa370e6b78c48496a521bb943205b9523b75c2952ef79275ba9d828c58a"
+    },
+    {
+      "byte_length": 1805,
+      "path": "native_mu_capture_principal_v2/NATIVE_COMPLETION_002.json",
+      "sha256": "f88504ff9a60c4914598f0a11c1887c4275c689327cd09e35d5e081d884fbd0f"
+    },
+    {
+      "byte_length": 680,
+      "path": "native_mu_capture_principal_v2/NATIVE_START_002.json",
+      "sha256": "0e9498907fd0e04a0553348c477044421220f84776a57809b7e47a458be20635"
+    },
+    {
+      "byte_length": 3987,
+      "path": "native_mu_capture_principal_v2/OUTER_READ_TOOL_RESULT_002.json",
+      "sha256": "1f3f38941d47e22cbca8053aae96646f5b02744f43e6a3f508f4888c5bf91ed4"
+    },
+    {
+      "byte_length": 3405,
+      "path": "native_mu_capture_principal_v2/OUTER_RESULT_002.json",
+      "sha256": "ee07bb7e324f9fe00495832afdf482ba13668584ea7ddea6ebaecdbd022e7b52"
+    },
+    {
+      "byte_length": 3506,
+      "path": "native_mu_capture_principal_v2/OWNER_METADATA_COMPLETION_002.json",
+      "sha256": "4ed442350a5c48b4b020aeb2d97b6f1331ec57b1da95684140b1d7fabd4130b8"
+    },
+    {
+      "byte_length": 3328,
+      "path": "native_mu_capture_principal_v2/OWNER_METADATA_SCRIPT_002.py",
+      "sha256": "f4e04ac2b4100015ca9b43384735e30da49a84285d27325101deaabce7b24c8b"
+    },
+    {
+      "byte_length": 28142,
+      "path": "native_mu_capture_principal_v2/PUBLIC_READ_TOOL_RESULT_002.json",
+      "sha256": "9e9cb297a8ee755f397c97f6cc47f27d065c68c7ce19f54a737fa0e5edbdaf96"
+    },
+    {
+      "byte_length": 25559,
+      "path": "native_mu_capture_principal_v2/PUBLIC_RESULT_002.json",
+      "sha256": "4fcd11f2d47e48748ab92461a01f778f0c767ae2b35db04efef6430422ee2a54"
+    },
+    {
+      "byte_length": 3279,
+      "path": "native_mu_capture_principal_v2/native-mu-owner-env-metadata-002.json",
+      "sha256": "5c218ba77b23446d41490adf13e99b5da2b3661f0cff06789d3377049b7fc31b"
+    },
+    {
+      "byte_length": 18367,
+      "path": "native_mu_capture_principal_v2/run_native_mu_capture_002.py",
+      "sha256": "de5f94b084726522352b44966a928bd2c410f9260901c63833603f2d51817ac1"
+    },
+    {
+      "byte_length": 28296,
+      "path": "native_mu_capture_principal_v2/run_owner_bootstrap_002.py",
+      "sha256": "bd88bb68b15894a85f71fa7ac75f5a4a7fcce43518804f9b27e28f5fdc14b2f3"
+    },
+    {
+      "byte_length": 28311,
+      "path": "native_mu_capture_principal_v2/run_owner_bootstrap_002_unexecuted_pre_review.py.txt",
+      "sha256": "b6ab3f96a68834b8616b2c98545cfccaa379c0db5f760c447d941a9ca8d02509"
+    },
+    {
+      "byte_length": 67554,
+      "path": "native_mu_capture_principal_v2/source_snapshots/close_pass_host_runner.py.txt",
+      "sha256": "20335fb0f694ca904e130a2b9016f379161c10946adb2e15dbfc5bdff3addd69"
+    },
+    {
+      "byte_length": 9444,
+      "path": "native_mu_owner_bootstrap_review_v1/RECEIPT.json",
+      "sha256": "1a25f963508c1d084f5ed905b314da790412a02594f7a6605825b6b0f5d1f705"
+    },
+    {
+      "byte_length": 9704,
+      "path": "native_mu_owner_bootstrap_review_v1/REVIEW.md",
+      "sha256": "919a6f483ce8ab5ca428a5bf79180d08566fe5a3ee0b62a78caa3133125324ca"
+    },
+    {
+      "byte_length": 826,
+      "path": "native_mu_owner_bootstrap_review_v1/SOURCE_REVIEW_MANIFEST.json",
+      "sha256": "59a8e53a39417220cdf2f57c80f014a115a46a38867df53b31d0b95b0df16dca"
+    }
+  ],
+  "inputs_unchanged_after": true,
+  "native_head": "7af7a9785d74c1b420b23de3be0eac6946cc2200",
+  "native_processes_observed_from_archived_receipts": {
+    "child_exit": 0,
+    "child_pid": 59339,
+    "outer_exit": 0,
+    "outer_pid": 59297,
+    "runtime_seconds": "13.54"
+  },
+  "pre_execution_review_packet_unchanged": true,
+  "protected_source": "8d838c8df453a78fac3459b7458576e1ba2cbcb8",
+  "public_envelope_nodes": 579,
+  "reconstructed_normalized_content": {
+    "acquisition_seal": "b2675455c55474c4f3c1ea73b005878416947207302ffc75aa8247c341668b47",
+    "artifact": {
+      "byte_length": 1274,
+      "sha256": "0c527ed511f14734e64b8127b475abfb92b93f8d158d3bcc5dbd869ea3bcf6b7"
+    },
+    "capture_vintage_revision_receipt_ids_recomputed": true,
+    "expected_private_envelope": {
+      "byte_length": 11384,
+      "sha256": "320c0026f1ca0cff3b3ea0b28fe3a9fea1842070ece3cfb351a3bd2d7d932dea"
+    },
+    "owner_receipt": {
+      "byte_length": 1301,
+      "sha256": "9303fa18be6a13b8a599cb7b1d6238ab79af5c8c34a220280024cabfbe112f97"
+    },
+    "private_native_file_read": false,
+    "raw_provider_body_reconstructed": false,
+    "read_receipt_seal": "5424ea7e89a2b6ec5065027ca952e993f99d8a1e498b4d97720035b436961b8a",
+    "store_manifest_or_generation_content_reconstructed": false
+  },
+  "reviewed_source": "87b01101ef13aa20ded205f3a2b267b68d094def",
+  "reviewer_process": {
+    "application_imports": 0,
+    "bytecode_disabled": true,
+    "credential_or_private_native_files_read": 0,
+    "native_processes_invoked": 0,
+    "parent_pid": 1,
+    "pid": 2,
+    "provider_calls": 0
+  },
+  "schema": "economic_network.independent_native_mu_public_verification/v2",
+  "source_outcome": "COMPLETE_EMPTY_RESULT",
+  "source_pin_count": 18,
+  "store": {
+    "all_reported_bytes_modes_mtimes_identical": true,
+    "files_after_intake": 8,
+    "files_after_read_and_repeat": 8,
+    "same_artifact_repeat_created": false,
+    "total_bytes": 6276
+  },
+  "verdict": "PASS_CURRENT_CAPTURE_CHAIN"
+}

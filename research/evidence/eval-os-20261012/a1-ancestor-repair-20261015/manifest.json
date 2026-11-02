@@ -1,0 +1,91 @@
+{
+  "schema": "eval_os.retained_evidence_manifest.v1",
+  "records": [
+    {
+      "file": "ancestor-red.xml",
+      "sha256": "2db39459092c853d78312ee5221990e835ffa7e3c0c10ce068f5804a6e8b5b39",
+      "bytes": 4448
+    },
+    {
+      "file": "ancestor-green.xml",
+      "sha256": "d03075d34aa62bf2092863988cb3797331c683577c254780532a0d0a4c524c7f",
+      "bytes": 576
+    },
+    {
+      "file": "ancestor-census-diagnosis.json",
+      "sha256": "12baff86d8df56011eb05aa2599d73c4c29d1d52c9ba08921e3bbfb7c18073fa",
+      "bytes": 3369
+    },
+    {
+      "file": "ancestor-source-repair.json",
+      "sha256": "5641c893f98c8dc25345448ae055e74fe7fe60de95a50775c0e84a59149888bf",
+      "bytes": 1160
+    },
+    {
+      "file": "ancestor-source-repair.patch",
+      "sha256": "c039d1c2ba5e7b8d6eee7ac1c9defbf80416d43ce80f76a43cc9be7130763b86",
+      "bytes": 1038
+    },
+    {
+      "file": "ancestor-qualification.json",
+      "sha256": "5ce5af1d44baf8656dc3689d195250897a1f6074f9cba1f4a1104b7aa60fd36b",
+      "bytes": 13885
+    },
+    {
+      "file": "qualify_ancestor_repair.py",
+      "sha256": "dde9cf0d4634717787906e97726510630b8c4269a1f4888b439ede1ebaa9a93b",
+      "bytes": 2524
+    },
+    {
+      "file": "ancestor-current-main-preview.json",
+      "sha256": "ae2dc006feab89a6a6ffe7830839ecb445da47b6b241a287639dead69146713e",
+      "bytes": 325
+    },
+    {
+      "file": "refreshed-ci-semantic-evidence.zip",
+      "sha256": "5e74d436f35febfd985076bd6076c6bd0b3016956fc6fa5d152ba6f88d5629f1",
+      "bytes": 31273
+    },
+    {
+      "file": "refreshed-terminal-metadata.json",
+      "sha256": "4a2aa294e457116298988463ee5f1cbc56ae6cce35f644416712f148fc59346e",
+      "bytes": 23231
+    },
+    {
+      "file": "refreshed-base-only-verification.json",
+      "sha256": "ed3a72355a8231f82b05a24f801b8bb1320a2c5ec2178089601a46799a1dfb95",
+      "bytes": 464
+    },
+    {
+      "file": "refreshed-source-comparison.json",
+      "sha256": "530b3faf280b9d080c7d1d3802426c1ba0cee5fe256c46518eaea91faa8ff354",
+      "bytes": 5201
+    },
+    {
+      "file": "b1-terminal-consumption-20261015.json",
+      "sha256": "c44d8847eef35ca2352024a1281283aea3518ec517442e53cd781e175f9529b1",
+      "bytes": 915
+    },
+    {
+      "file": "ancestor-review-packet.txt",
+      "sha256": "247dc5badfdb76c737e7453869e9333634eea57d53fce99fe1bb41119a20388b",
+      "bytes": 15074
+    },
+    {
+      "file": "ancestor-review-result.txt",
+      "sha256": "18998d79ad21380cdd5d5da4c956eabaceffc146f274ca010177fec54617f81a",
+      "bytes": 4631
+    },
+    {
+      "file": "ancestor-review-adjudication.json",
+      "sha256": "013476ba15b66e289cbfb51435e57ef91392bc7a937d6262929e7a257c17d01f",
+      "bytes": 1410
+    },
+    {
+      "file": "ancestor-review-acceptance.json",
+      "sha256": "fe01bf18280a6245b3e9498e60e4135977fd846e25e093441433bcac8097d0a0",
+      "bytes": 392
+    }
+  ],
+  "scope": "Exact source2d0e6e334986 local repair qualification and original hosted RED. Original independent Fabric review consumed and reviewer-accepted with report qualifiers; no material defect. No new hosted green, merge or production claim."
+}

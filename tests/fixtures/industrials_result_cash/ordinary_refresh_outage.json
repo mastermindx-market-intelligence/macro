@@ -1,0 +1,30 @@
+{
+  "synthetic": true,
+  "members": {
+    "case_a": {
+      "edition": "edition_1",
+      "lifecycle_state": "carried"
+    },
+    "case_b": {
+      "edition": "edition_1",
+      "lifecycle_state": "carried"
+    }
+  },
+  "run_2_changes": {
+    "case_b": "edition_2"
+  },
+  "fail_sources": [
+    "case_a"
+  ],
+  "expected": {
+    "case_a": "edition_1",
+    "case_b": "edition_2"
+  },
+  "sources": [
+    {
+      "url": "https://example.invalid/ordinary_refresh_outage.json",
+      "mode": "synthetic",
+      "rights_state": "unknown"
+    }
+  ]
+}

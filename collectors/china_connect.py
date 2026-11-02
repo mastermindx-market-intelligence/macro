@@ -109,6 +109,7 @@ def _frame_from_rows(rows: list[dict]) -> pd.DataFrame:
 class ChinaConnectAdapter(Adapter):
     name = "china_connect"
     group = "china_connect"
+    session_calendar = "CONNECT"  # observation dates follow the cash/Connect session
     stale_after_days = 6   # daily; northbound may be permanently null going forward
 
     # Per-column truth, so no column can die quietly inside a live frame. The

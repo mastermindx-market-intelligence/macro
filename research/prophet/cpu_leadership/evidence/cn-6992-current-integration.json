@@ -1,0 +1,18 @@
+{
+  "base": "2042b2f4ca5bcd84da47f0937f3b6a1e3d488b77",
+  "head": "a51bae222eedd4c53f4101998f3a3c4bc103f554",
+  "tree": "57b7d4f665b4c733a249898913e3039fc683c088",
+  "integration_commit": "7137a0cf3f0198a0974113f0f151e3aad9f01108",
+  "source_branch_modified": false,
+  "procedure_pin": "3e66e43258f34db240d5bff76f54148c7af84ee4",
+  "review_scope": "Independent current-base integration and source-contract test execution only; not natural-data replay or serving activation.",
+  "tests": {
+    "passed": 169,
+    "skipped": 0,
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. python3 -m pytest -q tests/test_china_intel_interest.py tests/test_china_board_rank.py tests/test_china_board_rank_v3.py tests/test_china_board_rank_v4.py tests/test_china_prophet_shadow.py",
+    "log_sha256": "834013b8309eb5b8e7cf4ab7330ab7238e91b6da3dc3a5a0b14f57e98b5d0971"
+  },
+  "source_writer_transfer": false,
+  "production_activation": false,
+  "original_raw_witness_cache_recovered": false
+}

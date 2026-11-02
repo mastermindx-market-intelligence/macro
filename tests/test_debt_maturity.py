@@ -4,7 +4,12 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import importlib
+import os
 import re
+import shutil
+import subprocess
+import sys
 from datetime import date
 from pathlib import Path
 
@@ -1084,3 +1089,735 @@ def test_capture_script_uses_real_ticker_page_and_element_screenshot():
     assert "_SHELL" not in src
     assert "body::before {{ display:none" not in src
     assert "render_ticker_page" in src
+
+
+# ---------------------------------------------------------------------------
+# W8B_F09_11 — debt-maturity-drip persistence helper (R3/R5)
+#
+# The drip workflow is now its own bounded committer of
+# data/debt_maturity/cache/** and data/edgar/statements.parquet. The fix
+# shape lives in scripts/debt_maturity_drip_push.py (a stdlib-only helper)
+# and the workflow itself. The tests below pin the workflow-lint requirements
+# (R3(b)) and the helper's behaviour against a tmp_path git worktree with a
+# real ``origin`` (a ``git clone --bare`` of the same worktree) so the push
+# path actually exercises the git plumbing without touching any remote.
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# BLOCKER — non-fast-forward RED→GREEN
+# MAJOR-1 — git outcome classification
+# MAJOR-2 — workflow ancestry + path-scope assertion
+# MINOR-2 — exhaustion test with real non_fast_forward warning
+# ---------------------------------------------------------------------------
+
+
+WORKFLOW_FILE = Path(".github/workflows/debt-maturity-drip.yml")
+
+
+def test_workflow_has_top_level_contents_write_and_no_job_level_permissions():
+    """R3(b): ``permissions: contents: write`` lives at the top level ONLY —
+    no job-level block (a job-level key with a narrower scope would silently
+    demote the runner's effective token)."""
+    import yaml
+
+    wf = yaml.safe_load(WORKFLOW_FILE.read_text())
+    assert wf["permissions"] == {"contents": "write"}, (
+        "top-level permissions must declare contents: write (R3b)"
+    )
+    for job_name, job in wf["jobs"].items():
+        assert "permissions" not in job, (
+            f"job {job_name!r} must not declare its own permissions block (R3b)"
+        )
+
+    raw = WORKFLOW_FILE.read_text()
+    # Exactly one occurrence of the bare ``permissions:`` key — yaml.safe_load
+    # above already proved the same structurally, but the regex is the
+    # reviewer-visible contract.
+    assert len(re.findall(r"^permissions:\s*$", raw, flags=re.MULTILINE)) == 1, (
+        "the workflow must declare exactly one ``permissions:`` key at the top level"
+    )
+
+
+def test_workflow_persist_step_runs_the_helper_with_the_push_env_expression():
+    """R3(b): the persist step runs ``scripts.debt_maturity_drip_push`` with
+    ``DEBT_MATURITY_DRIP_PUSH: ${{ github.event.inputs.push || '1' }}`` so
+    the workflow_dispatch input is the kill switch AND the schedule path
+    pushes by default."""
+    raw = WORKFLOW_FILE.read_text()
+    assert "persist cache + statements to main" in raw, (
+        "expected the persist step named ``persist cache + statements to main``"
+    )
+    # Env expression MUST reference github.event.inputs.push with a fallback
+    # to literal '1' — that is the kill switch + default-on contract.
+    assert re.search(
+        r"DEBT_MATURITY_DRIP_PUSH:\s*\$\{\{\s*github\.event\.inputs\.push\s*\|\|\s*'1'\s*\}\}",
+        raw,
+    ), "DEBT_MATURITY_DRIP_PUSH env expression must use github.event.inputs.push || '1'"
+    assert re.search(
+        r"python\s+-m\s+scripts\.debt_maturity_drip_push\s+--base\s+main",
+        raw,
+    ), "persist step must invoke `python -m scripts.debt_maturity_drip_push --base main`"
+
+
+def test_workflow_keeps_existing_cron_and_backfill_assertions():
+    """R3(c) carries the existing wiring test forward — the cron schedule
+    line and the backfill_edgar_flow invocation stay so the helper is a
+    strict SUPERSET of the prior shape, never a replacement."""
+    raw = WORKFLOW_FILE.read_text()
+    assert re.search(r"cron:\s*[\"']", raw), "expected a real cron schedule line"
+    assert "backfill_edgar_flow" in raw
+
+
+def test_workflow_header_no_longer_claims_nightly_engine_carries_writes():
+    """R2: the prior header asserted ``the nightly ENGINE job's broad 'git
+    add data/' sweep carries those writes on its next run, same as
+    edgar_flow_ops.yml``. That premise was falsified by R1 — the script
+    must be free of any such claim."""
+    raw = WORKFLOW_FILE.read_text()
+    forbidden = [
+        "ENGINE job's git add data/",
+        "nightly ENGINE job's",
+        "carry those writes",
+        "as edgar_flow_ops.yml",
+    ]
+    for frag in forbidden:
+        assert frag not in raw, (
+            f"workflow header must not claim {frag!r} — the R1 receipts falsified it"
+        )
+
+
+def _init_bare_remote(tmp_path: Path) -> Path:
+    """Build a tmp_path git repo with a baseline commit AND a ``bare``
+    remote so the helper's push lands somewhere inspectable. Returns the
+    working-tree path (the remote is ``<tmp_path>/origin.git``)."""
+    worktree = tmp_path / "work"
+    remote = tmp_path / "origin.git"
+    worktree.mkdir()
+    remote.mkdir()
+    # Remote first (--bare, so we can push into it).
+    subprocess.run(
+        ["git", "init", "--bare", "--initial-branch=main", str(remote)],
+        check=True, capture_output=True, text=True,
+    )
+    # Then the worktree.
+    env = {
+        **os.environ,
+        "GIT_AUTHOR_NAME": "seed", "GIT_AUTHOR_EMAIL": "seed@x",
+        "GIT_COMMITTER_NAME": "seed", "GIT_COMMITTER_EMAIL": "seed@x",
+    }
+    subprocess.run(["git", "init", "-q", "-b", "main"], cwd=str(worktree),
+                   check=True, capture_output=True, text=True, env=env)
+    subprocess.run(["git", "remote", "add", "origin", str(remote)],
+                   cwd=str(worktree), check=True, capture_output=True, text=True, env=env)
+    # Seed the two ALLOWED_PATHS so the EMPTY refusion path has a baseline
+    # to compare against.
+    (worktree / "data" / "debt_maturity" / "cache").mkdir(parents=True)
+    (worktree / "data" / "debt_maturity" / "cache" / "seed.json").write_text("{}")
+    (worktree / "data" / "edgar").mkdir(parents=True)
+    (worktree / "data" / "edgar" / "statements.parquet").write_bytes(b"PARQUET-SEED")
+    subprocess.run(["git", "add", "--", "data/"], cwd=str(worktree),
+                   check=True, capture_output=True, text=True, env=env)
+    subprocess.run(
+        ["git", "-c", "user.name=seed", "-c", "user.email=seed@x",
+         "commit", "-q", "-m", "seed"],
+        cwd=str(worktree), check=True, capture_output=True, text=True, env=env,
+    )
+    subprocess.run(["git", "push", "-q", "origin", "main:main"],
+                   cwd=str(worktree), check=True, capture_output=True, text=True, env=env)
+    return worktree
+
+
+def _run_helper(  # noqa: PLR0913
+    worktree: Path, *, push_env: str = "1", max_mb: int = 48,
+    attempts: int = 3, expect_failure: bool = False,
+) -> subprocess.CompletedProcess:
+    # PYTHONPATH points at the repo root so ``python -m scripts.debt_maturity_drip_push``
+    # resolves the helper while ``cwd=worktree`` keeps git operations on the
+    # tmp_path worktree (not on the repo itself).
+    repo_root = str(Path(__file__).resolve().parent.parent)
+    env = {
+        **os.environ,
+        "DEBT_MATURITY_DRIP_PUSH": push_env,
+        "PYTHONPATH": repo_root + os.pathsep + os.environ.get("PYTHONPATH", ""),
+    }
+    return subprocess.run(
+        [
+            sys.executable, "-m", "scripts.debt_maturity_drip_push",
+            "--repo", str(worktree),
+            "--base", "main",
+            "--remote", "origin",
+            "--max-mb", str(max_mb),
+            "--attempts", str(attempts),
+        ],
+        cwd=str(worktree),
+        env=env,
+        capture_output=True, text=True,
+    )
+
+
+def test_drip_helper_gate_off_emits_no_commit_and_bare_notice(tmp_path, capsys):
+    """(i) GATE — env != '1' prints a bare ``::notice`` and returns 0 without
+    touching the index."""
+    worktree = _init_bare_remote(tmp_path)
+    # Mark the seed cache as touched so STAGE has something to stage.
+    (worktree / "data" / "debt_maturity" / "cache" / "seed.json").write_text('{"x":1}')
+    proc = _run_helper(worktree, push_env="0")
+    assert proc.returncode == 0
+    out = proc.stdout
+    assert "::notice title=debt-maturity-drip::push disabled" in out
+    # The very first line carrying the notice starts with "::" (CI-guarded by
+    # tests/test_gh_annotation_line_start.py — assert it here too).
+    assert any(line.startswith("::") for line in out.splitlines())
+    # Index untouched — no commit was made.
+    head_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=str(worktree),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+    assert head_sha == subprocess.run(
+        ["git", "rev-parse", "origin/main"], cwd=str(worktree),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+
+
+def test_drip_helper_empty_diff_emits_no_commit_and_no_changes_notice(tmp_path):
+    """(ii) EMPTY — when the working tree has no diff vs HEAD, the helper
+    prints the no-changes notice and returns 0 without committing."""
+    worktree = _init_bare_remote(tmp_path)
+    proc = _run_helper(worktree, push_env="1")
+    assert proc.returncode == 0
+    assert "::notice title=debt-maturity-drip::no changes to persist" in proc.stdout
+    head_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=str(worktree),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+    origin_sha = subprocess.run(
+        ["git", "rev-parse", "origin/main"], cwd=str(worktree),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+    assert head_sha == origin_sha
+
+
+def test_drip_helper_ceiling_exceeded_resets_and_warns(tmp_path):
+    """(iii) CEILING — a staged payload above --max-mb must reset the index
+    and emit a refusal ``::warning``, leaving the remote untouched."""
+    worktree = _init_bare_remote(tmp_path)
+    # 2 MiB of zeros is far above the 1 MiB ceiling below.
+    big = b"\0" * (2 * 1024 * 1024)
+    (worktree / "data" / "debt_maturity" / "cache" / "seed.json").write_bytes(big)
+    proc = _run_helper(worktree, push_env="1", max_mb=1)
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    out_lines = proc.stdout.splitlines()
+    assert any(
+        line.startswith("::warning title=debt-maturity-drip::refused: staged payload")
+        and "exceeds ceiling 1" in line
+        for line in out_lines
+    ), proc.stdout
+    # Index is clean — the ``git reset -q`` inside CEILING ran.
+    staged = subprocess.run(
+        ["git", "diff", "--cached", "--name-only"], cwd=str(worktree),
+        capture_output=True, text=True,
+    )
+    assert staged.stdout.strip() == ""
+    origin_sha = subprocess.run(
+        ["git", "rev-parse", "origin/main"], cwd=str(worktree),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+    head_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=str(worktree),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+    assert head_sha == origin_sha
+
+
+def test_drip_helper_does_not_stage_changes_outside_allowed_paths(tmp_path):
+    """(iv) STAGE — a modify under docs/ must remain OUT of the committed
+    tree when the allowed paths also have a diff. Inspect the actual tree
+    on origin/main (the post-commit, post-push state) so the foreign file
+    is provably absent from the persisted tree, and the allowed file
+    provably present."""
+    worktree = _init_bare_remote(tmp_path)
+    # Allowed modification:
+    (worktree / "data" / "debt_maturity" / "cache" / "seed.json").write_text('{"x":2}')
+    # Foreign modification that MUST stay out of the commit:
+    (worktree / "docs").mkdir(exist_ok=True)
+    (worktree / "docs" / "FOREIGN.md").write_text("unrelated\n")
+    proc = _run_helper(worktree, push_env="1")
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    # Inspect the new origin/main tree directly — proves the foreign file
+    # was never staged (it is absent from the tree) and the allowed file
+    # was (it is present in the tree).
+    new_sha = subprocess.run(
+        ["git", "rev-parse", "origin/main"], cwd=str(worktree),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+    new_tree = set(
+        subprocess.run(
+            ["git", "ls-tree", "--name-only", "-r", new_sha],
+            cwd=str(worktree), capture_output=True, text=True, check=True,
+        ).stdout.splitlines()
+    )
+    assert "data/debt_maturity/cache/seed.json" in new_tree
+    assert "docs/FOREIGN.md" not in new_tree, (
+        "docs/FOREIGN.md must NOT be in the persisted tree (the helper "
+        "must not have staged paths outside ALLOWED_PATHS)"
+    )
+    # The local tree after the push may also be left clean (the working
+    # tree's foreign file is untracked or unstaged, not committed). After
+    # a successful push the local main ref equals the remote ref, and the
+    # foreign file is only in the working tree (untracked / unstaged).
+    head_tree = set(
+        subprocess.run(
+            ["git", "ls-tree", "--name-only", "-r", "HEAD"],
+            cwd=str(worktree), capture_output=True, text=True, check=True,
+        ).stdout.splitlines()
+    )
+    assert "docs/FOREIGN.md" not in head_tree
+
+
+def test_drip_helper_happy_path_pushes_a_single_skip_ci_commit(tmp_path):
+    """(v) HAPPY PATH — a write under the cache lands on origin/main as
+    exactly one new commit, author dashboard-bot, subject ending [skip ci]."""
+    worktree = _init_bare_remote(tmp_path)
+    (worktree / "data" / "debt_maturity" / "cache" / "seed.json").write_text('{"x":3}')
+    proc = _run_helper(worktree, push_env="1")
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    out = proc.stdout
+    assert "::notice title=debt-maturity-drip::pushed " in out, out
+    # MINOR-1: staged count is captured BEFORE commit, so the notice is not "0 files".
+    assert re.search(r": [1-9]\d* files,", out), (
+        f"success notice must report a real staged count, not 0;\n{out}"
+    )
+    # Author + subject.
+    log = subprocess.run(
+        ["git", "log", "--format=%an|%s", "origin/main", "-2"],
+        cwd=str(worktree), capture_output=True, text=True, check=True,
+    ).stdout
+    head_line = log.splitlines()[0]
+    author, subject = head_line.split("|", 1)
+    assert author == "dashboard-bot"
+    assert subject.startswith("debt-maturity-drip: persist cache + statements")
+    assert subject.endswith("[skip ci]"), subject
+    # Tree of the new commit contains the changed path.
+    new_sha = subprocess.run(
+        ["git", "rev-parse", "origin/main"], cwd=str(worktree),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+    ls = subprocess.run(
+        ["git", "ls-tree", "--name-only", "-r", new_sha],
+        cwd=str(worktree), capture_output=True, text=True, check=True,
+    ).stdout.splitlines()
+    assert any(p == "data/debt_maturity/cache/seed.json" for p in ls)
+
+
+def _origin_git(worktree: Path) -> Path:
+    url = subprocess.run(
+        ["git", "remote", "get-url", "origin"],
+        cwd=str(worktree), capture_output=True, text=True, check=True,
+    ).stdout.strip()
+    return Path(url)
+
+
+def _nff_two_clone_setup(tmp_path: Path) -> tuple[Path, str]:
+    """Real non-fast-forward fixture.
+
+    Local clone stays on the seed commit. A second clone pushes
+    ``foreign.json`` to the bare remote. Then the stale clone gets this
+    run's artifact (seed.json rewrite) as an uncommitted working-tree
+    change. The helper's first ``git push origin HEAD:refs/heads/main``
+    is therefore a genuine non-fast-forward.
+    """
+    work = _init_bare_remote(tmp_path)
+    remote = _origin_git(work)
+    second = tmp_path / "work2"
+    subprocess.run(
+        ["git", "clone", "-q", str(remote), str(second)],
+        check=True, capture_output=True, text=True,
+    )
+    cache = second / "data" / "debt_maturity" / "cache"
+    cache.mkdir(parents=True, exist_ok=True)
+    (cache / "foreign.json").write_text('{"f":1}')
+    subprocess.run(
+        ["git", "add", "--", "data/debt_maturity/cache/foreign.json"],
+        cwd=str(second), check=True, capture_output=True, text=True,
+    )
+    subprocess.run(
+        ["git", "-c", "user.name=foreign", "-c", "user.email=f@x",
+         "commit", "-q", "-m", "foreign advance"],
+        cwd=str(second), check=True, capture_output=True, text=True,
+    )
+    subprocess.run(
+        ["git", "push", "-q", "origin", "HEAD:refs/heads/main"],
+        cwd=str(second), check=True, capture_output=True, text=True,
+    )
+    foreign_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=str(second),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+    # Stale clone: still at seed. Write this run's artifact.
+    (work / "data" / "debt_maturity" / "cache" / "seed.json").write_text('{"x":4}')
+    return work, foreign_sha
+
+
+def _install_nff_hook(remote: Path, reject_times: int = 3) -> None:
+    """pre-receive hook that rejects the first N pushes as non-fast-forward."""
+    hooks = remote / "hooks"
+    hooks.mkdir(exist_ok=True)
+    script = hooks / "pre-receive"
+    script.write_text(
+        "#!/bin/sh\n"
+        f"max={int(reject_times)}\n"
+        'count_file="$(dirname "$0")/nff_count"\n'
+        "count=0\n"
+        '[ -f "$count_file" ] && count=$(cat "$count_file")\n'
+        'if [ "$count" -lt "$max" ]; then\n'
+        '  echo $((count + 1)) > "$count_file"\n'
+        '  echo "! [rejected] main -> main (non-fast-forward)" >&2\n'
+        "  exit 1\n"
+        "fi\n"
+        "exit 0\n"
+    )
+    script.chmod(0o755)
+
+
+def _ls_tree(cwd: Path, ref: str) -> set[str]:
+    return set(
+        subprocess.run(
+            ["git", "ls-tree", "--name-only", "-r", ref],
+            cwd=str(cwd), capture_output=True, text=True, check=True,
+        ).stdout.splitlines()
+    )
+
+
+def _rev_parse(cwd: Path, ref: str) -> str:
+    return subprocess.run(
+        ["git", "rev-parse", ref], cwd=str(cwd),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+
+
+def test_drip_helper_non_fast_forward_recovers_via_re_checkout(tmp_path):
+    """(vi) REAL NON-FAST-FORWARD — local clone is behind; a second clone
+    pushes foreign.json; THEN the helper runs from the stale clone.
+
+    Asserts (i) the push succeeded, (ii) foreign_sha is an ancestor of the
+    recovered tip, (iii) foreign.json AND this run's artifact both exist,
+    (iv) ``_resync_to_remote`` ran (log marker)."""
+    worktree, foreign_sha = _nff_two_clone_setup(tmp_path)
+    proc = _run_helper(worktree, push_env="1", attempts=3)
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    out = proc.stdout + proc.stderr
+    assert "::notice title=debt-maturity-drip::pushed " in out, out
+    assert "::notice title=debt-maturity-drip::resync_to_remote" in out, (
+        f"_resync_to_remote must have run;\n{out}"
+    )
+    recovered = _rev_parse(worktree, "origin/main")
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", foreign_sha, recovered],
+        cwd=str(worktree), capture_output=True, text=True,
+    )
+    assert ancestor.returncode == 0, (
+        f"foreign_sha {foreign_sha} must be an ancestor of recovered tip {recovered}"
+    )
+    ls = _ls_tree(worktree, recovered)
+    assert "data/debt_maturity/cache/foreign.json" in ls, ls
+    assert "data/debt_maturity/cache/seed.json" in ls, ls
+    blob = subprocess.run(
+        ["git", "show", f"{recovered}:data/debt_maturity/cache/seed.json"],
+        cwd=str(worktree), capture_output=True, text=True, check=True,
+    ).stdout
+    assert blob == '{"x":4}', blob
+
+
+def test_drip_helper_attempts_exhausted_refuses_with_warning(tmp_path):
+    """(vii) EXHAUSTED — three real rejected pushes (bare pre-receive hook)
+    then fail-soft exit naming ``non_fast_forward``."""
+    worktree = _init_bare_remote(tmp_path)
+    (worktree / "data" / "debt_maturity" / "cache" / "seed.json").write_text('{"x":5}')
+    origin_before = _rev_parse(worktree, "origin/main")
+    _install_nff_hook(_origin_git(worktree), reject_times=3)
+    proc = _run_helper(worktree, push_env="1", attempts=3)
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    out = proc.stdout + proc.stderr
+    lines = [line for line in out.splitlines() if line.startswith("::warning")]
+    assert any(
+        "non_fast_forward" in line and "refused after 3 attempts" in line
+        for line in lines
+    ), f"expected non_fast_forward warning with 'refused after 3 attempts';\n{out}"
+    assert _rev_parse(worktree, "origin/main") == origin_before
+
+
+def test_drip_helper_non_fast_forward_RED_without_recovery(tmp_path):
+    """BLOCKER (RED): same two-clone NFF setup, recovery disabled
+    (``attempts=1``). The helper's first push is rejected non-fast-forward,
+    it does not resync, and origin/main stays at the foreign tip."""
+    worktree, foreign_sha = _nff_two_clone_setup(tmp_path)
+    proc = _run_helper(worktree, push_env="1", attempts=1)
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    out = proc.stdout + proc.stderr
+    assert "non_fast_forward" in out, out
+    assert "::notice title=debt-maturity-drip::pushed " not in out, out
+    assert "::notice title=debt-maturity-drip::resync_to_remote" not in out, out
+    assert _rev_parse(worktree, "origin/main") == foreign_sha
+    ls = _ls_tree(worktree, "origin/main")
+    assert "data/debt_maturity/cache/foreign.json" in ls, ls
+    blob = subprocess.run(
+        ["git", "show", "origin/main:data/debt_maturity/cache/seed.json"],
+        cwd=str(worktree), capture_output=True, text=True, check=True,
+    ).stdout
+    assert blob == "{}", blob
+
+
+# ---------------------------------------------------------------------------
+# MAJOR-1 — git outcome classification
+# ---------------------------------------------------------------------------
+
+
+def test_classify_non_fast_forward_is_retryable():
+    """non-fast-forward output is classified as ``non_fast_forward``."""
+    import scripts.debt_maturity_drip_push as dmp
+    importlib.reload(dmp)
+    result = dmp._classify_push_failure(
+        "! [rejected] main -> main (non-fast-forward)\n"
+        "hint: Updates were rejected because the remote contains work that you do not have\n"
+        "error: failed to push some refs"
+    )
+    assert result.kind == "non_fast_forward", result
+
+
+def test_classify_ref_lock_is_retryable():
+    """ref-lock / fetch-first output is classified as ``non_fast_forward``."""
+    import scripts.debt_maturity_drip_push as dmp
+    importlib.reload(dmp)
+    result = dmp._classify_push_failure(
+        "error: cannot lock ref 'refs/heads/main': unable to resolve reference\n"
+        "error: failed to push some refs"
+    )
+    assert result.kind == "non_fast_forward", result
+
+
+def test_classify_hook_rejection_is_hard_refusal():
+    """hook declined output is classified as ``push_error``."""
+    import scripts.debt_maturity_drip_push as dmp
+    importlib.reload(dmp)
+    result = dmp._classify_push_failure(
+        "remote: error: hook declined to update refs/heads/main\n"
+        "fatal: error: failed to push some refs"
+    )
+    assert result.kind == "push_error", result
+    assert "hook declined" in result.detail
+
+
+def test_classify_auth_failure_is_hard_refusal():
+    """Permission-denied output is classified as ``push_error``."""
+    import scripts.debt_maturity_drip_push as dmp
+    importlib.reload(dmp)
+    result = dmp._classify_push_failure(
+        "remote: Permission to user/repo.git denied to dashboard-bot.\n"
+        "fatal: unable to access 'https://github.com/user/repo.git/': "
+        "Authentication failed\n"
+    )
+    assert result.kind == "push_error", result
+    assert "Permission" in result.detail, f"expected 'Permission' in detail; got {result.detail!r}"
+
+
+def test_classify_gh013_is_hard_refusal():
+    """GH013 (repository ruleset) output is classified as ``push_error``."""
+    import scripts.debt_maturity_drip_push as dmp
+    importlib.reload(dmp)
+    result = dmp._classify_push_failure(
+        "remote: error: GH013: Repository rule violations found for refs/heads/main.\n"
+        " ! [remote rejected] main -> main (push declined due to repository rule violations)\n"
+        "fatal: error: failed to push some refs"
+    )
+    assert result.kind == "push_error", result
+    assert "GH013" in result.detail
+
+
+# ---------------------------------------------------------------------------
+# MAJOR-2 — workflow: main ancestry check + path-scope assertion
+# ---------------------------------------------------------------------------
+
+
+def test_workflow_checks_out_main_and_has_ancestor_guard_step(tmp_path):
+    """MAJOR-2(a): the checkout step uses ``ref: main`` and there is a
+    dedicated step that asserts ``git merge-base --is-ancestor HEAD origin/main``
+    before any push can fire. fetch-depth must be 2 (or 0) so HEAD^ exists."""
+    import yaml
+
+    raw = WORKFLOW_FILE.read_text()
+    wf = yaml.safe_load(raw)
+    # Checkout must use main.
+    checkout_step = next(
+        s for s in wf["jobs"]["drip"]["steps"]
+        if s.get("uses", "").startswith("actions/checkout")
+    )
+    assert checkout_step["with"].get("ref") == "main", (
+        "checkout must use ref: main (MAJOR-2a)"
+    )
+    depth = checkout_step["with"].get("fetch-depth")
+    assert depth in (0, 2, "0", "2"), (
+        f"checkout fetch-depth must be 2 or 0 so HEAD^ exists; got {depth!r}"
+    )
+    # There must be a step that runs the ancestor check.
+    step_texts = [s.get("run", "") for s in wf["jobs"]["drip"]["steps"]]
+    assert any(
+        "git merge-base --is-ancestor" in t and "origin/main" in t
+        for t in step_texts
+    ), "workflow must contain a merge-base ancestor check step (MAJOR-2a)"
+
+
+def test_workflow_path_scope_assertion_blocks_foreign_paths(tmp_path):
+    """MAJOR-2(b): the path-scope assertion step blocks commits that contain
+    paths outside the two allowed paths."""
+    import yaml
+
+    raw = WORKFLOW_FILE.read_text()
+    wf = yaml.safe_load(raw)
+    step_texts = [s.get("run", "") for s in wf["jobs"]["drip"]["steps"]]
+    # At least one step must check the diff is within allowed paths.
+    scope_steps = [
+        t for t in step_texts
+        if "git diff" in t and "data/debt_maturity/cache" in t
+    ]
+    assert len(scope_steps) >= 1, (
+        "workflow must assert commit only touches allowed paths (MAJOR-2b)"
+    )
+
+
+def test_drip_helper_fetch_failure_aborts_resync_and_does_not_push(
+    tmp_path, monkeypatch, capsys,
+):
+    """MAJOR-1: a failed ``git fetch --depth 1`` aborts resync and does not push."""
+    import scripts.debt_maturity_drip_push as dmp
+
+    worktree, foreign_sha = _nff_two_clone_setup(tmp_path)
+    real_run = dmp._run
+
+    def wrapped(args, *, cwd, check=False):
+        if args and args[0] == "git" and "fetch" in args and "--depth" in args:
+            return subprocess.CompletedProcess(
+                args, 1, stdout="", stderr="fatal: fetch failed",
+            )
+        return real_run(args, cwd=cwd, check=check)
+
+    monkeypatch.setattr(dmp, "_run", wrapped)
+    monkeypatch.setenv("DEBT_MATURITY_DRIP_PUSH", "1")
+    rc = dmp.main([
+        "--repo", str(worktree),
+        "--base", "main",
+        "--remote", "origin",
+        "--attempts", "3",
+    ])
+    assert rc == 0
+    out, _err = capsys.readouterr()
+    combined = out + _err
+    assert "re-checkout failed" in combined or "git fetch failed" in combined, combined
+    assert "::notice title=debt-maturity-drip::pushed " not in combined
+    assert _rev_parse(worktree, "origin/main") == foreign_sha
+
+
+def test_drip_helper_push_error_skips_retry(tmp_path, monkeypatch, capsys):
+    """MAJOR-1: a ``push_error`` classification does not retry (attempt count == 1)."""
+    import scripts.debt_maturity_drip_push as dmp
+
+    worktree = _init_bare_remote(tmp_path)
+    (worktree / "data" / "debt_maturity" / "cache" / "seed.json").write_text('{"x":1}')
+    pushes = {"n": 0}
+    real_run = dmp._run
+
+    def wrapped(args, *, cwd, check=False):
+        if args and args[0] == "git" and "push" in args:
+            pushes["n"] += 1
+            return subprocess.CompletedProcess(
+                args,
+                1,
+                stdout="",
+                stderr=(
+                    "remote: error: GH013: Repository rule violations "
+                    "found for refs/heads/main.\n"
+                ),
+            )
+        return real_run(args, cwd=cwd, check=check)
+
+    monkeypatch.setattr(dmp, "_run", wrapped)
+    monkeypatch.setenv("DEBT_MATURITY_DRIP_PUSH", "1")
+    rc = dmp.main([
+        "--repo", str(worktree),
+        "--base", "main",
+        "--remote", "origin",
+        "--attempts", "3",
+    ])
+    assert rc == 0
+    assert pushes["n"] == 1, f"push_error must not retry; got {pushes['n']} pushes"
+    out, _err = capsys.readouterr()
+    assert "push_error" in out, out
+    assert "resync_to_remote" not in out
+
+
+def test_drip_helper_refuses_when_head_is_not_ancestor_of_origin_main(tmp_path):
+    """MAJOR-2: helper refuses when HEAD is not an ancestor of origin/main."""
+    worktree = _init_bare_remote(tmp_path)
+    origin_before = _rev_parse(worktree, "origin/main")
+    subprocess.run(
+        ["git", "checkout", "-q", "-b", "feature"],
+        cwd=str(worktree), check=True, capture_output=True, text=True,
+    )
+    docs = worktree / "docs"
+    docs.mkdir(exist_ok=True)
+    (docs / "feature.md").write_text("branch\n")
+    subprocess.run(
+        ["git", "add", "--", "docs/feature.md"],
+        cwd=str(worktree), check=True, capture_output=True, text=True,
+    )
+    subprocess.run(
+        ["git", "-c", "user.name=feat", "-c", "user.email=f@x",
+         "commit", "-q", "-m", "feature tip"],
+        cwd=str(worktree), check=True, capture_output=True, text=True,
+    )
+    (worktree / "data" / "debt_maturity" / "cache" / "seed.json").write_text('{"x":9}')
+    proc = _run_helper(worktree, push_env="1")
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    combined = proc.stdout + proc.stderr
+    assert "not an ancestor" in combined, combined
+    assert "::notice title=debt-maturity-drip::pushed " not in combined
+    assert _rev_parse(worktree, "origin/main") == origin_before
+
+
+def test_drip_helper_refuses_persist_commit_with_blocked_path(
+    tmp_path, monkeypatch, capsys,
+):
+    """MAJOR-2: helper refuses to push when the persist commit touches a
+    path outside ALLOWED_PATHS."""
+    import scripts.debt_maturity_drip_push as dmp
+
+    worktree = _init_bare_remote(tmp_path)
+    (worktree / "data" / "debt_maturity" / "cache" / "seed.json").write_text('{"x":2}')
+    origin_before = _rev_parse(worktree, "origin/main")
+    real_commit = dmp._commit
+
+    def sneaky(cwd, subject):
+        blocked = Path(cwd) / "docs" / "BLOCKED.md"
+        blocked.parent.mkdir(parents=True, exist_ok=True)
+        blocked.write_text("nope\n")
+        subprocess.run(
+            ["git", "add", "--", "docs/BLOCKED.md"],
+            cwd=str(cwd), check=True, capture_output=True, text=True,
+        )
+        return real_commit(cwd, subject)
+
+    monkeypatch.setattr(dmp, "_commit", sneaky)
+    monkeypatch.setenv("DEBT_MATURITY_DRIP_PUSH", "1")
+    rc = dmp.main([
+        "--repo", str(worktree),
+        "--base", "main",
+        "--remote", "origin",
+        "--attempts", "3",
+    ])
+    assert rc == 0
+    out, _err = capsys.readouterr()
+    combined = out + _err
+    assert "blocked path" in combined, combined
+    assert "BLOCKED.md" in combined, combined
+    assert "::notice title=debt-maturity-drip::pushed " not in combined
+    assert _rev_parse(worktree, "origin/main") == origin_before

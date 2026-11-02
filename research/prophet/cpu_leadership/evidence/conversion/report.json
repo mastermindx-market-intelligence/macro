@@ -1,0 +1,644 @@
+{
+  "method": "exact source identity and payload receipt against validated episode generation",
+  "cutoff": "2026-09-21T11:00:00Z",
+  "generation_recorded_at": "2026-09-18T09:08:31Z",
+  "counts": {
+    "no_record_in_selected_generation": 24,
+    "suppression_recorded": 3,
+    "event_recorded": 8
+  },
+  "rows": [
+    {
+      "ticker": "DUOL",
+      "door": "R",
+      "observation_session": "2026-09-02",
+      "source_event_id": "doors:2026-09-02:R:DUOL",
+      "source_receipt": "sha256:874746b45921a3543adbc1247f1336f85e65d21ed5b95eead132fd0f27bf4ce0",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "HRMY",
+      "door": "R",
+      "observation_session": "2026-09-02",
+      "source_event_id": "doors:2026-09-02:R:HRMY",
+      "source_receipt": "sha256:e8b786db42de91a72d87f50025913ab1c2516c296566d09c7f4aa08df589dbd2",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "JXN",
+      "door": "R",
+      "observation_session": "2026-09-02",
+      "source_event_id": "doors:2026-09-02:R:JXN",
+      "source_receipt": "sha256:97b6f9dcb3fa955e51a6c47baf4fa3079a7faa1fdef51e27e15348cc8f32beb3",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "ADM",
+      "door": "T",
+      "observation_session": "2026-09-03",
+      "source_event_id": "doors:2026-09-03:T:ADM",
+      "source_receipt": "sha256:f47f3c3fa6b54201b1024326506e09f9581de49baf5a20eb484c3ac8d75c454a",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "BWXT",
+      "door": "T",
+      "observation_session": "2026-09-03",
+      "source_event_id": "doors:2026-09-03:T:BWXT",
+      "source_receipt": "sha256:21fbd1d728dc53f2b55a57977b7bac5ba8a4620c744b0299ff995be00091213c",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "CLF",
+      "door": "R",
+      "observation_session": "2026-09-03",
+      "source_event_id": "doors:2026-09-03:R:CLF",
+      "source_receipt": "sha256:84c6683a23980ba40d6dcf9ec08e82aca279577d5a7a6e5bdba1e1fcd15a4791",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "VYX",
+      "door": "R",
+      "observation_session": "2026-09-04",
+      "source_event_id": "doors:2026-09-04:R:VYX",
+      "source_receipt": "sha256:c448ea5a96d446af9d1ae64df10e7b0bdec446db93e01a7cafa9f99d87ccebbc",
+      "status": "suppression_recorded",
+      "episode_id": null,
+      "reason": "IDENTITY_UNRESOLVED",
+      "first_publication_verified": false,
+      "live_entry_proven": false,
+      "known_at": null,
+      "recorded_at": "2026-09-06T11:16:58Z"
+    },
+    {
+      "ticker": "IREN",
+      "door": "W",
+      "observation_session": "2026-09-04",
+      "source_event_id": "doors:2026-09-04:W:IREN",
+      "source_receipt": "sha256:4529e7f3710cb612eab8708bf55c05919c8e21f657a490a99df5ed38249dcc6e",
+      "status": "suppression_recorded",
+      "episode_id": null,
+      "reason": "MISSING_STRUCTURAL_ANCHOR",
+      "first_publication_verified": false,
+      "live_entry_proven": false,
+      "known_at": null,
+      "recorded_at": "2026-09-06T11:16:58Z"
+    },
+    {
+      "ticker": "F",
+      "door": "T",
+      "observation_session": "2026-09-04",
+      "source_event_id": "doors:2026-09-04:T:F",
+      "source_receipt": "sha256:9a60531778a1a64849b100b48280a115f385afe0b5efc408a718046563bd0c12",
+      "status": "event_recorded",
+      "episode_id": "pe:SEC:US-XNYS-F:epoch_0:sa:e2bff82d31d3fde29d5c50f0:1",
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false,
+      "known_at": "2026-09-04T20:00:00Z",
+      "recorded_at": "2026-09-06T11:16:58Z"
+    },
+    {
+      "ticker": "LEA",
+      "door": "T",
+      "observation_session": "2026-09-04",
+      "source_event_id": "doors:2026-09-04:T:LEA",
+      "source_receipt": "sha256:dd595ceb6f9ebe107c06b9cb676a6521f171dce61723d90861d5d44a4f917aca",
+      "status": "suppression_recorded",
+      "episode_id": null,
+      "reason": "MISSING_STRUCTURAL_ANCHOR",
+      "first_publication_verified": false,
+      "live_entry_proven": false,
+      "known_at": null,
+      "recorded_at": "2026-09-06T11:16:58Z"
+    },
+    {
+      "ticker": "VST",
+      "door": "T",
+      "observation_session": "2026-09-04",
+      "source_event_id": "doors:2026-09-04:T:VST",
+      "source_receipt": "sha256:c8c8584aa12dce2eb197a9b973a5ffbe71401b95db97e8b500d3c7cbf44ccd77",
+      "status": "event_recorded",
+      "episode_id": "pe:SEC:US-XNYS-VST:epoch_0:sa:eae04db60b037c415a9ef660:1",
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false,
+      "known_at": "2026-09-04T20:00:00Z",
+      "recorded_at": "2026-09-06T11:16:58Z"
+    },
+    {
+      "ticker": "QCOM",
+      "door": "T",
+      "observation_session": "2026-09-09",
+      "source_event_id": "doors:2026-09-09:T:QCOM",
+      "source_receipt": "sha256:a77b60ce1905490b7f10c0e741033b91a020b4672a614773203e2481e7634d2d",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "DCH",
+      "door": "R",
+      "observation_session": "2026-09-09",
+      "source_event_id": "doors:2026-09-09:R:DCH",
+      "source_receipt": "sha256:1abfd79fd399952621a5b1ee18421e4c6b0aaac8cc96db842e021269c5cbe5cc",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "SMP",
+      "door": "R",
+      "observation_session": "2026-09-09",
+      "source_event_id": "doors:2026-09-09:R:SMP",
+      "source_receipt": "sha256:44eb8d16c5165967ec569f4b1ee748f51b85f4be5d8c7288f4c8b0fda5587f2c",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "INTC",
+      "door": "T",
+      "observation_session": "2026-09-10",
+      "source_event_id": "doors:2026-09-10:T:INTC",
+      "source_receipt": "sha256:e63bc5548d10092ee7f8cb747b9639ed7270b8e7093081efc1fd2eaa1d6edb07",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "MU",
+      "door": "T",
+      "observation_session": "2026-09-10",
+      "source_event_id": "doors:2026-09-10:T:MU",
+      "source_receipt": "sha256:643a5660144f19b7a6bbd4d3f7ef7e467ceadd43d0913e4a0f1cae85657c5d03",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "SEDG",
+      "door": "T",
+      "observation_session": "2026-09-10",
+      "source_event_id": "doors:2026-09-10:T:SEDG",
+      "source_receipt": "sha256:0dd9413fc35472364f4ec5a4f3914ab84770ff40f42e89c65f9bda33ece24da5",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "CLSK",
+      "door": "T",
+      "observation_session": "2026-09-10",
+      "source_event_id": "doors:2026-09-10:T:CLSK",
+      "source_receipt": "sha256:91a24698d037e541c7aef20fe8e2f56e53409a90eb1b0e08ac636f0c5acf2c07",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "MARA",
+      "door": "T",
+      "observation_session": "2026-09-10",
+      "source_event_id": "doors:2026-09-10:T:MARA",
+      "source_receipt": "sha256:3ca68f825f478a35a7565d75d840355addb1db0dbd4b671c09cd1b0c3cb0d612",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "TEL",
+      "door": "T",
+      "observation_session": "2026-09-11",
+      "source_event_id": "doors:2026-09-11:T:TEL",
+      "source_receipt": "sha256:4cad457a209f18aa189447c034e348b2ce46bd1a1cc4a70c9fb091bfc2c5730d",
+      "status": "event_recorded",
+      "episode_id": "pe:SEC:US-XNYS-TEL:epoch_0:sa:fe759d91d87140c03d677303:1",
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false,
+      "known_at": "2026-09-11T20:00:00Z",
+      "recorded_at": "2026-09-13T16:41:24Z"
+    },
+    {
+      "ticker": "ANDE",
+      "door": "T",
+      "observation_session": "2026-09-11",
+      "source_event_id": "doors:2026-09-11:T:ANDE",
+      "source_receipt": "sha256:98af9eddbe86d49b989a5d4ee4a7d2ba623343eb4ef8287492630ddb49856ba2",
+      "status": "event_recorded",
+      "episode_id": "pe:SEC:US-XNAS-ANDE:epoch_0:sa:1a37c1f675b332aa8a7b3b85:1",
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false,
+      "known_at": "2026-09-11T20:00:00Z",
+      "recorded_at": "2026-09-13T16:41:24Z"
+    },
+    {
+      "ticker": "LITE",
+      "door": "W",
+      "observation_session": "2026-09-11",
+      "source_event_id": "doors:2026-09-11:W:LITE",
+      "source_receipt": "sha256:a2760b95ec7da9a148d4bdf1df84e07a02e38fa6bb72e1b8f3f0654b7e6c095a",
+      "status": "event_recorded",
+      "episode_id": "pe:SEC:US-XNAS-LITE:epoch_0:sa:36e3fc2673b90458d0de9023:1",
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false,
+      "known_at": "2026-09-11T20:00:00Z",
+      "recorded_at": "2026-09-13T16:41:24Z"
+    },
+    {
+      "ticker": "GLW",
+      "door": "T",
+      "observation_session": "2026-09-11",
+      "source_event_id": "doors:2026-09-11:T:GLW",
+      "source_receipt": "sha256:722445b553cf940bfad28183db8511e9889635f15f5885162d198829072ef39d",
+      "status": "event_recorded",
+      "episode_id": "pe:SEC:US-XNYS-GLW:epoch_0:sa:d553365b36d6f184ee664b1f:1",
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false,
+      "known_at": "2026-09-11T20:00:00Z",
+      "recorded_at": "2026-09-13T16:41:24Z"
+    },
+    {
+      "ticker": "APH",
+      "door": "T",
+      "observation_session": "2026-09-11",
+      "source_event_id": "doors:2026-09-11:T:APH",
+      "source_receipt": "sha256:699cd44689dc1cfcfb9f9d0fdbc615a3cc5267892e4d91d94b066cd4c777ee2d",
+      "status": "event_recorded",
+      "episode_id": "pe:SEC:US-XNYS-APH:epoch_0:sa:7a277d1e09f2061511dbd729:1",
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false,
+      "known_at": "2026-09-11T20:00:00Z",
+      "recorded_at": "2026-09-13T16:41:24Z"
+    },
+    {
+      "ticker": "BRK-B",
+      "door": "T",
+      "observation_session": "2026-09-14",
+      "source_event_id": "doors:2026-09-14:T:BRK-B",
+      "source_receipt": "sha256:94a5ae6770c18cd5cd68f4beefbd3feccab1c7785a8c9216308ec889c9000c0b",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "APP",
+      "door": "T",
+      "observation_session": "2026-09-15",
+      "source_event_id": "doors:2026-09-15:T:APP",
+      "source_receipt": "sha256:a6006a24bf6be68193fcd82c40174f2fd861943433fcb01b21151f714a46128c",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "BAH",
+      "door": "R",
+      "observation_session": "2026-09-17",
+      "source_event_id": "doors:2026-09-17:R:BAH",
+      "source_receipt": "sha256:77e1237b1bf48af6add0c25cb617cf1f13827aab47c43d1864d2f101f0916358",
+      "status": "event_recorded",
+      "episode_id": "pe:SEC:US-XNYS-BAH:epoch_0:sa:eac0d64a69981c669d4731c3:1",
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false,
+      "known_at": "2026-09-17T20:00:00Z",
+      "recorded_at": "2026-09-18T09:08:31Z"
+    },
+    {
+      "ticker": "AZN",
+      "door": "W",
+      "observation_session": "2026-09-17",
+      "source_event_id": "doors:2026-09-17:W:AZN",
+      "source_receipt": "sha256:11e647720de06e926081d4ad36ae2947d986cc8869ea3915d40b480e7bf3aa68",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "ECHO",
+      "door": "W",
+      "observation_session": "2026-09-17",
+      "source_event_id": "doors:2026-09-17:W:ECHO",
+      "source_receipt": "sha256:7993e6d5e15f666aba98808abe4fb3a02826eb7f04c8986a05ac595f4b55f9ce",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "AMD",
+      "door": "T",
+      "observation_session": "2026-09-18",
+      "source_event_id": "doors:2026-09-18:T:AMD",
+      "source_receipt": "sha256:5edf9b7b24aeaf3625b59f19568f6ba0ba98a7e4711224a44126beb83f749ff6",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "ADI",
+      "door": "T",
+      "observation_session": "2026-09-18",
+      "source_event_id": "doors:2026-09-18:T:ADI",
+      "source_receipt": "sha256:98de00b4aedb2ccd9957fcb1e0ad3e89d530d984346d4b04bafbfe9f45c7fd44",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "AMKR",
+      "door": "T",
+      "observation_session": "2026-09-18",
+      "source_event_id": "doors:2026-09-18:T:AMKR",
+      "source_receipt": "sha256:8ecdd7546bf6a71a0fbd68b625f9ca14912a61aeb0b11474bfb77684741057fa",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "COHU",
+      "door": "T",
+      "observation_session": "2026-09-18",
+      "source_event_id": "doors:2026-09-18:T:COHU",
+      "source_receipt": "sha256:df29e6adcdc6e963c85a672d154830439508beebbc57fcd7f4df136c857702a9",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "FORM",
+      "door": "T",
+      "observation_session": "2026-09-18",
+      "source_event_id": "doors:2026-09-18:T:FORM",
+      "source_receipt": "sha256:d1749b5fc4f5e4934b7ff6905417b2793f7d18a4b1586c3f443ef5e14e0857f3",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    },
+    {
+      "ticker": "NXPI",
+      "door": "T",
+      "observation_session": "2026-09-18",
+      "source_event_id": "doors:2026-09-18:T:NXPI",
+      "source_receipt": "sha256:b6831fae4e6cce1dc2a38760cb34cf86fc56b9d4186d98fba1f5301cb8fe5538",
+      "status": "no_record_in_selected_generation",
+      "episode_id": null,
+      "reason": null,
+      "first_publication_verified": false,
+      "live_entry_proven": false
+    }
+  ],
+  "trade_conversion_proven": false,
+  "entry_authority_changed": false,
+  "limitations": [
+    "Dates on flags do not prove first publication time.",
+    "No record means absent from this generation, not never observed.",
+    "Episode retention is neither plan origination nor trade execution."
+  ],
+  "source_ref": "c48e15193a29fd5eff94e963d0d0c4d6f3104867",
+  "generation_id": "peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd",
+  "generation_validation": "canonical HEAD reader passed",
+  "sources": [
+    {
+      "path": "engine/us_candidate_episode.py",
+      "sha256": "f4ec4e85c24cb4d4c824833f24fbfb624a62c2f01614bcf50da2cf644fcc792b"
+    },
+    {
+      "path": "engine/us_candidate_episode_intake.py",
+      "sha256": "c08addea7f08a19ceff17ecf6d9aa7bedabc1c6faf3222d893db8a3e816577ed"
+    },
+    {
+      "path": "engine/stock_identity/fingerprint.py",
+      "sha256": "1e06e3ea1fe27361cc1decaff1524e112cbd41e538b9804162e5762dd58063b7"
+    },
+    {
+      "path": "lib/dataos/identity.py",
+      "sha256": "dadb53d3f15725d518f79238fe97a39148379baeeec763d3da9f95434b4097f0"
+    },
+    {
+      "path": "data/prophet_doors/flags.jsonl",
+      "sha256": "b2a6a45bf9122fc22132b3827ef5ab551ff247dd4ea638b5d6c7070fb2d3614d"
+    },
+    {
+      "path": "data/us_prophet_rank/episodes/HEAD.json",
+      "sha256": "d7d67e582af3ddf629efd0567fed217de1f860fede1943d0ade3900cd4530206"
+    },
+    {
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/all_candidates.json",
+      "sha256": "0d595a2a7534594a1439214cad7ea3f9c3319ad3f0d97ab0af64af8a1753655f"
+    },
+    {
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/current.parquet",
+      "sha256": "1eff933949dab5236c919e78532eb546f9e9ce604d5a0e2679a5e4dd7328b639"
+    },
+    {
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/events/2026-08.jsonl",
+      "sha256": "b47a60f891e1e8e8a512e29e88758fdd5394e6882d81c146d167d159cbc5eb06"
+    },
+    {
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/events/2026-09.jsonl",
+      "sha256": "29054d16c64b689f50761f4f1115e19c60cbfd6b7fef8d6eedd0dbba932a57c0"
+    },
+    {
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/latest_receipt.json",
+      "sha256": "1c49be944acae2f07cb3330e6a6b304642e4f925b51031527f973d8aa15b0066"
+    },
+    {
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/manifest.json",
+      "sha256": "e325bbe39f352521d17a96007f8a8f60149d338cd52cfb648900efa9910e0b31"
+    },
+    {
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/suppressions/2026-08.jsonl",
+      "sha256": "ef459116e5dc8d89b110f374c81d2bb7e27ff0c3185a646557e636cc96de2565"
+    },
+    {
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/suppressions/2026-09.jsonl",
+      "sha256": "a9564b7e1546ffe32b049d2286aadd62ea486831f3ba1c1b2b7d974708508a00"
+    },
+    {
+      "path": "site/prophet/index.json",
+      "sha256": "04774f1891ef5a858d4cd9c2f08be5ad662cf58f1ffd49bf84c256941487e021"
+    }
+  ],
+  "source_scope": "listed owner bytes matched; not complete historical-runtime replay",
+  "source_counts": {
+    "candidate": {
+      "input": 2932,
+      "mapped": 892,
+      "suppressed": 2040
+    },
+    "doors": {
+      "input": 1,
+      "mapped": 1,
+      "suppressed": 0
+    },
+    "entry_radar": {
+      "input": 0,
+      "mapped": 0,
+      "suppressed": 0
+    },
+    "turn_watch": {
+      "input": 3047,
+      "mapped": 244,
+      "suppressed": 2803
+    }
+  },
+  "episode_counts": {
+    "ACTIVE": 1035
+  },
+  "published_plan_presence": {
+    "asof": "2026-09-19",
+    "source_asof": "2026-09-18",
+    "recorded_at": "2026-09-19",
+    "total": 426,
+    "declared_plan_count": 448,
+    "by_ticker": {
+      "ADI": [],
+      "ADM": [
+        "ADM-BULL-20260831"
+      ],
+      "AMD": [],
+      "AMKR": [
+        "AMKR-BULL-20260917"
+      ],
+      "ANDE": [],
+      "APH": [],
+      "APP": [],
+      "ARM": [],
+      "AZN": [
+        "AZN-BULL-20260818"
+      ],
+      "BAH": [
+        "BAH-BULL-20260724"
+      ],
+      "BRK-B": [],
+      "BWXT": [],
+      "CLF": [
+        "CLF-BULL-20260724",
+        "CLF-BULL-20260727"
+      ],
+      "CLSK": [],
+      "COHU": [
+        "COHU-BULL-20260917"
+      ],
+      "DCH": [],
+      "DUOL": [
+        "DUOL-BULL-20260818"
+      ],
+      "ECHO": [],
+      "F": [
+        "F-BULL-20260903"
+      ],
+      "FORM": [
+        "FORM-BULL-20260813"
+      ],
+      "GLW": [
+        "GLW-BULL-20260903"
+      ],
+      "HRMY": [
+        "HRMY-BULL-20260731"
+      ],
+      "INTC": [],
+      "IREN": [
+        "IREN-BULL-20260810"
+      ],
+      "JXN": [],
+      "LEA": [
+        "LEA-BULL-20260727"
+      ],
+      "LITE": [],
+      "MARA": [],
+      "MU": [],
+      "NXPI": [
+        "NXPI-BULL-20260811"
+      ],
+      "QCOM": [
+        "QCOM-BULL-20260821",
+        "QCOM-BULL-20260710",
+        "QCOM-BULL-20260709"
+      ],
+      "SEDG": [
+        "SEDG-BULL-20260827"
+      ],
+      "SMP": [
+        "SMP-BULL-20260903"
+      ],
+      "TEL": [
+        "TEL-BULL-20260903",
+        "TEL-BULL-20260717"
+      ],
+      "VST": [
+        "VST-BULL-20260903"
+      ],
+      "VYX": [
+        "VYX-BULL-20260826"
+      ]
+    },
+    "relation": "ticker co-occurrence only; no causal sighting-to-plan link",
+    "historical_trade_absence_proven": false,
+    "scope": "published index at source pin; not a historical plan replay"
+  }
+}

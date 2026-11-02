@@ -1,0 +1,26 @@
+{
+  "seen": 4,
+  "written": 2,
+  "existing": 2,
+  "raw_only": 0,
+  "empty": 0,
+  "would_write": 0,
+  "refused": 0,
+  "errors": [],
+  "dry_run": false,
+  "raw_receipts_total": null,
+  "scope": "RESEARCH_ONLY_NOT_CANONICAL"
+}
+{
+  "seen": 2,
+  "written": 1,
+  "existing": 1,
+  "raw_only": 0,
+  "empty": 0,
+  "would_write": 0,
+  "refused": 0,
+  "errors": [],
+  "dry_run": false,
+  "raw_receipts_total": null,
+  "scope": "RESEARCH_ONLY_NOT_CANONICAL"
+}

@@ -1,0 +1,659 @@
+{
+  "lane": "s2_event_response",
+  "version": "v1",
+  "base_commit": "5ef7a7f39f99232bf9b574c7603da1011ee3af66",
+  "branch": "claude/sni-s2-event-response-20261011",
+  "labels": {
+    "status": "HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution",
+    "identity_view": "RETROSPECTIVE_JOIN",
+    "authority_flags": {
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false
+    }
+  },
+  "scope": {
+    "protocols": [
+      "P04",
+      "P05",
+      "P06"
+    ],
+    "not_supported_in_s2": [
+      {
+        "protocol_id": "P07",
+        "line": "NOT SUPPORTED in S2 (not commissioned)"
+      },
+      {
+        "protocol_id": "P08",
+        "line": "NOT SUPPORTED in S2 (not commissioned)"
+      },
+      {
+        "protocol_id": "P11",
+        "line": "NOT SUPPORTED in S2 (not commissioned)"
+      }
+    ],
+    "graded_issuer_group": "alibaba",
+    "graded_leg": "adr_baba (SEC:US-XNYS-BABA, MARKET_US)",
+    "census_only": [
+      "tencent issuer group",
+      "HK legs (9988, 0700)"
+    ]
+  },
+  "s0_sources": {
+    "REG": {
+      "path": "research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md",
+      "blob": "1b891b3c60a54bc5eba94cb7fafa8fec6ffb6ea6"
+    },
+    "IL": {
+      "path": "research/single_name_intelligence/protocols/S0_INDEPENDENCE_LAW.md",
+      "blob": "6ec4b097ce3fd24261da12061b3418fde945efaf"
+    },
+    "SL": {
+      "path": "research/single_name_intelligence/protocols/S0_SPLIT_AND_CONTAMINATION_LAW.md",
+      "blob": "c06a91beee22626eab1912aaa8a3baa6856913a2"
+    }
+  },
+  "families": [
+    {
+      "protocol_id": "P04",
+      "family": "results",
+      "counting_clock": "US",
+      "ledger_family": "sni.s2_event_response.P04",
+      "reg_canonical_family": "sni.s0.P04",
+      "declared_budget": 6,
+      "budget_basis": "FLOOR (REG §8 L205)",
+      "itemized_grid_size": 12,
+      "itemized_grid": [
+        {
+          "protocol_id": "P04",
+          "version": "v1",
+          "baseline": "always_long",
+          "horizon": 5
+        },
+        {
+          "protocol_id": "P04",
+          "version": "v1",
+          "baseline": "trailing_63_excess_sign",
+          "horizon": 5
+        },
+        {
+          "protocol_id": "P04",
+          "version": "v1",
+          "baseline": "pooled_train_prior",
+          "horizon": 5
+        },
+        {
+          "protocol_id": "P04",
+          "version": "v1",
+          "baseline": "always_long",
+          "horizon": 21
+        },
+        {
+          "protocol_id": "P04",
+          "version": "v1",
+          "baseline": "trailing_63_excess_sign",
+          "horizon": 21
+        },
+        {
+          "protocol_id": "P04",
+          "version": "v1",
+          "baseline": "pooled_train_prior",
+          "horizon": 21
+        },
+        {
+          "protocol_id": "P04",
+          "version": "v1",
+          "baseline": "always_long",
+          "horizon": 63
+        },
+        {
+          "protocol_id": "P04",
+          "version": "v1",
+          "baseline": "trailing_63_excess_sign",
+          "horizon": 63
+        },
+        {
+          "protocol_id": "P04",
+          "version": "v1",
+          "baseline": "pooled_train_prior",
+          "horizon": 63
+        },
+        {
+          "protocol_id": "P04",
+          "version": "v1",
+          "baseline": "challenger_hierarchy",
+          "horizon": 5
+        },
+        {
+          "protocol_id": "P04",
+          "version": "v1",
+          "baseline": "challenger_hierarchy",
+          "horizon": 21
+        },
+        {
+          "protocol_id": "P04",
+          "version": "v1",
+          "baseline": "challenger_hierarchy",
+          "horizon": 63
+        }
+      ]
+    },
+    {
+      "protocol_id": "P05",
+      "family": "capital_action",
+      "counting_clock": "US",
+      "ledger_family": "sni.s2_event_response.P05",
+      "reg_canonical_family": "sni.s0.P05",
+      "declared_budget": 6,
+      "budget_basis": "FLOOR (REG §8 L205)",
+      "itemized_grid_size": 12,
+      "itemized_grid": [
+        {
+          "protocol_id": "P05",
+          "version": "v1",
+          "baseline": "always_long",
+          "horizon": 5
+        },
+        {
+          "protocol_id": "P05",
+          "version": "v1",
+          "baseline": "trailing_63_excess_sign",
+          "horizon": 5
+        },
+        {
+          "protocol_id": "P05",
+          "version": "v1",
+          "baseline": "pooled_train_prior",
+          "horizon": 5
+        },
+        {
+          "protocol_id": "P05",
+          "version": "v1",
+          "baseline": "always_long",
+          "horizon": 21
+        },
+        {
+          "protocol_id": "P05",
+          "version": "v1",
+          "baseline": "trailing_63_excess_sign",
+          "horizon": 21
+        },
+        {
+          "protocol_id": "P05",
+          "version": "v1",
+          "baseline": "pooled_train_prior",
+          "horizon": 21
+        },
+        {
+          "protocol_id": "P05",
+          "version": "v1",
+          "baseline": "always_long",
+          "horizon": 63
+        },
+        {
+          "protocol_id": "P05",
+          "version": "v1",
+          "baseline": "trailing_63_excess_sign",
+          "horizon": 63
+        },
+        {
+          "protocol_id": "P05",
+          "version": "v1",
+          "baseline": "pooled_train_prior",
+          "horizon": 63
+        },
+        {
+          "protocol_id": "P05",
+          "version": "v1",
+          "baseline": "challenger_hierarchy",
+          "horizon": 5
+        },
+        {
+          "protocol_id": "P05",
+          "version": "v1",
+          "baseline": "challenger_hierarchy",
+          "horizon": 21
+        },
+        {
+          "protocol_id": "P05",
+          "version": "v1",
+          "baseline": "challenger_hierarchy",
+          "horizon": 63
+        }
+      ]
+    },
+    {
+      "protocol_id": "P06",
+      "family": "regulatory_material",
+      "counting_clock": "US",
+      "ledger_family": "sni.s2_event_response.P06",
+      "reg_canonical_family": "sni.s0.P06",
+      "declared_budget": 6,
+      "budget_basis": "FLOOR (REG §8 L205)",
+      "itemized_grid_size": 12,
+      "itemized_grid": [
+        {
+          "protocol_id": "P06",
+          "version": "v1",
+          "baseline": "always_long",
+          "horizon": 5
+        },
+        {
+          "protocol_id": "P06",
+          "version": "v1",
+          "baseline": "trailing_63_excess_sign",
+          "horizon": 5
+        },
+        {
+          "protocol_id": "P06",
+          "version": "v1",
+          "baseline": "pooled_train_prior",
+          "horizon": 5
+        },
+        {
+          "protocol_id": "P06",
+          "version": "v1",
+          "baseline": "always_long",
+          "horizon": 21
+        },
+        {
+          "protocol_id": "P06",
+          "version": "v1",
+          "baseline": "trailing_63_excess_sign",
+          "horizon": 21
+        },
+        {
+          "protocol_id": "P06",
+          "version": "v1",
+          "baseline": "pooled_train_prior",
+          "horizon": 21
+        },
+        {
+          "protocol_id": "P06",
+          "version": "v1",
+          "baseline": "always_long",
+          "horizon": 63
+        },
+        {
+          "protocol_id": "P06",
+          "version": "v1",
+          "baseline": "trailing_63_excess_sign",
+          "horizon": 63
+        },
+        {
+          "protocol_id": "P06",
+          "version": "v1",
+          "baseline": "pooled_train_prior",
+          "horizon": 63
+        },
+        {
+          "protocol_id": "P06",
+          "version": "v1",
+          "baseline": "challenger_hierarchy",
+          "horizon": 5
+        },
+        {
+          "protocol_id": "P06",
+          "version": "v1",
+          "baseline": "challenger_hierarchy",
+          "horizon": 21
+        },
+        {
+          "protocol_id": "P06",
+          "version": "v1",
+          "baseline": "challenger_hierarchy",
+          "horizon": 63
+        }
+      ]
+    }
+  ],
+  "classification_table": {
+    "source": "data/hk_filings/events.parquet category vocabulary (metadata only)",
+    "mapping": {
+      "final_results": "results",
+      "interim_results": "results",
+      "quarterly_results": "results",
+      "buyback": "capital_action",
+      "general_mandate": "capital_action",
+      "shareholder": "UNCLASSIFIED"
+    },
+    "vocabulary_seen": [
+      "buyback",
+      "final_results",
+      "general_mandate",
+      "interim_results",
+      "shareholder"
+    ],
+    "count_per_category": {
+      "buyback": 27,
+      "final_results": 792,
+      "general_mandate": 777,
+      "interim_results": 2178,
+      "shareholder": 132
+    },
+    "unclassified_rule": "a category the table does not map is UNCLASSIFIED: listed, never counted"
+  },
+  "event_sources": [
+    {
+      "id": "a",
+      "path": "data/hk_filings/events.parquet",
+      "selection": "rows whose exact '<br/>'-split stock_code token equals a profile counter local_code (09988 alibaba hkd_9988; 00700 tencent hkd_0700)",
+      "t_avail": "announced_at (publisher-stated HKT, converted to UTC)",
+      "timestamp_quality": "PUBLISHER_STATED"
+    },
+    {
+      "id": "b",
+      "path": "data/earnings/earnings.parquet",
+      "selection": "rows for BABA",
+      "timestamp_quality": "EVENT_DATE",
+      "disposition": "excluded-and-listed (IL §1), never an anchor"
+    },
+    {
+      "id": "c",
+      "path": "E1/E2 coverage reports (census only)",
+      "selection": "every coverage cell listed with its state and disposition"
+    }
+  ],
+  "clock_rules": {
+    "s_c": "first session on clock c whose REGULAR OPEN is strictly after t_avail (pre-open -> same day; in-session, HK midday break or after close -> next session; DISCLOSURE_DATE -> first session strictly after the date)",
+    "graded_clock": "MARKET_US only (BABA leg)",
+    "window": "entry_anchor = calendar day before s_US; resolve_horizon_window(entry_anchor, h, HORIZON_UNIT_TRADING, MARKET_US); assert fill_date == s_US else ABSTAIN_FILL_MISMATCH; None -> ABSTAIN_RESOLVER_NONE",
+    "leg_return": "close(coverage_date)/close(fill_date) - 1 on the adjusted total-return close; both endpoint bars present on exactly those sessions else ABSTAIN_MISSING_ENDPOINT",
+    "excess": "BABA return - SPY return",
+    "decision_time": "D(s) = last NYSE session before s_US; every decision-time quantity uses bars <= D(s); the day-s move is excluded and disclosed",
+    "W_h": "sessions s .. s+h inclusive (IL §1); the overlap window used by IL §3"
+  },
+  "collapse_rules": {
+    "order": "IL §3 steps 0..N run IN FULL before anything is counted (A22)",
+    "duplicate_reports": "repeated reports of one occurrence -> one event, earliest admissible t_avail",
+    "programme": "one programme -> one event; execution returns are evidence rows",
+    "cross_counter": "BABA and 9988 rows of one occurrence -> ONE alibaba episode; leg outcomes are columns of one episode, never extra N (IL §6)",
+    "overlap": "overlapping windows within an issuer group at the same h handled per IL §3 step 4 (absorb / confounded flags), never silently merged, never double-counted",
+    "clusters": "same-day shocks across issuer groups share a cluster key (trade date of s) and are counted in cluster-N, never merged into one episode (IL §8)",
+    "exclusion_order": "excluded-and-listed rows are removed before episode formation; the exclusion is listed with its ids",
+    "programme_rule": "among the selected rows of one issuer group, the capital_action rows whose category is general_mandate and whose title carries PLACING form ONE programme (proposal, pricing, completion = evidence rows); the frozen coverage exclusion then removes that programme for REG P05 with its ids listed (E0 gap 10: HK placement coverage misses general-mandate placings)"
+  },
+  "splits": {
+    "TRAIN": "s < 2024-01-01",
+    "TUNE": "2024-01-01 <= s < 2026-10-01",
+    "QUARANTINE": "s >= 2026-10-01 (listed, counted, never evaluated)",
+    "TEST": "prospective claims only; REG §2 registration gate not met, so S2 has no TEST",
+    "purge": "TRAIN episode with coverage_date >= 2024-01-01, or TUNE episode with coverage_date >= 2026-10-01 -> PURGED (counted visibly, never moved)",
+    "episode_key": "sha256('{issuer_key}|{opener_family}|{opener_t_avail_utc_iso8601}|{opener_evidence_pointer}') (SL §1)",
+    "manifest_rule": "runs/s2_event_response/manifests/<Pxx>_h<h>.jsonl, sorted by (horizon, episode_key), canonical json lines; membership_sha256 per (protocol, h, split) = sha256 of that split's lines in order"
+  },
+  "baselines": {
+    "i": "always-long (+1)",
+    "ii": "sign of the trailing-63-session excess at D(s): (BABA(D)/BABA(D63) - 1) - (SPY(D)/SPY(D63) - 1), exact bars on D and D63 for both legs, else direction 0",
+    "iii": "direction of the all-events pooled prior = sign of the mean excess of all counted TRAIN episodes across the three families at that h (PRIMARY set), computed from TRAIN only; TRAIN cluster-N < 2 -> NOT ESTIMABLE (abstain, never 0.5, never +1 by default)",
+    "challenger": "NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N printed beside)",
+    "pooling_weight": "NOT ESTIMABLE whenever baseline (iii) is not estimable or own-name cluster-N < 2; the token is printed, never a number by default",
+    "proper_score": "NOT SUPPORTED (REG P04: hit and excess are not a proper score)",
+    "hit_rule": "hit = sign(excess) == direction; excess == 0 exactly -> non-hit, listed as a tie; direction 0 -> ABSTAIN"
+  },
+  "statistics": {
+    "h0": "post-event hit rate = 0.50 per horizon",
+    "test": "exact one-sided binomial (greater) via math.comb",
+    "alpha": 0.05,
+    "hit_rate_ci": "wilson_ci (3 dp)",
+    "mean_excess_ci": "mirror-trick block_bootstrap_ci: dates=concat(k,k), vals=concat(x,-x), mask=concat([True]*n,[False]*n), stat='mean', default draws/seed; block = one episode window W_h; cluster variable = cluster key (trade date of s)",
+    "forbidden": "block_bootstrap_scalar_ci is not permitted"
+  },
+  "minimum_evidence": {
+    "episodes": 153,
+    "derivation": "one-sided alpha 0.05, power 0.80, hit rate 0.60 vs 0.50",
+    "below_minimum": "DESCRIPTIVE ONLY — below the 153-episode minimum"
+  },
+  "abstention_ladder": [
+    "ABSTAIN_NO_EPISODES (honest-N 0)",
+    "ABSTAIN_INSUFFICIENT_CLUSTERS (cluster-N < 2: no test, no CI, per-episode rows printed descriptively)",
+    "DESCRIPTIVE_ONLY (< 153)",
+    "TESTED",
+    "first match wins; never a 0.5 fill (A25)"
+  ],
+  "kill_hold_rule": "Kill/continue per REG P01: a failed criterion prints KILL or HOLD-AS-RESEARCH and is never rescued by changing target, cohort or horizon after seeing results.",
+  "info_leak_predicate": {
+    "series": "q_t = close_t / close_price_t for BABA and SPY",
+    "rule": "any |q_t/q_{t-1} - 1| > 1e-6 on a date >= the earliest TUNE anchor and <= the last input bar",
+    "class": "information_leak",
+    "effect": "TUNE RETIRED for P04/P05/P06 (per family with a non-empty TUNE); TUNE still computed and printed, labelled NON-CONFIRMATORY — TUNE RETIRED (A23 INFO-LEAK)",
+    "ledger_row": "log_trial(config={event: holdout_retired, protocol_id, version, split: TUNE, membership_sha256, contamination_class, detected_at (BASE commit date, deterministic), evidence}, family=sni.s2_event_response.<Pxx>, source=sni_s0_holdout_retirement) inside the register_trials block after the budget row",
+    "manifest_row": "a retirement row in runs/s2_event_response/LANE_MANIFEST.json with successor '<Pxx> v2 — not drafted; owner = seat/S0'",
+    "invariance_note": "a window return is invariant to a multiplicative adjustment constant across the window; the leak is the vintage, not necessarily the value",
+    "hk_series": "VINTAGE_UNVERIFIABLE (disclosed; HK series carry no adjustment-factor pair; not retired)",
+    "train": "TRAIN is never retired (SL §8 step 6)",
+    "empty_split": "EMPTY — retirement not applicable",
+    "membership_sha256_construction": "sha256 of '|'.join(per-(protocol,h,TUNE) membership_sha256 for h in (5,21,63))"
+  },
+  "trial_ledger": {
+    "path": "research/single_name_intelligence/runs/s2_event_response/trial_ledger.jsonl",
+    "required_arg": "--trial-ledger-path is REQUIRED with NO default; the runner refuses (exit 2) any path resolving inside <repo>/data/",
+    "budgets": {
+      "P04": 6,
+      "P05": 6,
+      "P06": 6
+    },
+    "effective_n": "TrialLedger.effective_n = max(base, declared, 1); printed, never hidden; labelled effective N (trials) — never a sample N (IL §1)"
+  },
+  "report_order": "REG §5 order: (1) plain-word null; (2) analysis set; (3) honest-N; (4) cluster-N; (5) literal row count; (6) visible exclusions; (7) test; (8) CI; (9) trial count; (10) receipt — then the commission family row",
+  "determinism": {
+    "command": "python3 research/single_name_intelligence/event_response/run_s2.py --input-ref 5ef7a7f39f99232bf9b574c7603da1011ee3af66 --out-dir <dir> --trial-ledger-path <dir>/trial_ledger.jsonl",
+    "check": "--check reruns into a temp dir and byte-compares every output against runs/s2_event_response/ (ledger compared after dropping ts); exit 0 iff identical",
+    "seal_verification": "the runner first recomputes every membership_sha256 and the prereg digest and exits non-zero on any mismatch with the seal"
+  },
+  "membership_table": [
+    {
+      "protocol_id": "P04",
+      "horizon": 5,
+      "split": "TRAIN",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P04",
+      "horizon": 5,
+      "split": "TUNE",
+      "count": 2,
+      "membership_sha256": "3987f51b24bc47ce9961206ffef580f810ea634964864f2f9659f5705dd24a0b"
+    },
+    {
+      "protocol_id": "P04",
+      "horizon": 5,
+      "split": "QUARANTINE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P04",
+      "horizon": 21,
+      "split": "TRAIN",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P04",
+      "horizon": 21,
+      "split": "TUNE",
+      "count": 2,
+      "membership_sha256": "f392d0c6efe30cc44af8406d72542a70ac4a559fc989ccdf287cbd71cdfbf298"
+    },
+    {
+      "protocol_id": "P04",
+      "horizon": 21,
+      "split": "QUARANTINE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P04",
+      "horizon": 63,
+      "split": "TRAIN",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P04",
+      "horizon": 63,
+      "split": "TUNE",
+      "count": 2,
+      "membership_sha256": "7fbe134bb1e72f6a5635a547cb6d562b1b5364f59168e67b12321ee64bf805c7"
+    },
+    {
+      "protocol_id": "P04",
+      "horizon": 63,
+      "split": "QUARANTINE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P05",
+      "horizon": 5,
+      "split": "TRAIN",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P05",
+      "horizon": 5,
+      "split": "TUNE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P05",
+      "horizon": 5,
+      "split": "QUARANTINE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P05",
+      "horizon": 21,
+      "split": "TRAIN",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P05",
+      "horizon": 21,
+      "split": "TUNE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P05",
+      "horizon": 21,
+      "split": "QUARANTINE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P05",
+      "horizon": 63,
+      "split": "TRAIN",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P05",
+      "horizon": 63,
+      "split": "TUNE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P05",
+      "horizon": 63,
+      "split": "QUARANTINE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P06",
+      "horizon": 5,
+      "split": "TRAIN",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P06",
+      "horizon": 5,
+      "split": "TUNE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P06",
+      "horizon": 5,
+      "split": "QUARANTINE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P06",
+      "horizon": 21,
+      "split": "TRAIN",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P06",
+      "horizon": 21,
+      "split": "TUNE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P06",
+      "horizon": 21,
+      "split": "QUARANTINE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P06",
+      "horizon": 63,
+      "split": "TRAIN",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P06",
+      "horizon": 63,
+      "split": "TUNE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P06",
+      "horizon": 63,
+      "split": "QUARANTINE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "programmes_frozen": [
+    {
+      "key": "placing:alibaba",
+      "issuer_key": "alibaba",
+      "counter": "hkd_9988",
+      "member_ids": [
+        "12295308",
+        "12295380",
+        "12300619"
+      ]
+    }
+  ],
+  "event_exclusions_frozen": [
+    {
+      "match": {
+        "programme": "placing:alibaba"
+      },
+      "reason": "E0 gap 10: HK placement coverage misses general-mandate placings; the one programme (one event under REG P05) is excluded and listed, never silently dropped",
+      "family_scope": "capital_action"
+    }
+  ]
+}

@@ -2133,7 +2133,7 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
     # never depend on the published board it exists to audit independently
     # of (K-D9 publication-isolation).
     try:
-        from engine import board_shadow, hk_discovery_challenger
+        from engine import board_shadow, hk_discovery_challenger, hk_native_intelligence
 
         # HK-DISCOVERY EVIDENCE ASSEMBLY START (build commission R3/K-D9
         # structural pin: this token must sit strictly between the
@@ -2159,6 +2159,44 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
                 flush=True,
             )
 
+        # HK-NATIVE-INTEL Wave 6: attach H3/X1 evidence to the existing
+        # zero-authority discovery rows. These reads cannot originate a
+        # candidate, change availability, alter the published board, or reach
+        # HK Brain.
+        _hk_native_family_rows: dict = {}
+        _native_tickers = [str(e.get("ticker")) for e in enriched if e.get("ticker")]
+        try:
+            _hk_ah_pairs = hk_ah._panel_pairs() or None
+            _hk_a_twin_closes = hk_native_intelligence.load_a_twin_closes(
+                _hk_ah_pairs, store.read,
+            )
+            _hk_native_family_rows = hk_native_intelligence.build_family_evidence(
+                _native_tickers,
+                asof=as_of,
+                pair_rows=_hk_ah_pairs,
+                premium_panel=hk_ah.panel_pair_premiums(),
+                a_closes=_hk_a_twin_closes,
+            )
+        except Exception as _native_ex:
+            print(
+                "::warning title=hk-native-intel-unavailable::H3/X1 family projection "
+                f"failed ({_native_ex}) — discovery continues with explicit UNAVAILABLE "
+                "family states",
+                flush=True,
+            )
+            _hk_native_family_rows = hk_native_intelligence.unavailable_family_evidence(
+                _native_tickers
+            )
+
+        # Add the already-computed broad beta-neutral RS screen to the same
+        # zero-authority family rows. This is evidence only: it does not
+        # originate candidates or alter availability/publication.
+        _hk_native_family_rows = hk_native_intelligence.with_bnrs_evidence(
+            _hk_native_family_rows,
+            _native_tickers,
+            bnrs,
+        )
+
         # R5/F5: ripening_tickers enters the bundle as a SORTED list, never
         # the raw set above — set iteration order is not stable across
         # process runs (hash randomisation), and build_candidates()
@@ -2172,6 +2210,7 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
             "dir_by_ticker": {e.get("ticker"): e.get("dir") for e in enriched if e.get("ticker")},
             "southbound": southbound,
             "ah_value": ah_value,
+            "native_families": _hk_native_family_rows,
             "knife_risk": {e.get("ticker"): bool(e.get("knife_risk"))
                           for e in enriched if e.get("ticker")},
             # R4/F4: knife_available is True iff the falling-knife pass
@@ -2200,9 +2239,51 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
         import copy as _copy_disc
         _hk_disc_evidence = _copy_disc.deepcopy(_hk_disc_evidence)
 
+        # Wave 7 HK-RANK-RACE: H3 and X1(b) run as TWO independent
+        # same-population Lane-A challengers.  No fusion/weights are minted here;
+        # each rank_fn can only score the exact incumbent calls handed to it by
+        # board_shadow, and non-ACCRUING family reads stay null.
+        _hk_rank_family_rows = _hk_disc_evidence["native_families"]
+
+        # Broad-coverage SCREEN race: reuse the beta-neutral RS map computed
+        # earlier for the live screen. It is captured only after publication,
+        # cannot originate names, and remains distinct from H3/X1 selection
+        # evidence and from the live fused hk_edge.
+        _hk_bnrs_rank_values = dict(bnrs or {})
+
+        def _hk_bnrs_rank_fn(_calls: list[dict]) -> dict:
+            return hk_native_intelligence.rank_bnrs_calls(
+                _calls, _hk_bnrs_rank_values,
+            )
+
+        def _hk_h3_rank_fn(_calls: list[dict]) -> dict:
+            return hk_native_intelligence.rank_family_calls(
+                _calls, _hk_rank_family_rows, "h3_ah_discount",
+            )
+
+        def _hk_x1_rank_fn(_calls: list[dict]) -> dict:
+            return hk_native_intelligence.rank_family_calls(
+                _calls, _hk_rank_family_rows, "x1_atwin_momentum",
+            )
+
         def _hk_discovery_fn(_asof_arg: str) -> list[dict]:
             return hk_discovery_challenger.build_candidates(_hk_disc_evidence, _asof_arg)
 
+        board_shadow.register_challenger(
+            "HK",
+            hk_native_intelligence.BNRS_DEFINITION,
+            rank_fn=_hk_bnrs_rank_fn,
+        )
+        board_shadow.register_challenger(
+            "HK",
+            hk_native_intelligence.RANK_DEFINITIONS["h3_ah_discount"],
+            rank_fn=_hk_h3_rank_fn,
+        )
+        board_shadow.register_challenger(
+            "HK",
+            hk_native_intelligence.RANK_DEFINITIONS["x1_atwin_momentum"],
+            rank_fn=_hk_x1_rank_fn,
+        )
         board_shadow.register_challenger(
             "HK", hk_discovery_challenger.DEFINITION, discovery_fn=_hk_discovery_fn,
         )
@@ -2243,7 +2324,7 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
         from engine.pick_lab.profile import HK_PROFILE
         from engine.pick_lab.signals_1d import compute_grids as _compute_grids
 
-        _producer_asof = str(as_of) if as_of else str(pd.Timestamp.utcnow().date())
+        _producer_asof = str(as_of).strip() if as_of and str(as_of).strip() else None
 
         # -- 1. Close panel: the breadth cache (already loaded as `closes` above)
         # Compute 1D/2D oscillators over the full close panel; also derive the 3D
@@ -2407,7 +2488,14 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
             pass
 
         # -- 5. Assemble snapshot rows
-        _snap_rows = build_hk_core_rows(
+        if _producer_asof is None:
+            _snap_rows = []
+            log.warning(
+                "hk producer: owner session unavailable — Pick Lab snapshot and "
+                "velocity outputs skipped for this pass"
+            )
+        else:
+            _snap_rows = build_hk_core_rows(
             tickers=_tickers,
             asof=_producer_asof,
             close_by=_close_by,
@@ -2435,7 +2523,7 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
                               if isinstance(liquidity_regime, dict) else liquidity_regime,
             vhsi_pctile=vhsi_pct,
             hsi_close=_hsi_close_scalar,
-        )
+            )
         log.info("hk producer: assembled %d snapshot rows (asof=%s)", len(_snap_rows), _producer_asof)
 
         # -- 6. Write snapshot parquet (keep-first; idempotent)

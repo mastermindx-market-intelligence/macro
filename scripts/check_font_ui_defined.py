@@ -104,10 +104,31 @@ def _block_sets_font_ui(block: str) -> bool:
 
 
 def uses_body_font_ui(text: str) -> bool:
-    """True if comment-stripped text has a body{} rule fonted via var(--font-ui)."""
-    for m in _CSS_RULE_RE.finditer(text):
-        selector, block = m.group(1), m.group(2)
-        if _BODY_TOKEN_RE.search(selector) and _block_sets_font_ui(block):
+    """True if comment-stripped text has a body{} rule fonted via var(--font-ui).
+
+    Search from the rare token outward instead of running the generic rule regex
+    from every byte in a full HTML document. The template CSS contract is flat at
+    declaration-rule depth after Jinja stripping; nested @media/@supports wrappers
+    are handled by taking the nearest structural brace before the rule selector.
+    """
+    for token in _VAR_FONT_UI_RE.finditer(text):
+        pos = token.start()
+        open_brace = text.rfind("{", 0, pos)
+        if open_brace < 0:
+            continue
+        close_brace = text.find("}", pos)
+        if close_brace < 0:
+            continue
+
+        previous_close = text.rfind("}", 0, open_brace)
+        previous_open = text.rfind("{", 0, open_brace)
+        selector_start = max(previous_close, previous_open) + 1
+        selector = text[selector_start:open_brace]
+        if not _BODY_TOKEN_RE.search(selector):
+            continue
+
+        block = text[open_brace + 1 : close_brace]
+        if _block_sets_font_ui(block):
             return True
     return False
 
@@ -175,6 +196,11 @@ def run_checks(templates_dir: str) -> tuple[list[tuple[str, str]], list[tuple[st
             raw = path.read_text(encoding="utf-8", errors="replace")
         except OSError as exc:
             violations.append((str(path), f"could not read file: {exc}"))
+            continue
+
+        # Most templates do not mention the token. Avoid expensive comment/Jinja
+        # regex passes on files that cannot possibly participate in this law.
+        if "--font-ui" not in raw:
             continue
 
         if path.name.startswith("_"):

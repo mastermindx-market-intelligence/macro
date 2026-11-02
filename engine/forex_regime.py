@@ -771,6 +771,62 @@ _CCY_ZH = {"USD": "美元", "EUR": "欧元", "JPY": "日元", "GBP": "英镑", "
 _CCY_ORDER = ["USD", "EUR", "JPY", "GBP", "CHF", "AUD", "CAD", "CNH", "MXN", "BRL"]
 
 
+def _selected_index_date(series: pd.Series | None) -> str | None:
+    """Date of the selected derived/input-series value, NOT a vendor timestamp.
+
+    Keep the existing last-non-null selection. Do not forward-fill a clock or use
+    today's/build time. Normalized input values may themselves already be filled.
+    """
+    if not isinstance(series, pd.Series) or not isinstance(series.index, pd.DatetimeIndex):
+        return None
+    selected = series.dropna()
+    if selected.empty or not np.isfinite(selected.iloc[-1]):
+        return None
+    stamp = selected.index[-1]
+    return None if pd.isna(stamp) else stamp.strftime("%Y-%m-%d")
+
+
+def _residual_window_evidence(results: dict, assets: dict, ccy: str,
+                              idx: pd.DatetimeIndex, end: pd.Timestamp | None) -> dict | None:
+    """Summarize the originating method flags for exactly the five selected returns.
+
+    No residual calculation is repeated. Missing/legacy/ambiguous annotations do
+    not certify an adjustment, and this receipt never certifies input freshness.
+    """
+    if end is None or not idx.is_unique:
+        return None
+    sources = [(pair, frame) for pair, frame in results.items()
+               if pair != '_dollar' and assets.get(pair, {}).get('base', pair) == ccy]
+    if len(sources) != 1:
+        return None
+    pair, frame = sources[0]
+    required = {'pair', 'residual_method', 'residual_dollar_carried'}
+    if not isinstance(frame, pd.DataFrame) or not required.issubset(frame.columns) or not frame.index.is_unique:
+        return None
+    position = idx.get_indexer([end])[0]
+    if position < 4:
+        return None
+    window = idx[position - 4:position + 1]
+    selected = frame.reindex(window)
+    if not selected['pair'].notna().all() or not selected['pair'].eq(pair).all():
+        return None
+    counts = dict.fromkeys(('adjusted', 'raw_fallback', 'zero_filled', 'unavailable'), 0)
+    carried = 0
+    for method, driver_carried in zip(selected['residual_method'], selected['residual_dollar_carried']):
+        if not isinstance(method, str) or method not in counts:
+            method = 'unavailable'
+        if method == 'adjusted' and not isinstance(driver_carried, (bool, np.bool_)):
+            method = 'unavailable'
+        counts[method] += 1
+        if method == 'adjusted' and bool(driver_carried):
+            carried += 1
+    return {'version': 1, 'producer': 'engine.forex_signals.orthogonalize',
+            'ccy': ccy, 'pair': pair, 'window_observations': 5,
+            'window_start': window[0].strftime('%Y-%m-%d'),
+            'window_end': window[-1].strftime('%Y-%m-%d'),
+            'counts': counts, 'carried_driver_observations': carried}
+
+
 def fx_kinematics_table(results: dict, drivers: dict, cfg: dict) -> dict:
     """Per-currency move kinematics: literal 1d/5d/20d % move, velocity-z, acceleration-z,
     realized-vol percentile, and the idiosyncratic (ex-dollar) 5d move. COINCIDENT,
@@ -793,9 +849,13 @@ def fx_kinematics_table(results: dict, drivers: dict, cfg: dict) -> dict:
                 continue
             lg = strength[ccy].reindex(idx)
             level = np.exp(lg)
-            def pct(w):
+            selected_dates = {field: None for field in (
+                "lit_1d_pct", "lit_5d_pct", "lit_20d_pct", "vel_z", "accel_z",
+                "rvol_pctile", "resid_5d_pct")}
+            def pct(w, field):
                 v = lg.diff(w)
                 vv = v.dropna()
+                selected_dates[field] = _selected_index_date(vv)
                 return round(100 * (np.exp(float(vv.iloc[-1])) - 1), 2) if len(vv) else None
             vel = _velocity(level, 5, hl)
             vz = _z_causal(vel, zw, zmp).dropna()
@@ -806,19 +866,39 @@ def fx_kinematics_table(results: dict, drivers: dict, cfg: dict) -> dict:
             acc_z = float(az.iloc[-1]) if len(az) else None
             # idiosyncratic (ex-dollar) 5d move from residual returns
             resid5 = None
+            residual_end = None
             if ccy in resid_ret:
                 rr = resid_ret[ccy].reindex(idx).rolling(5).sum().dropna()
                 if len(rr):
                     resid5 = round(100 * (np.exp(float(rr.iloc[-1])) - 1), 2)
+                    residual_end = rr.index[-1]
+                selected_dates["resid_5d_pct"] = _selected_index_date(rr)
+            selected_dates.update(vel_z=_selected_index_date(vz),
+                                  accel_z=_selected_index_date(az),
+                                  rvol_pctile=_selected_index_date(rvp))
             state_en, state_zh = _kin_state(vel_z, acc_z)
             rows.append({
                 "ccy": ccy, "label_en": ccy, "label_zh": _CCY_ZH.get(ccy, ccy),
-                "lit_1d_pct": pct(lw[0]), "lit_5d_pct": pct(lw[1]), "lit_20d_pct": pct(lw[2]),
+                "lit_1d_pct": pct(lw[0], "lit_1d_pct"),
+                "lit_5d_pct": pct(lw[1], "lit_5d_pct"),
+                "lit_20d_pct": pct(lw[2], "lit_20d_pct"),
                 "vel_z": round(vel_z, 2) if vel_z is not None else None,
                 "accel_z": round(acc_z, 2) if acc_z is not None else None,
                 "rvol_pctile": round(float(rvp.iloc[-1]), 2) if len(rvp) else None,
                 "resid_5d_pct": resid5,
+                "residual_adjustment": _residual_window_evidence(
+                    results, cfg['assets'], ccy, idx, residual_end),
                 "state_en": state_en, "state_zh": state_zh,
+                "calculation_clock": {
+                    "version": 1, "basis": "derived_series_index",
+                    "selected_index_dates": selected_dates,
+                    "normalized_input_dates": {
+                        "close": _selected_index_date(lg),
+                        "residual_return": _selected_index_date(resid_ret.get(ccy)),
+                    },
+                    # The normalized frames do not carry source release/ingestion clocks.
+                    "source_observed_at": None, "source_available_at": None,
+                },
             })
         if not rows:
             return {}

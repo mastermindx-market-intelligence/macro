@@ -83,12 +83,22 @@
     // live alert-id under its channel's key, so a genuinely NEW alert (or a new
     // radar state) re-opens the bar, but an old one merely expiring does not.
     var close = txt("button", "whb-x", "×");
-    close.setAttribute("aria-label", "Dismiss");
+    function syncCloseLabel() {
+      close.setAttribute(
+        "aria-label",
+        document.documentElement.getAttribute("data-lang") === "zh"
+          ? "关闭市场提醒"
+          : "Dismiss market alert"
+      );
+    }
+    syncCloseLabel();
+    document.addEventListener("langchange", syncCloseLabel);
     close.addEventListener("click", function (ev) {
       ev.stopPropagation();
       channels.forEach(function (c) { c.dismiss(); });
       bar.parentNode && bar.parentNode.removeChild(bar);
       document.documentElement.classList.remove("whb-on");
+      document.removeEventListener("langchange", syncCloseLabel);
       if (close._whbResize) window.removeEventListener("resize", close._whbResize);
       if (bar._whbTimer) clearInterval(bar._whbTimer);
     });
@@ -482,9 +492,13 @@
       ".whb-rr-pct{font-variant-numeric:tabular-nums;font-weight:800;font-size:17px;color:#ffb066;letter-spacing:.01em}",
       ".whb-rr-hz{font-size:10.5px;color:rgba(255,214,170,.85);font-weight:600}",
       ".whb-ramp .whb-sym{color:#e9c9a2;font-size:11px}",
-      ".whb-x{flex:0 0 auto;background:transparent;border:0;color:rgba(255,255,255,.6);",
-      "font-size:21px;line-height:1;padding:0 14px;cursor:pointer;align-self:center}",
-      ".whb-x:hover{color:#fff}",
+      ".whb-x{flex:0 0 40px;width:40px;height:40px;display:grid;place-items:center;",
+      "background:transparent;border:0;color:inherit;opacity:.6;",
+      "font-size:21px;line-height:1;padding:0;cursor:pointer;align-self:center;",
+      "border-radius:var(--r-sm,10px);touch-action:manipulation}",
+      ".whb-x:hover{opacity:1}",
+      ".whb-x:focus-visible{outline:2px solid currentColor;outline-offset:-4px;opacity:1}",
+      ".whb-x:active{opacity:.78}",
       "@media print{.whb{display:none}}",
     ].join("");
     var st = document.createElement("style");

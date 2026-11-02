@@ -68,6 +68,8 @@ source_snapshot = {
         "path": board_rel,
         "sha256": board_sha256,
         "size_bytes": len(board_bytes),
+        "snapshot_path": f"data/prophet/origination_sources/{board_sha256}.json.gz",
+        "snapshot_encoding": "gzip",
         "board_asof": board_asof,
         # price_through is the actual ranked-price watermark; board_asof
         # is publication metadata and must never silently substitute for it.
@@ -117,6 +119,7 @@ globs = {
     "site/prophet/plans": "*.json",
     "site/prophet/states": "*.json",
     "data/prophet/origination_receipts": "*.json",
+    "data/prophet/origination_sources": "*.json.gz",
     # §6.5 legacy shadow: month-grouped DAY parts
     # (legacy_shadow/YYYY-MM/YYYY-MM-DD.parquet). Build-owned and
     # append-only like the receipts; without this the accrual store
@@ -145,8 +148,11 @@ def snapshot() -> dict[str, str]:
         if path.is_file()
     }
 
+
+before = snapshot()
+
 Path(os.environ["PROPHET_BASELINE"]).write_text(
-    json.dumps(snapshot(), sort_keys=True), encoding="utf-8"
+    json.dumps(before, sort_keys=True), encoding="utf-8"
 )
 PY
 baseline_rc=$?
@@ -165,6 +171,7 @@ if [ "$rc" -eq 0 ]; then
   # immutable byte copy is independently re-hashed here. Any mismatch or
   # unmappable new plan withholds the ENTIRE early checkpoint.
   python3 - <<'PY'
+import gzip
 import hashlib
 import json
 import os
@@ -188,6 +195,20 @@ if live_sha != expected_sha or blob_sha != expected_sha or live_bytes != blob_by
         "::error title=Prophet origination source changed::"
         "us_standouts bytes did not remain identical across the build; "
         "no output from an ambiguous source snapshot will publish",
+        flush=True,
+    )
+    raise SystemExit(2)
+durable_path = root / str(source.get("snapshot_path") or "")
+durable_raw = None
+if durable_path.is_file() and not durable_path.is_symlink():
+    try:
+        durable_raw = gzip.decompress(durable_path.read_bytes())
+    except (OSError, EOFError):
+        durable_raw = None
+if durable_raw != blob_bytes:
+    print(
+        "::error title=Prophet durable source snapshot missing::"
+        f"{durable_path} does not recover the exact frozen source bytes",
         flush=True,
     )
     raise SystemExit(2)
@@ -339,6 +360,7 @@ globs = {
     "site/prophet/plans": "*.json",
     "site/prophet/states": "*.json",
     "data/prophet/origination_receipts": "*.json",
+    "data/prophet/origination_sources": "*.json.gz",
     # §6.5 legacy shadow: month-grouped DAY parts
     # (legacy_shadow/YYYY-MM/YYYY-MM-DD.parquet). Build-owned and
     # append-only like the receipts; without this the accrual store

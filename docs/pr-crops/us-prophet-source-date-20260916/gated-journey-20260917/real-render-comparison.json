@@ -1,0 +1,71 @@
+{
+  "proof_class": "existing_dashboard_and_splitters_with_preserved_real_board_and_book",
+  "production": false,
+  "authenticated_delivery_proven": false,
+  "fixture_other_context": "repository minimal _base_vm; source board/book from preserved real full build",
+  "source_head_preimage": "0a076cedd8094e5425e782aca976820e93ed6e8e",
+  "source_template_sha256": "c00a6e377d9c47abf88a6f048956f3d77da3bbb29b7f632ed9dc82edbe83a030",
+  "source_board_sha256": "3cfa5b63b84b8010e53b17fef781ead9814083189fbf7d191f7b21e80a75588a",
+  "source_book_sha256": "c24740936df99fcd2b9b08c99e2e4a71bc327d0e81af333049703f3800bedff8",
+  "source_board_date": "2026-09-16",
+  "candidate_gate": {
+    "tier": "essential",
+    "payload": "/premiumdata/us_stocks.json",
+    "preview": 3,
+    "locked": 39,
+    "total": 42,
+    "stage_counts": {
+      "live": 16,
+      "setting_up": 19,
+      "ran": 3,
+      "basing": 2,
+      "blocked": 2,
+      "bottoming": 23,
+      "continuation": 15,
+      "trend": 0,
+      "recovery": 0,
+      "watch": 4
+    }
+  },
+  "plan_gate": {
+    "tier": "essential",
+    "payload": "/premiumdata/us_stocks.json",
+    "preview": 3,
+    "locked": 412,
+    "total": 415
+  },
+  "visible_plan_preview": 3,
+  "visible_plan_locked": 412,
+  "only_rendered_changes": [
+    [
+      "Switch between tonight's candidate screen and the plan book",
+      "Switch between the candidate screen and the plan book"
+    ],
+    [
+      "\u5728\u4eca\u665a\u7684\u5019\u9009\u7b5b\u9009\u4e0e\u8ba1\u5212\u7c3f\u4e4b\u95f4\u5207\u6362",
+      "\u5728\u5019\u9009\u7b5b\u9009\u4e0e\u8ba1\u5212\u7c3f\u4e4b\u95f4\u5207\u6362"
+    ],
+    [
+      "more plan rows on tonight's board",
+      "more plan rows in the plan book"
+    ],
+    [
+      "\u4eca\u665a\u699c\u5355\u8fd8\u6709 412 \u6761\u8ba1\u5212",
+      "\u8ba1\u5212\u7c3f\u4e2d\u53e6\u6709 412 \u6761\u8ba1\u5212"
+    ],
+    [
+      "more names on tonight's board",
+      "more names in this screen"
+    ],
+    [
+      "\u4eca\u665a\u699c\u5355\u8fd8\u6709 39 \u53ea\u80a1\u7968",
+      "\u672c\u6b21\u7b5b\u9009\u8fd8\u6709 39 \u53ea\u80a1\u7968"
+    ]
+  ],
+  "all_other_html_identical": true,
+  "old_html_sha256": "551081d3f027232a2e62be0b15f716deac9b5c2e07299398ca96cd9ccfb19700",
+  "new_html_sha256": "224a0efa223f193d6aabc75f4dd946475245aa1a28c333198166799763b77691",
+  "inputs_unchanged": true,
+  "provider_calls": 0,
+  "preview_leak": false
+}

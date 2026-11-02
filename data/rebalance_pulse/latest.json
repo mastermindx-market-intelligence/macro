@@ -1,28 +1,28 @@
 {
-  "date": "2026-09-16",
+  "date": "2026-10-30",
   "class": "quiet",
-  "market_vol_ratio": 1.054,
-  "up_share": null,
-  "basis": "volume_only",
-  "n_megacap_rvol2": 0,
+  "market_vol_ratio": 1.497,
+  "up_share": 0.329,
+  "basis": "updown",
+  "n_megacap_rvol2": 5,
   "megacap_rvol": {
-    "BAC": 1.72,
-    "JPM": 1.52,
-    "BRK-B": 1.43,
-    "ORCL": 1.35,
-    "TMUS": 1.34,
-    "AMD": 1.34,
-    "V": 1.23,
-    "AMZN": 1.07
+    "AMZN": 3.01,
+    "GOOG": 2.88,
+    "GOOGL": 2.77,
+    "LLY": 2.48,
+    "AMD": 2.12,
+    "TMUS": 1.95,
+    "XOM": 1.92,
+    "AAPL": 1.84
   },
   "calendar": {
     "is_quarter_end": false,
-    "td_to_quarter_end": 10,
+    "td_to_quarter_end": -22,
     "in_qtr_end_window": false,
     "is_russell_recon_session": false,
     "in_recon_week": false,
     "is_sp_rebalance_session": false,
-    "is_month_end_session": false
+    "is_month_end_session": true
   },
   "summary_en": "No elevated volume or scheduled rebalancing activity.",
   "summary_zh": "无异常量能或计划中的再平衡活动。",

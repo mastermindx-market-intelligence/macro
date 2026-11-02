@@ -109,7 +109,9 @@
   <span>{{ t('sleeve gross','组合仓位') }}</span>
   <span class="prov">· {{ t('CN drawdown radar','A股回撤雷达') }}: {{ d.sizing.radar_state or '—' }}
     · can_force <code>{{ 'yes' if d.sizing.can_force else 'no' }}</code>
-    {% if d.sizing.radar_as_of %}· {{ d.sizing.radar_as_of }}{% endif %}</span>
+    {% if d.sizing.radar_as_of %}· {{ d.sizing.radar_as_of }}{% endif %}
+    {% if d.sizing.dominant_driver_en %}· {{ t('main driver','主要驱动') }}:
+    {{ t(d.sizing.dominant_driver_en, d.sizing.dominant_driver_zh) }}{% endif %}</span>
 </div>
 
 <div class="strip">
@@ -168,6 +170,20 @@
     <span class="rd-stat">{{ t('late half','后半段') }} <b>{% if rl.mean_pct is not none %}{{ '%+.3f'|format(rl.mean_pct) }}%/reb, t {{ '%.2f'|format(rl.t_hac) }}{% else %}&mdash;{% endif %}</b></span>
     <span class="rd-stat">{{ t('per-name p1 drawdown','个股p1回撤') }} <span class="neg">{% if rd.per_name_drawdown.p1_pct is not none %}{{ '%.1f'|format(rd.per_name_drawdown.p1_pct) }}%{% else %}&mdash;{% endif %}</span></span>
     <span class="rd-stat">{{ t('per-name p5 drawdown','个股p5回撤') }} <span class="neg">{% if rd.per_name_drawdown.p5_pct is not none %}{{ '%.1f'|format(rd.per_name_drawdown.p5_pct) }}%{% else %}&mdash;{% endif %}</span></span>
+    {%- if rd.csi300_reference %}{% set csi = rd.csi300_reference %}
+    <span class="rd-stat">{{ t('CSI300-rel. re-derive','相对沪深300再推导') }} <b>{#
+    #}{% if csi.mean_pct is number %}{{ '%+.3f'|format(csi.mean_pct) }}%/reb{#
+    #}{% else %}&mdash;{% endif %}{#
+    #}{% if csi.t_hac is number %}, t {{ '%.2f'|format(csi.t_hac) }}{% endif %}{#
+    #}{% if csi.n is number %}, n {{ csi.n }}{% endif %}</b></span>
+    {%- endif %}
+    {%- if rd.primary.pre_2024 %}{% set pre24 = rd.primary.pre_2024 %}
+    <span class="rd-stat">{{ t('pre-2024 (2024 split)','2024年前（以2024年划分）') }} <b>{#
+    #}{% if pre24.mean_pct is number %}{{ '%+.3f'|format(pre24.mean_pct) }}%/reb{#
+    #}{% else %}&mdash;{% endif %}{#
+    #}{% if pre24.t_hac is number %}, t {{ '%.2f'|format(pre24.t_hac) }}{% endif %}{#
+    #}{% if pre24.n is number %}, n {{ pre24.n }}{% endif %}</b></span>
+    {%- endif %}
   </div>
   {% if rp24 and rp24.mean_pct is not none and rp24.mean_pct < 0 %}
   <div class="rd-warn">{{ t(
@@ -241,11 +257,52 @@
   <span>{{ t('mean excess / rebalance','每次超额均值') }} {{ signed((lg.mean_excess_per_rebalance*100), pct=true) }}</span>
   <span>{{ t('hit vs CSI300','对沪深300胜率') }} <b>{{ (lg.hit_vs_csi300*100)|round(1) }}%</b></span>
 </div>
+{% set gl = d.ledger.graded or {} %}
+{% set pr = gl.get('per_rebalance') or [] %}
+{% set dts = pr|map(attribute='rebalance_date')|list %}
+{% set hz = gl.get('horizon_d') %}
+{% set n_reg = (gl.get('rebalances') or [])|length %}
+<div class="bc-stats" id="ledger-window">
+  {% if pr %}<span>{{ t('graded window','评分区间') }}
+    <b>{{ dts|min }} → {{ dts|max }}</b>
+    </span>{% endif %}
+  {% if n_reg > pr|length %}<span>{{ t('registered, not yet graded','已登记尚未评分') }}
+    <b>{{ n_reg - pr|length }}</b></span>{% endif %}
+  {% if hz is number %}<span>{{ t('horizon','持有期') }} <b>{{ hz }}</b>
+    {{ t('sessions','个交易日') }}</span>{% endif %}
+  {% if lg.median_excess is number %}<span>{{ t('median excess','超额中位数') }}
+    {{ signed(lg.median_excess*100, pct=true) }}</span>{% endif %}
+</div>
+{% if hz is number %}<p class="sub">{{ t('Each row is a ' ~ hz ~ '-session forward window; windows'
+  ~ ' that start within ' ~ hz ~ ' sessions of each other overlap.',
+  '每行是' ~ hz ~ '个交易日的前瞻窗口；起点相距不足' ~ hz ~ '个交易日的窗口相互重叠。') }}</p>{% endif %}
 {% else %}
 <div class="empty">{{ t('Accruing — the sleeve grades once enough rebalances mature (conventions locked in from day 1).','累积中——待足够再平衡成熟后开始评分（评分惯例自第一天锁定）。') }}
   <code>n={{ lg.get('n_rebalances', 0) }}</code></div>
 {% endif %}
 <p class="pass">{{ t('Conventions','惯例') }}: <code>{{ d.ledger.conventions }}</code> · <code>{{ d.ledger.artifact }}</code></p>
+{%- set lrows = ((d.ledger.graded or {}).get('per_rebalance') or [])
+     |sort(attribute='rebalance_date', reverse=true)|list %}
+{%- if lrows %}
+<table id="ledger-rows">
+  <thead><tr>
+    <th>{{ t('rebalance','再平衡日') }}</th><th class="num">{{ t('names filled','成交只数') }}</th>
+    <th class="num">{{ t('excess vs CSI300','相对沪深300超额') }}</th>
+  </tr></thead>
+  <tbody>
+  {%- for r in lrows[:12] %}
+  <tr><td>{{ r.rebalance_date }}</td><td class="num">{{ r.n_filled if r.n_filled is number
+                                                   else '—' }}</td>{#
+  #}<td class="num">{{ signed(r.sleeve_excess * 100 if r.sleeve_excess is number else none,
+                             pct=true) }}</td></tr>
+  {%- endfor %}
+  </tbody>
+</table>
+{%- if lrows|length > 12 %}
+<p class="sub">{{ t('showing the 12 most recent of ' ~ lrows|length ~ ' graded rows',
+  '显示最近12条，共' ~ lrows|length ~ '条已评分') }}</p>
+{%- endif %}
+{%- endif %}
 
 {# ---- CURRENT MEMBERSHIP ---- #}
 <div class="sec"><h2>{{ t('Current membership','当前成分') }}</h2>

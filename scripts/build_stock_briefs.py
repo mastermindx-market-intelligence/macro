@@ -43,6 +43,7 @@ def _targets() -> list[str]:
 
 
 def main() -> int:
+    brief_rc = 0
     try:
         from engine import catalyst_stock
         if not catalyst_stock.enabled():
@@ -56,6 +57,20 @@ def main() -> int:
         ok = sum(1 for b in briefs if not b.get("degraded_reason"))
         log.info("precomputed %d AI stock brief(s) (%d usable, %d degraded)",
                  len(briefs), ok, len(briefs) - ok)
+        if not briefs:
+            log.error(
+                "stock-brief capability dark: zero briefs emitted for %d target(s)",
+                len(targets),
+            )
+            brief_rc = 1
+        elif ok == 0 and all(
+            brief.get("degraded_reason") == "no_context" for brief in briefs
+        ):
+            log.error(
+                "stock-brief context dark: %d/%d target(s) degraded as no_context",
+                len(briefs), len(briefs),
+            )
+            brief_rc = 1
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("stock-brief precompute failed: %s", e)
 
@@ -75,7 +90,7 @@ def main() -> int:
             log.info("stock_desk disabled — skipping (additive)")
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("stock_desk run failed: %s", e)
-    return 0
+    return brief_rc
 
 
 if __name__ == "__main__":

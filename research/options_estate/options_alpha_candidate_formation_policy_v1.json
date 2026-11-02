@@ -1,0 +1,99 @@
+{
+  "schema": "options.alpha_candidate_formation_policy/v1",
+  "policy_id": "oa_member_persistent_measured_campaign/v1",
+  "policy_version": 1,
+  "status": "preregistered_inactive_until_activation",
+  "registered_on": "2026-09-18",
+  "governing_sources": {
+    "macro_commit": "348913be88d6486a68f63e57b2375c4b5fa6879f",
+    "oa_architecture": "docs/superpowers/specs/2026-08-27-options-alpha-intelligence-recovery-design.md",
+    "oa_decision": "agentos/decisions/DEC-OPTIONS-ALPHA-CAMPAIGN-CALIBRATION-ARCHITECTURE.md",
+    "campaign_contract": "research/options_estate/OPTIONS_SIGNAL_CAMPAIGN_V2_PREREG.md"
+  },
+  "effective_fences": {
+    "policy_freeze_rule": "next_nyse_session_open_after_prereg_main_merge/v1",
+    "activation_rule": "next_nyse_session_open_after_composer_activation_receipt/v1",
+    "pre_policy_action": "permanent_abstain",
+    "pre_activation_action": "permanent_abstain",
+    "late_arrival_policy": "formed_before_activation_never_cured_by_late_observation"
+  },
+  "activation_preconditions": [
+    "oa1t_measured_source_consumer_proven",
+    "ad1t2_consumer_availability_production_accepted",
+    "campaign_integrity_publication_runtime_accepted",
+    "source_collision_review_clear"
+  ],
+  "source_contracts": {
+    "campaign": "options.signal_campaign/v2",
+    "microstructure": "options.trade_nbbo_microstructure/v1",
+    "event_stage": "live_flow.event_stage/v1"
+  },
+  "formation": {
+    "campaign_phase": "prospective_after_rule_freeze",
+    "minimum_member_count": 2,
+    "require_final_member_measured_microstructure": true,
+    "minimum_source_print_count": 1,
+    "minimum_nbbo_valid_print_count": 1,
+    "minimum_nbbo_premium_coverage_exclusive": 0.0,
+    "no_new_premium_threshold": true,
+    "no_execution_location_share_threshold": true,
+    "attention_score_is_predicate": false,
+    "eod_context_is_predicate": false,
+    "package_context_is_predicate": false,
+    "outcomes_read_during_formation": false,
+    "direction_inferred_during_formation": false,
+    "first_qualifying_revision_frozen": true
+  },
+  "candidate_identity": "sha256(candidate_schema,policy_id,campaign_id,first_qualifying_campaign_revision_id)",
+  "candidate_states": {
+    "candidate": "research_candidate",
+    "abstain": "abstain",
+    "degraded": "degraded",
+    "reason_codes": [
+      "BEFORE_POLICY_FREEZE",
+      "BEFORE_ACTIVATION_BOUNDARY",
+      "CAMPAIGN_RECEIPT_INVALID",
+      "CAMPAIGN_NOT_PROSPECTIVE",
+      "INSUFFICIENT_CAMPAIGN_MEMBERS",
+      "FINAL_MEMBER_MICROSTRUCTURE_MISSING",
+      "NO_VALID_NBBO_MEASUREMENT",
+      "EVIDENCE_CLOCK_INVALID",
+      "SOURCE_EXPLICITLY_STALE_OR_UNAVAILABLE",
+      "UPSTREAM_AUTHORITY_VIOLATION"
+    ]
+  },
+  "clock_policy": {
+    "source_formed_at": "first_qualifying_campaign_revision.formed_at",
+    "first_observed_at": "candidate_first_observed_at",
+    "decision_at": "candidate_first_observed_at",
+    "available_at": "candidate_durable_write_time",
+    "published_at": "consumer_publication_time",
+    "formation_evidence_cutoff": "each_formation_leg.available_at<=candidate_first_observed_at",
+    "source_freshness_rule": "source_owner_clock_and_explicit_health_only_no_wrapper_freshening",
+    "backdating_policy": "never_backdate_candidate_to_campaign_formed_at"
+  },
+  "context_policy": {
+    "eod": "supplemental_only_after_ad1t2_acceptance_never_v1_formation_predicate",
+    "package": "supplemental_unresolved_allowed_never_v1_formation_predicate",
+    "tactical": "consumer_evidence_only_no_radar_or_entry_origination_authority"
+  },
+  "update_policy": {
+    "later_campaign_revision": "versioned_update_same_candidate_identity",
+    "later_eod": "post_decision_context_only_with_own_clock",
+    "corrections": "append_or_version_never_rewrite_initial_formation",
+    "outcomes": "join_after_frozen_candidate_never_formation_input"
+  },
+  "authority": {
+    "may_score": false,
+    "may_rank": false,
+    "may_issue": false,
+    "may_size": false,
+    "may_trade": false,
+    "may_publish_pick": false,
+    "may_train_prophet": false,
+    "may_feed_neural_web": false,
+    "may_create_tactical_event": false,
+    "may_infer_bullish_bearish_probability": false,
+    "may_compute_option_pnl": false
+  }
+}

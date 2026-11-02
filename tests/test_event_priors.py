@@ -583,6 +583,65 @@ class TestM4EarningsAnchor:
         with patch.object(bep.config, "data_dir", return_value=tmp_path):
             assert bep.load_earnings_events(closes, closes["SPY"]) == []
 
+    def test_same_day_8k_and_8ka_emit_one_event(self, tmp_path):
+        """Same (ticker, filing_date): earliest acceptance row wins; one reaction day."""
+        from engine.earnings_release.announcement_days import announcement_days
+
+        dates = pd.bdate_range("2020-01-01", periods=200)
+        closes = _flat_closes(dates, ["AAPL", "SPY"])
+        fd = dates[120]
+        fd_s = str(fd.date())
+        _synthetic_8k_panel(tmp_path, [
+            {
+                "ticker": "AAPL", "cik": 1, "accession": "0001-8K",
+                "filing_date": fd_s,
+                "acceptance_datetime": f"{fd_s}T12:00:00.000Z",
+                "items": "2.02", "form": "8-K",
+            },
+            {
+                "ticker": "AAPL", "cik": 1, "accession": "0002-8KA",
+                "filing_date": fd_s,
+                "acceptance_datetime": f"{fd_s}T21:00:00.000Z",
+                "items": "2.02,9.01", "form": "8-K/A",
+            },
+        ])
+        with patch.object(bep.config, "data_dir", return_value=tmp_path):
+            ev = bep.load_earnings_events(closes, closes["SPY"])
+        assert len(ev) == 1, f"expected one event, got {ev}"
+        assert ev[0][1] == fd_s, (
+            "premarket earliest row must anchor day0 on the filing session, not the "
+            "after-hours amendment session")
+        panel = pd.read_parquet(tmp_path / "edgar" / "earnings_8k_dates.parquet")
+        collapsed = announcement_days(panel)
+        assert len(collapsed) == 1
+        assert collapsed.iloc[0]["accession"] == "0001-8K"
+        assert collapsed.iloc[0]["form"] == "8-K"
+
+
+def test_announcement_days_keeps_earliest_acceptance():
+    from engine.earnings_release.announcement_days import announcement_days
+
+    raw = pd.DataFrame([
+        {"ticker": "AAA", "filing_date": "2026-04-29", "acceptance_datetime": "2026-04-29T21:05:00Z",
+         "report_date": "2026-03-31"},
+        {"ticker": "AAA", "filing_date": "2026-04-29", "acceptance_datetime": "",
+         "report_date": "2026-03-31-bad"},
+        {"ticker": "AAA", "filing_date": "2026-04-29", "acceptance_datetime": "2026-04-29T12:00:00Z",
+         "report_date": "2026-03-31-good"},
+        {"ticker": "BBB", "filing_date": "2026-04-30", "acceptance_datetime": "2026-04-30T20:00:00Z",
+         "report_date": "2026-03-31"},
+    ])
+    before_id = id(raw)
+    out = announcement_days(raw)
+    assert id(raw) == before_id
+    assert list(raw.columns) == list(out.columns)
+    aaa = out[out["ticker"] == "AAA"]
+    assert len(aaa) == 1
+    assert aaa.iloc[0]["report_date"] == "2026-03-31-good"
+    assert len(out[out["ticker"] == "BBB"]) == 1
+    again = announcement_days(out)
+    assert again.equals(out)
+
 
 class TestDeepClosesSplice:
     """_deep_closes must EXTEND history without altering any existing breadth value."""

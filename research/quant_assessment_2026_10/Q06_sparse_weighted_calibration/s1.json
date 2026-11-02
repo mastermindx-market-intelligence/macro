@@ -1,0 +1,5016 @@
+{
+ "cells": [
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.04776599158947921,
+   "mean_implied_ece": 0.028912619469465318,
+   "mean_kish_n": 706.2483575482985,
+   "mean_sum_w": 42.82166666666659,
+   "mean_true_gap": 0.0,
+   "n_sessions": 252,
+   "proposed": {
+    "FAIL": 1,
+    "NO_VERDICT": 190,
+    "PASS": 9
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 1,
+     "NO_VERDICT": 190,
+     "PASS": 9,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.005,
+     "error_rate_given_support_wilson95": [
+      0.0008831687156009814,
+      0.02777370439789293
+     ],
+     "error_rate_unconditional": 0.005,
+     "error_rate_unconditional_wilson95": [
+      0.0008831687156009814,
+      0.02777370439789293
+     ],
+     "fail_rate": 0.005,
+     "pass_rate": 0.045,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 1,
+     "NO_VERDICT": 198,
+     "PASS": 1,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.005,
+     "error_rate_given_support_wilson95": [
+      0.0008831687156009814,
+      0.02777370439789293
+     ],
+     "error_rate_unconditional": 0.005,
+     "error_rate_unconditional_wilson95": [
+      0.0008831687156009814,
+      0.02777370439789293
+     ],
+     "fail_rate": 0.005,
+     "pass_rate": 0.005,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T0"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.05355383398678594,
+   "mean_implied_ece": 0.02954270170250064,
+   "mean_kish_n": 525.8756341173785,
+   "mean_sum_w": 42.519166666666734,
+   "mean_true_gap": 0.0,
+   "n_sessions": 252,
+   "proposed": {
+    "FAIL": 3,
+    "NO_VERDICT": 194,
+    "PASS": 3
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 3,
+     "NO_VERDICT": 194,
+     "PASS": 3,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.015,
+     "error_rate_given_support_wilson95": [
+      0.00511423779325831,
+      0.04316572879269026
+     ],
+     "error_rate_unconditional": 0.015,
+     "error_rate_unconditional_wilson95": [
+      0.00511423779325831,
+      0.04316572879269026
+     ],
+     "fail_rate": 0.015,
+     "pass_rate": 0.015,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 4,
+     "NO_VERDICT": 196,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.02,
+     "error_rate_given_support_wilson95": [
+      0.0078044264163494685,
+      0.050287086905826436
+     ],
+     "error_rate_unconditional": 0.02,
+     "error_rate_unconditional_wilson95": [
+      0.0078044264163494685,
+      0.050287086905826436
+     ],
+     "fail_rate": 0.02,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T0"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.09662379871317887,
+   "mean_implied_ece": 0.08756208332283279,
+   "mean_kish_n": 712.4608068602654,
+   "mean_sum_w": 42.81333333333327,
+   "mean_true_gap": 0.08239556832480281,
+   "n_sessions": 252,
+   "proposed": {
+    "FAIL": 160,
+    "NO_VERDICT": 40,
+    "PASS": 0
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 160,
+     "NO_VERDICT": 40,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.8,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 165,
+     "NO_VERDICT": 35,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.825,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T1"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.09971193644451336,
+   "mean_implied_ece": 0.08837153020559527,
+   "mean_kish_n": 525.6683375044178,
+   "mean_sum_w": 42.47500000000007,
+   "mean_true_gap": 0.08227336631646337,
+   "n_sessions": 252,
+   "proposed": {
+    "FAIL": 151,
+    "NO_VERDICT": 49,
+    "PASS": 0
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 151,
+     "NO_VERDICT": 49,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.755,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 163,
+     "NO_VERDICT": 37,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.815,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T1"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.11544091622451041,
+   "mean_implied_ece": 0.11439457770029783,
+   "mean_kish_n": 709.6779132564988,
+   "mean_sum_w": 42.81499999999992,
+   "mean_true_gap": 0.11316084056204692,
+   "n_sessions": 252,
+   "proposed": {
+    "FAIL": 167,
+    "NO_VERDICT": 33,
+    "PASS": 0
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 167,
+     "NO_VERDICT": 33,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.835,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 174,
+     "NO_VERDICT": 26,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.87,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T2"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.12099699073343985,
+   "mean_implied_ece": 0.11870781771790366,
+   "mean_kish_n": 523.996686412642,
+   "mean_sum_w": 42.507500000000064,
+   "mean_true_gap": 0.12188894794462055,
+   "n_sessions": 252,
+   "proposed": {
+    "FAIL": 162,
+    "NO_VERDICT": 38,
+    "PASS": 0
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 162,
+     "NO_VERDICT": 38,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.81,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 166,
+     "NO_VERDICT": 34,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.83,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T2"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.06761965824060891,
+   "mean_implied_ece": 0.048356171503399124,
+   "mean_kish_n": 709.5053227283098,
+   "mean_sum_w": 42.81333333333327,
+   "mean_true_gap": 0.035724550038007855,
+   "n_sessions": 252,
+   "proposed": {
+    "FAIL": 16,
+    "NO_VERDICT": 181,
+    "PASS": 3
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 16,
+     "NO_VERDICT": 181,
+     "PASS": 3,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.015,
+     "error_rate_given_support_wilson95": [
+      0.00511423779325831,
+      0.04316572879269026
+     ],
+     "error_rate_unconditional": 0.015,
+     "error_rate_unconditional_wilson95": [
+      0.00511423779325831,
+      0.04316572879269026
+     ],
+     "fail_rate": 0.08,
+     "pass_rate": 0.015,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 25,
+     "NO_VERDICT": 175,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.125,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T3"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.09108653433414356,
+   "mean_implied_ece": 0.06264732514708803,
+   "mean_kish_n": 529.1545727584067,
+   "mean_sum_w": 42.510000000000076,
+   "mean_true_gap": 0.060703641318986784,
+   "n_sessions": 252,
+   "proposed": {
+    "FAIL": 34,
+    "NO_VERDICT": 166,
+    "PASS": 0
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 34,
+     "NO_VERDICT": 166,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.17,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 69,
+     "NO_VERDICT": 131,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.345,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T3"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.03274179805978432,
+   "mean_implied_ece": 0.019548728583048753,
+   "mean_kish_n": 1440.0740042476,
+   "mean_sum_w": 84.81500000000032,
+   "mean_true_gap": 0.0,
+   "n_sessions": 504,
+   "proposed": {
+    "FAIL": 0,
+    "NO_VERDICT": 71,
+    "PASS": 129
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 0,
+     "NO_VERDICT": 71,
+     "PASS": 129,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.645,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 0,
+     "NO_VERDICT": 96,
+     "PASS": 104,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.52,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T0"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.03710686337653239,
+   "mean_implied_ece": 0.021342798961906734,
+   "mean_kish_n": 1061.51883932411,
+   "mean_sum_w": 84.38166666666719,
+   "mean_true_gap": 0.0,
+   "n_sessions": 504,
+   "proposed": {
+    "FAIL": 0,
+    "NO_VERDICT": 106,
+    "PASS": 94
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 0,
+     "NO_VERDICT": 106,
+     "PASS": 94,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.47,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 0,
+     "NO_VERDICT": 159,
+     "PASS": 41,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.205,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T0"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.08818567668131422,
+   "mean_implied_ece": 0.0838347442072813,
+   "mean_kish_n": 1433.005071833452,
+   "mean_sum_w": 84.81250000000033,
+   "mean_true_gap": 0.08222223327238729,
+   "n_sessions": 504,
+   "proposed": {
+    "FAIL": 184,
+    "NO_VERDICT": 16,
+    "PASS": 0
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 184,
+     "NO_VERDICT": 16,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.92,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 187,
+     "NO_VERDICT": 13,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.935,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T1"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.09154665533939794,
+   "mean_implied_ece": 0.08526247822373793,
+   "mean_kish_n": 1049.1874984018407,
+   "mean_sum_w": 84.39250000000051,
+   "mean_true_gap": 0.08223632369260034,
+   "n_sessions": 504,
+   "proposed": {
+    "FAIL": 182,
+    "NO_VERDICT": 18,
+    "PASS": 0
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 182,
+     "NO_VERDICT": 18,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.91,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 186,
+     "NO_VERDICT": 14,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.93,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T1"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.11309842205904447,
+   "mean_implied_ece": 0.1129649684116957,
+   "mean_kish_n": 1435.725101278177,
+   "mean_sum_w": 84.81166666666701,
+   "mean_true_gap": 0.11289477803369742,
+   "n_sessions": 504,
+   "proposed": {
+    "FAIL": 188,
+    "NO_VERDICT": 12,
+    "PASS": 0
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 188,
+     "NO_VERDICT": 12,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.94,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 188,
+     "NO_VERDICT": 12,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.94,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T2"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.12365991062755119,
+   "mean_implied_ece": 0.1234070045907617,
+   "mean_kish_n": 1059.1111361128583,
+   "mean_sum_w": 84.43416666666718,
+   "mean_true_gap": 0.1217692255513514,
+   "n_sessions": 504,
+   "proposed": {
+    "FAIL": 193,
+    "NO_VERDICT": 7,
+    "PASS": 0
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 193,
+     "NO_VERDICT": 7,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.965,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 193,
+     "NO_VERDICT": 7,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.965,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T2"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.05818151225192722,
+   "mean_implied_ece": 0.047241876803207884,
+   "mean_kish_n": 1432.9278829714663,
+   "mean_sum_w": 84.81916666666699,
+   "mean_true_gap": 0.03590946217872466,
+   "n_sessions": 504,
+   "proposed": {
+    "FAIL": 11,
+    "NO_VERDICT": 172,
+    "PASS": 17
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 11,
+     "NO_VERDICT": 172,
+     "PASS": 17,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.085,
+     "error_rate_given_support_wilson95": [
+      0.05374575017747561,
+      0.13189587071565567
+     ],
+     "error_rate_unconditional": 0.085,
+     "error_rate_unconditional_wilson95": [
+      0.05374575017747561,
+      0.13189587071565567
+     ],
+     "fail_rate": 0.055,
+     "pass_rate": 0.085,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 23,
+     "NO_VERDICT": 173,
+     "PASS": 4,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.02,
+     "error_rate_given_support_wilson95": [
+      0.0078044264163494685,
+      0.050287086905826436
+     ],
+     "error_rate_unconditional": 0.02,
+     "error_rate_unconditional_wilson95": [
+      0.0078044264163494685,
+      0.050287086905826436
+     ],
+     "fail_rate": 0.115,
+     "pass_rate": 0.02,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T3"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.08151292207619751,
+   "mean_implied_ece": 0.06425896055419988,
+   "mean_kish_n": 1057.4500223630569,
+   "mean_sum_w": 84.40250000000053,
+   "mean_true_gap": 0.06087215024255987,
+   "n_sessions": 504,
+   "proposed": {
+    "FAIL": 39,
+    "NO_VERDICT": 159,
+    "PASS": 2
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 39,
+     "NO_VERDICT": 159,
+     "PASS": 2,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.01,
+     "error_rate_given_support_wilson95": [
+      0.0027466581335444384,
+      0.0357217617161768
+     ],
+     "error_rate_unconditional": 0.01,
+     "error_rate_unconditional_wilson95": [
+      0.0027466581335444384,
+      0.0357217617161768
+     ],
+     "fail_rate": 0.195,
+     "pass_rate": 0.01,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 86,
+     "NO_VERDICT": 114,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.43,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T3"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.020829074681350424,
+   "mean_implied_ece": 0.01180686416194348,
+   "mean_kish_n": 3613.489043328919,
+   "mean_sum_w": 210.8191666666686,
+   "mean_true_gap": 0.0,
+   "n_sessions": 1260,
+   "proposed": {
+    "FAIL": 1,
+    "NO_VERDICT": 4,
+    "PASS": 195
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 1,
+     "NO_VERDICT": 4,
+     "PASS": 195,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.005,
+     "error_rate_given_support_wilson95": [
+      0.0008831687156009814,
+      0.02777370439789293
+     ],
+     "error_rate_unconditional": 0.005,
+     "error_rate_unconditional_wilson95": [
+      0.0008831687156009814,
+      0.02777370439789293
+     ],
+     "fail_rate": 0.005,
+     "pass_rate": 0.975,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 0,
+     "NO_VERDICT": 6,
+     "PASS": 194,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.97,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T0"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.023099418963462997,
+   "mean_implied_ece": 0.013147656936299022,
+   "mean_kish_n": 2655.273427839472,
+   "mean_sum_w": 210.03583333333424,
+   "mean_true_gap": 0.0,
+   "n_sessions": 1260,
+   "proposed": {
+    "FAIL": 0,
+    "NO_VERDICT": 7,
+    "PASS": 193
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 0,
+     "NO_VERDICT": 7,
+     "PASS": 193,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.965,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 0,
+     "NO_VERDICT": 7,
+     "PASS": 193,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.965,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T0"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.08433336272869207,
+   "mean_implied_ece": 0.08331487736590089,
+   "mean_kish_n": 3603.7927766894954,
+   "mean_sum_w": 210.81750000000196,
+   "mean_true_gap": 0.08228570141881411,
+   "n_sessions": 1260,
+   "proposed": {
+    "FAIL": 200,
+    "NO_VERDICT": 0,
+    "PASS": 0
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T1"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.08470097461393428,
+   "mean_implied_ece": 0.08256056597939927,
+   "mean_kish_n": 2654.6403047750973,
+   "mean_sum_w": 210.00583333333418,
+   "mean_true_gap": 0.08223481933104125,
+   "n_sessions": 1260,
+   "proposed": {
+    "FAIL": 199,
+    "NO_VERDICT": 1,
+    "PASS": 0
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 199,
+     "NO_VERDICT": 1,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.995,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T1"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.11215373108504695,
+   "mean_implied_ece": 0.11215373108504696,
+   "mean_kish_n": 3609.9377582722436,
+   "mean_sum_w": 210.81500000000196,
+   "mean_true_gap": 0.11295837359039379,
+   "n_sessions": 1260,
+   "proposed": {
+    "FAIL": 200,
+    "NO_VERDICT": 0,
+    "PASS": 0
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T2"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.12317419870741371,
+   "mean_implied_ece": 0.12316593778231141,
+   "mean_kish_n": 2639.6036680982415,
+   "mean_sum_w": 210.01583333333417,
+   "mean_true_gap": 0.12176498956073724,
+   "n_sessions": 1260,
+   "proposed": {
+    "FAIL": 200,
+    "NO_VERDICT": 0,
+    "PASS": 0
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T2"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.048964915887368114,
+   "mean_implied_ece": 0.04311309983285909,
+   "mean_kish_n": 3609.5514576482856,
+   "mean_sum_w": 210.81750000000196,
+   "mean_true_gap": 0.03572400903940445,
+   "n_sessions": 1260,
+   "proposed": {
+    "FAIL": 102,
+    "NO_VERDICT": 77,
+    "PASS": 21
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 102,
+     "NO_VERDICT": 77,
+     "PASS": 21,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.105,
+     "error_rate_given_support_wilson95": [
+      0.06970748792681017,
+      0.1551803199112304
+     ],
+     "error_rate_unconditional": 0.105,
+     "error_rate_unconditional_wilson95": [
+      0.06970748792681017,
+      0.1551803199112304
+     ],
+     "fail_rate": 0.51,
+     "pass_rate": 0.105,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 5,
+     "NO_VERDICT": 179,
+     "PASS": 16,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.08,
+     "error_rate_given_support_wilson95": [
+      0.049840585889759974,
+      0.12598948826714396
+     ],
+     "error_rate_unconditional": 0.08,
+     "error_rate_unconditional_wilson95": [
+      0.049840585889759974,
+      0.12598948826714396
+     ],
+     "fail_rate": 0.025,
+     "pass_rate": 0.08,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T3"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 5,
+   "mean_binned_ece": 0.07322104375862114,
+   "mean_implied_ece": 0.06224731132125314,
+   "mean_kish_n": 2658.065542787264,
+   "mean_sum_w": 210.0575000000008,
+   "mean_true_gap": 0.06100144945842646,
+   "n_sessions": 1260,
+   "proposed": {
+    "FAIL": 100,
+    "NO_VERDICT": 98,
+    "PASS": 2
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 100,
+     "NO_VERDICT": 98,
+     "PASS": 2,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.01,
+     "error_rate_given_support_wilson95": [
+      0.0027466581335444384,
+      0.0357217617161768
+     ],
+     "error_rate_unconditional": 0.01,
+     "error_rate_unconditional_wilson95": [
+      0.0027466581335444384,
+      0.0357217617161768
+     ],
+     "fail_rate": 0.5,
+     "pass_rate": 0.01,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 134,
+     "NO_VERDICT": 66,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.67,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T3"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.056325155094161715,
+   "mean_implied_ece": 0.041070592417796696,
+   "mean_kish_n": 681.1953743954634,
+   "mean_sum_w": 12.404090909090906,
+   "mean_true_gap": 0.0,
+   "n_sessions": 252,
+   "proposed": {
+    "FAIL": 0,
+    "NO_VERDICT": 200,
+    "PASS": 0
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    }
+   },
+   "truth": "T0"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.05934988322538019,
+   "mean_implied_ece": 0.0445153143310701,
+   "mean_kish_n": 634.7520264906823,
+   "mean_sum_w": 12.349090909090908,
+   "mean_true_gap": 0.0,
+   "n_sessions": 252,
+   "proposed": {
+    "FAIL": 0,
+    "NO_VERDICT": 200,
+    "PASS": 0
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    }
+   },
+   "truth": "T0"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.10204524765442244,
+   "mean_implied_ece": 0.09471221527898081,
+   "mean_kish_n": 678.9922581035164,
+   "mean_sum_w": 12.403409090909092,
+   "mean_true_gap": 0.0822957111383758,
+   "n_sessions": 252,
+   "proposed": {
+    "FAIL": 0,
+    "NO_VERDICT": 200,
+    "PASS": 0
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    }
+   },
+   "truth": "T1"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.10154742631914393,
+   "mean_implied_ece": 0.09393107219363582,
+   "mean_kish_n": 638.372939573391,
+   "mean_sum_w": 12.358181818181816,
+   "mean_true_gap": 0.08236447006050815,
+   "n_sessions": 252,
+   "proposed": {
+    "FAIL": 0,
+    "NO_VERDICT": 200,
+    "PASS": 0
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    }
+   },
+   "truth": "T1"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.11480558337985386,
+   "mean_implied_ece": 0.11157518705440747,
+   "mean_kish_n": 678.4505413161268,
+   "mean_sum_w": 12.40409090909091,
+   "mean_true_gap": 0.11278202959085051,
+   "n_sessions": 252,
+   "proposed": {
+    "FAIL": 0,
+    "NO_VERDICT": 200,
+    "PASS": 0
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    }
+   },
+   "truth": "T2"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.11995491342574387,
+   "mean_implied_ece": 0.11662836896177577,
+   "mean_kish_n": 624.9835189656441,
+   "mean_sum_w": 12.351818181818178,
+   "mean_true_gap": 0.12205976426565866,
+   "n_sessions": 252,
+   "proposed": {
+    "FAIL": 0,
+    "NO_VERDICT": 200,
+    "PASS": 0
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    }
+   },
+   "truth": "T2"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.07719497388571099,
+   "mean_implied_ece": 0.06082386031139709,
+   "mean_kish_n": 681.2811483389787,
+   "mean_sum_w": 12.405,
+   "mean_true_gap": 0.03575708618549918,
+   "n_sessions": 252,
+   "proposed": {
+    "FAIL": 0,
+    "NO_VERDICT": 200,
+    "PASS": 0
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    }
+   },
+   "truth": "T3"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.09363264480018078,
+   "mean_implied_ece": 0.06950522839699631,
+   "mean_kish_n": 634.5217480078584,
+   "mean_sum_w": 12.355909090909087,
+   "mean_true_gap": 0.06140830301671389,
+   "n_sessions": 252,
+   "proposed": {
+    "FAIL": 0,
+    "NO_VERDICT": 200,
+    "PASS": 0
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    }
+   },
+   "truth": "T3"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.03350763299900679,
+   "mean_implied_ece": 0.025920812324031203,
+   "mean_kish_n": 2164.2439748060183,
+   "mean_sum_w": 35.31386363636378,
+   "mean_true_gap": 0.0,
+   "n_sessions": 756,
+   "proposed": {
+    "FAIL": 0,
+    "NO_VERDICT": 160,
+    "PASS": 40
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 0,
+     "NO_VERDICT": 160,
+     "PASS": 40,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.2,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 0,
+     "NO_VERDICT": 161,
+     "PASS": 39,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.195,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T0"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.032291966927848345,
+   "mean_implied_ece": 0.023732173577541052,
+   "mean_kish_n": 2001.4189708569274,
+   "mean_sum_w": 35.2686363636364,
+   "mean_true_gap": 0.0,
+   "n_sessions": 756,
+   "proposed": {
+    "FAIL": 0,
+    "NO_VERDICT": 164,
+    "PASS": 36
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 0,
+     "NO_VERDICT": 164,
+     "PASS": 36,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.18,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 0,
+     "NO_VERDICT": 165,
+     "PASS": 35,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.175,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T0"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.08949766862515592,
+   "mean_implied_ece": 0.08676212988177671,
+   "mean_kish_n": 2163.7601585470848,
+   "mean_sum_w": 35.31136363636378,
+   "mean_true_gap": 0.08241752909966085,
+   "n_sessions": 756,
+   "proposed": {
+    "FAIL": 196,
+    "NO_VERDICT": 4,
+    "PASS": 0
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 196,
+     "NO_VERDICT": 4,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.98,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 196,
+     "NO_VERDICT": 4,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.98,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T1"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.08902583731601482,
+   "mean_implied_ece": 0.0865190466882366,
+   "mean_kish_n": 2010.9848889149057,
+   "mean_sum_w": 35.26318181818186,
+   "mean_true_gap": 0.0822754106092918,
+   "n_sessions": 756,
+   "proposed": {
+    "FAIL": 198,
+    "NO_VERDICT": 2,
+    "PASS": 0
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 198,
+     "NO_VERDICT": 2,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.99,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 198,
+     "NO_VERDICT": 2,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.99,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T1"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.11062971512858087,
+   "mean_implied_ece": 0.1105299545604051,
+   "mean_kish_n": 2163.064238510098,
+   "mean_sum_w": 35.31477272727287,
+   "mean_true_gap": 0.1129882513996233,
+   "n_sessions": 756,
+   "proposed": {
+    "FAIL": 163,
+    "NO_VERDICT": 37,
+    "PASS": 0
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 163,
+     "NO_VERDICT": 37,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.815,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 164,
+     "NO_VERDICT": 36,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.82,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T2"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.12152305234961332,
+   "mean_implied_ece": 0.12148290676346844,
+   "mean_kish_n": 2008.438123672331,
+   "mean_sum_w": 35.261363636363676,
+   "mean_true_gap": 0.12208848166211304,
+   "n_sessions": 756,
+   "proposed": {
+    "FAIL": 173,
+    "NO_VERDICT": 27,
+    "PASS": 0
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 173,
+     "NO_VERDICT": 27,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.865,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 173,
+     "NO_VERDICT": 27,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.865,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T2"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.05698637645612117,
+   "mean_implied_ece": 0.04786071896412724,
+   "mean_kish_n": 2162.55277513145,
+   "mean_sum_w": 35.31477272727287,
+   "mean_true_gap": 0.03578510543445001,
+   "n_sessions": 756,
+   "proposed": {
+    "FAIL": 10,
+    "NO_VERDICT": 181,
+    "PASS": 9
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 10,
+     "NO_VERDICT": 181,
+     "PASS": 9,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.045,
+     "error_rate_given_support_wilson95": [
+      0.023852543001492997,
+      0.0832967040018196
+     ],
+     "error_rate_unconditional": 0.045,
+     "error_rate_unconditional_wilson95": [
+      0.023852543001492997,
+      0.0832967040018196
+     ],
+     "fail_rate": 0.05,
+     "pass_rate": 0.045,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 14,
+     "NO_VERDICT": 185,
+     "PASS": 1,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.005,
+     "error_rate_given_support_wilson95": [
+      0.0008831687156009814,
+      0.02777370439789293
+     ],
+     "error_rate_unconditional": 0.005,
+     "error_rate_unconditional_wilson95": [
+      0.0008831687156009814,
+      0.02777370439789293
+     ],
+     "fail_rate": 0.07,
+     "pass_rate": 0.005,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T3"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.07821081122969993,
+   "mean_implied_ece": 0.06367665589394017,
+   "mean_kish_n": 2008.5056017849345,
+   "mean_sum_w": 35.26250000000004,
+   "mean_true_gap": 0.06216311276413114,
+   "n_sessions": 756,
+   "proposed": {
+    "FAIL": 30,
+    "NO_VERDICT": 168,
+    "PASS": 2
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 30,
+     "NO_VERDICT": 166,
+     "PASS": 4,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.02,
+     "error_rate_given_support_wilson95": [
+      0.0078044264163494685,
+      0.050287086905826436
+     ],
+     "error_rate_unconditional": 0.02,
+     "error_rate_unconditional_wilson95": [
+      0.0078044264163494685,
+      0.050287086905826436
+     ],
+     "fail_rate": 0.15,
+     "pass_rate": 0.02,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 69,
+     "NO_VERDICT": 131,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.345,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T3"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.023259382422517506,
+   "mean_implied_ece": 0.01766328717036313,
+   "mean_kish_n": 4407.284810568738,
+   "mean_sum_w": 69.67613636363657,
+   "mean_true_gap": 0.0,
+   "n_sessions": 1512,
+   "proposed": {
+    "FAIL": 0,
+    "NO_VERDICT": 56,
+    "PASS": 144
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 0,
+     "NO_VERDICT": 56,
+     "PASS": 144,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.72,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 0,
+     "NO_VERDICT": 59,
+     "PASS": 141,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.705,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T0"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.023275516299107492,
+   "mean_implied_ece": 0.017299934962595263,
+   "mean_kish_n": 4088.3277708233263,
+   "mean_sum_w": 69.6277272727273,
+   "mean_true_gap": 0.0,
+   "n_sessions": 1512,
+   "proposed": {
+    "FAIL": 0,
+    "NO_VERDICT": 66,
+    "PASS": 134
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 0,
+     "NO_VERDICT": 66,
+     "PASS": 134,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.67,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 0,
+     "NO_VERDICT": 66,
+     "PASS": 134,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.67,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T0"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.08397754407858436,
+   "mean_implied_ece": 0.08311442707562376,
+   "mean_kish_n": 4399.729584953627,
+   "mean_sum_w": 69.67727272727292,
+   "mean_true_gap": 0.08231297813363735,
+   "n_sessions": 1512,
+   "proposed": {
+    "FAIL": 200,
+    "NO_VERDICT": 0,
+    "PASS": 0
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T1"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.08552033454873997,
+   "mean_implied_ece": 0.08377776719711727,
+   "mean_kish_n": 4092.3300187404743,
+   "mean_sum_w": 69.6270454545455,
+   "mean_true_gap": 0.08218769185176183,
+   "n_sessions": 1512,
+   "proposed": {
+    "FAIL": 200,
+    "NO_VERDICT": 0,
+    "PASS": 0
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T1"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.11259342204345398,
+   "mean_implied_ece": 0.11259119895967261,
+   "mean_kish_n": 4402.19171729,
+   "mean_sum_w": 69.67886363636383,
+   "mean_true_gap": 0.11292999337285049,
+   "n_sessions": 1512,
+   "proposed": {
+    "FAIL": 194,
+    "NO_VERDICT": 6,
+    "PASS": 0
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 194,
+     "NO_VERDICT": 6,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.97,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 194,
+     "NO_VERDICT": 6,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.97,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T2"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.12105857838927121,
+   "mean_implied_ece": 0.1210588229215489,
+   "mean_kish_n": 4104.539795685131,
+   "mean_sum_w": 69.62500000000004,
+   "mean_true_gap": 0.12217672859314482,
+   "n_sessions": 1512,
+   "proposed": {
+    "FAIL": 195,
+    "NO_VERDICT": 5,
+    "PASS": 0
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 195,
+     "NO_VERDICT": 5,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.975,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 195,
+     "NO_VERDICT": 5,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.975,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T2"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.05236215092688926,
+   "mean_implied_ece": 0.04778506591051997,
+   "mean_kish_n": 4400.987096791598,
+   "mean_sum_w": 69.67704545454565,
+   "mean_true_gap": 0.03582765538783767,
+   "n_sessions": 1512,
+   "proposed": {
+    "FAIL": 15,
+    "NO_VERDICT": 164,
+    "PASS": 21
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 15,
+     "NO_VERDICT": 164,
+     "PASS": 21,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.105,
+     "error_rate_given_support_wilson95": [
+      0.06970748792681017,
+      0.1551803199112304
+     ],
+     "error_rate_unconditional": 0.105,
+     "error_rate_unconditional_wilson95": [
+      0.06970748792681017,
+      0.1551803199112304
+     ],
+     "fail_rate": 0.075,
+     "pass_rate": 0.105,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 15,
+     "NO_VERDICT": 175,
+     "PASS": 10,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.05,
+     "error_rate_given_support_wilson95": [
+      0.02738264560076393,
+      0.08957814813877599
+     ],
+     "error_rate_unconditional": 0.05,
+     "error_rate_unconditional_wilson95": [
+      0.02738264560076393,
+      0.08957814813877599
+     ],
+     "fail_rate": 0.075,
+     "pass_rate": 0.05,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T3"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.07284162481027875,
+   "mean_implied_ece": 0.06136617584595391,
+   "mean_kish_n": 4112.888878920664,
+   "mean_sum_w": 69.62500000000006,
+   "mean_true_gap": 0.06189575252139938,
+   "n_sessions": 1512,
+   "proposed": {
+    "FAIL": 41,
+    "NO_VERDICT": 155,
+    "PASS": 4
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 41,
+     "NO_VERDICT": 155,
+     "PASS": 4,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.02,
+     "error_rate_given_support_wilson95": [
+      0.0078044264163494685,
+      0.050287086905826436
+     ],
+     "error_rate_unconditional": 0.02,
+     "error_rate_unconditional_wilson95": [
+      0.0078044264163494685,
+      0.050287086905826436
+     ],
+     "fail_rate": 0.205,
+     "pass_rate": 0.02,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 107,
+     "NO_VERDICT": 93,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.535,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T3"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.013978018208567856,
+   "mean_implied_ece": 0.010837106887683086,
+   "mean_kish_n": 13377.357921083276,
+   "mean_sum_w": 207.1290909090919,
+   "mean_true_gap": 0.0,
+   "n_sessions": 4536,
+   "proposed": {
+    "FAIL": 0,
+    "NO_VERDICT": 2,
+    "PASS": 198
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 0,
+     "NO_VERDICT": 2,
+     "PASS": 198,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.99,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 0,
+     "NO_VERDICT": 2,
+     "PASS": 198,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.99,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T0"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.013942638192691896,
+   "mean_implied_ece": 0.010363469850358544,
+   "mean_kish_n": 12499.440909442243,
+   "mean_sum_w": 207.08318181818387,
+   "mean_true_gap": 0.0,
+   "n_sessions": 4536,
+   "proposed": {
+    "FAIL": 0,
+    "NO_VERDICT": 3,
+    "PASS": 197
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 0,
+     "NO_VERDICT": 3,
+     "PASS": 197,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.985,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_kill",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 0,
+     "NO_VERDICT": 3,
+     "PASS": 197,
+     "error_kind": "false_kill",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.985,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T0"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.08242523703632734,
+   "mean_implied_ece": 0.08254302315034522,
+   "mean_kish_n": 13368.714410575598,
+   "mean_sum_w": 207.13113636363735,
+   "mean_true_gap": 0.08224808861652677,
+   "n_sessions": 4536,
+   "proposed": {
+    "FAIL": 200,
+    "NO_VERDICT": 0,
+    "PASS": 0
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T1"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.08273927631077704,
+   "mean_implied_ece": 0.08278622860015375,
+   "mean_kish_n": 12496.23828034616,
+   "mean_sum_w": 207.0745454545475,
+   "mean_true_gap": 0.0823003939572456,
+   "n_sessions": 4536,
+   "proposed": {
+    "FAIL": 200,
+    "NO_VERDICT": 0,
+    "PASS": 0
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T1"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.11283974848318376,
+   "mean_implied_ece": 0.11283974848318376,
+   "mean_kish_n": 13385.103811804369,
+   "mean_sum_w": 207.12931818181917,
+   "mean_true_gap": 0.1129659040603035,
+   "n_sessions": 4536,
+   "proposed": {
+    "FAIL": 200,
+    "NO_VERDICT": 0,
+    "PASS": 0
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T2"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.12361379937831124,
+   "mean_implied_ece": 0.12361379937831125,
+   "mean_kish_n": 12468.520646938896,
+   "mean_sum_w": 207.0863636363656,
+   "mean_true_gap": 0.12212155652914873,
+   "n_sessions": 4536,
+   "proposed": {
+    "FAIL": 200,
+    "NO_VERDICT": 0,
+    "PASS": 0
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 200,
+     "NO_VERDICT": 0,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 1.0,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T2"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.04372777131806435,
+   "mean_implied_ece": 0.04283481929844798,
+   "mean_kish_n": 13379.105369748226,
+   "mean_sum_w": 207.1315909090919,
+   "mean_true_gap": 0.0356789965277967,
+   "n_sessions": 4536,
+   "proposed": {
+    "FAIL": 177,
+    "NO_VERDICT": 19,
+    "PASS": 4
+   },
+   "regime": "steady",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 177,
+     "NO_VERDICT": 19,
+     "PASS": 4,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.02,
+     "error_rate_given_support_wilson95": [
+      0.0078044264163494685,
+      0.050287086905826436
+     ],
+     "error_rate_unconditional": 0.02,
+     "error_rate_unconditional_wilson95": [
+      0.0078044264163494685,
+      0.050287086905826436
+     ],
+     "fail_rate": 0.885,
+     "pass_rate": 0.02,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 3,
+     "NO_VERDICT": 136,
+     "PASS": 61,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.305,
+     "error_rate_given_support_wilson95": [
+      0.24536415630735034,
+      0.37198552097978366
+     ],
+     "error_rate_unconditional": 0.305,
+     "error_rate_unconditional_wilson95": [
+      0.24536415630735034,
+      0.37198552097978366
+     ],
+     "fail_rate": 0.015,
+     "pass_rate": 0.305,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T3"
+  },
+  {
+   "bootstrap_replicates": 299,
+   "empty_panels": 0,
+   "error_report_produced": 200,
+   "horizon": 21,
+   "mean_binned_ece": 0.06944892436856334,
+   "mean_implied_ece": 0.06345324376188825,
+   "mean_kish_n": 12513.384638675898,
+   "mean_sum_w": 207.07477272727476,
+   "mean_true_gap": 0.06201953171716235,
+   "n_sessions": 4536,
+   "proposed": {
+    "FAIL": 199,
+    "NO_VERDICT": 1,
+    "PASS": 0
+   },
+   "regime": "bursty",
+   "replicates": 200,
+   "rules": {
+    "R_alt": {
+     "FAIL": 199,
+     "NO_VERDICT": 1,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.995,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    },
+    "R_inc": {
+     "FAIL": 0,
+     "NO_VERDICT": 200,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": null,
+     "error_rate_given_support_wilson95": [
+      null,
+      null
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.0,
+     "pass_rate": 0.0,
+     "support_fraction": 0.0
+    },
+    "R_pool": {
+     "FAIL": 194,
+     "NO_VERDICT": 6,
+     "PASS": 0,
+     "error_kind": "false_reassurance",
+     "error_rate_given_support": 0.0,
+     "error_rate_given_support_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "error_rate_unconditional": 0.0,
+     "error_rate_unconditional_wilson95": [
+      1.734723475976807e-18,
+      0.018845326377266575
+     ],
+     "fail_rate": 0.97,
+     "pass_rate": 0.0,
+     "support_fraction": 1.0
+    }
+   },
+   "truth": "T3"
+  }
+ ],
+ "k1": {
+  "bar": 0.1,
+  "cells": [
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_kill",
+    "n_sessions": 252,
+    "rate": 0.005,
+    "regime": "steady",
+    "truth": "T0"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_kill",
+    "n_sessions": 252,
+    "rate": 0.015,
+    "regime": "bursty",
+    "truth": "T0"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_reassurance",
+    "n_sessions": 252,
+    "rate": 0.0,
+    "regime": "steady",
+    "truth": "T1"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_reassurance",
+    "n_sessions": 252,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T1"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_reassurance",
+    "n_sessions": 252,
+    "rate": 0.0,
+    "regime": "steady",
+    "truth": "T2"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_reassurance",
+    "n_sessions": 252,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T2"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_reassurance",
+    "n_sessions": 252,
+    "rate": 0.015,
+    "regime": "steady",
+    "truth": "T3"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_reassurance",
+    "n_sessions": 252,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T3"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_kill",
+    "n_sessions": 504,
+    "rate": 0.0,
+    "regime": "steady",
+    "truth": "T0"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_kill",
+    "n_sessions": 504,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T0"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_reassurance",
+    "n_sessions": 504,
+    "rate": 0.0,
+    "regime": "steady",
+    "truth": "T1"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_reassurance",
+    "n_sessions": 504,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T1"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_reassurance",
+    "n_sessions": 504,
+    "rate": 0.0,
+    "regime": "steady",
+    "truth": "T2"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_reassurance",
+    "n_sessions": 504,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T2"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_reassurance",
+    "n_sessions": 504,
+    "rate": 0.085,
+    "regime": "steady",
+    "truth": "T3"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_reassurance",
+    "n_sessions": 504,
+    "rate": 0.01,
+    "regime": "bursty",
+    "truth": "T3"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_kill",
+    "n_sessions": 1260,
+    "rate": 0.005,
+    "regime": "steady",
+    "truth": "T0"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_kill",
+    "n_sessions": 1260,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T0"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_reassurance",
+    "n_sessions": 1260,
+    "rate": 0.0,
+    "regime": "steady",
+    "truth": "T1"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_reassurance",
+    "n_sessions": 1260,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T1"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_reassurance",
+    "n_sessions": 1260,
+    "rate": 0.0,
+    "regime": "steady",
+    "truth": "T2"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_reassurance",
+    "n_sessions": 1260,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T2"
+   },
+   {
+    "holds": false,
+    "horizon": 5,
+    "kind": "false_reassurance",
+    "n_sessions": 1260,
+    "rate": 0.105,
+    "regime": "steady",
+    "truth": "T3"
+   },
+   {
+    "holds": true,
+    "horizon": 5,
+    "kind": "false_reassurance",
+    "n_sessions": 1260,
+    "rate": 0.01,
+    "regime": "bursty",
+    "truth": "T3"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_kill",
+    "n_sessions": 756,
+    "rate": 0.0,
+    "regime": "steady",
+    "truth": "T0"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_kill",
+    "n_sessions": 756,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T0"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_reassurance",
+    "n_sessions": 756,
+    "rate": 0.0,
+    "regime": "steady",
+    "truth": "T1"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_reassurance",
+    "n_sessions": 756,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T1"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_reassurance",
+    "n_sessions": 756,
+    "rate": 0.0,
+    "regime": "steady",
+    "truth": "T2"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_reassurance",
+    "n_sessions": 756,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T2"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_reassurance",
+    "n_sessions": 756,
+    "rate": 0.045,
+    "regime": "steady",
+    "truth": "T3"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_reassurance",
+    "n_sessions": 756,
+    "rate": 0.02,
+    "regime": "bursty",
+    "truth": "T3"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_kill",
+    "n_sessions": 1512,
+    "rate": 0.0,
+    "regime": "steady",
+    "truth": "T0"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_kill",
+    "n_sessions": 1512,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T0"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_reassurance",
+    "n_sessions": 1512,
+    "rate": 0.0,
+    "regime": "steady",
+    "truth": "T1"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_reassurance",
+    "n_sessions": 1512,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T1"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_reassurance",
+    "n_sessions": 1512,
+    "rate": 0.0,
+    "regime": "steady",
+    "truth": "T2"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_reassurance",
+    "n_sessions": 1512,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T2"
+   },
+   {
+    "holds": false,
+    "horizon": 21,
+    "kind": "false_reassurance",
+    "n_sessions": 1512,
+    "rate": 0.105,
+    "regime": "steady",
+    "truth": "T3"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_reassurance",
+    "n_sessions": 1512,
+    "rate": 0.02,
+    "regime": "bursty",
+    "truth": "T3"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_kill",
+    "n_sessions": 4536,
+    "rate": 0.0,
+    "regime": "steady",
+    "truth": "T0"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_kill",
+    "n_sessions": 4536,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T0"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_reassurance",
+    "n_sessions": 4536,
+    "rate": 0.0,
+    "regime": "steady",
+    "truth": "T1"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_reassurance",
+    "n_sessions": 4536,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T1"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_reassurance",
+    "n_sessions": 4536,
+    "rate": 0.0,
+    "regime": "steady",
+    "truth": "T2"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_reassurance",
+    "n_sessions": 4536,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T2"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_reassurance",
+    "n_sessions": 4536,
+    "rate": 0.02,
+    "regime": "steady",
+    "truth": "T3"
+   },
+   {
+    "holds": true,
+    "horizon": 21,
+    "kind": "false_reassurance",
+    "n_sessions": 4536,
+    "rate": 0.0,
+    "regime": "bursty",
+    "truth": "T3"
+   }
+  ],
+  "holds": false
+ },
+ "k2": {
+  "holds": true,
+  "rows": [
+   {
+    "first_supported_R_alt": 252.0,
+    "first_supported_R_inc": "inf",
+    "first_supported_R_pool": 252.0,
+    "holds": true,
+    "horizon": 5,
+    "regime": "steady",
+    "truth": "T0"
+   },
+   {
+    "first_supported_R_alt": 252.0,
+    "first_supported_R_inc": "inf",
+    "first_supported_R_pool": 252.0,
+    "holds": true,
+    "horizon": 5,
+    "regime": "bursty",
+    "truth": "T0"
+   },
+   {
+    "first_supported_R_alt": 252.0,
+    "first_supported_R_inc": "inf",
+    "first_supported_R_pool": 252.0,
+    "holds": true,
+    "horizon": 5,
+    "regime": "steady",
+    "truth": "T1"
+   },
+   {
+    "first_supported_R_alt": 252.0,
+    "first_supported_R_inc": "inf",
+    "first_supported_R_pool": 252.0,
+    "holds": true,
+    "horizon": 5,
+    "regime": "bursty",
+    "truth": "T1"
+   },
+   {
+    "first_supported_R_alt": 252.0,
+    "first_supported_R_inc": "inf",
+    "first_supported_R_pool": 252.0,
+    "holds": true,
+    "horizon": 5,
+    "regime": "steady",
+    "truth": "T2"
+   },
+   {
+    "first_supported_R_alt": 252.0,
+    "first_supported_R_inc": "inf",
+    "first_supported_R_pool": 252.0,
+    "holds": true,
+    "horizon": 5,
+    "regime": "bursty",
+    "truth": "T2"
+   },
+   {
+    "first_supported_R_alt": 252.0,
+    "first_supported_R_inc": "inf",
+    "first_supported_R_pool": 252.0,
+    "holds": true,
+    "horizon": 5,
+    "regime": "steady",
+    "truth": "T3"
+   },
+   {
+    "first_supported_R_alt": 252.0,
+    "first_supported_R_inc": "inf",
+    "first_supported_R_pool": 252.0,
+    "holds": true,
+    "horizon": 5,
+    "regime": "bursty",
+    "truth": "T3"
+   },
+   {
+    "first_supported_R_alt": 756.0,
+    "first_supported_R_inc": "inf",
+    "first_supported_R_pool": 756.0,
+    "holds": true,
+    "horizon": 21,
+    "regime": "steady",
+    "truth": "T0"
+   },
+   {
+    "first_supported_R_alt": 756.0,
+    "first_supported_R_inc": "inf",
+    "first_supported_R_pool": 756.0,
+    "holds": true,
+    "horizon": 21,
+    "regime": "bursty",
+    "truth": "T0"
+   },
+   {
+    "first_supported_R_alt": 756.0,
+    "first_supported_R_inc": "inf",
+    "first_supported_R_pool": 756.0,
+    "holds": true,
+    "horizon": 21,
+    "regime": "steady",
+    "truth": "T1"
+   },
+   {
+    "first_supported_R_alt": 756.0,
+    "first_supported_R_inc": "inf",
+    "first_supported_R_pool": 756.0,
+    "holds": true,
+    "horizon": 21,
+    "regime": "bursty",
+    "truth": "T1"
+   },
+   {
+    "first_supported_R_alt": 756.0,
+    "first_supported_R_inc": "inf",
+    "first_supported_R_pool": 756.0,
+    "holds": true,
+    "horizon": 21,
+    "regime": "steady",
+    "truth": "T2"
+   },
+   {
+    "first_supported_R_alt": 756.0,
+    "first_supported_R_inc": "inf",
+    "first_supported_R_pool": 756.0,
+    "holds": true,
+    "horizon": 21,
+    "regime": "bursty",
+    "truth": "T2"
+   },
+   {
+    "first_supported_R_alt": 756.0,
+    "first_supported_R_inc": "inf",
+    "first_supported_R_pool": 756.0,
+    "holds": true,
+    "horizon": 21,
+    "regime": "steady",
+    "truth": "T3"
+   },
+   {
+    "first_supported_R_alt": 756.0,
+    "first_supported_R_inc": "inf",
+    "first_supported_R_pool": 756.0,
+    "holds": true,
+    "horizon": 21,
+    "regime": "bursty",
+    "truth": "T3"
+   }
+  ]
+ },
+ "stage": "s1"
+}

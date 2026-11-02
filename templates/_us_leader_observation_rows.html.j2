@@ -1,0 +1,21 @@
+{# Display-only rows from engine.us_leader_pullback_coverage. No action authority. #}
+{% for row in (rows or []) %}
+{% set _st = row.get('state') %}
+<div class="plo-row" data-ticker="{{ row.get('ticker')|e }}" data-state="{{ _st|e }}">
+  <span class="plo-ticker">{{ row.get('ticker') }}</span>
+  <span class="plo-copy">
+    {% if _st == 'LEADER' %}
+    <span class="l-en">Leading now — wait for a controlled setup.</span><span class="l-zh">当前领涨——等待受控形态。</span>
+    {% elif _st == 'PULLBACK' %}
+    <span class="l-en">Controlled retrace — measured turn not yet proven.</span><span class="l-zh">受控回撤——尚未证实量化转折。</span>
+    {% elif _st == 'RESET_TURN' %}
+    <span class="l-en">Reset/turn context — setup still needs confirmation.</span><span class="l-zh">重置/转折背景——形态仍需确认。</span>
+    {% elif _st == 'RESUMED' %}
+    <span class="l-en">Leadership resumed — do not chase.</span><span class="l-zh">领涨已恢复——不要追高。</span>
+    {% endif %}
+  </span>
+  {% if row.get('zone_low') is not none and row.get('zone_high') is not none %}
+  <span class="plo-zone"><span class="l-en">Observed zone</span><span class="l-zh">观察区间</span> {{ row.get('zone_low') }}–{{ row.get('zone_high') }}</span>
+  {% endif %}
+</div>
+{% endfor %}

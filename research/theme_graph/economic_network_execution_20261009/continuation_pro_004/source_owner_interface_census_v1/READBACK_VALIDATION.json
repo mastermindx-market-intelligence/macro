@@ -1,0 +1,12 @@
+{
+  "schema": "research.source_owner_packet_readback.v1",
+  "result": "PASS",
+  "checks": [
+    "35 full native source pins with explicit partial/full read scopes; all worktree bytes match HEAD blobs",
+    "15 reported RDC process PIDs exited 0",
+    "Initial/final native HEAD and clean Git status equal",
+    "Previously frozen feasibility manifest and every contained file unchanged",
+    "Rights grants, capabilities, boolean/schema checks and fixture receipts separately classified"
+  ],
+  "limits": "This is packet integrity and native readback, not Canadian entitlement, provider capability, roster completeness or admission proof."
+}

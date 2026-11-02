@@ -1,0 +1,161 @@
+{
+  "schema": "mastermind.us_candidate_screen_date_fixture.v1",
+  "proof_class": "browser_fixture",
+  "production": "none",
+  "javascript_enabled": false,
+  "fixture_transform": "html locale/theme attributes only; candidate template and copy unchanged",
+  "browser": "153.0.8010.48",
+  "sources": [
+    {
+      "path": "templates/dashboard.html.j2",
+      "sha256": "8fe51aa611a3df4f31519732e0f231f865515609cffeda21f876b0b9c4a8d9b2"
+    },
+    {
+      "path": "tests/test_p0_prophet_candidate_board.py",
+      "sha256": "a1da45f722dd9657e090f6676f8bc678b598c46f2c6296afaab996a38451077c"
+    }
+  ],
+  "verifier": {
+    "path": "docs/pr-crops/us-prophet-source-date-20260916/probe.cjs",
+    "sha256": "dae098daa1e08eeb66d45981782ee7066bbf28435c315801d3568da012eec85d"
+  },
+  "cases": [
+    {
+      "variant": "stale",
+      "locale": "en",
+      "width": 390,
+      "source_date": "2026-09-11",
+      "text": "1 screened · as of 2026-09-11",
+      "layout": {
+        "client_width": 316,
+        "scroll_width": 316
+      },
+      "render_sha256": "e2d6bcf83f4103890affc8dab21a189ef81844e37231b98c79fae418b6b274d0",
+      "screenshot": {
+        "path": "docs/pr-crops/us-prophet-source-date-20260916/stale-en-390.png",
+        "sha256": "b772b23885eda9f552f83cbc6e9b4273a76ac846ac0ee91fbaea7c3af371d80c"
+      },
+      "pass": true
+    },
+    {
+      "variant": "stale",
+      "locale": "en",
+      "width": 1440,
+      "source_date": "2026-09-11",
+      "text": "1 screened · as of 2026-09-11",
+      "layout": {
+        "client_width": 1322,
+        "scroll_width": 1322
+      },
+      "render_sha256": "e2d6bcf83f4103890affc8dab21a189ef81844e37231b98c79fae418b6b274d0",
+      "screenshot": {
+        "path": "docs/pr-crops/us-prophet-source-date-20260916/stale-en-1440.png",
+        "sha256": "980c214be419a762de64ea5befb923d33fecfba34a56ef2789f20de6ac725ee4"
+      },
+      "pass": true
+    },
+    {
+      "variant": "stale",
+      "locale": "zh",
+      "width": 390,
+      "source_date": "2026-09-11",
+      "text": "筛出 1 只 · 截至 2026-09-11",
+      "layout": {
+        "client_width": 316,
+        "scroll_width": 316
+      },
+      "render_sha256": "e2d6bcf83f4103890affc8dab21a189ef81844e37231b98c79fae418b6b274d0",
+      "screenshot": {
+        "path": "docs/pr-crops/us-prophet-source-date-20260916/stale-zh-390.png",
+        "sha256": "30889b9160b84e474bbf9a064af9f9642fce1f57c7293e81726525dfbeaafd31"
+      },
+      "pass": true
+    },
+    {
+      "variant": "stale",
+      "locale": "zh",
+      "width": 1440,
+      "source_date": "2026-09-11",
+      "text": "筛出 1 只 · 截至 2026-09-11",
+      "layout": {
+        "client_width": 1322,
+        "scroll_width": 1322
+      },
+      "render_sha256": "e2d6bcf83f4103890affc8dab21a189ef81844e37231b98c79fae418b6b274d0",
+      "screenshot": {
+        "path": "docs/pr-crops/us-prophet-source-date-20260916/stale-zh-1440.png",
+        "sha256": "b95d820a5bd16f2055b5b93de0a76cbd1ff0a510c33b9f600e68c8e9e43ba119"
+      },
+      "pass": true
+    },
+    {
+      "variant": "undated",
+      "locale": "en",
+      "width": 390,
+      "source_date": null,
+      "text": "1 screened · date unavailable",
+      "layout": {
+        "client_width": 316,
+        "scroll_width": 316
+      },
+      "render_sha256": "4263be7cc0ecedb6577453c027ed288d6d23371a70919e173e97d572efc4a3e1",
+      "screenshot": {
+        "path": "docs/pr-crops/us-prophet-source-date-20260916/undated-en-390.png",
+        "sha256": "6fb471a211df4381f0d6de3fcb08bc72143d35c77d5b41d8ddb7fa382d2c2da5"
+      },
+      "pass": true
+    },
+    {
+      "variant": "undated",
+      "locale": "en",
+      "width": 1440,
+      "source_date": null,
+      "text": "1 screened · date unavailable",
+      "layout": {
+        "client_width": 1322,
+        "scroll_width": 1322
+      },
+      "render_sha256": "4263be7cc0ecedb6577453c027ed288d6d23371a70919e173e97d572efc4a3e1",
+      "screenshot": {
+        "path": "docs/pr-crops/us-prophet-source-date-20260916/undated-en-1440.png",
+        "sha256": "587a3877089421169a2bb315b3c44189987d0fc343dca30b0a056fff1675863b"
+      },
+      "pass": true
+    },
+    {
+      "variant": "undated",
+      "locale": "zh",
+      "width": 390,
+      "source_date": null,
+      "text": "筛出 1 只 · 筛选日期不可用",
+      "layout": {
+        "client_width": 316,
+        "scroll_width": 316
+      },
+      "render_sha256": "4263be7cc0ecedb6577453c027ed288d6d23371a70919e173e97d572efc4a3e1",
+      "screenshot": {
+        "path": "docs/pr-crops/us-prophet-source-date-20260916/undated-zh-390.png",
+        "sha256": "80b1bdc7b1de583525849f0b1e06933e7e518bc7d6b8a32d218196ba7c40264b"
+      },
+      "pass": true
+    },
+    {
+      "variant": "undated",
+      "locale": "zh",
+      "width": 1440,
+      "source_date": null,
+      "text": "筛出 1 只 · 筛选日期不可用",
+      "layout": {
+        "client_width": 1322,
+        "scroll_width": 1322
+      },
+      "render_sha256": "4263be7cc0ecedb6577453c027ed288d6d23371a70919e173e97d572efc4a3e1",
+      "screenshot": {
+        "path": "docs/pr-crops/us-prophet-source-date-20260916/undated-zh-1440.png",
+        "sha256": "204e4c73b57ec06a44cc32023f4bf94afcf71138c6fca36805793644f5619006"
+      },
+      "pass": true
+    }
+  ],
+  "pass": true
+}

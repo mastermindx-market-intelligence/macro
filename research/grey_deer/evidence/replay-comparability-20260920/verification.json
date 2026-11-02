@@ -1,0 +1,8 @@
+{
+  "owning_tests": "62 passed",
+  "source_sha256": "a94d467d71ba687815872fb1da6806d3691eeec16528bea0553aa4731d74a6ac",
+  "same_population_guard_implemented": false,
+  "new_handoff_published": false,
+  "implemented_original_red_tests": 4,
+  "deferred_comparator_cases": 4
+}

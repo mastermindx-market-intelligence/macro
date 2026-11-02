@@ -1,0 +1,433 @@
+{
+  "assumption_status": "PROPOSAL_NOT_MEASURED",
+  "currency": "USD",
+  "units": "decimal GB; one compressed copy unless stated",
+  "sessions_per_year": 252,
+  "session_seconds": {
+    "rth": 23400.0,
+    "extended": 34200.0,
+    "overnight": 28800
+  },
+  "hot_sessions": 30,
+  "lanes": {
+    "bars_1m": {
+      "rates": {
+        "rth": 0.016666666666666666,
+        "extended": 0.016666666666666666,
+        "overnight": 0.016666666666666666
+      },
+      "raw_bytes": 160,
+      "stored_bytes": 64
+    },
+    "trades": {
+      "rates": {
+        "rth": 2,
+        "extended": 0.25,
+        "overnight": 0.05
+      },
+      "raw_bytes": 96,
+      "stored_bytes": 40
+    },
+    "l1": {
+      "rates": {
+        "rth": 10,
+        "extended": 1,
+        "overnight": 0.1
+      },
+      "raw_bytes": 144,
+      "stored_bytes": 48
+    },
+    "l2_deltas": {
+      "rates": {
+        "rth": 25,
+        "extended": 2.5,
+        "overnight": 0.3
+      },
+      "raw_bytes": 192,
+      "stored_bytes": 64
+    },
+    "l3_mbo": {
+      "rates": {
+        "rth": 50,
+        "extended": 5,
+        "overnight": 0.6
+      },
+      "raw_bytes": 144,
+      "stored_bytes": 48
+    }
+  },
+  "r2_prices": {
+    "standard_gb_month": 0.015,
+    "ia_gb_month": 0.01,
+    "ia_retrieval_gb": 0.01
+  },
+  "rows": [
+    {
+      "names": 50,
+      "lane": "bars_1m",
+      "activity": 1,
+      "events_day": 72000.0,
+      "stored_gb_day": 0.004608,
+      "stored_gb_year": 1.161216,
+      "hot_ssd_gb": 0.13824,
+      "raw_vendor_gb_year": 2.90304,
+      "r2_standard_month_at_full_retention": 0.017418239999999998,
+      "r2_ia_month_at_full_retention": 0.01161216
+    },
+    {
+      "names": 50,
+      "lane": "trades",
+      "activity": 1,
+      "events_day": 2839500.0,
+      "stored_gb_day": 0.11358,
+      "stored_gb_year": 28.62216,
+      "hot_ssd_gb": 3.4074,
+      "raw_vendor_gb_year": 68.693184,
+      "r2_standard_month_at_full_retention": 0.4293324,
+      "r2_ia_month_at_full_retention": 0.2862216
+    },
+    {
+      "names": 50,
+      "lane": "l1",
+      "activity": 1,
+      "events_day": 13554000.0,
+      "stored_gb_day": 0.650592,
+      "stored_gb_year": 163.94918399999997,
+      "hot_ssd_gb": 19.51776,
+      "raw_vendor_gb_year": 491.847552,
+      "r2_standard_month_at_full_retention": 2.4592377599999997,
+      "r2_ia_month_at_full_retention": 1.6394918399999998
+    },
+    {
+      "names": 50,
+      "lane": "l2_deltas",
+      "activity": 1,
+      "events_day": 33957000.0,
+      "stored_gb_day": 2.173248,
+      "stored_gb_year": 547.658496,
+      "hot_ssd_gb": 65.19744,
+      "raw_vendor_gb_year": 1642.975488,
+      "r2_standard_month_at_full_retention": 8.21487744,
+      "r2_ia_month_at_full_retention": 5.47658496
+    },
+    {
+      "names": 50,
+      "lane": "l3_mbo",
+      "activity": 1,
+      "events_day": 67914000.0,
+      "stored_gb_day": 3.259872,
+      "stored_gb_year": 821.487744,
+      "hot_ssd_gb": 97.79616,
+      "raw_vendor_gb_year": 2464.463232,
+      "r2_standard_month_at_full_retention": 12.32231616,
+      "r2_ia_month_at_full_retention": 8.21487744
+    },
+    {
+      "names": 100,
+      "lane": "bars_1m",
+      "activity": 1,
+      "events_day": 144000.0,
+      "stored_gb_day": 0.009216,
+      "stored_gb_year": 2.322432,
+      "hot_ssd_gb": 0.27648,
+      "raw_vendor_gb_year": 5.80608,
+      "r2_standard_month_at_full_retention": 0.034836479999999996,
+      "r2_ia_month_at_full_retention": 0.02322432
+    },
+    {
+      "names": 100,
+      "lane": "trades",
+      "activity": 1,
+      "events_day": 5679000.0,
+      "stored_gb_day": 0.22716,
+      "stored_gb_year": 57.24432,
+      "hot_ssd_gb": 6.8148,
+      "raw_vendor_gb_year": 137.386368,
+      "r2_standard_month_at_full_retention": 0.8586648,
+      "r2_ia_month_at_full_retention": 0.5724432
+    },
+    {
+      "names": 100,
+      "lane": "l1",
+      "activity": 1,
+      "events_day": 27108000.0,
+      "stored_gb_day": 1.301184,
+      "stored_gb_year": 327.89836799999995,
+      "hot_ssd_gb": 39.03552,
+      "raw_vendor_gb_year": 983.695104,
+      "r2_standard_month_at_full_retention": 4.918475519999999,
+      "r2_ia_month_at_full_retention": 3.2789836799999996
+    },
+    {
+      "names": 100,
+      "lane": "l2_deltas",
+      "activity": 1,
+      "events_day": 67914000.0,
+      "stored_gb_day": 4.346496,
+      "stored_gb_year": 1095.316992,
+      "hot_ssd_gb": 130.39488,
+      "raw_vendor_gb_year": 3285.950976,
+      "r2_standard_month_at_full_retention": 16.42975488,
+      "r2_ia_month_at_full_retention": 10.95316992
+    },
+    {
+      "names": 100,
+      "lane": "l3_mbo",
+      "activity": 1,
+      "events_day": 135828000.0,
+      "stored_gb_day": 6.519744,
+      "stored_gb_year": 1642.975488,
+      "hot_ssd_gb": 195.59232,
+      "raw_vendor_gb_year": 4928.926464,
+      "r2_standard_month_at_full_retention": 24.64463232,
+      "r2_ia_month_at_full_retention": 16.42975488
+    },
+    {
+      "names": 300,
+      "lane": "bars_1m",
+      "activity": 1,
+      "events_day": 432000.0,
+      "stored_gb_day": 0.027648,
+      "stored_gb_year": 6.967296,
+      "hot_ssd_gb": 0.82944,
+      "raw_vendor_gb_year": 17.41824,
+      "r2_standard_month_at_full_retention": 0.10450944,
+      "r2_ia_month_at_full_retention": 0.06967296
+    },
+    {
+      "names": 300,
+      "lane": "trades",
+      "activity": 1,
+      "events_day": 17037000.0,
+      "stored_gb_day": 0.68148,
+      "stored_gb_year": 171.73296,
+      "hot_ssd_gb": 20.444399999999998,
+      "raw_vendor_gb_year": 412.159104,
+      "r2_standard_month_at_full_retention": 2.5759944,
+      "r2_ia_month_at_full_retention": 1.7173296
+    },
+    {
+      "names": 300,
+      "lane": "l1",
+      "activity": 1,
+      "events_day": 81324000.0,
+      "stored_gb_day": 3.903552,
+      "stored_gb_year": 983.695104,
+      "hot_ssd_gb": 117.10656,
+      "raw_vendor_gb_year": 2951.085312,
+      "r2_standard_month_at_full_retention": 14.75542656,
+      "r2_ia_month_at_full_retention": 9.83695104
+    },
+    {
+      "names": 300,
+      "lane": "l2_deltas",
+      "activity": 1,
+      "events_day": 203742000.0,
+      "stored_gb_day": 13.039488,
+      "stored_gb_year": 3285.950976,
+      "hot_ssd_gb": 391.18464,
+      "raw_vendor_gb_year": 9857.852928,
+      "r2_standard_month_at_full_retention": 49.28926464,
+      "r2_ia_month_at_full_retention": 32.85950976
+    },
+    {
+      "names": 300,
+      "lane": "l3_mbo",
+      "activity": 1,
+      "events_day": 407484000.0,
+      "stored_gb_day": 19.559232,
+      "stored_gb_year": 4928.926464,
+      "hot_ssd_gb": 586.77696,
+      "raw_vendor_gb_year": 14786.779392,
+      "r2_standard_month_at_full_retention": 73.93389696,
+      "r2_ia_month_at_full_retention": 49.28926464
+    },
+    {
+      "names": 3000,
+      "lane": "bars_1m",
+      "activity": 1,
+      "events_day": 4320000.0,
+      "stored_gb_day": 0.27648,
+      "stored_gb_year": 69.67296,
+      "hot_ssd_gb": 8.2944,
+      "raw_vendor_gb_year": 174.1824,
+      "r2_standard_month_at_full_retention": 1.0450944,
+      "r2_ia_month_at_full_retention": 0.6967296000000001
+    },
+    {
+      "names": 3000,
+      "lane": "trades",
+      "activity": 1,
+      "events_day": 170370000.0,
+      "stored_gb_day": 6.8148,
+      "stored_gb_year": 1717.3296,
+      "hot_ssd_gb": 204.444,
+      "raw_vendor_gb_year": 4121.59104,
+      "r2_standard_month_at_full_retention": 25.759944,
+      "r2_ia_month_at_full_retention": 17.173296
+    },
+    {
+      "names": 3000,
+      "lane": "l1",
+      "activity": 1,
+      "events_day": 813240000.0,
+      "stored_gb_day": 39.03552,
+      "stored_gb_year": 9836.95104,
+      "hot_ssd_gb": 1171.0656,
+      "raw_vendor_gb_year": 29510.85312,
+      "r2_standard_month_at_full_retention": 147.55426559999998,
+      "r2_ia_month_at_full_retention": 98.3695104
+    },
+    {
+      "names": 3000,
+      "lane": "l2_deltas",
+      "activity": 1,
+      "events_day": 2037420000.0,
+      "stored_gb_day": 130.39488,
+      "stored_gb_year": 32859.50976,
+      "hot_ssd_gb": 3911.8464,
+      "raw_vendor_gb_year": 98578.52928,
+      "r2_standard_month_at_full_retention": 492.8926464,
+      "r2_ia_month_at_full_retention": 328.59509760000003
+    },
+    {
+      "names": 3000,
+      "lane": "l3_mbo",
+      "activity": 1,
+      "events_day": 4074840000.0,
+      "stored_gb_day": 195.59232,
+      "stored_gb_year": 49289.26464,
+      "hot_ssd_gb": 5867.7696,
+      "raw_vendor_gb_year": 147867.79392,
+      "r2_standard_month_at_full_retention": 739.3389696,
+      "r2_ia_month_at_full_retention": 492.89264640000005
+    }
+  ],
+  "tier_b": [
+    {
+      "names": 50,
+      "activity": 0.2,
+      "stored_gb_day": 0.15744239999999998,
+      "stored_gb_year": 39.67548479999999,
+      "hot_ssd_gb": 4.723272,
+      "r2_one_copy_month": 0.5951322719999999,
+      "r2_two_copies_month": 1.1902645439999997,
+      "rth_events_sec": 120.0
+    },
+    {
+      "names": 50,
+      "activity": 1,
+      "stored_gb_day": 0.7687799999999999,
+      "stored_gb_year": 193.73255999999998,
+      "hot_ssd_gb": 23.063399999999998,
+      "r2_one_copy_month": 2.9059883999999996,
+      "r2_two_copies_month": 5.811976799999999,
+      "rth_events_sec": 600
+    },
+    {
+      "names": 50,
+      "activity": 5,
+      "stored_gb_day": 3.825468,
+      "stored_gb_year": 964.017936,
+      "hot_ssd_gb": 114.76404,
+      "r2_one_copy_month": 14.460269039999998,
+      "r2_two_copies_month": 28.920538079999996,
+      "rth_events_sec": 3000
+    },
+    {
+      "names": 100,
+      "activity": 0.2,
+      "stored_gb_day": 0.31488479999999996,
+      "stored_gb_year": 79.35096959999998,
+      "hot_ssd_gb": 9.446544,
+      "r2_one_copy_month": 1.1902645439999997,
+      "r2_two_copies_month": 2.3805290879999994,
+      "rth_events_sec": 240.0
+    },
+    {
+      "names": 100,
+      "activity": 1,
+      "stored_gb_day": 1.5375599999999998,
+      "stored_gb_year": 387.46511999999996,
+      "hot_ssd_gb": 46.126799999999996,
+      "r2_one_copy_month": 5.811976799999999,
+      "r2_two_copies_month": 11.623953599999998,
+      "rth_events_sec": 1200
+    },
+    {
+      "names": 100,
+      "activity": 5,
+      "stored_gb_day": 7.650936,
+      "stored_gb_year": 1928.035872,
+      "hot_ssd_gb": 229.52808,
+      "r2_one_copy_month": 28.920538079999996,
+      "r2_two_copies_month": 57.84107615999999,
+      "rth_events_sec": 6000
+    },
+    {
+      "names": 300,
+      "activity": 0.2,
+      "stored_gb_day": 0.9446544,
+      "stored_gb_year": 238.0529088,
+      "hot_ssd_gb": 28.339632,
+      "r2_one_copy_month": 3.570793632,
+      "r2_two_copies_month": 7.141587264,
+      "rth_events_sec": 720.0
+    },
+    {
+      "names": 300,
+      "activity": 1,
+      "stored_gb_day": 4.61268,
+      "stored_gb_year": 1162.39536,
+      "hot_ssd_gb": 138.3804,
+      "r2_one_copy_month": 17.4359304,
+      "r2_two_copies_month": 34.8718608,
+      "rth_events_sec": 3600
+    },
+    {
+      "names": 300,
+      "activity": 5,
+      "stored_gb_day": 22.952807999999997,
+      "stored_gb_year": 5784.107615999999,
+      "hot_ssd_gb": 688.5842399999999,
+      "r2_one_copy_month": 86.76161423999999,
+      "r2_two_copies_month": 173.52322847999997,
+      "rth_events_sec": 18000
+    },
+    {
+      "names": 3000,
+      "activity": 0.2,
+      "stored_gb_day": 9.446544,
+      "stored_gb_year": 2380.529088,
+      "hot_ssd_gb": 283.39632,
+      "r2_one_copy_month": 35.707936319999995,
+      "r2_two_copies_month": 71.41587263999999,
+      "rth_events_sec": 7200.0
+    },
+    {
+      "names": 3000,
+      "activity": 1,
+      "stored_gb_day": 46.126799999999996,
+      "stored_gb_year": 11623.953599999999,
+      "hot_ssd_gb": 1383.8039999999999,
+      "r2_one_copy_month": 174.35930399999998,
+      "r2_two_copies_month": 348.71860799999996,
+      "rth_events_sec": 36000
+    },
+    {
+      "names": 3000,
+      "activity": 5,
+      "stored_gb_day": 229.52808000000002,
+      "stored_gb_year": 57841.076160000004,
+      "hot_ssd_gb": 6885.8424,
+      "r2_one_copy_month": 867.6161424000001,
+      "r2_two_copies_month": 1735.2322848000001,
+      "rth_events_sec": 180000
+    }
+  ],
+  "calibration_illustration": {
+    "iid_n_for_95pct_halfwidth_5pp_at_p_half": 384.1599999999999,
+    "iid_n_per_arm_for_5pp_difference_power80_two_sided05": 1569.8160455281995,
+    "warning": "These are IID approximations, not clustered-study power or promotion gates."
+  }
+}

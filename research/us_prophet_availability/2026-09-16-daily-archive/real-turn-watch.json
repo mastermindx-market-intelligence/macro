@@ -1,0 +1,49 @@
+{
+  "proof_class": "real_full_universe_turn_watch_builder_after_real_archive_refresh",
+  "production": false,
+  "base_source": "bd93ee84583e6c6bea2b342bbf38cba0b9eb23e9",
+  "staged_v2_source": "0e57dc01e494475802c62fc664924236544abb90",
+  "expected_session": "2026-09-16",
+  "returncode": 0,
+  "elapsed_seconds": 1047.53,
+  "data_session": "2026-09-16",
+  "max_session": "2026-09-16",
+  "session_note": null,
+  "coverage": {
+    "universe": 6102,
+    "graded": 5635,
+    "skipped_short_history": 467,
+    "min_bars": 200,
+    "triggered": 2901,
+    "deck": 40,
+    "beyond_cap": 2861,
+    "cap": 40,
+    "lane_floor": 5,
+    "triggered_by_trigger": {
+      "dot_1d": 2358,
+      "pre_confluence_2d": 675,
+      "basket_turn": 8,
+      "leader_reset_turn": 89
+    },
+    "deck_by_trigger": {
+      "dot_1d": 29,
+      "pre_confluence_2d": 33,
+      "basket_turn": 6,
+      "leader_reset_turn": 5
+    },
+    "universe_limit": null,
+    "basket_states_read": 49,
+    "benchmark": "SPY",
+    "leader_pullback_sources": {
+      "engine.us_leader_pullback:evaluate": 2901
+    },
+    "leader_rs_cross_section": 5635
+  },
+  "public_sha256": "3bd0ae735619a0bddfcfff565003948ffc8ecc7d42900a236c4b8fb14d538e08",
+  "old_generation_files_preserved": 49,
+  "old_input_files_preserved": 5,
+  "new_input_paths": [
+    "data/us_prophet_rank/episode_inputs/turn_watch/2026-09-16.json"
+  ],
+  "protocol_activated_in_production": false
+}

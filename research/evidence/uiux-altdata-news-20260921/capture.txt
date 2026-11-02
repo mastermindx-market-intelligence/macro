@@ -1,0 +1,4 @@
+outcome: captured
+pages: 1  states: 24/24 captured
+manifest: mockups/evidence/uiux-altdata-news-20260921/manifest.json
+smells: mockups/evidence/uiux-altdata-news-20260921/smells.json

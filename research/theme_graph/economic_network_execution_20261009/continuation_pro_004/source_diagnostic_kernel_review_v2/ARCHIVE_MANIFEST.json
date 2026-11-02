@@ -1,0 +1,335 @@
+{
+  "all_members_reopened_and_verified": true,
+  "archive": {
+    "byte_length": 848031,
+    "path": "SOURCE_ARCHIVE.tar.gz",
+    "sha256": "ebfa02a7007aa4f6c821053bd49e4c63e0ceaad7af27d794562ea548d199b450"
+  },
+  "archived_test_filename_does_not_create_runnable_source_path": true,
+  "deterministic_metadata": {
+    "gid": 0,
+    "gzip_mtime": 0,
+    "mode": "0644",
+    "tar_mtime": 0,
+    "uid": 0
+  },
+  "files": [
+    {
+      "byte_length": 174212,
+      "path": "CORRECTIVE_PUBLIC_REPLAY_RECEIPT.json",
+      "sha256": "c584811ba09ba1285db0c789f6ba68545acc217d1ffecd09eef880915c990a0e"
+    },
+    {
+      "byte_length": 5214,
+      "path": "CORRECTIVE_PUBLIC_REPLAY_RUN_001.log",
+      "sha256": "032db6263c35f2515a4acfdf29b187335bec31f5fa0387424972565a6ce1bd52"
+    },
+    {
+      "byte_length": 5046,
+      "path": "CORRECTIVE_RECEIPT.json",
+      "sha256": "8721257ceb86be67d5b5bc6b89b766430c2cedd0d743284d86a159692b3efe4d"
+    },
+    {
+      "byte_length": 7402,
+      "path": "CORRECTIVE_REVIEW.md",
+      "sha256": "df0676c426631a856087065dc50e7a1dc78054179e6134e5957cdf182b9abbc1"
+    },
+    {
+      "byte_length": 2608,
+      "path": "INPUT_CONTRACT.md.diff",
+      "sha256": "49b18e5e1b641791b83e11848530d2eddfbf5bce149e69aee2694272b0b8ec37"
+    },
+    {
+      "byte_length": 11930,
+      "path": "MANIFEST.json",
+      "sha256": "3c04ebd6203ee2c7ccb1410f5f9821bfe0b18a2e13d2ebf153a7b3d61f5f14f3"
+    },
+    {
+      "byte_length": 11011,
+      "path": "RUN_CORRECTIVE_PUBLIC_REPLAY.py",
+      "sha256": "07223b371f087a00b256174af90bb014411b2aab998378f50871079cfc321520"
+    },
+    {
+      "byte_length": 2299,
+      "path": "SOURCE_DELTA_RECEIPT.json",
+      "sha256": "31698b4ea1f965eae76f5b9d0ef541f05a83b264de4c5ca203f7b847b009dd35"
+    },
+    {
+      "byte_length": 3400,
+      "path": "outputs/ANCHOR_SHAPE_COMMA.result.json.gz",
+      "sha256": "35213a9d727a8c881e5d731ebf17c7479a4f976ba665ccee89dd13dfcd3ac932"
+    },
+    {
+      "byte_length": 3398,
+      "path": "outputs/ANCHOR_SHAPE_SEVEN_ZEROES.result.json.gz",
+      "sha256": "d4ef9ae60a1201378a8ec142b8604cbb47ce313d36ef4a46174499562e9c9c7e"
+    },
+    {
+      "byte_length": 3400,
+      "path": "outputs/ANCHOR_SHAPE_UNICODE_DIGIT.result.json.gz",
+      "sha256": "f5afae4460ef603be3be69e4b0ac1500ac860fd0876c6f35e3f65e7814c0aed3"
+    },
+    {
+      "byte_length": 36078,
+      "path": "outputs/ANCHOR_VALID_BEFORE_SIX.result.json.gz",
+      "sha256": "e27aa2e1eb59368095f435dde5c5b524cc2721c4a5b697228d0bb11db99f70dd"
+    },
+    {
+      "byte_length": 36077,
+      "path": "outputs/ANCHOR_VALID_ONE_FRACTION.result.json.gz",
+      "sha256": "bd0a4b46bac8a6bcdb0a45426850bf929618508a9c189f883273b888f24a982c"
+    },
+    {
+      "byte_length": 36078,
+      "path": "outputs/ANCHOR_VALID_SECONDS.result.json.gz",
+      "sha256": "6a1280a7050a70701b6f0521f6517e1de20514cbd5e27efbb5110ebf2fcbcdb9"
+    },
+    {
+      "byte_length": 36283,
+      "path": "outputs/CONSUMER_ACTION_000000.result.json.gz",
+      "sha256": "aa5855224a2f73da4b4de45b27547ec06108459d0edf4cb406958b77ce4cc1c8"
+    },
+    {
+      "byte_length": 30640,
+      "path": "outputs/CONSUMER_ACTION_0000001.result.json.gz",
+      "sha256": "86d082573e610f5c6d05e5579155e13f58a65fdd8c278e8e9e115d97a0a15a62"
+    },
+    {
+      "byte_length": 36088,
+      "path": "outputs/CONSUMER_FX_ASSERTION_000000.result.json.gz",
+      "sha256": "2cbaf00d5848f60941c2c2b756648b7e2e34e456f331fa49417a3bf4c45828de"
+    },
+    {
+      "byte_length": 6055,
+      "path": "outputs/CONSUMER_FX_ASSERTION_0000001.result.json.gz",
+      "sha256": "20fbe12151c8ffc9a8577043fb27fae58fb89bcdac43de6c2f4b6c43bf24d0eb"
+    },
+    {
+      "byte_length": 36213,
+      "path": "outputs/CONSUMER_MEMBERSHIP_EVENT_000000.result.json.gz",
+      "sha256": "6b8a256dad7a19cec85897bf804027d68aca8e5f76eb84bfa8cd0497b099ccc5"
+    },
+    {
+      "byte_length": 3511,
+      "path": "outputs/CONSUMER_MEMBERSHIP_EVENT_0000001.result.json.gz",
+      "sha256": "9b8c4bd586332e4837f8c3178067387db79241ef006f8c7febbcfa24d308ac7c"
+    },
+    {
+      "byte_length": 36088,
+      "path": "outputs/CONSUMER_PRICE_ASSERTION_000000.result.json.gz",
+      "sha256": "dc826e11a95ff48378a972fdd2943dcc7f3dbbb621352d03ae6b81a254a13410"
+    },
+    {
+      "byte_length": 30551,
+      "path": "outputs/CONSUMER_PRICE_ASSERTION_0000001.result.json.gz",
+      "sha256": "2fb92f0a56597b721a6aa9677b3ca429b9eda797e7fa895c76007d7d5d77c733"
+    },
+    {
+      "byte_length": 36642,
+      "path": "outputs/CONSUMER_RELATION_000000.result.json.gz",
+      "sha256": "dcb87c198ecaaebfd1554eb278e1e40e8fa902e2ee4b28305890694ee75d2ba5"
+    },
+    {
+      "byte_length": 30744,
+      "path": "outputs/CONSUMER_RELATION_0000001.result.json.gz",
+      "sha256": "bc8c40915eb910e59cb243ed4b6b08e34ed6ef23034d815c1b73edcf743c4121"
+    },
+    {
+      "byte_length": 36090,
+      "path": "outputs/CONSUMER_SHARE_ASSERTION_000000.result.json.gz",
+      "sha256": "1fb3254b466fdac3506ac55c872f509815321c74fd7594a290fc8ecd5731fb9c"
+    },
+    {
+      "byte_length": 30547,
+      "path": "outputs/CONSUMER_SHARE_ASSERTION_0000001.result.json.gz",
+      "sha256": "1f8a6040dabb5c010ddc58f06d1479d54e6826508ef16d0f52a7d32ce2860979"
+    },
+    {
+      "byte_length": 36640,
+      "path": "outputs/CORRECTION_AT_K.result.json.gz",
+      "sha256": "b038268ddbf9f378c747ca4dce2bfee57b70e7e298918789c4269355479508b6"
+    },
+    {
+      "byte_length": 36653,
+      "path": "outputs/CORRECTION_BEFORE_K.result.json.gz",
+      "sha256": "13a156af305ff14010e12b2f7d9f90445dffc2e0827999c7957d1cf03a4a30e4"
+    },
+    {
+      "byte_length": 3398,
+      "path": "outputs/EXACT_V1_K_PLUS_0000001_ANCHOR.result.json.gz",
+      "sha256": "ffc66e7fe9201e1a10c73c67ea64e528762c3acc9de73e5e8252f4484b0f7fc0"
+    },
+    {
+      "byte_length": 30743,
+      "path": "outputs/EXACT_V1_K_PLUS_0000001_CORRECTION.result.json.gz",
+      "sha256": "9d5dfa1bd58268d59dfdde67b8acc4b310ec81c613394ae40741749cf71bb560"
+    },
+    {
+      "byte_length": 3385,
+      "path": "outputs/EXACT_V1_K_PLUS_000001_ANCHOR.result.json.gz",
+      "sha256": "8fa3c576104b48206d49d510da1172533231ce241c67e6cd9c7f00968a1c771d"
+    },
+    {
+      "byte_length": 36655,
+      "path": "outputs/EXACT_V1_K_PLUS_000001_CORRECTION.result.json.gz",
+      "sha256": "60a2ae6577aa93f727074731ce9727eb737637aed59ae82c846c45d3fbd07aae"
+    },
+    {
+      "byte_length": 36078,
+      "path": "outputs/UNCHANGED_V01_COMPLETE_MODEL.result.json.gz",
+      "sha256": "b06fa73911a2a72cccb8d0754dec25247d109b7e02ed71fae0a729408730c359"
+    },
+    {
+      "byte_length": 36647,
+      "path": "outputs/UNCHANGED_V10_WHOLE_SECOND_POST_K.result.json.gz",
+      "sha256": "b6a2007f15ba80dc5d69f220850577c4e624cf3322ccd9c146a5454a1413e963"
+    },
+    {
+      "byte_length": 11196,
+      "path": "requests/ANCHOR_SHAPE_COMMA.request.json.gz",
+      "sha256": "4cdbde9314b1f511b9ce1b6e8cf1bd07558873bd40e332fd2d2e417df67601a3"
+    },
+    {
+      "byte_length": 11198,
+      "path": "requests/ANCHOR_SHAPE_SEVEN_ZEROES.request.json.gz",
+      "sha256": "9c64d90bc5eff4314c84c63d33a298850e70a2ea02fb0e8ae65d2711bbb7b339"
+    },
+    {
+      "byte_length": 11202,
+      "path": "requests/ANCHOR_SHAPE_UNICODE_DIGIT.request.json.gz",
+      "sha256": "d33844389115592d05f96eb6276ce794655f17103cda10d64ac0a3fecc6c4eb1"
+    },
+    {
+      "byte_length": 11199,
+      "path": "requests/ANCHOR_VALID_BEFORE_SIX.request.json.gz",
+      "sha256": "6c382e596c51275c138445679bfcc31174b0d2412d9129267766318700c8024e"
+    },
+    {
+      "byte_length": 11196,
+      "path": "requests/ANCHOR_VALID_ONE_FRACTION.request.json.gz",
+      "sha256": "05492a9cb5e26af00374cb1eb8e862c76ecc851c9e65fc10ac00bed13e4b7b49"
+    },
+    {
+      "byte_length": 11194,
+      "path": "requests/ANCHOR_VALID_SECONDS.request.json.gz",
+      "sha256": "9bc31fa622f6d1b96555295550bf017a703780389fdcb619ce098f405d55d59c"
+    },
+    {
+      "byte_length": 11525,
+      "path": "requests/CONSUMER_ACTION_000000.request.json.gz",
+      "sha256": "ef15226d8db023a823d31e33e1628ed5756412b280d4562fa262d7813546684d"
+    },
+    {
+      "byte_length": 11526,
+      "path": "requests/CONSUMER_ACTION_0000001.request.json.gz",
+      "sha256": "5876c87f060b07e68c8a5f507f37fb5527b89293ada80269ae55f799407637fa"
+    },
+    {
+      "byte_length": 11196,
+      "path": "requests/CONSUMER_FX_ASSERTION_000000.request.json.gz",
+      "sha256": "cfc765770230f3a24fca5a5c2b117ed75357176d98ac9bdb1f8981ba9d4739f2"
+    },
+    {
+      "byte_length": 11197,
+      "path": "requests/CONSUMER_FX_ASSERTION_0000001.request.json.gz",
+      "sha256": "6f629f7a9a004a037a2dc5e284654741b8a499d4753ae92f536fe90edd568cfc"
+    },
+    {
+      "byte_length": 12756,
+      "path": "requests/CONSUMER_MEMBERSHIP_EVENT_000000.request.json.gz",
+      "sha256": "cf4b055e0bb57a32be16cd7aa910320f3ade5ff6f4fa3332a445bcbb274f330b"
+    },
+    {
+      "byte_length": 12758,
+      "path": "requests/CONSUMER_MEMBERSHIP_EVENT_0000001.request.json.gz",
+      "sha256": "ff53199daa5c196f4498163dc31c17de719ba8a527d7de1f3dbdca685f51bfc7"
+    },
+    {
+      "byte_length": 11205,
+      "path": "requests/CONSUMER_PRICE_ASSERTION_000000.request.json.gz",
+      "sha256": "571cf7a574bb05add83f3bd47cab7d412a9c48edac6ba09660401eb3a40e0734"
+    },
+    {
+      "byte_length": 11206,
+      "path": "requests/CONSUMER_PRICE_ASSERTION_0000001.request.json.gz",
+      "sha256": "224ffe1c53929b0d47f7a48fcaf9c8c4e02ad5fe59d3124e0a0652727a506300"
+    },
+    {
+      "byte_length": 11839,
+      "path": "requests/CONSUMER_RELATION_000000.request.json.gz",
+      "sha256": "6c8594faf24ddc7dee737970d5be5209799becd71bfdac2dc0b797022e3f77ef"
+    },
+    {
+      "byte_length": 11839,
+      "path": "requests/CONSUMER_RELATION_0000001.request.json.gz",
+      "sha256": "ef76014350a839b71038bf85f08e062561b2c139dcafa94e04992eadbb8cd384"
+    },
+    {
+      "byte_length": 11206,
+      "path": "requests/CONSUMER_SHARE_ASSERTION_000000.request.json.gz",
+      "sha256": "e38339f35ac006e8569e184d03f45e37ef99c2f6f9074e35a41132044fb6a170"
+    },
+    {
+      "byte_length": 11207,
+      "path": "requests/CONSUMER_SHARE_ASSERTION_0000001.request.json.gz",
+      "sha256": "e67218448672bde61e925318a6b927767299ea165975a971e9e004a464b3ad84"
+    },
+    {
+      "byte_length": 11829,
+      "path": "requests/CORRECTION_AT_K.request.json.gz",
+      "sha256": "1af6b698589ebacf109db5cc3d05123a5fe15a7308e245f53a4b48afe2fba436"
+    },
+    {
+      "byte_length": 11840,
+      "path": "requests/CORRECTION_BEFORE_K.request.json.gz",
+      "sha256": "bbcb4698be2bd6c07c0f48703022de969191d31cd17adcdb722a3baa201bb9c3"
+    },
+    {
+      "byte_length": 11199,
+      "path": "requests/EXACT_V1_K_PLUS_0000001_ANCHOR.request.json.gz",
+      "sha256": "f5658adbc289650b78bacb52e0bef5cff4e9d29a2f7b8013690e6aba3ce30329"
+    },
+    {
+      "byte_length": 11836,
+      "path": "requests/EXACT_V1_K_PLUS_0000001_CORRECTION.request.json.gz",
+      "sha256": "081f3d255c98c8f0128bc2c3fd7df7325053b913caa243a73a6ca212bfd82f71"
+    },
+    {
+      "byte_length": 11199,
+      "path": "requests/EXACT_V1_K_PLUS_000001_ANCHOR.request.json.gz",
+      "sha256": "803fbdfe9dd38d3a201d010d0473af5ffc3ac8e1c73c21af19393f37571bef38"
+    },
+    {
+      "byte_length": 11836,
+      "path": "requests/EXACT_V1_K_PLUS_000001_CORRECTION.request.json.gz",
+      "sha256": "d3b4e352f6467a6bd074e8c1bee84257664d056f7e3abc7df5ed2a5c1d44c88f"
+    },
+    {
+      "byte_length": 11193,
+      "path": "requests/UNCHANGED_V01_COMPLETE_MODEL.request.json.gz",
+      "sha256": "c2bdb659380f09bc8ebb1126c98a1d1d39c461c82153716c95a7560e861de74b"
+    },
+    {
+      "byte_length": 11832,
+      "path": "requests/UNCHANGED_V10_WHOLE_SECOND_POST_K.request.json.gz",
+      "sha256": "80d99c1165aad21c44a60b8007c4d056744d946a2c7f690a67d7cd7942ac76da"
+    },
+    {
+      "byte_length": 1292,
+      "path": "source_diagnostic.py.diff",
+      "sha256": "605323e3009ec18421236e744282332e558c003461fbe3503e15a5245cacca11"
+    },
+    {
+      "byte_length": 5034,
+      "path": "test_gmi_source_diagnostic_kernel.py.diff",
+      "sha256": "b8e283f2695976ad712dc9a388b6d2d2e907575e47ff9bf449f4042207c6dfa0"
+    }
+  ],
+  "member_count": 62,
+  "no_archived_code_executed": true,
+  "original_directory": "lanes/source_diagnostic_kernel_review_v2",
+  "original_manifest_sha256": "3c04ebd6203ee2c7ccb1410f5f9821bfe0b18a2e13d2ebf153a7b3d61f5f14f3",
+  "readable_report_exact_original": "CORRECTIVE_REVIEW.md",
+  "schema": "economic_network.frozen_packet_archive/v1",
+  "uncompressed_file_bytes": 1213539
+}

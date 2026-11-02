@@ -158,13 +158,18 @@ and falsifier language is never front-facing.
 """
 from __future__ import annotations
 
+from hashlib import sha256
+import json
 import logging
+import math
 from datetime import datetime, time, timedelta, timezone
 from typing import Any
 
 from engine.prophet_live.interval import (
+    ADJUSTED,
     DEFAULT_PACK_ADJUSTMENT,
     LIVE_QUOTE_ADJUSTMENT,
+    UNADJUSTED,
     basis_audit,
     in_probed_band,
     interval_contains,
@@ -175,6 +180,7 @@ from engine.prophet_live.interval import (
 log = logging.getLogger(__name__)
 
 SCHEMA = "prophet_live.states/v1"
+BASIS_RELATION_SCHEMA = "prophet_live.basis_relation/v1"
 
 #: The only states a payload may carry. No "fired"/"confirmed"/"refuted" anywhere.
 #: ``unknown`` is the non-verdict (module docstring: UNKNOWN IS NOT DARK) — it renders
@@ -291,6 +297,52 @@ _FEED_DELAY_FALLBACK_MIN = 15.0
 #: One number, derived once, so an ad-hoc dict cannot silently gate differently.
 _FALLBACK_MAX_AGE_MIN = _FEED_DELAY_FALLBACK_MIN + _DEFAULTS["quote_slack_min"]
 
+#: The schema of the freshness-policy disclosure carried in every payload's meta.
+FRESHNESS_POLICY_SCHEMA = "prophet_live.quote_freshness_policy/v1"
+
+
+def quote_max_age_policy(cfg: dict[str, Any] | None) -> dict[str, Any]:
+    """The exact staleness ceiling this pass applies, and how it was resolved.
+
+    ONE read shared by the state machine and the artifact's disclosure: the value
+    is read exactly as ``_resolve_state`` reads it — ``cfg["quote_max_age_min"]``
+    first, else the fallback ceiling — so meta can never name a number the gate did
+    not use. ``resolution`` names the same three provenance classes :func:`live_cfg`
+    resolves (``explicit`` operator lever, ``derived`` off the data plan,
+    ``fallback``), and ``malformed`` marks a configured value no lawful bound can be
+    read from (bool, non-numeric, non-finite): disclosed unusable rather than
+    laundered into a clean limit. Zero and negative are disclosed VERBATIM — they
+    are numbers, and the gate genuinely ran on them. Metadata only: nothing in the
+    state machine reads this block.
+    """
+    if not isinstance(cfg, dict):
+        return {"schema": FRESHNESS_POLICY_SCHEMA, "quote_max_age_min": None,
+                "resolution": "malformed"}
+    raw = cfg.get("quote_max_age_min")
+    if raw is None:
+        # An ABSENT key resolves to the machine's own .get default. An explicit
+        # None crashes the machine's float() read and darks the pass eval_error —
+        # only the former is the fallback ceiling; neither is a number.
+        absent = "quote_max_age_min" not in cfg
+        return {"schema": FRESHNESS_POLICY_SCHEMA,
+                "quote_max_age_min": _FALLBACK_MAX_AGE_MIN if absent else None,
+                "resolution": "fallback" if absent else "malformed"}
+    number: float | None = None
+    if not isinstance(raw, bool) and isinstance(raw, (int, float)):
+        try:
+            candidate = float(raw)
+        except (OverflowError, ValueError):  # pragma: no cover - huge int corner
+            candidate = float("nan")
+        if math.isfinite(candidate):
+            number = candidate
+    if number is None:
+        return {"schema": FRESHNESS_POLICY_SCHEMA, "quote_max_age_min": None,
+                "resolution": "malformed"}
+    resolution = cfg.get("quote_max_age_resolution")
+    return {"schema": FRESHNESS_POLICY_SCHEMA, "quote_max_age_min": number,
+            "resolution": resolution if resolution in ("explicit", "derived")
+            else "explicit"}
+
 
 def live_cfg(cfg: dict | None) -> dict[str, Any]:
     """Resolve the evaluator config: ``config.yml prophet_live`` over in-code defaults.
@@ -334,13 +386,17 @@ def live_cfg(cfg: dict | None) -> dict[str, Any]:
         declared = ((cfg or {}).get("live") or {}).get("delayed_min")
         if declared is not None:
             feed_delay = max(0.0, float(declared))
-        out["quote_max_age_min"] = (float(block["quote_max_age_min"])
-                                    if block.get("quote_max_age_min") is not None
+        explicit = block.get("quote_max_age_min") is not None
+        out["quote_max_age_min"] = (float(block["quote_max_age_min"]) if explicit
                                     else feed_delay + float(out["quote_slack_min"]))
+        # HOW the ceiling above was resolved — the operator lever won, or it was
+        # derived off the data plan. Disclosed verbatim by quote_max_age_policy.
+        out["quote_max_age_resolution"] = "explicit" if explicit else "derived"
     except Exception as exc:  # noqa: BLE001
         log.warning("live_states: bad prophet_live config (%s) — using defaults", exc)
         out = {k: (dict(v) if isinstance(v, dict) else v) for k, v in _DEFAULTS.items()}
         out["quote_max_age_min"] = _FALLBACK_MAX_AGE_MIN
+        out["quote_max_age_resolution"] = "fallback"
     return out
 
 
@@ -441,6 +497,159 @@ def last_completed_session(now: datetime | None = None) -> str:
 
 def _iso(now: datetime) -> str:
     return _utc(now).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+#: The closed field set of one measured basis-relation material. The receipt hashes
+#: EXACTLY these keys and nothing else, so the material a consumer re-hashes must be
+#: field-for-field this shape (native B4 readers verify that before trusting a row).
+BASIS_RELATION_FIELDS: tuple[str, ...] = (
+    "schema", "subject", "state", "pack_as_of", "levels_adjustment", "quote_adjustment",
+    "gap_pct", "tol_pct",
+)
+
+
+def _basis_relation_material(
+    *,
+    subject: str,
+    pack_as_of: str,
+    levels_adjustment: str,
+    gap_pct: float,
+    tol_pct: float,
+) -> dict[str, Any]:
+    """The measured per-name relationship between pack levels and tape, as a dict.
+
+    Published on a RESOLVED row beside its receipt under ``basis_relation`` so a strict
+    downstream reader can re-hash the EXACT measured material (and read the subject and
+    pack cut it binds) instead of trusting an opaque digest. The receipt below hashes
+    this dict field-for-field; the two can never drift because both are built here.
+    """
+    return {
+        "schema": BASIS_RELATION_SCHEMA,
+        "subject": str(subject),
+        "state": "RESOLVED",
+        "pack_as_of": str(pack_as_of),
+        "levels_adjustment": str(levels_adjustment),
+        "quote_adjustment": LIVE_QUOTE_ADJUSTMENT,
+        "gap_pct": round(float(gap_pct), 6),
+        "tol_pct": round(abs(float(tol_pct)), 6),
+    }
+
+
+def basis_relation_receipt(material: dict[str, Any]) -> str:
+    """Re-hash a published basis-relation material to its canonical receipt.
+
+    ONE definition of the digest (same canonical encoding ``_basis_relation_material``
+    is hashed with), so downstream validators and this module cannot disagree about
+    what a ``basis_receipt`` commits to.
+    """
+    blob = json.dumps(
+        material, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False
+    ).encode("utf-8")
+    return "sha256:" + sha256(blob).hexdigest()
+
+
+def _basis_receipt(
+    *,
+    subject: str,
+    pack_as_of: str,
+    levels_adjustment: str,
+    gap_pct: float,
+    tol_pct: float,
+) -> str:
+    """Content-address one measured per-name relationship between pack levels and tape."""
+    return basis_relation_receipt(_basis_relation_material(
+        subject=subject,
+        pack_as_of=pack_as_of,
+        levels_adjustment=levels_adjustment,
+        gap_pct=gap_pct,
+        tol_pct=tol_pct,
+    ))
+
+
+_CANONICAL_ADJUSTMENTS = frozenset({ADJUSTED, UNADJUSTED})
+_BASIS_COUNT_KEYS = _CANONICAL_ADJUSTMENTS | {"unknown"}
+
+
+def _basis_provenance_counts(
+    pack: dict[str, Any], *, names: dict[str, Any]
+) -> dict[str, int] | None:
+    """Return the closed producer basis census, or None when it is not trustworthy."""
+    meta = pack.get("meta")
+    counts = meta.get("price_adjustment_counts") if isinstance(meta, dict) else None
+    if not isinstance(counts, dict) or not counts:
+        return None
+    if set(counts) - _BASIS_COUNT_KEYS:
+        return None
+    if any(
+        isinstance(value, bool) or not isinstance(value, int) or value < 0
+        for value in counts.values()
+    ):
+        return None
+    if sum(counts.values()) != len(names):
+        return None
+    return dict(counts)
+
+
+def _implicit_pack_basis_is_reconciled(
+    pack: dict[str, Any], *, names: dict[str, Any], counts: dict[str, int]
+) -> bool:
+    """Prove that every compact/default row is accounted for by the census.
+
+    A mixed census is only useful when every non-default basis is attached to an
+    explicit row.  Otherwise the pack tells us that an exception exists but not
+    which ticker owns it, so no implicit row may inherit the pack default.
+    """
+    pack_adjustment = pack.get("price_adjustment")
+    if pack_adjustment not in _CANONICAL_ADJUSTMENTS:
+        return False
+
+    declared = {basis: 0 for basis in _BASIS_COUNT_KEYS}
+    for row in names.values():
+        if not isinstance(row, dict):
+            return False
+        if "price_adjustment" not in row:
+            declared[pack_adjustment] += 1
+            continue
+        explicit = row.get("price_adjustment")
+        if explicit not in _CANONICAL_ADJUSTMENTS:
+            return False
+        declared[explicit] += 1
+
+    return all(counts.get(key, 0) == declared[key] for key in _BASIS_COUNT_KEYS)
+
+
+def _resolved_levels_adjustment(
+    pack: dict[str, Any], *, entry: dict[str, Any], names: dict[str, Any]
+) -> str | None:
+    """Return a positively proven per-name levels basis, otherwise None.
+
+    Row-level exceptions are explicit producer provenance. Compact default rows may
+    inherit the pack's basis only when the complete producer census contains no
+    unknown names. Missing, partial, malformed, or unregistered provenance cannot
+    become a positive owner fact merely because two numeric closes happen to agree.
+    """
+    counts = _basis_provenance_counts(pack, names=names)
+    if counts is None:
+        return None
+
+    if "price_adjustment" in entry:
+        explicit = entry.get("price_adjustment")
+        if (
+            isinstance(explicit, str)
+            and explicit in _CANONICAL_ADJUSTMENTS
+            and counts.get(explicit, 0) > 0
+        ):
+            return explicit
+        return None
+
+    pack_adjustment = pack.get("price_adjustment")
+    if (
+        isinstance(pack_adjustment, str)
+        and pack_adjustment in _CANONICAL_ADJUSTMENTS
+        and _implicit_pack_basis_is_reconciled(pack, names=names, counts=counts)
+    ):
+        return pack_adjustment
+    return None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -832,6 +1041,9 @@ def dark_artifact(reason: str, *, now: datetime, cfg: dict[str, Any],
             # HOW stale the tape was when we declined to speak.
             "quote_asof": quote_asof,
             "delay_min": delay_min,
+            # ...and WHAT ceiling the lane enforces, resolved exactly as a live pass
+            # resolves it (metadata only; a dark pass evaluated no name).
+            "quote_freshness_policy": quote_max_age_policy(cfg),
             "dark_counts": {reason: 1},
             # Always present, so a consumer never has to tell "no unknowns" from "this
             # payload predates the bucket". A whole-artifact dark evaluated no name.
@@ -912,9 +1124,43 @@ def evaluate(pack: dict[str, Any] | None, quotes: dict[str, Any], prev: dict[str
         q = quotes.get(tkr) or {}
         px = q.get("price")
         age = quote_age_of(q) if (quote_age_of and q) else None
+        gap = gaps.get(tkr)
         st = name_state(entry, price=px, quote_age_min=age,
                         prev=prev_states.get(tkr), now=now, cfg=cfg,
-                        basis_gap_pct=gaps.get(tkr))
+                        basis_gap_pct=gap)
+        # A positive row-local basis receipt is emitted only after the incumbent audit
+        # actually measured this name and the live state did not fail dark.  Missing
+        # prev_close therefore remains absence of evidence, never an inferred pass.
+        ent_adj = entry.get("price_adjustment")
+        levels_adjustment = _resolved_levels_adjustment(
+            pack,
+            entry=entry,
+            names=pack.get("names") or {},
+        )
+        if levels_adjustment is not None and st.get("state") != "dark" and gap is not None:
+            tol = abs(float(audit["tol_pct"]))
+            if tol > 0.0 and abs(float(gap)) <= tol:
+                st["basis_status"] = "RESOLVED"
+                # The MEASURED material travels beside its receipt, so a strict native
+                # reader can re-hash exactly what was hashed and read the subject and
+                # pack cut it binds — an opaque digest alone cannot be checked against
+                # the row that claims it. Same branch, same inputs, one hash: the
+                # material re-hashes to the receipt by construction (tests pin it).
+                st["basis_relation"] = _basis_relation_material(
+                    subject=str(tkr),
+                    pack_as_of=pack_as_of,
+                    levels_adjustment=levels_adjustment,
+                    gap_pct=float(gap),
+                    tol_pct=tol,
+                )
+                st["basis_receipt"] = basis_relation_receipt(st["basis_relation"])
+                # The two inputs the audit actually read for THIS name, disclosed so a
+                # native reader can bind its own observed private quote's previous close
+                # (and the pack's as-of close) to the measured gap without re-running
+                # the audit. Absent wherever the receipt is absent — disclosure is part
+                # of the same positive measurement, never a row of its own.
+                st["basis_as_of_close"] = float(entry.get("as_of_close"))
+                st["basis_prev_close"] = float(q.get("prev_close"))
         # A name whose levels are NOT on the artifact's stated basis says so on its own
         # row. Only the exceptions carry the key — the rule is written down in
         # `meta.price_adjustment` and in the module docstring, so a reader derives
@@ -922,7 +1168,6 @@ def evaluate(pack: dict[str, Any] | None, quotes: dict[str, Any], prev: dict[str
         # `meta.price_adjustment.levels`. Stamping all ~1,700 rows with the same string
         # would add ~45 KB to a payload republished every five minutes to say what the
         # header already says.
-        ent_adj = entry.get("price_adjustment")
         if (st.get("state") != "dark" and isinstance(ent_adj, str) and ent_adj
                 and ent_adj != pack_adjustment):
             st["levels_adjustment"] = ent_adj
@@ -952,6 +1197,13 @@ def evaluate(pack: dict[str, Any] | None, quotes: dict[str, Any], prev: dict[str
             # House convention: the VENDOR delay floor, not a measured latency. The
             # per-name measured age rides on each state as quote_age_min.
             "delay_min": delay_min,
+            # THE EXACT STALENESS CEILING THIS PASS GATED ON — the number
+            # `_resolve_state` compared every quote age against (same
+            # explicit/derived/fallback resolution), disclosed so a downstream
+            # native reader can re-answer the freshness question at its own read
+            # time without assuming today's config describes this artifact.
+            # Metadata only: no verdict below reads this block.
+            "quote_freshness_policy": quote_max_age_policy(cfg),
             "pack_as_of": pack_as_of,
             "pack_built_at": pack.get("built_at"),
             "expected_session": expected,
@@ -978,6 +1230,7 @@ def evaluate(pack: dict[str, Any] | None, quotes: dict[str, Any], prev: dict[str
             "price_adjustment": {
                 "levels": pack_adjustment,
                 "quote": LIVE_QUOTE_ADJUSTMENT,
+                "relation_schema": BASIS_RELATION_SCHEMA,
                 "tol_pct": audit["tol_pct"],
                 "checked_n": audit["checked_n"],
                 "unchecked_n": audit["unchecked_n"],

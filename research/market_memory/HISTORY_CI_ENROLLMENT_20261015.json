@@ -1,0 +1,21 @@
+{
+  "schema": "market_memory.history_ci_enrollment.v1",
+  "owner_job": "research-price-panel",
+  "new_suites": [
+    "tests/test_market_memory_history.py",
+    "tests/test_market_memory_history_archive.py",
+    "tests/test_market_memory_history_cli.py",
+    "tests/test_market_memory_history_dossier.py",
+    "tests/test_market_memory_history_macro.py",
+    "tests/test_market_memory_history_view.py"
+  ],
+  "changed_job_ids": [
+    "research-price-panel"
+  ],
+  "additional_measured_closure_paths": [],
+  "canonical_inference_note": "derived scopes for 1/1 jobs",
+  "existing_job_order_and_other_jobs_preserved": true,
+  "gate": "code",
+  "scope": "existing_exclusive",
+  "fixture_only_no_provider_calls": true
+}

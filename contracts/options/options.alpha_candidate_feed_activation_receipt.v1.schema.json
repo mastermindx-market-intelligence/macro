@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "options.alpha_candidate_feed_activation_receipt/v1",
+  "title": "Activation receipt for the options-alpha research-candidate feed composer",
+  "description": "Caller-supplied receipt binding the four named OA-1C activation preconditions and the explicit policy/activation fence boundaries. The composer requires this receipt to be present and validated before any candidate formation succeeds; the receipt itself is NOT auto-mintable.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "receipt_id",
+    "preconditions",
+    "all_preconditions_cleared",
+    "policy_freeze_at",
+    "activation_boundary_at",
+    "activation_disposition"
+  ],
+  "properties": {
+    "schema": {"const": "options.alpha_candidate_feed_activation_receipt/v1"},
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "preconditions": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "oa1t_measured_source_consumer_proven",
+          "ad1t2_consumer_availability_production_accepted",
+          "campaign_integrity_publication_runtime_accepted",
+          "source_collision_review_clear"
+        ]
+      },
+      "allOf": [
+        {"contains": {"const": "oa1t_measured_source_consumer_proven"}},
+        {"contains": {"const": "ad1t2_consumer_availability_production_accepted"}},
+        {"contains": {"const": "campaign_integrity_publication_runtime_accepted"}},
+        {"contains": {"const": "source_collision_review_clear"}}
+      ]
+    },
+    "all_preconditions_cleared": {"type": "boolean"},
+    "policy_freeze_at": {"type": "string", "format": "date-time"},
+    "activation_boundary_at": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "string", "format": "date-time"}
+      ]
+    },
+    "activation_disposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "note"],
+      "properties": {
+        "state": {"enum": ["eligible", "ineligible", "pending"]},
+        "note": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

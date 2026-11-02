@@ -1,0 +1,15 @@
+{
+  "observed_before_utc": "2026-10-11T21:35:19.158905+00:00",
+  "expected_requests": 1000,
+  "plan_sha256": "fd41f6d30d5de60d84b41bd1a848e47bd7c7888007aa8016c905f80f17e54adb",
+  "all_receipts_inspected": true,
+  "request_status_counts": {
+    "RAW_RECORDS_CAPTURED": 1000
+  },
+  "scan": {
+    "receipts_scanned": 3565,
+    "unrelated_receipts": 2565,
+    "raw_bytes_read": 440364083,
+    "verified_raw_responses": 1000
+  }
+}

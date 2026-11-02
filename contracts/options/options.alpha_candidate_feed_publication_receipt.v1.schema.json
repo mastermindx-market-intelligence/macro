@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "options.alpha_candidate_feed_publication_receipt/v1",
+  "title": "Options Alpha candidate feed publication receipt",
+  "description": "Strict contract for the next IO slice. A pure validator can check internal identity and exact payload binding, but only persisted fsync/readback and external R2 metadata can prove provider effects.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "receipt_id",
+    "feed_id",
+    "feed_schema",
+    "payload_sha256",
+    "payload_bytes",
+    "campaign_prefix",
+    "prior_receipt",
+    "local_durability_confirmed_at",
+    "payload_r2_confirmed_at",
+    "r2",
+    "candidates"
+  ],
+  "properties": {
+    "schema": {"const": "options.alpha_candidate_feed_publication_receipt/v1"},
+    "receipt_id": {"type": "string", "pattern": "^oacfr_[a-f0-9]{25}$"},
+    "feed_id": {"type": "string", "pattern": "^oacf_[a-f0-9]{24}$"},
+    "feed_schema": {"const": "options.alpha_candidate_feed/v2"},
+    "payload_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "payload_bytes": {"type": "integer", "minimum": 1},
+    "campaign_prefix": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "records", "prefix_sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "records": {"type": "integer", "minimum": 1},
+        "prefix_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "prior_receipt": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["receipt_id", "payload_sha256"],
+          "properties": {
+            "receipt_id": {"type": "string", "pattern": "^oacfr_[a-f0-9]{25}$"},
+            "payload_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+          }
+        }
+      ]
+    },
+    "local_durability_confirmed_at": {"type": "string", "format": "date-time"},
+    "payload_r2_confirmed_at": {"type": "string", "format": "date-time"},
+    "r2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["payload_key", "payload_sha256", "etag"],
+      "properties": {
+        "payload_key": {"const": "options_alpha/candidate_feed.json"},
+        "payload_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "etag": {"type": "string", "minLength": 1}
+      }
+    },
+    "candidates": {
+      "type": "object",
+      "propertyNames": {"pattern": "^oacnd_[a-f0-9]{24}$"},
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["first_receipt_id", "first_consumer_published_at"],
+        "properties": {
+          "first_receipt_id": {"type": "string", "pattern": "^oacfr_[a-f0-9]{25}$"},
+          "first_consumer_published_at": {
+            "oneOf": [{"type": "null"}, {"type": "string", "format": "date-time"}]
+          }
+        }
+      }
+    }
+  }
+}

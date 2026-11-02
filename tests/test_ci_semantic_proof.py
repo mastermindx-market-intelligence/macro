@@ -442,6 +442,116 @@ def test_evidence_digest_and_provenance_are_strict() -> None:
         )
 
 
+STALE_BASE = "9" * 40
+
+
+def test_resolve_pr_proof_base_accepts_a_stale_ancestor_advertised_base() -> None:
+    """Red-first for PR #8844 (2026-10-11): the check run advertised GitHub's
+    lazily refreshed PR-object base (main at PR creation) while ci.yml sealed the
+    tested merge commit's FIRST PARENT (main at run time). Same head, advertised
+    base an ancestor of the evidence base -> the evidence base is the proof base.
+    """
+    evidence = _reconcile(_fragment())
+    loaded = proof.load_semantic_evidence(
+        evidence,
+        advertised=True,
+        expected_run_id=99,
+        expected_subject_head_sha=HEAD,
+        expected_role="pr_head",
+        expected_workflow="ci",
+        expected_event="pull_request",
+    )
+    seen: list[tuple[str, str]] = []
+
+    def is_ancestor(old: str, new: str) -> bool:
+        seen.append((old, new))
+        return True
+
+    assert (
+        proof.resolve_pr_proof_base(
+            loaded,
+            advertised_base_sha=STALE_BASE,
+            subject_head_sha=HEAD,
+            is_ancestor=is_ancestor,
+        )
+        == BASE
+    )
+    assert seen == [(STALE_BASE, BASE)]
+
+
+def test_resolve_pr_proof_base_exact_match_never_consults_ancestry() -> None:
+    evidence = _reconcile(_fragment())
+    assert (
+        proof.resolve_pr_proof_base(
+            evidence,
+            advertised_base_sha=BASE.upper(),
+            subject_head_sha=HEAD,
+            is_ancestor=lambda *_: pytest.fail("exact base must not compare"),
+        )
+        == BASE
+    )
+
+
+def test_resolve_pr_proof_base_refuses_a_non_ancestor_advertised_base() -> None:
+    evidence = _reconcile(_fragment())
+    with pytest.raises(proof.SemanticProofError, match="base_sha mismatch"):
+        proof.resolve_pr_proof_base(
+            evidence,
+            advertised_base_sha=STALE_BASE,
+            subject_head_sha=HEAD,
+            is_ancestor=lambda *_: False,
+        )
+
+
+def test_resolve_pr_proof_base_refuses_a_different_head_before_ancestry() -> None:
+    evidence = _reconcile(_fragment())
+    with pytest.raises(proof.SemanticProofError, match="subject_head_sha mismatch"):
+        proof.resolve_pr_proof_base(
+            evidence,
+            advertised_base_sha=STALE_BASE,
+            subject_head_sha="e" * 40,
+            is_ancestor=lambda *_: pytest.fail("head mismatch must refuse first"),
+        )
+
+
+@pytest.mark.parametrize("advertised", [None, "", "not-a-sha"])
+def test_resolve_pr_proof_base_requires_an_exact_advertised_base(advertised) -> None:
+    evidence = _reconcile(_fragment())
+    with pytest.raises(proof.SemanticProofError):
+        proof.resolve_pr_proof_base(
+            evidence,
+            advertised_base_sha=advertised,
+            subject_head_sha=HEAD,
+            is_ancestor=lambda *_: True,
+        )
+
+
+def test_resolve_pr_proof_base_is_only_for_pr_head_evidence() -> None:
+    evidence = _reconcile(_fragment(role="main"), plan=_plan(role="main"))
+    with pytest.raises(proof.SemanticProofError, match="pr_head"):
+        proof.resolve_pr_proof_base(
+            evidence,
+            advertised_base_sha=TREE,
+            subject_head_sha=TREE,
+            is_ancestor=lambda *_: True,
+        )
+
+
+def test_resolve_pr_proof_base_lets_the_ancestry_oracle_failure_propagate() -> None:
+    evidence = _reconcile(_fragment())
+
+    def is_ancestor(*_: str) -> bool:
+        raise RuntimeError("compare HTTP 500")
+
+    with pytest.raises(RuntimeError, match="compare HTTP 500"):
+        proof.resolve_pr_proof_base(
+            evidence,
+            advertised_base_sha=STALE_BASE,
+            subject_head_sha=HEAD,
+            is_ancestor=is_ancestor,
+        )
+
+
 def test_plan_digest_and_role_event_are_recomputed_not_trusted() -> None:
     plan = _plan()
     changed = copy.deepcopy(plan)

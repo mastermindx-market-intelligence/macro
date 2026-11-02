@@ -1,0 +1,83 @@
+{
+  "state": "PASS_SCOPED_PUBLICATION_SOURCE_ACCEPTED",
+  "mission_complete": false,
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "review_id": "paper-01a1101f-im06-history-publication-review-r2",
+  "review_sha256": "6869fa42820897c58f027b74dcec5b71f6f93e95f733fdd274b0a463b88a1b76",
+  "source_and_retained_tests": {
+    "engine/international_macro_dashboard.py": "9173b98c0cf95cadd25282b848e68835a1f2b1029c58bf6c53a2e36924a6a00f",
+    "scripts/build_international_macro.py": "fbdf143002e61bc02ed4d90f21d8b389c15ffb1dc3544a1ae068f1aee9429682",
+    "scripts/build_intl.py": "ea26e6c52fbe004a1744fe24511235ac570533cc0ebdb30f6a89b3e14000a03f",
+    "lib/intl_history_mount.py": "82e2953be1495d4b693b35fc120aaf96ef91c204b597351b2a0c36aeab8433d1",
+    "lib/intl_workspace_binding.py": "3c4dfd8285e8fbe1b9ddf4f76c833dfbb87928b59d56c99f088f4473e618dd55",
+    "lib/intl_workspace_history.py": "c4812130c14b62e4e7729a5d284090165d3b69a8289b71201c3359e6c7e29599",
+    "tests/test_intl_history_projection_independent.py": "bd66c73a5db9bfc15c6389e808d0f2c961c1f64c9b6cbb4e967b53c0f08e1656",
+    "tests/test_intl_history_publication_independent.py": "5675d2ee1c3a9c41516b213298d0e55e753be2ce771456f50b776e63518a20a3",
+    "tests/test_intl_workspace_risk_ui_independent.py": "a1dce7881b4cd6084d82abb9e1b8dde09a7e9b172910357615e7b6b7e0bcb6b2"
+  },
+  "rejected_predecessor": "R1 independently found missing np.longlong/np.ulonglong; parent reproduced32pass2fail; R2 exact one-line allowlist repair independently cleared",
+  "accepted_behavior": [
+    "Strict pure receipt projection preserves exact integer values, timestamps, all rows and metadata; custom numeric conversions refused",
+    "Default load_history caller compatibility unchanged; optional empty receipt sink retains exactly five already-owned reads once each",
+    "Publication isolates invalid markets and logs exception types only",
+    "History attachment failure preserves prior Macro and Risk results",
+    "Production History permissions remain unknown; no acquisition, rights, retention or vintage grant"
+  ],
+  "validation": {
+    "frozen_independent_review_and_parent_reproduction": 37,
+    "integrated_foundation_before_three_additional_review_challenges": 1269,
+    "integrated_python_render_publication": 334,
+    "focused_product_before_three_extra_review_challenges": 85,
+    "ci_scope_and_import_closure_checks": 2,
+    "actual_copied_input_main_pages": 3,
+    "preserved_history_rows": 45873,
+    "retained_review_and_risk_after_challenges": 99
+  },
+  "test_only_adaptations": [
+    "Retained reviewer tests use repository-relative paths and omit the external capsule byte-baseline assertion",
+    "Portable unsigned scalar fixture and explicit ulonglong max-value case independently inspected",
+    "Repository module guard exposed leaked reviewer mock; corrected with monkeypatch teardown, guard kept active",
+    "Older Risk static test now selects distinct Macro and Risk try blocks by owner call, preserving grant/failure assertions as History joins",
+    "Three R2 numerical challenge tests appended unchanged to retained independent suite"
+  ],
+  "publication_proof": "Unmodified main on copied60inputs, no blocked network/subprocess/canonical-data effects. Main/R2 integer-type changes cannot grant withheld History values. Local, not served/authenticated.",
+  "ui_evidence": "IM06_HISTORY_UI_EVIDENCE.json",
+  "source_lineage": "IM06_HISTORY_LINEAGE_EVIDENCE.json",
+  "provenance_limit": "IM06_HISTORY_SOURCE_WITNESS.json",
+  "proof_limits": [
+    "Scope is project_history_read plus AST-extracted publication boundary with doubles. Full scripts.build_intl / scripts.build_international_macro imports need site_assets, templates, jinja-owned pages, and engine.intl_inputs, which this capsule does not ship.",
+    "No parquet engine (pyarrow/fastparquet missing). load_history_result live parquet roundtrip was not executed here.",
+    "No Arrow dtypes. No whole-main, network, install, live/hosted/authenticated, or captured-page run. Parent 67/26/32/170 counts were not re-executed.",
+    "Mini2 existing python3 was not invoked; this run used the Ubuntu2 python-env interpreter only.",
+    "macOS numpy integer aliasing was not re-executed here. Parent previously reproduced the R1 32 pass/2 fail split on macOS. This Linux host has distinct np.longlong and np.ulonglong classes.",
+    "DatetimeIndex.isoformat() on pandas 3.0.6 preserves 9-digit nanoseconds and \u00b1HH:MM offsets; helper _parse_date accepts those strings. Six-digit truncation was not observed on this dependency.",
+    "Workspace fixture for attach_history uses the two-market mount envelope. Seven-market overview composition was not reconstructed.",
+    "PASS_SCOPED is not mission acceptance and not a production disclosure grant."
+  ],
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f",
+  "current_main_receipt": {
+    "status": "PRODUCED",
+    "rc": 0,
+    "exception_type": null,
+    "started": "2026-10-09T02:44:28.576631+00:00",
+    "finished": "2026-10-09T02:44:38.609585+00:00",
+    "source_sha256": "ea26e6c52fbe004a1744fe24511235ac570533cc0ebdb30f6a89b3e14000a03f",
+    "files": {
+      "intl.html": {
+        "bytes": 2627444,
+        "sha256": "f65539ea164bbb056256a21458e6160cbc300eeab34a3e43e1a51f91e2356052"
+      },
+      "intl_stocks.html": {
+        "bytes": 98836,
+        "sha256": "38862a0b8a12988640c46d7a0a571621131a47cc884492a86fa7aa67cda6290e"
+      },
+      "intl_stock.html": {
+        "bytes": 123022,
+        "sha256": "5de1dc48e4fe77dfd53b5677047c4f078053f555999aee4c4557fc79f6510f1b"
+      }
+    },
+    "blocked_effects": [],
+    "scope": "Actual unmodified main using copies of60 existing intl/intl_macro materializations. Existing render-only/intraday setting suppresses ledger accrual. All Python writes confined to this verification root; network/subprocess refused. Missing other source families remain explicit; this is not production or authenticated proof."
+  },
+  "current_main_engine_sha256": "9173b98c0cf95cadd25282b848e68835a1f2b1029c58bf6c53a2e36924a6a00f"
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "file": "base.log",
+    "raw_sha256": "ff2c49987e3c45185b07e81b91f9501c819fd6dc290b476b5f1f79940a31aa9d",
+    "normalized_sha256": "b81dcda2cf41052c0f652447f0aa3ec977db852bf0fce6c69ec34ad6f98f19df",
+    "change": "trailing whitespace only; assertions and results unchanged"
+  },
+  {
+    "file": "green.log",
+    "raw_sha256": "2265324bb113620c0005ef6bca87bdd732a05ec543f78b87b7b47c315b791a45",
+    "normalized_sha256": "e31331707e95148dbda730d288f51949b28180dd38be63e3c9161acca33dc9ac",
+    "change": "trailing whitespace only; assertions and results unchanged"
+  },
+  {
+    "file": "final.log",
+    "raw_sha256": "dba6d85cabb147a80cc6ea971a4d6ae1ce71f1b6a4e71be4672a7f58ba07ed79",
+    "normalized_sha256": "9cc92f00e4a63745dcb5f9d4854a27cd0b93ef9a0cfac4dc8486537edf111862",
+    "change": "trailing whitespace only; assertions and results unchanged"
+  }
+]

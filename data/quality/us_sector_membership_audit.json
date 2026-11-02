@@ -1,0 +1,113 @@
+{
+ "membership": "data/baskets/membership.json",
+ "reference": "data/breadth/constituents.parquet",
+ "reference_status": "ok",
+ "asof": "2026-10-30",
+ "skipped": false,
+ "note": "",
+ "drift": true,
+ "n_extra": 3,
+ "n_missing": 3,
+ "missing_baskets": [],
+ "baskets": [
+  {
+   "basket_id": "us_sector_tech",
+   "sector": "Information Technology",
+   "active": 74,
+   "expected": 75,
+   "extra": [],
+   "missing": [
+    "TWLO"
+   ]
+  },
+  {
+   "basket_id": "us_sector_financials",
+   "sector": "Financials",
+   "active": 76,
+   "expected": 76,
+   "extra": [],
+   "missing": []
+  },
+  {
+   "basket_id": "us_sector_health",
+   "sector": "Health Care",
+   "active": 60,
+   "expected": 60,
+   "extra": [],
+   "missing": []
+  },
+  {
+   "basket_id": "us_sector_discretionary",
+   "sector": "Consumer Discretionary",
+   "active": 47,
+   "expected": 47,
+   "extra": [],
+   "missing": []
+  },
+  {
+   "basket_id": "us_sector_comm",
+   "sector": "Communication Services",
+   "active": 23,
+   "expected": 22,
+   "extra": [
+    "PSKY",
+    "WBD"
+   ],
+   "missing": [
+    "SKYD"
+   ]
+  },
+  {
+   "basket_id": "us_sector_industrials",
+   "sector": "Industrials",
+   "active": 83,
+   "expected": 83,
+   "extra": [],
+   "missing": []
+  },
+  {
+   "basket_id": "us_sector_staples",
+   "sector": "Consumer Staples",
+   "active": 33,
+   "expected": 34,
+   "extra": [],
+   "missing": [
+    "VYLR"
+   ]
+  },
+  {
+   "basket_id": "us_sector_energy",
+   "sector": "Energy",
+   "active": 21,
+   "expected": 21,
+   "extra": [],
+   "missing": []
+  },
+  {
+   "basket_id": "us_sector_utilities",
+   "sector": "Utilities",
+   "active": 31,
+   "expected": 31,
+   "extra": [],
+   "missing": []
+  },
+  {
+   "basket_id": "us_sector_realestate",
+   "sector": "Real Estate",
+   "active": 30,
+   "expected": 30,
+   "extra": [],
+   "missing": []
+  },
+  {
+   "basket_id": "us_sector_materials",
+   "sector": "Materials",
+   "active": 25,
+   "expected": 24,
+   "extra": [
+    "CTVA"
+   ],
+   "missing": []
+  }
+ ]
+}

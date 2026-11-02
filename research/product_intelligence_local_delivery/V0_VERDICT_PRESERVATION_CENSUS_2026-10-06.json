@@ -1,0 +1,126 @@
+{
+  "main_pin": "d0f14c62544daca98258cbf68a5e1e3bef54ab74",
+  "verdicts": [
+    {
+      "id": "C2",
+      "actual": "INSUFFICIENT SUPPORT",
+      "counterfactual": "NOT SUPPORTED",
+      "stated": [
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/C2/RESULT.md", "line": 1, "literal": "H10: INSUFFICIENT SUPPORT"},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/C2/RESULT.md", "line": 176, "literal": "H10: INSUFFICIENT SUPPORT"},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/C2/RESULT.md", "line": 179, "literal": "COUNTERFACTUAL (if C1 controls were PASS; not a verdict): NOT SUPPORTED"},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/07_PRODUCT_CONDITIONING_TABLE_SPEC.md", "line": 57, "literal": "C2 = INSUFFICIENT SUPPORT."},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/09_WAVE1_SYNTHESIS_AND_PRODUCT_IMPLICATION.md", "line": 12, "literal": "INSUFFICIENT SUPPORT (3D and 2D) by rule — C1 controls BROKEN; counterfactual if C1 were PASS: NOT SUPPORTED"}
+      ],
+      "consumed": [
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/07_PRODUCT_CONDITIONING_TABLE_SPEC.md", "line": 65, "literal": "The C2 counterfactual \"if C1 controls had passed\" is a research diagnostic, not a second actual verdict.", "qualifier": "QUALIFIER_PRESERVED", "counterfactual_status": "PRESERVED", "surface": "DOCUMENT_ONLY", "site_path": ""},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/09_WAVE1_SYNTHESIS_AND_PRODUCT_IMPLICATION.md", "line": 19, "literal": "C2 = INSUFFICIENT SUPPORT, B1 = NOT SUPPORTED (grain and memory) → the §7 row is \"Named data/support gap and the exact lane that closes it.\"", "qualifier": "QUALIFIER_PRESERVED", "counterfactual_status": "PRESERVED", "surface": "DOCUMENT_ONLY", "site_path": ""},
+        {"path": "agentos/decisions/DEC-C1-AR1-GATE-UNCALIBRATED-SERIES-FAILS-CALIBRATED.md", "line": 16, "literal": "every downstream consumer (C2) keeps reading INSUFFICIENT SUPPORT by rule.", "qualifier": "QUALIFIER_PRESERVED", "counterfactual_status": "ABSENT", "surface": "DOCUMENT_ONLY", "site_path": ""},
+        {"path": "agentos/handoffs/WS-PROPHET-REGIME-TIMEFRAME-RESEARCH-2026-10-04-W1.md", "line": 30, "literal": "verdict INSUFFICIENT SUPPORT (3D and 2D; counterfactual NOT SUPPORTED) under the frozen rule", "qualifier": "QUALIFIER_PRESERVED", "counterfactual_status": "PRESERVED", "surface": "DOCUMENT_ONLY", "site_path": ""},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/reviews/C2_r1/REVIEW.md", "line": 30, "literal": "Lane ANSWER FIRST (`RESULT.md:4–6`): `**H10: NOT_SUPPORTED**`", "qualifier": "QUALIFIER_DROPPED", "counterfactual_status": "CONFLATED", "surface": "DOCUMENT_ONLY", "site_path": ""}
+      ]
+    },
+    {
+      "id": "B1",
+      "actual": "NOT SUPPORTED",
+      "counterfactual": null,
+      "stated": [
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/B1/RESULT.md", "line": 7, "literal": "the 3D grain effect is **NOT SUPPORTED**"},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/07_PRODUCT_CONDITIONING_TABLE_SPEC.md", "line": 61, "literal": "B1 separately reports **NOT SUPPORTED** for the tested 2D/3D grain and matched-memory claims."},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/09_WAVE1_SYNTHESIS_AND_PRODUCT_IMPLICATION.md", "line": 10, "literal": "grain_effect_3d NOT SUPPORTED; grain_effect_2d NOT SUPPORTED; memory_effect_3 NOT SUPPORTED"}
+      ],
+      "consumed": [
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/07_PRODUCT_CONDITIONING_TABLE_SPEC.md", "line": 61, "literal": "scoped to that study's sample, variants, endpoint and evidence level", "qualifier": "QUALIFIER_PRESERVED", "counterfactual_status": "ABSENT", "surface": "DOCUMENT_ONLY", "site_path": ""},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/09_WAVE1_SYNTHESIS_AND_PRODUCT_IMPLICATION.md", "line": 29, "literal": "Confirmation grain is not a lever at the H10 horizon (B1, evidence level 2)", "qualifier": "QUALIFIER_PRESERVED", "counterfactual_status": "ABSENT", "surface": "DOCUMENT_ONLY", "site_path": ""},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/C2/RESULT.md", "line": 8, "literal": "B1 grain_effect_3d = **NOT SUPPORTED**; grain_effect_2d = NOT SUPPORTED; memory_effect_3 = NOT SUPPORTED", "qualifier": "QUALIFIER_PRESERVED", "counterfactual_status": "ABSENT", "surface": "DOCUMENT_ONLY", "site_path": ""}
+      ]
+    },
+    {
+      "id": "F1",
+      "actual": "MIXED",
+      "counterfactual": null,
+      "stated": [
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/F1/RESULT.md", "line": 5, "literal": "the lever is **MIXED** under the pre-declared rule"},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/07_PRODUCT_CONDITIONING_TABLE_SPEC.md", "line": 99, "literal": "The current F1 result is **MIXED**, under its existing 21-NYSE-session embargo."},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/09_WAVE1_SYNTHESIS_AND_PRODUCT_IMPLICATION.md", "line": 15, "literal": "MIXED under the binding 21-NYSE-session embargo"}
+      ],
+      "consumed": [
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/07_PRODUCT_CONDITIONING_TABLE_SPEC.md", "line": 103, "literal": "A severe-case breakdown describes the inspected severe episodes; it does not prove ... An AUC is not a calibrated chance of profit.", "qualifier": "QUALIFIER_PRESERVED", "counterfactual_status": "ABSENT", "surface": "DOCUMENT_ONLY", "site_path": ""},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/09_WAVE1_SYNTHESIS_AND_PRODUCT_IMPLICATION.md", "line": 28, "literal": "68% of SEVERE episodes fail immediately; only 15% deteriorate after a non-negative H10.", "qualifier": "QUALIFIER_PRESERVED", "counterfactual_status": "ABSENT", "surface": "DOCUMENT_ONLY", "site_path": ""}
+      ]
+    },
+    {
+      "id": "E",
+      "actual": "SCOPED_NULL",
+      "counterfactual": null,
+      "stated": [
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/E/RESULT.md", "line": 1, "literal": "ANSWER FIRST:** SCOPED_NULL:"},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/E/result.json", "line": 1801, "literal": "\"verdict\": \"SCOPED_NULL\""},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/07_PRODUCT_CONDITIONING_TABLE_SPEC.md", "line": 113, "literal": "E is **SCOPED_NULL** for the inspected family-by-regime construction."}
+      ],
+      "consumed": [
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/07_PRODUCT_CONDITIONING_TABLE_SPEC.md", "line": 114, "literal": "No winning family ranking or regime-specific technical score is supplied.", "qualifier": "QUALIFIER_PRESERVED", "counterfactual_status": "ABSENT", "surface": "DOCUMENT_ONLY", "site_path": ""},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/09_WAVE1_SYNTHESIS_AND_PRODUCT_IMPLICATION.md", "line": 30, "literal": "Family × regime partitions carry no promotable edge in this construction (E, SCOPED_NULL)", "qualifier": "QUALIFIER_PRESERVED", "counterfactual_status": "ABSENT", "surface": "DOCUMENT_ONLY", "site_path": ""},
+        {"path": "agentos/workstreams/WS-PROPHET-REGIME-TIMEFRAME-RESEARCH.md", "line": 45, "literal": "E family×regime tournament SCOPED_NULL ACCEPT", "qualifier": "QUALIFIER_DROPPED", "counterfactual_status": "ABSENT", "surface": "DOCUMENT_ONLY", "site_path": ""}
+      ]
+    },
+    {
+      "id": "D0",
+      "actual": "PIT_PARTIAL",
+      "counterfactual": null,
+      "stated": [
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/D0/RESULT.md", "line": 3, "literal": "the verdict is **PIT_PARTIAL**."},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/D0/result.json", "line": 4, "literal": "\"verdict\": \"PIT_PARTIAL\""},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/07_PRODUCT_CONDITIONING_TABLE_SPEC.md", "line": 117, "literal": "D0 is **PIT_PARTIAL** for the inspected membership source and vintage, and its lane is parked as a forward study."}
+      ],
+      "consumed": [
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/07_PRODUCT_CONDITIONING_TABLE_SPEC.md", "line": 119, "literal": "Do not backfill old memberships, join them as original beliefs", "qualifier": "QUALIFIER_PRESERVED", "counterfactual_status": "ABSENT", "surface": "DOCUMENT_ONLY", "site_path": ""},
+        {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/09_WAVE1_SYNTHESIS_AND_PRODUCT_IMPLICATION.md", "line": 31, "literal": "Theme membership is honest only from 2026-07-05 (D0)", "qualifier": "QUALIFIER_PRESERVED", "counterfactual_status": "ABSENT", "surface": "DOCUMENT_ONLY", "site_path": ""},
+        {"path": "agentos/decisions/DEC-D-LANE-PARKED-AS-FORWARD-STUDY.md", "line": 9, "literal": "token PIT_PARTIAL", "qualifier": "QUALIFIER_PRESERVED", "counterfactual_status": "ABSENT", "surface": "DOCUMENT_ONLY", "site_path": ""}
+      ]
+    }
+  ],
+  "diagnostic_leakage": [
+    {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/07_PRODUCT_CONDITIONING_TABLE_SPEC.md", "line": 48, "class": "DIAGNOSTIC_ONLY", "quote": "`expected_protection` | C2 false-start diagnostic and interval | Not a candidate success probability or causal protection claim."},
+    {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/07_PRODUCT_CONDITIONING_TABLE_SPEC.md", "line": 105, "class": "DIAGNOSTIC_ONLY", "quote": "An AUC is not a calibrated chance of profit. Do not turn these diagnostic results into an entry/size/exit lever."},
+    {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/F1/RESULT.md", "line": 5, "class": "DIAGNOSTIC_ONLY", "quote": "purged OOS AUC = **0.6227** ... The product implication is descriptive only: **no management lever is supported**"},
+    {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/F1/RESULT.md", "line": 170, "class": "DIAGNOSTIC_ONLY", "quote": "The verdict is descriptive; nothing is promoted here."},
+    {"path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/09_WAVE1_SYNTHESIS_AND_PRODUCT_IMPLICATION.md", "line": 28, "class": "DIAGNOSTIC_ONLY", "quote": "purged OOS AUC of 0.62 on 4 week clusters is *some* discrimination, below the 0.65 SELECTION floor — a descriptive \"entry-state watch\" chip is admissible, an entry screen is not."}
+  ],
+  "trend_persistence_refs": [
+    {"path": "agentos/decisions/DEC-TREND-PERSISTENCE-STOPS-AT-WAVE-C.md", "line": 12, "note": "Nothing is built; C2 confirmation read never made for Trend Persistence group persistence."},
+    {"path": "agentos/workstreams/WS-TREND-PERSISTENCE.md", "line": 56, "note": "Do not build a calibrated profile, shadow snapshot or advisory field (DNR kill row)."},
+    {"path": "research/DO_NOT_REBUILD.md", "line": 133, "note": "KILL-TREND-PERSISTENCE-PATH-FEATURE-PROFILE closes calibrated drawdown-risk profile construction."},
+    {"path": "collectors/sp1500_pit_sectors.py", "line": 1, "note": "Wave C-0 PIT sector substrate only — not a calibrated profile or shadow field builder."}
+  ],
+  "greps": [
+    {"cmd": "rg -c 'INSUFFICIENT SUPPORT|NOT SUPPORTED|SCOPED_NULL|PIT_PARTIAL' engine templates scripts app", "scope": "production code paths", "hits": 0},
+    {"cmd": "rg -c 'INSUFFICIENT SUPPORT' research/prophet_v4 agentos", "scope": "research + agentos", "hits": 19},
+    {"cmd": "rg -c 'NOT SUPPORTED' research/prophet_v4 agentos", "scope": "research + agentos", "hits": 42},
+    {"cmd": "rg -c 'SCOPED_NULL' research/prophet_v4 agentos", "scope": "research + agentos", "hits": 14},
+    {"cmd": "rg -c 'PIT_PARTIAL' research/prophet_v4 agentos", "scope": "research + agentos", "hits": 12},
+    {"cmd": "rg -c 'calibrated_profile|shadow_field' engine templates scripts app", "scope": "Trend Persistence build grep", "hits": 0},
+    {"cmd": "git ls-tree -r origin/main --name-only site | grep -iE 'prophet|regime|conditioning'", "scope": "served site artifact names", "hits": 40}
+  ],
+  "integrated_answer_inputs": [
+    {"verdict": "C2", "literal": "INSUFFICIENT SUPPORT", "source": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/C2/RESULT.md:176", "qualifiers": "C1 controls BROKEN; pooled 3D H10 DiD +0.0035 CI includes zero; counterfactual NOT SUPPORTED labelled separately", "consumer_status": "DOCUMENT_ONLY via 07/09 — no engine/template consumer"},
+    {"verdict": "B1", "literal": "NOT SUPPORTED (grain_effect_3d/2d, memory_effect_3)", "source": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/B1/RESULT.md:7", "qualifiers": "final-vintage; survivor-selected; pooled Δ(3D.p*−1D.M3) H10 +0.0001 [−0.0003,+0.0004]", "consumer_status": "QUALIFIER_PRESERVED in 07/09"},
+    {"verdict": "F1", "literal": "MIXED", "source": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/F1/RESULT.md:5", "qualifiers": "21-NYSE-session embargo; 4 OOS week clusters; small-N descriptive only", "consumer_status": "QUALIFIER_PRESERVED in 07/09"},
+    {"verdict": "E", "literal": "SCOPED_NULL", "source": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/E/result.json:1801", "qualifiers": "10/12 tests above floor; no Holm winner; family×partition construction only", "consumer_status": "QUALIFIER_PRESERVED in 07/09"},
+    {"verdict": "D0", "literal": "PIT_PARTIAL", "source": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/D0/RESULT.md:3", "qualifiers": "honest window from 2026-07-05; min coverage 25.43% < 50%; lane D parked", "consumer_status": "QUALIFIER_PRESERVED in 07/09"},
+    {"verdict": "C1 (upstream)", "literal": "controls.status BROKEN", "source": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/C2/RESULT.md:9", "qualifiers": "AR(1)-21 gate; drives C2 INSUFFICIENT SUPPORT rule", "consumer_status": "NOT_CONSUMED in production UI"},
+    {"verdict": "Product law", "literal": "DISPLAY-TIER ONLY", "source": "research/prophet_v4/astra_regime_indicator_handoff_20261004/07_PRODUCT_CONDITIONING_TABLE_SPEC.md:15", "qualifiers": "No rank/size/entry gate authorized", "consumer_status": "Binding for Phase-C integrated answer framing"}
+  ],
+  "do_not_consume": [
+    {"item": "C2 round-1 headline NOT_SUPPORTED", "reason": "Superseded defect documented in reviews/C2_r1/REVIEW.md; current RESULT.md:176-179 is INSUFFICIENT SUPPORT", "repair": "None — historical record only"},
+    {"item": "F1 OOS AUC as entry probability or protection", "reason": "07:105-106 and F1 RESULT.md:170 forbid promotion; 4-cluster CI", "repair": "Forward log / more test weeks per F1 own caveat"},
+    {"item": "C2 expected_protection / false-start rates as product protection language", "reason": "07:48 names diagnostic-only column; no recommendation rows authorized", "repair": "Owner UI copy acceptance for 07 suggested EN/ZH strings"},
+    {"item": "D0 E* / ISO-week-40 numeric leaves for promotion", "reason": "09:13 D0 r3 ACCEPTED-WITH-GAPS — vintage-dependent record defects", "repair": "Named D0 record hygiene before promotion use"},
+    {"item": "Trend Persistence calibrated profile or shadow field", "reason": "DNR:KILL-TREND-PERSISTENCE-PATH-FEATURE-PROFILE; DEC-TREND-PERSISTENCE-STOPS-AT-WAVE-C", "repair": "New Mastermind prereg only — not macro build"}
+  ],
+  "gaps": [
+    "No browser-rendered consumer: rg found zero verdict literals in engine/, templates/, scripts/, app/ on MAIN_PIN; site/prophet/* artifacts exist by name but were not read from disk (sparse worktree).",
+    "C2_r1 REVIEW.md still documents CONFLATED NOT_SUPPORTED headline for audit; not a live consumer of the integrated answer.",
+    "MIXED in F1 lane is distinct from unrelated dashboard MIXED verdict strings elsewhere in the repo (risk_state, etc.) — census scoped to prophet_v4 handoff only."
+  ]
+}

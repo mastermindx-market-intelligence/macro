@@ -280,9 +280,16 @@ def all_accumulation_signals() -> list[dict]:
 
 
 def top_sector_residuals(n: int = 12) -> list[dict]:
-    """The strongest residual ('active') weight movers across every sector SPDR,
-    ranked by |active_change| and enriched with each name's cycle state — for the
-    display-only Accumulation-watch panel.
+    """The strongest residual ('active') weight movers across every sector SPDR.
+
+    List-only wrapper around ``sector_residual_panel`` for callers that do not
+    need the unsliced pool size."""
+    rows, _pool_n = sector_residual_panel(n)
+    return rows
+
+
+def sector_residual_panel(n: int = 12) -> tuple[list[dict], int]:
+    """Top residual movers plus the unsliced pool size.
 
     Unlike ``all_accumulation_signals`` this does NOT gate on the alert threshold:
     on passive sector SPDRs the residual (weight growth beyond price) is small by
@@ -292,7 +299,9 @@ def top_sector_residuals(n: int = 12) -> list[dict]:
     small — honestly labelled as index-reconstitution flow, never scored.
 
     Cheap-then-rich: rank on the already-computed decompositions (cheap) and only
-    run the per-name cycle/ladder lookup on the top ``n`` (the expensive part)."""
+    run the per-name cycle/ladder lookup on the top ``n`` (the expensive part).
+    ``pool_n`` is counted BEFORE the slice so the 'N tracked' label matches this
+    same pass — callers must not re-run ``weight_decomposition`` just to count."""
     funds = config.load()["sponsors"]["sector_funds"]
     pool: list[tuple[str, str, "pd.Series"]] = []
     for fund in funds:
@@ -309,6 +318,7 @@ def top_sector_residuals(n: int = 12) -> list[dict]:
                 continue
             pool.append((fund, str(tk), row))
     pool.sort(key=lambda x: -abs(float(x[2]["active_change"])))
+    pool_n = len(pool)
     pool = pool[:n]
 
     liq, drag = _live_macro_context()
@@ -340,7 +350,7 @@ def top_sector_residuals(n: int = 12) -> list[dict]:
             "direction": direction, "ladder": ladder, "confirmed": confirmed,
             "vol": volume_surge(tk),
         })
-    return out
+    return out, pool_n
 
 
 # --------------------------------------------------------------------------- #
@@ -1152,6 +1162,20 @@ def split_by_conviction(rows: list[dict], n: int | None = None,
     trims = sorted((r for r in rows if (r.get("conviction_pp") or 0) < 0),
                    key=lambda r: r["conviction_pp"])[:trims_n]
     return {"accumulation": acc, "trims": trims}
+
+
+def etf_page_accumulation(rows: list[dict] | None = None) -> list[dict]:
+    """Accumulate rows ``etfs.html`` actually renders.
+
+    Same chain as ``scripts.build_site.build_etf_page``: ``drop_cash`` then
+    ``split_by_conviction`` (drop_split_events + positive conviction +
+    ``etf_holdings.page_top_n``, default 40). Pass this length as any counted
+    link to that board — never the unsliced producer universe.
+    """
+    from engine.etf_board import drop_cash
+    if rows is None:
+        rows = all_etf_signals()
+    return split_by_conviction(drop_cash(rows))["accumulation"]
 
 
 def top_etf_accumulation(n: int | None = None, trims_n: int | None = None) -> dict[str, list[dict]]:

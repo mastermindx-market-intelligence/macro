@@ -1,0 +1,55 @@
+{
+  "schema": "tiingo.exact_finite_qualifier_launch_packet_review/v1",
+  "recorded_at_utc": "2026-10-14T02:47:09.613489+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "verdict": "PASS",
+  "launch_packet_file": "tiingo-eleven-repair-prefix01-qualify01-launch-packet.json",
+  "launch_packet_sha256": "9f9ddb95e88f56fc9e0e1834c2c0de210651c6ff495a8d9724d199b404b942f3",
+  "source_file": "tiingo-eleven-strict-timeout-later-repair-disposition-bound01.py",
+  "source_sha256": "58b408064550e95966618e8f482761cf8dbae115e0c4a13b46b64dd86e438a61",
+  "wrapper_sha256": "c0a6300282f8aee2a55a89f2f4ae20475b5c81fdc1c53d5ebd26815c32a44788",
+  "source_acceptance_sha256": "85e6a250382cf2a250fbc8164b93a7d6745e17995b427b612a59e3eeb13877d3",
+  "scope": "One exact qualify01 operation for eleven preflight-selected repair responses, with no raw capture or provider operation.",
+  "actual_preflight_parent_sha256": "f3c554148bd3891ef340310ac2de853c0194d0d815e989900aeaf5b4c7ca7175",
+  "actual_preflight_sha256": "4d69ab5a5a485889774354e625d2f4b3fd68d45e739585820eb9d00b27ec16e6",
+  "checks": {
+    "all_40_frozen_input_hashes_match": true,
+    "unchanged_accepted_source_and_wrapper_hashes_match": true,
+    "six_distinct_exclusive_control_output_slots_lstat_absent": true,
+    "actual_preflight_native_34343_exit0_chunk_5c5599_consumed": true,
+    "durable_child_wait0_and_post_validation_true_bound": true,
+    "snapshot_and_preflight_output_hashes_match_validation": true,
+    "eleven_valid_zero_quality_18366_rows": true,
+    "exact_snapshot_and_preflight_request_sets_match": true,
+    "44_selector_slots_absent_in_accepted_preflight": true,
+    "retained_foreign_partial_map_empty": true,
+    "current_archive_selector_state_independently_rescanned_by_reviewer": false
+  },
+  "control_judgment": [
+    "Accepted unchanged source checks all 44 selector paths and ancestor identities against the frozen preflight before any materialization; any drift refuses the operation.",
+    "Each selected receipt and raw payload is revalidated against its actual settled capture, requested dates and accepted predecessor disjointness. Unchanged whole-quality and exact foreign-owner controls remain active.",
+    "Only WRITTEN or EMPTY_NORMALIZED materializer outcomes are admitted. Every nonempty new projection must equal unchanged research_rows output and pass receipt/raw lineage.",
+    "Final selector audit preserves all original protected paths, binds only own newly published files and requires every other initially absent selector to remain absent. Source/input and receipt/raw checks repeat before exclusive qualification publication.",
+    "Forty-GiB standing storage floor remains checked by the child. Packet freezes actual preflight, parent, snapshot, wait, validation and accepted source review before and after the child."
+  ],
+  "findings": [],
+  "remaining_requirements": [
+    "Invoke the exact packet once through wrapper02 on the existing carrier.",
+    "Consume actual native return, durable wait, validation, exact qualified output hash and semantic results; exit0 alone is not acceptance.",
+    "Bind a separate coverage packet only after actual qualification acceptance.",
+    "If any return or effect becomes uncertain, preserve same-run evidence and reconcile without blind qualifier replay."
+  ],
+  "preserved_facts": [
+    "Original eleven failed attempts remain historical facts.",
+    "Original QA22925 and QA91287 native terminal returns remain unknown, with accepted recovery effects separately evidenced.",
+    "Existing provider, CI approval, Fabric and publisher refusals remain unchanged."
+  ],
+  "review_effects": {
+    "stage_execution": false,
+    "archive_writes": 0,
+    "provider_requests": 0,
+    "credential_reads": 0,
+    "delegations": 0,
+    "raw_or_reader_rescan": false
+  }
+}

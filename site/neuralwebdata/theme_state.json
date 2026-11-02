@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_state.v1",
-  "as_of": "2026-09-17",
-  "generated_at": "2026-09-17T09:45:50Z",
+  "as_of": "2026-11-02",
+  "generated_at": "2026-11-02T10:37:39Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -39,23 +39,23 @@
           "basket_id": "ai_semiconductors",
           "name_en": "AI Semiconductors",
           "name_zh": "AI半导体",
-          "score": 49,
-          "label": "neutral",
-          "label_en": "NEUTRAL",
-          "label_zh": "中性",
+          "score": 30,
+          "label": "deteriorating",
+          "label_en": "DETERIORATING",
+          "label_zh": "走弱",
           "crowding": 0.0,
-          "reco": "hold",
+          "reco": "avoid",
           "source": "site/basketdata/baskets.json"
         },
         {
           "basket_id": "ai_infra",
           "name_en": "AI Infrastructure",
           "name_zh": "AI 基础设施",
-          "score": 44,
+          "score": 31,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
-          "crowding": 0.3,
+          "crowding": 0.0,
           "reco": "avoid",
           "source": "site/basketdata/baskets.json"
         }
@@ -63,19 +63,35 @@
       "radar": [
         {
           "basket_id": "ai_semiconductors",
-          "state": "QUIET",
-          "lifecycle": "quiet",
-          "divergence": 0.883,
-          "salience": 0.883,
+          "state": "POSITIVE_DIVERGENCE",
+          "lifecycle": "emerging",
+          "divergence": 0.917,
+          "salience": 0.917,
+          "source": "site/basketdata/radar_enriched.json"
+        },
+        {
+          "basket_id": "ai_semiconductors",
+          "lean": "positive_divergence",
+          "horizon_d": 63,
+          "check_by": "2027-01-29",
+          "thesis_snippet": "Real activity (congress net-buy, lobbying ramp, 8-k material events) on ALAB, AMD, ANET, ARM… is accelerating (~1.4× YoY",
+          "source": "site/basketdata/radar.json"
+        },
+        {
+          "basket_id": "ai_infra",
+          "state": "POSITIVE_DIVERGENCE",
+          "lifecycle": "emerging",
+          "divergence": 1.327,
+          "salience": 1.327,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
           "basket_id": "ai_infra",
-          "state": "QUIET",
-          "lifecycle": "quiet",
-          "divergence": 1.647,
-          "salience": 1.647,
-          "source": "site/basketdata/radar_enriched.json"
+          "lean": "positive_divergence",
+          "horizon_d": 63,
+          "check_by": "2027-01-29",
+          "thesis_snippet": "Real activity (gov contracts (quiver), congress net-buy, lobbying ramp) on DELL, MU, QCOM is accelerating (~2.6× YoY) wh",
+          "source": "site/basketdata/radar.json"
         }
       ],
       "narrative": null,
@@ -90,36 +106,36 @@
             "key": "Semiconductors",
             "quadrant": "lagging",
             "rs": {
-              "1W": -4.6,
-              "1M": -7.95,
-              "3M": -19.88,
-              "6M": 34.9,
-              "1Y": 122.48
+              "1W": -0.04,
+              "1M": -16.57,
+              "3M": -2.25,
+              "6M": -4.69,
+              "1Y": 58.42
             },
-            "accel_z": -1.246,
-            "emerging_score": -2.37
+            "accel_z": 0.111,
+            "emerging_score": -0.641
           },
           {
             "key": "Artificial Intelligence",
-            "quadrant": "weakening",
+            "quadrant": "lagging",
             "rs": {
-              "1W": 0.44,
-              "1M": 1.16,
-              "3M": 3.48,
-              "6M": 19.06,
-              "1Y": 19.17
+              "1W": -1.86,
+              "1M": -4.65,
+              "3M": 5.15,
+              "6M": 13.43,
+              "1Y": 5.92
             },
-            "accel_z": 0.11,
-            "emerging_score": -0.119
+            "accel_z": -0.702,
+            "emerging_score": -1.504
           }
         ]
       },
       "divergence_board": {
         "quadrant": "hidden-opportunity",
-        "divergence": -0.5294,
+        "divergence": -0.5882,
         "narrative_pct": 0.1176,
-        "money_pct": 0.6471,
-        "asof": "2026-09-17",
+        "money_pct": 0.7059,
+        "asof": "2026-10-14",
         "source": "data/foresight/divergence_log.jsonl"
       },
       "basket_ids": [
@@ -148,12 +164,12 @@
           "basket_id": "memory_storage",
           "name_en": "Memory, HBM & Storage",
           "name_zh": "内存、HBM 与存储",
-          "score": 43,
-          "label": "neutral",
-          "label_en": "NEUTRAL",
-          "label_zh": "中性",
+          "score": 31,
+          "label": "deteriorating",
+          "label_en": "DETERIORATING",
+          "label_zh": "走弱",
           "crowding": 0.3,
-          "reco": "hold",
+          "reco": "avoid",
           "source": "site/basketdata/baskets.json"
         }
       ],
@@ -162,16 +178,16 @@
           "basket_id": "memory_storage",
           "state": "POSITIVE_DIVERGENCE",
           "lifecycle": "forming",
-          "divergence": 2.706,
-          "salience": 2.706,
+          "divergence": 1.151,
+          "salience": 1.151,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
           "basket_id": "memory_storage",
           "lean": "positive_divergence",
           "horizon_d": 63,
-          "check_by": "2026-12-16",
-          "thesis_snippet": "Real activity (congress net-buy, lobbying ramp, 8-k material events) on MU, SNDK, STX, WDC is accelerating (~3.8× YoY) w",
+          "check_by": "2027-01-29",
+          "thesis_snippet": "Real activity (congress net-buy, lobbying ramp, 8-k material events) on MU, SNDK, STX, WDC is accelerating (~1.3× YoY) w",
           "source": "site/basketdata/radar.json"
         }
       ],
@@ -186,23 +202,23 @@
             "key": "Semiconductors",
             "quadrant": "lagging",
             "rs": {
-              "1W": -4.6,
-              "1M": -7.95,
-              "3M": -19.88,
-              "6M": 34.9,
-              "1Y": 122.48
+              "1W": -0.04,
+              "1M": -16.57,
+              "3M": -2.25,
+              "6M": -4.69,
+              "1Y": 58.42
             },
-            "accel_z": -1.246,
-            "emerging_score": -2.37
+            "accel_z": 0.111,
+            "emerging_score": -0.641
           }
         ]
       },
       "divergence_board": {
         "quadrant": "hidden-opportunity",
-        "divergence": -0.3235,
+        "divergence": -0.2059,
         "narrative_pct": 0.5,
-        "money_pct": 0.8235,
-        "asof": "2026-09-17",
+        "money_pct": 0.7059,
+        "asof": "2026-11-02",
         "source": "data/foresight/divergence_log.jsonl"
       },
       "basket_ids": [
@@ -224,8 +240,38 @@
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
       },
-      "basket_intel": null,
-      "radar": null,
+      "basket_intel": [
+        {
+          "basket_id": "semicap_equipment",
+          "name_en": "Semiconductor Equipment (WFE)",
+          "name_zh": "半导体设备（晶圆厂设备）",
+          "score": 32,
+          "label": "deteriorating",
+          "label_en": "DETERIORATING",
+          "label_zh": "走弱",
+          "crowding": 0.0,
+          "reco": "avoid",
+          "source": "site/basketdata/baskets.json"
+        }
+      ],
+      "radar": [
+        {
+          "basket_id": "semicap_equipment",
+          "state": "POSITIVE_DIVERGENCE",
+          "lifecycle": "emerging",
+          "divergence": 2.008,
+          "salience": 2.008,
+          "source": "site/basketdata/radar_enriched.json"
+        },
+        {
+          "basket_id": "semicap_equipment",
+          "lean": "positive_divergence",
+          "horizon_d": 63,
+          "check_by": "2027-01-29",
+          "thesis_snippet": "Real activity (congress net-buy, lobbying ramp, 8-k material events) on AEIS, AMAT, ENTG, ICHR… is accelerating (~2.2× Y",
+          "source": "site/basketdata/radar.json"
+        }
+      ],
       "narrative": null,
       "subsector_rotation": {
         "keys": [
@@ -237,23 +283,23 @@
             "key": "Semiconductors",
             "quadrant": "lagging",
             "rs": {
-              "1W": -4.6,
-              "1M": -7.95,
-              "3M": -19.88,
-              "6M": 34.9,
-              "1Y": 122.48
+              "1W": -0.04,
+              "1M": -16.57,
+              "3M": -2.25,
+              "6M": -4.69,
+              "1Y": 58.42
             },
-            "accel_z": -1.246,
-            "emerging_score": -2.37
+            "accel_z": 0.111,
+            "emerging_score": -0.641
           }
         ]
       },
       "divergence_board": {
-        "quadrant": "confirmed",
-        "divergence": 0.0,
-        "narrative_pct": 0.7059,
-        "money_pct": 0.7059,
-        "asof": "2026-09-17",
+        "quadrant": "hidden-opportunity",
+        "divergence": -0.3529,
+        "narrative_pct": 0.5882,
+        "money_pct": 0.9412,
+        "asof": "2026-10-21",
         "source": "data/foresight/divergence_log.jsonl"
       },
       "basket_ids": [
@@ -277,25 +323,45 @@
       },
       "basket_intel": [
         {
+          "basket_id": "data_center_power",
+          "name_en": "Data-Center Power & Cooling",
+          "name_zh": "数据中心电力与散热",
+          "score": 22,
+          "label": "deteriorating",
+          "label_en": "DETERIORATING",
+          "label_zh": "走弱",
+          "crowding": 0.0,
+          "reco": "avoid",
+          "source": "site/basketdata/baskets.json"
+        },
+        {
           "basket_id": "ai_neoclouds",
           "name_en": "AI Neoclouds & HPC Hosting",
           "name_zh": "AI 新云与高性能算力托管",
-          "score": 46,
-          "label": "neutral",
-          "label_en": "NEUTRAL",
-          "label_zh": "中性",
+          "score": 22,
+          "label": "deteriorating",
+          "label_en": "DETERIORATING",
+          "label_zh": "走弱",
           "crowding": 0.0,
-          "reco": "hold",
+          "reco": "avoid",
           "source": "site/basketdata/baskets.json"
         }
       ],
       "radar": [
         {
-          "basket_id": "ai_neoclouds",
+          "basket_id": "data_center_power",
           "state": "CONFIRMED_DOWN",
           "lifecycle": "fading",
-          "divergence": 2.346,
-          "salience": 2.346,
+          "divergence": 1.44,
+          "salience": 1.44,
+          "source": "site/basketdata/radar_enriched.json"
+        },
+        {
+          "basket_id": "ai_neoclouds",
+          "state": "QUIET",
+          "lifecycle": "quiet",
+          "divergence": 3.995,
+          "salience": 3.995,
           "source": "site/basketdata/radar_enriched.json"
         }
       ],
@@ -304,29 +370,29 @@
         "keys": [
           "Artificial Intelligence"
         ],
-        "rollup_quadrant": "weakening",
+        "rollup_quadrant": "lagging",
         "subsectors": [
           {
             "key": "Artificial Intelligence",
-            "quadrant": "weakening",
+            "quadrant": "lagging",
             "rs": {
-              "1W": 0.44,
-              "1M": 1.16,
-              "3M": 3.48,
-              "6M": 19.06,
-              "1Y": 19.17
+              "1W": -1.86,
+              "1M": -4.65,
+              "3M": 5.15,
+              "6M": 13.43,
+              "1Y": 5.92
             },
-            "accel_z": 0.11,
-            "emerging_score": -0.119
+            "accel_z": -0.702,
+            "emerging_score": -1.504
           }
         ]
       },
       "divergence_board": {
         "quadrant": "hidden-opportunity",
-        "divergence": -0.7647,
-        "narrative_pct": 0.0,
+        "divergence": -0.7059,
+        "narrative_pct": 0.0588,
         "money_pct": 0.7647,
-        "asof": "2026-09-10",
+        "asof": "2026-11-02",
         "source": "data/foresight/divergence_log.jsonl"
       },
       "basket_ids": [
@@ -354,7 +420,7 @@
           "basket_id": "nuclear_power",
           "name_en": "Nuclear & SMR Power",
           "name_zh": "核电与小型模块化反应堆",
-          "score": 27,
+          "score": 26,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -366,7 +432,7 @@
           "basket_id": "uranium_miners",
           "name_en": "Uranium & Nuclear Fuel",
           "name_zh": "铀矿与核燃料",
-          "score": 26,
+          "score": 28,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -378,18 +444,18 @@
       "radar": [
         {
           "basket_id": "nuclear_power",
-          "state": "CONFIRMED_DOWN",
-          "lifecycle": "fading",
-          "divergence": 1.712,
-          "salience": 1.712,
+          "state": "QUIET",
+          "lifecycle": "quiet",
+          "divergence": 1.977,
+          "salience": 1.977,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
           "basket_id": "uranium_miners",
-          "state": "QUIET",
-          "lifecycle": "quiet",
-          "divergence": 0.921,
-          "salience": 0.921,
+          "state": "CONFIRMED_DOWN",
+          "lifecycle": "fading",
+          "divergence": 2.631,
+          "salience": 2.631,
           "source": "site/basketdata/radar_enriched.json"
         }
       ],
@@ -398,20 +464,20 @@
         "keys": [
           "Energy Renewable"
         ],
-        "rollup_quadrant": "lagging",
+        "rollup_quadrant": "improving",
         "subsectors": [
           {
             "key": "Energy Renewable",
-            "quadrant": "lagging",
+            "quadrant": "improving",
             "rs": {
-              "1W": -3.93,
-              "1M": -4.42,
-              "3M": -11.21,
-              "6M": -15.42,
-              "1Y": 1.9
+              "1W": 2.5,
+              "1M": -1.9,
+              "3M": -5.27,
+              "6M": -14.43,
+              "1Y": -3.46
             },
-            "accel_z": -1.244,
-            "emerging_score": -1.12
+            "accel_z": 1.053,
+            "emerging_score": 1.893
           }
         ]
       },
@@ -441,7 +507,7 @@
           "basket_id": "power_grid",
           "name_en": "Power & Grid Buildout",
           "name_zh": "电力与电网",
-          "score": 24,
+          "score": 34,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -453,11 +519,19 @@
       "radar": [
         {
           "basket_id": "power_grid",
-          "state": "CONFIRMED_DOWN",
-          "lifecycle": "fading",
-          "divergence": 0.74,
-          "salience": 0.74,
+          "state": "POSITIVE_DIVERGENCE",
+          "lifecycle": "emerging",
+          "divergence": 1.719,
+          "salience": 1.719,
           "source": "site/basketdata/radar_enriched.json"
+        },
+        {
+          "basket_id": "power_grid",
+          "lean": "positive_divergence",
+          "horizon_d": 63,
+          "check_by": "2027-01-29",
+          "thesis_snippet": "Real activity (federal contracts, federal grants/loans, gov contracts (quiver)) on TLN, CEG, BWXT, LEU… is accelerating ",
+          "source": "site/basketdata/radar.json"
         }
       ],
       "narrative": null,
@@ -465,20 +539,20 @@
         "keys": [
           "Energy Renewable"
         ],
-        "rollup_quadrant": "lagging",
+        "rollup_quadrant": "improving",
         "subsectors": [
           {
             "key": "Energy Renewable",
-            "quadrant": "lagging",
+            "quadrant": "improving",
             "rs": {
-              "1W": -3.93,
-              "1M": -4.42,
-              "3M": -11.21,
-              "6M": -15.42,
-              "1Y": 1.9
+              "1W": 2.5,
+              "1M": -1.9,
+              "3M": -5.27,
+              "6M": -14.43,
+              "1Y": -3.46
             },
-            "accel_z": -1.244,
-            "emerging_score": -1.12
+            "accel_z": 1.053,
+            "emerging_score": 1.893
           }
         ]
       },
@@ -497,7 +571,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 33.2,
+        "score": 45.0,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -507,12 +581,12 @@
           "basket_id": "cybersecurity",
           "name_en": "Cybersecurity",
           "name_zh": "网络安全",
-          "score": 69,
-          "label": "dominant",
-          "label_en": "DOMINANT",
-          "label_zh": "主导",
-          "crowding": 0.79,
-          "reco": "hold",
+          "score": 55,
+          "label": "fading",
+          "label_en": "FADING",
+          "label_zh": "退潮",
+          "crowding": 0.72,
+          "reco": "trim",
           "source": "site/basketdata/baskets.json"
         }
       ],
@@ -521,8 +595,8 @@
           "basket_id": "cybersecurity",
           "state": "CONFIRMED_UP",
           "lifecycle": "mature",
-          "divergence": -2.84,
-          "salience": 2.84,
+          "divergence": -2.801,
+          "salience": 2.801,
           "source": "site/basketdata/radar_enriched.json"
         }
       ],
@@ -537,14 +611,14 @@
             "key": "Cybersecurity",
             "quadrant": "weakening",
             "rs": {
-              "1W": 9.05,
-              "1M": 7.86,
-              "3M": 31.05,
-              "6M": 62.48,
-              "1Y": 34.15
+              "1W": -3.75,
+              "1M": 0.94,
+              "3M": 18.33,
+              "6M": 74.74,
+              "1Y": 35.26
             },
-            "accel_z": 2.822,
-            "emerging_score": 2.055
+            "accel_z": -1.688,
+            "emerging_score": -4.268
           }
         ]
       },
@@ -580,12 +654,12 @@
           "basket_id": "defense",
           "name_en": "Defense & Aerospace",
           "name_zh": "国防与航空航天",
-          "score": 27,
-          "label": "deteriorating",
-          "label_en": "DETERIORATING",
-          "label_zh": "走弱",
+          "score": 46,
+          "label": "emerging",
+          "label_en": "EMERGING",
+          "label_zh": "新兴",
           "crowding": 0.0,
-          "reco": "avoid",
+          "reco": "hold",
           "source": "site/basketdata/baskets.json"
         }
       ],
@@ -594,16 +668,16 @@
           "basket_id": "defense",
           "state": "POSITIVE_DIVERGENCE",
           "lifecycle": "emerging",
-          "divergence": 0.737,
-          "salience": 0.737,
+          "divergence": 2.154,
+          "salience": 2.154,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
           "basket_id": "defense",
           "lean": "positive_divergence",
           "horizon_d": 63,
-          "check_by": "2026-12-16",
-          "thesis_snippet": "Real activity (federal contracts, federal grants/loans, gov contracts (quiver)) on TXT, GD, BA, NOC… is accelerating (~1",
+          "check_by": "2027-01-29",
+          "thesis_snippet": "Real activity (federal contracts, federal grants/loans, gov contracts (quiver)) on LMT, LDOS, HII, LHX… is accelerating ",
           "source": "site/basketdata/radar.json"
         }
       ],
@@ -612,29 +686,29 @@
         "keys": [
           "Defense & Aerospace"
         ],
-        "rollup_quadrant": "improving",
+        "rollup_quadrant": "leading",
         "subsectors": [
           {
             "key": "Defense & Aerospace",
-            "quadrant": "improving",
+            "quadrant": "leading",
             "rs": {
-              "1W": 1.2,
-              "1M": -8.66,
-              "3M": -7.6,
-              "6M": -21.44,
-              "1Y": -8.44
+              "1W": 5.34,
+              "1M": 7.57,
+              "3M": -2.02,
+              "6M": -2.02,
+              "1Y": -2.96
             },
-            "accel_z": 0.784,
-            "emerging_score": 0.805
+            "accel_z": 1.932,
+            "emerging_score": 3.213
           }
         ]
       },
       "divergence_board": {
         "quadrant": "hidden-opportunity",
-        "divergence": -0.3529,
+        "divergence": -0.2941,
         "narrative_pct": 0.4118,
-        "money_pct": 0.7647,
-        "asof": "2026-08-29",
+        "money_pct": 0.7059,
+        "asof": "2026-10-21",
         "source": "data/foresight/divergence_log.jsonl"
       },
       "basket_ids": [
@@ -651,7 +725,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 39.4,
+        "score": 37.7,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -665,7 +739,7 @@
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
-          "crowding": 0.0,
+          "crowding": 0.005,
           "reco": "avoid",
           "source": "site/basketdata/baskets.json"
         }
@@ -675,16 +749,16 @@
           "basket_id": "robotics_automation",
           "state": "POSITIVE_DIVERGENCE",
           "lifecycle": "forming",
-          "divergence": -0.12,
-          "salience": 0.12,
+          "divergence": -0.101,
+          "salience": 0.101,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
           "basket_id": "robotics_automation",
           "lean": "positive_divergence",
           "horizon_d": 63,
-          "check_by": "2026-12-16",
-          "thesis_snippet": "Real activity (gov contracts (quiver), congress net-buy, lobbying ramp) on ISRG, NDSN, PH, PTC… is accelerating (~1.4× Y",
+          "check_by": "2027-01-29",
+          "thesis_snippet": "Real activity (gov contracts (quiver), congress net-buy, lobbying ramp) on EMR, ISRG, NDSN, PH… is accelerating (~2.2× Y",
           "source": "site/basketdata/radar.json"
         }
       ],
@@ -701,49 +775,49 @@
             "key": "Robotics",
             "quadrant": "lagging",
             "rs": {
-              "1W": -0.83,
-              "1M": -4.51,
-              "3M": -2.36,
-              "6M": -0.32,
-              "1Y": 2.53
+              "1W": -0.73,
+              "1M": -5.0,
+              "3M": -1.66,
+              "6M": -0.3,
+              "1Y": 1.47
             },
-            "accel_z": -0.235,
-            "emerging_score": -0.505
+            "accel_z": -0.139,
+            "emerging_score": -0.252
           },
           {
             "key": "Industrial Automation",
-            "quadrant": "lagging",
+            "quadrant": "weakening",
             "rs": {
-              "1W": -0.69,
-              "1M": -5.78,
-              "3M": 0.0,
-              "6M": 7.73,
-              "1Y": 4.11
+              "1W": 0.67,
+              "1M": -0.99,
+              "3M": 2.8,
+              "6M": 13.14,
+              "1Y": 10.32
             },
-            "accel_z": -0.252,
-            "emerging_score": -0.868
+            "accel_z": 0.219,
+            "emerging_score": -0.025
           },
           {
             "key": "Autonomous Systems",
-            "quadrant": "lagging",
+            "quadrant": "improving",
             "rs": {
-              "1W": -0.64,
-              "1M": -4.41,
-              "3M": -3.02,
-              "6M": -1.64,
-              "1Y": -5.18
+              "1W": 1.13,
+              "1M": -3.29,
+              "3M": -2.11,
+              "6M": -2.73,
+              "1Y": -6.05
             },
-            "accel_z": -0.133,
-            "emerging_score": -0.34
+            "accel_z": 0.504,
+            "emerging_score": 0.726
           }
         ]
       },
       "divergence_board": {
         "quadrant": "hidden-opportunity",
-        "divergence": -0.5588,
-        "narrative_pct": 0.2059,
-        "money_pct": 0.7647,
-        "asof": "2026-09-11",
+        "divergence": -0.3824,
+        "narrative_pct": 0.2647,
+        "money_pct": 0.6471,
+        "asof": "2026-11-02",
         "source": "data/foresight/divergence_log.jsonl"
       },
       "basket_ids": [
@@ -762,7 +836,7 @@
       "foresight": {
         "stage": "BROADENING (fingerprint)",
         "tier": "P",
-        "score": 52.7,
+        "score": 37.2,
         "entry_ready": false,
         "bottleneck_band": "TIGHTENING (fingerprint)",
         "source": "site/basketdata/foresight_cascade.json"
@@ -772,23 +846,31 @@
           "basket_id": "obesity_glp1",
           "name_en": "GLP-1 & Obesity",
           "name_zh": "GLP-1 与减肥药",
-          "score": 43,
-          "label": "deteriorating",
-          "label_en": "DETERIORATING",
-          "label_zh": "走弱",
-          "crowding": 0.0,
-          "reco": "avoid",
+          "score": 53,
+          "label": "emerging",
+          "label_en": "EMERGING",
+          "label_zh": "新兴",
+          "crowding": 0.3,
+          "reco": "enter",
           "source": "site/basketdata/baskets.json"
         }
       ],
       "radar": [
         {
           "basket_id": "obesity_glp1",
-          "state": "QUIET",
-          "lifecycle": "quiet",
-          "divergence": -0.211,
-          "salience": 0.211,
+          "state": "POSITIVE_DIVERGENCE",
+          "lifecycle": "forming",
+          "divergence": 0.563,
+          "salience": 0.563,
           "source": "site/basketdata/radar_enriched.json"
+        },
+        {
+          "basket_id": "obesity_glp1",
+          "lean": "positive_divergence",
+          "horizon_d": 63,
+          "check_by": "2027-01-29",
+          "thesis_snippet": "Real activity (congress net-buy, lobbying ramp, 8-k material events) on AMGN, AZN, DVA, DXCM… is accelerating (~1.4× YoY",
+          "source": "site/basketdata/radar.json"
         }
       ],
       "narrative": null,
@@ -802,23 +884,23 @@
             "key": "Healthcare & Biotech",
             "quadrant": "weakening",
             "rs": {
-              "1W": 1.31,
-              "1M": 4.67,
-              "3M": 20.33,
-              "6M": 21.9,
-              "1Y": 32.79
+              "1W": 4.26,
+              "1M": 5.84,
+              "3M": 19.44,
+              "6M": 38.67,
+              "1Y": 42.78
             },
-            "accel_z": -0.065,
-            "emerging_score": -0.387
+            "accel_z": 1.006,
+            "emerging_score": 0.16
           }
         ]
       },
       "divergence_board": {
         "quadrant": "hidden-opportunity",
-        "divergence": -0.7353,
-        "narrative_pct": 0.2059,
-        "money_pct": 0.9412,
-        "asof": "2026-09-11",
+        "divergence": -0.5588,
+        "narrative_pct": 0.2647,
+        "money_pct": 0.8235,
+        "asof": "2026-10-04",
         "source": "data/foresight/divergence_log.jsonl"
       },
       "basket_ids": [
@@ -845,22 +927,22 @@
           "basket_id": "payments_fintech",
           "name_en": "Payments & Fintech",
           "name_zh": "支付与金融科技",
-          "score": 43,
-          "label": "deteriorating",
-          "label_en": "DETERIORATING",
-          "label_zh": "走弱",
+          "score": 55,
+          "label": "emerging",
+          "label_en": "EMERGING",
+          "label_zh": "新兴",
           "crowding": 0.0,
-          "reco": "avoid",
+          "reco": "enter",
           "source": "site/basketdata/baskets.json"
         }
       ],
       "radar": [
         {
           "basket_id": "payments_fintech",
-          "state": "CONFIRMED_UP",
-          "lifecycle": "confirming",
-          "divergence": 0.25,
-          "salience": 0.25,
+          "state": "QUIET",
+          "lifecycle": "quiet",
+          "divergence": -0.694,
+          "salience": 0.694,
           "source": "site/basketdata/radar_enriched.json"
         }
       ],
@@ -869,20 +951,20 @@
         "keys": [
           "FinTech"
         ],
-        "rollup_quadrant": "weakening",
+        "rollup_quadrant": "leading",
         "subsectors": [
           {
             "key": "FinTech",
-            "quadrant": "weakening",
+            "quadrant": "leading",
             "rs": {
-              "1W": -1.29,
-              "1M": 0.0,
-              "3M": 1.26,
-              "6M": 2.68,
-              "1Y": -27.01
+              "1W": 0.38,
+              "1M": 2.12,
+              "3M": -1.09,
+              "6M": 3.49,
+              "1Y": -14.63
             },
-            "accel_z": -0.541,
-            "emerging_score": -0.558
+            "accel_z": 0.221,
+            "emerging_score": 0.579
           }
         ]
       },
@@ -906,7 +988,7 @@
       "name_en": "Space & Satellites",
       "name_zh": "太空与卫星",
       "foresight": {
-        "stage": "RE-RATING",
+        "stage": "BROADENING (text)",
         "tier": "P",
         "score": 50.0,
         "entry_ready": false,
@@ -918,7 +1000,7 @@
           "basket_id": "space_economy",
           "name_en": "Space Economy",
           "name_zh": "太空经济",
-          "score": 41,
+          "score": 28,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -930,19 +1012,11 @@
       "radar": [
         {
           "basket_id": "space_economy",
-          "state": "POSITIVE_DIVERGENCE",
-          "lifecycle": "emerging",
-          "divergence": 1.41,
-          "salience": 1.41,
+          "state": "QUIET",
+          "lifecycle": "quiet",
+          "divergence": 1.771,
+          "salience": 1.771,
           "source": "site/basketdata/radar_enriched.json"
-        },
-        {
-          "basket_id": "space_economy",
-          "lean": "positive_divergence",
-          "horizon_d": 63,
-          "check_by": "2026-12-16",
-          "thesis_snippet": "Real activity (federal contracts, congress net-buy, lobbying ramp) on ASTS, RDW, RKLB, FLY… is accelerating (~1.8× YoY) ",
-          "source": "site/basketdata/radar.json"
         }
       ],
       "narrative": null,
@@ -956,14 +1030,14 @@
             "key": "Space Tech",
             "quadrant": "improving",
             "rs": {
-              "1W": 0.9,
-              "1M": -10.92,
-              "3M": -15.94,
-              "6M": -14.12,
-              "1Y": 17.98
+              "1W": 3.44,
+              "1M": -5.51,
+              "3M": -5.17,
+              "6M": -14.64,
+              "1Y": 3.17
             },
-            "accel_z": 0.922,
-            "emerging_score": 0.758
+            "accel_z": 1.368,
+            "emerging_score": 2.021
           }
         ]
       },
@@ -991,7 +1065,7 @@
         "tier": "P",
         "score": 45.0,
         "entry_ready": false,
-        "bottleneck_band": "NEUTRAL",
+        "bottleneck_band": "TIGHTENING",
         "source": "site/basketdata/foresight_cascade.json"
       },
       "basket_intel": [
@@ -999,7 +1073,7 @@
           "basket_id": "critical_minerals",
           "name_en": "Critical Minerals & Rare Earths",
           "name_zh": "关键矿产与稀土",
-          "score": 24,
+          "score": 27,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -1013,8 +1087,8 @@
           "basket_id": "critical_minerals",
           "state": "CONFIRMED_DOWN",
           "lifecycle": "fading",
-          "divergence": 0.204,
-          "salience": 0.204,
+          "divergence": 2.417,
+          "salience": 2.417,
           "source": "site/basketdata/radar_enriched.json"
         }
       ],
@@ -1023,20 +1097,20 @@
         "keys": [
           "Commodities Metals"
         ],
-        "rollup_quadrant": "lagging",
+        "rollup_quadrant": "improving",
         "subsectors": [
           {
             "key": "Commodities Metals",
-            "quadrant": "lagging",
+            "quadrant": "improving",
             "rs": {
-              "1W": -7.55,
-              "1M": -3.06,
-              "3M": -6.46,
-              "6M": -13.42,
-              "1Y": 15.48
+              "1W": 0.94,
+              "1M": -9.46,
+              "3M": -4.84,
+              "6M": -18.65,
+              "1Y": -4.02
             },
-            "accel_z": -2.909,
-            "emerging_score": -2.997
+            "accel_z": 0.511,
+            "emerging_score": 0.779
           }
         ]
       },
@@ -1057,7 +1131,7 @@
         "tier": "P",
         "score": 45.0,
         "entry_ready": false,
-        "bottleneck_band": "NEUTRAL",
+        "bottleneck_band": "TIGHTENING",
         "source": "site/basketdata/foresight_cascade.json"
       },
       "basket_intel": [
@@ -1065,7 +1139,7 @@
           "basket_id": "reshoring",
           "name_en": "Reshoring & Industrial Capex",
           "name_zh": "回流与工业资本开支",
-          "score": 38,
+          "score": 49,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -1079,8 +1153,8 @@
           "basket_id": "reshoring",
           "state": "QUIET",
           "lifecycle": "quiet",
-          "divergence": 0.96,
-          "salience": 0.96,
+          "divergence": -0.557,
+          "salience": 0.557,
           "source": "site/basketdata/radar_enriched.json"
         }
       ],
@@ -1089,29 +1163,29 @@
         "keys": [
           "Commodities Metals"
         ],
-        "rollup_quadrant": "lagging",
+        "rollup_quadrant": "improving",
         "subsectors": [
           {
             "key": "Commodities Metals",
-            "quadrant": "lagging",
+            "quadrant": "improving",
             "rs": {
-              "1W": -7.55,
-              "1M": -3.06,
-              "3M": -6.46,
-              "6M": -13.42,
-              "1Y": 15.48
+              "1W": 0.94,
+              "1M": -9.46,
+              "3M": -4.84,
+              "6M": -18.65,
+              "1Y": -4.02
             },
-            "accel_z": -2.909,
-            "emerging_score": -2.997
+            "accel_z": 0.511,
+            "emerging_score": 0.779
           }
         ]
       },
       "divergence_board": {
         "quadrant": "hidden-opportunity",
-        "divergence": -0.5588,
-        "narrative_pct": 0.4412,
-        "money_pct": 1.0,
-        "asof": "2026-09-12",
+        "divergence": -0.2647,
+        "narrative_pct": 0.5588,
+        "money_pct": 0.8235,
+        "asof": "2026-10-15",
         "source": "data/foresight/divergence_log.jsonl"
       },
       "basket_ids": [
@@ -1126,9 +1200,9 @@
       "name_en": "Agriculture & Fertilizer",
       "name_zh": "农业与化肥",
       "foresight": {
-        "stage": "WATCH",
+        "stage": "GLUT-RISK",
         "tier": "P",
-        "score": 36.5,
+        "score": 40.0,
         "entry_ready": false,
         "bottleneck_band": "LOOSE",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1141,37 +1215,44 @@
           "Agriculture & FoodTech",
           "Commodities Agriculture"
         ],
-        "rollup_quadrant": "weakening",
+        "rollup_quadrant": "improving",
         "subsectors": [
           {
             "key": "Agriculture & FoodTech",
-            "quadrant": "weakening",
+            "quadrant": "improving",
             "rs": {
-              "1W": -3.13,
-              "1M": 1.74,
-              "3M": 4.84,
-              "6M": -13.57,
-              "1Y": -26.43
+              "1W": -1.25,
+              "1M": -9.5,
+              "3M": -8.86,
+              "6M": -17.57,
+              "1Y": -21.25
             },
-            "accel_z": -1.423,
-            "emerging_score": -1.103
+            "accel_z": -0.13,
+            "emerging_score": 0.13
           },
           {
             "key": "Commodities Agriculture",
             "quadrant": "leading",
             "rs": {
-              "1W": -1.63,
-              "1M": 6.97,
-              "3M": 6.61,
-              "6M": -14.14,
-              "1Y": 1.09
+              "1W": 1.17,
+              "1M": 1.45,
+              "3M": 0.0,
+              "6M": -9.16,
+              "1Y": 8.33
             },
-            "accel_z": -0.853,
-            "emerging_score": 0.01
+            "accel_z": 0.462,
+            "emerging_score": 1.078
           }
         ]
       },
-      "divergence_board": null,
+      "divergence_board": {
+        "quadrant": "hidden-opportunity",
+        "divergence": -0.8235,
+        "narrative_pct": 0.1176,
+        "money_pct": 0.9412,
+        "asof": "2026-11-02",
+        "source": "data/foresight/divergence_log.jsonl"
+      },
       "basket_ids": [],
       "subsector_keys": [
         "Agriculture & FoodTech",
@@ -1185,7 +1266,7 @@
       "foresight": {
         "stage": "PRECIPICE (fingerprint)",
         "tier": "P",
-        "score": 49.5,
+        "score": 47.7,
         "entry_ready": false,
         "bottleneck_band": "TIGHTENING (fingerprint)",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1195,11 +1276,11 @@
           "basket_id": "managed_care",
           "name_en": "Managed Care & Insurers",
           "name_zh": "管理式医疗与保险",
-          "score": 45,
+          "score": 54,
           "label": "neutral",
           "label_en": "NEUTRAL",
           "label_zh": "中性",
-          "crowding": 0.3,
+          "crowding": 0.0,
           "reco": "hold",
           "source": "site/basketdata/baskets.json"
         }
@@ -1207,11 +1288,19 @@
       "radar": [
         {
           "basket_id": "managed_care",
-          "state": "QUIET",
-          "lifecycle": "quiet",
-          "divergence": 0.19,
-          "salience": 0.19,
+          "state": "POSITIVE_DIVERGENCE",
+          "lifecycle": "forming",
+          "divergence": -0.196,
+          "salience": 0.196,
           "source": "site/basketdata/radar_enriched.json"
+        },
+        {
+          "basket_id": "managed_care",
+          "lean": "positive_divergence",
+          "horizon_d": 63,
+          "check_by": "2027-01-29",
+          "thesis_snippet": "Real activity (congress net-buy, lobbying ramp, 8-k material events) on CI, CNC, CVS, ELV… is accelerating (~1.3× YoY) w",
+          "source": "site/basketdata/radar.json"
         }
       ],
       "narrative": null,
@@ -1225,14 +1314,14 @@
             "key": "Healthcare & Biotech",
             "quadrant": "weakening",
             "rs": {
-              "1W": 1.31,
-              "1M": 4.67,
-              "3M": 20.33,
-              "6M": 21.9,
-              "1Y": 32.79
+              "1W": 4.26,
+              "1M": 5.84,
+              "3M": 19.44,
+              "6M": 38.67,
+              "1Y": 42.78
             },
-            "accel_z": -0.065,
-            "emerging_score": -0.387
+            "accel_z": 1.006,
+            "emerging_score": 0.16
           }
         ]
       },
@@ -1251,7 +1340,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 45.0,
+        "score": 41.3,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1269,23 +1358,23 @@
             "key": "Healthcare & Biotech",
             "quadrant": "weakening",
             "rs": {
-              "1W": 1.31,
-              "1M": 4.67,
-              "3M": 20.33,
-              "6M": 21.9,
-              "1Y": 32.79
+              "1W": 4.26,
+              "1M": 5.84,
+              "3M": 19.44,
+              "6M": 38.67,
+              "1Y": 42.78
             },
-            "accel_z": -0.065,
-            "emerging_score": -0.387
+            "accel_z": 1.006,
+            "emerging_score": 0.16
           }
         ]
       },
       "divergence_board": {
         "quadrant": "hidden-opportunity",
-        "divergence": -0.6765,
-        "narrative_pct": 0.2059,
+        "divergence": -0.6176,
+        "narrative_pct": 0.2647,
         "money_pct": 0.8824,
-        "asof": "2026-09-11",
+        "asof": "2026-10-14",
         "source": "data/foresight/divergence_log.jsonl"
       },
       "basket_ids": [],
@@ -1300,7 +1389,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 35.3,
+        "score": 36.4,
         "entry_ready": false,
         "bottleneck_band": "LOOSE",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1312,24 +1401,31 @@
         "keys": [
           "Energy Renewable"
         ],
-        "rollup_quadrant": "lagging",
+        "rollup_quadrant": "improving",
         "subsectors": [
           {
             "key": "Energy Renewable",
-            "quadrant": "lagging",
+            "quadrant": "improving",
             "rs": {
-              "1W": -3.93,
-              "1M": -4.42,
-              "3M": -11.21,
-              "6M": -15.42,
-              "1Y": 1.9
+              "1W": 2.5,
+              "1M": -1.9,
+              "3M": -5.27,
+              "6M": -14.43,
+              "1Y": -3.46
             },
-            "accel_z": -1.244,
-            "emerging_score": -1.12
+            "accel_z": 1.053,
+            "emerging_score": 1.893
           }
         ]
       },
-      "divergence_board": null,
+      "divergence_board": {
+        "quadrant": "hidden-opportunity",
+        "divergence": -0.3824,
+        "narrative_pct": 0.2647,
+        "money_pct": 0.6471,
+        "asof": "2026-10-10",
+        "source": "data/foresight/divergence_log.jsonl"
+      },
       "basket_ids": [],
       "subsector_keys": [
         "Energy Renewable"
@@ -1338,14 +1434,15 @@
   ],
   "stale_legs": [
     "divergence_log[cybersecurity]: stale (as_of=2026-08-27)",
-    "divergence_log[robotics_automation]: stale (as_of=2026-09-11)",
-    "divergence_log[defense_aerospace]: stale (as_of=2026-08-29)",
-    "divergence_log[glp1_obesity]: stale (as_of=2026-09-11)",
+    "divergence_log[ai_semiconductors]: stale (as_of=2026-10-14)",
+    "divergence_log[defense_aerospace]: stale (as_of=2026-10-21)",
+    "divergence_log[glp1_obesity]: stale (as_of=2026-10-04)",
+    "divergence_log[semicap_equipment]: stale (as_of=2026-10-21)",
     "divergence_log[fintech_payments]: stale (as_of=2026-08-28)",
-    "divergence_log[diagnostics_lifesci]: stale (as_of=2026-09-11)",
-    "divergence_log[copper_steel_electrify]: stale (as_of=2026-09-12)",
+    "divergence_log[diagnostics_lifesci]: stale (as_of=2026-10-14)",
+    "divergence_log[copper_steel_electrify]: stale (as_of=2026-10-15)",
     "divergence_log[space_satellite]: stale (as_of=2026-08-08)",
-    "divergence_log[data_center_power]: stale (as_of=2026-09-10)"
+    "divergence_log[solar]: stale (as_of=2026-10-10)"
   ],
   "sources": {
     "theme_crosswalk": "config/theme_crosswalk.yml",
@@ -1359,7 +1456,7 @@
   },
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-09-17T09:45:50Z",
-  "inputs_hash": "sha256:a53bc8800b355bd8dbaa3b6833d77954dc8f0595b89a76e0c9d148e602814fe8",
+  "produced_at": "2026-11-02T10:37:40Z",
+  "inputs_hash": "sha256:536929b08b46536e6b3f454a3e2b9369e680b88ec97e9f45eb9d2b4ac9d8b1bc",
   "tier": "display"
 }

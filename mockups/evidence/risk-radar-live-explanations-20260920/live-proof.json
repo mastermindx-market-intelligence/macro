@@ -1,0 +1,441 @@
+{
+  "mode": "isolated production partial and shipped poller; synthetic live responses and virtual browser clock",
+  "authenticated_production": false,
+  "natural_market_event": false,
+  "page_sha256": "035aae0bebe23544f2c5abc4d73fd9c67049990233d832a0294832b1c78860e8",
+  "script_sha256": "47a6eb04c763621586810accfc35777113ccaa982be3a520716f97f989428abd",
+  "rows": [
+    {
+      "width": 1440,
+      "lang": "en",
+      "theme": "light",
+      "phases": [
+        {
+          "phase": "healthy",
+          "file": "1440-en-light-component-healthy.png",
+          "hint": "Live: Fragile internals",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "fc5c1d2010df92cac501659a8ac0239a546c53a7c403976d2001741adb9d2456",
+          "bytes": 121777
+        },
+        {
+          "phase": "pending",
+          "file": "1440-en-light-component-pending.png",
+          "hint": "Live: Checking stress",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "6a33a99a27e5d35ff9c3c60e96e60c31fe51d2c15f6626b8f01717d74d566d7b",
+          "bytes": 125481
+        },
+        {
+          "phase": "network-fallback",
+          "file": "1440-en-light-component-network-fallback.png",
+          "hint": "Fragile internals",
+          "live_visible": false,
+          "fallback_visible": true,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "27b89effa56541d967d586f480468a7f14bf520b46340733d52d9e88cb60068a",
+          "bytes": 118023
+        },
+        {
+          "phase": "recovery",
+          "file": "1440-en-light-component-recovery.png",
+          "hint": "Live: Stress spreading",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "a3de70afb05649933441a399039cc633033a4aa58f0cab4a900fb979f8ba8ff7",
+          "bytes": 123541
+        }
+      ],
+      "errors": [],
+      "request_count": 4,
+      "source_dates_verified": true
+    },
+    {
+      "width": 1440,
+      "lang": "en",
+      "theme": "dark",
+      "phases": [
+        {
+          "phase": "healthy",
+          "file": "1440-en-dark-component-healthy.png",
+          "hint": "Live: Fragile internals",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "4e219e0b066714faba1fb64c3762b5d2f752dbcbfda8adc0e34cb18d89daf628",
+          "bytes": 149425
+        },
+        {
+          "phase": "pending",
+          "file": "1440-en-dark-component-pending.png",
+          "hint": "Live: Checking stress",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "b915e8964867aa96eb4d7123142b935484ed1d238608f6f99dff209e9f3babef",
+          "bytes": 153142
+        },
+        {
+          "phase": "network-fallback",
+          "file": "1440-en-dark-component-network-fallback.png",
+          "hint": "Fragile internals",
+          "live_visible": false,
+          "fallback_visible": true,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "107c3d353b6f4f5c59731cf8ea34431bb3d15924051ee413509663ba85b95ddb",
+          "bytes": 145946
+        },
+        {
+          "phase": "recovery",
+          "file": "1440-en-dark-component-recovery.png",
+          "hint": "Live: Stress spreading",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "126e01dfa8e8b399f3cea7e27d8f920cf40ea0924f0b4dd20d5c380f0dd28694",
+          "bytes": 151346
+        }
+      ],
+      "errors": [],
+      "request_count": 4,
+      "source_dates_verified": true
+    },
+    {
+      "width": 1440,
+      "lang": "zh",
+      "theme": "light",
+      "phases": [
+        {
+          "phase": "healthy",
+          "file": "1440-zh-light-component-healthy.png",
+          "hint": "\u5b9e\u65f6\uff1a\u5185\u90e8\u8106\u5f31",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "f79f816a3b35dd41c5da45ccb99feecd4c363f731be6552b2a457174dbf87e91",
+          "bytes": 126633
+        },
+        {
+          "phase": "pending",
+          "file": "1440-zh-light-component-pending.png",
+          "hint": "\u5b9e\u65f6\uff1a\u538b\u529b\u5f85\u786e\u8ba4",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "a8887931ec033ab2b5842c9cee862775e2e360bf4c0b267a1d7ae40ecc8dc45c",
+          "bytes": 130318
+        },
+        {
+          "phase": "network-fallback",
+          "file": "1440-zh-light-component-network-fallback.png",
+          "hint": "\u5185\u90e8\u8106\u5f31",
+          "live_visible": false,
+          "fallback_visible": true,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "693484e266d1186b6eef09d73d78277cb5da4494bc57f618a1281d87d2e1287a",
+          "bytes": 121127
+        },
+        {
+          "phase": "recovery",
+          "file": "1440-zh-light-component-recovery.png",
+          "hint": "\u5b9e\u65f6\uff1a\u538b\u529b\u6269\u6563",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "13e0ca241170026c0b39524d8f3cf2b0cdb6554b009ed88d3812e512737f222a",
+          "bytes": 126692
+        }
+      ],
+      "errors": [],
+      "request_count": 4,
+      "source_dates_verified": true
+    },
+    {
+      "width": 1440,
+      "lang": "zh",
+      "theme": "dark",
+      "phases": [
+        {
+          "phase": "healthy",
+          "file": "1440-zh-dark-component-healthy.png",
+          "hint": "\u5b9e\u65f6\uff1a\u5185\u90e8\u8106\u5f31",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "99b9dcd640274f8e80771ced7fbc0ca0c692356d8c8b2b4938d1c922dc0cd87a",
+          "bytes": 154100
+        },
+        {
+          "phase": "pending",
+          "file": "1440-zh-dark-component-pending.png",
+          "hint": "\u5b9e\u65f6\uff1a\u538b\u529b\u5f85\u786e\u8ba4",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "a1bc37341ce64d76df40c46e2ce4af6c1ebededa5c5e4ab754e06d77f85db752",
+          "bytes": 156661
+        },
+        {
+          "phase": "network-fallback",
+          "file": "1440-zh-dark-component-network-fallback.png",
+          "hint": "\u5185\u90e8\u8106\u5f31",
+          "live_visible": false,
+          "fallback_visible": true,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "fedd23812405042eb7e8122400b4033811bdff4153a352dbe244f47f4200ebb7",
+          "bytes": 150229
+        },
+        {
+          "phase": "recovery",
+          "file": "1440-zh-dark-component-recovery.png",
+          "hint": "\u5b9e\u65f6\uff1a\u538b\u529b\u6269\u6563",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "e01ff6b050339db6dfcb4c1c3bcd9ea7afd0c92fce42bda3cd846f0ee37be0ed",
+          "bytes": 154020
+        }
+      ],
+      "errors": [],
+      "request_count": 4,
+      "source_dates_verified": true
+    },
+    {
+      "width": 390,
+      "lang": "en",
+      "theme": "light",
+      "phases": [
+        {
+          "phase": "healthy",
+          "file": "390-en-light-component-healthy.png",
+          "hint": "Live: Fragile internals",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "39934be1daac11bfc1c1b7cd3f28e6b0dd9134942a0c2e23331ec3b343ce1d74",
+          "bytes": 61352
+        },
+        {
+          "phase": "pending",
+          "file": "390-en-light-component-pending.png",
+          "hint": "Live: Checking stress",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "23688ac051ec08cc78df5ee662957957842231bb7b1ed8ed925c0abe262393d6",
+          "bytes": 65129
+        },
+        {
+          "phase": "network-fallback",
+          "file": "390-en-light-component-network-fallback.png",
+          "hint": "Fragile internals",
+          "live_visible": false,
+          "fallback_visible": true,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "43f2e2b5247869c739fbf564be72648a436d021a302c06876ce8a087c1ec0a00",
+          "bytes": 58125
+        },
+        {
+          "phase": "recovery",
+          "file": "390-en-light-component-recovery.png",
+          "hint": "Live: Stress spreading",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "32f5bdeac32820e36eb8fc838b24abcbf3394dc230b927c2f61b3ce2da4abc57",
+          "bytes": 62943
+        }
+      ],
+      "errors": [],
+      "request_count": 4,
+      "source_dates_verified": true
+    },
+    {
+      "width": 390,
+      "lang": "en",
+      "theme": "dark",
+      "phases": [
+        {
+          "phase": "healthy",
+          "file": "390-en-dark-component-healthy.png",
+          "hint": "Live: Fragile internals",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "de325ad0fb40e8beb8faaff6fdcc0fc5f5e4fa05be52f36a4047000e060eec79",
+          "bytes": 65079
+        },
+        {
+          "phase": "pending",
+          "file": "390-en-dark-component-pending.png",
+          "hint": "Live: Checking stress",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "2f3dd7fc4d14718db19ae4c772494c8973efa180f1ed442faf34ffde655e658f",
+          "bytes": 67861
+        },
+        {
+          "phase": "network-fallback",
+          "file": "390-en-dark-component-network-fallback.png",
+          "hint": "Fragile internals",
+          "live_visible": false,
+          "fallback_visible": true,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "f9ffa05ebc40f33f70bf63826b8176105070560d86e4b9e625957a93e2acfb1e",
+          "bytes": 64067
+        },
+        {
+          "phase": "recovery",
+          "file": "390-en-dark-component-recovery.png",
+          "hint": "Live: Stress spreading",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "32715fbbc4655eb4f68d8da5a312c01c7a1395961236d7960ae326623cd18c1f",
+          "bytes": 66466
+        }
+      ],
+      "errors": [],
+      "request_count": 4,
+      "source_dates_verified": true
+    },
+    {
+      "width": 390,
+      "lang": "zh",
+      "theme": "light",
+      "phases": [
+        {
+          "phase": "healthy",
+          "file": "390-zh-light-component-healthy.png",
+          "hint": "\u5b9e\u65f6\uff1a\u5185\u90e8\u8106\u5f31",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "ef436239a3fc57e3ed79addfb5e6ae9d7c1638ae61ddeac20a6170b4e4ef6e37",
+          "bytes": 65740
+        },
+        {
+          "phase": "pending",
+          "file": "390-zh-light-component-pending.png",
+          "hint": "\u5b9e\u65f6\uff1a\u538b\u529b\u5f85\u786e\u8ba4",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "9710b2bbd1c7384661f6b3c3bac0a2cc87ac973743b811300e2220eb0b729195",
+          "bytes": 69209
+        },
+        {
+          "phase": "network-fallback",
+          "file": "390-zh-light-component-network-fallback.png",
+          "hint": "\u5185\u90e8\u8106\u5f31",
+          "live_visible": false,
+          "fallback_visible": true,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "8779c31cde567ad1e5ff685152c1080160af3b091cc5d4d8c5e7c72290426f11",
+          "bytes": 60487
+        },
+        {
+          "phase": "recovery",
+          "file": "390-zh-light-component-recovery.png",
+          "hint": "\u5b9e\u65f6\uff1a\u538b\u529b\u6269\u6563",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "6f274118b552db9a4f29dbeef7676277100142d98368814e22d8baac34a038f3",
+          "bytes": 65647
+        }
+      ],
+      "errors": [],
+      "request_count": 4,
+      "source_dates_verified": true
+    },
+    {
+      "width": 390,
+      "lang": "zh",
+      "theme": "dark",
+      "phases": [
+        {
+          "phase": "healthy",
+          "file": "390-zh-dark-component-healthy.png",
+          "hint": "\u5b9e\u65f6\uff1a\u5185\u90e8\u8106\u5f31",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "843f5de233d79ac0e0e3b33b43f54aa8702c041407af0b4f97aadf651a3d241c",
+          "bytes": 68980
+        },
+        {
+          "phase": "pending",
+          "file": "390-zh-dark-component-pending.png",
+          "hint": "\u5b9e\u65f6\uff1a\u538b\u529b\u5f85\u786e\u8ba4",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "affc147e77b330dd5b7bf9996996a123db719d605cbb35e6817c71c4c72d675c",
+          "bytes": 70968
+        },
+        {
+          "phase": "network-fallback",
+          "file": "390-zh-dark-component-network-fallback.png",
+          "hint": "\u5185\u90e8\u8106\u5f31",
+          "live_visible": false,
+          "fallback_visible": true,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "560afa1de3c081afb826001fb8bb0fec3ff136d1b7098c57a521576105b0c09e",
+          "bytes": 66207
+        },
+        {
+          "phase": "recovery",
+          "file": "390-zh-dark-component-recovery.png",
+          "hint": "\u5b9e\u65f6\uff1a\u538b\u529b\u6269\u6563",
+          "live_visible": true,
+          "fallback_visible": false,
+          "settled_read_unchanged": true,
+          "radar_score_unchanged": true,
+          "sha256": "69b2d3c7c1b362ce19f564eb526a9f677f2ed41eb7237555cc237de6187379c8",
+          "bytes": 68560
+        }
+      ],
+      "errors": [],
+      "request_count": 4,
+      "source_dates_verified": true
+    }
+  ]
+}

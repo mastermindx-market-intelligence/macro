@@ -1,0 +1,200 @@
+{
+  "INT_symbolic_counterexample": {
+    "EU_quota": 8,
+    "JP_quota": 8,
+    "UK_cell_capacity": 2,
+    "UK_only_reaches_one_L_cell": true,
+    "flow_upper_bound": 18,
+    "method": "Cut_capacity_bound_only_not_an_actual_flow_solver",
+    "target": 24
+  },
+  "cap_conflict": {
+    "absolute_options": [
+      "S_ABS",
+      "M_ABS"
+    ],
+    "counts": [
+      190000000,
+      210000000
+    ],
+    "possible_values": [
+      1900000000,
+      2100000000
+    ],
+    "price": 10,
+    "relative_options": [
+      "M",
+      "L"
+    ],
+    "same_basis_same_measurement_no_supersession": true
+  },
+  "eligible_population_count": null,
+  "formula_small_N": [
+    {
+      "N": 0,
+      "k1": null,
+      "k2": null,
+      "labels": {},
+      "t1": null,
+      "t2": null
+    },
+    {
+      "N": 1,
+      "k1": 1,
+      "k2": 1,
+      "labels": {
+        "1": "L"
+      },
+      "t1": 1,
+      "t2": 1
+    },
+    {
+      "N": 2,
+      "k1": 1,
+      "k2": 2,
+      "labels": {
+        "1": "M",
+        "2": "L"
+      },
+      "t1": 2,
+      "t2": 1
+    },
+    {
+      "N": 3,
+      "k1": 2,
+      "k2": 3,
+      "labels": {
+        "1": "M",
+        "2": "L",
+        "3": "L"
+      },
+      "t1": 2,
+      "t2": 1
+    },
+    {
+      "N": 4,
+      "k1": 2,
+      "k2": 3,
+      "labels": {
+        "1": "S",
+        "2": "M",
+        "3": "L",
+        "4": "L"
+      },
+      "t1": 3,
+      "t2": 2
+    },
+    {
+      "N": 5,
+      "k1": 3,
+      "k2": 4,
+      "labels": {
+        "1": "S",
+        "2": "M",
+        "3": "L",
+        "4": "L",
+        "5": "L"
+      },
+      "t1": 3,
+      "t2": 2
+    },
+    {
+      "N": 6,
+      "k1": 3,
+      "k2": 5,
+      "labels": {
+        "1": "S",
+        "2": "M",
+        "3": "M",
+        "4": "L",
+        "5": "L",
+        "6": "L"
+      },
+      "t1": 4,
+      "t2": 2
+    },
+    {
+      "N": 7,
+      "k1": 4,
+      "k2": 6,
+      "labels": {
+        "1": "S",
+        "2": "M",
+        "3": "M",
+        "4": "L",
+        "5": "L",
+        "6": "L",
+        "7": "L"
+      },
+      "t1": 4,
+      "t2": 2
+    },
+    {
+      "N": 8,
+      "k1": 4,
+      "k2": 6,
+      "labels": {
+        "1": "S",
+        "2": "S",
+        "3": "M",
+        "4": "M",
+        "5": "L",
+        "6": "L",
+        "7": "L",
+        "8": "L"
+      },
+      "t1": 5,
+      "t2": 3
+    }
+  ],
+  "production_or_data_effects": false,
+  "real_issuer_selection": null,
+  "result": "PASS_COUNTEREXAMPLE_ARITHMETIC",
+  "roster_omission": {
+    "D_complete": {
+      "N": 5,
+      "k1": 3,
+      "k2": 4,
+      "labels": {
+        "100": "S",
+        "200": "M",
+        "300": "L",
+        "400": "L",
+        "500": "L"
+      },
+      "t1": 300,
+      "t2": 200
+    },
+    "later_directory_omits_post_D_delisting": {
+      "N": 4,
+      "k1": 2,
+      "k2": 3,
+      "labels": {
+        "200": "S",
+        "300": "M",
+        "400": "L",
+        "500": "L"
+      },
+      "t1": 400,
+      "t2": 300
+    },
+    "observed_bands_changed": [
+      "300:L_to_M",
+      "200:M_to_S"
+    ]
+  },
+  "schema": "research.selection_policy_synthetic_method_checks/v1",
+  "scope": "SYNTHETIC_ARITHMETIC_ONLY_NO_ISSUER_FRAME_OR_SELECTOR",
+  "tied_boundary": {
+    "N": 4,
+    "k1": 2,
+    "k2": 3,
+    "labels": {
+      "1": "S",
+      "3": "L",
+      "4": "L"
+    },
+    "t1": 3,
+    "t2": 3
+  }
+}

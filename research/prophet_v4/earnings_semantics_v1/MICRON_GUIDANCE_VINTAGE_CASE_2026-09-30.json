@@ -1,0 +1,79 @@
+{
+  "schema": "prophet.issuer_guidance_research_case/v1",
+  "issuer": "Micron Technology, Inc.",
+  "cik": "0000723125",
+  "fiscal_period": "FY2025 Q4",
+  "period_end": "2025-08-28",
+  "measure": "GAAP_REVENUE",
+  "basis": "USD_millions",
+  "sources": [
+    {
+      "role": "initial",
+      "publication_date": "2025-06-25",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000019/a2025q3ex991-pressrelease.htm",
+      "source_clock_precision": "DATE_ONLY_FOR_THIS_RESEARCH_CASE",
+      "system_available_at": null,
+      "revenue_usd_millions": {
+        "low": 10400,
+        "value_or_midpoint": 10700,
+        "high": 11000
+      },
+      "retrieved_body_sha256": "8ee399aeea24a7915f7a0a98dcc1cf64b462e4be7013c46b209a30ff7fcb8627",
+      "retrieved_bytes": 267601
+    },
+    {
+      "role": "updated",
+      "publication_date": "2025-08-11",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/723125/000110465925075940/tm2522933d1_ex99-1.htm",
+      "source_clock_precision": "DATE_ONLY_FOR_THIS_RESEARCH_CASE",
+      "system_available_at": null,
+      "revenue_usd_millions": {
+        "low": 11100,
+        "value_or_midpoint": 11200,
+        "high": 11300
+      },
+      "retrieved_body_sha256": "081b7afe82accef144dbf04d1fd661e4d0c7d85f26837de5f6ae3b18bc0564ac",
+      "retrieved_bytes": 25041
+    },
+    {
+      "role": "actual",
+      "publication_date": "2025-09-23",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000024/a2025q4ex991-pressrelease.htm",
+      "source_clock_precision": "DATE_ONLY_FOR_THIS_RESEARCH_CASE",
+      "system_available_at": null,
+      "revenue_usd_millions": {
+        "low": null,
+        "value_or_midpoint": 11315,
+        "high": null
+      },
+      "retrieved_body_sha256": "37af789d70da86079ffe5fd598d2b27fc47913df56beb799b8d12f3120c39e9b",
+      "retrieved_bytes": 361806
+    }
+  ],
+  "calculations": {
+    "actual": 11315,
+    "initial_midpoint": 10700,
+    "updated_midpoint": 11200,
+    "initial_high": 11000,
+    "updated_high": 11300,
+    "apparent_residual_against_initial_midpoint": 615,
+    "previously_disclosed_midpoint_upgrade": 500,
+    "residual_against_updated_midpoint": 115,
+    "excess_over_updated_high": 15,
+    "share_of_initial_midpoint_gap_already_disclosed": 0.8130081300813008
+  },
+  "interpretation": "The August guidance upgrade is earlier information, not September earnings surprise. Latest pre-release issuer guidance is distinct from analyst consensus.",
+  "limits": [
+    "Historical numeric construction, not an as-run Prophet decision or return study.",
+    "This artifact preserves source dates only and does not assert historical system ingestion or tradability.",
+    "Code tests use deliberately synthetic qualified timestamps for these amounts and separately test timing boundaries.",
+    "Full guidance-history coverage is a source-owner prerequisite, not inferred from these three retrieved pages."
+  ],
+  "financial_authority": {
+    "rank": false,
+    "entry": false,
+    "size": false,
+    "trade": false
+  },
+  "retrieved_on": "2026-09-30"
+}

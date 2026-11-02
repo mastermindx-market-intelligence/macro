@@ -1,0 +1,1460 @@
+{
+  "schema": "commission15.research_publication_manifest/v1",
+  "generated_at": "2026-10-04T08:34:28.761949+00:00",
+  "purpose": "Completed research and hardening commission; this is documentation metadata, not a new production contract or authority registry.",
+  "input": {
+    "filename": "deep-research-report (19).md",
+    "sha256": "b5ffa4f98ca0bb913ccf6b098ad1915dfa5ba964bf63a065bf0346a29e8bdd93",
+    "lines": 753
+  },
+  "scope": {
+    "research_complete": true,
+    "implementation_executed": false,
+    "new_data_acquired": false,
+    "production_mutations": false,
+    "portfolio_or_trading_mutations": false,
+    "private_raw_or_corpus_included": false
+  },
+  "publication_repository": "mastermindx-market-intelligence/macro",
+  "publication_branch": "claude/c15-microstructure-hardening-20261004",
+  "publication_directory": "research/market_microstructure/commission15",
+  "hash_rule": "Artifact SHA-256 and Git blob SHA-1 identify exact UTF-8 bytes of the six Markdown deliverables. This manifest excludes its own hash and future commit/PR identifiers to avoid circular attestations; Git identifies the complete committed tree.",
+  "artifacts": [
+    {
+      "path": "research/market_microstructure/commission15/COMMISSION_15_HARDENED_REPORT.md",
+      "bytes": 98533,
+      "sha256": "c3bdd3d8c449d868dc4468dbe9b096b88ae709b63802c605ea20d791c5be2972",
+      "git_blob_sha1": "7609e167acb8dfb832f7d0743ea27249e8f99c13"
+    },
+    {
+      "path": "research/market_microstructure/commission15/CURRENT_STATE_AND_HARDENING_LOG.md",
+      "bytes": 29328,
+      "sha256": "e8ab6f93685c4b64dbb51716a512598ac3d6824f83b9183585544e3048c99ecc",
+      "git_blob_sha1": "20c2bb6a1d8ccd5328bbd4bd91892ba600147623"
+    },
+    {
+      "path": "research/market_microstructure/commission15/README.md",
+      "bytes": 4400,
+      "sha256": "9d27f2343bb4b9099125746aeff87774ed6a9f2c807d1f8a8ca46e8b65257015",
+      "git_blob_sha1": "911015b8c76c00b73d04ae67ba6631f729897989"
+    },
+    {
+      "path": "research/market_microstructure/commission15/REVIEW_AND_ACCEPTANCE.md",
+      "bytes": 6790,
+      "sha256": "7a2a6854ac71077974fdefd5777fe31c7e835224ebe2baa756e3072156560246",
+      "git_blob_sha1": "7668fac4ef2a96aedc8acc9320692fac0446cf22"
+    },
+    {
+      "path": "research/market_microstructure/commission15/SOURCE_REGISTER.md",
+      "bytes": 29212,
+      "sha256": "308c6266619772aa0c21d03998de39a8c909c1da094dd07a053a930a6c51fadf",
+      "git_blob_sha1": "bfdb5cde2b38d9ebfe7ea2d783511002fe94381a"
+    },
+    {
+      "path": "research/market_microstructure/commission15/VALIDATION_PROTOCOL.md",
+      "bytes": 21417,
+      "sha256": "82b518232f67e2378aa9131b8c4929d90643f8ced9ffce4a14d01aa36ce0b149",
+      "git_blob_sha1": "7611be11b8fabf1cf3c12fe0644e4ceafdbafc89"
+    }
+  ],
+  "source_reference_count": 98,
+  "primary_external_reference_count": 55,
+  "references": [
+    {
+      "id": "M01",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/research/OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M02",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/app/dossier_quote.py#L12-L17",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M03",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/1c708450187755160e1a5889b69598a2fcb1f0d1/hub/README.md",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M04",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M05",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/research/options_intelligence/2026-10-03/MASTER_PLAN.md",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M06",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/673",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M07",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/research_vault/__init__.py",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M08",
+      "url": "https://github.com/mastermindx-market-intelligence/executive-dr-vault/blob/ea422c92bd29800d1f7fb3ae850236cc44d8c890/README.md",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M09",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/flow_enrich.py#L250-L262",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M10",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/lib/live_flow_event_stage.py",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M11",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/site/options_intel_brief.json#L47-L62",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M12",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/1c708450187755160e1a5889b69598a2fcb1f0d1/terminal/lib/dislocations/source.ts",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M13",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/loop/single_name_panel.py",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M14",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/loop/fundamentals.py",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M15",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/portfolio/held_risk.py#L734-L825",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M16",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/portfolio/lenses.py",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M17",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/data/census/CENSUS.md",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M18",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/live_flow.py",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M19",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/contracts/options/options.trade_nbbo_microstructure.v1.schema.json",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M20",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/research/execution/THETADATA_TAPE_CONTINUOUS_CALIBRATION.md",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M21",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/data/options_flow/signing_gate.json",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M22",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/options_alpha_candidate_feed.py",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M23",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/1c708450187755160e1a5889b69598a2fcb1f0d1/terminal/app/api/v1/dislocations/route.ts",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M24",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/brain/research_desk.py",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M25",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/thetadata_store.py",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M26",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/collectors/thetadata.py",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M27",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/live_quotes.py",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M28",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/scripts/build_live_quotes.py",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M29",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/research/MASTERMIND_DATA_CONTRACTS.md#L967-L1028",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M30",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/research/INTRADAY_DISLOCATION_TERMINAL_PRODUCT_SPEC_V1.md",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M31",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/research/live_entry_radar/INTRADAY_DISLOCATION_CATALYST_FORWARD_READ_EVIDENCE_2026-10-03.md",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M32",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/docs/runbooks/OPTIONS_NBBO_COHORT.md",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M33",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/docs/superpowers/specs/2026-09-15-mastermind-portfolio-v3-risk-first-autonomous-manager-design.md",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M34",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/docs/superpowers/plans/2026-09-15-mastermind-portfolio-v3-s0-decision-snapshot.md",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M35",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/research/options_intelligence/2026-10-03/SOURCE_ADMISSION_SPEC.md",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M36",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/research/options_intelligence/2026-10-03/PILOT_STUDY_SPEC_V1.md",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E01",
+      "url": "https://arxiv.org/abs/1011.6402",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E02",
+      "url": "https://databento.com/docs/schemas-and-data-formats/tbbo",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E03",
+      "url": "https://www.ctaplan.com/publicdocs/ctaplan/CQS_Pillar_Output_Specification.pdf",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E04",
+      "url": "https://www.utpplan.com/DOC/UtpBinaryOutputSpec.pdf",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E05",
+      "url": "https://www.nyse.com/market-data/real-time",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E06",
+      "url": "https://www.nyse.com/data-products/catalog/integrated-feed",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E07",
+      "url": "https://www.sec.gov/files/rules/exorders/2026/34-105656.pdf",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E08",
+      "url": "https://www.sec.gov/files/rules/exorders/2026/34-104612.pdf",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E09",
+      "url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=UTP2025-28",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E10",
+      "url": "https://databento.com/blog/nasdaq-historical-data-changes-2026-09",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E11",
+      "url": "https://www.nyse.com/data-products/catalog/daily-taq",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E12",
+      "url": "https://www.finra.org/rules-guidance/rulebooks/finra-rules/6110",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E13",
+      "url": "https://www.iex.io/products/market-data-connectivity",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E14",
+      "url": "https://www.nasdaq.com/products/data/equities/nasdaq-totalview",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E15",
+      "url": "https://www.nyse.com/data-products/catalog/imbalances",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E16",
+      "url": "https://www.nyse.com/publicdocs/nyse/data/NYSE_Market_Data_Pricing.pdf",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E17",
+      "url": "https://www.ctaplan.com/publicdocs/ctaplan/CTS_Pillar_Output_Specification.pdf",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E18",
+      "url": "https://databento.com/docs/schemas-and-data-formats/mbp-1",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E19",
+      "url": "https://www.finra.org/filing-reporting/market-transparency-reporting/trade-reporting-faq",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E20",
+      "url": "https://www.iex.io/legal/hist-data-terms",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E21",
+      "url": "https://consolidatedtape.com/faq",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E22",
+      "url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=DTN2026-14",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "E23",
+      "url": "https://www.sec.gov/rules-regulations/staff-guidance/trading-markets-frequently-asked-questions/frequently-asked-questions-rule-605-regulation-nms",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O1",
+      "url": "https://www.thetadata.net/docs/operations/option_history_trade_quote.html",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O2",
+      "url": "https://thetadata.net/docs/Streaming/US-Options/Full-Trade-Stream.html",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O3",
+      "url": "https://www.thetadata.net/docs/Articles/Data-And-Requests/Making-Requests.html",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O4",
+      "url": "https://thetadata.net/docs/Articles/Errors-Exchanges-Conditions/Trade-Conditions.html",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O5",
+      "url": "https://www.thetadata.net/docs/operations/option_history_open_interest.html",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O6",
+      "url": "https://www.thetadata.net/docs/Articles/Data-And-Requests/Option-Greeks.html",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O7",
+      "url": "https://thetadata.net/docs/Articles/Getting-Started/Subscriptions.html",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O8",
+      "url": "https://www.thetadata.net/commercial-use",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O9",
+      "url": "https://www.thetadata.net/subscriber-agreement",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O10",
+      "url": "https://databento.com/blog/opra-migration",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O11",
+      "url": "https://databento.com/blog/opra-improvements-coming-soon",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O12",
+      "url": "https://databento.com/docs/venues-and-datasets/opra-pillar",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O13",
+      "url": "https://databento.com/docs/schemas-and-data-formats/tcbbo",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O14",
+      "url": "https://roadmap.databento.com/roadmap/include-opra-trade-conditions",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O15",
+      "url": "https://datashop.cboe.com/option-trades",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O16",
+      "url": "https://datashop.cboe.com/documents/Option_Trades_Specification.pdf",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O17",
+      "url": "https://datashop.cboe.com/cboe-options-open-close-volume-summary",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O18",
+      "url": "https://datashop.cboe.com/enhanced-us-options-trade-by-trade-execution-detail",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O19",
+      "url": "https://datashop.cboe.com/documents/TBT_Spec_v1.0.pdf",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O20",
+      "url": "https://www.massive.com/docs/rest/options/trades-quotes/trades",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O21",
+      "url": "https://www.massive.com/docs/rest/options/trades-quotes/quotes",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O22",
+      "url": "https://www.massive.com/pricing?product=options",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O23",
+      "url": "https://cdn.opraplan.com/documents/OPRA_Pillar_Output_Specification.pdf",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O24",
+      "url": "https://cdn.opraplan.com/documents/OPRA_BBO_Guidelines.pdf",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O25",
+      "url": "https://www.optionseducation.org/referencelibrary/faq/general-information",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O26",
+      "url": "https://www.theocc.com/market-data/market-data-reports/other-market-data-info/batch-processing/daily-open-interest",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O27",
+      "url": "https://www.optionseducation.org/news/splits-happen",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O28",
+      "url": "https://www.cambridge.org/core/journals/journal-of-financial-and-quantitative-analysis/article/abs/on-inferring-the-direction-of-option-trades/FDA4541B57F78B2C8DCE129AFC25AAF0",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O29",
+      "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4098475",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O30",
+      "url": "https://www.mit.edu/~junpan/volume.pdf",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O31",
+      "url": "https://abarbon.com/papers/gamma-fragility",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "O32",
+      "url": "https://arxiv.org/abs/1204.0646",
+      "evidence_kind": "primary_public_documentation_or_research",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M37",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/scripts/build_options_alpha_candidate_feed.py#L108-L166",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M38",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-04-installed-source.md#L72-L84",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M39",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/options_flow.py#L23-L34",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M40",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/data/thetadata_eod/_manifest.json",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M41",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/prophet_entry_policy.py#L43-L49",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M42",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    },
+    {
+      "id": "M43",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/docs/sol_skills/INDEX.md",
+      "evidence_kind": "pinned_internal_source_or_PR",
+      "retrieved_date_utc": "2026-10-04"
+    }
+  ],
+  "repository_identity": {
+    "mastermind": "mastermindx-market-intelligence/Mastermind",
+    "macro": "mastermindx-market-intelligence/macro",
+    "terminal": "mastermindx-market-intelligence/mastermind-terminal",
+    "research_vault": "Macro engine/research_vault/; private content subsystem, no source decision authority",
+    "executive_dr_vault": "mastermindx-market-intelligence/executive-dr-vault; distinct backup repository"
+  },
+  "other_repository_pins": [
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "branch": "master",
+      "sha": "1c708450187755160e1a5889b69598a2fcb1f0d1",
+      "protected_observed": true,
+      "final_recheck": "2026-10-04T08:26:23Z",
+      "ruling": "HEAD_UNCHANGED"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/executive-dr-vault",
+      "branch": "main",
+      "sha": "ea422c92bd29800d1f7fb3ae850236cc44d8c890",
+      "scope": "README-only tree inspected to disambiguate Research Vault; no private corpus read"
+    }
+  ],
+  "bounded_drift_reviews": {
+    "macro": {
+      "schema": "commission15.bounded_final_drift_review/v1",
+      "scope": "Read-only source drift reconciliation; preserve initial census pin; no GitHub/runtime/authority changes.",
+      "initial_census": {
+        "repository": "mastermindx-market-intelligence/macro",
+        "branch": "main",
+        "sha": "59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc"
+      },
+      "final_cut": {
+        "repository": "mastermindx-market-intelligence/macro",
+        "branch": "main",
+        "sha": "0bbc246fe1c023684bb36ae2ac7795668eafef97",
+        "protected": false,
+        "committed_at": "2026-10-04T08:18:50Z",
+        "branch_observed_at": "2026-10-04T08:24:45Z",
+        "observed_head": "0bbc246fe1c023684bb36ae2ac7795668eafef97",
+        "api": "https://api.github.com/repos/mastermindx-market-intelligence/macro/branches/main"
+      },
+      "file_probe_window": {
+        "start": "2026-10-04T08:22:57Z",
+        "end": "2026-10-04T08:24:26Z"
+      },
+      "method": "Each listed path fetched at each exact pin with start_line=1/end_line=1. GitHub fetch_file returned the full file git blob SHA; content equality was determined from those hashes, not the returned first line. Full changed content is read only if the blob differs.",
+      "file_count": 30,
+      "unchanged_count": 30,
+      "changed_count": 0,
+      "files": [
+        {
+          "path": "engine/live_flow.py",
+          "initial": {
+            "git_blob_sha": "323be029c88ef8ee03d97c2ae3a878fce95ba191",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/live_flow.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "323be029c88ef8ee03d97c2ae3a878fce95ba191",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/engine/live_flow.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "engine/flow_enrich.py",
+          "initial": {
+            "git_blob_sha": "29a65b6ba47c9e7974c9a4f97384d6aaac436734",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/flow_enrich.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "29a65b6ba47c9e7974c9a4f97384d6aaac436734",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/engine/flow_enrich.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "lib/live_flow_event_stage.py",
+          "initial": {
+            "git_blob_sha": "79eabacbfad687bbe288a98dfe86d486958adabc",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/lib/live_flow_event_stage.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "79eabacbfad687bbe288a98dfe86d486958adabc",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/lib/live_flow_event_stage.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "collectors/flow_signals.py",
+          "initial": {
+            "git_blob_sha": "97051f168bccbe74dceddf47d6532385d6425658",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/collectors/flow_signals.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "97051f168bccbe74dceddf47d6532385d6425658",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/collectors/flow_signals.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "engine/options_alpha_candidate_feed.py",
+          "initial": {
+            "git_blob_sha": "ea847db0ba79e48f029aafc8b82d99ab2ac9c2c0",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/options_alpha_candidate_feed.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "ea847db0ba79e48f029aafc8b82d99ab2ac9c2c0",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/engine/options_alpha_candidate_feed.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "scripts/build_options_alpha_candidate_feed.py",
+          "initial": {
+            "git_blob_sha": "45c38aaea73cd873cf8b54ffe70e97a458f434bf",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/scripts/build_options_alpha_candidate_feed.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "45c38aaea73cd873cf8b54ffe70e97a458f434bf",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/scripts/build_options_alpha_candidate_feed.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "contracts/options/options.trade_nbbo_microstructure.v1.schema.json",
+          "initial": {
+            "git_blob_sha": "a80492f0cebecff010a9c130e6847897b31dd973",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/contracts/options/options.trade_nbbo_microstructure.v1.schema.json"
+          },
+          "final_cut": {
+            "git_blob_sha": "a80492f0cebecff010a9c130e6847897b31dd973",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/contracts/options/options.trade_nbbo_microstructure.v1.schema.json"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md",
+          "initial": {
+            "git_blob_sha": "681ec895ebc842cd633651732db0848a46872976",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "681ec895ebc842cd633651732db0848a46872976",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-04-installed-source.md",
+          "initial": {
+            "git_blob_sha": "bcdc5c05f8a2d4063d26560f2a68dfd2498feee4",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-04-installed-source.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "bcdc5c05f8a2d4063d26560f2a68dfd2498feee4",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-04-installed-source.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "research/OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md",
+          "initial": {
+            "git_blob_sha": "43b717b9cb855c8b5c0eaa5cfd7080b5066374c4",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/research/OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "43b717b9cb855c8b5c0eaa5cfd7080b5066374c4",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/research/OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "research/options_intelligence/2026-10-03/README.md",
+          "initial": {
+            "git_blob_sha": "c11bb561c655b5d3da6fe51ad78557ad51ff8399",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/research/options_intelligence/2026-10-03/README.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "c11bb561c655b5d3da6fe51ad78557ad51ff8399",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/research/options_intelligence/2026-10-03/README.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "engine/live_quotes.py",
+          "initial": {
+            "git_blob_sha": "88f3e621df541fb51fd3d759e4309814355ca16c",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/live_quotes.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "88f3e621df541fb51fd3d759e4309814355ca16c",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/engine/live_quotes.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "scripts/build_live_quotes.py",
+          "initial": {
+            "git_blob_sha": "a6d89388629ccdd84a3833bb33dff0e8d331a805",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/scripts/build_live_quotes.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "a6d89388629ccdd84a3833bb33dff0e8d331a805",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/scripts/build_live_quotes.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "app/dossier_quote.py",
+          "initial": {
+            "git_blob_sha": "ad4cffaa5d40ebc96de308032b6d4eb1970465fe",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/app/dossier_quote.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "ad4cffaa5d40ebc96de308032b6d4eb1970465fe",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/app/dossier_quote.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "engine/thetadata_store.py",
+          "initial": {
+            "git_blob_sha": "5a832cf30ee09c956ca7d77692f19611121626fe",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/thetadata_store.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "5a832cf30ee09c956ca7d77692f19611121626fe",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/engine/thetadata_store.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "engine/options_hub.py",
+          "initial": {
+            "git_blob_sha": "fecf1b69fd8a016a83643f95128b2f1b3b1b80ff",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/options_hub.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "fecf1b69fd8a016a83643f95128b2f1b3b1b80ff",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/engine/options_hub.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "engine/positioning_persistence.py",
+          "initial": {
+            "git_blob_sha": "917bbd225ab2ed3ad5668b38dcbb4f4c4d0c988f",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/positioning_persistence.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "917bbd225ab2ed3ad5668b38dcbb4f4c4d0c988f",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/engine/positioning_persistence.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "data/options_flow/signing_gate.json",
+          "initial": {
+            "git_blob_sha": "bf8321732647310edde099c19314123261a95a99",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/data/options_flow/signing_gate.json"
+          },
+          "final_cut": {
+            "git_blob_sha": "bf8321732647310edde099c19314123261a95a99",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/data/options_flow/signing_gate.json"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "engine/flow_signing.py",
+          "initial": {
+            "git_blob_sha": "bc012baeeeedda73d90d15521c63df3853202f11",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/flow_signing.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "bc012baeeeedda73d90d15521c63df3853202f11",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/engine/flow_signing.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "collectors/thetadata.py",
+          "initial": {
+            "git_blob_sha": "d3e0e4a97a872dcaad555c26e1e35bd934a00a20",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/collectors/thetadata.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "d3e0e4a97a872dcaad555c26e1e35bd934a00a20",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/collectors/thetadata.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md",
+          "initial": {
+            "git_blob_sha": "fc0243b9cf4ad792ff14a48f10c2c2389b15d0a2",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "fc0243b9cf4ad792ff14a48f10c2c2389b15d0a2",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "engine/entry_radar/live_eval.py",
+          "initial": {
+            "git_blob_sha": "a25ca7ce18f2bf2eac776c11c373191524da8016",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/entry_radar/live_eval.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "a25ca7ce18f2bf2eac776c11c373191524da8016",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/engine/entry_radar/live_eval.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "engine/entry_radar/live_pack.py",
+          "initial": {
+            "git_blob_sha": "c83ab5dcd361bf10fee55e281d03fe2fb70e8e6e",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/entry_radar/live_pack.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "c83ab5dcd361bf10fee55e281d03fe2fb70e8e6e",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/engine/entry_radar/live_pack.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "scripts/entry_radar_live_pack.py",
+          "initial": {
+            "git_blob_sha": "1951d954340efe31bb01901e470b1749fd60a8a7",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/scripts/entry_radar_live_pack.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "1951d954340efe31bb01901e470b1749fd60a8a7",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/scripts/entry_radar_live_pack.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "research/INTRADAY_DISLOCATION_TERMINAL_PRODUCT_SPEC_V1.md",
+          "initial": {
+            "git_blob_sha": "d26d8a4cb303cef714c54b87f3280f89b78e79bc",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/research/INTRADAY_DISLOCATION_TERMINAL_PRODUCT_SPEC_V1.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "d26d8a4cb303cef714c54b87f3280f89b78e79bc",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/research/INTRADAY_DISLOCATION_TERMINAL_PRODUCT_SPEC_V1.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "research/live_entry_radar/INTRADAY_DISLOCATION_CATALYST_FORWARD_READ_EVIDENCE_2026-10-03.md",
+          "initial": {
+            "git_blob_sha": "fe83ab1d98ed46f413cda1d6501f7da0ca2d911d",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/research/live_entry_radar/INTRADAY_DISLOCATION_CATALYST_FORWARD_READ_EVIDENCE_2026-10-03.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "fe83ab1d98ed46f413cda1d6501f7da0ca2d911d",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/research/live_entry_radar/INTRADAY_DISLOCATION_CATALYST_FORWARD_READ_EVIDENCE_2026-10-03.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "site/options_intel_brief.json",
+          "initial": {
+            "git_blob_sha": "3ccca6713c7d4137f076b7b4def4a29028ab752b",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/site/options_intel_brief.json"
+          },
+          "final_cut": {
+            "git_blob_sha": "3ccca6713c7d4137f076b7b4def4a29028ab752b",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/site/options_intel_brief.json"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "data/thetadata_eod/_manifest.json",
+          "initial": {
+            "git_blob_sha": "ddd45c38577c65634cb81b53fa71e00ce15618a2",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/data/thetadata_eod/_manifest.json"
+          },
+          "final_cut": {
+            "git_blob_sha": "ddd45c38577c65634cb81b53fa71e00ce15618a2",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/data/thetadata_eod/_manifest.json"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "config/production_topology.yml",
+          "initial": {
+            "git_blob_sha": "8b9db941219b512e69012cb73ec0bac8154ce3e3",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/config/production_topology.yml"
+          },
+          "final_cut": {
+            "git_blob_sha": "8b9db941219b512e69012cb73ec0bac8154ce3e3",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/config/production_topology.yml"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "engine/options_alpha_exact_option_outcome.py",
+          "initial": {
+            "git_blob_sha": "648d5d9ac2b782eb5254c6c5ad5061d582d275fd",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc/engine/options_alpha_exact_option_outcome.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "648d5d9ac2b782eb5254c6c5ad5061d582d275fd",
+            "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0bbc246fe1c023684bb36ae2ac7795668eafef97/engine/options_alpha_exact_option_outcome.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        }
+      ],
+      "pull_request_observed_at": "2026-10-04T08:24:26Z",
+      "pull_requests": [
+        {
+          "repository": "mastermindx-market-intelligence/Mastermind",
+          "number": 673,
+          "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/673",
+          "initial_observed_head": "0b960590c77101b3f3b5545896423f9ad07b7d56",
+          "final_observed_head": "0b960590c77101b3f3b5545896423f9ad07b7d56",
+          "head_changed": false,
+          "state": "open",
+          "draft": true,
+          "merged": false,
+          "merged_at": null,
+          "updated_at": "2026-09-17T08:39:49Z",
+          "base_sha": "e1f752a58df8f874efa12e30957d911627a0c4f8",
+          "title": "[PORTFOLIO-V3][S0][DRAFT] Decision Snapshot through read-only evidence inspector",
+          "labels": [],
+          "mergeable_state": "unknown",
+          "ruling": "OPEN_DRAFT_UNMERGED; unchanged head. Body retains DRAFT/HOLD, BUILT_NOT_PROVEN, PRODUCTION_INERT and Task 7/pre-start/current-base integration gates. Body source head may be stale; API head is recorded separately."
+        },
+        {
+          "repository": "mastermindx-market-intelligence/macro",
+          "number": 8385,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8385",
+          "initial_observed_head": "0234ea19cb8fee75750f8c387b2fe4a3cf358a25",
+          "final_observed_head": "0234ea19cb8fee75750f8c387b2fe4a3cf358a25",
+          "head_changed": false,
+          "state": "open",
+          "draft": true,
+          "merged": false,
+          "merged_at": null,
+          "updated_at": "2026-10-04T02:14:42Z",
+          "base_sha": "1dfc8488e29c8b8231e67bd9587b7c025ba0d0ea",
+          "title": "draft(options): resolve weighted calibration method and support decisions",
+          "labels": [],
+          "mergeable_state": "unknown",
+          "ruling": "OPEN_DRAFT_UNMERGED; unchanged head. Method proposal remains unratified; required statistics review and principal ratification are not claimed by the PR. No trainer/study/threshold authority."
+        },
+        {
+          "repository": "mastermindx-market-intelligence/macro",
+          "number": 6625,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6625",
+          "initial_observed_head": "ea32fc9fad6e826fa01f626a56054e3eff4815d2",
+          "final_observed_head": "ea32fc9fad6e826fa01f626a56054e3eff4815d2",
+          "head_changed": false,
+          "state": "open",
+          "draft": true,
+          "merged": false,
+          "merged_at": null,
+          "updated_at": "2026-09-18T10:24:35Z",
+          "base_sha": "037c1cda0289786b8bd78b007503e2cee95bc37f",
+          "title": "[HOLD-FOR-SOL] radar(w4.2): private evidence-spool boundary — dedicated store + shared-bucket refusal (LER-C1)",
+          "labels": [],
+          "mergeable_state": "unknown",
+          "ruling": "OPEN_DRAFT_UNMERGED; unchanged head. Explicit security-acceptance HOLD remains; no merge or operational provisioning inferred."
+        },
+        {
+          "repository": "mastermindx-market-intelligence/macro",
+          "number": 7274,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7274",
+          "initial_observed_head": "3ec5c388de2e9a72e1f42f2fdf4da0c3b3bcb308",
+          "final_observed_head": "3ec5c388de2e9a72e1f42f2fdf4da0c3b3bcb308",
+          "head_changed": false,
+          "state": "open",
+          "draft": true,
+          "merged": false,
+          "merged_at": null,
+          "updated_at": "2026-10-03T14:35:35Z",
+          "base_sha": "8f10ba66426f302ead925b865a97633a86bcdc8d",
+          "title": "[Tactical R1-B v4] Causal exhaustion/reclaim + matched controls (synthetic only)",
+          "labels": [],
+          "mergeable_state": "dirty",
+          "ruling": "OPEN_DRAFT_UNMERGED; unchanged head. Synthetic exhaustion/reclaim construction only; existing empirical/shared-source gate and HOLD remain. API mergeable_state dirty is transient metadata, not an independent review ruling."
+        },
+        {
+          "repository": "mastermindx-market-intelligence/macro",
+          "number": 8191,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8191",
+          "initial_observed_head": "6753d5622555e110a107bd4fd706f478f73b1d24",
+          "final_observed_head": "6753d5622555e110a107bd4fd706f478f73b1d24",
+          "head_changed": false,
+          "state": "open",
+          "draft": true,
+          "merged": false,
+          "merged_at": null,
+          "updated_at": "2026-09-30T01:39:38Z",
+          "base_sha": "f65f6e5aa57d25f4342c5930b79f2965fe90ff8d",
+          "title": "[HOLD: verification blocked] feat(options): daily expansion and source coverage",
+          "labels": [],
+          "mergeable_state": "unknown",
+          "ruling": "OPEN_DRAFT_UNMERGED; unchanged head. Verification-blocked HOLD and separate provider/store/production gates remain. No bypass or retry authorized by this read."
+        },
+        {
+          "repository": "mastermindx-market-intelligence/macro",
+          "number": 7027,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7027",
+          "initial_observed_head": "9f68e8e3ff508689480cdd05a064229cbb42f29f",
+          "final_observed_head": "9f68e8e3ff508689480cdd05a064229cbb42f29f",
+          "head_changed": false,
+          "state": "open",
+          "draft": true,
+          "merged": false,
+          "merged_at": null,
+          "updated_at": "2026-09-12T18:50:19Z",
+          "base_sha": "1952390091877671b997d0ee0c79b166c7a51205",
+          "title": "docs(options): Nightglass mechanics, population attribution and Flow semantics",
+          "labels": [],
+          "mergeable_state": "unknown",
+          "ruling": "OPEN_DRAFT_UNMERGED; unchanged head. Independent-methodology/source-rights gate blocks freeze/acquisition/fitting/merge. Older body capability statements are historical and do not override newer main workstream evidence."
+        }
+      ],
+      "ruling": "NO_MATERIAL_DRIFT_FOUND_IN_BOUNDED_SAMPLE. All 30 sampled decisive Macro file blobs are identical at the two exact revisions. All six selected PRs retain the same heads and open/draft/unmerged status. Initial audit pin remains authoritative for cited inspection; this is an appended final-cut corroboration, not a silent repin or a full-repository/fleet audit.",
+      "limitations": [
+        "Unlisted files, newly opened adjacent PRs and live host/provider content are not certified by this bounded check.",
+        "GitHub branch protection reports protected=false; this does not make Macro main a protected-law revision.",
+        "Recorded runtime evidence remains dated repo evidence; identical blobs do not prove live host health or source coverage.",
+        "PR body prose may retain historical capability claims and stale head strings. Exact API head/status and source-pinned workstream evidence remain separately scoped."
+      ],
+      "errors": []
+    },
+    "mastermind": {
+      "schema": "commission15.bounded_mastermind_final_drift_review/v1",
+      "scope": "Read-only governing-procedure and decisive-source drift reconciliation. Initial census pin preserved. No remote edits or active/runtime effects.",
+      "initial_census": {
+        "repository": "mastermindx-market-intelligence/Mastermind",
+        "branch": "master",
+        "sha": "521720b09be2921e996d9396b522b1c4ca62041c"
+      },
+      "final_cut": {
+        "repository": "mastermindx-market-intelligence/Mastermind",
+        "branch": "master",
+        "sha": "17b9fa1363db6071d338be3373a4fdb11fc0076d",
+        "protected": true,
+        "committed_at": "2026-10-04T07:56:11Z",
+        "branch_observed_at": "2026-10-04T08:27:36Z",
+        "observed_head": "17b9fa1363db6071d338be3373a4fdb11fc0076d",
+        "api": "https://api.github.com/repos/mastermindx-market-intelligence/Mastermind/branches/master"
+      },
+      "observation_window": {
+        "start": "2026-10-04T08:26:58Z",
+        "end": "2026-10-04T08:27:36Z"
+      },
+      "method": "Each listed path fetched at each exact pin with start_line=1/end_line=1. Equality compares the full file git blob SHA returned by GitHub fetch_file, not first-line content. Additional changed-file content/diff would be read only if hashes differed.",
+      "file_count": 18,
+      "unchanged_count": 18,
+      "changed_count": 0,
+      "files": [
+        {
+          "path": "docs/sol_skills/INDEX.md",
+          "initial": {
+            "git_blob_sha": "38a18571229e487f525b1c9780f7993220a5da93",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/docs/sol_skills/INDEX.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "38a18571229e487f525b1c9780f7993220a5da93",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/17b9fa1363db6071d338be3373a4fdb11fc0076d/docs/sol_skills/INDEX.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "docs/sol_skills/COLD_START.md",
+          "initial": {
+            "git_blob_sha": "b11e58f083040144933cf2ddab76bf6c60a7e542",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/docs/sol_skills/COLD_START.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "b11e58f083040144933cf2ddab76bf6c60a7e542",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/17b9fa1363db6071d338be3373a4fdb11fc0076d/docs/sol_skills/COLD_START.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "docs/sol_skills/ACTIVE_EXECUTION.md",
+          "initial": {
+            "git_blob_sha": "413b1ce8b5cf6feaea33ab53434acfad1e8956c8",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/docs/sol_skills/ACTIVE_EXECUTION.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "413b1ce8b5cf6feaea33ab53434acfad1e8956c8",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/17b9fa1363db6071d338be3373a4fdb11fc0076d/docs/sol_skills/ACTIVE_EXECUTION.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "docs/sol_skills/SESSION_RELIABILITY.md",
+          "initial": {
+            "git_blob_sha": "8adc1ace42db9ab97854f96689485be223d34c51",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/docs/sol_skills/SESSION_RELIABILITY.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "8adc1ace42db9ab97854f96689485be223d34c51",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/17b9fa1363db6071d338be3373a4fdb11fc0076d/docs/sol_skills/SESSION_RELIABILITY.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "docs/sol_skills/WEB_CEO_DELEGATION.md",
+          "initial": {
+            "git_blob_sha": "2073a33f05506268b15f0b5ce292ce57d5b60ed3",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/docs/sol_skills/WEB_CEO_DELEGATION.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "2073a33f05506268b15f0b5ce292ce57d5b60ed3",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/17b9fa1363db6071d338be3373a4fdb11fc0076d/docs/sol_skills/WEB_CEO_DELEGATION.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "docs/sol_skills/REVIEW_RETURN.md",
+          "initial": {
+            "git_blob_sha": "f4e7fa1dd183cfb3d28d26dccfbf527dd5dd8e00",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/docs/sol_skills/REVIEW_RETURN.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "f4e7fa1dd183cfb3d28d26dccfbf527dd5dd8e00",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/17b9fa1363db6071d338be3373a4fdb11fc0076d/docs/sol_skills/REVIEW_RETURN.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "docs/sol_skills/CLOSEOUT.md",
+          "initial": {
+            "git_blob_sha": "4a9ec3782da001322604e977dbe91b9cf371f0b9",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/docs/sol_skills/CLOSEOUT.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "4a9ec3782da001322604e977dbe91b9cf371f0b9",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/17b9fa1363db6071d338be3373a4fdb11fc0076d/docs/sol_skills/CLOSEOUT.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "AGENTS.md",
+          "initial": {
+            "git_blob_sha": "f251f95d2b1a335059bb22422afde77f618918e1",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/AGENTS.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "f251f95d2b1a335059bb22422afde77f618918e1",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/17b9fa1363db6071d338be3373a4fdb11fc0076d/AGENTS.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md",
+          "initial": {
+            "git_blob_sha": "5bfb9bbc91177e2400da596b45ec809d294a3242",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "5bfb9bbc91177e2400da596b45ec809d294a3242",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/17b9fa1363db6071d338be3373a4fdb11fc0076d/docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "portfolio/lenses.py",
+          "initial": {
+            "git_blob_sha": "2b8f593991d963de3d5d5d97c5970c36115cc411",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/portfolio/lenses.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "2b8f593991d963de3d5d5d97c5970c36115cc411",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/17b9fa1363db6071d338be3373a4fdb11fc0076d/portfolio/lenses.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "portfolio/held_risk.py",
+          "initial": {
+            "git_blob_sha": "4ec5eb6047848d46b0d780dfdf9f3967fd0d1796",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/portfolio/held_risk.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "4ec5eb6047848d46b0d780dfdf9f3967fd0d1796",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/17b9fa1363db6071d338be3373a4fdb11fc0076d/portfolio/held_risk.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "brain/research_desk.py",
+          "initial": {
+            "git_blob_sha": "702e398f107831e862efafd6e5df35ca703361a4",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/brain/research_desk.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "702e398f107831e862efafd6e5df35ca703361a4",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/17b9fa1363db6071d338be3373a4fdb11fc0076d/brain/research_desk.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "brain/bottleneck.py",
+          "initial": {
+            "git_blob_sha": "f0ab5274df108cc7d56674c2c238eb2698ef7fdd",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/brain/bottleneck.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "f0ab5274df108cc7d56674c2c238eb2698ef7fdd",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/17b9fa1363db6071d338be3373a4fdb11fc0076d/brain/bottleneck.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "loop/fundamentals.py",
+          "initial": {
+            "git_blob_sha": "b8ede9c1dc3d5c9adca9100a47a07db2c382267b",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/loop/fundamentals.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "b8ede9c1dc3d5c9adca9100a47a07db2c382267b",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/17b9fa1363db6071d338be3373a4fdb11fc0076d/loop/fundamentals.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "loop/single_name_panel.py",
+          "initial": {
+            "git_blob_sha": "9967191353f96dd8feebf6f16941e47f2a69ed15",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/loop/single_name_panel.py"
+          },
+          "final_cut": {
+            "git_blob_sha": "9967191353f96dd8feebf6f16941e47f2a69ed15",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/17b9fa1363db6071d338be3373a4fdb11fc0076d/loop/single_name_panel.py"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "data/census/CENSUS.md",
+          "initial": {
+            "git_blob_sha": "dcf51d160ba9b470c91309b2dc19cf2d0048b458",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/data/census/CENSUS.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "dcf51d160ba9b470c91309b2dc19cf2d0048b458",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/17b9fa1363db6071d338be3373a4fdb11fc0076d/data/census/CENSUS.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "docs/superpowers/specs/2026-09-15-mastermind-portfolio-v3-risk-first-autonomous-manager-design.md",
+          "initial": {
+            "git_blob_sha": "d700d50d62c9ee585aafb9737e3a35e7734e42e4",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/docs/superpowers/specs/2026-09-15-mastermind-portfolio-v3-risk-first-autonomous-manager-design.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "d700d50d62c9ee585aafb9737e3a35e7734e42e4",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/17b9fa1363db6071d338be3373a4fdb11fc0076d/docs/superpowers/specs/2026-09-15-mastermind-portfolio-v3-risk-first-autonomous-manager-design.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        },
+        {
+          "path": "docs/superpowers/plans/2026-09-15-mastermind-portfolio-v3-s0-decision-snapshot.md",
+          "initial": {
+            "git_blob_sha": "789c558abbc168499f623990667c944248566ef5",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/docs/superpowers/plans/2026-09-15-mastermind-portfolio-v3-s0-decision-snapshot.md"
+          },
+          "final_cut": {
+            "git_blob_sha": "789c558abbc168499f623990667c944248566ef5",
+            "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/17b9fa1363db6071d338be3373a4fdb11fc0076d/docs/superpowers/plans/2026-09-15-mastermind-portfolio-v3-s0-decision-snapshot.md"
+          },
+          "ruling": "UNCHANGED_BLOB"
+        }
+      ],
+      "changed_procedure_paths": [],
+      "changed_source_paths": [],
+      "ruling": "NO_MATERIAL_DRIFT_FOUND_IN_REQUESTED_SAMPLE. All 18 requested blobs match. The seven named Skillpack files, AGENTS and Chairman routing addendum retain identical full content. No changed procedure read is required from this diff. Six portfolio/research/loop files, CENSUS and the two V3/S0 documents are likewise identical. Preserve initial audit citations and append this named final-cut corroboration.",
+      "limitations": [
+        "This is an exact comparison of the requested paths, not a whole-repository or all-active-custody audit.",
+        "Protection was observed through the branch API at the stated time; future head changes require separately scoped reconciliation.",
+        "Identical source/specification content does not independently establish current production capability or active host state."
+      ],
+      "errors": []
+    }
+  },
+  "review_disposition": {
+    "independent_validation": "PASS after agreed corrections; scope and findings in REVIEW_AND_ACCEPTANCE.md",
+    "independent_options_fact_spot_review": "No material error in scoped main sections/source register; no live sample certification",
+    "owner_review": "Concrete findings incorporated by principal; code/hash/status receipts retained"
+  },
+  "empirical_limitations": [
+    "No new backtest or signing accuracy result.",
+    "No current external host-store coverage census.",
+    "No executed private vendor agreement or licensed sample inspected.",
+    "No source decision authority conferred.",
+    "Proposed thresholds and fixtures are future study designs."
+  ],
+  "next_commission": {
+    "id": "C15-R0",
+    "location": "COMMISSION_15_HARDENED_REPORT.md section L",
+    "state": "PROPOSED_NOT_EXECUTED",
+    "qualification_exits": [
+      "QUALIFIED_MEASUREMENT",
+      "QUALIFICATION_BLOCKED_WITH_EVIDENCE"
+    ]
+  }
+}

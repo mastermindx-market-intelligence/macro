@@ -1,0 +1,96 @@
+{
+  "pickup": "4815acf7fcd7ed5ad7bf7a5aacac00aff8c0bdac",
+  "base": "fc6db6c1f9a76cadc180c44e386ae928c1a9ccbc",
+  "files": [
+    {
+      "label": "pickup",
+      "path": "templates/darkpool.html.j2",
+      "sha": "d066089e024ee2ddc577663a22f7460bd19f2417"
+    },
+    {
+      "label": "pickup",
+      "path": "site/darkpool.html",
+      "sha": "2be32e1c868743df777cc434e0612937afc44b69"
+    },
+    {
+      "label": "pickup",
+      "path": "tests/test_darkpool_desk.py",
+      "sha": "430da45cac81435331e8f227bcbd748f5e6cff9e"
+    },
+    {
+      "label": "pickup",
+      "path": "scripts/build_darkpool_desk.py",
+      "sha": "d6d536c4f7f4d7183952bd9c4069cc57cf3f7039"
+    },
+    {
+      "label": "pickup",
+      "path": "engine/darkpool_signals.py",
+      "sha": "29f24ae394fd37cac587e70e908d8dd75b6c9100"
+    },
+    {
+      "label": "pickup",
+      "path": "site/theme.js",
+      "sha": "65d29fac37eac4fa8843b52ac053394e92e750d6"
+    },
+    {
+      "label": "pickup",
+      "path": "site/theme.css",
+      "sha": "41f0c3bdea3979faf4a57f2a98e31a4df54a5973"
+    },
+    {
+      "label": "pickup",
+      "path": "site/live.js",
+      "sha": "6c15cdfc1feea10cb86d988af6fcbc6d9e13e275"
+    },
+    {
+      "label": "pickup",
+      "path": "config/site_access.yml",
+      "sha": "41a8bdeb5a9147893890c54997cc6a1ae0119e59"
+    },
+    {
+      "label": "current",
+      "path": "templates/darkpool.html.j2",
+      "sha": "d066089e024ee2ddc577663a22f7460bd19f2417"
+    },
+    {
+      "label": "current",
+      "path": "site/darkpool.html",
+      "sha": "2be32e1c868743df777cc434e0612937afc44b69"
+    },
+    {
+      "label": "current",
+      "path": "tests/test_darkpool_desk.py",
+      "sha": "430da45cac81435331e8f227bcbd748f5e6cff9e"
+    },
+    {
+      "label": "current",
+      "path": "scripts/build_darkpool_desk.py",
+      "sha": "d6d536c4f7f4d7183952bd9c4069cc57cf3f7039"
+    },
+    {
+      "label": "current",
+      "path": "engine/darkpool_signals.py",
+      "sha": "29f24ae394fd37cac587e70e908d8dd75b6c9100"
+    },
+    {
+      "label": "current",
+      "path": "site/theme.js",
+      "sha": "65d29fac37eac4fa8843b52ac053394e92e750d6"
+    },
+    {
+      "label": "current",
+      "path": "site/theme.css",
+      "sha": "41f0c3bdea3979faf4a57f2a98e31a4df54a5973"
+    },
+    {
+      "label": "current",
+      "path": "site/live.js",
+      "sha": "6c15cdfc1feea10cb86d988af6fcbc6d9e13e275"
+    },
+    {
+      "label": "current",
+      "path": "config/site_access.yml",
+      "sha": "41a8bdeb5a9147893890c54997cc6a1ae0119e59"
+    }
+  ]
+}

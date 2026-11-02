@@ -1,0 +1,143 @@
+{
+  "schema": "gmi.retained_micron_semantic_read_receipt/v1",
+  "task": "C01 retained-byte semantic addendum",
+  "evidence_scope": "New actual read of three specifically authorized retained native files; no new source acquisition",
+  "device": {
+    "carrier": "Remote Desktop Commander",
+    "device_id": "3f5ce987-e3eb-40a3-af9f-4b0ae54919cc",
+    "observed_host": "m2studio",
+    "host_observation_is_authenticated_custody": false
+  },
+  "observed_read": {
+    "schema": "retained_source_read_receipt/v1",
+    "python_pid": 64638,
+    "observed_host": "m2studio",
+    "started_at_utc": "2026-10-09T10:20:01.520305+00:00",
+    "completed_at_utc": "2026-10-09T10:20:01.525503+00:00",
+    "files": [
+      {
+        "label": "retained_source",
+        "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/micron-hbm3e-a7efabf9cec581ba684688368118e3e13df6a3043aff56667927e24df97e8b2e.html",
+        "bytes": 504119,
+        "sha256": "a7efabf9cec581ba684688368118e3e13df6a3043aff56667927e24df97e8b2e",
+        "regular_file": true,
+        "nofollow": true,
+        "bounded_read": true,
+        "descriptor_metadata_stable_during_read": true,
+        "utf8_exact_roundtrip": true
+      },
+      {
+        "label": "manual_candidate",
+        "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/micron-manual-candidate.json",
+        "bytes": 1930,
+        "sha256": "5e2a2c789599e5e146b6e2969ccc243ee5c85b7d74c67af76b7c437857c4383c",
+        "regular_file": true,
+        "nofollow": true,
+        "bounded_read": true,
+        "descriptor_metadata_stable_during_read": true,
+        "utf8_exact_roundtrip": true
+      },
+      {
+        "label": "case_metadata",
+        "path": "/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-network-native-reader-20261009-pro-002/research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json",
+        "bytes": 1588,
+        "sha256": "dd72d31afce12ca727a171e6f635d7085c8c2d6bff6bea2750f9c29a04fe101b",
+        "regular_file": true,
+        "nofollow": true,
+        "bounded_read": true,
+        "descriptor_metadata_stable_during_read": true,
+        "utf8_exact_roundtrip": true
+      }
+    ],
+    "span": {
+      "character_start": 370876,
+      "character_end": 371258,
+      "byte_start": 370936,
+      "byte_end": 371320,
+      "characters": 382,
+      "bytes": 384,
+      "sha256": "f79bce81f656e826b3aa74380eb9a2b63bf74fc0e60376dc2b40c64600eb890a",
+      "character_to_byte_coordinates_match": true
+    },
+    "context": {
+      "character_start": 369676,
+      "character_end": 372658,
+      "byte_start": 369736,
+      "byte_end": 372732,
+      "characters": 2982,
+      "bytes": 2996,
+      "sha256": "97be3fa06ae6122e27f12eef208c2b081e166dcc55d35dd3c94703f7b6f740dd"
+    },
+    "git_commands": 0,
+    "application_imports": 0,
+    "source_capture": false,
+    "native_writes_requested": false
+  },
+  "candidate_binding_comparison": {
+    "schema": "retained_candidate_binding_comparison/v1",
+    "candidate_id": "manual:micron-hbm3e-h200:2024-02-26:1",
+    "candidate_source_sha256_matches_actual": true,
+    "candidate_span_text_matches_actual": true,
+    "candidate_coordinates_match_actual": true,
+    "candidate_span_hash_matches_actual": true,
+    "candidate_span_byte_count_matches_actual": true,
+    "candidate_assertion_matches_metadata": true,
+    "candidate_dataset_null": true,
+    "candidate_temporal_row_null": true,
+    "candidate_identity_annotations_null": true
+  },
+  "candidate_document_projection": {
+    "document_id": "manual:micron-ir:hbm3e-h200:2024-02-26",
+    "source_version": "sha256:a7efabf9cec581ba684688368118e3e13df6a3043aff56667927e24df97e8b2e",
+    "source_url": "https://investors.micron.com/news/press-release/2024/Micron-Commences-Volume-Production-of-Industry-Leading-HBM3E-Solution-to-Accelerate-the-Growth-of-AI-02-26-2024/default.aspx",
+    "published_date": "2024-02-26",
+    "published_instant": null
+  },
+  "processes": [
+    {
+      "pid": 64638,
+      "role": "bounded_read_three_files_hash_and_span_context_view",
+      "started_at_utc": "2026-10-09T10:20:01.520305+00:00",
+      "completed_read_at_utc": "2026-10-09T10:20:01.525503+00:00",
+      "exit_code": 0,
+      "completion_observed_via": "RDC read_process_output",
+      "shell": "/bin/zsh",
+      "invocation": "PYTHONDONTWRITEBYTECODE=1 python3 -B -S"
+    },
+    {
+      "pid": 71456,
+      "role": "bounded_repeat_candidate_read_document_header_view",
+      "observed_at_utc": "2026-10-09T10:20:49.374521+00:00",
+      "exit_code": 0,
+      "completion_observed_via": "RDC read_process_output",
+      "shell": "/bin/zsh",
+      "invocation": "PYTHONDONTWRITEBYTECODE=1 python3 -B -S"
+    }
+  ],
+  "byte_interpretation": {
+    "source": "Original UTF-8 retained HTML, not browser text or a newly acquired source",
+    "span": "Raw HTML bytes including inline markup; exact UTF-8 roundtrip",
+    "context": "Exactly 1200 characters before the supplied span and 1400 after; the surrounding window includes the date line, separate memory-production statement and beginning of product-feature material",
+    "candidate_json": "Exact supplied file was hashed and decoded; semantic assertion and document metadata were inspected",
+    "metadata": "Existing metadata file was hashed and its source/candidate/span bindings compared; timestamps in it are retained metadata, not newly authenticated historical custody"
+  },
+  "effects": {
+    "native_writes_requested": false,
+    "git_commands": 0,
+    "application_imports": 0,
+    "consumer_or_test_runs": 0,
+    "provider_calls": 0,
+    "new_source_captures": 0,
+    "network_fetches_by_read_scripts": 0,
+    "credentials_read": false
+  },
+  "limitations": [
+    "A matching digest identifies the inspected bytes but does not authenticate the original publisher/capture actor or history.",
+    "Only the stated 2982-character context was semantically inspected; no complete-document semantic review is claimed.",
+    "No raw source or complete candidate body is retained in this addendum."
+  ],
+  "body_disclosure": {
+    "source_body_in_artifact": false,
+    "candidate_body_in_artifact": false
+  }
+}

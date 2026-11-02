@@ -1,0 +1,577 @@
+{
+  "asof": "2026-09-21",
+  "authority_ceiling": "research_internal_only",
+  "availability": {
+    "reason": null,
+    "state": "OK"
+  },
+  "canonical_mapping": {
+    "state": "NOT_APPLICABLE",
+    "theme_node_ids": []
+  },
+  "counts": {
+    "future_beliefs_excluded": 0,
+    "proposals": 0,
+    "relations": 13
+  },
+  "curation": {
+    "counts": {
+      "proposed": 0,
+      "ratified": 0,
+      "rejected": 0
+    },
+    "proposal_ids": [],
+    "state": "NONE"
+  },
+  "knowledge_cutoff": "2026-09-21",
+  "limitations": [
+    "exact node_id only; labels are never fuzzy-matched",
+    "probation proposals have zero graph authority",
+    "internal research projection; public display still requires the cited rights receipts",
+    "no ranking, scoring, selection, trade, or ThemeState authority"
+  ],
+  "node_id": "basket:baskets_china_ths:ths_solid_state",
+  "ordering": "type,direction,peer_node_id,edge_id; never score",
+  "proposals": [],
+  "relations": [
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "raw_snapshot",
+      "direction": "OUTGOING",
+      "edge_id": "expresses:basket:baskets_china_ths:ths_solid_state->ltheme:ths:308294@2026-06-30",
+      "evidence_refs": [
+        "ev:a8cd1b7326fe6ff8",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-06-30",
+      "peer": {
+        "external_ids": {
+          "ths_code": "308294"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "固态电池",
+        "node_id": "ltheme:ths:308294",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "固态电池",
+          "source_local_id": "308294",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:308294",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "scrape",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-06-30",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-08-30",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "seed_constant",
+      "direction": "INCOMING",
+      "edge_id": "member_of:co:cn:000811.SZ->basket:baskets_china_ths:ths_solid_state@2021-06-15",
+      "evidence_refs": [
+        "ev:a8cd1b7326fe6ff8"
+      ],
+      "evidence_time": "2026-06-30",
+      "peer": {
+        "external_ids": {
+          "symbol": "000811.SZ"
+        },
+        "kind": "company",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "冰轮环境",
+        "node_id": "co:cn:000811.SZ",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "co:cn:000811.SZ",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "scrape",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "MEMBER_OF",
+      "valid_from": "2021-06-15",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "seed_constant",
+      "direction": "INCOMING",
+      "edge_id": "member_of:co:cn:002407.SZ->basket:baskets_china_ths:ths_solid_state@2021-06-15",
+      "evidence_refs": [
+        "ev:a8cd1b7326fe6ff8"
+      ],
+      "evidence_time": "2026-06-30",
+      "peer": {
+        "external_ids": {
+          "symbol": "002407.SZ"
+        },
+        "kind": "company",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "多氟多",
+        "node_id": "co:cn:002407.SZ",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "co:cn:002407.SZ",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "scrape",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "MEMBER_OF",
+      "valid_from": "2021-06-15",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-08-23",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "seed_constant",
+      "direction": "INCOMING",
+      "edge_id": "member_of:co:cn:300007.SZ->basket:baskets_china_ths:ths_solid_state@2021-06-15",
+      "evidence_refs": [
+        "ev:a8cd1b7326fe6ff8"
+      ],
+      "evidence_time": "2026-06-30",
+      "peer": {
+        "external_ids": {
+          "symbol": "300007.SZ"
+        },
+        "kind": "company",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "汉威科技",
+        "node_id": "co:cn:300007.SZ",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "co:cn:300007.SZ",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "scrape",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "MEMBER_OF",
+      "valid_from": "2021-06-15",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-08-23",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "seed_constant",
+      "direction": "INCOMING",
+      "edge_id": "member_of:co:cn:300037.SZ->basket:baskets_china_ths:ths_solid_state@2021-06-15",
+      "evidence_refs": [
+        "ev:a8cd1b7326fe6ff8"
+      ],
+      "evidence_time": "2026-06-30",
+      "peer": {
+        "external_ids": {
+          "symbol": "300037.SZ"
+        },
+        "kind": "company",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "新宙邦",
+        "node_id": "co:cn:300037.SZ",
+        "provenance": "membership_doc:baskets_china",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "co:cn:300037.SZ",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "scrape",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "MEMBER_OF",
+      "valid_from": "2021-06-15",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-08-23",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "seed_constant",
+      "direction": "INCOMING",
+      "edge_id": "member_of:co:cn:300568.SZ->basket:baskets_china_ths:ths_solid_state@2021-06-15",
+      "evidence_refs": [
+        "ev:a8cd1b7326fe6ff8"
+      ],
+      "evidence_time": "2026-06-30",
+      "peer": {
+        "external_ids": {
+          "symbol": "300568.SZ"
+        },
+        "kind": "company",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "星源材质",
+        "node_id": "co:cn:300568.SZ",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "co:cn:300568.SZ",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "scrape",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "MEMBER_OF",
+      "valid_from": "2021-06-15",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "seed_constant",
+      "direction": "INCOMING",
+      "edge_id": "member_of:co:cn:600378.SS->basket:baskets_china_ths:ths_solid_state@2021-06-15",
+      "evidence_refs": [
+        "ev:a8cd1b7326fe6ff8"
+      ],
+      "evidence_time": "2026-06-30",
+      "peer": {
+        "external_ids": {
+          "symbol": "600378.SS"
+        },
+        "kind": "company",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "昊华科技",
+        "node_id": "co:cn:600378.SS",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "co:cn:600378.SS",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "scrape",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "MEMBER_OF",
+      "valid_from": "2021-06-15",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "seed_constant",
+      "direction": "INCOMING",
+      "edge_id": "member_of:co:cn:600641.SS->basket:baskets_china_ths:ths_solid_state@2021-06-15",
+      "evidence_refs": [
+        "ev:a8cd1b7326fe6ff8"
+      ],
+      "evidence_time": "2026-06-30",
+      "peer": {
+        "external_ids": {
+          "symbol": "600641.SS"
+        },
+        "kind": "company",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "先导基电",
+        "node_id": "co:cn:600641.SS",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "co:cn:600641.SS",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "scrape",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "MEMBER_OF",
+      "valid_from": "2021-06-15",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "seed_constant",
+      "direction": "INCOMING",
+      "edge_id": "member_of:co:cn:603067.SS->basket:baskets_china_ths:ths_solid_state@2021-06-15",
+      "evidence_refs": [
+        "ev:a8cd1b7326fe6ff8",
+        "ev:71d2e310f882057e"
+      ],
+      "evidence_time": "2026-06-30",
+      "peer": {
+        "external_ids": {
+          "symbol": "603067.SS"
+        },
+        "kind": "company",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "振华股份",
+        "node_id": "co:cn:603067.SS",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "co:cn:603067.SS",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "scrape",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "MEMBER_OF",
+      "valid_from": "2021-06-15",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-08-30",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "seed_constant",
+      "direction": "INCOMING",
+      "edge_id": "member_of:co:cn:688097.SS->basket:baskets_china_ths:ths_solid_state@2021-06-15",
+      "evidence_refs": [
+        "ev:a8cd1b7326fe6ff8"
+      ],
+      "evidence_time": "2026-06-30",
+      "peer": {
+        "external_ids": {
+          "symbol": "688097.SS"
+        },
+        "kind": "company",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "博众精工",
+        "node_id": "co:cn:688097.SS",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "co:cn:688097.SS",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "scrape",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "MEMBER_OF",
+      "valid_from": "2021-06-15",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-08-23",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "seed_constant",
+      "direction": "INCOMING",
+      "edge_id": "member_of:co:cn:688306.SS->basket:baskets_china_ths:ths_solid_state@2021-06-15",
+      "evidence_refs": [
+        "ev:a8cd1b7326fe6ff8"
+      ],
+      "evidence_time": "2026-06-30",
+      "peer": {
+        "external_ids": {
+          "symbol": "688306.SS"
+        },
+        "kind": "company",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "均普智能",
+        "node_id": "co:cn:688306.SS",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "co:cn:688306.SS",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "scrape",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "MEMBER_OF",
+      "valid_from": "2021-06-15",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-08-30",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "seed_constant",
+      "direction": "INCOMING",
+      "edge_id": "member_of:co:cn:688388.SS->basket:baskets_china_ths:ths_solid_state@2021-06-15",
+      "evidence_refs": [
+        "ev:a8cd1b7326fe6ff8"
+      ],
+      "evidence_time": "2026-06-30",
+      "peer": {
+        "external_ids": {
+          "symbol": "688388.SS"
+        },
+        "kind": "company",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "嘉元科技",
+        "node_id": "co:cn:688388.SS",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "co:cn:688388.SS",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "scrape",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "MEMBER_OF",
+      "valid_from": "2021-06-15",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "seed_constant",
+      "direction": "INCOMING",
+      "edge_id": "member_of:co:cn:688559.SS->basket:baskets_china_ths:ths_solid_state@2021-06-15",
+      "evidence_refs": [
+        "ev:a8cd1b7326fe6ff8"
+      ],
+      "evidence_time": "2026-06-30",
+      "peer": {
+        "external_ids": {
+          "symbol": "688559.SS"
+        },
+        "kind": "company",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "海目星",
+        "node_id": "co:cn:688559.SS",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "co:cn:688559.SS",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "scrape",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "MEMBER_OF",
+      "valid_from": "2021-06-15",
+      "valid_to": null
+    }
+  ],
+  "schema": "gmi.theme_ontology_neighborhood/v1",
+  "subject": {
+    "external_ids": {
+      "basket_id": "ths_solid_state",
+      "suite": "baskets_china_ths",
+      "ths_code": "308294"
+    },
+    "kind": "basket",
+    "market_scope": "cn",
+    "merged_into": null,
+    "name_en": "Solid-State Battery",
+    "name_zh": "固态电池",
+    "node_id": "basket:baskets_china_ths:ths_solid_state",
+    "provenance": "membership_doc:baskets_china_ths",
+    "source_meta": null,
+    "status": "canonical",
+    "tier": null
+  }
+}

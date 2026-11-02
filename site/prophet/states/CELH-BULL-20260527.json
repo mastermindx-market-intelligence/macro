@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CELH-BULL-20260527",
-  "asof": "2026-09-17",
+  "asof": "2026-11-02",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
-  "management_confidence": 29.0,
-  "raw_confidence": 32.0,
-  "delta_vs_base": -31.0,
-  "recommended_action": "trim",
-  "human_state": "Deep Giveback \u2014 Reassess",
+  "management_confidence": 36.0,
+  "raw_confidence": 36.5,
+  "delta_vs_base": -24.0,
+  "recommended_action": null,
+  "human_state": "Closed",
   "components": {
-    "validity": 42.2,
+    "validity": 86.9,
     "progress": 32.8,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 59.0
+    "overlay": 58.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.528,
+    "dist_to_stop_r": 0.901,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 108.9,
-    "p1": -0.3147,
-    "p2": -0.1574,
+    "horizon_pct_used": 211.1,
+    "p1": -0.0658,
+    "p2": -0.0329,
     "p3": null,
-    "move_r": -0.472,
+    "move_r": -0.099,
     "mfe_r": 2.571,
     "mae_r": -1.167
   },
@@ -36,7 +36,7 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 5.990000152587889,
@@ -45,6 +45,8 @@
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": "2026-08-21",
   "_first_t2_ts": null,
-  "days_elapsed": 49,
-  "tau": 1.0889
+  "days_elapsed": 95,
+  "tau": 2.1111,
+  "closed": true,
+  "outcome": "T1_HIT"
 }

@@ -41,7 +41,8 @@ def main() -> int:
     env = Environment(loader=FileSystemLoader(
         str(Path(__file__).resolve().parent.parent / "templates")), autoescape=False)
     from engine import i18n
-    env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
+    from engine.hk_tier1 import cycle_lane as _cycle_lane
+    env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t, cycle_lane=_cycle_lane)
     tmpl = env.get_template("hk.html.j2")
 
     for mode, name in (("macro", "hk.html"), ("stocks", "hk_stocks.html")):

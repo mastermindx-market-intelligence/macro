@@ -1,0 +1,4 @@
+FROZEN_AT_UTC=2026-10-09T09:38:41Z
+PREREG_SHA256=23a6f671da42e23a0660447f984f92662c34db8d5ff894b95753125513bc8a03
+FILE=PREREG.md
+SOURCE=`date -u +%Y-%m-%dT%H:%M:%SZ` and `shasum -a 256 PREREG.md`, both run before any evaluation outcome was computed

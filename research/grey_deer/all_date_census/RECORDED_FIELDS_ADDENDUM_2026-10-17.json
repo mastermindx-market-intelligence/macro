@@ -1,0 +1,681 @@
+{
+  "correction": "The executed replay selected ungated_state; native Radar uses state_ungated. Null in the original extraction is not evidence of native absence. This addendum reads exact original blobs; no historical recomputation.",
+  "corrects_artifact": "research/grey_deer/all_date_census/RECORDED_VERSIONS_2026-10-17.json",
+  "original_sha256": "6e2bbe6c452ffe9de35488912ac219487fbfe3f6a7dbf0697614f9ba0bb49a72",
+  "records": [
+    {
+      "available_at": null,
+      "blob_sha": "0015cc657c5e6e6041b6de87dd3f615f586cabbf",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-01",
+        "can_force": false,
+        "gate_clamped": false,
+        "state": "watch",
+        "state_ungated": "watch",
+        "top_score": 56.0
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-01",
+      "research_decision_cutoff": "2026-09-02T13:30:00+00:00",
+      "version_commit": "1a488e24640f32f547819e5f2ecae3632a722193"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "0015cc657c5e6e6041b6de87dd3f615f586cabbf",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-01",
+        "can_force": false,
+        "gate_clamped": false,
+        "state": "watch",
+        "state_ungated": "watch",
+        "top_score": 56.0
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-02",
+      "research_decision_cutoff": "2026-09-03T13:30:00+00:00",
+      "version_commit": "1a488e24640f32f547819e5f2ecae3632a722193"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "ce483053e27654e44570b428c221b9270911e4f9",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-03",
+        "can_force": false,
+        "gate_clamped": false,
+        "state": "watch",
+        "state_ungated": "watch",
+        "top_score": 49.9
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-03",
+      "research_decision_cutoff": "2026-09-04T13:30:00+00:00",
+      "version_commit": "297b3e6f16a20fb9ec090847de4ba53bbeda80be"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "f8b147a42cc0d19125cf7257cb02315502e9467a",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-04",
+        "can_force": false,
+        "gate_clamped": false,
+        "state": "watch",
+        "state_ungated": "watch",
+        "top_score": 63.9
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-04",
+      "research_decision_cutoff": "2026-09-08T13:30:00+00:00",
+      "version_commit": "e303b3448f974fd61340c0c7f3e76b0e5ccb4b3b"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "89ee7d9c26ddb8af1f51a59c3cd1516e636c7690",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-08",
+        "can_force": false,
+        "gate_clamped": false,
+        "state": "caution",
+        "state_ungated": "caution",
+        "top_score": 75.1
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-08",
+      "research_decision_cutoff": "2026-09-09T13:30:00+00:00",
+      "version_commit": "477b9c3f449e451063634f1078fc6ce47e209648"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "56679db2ffa8862fd2c1734f84e020e053faec87",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-09",
+        "can_force": false,
+        "gate_clamped": false,
+        "state": "watch",
+        "state_ungated": "watch",
+        "top_score": 65.7
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-09",
+      "research_decision_cutoff": "2026-09-10T13:30:00+00:00",
+      "version_commit": "cdab3525f6493096c94aca9719d73bdffbaaaf20"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "d065755554c63f247fc2158edb7300e02e10d405",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-10",
+        "can_force": false,
+        "gate_clamped": false,
+        "state": "watch",
+        "state_ungated": "watch",
+        "top_score": 59.9
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-10",
+      "research_decision_cutoff": "2026-09-11T13:30:00+00:00",
+      "version_commit": "9b2d7b7d87556809e816edeecaf49fd362a7f2b1"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "a7d170442ceec2d755fcd93df00c1a18a8c46bdb",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-11",
+        "can_force": false,
+        "gate_clamped": false,
+        "state": "caution",
+        "state_ungated": "caution",
+        "top_score": 53.9
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-11",
+      "research_decision_cutoff": "2026-09-14T13:30:00+00:00",
+      "version_commit": "cf28b6bcb8e77b7143ab618e5780f90221b25001"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "b514d2927feeae2d4b1fc5fe8b9ed32d10bb34b0",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-14",
+        "can_force": false,
+        "gate_clamped": false,
+        "state": "caution",
+        "state_ungated": "caution",
+        "top_score": 50.0
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-14",
+      "research_decision_cutoff": "2026-09-15T13:30:00+00:00",
+      "version_commit": "19d1832d779f32d2a46e342088f87fc7bc5c9d49"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "21d0f8325f640726bece94081f3b1e671e447fcc",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-15",
+        "can_force": false,
+        "gate_clamped": false,
+        "state": "caution",
+        "state_ungated": "caution",
+        "top_score": 51.4
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-15",
+      "research_decision_cutoff": "2026-09-16T13:30:00+00:00",
+      "version_commit": "4347812e120f5c2dc84190a740eb395651d351e1"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "16fd6139e8c546982ea0dbca77b678c304a78d85",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-16",
+        "can_force": false,
+        "gate_clamped": false,
+        "state": "caution",
+        "state_ungated": "caution",
+        "top_score": 67.9
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-16",
+      "research_decision_cutoff": "2026-09-17T13:30:00+00:00",
+      "version_commit": "92b0487f3187cf742bfa92c512eafc1aa08f7428"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "28ae79a1e54990fff2f7427a9b04ddbe80018dcc",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-17",
+        "can_force": false,
+        "gate_clamped": false,
+        "state": "calm",
+        "state_ungated": "calm",
+        "top_score": 47.9
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-17",
+      "research_decision_cutoff": "2026-09-18T13:30:00+00:00",
+      "version_commit": "706c352cd04fdcadf2fe1633d8fedb18d43c381d"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "b92af7138f2739bec875f0d6d6426d214720ced2",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-18",
+        "can_force": false,
+        "gate_clamped": false,
+        "state": "caution",
+        "state_ungated": "caution",
+        "top_score": 56.1
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-18",
+      "research_decision_cutoff": "2026-09-21T13:30:00+00:00",
+      "version_commit": "f43207a34db84692eefc5cc3bf50fd71237f5584"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "619811fdc4dc4b58b9447fd3efaebc1a39ef4c4f",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-21",
+        "can_force": false,
+        "gate_clamped": false,
+        "state": "caution",
+        "state_ungated": "caution",
+        "top_score": 57.9
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-21",
+      "research_decision_cutoff": "2026-09-22T13:30:00+00:00",
+      "version_commit": "6778c552b5e7a4c96e2de54bff43da892ee6eaae"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "6fe44a9728dea221d29aab44760e59fe3f042d43",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-21",
+        "can_force": false,
+        "gate_clamped": false,
+        "state": "calm",
+        "state_ungated": "calm",
+        "top_score": 39.2
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-22",
+      "research_decision_cutoff": "2026-09-23T13:30:00+00:00",
+      "version_commit": "f426902719ce03a4866317052b74a67b36ecb826"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "5c4b13e3959677d37d1717134f107bc93dd78e5b",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-23",
+        "can_force": false,
+        "gate_clamped": false,
+        "state": "caution",
+        "state_ungated": "caution",
+        "top_score": 69.9
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-23",
+      "research_decision_cutoff": "2026-09-24T13:30:00+00:00",
+      "version_commit": "fab3ad33b72f9f1a395d02a08325db525b3d66d5"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "4c079ac36b8df4fc2123ca78162e410a525a3802",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-24",
+        "can_force": false,
+        "gate_clamped": true,
+        "state": "caution",
+        "state_ungated": "elevated",
+        "top_score": 80.7
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-24",
+      "research_decision_cutoff": "2026-09-25T13:30:00+00:00",
+      "version_commit": "969883bc9733eaa81af6dbdcd6841fd363b6aeda"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "c0db281da3b3b44eba94923848004ba6bbd10c07",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-25",
+        "can_force": false,
+        "gate_clamped": true,
+        "state": "caution",
+        "state_ungated": "elevated",
+        "top_score": 80.3
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-25",
+      "research_decision_cutoff": "2026-09-28T13:30:00+00:00",
+      "version_commit": "071b703f2ef58e0f8a0c444a76af75e1591ec662"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "a285d4d6640f0ef897fa658363072db3fe378047",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-28",
+        "can_force": false,
+        "gate_clamped": true,
+        "state": "caution",
+        "state_ungated": "elevated",
+        "top_score": 87.3
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-28",
+      "research_decision_cutoff": "2026-09-29T13:30:00+00:00",
+      "version_commit": "68e62056202356ca30fbfea4111bf82f81a4f9fa"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "7998aa81c0657f6df8e4e0c8c6391c2d58f01f01",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-29",
+        "can_force": false,
+        "gate_clamped": true,
+        "state": "caution",
+        "state_ungated": "risk-off",
+        "top_score": 91.6
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-29",
+      "research_decision_cutoff": "2026-09-30T13:30:00+00:00",
+      "version_commit": "76e3251268b65c382f47001ae1413bf259633cfb"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "1bb8739e060a65b97d0532320145a0b3e8f2b01c",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-09-30",
+        "can_force": false,
+        "gate_clamped": true,
+        "state": "caution",
+        "state_ungated": "risk-off",
+        "top_score": 93.0
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-09-30",
+      "research_decision_cutoff": "2026-10-01T13:30:00+00:00",
+      "version_commit": "99f440526ca112999404829290d017374c31f893"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "a11e75e408dc71688ffe0cac48e887beff2e8028",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-10-01",
+        "can_force": false,
+        "gate_clamped": true,
+        "state": "caution",
+        "state_ungated": "risk-off",
+        "top_score": 91.0
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-10-01",
+      "research_decision_cutoff": "2026-10-02T13:30:00+00:00",
+      "version_commit": "ec66cc3fa210c489fd104a41c4e2cf070293421d"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "0611cc5fbded2fc9ba78ec7cae4cdac2bde1bf5d",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-10-02",
+        "can_force": false,
+        "gate_clamped": true,
+        "state": "caution",
+        "state_ungated": "risk-off",
+        "top_score": 83.7
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-10-02",
+      "research_decision_cutoff": "2026-10-05T13:30:00+00:00",
+      "version_commit": "0b6786b6dbecd75c0b3ef7a0f3cc3dc8b91dfa5f"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "40e40ca3960076eb89b344eb70156610a2335420",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-10-05",
+        "can_force": false,
+        "gate_clamped": true,
+        "state": "caution",
+        "state_ungated": "risk-off",
+        "top_score": 90.5
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-10-05",
+      "research_decision_cutoff": "2026-10-06T13:30:00+00:00",
+      "version_commit": "f7dd82910f315e82f376144388f2b38490c94ffe"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "370b8324ddead4f9853c6bb126f313a808073357",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-10-06",
+        "can_force": false,
+        "gate_clamped": true,
+        "state": "caution",
+        "state_ungated": "risk-off",
+        "top_score": 84.8
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-10-06",
+      "research_decision_cutoff": "2026-10-07T13:30:00+00:00",
+      "version_commit": "856c5939858fe6adcf41bfc2e10787a21de649a3"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "ab7c66c24ee1d870cac9252f39e1d207de2f2b9c",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-10-06",
+        "can_force": false,
+        "gate_clamped": true,
+        "state": "caution",
+        "state_ungated": "risk-off",
+        "top_score": 84.8
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-10-07",
+      "research_decision_cutoff": "2026-10-08T13:30:00+00:00",
+      "version_commit": "4a475cf69fa824556e43ff5eaf23f578aa57564f"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "e6afadf62a725e3c5b8ca43b96d229ddf6515e38",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-10-08",
+        "can_force": false,
+        "gate_clamped": true,
+        "state": "caution",
+        "state_ungated": "risk-off",
+        "top_score": 72.9
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-10-08",
+      "research_decision_cutoff": "2026-10-09T13:30:00+00:00",
+      "version_commit": "4d6ca3f0378f522362db49e729f1097accf37da1"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "cce7fefdcd1ac527a85567d800b9ee566294f43c",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-10-09",
+        "can_force": false,
+        "gate_clamped": true,
+        "state": "caution",
+        "state_ungated": "risk-off",
+        "top_score": 70.2
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-10-09",
+      "research_decision_cutoff": "2026-10-12T13:30:00+00:00",
+      "version_commit": "6be9bcc8647b9a0c64b2161397367cce6b83d62f"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "0a64151baafdc1532d17764c8e1b3d0abc51b16a",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-10-12",
+        "can_force": false,
+        "gate_clamped": true,
+        "state": "caution",
+        "state_ungated": "risk-off",
+        "top_score": 70.3
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-10-12",
+      "research_decision_cutoff": "2026-10-13T13:30:00+00:00",
+      "version_commit": "21c22e1707e51aacb37901e3b6756ad8a9321512"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "d3bbb484f67bee5e128e2a9a32d3c4524f072e71",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-10-13",
+        "can_force": false,
+        "gate_clamped": true,
+        "state": "caution",
+        "state_ungated": "risk-off",
+        "top_score": 73.9
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-10-13",
+      "research_decision_cutoff": "2026-10-14T13:30:00+00:00",
+      "version_commit": "8ce9f3e9908dd64cc3f6a014158277cf08c2a204"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "c96b9912da627a2c980937e31c14c5c1c610707f",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-10-14",
+        "can_force": false,
+        "gate_clamped": true,
+        "state": "caution",
+        "state_ungated": "risk-off",
+        "top_score": 87.9
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-10-14",
+      "research_decision_cutoff": "2026-10-15T13:30:00+00:00",
+      "version_commit": "4b7d6c7e00dc2635bd4f9c798716ca62913931e1"
+    },
+    {
+      "available_at": null,
+      "blob_sha": "b3eb745246f8038c618b69109fdb529e4a6428d6",
+      "delivered_at": null,
+      "native_fields": {
+        "alert": false,
+        "asof": "2026-10-15",
+        "can_force": false,
+        "gate_clamped": true,
+        "state": "caution",
+        "state_ungated": "risk-off",
+        "top_score": 88.2
+      },
+      "native_presence": {
+        "gate_clamped": true,
+        "state_ungated": true
+      },
+      "price_origin_date": "2026-10-15",
+      "research_decision_cutoff": "2026-10-16T13:30:00+00:00",
+      "version_commit": "3bbe42a324e9926f20ed583469ca242f3cc12116"
+    }
+  ],
+  "schema": "grey_deer.recorded_fields_addendum.v1",
+  "script_sha256": "fd85f27a9de597d1542c8d6b7179011d2d49c516ebff3389d8ec979ffc8b9096"
+}

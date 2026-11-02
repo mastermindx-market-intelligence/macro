@@ -1,0 +1,10 @@
+{
+ "alias_candidate_stores": 0,
+ "census_errors": 0,
+ "comparison_H2_run": false,
+ "eligible_stores": 0,
+ "missing_input": "synchronized same-timestamp call/put two-sided bid/ask quotes with strike, expiry, deliverable/multiplier and settlement/exercise identity (preferably European cash-settled index options), plus a dated discount curve",
+ "parquet_schemas_scanned": 25246,
+ "text_heads_scanned": 39175,
+ "verdict": "INSUFFICIENT_DATA"
+}

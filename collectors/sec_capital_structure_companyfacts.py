@@ -46,6 +46,7 @@ from engine.capital_structure.source_identity import (
 from engine.capital_structure.source_ledger_io import (
     SOURCE_LEDGER_FILENAME,
     decode_source_ledger,
+    source_ledger_part_names,
 )
 from engine.capital_structure.source_store import object_key_for_sha256
 
@@ -1046,6 +1047,70 @@ def _read_ledger(
     return _read_ledger_bytes(body, columns, label=str(path))
 
 
+def _ledger_directory_names(dirfd: int) -> list[str]:
+    try:
+        return list(os.listdir(dirfd))
+    except OSError as exc:
+        raise CompanyFactsIntakeError(
+            f"source manifest ledger directory unreadable: {exc}"
+        ) from exc
+
+
+def _read_ledger_part_bodies(
+    path: Path, *, max_bytes: int,
+    parent_fd: int | None = None,
+    deadline: float | None = None,
+    monotonic: Callable[[], float] = time.monotonic,
+) -> list[tuple[Path, bytes]]:
+    """Every part of the sharded JSON Lines ledger, in ledger order, through the boundary.
+
+    Part 1 is ``path`` itself; continuation parts are the sibling directory entries
+    matching ``SOURCE_LEDGER_PART_PATTERN``, required contiguous from 0002 by
+    ``source_ledger_part_names`` (a gap or an orphan is a corrupt ledger, never rows
+    to skip). Each part is read under the same no-follow, per-part byte cap as
+    part 1. An empty list means the ledger is absent.
+    """
+    first = _read_ledger_body(
+        path, max_bytes=max_bytes, parent_fd=parent_fd,
+        deadline=deadline, monotonic=monotonic,
+    )
+    if parent_fd is not None:
+        names = _ledger_directory_names(parent_fd)
+    else:
+        try:
+            with _open_absolute_directory(path.parent) as opened_parent_fd:
+                names = _ledger_directory_names(opened_parent_fd)
+        except CompanyFactsPathMissing:
+            names = []
+    try:
+        part_names = source_ledger_part_names(names)
+    except ManifestIdentityError as exc:
+        raise CompanyFactsIntakeError(
+            f"unreadable source manifest ledger {path}: {exc}"
+        ) from exc
+    if first is None:
+        if part_names:
+            raise CompanyFactsIntakeError(
+                f"unreadable source manifest ledger {path}: {path.name} is absent "
+                f"but continuation parts exist: {', '.join(part_names)}"
+            )
+        return []
+    bodies: list[tuple[Path, bytes]] = [(path, first)]
+    for name in part_names:
+        part_path = path.with_name(name)
+        body = _read_ledger_body(
+            part_path, max_bytes=max_bytes, parent_fd=parent_fd,
+            deadline=deadline, monotonic=monotonic,
+        )
+        if body is None:
+            raise CompanyFactsIntakeError(
+                f"unreadable source manifest ledger {path}: continuation part {name} "
+                f"was listed but could not be read"
+            )
+        bodies.append((part_path, body))
+    return bodies
+
+
 def _read_source_manifest_ledger(
     path: Path, required_keys: Sequence[str], *, max_bytes: int,
     parent_fd: int | None = None,
@@ -1057,19 +1122,22 @@ def _read_source_manifest_ledger(
     ``required_keys`` preserves the missing-column rejection the parquet reader
     performed; per-record now rather than per-frame, because JSON Lines has no
     shared column set to check against.
+
+    The ledger is sharded byte-exactly (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY):
+    ``path`` is part 1 and ``source_manifest.part-NNNN.jsonl`` siblings continue it,
+    so every part is read through the same boundary and decoded in ledger order.
     """
-    body = _read_ledger_body(
+    records: list[dict[str, Any]] = []
+    for part_path, body in _read_ledger_part_bodies(
         path, max_bytes=max_bytes, parent_fd=parent_fd,
         deadline=deadline, monotonic=monotonic,
-    )
-    if body is None:
-        return []
-    try:
-        records = decode_source_ledger(body, label=str(path))
-    except (ManifestIdentityError, TypeError, ValueError) as exc:
-        raise CompanyFactsIntakeError(
-            f"unreadable source manifest ledger {path}: {exc}"
-        ) from exc
+    ):
+        try:
+            records.extend(decode_source_ledger(body, label=str(part_path)))
+        except (ManifestIdentityError, TypeError, ValueError) as exc:
+            raise CompanyFactsIntakeError(
+                f"unreadable source manifest ledger {part_path}: {exc}"
+            ) from exc
     for index, record in enumerate(records):
         missing = [key for key in required_keys if key not in record]
         if missing:

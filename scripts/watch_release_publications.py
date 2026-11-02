@@ -77,6 +77,7 @@ class SourceSpec:
     actual_parser: str | None = None
     feed_kind: str | None = None
     follow_entry_link: bool = False
+    actual_parser_version: int = 1
 
 
 SOURCES: tuple[SourceSpec, ...] = (
@@ -91,6 +92,7 @@ SOURCES: tuple[SourceSpec, ...] = (
         ("federal open market committee", "target range", "federal funds rate"),
         event_scoped=True,
         actual_parser="fomc",
+        actual_parser_version=2,
     ),
     SourceSpec(
         "bls_cpi",
@@ -148,7 +150,7 @@ SOURCES: tuple[SourceSpec, ...] = (
         "dol_claims",
         ("CLAIMS",),
         "U.S. Department of Labor",
-        "https://www.dol.gov/newsroom/releases/eta",
+        "https://www.dol.gov/index.php/newsroom/releases/eta",
         ("unemployment insurance", "initial claims"),
         event_scoped=True,
         actual_parser="claims",
@@ -448,6 +450,77 @@ def _fetch(spec: SourceSpec, prior: dict[str, Any], timeout: float) -> dict[str,
         raise
 
 
+def _begin_source_attempt(
+    prior: dict[str, Any],
+    *,
+    now: datetime,
+    source_url: str,
+) -> dict[str, Any]:
+    """Start one durable attempt record inside the existing source state row."""
+    attempt = dict(prior)
+    try:
+        attempt_count = max(0, int(attempt.get("attempt_count") or 0)) + 1
+    except (TypeError, ValueError):
+        attempt_count = 1
+    attempted_at = now.isoformat()
+    attempt.update(
+        {
+            "attempt_count": attempt_count,
+            "first_attempt_at": attempt.get("first_attempt_at") or attempted_at,
+            "last_attempt_at": attempted_at,
+            "last_attempt_status": "in_progress",
+            "checked_at": attempted_at,
+            "source_url": source_url,
+        }
+    )
+    return attempt
+
+
+def _complete_source_attempt(
+    attempt: dict[str, Any],
+    *,
+    now: datetime,
+    source_url: str,
+    result: dict[str, Any],
+) -> dict[str, Any]:
+    """Record a successful observation without erasing prior failure lineage."""
+    completed = dict(attempt)
+    completed.update(
+        {
+            "fingerprint": result.get("fingerprint"),
+            "etag": result.get("etag"),
+            "last_modified": result.get("last_modified"),
+            "content_type": result.get("content_type"),
+            "checked_at": now.isoformat(),
+            "source_url": source_url,
+            "last_attempt_status": "ok",
+            "last_success_at": now.isoformat(),
+        }
+    )
+    return completed
+
+
+def _fail_source_attempt(
+    attempt: dict[str, Any],
+    *,
+    now: datetime,
+    source_url: str,
+    error: str,
+) -> dict[str, Any]:
+    """Persist coarse failure lineage while keeping validators and last success."""
+    failed = dict(attempt)
+    failed.update(
+        {
+            "checked_at": now.isoformat(),
+            "source_url": source_url,
+            "last_attempt_status": "error",
+            "last_error": error,
+            "last_error_at": now.isoformat(),
+        }
+    )
+    return failed
+
+
 def _resolved_spec(spec: SourceSpec, event: dict[str, Any] | None) -> SourceSpec:
     if not event or "{" not in spec.url:
         return spec
@@ -497,7 +570,8 @@ def parse_fomc_actual(body: bytes) -> dict[str, Any] | None:
     text = _html_text(body)
     decision = re.search(
         r"decided to\s+(maintain|raise|lower)\s+the target range for the "
-        r"federal funds rate\s+(?:at|to)\s+([0-9][0-9./-]*)\s+to\s+"
+        r"federal funds rate\s+(?:by\s+[0-9][0-9./-]*\s+percentage "
+        r"point(?:s)?\s+)?(?:at|to)\s+([0-9][0-9./-]*)\s+to\s+"
         r"([0-9][0-9./-]*)\s+percent",
         text,
         flags=re.IGNORECASE,
@@ -1032,7 +1106,7 @@ def detect(
                 publication.get("status") == "published_unparsed"
                 or (
                     not publication
-                    and timedelta(0) <= elapsed <= timedelta(hours=24)
+                    and timedelta(0) <= elapsed <= _alert_retention(event)
                 )
             )
             past_fast_window = now_et > _event_at(event) + _poll_after(event)
@@ -1110,6 +1184,11 @@ def detect(
             )
             if forced_repair and isinstance(repair_record, dict):
                 _start_defect_repair_attempt(repair_record, now)
+            attempt = _begin_source_attempt(
+                prior,
+                now=now,
+                source_url=resolved.url,
+            )
             try:
                 result = fetch_primary(resolved, {} if forced_repair else prior)
                 # A statement can become visible seconds before the scheduled
@@ -1135,14 +1214,12 @@ def detect(
                     and result.get("fingerprint")
                     and prior["fingerprint"] != result["fingerprint"]
                 )
-                source_state[state_key] = {
-                    "fingerprint": result.get("fingerprint"),
-                    "etag": result.get("etag"),
-                    "last_modified": result.get("last_modified"),
-                    "content_type": result.get("content_type"),
-                    "checked_at": now.isoformat(),
-                    "source_url": resolved.url,
-                }
+                source_state[state_key] = _complete_source_attempt(
+                    attempt,
+                    now=now,
+                    source_url=resolved.url,
+                    result=result,
+                )
                 if legacy_state_key != state_key:
                     source_state.pop(legacy_state_key, None)
                 detail_errors: list[str] = []
@@ -1337,7 +1414,7 @@ def detect(
                     if resolved.actual_parser:
                         publication["parser"] = {
                             "name": str(resolved.actual_parser),
-                            "version": 1,
+                            "version": int(resolved.actual_parser_version),
                         }
                     if actual and not keep_verified_binding:
                         publication["actual"] = {
@@ -1382,6 +1459,14 @@ def detect(
                     }
                 )
             except Exception as exc:  # noqa: BLE001 - source failure is display health
+                source_state[state_key] = _fail_source_attempt(
+                    attempt,
+                    now=now,
+                    source_url=resolved.url,
+                    error=type(exc).__name__,
+                )
+                if legacy_state_key != state_key:
+                    source_state.pop(legacy_state_key, None)
                 if forced_repair and isinstance(repair_record, dict):
                     _fail_defect_repair(repair_record, type(exc).__name__)
                 log.warning(

@@ -1,0 +1,22 @@
+{
+  "scope": "Same committed local content-plan input, not production latency",
+  "source_root": "/Volumes/Mastermind/worktrees/admin-revamp-20260921",
+  "inline": {
+    "ok": true,
+    "bytes": 2875956,
+    "seconds": 0.29,
+    "revision": "c9d133b9edbe08d84acb0a75f4e97dd9b277ce8b5568e977c26e858d2663ec86",
+    "accounts": 13,
+    "posts": 38,
+    "charts": 27
+  },
+  "metadata": {
+    "ok": true,
+    "bytes": 40294,
+    "seconds": 0.225,
+    "revision": "c9d133b9edbe08d84acb0a75f4e97dd9b277ce8b5568e977c26e858d2663ec86",
+    "accounts": 13,
+    "posts": 38,
+    "charts": 27
+  }
+}

@@ -1,0 +1,683 @@
+{
+  "schema": "grey_deer.all_date_census_protocol.v1",
+  "protocol_id": "GD-T12-CENSUS-20261017-v1",
+  "programme": "WS:GREY-DEER-RISK-INTELLIGENCE / MAS-258",
+  "root_id": "01a14837-d202-71fa-918c-99124fb860c5",
+  "parent_method": "EPISODE_SAMPLE_SPEC_2026-10-13.md",
+  "frozen_before_new_outcome_computation": true,
+  "status": "RETROSPECTIVE_EXPLORATORY_NO_PREDICTIVE_PROMOTION",
+  "source": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "commit": "3ab3382af89242c7b7fe8c65360bd883a7dd3504",
+    "path_pattern": "data/yahoo/{ticker}.parquet",
+    "column": {
+      "return": "close",
+      "damage": "close_price",
+      "future_total_return_loss": "close",
+      "T12_episodes": "close"
+    },
+    "basis": "collectors/yahoo.py: close = split+dividend-adjusted total-return close; close_price = split-adjusted/dividend-unadjusted structure price. Both are revised; this is NOT the prior Massive raw/split-only study basis.",
+    "vintage": "CURRENT_REVISED",
+    "availability_policy": "historical available_at / ingestion / delivered_at UNKNOWN; no issue-time or actionable-lead assertion",
+    "metadata": [
+      {
+        "ticker": "SPY",
+        "sha256": "410f3f872b2e00c85a08e22c6460e3f848d84c419d8437b6e6b6745308fa7e7d",
+        "rows": 8486,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "1993-01-29 00:00:00",
+        "last": "2026-10-15 00:00:00",
+        "null_close": 0,
+        "same_close_price": false
+      },
+      {
+        "ticker": "RSP",
+        "sha256": "7aaa040be716040fd99f6a02ac640d88341fdc55e9ab9897a774b6479834ec65",
+        "rows": 5903,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2003-05-01 00:00:00",
+        "last": "2026-10-15 00:00:00",
+        "null_close": 0,
+        "same_close_price": false
+      },
+      {
+        "ticker": "DIA",
+        "sha256": "702f4534589dfa4a2d3b036c83ea6276257d5c5c82bbd638be36460eb8ae1a40",
+        "rows": 7229,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "1998-01-20 00:00:00",
+        "last": "2026-10-14 00:00:00",
+        "null_close": 0,
+        "same_close_price": false
+      },
+      {
+        "ticker": "IWM",
+        "sha256": "ca881cd8b4d8b23bdd419086a10f889e59ff6aeee26ba84ed8e628458fb33dc1",
+        "rows": 6636,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2000-05-26 00:00:00",
+        "last": "2026-10-15 00:00:00",
+        "null_close": 0,
+        "same_close_price": false
+      },
+      {
+        "ticker": "QQQ",
+        "sha256": "e3b749f5347112b506e69869194d2b009b3da7bde1a00f7a05104a7bd06d1f48",
+        "rows": 6944,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "1999-03-10 00:00:00",
+        "last": "2026-10-15 00:00:00",
+        "null_close": 0,
+        "same_close_price": false
+      },
+      {
+        "ticker": "XLK",
+        "sha256": "f50b3dc0f60aa7696923a4f8da5c81a1d0f024946b113942d116ca5a51969bed",
+        "rows": 6996,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "1998-12-22 00:00:00",
+        "last": "2026-10-15 00:00:00",
+        "null_close": 0,
+        "same_close_price": false
+      },
+      {
+        "ticker": "SMH",
+        "sha256": "e9c9123fe122320709fa2e866456d17dd13fe8f8a3d00b8e5ac0273fcca8b82d",
+        "rows": 6631,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2000-06-05 00:00:00",
+        "last": "2026-10-15 00:00:00",
+        "null_close": 0,
+        "same_close_price": false
+      },
+      {
+        "ticker": "XLP",
+        "sha256": "a8badfbeddf13e46e5b88534f90cd7d7a79915eeb414e05d295b9333c29b52de",
+        "rows": 6996,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "1998-12-22 00:00:00",
+        "last": "2026-10-15 00:00:00",
+        "null_close": 0,
+        "same_close_price": false
+      },
+      {
+        "ticker": "XLV",
+        "sha256": "4165cf38ed9481b570a5ed4d339e81e44b0e1d22c5729ef1bacf1c6e09833272",
+        "rows": 6996,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "1998-12-22 00:00:00",
+        "last": "2026-10-15 00:00:00",
+        "null_close": 0,
+        "same_close_price": false
+      },
+      {
+        "ticker": "XLU",
+        "sha256": "5f4062788861667e4af89acfc5c79856fab390cd9d9e95b614bc862c25de892d",
+        "rows": 6996,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "1998-12-22 00:00:00",
+        "last": "2026-10-15 00:00:00",
+        "null_close": 0,
+        "same_close_price": false
+      },
+      {
+        "ticker": "XLF",
+        "sha256": "49442a13736629d97cd904a54d9eca0da6df6d36b2c00884758696168bebae99",
+        "rows": 6996,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "1998-12-22 00:00:00",
+        "last": "2026-10-15 00:00:00",
+        "null_close": 0,
+        "same_close_price": false
+      },
+      {
+        "ticker": "HYG",
+        "sha256": "681f3c62d434db7f2092360ae00bc5c1456daaa3816d153b0a036b5a298406b0",
+        "rows": 4911,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2007-04-11 00:00:00",
+        "last": "2026-10-15 00:00:00",
+        "null_close": 0,
+        "same_close_price": false
+      },
+      {
+        "ticker": "LQD",
+        "sha256": "feb23cbc44c327691dbbf1bd071b6b44b89674d568ec4546762e8fc0fcb2b393",
+        "rows": 6093,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2002-07-30 00:00:00",
+        "last": "2026-10-15 00:00:00",
+        "null_close": 0,
+        "same_close_price": false
+      },
+      {
+        "ticker": "TLT",
+        "sha256": "3dd5b301959ffa00520a1da2440fbc8871cc18c3a8a94fcb9614d7a795837907",
+        "rows": 6093,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2002-07-30 00:00:00",
+        "last": "2026-10-15 00:00:00",
+        "null_close": 0,
+        "same_close_price": false
+      },
+      {
+        "ticker": "IEF",
+        "sha256": "ac47c26059cf982358d4e7d3eb0d2784cc040373440d424125bbce343287eab5",
+        "rows": 6093,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2002-07-30 00:00:00",
+        "last": "2026-10-15 00:00:00",
+        "null_close": 0,
+        "same_close_price": false
+      },
+      {
+        "ticker": "BIL",
+        "sha256": "c57f5142f02a8101a61c4445732be4f9f20d4c5ee04b962e47fb4267b33041d3",
+        "rows": 4876,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2007-05-30 00:00:00",
+        "last": "2026-10-14 00:00:00",
+        "null_close": 0,
+        "same_close_price": false
+      },
+      {
+        "ticker": "SGOV",
+        "sha256": "83a7abd5976ac738a5ad6510354d426fe8342606b4876b63027f4cd9479e1902",
+        "rows": 1602,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2020-06-01 00:00:00",
+        "last": "2026-10-14 00:00:00",
+        "null_close": 0,
+        "same_close_price": false
+      },
+      {
+        "ticker": "GLD",
+        "sha256": "19c7555e1f51c51b8489c220ec0f1e096a2dd1cbeb9edc8794d17e7bd14ef9d4",
+        "rows": 5511,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2004-11-18 00:00:00",
+        "last": "2026-10-15 00:00:00",
+        "null_close": 0,
+        "same_close_price": true
+      },
+      {
+        "ticker": "XLB",
+        "sha256": "6f9062cbdc1d22227a1c1ba26fb7edaa52406e17ad4aa855a3df83737b4a09bc",
+        "rows": 6996,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "1998-12-22 00:00:00",
+        "last": "2026-10-15 00:00:00"
+      },
+      {
+        "ticker": "XLC",
+        "sha256": "e9cf6fd8783ab808b2bdedcd5217488194b175bcb1d6ece1abb3d9c51307bdb4",
+        "rows": 2093,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2018-06-19 00:00:00",
+        "last": "2026-10-15 00:00:00"
+      },
+      {
+        "ticker": "XLE",
+        "sha256": "6fd2b13fa430a0a0b53c41461760f4a7b309069205871dab775230873b5fcaca",
+        "rows": 6996,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "1998-12-22 00:00:00",
+        "last": "2026-10-15 00:00:00"
+      },
+      {
+        "ticker": "XLI",
+        "sha256": "b7137ff4a0ea322ae45fdca8973a6e233c1f3839ab614fc51550048bc0403db8",
+        "rows": 6996,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "1998-12-22 00:00:00",
+        "last": "2026-10-15 00:00:00"
+      },
+      {
+        "ticker": "XLRE",
+        "sha256": "bc8112ecb80b64c57b0eb0d1aaf61deacb4d3dd22cbace544577a929185d5833",
+        "rows": 2771,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2015-10-08 00:00:00",
+        "last": "2026-10-15 00:00:00"
+      },
+      {
+        "ticker": "XLY",
+        "sha256": "42130f3cddf965df922d3c1ffebc7f86fa437e64a25423d0d5aa284b6b561446",
+        "rows": 6996,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "1998-12-22 00:00:00",
+        "last": "2026-10-15 00:00:00"
+      },
+      {
+        "ticker": "XBI",
+        "sha256": "639acd1669d3d181cd3c40317d4902bfa4c82ff95470cac7435345ff35a27dca",
+        "rows": 5206,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2006-02-06 00:00:00",
+        "last": "2026-10-15 00:00:00"
+      },
+      {
+        "ticker": "SOXX",
+        "sha256": "903acf889f832645a52f86ff302c4c01bbb4bc7b9bb52dfb02325abf8711a697",
+        "rows": 6352,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2001-07-13 00:00:00",
+        "last": "2026-10-15 00:00:00"
+      },
+      {
+        "ticker": "IGV",
+        "sha256": "57ed0df6d1724157d541b0e189a2c8941b3dc48021a55d89d4697f865d460875",
+        "rows": 6350,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2001-07-17 00:00:00",
+        "last": "2026-10-15 00:00:00"
+      },
+      {
+        "ticker": "KRE",
+        "sha256": "71cd99d27537c5e402952f877022cd561932726bcd441ee91f84ea48148728e6",
+        "rows": 5111,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2006-06-22 00:00:00",
+        "last": "2026-10-15 00:00:00"
+      },
+      {
+        "ticker": "FXI",
+        "sha256": "721dcde5122a40c7a7c249b833624b135daefccb41381a48577cb00fa9869902",
+        "rows": 5540,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2004-10-08 00:00:00",
+        "last": "2026-10-15 00:00:00"
+      },
+      {
+        "ticker": "MCHI",
+        "sha256": "fbed7904f8b589011e3602e7ac802d696b0230117da4c670cbf51add23a4adb1",
+        "rows": 3909,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2011-03-31 00:00:00",
+        "last": "2026-10-15 00:00:00"
+      },
+      {
+        "ticker": "EWH",
+        "sha256": "088eae010203110f5b36c4d93b03d371408a01922f32744c9c9a5be4e97bbec8",
+        "rows": 7695,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "1996-03-18 00:00:00",
+        "last": "2026-10-15 00:00:00"
+      },
+      {
+        "ticker": "EWC",
+        "sha256": "858dfe0f19bd90a80fd8670efc64f4c84b7d980557327c55aa3cfc2e1ee4ac36",
+        "rows": 7695,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "1996-03-18 00:00:00",
+        "last": "2026-10-15 00:00:00"
+      },
+      {
+        "ticker": "EWJ",
+        "sha256": "3668de153a69d5d573676a4b47abc103b87214ebf852d9170664301199378618",
+        "rows": 7695,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "1996-03-18 00:00:00",
+        "last": "2026-10-15 00:00:00"
+      },
+      {
+        "ticker": "INDA",
+        "sha256": "dacbdd7420f4fa6e804c72dac57aae0344dbdc80a0f3a6fbac407514f6eaf7fa",
+        "rows": 3696,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2012-02-03 00:00:00",
+        "last": "2026-10-15 00:00:00"
+      },
+      {
+        "ticker": "EEM",
+        "sha256": "d53b91582429a339e44a893490f866b7ae239244f4d1498b824e32e53ccc7c81",
+        "rows": 5915,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2003-04-14 00:00:00",
+        "last": "2026-10-15 00:00:00"
+      },
+      {
+        "ticker": "ARKK",
+        "sha256": "b14b78997fa7cf87dda5646d034530220b1c3fccbd711e942e6f91a4c2439061",
+        "rows": 3005,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first": "2014-10-31 00:00:00",
+        "last": "2026-10-14 00:00:00"
+      }
+    ]
+  },
+  "universe": {
+    "SPY": "US_S&P500",
+    "RSP": "US_S&P500_EQUAL_WEIGHT",
+    "DIA": "US_DOW",
+    "IWM": "US_RUSSELL2000",
+    "QQQ": "US_NASDAQ100",
+    "XLK": "US_TECHNOLOGY",
+    "XLP": "US_STAPLES",
+    "XLV": "US_HEALTHCARE",
+    "XLU": "US_UTILITIES",
+    "XLF": "US_FINANCIALS",
+    "XLB": "US_MATERIALS",
+    "XLC": "US_COMMUNICATIONS",
+    "XLE": "US_ENERGY",
+    "XLI": "US_INDUSTRIALS",
+    "XLRE": "US_REAL_ESTATE",
+    "XLY": "US_DISCRETIONARY",
+    "SMH": "US_SEMICONDUCTORS",
+    "SOXX": "US_SEMICONDUCTORS_ALTERNATE",
+    "XBI": "US_BIOTECH",
+    "IGV": "US_SOFTWARE",
+    "KRE": "US_REGIONAL_BANKS",
+    "ARKK": "US_INNOVATION_THEME",
+    "HYG": "USD_HIGH_YIELD_CREDIT_ETF",
+    "LQD": "USD_INVESTMENT_GRADE_CREDIT_ETF",
+    "TLT": "US_LONG_TREASURY_ETF",
+    "IEF": "US_INTERMEDIATE_TREASURY_ETF",
+    "BIL": "US_BILL_ETF",
+    "SGOV": "US_BILL_ETF_ALTERNATE",
+    "GLD": "USD_GOLD_ETF",
+    "FXI": "CHINA_LARGE_CAP_US_LISTED_PROXY",
+    "MCHI": "CHINA_US_LISTED_PROXY",
+    "EWH": "HONG_KONG_US_LISTED_PROXY",
+    "EWC": "CANADA_US_LISTED_PROXY",
+    "EWJ": "JAPAN_US_LISTED_PROXY",
+    "INDA": "INDIA_US_LISTED_PROXY",
+    "EEM": "EMERGING_MARKETS_US_LISTED_PROXY"
+  },
+  "calendar": {
+    "source": "SPY observed date index at the exact source commit",
+    "start": "1993-01-29",
+    "cutoff": "2026-10-15",
+    "type": "OBSERVED_REFERENCE_CALENDAR_NOT_CERTIFIED_EXCHANGE_CALENDAR",
+    "rule": "Every reference date x every declared exposure retained, including outside coverage, invalid prices, missing sessions, warmup and immature outcomes. No intersection-only join, forward fill, synthetic history or substituted source."
+  },
+  "features": {
+    "return_sessions": [
+      1,
+      2,
+      5,
+      20,
+      63
+    ],
+    "drawdown_sessions": [
+      63,
+      252
+    ],
+    "sma_sessions": [
+      20,
+      200
+    ],
+    "warmup": "Per-field complete trailing window; 63-session damage field does not wait for 252-session field. Prior reference gap nulls every affected field.",
+    "damage_flag": "close_price / trailing_63_session_max(close_price) - 1 <= -0.05",
+    "damage_tiers": [
+      0.05,
+      0.1,
+      0.2
+    ],
+    "broad_gate_component": "SPY close(total-return) < trailing_200_complete_session_mean(close); necessary SPY component only, NOT full incumbent breadth/radar replay",
+    "repair_candidate": "price damage_flag true at least once in prior 21 sessions including t, close_price > price SMA20 and total-return return5 > 0; contemporaneous stabilization candidate only, not re-entry authority",
+    "basis": "return_* uses total-return close. drawdown_* and own SMA gap use close_price. Required SPY gate diagnostic uses total-return close matching current Radar _s basis. Never compare unlabelled bases."
+  },
+  "outcomes": {
+    "horizons": [
+      5,
+      10,
+      21
+    ],
+    "threshold": 0.05,
+    "definition": "Reuse stage1.build_labels / observed_moves math on total-return close for A(t,h)=maximum additional closing-price total-return loss from origin, floored at zero; Y=A>=0.05. This differs explicitly from prior Massive raw/split-only study input. Require all h+1 reference closes valid. Last h origins immature, gap windows explicitly missing. Future outcomes are NEVER observable features.",
+    "competing_path_21": "First future close >= 1.05*origin vs <=0.95*origin; GAIN_FIRST / LOSS_FIRST / NEITHER / IMMATURE / GAP. Closing-price ordering only; no intraday execution claim.",
+    "maturity": "At final future reference close in revised reconstruction; historical availability remains unknown."
+  },
+  "episodes": {
+    "reuse": "Existing T12 event_episodes, applied separately to contiguous valid-price segments, exact 5/10/21 horizons and EPISODE_PRE=21. Retain all event-positive origins; no warmup cut on outcome census.",
+    "cross_exposure": "Per-recipient episodes are dependent. Do NOT sum them into independent episodes.",
+    "common_calendar": "Calendar connected components of overlapping outcome-support intervals, counted as descriptive dependence groups, NOT verified independent shocks. Report degeneration honestly; no predictive power claim.",
+    "point_in_time": "Episode and future-event IDs are post-outcome annotations. Separate observed drawdown-onset flags from these labels.",
+    "controls": "Full non-event eligible-date denominator retained; original T12 negative-control API unchanged. No newly selected sample or seed."
+  },
+  "comparisons": {
+    "kind": "FROZEN_DESCRIPTIVE_ASSOCIATION_ONLY",
+    "price_damage": "Current exposure damage_flag; compare additional-loss positives/negatives, warning-day burden and observed hidden-damage dates with SPY component off. Not a validated warning.",
+    "gating": "Compare damage_flag with damage_flag AND SPY below SMA200 component, same exposure and eligible dates. This is a necessary-gate suppression diagnostic, not a replay of the full incumbent.",
+    "rotation_pairs": [
+      [
+        "RSP",
+        "SPY"
+      ],
+      [
+        "DIA",
+        "SPY"
+      ],
+      [
+        "IWM",
+        "SPY"
+      ],
+      [
+        "QQQ",
+        "SPY"
+      ],
+      [
+        "XLP",
+        "XLK"
+      ],
+      [
+        "XLV",
+        "XLK"
+      ],
+      [
+        "XLU",
+        "XLK"
+      ],
+      [
+        "XLP",
+        "SMH"
+      ],
+      [
+        "XLV",
+        "SMH"
+      ],
+      [
+        "HYG",
+        "IEF"
+      ],
+      [
+        "GLD",
+        "SPY"
+      ]
+    ],
+    "rotation_horizons": [
+      2,
+      5,
+      20
+    ],
+    "rotation_rule": "Keep both absolute legs, ratio and sign. BOTH_DOWN is relative resilience, not preservation; receiver up/donor down is price divergence, not measured fund flows.",
+    "date_case": {
+      "start": "2026-09-01",
+      "end": "2026-10-15",
+      "anchors": [
+        "2026-09-01",
+        "2026-09-15",
+        "2026-09-30",
+        "2026-10-08",
+        "2026-10-13",
+        "2026-10-14",
+        "2026-10-15"
+      ]
+    }
+  },
+  "trial_control": {
+    "new_predictive_claim_budget": 0,
+    "new_fit_budget": 0,
+    "threshold_search_budget": 0,
+    "confidence_or_significance_claims": false,
+    "consumed_history": "All examined historical outcomes become exploratory. No new untouched holdout asserted. Prior SPY and 14-ETF frozen runs and 0/12 outcome remain untouched.",
+    "next_model_stage": "Separate preregistered later-origin and prospective B0/B1/limited-challenger evaluation; do not invoke frozen stage1/stage1b main or write prospective ledger."
+  },
+  "integrity": {
+    "duplicate_dates": "REFUSE",
+    "nonpositive_or_nonfinite": "retained as PRICE_INVALID; null affected features/outcomes",
+    "large_one_day_moves": "absolute log-return > log(1.25) retained and flagged for audit; no automatic split repair, episode deletion, or innocent-data assertion",
+    "compressed_artifact": "Deterministic gzip mtime=0; no raw prices necessary in origin ledger; manifest includes source byte hashes and artifact hashes.",
+    "missing_membership": "No company breadth or current-member historical reconstruction; country rows are US-listed proxies, not local market states."
+  },
+  "acceptance": {
+    "population": "lattice count == calendar dates * 36 exposures; mutually exclusive origin states sum to total; event/non-event/gap/immature outcome counts reconcile per horizon",
+    "causality": "Appending future bars cannot change earlier observed features; labels remain segregated and mature only with full support.",
+    "tests": [
+      "middle gap invalidates preceding outcome windows",
+      "immature labels never become negative",
+      "simultaneous exposure episodes never counted as independent",
+      "future append leaves observed features unchanged",
+      "both-down ratio retained as relative resilience",
+      "T12 episode membership matches mature events within contiguous segments",
+      "pre-inception and stale end rows retained",
+      "frozen source/protocol mismatch refuses run"
+    ],
+    "delivery": "Reusable research CLI plus real census and dated reconstruction; NOT live product acceptance, forecast qualification or policy authority."
+  }
+}

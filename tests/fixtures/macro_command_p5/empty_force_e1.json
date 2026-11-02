@@ -1,0 +1,16 @@
+{
+  "availability": {"state": "CURRENT"},
+  "headline": {
+    "status": "ABSENT",
+    "state_id": null,
+    "effective_date": null,
+    "null_reason": "NOT_YET_RELEASED"
+  },
+  "changes": {
+    "status": "ABSENT",
+    "comparability": "NO_PRIOR",
+    "null_reason": "INSUFFICIENT_HISTORY",
+    "prior_effective_date": null,
+    "deltas": []
+  }
+}

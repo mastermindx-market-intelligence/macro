@@ -1,0 +1,647 @@
+{
+  "accepted_merge_sha": "c63a92576a43247bb8c43dc275f827b8871fda3b",
+  "code_root": "/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-network-native-reader-20261009-pro-002",
+  "compared_locations": [
+    "reviewed_commit",
+    "accepted_merge",
+    "fresh_upstream",
+    "execution_workspace"
+  ],
+  "dependencies": [
+    {
+      "all_locations_equal": true,
+      "bytes": 0,
+      "path": "collectors/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 27625,
+      "path": "collectors/edgar_forensics.py",
+      "sha256": "8e153f35b1d9f243790c2df16749207243168c42676802f1f0e5a886537a9a29"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 44318,
+      "path": "collectors/fundamental_forensics_acquisition.py",
+      "sha256": "fba28cca50d8f8fe249c12bb8f6b9d29dd7e41dd439f32210908fb7869d97216"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 99526,
+      "path": "collectors/fundamental_forensics_companyfacts.py",
+      "sha256": "024fcace6c21ca84e6a262aa8ecd434955877ec2db19ce47ee190bbc9a4e989a"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 42289,
+      "path": "collectors/sec_document_spine.py",
+      "sha256": "1c6fec647373372858f4ad5fc0b6a88d9da84d605f5d14e8e148ac2ee7e8a3e5"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 123233,
+      "path": "collectors/sec_filing_parser.py",
+      "sha256": "37622fc108944e65fa1ca4cb80497633e6b1157348b9aa029afd990d28225090"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 50632,
+      "path": "config/dataset_registry.yml",
+      "sha256": "bb9b6975eeabebf630f73e632d307d280ea1d9e34f30953ac3989c65fc90f0a7"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 7364,
+      "path": "config/fundamental_forensics_disclosure_diff.v1.json",
+      "sha256": "e530774b66de375f88f7ae64aace5127c8c15ba5e131b43cf9bc443de677f8e6"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 0,
+      "path": "engine/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 16985,
+      "path": "engine/basket_breadth_divergence.py",
+      "sha256": "f073f778f43f9e040b5b3b76cfb66fe5085940ca00b92e7ae2fac359d1d68be6"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 31503,
+      "path": "engine/catalyst_tone.py",
+      "sha256": "1856dc10ea0c9fc480517d50b1b8488303ea29dbc18c7b86cd11d29ea0e7dbb0"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 832,
+      "path": "engine/company_intelligence/__init__.py",
+      "sha256": "09e8425cdca490d03bece9462af575fddd25802e0ca2aa12be7d24f6ded8b347"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 34222,
+      "path": "engine/company_intelligence/contracts.py",
+      "sha256": "a9ab0b648e72b7537fc812618adab8325bd9f88410ba1169103929ddccc276ad"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 7219,
+      "path": "engine/company_intelligence/health.py",
+      "sha256": "db924871e9a49446ebbe6e84c2c9c57a361b903fb8764a5a891a531cdb449210"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 11962,
+      "path": "engine/company_intelligence/pinned_relationship_candidates.py",
+      "sha256": "afafacb978face2775c769844a2773e04a5cb5b755aacd6c9724d7e51eb07cb7"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 45473,
+      "path": "engine/company_intelligence/relationship_candidates.py",
+      "sha256": "a558922c0586a5532f3912524b48f3cf592c3c6c9c21f689e3d416976e9cae55"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 36392,
+      "path": "engine/company_intelligence/views.py",
+      "sha256": "b5cc18f5722305f841a18b94867edcdd36e6797889136bd807e6a5161cef70f4"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 6683,
+      "path": "engine/desk_ledger.py",
+      "sha256": "9e079f7d26e3a60e75ee651140612c2efd6a9d00a9405ac5c424fe219600dbc2"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 1009,
+      "path": "engine/earnings_release/__init__.py",
+      "sha256": "efb8ea9960f8fe2e5e6ab79eff5bef7abde6b7d7fa63f7b5faca17081a9bbe85"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 12010,
+      "path": "engine/earnings_release/receipts.py",
+      "sha256": "463c97d12c74baaf76fe1abab359b38d2b89a2958f455e5d541caa8fa580fb84"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 1854,
+      "path": "engine/fundamental_forensics/__init__.py",
+      "sha256": "c4c6084411d11e5b07bfd0e4600880ccbbc60309712262bdd266657c120ad5fb"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 17295,
+      "path": "engine/fundamental_forensics/detectors.py",
+      "sha256": "3a5b3ceb58cbfd21253052676c4ef38b3125b45799f44c799a8977c3685f522a"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 118522,
+      "path": "engine/fundamental_forensics/disclosure_diff.py",
+      "sha256": "a266960ac1c3d48b7ebedbe1141d50e1ed3cbfd617d27d01aa6e1554fce389ba"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 76795,
+      "path": "engine/fundamental_forensics/filing_attestation.py",
+      "sha256": "1b2693a9bbff66761a573a8c1bd5d32b352a2d43719407e2864fda6e725d0a47"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 57231,
+      "path": "engine/fundamental_forensics/filing_package.py",
+      "sha256": "929de48d3391844f71dc0875d97eddd4372524133de41de90953819a7d5da4d9"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 77632,
+      "path": "engine/fundamental_forensics/ixbrl_extraction.py",
+      "sha256": "e9a3ad540b154d37f2a8724ac4bd523d6aa951c70d500f9fed80295fc60b6e58"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 14519,
+      "path": "engine/fundamental_forensics/models.py",
+      "sha256": "cd8e5e62d4e29378453b89ea6b2f5cfd4028ed5ea4502a9d43f98f0819c3aa97"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 12032,
+      "path": "engine/fundamental_forensics/normalize.py",
+      "sha256": "b23163c565ad0bd5bc079542538725c56d747a1212346ba74f8f6f9f3ea80487"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 5086,
+      "path": "engine/fundamental_forensics/pipeline.py",
+      "sha256": "ecb8d2ebe9da231a70b9edcfea654f0bfee00e01570fbfd596106e5fe528817b"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 7430,
+      "path": "engine/fundamental_forensics/sec_companyfacts.py",
+      "sha256": "bf575fdcb307e12efdf9e281697e0fe143e7a373282efde6f1799e2582c89170"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 48206,
+      "path": "engine/fundamental_forensics/sec_document_spine.py",
+      "sha256": "ee240863943823e598083f45164c6a288e9098292a47a454cc70898c2bdf8366"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 54924,
+      "path": "engine/fundamental_forensics/source_sync.py",
+      "sha256": "73ddb5ac6ed910b1f4d9a7d76a944063f3251011e7b2af96d7fbb8306f46776a"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 17148,
+      "path": "engine/gdelt_client.py",
+      "sha256": "9282e05655b3de93da3046c0fe36d17e6b682d5825237fd68a16017ae788ab6a"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 660,
+      "path": "engine/marketing/__init__.py",
+      "sha256": "6c9056208c0a9c0115eb54b9f8abfd01b36fd168e843b0d5235c9291240bfa5c"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 5038,
+      "path": "engine/marketing/accounts.py",
+      "sha256": "868a6f728f177009808c9321416d08a9a8e610ff2c6aa3733bf3cb1c0adcc40f"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 5355,
+      "path": "engine/marketing/authority.py",
+      "sha256": "0d73e0cdd1bc36b24a6ea45658e63c254094bd3b8ef8878b092020afd1a27368"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 287289,
+      "path": "engine/marketing/chart_render.py",
+      "sha256": "2d8d596c39545c9c0b064a56ec8508b41fb7845ff8fb124902a956896668fbcd"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 3628,
+      "path": "engine/marketing/charter.py",
+      "sha256": "af4bef84e91e4631534e7da7508c4c6eae9b0529272365228339fe7b48ec4f1f"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 4436,
+      "path": "engine/marketing/claims.py",
+      "sha256": "ad6667e71d23ddb4cda28cf5b8d79fc7328a80f94f415540063822c6dd0d9d0b"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 10714,
+      "path": "engine/marketing/cmo.py",
+      "sha256": "f2b124754fb808d1935fcde19bdad3d66f334ada97b1f292fbfc9af0686974f9"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 45779,
+      "path": "engine/marketing/departments.py",
+      "sha256": "f42be96b317a040bf28c6dcdb4343aa9d8b83fce0133ef77121448f2015f889f"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 4797,
+      "path": "engine/marketing/economics.py",
+      "sha256": "bb4e78bb1251366d536a79aa789a357ce6ece47c32ca4534e920e8ee4d24b3d9"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 2136,
+      "path": "engine/marketing/events.py",
+      "sha256": "f940ba236256f56841cc944fdab5914ee4c5a85a5b9ce774137bcede7c5caace"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 1686,
+      "path": "engine/marketing/ledgers.py",
+      "sha256": "a94a60f25914ff67328c3b54eb46befa81c1b3910a9a0f72c260fb0609c7a3e8"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 14389,
+      "path": "engine/marketing/logo_cache.py",
+      "sha256": "afc70743c63ba6c7ddc732914876baa38ef0eff384b296b42f249fe09510d0c6"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 5350,
+      "path": "engine/marketing/opportunity_bus.py",
+      "sha256": "09f0ce3e55bcbda2e83051c396ba78bdc68d9e7d0fdfb093fdb4b09197f94df2"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 7182,
+      "path": "engine/marketing/publication.py",
+      "sha256": "9904f90241f1b236dd88094aa6b388fdf43d627c6117900a3b36ededb6f4beb2"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 18901,
+      "path": "engine/marketing/state.py",
+      "sha256": "1b933891c7c3c1d22018ea6b49fbb370a7f6cd5f9e5e9123912405081b81c15b"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 142755,
+      "path": "engine/master_brain.py",
+      "sha256": "9d58cfe754f365206be998d95b29a60cf2a54df46a1cad8ac7788fae66a16b70"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 1175,
+      "path": "engine/research_vault/__init__.py",
+      "sha256": "5b35706ac8760796f9ac445b8c1fceda53a058aa64ea46cf6c79d19e420a97f8"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 47498,
+      "path": "engine/research_vault/r2_store.py",
+      "sha256": "7ba42eb8f74c034413997707a35156e67342fb9a30ca2b80dde0f11d1dc7e2bd"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 0,
+      "path": "lib/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 1131,
+      "path": "lib/config.py",
+      "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 5496,
+      "path": "lib/dataos/__init__.py",
+      "sha256": "0d8df3c0c127df3ec7a5b7148dd32dfed66dbd4c22e5fa496b77ec15377213a7"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 49306,
+      "path": "lib/dataos/identity.py",
+      "sha256": "8baefdf03e29afb59b4bc70805327e88e0e4e96e0a720727ffa695ba1775ad6f"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 7737,
+      "path": "lib/dataos/nulls.py",
+      "sha256": "2556e7d0b2ac609306e512a61071a024b7b0b7eb0ec4ef3efaf22ce9f4387d49"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 10509,
+      "path": "lib/dataos/price.py",
+      "sha256": "40aad993988e03f3c9ff4c2a221cdaeecc3569054d4a93fc0565657fce109e15"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 15792,
+      "path": "lib/dataos/quality.py",
+      "sha256": "e56dfb5baa8f53ccf8141dbfa357d266faed519043e258a56d657abe264f9706"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 16599,
+      "path": "lib/dataos/registry.py",
+      "sha256": "b57ec16a61086b8d35beb2f81af30efc4af55f1ac07ec95cfcfd87beefeef0a5"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 12847,
+      "path": "lib/dataos/temporal.py",
+      "sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 1588,
+      "path": "research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json",
+      "sha256": "dd72d31afce12ca727a171e6f635d7085c8c2d6bff6bea2750f9c29a04fe101b"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 5231,
+      "path": "research/theme_graph/economic_network_execution_20261009/replay_micron_witness.py",
+      "sha256": "69da2f393711923be68f05b1da563dbbcb736761fa60a8bf5ea4aa6cbf9f1830"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 2217,
+      "path": "scripts/__init__.py",
+      "sha256": "099b906ef95aec83bbfc4d84b5ceb4f050e57a5fd2840e99faa9dc202e90c378"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 88324,
+      "path": "scripts/worktree_sparse.py",
+      "sha256": "08a6c23c75569c7acb6c8e1ef028bd7d752d283bbb37d540d666c25ab117657f"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 0,
+      "path": "tests/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 34456,
+      "path": "tests/conftest.py",
+      "sha256": "ad0b342a4303b5dc098d203530e8e8a83d4b5c3cbc38730309448cac14570425"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 27799,
+      "path": "tests/test_company_pinned_relationship_candidates.py",
+      "sha256": "08fa9e22f7c35681b2fd97ccd97796a01a98988b05b8d047c8368ff24f6eb669"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 29602,
+      "path": "tests/test_company_relationship_candidates.py",
+      "sha256": "0a8c73d5e5b968fd3795fed1e08305597f9c254cc5702b9946b702b8f31bdbd4"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 35165,
+      "path": "tests/test_company_relationship_review_set.py",
+      "sha256": "67636cc6eca4f9be84b383bb44b4835a3dc8447f6b288e2e99073f61182ce212"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 20222,
+      "path": "tests/test_fundamental_forensics_attestation.py",
+      "sha256": "7a059d848d875929c665a716934ce58ff2c4accc94ac024f670d1b5f6e098d30"
+    },
+    {
+      "all_locations_equal": true,
+      "bytes": 50400,
+      "path": "tests/test_sec_document_spine.py",
+      "sha256": "050022e3e0d39ec644763d4b9377a3386bde7a81e33dbcf4495f5cc4cbd8f4bb"
+    }
+  ],
+  "dependency_count": 71,
+  "execution_workspace_head": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+  "fresh_upstream_sha": "c63a92576a43247bb8c43dc275f827b8871fda3b",
+  "historical_system_replay": false,
+  "ignored_file_count": 0,
+  "integrated_base": "25d6652168d23a1ecfb606b6c58451399762a753",
+  "limitations": [
+    "Principal read-and-compare witness; no atomic filesystem or runtime custody claim.",
+    "Third-party runtime and installed dependencies are not fully pinned by this receipt."
+  ],
+  "merged_at": "2026-10-09T10:51:50Z",
+  "native_fact_admission": false,
+  "operation_id": "gmi-economic-network-native-reader-20261009-pro-002",
+  "owned_file_count": 30,
+  "owned_files": [
+    {
+      "all_four_locations_equal": true,
+      "bytes": 1247930,
+      "path": ".github/ci/legacy-jobs.yml",
+      "sha256": "8754604c46e236023fab35aa6914196bc2462d9308772d406efed96c58dce7b2"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 10277,
+      "path": "agentos/decisions/DEC-GMI-ECONOMIC-NETWORK-READER-AND-REVIEW-CONTINUATION.md",
+      "sha256": "acee5dd9cdf1cda57311de3609bdf986ffd4e13aec5a70dc58cf82e26e6c8035"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 42289,
+      "path": "collectors/sec_document_spine.py",
+      "sha256": "1c6fec647373372858f4ad5fc0b6a88d9da84d605f5d14e8e148ac2ee7e8a3e5"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 11962,
+      "path": "engine/company_intelligence/pinned_relationship_candidates.py",
+      "sha256": "afafacb978face2775c769844a2773e04a5cb5b755aacd6c9724d7e51eb07cb7"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 45473,
+      "path": "engine/company_intelligence/relationship_candidates.py",
+      "sha256": "a558922c0586a5532f3912524b48f3cf592c3c6c9c21f689e3d416976e9cae55"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 76795,
+      "path": "engine/fundamental_forensics/filing_attestation.py",
+      "sha256": "1b2693a9bbff66761a573a8c1bd5d32b352a2d43719407e2864fda6e725d0a47"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 48206,
+      "path": "engine/fundamental_forensics/sec_document_spine.py",
+      "sha256": "ee240863943823e598083f45164c6a288e9098292a47a454cc70898c2bdf8366"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 6475,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/EXECUTION_SOURCE_VERIFIER_REVIEW_V1.md",
+      "sha256": "88ffdfad930556504f90a2c203a5896e76e592494ce28abeffc82492e1bd3e2a"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 5715,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/EXECUTION_SOURCE_VERIFIER_REVIEW_V2.md",
+      "sha256": "1f993564acffabbf910bbb56647a8a95b4edd0c2f50ae126837d0ee8ee407f58"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 29611,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/MICRON_NVDA_REVIEW_SET_REPLAY_PREPARATION_20261009.md",
+      "sha256": "ff218ea5f51936236e1e14972379d7277b2a4aadfadea0311b32e45e3f850663"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 27570,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/NATIVE_ADOPTION_FRONTIER_20261009.md",
+      "sha256": "0e5123262efcd3ad42f3bc667e79a000a35c6c4d0ed1d44c8c03052f84535c35"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 79769,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/NATIVE_READER_CURRENT_PR_INVENTORY_20261009.json",
+      "sha256": "14284af117201ffba96f9d576be63bb655b0567363899b753a5e38ca852591da"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 26311,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/NATIVE_READER_CURRENT_READINESS_20261009.md",
+      "sha256": "17fd30aed164e643f0d96fddc7d88abc2678cadefa2b0627d4f316f7a7969136"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 14788,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/NATIVE_READER_FROZEN_SOURCE_REVIEW_20261009.md",
+      "sha256": "2637bc60bb6f6a32c7ca14d43a0a2aded00efb8bf56874e730d817b7c0723e71"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 14704,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/NATIVE_READER_PURE_BOUNDARY_IMPLEMENTATION.md",
+      "sha256": "9ca436c2c9c8e12e9e27d41031fe82f4953f13ab0c4d8989b0b6efe0988f381a"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 10460,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/NVDA_REPAIRED_REPLAY_PREPARATION_20261009.md",
+      "sha256": "8c2dfb870dbd04777a89ca7c271218607b723b0c342b94d2b9e8e811a7779001"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 3447,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/PRINCIPAL_INTEGRATION_RECEIPT.json",
+      "sha256": "bc6ec0394518d4488aaeb637162e928c723d17b5e8718b662544c938e9107aca"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 16614,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/README.md",
+      "sha256": "cca6adc2ae76e7ff6a9269d38885779587eb0b291c5a484c7a08b5aea3186b37"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 13310,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/REVIEW_SET_INDEPENDENT_SOURCE_REVIEW_V1.md",
+      "sha256": "27553a1f4a926699e06084d867e236239385a6c5596d6e26d89f2d446a99eda0"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 16245,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/REVIEW_SET_INDEPENDENT_SOURCE_REVIEW_V4.md",
+      "sha256": "3c03dd09c12c70270dc9f5a97960c150b2a5a73a8ffc31be3d921e911b5d15b8"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 11726,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/REVIEW_SET_NATIVE_COMPOSITION_CI_AGENTOS_REVIEW.md",
+      "sha256": "bfe4883398ed6def4ffc71456b7254edaed94035c856e9b047801cb2f2b6389f"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 14693,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/REVIEW_SET_NATIVE_IMPLEMENTATION_20261009.md",
+      "sha256": "96c0b332cec68f559a75dcec0903208ef0d1f8756deda12f4a159db33aee2c77"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 61095,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/replay_micron_nvda_review_set_prepared.py",
+      "sha256": "ff59e80b54bec67310c2a1a998cb7c1651b974bbfcca97257d1483d80dcc3a48"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 28986,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/replay_nvda_repaired_reader_prepared.py",
+      "sha256": "42ffb74613ec7d5be9beb8b4c8a7a5e7a868580c84f72e73355b8736585b0940"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 4602,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/review_set_native_receipts.json",
+      "sha256": "7cf13c212f80df3ab41450b85d1f7450ecb99f5c8d4cee8583b79902895cce1f"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 11119,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/verify_execution_source.py",
+      "sha256": "ac3b1099fe1b1d5f0ad75bdfb517ed503551d0ff8aa880288af27cb4085edd85"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 10795,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_002/verify_execution_source_v1_reviewed.txt",
+      "sha256": "dc98893755d7d83fad29052d8c5a0800b0e2a976244aabbe592fd1f5fdbd994f"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 27799,
+      "path": "tests/test_company_pinned_relationship_candidates.py",
+      "sha256": "08fa9e22f7c35681b2fd97ccd97796a01a98988b05b8d047c8368ff24f6eb669"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 35165,
+      "path": "tests/test_company_relationship_review_set.py",
+      "sha256": "67636cc6eca4f9be84b383bb44b4835a3dc8447f6b288e2e99073f61182ce212"
+    },
+    {
+      "all_four_locations_equal": true,
+      "bytes": 50400,
+      "path": "tests/test_sec_document_spine.py",
+      "sha256": "050022e3e0d39ec644763d4b9377a3386bde7a81e33dbcf4495f5cc4cbd8f4bb"
+    }
+  ],
+  "phase": "POSTMERGE_ACCEPTED_SOURCE",
+  "pr": "https://github.com/mastermindx-market-intelligence/macro/pull/8705",
+  "predictive_authority": false,
+  "production_reader_custody": false,
+  "repository": "mastermindx-market-intelligence/macro",
+  "reviewed_head": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+  "rights_admission": false,
+  "schema": "economic_network.accepted_source_delivery.v1",
+  "served_product_proof": false,
+  "status": "PASS",
+  "upstream_contains_merge": true,
+  "verified_at": "2026-10-09T10:53:10.705469+00:00",
+  "working_tree_clean": true
+}

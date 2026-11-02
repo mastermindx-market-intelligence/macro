@@ -1,0 +1,181 @@
+--- a/templates/darkpool.html.j2
++++ b/templates/darkpool.html.j2
+@@ -51 +51,2 @@
+-  .dp-asof .l-en,.dp-asof .l-zh { white-space:nowrap; }
++  .dp-asof { max-width:100%; }
++  .dp-asof .l-en,.dp-asof .l-zh { white-space:normal; min-width:0; }
+@@ -213,0 +215,25 @@
++
++/* Native browse controls: one compact desk, keyboard/touch parity in both themes. */
++.shelf summary.dp-desk-summary{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px}
++.dp-desk-summary .si{grid-column:1;grid-row:1 / span 2}
++.dp-desk-summary .dp-desk-title{grid-column:2;min-width:0}
++.shelf summary.dp-desk-summary .sh{grid-column:2;grid-row:2;margin-left:0}
++.dp-desk-summary .sc{grid-column:3;grid-row:1 / span 2}
++.presets-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
++.presets-row .chip.preset{min-height:40px;white-space:normal;text-align:center;justify-content:center;padding:6px 8px;font:inherit;font-size:12px;line-height:1.3;touch-action:manipulation}
++.presets-row .chip.preset.active{color:var(--ink);background:var(--panel2);border-color:var(--dpb);font-weight:700}
++.filters-row{display:grid;grid-template-columns:minmax(120px,1.2fr) minmax(100px,.8fr) repeat(2,minmax(145px,1fr)) auto auto;align-items:end}
++.dp-filter{display:flex;flex-direction:column;gap:4px;min-width:0}
++.dp-filter label{font-size:11px;font-weight:600;color:var(--muted)}
++.dp-filter .dp-input,.dp-filter .dp-select{width:100%;min-width:0;min-height:40px}
++.filters-row .clear-btn,.filters-row .export-btn{min-height:40px;touch-action:manipulation}
++.dp-sort{border:0;padding:4px 0;min-height:40px;background:transparent;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;touch-action:manipulation}
++#dp-table th[data-col]{cursor:default}
++/* Keep the stock identity visible while browsing the wide data table. */
++#dp-table th:first-child,#dp-table tr:not(.dp-empty)>td:first-child{position:sticky;left:0;z-index:1;background:var(--panel);box-shadow:1px 0 0 var(--line)}
++#dp-table th:first-child{z-index:2}
++#dp-table tr:not(.dp-empty):hover>td:first-child{background:var(--panel2)}
++.presets-row .preset:focus-visible,.filters-row :is(input,select,button):focus-visible,#dp-table .dp-sort:focus-visible,.dp-desk-summary:focus-visible{outline:2px solid currentColor;outline-offset:2px}
++#dp-table .dp-empty td{text-align:left;padding:16px 8px;font-weight:400;white-space:normal;color:var(--muted)}
++@media(max-width:820px){.filters-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
++@media(max-width:600px){.presets-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@@ -355 +381 @@
+-    <summary><span class="si">▦</span>{{ t('Browse all', '浏览全部') }} {{ n_tickers_total }} {{ t('tracked rows — sortable desk', '条跟踪记录 — 可排序数据台') }}<span class="sh">{{ t('current rows rank first · older rows retain exact dates', '当前记录优先 · 较早记录保留准确日期') }}</span><span class="sc">▶</span></summary>
++    <summary class="dp-desk-summary"><span class="si" aria-hidden="true">▦</span><span class="dp-desk-title">{{ t('Browse all stocks', '浏览全部股票') }}</span><span class="sh">{{ n_tickers_total }} {{ t('tracked rows', '条跟踪记录') }}</span><span class="sc" aria-hidden="true">▶</span></summary>
+@@ -360,5 +386,5 @@
+-      <div class="presets-row">
+-        <span class="chip preset" data-preset="heavy-oe"><span class="l-en">Off-exchange heavy</span><span class="l-zh">场外占比高</span></span>
+-        <span class="chip preset" data-preset="rising-oe"><span class="l-en">Rising off-ex</span><span class="l-zh">场外占比上升</span></span>
+-        <span class="chip preset" data-preset="short-spike"><span class="l-en">Short-volume spike</span><span class="l-zh">融券成交激增</span></span>
+-        <span class="chip preset" data-preset="fading-oe"><span class="l-en">Fading off-ex</span><span class="l-zh">场外占比下降</span></span>
++      <div class="presets-row" role="group" aria-label="Quick filters" data-label-en="Quick filters" data-label-zh="快捷筛选">
++        <button type="button" class="chip preset" data-preset="heavy-oe" aria-pressed="false">{{ t('Off-exchange heavy','场外占比高') }}</button>
++        <button type="button" class="chip preset" data-preset="rising-oe" aria-pressed="false">{{ t('Rising off-exchange','场外占比上升') }}</button>
++        <button type="button" class="chip preset" data-preset="short-spike" aria-pressed="false">{{ t('Short-volume spike','卖空成交激增') }}</button>
++        <button type="button" class="chip preset" data-preset="fading-oe" aria-pressed="false">{{ t('Falling off-exchange','场外占比下降') }}</button>
+@@ -368,14 +394,18 @@
+-        <input id="dp-search" class="dp-input" type="text" placeholder="Filter ticker…" data-ph-en="Filter ticker…" data-ph-zh="筛选代码…" autocomplete="off">
+-        <input id="dp-min-share" class="dp-input" type="number" min="0" max="100" step="1" placeholder="Min OE %" data-ph-en="Min OE %" data-ph-zh="最低场外占比%" autocomplete="off">
+-        <select id="dp-trend" class="dp-select">
+-          <option value="all" data-en="All trends" data-zh="全部趋势">All trends</option>
+-          <option value="rising" data-en="Rising (≥+1pp)" data-zh="上升（≥+1pp）">Rising (≥+1pp)</option>
+-          <option value="falling" data-en="Falling (≤−1pp)" data-zh="下降（≤−1pp）">Falling (≤−1pp)</option>
+-        </select>
+-        <select id="dp-norm" class="dp-select">
+-          <option value="all" data-en="All vs norm" data-zh="全部vs基准">All vs norm</option>
+-          <option value="above" data-en="Above norm (z≥1)" data-zh="高于基准（z≥1）">Above norm (z≥1)</option>
+-          <option value="below" data-en="Below norm (z≤−1)" data-zh="低于基准（z≤−1）">Below norm (z≤−1)</option>
+-        </select>
+-        <button class="clear-btn" id="dp-clear">{{ t('Clear', '清除') }}</button>
+-        <button class="export-btn" id="dp-export">{{ t('Export CSV', '导出CSV') }}</button>
++        <div class="dp-filter"><label for="dp-search">{{ t('Ticker','代码') }}</label>
++          <input id="dp-search" class="dp-input" type="search" placeholder="Filter ticker…" data-ph-en="Filter ticker…" data-ph-zh="筛选代码…" autocomplete="off"></div>
++        <div class="dp-filter"><label for="dp-min-share">{{ t('Min share (%)','最低占比 (%)') }}</label>
++          <input id="dp-min-share" class="dp-input" type="number" min="0" max="100" step="1" placeholder="0" aria-label="Minimum off-exchange share (%)" data-label-en="Minimum off-exchange share (%)" data-label-zh="最低场外占比 (%)" autocomplete="off"></div>
++        <div class="dp-filter"><label for="dp-trend">{{ t('Share trend','占比趋势') }}</label>
++          <select id="dp-trend" class="dp-select">
++            <option value="all" data-en="All trends" data-zh="全部趋势">All trends</option>
++            <option value="rising" data-en="Rising (≥+1pp)" data-zh="上升（≥+1百分点）">Rising (≥+1pp)</option>
++            <option value="falling" data-en="Falling (≤−1pp)" data-zh="下降（≤−1百分点）">Falling (≤−1pp)</option>
++          </select></div>
++        <div class="dp-filter"><label for="dp-norm">{{ t('Versus usual','相对常态') }}</label>
++          <select id="dp-norm" class="dp-select">
++            <option value="all" data-en="Any level" data-zh="全部水平">Any level</option>
++            <option value="above" data-en="Above usual (z≥1)" data-zh="高于常态（z≥1）">Above usual (z≥1)</option>
++            <option value="below" data-en="Below usual (z≤−1)" data-zh="低于常态（z≤−1）">Below usual (z≤−1)</option>
++          </select></div>
++        <button type="button" class="clear-btn" id="dp-clear">{{ t('Clear', '清除') }}</button>
++        <button type="button" class="export-btn" id="dp-export">{{ t('Export CSV', '导出CSV') }}</button>
+@@ -383 +413 @@
+-      <div id="dp-row-count" class="row-count"></div>
++      <div id="dp-row-count" class="row-count" role="status" aria-live="polite" aria-atomic="true"></div>
+@@ -386 +416 @@
+-        <table class="dp-tbl" id="dp-table">
++        <table class="dp-tbl" id="dp-table" aria-label="Off-exchange stock data" data-label-en="Off-exchange stock data" data-label-zh="个股场外成交数据">
+@@ -389,3 +419,3 @@
+-              <th data-col="ticker" data-type="str">{{ t('Ticker','代码') }}</th>
+-              <th data-col="asof" data-type="str" class="sc-hide-sm">{{ t('Date','日期') }}</th>
+-              <th data-col="participation" data-type="num">{{ t('Off-Ex Share','场外占比') }}
++              <th data-col="ticker" data-type="str" scope="col"><button type="button" class="dp-sort" aria-label="Sort by Ticker" data-label-en="Sort by Ticker" data-label-zh="按代码排序">{{ t('Ticker','代码') }}</button></th>
++              <th data-col="asof" data-type="str" class="sc-hide-sm" scope="col"><button type="button" class="dp-sort" aria-label="Sort by Date" data-label-en="Sort by Date" data-label-zh="按日期排序">{{ t('Date','日期') }}</button></th>
++              <th data-col="participation" data-type="num" scope="col"><button type="button" class="dp-sort" aria-label="Sort by Off-Ex Share" data-label-en="Sort by Off-Ex Share" data-label-zh="按场外占比排序">{{ t('Off-Ex Share','场外占比') }}</button>
+@@ -393,2 +423,2 @@
+-              <th data-col="spark" data-type="none" class="spark-cell sc-hide">{{ t('20d trend','20日走势') }}</th>
+-              <th data-col="participation_trend_pp" data-type="num">{{ t('OE trend pp','场外趋势pp') }}
++              <th data-col="spark" data-type="none" class="spark-cell sc-hide" scope="col">{{ t('20d trend','20日走势') }}</th>
++              <th data-col="participation_trend_pp" data-type="num" scope="col"><button type="button" class="dp-sort" aria-label="Sort by OE trend pp" data-label-en="Sort by OE trend pp" data-label-zh="按场外趋势pp排序">{{ t('OE trend pp','场外趋势pp') }}</button>
+@@ -396 +426 @@
+-              <th data-col="participation_z" data-type="num">{{ t('vs norm','对比基准') }}
++              <th data-col="participation_z" data-type="num" scope="col"><button type="button" class="dp-sort" aria-label="Sort by vs norm" data-label-en="Sort by vs norm" data-label-zh="按对比基准排序">{{ t('vs norm','对比基准') }}</button>
+@@ -398 +428 @@
+-              <th data-col="short_rate" data-type="num">{{ t('Short Ratio','融券比率') }}
++              <th data-col="short_rate" data-type="num" scope="col"><button type="button" class="dp-sort" aria-label="Sort by Short Ratio" data-label-en="Sort by Short Ratio" data-label-zh="按融券比率排序">{{ t('Short Ratio','融券比率') }}</button>
+@@ -400 +430 @@
+-              <th data-col="short_trend_pp" data-type="num" class="sc-hide-sm">{{ t('SR trend pp','融券趋势pp') }}
++              <th data-col="short_trend_pp" data-type="num" class="sc-hide-sm" scope="col"><button type="button" class="dp-sort" aria-label="Sort by SR trend pp" data-label-en="Sort by SR trend pp" data-label-zh="按融券趋势pp排序">{{ t('SR trend pp','融券趋势pp') }}</button>
+@@ -402 +432 @@
+-              <th data-col="top_ats_venue" data-type="str" class="sc-hide">{{ t('ATS top venue','ATS主场所') }}
++              <th data-col="top_ats_venue" data-type="str" class="sc-hide" scope="col"><button type="button" class="dp-sort" aria-label="Sort by ATS top venue" data-label-en="Sort by ATS top venue" data-label-zh="按ATS主场所排序">{{ t('ATS top venue','ATS主场所') }}</button>
+@@ -404 +434 @@
+-              <th data-col="streak" data-type="num">{{ t('Run','连续') }}
++              <th data-col="streak" data-type="num" scope="col"><button type="button" class="dp-sort" aria-label="Sort by Run" data-label-en="Sort by Run" data-label-zh="按连续排序">{{ t('Run','连续') }}</button>
+@@ -406 +436 @@
+-              <th data-col="ats_frac" data-type="num" class="sc-hide-sm">{{ t('In dark pools','进入暗池比例') }}
++              <th data-col="ats_frac" data-type="num" class="sc-hide-sm" scope="col"><button type="button" class="dp-sort" aria-label="Sort by In dark pools" data-label-en="Sort by In dark pools" data-label-zh="按进入暗池比例排序">{{ t('In dark pools','进入暗池比例') }}</button>
+@@ -408,3 +438,3 @@
+-              <th data-col="price_change_pct" data-type="num" class="sc-hide">{{ t('Price 5d %','5日涨跌%') }}</th>
+-              <th data-col="finra_total_vol" data-type="num" class="sc-hide-xs">{{ t('FINRA vol','FINRA量') }}</th>
+-              <th data-col="n_days" data-type="num" class="sc-hide">{{ t('Days','天数') }}</th>
++              <th data-col="price_change_pct" data-type="num" class="sc-hide" scope="col"><button type="button" class="dp-sort" aria-label="Sort by Price 5d %" data-label-en="Sort by Price 5d %" data-label-zh="按5日涨跌%排序">{{ t('Price 5d %','5日涨跌%') }}</button></th>
++              <th data-col="finra_total_vol" data-type="num" class="sc-hide-xs" scope="col"><button type="button" class="dp-sort" aria-label="Sort by FINRA vol" data-label-en="Sort by FINRA vol" data-label-zh="按FINRA量排序">{{ t('FINRA vol','FINRA量') }}</button></th>
++              <th data-col="n_days" data-type="num" class="sc-hide" scope="col"><button type="button" class="dp-sort" aria-label="Sort by Days" data-label-en="Sort by Days" data-label-zh="按天数排序">{{ t('Days','天数') }}</button></th>
+@@ -487,0 +518,3 @@
++    document.querySelectorAll('.dp-shell [data-label-en]').forEach(function(el) {
++      el.setAttribute('aria-label', el.getAttribute(lang === 'zh' ? 'data-label-zh' : 'data-label-en') || el.getAttribute('data-label-en'));
++    });
+@@ -591,0 +625,14 @@
++  function syncDeskControls() {
++    document.querySelectorAll('.chip.preset').forEach(function(button) {
++      var selected = button.getAttribute('data-preset') === activePreset;
++      button.classList.toggle('active', selected);
++      button.setAttribute('aria-pressed', String(selected));
++    });
++    document.querySelectorAll('#dp-table th[data-col]').forEach(function(th) {
++      var selected = th.getAttribute('data-col') === sortCol;
++      th.classList.toggle('sort-asc', selected && sortDir === 1);
++      th.classList.toggle('sort-desc', selected && sortDir === -1);
++      if (selected) th.setAttribute('aria-sort', sortDir === -1 ? 'descending' : 'ascending');
++      else th.removeAttribute('aria-sort');
++    });
++  }
+@@ -596 +643,6 @@
+-    if (tbody) tbody.innerHTML = sorted.map(renderRow).join('');
++    if (tbody) tbody.innerHTML = sorted.length ? sorted.map(renderRow).join('') :
++      '<tr class="dp-empty"><td colspan="14">' +
++      (allRows.length ?
++        (document.documentElement.getAttribute('data-lang') === 'zh' ? '没有匹配的股票。请调整或清除筛选。' : 'No matching stocks. Adjust or clear the filters.') :
++        (document.documentElement.getAttribute('data-lang') === 'zh' ? '当前快照暂无股票数据。' : 'No stock data is available in this snapshot.')) + '</td></tr>';
++    syncDeskControls();
+@@ -604,4 +656,3 @@
+-  document.querySelectorAll('table.dp-tbl th[data-col]').forEach(function(th) {
+-    if (th.getAttribute('data-type') === 'none') return;
+-    th.addEventListener('click', function() {
+-      var col = th.getAttribute('data-col');
++  document.querySelectorAll('#dp-table .dp-sort').forEach(function(button) {
++    button.addEventListener('click', function() {
++      var col = button.closest('th').getAttribute('data-col');
+@@ -609,2 +659,0 @@
+-      document.querySelectorAll('table.dp-tbl th').forEach(function(h) { h.classList.remove('sort-asc', 'sort-desc'); });
+-      th.classList.add(sortDir === -1 ? 'sort-desc' : 'sort-asc');
+@@ -618 +666,0 @@
+-      document.querySelectorAll('.chip.preset').forEach(function(c) { c.classList.remove('active'); });
+@@ -622 +670 @@
+-  document.getElementById('dp-clear').addEventListener('click', function() {
++  function clearFilters(focusSearch) {
+@@ -626 +673,0 @@
+-    document.querySelectorAll('.chip.preset').forEach(function(c) { c.classList.remove('active'); });
+@@ -628 +675,3 @@
+-  });
++    if (focusSearch) document.getElementById('dp-search').focus();
++  }
++  document.getElementById('dp-clear').addEventListener('click', function() { clearFilters(true); });
+@@ -632 +681 @@
+-      if (activePreset === p) { document.getElementById('dp-clear').click(); return; }
++      if (activePreset === p) { clearFilters(false); return; }
+@@ -640,2 +688,0 @@
+-      document.querySelectorAll('.chip.preset').forEach(function(c) { c.classList.remove('active'); });
+-      chip.classList.add('active');
+@@ -667,2 +713,0 @@
+-  var defaultTh = document.querySelector('th[data-col="participation_z"]');
+-  if (defaultTh) defaultTh.classList.add('sort-desc');

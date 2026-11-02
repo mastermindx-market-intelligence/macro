@@ -1,0 +1,71 @@
+{
+  "schema": "tiingo.physical_continuation_qualified_quality_failure_never_accounting/v1",
+  "recorded_at_utc": "2026-10-13T02:55:54.542344+00:00",
+  "run_id": "eod-wave15-original-unadmitted-continuation02-20261013-01a12ab6",
+  "method_sha256": "cb89aef29025589ab3b7e99d317285d26e4a4a1396e9835dfcb64e2166ded3c5",
+  "core_sha256": "c6932707a653fd825256a51531b1e320661b2561ef1633edc52880fd8412cebd",
+  "accepted_qualification_method_sha256": [
+    "c6932707a653fd825256a51531b1e320661b2561ef1633edc52880fd8412cebd"
+  ],
+  "actual_original_result_sha256": "259a104731b007c3465c7c001c40df49ade457793ec3030eb90e5871d790fbdd",
+  "actual_original_terminal_parent_sha256": "461c416c8dd91cceb605199bf6d98673c12640def8041f532323b0c0954a5107",
+  "actual_disposition_window_parent_sha256": {
+    "tiingo-wave15-continuation02-disposition-window01-actual-parent-consumption.json": "f0e4c6cd30c6441a885ede6628f08831da059a109f9cdd6b749e99c675d18f2c"
+  },
+  "all_physical_2015_identities_accounted_exactly_once": true,
+  "actual_original_capture_terminal_return_consumed": true,
+  "all_listed_qualification_writer_returns_consumed": true,
+  "successful_requests": 121,
+  "qualified_successes": 121,
+  "source_quality_quarantined_successes": 0,
+  "held_attempted_failures": [
+    {
+      "source": "eod-bars",
+      "symbol": "TRPCF",
+      "request_path": "/tiingo/daily/TRPCF/prices?endDate=2026-10-09&startDate=2021-10-26",
+      "reason": "Tiingo transport unavailable",
+      "transport_reason_class": "TimeoutError",
+      "transport_message_retained": false
+    }
+  ],
+  "never_admitted_count": 1893,
+  "all_captured_successes_partitioned_between_valid_and_quality": true,
+  "all_qualified_nonempty_reader_lineage_verified": true,
+  "all_captured_successes_reader_qualified": true,
+  "all_selected_captured": false,
+  "qualified_nonempty_responses": 121,
+  "qualified_empty_responses": 0,
+  "qualified_disjoint_bars": 232879,
+  "qualified_raw_bytes": 51532314,
+  "quarantined_raw_bytes": 0,
+  "all_captured_raw_bytes": 51532314,
+  "qualification_sha256": {
+    "eod-wave15-unadmitted-continuation02-prefix01-qualified.json": "b552cc0b6d833f693738f39318296d7e84c2600ca52b64b88df38c3c56e10f3e"
+  },
+  "coverage_sha256": {
+    "eod-qualified-catalogue-coverage-wave15-unadmitted-continuation02-prefix01-delta.json": "2ea5ada401e3d375c157f0fd7e5340045a05cac02cae57a6f95c2d94f2d9e145"
+  },
+  "last_coverage_file": "eod-qualified-catalogue-coverage-wave15-unadmitted-continuation02-prefix01-delta.json",
+  "last_coverage_sha256": "2ea5ada401e3d375c157f0fd7e5340045a05cac02cae57a6f95c2d94f2d9e145",
+  "global_candidate_status": {
+    "NONEMPTY_DESIRED_REQUEST_WINDOWS_CAPTURED": 45651,
+    "CAPTURED_EMPTY_RESPONSE": 117,
+    "UNCAPTURED_CATALOGUE_WINDOW": 1918,
+    "CAPTURED_SOURCE_QUALITY_QUARANTINED": 3
+  },
+  "global_histories": 45651,
+  "global_bars": 96634698,
+  "minimum_four_admission_gap_seconds": 5.00006241700612,
+  "prior_failures_retried": false,
+  "provider_requests": 0,
+  "credentials_read": false,
+  "archive_writes": 0,
+  "source_payloads_modified": false,
+  "complete_vendor_history_proven": false,
+  "canonical_identity_admitted": false,
+  "pit_backtest_eligible": false,
+  "programme_acceptance_claimed": false,
+  "retained_operational_accounting_sha256": "fadd559da063ca188956f3a53644f94e8cc3b8df5c9015c92a16bc9b99358aab",
+  "never_admitted_request_rows_copied": false,
+  "licensed_market_rows_copied": false
+}

@@ -1,0 +1,225 @@
+"""Authored for deferred qualification: exact production widget functions in Node.
+
+No provider or browser requests; these isolate Stop/replay event semantics. Full DOM,
+real host integration and deployed browser proof remain separate required checks.
+"""
+from __future__ import annotations
+
+import json
+from pathlib import Path
+import shutil
+import subprocess
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+SOURCE = ROOT / "templates" / "mm_brain.js"
+
+
+def _function(name: str) -> str:
+    text = SOURCE.read_text(encoding="utf-8")
+    start = text.index("  function " + name + "(")
+    # Top-level IIFE function boundaries use two spaces; nested blocks use >=4.
+    end = text.index("\n  }", start) + len("\n  }")
+    return text[start:end]
+
+
+def _node(names: list[str], program: str) -> None:
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node required for real JavaScript function evaluation")
+    code = "const assert = require('node:assert/strict');\n" + "\n".join(_function(n) for n in names)
+    code += "\n(async function () {\n" + program + "\n})().catch(e => { console.error(e); process.exitCode=1; });"
+    result = subprocess.run([node, "-e", code], cwd=ROOT, text=True, capture_output=True, timeout=10)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.parametrize("flag", ["stopped", "retracted", "doneSeen"])
+def test_no_chart_handoff_from_inactive_reply(flag: str) -> None:
+    _node(["newTurn", "forwardChartEvent"], r"""
+      global.CFG = {onCommand: () => { throw Error('must not execute'); }};
+      global.saveRun = () => {}; global.setBusy = () => {};
+      const t = newTurn({}, null); t[FLAG] = true;
+      forwardChartEvent({type:'command',v:2,batch_id:'brain_a'}, t);
+      assert.equal(t.chartHandoff, false);
+    """.replace("FLAG", json.dumps(flag)))
+
+
+def test_handoff_is_recorded_before_a_throwing_callback() -> None:
+    _node(["newTurn", "forwardChartEvent"], r"""
+      const order = [];
+      global.saveRun = t => { order.push('persist'); assert.equal(t.chartHandoff, true); };
+      global.setBusy = () => {};
+      global.CFG = {onCommand: () => {order.push('callback'); throw Error('possibly applied');}};
+      const t = newTurn({}, null);
+      forwardChartEvent({type:'command',v:2,batch_id:'brain_a'}, t);
+      assert.deepEqual(order, ['persist','callback']);
+      assert.equal(t.chartHandoff, true);
+      assert.deepEqual(t.chartBatches, ['brain_a']);
+      assert.equal(t.chartHandoffUnconfirmed, true);
+    """)
+
+
+def test_command_and_annotation_both_mark_effect_handoff_without_inventing_ack() -> None:
+    _node(["newTurn", "forwardChartEvent"], r"""
+      let commands=0, annotations=0;
+      global.saveRun=()=>{}; global.setBusy=()=>{};
+      global.CFG={onCommand:()=>commands++,onAnnotate:()=>annotations++};
+      const t=newTurn({},null);
+      forwardChartEvent({type:'command',v:2,batch_id:'brain_a'},t);
+      forwardChartEvent({type:'command',v:2,batch_id:'brain_a'},t);
+      forwardChartEvent({type:'annotate'},t);
+      assert.equal(commands,2); assert.equal(annotations,1);
+      assert.deepEqual(t.chartBatches,['brain_a']);
+      assert.equal(t.chartUntracked,true); assert.equal(t.chartHandoff,true);
+      assert.equal(t.command_status,undefined);
+    """)
+
+
+def test_cold_reply_recovery_never_forwards_chart_effects() -> None:
+    _node(["newTurn", "forwardChartEvent"], r"""
+      let commands=0, annotations=0, notices=0;
+      global.saveRun=()=>{}; global.setBusy=()=>{};
+      global.CFG={onCommand:()=>commands++,onAnnotate:()=>annotations++};
+      global.showChartReplayNotice=()=>notices++;
+      const t=newTurn({},null); t.chartReplayOnly=true;
+      forwardChartEvent({type:'command',v:2,batch_id:'brain_a'},t);
+      forwardChartEvent({type:'annotate'},t);
+      assert.equal(commands,0); assert.equal(annotations,0);
+      assert.equal(t.chartReplaySuppressed,true); assert.equal(t.chartHandoff,false);
+      assert.equal(notices,2);
+    """)
+
+
+def test_live_turn_reconnect_keeps_existing_command_path() -> None:
+    _node(["newTurn", "forwardChartEvent"], r"""
+      let count=0; global.saveRun=()=>{};global.setBusy=()=>{};
+      global.CFG={onCommand:()=>count++};
+      const t=newTurn({},null);t.cursor=17;t.runId='existing-run';
+      forwardChartEvent({type:'command',v:2,batch_id:'brain_a'},t);
+      assert.equal(count,1);assert.equal(t.chartReplayOnly,false);
+    """)
+
+
+def test_stop_calls_only_exact_received_batches_once() -> None:
+    _node(["newTurn", "stopChartWork"], r"""
+      let calls=0;
+      const t=newTurn({},null);t.chartBatches=['brain_a','brain_b'];
+      global.CFG={onChartStop:r=>{
+        calls++;assert.equal(r.scope,'received_batches');
+        assert.deepEqual(r.batch_ids,['brain_a','brain_b']);r.batch_ids.push('not-the-original');
+        return {scope:'received_batches',cancelled:2};
+      }};
+      assert.deepEqual(stopChartWork(t),{status:'reported',cancelled:2});
+      assert.deepEqual(stopChartWork(t),{status:'reported',cancelled:2});
+      assert.equal(calls,1);assert.deepEqual(t.chartBatches,['brain_a','brain_b']);
+    """)
+
+
+@pytest.mark.parametrize("result", [None, {}, {"scope":"all","cancelled":2},
+                                       {"scope":"received_batches","cancelled":-1},
+                                       {"scope":"received_batches","cancelled":0.5}])
+def test_absent_or_malformed_stop_result_is_not_a_success_count(result: object) -> None:
+    _node(["newTurn", "stopChartWork"], r"""
+      global.CFG={onChartStop:()=>RESULT};
+      const t=newTurn({},null);t.chartBatches=['brain_a'];
+      assert.equal(stopChartWork(t).status,'unconfirmed');
+      assert.equal(stopChartWork(t).cancelled,undefined);
+    """.replace("RESULT", json.dumps(result)))
+
+
+def test_old_host_and_throwing_host_do_not_claim_pending_actions_stopped() -> None:
+    _node(["newTurn", "stopChartWork"], r"""
+      global.CFG={};const a=newTurn({},null);a.chartBatches=['brain_a'];
+      assert.equal(stopChartWork(a).status,'unavailable');
+      let calls=0;global.CFG={onChartStop:()=>{calls++;throw Error('unknown callback effect');}};
+      const b=newTurn({},null);b.chartBatches=['brain_b'];
+      assert.equal(stopChartWork(b).status,'unconfirmed');stopChartWork(b);
+      assert.equal(calls,1);
+    """)
+
+
+def test_empty_scope_never_invokes_broad_cancellation() -> None:
+    _node(["newTurn", "stopChartWork"], r"""
+      global.CFG={onChartStop:()=>{throw Error('no batch must not mean all');}};
+      assert.equal(stopChartWork(newTurn({},null)).status,'no_tracked_batches');
+    """)
+
+
+def test_event_handler_ignores_obsolete_or_terminal_reply() -> None:
+    _node(["newTurn", "handleEvent"], r"""
+      let forwarded=0;global.forwardChartEvent=()=>forwarded++;
+      global.saveRun=()=>{throw Error('must not rearm stopped run');};
+      const t=newTurn({},null);global.activeStream={};
+      assert.equal(handleEvent({type:'command'},t),false);
+      global.activeStream=t;t.stopped=true;
+      assert.equal(handleEvent({type:'run',run_id:'late'},t),false);
+      assert.equal(t.runId,null);assert.equal(forwarded,0);
+    """)
+
+
+def test_buffered_late_chunk_does_not_reach_host_after_stop() -> None:
+    _node(["newTurn", "handleEvent", "readSse"], r"""
+      const t=newTurn({},null);global.activeStream=t;
+      let forwarded=0,cancelled=0,read=0;
+      global.forwardChartEvent=()=>{forwarded++;t.stopped=true;};
+      global.saveRun=()=>{};global.finish=()=>{};
+      const bytes=new TextEncoder().encode('data: {"type":"command"}\n\ndata: {"type":"command"}\n\n');
+      const reader={read:()=>Promise.resolve(read++ ? {done:true}:{done:false,value:bytes}),cancel:()=>{cancelled++;return Promise.resolve();}};
+      await readSse({body:{getReader:()=>reader}},t);
+      assert.equal(forwarded,1);assert.ok(cancelled>=1);
+    """)
+
+
+def test_existing_run_record_keeps_handoff_metadata_not_an_extra_storage_key() -> None:
+    _node(["newTurn", "saveRun"], r"""
+      let saved;global.RUN_KEY='existing.run';global.threadId='thread';
+      global.runStore={setItem:(key,value)=>{assert.equal(key,'existing.run');saved=JSON.parse(value);}};
+      const t=newTurn({text:'move this line'},null);t.runId='run';t.chartHandoff=true;
+      t.chartBatches=['brain_a'];t.chartUntracked=true;saveRun(t);
+      assert.equal(saved.chart_handoff,true);assert.deepEqual(saved.chart_batches,['brain_a']);
+      assert.equal(saved.chart_untracked,true);assert.equal(saved.id,'run');
+    """)
+
+
+def test_cold_attachment_is_read_only_even_with_a_nonzero_cursor() -> None:
+    _node(["newTurn", "attachFresh"], r"""
+      let attached;
+      global.root={querySelectorAll:()=>[]};global.el=()=>({querySelector:()=>({})});
+      global.scroll={appendChild:()=>{}};global.stick=()=>{};global.ORB_PATH='';
+      global.thinkInit=()=>({});global.saveRun=()=>{};global.attachRun=t=>attached=t;
+      attachFresh({run_id:'run',thread_id:'thread'},12,'question',{
+        id:'run',chart_handoff:true,chart_batches:['brain_a'],chart_untracked:false
+      });
+      assert.equal(attached.chartReplayOnly,true);assert.equal(attached.cursor,12);
+      assert.equal(attached.chartHandoff,true);assert.deepEqual(attached.chartBatches,['brain_a']);
+    """)
+
+
+@pytest.mark.parametrize("handed", [True, False])
+def test_early_stop_retracts_only_when_no_chart_callback_was_handed_off(handed: bool) -> None:
+    _node(["newTurn", "stopStream"], r"""
+      const t=newTurn({},null);t.chartHandoff=HANDED;
+      global.activeStream=t;global.streaming=true;global.parked=null;global.streamAbort=null;
+      let retracted=0,noted=0,cancelled=0;
+      global.thinkTeardown=()=>{};global.clearRun=()=>{};
+      global.stopChartWork=()=>{cancelled++;return {status:'reported',cancelled:1};};
+      global.retractTurn=()=>retracted++;
+      global.ensureBub=x=>{x.bub={};x.stream={stop:()=>{}};return x.bub;};
+      global.showChartStopNotice=()=>noted++;
+      global.bumpTime=()=>{};global.markLastAssistant=()=>{};
+      global.setBusy=()=>{};global.syncSend=()=>{};global.stickAfter=()=>{};
+      stopStream();
+      assert.equal(retracted,HANDED?0:1);assert.equal(noted,HANDED?1:0);
+      assert.equal(cancelled,HANDED?1:0);assert.equal(t.stopped,true);
+    """.replace("HANDED", json.dumps(handed)))
+
+
+def test_stopped_finish_does_not_announce_completion_or_reload_threads() -> None:
+    _node(["newTurn", "finish"], r"""
+      const t=newTurn({},null);t.stopped=true;global.activeStream=t;
+      let ended=0;global.endTurn=()=>ended++;
+      global.loadThreads=()=>{throw Error('stopped is not completed');};
+      global.announceDone=()=>{throw Error('stopped is not completed');};
+      finish(t);assert.equal(ended,1);
+    """)

@@ -1,0 +1,787 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "context_v1",
+    "owner_structure",
+    "query",
+    "read_clock",
+    "subindustry",
+    "use_qualification",
+    "authority_flags",
+    "limitations"
+  ],
+  "properties": {
+    "schema": {
+      "const": "gmi.theme_structural_context/v2"
+    },
+    "context_v1": {
+      "$ref": "https://mastermind-x.com/contracts/theme_graph/structural_context.v1.schema.json"
+    },
+    "owner_structure": {
+      "$ref": "#/$defs/owner_structure"
+    },
+    "query": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "node_id",
+        "effective_at",
+        "known_at",
+        "clock_precision"
+      ],
+      "properties": {
+        "node_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "effective_at": {
+          "type": "string",
+          "format": "date"
+        },
+        "known_at": {
+          "type": "string",
+          "format": "date"
+        },
+        "clock_precision": {
+          "const": "date"
+        }
+      }
+    },
+    "read_clock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "started_at",
+        "finished_at"
+      ],
+      "properties": {
+        "started_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$(?![\\s\\S])"
+        },
+        "finished_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$(?![\\s\\S])"
+        }
+      }
+    },
+    "subindustry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "reason_codes"
+      ],
+      "properties": {
+        "state": {
+          "const": "OWNER_NOT_BOUND"
+        },
+        "reason_codes": {
+          "const": [
+            "NO_STABLE_SUBINDUSTRY_OWNER_CONTRACT"
+          ]
+        }
+      }
+    },
+    "use_qualification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "rights_state",
+        "reason_codes",
+        "authorized_uses",
+        "public_display",
+        "machine_qualified",
+        "predictive_use"
+      ],
+      "properties": {
+        "status": {
+          "const": "NOT_QUALIFIED"
+        },
+        "rights_state": {
+          "const": "OWNER_NOT_BOUND"
+        },
+        "reason_codes": {
+          "const": [
+            "STAGE_RELATIONSHIP_PER_USE_RIGHTS_UNSUPPORTED"
+          ]
+        },
+        "authorized_uses": {
+          "const": []
+        },
+        "public_display": {
+          "const": false
+        },
+        "machine_qualified": {
+          "const": false
+        },
+        "predictive_use": {
+          "const": false
+        }
+      }
+    },
+    "authority_flags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rank",
+        "gate",
+        "size",
+        "insertion",
+        "origination",
+        "escalation",
+        "predictive_use"
+      ],
+      "properties": {
+        "rank": {
+          "const": false
+        },
+        "gate": {
+          "const": false
+        },
+        "size": {
+          "const": false
+        },
+        "insertion": {
+          "const": false
+        },
+        "origination": {
+          "const": false
+        },
+        "escalation": {
+          "const": false
+        },
+        "predictive_use": {
+          "const": false
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/theme_graph/theme_structural_context.v2.schema.json",
+  "title": "Current structural owner observation v2",
+  "description": "Output of the existing structural reader only. Availability is separate from per-use authorization. Schema validation cannot authenticate owner receipts, compare clocks or identity joins, verify fingerprints, establish consumed bytes or grant rights. The reader enforces its bounded semantic checks; default v1 remains intact.",
+  "$defs": {
+    "owner_structure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "availability",
+        "identity",
+        "industry_reference",
+        "input_observation"
+      ],
+      "properties": {
+        "availability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "reason_codes"
+          ],
+          "properties": {
+            "state": {
+              "enum": [
+                "AVAILABLE",
+                "UNAVAILABLE",
+                "UNSUPPORTED_SUBJECT"
+              ]
+            },
+            "reason_codes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "identity": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/resolved_identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "industry_reference": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/industry_reference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "input_observation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/input_observation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "availability": {
+                "properties": {
+                  "state": {
+                    "const": "AVAILABLE"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "availability": {
+                "properties": {
+                  "reason_codes": {
+                    "const": []
+                  }
+                }
+              },
+              "identity": {
+                "$ref": "#/$defs/resolved_identity"
+              },
+              "industry_reference": {
+                "$ref": "#/$defs/industry_reference"
+              },
+              "input_observation": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/input_observation"
+                  },
+                  {
+                    "properties": {
+                      "unchanged_during_read": {
+                        "const": true
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "availability": {
+                "properties": {
+                  "reason_codes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "minItems": 1
+                  }
+                }
+              },
+              "industry_reference": {
+                "const": null
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "availability": {
+                "properties": {
+                  "state": {
+                    "const": "UNSUPPORTED_SUBJECT"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "identity": {
+                "const": null
+              },
+              "input_observation": {
+                "const": null
+              }
+            }
+          }
+        }
+      ]
+    },
+    "resolved_identity": {
+      "allOf": [
+        {
+          "$ref": "https://mastermind-x.com/contracts/theme_graph/identity_resolution.v1.schema.json"
+        },
+        {
+          "properties": {
+            "market_scope": {
+              "const": "us"
+            },
+            "resolution_state": {
+              "const": "RESOLVED"
+            },
+            "security_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "listing_key": {
+              "type": "string",
+              "minLength": 1
+            },
+            "refusal_reason": {
+              "const": null
+            },
+            "computed_at": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$(?![\\s\\S])"
+            },
+            "master_generated_at": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$(?![\\s\\S])"
+            }
+          }
+        }
+      ]
+    },
+    "industry_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "security_id",
+        "owner_relationship",
+        "historical_classification_claim",
+        "classification_first_known_at",
+        "owner_binding"
+      ],
+      "properties": {
+        "target": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "id",
+            "universe"
+          ],
+          "properties": {
+            "type": {
+              "const": "industry"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "universe": {
+              "const": "us_industry"
+            }
+          }
+        },
+        "security_id": {
+          "type": "string",
+          "pattern": "^SEC:US-(XNAS|XNYS|XASE)-.+$"
+        },
+        "owner_relationship": {
+          "$ref": "#/$defs/owner_relationship"
+        },
+        "historical_classification_claim": {
+          "const": false
+        },
+        "classification_first_known_at": {
+          "const": null
+        },
+        "owner_binding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "graph_reader",
+            "identity_reader",
+            "relationship_reader",
+            "artifact_id",
+            "target_identity_artifact_id",
+            "supported_scope"
+          ],
+          "properties": {
+            "graph_reader": {
+              "const": "engine.theme_graph.identity_resolution.resolve_graph_node_identity"
+            },
+            "identity_reader": {
+              "const": "engine.intelligence_workspace.entity.DataOSIdentityNormalizer.normalize_many"
+            },
+            "relationship_reader": {
+              "const": "engine.intelligence_workspace.resolver.DatapointResolver.resolve_current_industry_relationship"
+            },
+            "artifact_id": {
+              "const": "data/stage_analysis/screener.json"
+            },
+            "target_identity_artifact_id": {
+              "const": "data/stage_analysis/industry_ranks.json"
+            },
+            "supported_scope": {
+              "const": "CURRENT_US_SECURITY_INDUSTRY"
+            }
+          }
+        }
+      }
+    },
+    "owner_relationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "registry_digest",
+        "relationship",
+        "from",
+        "to",
+        "status",
+        "reason_code",
+        "observed_at",
+        "effective_at",
+        "as_of",
+        "generated_at",
+        "freshness",
+        "quality",
+        "source",
+        "provenance",
+        "audience",
+        "consumer_use",
+        "relationship_fingerprint"
+      ],
+      "properties": {
+        "schema": {
+          "const": "intelligence_workspace.current_industry_relationship.v1"
+        },
+        "registry_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "relationship": {
+          "const": "security.current_industry"
+        },
+        "from": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "id"
+          ],
+          "properties": {
+            "type": {
+              "const": "security"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^SEC:US-(XNAS|XNYS|XASE)-.+$"
+            }
+          }
+        },
+        "to": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "id",
+            "universe"
+          ],
+          "properties": {
+            "type": {
+              "const": "industry"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "universe": {
+              "const": "us_industry"
+            }
+          }
+        },
+        "status": {
+          "const": "available"
+        },
+        "reason_code": {
+          "const": null
+        },
+        "observed_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date",
+              "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$(?![\\s\\S])"
+            },
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$(?![\\s\\S])"
+            }
+          ]
+        },
+        "effective_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date",
+              "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$(?![\\s\\S])"
+            },
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$(?![\\s\\S])"
+            }
+          ]
+        },
+        "as_of": {
+          "type": "string",
+          "format": "date"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$(?![\\s\\S])"
+        },
+        "freshness": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "policy"
+          ],
+          "properties": {
+            "state": {
+              "const": "fresh"
+            },
+            "policy": {
+              "const": "owner_native"
+            }
+          }
+        },
+        "quality": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "issues"
+          ],
+          "properties": {
+            "state": {
+              "const": "ok"
+            },
+            "issues": {
+              "const": []
+            }
+          }
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_id",
+            "owner",
+            "license_class",
+            "dataset_id"
+          ],
+          "properties": {
+            "source_id": {
+              "const": "stage_analysis.screener"
+            },
+            "owner": {
+              "const": "stage_analysis"
+            },
+            "license_class": {
+              "type": "string",
+              "minLength": 1
+            },
+            "dataset_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "owner_field_key",
+            "relationship",
+            "basis"
+          ],
+          "properties": {
+            "kind": {
+              "const": "owner_relationship"
+            },
+            "owner_field_key": {
+              "const": "current_industry"
+            },
+            "relationship": {
+              "const": "security.current_industry"
+            },
+            "basis": {
+              "const": "owner_published_current_relationship"
+            }
+          }
+        },
+        "audience": {
+          "const": "subscriber"
+        },
+        "consumer_use": {
+          "const": "ai_fact"
+        },
+        "relationship_fingerprint": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "input_observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "basis",
+        "consumed_bytes_proven",
+        "artifacts",
+        "unchanged_during_read"
+      ],
+      "properties": {
+        "basis": {
+          "const": "SEPARATELY_OBSERVED_BEFORE_AFTER_OWNER_READ"
+        },
+        "consumed_bytes_proven": {
+          "const": false
+        },
+        "artifacts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "data/theme_graph/nodes.parquet",
+            "data/theme_graph/identity_resolution.parquet",
+            "data/reference/security_master.parquet",
+            "data/reference/vendor_aliases.parquet",
+            "data/reference/_receipt.json",
+            "data/stage_analysis/screener.json",
+            "data/stage_analysis/industry_ranks.json"
+          ],
+          "properties": {
+            "data/theme_graph/nodes.parquet": {
+              "$ref": "#/$defs/artifact_observation"
+            },
+            "data/theme_graph/identity_resolution.parquet": {
+              "$ref": "#/$defs/artifact_observation"
+            },
+            "data/reference/security_master.parquet": {
+              "$ref": "#/$defs/artifact_observation"
+            },
+            "data/reference/vendor_aliases.parquet": {
+              "$ref": "#/$defs/artifact_observation"
+            },
+            "data/reference/_receipt.json": {
+              "$ref": "#/$defs/artifact_observation"
+            },
+            "data/stage_analysis/screener.json": {
+              "$ref": "#/$defs/artifact_observation"
+            },
+            "data/stage_analysis/industry_ranks.json": {
+              "$ref": "#/$defs/artifact_observation"
+            }
+          }
+        },
+        "unchanged_during_read": {
+          "type": "boolean"
+        }
+      }
+    },
+    "artifact_observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "OBSERVED",
+            "MISSING"
+          ]
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "bytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "OBSERVED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "sha256": {
+                "const": null
+              },
+              "bytes": {
+                "const": null
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

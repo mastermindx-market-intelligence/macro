@@ -17,7 +17,9 @@ Terminal fixtures public/data/surface_idx_fixture.json + surface_fixture.json):
                   cadenceSec?, cadence?, root?, source?}
   SurfaceFrame = {spot, price_levels:[…] ascending, time_steps:["HH:MM",…],
                   grids:{netprem:[[levelIdx][timeIdx]]}, asof, pollFloorSec,
-                  observedCadenceSec, cadence, metrics?, session_date?, root?}
+                  observedCadenceSec, cadence, metrics?, session_date?, root?,
+                  valuation_at?, built_at?, trade_at_first?, trade_at_last?,
+                  quote_at_first?, quote_at_last?, oi_vintage?}
   SurfaceDates = {root, dates:["YYYY-MM-DD",…] NEWEST FIRST, latest, count, retain,
                   pollFloorSec, cadenceSec?, cadence, asof, source}
 
@@ -67,6 +69,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+from copy import deepcopy
 import json
 import logging
 import re
@@ -224,23 +227,41 @@ def net_prem_by_strike(root_strikes: dict) -> dict[float, float]:
 # aggregates per-strike GEX/DEX/VANNA/CHARM using the EOD engine's dealer conventions.
 
 
-def _year_fraction(exp_str: str, session_date: str) -> float | None:
-    """Year-fraction to expiry (T) from an expiration date and the session date.
+def _year_fraction(exp_str: str, observed_at: str) -> float | None:
+    """Actual year-fraction from an observation to the expiration session close.
 
-    Both ISO 'YYYY-MM-DD' (or a timestamp whose first 10 chars are the date). 0DTE →
-    a small positive floor (never 0 or negative, which would blow up BS). Returns None on
-    an unparseable/expired date (past the session date).
+    Surface Greeks are observation-time objects. The current surface roots are US
+    cash-equity/ETF options, so maturity is the underlying cash-session close for the
+    expiration date: 16:00 ET normally and 13:00 ET on the existing early-close calendar.
+    The numerical Greek engine owns its separate one-minute MIN_T solve guard; this
+    producer reports actual remaining time and drops contracts at/after maturity.
+
+    ``observed_at`` must be an offset-aware ISO timestamp (the poller's canonical
+    ``cycle_started_at``). Non-session expirations, malformed/naive observations and
+    already-matured contracts fail closed with ``None``.
     """
     try:
         exp_d = datetime.fromisoformat(str(exp_str)[:10]).date()
-        sess_d = datetime.fromisoformat(str(session_date)[:10]).date()
+        observed = datetime.fromisoformat(str(observed_at).replace("Z", "+00:00"))
     except (TypeError, ValueError):
         return None
-    days = (exp_d - sess_d).days
-    if days < 0:
+    if observed.tzinfo is None:
         return None
-    # 0DTE carries intraday time value; floor at ~4 hours so late-day 0DTE greeks stay finite.
-    return max(days / 365.0, (4.0 / 24.0) / 365.0)
+
+    # Reuse the existing US cash-session clock/calendar rather than minting a second
+    # early-close table inside the options surface producer.
+    from lib.nyse_calendar import is_session
+    from engine.session_digest import session_window_et
+
+    if not is_session(exp_d):
+        return None
+    _opened, maturity = session_window_et(exp_d)
+    remaining_sec = (
+        maturity.astimezone(timezone.utc) - observed.astimezone(timezone.utc)
+    ).total_seconds()
+    if remaining_sec <= 0:
+        return None
+    return remaining_sec / (365.0 * 24.0 * 60.0 * 60.0)
 
 
 def extract_cycle_quotes(
@@ -248,23 +269,69 @@ def extract_cycle_quotes(
     puts_df,
     *,
     session_date: str,
+    observed_at: str,
     near_dte_cap_days: int | None = 90,
 ) -> list[dict]:
     """Freshest per-contract NBBO mid this cycle, from the raw trade-tape frames.
 
     calls_df / puts_df: the poller's bulk_trade_quote output (row-per-fill tape) with
-    columns root, expiration, strike, right, trade_timestamp, bid, ask (collectors/
-    thetadata._normalize_trade_quote_df). For each (expiration, strike, right) we keep the
+    columns root, expiration, strike, right, trade_timestamp, quote_timestamp, bid, ask
+    (collectors.thetadata.bulk_trade_quote). For each (expiration, strike, right) we keep the
     LAST row by trade_timestamp — the most recent NBBO for that contract — and compute
     mid = (bid+ask)/2. Contracts with no positive bid/ask, or an expiry beyond
     near_dte_cap_days (the poller's chain coverage cap), are dropped.
 
-    Returns a list of {exp_str, exp_years, strike, right('C'/'P'), mid} dicts — the input
+    observed_at is the fetched-root availability/valuation clock and determines actual
+    remaining time to the expiration session close. Each chosen tape row separately retains
+    its trade-event clock (`trade_at`) and the provider's prevailing-NBBO clock
+    (`quote_at`). ThetaData v3 tape clocks are exchange-local wall-clock values when naive;
+    they are localized to America/New_York before conversion to UTC. A source event after
+    observed_at is rejected rather than backdated. Missing/malformed quote_timestamp stays
+    an honest null — it is never fabricated from trade_timestamp.
+
+    Returns {exp_str, exp_years, strike, right('C'/'P'), mid, trade_at, quote_at} dicts — the input
     compute_greek_grids expects (minus oi, which is joined separately from the OI snapshot).
-    Coverage honesty is intrinsic: a strike with no traded contract this cycle simply is
-    not in the list, so it contributes 0 and is not counted toward greek coverage.
+    Absence from this traded-contract tape stays absent. This list is not the full eligible
+    option universe, so higher-level coverage must not interpret it as field completeness.
     """
     import pandas as pd  # local import — pure-python callers (dry-run) never hit this
+
+    # The frame's session identity and the clock driving time-to-expiry must agree.
+    # A historical/diagnostic date paired with today's clock is unavailable, not a
+    # license to manufacture a maturity from two different information sets.
+    try:
+        session_d = datetime.fromisoformat(str(session_date)[:10]).date()
+        observed = datetime.fromisoformat(str(observed_at).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return []
+    if observed.tzinfo is None or observed.astimezone(ET).date() != session_d:
+        return []
+    observed_utc = observed.astimezone(timezone.utc)
+
+    # Reuse the same cash-session owner as engine.live_flow. The raw bulk tape can
+    # include post-close ETF prints because the poller fetches through "now"; surface
+    # Greek inputs must first stay inside the accepted cash-session trade window.
+    from engine.session_digest import session_window_et
+    session_open_et, session_close_et = session_window_et(session_d)
+    session_open_utc = session_open_et.astimezone(timezone.utc)
+    session_close_utc = session_close_et.astimezone(timezone.utc)
+
+    def _source_instant(raw: object) -> datetime | None:
+        if raw is None:
+            return None
+        text = str(raw).strip()
+        if not text or text.lower() in {"nan", "nat", "none"}:
+            return None
+        try:
+            dt = datetime.fromisoformat(text.replace("Z", "+00:00"))
+        except (TypeError, ValueError):
+            return None
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=ET)
+        return dt.astimezone(timezone.utc)
+
+    def _utc_iso(dt: datetime | None) -> str | None:
+        return dt.isoformat().replace("+00:00", "Z") if dt is not None else None
 
     frames = []
     for df in (calls_df, puts_df):
@@ -286,23 +353,45 @@ def extract_cycle_quotes(
     # start with '_' into positional accessors, so keep them itertuples-safe.
     tape["cright"] = tape["right"].astype(str).str.upper().str[:1]
     tape["cexp"] = tape["expiration"].astype(str).str[:10]
-    # Keep only rows with a usable two-sided quote.
-    tape = tape[(tape["bid"] > 0) & (tape["ask"] > 0) & (tape["strike"] > 0)]
+    # Keep only rows with a usable two-sided quote and a trade event inside
+    # the existing cash-session window. RTH membership belongs to the trade clock;
+    # quote_timestamp may legitimately precede it and remains provenance only.
+    tape["trade_utc_sort"] = tape["trade_timestamp"].map(_source_instant)
+    tape = tape[
+        (tape["bid"] > 0)
+        & (tape["ask"] > 0)
+        & (tape["strike"] > 0)
+        & tape["trade_utc_sort"].notna()
+        & (tape["trade_utc_sort"] >= session_open_utc)
+        & (tape["trade_utc_sort"] < session_close_utc)
+    ]
     if tape.empty:
         return []
 
-    # Freshest quote per contract = last row by trade_timestamp.
-    tape = tape.sort_values("trade_timestamp")
-    last = tape.groupby(["cexp", "strike", "cright"], as_index=False).last()
+    # Freshest contract observation = the whole latest RTH trade row.
+    # GroupBy.last() is column-wise and skips nulls, which can splice an older
+    # quote_timestamp onto a newer trade/bid/ask row. Stable sort + drop_duplicates
+    # preserves row identity, including an honestly missing quote clock.
+    tape = tape.sort_values("trade_utc_sort", kind="mergesort")
+    last = tape.drop_duplicates(
+        subset=["cexp", "strike", "cright"], keep="last",
+    ).reset_index(drop=True)
 
     out: list[dict] = []
     for row in last.itertuples(index=False):
         exp_str = row.cexp
-        T = _year_fraction(exp_str, session_date)
+        T = _year_fraction(exp_str, observed_at)
         if T is None:
             continue
         if near_dte_cap_days is not None and T > (near_dte_cap_days + 1) / 365.0:
             continue
+        trade_utc = getattr(row, "trade_utc_sort", None)
+        if trade_utc is None or trade_utc > observed_utc:
+            continue
+        quote_utc = _source_instant(getattr(row, "quote_timestamp", None))
+        if quote_utc is not None and quote_utc > observed_utc:
+            continue
+
         bid = float(row.bid); ask = float(row.ask)
         mid = (bid + ask) / 2.0
         right = row.cright
@@ -314,6 +403,8 @@ def extract_cycle_quotes(
             "strike": float(row.strike),
             "right": right,
             "mid": mid,
+            "trade_at": _utc_iso(trade_utc),
+            "quote_at": _utc_iso(quote_utc),
         })
     return out
 
@@ -381,9 +472,42 @@ def greek_columns_for_stamp(
         "walls": {"flip": None, "callWall": None, "putWall": None},
         "coverage": 0.0, "spot": spot if spot is not None else spot_fallback,
         "spot_source": "none", "n_contracts": 0,
+        "trade_at_first": None, "trade_at_last": None,
+        "quote_at_first": None, "quote_at_last": None,
     }
     if not quotes:
         return empty
+
+    def _clock_bounds(field: str) -> tuple[str | None, str | None]:
+        instants: list[datetime] = []
+        for quote in quotes:
+            raw = quote.get(field)
+            # Bounds summarize the whole selected source set. A known-only envelope is
+            # dishonest when even one member's source clock is unknown, malformed or
+            # timezone-naive, so fail the aggregate closed rather than silently skipping it.
+            if not isinstance(raw, str) or not raw:
+                return None, None
+            try:
+                dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+            except ValueError:
+                return None, None
+            if dt.tzinfo is None:
+                return None, None
+            instants.append(dt.astimezone(timezone.utc))
+        instants.sort()
+        if not instants:
+            return None, None
+        return (
+            instants[0].isoformat().replace("+00:00", "Z"),
+            instants[-1].isoformat().replace("+00:00", "Z"),
+        )
+
+    trade_at_first, trade_at_last = _clock_bounds("trade_at")
+    quote_at_first, quote_at_last = _clock_bounds("quote_at")
+    empty["trade_at_first"] = trade_at_first
+    empty["trade_at_last"] = trade_at_last
+    empty["quote_at_first"] = quote_at_first
+    empty["quote_at_last"] = quote_at_last
     try:
         from engine.intraday_greeks import compute_greek_grids
     except Exception as e:  # noqa: BLE001 — engine import must never break netprem writes
@@ -429,6 +553,10 @@ def greek_columns_for_stamp(
         "spot": gg.spot,
         "spot_source": gg.spot_source,
         "n_contracts": gg.n_contracts,
+        "trade_at_first": trade_at_first,
+        "trade_at_last": trade_at_last,
+        "quote_at_first": quote_at_first,
+        "quote_at_last": quote_at_last,
     }
 
 
@@ -443,6 +571,13 @@ def append_stamp(
     cadence_sec: int,
     session_date: str,
     root: str,
+    valuation_at: str | None = None,
+    built_at: str | None = None,
+    trade_at_first: str | None = None,
+    trade_at_last: str | None = None,
+    quote_at_first: str | None = None,
+    quote_at_last: str | None = None,
+    oi_vintage: str | None = None,
     round_ndigits: int = 0,
     greek_by_strike: dict[str, dict[float, float]] | None = None,
     walls: dict | None = None,
@@ -483,6 +618,25 @@ def append_stamp(
     prior_spot_path: list = list(prior.get("spot_path") or [])
     prior_walls_path: list = list(prior.get("walls_path") or [])
     prior_cov_path: list = list(prior.get("coverage_path") or [])
+    prior_valuation_path: list = list(prior.get("valuation_at_path") or [])
+    prior_built_path: list = list(prior.get("built_at_path") or [])
+    prior_greek_source_path: list = list(prior.get("greek_source_path") or [])
+
+    same_stamp = stamp in prior_stamps
+    greek_snapshot_supplied = greek_by_strike is not None
+    prior_has_greeks = any(m in prior_grids for m in GREEK_METRICS)
+
+    # A same-minute retry is one snapshot identity. If a prior Greek-bearing snapshot
+    # exists but the current Greek stage produced no snapshot (None = failed/unavailable,
+    # distinct from an explicitly supplied empty dict), do not partially overwrite that
+    # minute with newer net-premium/spot/clock metadata while retaining older Greek values.
+    # Preserve the coherent prior minute atomically; only the session-wide poll floor may
+    # tighten independently.
+    if same_stamp and prior_has_greeks and not greek_snapshot_supplied:
+        held = deepcopy(prior)
+        held["pollFloorSec"] = poll_floor_sec
+        held["cadence"] = cadence_label(poll_floor_sec)
+        return held
 
     # Which metric grids does this frame carry? netprem always; greek metrics once any
     # stamp has supplied them (a prior frame may already have them, or this stamp does).
@@ -497,7 +651,7 @@ def append_stamp(
 
     # Column index for this stamp: reuse if the stamp already exists (idempotent overwrite),
     # else append a new trailing column.
-    if stamp in prior_stamps:
+    if same_stamp:
         col_idx = prior_stamps.index(stamp)
         stamps = list(prior_stamps)
         time_steps = list(prior_steps)
@@ -528,7 +682,21 @@ def append_stamp(
                 continue
             old_row = prior_grid[old_li] if old_li < len(prior_grid) else []
             for cj in range(min(len(old_row), n_cols)):
-                grid[new_li][cj] = old_row[cj]
+                # A same-stamp replacement is authoritative for this column. Start the
+                # current net-premium column clean, and do the same for Greek metrics when
+                # a Greek snapshot was actually supplied. This prevents absent strikes in
+                # an explicit empty/partial replacement from retaining stale current-column
+                # values. Earlier columns remain byte-for-byte preserved.
+                replace_current = (
+                    same_stamp
+                    and cj == col_idx
+                    and (
+                        metric == METRIC_NETPREM
+                        or (metric in GREEK_METRICS and greek_snapshot_supplied)
+                    )
+                )
+                if not replace_current:
+                    grid[new_li][cj] = old_row[cj]
         # Write this stamp's column (overwriting if it already existed).
         for lvl, val in stamp_values.get(metric, {}).items():
             li = lvl_index.get(float(lvl))
@@ -558,6 +726,37 @@ def append_stamp(
     if coverage is not None:
         cov_path[col_idx] = coverage
 
+    valuation_path = list(prior_valuation_path)
+    if valuation_at is not None or valuation_path:
+        while len(valuation_path) < n_cols:
+            valuation_path.append(None)
+        if valuation_at is not None:
+            valuation_path[col_idx] = valuation_at
+
+    built_path = list(prior_built_path)
+    if built_at is not None or built_path:
+        while len(built_path) < n_cols:
+            built_path.append(None)
+        if built_at is not None:
+            built_path[col_idx] = built_at
+
+    greek_source_path = list(prior_greek_source_path)
+    source_context = None
+    if any(v is not None for v in (
+        trade_at_first, trade_at_last, quote_at_first, quote_at_last, oi_vintage,
+    )):
+        source_context = {
+            "trade_at_first": trade_at_first,
+            "trade_at_last": trade_at_last,
+            "quote_at_first": quote_at_first,
+            "quote_at_last": quote_at_last,
+            "oi_vintage": oi_vintage,
+        }
+    if source_context is not None or greek_source_path:
+        while len(greek_source_path) < n_cols:
+            greek_source_path.append(None)
+        greek_source_path[col_idx] = source_context
+
     out = {
         "spot": spot,
         "price_levels": price_levels,
@@ -579,6 +778,12 @@ def append_stamp(
     if active_greeks:
         out["walls_path"] = walls_path
         out["coverage_path"] = cov_path
+    if valuation_path:
+        out["valuation_at_path"] = valuation_path
+    if built_path:
+        out["built_at_path"] = built_path
+    if greek_source_path:
+        out["greek_source_path"] = greek_source_path
     return out
 
 
@@ -665,12 +870,24 @@ def frame_for_stamp(full_frame: dict, stamp: str) -> dict:
     grids = {m: [row[:upto] for row in g] for m, g in grids_full.items()}
     spot_path = full_frame.get("spot_path") or []
     spot = spot_path[upto - 1] if (spot_path and upto - 1 < len(spot_path) and upto >= 1) else full_frame.get("spot")
+    valuation_path = full_frame.get("valuation_at_path") or []
+    valuation_at = (
+        valuation_path[upto - 1]
+        if valuation_path and 0 <= upto - 1 < len(valuation_path)
+        else None
+    )
+    built_path = full_frame.get("built_at_path") or []
+    built_at = (
+        built_path[upto - 1]
+        if built_path and 0 <= upto - 1 < len(built_path)
+        else None
+    )
     out = {
         "spot": spot,
         "price_levels": list(full_frame.get("price_levels") or []),
         "time_steps": times[:upto],
         "grids": grids,
-        "asof": full_frame.get("asof", ""),
+        "asof": valuation_at if valuation_at is not None else full_frame.get("asof", ""),
         "pollFloorSec": full_frame.get("pollFloorSec"),
         "observedCadenceSec": observed_cadence_sec(stamps[:upto]),
         "cadence": full_frame.get("cadence", ""),
@@ -678,6 +895,20 @@ def frame_for_stamp(full_frame: dict, stamp: str) -> dict:
         "session_date": full_frame.get("session_date", ""),
         "root": full_frame.get("root", ""),
     }
+    if valuation_at is not None:
+        out["valuation_at"] = valuation_at
+    if built_at is not None:
+        out["built_at"] = built_at
+    greek_source_path = full_frame.get("greek_source_path") or []
+    if greek_source_path and 0 <= upto - 1 < len(greek_source_path):
+        source_context = greek_source_path[upto - 1]
+        if isinstance(source_context, dict):
+            for key in (
+                "trade_at_first", "trade_at_last",
+                "quote_at_first", "quote_at_last", "oi_vintage",
+            ):
+                if key in source_context:
+                    out[key] = source_context.get(key)
     # Per-stamp walls + greek coverage AS OF the replayed stamp (Lane G). Only emitted when
     # the frame carries greek grids; the value is that stamp's own snapshot (walls are a
     # point-in-time read, never forward-filled).
@@ -1017,6 +1248,8 @@ def build_and_stage_surfaces(
     quotes_by_root: dict | None = None,
     oi_by_root: dict | None = None,
     spot_fallback_by_root: dict | None = None,
+    observed_at_by_root: dict | None = None,
+    oi_vintage_by_root: dict | None = None,
     retain_sessions: int = SURFACE_RETAIN_SESSIONS,
 ) -> list[tuple[Path, str]]:
     """Build + stage the surface store for each root; return [(local_path, r2_key), …].
@@ -1037,6 +1270,12 @@ def build_and_stage_surfaces(
       oi_by_root           : {ROOT → {(exp_str,strike,right) → open_interest}} from the OI
                              snapshot (EOD t-1 positions).
       spot_fallback_by_root: {ROOT → prev_close} used only when parity spot can't resolve.
+      observed_at_by_root : {ROOT → fetched-root observation timestamp}. When supplied, it
+                            is the valuation/source-availability clock for that root and
+                            determines the root's stamp. A missing/invalid root observation
+                            skips that root rather than relabelling cumulative state as fresh.
+      oi_vintage_by_root : {ROOT → exact source session of the OI snapshot}. It is
+                           provenance only; missing/invalid vintage stays absent.
 
     Date-keyed retention (M-XP a): every cycle ALSO returns the date-keyed keys for the same
     two local files (live_flow/surface/{ROOT}/{DATE}/…) plus the root's dates.json. The
@@ -1050,8 +1289,13 @@ def build_and_stage_surfaces(
     Never raises for a single root; a bad root is logged and skipped.
     """
     now = now or datetime.now(timezone.utc)
-    stamp = stamp_hhmm(now)
-    time_step = stamp_hhcolonmm(now)
+    built_at = (
+        now.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+        if now.tzinfo is not None else None
+    )
+    observation_bound = observed_at_by_root is not None
+    observed_at_by_root = observed_at_by_root or {}
+    oi_vintage_by_root = oi_vintage_by_root or {}
     spot_by_root = spot_by_root or {}
     quotes_by_root = quotes_by_root or {}
     oi_by_root = oi_by_root or {}
@@ -1067,6 +1311,37 @@ def build_and_stage_surfaces(
                 log.info("surface: skip %s (no strike rollup this cycle)", root_u)
                 continue
 
+            root_now = now
+            root_asof = asof
+            valuation_at = None
+            if observation_bound:
+                raw_observed = (
+                    observed_at_by_root.get(root_u)
+                    or observed_at_by_root.get(root)
+                )
+                try:
+                    observed = datetime.fromisoformat(
+                        str(raw_observed).replace("Z", "+00:00")
+                    )
+                    if observed.tzinfo is None:
+                        raise ValueError("observation clock is naive")
+                    if observed.astimezone(ET).strftime("%Y-%m-%d") != session_date:
+                        raise ValueError("observation clock is outside the session date")
+                except (TypeError, ValueError) as oe:
+                    log.info(
+                        "surface: skip %s (no valid current root observation: %s)",
+                        root_u, oe,
+                    )
+                    continue
+                root_now = observed.astimezone(timezone.utc)
+                # Preserve the poller's exact fetched-root clock; it deliberately retains
+                # sub-second ordering, so the public valuation basis must not round it away.
+                root_asof = root_now.isoformat().replace("+00:00", "Z")
+                valuation_at = root_asof
+
+            stamp = stamp_hhmm(root_now)
+            time_step = stamp_hhcolonmm(root_now)
+
             prior = _load_prior_full_frame(root_u)
             # Session rollover guard: drop a prior frame from a different session date.
             if prior and prior.get("session_date") not in (None, "", session_date):
@@ -1078,6 +1353,11 @@ def build_and_stage_surfaces(
             greek_by_strike = None
             walls = None
             coverage = None
+            trade_at_first = None
+            trade_at_last = None
+            quote_at_first = None
+            quote_at_last = None
+            oi_vintage = None
             try:
                 # The whole quote→greek path is fenced (incl. the lookups) so a malformed
                 # quotes_by_root can NEVER blank a root's netprem column.
@@ -1090,6 +1370,19 @@ def build_and_stage_surfaces(
                     greek_by_strike = gcols["by_strike"]
                     walls = gcols["walls"]
                     coverage = gcols["coverage"]
+                    trade_at_first = gcols.get("trade_at_first")
+                    trade_at_last = gcols.get("trade_at_last")
+                    quote_at_first = gcols.get("quote_at_first")
+                    quote_at_last = gcols.get("quote_at_last")
+                    raw_oi_vintage = (
+                        oi_vintage_by_root.get(root_u)
+                        or oi_vintage_by_root.get(root)
+                    )
+                    if (
+                        is_session_date(raw_oi_vintage)
+                        and raw_oi_vintage < session_date
+                    ):
+                        oi_vintage = raw_oi_vintage
                     # If parity resolved a spot and none was passed, adopt it for the column.
                     if spot is None and gcols.get("spot") is not None:
                         spot = gcols["spot"]
@@ -1108,10 +1401,17 @@ def build_and_stage_surfaces(
                 time_step=time_step,
                 net_by_strike=net,
                 spot=spot,
-                asof=asof,
+                asof=root_asof,
                 cadence_sec=cadence_sec,
                 session_date=session_date,
                 root=root_u,
+                valuation_at=valuation_at,
+                built_at=built_at,
+                trade_at_first=trade_at_first,
+                trade_at_last=trade_at_last,
+                quote_at_first=quote_at_first,
+                quote_at_last=quote_at_last,
+                oi_vintage=oi_vintage,
                 greek_by_strike=greek_by_strike,
                 walls=walls,
                 coverage=coverage,
@@ -1141,7 +1441,7 @@ def build_and_stage_surfaces(
                 out.append((idx_path, d_idx_key))
                 out.append((snap_path, d_snap_key))
                 merge_surface_dates(root_u, [session_date], cadence_sec=cadence_sec,
-                                    asof=asof, retain=retain_sessions)
+                                    asof=root_asof, retain=retain_sessions)
                 # merge_surface_dates is fail-soft: only queue the upload when the file is
                 # really on disk, so a degraded ledger doesn't log an upload warning a
                 # cycle (every 2 min) for a path that was never written.

@@ -1,0 +1,186 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-09-20T21:56:56Z",
+  "target": "macro.html",
+  "selector": ".mx-spine",
+  "head": "d9a57dd944eb54784bd71ab84f0009eef2f29fe7",
+  "capture_head": "d9a57dd944eb54784bd71ab84f0009eef2f29fe7",
+  "source_slice_sha256": "d1a914a628b7fe99ccdcd8f0ddbf44a8f9a13f4a0749e1c42e66c6aaadf3da89",
+  "source_slice_bytes": 9997,
+  "axes": {
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "matrix": [
+    {
+      "theme": "dark",
+      "locale": "en",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "file": "mockups/evidence/unified-dashboard-b2w2/spine_dark_en_desktop.png",
+      "png_sha256": "7952dda517333d85c8eb00e4f5add02990f12c24c17eb59382629e0c131b009e",
+      "png_bytes": 352819,
+      "dom_slice_sha256": "07899209412838a552e1e0d3ffa422f961465919e2e65d7998037ae275ec2d52",
+      "dom_slice_bytes": 9914,
+      "bounding_box": {
+        "x": 63,
+        "y": 472.0625,
+        "width": 1314,
+        "height": 385.5
+      }
+    },
+    {
+      "theme": "dark",
+      "locale": "en",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "file": "mockups/evidence/unified-dashboard-b2w2/spine_dark_en_mobile.png",
+      "png_sha256": "3ab074ce25e2e206e136d555a260346ad847b4a883e7b36cc90d88a81d23bed5",
+      "png_bytes": 370556,
+      "dom_slice_sha256": "07899209412838a552e1e0d3ffa422f961465919e2e65d7998037ae275ec2d52",
+      "dom_slice_bytes": 9914,
+      "bounding_box": {
+        "x": 41,
+        "y": 816.4375,
+        "width": 308,
+        "height": 789.75
+      }
+    },
+    {
+      "theme": "dark",
+      "locale": "zh",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "file": "mockups/evidence/unified-dashboard-b2w2/spine_dark_zh_desktop.png",
+      "png_sha256": "1d86d92a09e5131a3cf1105c452e9c64777e9f5f9b97f736059a3c84d4274b01",
+      "png_bytes": 336489,
+      "dom_slice_sha256": "07899209412838a552e1e0d3ffa422f961465919e2e65d7998037ae275ec2d52",
+      "dom_slice_bytes": 9914,
+      "bounding_box": {
+        "x": 63,
+        "y": 472.0625,
+        "width": 1314,
+        "height": 385.5
+      }
+    },
+    {
+      "theme": "dark",
+      "locale": "zh",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "file": "mockups/evidence/unified-dashboard-b2w2/spine_dark_zh_mobile.png",
+      "png_sha256": "a1624ec81f0673379c8bad2ed968c1d775655a7f0ff76606942dfa4d05ae9f89",
+      "png_bytes": 322589,
+      "dom_slice_sha256": "07899209412838a552e1e0d3ffa422f961465919e2e65d7998037ae275ec2d52",
+      "dom_slice_bytes": 9914,
+      "bounding_box": {
+        "x": 41,
+        "y": 710.40625,
+        "width": 308,
+        "height": 739
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "en",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "file": "mockups/evidence/unified-dashboard-b2w2/spine_light_en_desktop.png",
+      "png_sha256": "7003bb4412cb691da6558c99e22c02b74e6afa485b21475e140dda87b89699c4",
+      "png_bytes": 311048,
+      "dom_slice_sha256": "07899209412838a552e1e0d3ffa422f961465919e2e65d7998037ae275ec2d52",
+      "dom_slice_bytes": 9914,
+      "bounding_box": {
+        "x": 63,
+        "y": 472.0625,
+        "width": 1314,
+        "height": 385.5
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "en",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "file": "mockups/evidence/unified-dashboard-b2w2/spine_light_en_mobile.png",
+      "png_sha256": "ebd545a2daee193b995f8d34edd890bba6080f97491763349cdd926aa11869e6",
+      "png_bytes": 352927,
+      "dom_slice_sha256": "07899209412838a552e1e0d3ffa422f961465919e2e65d7998037ae275ec2d52",
+      "dom_slice_bytes": 9914,
+      "bounding_box": {
+        "x": 41,
+        "y": 816.4375,
+        "width": 308,
+        "height": 789.75
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "zh",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "file": "mockups/evidence/unified-dashboard-b2w2/spine_light_zh_desktop.png",
+      "png_sha256": "e1a9dcde630d703735a1328bf859870405ca5cf03205ecde648908e71b750589",
+      "png_bytes": 301187,
+      "dom_slice_sha256": "07899209412838a552e1e0d3ffa422f961465919e2e65d7998037ae275ec2d52",
+      "dom_slice_bytes": 9914,
+      "bounding_box": {
+        "x": 63,
+        "y": 472.0625,
+        "width": 1314,
+        "height": 385.5
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "zh",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "file": "mockups/evidence/unified-dashboard-b2w2/spine_light_zh_mobile.png",
+      "png_sha256": "0b942f37b43889b866ce54d8c26dad335522252623592021265d0cd8eda8521c",
+      "png_bytes": 293720,
+      "dom_slice_sha256": "07899209412838a552e1e0d3ffa422f961465919e2e65d7998037ae275ec2d52",
+      "dom_slice_bytes": 9914,
+      "bounding_box": {
+        "x": 41,
+        "y": 710.40625,
+        "width": 308,
+        "height": 739
+      }
+    }
+  ],
+  "honesty": {
+    "access": "anonymous only",
+    "authority": "This tool captures screenshots; it scores nothing.",
+    "page": "site/macro.html regenerated by python -m scripts.build_site at the capture head. FAB #mmb-launch hidden so the crop is spine-only."
+  },
+  "totals": {
+    "rest_cells": 8,
+    "rest_required": 8
+  },
+  "outcome": "captured"
+}

@@ -1,0 +1,923 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      {
+        "attribute": null,
+        "kind": "focus",
+        "name": "score-focus",
+        "spec": "score-focus:focus(.ftr-anatomy-disclosure > summary)",
+        "value": ".ftr-anatomy-disclosure > summary"
+      }
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-09-20T08:05:56Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "force_states": "a forced state is either a class/attribute toggled on <body> or a real browser hover/focus applied to a selector before the shot; it shows that state's presentation, not data the page returned; metrics are measured on the rest cells only, and a state that did not take is recorded as a gap",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:63143/fonts/Inter-400.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63143/fonts/Inter-600.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63143/fonts/Inter-700.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63143/fonts/Inter-500.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63143/fonts/Inter-800.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63143/fonts/Inter-400.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63143/fonts/Inter-600.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63143/fonts/Inter-700.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63143/fonts/Inter-500.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63143/fonts/Inter-800.woff2"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 6122,
+            "elements_wider_than_viewport": 1,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 9211,
+            "elements_wider_than_viewport": 23,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 6122,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 1,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 13,
+          "h3": 0,
+          "h4": 0,
+          "h5": 2,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 16,
+        "payload_bytes_total": 185539,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 26,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 2045
+      },
+      "page_id": "basket_ai_semiconductors.html",
+      "registry_route": "/basket/ai_semiconductors.html",
+      "route": "/basket/ai_semiconductors.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 1161434,
+          "captured": true,
+          "file": "cells/9423b0e697edc750.png",
+          "force_state": null,
+          "height": 6122,
+          "locale": "en",
+          "sha256": "9423b0e697edc75097d207afbbbc9ff4c5816eb48e0cf4086c94f0ee6060a713",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "score-focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 1144932,
+          "captured": true,
+          "file": "cells/165ce329a405e721--score-focus.png",
+          "force_state": "score-focus",
+          "height": 6122,
+          "locale": "en",
+          "sha256": "165ce329a405e721dba48e7739038de746b957e4374171123ecbef962d1887b0",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 1157895,
+          "captured": true,
+          "file": "cells/f4afc2fe6a8c21e9.png",
+          "force_state": null,
+          "height": 6122,
+          "locale": "en",
+          "sha256": "f4afc2fe6a8c21e9750b8eb88211ddb1201be36277a5e9fe0904cdb00bdd5419",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "score-focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 1145039,
+          "captured": true,
+          "file": "cells/5d5c364ae6518c5d--score-focus.png",
+          "force_state": "score-focus",
+          "height": 6122,
+          "locale": "en",
+          "sha256": "5d5c364ae6518c5d2d339c7c8566a487bb2162f87f87170aea457e3f910550ab",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 1203014,
+          "captured": true,
+          "file": "cells/e0d52973fbcfe026.png",
+          "force_state": null,
+          "height": 6007,
+          "locale": "zh",
+          "sha256": "e0d52973fbcfe02642076a7f588716207732732224231678621b0489c7f33a41",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "score-focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 1196115,
+          "captured": true,
+          "file": "cells/fdc1e918c7c135b2--score-focus.png",
+          "force_state": "score-focus",
+          "height": 6007,
+          "locale": "zh",
+          "sha256": "fdc1e918c7c135b2c7da6c5d92b077ba7761f629722e4578b2bbe6ab6407964f",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 1208132,
+          "captured": true,
+          "file": "cells/36fcd75f753da98e.png",
+          "force_state": null,
+          "height": 6007,
+          "locale": "zh",
+          "sha256": "36fcd75f753da98e1eb66d5fe9e8e08eac29d27ca6496f882989c7d4cf2ca3a7",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "score-focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 1200470,
+          "captured": true,
+          "file": "cells/b7589e33c2368025--score-focus.png",
+          "force_state": "score-focus",
+          "height": 6007,
+          "locale": "zh",
+          "sha256": "b7589e33c236802562dba2c8f15db3e39d5b5ec7bfeacab2ad551fc8ee7cb8ae",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 917882,
+          "captured": true,
+          "file": "cells/ca3b06fd7ed381b1.png",
+          "force_state": null,
+          "height": 9211,
+          "locale": "en",
+          "sha256": "ca3b06fd7ed381b11e3bc382ea026586442929d1f55fd24f180e0c01836c76b0",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "score-focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 903182,
+          "captured": true,
+          "file": "cells/d4f6cb1d0f639df8--score-focus.png",
+          "force_state": "score-focus",
+          "height": 9211,
+          "locale": "en",
+          "sha256": "d4f6cb1d0f639df8e236d32f6152e777604f94c7dfeb22acf91e09ebc1822467",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 915412,
+          "captured": true,
+          "file": "cells/aa20b909a04a6b24.png",
+          "force_state": null,
+          "height": 9211,
+          "locale": "en",
+          "sha256": "aa20b909a04a6b242aa24f0a3c2cbca95ac8b480c090d2e5e71785a048024f7c",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "score-focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 904866,
+          "captured": true,
+          "file": "cells/f486c05735edbc42--score-focus.png",
+          "force_state": "score-focus",
+          "height": 9211,
+          "locale": "en",
+          "sha256": "f486c05735edbc42b082446eb76a50f8f49c9f42e9b0dd61d1787ca17b555802",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 953809,
+          "captured": true,
+          "file": "cells/667f1e860b8b5f82.png",
+          "force_state": null,
+          "height": 8331,
+          "locale": "zh",
+          "sha256": "667f1e860b8b5f82131f4791b147d1eae1fcbbf53a421ed9b1f6603710203c39",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "score-focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 945058,
+          "captured": true,
+          "file": "cells/f058165dd516f97c--score-focus.png",
+          "force_state": "score-focus",
+          "height": 8331,
+          "locale": "zh",
+          "sha256": "f058165dd516f97c131955287b85df24702acab91e21ebebd213b874bc331f3e",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 952107,
+          "captured": true,
+          "file": "cells/2481959c6fb50659.png",
+          "force_state": null,
+          "height": 8331,
+          "locale": "zh",
+          "sha256": "2481959c6fb5065948eda21fb28fb87b3270c13f794a4f3a458ddda756bdbe7e",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "score-focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 945906,
+          "captured": true,
+          "file": "cells/a75075669fb1c8ab--score-focus.png",
+          "force_state": "score-focus",
+          "height": 8331,
+          "locale": "zh",
+          "sha256": "a75075669fb1c8ab5aac04e666f66d472046f054eaf13a210d19fa9d605d6598",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    },
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:63143/fonts/Inter-600.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63143/fonts/Inter-400.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63143/fonts/Inter-700.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63143/fonts/Inter-500.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63143/fonts/Inter-800.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63143/fonts/Inter-600.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63143/fonts/Inter-400.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63143/fonts/Inter-700.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63143/fonts/Inter-500.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63143/fonts/Inter-800.woff2"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 4063,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 6244,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 4063,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 12,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 15,
+        "payload_bytes_total": 650031,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 23,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 1204
+      },
+      "page_id": "basket_china_cn_solar.html",
+      "registry_route": "/basket_china/cn_solar.html",
+      "route": "/basket_china/cn_solar.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 793262,
+          "captured": true,
+          "file": "cells/5a9617886d1a16d3.png",
+          "force_state": null,
+          "height": 4063,
+          "locale": "en",
+          "sha256": "5a9617886d1a16d37af725793471fb78a7229d6b9c75fa60d9f4bb53a2eb8dc0",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "score-focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 757179,
+          "captured": true,
+          "file": "cells/3cfa0070228805be--score-focus.png",
+          "force_state": "score-focus",
+          "height": 4063,
+          "locale": "en",
+          "sha256": "3cfa0070228805be5b09782f874b169981f6393259913966b277bcbd9f030e7f",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 790417,
+          "captured": true,
+          "file": "cells/4f184a13398f465b.png",
+          "force_state": null,
+          "height": 4063,
+          "locale": "en",
+          "sha256": "4f184a13398f465b8efaae14a8c3e88c42438d4932c547a39a462fb2a8af51e3",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "score-focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 756251,
+          "captured": true,
+          "file": "cells/b5fc3f93e9ddfc60--score-focus.png",
+          "force_state": "score-focus",
+          "height": 4063,
+          "locale": "en",
+          "sha256": "b5fc3f93e9ddfc6073d7e304135e7b07607d4449e8eb8366ea093caf19d1a1a2",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 811704,
+          "captured": true,
+          "file": "cells/08127edc89d301f3.png",
+          "force_state": null,
+          "height": 3962,
+          "locale": "zh",
+          "sha256": "08127edc89d301f3a6179e72407337f05835fac851848bc391a1d6ac7745b444",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "score-focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 791026,
+          "captured": true,
+          "file": "cells/a35a496f06f37d2e--score-focus.png",
+          "force_state": "score-focus",
+          "height": 3962,
+          "locale": "zh",
+          "sha256": "a35a496f06f37d2e32d1af60c387466cc7130d3a702917750d68596837f95c7d",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 813608,
+          "captured": true,
+          "file": "cells/d4049f0dce2f9276.png",
+          "force_state": null,
+          "height": 3962,
+          "locale": "zh",
+          "sha256": "d4049f0dce2f9276caeb4dc079512ab851a679c22828240538bc2b055ac5557f",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "score-focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 790652,
+          "captured": true,
+          "file": "cells/6356f262f1d2c0b2--score-focus.png",
+          "force_state": "score-focus",
+          "height": 3962,
+          "locale": "zh",
+          "sha256": "6356f262f1d2c0b2ce21abde008dafa4155cf581039a1f115d45d3db1fac0683",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 608447,
+          "captured": true,
+          "file": "cells/9109c804c11bbce0.png",
+          "force_state": null,
+          "height": 6244,
+          "locale": "en",
+          "sha256": "9109c804c11bbce0eb46e06c99ef1d572315507defb4b8900d1338337af57eae",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "score-focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 586334,
+          "captured": true,
+          "file": "cells/233812abd352e40f--score-focus.png",
+          "force_state": "score-focus",
+          "height": 6244,
+          "locale": "en",
+          "sha256": "233812abd352e40fe2e7d97ca8aafd3d322208a579ada4a1eeacb9686f269f42",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 606519,
+          "captured": true,
+          "file": "cells/f192c1271717d61c.png",
+          "force_state": null,
+          "height": 6244,
+          "locale": "en",
+          "sha256": "f192c1271717d61cd194bc9103e1c08454ffbe87196384bc7a08571037a1bde4",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "score-focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 587918,
+          "captured": true,
+          "file": "cells/9164825195365b99--score-focus.png",
+          "force_state": "score-focus",
+          "height": 6244,
+          "locale": "en",
+          "sha256": "9164825195365b99f787a7f91ff4596b5f25c7534623e690b50d6feb818008cd",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 625950,
+          "captured": true,
+          "file": "cells/2a4cb6b3645677cd.png",
+          "force_state": null,
+          "height": 5682,
+          "locale": "zh",
+          "sha256": "2a4cb6b3645677cddb7b5db213f6b2ed1e76efee33f46d0e5abd7719f5e3ade1",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "score-focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 609576,
+          "captured": true,
+          "file": "cells/4bb635d22ec52136--score-focus.png",
+          "force_state": "score-focus",
+          "height": 5682,
+          "locale": "zh",
+          "sha256": "4bb635d22ec52136de69176fb7d113a054f6683484c23b6f0f9e742d67c9c213",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 625974,
+          "captured": true,
+          "file": "cells/4f2a45ac500cea4d.png",
+          "force_state": null,
+          "height": 5682,
+          "locale": "zh",
+          "sha256": "4f2a45ac500cea4d4f9e1f38949b6166358afa370a4922721d2340a8a30aba12",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "score-focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 610699,
+          "captured": true,
+          "file": "cells/b71142c015c268bf--score-focus.png",
+          "force_state": "score-focus",
+          "height": 5682,
+          "locale": "zh",
+          "sha256": "b71142c015c268bf587950be34fe23b3de1bd4658765939337e0240538dda0d7",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/basket/ai_semiconductors.html",
+      "/basket_china/cn_solar.html"
+    ],
+    "max_pages": 2,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 0,
+    "repo": null,
+    "selected": 2
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/uiux-basket-score-resilience-20260920",
+    "resolved_sha_or_none": "49a568199d738ce4cdab878b42d6587fc13870e1",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/uiux-basket-score-resilience-20260920 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/uiux-basket-score-resilience-20260920/site"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 2,
+    "states_attempted": 32,
+    "states_captured": 32
+  }
+}

@@ -1,0 +1,93 @@
+[
+  {
+    "id": "D01",
+    "source_type": "INTERNAL",
+    "owner": "mastermindx-market-intelligence/macro",
+    "title": "MASSIVE_ENTITLEMENT_RECORD.md",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d7a6f86e81089e290996438335843b9630807fa/research/licenses/MASSIVE_ENTITLEMENT_RECORD.md",
+    "commit": "3d7a6f86e81089e290996438335843b9630807fa",
+    "blob_sha": "3969a9aae918141b51baffbb0e17d8a2ec2485a0",
+    "claim": "Inherited operator rights record; not a live endpoint/venue entitlement test",
+    "evidence_class": "INHERITED_RECORD",
+    "currentness": "Exact pinned bytes; retrieved 2026-10-06; no independent production/source qualification",
+    "limitations": "Inherited operator rights record; not a live endpoint/venue entitlement test"
+  },
+  {
+    "id": "D02",
+    "source_type": "INTERNAL",
+    "owner": "mastermindx-market-intelligence/macro",
+    "title": "vendor_minutes.py",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d7a6f86e81089e290996438335843b9630807fa/engine/entry_radar/vendor_minutes.py",
+    "commit": "3d7a6f86e81089e290996438335843b9630807fa",
+    "blob_sha": "bfc1b01b46ca1862de91e98d5d27f631fd564dea",
+    "claim": "Observed bounded adjusted-minute source adapter; not market-wide PIT admission",
+    "evidence_class": "OBSERVED_SOURCE",
+    "currentness": "Exact pinned bytes; retrieved 2026-10-06; no independent production/source qualification",
+    "limitations": "Observed bounded adjusted-minute source adapter; not market-wide PIT admission"
+  },
+  {
+    "id": "D03",
+    "source_type": "INTERNAL",
+    "owner": "mastermindx-market-intelligence/macro",
+    "title": "databento_tbbo.py",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d7a6f86e81089e290996438335843b9630807fa/collectors/databento_tbbo.py",
+    "commit": "3d7a6f86e81089e290996438335843b9630807fa",
+    "blob_sha": "3c31f8fb72d1695dbbaa7d8575853de98df081c2",
+    "claim": "Observed optional OPRA trade-plus-NBBO collector; no entitlement or running-service proof",
+    "evidence_class": "OBSERVED_SOURCE",
+    "currentness": "Exact pinned bytes; retrieved 2026-10-06; no independent production/source qualification",
+    "limitations": "Observed optional OPRA trade-plus-NBBO collector; no entitlement or running-service proof"
+  },
+  {
+    "id": "D04",
+    "source_type": "INTERNAL",
+    "owner": "mastermindx-market-intelligence/macro",
+    "title": "SOURCE_ADMISSION_SPEC.md",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d7a6f86e81089e290996438335843b9630807fa/research/options_intelligence/2026-10-03/SOURCE_ADMISSION_SPEC.md",
+    "commit": "3d7a6f86e81089e290996438335843b9630807fa",
+    "blob_sha": "9edf9f4768c11f8851ac19c17f05c3a1195f700c",
+    "claim": "Synthetic-only source-admission reference; no source certified accepted",
+    "evidence_class": "INHERITED_RECORD",
+    "currentness": "Exact pinned bytes; retrieved 2026-10-06; no independent production/source qualification",
+    "limitations": "Synthetic-only source-admission reference; no source certified accepted"
+  },
+  {
+    "id": "D04R",
+    "source_type": "INTERNAL",
+    "owner": "mastermindx-market-intelligence/macro",
+    "title": "SOURCE_ADMISSION_REVIEW.md",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d7a6f86e81089e290996438335843b9630807fa/research/options_intelligence/2026-10-03/SOURCE_ADMISSION_REVIEW.md",
+    "commit": "3d7a6f86e81089e290996438335843b9630807fa",
+    "blob_sha": "d3535bd674cb2b8c90f61b6978fe9fda530695ff",
+    "claim": "Review limits on the same synthetic source-admission reference",
+    "evidence_class": "INHERITED_RECORD",
+    "currentness": "Exact pinned bytes; retrieved 2026-10-06; no independent production/source qualification",
+    "limitations": "Review limits on the same synthetic source-admission reference"
+  },
+  {
+    "id": "D05",
+    "source_type": "INTERNAL",
+    "owner": "mastermindx-market-intelligence/macro",
+    "title": "DSC-QUOTE-HUB-CHG-IS-PERCENT-AND-TS-IS-A-PRINT-CLOCK.md",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d7a6f86e81089e290996438335843b9630807fa/agentos/discoveries/DSC-QUOTE-HUB-CHG-IS-PERCENT-AND-TS-IS-A-PRINT-CLOCK.md",
+    "commit": "3d7a6f86e81089e290996438335843b9630807fa",
+    "blob_sha": "340eda2cc5d58b2e874310f2b6fbe581969fd7df",
+    "claim": "Canonical discovery: quote-hub percentage and print-clock semantics",
+    "evidence_class": "INHERITED_RECORD",
+    "currentness": "Exact pinned bytes; retrieved 2026-10-06; no independent production/source qualification",
+    "limitations": "Canonical discovery: quote-hub percentage and print-clock semantics"
+  },
+  {
+    "id": "D06",
+    "source_type": "INTERNAL",
+    "owner": "mastermindx-market-intelligence/macro",
+    "title": "DSC-TEMPORAL-GRAIN-NARROW-MASSIVE-MINUTE-PLANE-PARTIAL.md",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d7a6f86e81089e290996438335843b9630807fa/agentos/discoveries/DSC-TEMPORAL-GRAIN-NARROW-MASSIVE-MINUTE-PLANE-PARTIAL.md",
+    "commit": "3d7a6f86e81089e290996438335843b9630807fa",
+    "blob_sha": "21a5b894a68f6f91e26e6f1692f90f754526ee7c",
+    "claim": "Canonical narrow-minute source-use limitation",
+    "evidence_class": "OBSERVED_SOURCE",
+    "currentness": "Exact pinned bytes; retrieved 2026-10-06; no independent production/source qualification",
+    "limitations": "Canonical narrow-minute source-use limitation"
+  }
+]

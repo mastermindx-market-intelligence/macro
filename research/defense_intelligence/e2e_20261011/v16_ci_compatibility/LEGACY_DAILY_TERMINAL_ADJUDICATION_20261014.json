@@ -1,0 +1,16 @@
+{
+  "checked_at": "2026-10-14T13:09:36.539717+00:00",
+  "run_id": 38495183073,
+  "workflow_head_sha": "3cf087f62e36f0da6d868a351c4a3922cebf9ef5",
+  "run_conclusion": "cancelled",
+  "publisher_job_id": 115696593472,
+  "publisher_job_name": "government_revenue_projection",
+  "publisher_job_conclusion": "skipped",
+  "publisher_step_count": 0,
+  "completed_at": "2026-10-14T05:25:36Z",
+  "authenticated_gh_read_sha256": "46826dc532c0666f0c7ca7f8cba3690229ef8118648e20ae08bc486e99b5d3d8",
+  "source_preflight_sha256": "3f24c2e2139ea6f11103997bd07a1e69ec938e1012856f5112557ba2d65948f9",
+  "applicable_existing_disposition": "authenticated_publisher_job_skipped_without_steps",
+  "consequence": "This old Daily publisher did not execute. The previously conditional runtime checkout drift risk did not materialize in this job. It no longer remains an active publisher dependency.",
+  "limits": "Bounded parent adjudication of this one authenticated terminal job. The real post-merge publisher must run its normal complete preflight; no fabricated Actions identity, baseline restamp, dispatch or cancellation."
+}

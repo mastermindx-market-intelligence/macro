@@ -1,0 +1,14 @@
+{
+  "missing": [
+    "config/market_memory_retained_use.v1.json",
+    "engine/neuralweb/market_memory_episode_comparison.py",
+    "engine/neuralweb/market_memory_episode_features.py",
+    "engine/neuralweb/market_memory_episode_retrieval.py",
+    "engine/neuralweb/market_memory_operating_cortex_service.py",
+    "engine/neuralweb/market_memory_retained_context_cohort.py",
+    "engine/neuralweb/market_memory_retained_use.py",
+    "research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md"
+  ],
+  "closure_size": 1174,
+  "scope": "materialized current merge; final exact-HEAD tracked inventory is still required"
+}

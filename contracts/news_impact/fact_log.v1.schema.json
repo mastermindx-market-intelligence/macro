@@ -1,0 +1,607 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/news_impact/fact_log.v1.schema.json",
+  "title": "News-impact fact log v1 — append-only article manifestations, fact revisions, and thesis links",
+  "description": "Append-only log that is the sole mutable-history owner for the three-level cluster store. Corrections append; they never overwrite. The thesis view is a pure fold of this log plus existing owner records. context_only. No confidence, probability, score, target, fair value or rating field.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "authority",
+    "prophet_flags",
+    "unsolicited_instruction_detected",
+    "records"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "fact_log.v1",
+      "maxLength": 16
+    },
+    "authority": {
+      "type": "string",
+      "const": "context_only",
+      "maxLength": 16
+    },
+    "prophet_flags": {
+      "$ref": "#/$defs/prophet_flags"
+    },
+    "unsolicited_instruction_detected": {
+      "const": false
+    },
+    "records": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 100000,
+      "items": {
+        "$ref": "#/$defs/log_record"
+      }
+    }
+  },
+  "$defs": {
+    "text_safe": {
+      "type": "string",
+      "not": {
+        "anyOf": [
+          {
+            "pattern": "(?i)\\b(ignore|disregard|forget|override)\\s+(all\\s+|any\\s+|the\\s+|every\\s+)?(previous|prior|above|preceding|earlier)\\b"
+          },
+          {
+            "pattern": "(?i)(^|[\\n\\r>\\\"'\\]\\[}{|])\\s*(system|assistant|developer|user|tool|function)\\s*[:：]"
+          },
+          {
+            "pattern": "(?i)system\\s*prompt"
+          },
+          {
+            "pattern": "(?i)\\b(https?|ftps?|wss?|file|javascript|vbscript|gopher|hxxps?|hxtp)\\s*:"
+          },
+          {
+            "pattern": "(?i)^\\s*(?=^[^_\\s]*$)(www\\.)?[a-z0-9][a-z0-9\\-]*(\\.[a-z0-9][a-z0-9\\-]*)*\\.[a-z]{2,4}(:\\d+)?(/[^\\s]*)?\\s*$"
+          },
+          {
+            "pattern": "(?i)(~\\/\\.|/(etc|usr|bin|sbin|tmp|var|root|home|opt|dev|proc|lib)\\b|\\$\\(|`|\\brm\\s+-rf\\b|\\bcurl\\b|\\bwget\\b|\\bchmod\\b|\\bbash\\s+-c\\b|\\bsh\\s+-c\\b|\\bpowershell\\b|\\bnc\\s+-e\\b|\\|\\s*sh\\b)"
+          },
+          {
+            "pattern": "[A-Za-z0-9+/=]{40,}"
+          },
+          {
+            "pattern": "(!\\[|\\]\\(\\s*[a-z0-9.])"
+          },
+          {
+            "pattern": "[\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f​-‏‪-‮⁠-⁤⁦-⁯﻿￹-￻]"
+          },
+          {
+            "pattern": "(?i)(<\\||\\[/?inst\\]|<<\\s*sys\\s*>>|<\\s*/?\\s*system\\s*>|###\\s*(system|assistant|instruction|user)\\b)"
+          },
+          {
+            "pattern": "(?i)\\b(switch|swap|route|redirect)\\s+(to\\s+)?(the\\s+)?(provider|model|llm|api|endpoint|engine)\\b"
+          }
+        ]
+      }
+    },
+    "company_id": {
+      "type": "string",
+      "minLength": 14,
+      "maxLength": 14,
+      "pattern": "^cik:(?!0{10}$)[0-9]{10}$"
+    },
+    "fact_id": {
+      "type": "string",
+      "minLength": 29,
+      "maxLength": 29,
+      "pattern": "^fact_[0-9a-f]{24}$"
+    },
+    "span_id": {
+      "type": "string",
+      "minLength": 25,
+      "maxLength": 25,
+      "pattern": "^span_[0-9a-f]{20}$"
+    },
+    "cluster_id": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 20,
+      "pattern": "^ev2_[0-9a-f]{16}$"
+    },
+    "date_time": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 40,
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "prophet_flags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "may_rank",
+        "may_size",
+        "may_gate",
+        "prophet_authority"
+      ],
+      "properties": {
+        "may_rank": { "const": false },
+        "may_size": { "const": false },
+        "may_gate": { "const": false },
+        "prophet_authority": { "const": false }
+      }
+    },
+    "novelty": {
+      "type": "string",
+      "maxLength": 64,
+      "enum": [
+        "new_reporting_of_old_fact",
+        "corrected_fact",
+        "new_magnitude_timing_commitment_counterparty",
+        "independently_observed_milestone",
+        "commentary"
+      ]
+    },
+    "cluster_grain": {
+      "type": "string",
+      "maxLength": 32,
+      "enum": [
+        "article_manifestation",
+        "fact_revision",
+        "thesis_link"
+      ]
+    },
+    "template_name": {
+      "type": "string",
+      "maxLength": 48,
+      "enum": [
+        "capital_allocation_event.v1",
+        "demand_guidance_contract_event.v1",
+        "strategic_product_partnership_event.v1"
+      ]
+    },
+    "polarity": {
+      "type": "string",
+      "maxLength": 16,
+      "enum": [
+        "supporting",
+        "contrary",
+        "unclassified"
+      ]
+    },
+    "field_absence.v1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "authority",
+        "reason",
+        "subject",
+        "detail",
+        "missing_fields"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "field_absence.v1"
+        },
+        "authority": {
+          "type": "string",
+          "const": "context_only"
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 32,
+          "enum": [
+            "not_stated",
+            "stated_without_number",
+            "range_only",
+            "redacted_rights",
+            "parse_failed"
+          ]
+        },
+        "subject": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "detail": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "missing_fields": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "items": {
+            "$ref": "#/$defs/text_safe",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        }
+      }
+    },
+    "owner_span_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "form",
+        "document_id",
+        "span_id"
+      ],
+      "properties": {
+        "form": {
+          "type": "string",
+          "const": "owner_span_ref"
+        },
+        "document_id": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "span_id": {
+          "$ref": "#/$defs/span_id"
+        }
+      }
+    },
+    "evidence_ref": {
+      "oneOf": [
+        { "$ref": "#/$defs/owner_span_ref" },
+        { "$ref": "#/$defs/field_absence.v1" }
+      ]
+    },
+    "ci_event_ref": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["form", "event_id"],
+          "properties": {
+            "form": { "const": "company_event.v1" },
+            "event_id": {
+              "type": "string",
+              "pattern": "^evt_cik[0-9]{10}_[0-9]{4}(q[1-4]|fy)_[a-z0-9]+$",
+              "maxLength": 48
+            }
+          }
+        },
+        { "$ref": "#/$defs/field_absence.v1" }
+      ]
+    },
+    "fact_key": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "company_id",
+        "template",
+        "slot"
+      ],
+      "properties": {
+        "company_id": { "$ref": "#/$defs/company_id" },
+        "template": { "$ref": "#/$defs/template_name" },
+        "slot": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "t1_authorization_program",
+                "t1_execution_under_program",
+                "t2_metric_period_counterparty",
+                "t3_object_counterparty",
+                "milestone_under_proposition"
+              ]
+            },
+            "action_type": {
+              "type": "string",
+              "maxLength": 32,
+              "enum": [
+                "share_repurchase",
+                "dividend",
+                "special_dividend",
+                "equity_issuance",
+                "debt_issuance",
+                "other_allocation"
+              ]
+            },
+            "horizon_token": {
+              "$ref": "#/$defs/text_safe",
+              "maxLength": 32
+            },
+            "metric": {
+              "$ref": "#/$defs/text_safe",
+              "maxLength": 32
+            },
+            "fiscal_period_token": {
+              "$ref": "#/$defs/text_safe",
+              "maxLength": 16
+            },
+            "event_kind": {
+              "$ref": "#/$defs/text_safe",
+              "maxLength": 32
+            },
+            "object_name": {
+              "$ref": "#/$defs/text_safe",
+              "maxLength": 80
+            },
+            "counterparty_company_id": {
+              "oneOf": [
+                { "$ref": "#/$defs/company_id" },
+                { "type": "null" }
+              ]
+            },
+            "milestone_name": {
+              "type": "string",
+              "maxLength": 40,
+              "enum": [
+                "announcement",
+                "artifact_available",
+                "license_stated",
+                "hardware_support_stated",
+                "independent_deployment",
+                "repeated_active_use",
+                "paid_bookings",
+                "reported_economics",
+                "executed_repurchase",
+                "net_dilution_reported",
+                "other_stated_milestone"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origin_document_id",
+        "origin_claim_id",
+        "root_family_id",
+        "source_family"
+      ],
+      "properties": {
+        "origin_document_id": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/text_safe",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            { "$ref": "#/$defs/field_absence.v1" }
+          ]
+        },
+        "origin_claim_id": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/text_safe",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            { "$ref": "#/$defs/field_absence.v1" }
+          ]
+        },
+        "root_family_id": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/text_safe",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            { "$ref": "#/$defs/field_absence.v1" }
+          ]
+        },
+        "source_family": {
+          "type": "string",
+          "maxLength": 32,
+          "enum": [
+            "issuer_primary",
+            "regulator_filing",
+            "exchange_notice",
+            "wire_reprint",
+            "secondary_outlet",
+            "independent_measurement",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "quantity_fingerprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["form"],
+      "properties": {
+        "form": {
+          "type": "string",
+          "enum": ["present", "absent"]
+        },
+        "canonical_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "form": { "const": "present" } },
+            "required": ["form"]
+          },
+          "then": { "required": ["canonical_sha256"] }
+        }
+      ]
+    },
+    "owner_claim_id": {
+      "$ref": "#/$defs/text_safe",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "log_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "log_seq",
+        "record_kind",
+        "cluster_grain",
+        "fact_id",
+        "document_id",
+        "observed_at",
+        "source_available_at",
+        "supersedes_fact_id",
+        "company_id",
+        "cluster_id",
+        "novelty",
+        "polarity",
+        "fact_key",
+        "provenance",
+        "evidence",
+        "payload_schema",
+        "ci_event_id",
+        "owner_claim_ids",
+        "quantity_fingerprint",
+        "reports_fact_id",
+        "linked_fact_ids",
+        "unsolicited_instruction_detected"
+      ],
+      "properties": {
+        "log_seq": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "record_kind": {
+          "type": "string",
+          "enum": [
+            "manifestation",
+            "fact_revision",
+            "thesis_link"
+          ]
+        },
+        "cluster_grain": { "$ref": "#/$defs/cluster_grain" },
+        "fact_id": { "$ref": "#/$defs/fact_id" },
+        "document_id": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "observed_at": { "$ref": "#/$defs/date_time" },
+        "source_available_at": { "$ref": "#/$defs/date_time" },
+        "supersedes_fact_id": {
+          "type": ["string", "null"],
+          "pattern": "^fact_[0-9a-f]{24}$"
+        },
+        "company_id": { "$ref": "#/$defs/company_id" },
+        "cluster_id": { "$ref": "#/$defs/cluster_id" },
+        "novelty": { "$ref": "#/$defs/novelty" },
+        "polarity": { "$ref": "#/$defs/polarity" },
+        "fact_key": { "$ref": "#/$defs/fact_key" },
+        "provenance": { "$ref": "#/$defs/provenance" },
+        "evidence": { "$ref": "#/$defs/evidence_ref" },
+        "payload_schema": { "$ref": "#/$defs/template_name" },
+        "ci_event_id": { "$ref": "#/$defs/ci_event_ref" },
+        "owner_claim_ids": {
+          "type": "array",
+          "maxItems": 32,
+          "items": { "$ref": "#/$defs/owner_claim_id" }
+        },
+        "quantity_fingerprint": { "$ref": "#/$defs/quantity_fingerprint" },
+        "reports_fact_id": {
+          "type": ["string", "null"],
+          "pattern": "^fact_[0-9a-f]{24}$"
+        },
+        "linked_fact_ids": {
+          "type": "array",
+          "maxItems": 16,
+          "items": { "$ref": "#/$defs/fact_id" }
+        },
+        "stated_deadline": {
+          "oneOf": [
+            { "$ref": "#/$defs/date_time" },
+            { "$ref": "#/$defs/field_absence.v1" }
+          ]
+        },
+        "next_expected_observation": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["milestone_name"],
+              "properties": {
+                "milestone_name": {
+                  "$ref": "#/$defs/fact_key/properties/slot/properties/milestone_name"
+                },
+                "window_start": { "$ref": "#/$defs/date_time" },
+                "window_end": { "$ref": "#/$defs/date_time" }
+              }
+            },
+            { "$ref": "#/$defs/field_absence.v1" }
+          ]
+        },
+        "unsolicited_instruction_detected": { "const": false }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "record_kind": { "const": "manifestation" } },
+            "required": ["record_kind"]
+          },
+          "then": {
+            "properties": {
+              "cluster_grain": { "const": "article_manifestation" },
+              "novelty": {
+                "enum": ["new_reporting_of_old_fact", "commentary"]
+              },
+              "supersedes_fact_id": { "type": "null" }
+            },
+            "required": ["reports_fact_id"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "record_kind": { "const": "fact_revision" } },
+            "required": ["record_kind"]
+          },
+          "then": {
+            "properties": {
+              "cluster_grain": { "const": "fact_revision" },
+              "novelty": {
+                "enum": [
+                  "corrected_fact",
+                  "new_magnitude_timing_commitment_counterparty",
+                  "independently_observed_milestone"
+                ]
+              },
+              "reports_fact_id": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "record_kind": { "const": "thesis_link" } },
+            "required": ["record_kind"]
+          },
+          "then": {
+            "properties": {
+              "cluster_grain": { "const": "thesis_link" },
+              "supersedes_fact_id": { "type": "null" },
+              "reports_fact_id": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "novelty": { "const": "corrected_fact" } },
+            "required": ["novelty"]
+          },
+          "then": {
+            "properties": {
+              "supersedes_fact_id": {
+                "type": "string",
+                "pattern": "^fact_[0-9a-f]{24}$"
+              }
+            },
+            "required": ["supersedes_fact_id"]
+          }
+        }
+      ]
+    }
+  }
+}

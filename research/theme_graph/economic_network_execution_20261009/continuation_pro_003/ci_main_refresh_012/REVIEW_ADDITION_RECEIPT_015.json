@@ -1,0 +1,23 @@
+{
+  "direct_files": [
+    {
+      "byte_length": 11111,
+      "path": "ci_main_refresh_012/PRO003_REQUIRED_BLOB_FETCH_010_INDEPENDENT_PREPARED_SOURCE_REVIEW.md",
+      "sha256": "e3418b01387f28d4a59bb33a2af07d177413f1c5bd880d3d0acd830d6d95fce8"
+    },
+    {
+      "byte_length": 13132,
+      "path": "ci_main_refresh_012/INDEPENDENT_PREPARED_REVIEW_TRANSPORT_015.json",
+      "sha256": "dfc804736ba7d4a6399798805b8d05527b5fae2afab2eac672e57885737f17dd"
+    }
+  ],
+  "finished_at": "2026-10-09T16:46:04.834546+00:00",
+  "native_application_or_archived_script_execution": false,
+  "prior_local_freeze_status": "UNKNOWN",
+  "status": "INDEPENDENT_PREPARED_SOURCE_REVIEW_ADDITION_VERIFIED",
+  "this_payload_origin": "Complete immediately preceding final prepared-source review, copied verbatim from conversation memory; no local reread or writer retry.",
+  "transport_bytes": 13132,
+  "transport_git_blob": "1fdfb529a76f40bb5a72a7b936c54917e38589fc",
+  "transport_sha256": "dfc804736ba7d4a6399798805b8d05527b5fae2afab2eac672e57885737f17dd",
+  "worktree_or_ref_mutation": false
+}

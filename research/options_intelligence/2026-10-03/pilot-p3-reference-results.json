@@ -1,0 +1,703 @@
+{
+  "availability_attested": false,
+  "case_count": 52,
+  "cases": [
+    {
+      "case": "beta_zero_exactly_recovers_incumbent",
+      "observed": {
+        "beta": 0.0,
+        "derivative": -0.4950900147403309,
+        "forecasts": [
+          {
+            "id": "a",
+            "v2": 0.04
+          },
+          {
+            "id": "b",
+            "v2": 0.09
+          },
+          {
+            "id": "c",
+            "v2": 0.06
+          }
+        ],
+        "loss": -1.4388133490778203
+      },
+      "result": "PASS"
+    },
+    {
+      "case": "known_interior_convex_optimum",
+      "observed": {
+        "beta": 0.35000000000582077,
+        "bracket_width": 5.820766091346741e-11,
+        "constrained_optimum": false,
+        "derivative": 6.693873233466471e-12,
+        "domain": [
+          -1.0,
+          1.0
+        ],
+        "empirical_evidence": false,
+        "forecasts": [
+          {
+            "id": "a",
+            "v2": 0.030231349658088245
+          },
+          {
+            "id": "b",
+            "v2": 0.14690845979718126
+          },
+          {
+            "id": "c",
+            "v2": 0.0643504908753279
+          }
+        ],
+        "iterations": 35,
+        "mean_qlike": -1.5195444397329951,
+        "rows": 3,
+        "status": "FIT"
+      },
+      "result": "PASS"
+    },
+    {
+      "case": "negative_feature_keeps_variance_positive",
+      "observed": {
+        "beta": 0.35000000000582077,
+        "derivative": 6.693873233466471e-12,
+        "forecasts": [
+          {
+            "id": "a",
+            "v2": 0.030231349658088245
+          },
+          {
+            "id": "b",
+            "v2": 0.14690845979718126
+          },
+          {
+            "id": "c",
+            "v2": 0.0643504908753279
+          }
+        ],
+        "loss": -1.5195444397329951
+      },
+      "result": "PASS"
+    },
+    {
+      "case": "permutation_does_not_change_fit",
+      "observed": {
+        "beta": 0.35000000000582077,
+        "bracket_width": 5.820766091346741e-11,
+        "constrained_optimum": false,
+        "derivative": 6.693873233466471e-12,
+        "domain": [
+          -1.0,
+          1.0
+        ],
+        "empirical_evidence": false,
+        "forecasts": [
+          {
+            "id": "c",
+            "v2": 0.0643504908753279
+          },
+          {
+            "id": "b",
+            "v2": 0.14690845979718126
+          },
+          {
+            "id": "a",
+            "v2": 0.030231349658088245
+          }
+        ],
+        "iterations": 35,
+        "mean_qlike": -1.5195444397329951,
+        "rows": 3,
+        "status": "FIT"
+      },
+      "result": "PASS"
+    },
+    {
+      "case": "common_weight_scale_preserves_fit",
+      "observed": {
+        "beta": 0.35000000000582077,
+        "bracket_width": 5.820766091346741e-11,
+        "constrained_optimum": false,
+        "derivative": 6.693873233466471e-12,
+        "domain": [
+          -1.0,
+          1.0
+        ],
+        "empirical_evidence": false,
+        "forecasts": [
+          {
+            "id": "a",
+            "v2": 0.030231349658088245
+          },
+          {
+            "id": "b",
+            "v2": 0.14690845979718126
+          },
+          {
+            "id": "c",
+            "v2": 0.0643504908753279
+          }
+        ],
+        "iterations": 35,
+        "mean_qlike": -1.5195444397329951,
+        "rows": 3,
+        "status": "FIT"
+      },
+      "result": "PASS"
+    },
+    {
+      "case": "variance_unit_scale_preserves_beta",
+      "observed": {
+        "beta": 0.35000000000582077,
+        "bracket_width": 5.820766091346741e-11,
+        "constrained_optimum": false,
+        "derivative": 6.693954418525147e-12,
+        "domain": [
+          -1.0,
+          1.0
+        ],
+        "empirical_evidence": false,
+        "forecasts": [
+          {
+            "id": "a",
+            "v2": 302.31349658088243
+          },
+          {
+            "id": "b",
+            "v2": 1469.0845979718126
+          },
+          {
+            "id": "c",
+            "v2": 643.5049087532791
+          }
+        ],
+        "iterations": 35,
+        "mean_qlike": 7.690795932243187,
+        "rows": 3,
+        "status": "FIT"
+      },
+      "result": "PASS"
+    },
+    {
+      "case": "paired_qlike_is_invariant_to_common_variance_units",
+      "observed": {
+        "scaled": 0.08073109065517592,
+        "unscaled": 0.08073109065517481
+      },
+      "result": "PASS"
+    },
+    {
+      "case": "upper_boundary_optimum_is_declared",
+      "observed": {
+        "beta": 1.0,
+        "bracket_width": 0.0,
+        "constrained_optimum": true,
+        "derivative": -1.718281828459045,
+        "domain": [
+          -1.0,
+          1.0
+        ],
+        "empirical_evidence": false,
+        "forecasts": [
+          {
+            "id": "one",
+            "v2": 2.718281828459045
+          }
+        ],
+        "iterations": 0,
+        "mean_qlike": 3.718281828459045,
+        "rows": 1,
+        "status": "FIT"
+      },
+      "result": "PASS"
+    },
+    {
+      "case": "lower_boundary_optimum_is_declared",
+      "observed": {
+        "beta": -1.0,
+        "bracket_width": 0.0,
+        "constrained_optimum": true,
+        "derivative": 0.6321205588285577,
+        "domain": [
+          -1.0,
+          1.0
+        ],
+        "empirical_evidence": false,
+        "forecasts": [
+          {
+            "id": "one",
+            "v2": 0.36787944117144233
+          }
+        ],
+        "iterations": 0,
+        "mean_qlike": -0.6321205588285577,
+        "rows": 1,
+        "status": "FIT"
+      },
+      "result": "PASS"
+    },
+    {
+      "case": "zero_target_valid_affine_boundary",
+      "observed": {
+        "beta": -1.0,
+        "bracket_width": 0.0,
+        "constrained_optimum": true,
+        "derivative": 1.0,
+        "domain": [
+          -1.0,
+          1.0
+        ],
+        "empirical_evidence": false,
+        "forecasts": [
+          {
+            "id": "one",
+            "v2": 0.36787944117144233
+          }
+        ],
+        "iterations": 0,
+        "mean_qlike": -1.0,
+        "rows": 1,
+        "status": "FIT"
+      },
+      "result": "PASS"
+    },
+    {
+      "case": "tiny_affine_slope_sign_survives_weight_cancellation",
+      "observed": {
+        "beta": 1.0,
+        "bracket_width": 0.0,
+        "constrained_optimum": true,
+        "derivative": -1.4285714285714287e-19,
+        "domain": [
+          -1.0,
+          1.0
+        ],
+        "empirical_evidence": false,
+        "forecasts": [
+          {
+            "id": "positive",
+            "v2": 148.4131591025766
+          },
+          {
+            "id": "negative",
+            "v2": 0.36787944117144233
+          },
+          {
+            "id": "tiny",
+            "v2": 1.0
+          }
+        ],
+        "iterations": 0,
+        "mean_qlike": 1.1087944531965851e-16,
+        "rows": 3,
+        "status": "FIT"
+      },
+      "result": "PASS"
+    },
+    {
+      "case": "constant_nonzero_feature_can_identify_offset",
+      "observed": {
+        "beta": 0.1999999999825377,
+        "bracket_width": 5.820766091346741e-11,
+        "constrained_optimum": false,
+        "derivative": -1.7462309376422935e-11,
+        "domain": [
+          -1.0,
+          1.0
+        ],
+        "empirical_evidence": false,
+        "forecasts": [
+          {
+            "id": "one",
+            "v2": 1.2214027581388414
+          }
+        ],
+        "iterations": 35,
+        "mean_qlike": 1.2,
+        "rows": 1,
+        "status": "FIT"
+      },
+      "result": "PASS"
+    },
+    {
+      "case": "tiny_feature_preserves_unique_zero_optimum",
+      "observed": {
+        "beta": 0.0,
+        "bracket_width": 0.0,
+        "constrained_optimum": false,
+        "derivative": 0.0,
+        "domain": [
+          -1.0,
+          1.0
+        ],
+        "empirical_evidence": false,
+        "forecasts": [
+          {
+            "id": "one",
+            "v2": 1.0
+          }
+        ],
+        "iterations": 1,
+        "mean_qlike": 1.0,
+        "rows": 1,
+        "status": "FIT"
+      },
+      "result": "PASS"
+    },
+    {
+      "case": "curved_derivative_underflow_does_not_choose_boundary",
+      "detail": "nonzero row derivative underflow",
+      "refusal": "NUMERICALLY_UNIDENTIFIED",
+      "result": "PASS"
+    },
+    {
+      "case": "subnormal_derivative_cannot_report_false_exact_root",
+      "detail": "subnormal row derivative cannot certify bracket",
+      "refusal": "NUMERICALLY_UNIDENTIFIED",
+      "result": "PASS"
+    },
+    {
+      "case": "zero_target_and_positive_target_can_coexist",
+      "observed": {
+        "beta": -1.0,
+        "bracket_width": 0.0,
+        "constrained_optimum": true,
+        "derivative": 0.18393972058572117,
+        "domain": [
+          -1.0,
+          1.0
+        ],
+        "empirical_evidence": false,
+        "forecasts": [
+          {
+            "id": "one",
+            "v2": 0.36787944117144233
+          },
+          {
+            "id": "two",
+            "v2": 2.718281828459045
+          }
+        ],
+        "iterations": 0,
+        "mean_qlike": 0.18393972058572117,
+        "rows": 2,
+        "status": "FIT"
+      },
+      "result": "PASS"
+    },
+    {
+      "case": "all_zero_feature_is_unidentified",
+      "detail": "objective is analytically flat",
+      "refusal": "FIT_UNIDENTIFIED",
+      "result": "PASS"
+    },
+    {
+      "case": "balanced_zero_targets_are_unidentified",
+      "detail": "objective is analytically flat",
+      "refusal": "FIT_UNIDENTIFIED",
+      "result": "PASS"
+    },
+    {
+      "case": "negative_target_is_not_dropped",
+      "detail": "require y >= 0, v1 > 0, weight > 0",
+      "refusal": "INVALID_DOMAIN",
+      "result": "PASS"
+    },
+    {
+      "case": "zero_baseline_is_not_floored",
+      "detail": "require y >= 0, v1 > 0, weight > 0",
+      "refusal": "INVALID_DOMAIN",
+      "result": "PASS"
+    },
+    {
+      "case": "missing_feature_is_not_zero",
+      "detail": "z",
+      "refusal": "INVALID_NUMBER",
+      "result": "PASS"
+    },
+    {
+      "case": "nonfinite_feature_is_not_clipped",
+      "detail": "z",
+      "refusal": "NONFINITE_INPUT",
+      "result": "PASS"
+    },
+    {
+      "case": "boolean_feature_is_not_numeric",
+      "detail": "z",
+      "refusal": "INVALID_NUMBER",
+      "result": "PASS"
+    },
+    {
+      "case": "duplicate_training_identity_is_not_double_weighted",
+      "detail": "missing or duplicate training identity",
+      "refusal": "INVALID_ROW_ID",
+      "result": "PASS"
+    },
+    {
+      "case": "exponential_range_violation_refuses_entire_fit",
+      "detail": "exp(beta*z)",
+      "refusal": "POSITIVE_UNDERFLOW",
+      "result": "PASS"
+    },
+    {
+      "case": "positive_exponential_overflow_refuses",
+      "detail": "exp(beta*z)",
+      "refusal": "EXP_OVERFLOW",
+      "result": "PASS"
+    },
+    {
+      "case": "positive_variance_underflow_is_not_zero",
+      "detail": "variance forecast",
+      "refusal": "POSITIVE_UNDERFLOW",
+      "result": "PASS"
+    },
+    {
+      "case": "ratio_overflow_is_not_clipped",
+      "detail": "y/v1",
+      "refusal": "NONFINITE_CALCULATION",
+      "result": "PASS"
+    },
+    {
+      "case": "zero_weight_does_not_drop_failed_row",
+      "detail": "require y >= 0, v1 > 0, weight > 0",
+      "refusal": "INVALID_DOMAIN",
+      "result": "PASS"
+    },
+    {
+      "case": "empty_fit_does_not_fallback",
+      "detail": "a nonempty explicit row sequence is required",
+      "refusal": "NO_TRAINING_ROWS",
+      "result": "PASS"
+    },
+    {
+      "case": "chronology_valid_does_not_attest_capture",
+      "observed": {
+        "availability_attested": false,
+        "consumer_capture_attested": false,
+        "rows": 1,
+        "scope": "supplied_clock_order_only",
+        "status": "ORDERING_VALID"
+      },
+      "result": "PASS"
+    },
+    {
+      "case": "immature_training_label",
+      "detail": "historical-a",
+      "refusal": "TRAINING_LABEL_NOT_MATURE",
+      "result": "PASS"
+    },
+    {
+      "case": "unavailable_training_label_revision",
+      "detail": "historical-a",
+      "refusal": "TRAINING_LABEL_REVISION_UNAVAILABLE",
+      "result": "PASS"
+    },
+    {
+      "case": "final_label_revision_cannot_precede_maturity",
+      "detail": "final immutable label revision is not provisional: historical-a",
+      "refusal": "LABEL_REVISION_BEFORE_MATURITY",
+      "result": "PASS"
+    },
+    {
+      "case": "feature_published_after_decision",
+      "detail": "feature:historical-a",
+      "refusal": "PREDICTION_NOT_ASOF",
+      "result": "PASS"
+    },
+    {
+      "case": "feature_received_after_decision",
+      "detail": "feature:historical-a",
+      "refusal": "PREDICTION_NOT_ASOF",
+      "result": "PASS"
+    },
+    {
+      "case": "upstream_nuisance_label_leakage",
+      "detail": "historical-a",
+      "refusal": "NUISANCE_LABEL_LEAKAGE",
+      "result": "PASS"
+    },
+    {
+      "case": "upstream_baseline_label_leakage",
+      "detail": "historical-a",
+      "refusal": "BASELINE_LABEL_LEAKAGE",
+      "result": "PASS"
+    },
+    {
+      "case": "missing_feature_revision",
+      "detail": "feature_revision_id",
+      "refusal": "MISSING_REVISION",
+      "result": "PASS"
+    },
+    {
+      "case": "fractional_clock_is_not_truncated",
+      "detail": "feature_received_at_ns must be nonnegative integer epoch nanoseconds",
+      "refusal": "INVALID_CLOCK",
+      "result": "PASS"
+    },
+    {
+      "case": "fit_cannot_occur_at_first_test",
+      "detail": "fit must precede first test decision",
+      "refusal": "FIT_NOT_BEFORE_TEST",
+      "result": "PASS"
+    },
+    {
+      "case": "last_60_eligible_sessions_only",
+      "observed": {
+        "census_rows": 65,
+        "clock_bin": "09:35",
+        "eligibility_attested": false,
+        "fit_at_ns": 1000,
+        "mad": 15.0,
+        "median": 34.5,
+        "observations": 60,
+        "root": "SYNTHETIC",
+        "scale": 22.238999999999997,
+        "selected_sessions": [
+          "session-005",
+          "session-006",
+          "session-007",
+          "session-008",
+          "session-009",
+          "session-010",
+          "session-011",
+          "session-012",
+          "session-013",
+          "session-014",
+          "session-015",
+          "session-016",
+          "session-017",
+          "session-018",
+          "session-019",
+          "session-020",
+          "session-021",
+          "session-022",
+          "session-023",
+          "session-024",
+          "session-025",
+          "session-026",
+          "session-027",
+          "session-028",
+          "session-029",
+          "session-030",
+          "session-031",
+          "session-032",
+          "session-033",
+          "session-034",
+          "session-035",
+          "session-036",
+          "session-037",
+          "session-038",
+          "session-039",
+          "session-040",
+          "session-041",
+          "session-042",
+          "session-043",
+          "session-044",
+          "session-045",
+          "session-046",
+          "session-047",
+          "session-048",
+          "session-049",
+          "session-050",
+          "session-051",
+          "session-052",
+          "session-053",
+          "session-054",
+          "session-055",
+          "session-056",
+          "session-057",
+          "session-058",
+          "session-059",
+          "session-060",
+          "session-061",
+          "session-062",
+          "session-063",
+          "session-064"
+        ],
+        "status": "SCALER_FIT"
+      },
+      "result": "PASS"
+    },
+    {
+      "case": "RZ_is_unclipped",
+      "observed": {
+        "z": 44964.49930302622
+      },
+      "result": "PASS"
+    },
+    {
+      "case": "scaler_requires_40_sessions",
+      "detail": "require at least 40 eligible sessions",
+      "refusal": "INSUFFICIENT_SCALER_HISTORY",
+      "result": "PASS"
+    },
+    {
+      "case": "scaler_zero_MAD_refuses",
+      "detail": "no epsilon scale or pooling fallback",
+      "refusal": "ZERO_MAD",
+      "result": "PASS"
+    },
+    {
+      "case": "scaler_future_availability_refuses",
+      "detail": "session-064",
+      "refusal": "SCALER_FUTURE_INFORMATION",
+      "result": "PASS"
+    },
+    {
+      "case": "scaler_scope_cannot_pool_roots",
+      "detail": "root or formation bin",
+      "refusal": "SCALER_SCOPE_MISMATCH",
+      "result": "PASS"
+    },
+    {
+      "case": "scaler_duplicate_session_refuses",
+      "detail": "one observation per root/bin/session",
+      "refusal": "DUPLICATE_SCALER_SESSION",
+      "result": "PASS"
+    },
+    {
+      "case": "invalid_scale_cannot_epsilon_rescue",
+      "detail": "strictly positive scale required",
+      "refusal": "INVALID_SCALE",
+      "result": "PASS"
+    },
+    {
+      "case": "positive_RZ_underflow_is_not_zero",
+      "detail": "RZ transform",
+      "refusal": "NONZERO_UNDERFLOW",
+      "result": "PASS"
+    },
+    {
+      "case": "negative_RZ_underflow_is_not_zero",
+      "detail": "RZ transform",
+      "refusal": "NONZERO_UNDERFLOW",
+      "result": "PASS"
+    },
+    {
+      "case": "null_scaler_scope_is_not_identity",
+      "detail": "nonblank root and formation bin required",
+      "refusal": "INVALID_SCALER_SCOPE",
+      "result": "PASS"
+    }
+  ],
+  "empirical_fit_performed": false,
+  "evidence_class": "SYNTHETIC_REFERENCE_ONLY",
+  "passed": 52,
+  "production_compatible_schema": false,
+  "python": "3.12.14",
+  "schema": "options.p3.positive_offset.reference.v1",
+  "solver_policy": {
+    "beta_domain": [
+      -1,
+      1
+    ],
+    "bracket_tolerance": 1e-10,
+    "epsilon_floor": false,
+    "failed_row_fallback": false,
+    "intercept": false,
+    "max_iterations": 100
+  },
+  "source_sha256": "29fc1cc5ff79abc5a7f0377ea1860113adc851f0aad81feb852d27d45a65a11f"
+}

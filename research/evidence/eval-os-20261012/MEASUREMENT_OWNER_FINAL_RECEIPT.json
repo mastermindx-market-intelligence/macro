@@ -1,0 +1,266 @@
+{
+  "head": "23dfff6dc2920d04e90cf3a9e8c51e0c2a6f7bf6",
+  "scope": "Root-approved synthetic INTERNAL QA owner extension; no empirical study or production evaluator",
+  "file_sha256": {
+    "engine/neuralweb/response_eval.py": "b4caa23259a91e78ef4ddbbbce2ec38c6339fa12090f9135018d125d1b320e1d",
+    "engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json": "f86677c419e97eb3932024db56e5e147de7b5a88536bb9701af5ea367e8140db",
+    "tests/test_eval_os_adversarial_acceptance.py": "0d1aaf8542a217511d5b5ec64828cfcd6ccccb69f0022b34fcc88a12504fa08f",
+    "research/EVAL_OS_MEASUREMENT_ACCEPTANCE_PROTOCOL_2026-10-12.md": "5b90aaef31e6879c3ad5f1add59972549b8bf755540d8e9de12429340b67db07"
+  },
+  "protocol_sha256": "4beb3a9053c4142bacb0ce5779443bb855fcd7886f827a1ddf8747aeab33c080",
+  "old_function_or_class_count": 24,
+  "old_definitions_changed": [],
+  "final_tests": {
+    "cases": 136,
+    "failures": 0,
+    "result": "136 passed in109.41s",
+    "junit_sha256": "4071dfc4cca883bf0361531c6768066431a7be403cc1c4b159ea5fa9bf7c5fae"
+  },
+  "measurement_cases": {
+    "ok": true,
+    "internal_qa_only": true,
+    "outcome_access_allowed": false,
+    "protocol": {
+      "accepted": true,
+      "reason": null,
+      "internal_qa_only": true,
+      "outcome_access_allowed": false,
+      "independent_blocks": 2,
+      "observation_rows": 3,
+      "distinct_observations": 3,
+      "contaminated_holdouts": [
+        "synthetic-H1"
+      ],
+      "trial_count": 2,
+      "look_count": 3
+    },
+    "case_population_matches": true,
+    "cases": [
+      {
+        "case_id": "predictive-valid",
+        "output_class": "predictive",
+        "actual": {
+          "accepted": true,
+          "reason": null,
+          "measurements": {
+            "log_loss": 0.35667494393873245,
+            "brier": 0.14000000000000004
+          }
+        },
+        "contract_matches_freeze": true,
+        "agrees_with_oracle": true
+      },
+      {
+        "case_id": "predictive-adversarial",
+        "output_class": "predictive",
+        "actual": {
+          "accepted": false,
+          "reason": "probability_invalid",
+          "measurements": {}
+        },
+        "contract_matches_freeze": true,
+        "agrees_with_oracle": true
+      },
+      {
+        "case_id": "ranking-valid",
+        "output_class": "ranking",
+        "actual": {
+          "accepted": true,
+          "reason": null,
+          "measurements": {
+            "precision_at_k": 1.0,
+            "coverage": 1.0,
+            "eligible_n": 3
+          }
+        },
+        "contract_matches_freeze": true,
+        "agrees_with_oracle": true
+      },
+      {
+        "case_id": "ranking-adversarial",
+        "output_class": "ranking",
+        "actual": {
+          "accepted": false,
+          "reason": "ranking_population_mismatch",
+          "measurements": {}
+        },
+        "contract_matches_freeze": true,
+        "agrees_with_oracle": true
+      },
+      {
+        "case_id": "classification_state-valid",
+        "output_class": "classification_state",
+        "actual": {
+          "accepted": true,
+          "reason": null,
+          "measurements": {
+            "accuracy": 1.0,
+            "n_labels": 2,
+            "confusion": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                1
+              ]
+            ]
+          }
+        },
+        "contract_matches_freeze": true,
+        "agrees_with_oracle": true
+      },
+      {
+        "case_id": "classification_state-adversarial",
+        "output_class": "classification_state",
+        "actual": {
+          "accepted": false,
+          "reason": "state_label_not_available",
+          "measurements": {}
+        },
+        "contract_matches_freeze": true,
+        "agrees_with_oracle": true
+      },
+      {
+        "case_id": "detection_event-valid",
+        "output_class": "detection_event",
+        "actual": {
+          "accepted": true,
+          "reason": null,
+          "measurements": {
+            "matched": 1,
+            "missed": 1,
+            "false_alarms": 1,
+            "false_alarm_rate": 0.01,
+            "mean_lead": 2.0
+          }
+        },
+        "contract_matches_freeze": true,
+        "agrees_with_oracle": true
+      },
+      {
+        "case_id": "detection_event-adversarial",
+        "output_class": "detection_event",
+        "actual": {
+          "accepted": false,
+          "reason": "event_match_not_one_to_one",
+          "measurements": {}
+        },
+        "contract_matches_freeze": true,
+        "agrees_with_oracle": true
+      },
+      {
+        "case_id": "descriptive-valid",
+        "output_class": "descriptive",
+        "actual": {
+          "accepted": true,
+          "reason": null,
+          "measurements": {
+            "source_supported": true
+          }
+        },
+        "contract_matches_freeze": true,
+        "agrees_with_oracle": true
+      },
+      {
+        "case_id": "descriptive-adversarial",
+        "output_class": "descriptive",
+        "actual": {
+          "accepted": false,
+          "reason": "source_fact_mismatch",
+          "measurements": {}
+        },
+        "contract_matches_freeze": true,
+        "agrees_with_oracle": true
+      },
+      {
+        "case_id": "salience-valid",
+        "output_class": "salience",
+        "actual": {
+          "accepted": true,
+          "reason": null,
+          "measurements": {
+            "relevance_precision": 1.0,
+            "coverage": 1.0
+          }
+        },
+        "contract_matches_freeze": true,
+        "agrees_with_oracle": true
+      },
+      {
+        "case_id": "salience-adversarial",
+        "output_class": "salience",
+        "actual": {
+          "accepted": false,
+          "reason": "salience_reference_not_independent",
+          "measurements": {}
+        },
+        "contract_matches_freeze": true,
+        "agrees_with_oracle": true
+      },
+      {
+        "case_id": "generative-valid",
+        "output_class": "generative",
+        "actual": {
+          "accepted": true,
+          "reason": null,
+          "measurements": {
+            "source_supported": true,
+            "legitimate_scope_differences": 1
+          }
+        },
+        "contract_matches_freeze": true,
+        "agrees_with_oracle": true
+      },
+      {
+        "case_id": "generative-adversarial",
+        "output_class": "generative",
+        "actual": {
+          "accepted": false,
+          "reason": "source_fact_mismatch",
+          "measurements": {}
+        },
+        "contract_matches_freeze": true,
+        "agrees_with_oracle": true
+      },
+      {
+        "case_id": "quantile-valid",
+        "output_class": "predictive",
+        "actual": {
+          "accepted": true,
+          "reason": null,
+          "measurements": {
+            "mean_pinball": 0.06666666666666667,
+            "interval_coverage": 1.0
+          }
+        },
+        "contract_matches_freeze": true,
+        "agrees_with_oracle": true
+      },
+      {
+        "case_id": "quantile-adversarial",
+        "output_class": "predictive",
+        "actual": {
+          "accepted": false,
+          "reason": "quantile_invalid",
+          "measurements": {}
+        },
+        "contract_matches_freeze": true,
+        "agrees_with_oracle": true
+      }
+    ]
+  },
+  "quantile_owner_controls": "13 passed,182deselected,65.34s; exactsource stable inquantile-owner-controls.json",
+  "source_writes": [
+    "engine/neuralweb/response_eval.py",
+    "engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json",
+    "tests/test_eval_os_adversarial_acceptance.py",
+    "research/EVAL_OS_MEASUREMENT_ACCEPTANCE_PROTOCOL_2026-10-12.md"
+  ],
+  "git_mutations": false,
+  "protected_outcomes_accessed": false,
+  "financial_authority_changed": false,
+  "outcome_access_allowed": false,
+  "review": "Independent assurance findings closed; final byte acceptance pending assigningreviewer"
+}

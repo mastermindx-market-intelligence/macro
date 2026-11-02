@@ -129,6 +129,8 @@ def _harness(js_src: str, feed: dict, page: str) -> dict:
         var bigEl   = reg(".mx5-big-score", new El("", "mx5-big-score", "{BAKED_SCORE}"));
         var vwEl    = reg(".mx5-verdict-word", new El("", "mx5-verdict-word", {BAKED_WORD!r}));
         var thesis  = reg(".mx5-thesis", new El("", "mx5-thesis", "Risk-on — the tape"));
+        var subline = reg(".mx5-sub-line", new El("", "mx5-sub-line", "GREEN — Risk-on backdrop"));
+        var action  = reg("[data-wtd-primary] .mx5-action-label", new El("", "mx5-action-label", "Stay selective."));
         var pill    = reg("#ms-live-pill", new El("ms-live-pill", "on"));
         reg("#ms-date", new El("ms-date", "", "{BAKED_SESSION}"));
         reg("#regime-asof", new El("regime-asof", "", "{BAKED_SESSION}"));
@@ -141,6 +143,8 @@ def _harness(js_src: str, feed: dict, page: str) -> dict:
         out.score = String(scoreEl.textContent);
         out.big   = String(bigEl.textContent);
         out.thesis = (thesis.children[0] || {}).textContent || thesis.textContent;
+        out.subline = (subline.children[0] || {}).textContent || subline.textContent;
+        out.action = (action.children[0] || {}).textContent || action.textContent;
         out.pill_on = pill.hasClass("on");
         """
     else:
@@ -528,6 +532,68 @@ def test_us_feed_on_the_rendered_session_still_patches(js):
 
 @needs_node
 @US_PAGES
+def test_us_legacy_feed_keeps_safe_verdict_fallback_copy(js):
+    # Older payloads without display presentation fields retain safe copy.
+    feed = _us_feed(BAKED_SESSION, 61, "RISK_ON")
+
+    out = _harness(js.read_text(encoding="utf-8"), feed, "us")
+
+    assert not out.get("error"), out["error"]
+    assert out["thesis"].startswith(
+        "Risk-on — the overall backdrop is supportive."
+    )
+    assert out["subline"] == "GREEN — Risk-on backdrop"
+    assert out["action"] == "Stay selective. Add where setups confirm."
+    assert "breadth and cross-asset signals line up" not in out["thesis"]
+
+
+@needs_node
+@US_PAGES
+def test_us_feed_prefers_canonical_participation_aware_headline(js):
+    feed = _us_feed(BAKED_SESSION, 61, "RISK_ON")
+    feed["display"]["headline_en"] = (
+        "Selective risk-on — the broader backdrop is supportive, but participation is weak."
+    )
+    feed["display"]["headline_zh"] = "选择性风险偏好 — 大环境仍支持风险资产，但市场参与度偏弱。"
+    feed["display"]["participation_scope"] = {
+        "state": "selective",
+        "participation": "weak",
+        "breadth_score": 0,
+        "subline_en": "GREEN — Selective risk-on",
+        "subline_zh": "偏多 — 选择性风险偏好",
+        "action_en": "Stay selective. Follow confirmed leadership and fresh turns.",
+        "action_zh": "保持精选。跟随已确认的强势板块与新出现的转强信号。",
+    }
+
+    out = _harness(js.read_text(encoding="utf-8"), feed, "us")
+
+    assert not out.get("error"), out["error"]
+    assert out["thesis"].startswith("Selective risk-on")
+    assert out["subline"] == "GREEN — Selective risk-on"
+    assert out["action"] == "Stay selective. Follow confirmed leadership and fresh turns."
+    assert "breadth and cross-asset signals line up" not in out["thesis"]
+
+
+@needs_node
+@US_PAGES
+def test_us_feed_participation_unverified_headline_fails_closed(js):
+    feed = _us_feed(BAKED_SESSION, 61, "RISK_ON")
+    feed["display"]["headline_en"] = (
+        "Risk-on — the broader backdrop is supportive, but participation is unverified."
+    )
+    feed["display"]["headline_zh"] = "风险偏好 — 大环境支持风险资产，但市场参与度尚无法验证。"
+    feed["display"]["participation_scope"] = {
+        "state": "unverified", "participation": "unverified", "breadth_score": None
+    }
+
+    out = _harness(js.read_text(encoding="utf-8"), feed, "us")
+
+    assert not out.get("error"), out["error"]
+    assert "participation is unverified" in out["thesis"]
+
+
+@needs_node
+@US_PAGES
 def test_us_feed_ahead_of_the_render_appends_a_provisional_point(js):
     """A genuinely newer session still appends, and the chart follows the gauge."""
     out = _harness(js.read_text(encoding="utf-8"),
@@ -730,18 +796,22 @@ class TestSplicedFramesQuoteClocks:
 
     def test_a_synthetic_flagged_quote_is_excluded_from_the_clock_receipt(self, monkeypatch):
         """F3: a quote whose quote_ts did NOT come from a real market timestamp
-        (quote_ts_synthetic=True) must still SPLICE normally (pricing/staleness
-        unaffected) but its clock must never enter the receipt — mapped to None."""
+        (quote_ts_synthetic=True) must never put its clock in the receipt. Since
+        #8606 (rule 6: a synthetic quote clock is no actionable live cash update)
+        live_overlay.staleness() calls it stale, so it is not spliced at all: the
+        symbol reads its nightly close and has no clock."""
         closes = {"SPY": _nightly_close(500.0)}
         monkeypatch.setattr(live_overlay, "read_close", lambda name: closes.get(name))
         now = datetime(2026, 8, 21, 9, 6, tzinfo=timezone.utc)
         quotes = {"SPY": _live_quote(505.0, "2026-08-21T09:05:30+00:00",
                                      prev_close=500.0, synthetic=True)}
+        assert live_overlay.staleness(quotes["SPY"], 20.0, now=now, session_open=True)["reason"] \
+            == "synthetic quote timestamp"
         spliced, live_close, nightly_close, quote_clocks = brs._spliced_frames(
             quotes, max_chg=10.0, stale_after=20.0, now=now, session_open=True)
-        assert "SPY" in spliced          # pricing/splicing unaffected
-        assert live_close["SPY"] == 505.0
-        assert quote_clocks["SPY"] is None    # but excluded from the clock receipt
+        assert "SPY" not in spliced and "SPY" not in live_close
+        assert nightly_close["SPY"] == 500.0
+        assert "SPY" not in quote_clocks      # its clock never enters the receipt
         assert brs._source_event_time(quote_clocks, now) is None
 
     def test_all_synthetic_quotes_yield_none_source_event_time(self, monkeypatch):
@@ -754,8 +824,9 @@ class TestSplicedFramesQuoteClocks:
         }
         spliced, live_close, nightly_close, quote_clocks = brs._spliced_frames(
             quotes, max_chg=10.0, stale_after=20.0, now=now, session_open=True)
-        assert set(spliced) == {"SPY", "QQQ"}
-        assert quote_clocks == {"SPY": None, "QQQ": None}
+        assert spliced == {} and live_close == {}
+        assert nightly_close == {"SPY": 500.0, "QQQ": 400.0}
+        assert quote_clocks == {}
         assert brs._source_event_time(quote_clocks, now) is None
 
 

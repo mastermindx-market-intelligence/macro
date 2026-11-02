@@ -1,0 +1,22 @@
+{
+  "schema": "tiingo.exact_original_never_admitted_continuation_actual_launch/v1",
+  "original_tool_session": 33372,
+  "actual_original_scope_observed": true,
+  "actual_scope_sha256": "3ce93ca004e71564f5b9e85444b02bf3be53a3255ee44c40152b285331bb378b",
+  "started_at_utc": "2026-10-13T02:03:45.659830+00:00",
+  "request_cap": 2631,
+  "remaining_original_raw_budget_bytes": 24871583365,
+  "method_sha256": "dccefc622669e985443ae1434a311185c4f50d87fec28df78da6e18f1c16b934",
+  "plan_sha256": "1fcaf8614d1df2ef31c1de353b4056755038a578f95ed2fe389969747b9ceec0",
+  "quota_proof_sha256": "c9a03df5bd39d0e5031d69eca6dd6cb542b9c2d78547d83fbfc1747c8c5f54d7",
+  "independent_source_review_sha256": "7f8016bd841d0ab5510d7a1e688603a07f5ccf9c06b59c95a8682ccb5d31b5f1",
+  "actual_readonly_preflight_parent_sha256": "cc584074cd4c047d385e6446cd057b7c4a7051c2432376670fae499496f81b76",
+  "held_symbol_count": 28,
+  "all_selected_original_never_admitted_requests": true,
+  "capture_terminal_return_consumed": false,
+  "complete_capture_claimed": false,
+  "qualification_writer_started": false,
+  "new_collector_queue_or_service_created": false,
+  "pit_backtest_eligible": false,
+  "programme_acceptance_claimed": false
+}

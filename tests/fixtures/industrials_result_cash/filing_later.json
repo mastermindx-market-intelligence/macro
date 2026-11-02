@@ -1,0 +1,39 @@
+{
+  "synthetic": true,
+  "issuer": {
+    "company_id": "synthetic:northgate",
+    "display_name": "Northgate Testing Services",
+    "external_ids": {
+      "cik": "0000987654"
+    }
+  },
+  "sources": [
+    {
+      "source_id": "northgate-release",
+      "url": "https://example.invalid/service-release.json",
+      "mode": "release",
+      "rights_state": "public_primary",
+      "recorded_at": "2026-07-10T12:00:00Z"
+    },
+    {
+      "source_id": "northgate-filing",
+      "url": "https://example.invalid/service-filing.json",
+      "mode": "filing",
+      "rights_state": "unknown",
+      "recorded_at": "2026-08-01T12:00:00Z"
+    }
+  ],
+  "documents": [
+    {
+      "document_ref": "synthetic:document:release",
+      "source_id": "northgate-release",
+      "relationship": "enriched_by_filing"
+    },
+    {
+      "document_ref": "synthetic:document:filing",
+      "source_id": "northgate-filing",
+      "relationship": "enrichment"
+    }
+  ],
+  "cells": []
+}

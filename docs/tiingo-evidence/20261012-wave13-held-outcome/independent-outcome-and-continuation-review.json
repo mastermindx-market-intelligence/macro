@@ -1,0 +1,19 @@
+{
+  "schema": "tiingo.independent_source_and_actual_prior_outcome_review/v1",
+  "recorded_at_utc": "2026-10-12T22:45:21.071028+00:00",
+  "reviewer": "existing /root/tiingo_contract_adjudication",
+  "conclusion": "PASS",
+  "candidate_sha256": "320a8f2e46d1fa9a2655c172fc215a031fbbcde37ea9de504c0ea085dd10bf13",
+  "accounting_sha256": "42b5c31ddaadb1bee431e2b8a2c0b9e8965c8ff0797e5deb90c3117240c2e120",
+  "verified_prior_qualified_successes": 4994,
+  "verified_prior_held_failures": 6,
+  "verified_prior_never_admitted": 0,
+  "verified_qualification_proofs": 28,
+  "verified_prior_bars": 10976717,
+  "verified_prior_raw_bytes": 2468556453,
+  "original_partial_flags_preserved": true,
+  "new_final_failure_cannot_grant_continuation": true,
+  "held_symbols": 22,
+  "fresh_launch_gates_required": true,
+  "capture_effect_claimed": false
+}

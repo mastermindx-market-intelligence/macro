@@ -1,0 +1,65 @@
+{
+  "procedure_pin": "bf764f494b9cd0ecede6234bb472c3344c8e77cc",
+  "macro_pin": "fc5c1fc49e4f552d8e3e55b5528a6d280d7415e8",
+  "note": "Read against native connectors during preparation. No current runtime census or source-edit permission claim.",
+  "references": [
+    {
+      "repo": "Mastermind",
+      "path": "docs/sol_skills/INDEX.md",
+      "blob": "1a20acafe1fe7df686489cadef15a1ae7833ec12",
+      "purpose": "Protected procedure and canonical source ownership"
+    },
+    {
+      "repo": "Mastermind",
+      "path": "docs/sol_skills/ACTIVE_EXECUTION.md",
+      "blob": "69ac0734df6ca1e8d4885b917ba5b51d998aafe6",
+      "purpose": "Continuity, no-delta, action and finalization boundaries"
+    },
+    {
+      "repo": "Mastermind",
+      "path": "docs/sol_skills/WEB_CEO_DELEGATION.md",
+      "blob": "2073a33f05506268b15f0b5ce292ce57d5b60ed3",
+      "purpose": "Role-adaptive principal and bounded labor"
+    },
+    {
+      "repo": "Mastermind",
+      "path": "docs/sol_skills/COMMISSION_WAVE.md",
+      "purpose": "Current directive, assignment, bounded packets and effect boundaries"
+    },
+    {
+      "repo": "Mastermind",
+      "path": "docs/sol_skills/WORKER_AVENUE_ROUTING.md",
+      "purpose": "Eligible placement, binding and no imaginary receiver"
+    },
+    {
+      "repo": "Mastermind",
+      "path": "docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md",
+      "blob": "21ac0d28c3ca36d4fefdfc501453f3338636df0d",
+      "purpose": "Scarcity, admission, Fable principal role"
+    },
+    {
+      "repo": "Mastermind",
+      "path": "docs/superpowers/specs/2026-09-14-astra-external-fabric-delegation-design.md",
+      "blob": "44de81c2ab952f159af5d7eb2efd823c6128e24c",
+      "purpose": "Existing fabric owner/ingress navigation; SPEC_ONLY at its own freeze, not live attestation; internal fallback superseded for this mission"
+    },
+    {
+      "repo": "Mastermind",
+      "path": "docs/sol_skills/CLOSEOUT.md",
+      "blob": "4a9ec3782da001322604e977dbe91b9cf371f0b9",
+      "purpose": "Correct durable homes and exact continuation"
+    },
+    {
+      "repo": "macro",
+      "path": "agentos/workstreams/WS-PROPHET-US-V4-RECOVERY.md",
+      "blob": "e890eed80da566ae4a0363c3ebd58b74269ebc09",
+      "purpose": "Existing program and technical ownership; historical narrative is dated"
+    },
+    {
+      "repo": "macro",
+      "path": "agentos/decisions/DEC-PROPHET-ROTATION-PARTICIPATION-META-CEO-MANDATE.md",
+      "blob": "87d7ed98333020cc4233f5ec8d9e72d5247cab72",
+      "purpose": "Existing scoped mandate; current Fable recipient supersedes former mandatory Sol program return"
+    }
+  ]
+}

@@ -394,3 +394,38 @@ def test_import_stays_light():
             if isinstance(n, ast.Import) for a in n.names}
     heavy = top & {"pandas", "numpy", "plotly", "pyarrow", "engine", "collectors"}
     assert not heavy, f"module-scope heavy imports would dark this suite: {heavy}"
+
+
+# ── source-generation binding ────────────────────────────────────────────────
+
+def test_payload_carries_exact_source_generation(tmp_path):
+    write_payload(
+        _env(), tmp_path, None, [], _board(), built="2026-09-16T06:00:00Z",
+        as_of="2026-09-14",
+        baskets_sha256="a" * 64,
+        action_board_sha256="b" * 64,
+    )
+    doc = json.loads((tmp_path / "premiumdata" / "sector_central.json").read_text())
+    assert doc["as_of"] == "2026-09-14"
+    assert doc["baskets_sha256"] == "a" * 64
+    assert doc["action_board_sha256"] == "b" * 64
+
+
+def test_overview_hero_discloses_exact_source_generation():
+    html = _env().get_template(PAGE_TPL.name).render(
+        flows_html=None,
+        pgate=None,
+        bottoming=None,
+        theme_context=None,
+        factor_season=None,
+        flow=None,
+        basket_member_syms=[],
+        action_board=_board(),
+        generated_utc="2026-09-16T06:00:00Z",
+        source_as_of="2026-09-14",
+        baskets_sha256="a" * 64,
+        action_board_sha256="b" * 64,
+    )
+    assert 'data-si-as-of="2026-09-14"' in html
+    assert f'data-si-baskets-sha256="{"a" * 64}"' in html
+    assert f'data-si-action-board-sha256="{"b" * 64}"' in html

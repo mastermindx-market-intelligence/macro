@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "options.trade_nbbo_microstructure/v1",
+  "title": "Measured trade-vs-NBBO microstructure receipt for a single source event",
+  "description": "Additive receipt binding measured NBBO execution-location evidence to a single source event under the existing live-flow event_stage/v1 plane. Authority is research-only and the composer MUST NOT consume any other field shape.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "source_event_id",
+    "event_id",
+    "source_path",
+    "event_time",
+    "observed_at",
+    "available_at",
+    "decision_path",
+    "source_print_count",
+    "nbbo_valid_print_count",
+    "nbbo_premium_coverage",
+    "nbbo_covered_premium_usd",
+    "source_premium_usd",
+    "event_digest_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "options.trade_nbbo_microstructure/v1"},
+    "source_event_id": {"type": "string", "minLength": 1},
+    "event_id": {"type": "string", "minLength": 1},
+    "source_path": {"type": "string", "minLength": 1},
+    "event_time": {"type": "string", "format": "date-time"},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "available_at": {"type": "string", "format": "date-time"},
+    "decision_path": {"type": "string", "minLength": 1},
+    "source_print_count": {"type": "integer", "minimum": 0},
+    "nbbo_valid_print_count": {"type": "integer", "minimum": 0},
+    "nbbo_premium_coverage": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+    "nbbo_covered_premium_usd": {"type": "number", "minimum": 0.0},
+    "source_premium_usd": {"type": "number", "minimum": 0.0},
+    "event_digest_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

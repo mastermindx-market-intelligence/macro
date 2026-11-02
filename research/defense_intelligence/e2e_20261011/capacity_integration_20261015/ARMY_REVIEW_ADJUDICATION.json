@@ -1,0 +1,28 @@
+{
+  "adjudicated_at": "2026-10-14T13:16:44.417295+00:00",
+  "run_id": "defense-army-source-review-01a13300-a",
+  "root_and_parent": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "retained_result_sha256": "2e6e4b56542d841f1668ebfd3e61c4ab9613f8b423dc1cc55089dec5ad272937",
+  "verdict": "ACCEPTED_BOUNDED_STATIC_REVIEW_AFTER_PARENT_CORRECTIONS",
+  "reviewer_verdict": "PASS_WITH_NONBLOCKING_FINDINGS",
+  "accepted_scope": "Useful independent review of the supplied Army-source gate and tests; not acceptance of wider capacity implementation or product",
+  "dispositions": {
+    "F1": "Adopted: six valid general-scope cases now discriminate the restricted subset in versions1.2/1.3, asserting publisher error and absence of shape error.",
+    "F2": "Not reproduced: graph constructs a valid row then row.update(changes) restores the raw non-list value. Added an explicit helper assertion and actual loader refusal to prove this.",
+    "F3": "Documentation now names current 1.3 accepted key set and the actual allowed_claim_scopes, coverage_scopes_for and current_public_capacity_rows wiring. Reviewer only had older module baseline.",
+    "F4": "Host-level eligibility, non-article paths and exact canonical URL form are explicit.",
+    "F5": "Positive cases assert exact admitted evidence row preservation.",
+    "F6": "Canonical case/port/trailing-dot/foreign-host and NATO regressions added and passed.",
+    "F7": "Pre-existing labeling noted; no unrelated rewrite."
+  },
+  "review_limitation_and_parent_repair": "Reviewer incorrectly considered strip+urlparse sufficient for literal URL whitespace. Parent independently demonstrated five admitted control/space forms, added the raw-character guard, and retained red/green evidence. The final one-line guard was parent-verified, not independently seen by this reviewer.",
+  "tests": {
+    "final_focused": "45 passed, 14 warnings in11.08s",
+    "source_consumer": "EN/ZH actual factory with real staged PAC3 bundle passes",
+    "source_hash": "e163f5d7f95bc5b79adce72853d22e73c6ff261e27583ae5be908baed9b6c3e9",
+    "test_hash": "98466873e9ddc836048c979040e267183c5a3307cfcd7f6948b84f174f6b93dd"
+  },
+  "broader_review": "defense-capacity-contract-review-01a13300-a remains UNKNOWN, no replacement/retry",
+  "canonical_admission": false,
+  "production_publication": false
+}

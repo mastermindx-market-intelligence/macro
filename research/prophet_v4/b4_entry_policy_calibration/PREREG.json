@@ -1,0 +1,229 @@
+{
+  "schema": "prophet.b4_entry_policy_calibration_prereg.v1",
+  "registered_date": "2026-09-23",
+  "status": "REGISTERED_OUTCOMES_UNREAD",
+  "strategy_id": "EARLY_LEADERSHIP_SECTOR_ROTATION",
+  "horizon": "2_15_SESSIONS",
+  "parents": {
+    "policy_owner_pr": 7738,
+    "policy_owner_head": "b143e7000b6afa003a15a7f934f4aaf099968d42",
+    "measurement_owner_pr": 7734,
+    "measurement_owner_head": "55e8671317af3219785e7a14e490028a9933daa4",
+    "basis_owner_pr": 7584,
+    "basis_owner_head": "87f85e88f75bf037e4f917ee30313444f766bb62",
+    "runtime_adapter_pr": 7581,
+    "runtime_adapter_head": "39ef2cd48e091d90f12771aab142c2197022aa79"
+  },
+  "authority": {
+    "research_only": true,
+    "can_rank": false,
+    "can_admit": false,
+    "can_size": false,
+    "can_execute": false,
+    "can_trade": false,
+    "can_promote_policy": false
+  },
+  "amendments": [
+    {
+      "id": "A1",
+      "date": "2026-09-23",
+      "pre_capture": true,
+      "reason": "Seat ruling R6-PREREG-01 (Opus science audit M3/M4)",
+      "authority": "DEC:PROPHET-US-FABLE-META-CEO-DELEGATION"
+    }
+  ],
+  "clock_law": {
+    "cohort_start": "FIRST_PROSPECTIVE_B4_OBSERVATION_AFTER_PREREG_MERGE",
+    "historical_backfill": false,
+    "entry_fact_clock": "DECISION_TIME_ONLY",
+    "outcomes_attach_later": true,
+    "same_tape_required": true
+  },
+  "population": {
+    "unit": "first admissible decision instant per candidate episode",
+    "effective_n_reporting": [
+      "N_eff_date",
+      "N_eff_issuer"
+    ],
+    "freeze_before_policy": true,
+    "no_named_ticker_inclusion": true,
+    "no_candidate_population_widening": true,
+    "required_parent_facts": [
+      "accepted candidate identity/lifecycle",
+      "accepted basis/provenance",
+      "decision-time live quote",
+      "current-session open",
+      "previous-session close",
+      "owner-supplied ATR",
+      "accepted entry geometry"
+    ]
+  },
+  "cells": [
+    {
+      "id": "C0_OBSERVE_ONLY",
+      "liquidity": null,
+      "gap_velocity": null
+    },
+    {
+      "id": "C1_CURRENT_BASELINE",
+      "liquidity": {"max_full_spread_bps": 50.0, "max_nbbo_age_seconds": 300.0},
+      "gap_velocity": {"max_open_gap_atr": 1.5, "max_move_from_open_atr": 1.0, "max_session_move_atr": 1.5}
+    },
+    {
+      "id": "C2_TIGHT_LIQUIDITY",
+      "liquidity": {"max_full_spread_bps": 25.0, "max_nbbo_age_seconds": 120.0},
+      "gap_velocity": {"max_open_gap_atr": 1.5, "max_move_from_open_atr": 1.0, "max_session_move_atr": 1.5}
+    },
+    {
+      "id": "C3_WIDE_LIQUIDITY",
+      "liquidity": {"max_full_spread_bps": 75.0, "max_nbbo_age_seconds": 300.0},
+      "gap_velocity": {"max_open_gap_atr": 1.5, "max_move_from_open_atr": 1.0, "max_session_move_atr": 1.5}
+    },
+    {
+      "id": "C4_TIGHT_GAP",
+      "liquidity": {"max_full_spread_bps": 50.0, "max_nbbo_age_seconds": 300.0},
+      "gap_velocity": {"max_open_gap_atr": 1.0, "max_move_from_open_atr": 0.75, "max_session_move_atr": 1.0}
+    },
+    {
+      "id": "C5_WIDE_GAP",
+      "liquidity": {"max_full_spread_bps": 50.0, "max_nbbo_age_seconds": 300.0},
+      "gap_velocity": {"max_open_gap_atr": 2.0, "max_move_from_open_atr": 1.5, "max_session_move_atr": 2.0}
+    },
+    {
+      "id": "C6_TIGHT_LIQUIDITY_BASELINE_GAP",
+      "liquidity": {"max_full_spread_bps": 25.0, "max_nbbo_age_seconds": 120.0},
+      "gap_velocity": {"max_open_gap_atr": 1.5, "max_move_from_open_atr": 1.0, "max_session_move_atr": 1.5}
+    },
+    {
+      "id": "C7_BASELINE_LIQUIDITY_TIGHT_GAP",
+      "liquidity": {"max_full_spread_bps": 50.0, "max_nbbo_age_seconds": 300.0},
+      "gap_velocity": {"max_open_gap_atr": 1.0, "max_move_from_open_atr": 0.75, "max_session_move_atr": 1.0}
+    }
+  ],
+  "outcomes": {
+    "primary_horizons_sessions": [5, 10],
+    "secondary_horizons_sessions": [3, 15],
+    "required_metrics": [
+      "coverage_retained_vs_C0",
+      "net_return_after_measured_or_floor_costs",
+      "excess_vs_benchmark",
+      "excess_vs_sector",
+      "mfe",
+      "mae",
+      "target_before_invalidation",
+      "invalidation_first",
+      "time_to_positive",
+      "cost_per_side_bps",
+      "cost_basis",
+      "nbbo_missing_or_unusable_rate"
+    ],
+    "capacity_claim_allowed": false,
+    "supporting_descriptive_only": {
+      "metrics": [
+      "coverage_retained_vs_C0",
+      "net_return_after_measured_or_floor_costs",
+      "excess_vs_benchmark",
+      "excess_vs_sector",
+      "mfe",
+      "target_before_invalidation",
+      "invalidation_first",
+      "time_to_positive",
+      "cost_per_side_bps",
+      "cost_basis",
+      "nbbo_missing_or_unusable_rate"
+      ],
+      "horizons_sessions": [3, 5, 15],
+      "rescue_authority": false
+    }
+  },
+  "evidence_floor": {
+    "verdict_grade_episodes_per_cell": 300,
+    "interim_counts": [50, 100],
+    "interim_can_promote": false
+  },
+  "alias_map": {
+    "C6_TIGHT_LIQUIDITY_BASELINE_GAP": "C2_TIGHT_LIQUIDITY",
+    "C7_BASELINE_LIQUIDITY_TIGHT_GAP": "C4_TIGHT_GAP"
+  },
+  "distinct_configurations": 6,
+  "distinct_cell_ids": [
+    "C0_OBSERVE_ONLY",
+    "C1_CURRENT_BASELINE",
+    "C2_TIGHT_LIQUIDITY",
+    "C3_WIDE_LIQUIDITY",
+    "C4_TIGHT_GAP",
+    "C5_WIDE_GAP"
+  ],
+  "primary_endpoint": "mae",
+  "primary_horizon_sessions": 10,
+  "multiplicity": {
+    "method": "Holm",
+    "family": [
+      "C1_CURRENT_BASELINE",
+      "C2_TIGHT_LIQUIDITY",
+      "C3_WIDE_LIQUIDITY",
+      "C4_TIGHT_GAP",
+      "C5_WIDE_GAP"
+    ],
+    "endpoint": "mae",
+    "horizon_sessions": 10,
+    "search_family_includes": [
+      "EL_H10_timing_study_registered_under_D06"
+    ]
+  },
+  "non_inferiority": {
+    "comparison": "net excess vs C0 at H10",
+    "lower_bound_margin_bps": -25,
+    "nonsignificant_point_estimate_is_non_inferior": false
+  },
+  "cost_floor_bps_round_trip": 50,
+  "cost_floor_treatment": "floor_not_measurement_pending_D08",
+  "refused_rows_treatment": "full_opportunity_cash",
+  "refused_rows_return": "cash over the declared primary horizon",
+  "looks": {
+    "fixed_episode_count_per_distinct_cell": 300,
+    "monitoring_only_episode_counts": [
+      50,
+      100
+    ],
+    "monitoring_can_promote": false
+  },
+  "futility": {
+    "episode_count_per_cell": 150,
+    "rule": "stop as REJECTED if every cell's primary lower confidence bound excludes improvement"
+  },
+  "decision_law": {
+    "superseded_by_A1": {
+      "baseline_supported_only_if": [
+        "C1 lies on the observed coverage-versus-adverse-tail Pareto frontier",
+        "C1 has confidence-supported improvement in at least one adverse-tail endpoint versus C0",
+        "C1 shows no confidence-supported degradation in primary net excess versus C0",
+        "source/basis/clock coverage is sufficient to avoid selection-by-missingness"
+      ],
+      "baseline_killed_if": [
+        "C1 is Pareto-dominated by C0 or a preregistered challenger",
+        "C1 worsens adverse-tail endpoints without compensating net-excess evidence",
+        "missingness or basis incompatibility makes the comparison non-identifiable"
+      ]
+    },
+    "supported_requires": [
+      "analysis uses one distinct configuration per cell and aliases carry no independent evidence",
+      "the single primary endpoint is maximum adverse excursion at 10 sessions",
+      "the Holm-adjusted result passes across C1-C5 and the declared search family",
+      "the lower confidence bound for net excess versus C0 is at least -25 bps",
+      "the 50 bps round-trip floor is used pending the D08 measured range"
+    ],
+    "killed_if": [
+      "the configuration is Pareto-dominated by C0 or a preregistered challenger",
+      "missingness or basis incompatibility makes the comparison non-identifiable"
+    ],
+    "single_primary_endpoint_no_any_of_k": true,
+    "promotion_requires_separate_adjudication": true
+  },
+  "reuse_law": {
+    "market_tape": "reuse incumbent Entry Radar PIT vendor plane and cost semantics where compatible",
+    "outcome_store": "reuse an incumbent prospective evaluation ledger; do not create a parallel outcome authority",
+    "live_product": "never use product recommendation output as calibration truth",
+    "providers": "no new provider"
+  }
+}

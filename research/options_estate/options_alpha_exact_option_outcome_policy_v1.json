@@ -1,0 +1,81 @@
+{
+  "schema": "options.alpha_exact_option_outcome_policy/v1",
+  "policy_id": "oa3.long_single_leg_h60_nbbo/v1",
+  "state": "preregistered_inactive",
+  "population": {
+    "exact_expression_receipt_required": true,
+    "selection_before_outcomes": true,
+    "position": "long",
+    "quantity_contracts": 1,
+    "standard_multiplier": 100,
+    "standard_deliverable_only": true,
+    "same_day_expiration_allowed": false,
+    "package_supported": false,
+    "short_option_supported": false
+  },
+  "entry": {
+    "boundary": "expression.available_at",
+    "selected_side": "ask",
+    "quote_event_window_seconds": 60,
+    "minimum_displayed_contracts": 1
+  },
+  "exit": {
+    "target": "entry_quote.event_at+PT60M",
+    "selected_side": "bid",
+    "quote_event_window_seconds": 60,
+    "minimum_displayed_contracts": 1
+  },
+  "quote_source": {
+    "endpoint": "/v3/option/history/quote",
+    "interval": "tick",
+    "quote_rule_reference": "first_role_side_firm_known_exchange_opra_nbbo_tick/v1",
+    "exact_contract_required": true,
+    "firm_condition_required": true,
+    "known_exchange_required": true,
+    "raw_response_receipt_required": true,
+    "executable_fill_claim": false
+  },
+  "cost": {
+    "fee_per_side_usd": "0.65",
+    "multiplier": 100,
+    "return_formula": "100*((100*exit_bid-0.65)-(100*entry_ask+0.65))/(100*entry_ask+0.65)",
+    "cost_interpretation": "frozen_research_quote_ruler_not_actual_account_fee_or_fill"
+  },
+  "clock": {
+    "same_nyse_rth_session_required": true,
+    "entry_never_precedes_expression_availability": true,
+    "retrieval_after_maturity_allowed": true,
+    "actual_retrieval_available_at_recorded": true,
+    "benchmark_live_capture_lag_rule_inherited": false
+  },
+  "status_vocabulary": [
+    "pending",
+    "complete",
+    "unavailable",
+    "excluded",
+    "invalid"
+  ],
+  "forbidden_substitutes": [
+    "mid",
+    "last",
+    "eod_mark",
+    "intrinsic",
+    "black_scholes",
+    "neighbor_contract",
+    "underlying_return",
+    "later_best_print"
+  ],
+  "authority": {
+    "may_originate_signal": false,
+    "may_score": false,
+    "may_rank": false,
+    "may_select": false,
+    "may_issue": false,
+    "may_size": false,
+    "may_trade": false,
+    "may_publish_pick": false,
+    "may_train_prophet": false,
+    "may_feed_neural_web": false,
+    "may_claim_fill": false
+  }
+}

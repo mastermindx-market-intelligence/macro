@@ -137,6 +137,38 @@ max `computed_at` per node. It is internal, never user-facing, and never a marke
 It lives outside the node row precisely because node rows are write-once: a capability
 stored there would be a one-way ratchet that outlived every later substrate improvement.
 
+## Hierarchy (DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK)
+
+House theme taxonomy is three tiers on `kind=theme` nodes: `macro_category`, `theme`
+(the 18 legacy crosswalk themes), and `micro_theme`. Node ids stay `theme:<slug>` with
+slug grammar `^[a-z0-9][a-z0-9_]{1,62}$`, globally unique across tiers. Non-theme node
+kinds keep `tier` null.
+
+**Edges.** Only `PARENT_OF` models hierarchy. Direction: `src` = PARENT, `dst` = CHILD.
+Allowed adjacency: `macro_category → theme` or `theme → micro_theme` (no
+category→micro, no theme→theme). The graph is a DAG; a child may have at most three
+parents; a `theme` may have zero categories. Fields: `source_class=curated`,
+`date_provenance=crosswalk`, `valid_from` = the parent row's `asserted_on`, evidence
+from operator curation of `config/theme_crosswalk.yml` (same evidence shape as crosswalk
+EXPRESSES). No weight, share, count, or score on PARENT_OF. The #8324 typed vocabulary
+(EQUIVALENT / NARROWER_THAN / …) is probation/mapping vocabulary only — not a graph edge
+type in v1.
+
+**Rights.** Hierarchy nodes resolve to family `mastermind_curated` exactly like the 18
+canonical themes (`direct_display_ok`); no new prefix or rights row.
+
+**Source of truth.** The ONLY hierarchy source is the `hierarchy:` block in
+`config/theme_crosswalk.yml`; the ONLY emitter is `engine/theme_graph/materialize.py`
+into `data/theme_graph/{nodes,edges}.parquet`. Display-tier only until gauntleted (G0.1).
+No per-ticker stored category/theme tags (DNR:HOLD-TICKER-EXPOSURE-TAGS).
+
+**Schema vs checker.** Per row, `nodes.v1` / `edges.v1` jsonschema enforce kind/tier
+conditionals, PARENT_OF endpoint id grammar, `source_class` / `date_provenance`, and
+null reserved exposure columns. Per store, `scripts/check_theme_graph_contracts.py`
+enforces tier adjacency, endpoint existence, DAG (no cycles among open PARENT_OF),
+the three-parent cap, crosswalk provenance and rights on endpoints and evidence, and
+the spec §9.6 ban on company→theme edges.
+
 ## 5. Versioning — additive only
 
 `v1` is **additive-only**: a later wave may add columns and enum members; it may not
@@ -145,3 +177,30 @@ rename a column, repurpose one, or narrow an enum. A breaking change ships as
 `_meta.json` beside the parquets carries `computed_at`, the row counts, per-suite
 counts, and the living `ths_unmapped_concept_count` / `unknown_ths_codes` — read it
 for freshness and coverage rather than counting rows yourself.
+
+## F04 current ETF identity adoption
+
+`identity_resolution.adopt_etf_references` is a read-only composition beside the
+unchanged **company-only** `gmi.identity_resolution/v1` sidecar. It writes no rows
+and does not clear company `ENTITY_TYPE_CONFLICT` results. An active company wrapper
+sharing a fund reference refuses ETF adoption; an already retired wrapper stays
+retired and its historical refusal is preserved.
+
+For a current US house membership-document ETF reference, canonical security/listing
+identity comes only from the existing Data OS `membership` vendor alias reader, with
+inverse round trip, agreement across available vendor namespaces, and an active
+canonical master row. Neither `etf:<symbol>`, a fund name, nor inception-code equality
+supplies that identity. The current producer receipt binds the listing snapshot used
+by the same reference generation; its real completion receipt and bytes must validate.
+The listing's explicit `etf` flag qualifies **instrument type only**. Its
+`listing_sec_identity_binding_eligible:false` remains unchanged: this observation does
+not create the canonical identity supplied separately by Data OS. Venue comparison
+uses the canonical producer's existing closed exchange/MIC table.
+
+Results distinguish available canonical identity, unavailable inputs/type/alias and
+ambiguous active wrappers/aliases. They retain master generation, listing observation
+and source-known clocks. Identity is latest-published/current, never historical;
+issuer grouping, ETF holdings, weights and performance are not inferred. F04 binds
+these source bytes into its rechecked response manifest, without exposing raw source
+rows. Additional geography or namespace support requires native qualified inputs;
+absence is not a symbol-matching fallback.

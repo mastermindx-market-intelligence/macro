@@ -31,6 +31,20 @@ that the starvation used to be invisible — "no positive earnings call" and "no
 earnings-call data at all" produced identical output. They are now distinguishable in
 the plan block and in the forward shadow that arms the leash's auto-demote clause.
 
+WHAT CHANGED ON 2026-09-18. The starvation itself is now repaired: the same NATIVE
+EquityDesk table already reached CI and deploy as ``data/earnings_calls/history.parquet``
+through the earnings R2 plane, and ``engine/prophet_stage_inputs.py`` walks that native
+ladder. The availability work, the scale-fidelity proofs and the no-duplicate-plane
+proofs live in ``tests/test_prophet_earnings_source_restore.py``. THIS file is unchanged
+in purpose: it pins severance and blast radius — whichever native store answers, earnings
+sentiment still reaches nothing but the ratified 45->56 hold horizon and its provenance
+block.
+
+NOTE ON THE FIXTURE VALUES. They are native desk readings (<= 30). They used to be 90/95,
+outside the native range that arrived with ``EC_SENT_NATIVE_MIN/MAX``: the loader nulled
+them, so the "present" case silently stopped tilting and the blast-radius assertion went
+red on main. A fixture for this arm must be on the desk's own scale.
+
 Run: python3 -m pytest tests/test_prophet_earnings_split_brain.py -q
 """
 from __future__ import annotations
@@ -271,7 +285,7 @@ def test_legacy_parquet_cannot_alter_any_plan_field_without_the_stage_conjunctio
     monkeypatch.undo()
     present = _run_origination(
         tmp_path, monkeypatch,
-        ec_rows=[("MSFT", "2026-06-01", 90.0), ("AAPL", "2026-06-02", 95.0)],
+        ec_rows=[("MSFT", "2026-06-01", 30.0), ("AAPL", "2026-06-02", 28.0)],
         tag="present")
 
     assert [p["id"] for p in present] == [p["id"] for p in absent]
@@ -298,7 +312,7 @@ def test_legacy_parquet_blast_radius_is_exactly_the_ratified_hold_horizon(
     monkeypatch.undo()
     present = _run_origination(
         tmp_path, monkeypatch,
-        ec_rows=[("MSFT", "2026-06-01", 90.0), ("AAPL", "2026-06-02", 95.0)],
+        ec_rows=[("MSFT", "2026-06-01", 30.0), ("AAPL", "2026-06-02", 28.0)],
         stage_at_entry=stage2, tag="s2present")
 
     assert _differing_keys(present, absent) == {"horizon_days", "stage_tilt"}, (
@@ -367,7 +381,7 @@ def test_absent_earnings_source_is_disclosed_in_every_plan(tmp_path, monkeypatch
 def test_present_earnings_source_is_disclosed_as_available(tmp_path, monkeypatch):
     plans = _run_origination(
         tmp_path, monkeypatch,
-        ec_rows=[("MSFT", "2026-06-01", 90.0)], tag="available")
+        ec_rows=[("MSFT", "2026-06-01", 30.0)], tag="available")
     for plan in plans:
         block = plan["stage_tilt"]
         assert block["ec_source_state"] == psi.EC_SOURCE_AVAILABLE
@@ -482,14 +496,24 @@ def test_tag_entries_reports_the_earnings_source_state(tmp_path, monkeypatch):
 # 5. Authority constraints (DNR:KILL-STAGE-WIN-GATE / PSQ-H1 provisional).       #
 # --------------------------------------------------------------------------- #
 def test_the_earnings_gate_is_not_repointed_at_a_differently_scaled_artifact():
-    """EC_SENT_GATE = 24 is calibrated to EquityDesk's 0-100 earnings_call_sent. The
-    repo's own data/earnings_calls/scores.parquet carries a -1..1 ``sentiment`` — a
-    sibling name, a different scale. Re-pointing the join there would silently re-scale
-    a promoted construction rather than repair it."""
+    """EC_SENT_GATE = 24 is calibrated to EquityDesk's NATIVE ~-10..30
+    earnings_call_sent (12 is the documented neutral midpoint). The repo's own
+    data/earnings_calls/scores.parquet carries a -1..1 ``sentiment`` — a sibling name in
+    a sibling directory, a different scale. Re-pointing the join there would silently
+    re-scale a promoted construction rather than repair it.
+
+    ``ec_source_path()`` stays the DECLARED canonical path. The 2026-09-18 restore added
+    a native-store ladder so a CI/deploy host can read the SAME native table from the
+    R2-transported data/earnings_calls/history.parquet; that ladder is pinned by
+    tests/test_prophet_earnings_source_restore.py, which asserts the -1..1 scores
+    artifact is never one of its tiers."""
     assert psi.EC_SENT_GATE == 24
+    assert (psi.EC_SENT_NATIVE_MIN, psi.EC_SENT_NATIVE_MAX) == (-10, 30)
     resolved = psi.ec_source_path().as_posix()
     assert resolved.endswith("stage_analysis/backfill/earnings_calls.parquet")
     assert "earnings_calls/scores.parquet" not in resolved
+    for _tier, path, _transported in psi.ec_source_candidates():
+        assert "earnings_calls/scores.parquet" not in path.as_posix()
 
 
 def test_the_disclosure_never_enters_the_eligibility_test():

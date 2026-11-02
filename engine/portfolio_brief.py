@@ -892,12 +892,27 @@ def compose_brief(ctx: dict, holdings: list[dict], today: str,
                 "not_computed": {k: v[:] if isinstance(v, list) else v
                                  for k, v in _NOT_COMPUTED.items()}}
 
-    # Empty book: no names at all.
+    # Zero names. TWO different facts arrive here and must not share a sentence:
+    #   * population declared (positions / watchlist_union) + zero names = the store
+    #     ANSWERED and the set is genuinely empty → the add-names invitation is true.
+    #   * population `unspecified` + zero names = nothing is known about the set — the
+    #     loaders return ([], "unspecified") when a private-store query did not answer.
+    #     Inviting the user to "add names" would assert an empty watchlist the desk
+    #     never read (Terminal#169 / macro#6819, C2 2026-10-04). The endpoints fail
+    #     closed (503) before reaching this branch; this is the composer-side guard
+    #     for every other caller, and it stays plain-word (no internal state names).
     if len(order) == 0:
-        base["headline"] = {
-            "en": "Add names to your watchlist to see your book through the desk's eyes.",
-            "zh": "把标的加入你的观察列表，即可用桌面的视角审视你的持仓。",
-        }
+        if population == "unspecified":
+            base["headline"] = {
+                "en": ("No names reached the desk this time, so there is nothing to "
+                       "show yet — this is not a read of an empty watchlist."),
+                "zh": "这次没有标的送达桌面，暂无可展示的内容 — 这并不是对空观察列表的判读。",
+            }
+        else:
+            base["headline"] = {
+                "en": "Add names to your watchlist to see your book through the desk's eyes.",
+                "zh": "把标的加入你的观察列表，即可用桌面的视角审视你的持仓。",
+            }
         base["sections"] = []
         base["data"] = _thin_data()
         return base

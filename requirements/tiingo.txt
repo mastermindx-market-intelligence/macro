@@ -1,0 +1,3 @@
+# Optional Tiingo BOATS websocket-only dependency.
+# Existing Macro requirements already provide pyarrow for offline views.
+websocket-client>=1.8,<2

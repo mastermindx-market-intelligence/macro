@@ -16,12 +16,16 @@ def _glance_source() -> str:
     return source[start:end]
 
 
-def _render_glance(*, catalysts=True, policy_state="QUIET", risk_elevated=True) -> str:
+def _render_glance(
+    *, catalysts=True, policy_state="QUIET", risk_elevated=True,
+    color="yellow", participation_scope=None,
+) -> str:
     state = {
-        "color": "yellow",
-        "label_en": "Mixed",
-        "label_zh": "混合",
-        "score": 44,
+        "color": color,
+        "label_en": "Risk-on" if color == "green" else "Mixed",
+        "label_zh": "风险偏好" if color == "green" else "混合",
+        "score": 61 if color == "green" else 44,
+        "participation_scope": participation_scope,
         "radar": {
             "state": "ELEVATED" if risk_elevated else "QUIET",
             "do_en": "Avoid chasing extended leaders.",
@@ -79,6 +83,24 @@ def test_primary_copy_is_short_and_live_patchable():
     glance = _glance_source()
     assert "Trade small. Stay selective." in glance
     assert "{{ MS.label_en }} &middot; {{ MS.score }}/100" in glance
+
+
+def test_primary_copy_is_participation_aware_in_selective_risk_on():
+    html = _render_glance(
+        color="green",
+        participation_scope={
+            "state": "selective",
+            "participation": "weak",
+            "breadth_score": 0,
+            "action_en": "Stay selective. Follow confirmed leadership and fresh turns.",
+            "action_zh": "保持精选。跟随已确认的强势板块与新出现的转强信号。",
+            "subline_en": "GREEN — Selective risk-on",
+            "subline_zh": "偏多 — 选择性风险偏好",
+        },
+    )
+
+    assert "Stay selective. Follow confirmed leadership and fresh turns." in html
+    assert "Follow the trend. Add on strength." not in html
 
 
 def test_glance_uses_the_dashboard_typography_without_alert_labels():

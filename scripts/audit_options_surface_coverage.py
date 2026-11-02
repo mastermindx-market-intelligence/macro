@@ -55,26 +55,29 @@ _OPS_WT_STORE = Path("/Users/chriswong/theta-ops-wt/data/thetadata_eod")
 
 
 def _resolve_store(override: str | None = None) -> Path:
-    """Resolve the T1 store, mirroring engine/thetadata_store.resolve_thetadata_store."""
+    """Resolve the T1 store by DELEGATING to the canonical resolver.
+
+    This used to hand-mirror engine/thetadata_store.resolve_thetadata_store, and
+    the copy drifted: its env branch accepted any directory at all, and its
+    content check was the pre-AD-1T2b "does a tier dir exist" shape. After the
+    canonical resolver learned to refuse a provably drained store, the copy still
+    accepted one — so the two disagreed on the same bytes, and this audit would
+    have reported every root as missing coverage instead of refusing outright.
+    A mirror that can disagree with its subject is worse than no mirror.
+    """
     if override:
         return Path(override)
-    env = os.environ.get("THETADATA_STORE")
-    if env:
-        p = Path(env)
-        if p.is_dir():
-            return p
-    try:
-        from lib import config  # noqa: PLC0415
-        p = config.data_dir() / "thetadata_eod"
-        if p.is_dir() and any((p / t).is_dir() for t in ("eod", "oi", "greeks")):
-            return p
-    except Exception:  # noqa: BLE001
-        pass
-    if _OPS_WT_STORE.is_dir():
-        return _OPS_WT_STORE
+    from engine.thetadata_store import resolve_thetadata_store  # noqa: PLC0415
+    store = resolve_thetadata_store(
+        required=False, purpose="audit_options_surface_coverage")
+    if store is not None:
+        return store
     raise RuntimeError(
-        f"T1 store not found. Set THETADATA_STORE or use --store. "
-        f"Tried: {_OPS_WT_STORE}"
+        f"T1 store not found or provably empty. Set THETADATA_STORE or use "
+        f"--store. A store whose tier directories are present but hold no root "
+        f"is DRAINED, not resolvable — see the resolver's log lines above for "
+        f"which candidate that was. Tried the canonical chain ending at "
+        f"{_OPS_WT_STORE}."
     )
 
 

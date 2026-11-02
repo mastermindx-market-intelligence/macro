@@ -1,0 +1,51 @@
+{
+  "schema": "gmi.kernel_clock_scope_integration_repair/v1",
+  "at": "2026-10-11T20:24:25.755120+00:00",
+  "base_head": "e58bb4f5ffc240a3333ccb86be4cc26264adb3f0",
+  "controller_refresh_run": 38170362127,
+  "red": {
+    "natural_ci_run": 38170499424,
+    "pack0_job": 114562102333,
+    "contract_delta_job": 114561915905,
+    "reason": "integrated-answer-v0 command reads tests/test_integrated_answer_clock.py outside its declared paths"
+  },
+  "repair": {
+    "path": ".github/ci/legacy-jobs.yml",
+    "delta": "Add exactly tests/test_integrated_answer_clock.py to existing exclusive scope",
+    "sha256": "de412176ed2a87d939a1d03b16f5961224b50e6712a26de5bb1942c305aa7236",
+    "commands_limits_guards_changed": false
+  },
+  "green": {
+    "canonical_validation_jobs": 280,
+    "packing_tests": [
+      "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+      "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared"
+    ],
+    "passed": 2,
+    "seconds": 179.28,
+    "rc": 0,
+    "warning": "Existing pytest temporary-directory cleanup PermissionError; tests passed; unrelated directory not modified"
+  },
+  "review": {
+    "owner": "existing native_fact_architecture reasoning coordinator",
+    "judgment": "ACCEPT bounded one-line coverage repair; named transitive dependencies already covered",
+    "new_issue": null
+  },
+  "conservation": {
+    "kernel_files": 36,
+    "evidence_files": 179,
+    "observation_files": 53,
+    "all_bytes_conserved": true
+  },
+  "custody": {
+    "visible_owner_comment": 6113306521,
+    "merge_on_green_removed": true,
+    "merge_refresh_lease_present": false,
+    "prior_controller_run": 38171545382,
+    "prior_controller_terminal": "completed success",
+    "merge_blocked_preserved": true
+  },
+  "hosted_corrected_head_proof": "REQUIRED_NOT_YET_OBSERVED",
+  "merge_authorized": false,
+  "production_acceptance": false
+}

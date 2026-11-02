@@ -31,8 +31,10 @@ append-only PIT rows cannot be corrected after the fact.  Use implied_median
 for central-tendency comparisons.
 
 Prices: we use the MID (average of best bid and best ask) when both are
-available, else the last traded price, else the yes_bid or yes_ask alone.
-Kalshi prices are in cents (0-100); we normalize to probabilities (0-1).
+available, else the last traded price, else the yes bid or ask alone. Current
+Kalshi v2 payloads expose fixed-point dollar probability strings in the
+*_dollars fields; legacy integer-cent fields remain a compatibility fallback.
+Both representations are normalized to probabilities in [0, 1].
 
 == Storage ==
 
@@ -155,25 +157,40 @@ _MONTH_MAP = {
 def _mid_price(market: dict) -> tuple[float | None, str]:
     """Return (prob_survival, price_type) from a Kalshi market dict.
 
-    Kalshi prices are in cents (0-100); we normalize to [0, 1].
-    Priority: mid (bid+ask) > last_price > yes_bid > yes_ask > None.
-    Returns P(outcome > strike) = P(YES).
+    Kalshi's v2 API now emits fixed-point dollar probability fields such as
+    yes_bid_dollars="0.4200". Older payloads/tests can still carry integer
+    cent fields (yes_bid=42). Prefer the dollar representation when it is
+    present, then fall back to cents so this collector remains compatible across
+    the API transition.
+
+    Priority: mid (bid+ask) > last > bid > ask > None. Invalid/out-of-range
+    values are treated as unavailable rather than leaking impossible
+    probabilities downstream.
     """
-    yes_bid = market.get("yes_bid")
-    yes_ask = market.get("yes_ask")
-    last_price = market.get("last_price")
 
-    def _norm(v: int | float | None) -> float | None:
-        if v is None:
-            return None
-        try:
-            return float(v) / 100.0
-        except (TypeError, ValueError):
-            return None
+    def _prob(dollars_key: str, cents_key: str) -> float | None:
+        raw = market.get(dollars_key)
+        if raw is not None:
+            try:
+                value = float(raw)
+                if 0.0 <= value <= 1.0:
+                    return value
+            except (TypeError, ValueError):
+                pass
 
-    bid = _norm(yes_bid)
-    ask = _norm(yes_ask)
-    last = _norm(last_price)
+        raw = market.get(cents_key)
+        if raw is not None:
+            try:
+                value = float(raw) / 100.0
+                if 0.0 <= value <= 1.0:
+                    return value
+            except (TypeError, ValueError):
+                pass
+        return None
+
+    bid = _prob("yes_bid_dollars", "yes_bid")
+    ask = _prob("yes_ask_dollars", "yes_ask")
+    last = _prob("last_price_dollars", "last_price")
 
     if bid is not None and ask is not None:
         return (bid + ask) / 2.0, "mid"
@@ -372,11 +389,20 @@ def _upsert_parquet(path: Path, new_rows: pd.DataFrame) -> int:
         return 0
 
     def _composite_key(df: pd.DataFrame) -> pd.Series:
-        """Build a temporary string key from _KEY_COLS for dedup comparison."""
+        """Build a null-stable temporary key from _KEY_COLS.
+
+        Recent pandas can preserve a floating NaN as a missing scalar through
+        astype(str). str.cat then propagates that NA across the whole composite
+        key, causing summary rows (whose strike is intentionally null) from
+        different dates to collapse as duplicates. Materialize a sentinel first
+        so date/event identity remains part of every key.
+        """
         parts = []
         for col in _KEY_COLS:
             if col in df.columns:
-                parts.append(df[col].astype(str))
+                parts.append(
+                    df[col].map(lambda value: "<NA>" if pd.isna(value) else str(value))
+                )
             else:
                 parts.append(pd.Series([""] * len(df), index=df.index))
         return parts[0].str.cat(parts[1:], sep="|")

@@ -32,6 +32,7 @@ semantics stay in one place.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -353,6 +354,44 @@ def test_the_de_escalated_copy_stays_de_escalated():
 def test_the_backings_named_by_the_new_entries_exist(doc):
     """An entry is a claim of record: the artifact it names has to be there."""
     assert (ROOT / doc).exists(), doc
+
+
+# ── 2026-09-25 data-gate heal: contract enum keys + code comments ───────────────────
+# `unrun-subsector-themes` went red on 75 unearned claims that had merged unseen (this gate
+# runs only on the data lane). Most were reworded. The rest are enum values the Finance
+# read-model contract fixes, plus code comments in P0B-pinned files. An entry licenses its
+# WHOLE line, so the enum-key pin keeps the licence on the key: the label beside it
+# must stay plain.
+
+_FINANCE_JS = "templates/finance_intelligence.js"  # site/ copy is byte-synced
+
+
+@pytest.mark.parametrize("key", ["IDENTITY_VALIDATED", "PIT_MEMBERSHIP_VALIDATED"])
+def test_a_contract_enum_key_licenses_only_the_key(key):
+    lines = [line for line in (ROOT / _FINANCE_JS).read_text(encoding="utf-8").splitlines()
+             if re.match(rf"\s*{key}\s*:\s*\[", line)]
+    assert lines, f"{_FINANCE_JS}: no label-map entry keyed {key}"
+    for line in lines:
+        found, _ = scan_text(_FINANCE_JS, line, ALLOW)
+        assert found == [], f"{_FINANCE_JS} unearned: {found}"
+        assert not TOKEN.search(line.replace(key, "")), f"label carries the token: {line.strip()}"
+
+
+def test_the_enum_key_entry_does_not_travel_to_another_page():
+    found, _ = scan_text("templates/forex.html.j2", "IDENTITY_VALIDATED: ['Identity confirmed']", ALLOW)
+    assert found, "the Finance enum-key entry must not license a page outside finance_intelligence"
+
+
+@pytest.mark.parametrize("rel,needle", [
+    ("contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json", "IDENTITY_VALIDATED"),
+    ("contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json", "PIT_MEMBERSHIP_VALIDATED"),
+    ("templates/hk.html.j2", "_hk_buy_owner.valid"),
+    ("templates/canada.html.j2", "_ca_owner.board_valid"),
+    ("engine/intelligence_workspace/context_compiler.py", "def _valid_symbol("),
+])
+def test_the_checks_the_heal_entries_cite_exist(rel, needle):
+    """An entry is a claim of record: the contract value or code check it names has to be there."""
+    assert needle in (ROOT / rel).read_text(encoding="utf-8"), f"{rel} no longer carries {needle}"
 
 
 # ── wiring + no-debt ────────────────────────────────────────────────────────────────

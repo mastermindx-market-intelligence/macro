@@ -1,0 +1,78 @@
+
+#ud-hero .ud-live--snapshot i{background:var(--muted);box-shadow:none;}
+/* UD-B2-W2: spine caveat disclosure — engine-verbatim lighter-evidence note.
+   Scope-narrowed to this hero template (the spine is a UD-B1 + UD-B2-W2
+   construct, never re-used elsewhere). Token-scoped only: every value is
+   a var() reference, no hex / rgba / colour-function / radius literal /
+   inline custom-property literal. This stays in the template (not
+   templates/theme.css) to keep the THEME-CLOSURE re-bind sweep out of
+   this PR's scope — the new rule only fires on the new .mx-spine-caveat
+   class, which is unique to the HK + CN bound rows. */
+.mx-spine-caveat{
+  margin-top:6px;
+  padding: 4px 8px;
+  border-left: 2px solid var(--line);
+  border-radius: var(--r-ctl,8px);
+  font-size: var(--fs-micro);
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+html[data-theme="light"] .mx-spine-caveat{ color: var(--ink-3); }
+
+/* UD-B2-W3 Drivers fold (R1 leadership tile, #33+#34 sentiment counterpart,
+   R6 breadth chip). Token-scoped only: every value is a var() reference.
+   Dark: luminance step on --panel2 rails. Light: hairline ring on the same
+   rails so the two treatments are not a token recolour. Scope-narrowed to
+   this hero so THEME-CLOSURE does not pull templates/theme.css into the PR. */
+.ud-driver-chip{ align-self:flex-start; margin-top:auto; }
+.ud-driver-leg{ display:flex; flex-direction:column; gap:var(--sp-2,8px); }
+/* Spec §7: 390 hides the locked fourth card so the swipe is 1 / 3.
+   theme.css already declares this under body.page-macro; repeat it here
+   so the isolated evidence fixture (hero partial + theme.css) cannot
+   lose the hide if the live class ever drifts. */
+@media (max-width:390px){
+  .ud-driver--locked{ display:none; }
+}
+.ud-sent-lenses{ display:flex; flex-direction:column; gap:var(--sp-2,8px); }
+.ud-sent-lens{ display:flex; flex-direction:column; gap:4px; }
+.ud-sent-lens-name{
+  font-size:var(--fs-micro);
+  font-weight:700;
+  color:var(--ink-3);
+}
+.ud-sent-rail{
+  position:relative;
+  height:6px;
+  background:var(--panel2);
+  border-radius:var(--r-ctl);
+}
+.ud-sent-pin{
+  position:absolute;
+  top:-2px;
+  width:2px;
+  height:10px;
+  background:var(--ink-1);
+}
+html[data-theme="light"] .ud-sent-rail{
+  background:var(--panel);
+  box-shadow:0 0 0 1px var(--line);
+}
+.ud-froth-row{ display:flex; align-items:center; gap:8px; }
+.ud-froth-lbl{
+  font-size:var(--fs-micro);
+  color:var(--ink-3);
+  flex:0 0 auto;
+}
+.ud-froth-track{
+  flex:1;
+  height:4px;
+  background:var(--panel2);
+  border-radius:var(--r-ctl);
+  overflow:hidden;
+}
+.ud-froth-fill{ height:100%; background:var(--warn); }
+.ud-froth-fill--b{ background:var(--act); }
+html[data-theme="light"] .ud-froth-track{
+  background:var(--panel);
+  box-shadow:0 0 0 1px var(--line);
+}

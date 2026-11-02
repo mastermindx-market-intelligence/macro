@@ -42,7 +42,7 @@ def _with_client(cfg: Config, fn):
 # --- command handlers ------------------------------------------------------
 def cmd_auth(cfg: Config, args) -> int:
     from .auth import run_auth_flow
-    ok = run_auth_flow(cfg, timeout_s=args.timeout)
+    ok = run_auth_flow(cfg, timeout_s=args.timeout, force=args.force)
     print("Authenticated." if ok else "Auth failed / timed out.")
     return 0 if ok else 2
 
@@ -122,12 +122,18 @@ def cmd_status(cfg: Config, args) -> int:
     conn = _open_conn(cfg)
     counts = db.counts_by_status(conn)
     last = db.get_meta(conn, "last_successful_run", "never")
+    auth = db.producer_auth_health(conn)
     conn.close()
     total = sum(counts.values())
     print(f"papers total: {total}")
     for status, n in sorted(counts.items()):
         print(f"  {status:<14} {n}")
     print(f"last_successful_run: {last}")
+    print(f"producer_auth_state: {auth['state']}")
+    print(f"producer_auth_observed_at: {auth['observed_at'] or 'unknown'}")
+    if auth["state"] == db.AUTH_REQUIRED:
+        print(f"producer_auth_required_at: {auth['required_at'] or 'unknown'}")
+        print(f"producer_auth_reason: {auth['reason'] or 'NO_AUTHENTICATED_PROFILE'}")
     return 0
 
 
@@ -238,6 +244,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     sp = sub.add_parser("auth", help="interactive login (headed), saves session profile")
     sp.add_argument("--timeout", type=int, default=300)
+    sp.add_argument(
+        "--force", action="store_true",
+        help="open the login window even if latest/latest still returns IDs "
+             "(needed when the T&Cs overlay blocks browse/provision)",
+    )
     sp.set_defaults(func=cmd_auth)
 
     sp = sub.add_parser("discover", help="find + score new papers (no download)")

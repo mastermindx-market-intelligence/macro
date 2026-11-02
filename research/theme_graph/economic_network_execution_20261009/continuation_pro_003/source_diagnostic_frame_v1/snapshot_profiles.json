@@ -1,0 +1,1059 @@
+{
+  "contract_path_search": {
+    "exit_code": 0,
+    "matches": [
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:collectors/hk_universe.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:config/dag.yml",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:config/seasonality_universe.yml",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:scripts/audit_universe.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:scripts/backfill_qledger_us.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:scripts/build_company_institutional_context.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:scripts/build_polygon_universe.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:scripts/build_stock_seasonality.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:scripts/build_ticker_pages.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:scripts/entry_radar_stage_terminal.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:scripts/marketing_publisher.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:scripts/stock_identity_build_w1a1.py"
+    ],
+    "stderr": ""
+  },
+  "observed_at_utc": "2026-10-09T10:31:47.590938+00:00",
+  "parser": "pyarrow",
+  "profiles": [
+    {
+      "bytes": 79534,
+      "categories": {
+        "country": {
+          "counts": {
+            "CN": 1018,
+            "HK": 147,
+            "US": 1219
+          },
+          "truncated": false,
+          "unique_values": 3
+        },
+        "issuer_state": {
+          "counts": {
+            "DEFERRED_IDENTITY_EXCEPTION": 1,
+            "NO_ISSUER_EVIDENCE": 1169,
+            "RESOLVED": 1214
+          },
+          "truncated": false,
+          "unique_values": 3
+        },
+        "mic": {
+          "counts": {
+            "BATS": 1,
+            "XASE": 13,
+            "XHKG": 147,
+            "XNAS": 522,
+            "XNYS": 683,
+            "XSHE": 498,
+            "XSHG": 520
+          },
+          "truncated": false,
+          "unique_values": 7
+        },
+        "security_state": {
+          "counts": {
+            "None": 2383,
+            "SUPERSEDED_DUPLICATE_MINT": 1
+          },
+          "truncated": false,
+          "unique_values": 2
+        }
+      },
+      "columns": [
+        {
+          "name": "security_id",
+          "type": "string"
+        },
+        {
+          "name": "issuer_id",
+          "type": "string"
+        },
+        {
+          "name": "issuer_state",
+          "type": "string"
+        },
+        {
+          "name": "issuer_cik",
+          "type": "string"
+        },
+        {
+          "name": "issuer_evidence_snapshot",
+          "type": "date32[day]"
+        },
+        {
+          "name": "listing_key",
+          "type": "string"
+        },
+        {
+          "name": "country",
+          "type": "string"
+        },
+        {
+          "name": "mic",
+          "type": "string"
+        },
+        {
+          "name": "inception_code",
+          "type": "string"
+        },
+        {
+          "name": "effective_at",
+          "type": "timestamp[us]"
+        },
+        {
+          "name": "ingested_at",
+          "type": "timestamp[us]"
+        },
+        {
+          "name": "security_state",
+          "type": "string"
+        },
+        {
+          "name": "superseded_by",
+          "type": "string"
+        }
+      ],
+      "country_by_issuer_state": {
+        "CN": {
+          "NO_ISSUER_EVIDENCE": 1018
+        },
+        "HK": {
+          "NO_ISSUER_EVIDENCE": 147
+        },
+        "US": {
+          "DEFERRED_IDENTITY_EXCEPTION": 1,
+          "NO_ISSUER_EVIDENCE": 4,
+          "RESOLVED": 1214
+        }
+      },
+      "date_ranges": {
+        "effective_at": {
+          "distinct": 136,
+          "max": "2026-10-09 00:00:00",
+          "min": "2012-08-31 00:00:00",
+          "nonnull": 2384
+        },
+        "ingested_at": {
+          "distinct": 21,
+          "max": "2026-10-09 05:05:32",
+          "min": "2026-08-13 13:08:12",
+          "nonnull": 2384
+        },
+        "issuer_evidence_snapshot": {
+          "distinct": 5,
+          "max": "2026-10-05",
+          "min": "2026-08-18",
+          "nonnull": 1214
+        }
+      },
+      "distinct_nonnull_issuer_ids": 1215,
+      "magic_hex": "50415231150415b6",
+      "nulls": {
+        "country": 0,
+        "effective_at": 0,
+        "inception_code": 0,
+        "ingested_at": 0,
+        "issuer_cik": 1170,
+        "issuer_evidence_snapshot": 1170,
+        "issuer_id": 1166,
+        "issuer_state": 0,
+        "listing_key": 0,
+        "mic": 0,
+        "security_id": 0,
+        "security_state": 2383,
+        "superseded_by": 2383
+      },
+      "path": "data/reference/security_master.parquet",
+      "resolved_active_distinct_issuer_ids": 1211,
+      "rows": 2384,
+      "schema_metadata_keys": [
+        "pandas"
+      ],
+      "sha256": "23b92f9cdd672425bceeece8709185fdfcc8014967408be50874d5e106fce22e",
+      "worktree_exists": false,
+      "worktree_symlink": false
+    },
+    {
+      "bytes": 43844,
+      "categories": {
+        "era": {
+          "counts": {
+            "issuer_semantic_correction_v1": 1211,
+            "legacy": 4
+          },
+          "truncated": false,
+          "unique_values": 2
+        },
+        "evidence_source": {
+          "counts": {
+            "legacy_mint": 4,
+            "sec_company_tickers": 1211
+          },
+          "truncated": false,
+          "unique_values": 2
+        },
+        "status": {
+          "counts": {
+            "active": 1215
+          },
+          "truncated": false,
+          "unique_values": 1
+        }
+      },
+      "columns": [
+        {
+          "name": "issuer_id",
+          "type": "string"
+        },
+        {
+          "name": "cik",
+          "type": "string"
+        },
+        {
+          "name": "legal_name",
+          "type": "string"
+        },
+        {
+          "name": "n_securities",
+          "type": "int64"
+        },
+        {
+          "name": "evidence_source",
+          "type": "string"
+        },
+        {
+          "name": "evidence_snapshot",
+          "type": "date32[day]"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "era",
+          "type": "string"
+        }
+      ],
+      "date_ranges": {
+        "evidence_snapshot": {
+          "distinct": 5,
+          "max": "2026-10-05",
+          "min": "2026-08-18",
+          "nonnull": 1211
+        }
+      },
+      "magic_hex": "50415231150415fe",
+      "nulls": {
+        "cik": 4,
+        "era": 0,
+        "evidence_snapshot": 4,
+        "evidence_source": 0,
+        "issuer_id": 0,
+        "legal_name": 9,
+        "n_securities": 0,
+        "status": 0
+      },
+      "path": "data/reference/issuer_master.parquet",
+      "rows": 1215,
+      "schema_metadata_keys": [
+        "pandas"
+      ],
+      "sha256": "8d2d136a1ed8466f1a1c57ebbb14b438f27c9a0d4e1ea17214b4ef3e79877402",
+      "worktree_exists": false,
+      "worktree_symlink": false
+    },
+    {
+      "bytes": 50724,
+      "categories": {},
+      "columns": [
+        {
+          "name": "vendor",
+          "type": "string"
+        },
+        {
+          "name": "vendor_symbol",
+          "type": "string"
+        },
+        {
+          "name": "security_id",
+          "type": "string"
+        },
+        {
+          "name": "valid_from",
+          "type": "date32[day]"
+        },
+        {
+          "name": "valid_to",
+          "type": "date32[day]"
+        },
+        {
+          "name": "ingested_at",
+          "type": "timestamp[us]"
+        },
+        {
+          "name": "known_at",
+          "type": "string"
+        },
+        {
+          "name": "evidence_sha256",
+          "type": "string"
+        },
+        {
+          "name": "binding_sha256",
+          "type": "string"
+        }
+      ],
+      "date_ranges": {
+        "ingested_at": {
+          "distinct": 22,
+          "max": "2026-10-09 05:05:32",
+          "min": "2026-08-13 13:08:12",
+          "nonnull": 6046
+        },
+        "known_at": {
+          "distinct": 1,
+          "max": "2026-10-07T06:24:36.802797+00:00",
+          "min": "2026-10-07T06:24:36.802797+00:00",
+          "nonnull": 1
+        }
+      },
+      "magic_hex": "50415231150415b4",
+      "nulls": {
+        "binding_sha256": 6045,
+        "evidence_sha256": 6045,
+        "ingested_at": 0,
+        "known_at": 6045,
+        "security_id": 0,
+        "valid_from": 6038,
+        "valid_to": 6039,
+        "vendor": 0,
+        "vendor_symbol": 0
+      },
+      "path": "data/reference/vendor_aliases.parquet",
+      "rows": 6046,
+      "schema_metadata_keys": [
+        "pandas"
+      ],
+      "sha256": "0bf122a6df17e54865c8d78e12aca592c8832c4de984972fae8658b6e696741f",
+      "worktree_exists": false,
+      "worktree_symlink": false
+    },
+    {
+      "bytes": 78385,
+      "categories": {
+        "sector": {
+          "counts": {
+            "Basic Materials": 92,
+            "Communication Services": 132,
+            "Consumer Cyclical": 195,
+            "Consumer Defensive": 75,
+            "Consumer Discretionary": 202,
+            "Consumer Staples": 83,
+            "Energy": 167,
+            "Financial": 365,
+            "Financials": 267,
+            "Health Care": 174,
+            "Healthcare": 449,
+            "Industrials": 525,
+            "Information Technology": 200,
+            "Materials": 78,
+            "Real Estate": 242,
+            "Technology": 262,
+            "Utilities": 92
+          },
+          "truncated": false,
+          "unique_values": 17
+        }
+      },
+      "columns": [
+        {
+          "name": "ticker",
+          "type": "large_string"
+        },
+        {
+          "name": "group",
+          "type": "large_string"
+        },
+        {
+          "name": "name",
+          "type": "large_string"
+        },
+        {
+          "name": "sector",
+          "type": "large_string"
+        },
+        {
+          "name": "first_seen",
+          "type": "timestamp[us]"
+        },
+        {
+          "name": "last_seen",
+          "type": "timestamp[us]"
+        },
+        {
+          "name": "active",
+          "type": "bool"
+        }
+      ],
+      "date_ranges": {},
+      "magic_hex": "50415231150415b4",
+      "nulls": {
+        "active": 0,
+        "first_seen": 0,
+        "group": 0,
+        "last_seen": 0,
+        "name": 0,
+        "sector": 0,
+        "ticker": 0
+      },
+      "path": "data/universe/membership.parquet",
+      "rows": 3600,
+      "schema_metadata_keys": [
+        "pandas"
+      ],
+      "sha256": "33da41e7a9831260c6e0f988c2ca43dd421c274ccd5cf357c47bb53ddc49c91b",
+      "worktree_exists": false,
+      "worktree_symlink": false
+    },
+    {
+      "bytes": 12701,
+      "categories": {
+        "sector": {
+          "counts": {
+            "Communication Services": 22,
+            "Consumer Discretionary": 47,
+            "Consumer Staples": 34,
+            "Energy": 21,
+            "Financials": 76,
+            "Health Care": 60,
+            "Industrials": 83,
+            "Information Technology": 75,
+            "Materials": 24,
+            "Real Estate": 30,
+            "Utilities": 31
+          },
+          "truncated": false,
+          "unique_values": 11
+        }
+      },
+      "columns": [
+        {
+          "name": "name",
+          "type": "large_string"
+        },
+        {
+          "name": "sector",
+          "type": "large_string"
+        },
+        {
+          "name": "symbol",
+          "type": "large_string"
+        }
+      ],
+      "date_ranges": {},
+      "magic_hex": "5041523115041596",
+      "nulls": {
+        "name": 0,
+        "sector": 0,
+        "symbol": 0
+      },
+      "path": "data/breadth/constituents.parquet",
+      "rows": 503,
+      "schema_metadata_keys": [
+        "pandas"
+      ],
+      "sha256": "ecdd7e77ac36198b45c4ff6b854e7a46281bd3504d82540853f29c09a1f64aaf",
+      "worktree_exists": false,
+      "worktree_symlink": false
+    },
+    {
+      "bytes": 22077,
+      "categories": {
+        "sector": {
+          "counts": {
+            "Communication Services": 52,
+            "Consumer Discretionary": 196,
+            "Consumer Staples": 78,
+            "Energy": 69,
+            "Financials": 257,
+            "Health Care": 169,
+            "Industrials": 258,
+            "Information Technology": 190,
+            "Materials": 77,
+            "Real Estate": 109,
+            "Utilities": 60
+          },
+          "truncated": false,
+          "unique_values": 11
+        }
+      },
+      "columns": [
+        {
+          "name": "ticker",
+          "type": "large_string"
+        },
+        {
+          "name": "sector",
+          "type": "large_string"
+        },
+        {
+          "name": "source",
+          "type": "large_string"
+        },
+        {
+          "name": "__index_level_0__",
+          "type": "int64"
+        }
+      ],
+      "date_ranges": {},
+      "magic_hex": "50415231150415a2",
+      "nulls": {
+        "__index_level_0__": 0,
+        "sector": 0,
+        "source": 0,
+        "ticker": 0
+      },
+      "path": "data/breadth/ticker_sectors.parquet",
+      "rows": 1515,
+      "schema_metadata_keys": [
+        "pandas"
+      ],
+      "sha256": "e63d2112e38f95bc49e7cc68c6095d1eca2b148898688a946bce40da2c77d6ad",
+      "worktree_exists": false,
+      "worktree_symlink": false
+    },
+    {
+      "bytes": 11271,
+      "categories": {},
+      "columns": [
+        {
+          "name": "gics_sector",
+          "type": "large_string"
+        },
+        {
+          "name": "market_cap_usd",
+          "type": "double"
+        },
+        {
+          "name": "asof",
+          "type": "large_string"
+        },
+        {
+          "name": "ticker",
+          "type": "large_string"
+        }
+      ],
+      "date_ranges": {},
+      "magic_hex": "5041523115041582",
+      "nulls": {
+        "asof": 0,
+        "gics_sector": 0,
+        "market_cap_usd": 5,
+        "ticker": 0
+      },
+      "path": "data/polygon_universe/reference.parquet",
+      "rows": 509,
+      "schema_metadata_keys": [
+        "pandas"
+      ],
+      "sha256": "b69738dd48d6b4cc8aa0c27cc69e08b69074596a903aafb79cc501ffb6e8edfc",
+      "worktree_exists": false,
+      "worktree_symlink": false
+    },
+    {
+      "bytes": 117493,
+      "categories": {},
+      "columns": [
+        {
+          "name": "symbol",
+          "type": "large_string"
+        },
+        {
+          "name": "price_plane_id",
+          "type": "large_string"
+        },
+        {
+          "name": "first_date",
+          "type": "timestamp[ms]"
+        },
+        {
+          "name": "last_date",
+          "type": "timestamp[ms]"
+        },
+        {
+          "name": "n_rows",
+          "type": "int64"
+        },
+        {
+          "name": "has_open",
+          "type": "bool"
+        },
+        {
+          "name": "adv_252",
+          "type": "double"
+        },
+        {
+          "name": "realized_vol_252",
+          "type": "double"
+        },
+        {
+          "name": "hygiene_flags",
+          "type": "large_string"
+        },
+        {
+          "name": "first_print_sanity",
+          "type": "large_string"
+        },
+        {
+          "name": "first_print_note",
+          "type": "large_string"
+        },
+        {
+          "name": "compute_eligible",
+          "type": "bool"
+        },
+        {
+          "name": "blind_eligible",
+          "type": "bool"
+        },
+        {
+          "name": "tape_end_lag_sessions",
+          "type": "int64"
+        },
+        {
+          "name": "tape_ended",
+          "type": "bool"
+        },
+        {
+          "name": "terminated_reason",
+          "type": "large_string"
+        },
+        {
+          "name": "asof",
+          "type": "timestamp[ms]"
+        },
+        {
+          "name": "authority_can_rank",
+          "type": "bool"
+        },
+        {
+          "name": "authority_can_size",
+          "type": "bool"
+        },
+        {
+          "name": "authority_can_gate",
+          "type": "bool"
+        },
+        {
+          "name": "authority_can_originate_signal",
+          "type": "bool"
+        },
+        {
+          "name": "authority_can_escalate",
+          "type": "bool"
+        }
+      ],
+      "date_ranges": {
+        "first_date": {
+          "distinct": 948,
+          "max": "2026-06-15 00:00:00",
+          "min": "1962-01-02 00:00:00",
+          "nonnull": 2781
+        },
+        "last_date": {
+          "distinct": 16,
+          "max": "2026-08-13 00:00:00",
+          "min": "2026-06-29 00:00:00",
+          "nonnull": 2781
+        }
+      },
+      "magic_hex": "5041523115041588",
+      "nulls": {
+        "adv_252": 40,
+        "asof": 0,
+        "authority_can_escalate": 0,
+        "authority_can_gate": 0,
+        "authority_can_originate_signal": 0,
+        "authority_can_rank": 0,
+        "authority_can_size": 0,
+        "blind_eligible": 0,
+        "compute_eligible": 0,
+        "first_date": 0,
+        "first_print_note": 0,
+        "first_print_sanity": 0,
+        "has_open": 0,
+        "hygiene_flags": 0,
+        "last_date": 0,
+        "n_rows": 0,
+        "price_plane_id": 0,
+        "realized_vol_252": 56,
+        "symbol": 0,
+        "tape_end_lag_sessions": 0,
+        "tape_ended": 0,
+        "terminated_reason": 0
+      },
+      "path": "data/stock_identity/partition/universe_snapshot_v1.parquet",
+      "rows": 2781,
+      "schema_metadata_keys": [
+        "pandas"
+      ],
+      "sha256": "9f22807e7cb6ba570f1963de945b7be77461a1788608754e25db6235f4fe3730",
+      "worktree_exists": false,
+      "worktree_symlink": false
+    },
+    {
+      "bytes": 364484,
+      "categories": {
+        "exchange": {
+          "counts": {
+            "A": 314,
+            "F": 20,
+            "M": 1,
+            "N": 2912,
+            "NASDAQ": 5630,
+            "P": 2755,
+            "V": 3,
+            "Z": 1658
+          },
+          "truncated": false,
+          "unique_values": 8
+        }
+      },
+      "columns": [
+        {
+          "name": "date",
+          "type": "large_string"
+        },
+        {
+          "name": "symbol",
+          "type": "large_string"
+        },
+        {
+          "name": "security_name",
+          "type": "large_string"
+        },
+        {
+          "name": "exchange",
+          "type": "large_string"
+        },
+        {
+          "name": "etf",
+          "type": "bool"
+        },
+        {
+          "name": "test_issue",
+          "type": "bool"
+        },
+        {
+          "name": "is_preferred",
+          "type": "bool"
+        },
+        {
+          "name": "source",
+          "type": "large_string"
+        }
+      ],
+      "date_ranges": {
+        "date": {
+          "distinct": 1,
+          "max": "2026-10-09",
+          "min": "2026-10-09",
+          "nonnull": 13293
+        }
+      },
+      "magic_hex": "504152311504151c",
+      "nulls": {
+        "date": 0,
+        "etf": 0,
+        "exchange": 0,
+        "is_preferred": 0,
+        "security_name": 0,
+        "source": 0,
+        "symbol": 0,
+        "test_issue": 0
+      },
+      "path": "data/symbol_directory/snapshots/2026-10-09.parquet",
+      "rows": 13293,
+      "schema_metadata_keys": [
+        "pandas"
+      ],
+      "sha256": "a96d477d51c73b86b7fe58e131fc1022b6cf921d89e974872d6b433c54b1cc0f",
+      "worktree_exists": false,
+      "worktree_symlink": false
+    },
+    {
+      "bytes": 278660,
+      "categories": {},
+      "columns": [
+        {
+          "name": "ticker",
+          "type": "large_string"
+        },
+        {
+          "name": "cik",
+          "type": "int64"
+        },
+        {
+          "name": "title",
+          "type": "large_string"
+        }
+      ],
+      "date_ranges": {},
+      "magic_hex": "50415231150415c8",
+      "nulls": {
+        "cik": 0,
+        "ticker": 0,
+        "title": 0
+      },
+      "path": "data/symbol_directory/cik_map/2026-10-05.parquet",
+      "rows": 10440,
+      "schema_metadata_keys": [
+        "pandas"
+      ],
+      "sha256": "5b817069fbee57a6616095e58b3b2ba759f55eb3f1cbf866fc62e0f0f55230b9",
+      "worktree_exists": false,
+      "worktree_symlink": false
+    },
+    {
+      "bytes": 8882,
+      "json_type": "dict",
+      "magic_hex": "7b0a20202261735f",
+      "path": "data/hk_stocks_ext/_universe.json",
+      "scalar_metadata": {
+        "as_of": "2026-10-08T15:03:35Z",
+        "n": 582,
+        "source": "https://www.hsi.com.hk/data/eng/rt/index-series/hsci/constituents.do"
+      },
+      "sha256": "d48a0546784a190e993e72bef0c2d968f74aae59f784936fa4000036d4149f28",
+      "shape": {
+        "tickers": 582
+      },
+      "top_level_keys": [
+        "as_of",
+        "source",
+        "n",
+        "tickers"
+      ],
+      "worktree_exists": false,
+      "worktree_symlink": false
+    },
+    {
+      "bytes": 305944,
+      "json_type": "dict",
+      "magic_hex": "7b0a202022766572",
+      "path": "data/baskets/membership.json",
+      "scalar_metadata": {
+        "added_semantics": "Each member carries TWO dates and they mean different things. `added` is the index-inclusion mask: the first date this member's price counts toward the basket's equal-weight level, back-projected to seed_date for any roster curated later, and it is what engine/baskets.py and its sibling engines read. `curated_added` is the provenance stamp: the date a curator actually put this name in this basket, never earlier than the basket's own `created`. Read `curated_added` — never `added` — when asking how long a name has been watched, or whether a signal predates its curation.",
+        "construction": "Equal-weight baskets, rebalanced monthly.",
+        "curated": "2026-08-07",
+        "history_note": "Available history comes from the S&P 1500 and baskets-only price caches. Basket levels are BACK-PROJECTED: a basket curated after seed_date is charted with its current roster carried backward over that roster's own price history, so the line shows what today's members did in the past, not what anyone held at the time. 35 of the 49 baskets here are back-projected this way. Membership changes are recorded per basket in `changelog`, and each member carries its true curation date in `curated_added` (see `added_semantics`) — treat the history before a member's `curated_added` as context, never as a track record.",
+        "note": "Curated US theme baskets for monitoring rotation. Descriptive only, not a buy list.",
+        "seed_date": "2023-05-09",
+        "version": "2026-08-07"
+      },
+      "sha256": "b968e9812f60494bd02bbc0d5ad4b8dc67dcb90a939426728e9db6befba9678a",
+      "shape": {
+        "baskets": 49
+      },
+      "top_level_keys": [
+        "version",
+        "note",
+        "seed_date",
+        "curated",
+        "baskets",
+        "construction",
+        "history_note",
+        "added_semantics"
+      ],
+      "worktree_exists": false,
+      "worktree_symlink": false
+    },
+    {
+      "bytes": 102638,
+      "magic_hex": "736368656d613a20",
+      "path": "config/market_reference.yml",
+      "sha256": "f5b752334b571f1f3577bef677db4c6752cd134a2b415989f8122eec739aa666",
+      "text_preview": "schema: mastermind.market_reference/v1\ngenerated_note: >\n  MOR-1 first inventory (34 entries). Approved editorial copy from the principal's\n  registry draft, unchanged, with owner_ref anchors corrected to REAL id= anchors\n  verified against the live templates (MOR-1 build packet DEVIATIONS table records\n  every adjustment). No live values. No internal names, repo paths, or engine\n  identifiers. owner_ref values are product surfaces only.\n\nentries:\n\n  # ---------------------------------------------------------------------\n  # Orientation indicator set (1-12)\n  # ---------------------------------------------------------------------\n\n  - id: market-regime\n    kind: indicator\n    family: regime\n    label_en: Market Regime\n    label_zh: 市场状态\n    aliases_en: [regime call, market posture read, regime badge]\n    aliases_zh: [市场态势, 市场状态判断, 市场状态徽标]\n    short_definition_en: >\n      A plain-word read of the market's current posture — risk-on, mixed, or risk-off — drawn\n      from the dashboard's composite indicators, shown alongside the day's briefing.\n    short_definition_zh: >\n      对市场当前态势的简明判断——风险偏好、混合或避险——来自看板综合指标，与当日简报一并展示。\n    why_it_matters_en: >\n      Gives a fast, one-word orientation before reading any detail, so you know whether the\n      backdrop currently favours or discourages taking risk.\n    why_it_matters_zh: >\n      在查看细节前先给出一个词的方向感，帮助判断当前环境是偏向承担风险还是偏向谨慎。\n    unit_or_basis: Categorical label (risk-on / mixed / risk-off)\n    unit_or_basis_zh: '分类标签（风险偏好／混合／避险）'\n    interpretation_up: >\n      Risk-on — supportive backdrop; trend, breadth, and cross-asset signals broadly line up.\n    interpretation_up_zh: '风险偏好——环境偏支持性；趋势、广度与跨资产信号总体一致。'\n    interpretation_down: >\n      Risk-off — stressed backdrop; tape under pressure and trend pointing lower.\n    interpretation_down_zh: '避险——环境承压；盘面承压，趋势向下。'\n    interpretation_neutral: >\n      Mixed — signals disagree or the regime is in transition; treat with extra caution.\n    interpretation_neutral_zh: '混合——信号不一致或市场状态处于转换期，应格外谨慎。'\n    caveats_en:\n      - A confirmation-style read of current conditions, not a forecast of what happens next.\n      - Can change quickly when underlying signals flip; check the update time before acting.\n    caveats_zh:\n      - 这是对当前状态的确认性判断，不是对未来走势的预测。\n      - 底层信号变化时该判断可能迅速更新，行动前请核对更新时间。\n    owner_ref: aibrief.html\n    public_source_refs: []\n    related_ids: [market-state-score, regime-quadrant, transition-state]\n    authority_ceiling: reference_only\n    status: active\n\n  - id: market-state-score\n    kind: indicator\n    family: regime\n    label_en: Market State Score\n    label_zh: 市场状态分\n    aliases_en: [state dial, 0-100 market score]\n    aliases_zh: [市场状态评分, 状态仪表盘]\n    short_definition_en: >\n      A 0-100 dial summarising current US equity market posture, blending trend, cross-asset\n      risk appetite, volatility, breadth, liquidity, and stress into one composite read.\n    short_definition_zh: '0-100综合仪表盘，反映美股当前市场态势，综合趋势、跨资产风险偏好、波动率、市场广度、流动性与压力六项因子。'\n    why_it_matters_en: >\n      Turns six separate market inputs into one glanceable number so you can track whether\n      conditions are improving or deteriorating day to day.\n    why_it_matters_zh: >\n      将六项市场输入合并为一个直观数字，方便逐日跟踪环境是在改善还是在恶化。\n    unit_or_basis: 0-100 composite score\n    unit_or_basis_zh: '0-100综合评分'\n    interpretation_up: >\n      Higher score — trend, breadth, and cross-asset signals broadly align supportive.\n    interpretation_up_zh: '评分较高——趋势、广度与跨资产信号总体呈支持性一致。'\n    interpretation_down: >\n      Lower score — tape under stress, trend pointing lower, signals aligned negative.\n    interpretation_down_zh: '评分较低——盘面承压，趋势向下，信号呈负面一致。'\n    interpretation_neutral: >\n      Mid-range score — components disagree or the picture is transitional.\n    interpretation_neutral_zh: '评分处于中间区间——各分项不一致，或整体格局处于过渡阶段。'\n    caveats_en:\n      - A blended confirmation measure of current conditions, not a predictive score.\n      - Individual component legs can pull the score in different directions; check the\n        breakdown before drawing conclusions from the headline number alone.\n    caveats_zh:\n      - 这是对当前状态的综合确认性衡量，不是预测性评分。\n      - 各分项因子可能方向不一致，仅看总分容易误判，建议查看分项拆解。\n    owner_ref: macro.html#regime-radar\n    public_source_refs: []\n    related_ids: [market-regime, market-breadth, evidence-liquidity]\n    authority_ceiling: reference_only\n    status: active\n\n  - id: regime-quadrant\n    kind: indicator\n    family: regime\n    label_en: Regime Quadrant\n    label_zh: 宏观象限\n    aliases_en: [growth-inflation quadrant, macro quadrant]\n    aliases_zh: [增长通胀象限, 经济周期象限]\n    short_definition_en: >\n      A four-way classification of the macro backdrop by the direction of growth and inflation:\n      e.g. growth rising with inflation falling, or growth falling with inflation rising.\n    short_definition_zh: '按增长与通胀的方向变化，将宏观环境划分为四种象限：例如增长上行、通胀下行，或增长下行、通胀上行等组合。'\n    why_it_matters_en: >\n      Different quadrants historically favour different sectors and factors, so it helps frame\n      which parts of the market the",
+      "worktree_equal_fixed_ref": true,
+      "worktree_exists": true,
+      "worktree_sha256": "f5b752334b571f1f3577bef677db4c6752cd134a2b415989f8122eec739aa666",
+      "worktree_symlink": false
+    },
+    {
+      "bytes": 3136,
+      "json_type": "dict",
+      "magic_hex": "7b0a202022766572",
+      "path": "config/rotation_universe.json",
+      "record_fields": {
+        "complexes": [
+          "key",
+          "label_en",
+          "label_zh",
+          "members",
+          "attribution_members",
+          "attribution_probes"
+        ],
+        "contagion_pairs": [
+          "id",
+          "a",
+          "b",
+          "complex"
+        ],
+        "pairs": [
+          "id",
+          "donor",
+          "receiver",
+          "tier"
+        ],
+        "series": [
+          "key",
+          "kind",
+          "ticker",
+          "label_en",
+          "label_zh",
+          "sector"
+        ]
+      },
+      "scalar_metadata": {
+        "data_subdir": "rotation_events",
+        "prereg": "research/ROTATION_UNIVERSE_EXTENSION_PREREG.md",
+        "region": "us",
+        "registered": "2026-07-18",
+        "version": "2.0"
+      },
+      "sha256": "2edd612f96b126c709ae29d9a481d9ea77944ac2aec5a513a806beae9dc5e795",
+      "shape": {
+        "bench": 3,
+        "complexes": 1,
+        "contagion_pairs": 3,
+        "pairs": 7,
+        "series": 12,
+        "velocity_series": 10
+      },
+      "top_level_keys": [
+        "version",
+        "region",
+        "data_subdir",
+        "registered",
+        "prereg",
+        "bench",
+        "series",
+        "pairs",
+        "complexes",
+        "contagion_pairs",
+        "velocity_series"
+      ],
+      "worktree_equal_fixed_ref": true,
+      "worktree_exists": true,
+      "worktree_sha256": "2edd612f96b126c709ae29d9a481d9ea77944ac2aec5a513a806beae9dc5e795",
+      "worktree_symlink": false
+    },
+    {
+      "bytes": 3568,
+      "json_type": "dict",
+      "magic_hex": "7b22617274696661",
+      "path": "data/symbol_directory/receipts/snapshots/2026-10-09.json",
+      "record_fields": {
+        "sources": [
+          "requested_url",
+          "response_bytes",
+          "response_bytes_retained",
+          "response_completed_at",
+          "response_sha256",
+          "response_started_at",
+          "source_id"
+        ]
+      },
+      "scalar_metadata": {
+        "observation_date": "2026-10-09",
+        "profile": "symbol_directory.operational_capture.v1",
+        "receipt_id": "sdreceipt_8b3c68d2b1deba836a72c491e506a4babff9e0dfe699bc95a8a4dc2a99ba4df2",
+        "schema": "symbol_directory.completion_receipt.v1"
+      },
+      "sha256": "a1304d3c5406cdadc65b6d01c381a6e69471c012256b8573121d91f0ff7b52c8",
+      "shape": {
+        "artifact": 6,
+        "authority": 12,
+        "clocks": 2,
+        "completeness": 10,
+        "diagnostics": 4,
+        "evidence_policy": 8,
+        "producer": 2,
+        "sources": 2
+      },
+      "top_level_keys": [
+        "artifact",
+        "authority",
+        "clocks",
+        "completeness",
+        "diagnostics",
+        "evidence_policy",
+        "observation_date",
+        "producer",
+        "profile",
+        "receipt_id",
+        "schema",
+        "sources"
+      ],
+      "worktree_exists": false,
+      "worktree_symlink": false
+    },
+    {
+      "bytes": 2422,
+      "json_type": "dict",
+      "magic_hex": "7b22617274696661",
+      "path": "data/symbol_directory/receipts/cik_map/2026-10-05.json",
+      "record_fields": {
+        "sources": [
+          "requested_url",
+          "response_bytes",
+          "response_bytes_retained",
+          "response_completed_at",
+          "response_sha256",
+          "response_started_at",
+          "source_id"
+        ]
+      },
+      "scalar_metadata": {
+        "observation_date": "2026-10-05",
+        "profile": "symbol_directory.operational_capture.v1",
+        "receipt_id": "sdreceipt_54f5c7f3a775b8877b8163a3c5b0d3acd447e87798ed2e59d25db8c10e9efa46",
+        "schema": "symbol_directory.completion_receipt.v1"
+      },
+      "sha256": "7d7e0f0482d8540045b1bd1386e23157885ea1793139208305a421ddfc7cf740",
+      "shape": {
+        "artifact": 6,
+        "authority": 12,
+        "clocks": 2,
+        "completeness": 10,
+        "diagnostics": 3,
+        "evidence_policy": 8,
+        "producer": 2,
+        "sources": 1
+      },
+      "top_level_keys": [
+        "artifact",
+        "authority",
+        "clocks",
+        "completeness",
+        "diagnostics",
+        "evidence_policy",
+        "observation_date",
+        "producer",
+        "profile",
+        "receipt_id",
+        "schema",
+        "sources"
+      ],
+      "worktree_exists": false,
+      "worktree_symlink": false
+    }
+  ],
+  "schema": "gmi.wp02.frame_snapshot_profile/v1",
+  "source_ref": "4d736c55adb630a4a8eb11b261e31acd0f6dc48b"
+}
+

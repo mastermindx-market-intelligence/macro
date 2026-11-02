@@ -1,0 +1,39 @@
+{
+  "state": "PASS_SCOPED_UI_SOURCE_ACCEPTED",
+  "mission_complete": false,
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "review_id": "paper-01a1101f-im06-history-ui-review-r2",
+  "source": {
+    "lib/intl_history_mount.py": "82e2953be1495d4b693b35fc120aaf96ef91c204b597351b2a0c36aeab8433d1",
+    "lib/intl_workspace_binding.py": "3c4dfd8285e8fbe1b9ddf4f76c833dfbb87928b59d56c99f088f4473e618dd55",
+    "templates/intl_workspace.js": "cb6d019f4ecc31dd8f87575cbf25d7c56927723bf7eaf81c7dd7a8c89e860b11",
+    "templates/intl_workspace/history.html.j2": "2b9bedbac77bbf692d21f314cd853820bc74953ace8722bcd341106f2d62ab64",
+    "templates/intl_workspace_history.css": "a4d333467c17afeffd8a47316082357a89d5d85618c37a613be25e6e240807d0"
+  },
+  "review_sha256": "3c0617f875fd696ff2a0856153d361df528c40918d036e7345b5b296506e4c3f",
+  "failed_predecessor": "R1 reproduced3productfailures: ambiguous research basis label, invalid popstate staged ascontext, missing zhmarketrefresh. Allfixedandindependentlyreproduced. One raw reviewer assertion expected invalid instead of established Unsupported value; preservedrawtestanddocumentedcorrection.",
+  "parent_reproduced": {
+    "independent_python": 18,
+    "independent_browser": 22,
+    "full_controller_before_replacing14with22independent_cases": 170,
+    "actual_page_matrix": 32,
+    "canonical_captures": 48,
+    "keyboard_focus": 24,
+    "actual_page_tablet_768": 8,
+    "actual_page_total": 40,
+    "reduced_motion": "Enabled for all40cases; matchMedia asserted in8tablet cases"
+  },
+  "product_retained": {
+    "independent_python_behavioral": 16,
+    "independent_browser": 22
+  },
+  "visual_acceptance": "Dark ENdesktopgraphitehierarchy and lightZHmobile coolcanvas/whitecards inspected at finalsource; longercontextwrapswithout horizontaloverflow. Currentmanifest contains48captures only; superseded48verifiedarchiveoutsideproduct. GlobalincumbentAskMastermindoverlayunchanged.",
+  "proof_limits": [
+    "Synthetic positive History data and explicit user assumptions; normal source disclosures unknown",
+    "Local copied-input publication; not served/authenticated",
+    "No original-known/revision/Saved persistence or full programme acceptance"
+  ],
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f",
+  "visual_manifest_sha256": "5251c483640e251ef30165940e542720bbbee267a9a22b4be3f2220cb41695e7",
+  "publication_source_acceptance": "IM06_HISTORY_PUBLICATION_EVIDENCE.json"
+}

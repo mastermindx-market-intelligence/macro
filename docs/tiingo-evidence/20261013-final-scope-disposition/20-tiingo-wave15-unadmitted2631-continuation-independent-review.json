@@ -1,0 +1,45 @@
+{
+  "schema": "tiingo.bounded_source_control_review/v1",
+  "recorded_at_utc": "2026-10-13T02:02:10.772184+00:00",
+  "decision": "PASS",
+  "scope": "Exact unstarted wave15 continuation v2 source and immutable prerequisite bindings; not execution or programme acceptance",
+  "reviewed_method": "/private/tmp/tiingo-eod-wave15-original-unadmitted2631-candidate-v2-01a12ab6.py",
+  "method_sha256": "dccefc622669e985443ae1434a311185c4f50d87fec28df78da6e18f1c16b934",
+  "plan_sha256": "1fcaf8614d1df2ef31c1de353b4056755038a578f95ed2fe389969747b9ceec0",
+  "prior_unexecuted_method_sha256": "10b1f9956955b77bdf55873e2bd9f5e1fef244c9adcf2ff955345731b6eec6ce",
+  "actual_original_accounting_sha256": "2df8e075d3ed6962c19163fef91e88184709a430942cf282a7698f5d087960fb",
+  "actual_accounting_parent_sha256": "1db7d1ca0c7711add656f47f9928620fd8a0dbcc827eaaddcd58599102f3bcde",
+  "final_readonly_preflight_parent_sha256": "cc584074cd4c047d385e6446cd057b7c4a7051c2432376670fae499496f81b76",
+  "findings": [
+    "Exact selected list independently equals original 4392 plan minus 1761 unique actual admission indices and accepted 2631 never-admitted list; started-task mapping agrees.",
+    "28 held symbols exactly union original holds, three attempted transport failures and SCNG whole-receipt quarantine; no selected held symbol.",
+    "Remaining budget independently equals 24 GiB minus 898220411 captured bytes = 24871583365 bytes.",
+    "Original settled result, actual consumed capture and accounting evidence, all qualification/coverage/window-parent hash bindings retained. All referenced map hashes checked.",
+    "Capture body equals accepted wave14 continuation body except 3311-to-2631 completion cardinalities; unchanged first-error latch/drain, rolling four admissions, diagnostics, resource checks and exclusive scope/result.",
+    "Ambiguous pre-plan method_sha256 removed in refresh02. Named template rule independently reproduces e273f9a0c262662ff431c1f05c816b634a18891d5ed19983204f9a53a3927833; actual executable hash recorded separately by launch scope.",
+    "Scope and result absent when reviewed; retained final preflight reports source pins, zero collisions and no credentials/network/archive writes."
+  ],
+  "required_at_actual_launch": [
+    "Same original root and stable RUN; exact reviewed executable and refreshed plan.",
+    "Fresh source/storage/collision gates and original writer custody; no unresolved or active competing writer.",
+    "Pinned account quota observed 2026-10-13T01:57:57+00:00 passes nonnegative age <=900 seconds at capture admission (through 02:12:57 UTC). If expired, refresh quota and explicitly rebind plan/method before effects.",
+    "Canonical module merge/CI/independent review acceptance remains required by non-preflight branch.",
+    "Any new failure stops admission and drains admitted tasks; retain actual partition, no failed-request retry or automatic successor. Exit zero alone is not whole-scope completion."
+  ],
+  "falsifiers": [
+    "Changed source, plan, prerequisite or template binding",
+    "Expired quota, insufficient storage or selected receipt collision",
+    "Any selected request already admitted or held",
+    "Unconsumed or unresolved original effect or competing writer",
+    "Claiming original 4392 full success, continuation completion, PIT or programme acceptance before actual evidence"
+  ],
+  "review_actions": {
+    "candidate_executed": false,
+    "provider_calls": 0,
+    "credentials_accessed": false,
+    "archive_writes": 0,
+    "source_edits": 0,
+    "independent_offline_hash_arithmetic_mapping_checks": true,
+    "review_artifact_only_write": true
+  }
+}

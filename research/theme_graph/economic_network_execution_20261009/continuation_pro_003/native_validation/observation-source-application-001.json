@@ -1,0 +1,30 @@
+{
+  "base_head": "dfa8533b07f1f603ef9f9bb6fbf957e4b1c112a1",
+  "ci": {
+    "added_runtime_inputs": 2,
+    "added_test_suites": 1,
+    "after_sha256": "3c23ea9dcc9094a10a3e5874b8281998f203227f522752d00f578820c5b9e581",
+    "before_sha256": "8754604c46e236023fab35aa6914196bc2462d9308772d406efed96c58dce7b2",
+    "changes_confined_to_existing_owner": true,
+    "inverse_restores_exact_original": true,
+    "path": ".github/ci/legacy-jobs.yml"
+  },
+  "files": [
+    {
+      "bytes": 42756,
+      "path": "engine/company_intelligence/relationship_observations.py",
+      "sha256": "85c07b309ff7b7220ec12f2b3f25c924a2ef4c9ab495ce9030f61038cbb9e8c7"
+    },
+    {
+      "bytes": 49406,
+      "path": "tests/test_company_relationship_observations.py",
+      "sha256": "a73700e639c8e97a4ff84951b48358abe63b1f5048560d03b0e40f2310ac44da"
+    }
+  ],
+  "native_test_or_store_execution": false,
+  "observed_at": "2026-10-09T11:08:11.479964+00:00",
+  "other_tracked_files_unchanged": true,
+  "schema": "economic_network.pro003_observation_source_application/v1",
+  "source_version": "frozen_v2",
+  "status": "APPLIED_NOT_YET_NATIVE_TESTED"
+}

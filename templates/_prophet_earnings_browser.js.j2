@@ -3,6 +3,7 @@
 'use strict';
 var BASE='/api/prophet/lab/v1/episodes';
 var AUTH=['can_rank','can_gate','can_size','can_originate_signal','can_change_entry_open','can_change_execution'];
+var OPPORTUNITY_VIEW_VERSION='research-opportunity-context/1';
 var WORDS={
 en:{idle:'Open a recorded opportunity to review its earnings evidence.',loading:'Loading private evidence…',
 signin:'Sign in to review private earnings evidence. No evidence is loaded.',
@@ -25,6 +26,7 @@ function element(tag,cls,value){var n=document.createElement(tag);if(cls)n.class
 function string(v){return typeof v==='string'&&v.length<20000;}
 function generation(v){return typeof v==='string'&&/^peg:[0-9a-f]{64}$/.test(v);}
 function noAuthority(v){return v&&Object.keys(v).length===AUTH.length&&AUTH.every(function(k){return v[k]===false;});}
+function allFalse(v){return !!v&&typeof v==='object'&&Object.keys(v).length>0&&Object.keys(v).every(function(k){return v[k]===false;});}
 function sameRef(a,b){return a&&b&&['episode_id','generation_id','identity_ref','schema'].every(function(k){return a[k]===b[k];});}
 function failure(key){var e=new Error(key);e.evidenceKey=key;return e;}
 function securityLabel(id){var m=/^SEC:([A-Z]{2})-([A-Z0-9]+)-(.+)$/.exec(id);return m?m[3]+' · '+m[1]+' / '+m[2]:id;}
@@ -32,13 +34,30 @@ function mount(root) {
   var select=function(name){return root.querySelector('[data-pe-'+name+']');};
   var list=select('results'), detail=select('detail'), status=select('status');
   var query=select('query'), next=select('next'), first=select('first'), signin=select('signin');
-  var epoch=0, pending=null, page=null, chosen=null, currentView=null, currentLang=lang();
+  var epoch=0, pending=null, page=null, chosen=null, currentView=null, currentLang=lang(),pendingFocus=null;
   var statusKey='idle', statusArgs=null, accountId=null;
   select('controls').hidden=false;
   function message(key,args){statusKey=key;statusArgs=args||null;status.textContent=text(key,args);signin.hidden=key!=='signin';}
   function cancel(){epoch++;if(pending){pending.abort();pending=null;}root.removeAttribute('aria-busy');}
-  function clear(){cancel();page=null;chosen=null;currentView=null;list.replaceChildren();detail.replaceChildren();next.hidden=true;first.hidden=true;}
+  function clear(){cancel();page=null;chosen=null;currentView=null;pendingFocus=null;list.replaceChildren();detail.replaceChildren();next.hidden=true;first.hidden=true;}
   function notice(error){clear();message(error.evidenceKey||'unavailable');}
+  // Repainting the detail pane destroys the node that had keyboard focus.
+  // When that focus lived inside the pane it goes back to the chosen row, so
+  // a keyboard user is never dropped into the document body.  The focus is
+  // READ before the pane is emptied and RESTORED after it is repainted.
+  function replaceDetail(){
+    var nodes=Array.prototype.slice.call(arguments);
+    detail.replaceChildren.apply(detail,nodes);
+    if(pendingFocus){pendingFocus=null;focusChosen();}
+  }
+  function focusChosen(){
+    var id=chosen&&chosen.episode_ref&&chosen.episode_ref.episode_id;
+    if(!id)return;
+    var buttons=Array.from(list.querySelectorAll('button'));
+    for(var i=0;i<buttons.length;i++){
+      if(buttons[i].dataset.episode===id&&typeof buttons[i].focus==='function'){buttons[i].focus();return;}
+    }
+  }
   function rows(parent,items){items.forEach(function(item){var r=element('div','pe-row');r.append(element('strong','',item.label),element('span','',item.note));parent.append(r);});}
   function section(title){var s=element('section','pe-section');s.append(element('h3','',title));return s;}
   function paintView(v){
@@ -61,7 +80,7 @@ function mount(root) {
     ['metrics','source_projection_id','episode_ref','decision_cut','coverage','rights','freshness','point_in_time','correction','source_refs','owner_lane_dispositions','owner_warnings','assembly_receipt','authority'].forEach(function(k){receipt[k]=v[k];});
     disclosure.append(element('pre','',JSON.stringify(receipt,null,2)));article.append(disclosure);
     var scope=element('section','pe-foot');scope.append(element('h3','',p.scope_title));p.scope_notes.forEach(function(note){scope.append(element('p','',note));});article.append(scope);
-    detail.replaceChildren(element('div','pe-detail-heading',securityLabel(chosen.security_id)),article);
+    replaceDetail(element('div','pe-detail-heading',securityLabel(chosen.security_id)),article);
   }
   function refOK(r){return r&&string(r.episode_id)&&r.episode_id.length>0&&string(r.identity_ref)&&string(r.schema)&&generation(r.generation_id);}
   function validateDirectory(d,requestedOffset,requestedQuery,expectedGeneration){
@@ -89,6 +108,73 @@ function mount(root) {
     ['comparisons','separate'].forEach(function(k){if(!Array.isArray(p[k])||p[k].length>3||!p[k].every(function(r){return r&&string(r.label)&&string(r.note);}))throw failure('bad');});
     if(!Array.isArray(p.scope_notes)||p.scope_notes.length>4||!p.scope_notes.every(string))throw failure('bad');return v;
   }
+  function validateOpportunityView(v,ref){
+    // The DEGRADED envelope is its OWN closed versioned document.  It is not
+    // 'earnings-detail/1' and the incumbent validator is never relaxed to
+    // accept it; a stale or mismatched envelope is refused outright.
+    if(!v||v.view_version!==OPPORTUNITY_VIEW_VERSION)throw failure('bad');
+    if(v.state!=='PARTIAL'||v.reason!=='EARNINGS_UNAVAILABLE')throw failure('bad');
+    if(v.language!==lang()||!sameRef(v.episode_ref,ref)||!noAuthority(v.authority))throw failure('bad');
+    if(!v.earnings_source_state||v.earnings_source_state.state!=='UNAVAILABLE'||v.earnings_source_state.reason!=='EARNINGS_UNAVAILABLE')throw failure('bad');
+    var o=v.opportunity_context;
+    if(!o||o.schema!=='prophet.lab_research_opportunity_context/v1'||o.status!=='PARTIAL'||o.reason!=='EARNINGS_UNAVAILABLE')throw failure('bad');
+    var c=o.context;
+    if(!c||c.schema!=='prophet.lab_opportunity_context/v1')throw failure('bad');
+    if(!c.identity||!string(c.identity.episode_id)||!string(c.identity.security_id))throw failure('bad');
+    if(!c.decision_clock||!string(c.decision_clock.market_session)||!string(c.decision_clock.candidate_state_generated_at))throw failure('bad');
+    var ph=c.native_phase;
+    if(!ph||!ph.episode_lifecycle||!string(ph.episode_lifecycle.state)||!ph.emergence_state||!string(ph.emergence_state.state)||!ph.maturity_state||!string(ph.maturity_state.state))throw failure('bad');
+    var e=c.fresh_entry;
+    // A missing B4 owner stays UNKNOWN: it is never read as a closed verdict.
+    // An entry verdict is readable only when it carries the owner's own
+    // availability receipt, so a bare 'entry_open:false' is refused.
+    if(!e||!string(e.state))throw failure('bad');
+    if(e.entry_open!==null&&typeof e.entry_open!=='boolean')throw failure('bad');
+    if(e.reason!=null&&!string(e.reason))throw failure('bad');
+    if(e.entry_open!==null&&!string(e.availability_id))throw failure('bad');
+    if(!allFalse(c.authority))throw failure('bad');
+    if(!o.identity_binding||!string(o.identity_binding.display_symbol)||!string(o.identity_binding.security_id))throw failure('bad');
+    if(!allFalse(o.identity_binding.authority))throw failure('bad');
+    if(!string(o.source_receipt)||o.source_receipt.indexOf('sha256:')!==0)throw failure('bad');
+    var p=v.presentation;
+    if(!p||!['title','subtitle','state_label','state_value','phase_label','emergence_label','maturity_label','entry_label','source_label','time_label','lineage_title'].every(function(k){return string(p[k]);}))throw failure('bad');
+    if(!Array.isArray(p.scope_notes)||p.scope_notes.length>4||!p.scope_notes.every(string))throw failure('bad');
+    return v;
+  }
+  function paintOpportunityView(v){
+    // One compact, visibly labelled lifecycle card.  Every word is either a
+    // closed presentation string or an owner-issued string, and every word
+    // reaches the DOM as textContent, so no source value can become markup.
+    var p=v.presentation,o=v.opportunity_context,c=o.context,b=o.identity_binding;
+    var article=element('article','plab-evidence');article.lang=v.language;
+    var header=element('header');
+    header.append(element('h2','',p.title),element('p','',p.subtitle));
+    article.append(header);
+    article.append(element('div','pe-state',p.state_label+': '+p.state_value));
+    var grid=element('div','pe-grid');
+    function card(label,value,note){
+      var s=element('section','pe-card');
+      s.append(element('div','pe-label',label));
+      if(value)s.append(element('p','pe-value',value));
+      if(note)s.append(element('p','pe-muted',note));
+      grid.append(s);
+    }
+    card(p.phase_label,c.native_phase.episode_lifecycle.state,p.emergence_label+': '+c.native_phase.emergence_state.state+' · '+p.maturity_label+': '+c.native_phase.maturity_state.state);
+    card(p.entry_label,c.fresh_entry.state,c.fresh_entry.reason||'');
+    card(p.source_label,b.display_symbol,b.security_id);
+    card(p.time_label,c.decision_clock.market_session,c.decision_clock.candidate_state_generated_at);
+    article.append(grid);
+    var lineage=element('details'),receipt={};
+    receipt.episode_ref=v.episode_ref;
+    receipt.earnings_source_state=v.earnings_source_state;
+    receipt.opportunity_context={schema:o.schema,status:o.status,reason:o.reason,identity_binding:o.identity_binding,source_receipt:o.source_receipt};
+    receipt.context={identity:c.identity,decision_clock:c.decision_clock,native_phase:c.native_phase,fresh_entry:c.fresh_entry,authority:c.authority};
+    lineage.append(element('summary','',p.lineage_title));
+    lineage.append(element('pre','',JSON.stringify(receipt,null,2)));
+    article.append(lineage);
+    var scope=element('section','pe-foot');p.scope_notes.forEach(function(note){scope.append(element('p','',note));});article.append(scope);
+    replaceDetail(element('div','pe-detail-heading',securityLabel(chosen.security_id)),article);
+  }
   function perform(url,done){
     cancel();var version=epoch, controller=new AbortController(), timer;
     pending=controller;root.setAttribute('aria-busy','true');message('loading');
@@ -113,11 +199,19 @@ function mount(root) {
     Promise.race([work,timeout]).then(function(data){if(active())done(data);}).catch(function(error){if(active()){if(['signin','forbidden','account'].indexOf(error.evidenceKey)!==-1)accountId=null;notice(error);}}).finally(function(){clearTimeout(timer);if(version===epoch){pending=null;root.removeAttribute('aria-busy');}});
   }
   function choose(row){
-    chosen=row;currentView=null;detail.replaceChildren();
+    chosen=row;currentView=null;
+    var active=(document&&document.activeElement)||null;
+    pendingFocus=(active&&typeof detail.contains==='function'&&detail.contains(active))?active:null;
+    detail.replaceChildren();
     Array.from(list.querySelectorAll('button')).forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.episode===row.episode_ref.episode_id));});
     var ref=Object.assign({},row.episode_ref), u=new URL(row.research_view_url,location.origin);
     u.searchParams.set('language',lang());u.searchParams.set('format','json');
-    perform(u.pathname+u.search,function(data){currentView=validateView(data,ref);paintView(currentView);message('idle');});
+    perform(u.pathname+u.search,function(data){
+      var view=(data&&data.view_version===OPPORTUNITY_VIEW_VERSION)?validateOpportunityView(data,ref):validateView(data,ref);
+      currentView=view;
+      if(view.view_version===OPPORTUNITY_VIEW_VERSION)paintOpportunityView(view);else paintView(view);
+      message('idle');
+    });
   }
   function paintDirectory(d){
     list.replaceChildren();list.setAttribute('aria-label',text('records'));

@@ -846,3 +846,433 @@ class TestWashoutContext:
         assert result["drawdown_21d_pct"] < -0.05
         # Latest close (86) is at the trough, so recovery_begun should be False.
         assert result["recovery_begun"] is False
+
+
+# ── Session-history projection ───────────────────────────────────────────────
+
+import engine.intraday_flow_history as _ifh  # noqa: E402
+
+
+def _history_row(
+    session: str,
+    ticker: str,
+    stance: str | None = "get_ready",
+    **extra,
+) -> dict:
+    row = {
+        "session": session,
+        "ticker": ticker,
+        "built_utc": f"{session}T22:30:00+00:00",
+        "stance": stance,
+        "K": 3,
+        "L1_washout_recent": True,
+        "L2_reclaim": False,
+        "L3_rvol_elevated": None,
+        "L4_vol_durable": None,
+        "L5_flow_bid": None,
+        "L6_upturn_organ": True,
+        "L7_leader_quality": True,
+        "close": 100.0,
+        "mtf_upturn_state": "UPTURN_WATCH",
+        "mtf_upturn_K": 2,
+        "failed_breakout_trap": False,
+        "rvol_tod_close": None,
+        "cum_ncp": None,
+        "flow_durability_eod": None,
+        "fwd_ret_1d": None,
+        "fwd_ret_5d": None,
+        "fwd_ret_10d": None,
+        "fwd_ret_21d": None,
+    }
+    row.update(extra)
+    return row
+
+
+class TestIntradayFlowHistoryProjection:
+    def test_legacy_rows_are_partial_and_never_invent_live_values(self):
+        df = pd.DataFrame([_history_row("2026-09-17", "AAPL")])
+        payload = _ifh.build_session_payload(df, "2026-09-17")
+
+        assert payload["historical_coverage"] == "partial"
+        leader = payload["leaders"][0]
+        assert leader["historical_coverage"] == "partial"
+        assert leader["market"]["last"] is None
+        assert leader["market"]["vwap"] is None
+        assert leader["feeds"]["quotes"] == {"status": None, "as_of": None}
+        assert leader["reason"] == {"en": None, "zh": None}
+        assert (
+            payload["internal_scorecard"]["evidence_availability"]["full_snapshot"]
+            == 0.0
+        )
+
+    def test_explicit_full_capture_and_source_receipts_are_preserved(self):
+        df = pd.DataFrame([
+            _history_row(
+                "2026-09-18",
+                "AAPL",
+                historical_coverage="full",
+                history_capture_version="ift.close.v1",
+                snapshot_utc="2026-09-18T20:05:00+00:00",
+                reason_en="Base built; waiting for a reclaim.",
+                reason_zh="底部已成；等待收复。",
+                last=101.5,
+                change_pct=1.5,
+                vwap=100.8,
+                vwap_delta_pct=0.694,
+                rvol_tod_close=1.8,
+                cum_ncp=125000.0,
+                flow_durability_eod=0.7,
+                stop_ref=98.0,
+                quote_status="live",
+                quote_asof="2026-09-18T20:04:50+00:00",
+                pulse_status="live",
+                pulse_asof="2026-09-18T20:00:00+00:00",
+                flow_status="live",
+                flow_asof="2026-09-18T20:04:40+00:00",
+            )
+        ])
+        payload = _ifh.build_session_payload(df, "2026-09-18")
+        leader = payload["leaders"][0]
+
+        assert payload["historical_coverage"] == "full"
+        assert leader["historical_coverage"] == "full"
+        assert leader["history_capture_version"] == "ift.close.v1"
+        assert leader["market"]["last"] == 101.5
+        assert leader["feeds"]["options_flow"]["status"] == "live"
+        assert (
+            payload["internal_scorecard"]["evidence_availability"]["full_snapshot"]
+            == 1.0
+        )
+
+    def test_scorecard_uses_only_non_null_matured_outcomes(self):
+        df = pd.DataFrame([
+            _history_row("2026-09-16", "AAA", stance="act", fwd_ret_1d=0.10),
+            _history_row("2026-09-16", "BBB", stance="act", fwd_ret_1d=-0.02),
+            _history_row("2026-09-16", "CCC", stance="watch", fwd_ret_1d=None),
+        ])
+        score = _ifh.build_session_payload(
+            df,
+            "2026-09-16",
+        )["internal_scorecard"]
+
+        one = score["forward_outcomes"]["fwd_ret_1d"]
+        assert one["n"] == 2
+        assert one["coverage"] == pytest.approx(2 / 3, abs=1e-6)
+        assert one["median_return"] == pytest.approx(0.04)
+        assert one["positive_share"] == 0.5
+        assert (
+            score["per_stance"]["act"]["forward_outcomes"]["fwd_ret_1d"]["n"]
+            == 2
+        )
+        assert "almost_ready_to_buy_now_conversion" in score["not_available_yet"]
+
+    def test_public_projection_does_not_leak_unknown_ledger_columns(self):
+        import json
+
+        df = pd.DataFrame([
+            _history_row(
+                "2026-09-17",
+                "AAPL",
+                internal_secret="do-not-publish",
+            )
+        ])
+        encoded = json.dumps(_ifh.build_session_payload(df, "2026-09-17"))
+        assert "internal_secret" not in encoded
+        assert "do-not-publish" not in encoded
+
+    def test_snapshot_fingerprint_excludes_forward_outcome_accrual(self):
+        original = pd.DataFrame([
+            _history_row("2026-09-17", "AAPL", fwd_ret_1d=None)
+        ])
+        matured = original.copy(deep=True)
+        matured.loc[0, "fwd_ret_1d"] = 0.05
+
+        first = _ifh.build_session_payload(original, "2026-09-17")
+        second = _ifh.build_session_payload(matured, "2026-09-17")
+        assert first["snapshot_sha256"] == second["snapshot_sha256"]
+        assert first["leaders"][0]["outcomes"]["fwd_ret_1d"] is None
+        assert second["leaders"][0]["outcomes"]["fwd_ret_1d"] == 0.05
+
+        changed = original.copy(deep=True)
+        changed.loc[0, "stance"] = "act"
+        changed_payload = _ifh.build_session_payload(changed, "2026-09-17")
+        assert changed_payload["snapshot_sha256"] != first["snapshot_sha256"]
+
+    def test_publish_is_deterministic_and_index_is_descending(
+        self,
+        tmp_path: Path,
+    ):
+        import json
+
+        df = pd.DataFrame([
+            _history_row("2026-09-17", "MSFT"),
+            _history_row("2026-09-18", "AAPL", stance="watch"),
+            _history_row("2026-09-17", "AAPL", stance="act"),
+        ])
+        out = tmp_path / "history"
+        _ifh.publish_history(df, out)
+        first = {path.name: path.read_bytes() for path in sorted(out.glob("*.json"))}
+        _ifh.publish_history(df.sample(frac=1, random_state=42), out)
+        second = {
+            path.name: path.read_bytes()
+            for path in sorted(out.glob("*.json"))
+        }
+
+        assert first == second
+        index = json.loads((out / "index.json").read_text())
+        assert [row["session"] for row in index["sessions"]] == [
+            "2026-09-18",
+            "2026-09-17",
+        ]
+        day = json.loads((out / "2026-09-17.json").read_text())
+        assert day["leaders"][0]["ticker"] == "AAPL"
+
+    def test_invalid_or_duplicate_session_keys_fail_closed(self):
+        bad = pd.DataFrame([_history_row("../../etc", "AAPL")])
+        with pytest.raises(ValueError, match="invalid Intraday Flow session"):
+            _ifh.build_index_payload(bad)
+
+        dupes = pd.DataFrame([
+            _history_row("2026-09-17", "AAPL"),
+            _history_row("2026-09-17", "aapl"),
+        ])
+        with pytest.raises(ValueError, match="duplicate session/ticker"):
+            _ifh.build_index_payload(dupes)
+
+    def test_non_finite_values_are_rendered_as_json_null(self):
+        import json
+
+        df = pd.DataFrame([
+            _history_row(
+                "2026-09-17",
+                "AAPL",
+                fwd_ret_1d=float("inf"),
+                rvol_tod_close=float("nan"),
+            )
+        ])
+        payload = _ifh.build_session_payload(df, "2026-09-17")
+        assert payload["leaders"][0]["market"]["rvol_tod_close"] is None
+        assert payload["leaders"][0]["outcomes"]["fwd_ret_1d"] is None
+        json.dumps(payload, allow_nan=False)
+
+
+# ── R04-B1: read-failed boards must publish as read_failed, not no_data ──────
+
+import json  # noqa: E402
+
+_PULSE_PATH = "live/flow_pulse.json"
+
+
+def _read_pulse(site: Path) -> dict:
+    return json.loads((site / _PULSE_PATH).read_text(encoding="utf-8"))
+
+
+def _bar_dicts(count: int, base_ts_iso: str) -> list[dict]:
+    """Helper: count hourly bars in ET afternoon; matches the sibling test idiom."""
+    return [
+        {
+            "ts": base_ts_iso,
+            "open": 1.0, "high": 2.0, "low": 0.5, "close": 1.5, "volume": 100.0,
+        }
+        for _ in range(count)
+    ]
+
+
+# T1 — expected RED at base: provider exception is published as no_data.
+def test_fastpath_provider_exception_is_not_zero_activity(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    def today_bars_raising(ticker: str, data_root: Path) -> list[dict]:
+        raise RuntimeError(f"provider down for {ticker}")
+
+    def today_bars_empty(ticker: str, data_root: Path) -> list[dict]:
+        return []
+
+    # Case A: both raise.
+    monkeypatch.setattr(_bif, "_resolve_universe", lambda cfg, data_root: ["AAA", "BBB"])
+    monkeypatch.setattr(_bif, "_today_bars", today_bars_raising)
+    site_a = tmp_path / "site_a"
+    _bif._run_fastpath({}, tmp_path, site_a)
+    pulse_a = _read_pulse(site_a)
+    assert pulse_a["mode"] == "read_failed"
+    assert pulse_a["n_failed"] == 2
+    rows_a = {r["ticker"]: r for r in pulse_a["tickers"]}
+    assert set(rows_a) == {"AAA", "BBB"}
+    assert rows_a["AAA"]["bars_today"] is None
+    assert rows_a["AAA"]["error"] == "RuntimeError"
+    assert rows_a["BBB"]["bars_today"] is None
+    assert rows_a["BBB"]["error"] == "RuntimeError"
+
+    # Case B: both return [] — a genuine quiet board.
+    monkeypatch.setattr(_bif, "_today_bars", today_bars_empty)
+    site_b = tmp_path / "site_b"
+    _bif._run_fastpath({}, tmp_path, site_b)
+    pulse_b = _read_pulse(site_b)
+    assert pulse_b["mode"] == "no_data"
+    assert pulse_b["n_failed"] == 0
+    rows_b = {r["ticker"]: r for r in pulse_b["tickers"]}
+    assert set(rows_b) == {"AAA", "BBB"}
+    assert rows_b["AAA"]["bars_today"] == 0
+    assert "error" not in rows_b["AAA"]
+    assert rows_b["BBB"]["bars_today"] == 0
+    assert "error" not in rows_b["BBB"]
+
+
+# T2 — expected RED at base: absent parquet file is published as no_data.
+def test_fastpath_absent_parquet_is_a_failed_read(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    intraday_dir = tmp_path / "empty_intraday"
+    intraday_dir.mkdir()
+    monkeypatch.setenv("MACRO_INTRADAY_DIR", str(intraday_dir))
+    monkeypatch.setattr(_bif, "_resolve_universe", lambda cfg, data_root: ["AAA", "BBB"])
+    site = tmp_path / "site"
+    _bif._run_fastpath({}, tmp_path, site)
+    pulse = _read_pulse(site)
+    assert pulse["mode"] == "read_failed"
+    rows = {r["ticker"]: r for r in pulse["tickers"]}
+    for tk in ("AAA", "BBB"):
+        assert rows[tk]["bars_today"] is None
+        assert rows[tk]["error"] == "IntradayBarsAbsent"
+
+
+# T3 — expected RED at base: unreadable parquet is published as no_data.
+def test_fastpath_unreadable_parquet_is_a_failed_read(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    intraday_dir = tmp_path / "intraday_junk"
+    intraday_dir.mkdir()
+    (intraday_dir / "AAA.parquet").write_bytes(b"this is not a parquet file at all")
+    monkeypatch.setenv("MACRO_INTRADAY_DIR", str(intraday_dir))
+    monkeypatch.setattr(_bif, "_resolve_universe", lambda cfg, data_root: ["AAA"])
+    site = tmp_path / "site"
+    _bif._run_fastpath({}, tmp_path, site)
+    pulse = _read_pulse(site)
+    assert pulse["mode"] == "read_failed"
+    rows = {r["ticker"]: r for r in pulse["tickers"]}
+    assert rows["AAA"]["bars_today"] is None
+    assert rows["AAA"]["error"] == "IntradayBarsUnreadable"
+
+
+# T4 — expected RED at base: frame with no clock column is published as no_data.
+def test_fastpath_frame_without_clock_is_a_failed_read(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    intraday_dir = tmp_path / "intraday_noclock"
+    intraday_dir.mkdir()
+    (intraday_dir / "AAA.parquet").touch()
+    monkeypatch.setenv("MACRO_INTRADAY_DIR", str(intraday_dir))
+    frame = pd.DataFrame(
+        {
+            "open": [1.0, 1.5],
+            "high": [2.0, 2.5],
+            "low": [0.5, 1.0],
+            "close": [1.5, 2.0],
+            "volume": [100.0, 200.0],
+        }
+    )  # RangeIndex; no timestamp/t/datetime/time column.
+    monkeypatch.setattr(_bif.pd, "read_parquet", lambda _: frame.copy())
+    monkeypatch.setattr(_bif, "_resolve_universe", lambda cfg, data_root: ["AAA"])
+    site = tmp_path / "site"
+    _bif._run_fastpath({}, tmp_path, site)
+    pulse = _read_pulse(site)
+    assert pulse["mode"] == "read_failed"
+    rows = {r["ticker"]: r for r in pulse["tickers"]}
+    assert rows["AAA"]["bars_today"] is None
+    assert rows["AAA"]["error"] == "IntradayBarsNoClock"
+
+
+# T5 — GREEN control: mixed board stays fastpath; n_failed counts failures.
+def test_fastpath_mixed_board_stays_fastpath_with_failures_counted(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    def today_bars(ticker: str, data_root: Path) -> list[dict]:
+        if ticker == "BBB":
+            raise RuntimeError("boom")
+        return _bar_dicts(2, "2026-10-13T13:00:00+00:00")
+
+    monkeypatch.setattr(_bif, "_resolve_universe", lambda cfg, data_root: ["AAA", "BBB"])
+    monkeypatch.setattr(_bif, "_today_bars", today_bars)
+    site = tmp_path / "site"
+    _bif._run_fastpath({}, tmp_path, site)
+    pulse = _read_pulse(site)
+    assert pulse["mode"] == "fastpath"
+    rows = {r["ticker"]: r for r in pulse["tickers"]}
+    assert rows["AAA"]["bars_today"] == 2
+    assert "error" not in rows["AAA"]
+    assert rows["BBB"]["bars_today"] is None
+    assert rows["BBB"]["error"] == "RuntimeError"
+    # The only RED at base: this n_failed assertion.
+    assert pulse.get("n_failed") == 1
+
+
+# T6 — GREEN control: quiet board whose reads succeeded is no_data.
+def test_fastpath_quiet_board_read_ok_is_no_data(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    intraday_dir = tmp_path / "intraday_quiet"
+    intraday_dir.mkdir()
+    (intraday_dir / "AAA.parquet").touch()
+    monkeypatch.setenv("MACRO_INTRADAY_DIR", str(intraday_dir))
+    yesterday = pd.Timestamp.now(tz="America/New_York").normalize() - pd.Timedelta(days=1)
+    index = pd.DatetimeIndex(
+        [
+            (yesterday + pd.Timedelta(hours=10)).tz_convert("UTC"),
+            (yesterday + pd.Timedelta(hours=11)).tz_convert("UTC"),
+        ],
+        name="ts",
+    )
+    frame = pd.DataFrame(
+        {
+            "open": [1.0, 1.5],
+            "high": [2.0, 2.5],
+            "low": [0.5, 1.0],
+            "close": [1.5, 2.0],
+            "volume": [100.0, 200.0],
+        },
+        index=index,
+    )
+    monkeypatch.setattr(_bif.pd, "read_parquet", lambda _: frame.copy())
+    monkeypatch.setattr(_bif, "_resolve_universe", lambda cfg, data_root: ["AAA"])
+    site = tmp_path / "site"
+    _bif._run_fastpath({}, tmp_path, site)
+    pulse = _read_pulse(site)
+    assert pulse["mode"] == "no_data"
+    rows = {r["ticker"]: r for r in pulse["tickers"]}
+    assert rows["AAA"]["bars_today"] == 0
+    assert "error" not in rows["AAA"]
+
+
+# T7 — GREEN control: nightly/baseline loader callers stay lenient.
+def test_nightly_loader_callers_stay_lenient(tmp_path: Path):
+    # _load_intraday_bars is the default-strict=False function: with an empty
+    # intraday dir, an absent file returns None (no raise).
+    assert _bif._load_intraday_bars("AAA", tmp_path) is None
+    # Nightly/baseline callers must not raise either.
+    assert _bif._adv20_and_curve("AAA", tmp_path) == (None, None)
+    assert _bif._atr14("AAA", tmp_path) is None
+
+
+# T8 — expected RED at base: read_failed board never overwrites lastgood.
+def test_read_failed_board_never_overwrites_lastgood(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    def today_bars_raising(ticker: str, data_root: Path) -> list[dict]:
+        raise RuntimeError(f"provider down for {ticker}")
+
+    site = tmp_path / "site"
+    live = site / "live"
+    live.mkdir(parents=True)
+    marker = '{"marker":"PRESERVE_ME_DO_NOT_OVERWRITE"}'
+    (live / _bif._LASTGOOD_FILENAME).write_text(marker, encoding="utf-8")
+
+    monkeypatch.setattr(_bif, "_resolve_universe", lambda cfg, data_root: ["AAA", "BBB"])
+    monkeypatch.setattr(_bif, "_today_bars", today_bars_raising)
+    _bif._run_fastpath({}, tmp_path, site)
+    pulse = _read_pulse(site)
+
+    # The mode assertion is the RED at base.
+    assert pulse["mode"] == "read_failed"
+    # Lastgood bytes are unchanged: read_failed never overwrites lastgood.
+    lastgood = (live / _bif._LASTGOOD_FILENAME).read_text(encoding="utf-8")
+    assert lastgood == marker

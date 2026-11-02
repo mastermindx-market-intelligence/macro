@@ -1,0 +1,16 @@
+{
+  "schema": "tiingo.source_merge_and_ci_separate_observation/v1",
+  "observed_at_utc": "2026-10-12T22:56:41.443790+00:00",
+  "pull_request": 9038,
+  "head_sha": "2bbec46c985a2064ab3ae071c544e4a809c6cd39",
+  "actual_state": "MERGED",
+  "merged_at_utc": "2026-10-12T22:53:31Z",
+  "squash_sha": "99c3ae524e19ffe3ca765e24ad3deaf0bd84fc8d",
+  "existing_ci_run": 38318955038,
+  "expanded_twelve_jobs_state_at_post_mutation_read": "IN_PROGRESS",
+  "all_twelve_ci_success_claimed": false,
+  "project_ci_acceptance_open": true,
+  "runtime_release_changed": false,
+  "premature_auto_merge_acknowledged": true,
+  "next_source_merge_requires_actual_terminal_all_twelve_before_merge_request": true
+}

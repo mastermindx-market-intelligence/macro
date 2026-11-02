@@ -13,10 +13,10 @@ real freeze, a weekday budget of 3 first pages on 2026-08-20 where this table pa
 dependencies, stdlib only — the same shape as ``lib/nyse_calendar.py``,
 ``lib/hk_calendar.py`` and ``lib/cn_calendar.py``.
 
-Scope: full-day closures for TSX/TSXV cash equities.  Early closes (13:00 ET, typically
-Christmas Eve) are NOT modeled — a shortened session still produces a daily bar, and
-``expected_last_session`` only asks "should a bar for day D exist by now?", for which the
-regular 16:00 ET close plus a settle buffer is a conservative answer.
+Scope: full-day closures and published early closes for TSX/TSXV cash equities.
+Complete annual exchange notices override the historical rules. A published 13:00
+ET early close remains a session and expects its bar at 14:00 ET, preserving the
+one-hour settle buffer. Regular days retain their 17:00 ET expectation.
 
 DIRECTION OF ERROR — the rule this table is built on
     Omitting a real holiday   → we count a session that never happened → we over-count
@@ -42,6 +42,8 @@ from __future__ import annotations
 
 from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
+
+from lib.exchange_holidays import announced_holidays, early_close
 
 TORONTO = ZoneInfo("America/Toronto")
 
@@ -93,7 +95,10 @@ def _observed_ca(d: date, taken: set[date]) -> date:
 
 
 def holidays(year: int) -> frozenset[date]:
-    """Scheduled full-day TSX holidays for `year` (rule-computed, cached)."""
+    """Full-day TSX closures: official notice or cached historical fallback."""
+    announced = announced_holidays("CA", year)
+    if announced is not None:
+        return frozenset(announced)
     return _holidays_cached(year)
 
 
@@ -145,9 +150,9 @@ def last_session_on_or_before(d: date) -> date:
 def expected_last_session(now: datetime | None = None) -> date:
     """The most recent COMPLETED TSX session whose daily bar the store should hold.
 
-    'Completed' = the 16:00 ET close plus a settle buffer has passed (17:00 ET), so a
-    same-day afternoon run conservatively expects only the PRIOR session. Naive datetimes
-    are taken as UTC (the pipeline's convention).
+    Daily bars are expected after a one-hour settle buffer: 17:00 ET on regular
+    days, 14:00 ET on published 13:00 early closes. Before that expectation, only
+    the prior session is complete. Naive datetimes are UTC.
     """
     if now is None:
         now = datetime.now(timezone.utc)
@@ -155,7 +160,8 @@ def expected_last_session(now: datetime | None = None) -> date:
         now = now.replace(tzinfo=timezone.utc)
     now_et = now.astimezone(TORONTO)
     today = now_et.date()
-    if is_session(today) and now_et.time() >= _CLOSE_PLUS_SETTLE:
+    settled = time(14, 0) if early_close("CA", today) is not None else _CLOSE_PLUS_SETTLE
+    if is_session(today) and now_et.time() >= settled:
         return today
     return last_session_on_or_before(today - timedelta(days=1))
 

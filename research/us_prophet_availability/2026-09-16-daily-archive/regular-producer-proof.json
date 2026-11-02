@@ -1,0 +1,20 @@
+{
+  "proof_class": "real_regular_yahoo_producer_in_private_tree",
+  "production": false,
+  "expected_session": "2026-09-16",
+  "elapsed_seconds": 105.74,
+  "result": {
+    "source": "yahoo",
+    "status": "ok",
+    "rows": 183880,
+    "last_date": "2026-09-17",
+    "error": null,
+    "notes": [],
+    "probed_at": null
+  },
+  "returned_symbols": 742,
+  "current_returned_symbols": 740,
+  "unmaintained_files_changed": 0,
+  "preserved_breaker_input": true,
+  "source_changes": 0
+}

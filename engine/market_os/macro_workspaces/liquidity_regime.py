@@ -160,6 +160,18 @@ def _bil(en: str, zh: str | None) -> dict:
 # --------------------------------------------------------------------------- #
 # axis component construction
 # --------------------------------------------------------------------------- #
+
+def _plain_axis_num(v, *, zh: bool = False) -> str:
+    """C-n3: format an axis score; None/non-numeric → plain-word null."""
+    if v is None:
+        return "暂无" if zh else "unavailable"
+    try:
+        return f"{float(v):.1f}"
+    except (TypeError, ValueError):
+        return "暂无" if zh else "unavailable"
+
+
+
 def _component(component_id, label_en, label_zh, owner_field, owner_ref, raw,
                standardized, sign, weight, freshness) -> dict:
     present = standardized is not None
@@ -572,6 +584,8 @@ def _headline(x_value, x_status, x_null, y_value, y_status, y_null, asof,
             vec_null = "INSUFFICIENT_HISTORY"
         vec = {"dx": None, "dy": None, "status": "ABSENT", "null_reason": vec_null}
         transition_distance = None
+    vec["x_axis_id"] = "funding_pressure"
+    vec["y_axis_id"] = "balance_sheet_support"
 
     # F1: disclosure text describes the corrected per-axis-crossing rule.
     if not applied:
@@ -819,9 +833,9 @@ def _implications(headline, x_value, y_value, contradiction, worst_freshness,
         items.append({
             "implication_id": "state_descriptive",
             "text": _bil(
-                f"US liquidity regime reads {state_id} - {label_en} (funding pressure x={x_value}, "
-                f"balance-sheet support y={y_value}, boundary 50).",
-                f"美国流动性体制读数为 {state_id} - {label_zh}（融资压力 x={x_value}，资产负债表支持 y={y_value}，分界 50）。"),
+                f"US liquidity regime reads {state_id} - {label_en} (funding pressure {_plain_axis_num(x_value)}, "
+                f"balance-sheet support {_plain_axis_num(y_value)}, boundary 50).",
+                f"美国流动性体制读数为 {state_id} - {label_zh}（融资压力 {_plain_axis_num(x_value, zh=True)}，资产负债表支持 {_plain_axis_num(y_value, zh=True)}，分界 50）。"),
             "evidence_class": "DESCRIPTIVE",
             "confidence": conf,
             "horizon": "current",

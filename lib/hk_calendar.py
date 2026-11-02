@@ -5,19 +5,20 @@ is committed stale (the `-X theirs` rebase allowed a stale local cache to win), 
 served data frozen at 2026-07-02 while appearing fresh. This module is the independent reference
 that can detect that staleness: pure rule arithmetic, zero data dependencies, stdlib only.
 
-Scope: full-day closures for HKEX (Hong Kong Stock Exchange). HKEX is closed on HK public
-holidays and weekends. The session day is defined as 09:30 – 16:00 HKT; `expected_last_session`
-conservatively uses a 17:30 HKT settle buffer.
+Scope: full-day closures and announced half days for HKEX cash equities. Complete
+annual exchange notices override the historical approximation. Regular sessions retain
+a 17:30 HKT data expectation; published half days finish CAS by 12:10 and retain a
+conservative 13:30 HKT data expectation.
 
-Unscheduled one-off closures (Typhoon Signal No.8, Black Rainstorm Warning, ad-hoc government
-declarations) cannot be computed from rules — they live in `ONE_OFF_CLOSURES` and MUST be
-appended when announced. The cost of a missing entry is a false "stale" — a banner on the
-page until the date is added — never a silently-wrong "fresh".
+Unscheduled exchange-announced full-day closures cannot be computed from rules —
+they live in `ONE_OFF_CLOSURES` and must be appended when announced. Since severe-weather
+trading began in September 2024, typhoon signals and black rainstorm warnings do not
+automatically close HKEX; preserve historical weather closures without inferring new ones.
+The cost of a missing entry is a false "stale" banner until the date is added, never a
+silently-wrong "fresh".
 
 HOW TO ADD A ONE-OFF CLOSURE:
     Add the date to ONE_OFF_CLOSURES as `date(YYYY, MM, DD)`.
-    Example for a Typhoon No.8 on 2026-09-15:
-        date(2026, 9, 15),   # Typhoon No.8 closure
     Commit the change so all environments see the update.
 """
 from __future__ import annotations
@@ -25,15 +26,17 @@ from __future__ import annotations
 from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 
+from lib.exchange_holidays import announced_holidays, early_close
+
 HKT = ZoneInfo("Asia/Hong_Kong")
 
 # The last completed session's daily bar is expected only after the close (16:00 HKT)
 # plus a settle buffer (data vendors finalize bars 30-90 min after close; 17:30 is generous).
 _CLOSE_PLUS_SETTLE = time(17, 30)
 
-# Unscheduled full-day closures — Typhoon No.8/10, Black Rainstorm, ad-hoc government
-# declarations. Append when announced. A missing entry is a false "stale" page banner
-# (non-fatal), never a silently-wrong "fresh".
+# Historical and exchange-announced unscheduled full-day closures. Weather signals
+# alone are not closure instructions under current severe-weather trading rules.
+# A missing closure causes a false "stale" banner, never a silently-wrong "fresh".
 # Pattern: date(YYYY, MM, DD),  # reason
 ONE_OFF_CLOSURES: frozenset[date] = frozenset({
     date(2023, 9, 8),   # Super Typhoon Saola — No.10 signal, full-day closure
@@ -62,7 +65,10 @@ def _observed_hk(d: date) -> date:
 
 
 def holidays(year: int) -> frozenset[date]:
-    """Scheduled full-day HKEX holidays for `year` (rule-computed, cached)."""
+    """Full-day HKEX closures: official notice or cached historical fallback."""
+    announced = announced_holidays("HK", year)
+    if announced is not None:
+        return frozenset(announced)
     return _holidays_cached(year)
 
 
@@ -268,16 +274,17 @@ def last_session_on_or_before(d: date) -> date:
 def expected_last_session(now: datetime | None = None) -> date:
     """The most recent COMPLETED HKEX session whose daily bar the store should hold.
 
-    'Completed' = the 16:00 HKT close plus a settle buffer has passed (17:30 HKT),
-    so a same-day afternoon run conservatively expects only the PRIOR session. Naive
-    datetimes are taken as UTC (the pipeline's convention)."""
+    Regular sessions are expected at 17:30 HKT; announced half-day sessions at
+    13:30 HKT, after the latest 12:10 CAS end plus a settle buffer. Before that
+    expectation, only the prior session is complete. Naive datetimes are UTC."""
     if now is None:
         now = datetime.now(timezone.utc)
     elif now.tzinfo is None:
         now = now.replace(tzinfo=timezone.utc)
     now_hkt = now.astimezone(HKT)
     today = now_hkt.date()
-    if is_session(today) and now_hkt.time() >= _CLOSE_PLUS_SETTLE:
+    settled = time(13, 30) if early_close("HK", today) is not None else _CLOSE_PLUS_SETTLE
+    if is_session(today) and now_hkt.time() >= settled:
         return today
     return last_session_on_or_before(today - timedelta(days=1))
 

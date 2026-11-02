@@ -1,0 +1,6069 @@
+{
+  "p1_overview_figures": 1,
+  "p1_move_rows": 5,
+  "p1_dests": 1,
+  "p1_dests_in_figure": false,
+  "dark_figure_bg": "rgb(13, 16, 24)",
+  "dark_panel_bg": "rgb(21, 24, 32)",
+  "dark_figure_border": "0px",
+  "dark_move_current": "rgb(200, 208, 220)",
+  "dark_move_prior": "rgb(139, 147, 161)",
+  "dark_row_border": "color(srgb 0.784314 0.815686 0.862745 / 0.08)",
+  "dark_arrival_shadow": "none",
+  "dark_arrival_border": "rgba(0, 0, 0, 0)",
+  "dark_arrival_bg": "color(srgb 0.356863 0.607843 0.941176 / 0.1)",
+  "asof_fs": "11px",
+  "caption_fs": "13px",
+  "asof_lh": "17.05px",
+  "caption_lh": "20.15px",
+  "details_key_fs": "11px",
+  "dest_hrefs": [
+    "macro_liquidity_regime.html",
+    "macro_liquidity_central_banks.html",
+    "macro_monetary_policy.html",
+    "macro_rates_curves.html",
+    "macro_inflation_system.html",
+    "macro_growth_real_economy.html",
+    "macro_business_activity.html",
+    "macro_labor_markets.html",
+    "macro_housing_real_estate.html",
+    "macro_consumer_payments.html",
+    "macro_financial_conditions.html",
+    "macro_capital_structure.html",
+    "macro_national_debt_liabilities.html",
+    "macro_trade_flows.html"
+  ],
+  "len_en": 529,
+  "len_zh": 529,
+  "panel_alpha_dark": "rgb(21, 24, 32)",
+  "dest_rest_dark": "color(srgb 1 1 1 / 0.06) 0px 1px 0px 0px inset",
+  "dest_hover_dark": {
+    "boxShadow": "color(srgb 0.784314 0.815686 0.862745 / 0.1) 0px 1px 0px 0px inset",
+    "background": "color(srgb 0.784314 0.815686 0.862745 / 0.09)",
+    "border": "rgba(0, 0, 0, 0)"
+  },
+  "light_figure_bg": "rgb(255, 255, 255)",
+  "light_panel_bg": "rgb(255, 255, 255)",
+  "light_figure_border": "1px",
+  "light_figure_radius": "0px",
+  "light_move_current": "rgb(46, 57, 80)",
+  "light_move_prior": "rgb(76, 90, 108)",
+  "light_row_border": "color(srgb 0.180392 0.223529 0.313726 / 0.1)",
+  "panel_alpha_light": "rgb(255, 255, 255)",
+  "dest_rest_light": "none",
+  "dest_hover_light": {
+    "boxShadow": "color(srgb 0.109804 0.141176 0.188235 / 0.1) 0px 1px 2px 0px, color(srgb 0.109804 0.141176 0.188235 / 0.22) 0px 8px 24px -18px",
+    "background": "rgb(255, 255, 255)",
+    "border": "color(srgb 0.148112 0.329526 0.849055 / 0.4668)"
+  },
+  "heading_focus_dark": {
+    "outline": "rgb(200, 208, 220) none 3px",
+    "boxShadow": "none",
+    "bg": "radial-gradient(closest-side, color(srgb 0.356863 0.607843 0.941176 / 0.22), rgba(0, 0, 0, 0))",
+    "sectionOutline": "rgb(200, 208, 220) none 3px",
+    "sectionShadow": "color(srgb 1 1 1 / 0.06) 0px 1px 0px 0px inset"
+  },
+  "heading_focus_light": {
+    "outline": "rgb(46, 57, 80) none 3px",
+    "boxShadow": "none",
+    "bg": "none",
+    "sectionOutline": "rgb(46, 57, 80) none 3px",
+    "sectionShadow": "color(srgb 0.109804 0.141176 0.188235 / 0.1) 0px 1px 2px 0px, color(srgb 0.109804 0.141176 0.188235 / 0.22) 0px 8px 24px -18px"
+  },
+  "arrival_hidden_dark": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "arrival_hidden_light": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "money_tabs": {
+    "fundingHidden": true,
+    "banksHidden": false,
+    "selected": "central_banks"
+  },
+  "inflation_foot": true,
+  "empty_dark_bg": "rgba(0, 0, 0, 0)",
+  "empty_light_bg": "color(srgb 0.180392 0.223529 0.313726 / 0.02)",
+  "empty_light_border": "color(srgb 0.109804 0.141176 0.188235 / 0.14)",
+  "m4_nav_to_eyebrow_768": {
+    "navBottom": 117,
+    "eyebrowTop": 141,
+    "gap": 24,
+    "shellPadTop": "8px",
+    "note": "measured at scrollY=0; 16px site-nav margin-bottom + 8px shell padding-top"
+  },
+  "pad_768": "140px",
+  "m5_dark_390_caption": {
+    "caption_color": "rgb(139, 147, 161)",
+    "caption_bg": "rgba(0, 0, 0, 0)",
+    "panel_bg": "rgb(21, 24, 32)",
+    "count_color": "rgb(139, 147, 161)",
+    "count_bg": "rgba(0, 0, 0, 0)"
+  },
+  "m5_caption_contrast": 5.7342770734687685,
+  "m5_count_contrast": 5.7342770734687685,
+  "scroll_matrix": {
+    "1440_dark_en": {
+      "sw": 1440,
+      "cw": 1440,
+      "equal": true
+    },
+    "1440_dark_zh": {
+      "sw": 1440,
+      "cw": 1440,
+      "equal": true
+    },
+    "1440_light_en": {
+      "sw": 1440,
+      "cw": 1440,
+      "equal": true
+    },
+    "1440_light_zh": {
+      "sw": 1440,
+      "cw": 1440,
+      "equal": true
+    },
+    "768_dark_en": {
+      "sw": 768,
+      "cw": 768,
+      "equal": true
+    },
+    "768_dark_zh": {
+      "sw": 768,
+      "cw": 768,
+      "equal": true
+    },
+    "768_light_en": {
+      "sw": 768,
+      "cw": 768,
+      "equal": true
+    },
+    "768_light_zh": {
+      "sw": 768,
+      "cw": 768,
+      "equal": true
+    },
+    "390_dark_en": {
+      "sw": 390,
+      "cw": 390,
+      "equal": true
+    },
+    "390_dark_zh": {
+      "sw": 390,
+      "cw": 390,
+      "equal": true
+    },
+    "390_light_en": {
+      "sw": 390,
+      "cw": 390,
+      "equal": true
+    },
+    "390_light_zh": {
+      "sw": 390,
+      "cw": 390,
+      "equal": true
+    }
+  },
+  "scroll_w": [
+    1440,
+    1440
+  ],
+  "p19_all_equal": true,
+  "panel_bgs": {
+    "1440_dark": [
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)"
+    ],
+    "1440_light": [
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)"
+    ],
+    "768_dark": [
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)"
+    ],
+    "768_light": [
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)"
+    ],
+    "390_dark": [
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)"
+    ],
+    "390_light": [
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)"
+    ]
+  },
+  "rail_dark_en": {
+    "ok": true,
+    "railBg": "rgb(13, 16, 24)",
+    "shellBg": "rgb(13, 16, 24)",
+    "railAlpha": 1,
+    "equal": true,
+    "position": "sticky",
+    "stanceText": "What this means for you:\nSome desks have not reported yet. The latest readings are below \u2014 there is no earlier reading to compare yet.",
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "noDocOverflow": true,
+    "listOverflowX": "auto",
+    "listMaxWidth": "none",
+    "listContain": "inline-size"
+  },
+  "rail_dark_zh": {
+    "ok": true,
+    "railBg": "rgb(13, 16, 24)",
+    "shellBg": "rgb(13, 16, 24)",
+    "railAlpha": 1,
+    "equal": true,
+    "position": "sticky",
+    "stanceText": "\u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48:\n\u90e8\u5206\u5c0f\u7ec4\u4eca\u5929\u5c1a\u672a\u53d1\u5e03\u3002\u6700\u65b0\u8bfb\u6570\u5982\u4e0b\u2014\u2014\u6682\u65e0\u66f4\u65e9\u8bfb\u6570\u53ef\u6bd4\u3002",
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "noDocOverflow": true,
+    "listOverflowX": "auto",
+    "listMaxWidth": "none",
+    "listContain": "inline-size"
+  },
+  "rail_light_en": {
+    "ok": true,
+    "railBg": "rgb(232, 235, 241)",
+    "shellBg": "rgb(232, 235, 241)",
+    "railAlpha": 1,
+    "equal": true,
+    "position": "sticky",
+    "stanceText": "What this means for you:\nSome desks have not reported yet. The latest readings are below \u2014 there is no earlier reading to compare yet.",
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "noDocOverflow": true,
+    "listOverflowX": "auto",
+    "listMaxWidth": "none",
+    "listContain": "inline-size"
+  },
+  "rail_light_zh": {
+    "ok": true,
+    "railBg": "rgb(232, 235, 241)",
+    "shellBg": "rgb(232, 235, 241)",
+    "railAlpha": 1,
+    "equal": true,
+    "position": "sticky",
+    "stanceText": "\u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48:\n\u90e8\u5206\u5c0f\u7ec4\u4eca\u5929\u5c1a\u672a\u53d1\u5e03\u3002\u6700\u65b0\u8bfb\u6570\u5982\u4e0b\u2014\u2014\u6682\u65e0\u66f4\u65e9\u8bfb\u6570\u53ef\u6bd4\u3002",
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "noDocOverflow": true,
+    "listOverflowX": "auto",
+    "listMaxWidth": "none",
+    "listContain": "inline-size"
+  },
+  "rail_768_dark_en": {
+    "ok": true,
+    "railBg": "rgb(13, 16, 24)",
+    "shellBg": "rgb(13, 16, 24)",
+    "railAlpha": 1,
+    "equal": true,
+    "position": "sticky",
+    "stanceText": "What this means for you:\nSome desks have not reported yet. The latest readings are below \u2014 there is no earlier reading to compare yet.",
+    "scrollWidth": 768,
+    "clientWidth": 768,
+    "noDocOverflow": true,
+    "listOverflowX": "auto",
+    "listMaxWidth": "none",
+    "listContain": "inline-size"
+  },
+  "rail_768_light_en": {
+    "ok": true,
+    "railBg": "rgb(232, 235, 241)",
+    "shellBg": "rgb(232, 235, 241)",
+    "railAlpha": 1,
+    "equal": true,
+    "position": "sticky",
+    "stanceText": "What this means for you:\nSome desks have not reported yet. The latest readings are below \u2014 there is no earlier reading to compare yet.",
+    "scrollWidth": 768,
+    "clientWidth": 768,
+    "noDocOverflow": true,
+    "listOverflowX": "auto",
+    "listMaxWidth": "none",
+    "listContain": "inline-size"
+  },
+  "generated_at": "2026-09-08T16:19:41Z",
+  "resolved_sha_or_none": "54be458c734755e6456f82c98f57bfc9aca2e65c",
+  "m2_hairline_light_en": {
+    "populated": true,
+    "hairlineCount": 1,
+    "rules": [
+      {
+        "className": "mc-figure",
+        "top": 949.78125,
+        "borderTop": 1
+      }
+    ],
+    "tabbodyBorderTopPx": 0,
+    "figureBorderTopPx": 1,
+    "firstRowClass": "mc-move",
+    "pillBottom": 935.78125,
+    "rowTop": 964.78125,
+    "visibleTab": "central_banks"
+  },
+  "clearance_390_dark_en": {
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 3301,
+        "innerHeight": 844,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 2457,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 733.09375,
+            "left": 14,
+            "right": 376,
+            "bottom": 783.640625,
+            "width": 362,
+            "height": 50.546875
+          }
+        ]
+      },
+      "50": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [
+          {
+            "text": "45.39 pts",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 48.890625,
+              "left": 263.140625,
+              "right": 339,
+              "bottom": 64.890625
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_partially_covered",
+            "docTop": 1277.890625,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 1167.34375
+          },
+          {
+            "text": "Sep 2026",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 71.578125,
+              "left": 283.609375,
+              "right": 339,
+              "bottom": 85.578125
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 1300.578125,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 1190.03125
+          },
+          {
+            "text": "Growth momentum (6-month)",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 109.390625,
+              "left": 51,
+              "right": 247.8125,
+              "bottom": 125.390625
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_partially_covered",
+            "docTop": 1338.390625,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 1227.84375
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 3301,
+        "innerHeight": 844,
+        "target": "50",
+        "scrollY": 1229,
+        "scrollWanted": 1228.5,
+        "maxScroll": 2457,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 110.546875,
+            "width": 362,
+            "height": 50.546875
+          }
+        ]
+      },
+      "max": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [
+          {
+            "text": "What companies are making, ordering and investing.",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 52.8125,
+              "left": 65,
+              "right": 294.5,
+              "bottom": 68.8125
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_partially_covered",
+            "docTop": 2509.8125,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 2399.265625
+          },
+          {
+            "text": "What companies are making, ordering and investing.",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 71.65625,
+              "left": 65,
+              "right": 149.140625,
+              "bottom": 87.65625
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 2528.65625,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 2418.109375
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 3301,
+        "innerHeight": 844,
+        "target": "max",
+        "scrollY": 2457,
+        "scrollWanted": 2457,
+        "maxScroll": 2457,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 110.546875,
+            "width": 362,
+            "height": 50.546875
+          }
+        ]
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
+    "mmbBootDisplay": "none",
+    "mmbBootBox": null,
+    "excusedCounts": {
+      "0": 0,
+      "50": 3,
+      "max": 2
+    }
+  },
+  "clearance_390_dark_zh": {
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 2945,
+        "innerHeight": 844,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 2101,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 683.578125,
+            "left": 14,
+            "right": 376,
+            "bottom": 734.125,
+            "width": 362,
+            "height": 50.546875
+          }
+        ]
+      },
+      "50": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [
+          {
+            "text": "\u8d44\u4ea7\u8d1f\u503a\u8868\u652f\u6301",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 76.515625,
+              "left": 51,
+              "right": 145.5,
+              "bottom": 95.515625
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 1127.515625,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 1016.96875
+          },
+          {
+            "text": "\u6d41\u52a8\u6027\u4f53\u5236\u76d1\u6d4b",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 105.4375,
+              "left": 51,
+              "right": 129.703125,
+              "bottom": 121.4375
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_partially_covered",
+            "docTop": 1156.4375,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 1045.890625
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 2945,
+        "innerHeight": 844,
+        "target": "50",
+        "scrollY": 1051,
+        "scrollWanted": 1050.5,
+        "maxScroll": 2101,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 110.546875,
+            "width": 362,
+            "height": 50.546875
+          }
+        ]
+      },
+      "max": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [
+          {
+            "text": "\u589e\u957f\u4e0e\u5b9e\u4f53\u7ecf\u6d4e",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 75.484375,
+              "left": 65,
+              "right": 170,
+              "bottom": 96.484375
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 2176.484375,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 2065.9375
+          },
+          {
+            "text": "\u7ecf\u6d4e\u662f\u5728\u52a0\u901f\u8fd8\u662f\u5728\u653e\u7f13\u3002",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 100.984375,
+              "left": 65,
+              "right": 224.125,
+              "bottom": 118.984375
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_partially_covered",
+            "docTop": 2201.984375,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 2091.4375
+          },
+          {
+            "text": "\u2192",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 77.234375,
+              "left": 315,
+              "right": 328,
+              "bottom": 95.234375
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 2178.234375,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 2067.6875
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 2945,
+        "innerHeight": 844,
+        "target": "max",
+        "scrollY": 2101,
+        "scrollWanted": 2101,
+        "maxScroll": 2101,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 110.546875,
+            "width": 362,
+            "height": 50.546875
+          }
+        ]
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
+    "mmbBootDisplay": "none",
+    "mmbBootBox": null,
+    "excusedCounts": {
+      "0": 0,
+      "50": 2,
+      "max": 3
+    }
+  },
+  "clearance_390_light_en": {
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 3339,
+        "innerHeight": 844,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 2495,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 756.59375,
+            "left": 14,
+            "right": 376,
+            "bottom": 807.140625,
+            "width": 362,
+            "height": 50.546875
+          }
+        ]
+      },
+      "50": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [
+          {
+            "text": "45.39 pts",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 60.390625,
+              "left": 271.140625,
+              "right": 347,
+              "bottom": 76.390625
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 1308.390625,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 1197.84375
+          },
+          {
+            "text": "Sep 2026",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 83.078125,
+              "left": 291.609375,
+              "right": 347,
+              "bottom": 97.078125
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 1331.078125,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 1220.53125
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 3339,
+        "innerHeight": 844,
+        "target": "50",
+        "scrollY": 1248,
+        "scrollWanted": 1247.5,
+        "maxScroll": 2495,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 110.546875,
+            "width": 362,
+            "height": 50.546875
+          }
+        ]
+      },
+      "max": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [
+          {
+            "text": "What companies are making, ordering and investing.",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 52.3125,
+              "left": 65,
+              "right": 294.5,
+              "bottom": 68.3125
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_partially_covered",
+            "docTop": 2547.3125,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 2436.765625
+          },
+          {
+            "text": "What companies are making, ordering and investing.",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 71.15625,
+              "left": 65,
+              "right": 149.140625,
+              "bottom": 87.15625
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 2566.15625,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 2455.609375
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 3339,
+        "innerHeight": 844,
+        "target": "max",
+        "scrollY": 2495,
+        "scrollWanted": 2495,
+        "maxScroll": 2495,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 110.546875,
+            "width": 362,
+            "height": 50.546875
+          }
+        ]
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
+    "mmbBootDisplay": "none",
+    "mmbBootBox": null,
+    "excusedCounts": {
+      "0": 0,
+      "50": 2,
+      "max": 2
+    }
+  },
+  "clearance_390_light_zh": {
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 2965,
+        "innerHeight": 844,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 2121,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 689.578125,
+            "left": 14,
+            "right": 376,
+            "bottom": 740.125,
+            "width": 362,
+            "height": 50.546875
+          }
+        ]
+      },
+      "50": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [
+          {
+            "text": "\u8d44\u4ea7\u8d1f\u503a\u8868\u652f\u6301",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 79.515625,
+              "left": 43,
+              "right": 137.5,
+              "bottom": 98.515625
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 1140.515625,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 1029.96875
+          },
+          {
+            "text": "\u6d41\u52a8\u6027\u4f53\u5236\u76d1\u6d4b",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 108.4375,
+              "left": 43,
+              "right": 121.703125,
+              "bottom": 124.4375
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_partially_covered",
+            "docTop": 1169.4375,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 1058.890625
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 2965,
+        "innerHeight": 844,
+        "target": "50",
+        "scrollY": 1061,
+        "scrollWanted": 1060.5,
+        "maxScroll": 2121,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 110.546875,
+            "width": 362,
+            "height": 50.546875
+          }
+        ]
+      },
+      "max": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [
+          {
+            "text": "\u589e\u957f\u4e0e\u5b9e\u4f53\u7ecf\u6d4e",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 75.484375,
+              "left": 65,
+              "right": 170,
+              "bottom": 96.484375
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 2196.484375,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 2085.9375
+          },
+          {
+            "text": "\u7ecf\u6d4e\u662f\u5728\u52a0\u901f\u8fd8\u662f\u5728\u653e\u7f13\u3002",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 100.984375,
+              "left": 65,
+              "right": 224.125,
+              "bottom": 118.984375
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_partially_covered",
+            "docTop": 2221.984375,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 2111.4375
+          },
+          {
+            "text": "\u2192",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 77.234375,
+              "left": 315,
+              "right": 328,
+              "bottom": 95.234375
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 14,
+              "right": 376,
+              "bottom": 110.546875
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 2198.234375,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 2087.6875
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 2965,
+        "innerHeight": 844,
+        "target": "max",
+        "scrollY": 2121,
+        "scrollWanted": 2121,
+        "maxScroll": 2121,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 110.546875,
+            "width": 362,
+            "height": 50.546875
+          }
+        ]
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
+    "mmbBootDisplay": "none",
+    "mmbBootBox": null,
+    "excusedCounts": {
+      "0": 0,
+      "50": 2,
+      "max": 3
+    }
+  },
+  "clearance_768_dark_en": {
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 2125,
+        "innerHeight": 1400,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 725,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 674.625,
+            "left": 18,
+            "right": 750,
+            "bottom": 725.171875,
+            "width": 732,
+            "height": 50.546875
+          }
+        ]
+      },
+      "50": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 2125,
+        "innerHeight": 1400,
+        "target": "50",
+        "scrollY": 363,
+        "scrollWanted": 362.5,
+        "maxScroll": 725,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 311.625,
+            "left": 18,
+            "right": 750,
+            "bottom": 362.171875,
+            "width": 732,
+            "height": 50.546875
+          }
+        ]
+      },
+      "max": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [
+          {
+            "text": "What this means for you",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 85.5625,
+              "left": 78,
+              "right": 244.03125,
+              "bottom": 103.5625
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 18,
+              "right": 750,
+              "bottom": 110.546875
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 810.5625,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 700.015625
+          },
+          {
+            "text": ":",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 85.5625,
+              "left": 244.03125,
+              "right": 248.25,
+              "bottom": 103.5625
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 18,
+              "right": 750,
+              "bottom": 110.546875
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 810.5625,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 700.015625
+          },
+          {
+            "text": "Some desks have not reported yet. The latest readings are below \u2014 there is no ea",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 86.5625,
+              "left": 79,
+              "right": 662.15625,
+              "bottom": 104.5625
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 18,
+              "right": 750,
+              "bottom": 110.546875
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 811.5625,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 701.015625
+          },
+          {
+            "text": "Some desks have not reported yet. The latest readings are below \u2014 there is no ea",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 109.0625,
+              "left": 79,
+              "right": 241.75,
+              "bottom": 127.0625
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 18,
+              "right": 750,
+              "bottom": 110.546875
+            },
+            "reason": "rail_partially_covered",
+            "docTop": 834.0625,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 723.515625
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 2125,
+        "innerHeight": 1400,
+        "target": "max",
+        "scrollY": 725,
+        "scrollWanted": 725,
+        "maxScroll": 725,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 18,
+            "right": 750,
+            "bottom": 110.546875,
+            "width": 732,
+            "height": 50.546875
+          }
+        ]
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
+    "mmbBootDisplay": "none",
+    "mmbBootBox": null,
+    "excusedCounts": {
+      "0": 0,
+      "50": 0,
+      "max": 4
+    }
+  },
+  "clearance_768_light_en": {
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 2133,
+        "innerHeight": 1400,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 733,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 680.625,
+            "left": 18,
+            "right": 750,
+            "bottom": 731.171875,
+            "width": 732,
+            "height": 50.546875
+          }
+        ]
+      },
+      "50": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 2133,
+        "innerHeight": 1400,
+        "target": "50",
+        "scrollY": 367,
+        "scrollWanted": 366.5,
+        "maxScroll": 733,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 313.625,
+            "left": 18,
+            "right": 750,
+            "bottom": 364.171875,
+            "width": 732,
+            "height": 50.546875
+          }
+        ]
+      },
+      "max": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [
+          {
+            "text": "What this means for you",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 83.5625,
+              "left": 78,
+              "right": 244.03125,
+              "bottom": 101.5625
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 18,
+              "right": 750,
+              "bottom": 110.546875
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 816.5625,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 706.015625
+          },
+          {
+            "text": ":",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 83.5625,
+              "left": 244.03125,
+              "right": 248.25,
+              "bottom": 101.5625
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 18,
+              "right": 750,
+              "bottom": 110.546875
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 816.5625,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 706.015625
+          },
+          {
+            "text": "Some desks have not reported yet. The latest readings are below \u2014 there is no ea",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 84.5625,
+              "left": 79,
+              "right": 662.15625,
+              "bottom": 102.5625
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 18,
+              "right": 750,
+              "bottom": 110.546875
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 817.5625,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 707.015625
+          },
+          {
+            "text": "Some desks have not reported yet. The latest readings are below \u2014 there is no ea",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 107.0625,
+              "left": 79,
+              "right": 241.75,
+              "bottom": 125.0625
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 18,
+              "right": 750,
+              "bottom": 110.546875
+            },
+            "reason": "rail_partially_covered",
+            "docTop": 840.0625,
+            "ovHeight": 50.546875,
+            "ovBottom": 110.546875,
+            "exposedAtScrollY": 729.515625
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 2133,
+        "innerHeight": 1400,
+        "target": "max",
+        "scrollY": 733,
+        "scrollWanted": 733,
+        "maxScroll": 733,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 18,
+            "right": 750,
+            "bottom": 110.546875,
+            "width": 732,
+            "height": 50.546875
+          }
+        ]
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
+    "mmbBootDisplay": "none",
+    "mmbBootBox": null,
+    "excusedCounts": {
+      "0": 0,
+      "50": 0,
+      "max": 4
+    }
+  },
+  "strip_void_probes": {
+    "dark_en": {
+      "ok": true,
+      "chipCount": 5,
+      "childCount": 5,
+      "emptyChildren": 0,
+      "stripBg": "rgba(0, 0, 0, 0)",
+      "stripFilled": false,
+      "bodyBackgroundColor": "rgb(13, 16, 24)",
+      "bgToken": "#0d1018",
+      "voids": [],
+      "maxVoidWidth": 0,
+      "voidWiderThan40": false,
+      "chipBoxes": [
+        {
+          "left": 332,
+          "right": 578,
+          "top": 386.859375,
+          "bottom": 491.15625,
+          "width": 246,
+          "height": 104.296875
+        },
+        {
+          "left": 586,
+          "right": 832,
+          "top": 386.859375,
+          "bottom": 491.15625,
+          "width": 246,
+          "height": 104.296875
+        },
+        {
+          "left": 840,
+          "right": 1086,
+          "top": 386.859375,
+          "bottom": 491.15625,
+          "width": 246,
+          "height": 104.296875
+        },
+        {
+          "left": 1094,
+          "right": 1340,
+          "top": 386.859375,
+          "bottom": 491.15625,
+          "width": 246,
+          "height": 104.296875
+        },
+        {
+          "left": 332,
+          "right": 1340,
+          "top": 499.15625,
+          "bottom": 576.453125,
+          "width": 1008,
+          "height": 77.296875
+        }
+      ],
+      "stripBox": {
+        "left": 332,
+        "right": 1340,
+        "top": 386.859375,
+        "bottom": 576.453125,
+        "width": 1008,
+        "height": 189.59375
+      },
+      "viewport": {
+        "innerWidth": 1440,
+        "innerHeight": 900,
+        "stripWidth": 1008
+      },
+      "scrollY": 0,
+      "scrollYAtMeasure": 0.0,
+      "scrollYAtShot": 0.0,
+      "pixelVoidWiderThan40": false,
+      "pixelVoids": [],
+      "pixelVoidCount": 0,
+      "pixelsScanned": 421344,
+      "canvasRgb": [
+        13,
+        16,
+        24
+      ],
+      "canvasSource": "strip-inter-chip-gap (582.00css,439.01css) gapCss=8.00",
+      "bgTokenRgb": [
+        13,
+        16,
+        24
+      ],
+      "delta": [
+        0,
+        0,
+        0
+      ],
+      "band": {
+        "x0": 664,
+        "x1": 2680,
+        "y0": 773,
+        "y1": 982
+      }
+    },
+    "dark_zh": {
+      "ok": true,
+      "chipCount": 5,
+      "childCount": 5,
+      "emptyChildren": 0,
+      "stripBg": "rgba(0, 0, 0, 0)",
+      "stripFilled": false,
+      "bodyBackgroundColor": "rgb(13, 16, 24)",
+      "bgToken": "#0d1018",
+      "voids": [],
+      "maxVoidWidth": 0,
+      "voidWiderThan40": false,
+      "chipBoxes": [
+        {
+          "left": 332,
+          "right": 578,
+          "top": 322.609375,
+          "bottom": 413.40625,
+          "width": 246,
+          "height": 90.796875
+        },
+        {
+          "left": 586,
+          "right": 832,
+          "top": 322.609375,
+          "bottom": 413.40625,
+          "width": 246,
+          "height": 90.796875
+        },
+        {
+          "left": 840,
+          "right": 1086,
+          "top": 322.609375,
+          "bottom": 413.40625,
+          "width": 246,
+          "height": 90.796875
+        },
+        {
+          "left": 1094,
+          "right": 1340,
+          "top": 322.609375,
+          "bottom": 413.40625,
+          "width": 246,
+          "height": 90.796875
+        },
+        {
+          "left": 332,
+          "right": 1340,
+          "top": 421.40625,
+          "bottom": 498.703125,
+          "width": 1008,
+          "height": 77.296875
+        }
+      ],
+      "stripBox": {
+        "left": 332,
+        "right": 1340,
+        "top": 322.609375,
+        "bottom": 498.703125,
+        "width": 1008,
+        "height": 176.09375
+      },
+      "viewport": {
+        "innerWidth": 1440,
+        "innerHeight": 900,
+        "stripWidth": 1008
+      },
+      "scrollY": 0,
+      "scrollYAtMeasure": 0.0,
+      "scrollYAtShot": 0.0,
+      "pixelVoidWiderThan40": false,
+      "pixelVoids": [],
+      "pixelVoidCount": 0,
+      "pixelsScanned": 364896,
+      "canvasRgb": [
+        13,
+        16,
+        24
+      ],
+      "canvasSource": "strip-inter-chip-gap (582.00css,368.01css) gapCss=8.00",
+      "bgTokenRgb": [
+        13,
+        16,
+        24
+      ],
+      "delta": [
+        0,
+        0,
+        0
+      ],
+      "band": {
+        "x0": 664,
+        "x1": 2680,
+        "y0": 645,
+        "y1": 826
+      }
+    },
+    "light_en": {
+      "ok": true,
+      "chipCount": 5,
+      "childCount": 5,
+      "emptyChildren": 0,
+      "stripBg": "rgba(0, 0, 0, 0)",
+      "stripFilled": false,
+      "bodyBackgroundColor": "rgb(232, 235, 241)",
+      "bgToken": "#e8ebf1",
+      "voids": [],
+      "maxVoidWidth": 0,
+      "voidWiderThan40": false,
+      "chipBoxes": [
+        {
+          "left": 332,
+          "right": 578,
+          "top": 386.859375,
+          "bottom": 493.15625,
+          "width": 246,
+          "height": 106.296875
+        },
+        {
+          "left": 586,
+          "right": 832,
+          "top": 386.859375,
+          "bottom": 493.15625,
+          "width": 246,
+          "height": 106.296875
+        },
+        {
+          "left": 840,
+          "right": 1086,
+          "top": 386.859375,
+          "bottom": 493.15625,
+          "width": 246,
+          "height": 106.296875
+        },
+        {
+          "left": 1094,
+          "right": 1340,
+          "top": 386.859375,
+          "bottom": 493.15625,
+          "width": 246,
+          "height": 106.296875
+        },
+        {
+          "left": 332,
+          "right": 1340,
+          "top": 501.15625,
+          "bottom": 580.453125,
+          "width": 1008,
+          "height": 79.296875
+        }
+      ],
+      "stripBox": {
+        "left": 332,
+        "right": 1340,
+        "top": 386.859375,
+        "bottom": 580.453125,
+        "width": 1008,
+        "height": 193.59375
+      },
+      "viewport": {
+        "innerWidth": 1440,
+        "innerHeight": 900,
+        "stripWidth": 1008
+      },
+      "scrollY": 0,
+      "scrollYAtMeasure": 0.0,
+      "scrollYAtShot": 0.0,
+      "pixelVoidWiderThan40": false,
+      "pixelVoids": [],
+      "pixelVoidCount": 0,
+      "pixelsScanned": 429408,
+      "canvasRgb": [
+        232,
+        235,
+        241
+      ],
+      "canvasSource": "strip-inter-chip-gap (582.00css,440.01css) gapCss=8.00",
+      "bgTokenRgb": [
+        232,
+        235,
+        241
+      ],
+      "delta": [
+        0,
+        0,
+        0
+      ],
+      "band": {
+        "x0": 664,
+        "x1": 2680,
+        "y0": 773,
+        "y1": 986
+      }
+    },
+    "light_zh": {
+      "ok": true,
+      "chipCount": 5,
+      "childCount": 5,
+      "emptyChildren": 0,
+      "stripBg": "rgba(0, 0, 0, 0)",
+      "stripFilled": false,
+      "bodyBackgroundColor": "rgb(232, 235, 241)",
+      "bgToken": "#e8ebf1",
+      "voids": [],
+      "maxVoidWidth": 0,
+      "voidWiderThan40": false,
+      "chipBoxes": [
+        {
+          "left": 332,
+          "right": 578,
+          "top": 322.609375,
+          "bottom": 415.40625,
+          "width": 246,
+          "height": 92.796875
+        },
+        {
+          "left": 586,
+          "right": 832,
+          "top": 322.609375,
+          "bottom": 415.40625,
+          "width": 246,
+          "height": 92.796875
+        },
+        {
+          "left": 840,
+          "right": 1086,
+          "top": 322.609375,
+          "bottom": 415.40625,
+          "width": 246,
+          "height": 92.796875
+        },
+        {
+          "left": 1094,
+          "right": 1340,
+          "top": 322.609375,
+          "bottom": 415.40625,
+          "width": 246,
+          "height": 92.796875
+        },
+        {
+          "left": 332,
+          "right": 1340,
+          "top": 423.40625,
+          "bottom": 502.703125,
+          "width": 1008,
+          "height": 79.296875
+        }
+      ],
+      "stripBox": {
+        "left": 332,
+        "right": 1340,
+        "top": 322.609375,
+        "bottom": 502.703125,
+        "width": 1008,
+        "height": 180.09375
+      },
+      "viewport": {
+        "innerWidth": 1440,
+        "innerHeight": 900,
+        "stripWidth": 1008
+      },
+      "scrollY": 0,
+      "scrollYAtMeasure": 0.0,
+      "scrollYAtShot": 0.0,
+      "pixelVoidWiderThan40": false,
+      "pixelVoids": [],
+      "pixelVoidCount": 0,
+      "pixelsScanned": 372960,
+      "canvasRgb": [
+        232,
+        235,
+        241
+      ],
+      "canvasSource": "strip-inter-chip-gap (582.00css,369.01css) gapCss=8.00",
+      "bgTokenRgb": [
+        232,
+        235,
+        241
+      ],
+      "delta": [
+        0,
+        0,
+        0
+      ],
+      "band": {
+        "x0": 664,
+        "x1": 2680,
+        "y0": 645,
+        "y1": 830
+      }
+    }
+  },
+  "fab_display_1440_dark_en": {
+    "present": true,
+    "display": "flex",
+    "position": "fixed",
+    "box": {
+      "top": 822,
+      "bottom": 878,
+      "left": 1215.90625,
+      "right": 1418,
+      "width": 202.09375,
+      "height": 56
+    }
+  },
+  "capture_sha": "54be458c734755e6456f82c98f57bfc9aca2e65c",
+  "commit_time_of_capture_sha": "2026-09-08T09:17:12-07:00",
+  "fab_display_1440_dark_zh": {
+    "present": true,
+    "display": "flex",
+    "position": "fixed",
+    "box": {
+      "top": 822,
+      "bottom": 878,
+      "left": 1246.9375,
+      "right": 1418,
+      "width": 171.0625,
+      "height": 56
+    }
+  },
+  "fab_display_1440_light_en": {
+    "present": true,
+    "display": "flex",
+    "position": "fixed",
+    "box": {
+      "top": 822,
+      "bottom": 878,
+      "left": 1215.90625,
+      "right": 1418,
+      "width": 202.09375,
+      "height": 56
+    }
+  },
+  "fab_display_1440_light_zh": {
+    "present": true,
+    "display": "flex",
+    "position": "fixed",
+    "box": {
+      "top": 822,
+      "bottom": 878,
+      "left": 1246.9375,
+      "right": 1418,
+      "width": 171.0625,
+      "height": 56
+    }
+  },
+  "chip_opens_chat_390_dark_en": {
+    "ok": true,
+    "clicked": "data-mc-analyst",
+    "href": "chat.html",
+    "mountedId": "mmb-root",
+    "mountedClass": "",
+    "mmbPanelPresent": true,
+    "mmBrainMounted": true
+  },
+  "chip_opens_chat_390_light_en": {
+    "ok": true,
+    "clicked": "data-mc-analyst",
+    "href": "chat.html",
+    "mountedId": "mmb-root",
+    "mountedClass": "",
+    "mmbPanelPresent": true,
+    "mmBrainMounted": true
+  },
+  "generated_at_start": "2026-09-08T16:17:17Z",
+  "generated_at_end": "2026-09-08T16:19:41Z",
+  "tree_clean_start": true,
+  "tree_clean_end": true,
+  "head_start": "54be458c734755e6456f82c98f57bfc9aca2e65c",
+  "head_end": "54be458c734755e6456f82c98f57bfc9aca2e65c",
+  "rail_768_dark_zh": {
+    "ok": true,
+    "railBg": "rgb(13, 16, 24)",
+    "shellBg": "rgb(13, 16, 24)",
+    "railAlpha": 1,
+    "equal": true,
+    "position": "sticky",
+    "stanceText": "\u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48:\n\u90e8\u5206\u5c0f\u7ec4\u4eca\u5929\u5c1a\u672a\u53d1\u5e03\u3002\u6700\u65b0\u8bfb\u6570\u5982\u4e0b\u2014\u2014\u6682\u65e0\u66f4\u65e9\u8bfb\u6570\u53ef\u6bd4\u3002",
+    "scrollWidth": 768,
+    "clientWidth": 768,
+    "noDocOverflow": true,
+    "listOverflowX": "auto",
+    "listMaxWidth": "none",
+    "listContain": "inline-size"
+  },
+  "clearance_768_dark_zh": {
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 1915,
+        "innerHeight": 1400,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 515,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 619.390625,
+            "left": 18,
+            "right": 750,
+            "bottom": 669.9375,
+            "width": 732,
+            "height": 50.546875
+          }
+        ]
+      },
+      "50": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 1915,
+        "innerHeight": 1400,
+        "target": "50",
+        "scrollY": 258,
+        "scrollWanted": 257.5,
+        "maxScroll": 515,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 361.390625,
+            "left": 18,
+            "right": 750,
+            "bottom": 411.9375,
+            "width": 732,
+            "height": 50.546875
+          }
+        ]
+      },
+      "max": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 1915,
+        "innerHeight": 1400,
+        "target": "max",
+        "scrollY": 515,
+        "scrollWanted": 515,
+        "maxScroll": 515,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 104.390625,
+            "left": 18,
+            "right": 750,
+            "bottom": 154.9375,
+            "width": 732,
+            "height": 50.546875
+          }
+        ]
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
+    "mmbBootDisplay": "none",
+    "mmbBootBox": null,
+    "excusedCounts": {
+      "0": 0,
+      "50": 0,
+      "max": 0
+    }
+  },
+  "rail_768_light_zh": {
+    "ok": true,
+    "railBg": "rgb(232, 235, 241)",
+    "shellBg": "rgb(232, 235, 241)",
+    "railAlpha": 1,
+    "equal": true,
+    "position": "sticky",
+    "stanceText": "\u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48:\n\u90e8\u5206\u5c0f\u7ec4\u4eca\u5929\u5c1a\u672a\u53d1\u5e03\u3002\u6700\u65b0\u8bfb\u6570\u5982\u4e0b\u2014\u2014\u6682\u65e0\u66f4\u65e9\u8bfb\u6570\u53ef\u6bd4\u3002",
+    "scrollWidth": 768,
+    "clientWidth": 768,
+    "noDocOverflow": true,
+    "listOverflowX": "auto",
+    "listMaxWidth": "none",
+    "listContain": "inline-size"
+  },
+  "clearance_768_light_zh": {
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 1923,
+        "innerHeight": 1400,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 523,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 625.390625,
+            "left": 18,
+            "right": 750,
+            "bottom": 675.9375,
+            "width": 732,
+            "height": 50.546875
+          }
+        ]
+      },
+      "50": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 1923,
+        "innerHeight": 1400,
+        "target": "50",
+        "scrollY": 262,
+        "scrollWanted": 261.5,
+        "maxScroll": 523,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 363.390625,
+            "left": 18,
+            "right": 750,
+            "bottom": 413.9375,
+            "width": 732,
+            "height": 50.546875
+          }
+        ]
+      },
+      "max": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
+        "mmbBootBox": null,
+        "scrollHeight": 1923,
+        "innerHeight": 1400,
+        "target": "max",
+        "scrollY": 523,
+        "scrollWanted": 523,
+        "maxScroll": 523,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "none",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 102.390625,
+            "left": 18,
+            "right": 750,
+            "bottom": 152.9375,
+            "width": 732,
+            "height": 50.546875
+          }
+        ]
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
+    "mmbBootDisplay": "none",
+    "mmbBootBox": null,
+    "excusedCounts": {
+      "0": 0,
+      "50": 0,
+      "max": 0
+    }
+  },
+  "chip_opens_chat_390_dark_zh": {
+    "ok": true,
+    "clicked": "data-mc-analyst",
+    "href": "chat.html",
+    "mountedId": "mmb-root",
+    "mountedClass": "",
+    "mmbPanelPresent": true,
+    "mmBrainMounted": true
+  },
+  "chip_opens_chat_390_light_zh": {
+    "ok": true,
+    "clicked": "data-mc-analyst",
+    "href": "chat.html",
+    "mountedId": "mmb-root",
+    "mountedClass": "",
+    "mmbPanelPresent": true,
+    "mmBrainMounted": true
+  },
+  "e5_timeout_dark_en_1440": {
+    "elapsedMs": 8039.45179104805,
+    "requestSeenAtMs": 844265254.5378749,
+    "cloneSeenAtMs": 844273293.989666,
+    "templatePresent": true,
+    "clonePresent": true,
+    "headline": "This section didn't load"
+  },
+  "e5_timeout_dark_en_390": {
+    "elapsedMs": 8101.184875011444,
+    "requestSeenAtMs": 844273685.576375,
+    "cloneSeenAtMs": 844281786.76125,
+    "templatePresent": true,
+    "clonePresent": true,
+    "headline": "This section didn't load"
+  },
+  "e5_timeout_dark_zh_1440": {
+    "elapsedMs": 8010.179332971573,
+    "requestSeenAtMs": 844282144.537083,
+    "cloneSeenAtMs": 844290154.716416,
+    "templatePresent": true,
+    "clonePresent": true,
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165"
+  },
+  "e5_timeout_dark_zh_390": {
+    "elapsedMs": 8086.035457968712,
+    "requestSeenAtMs": 844290535.2365,
+    "cloneSeenAtMs": 844298621.271958,
+    "templatePresent": true,
+    "clonePresent": true,
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165"
+  },
+  "e5_timeout_light_en_1440": {
+    "elapsedMs": 8053.582000017166,
+    "requestSeenAtMs": 844299085.446208,
+    "cloneSeenAtMs": 844307139.028208,
+    "templatePresent": true,
+    "clonePresent": true,
+    "headline": "This section didn't load"
+  },
+  "e5_timeout_light_en_390": {
+    "elapsedMs": 8012.973667025566,
+    "requestSeenAtMs": 844307517.525708,
+    "cloneSeenAtMs": 844315530.499375,
+    "templatePresent": true,
+    "clonePresent": true,
+    "headline": "This section didn't load"
+  },
+  "e5_timeout_light_zh_1440": {
+    "elapsedMs": 8035.071999907494,
+    "requestSeenAtMs": 844315984.2974161,
+    "cloneSeenAtMs": 844324019.369416,
+    "templatePresent": true,
+    "clonePresent": true,
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165"
+  },
+  "e5_timeout_light_zh_390": {
+    "elapsedMs": 8004.034125089645,
+    "requestSeenAtMs": 844324392.438833,
+    "cloneSeenAtMs": 844332396.4729581,
+    "templatePresent": true,
+    "clonePresent": true,
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165"
+  },
+  "rail_viewport_dark_en_390": {
+    "ok": true,
+    "firstFullyVisibleAt0": true,
+    "everyReachable": true,
+    "fadeBandOk": true,
+    "maskOk": true,
+    "ownLabelOk": true,
+    "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "fadeWidth": 24.0,
+    "fadeLeft": 186.9375,
+    "fadeBeginsBeforeAnalyst": 56,
+    "maxScrollLeft": 438.0,
+    "at0": {
+      "scrollLeft": 0,
+      "listBox": {
+        "left": 32,
+        "right": 210.9375,
+        "width": 178.9375,
+        "height": 33.546875
+      },
+      "analystBox": {
+        "left": 242.9375,
+        "right": 358,
+        "width": 115.0625,
+        "height": 31.546875
+      },
+      "fadeWidth": 24,
+      "fadeLeft": 186.9375,
+      "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+      "chips": [
+        {
+          "label": "Overview",
+          "fraction": 1,
+          "box": {
+            "left": 32,
+            "right": 131.15625,
+            "top": 68,
+            "bottom": 101.546875,
+            "width": 99.15625,
+            "height": 33.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 97,
+          "clientWidth": 97,
+          "selfClips": false
+        },
+        {
+          "label": "Money & liquidity",
+          "fraction": 0.3458907827597438,
+          "box": {
+            "left": 137.15625,
+            "right": 281.078125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 143.921875,
+            "height": 31.546875
+          },
+          "underAnalyst": true,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 144,
+          "clientWidth": 144,
+          "selfClips": false
+        },
+        {
+          "label": "Policy rates",
+          "fraction": 0,
+          "box": {
+            "left": 287.078125,
+            "right": 395.703125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 108.625,
+            "height": 31.546875
+          },
+          "underAnalyst": true,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 109,
+          "clientWidth": 109,
+          "selfClips": false
+        },
+        {
+          "label": "Rates & the curve",
+          "fraction": 0,
+          "box": {
+            "left": 401.703125,
+            "right": 532.625,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 130.921875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 131,
+          "clientWidth": 131,
+          "selfClips": false
+        },
+        {
+          "label": "Inflation",
+          "fraction": 0,
+          "box": {
+            "left": 538.625,
+            "right": 624.953125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 86.328125,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 86,
+          "clientWidth": 86,
+          "selfClips": false
+        }
+      ]
+    },
+    "atMax": {
+      "scrollLeft": 438,
+      "listBox": {
+        "left": 32,
+        "right": 210.9375,
+        "width": 178.9375,
+        "height": 33.546875
+      },
+      "analystBox": {
+        "left": 242.9375,
+        "right": 358,
+        "width": 115.0625,
+        "height": 31.546875
+      },
+      "fadeWidth": 24,
+      "fadeLeft": 186.9375,
+      "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+      "chips": [
+        {
+          "label": "Overview",
+          "fraction": 0,
+          "box": {
+            "left": -406,
+            "right": -306.84375,
+            "top": 68,
+            "bottom": 101.546875,
+            "width": 99.15625,
+            "height": 33.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 97,
+          "clientWidth": 97,
+          "selfClips": false
+        },
+        {
+          "label": "Money & liquidity",
+          "fraction": 0,
+          "box": {
+            "left": -300.84375,
+            "right": -156.921875,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 143.921875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 144,
+          "clientWidth": 144,
+          "selfClips": false
+        },
+        {
+          "label": "Policy rates",
+          "fraction": 0,
+          "box": {
+            "left": -150.921875,
+            "right": -42.296875,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 108.625,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 109,
+          "clientWidth": 109,
+          "selfClips": false
+        },
+        {
+          "label": "Rates & the curve",
+          "fraction": 0.4783387039026137,
+          "box": {
+            "left": -36.296875,
+            "right": 94.625,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 130.921875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 131,
+          "clientWidth": 131,
+          "selfClips": false
+        },
+        {
+          "label": "Inflation",
+          "fraction": 0.9998190045248869,
+          "box": {
+            "left": 100.625,
+            "right": 186.953125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 86.328125,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 86,
+          "clientWidth": 86,
+          "selfClips": false
+        }
+      ]
+    },
+    "chips": [
+      {
+        "label": "Overview",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 97,
+        "clientWidth": 97,
+        "selfClips": false
+      },
+      {
+        "label": "Money & liquidity",
+        "fullyVisibleAtScrollLeft": 99,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 144,
+        "clientWidth": 144,
+        "selfClips": false
+      },
+      {
+        "label": "Policy rates",
+        "fullyVisibleAtScrollLeft": 227,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 109,
+        "clientWidth": 109,
+        "selfClips": false
+      },
+      {
+        "label": "Rates & the curve",
+        "fullyVisibleAtScrollLeft": 364,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 131,
+        "clientWidth": 131,
+        "selfClips": false
+      },
+      {
+        "label": "Inflation",
+        "fullyVisibleAtScrollLeft": 438,
+        "fraction": 0.9998190045248869,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 86,
+        "clientWidth": 86,
+        "selfClips": false
+      }
+    ],
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 185.9375,
+    "fadeVisualStartX": 185.9375,
+    "fadeVisualHalfX": 185.9375,
+    "fadeHalfDelta": -1.0
+  },
+  "chip_material_dark_en_390": {
+    "ok": true,
+    "analyst": {
+      "borderRadius": "999px",
+      "borderTopWidth": "0px",
+      "borderRightWidth": "0px",
+      "borderBottomWidth": "0px",
+      "borderLeftWidth": "0px",
+      "borderTopStyle": "none",
+      "paddingTop": "7px",
+      "paddingRight": "10px",
+      "paddingBottom": "7px",
+      "paddingLeft": "10px",
+      "fontSize": "13.5px"
+    },
+    "sibling": {
+      "borderRadius": "999px",
+      "borderTopWidth": "0px",
+      "borderRightWidth": "0px",
+      "borderBottomWidth": "0px",
+      "borderLeftWidth": "0px",
+      "borderTopStyle": "none",
+      "paddingTop": "7px",
+      "paddingRight": "10px",
+      "paddingBottom": "7px",
+      "paddingLeft": "10px",
+      "fontSize": "13.5px"
+    },
+    "mismatches": []
+  },
+  "rail_viewport_dark_zh_390": {
+    "ok": true,
+    "firstFullyVisibleAt0": true,
+    "everyReachable": true,
+    "fadeBandOk": true,
+    "maskOk": true,
+    "ownLabelOk": true,
+    "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "fadeWidth": 24.0,
+    "fadeLeft": 226.90625,
+    "fadeBeginsBeforeAnalyst": 56,
+    "maxScrollLeft": 297.0,
+    "at0": {
+      "scrollLeft": 0,
+      "listBox": {
+        "left": 32,
+        "right": 250.90625,
+        "width": 218.90625,
+        "height": 33.546875
+      },
+      "analystBox": {
+        "left": 282.90625,
+        "right": 358,
+        "width": 75.09375,
+        "height": 31.546875
+      },
+      "fadeWidth": 24,
+      "fadeLeft": 226.90625,
+      "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+      "chips": [
+        {
+          "label": "\u603b\u89c8",
+          "fraction": 1,
+          "box": {
+            "left": 32,
+            "right": 97,
+            "top": 68,
+            "bottom": 101.546875,
+            "width": 65,
+            "height": 33.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 63,
+          "clientWidth": 63,
+          "selfClips": false
+        },
+        {
+          "label": "\u8d44\u91d1\u4e0e\u6d41\u52a8\u6027",
+          "fraction": 1,
+          "box": {
+            "left": 103,
+            "right": 221.625,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 118.625,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 119,
+          "clientWidth": 119,
+          "selfClips": false
+        },
+        {
+          "label": "\u653f\u7b56\u5229\u7387",
+          "fraction": 0,
+          "box": {
+            "left": 227.625,
+            "right": 318.71875,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 91.09375,
+            "height": 31.546875
+          },
+          "underAnalyst": true,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 91,
+          "clientWidth": 91,
+          "selfClips": false
+        },
+        {
+          "label": "\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf",
+          "fraction": 0,
+          "box": {
+            "left": 324.71875,
+            "right": 454.890625,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 130.171875,
+            "height": 31.546875
+          },
+          "underAnalyst": true,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 130,
+          "clientWidth": 130,
+          "selfClips": false
+        },
+        {
+          "label": "\u901a\u80c0",
+          "fraction": 0,
+          "box": {
+            "left": 460.890625,
+            "right": 524.4375,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 63.546875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 64,
+          "clientWidth": 64,
+          "selfClips": false
+        }
+      ]
+    },
+    "atMax": {
+      "scrollLeft": 297,
+      "listBox": {
+        "left": 32,
+        "right": 250.90625,
+        "width": 218.90625,
+        "height": 33.546875
+      },
+      "analystBox": {
+        "left": 282.90625,
+        "right": 358,
+        "width": 75.09375,
+        "height": 31.546875
+      },
+      "fadeWidth": 24,
+      "fadeLeft": 226.90625,
+      "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+      "chips": [
+        {
+          "label": "\u603b\u89c8",
+          "fraction": 0,
+          "box": {
+            "left": -265,
+            "right": -200,
+            "top": 68,
+            "bottom": 101.546875,
+            "width": 65,
+            "height": 33.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 63,
+          "clientWidth": 63,
+          "selfClips": false
+        },
+        {
+          "label": "\u8d44\u91d1\u4e0e\u6d41\u52a8\u6027",
+          "fraction": 0,
+          "box": {
+            "left": -194,
+            "right": -75.375,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 118.625,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 119,
+          "clientWidth": 119,
+          "selfClips": false
+        },
+        {
+          "label": "\u653f\u7b56\u5229\u7387",
+          "fraction": 0,
+          "box": {
+            "left": -69.375,
+            "right": 21.71875,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 91.09375,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 91,
+          "clientWidth": 91,
+          "selfClips": false
+        },
+        {
+          "label": "\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf",
+          "fraction": 0.967110791021486,
+          "box": {
+            "left": 27.71875,
+            "right": 157.890625,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 130.171875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 130,
+          "clientWidth": 130,
+          "selfClips": false
+        },
+        {
+          "label": "\u901a\u80c0",
+          "fraction": 0.9916400295057782,
+          "box": {
+            "left": 163.890625,
+            "right": 227.4375,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 63.546875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 64,
+          "clientWidth": 64,
+          "selfClips": false
+        }
+      ]
+    },
+    "chips": [
+      {
+        "label": "\u603b\u89c8",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 63,
+        "clientWidth": 63,
+        "selfClips": false
+      },
+      {
+        "label": "\u8d44\u91d1\u4e0e\u6d41\u52a8\u6027",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 119,
+        "clientWidth": 119,
+        "selfClips": false
+      },
+      {
+        "label": "\u653f\u7b56\u5229\u7387",
+        "fullyVisibleAtScrollLeft": 110,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 91,
+        "clientWidth": 91,
+        "selfClips": false
+      },
+      {
+        "label": "\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf",
+        "fullyVisibleAtScrollLeft": 246,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 130,
+        "clientWidth": 130,
+        "selfClips": false
+      },
+      {
+        "label": "\u901a\u80c0",
+        "fullyVisibleAtScrollLeft": 297,
+        "fraction": 0.9916400295057782,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 64,
+        "clientWidth": 64,
+        "selfClips": false
+      }
+    ],
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 227.90625,
+    "fadeVisualStartX": 240.90625,
+    "fadeVisualHalfX": 240.90625,
+    "fadeHalfDelta": 14.0
+  },
+  "chip_material_dark_zh_390": {
+    "ok": true,
+    "analyst": {
+      "borderRadius": "999px",
+      "borderTopWidth": "0px",
+      "borderRightWidth": "0px",
+      "borderBottomWidth": "0px",
+      "borderLeftWidth": "0px",
+      "borderTopStyle": "none",
+      "paddingTop": "7px",
+      "paddingRight": "10px",
+      "paddingBottom": "7px",
+      "paddingLeft": "10px",
+      "fontSize": "13.5px"
+    },
+    "sibling": {
+      "borderRadius": "999px",
+      "borderTopWidth": "0px",
+      "borderRightWidth": "0px",
+      "borderBottomWidth": "0px",
+      "borderLeftWidth": "0px",
+      "borderTopStyle": "none",
+      "paddingTop": "7px",
+      "paddingRight": "10px",
+      "paddingBottom": "7px",
+      "paddingLeft": "10px",
+      "fontSize": "13.5px"
+    },
+    "mismatches": []
+  },
+  "rail_viewport_light_en_390": {
+    "ok": true,
+    "firstFullyVisibleAt0": true,
+    "everyReachable": true,
+    "fadeBandOk": true,
+    "maskOk": true,
+    "ownLabelOk": true,
+    "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "fadeWidth": 24.0,
+    "fadeLeft": 186.9375,
+    "fadeBeginsBeforeAnalyst": 56,
+    "maxScrollLeft": 438.0,
+    "at0": {
+      "scrollLeft": 0,
+      "listBox": {
+        "left": 32,
+        "right": 210.9375,
+        "width": 178.9375,
+        "height": 33.546875
+      },
+      "analystBox": {
+        "left": 242.9375,
+        "right": 358,
+        "width": 115.0625,
+        "height": 31.546875
+      },
+      "fadeWidth": 24,
+      "fadeLeft": 186.9375,
+      "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+      "chips": [
+        {
+          "label": "Overview",
+          "fraction": 1,
+          "box": {
+            "left": 32,
+            "right": 131.15625,
+            "top": 68,
+            "bottom": 101.546875,
+            "width": 99.15625,
+            "height": 33.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 97,
+          "clientWidth": 97,
+          "selfClips": false
+        },
+        {
+          "label": "Money & liquidity",
+          "fraction": 0.3458907827597438,
+          "box": {
+            "left": 137.15625,
+            "right": 281.078125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 143.921875,
+            "height": 31.546875
+          },
+          "underAnalyst": true,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 144,
+          "clientWidth": 144,
+          "selfClips": false
+        },
+        {
+          "label": "Policy rates",
+          "fraction": 0,
+          "box": {
+            "left": 287.078125,
+            "right": 395.703125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 108.625,
+            "height": 31.546875
+          },
+          "underAnalyst": true,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 109,
+          "clientWidth": 109,
+          "selfClips": false
+        },
+        {
+          "label": "Rates & the curve",
+          "fraction": 0,
+          "box": {
+            "left": 401.703125,
+            "right": 532.625,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 130.921875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 131,
+          "clientWidth": 131,
+          "selfClips": false
+        },
+        {
+          "label": "Inflation",
+          "fraction": 0,
+          "box": {
+            "left": 538.625,
+            "right": 624.953125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 86.328125,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 86,
+          "clientWidth": 86,
+          "selfClips": false
+        }
+      ]
+    },
+    "atMax": {
+      "scrollLeft": 438,
+      "listBox": {
+        "left": 32,
+        "right": 210.9375,
+        "width": 178.9375,
+        "height": 33.546875
+      },
+      "analystBox": {
+        "left": 242.9375,
+        "right": 358,
+        "width": 115.0625,
+        "height": 31.546875
+      },
+      "fadeWidth": 24,
+      "fadeLeft": 186.9375,
+      "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+      "chips": [
+        {
+          "label": "Overview",
+          "fraction": 0,
+          "box": {
+            "left": -406,
+            "right": -306.84375,
+            "top": 68,
+            "bottom": 101.546875,
+            "width": 99.15625,
+            "height": 33.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 97,
+          "clientWidth": 97,
+          "selfClips": false
+        },
+        {
+          "label": "Money & liquidity",
+          "fraction": 0,
+          "box": {
+            "left": -300.84375,
+            "right": -156.921875,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 143.921875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 144,
+          "clientWidth": 144,
+          "selfClips": false
+        },
+        {
+          "label": "Policy rates",
+          "fraction": 0,
+          "box": {
+            "left": -150.921875,
+            "right": -42.296875,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 108.625,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 109,
+          "clientWidth": 109,
+          "selfClips": false
+        },
+        {
+          "label": "Rates & the curve",
+          "fraction": 0.4783387039026137,
+          "box": {
+            "left": -36.296875,
+            "right": 94.625,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 130.921875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 131,
+          "clientWidth": 131,
+          "selfClips": false
+        },
+        {
+          "label": "Inflation",
+          "fraction": 0.9998190045248869,
+          "box": {
+            "left": 100.625,
+            "right": 186.953125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 86.328125,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 86,
+          "clientWidth": 86,
+          "selfClips": false
+        }
+      ]
+    },
+    "chips": [
+      {
+        "label": "Overview",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 97,
+        "clientWidth": 97,
+        "selfClips": false
+      },
+      {
+        "label": "Money & liquidity",
+        "fullyVisibleAtScrollLeft": 99,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 144,
+        "clientWidth": 144,
+        "selfClips": false
+      },
+      {
+        "label": "Policy rates",
+        "fullyVisibleAtScrollLeft": 227,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 109,
+        "clientWidth": 109,
+        "selfClips": false
+      },
+      {
+        "label": "Rates & the curve",
+        "fullyVisibleAtScrollLeft": 364,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 131,
+        "clientWidth": 131,
+        "selfClips": false
+      },
+      {
+        "label": "Inflation",
+        "fullyVisibleAtScrollLeft": 438,
+        "fraction": 0.9998190045248869,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 86,
+        "clientWidth": 86,
+        "selfClips": false
+      }
+    ],
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 185.9375,
+    "fadeVisualStartX": 185.9375,
+    "fadeVisualHalfX": 185.9375,
+    "fadeHalfDelta": -1.0
+  },
+  "chip_material_light_en_390": {
+    "ok": true,
+    "analyst": {
+      "borderRadius": "999px",
+      "borderTopWidth": "0px",
+      "borderRightWidth": "0px",
+      "borderBottomWidth": "0px",
+      "borderLeftWidth": "0px",
+      "borderTopStyle": "none",
+      "paddingTop": "7px",
+      "paddingRight": "10px",
+      "paddingBottom": "7px",
+      "paddingLeft": "10px",
+      "fontSize": "13.5px"
+    },
+    "sibling": {
+      "borderRadius": "999px",
+      "borderTopWidth": "0px",
+      "borderRightWidth": "0px",
+      "borderBottomWidth": "0px",
+      "borderLeftWidth": "0px",
+      "borderTopStyle": "none",
+      "paddingTop": "7px",
+      "paddingRight": "10px",
+      "paddingBottom": "7px",
+      "paddingLeft": "10px",
+      "fontSize": "13.5px"
+    },
+    "mismatches": []
+  },
+  "rail_viewport_light_zh_390": {
+    "ok": true,
+    "firstFullyVisibleAt0": true,
+    "everyReachable": true,
+    "fadeBandOk": true,
+    "maskOk": true,
+    "ownLabelOk": true,
+    "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "fadeWidth": 24.0,
+    "fadeLeft": 226.90625,
+    "fadeBeginsBeforeAnalyst": 56,
+    "maxScrollLeft": 297.0,
+    "at0": {
+      "scrollLeft": 0,
+      "listBox": {
+        "left": 32,
+        "right": 250.90625,
+        "width": 218.90625,
+        "height": 33.546875
+      },
+      "analystBox": {
+        "left": 282.90625,
+        "right": 358,
+        "width": 75.09375,
+        "height": 31.546875
+      },
+      "fadeWidth": 24,
+      "fadeLeft": 226.90625,
+      "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+      "chips": [
+        {
+          "label": "\u603b\u89c8",
+          "fraction": 1,
+          "box": {
+            "left": 32,
+            "right": 97,
+            "top": 68,
+            "bottom": 101.546875,
+            "width": 65,
+            "height": 33.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 63,
+          "clientWidth": 63,
+          "selfClips": false
+        },
+        {
+          "label": "\u8d44\u91d1\u4e0e\u6d41\u52a8\u6027",
+          "fraction": 1,
+          "box": {
+            "left": 103,
+            "right": 221.625,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 118.625,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 119,
+          "clientWidth": 119,
+          "selfClips": false
+        },
+        {
+          "label": "\u653f\u7b56\u5229\u7387",
+          "fraction": 0,
+          "box": {
+            "left": 227.625,
+            "right": 318.71875,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 91.09375,
+            "height": 31.546875
+          },
+          "underAnalyst": true,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 91,
+          "clientWidth": 91,
+          "selfClips": false
+        },
+        {
+          "label": "\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf",
+          "fraction": 0,
+          "box": {
+            "left": 324.71875,
+            "right": 454.890625,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 130.171875,
+            "height": 31.546875
+          },
+          "underAnalyst": true,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 130,
+          "clientWidth": 130,
+          "selfClips": false
+        },
+        {
+          "label": "\u901a\u80c0",
+          "fraction": 0,
+          "box": {
+            "left": 460.890625,
+            "right": 524.4375,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 63.546875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 64,
+          "clientWidth": 64,
+          "selfClips": false
+        }
+      ]
+    },
+    "atMax": {
+      "scrollLeft": 297,
+      "listBox": {
+        "left": 32,
+        "right": 250.90625,
+        "width": 218.90625,
+        "height": 33.546875
+      },
+      "analystBox": {
+        "left": 282.90625,
+        "right": 358,
+        "width": 75.09375,
+        "height": 31.546875
+      },
+      "fadeWidth": 24,
+      "fadeLeft": 226.90625,
+      "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+      "chips": [
+        {
+          "label": "\u603b\u89c8",
+          "fraction": 0,
+          "box": {
+            "left": -265,
+            "right": -200,
+            "top": 68,
+            "bottom": 101.546875,
+            "width": 65,
+            "height": 33.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 63,
+          "clientWidth": 63,
+          "selfClips": false
+        },
+        {
+          "label": "\u8d44\u91d1\u4e0e\u6d41\u52a8\u6027",
+          "fraction": 0,
+          "box": {
+            "left": -194,
+            "right": -75.375,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 118.625,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 119,
+          "clientWidth": 119,
+          "selfClips": false
+        },
+        {
+          "label": "\u653f\u7b56\u5229\u7387",
+          "fraction": 0,
+          "box": {
+            "left": -69.375,
+            "right": 21.71875,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 91.09375,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 91,
+          "clientWidth": 91,
+          "selfClips": false
+        },
+        {
+          "label": "\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf",
+          "fraction": 0.967110791021486,
+          "box": {
+            "left": 27.71875,
+            "right": 157.890625,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 130.171875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 130,
+          "clientWidth": 130,
+          "selfClips": false
+        },
+        {
+          "label": "\u901a\u80c0",
+          "fraction": 0.9916400295057782,
+          "box": {
+            "left": 163.890625,
+            "right": 227.4375,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 63.546875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 64,
+          "clientWidth": 64,
+          "selfClips": false
+        }
+      ]
+    },
+    "chips": [
+      {
+        "label": "\u603b\u89c8",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 63,
+        "clientWidth": 63,
+        "selfClips": false
+      },
+      {
+        "label": "\u8d44\u91d1\u4e0e\u6d41\u52a8\u6027",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 119,
+        "clientWidth": 119,
+        "selfClips": false
+      },
+      {
+        "label": "\u653f\u7b56\u5229\u7387",
+        "fullyVisibleAtScrollLeft": 110,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 91,
+        "clientWidth": 91,
+        "selfClips": false
+      },
+      {
+        "label": "\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf",
+        "fullyVisibleAtScrollLeft": 246,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 130,
+        "clientWidth": 130,
+        "selfClips": false
+      },
+      {
+        "label": "\u901a\u80c0",
+        "fullyVisibleAtScrollLeft": 297,
+        "fraction": 0.9916400295057782,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 64,
+        "clientWidth": 64,
+        "selfClips": false
+      }
+    ],
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 227.90625,
+    "fadeVisualStartX": 240.90625,
+    "fadeVisualHalfX": 240.90625,
+    "fadeHalfDelta": 14.0
+  },
+  "chip_material_light_zh_390": {
+    "ok": true,
+    "analyst": {
+      "borderRadius": "999px",
+      "borderTopWidth": "0px",
+      "borderRightWidth": "0px",
+      "borderBottomWidth": "0px",
+      "borderLeftWidth": "0px",
+      "borderTopStyle": "none",
+      "paddingTop": "7px",
+      "paddingRight": "10px",
+      "paddingBottom": "7px",
+      "paddingLeft": "10px",
+      "fontSize": "13.5px"
+    },
+    "sibling": {
+      "borderRadius": "999px",
+      "borderTopWidth": "0px",
+      "borderRightWidth": "0px",
+      "borderBottomWidth": "0px",
+      "borderLeftWidth": "0px",
+      "borderTopStyle": "none",
+      "paddingTop": "7px",
+      "paddingRight": "10px",
+      "paddingBottom": "7px",
+      "paddingLeft": "10px",
+      "fontSize": "13.5px"
+    },
+    "mismatches": []
+  },
+  "rail_viewport_dark_en_768": {
+    "ok": true,
+    "firstFullyVisibleAt0": true,
+    "everyReachable": true,
+    "fadeBandOk": true,
+    "maskOk": true,
+    "ownLabelOk": true,
+    "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "fadeWidth": 24.0,
+    "fadeLeft": 560.9375,
+    "fadeBeginsBeforeAnalyst": 56,
+    "maxScrollLeft": 68.0,
+    "at0": {
+      "scrollLeft": 0,
+      "listBox": {
+        "left": 36,
+        "right": 584.9375,
+        "width": 548.9375,
+        "height": 33.546875
+      },
+      "analystBox": {
+        "left": 616.9375,
+        "right": 732,
+        "width": 115.0625,
+        "height": 31.546875
+      },
+      "fadeWidth": 24,
+      "fadeLeft": 560.9375,
+      "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+      "chips": [
+        {
+          "label": "Overview",
+          "fraction": 1,
+          "box": {
+            "left": 36,
+            "right": 135.15625,
+            "top": 68,
+            "bottom": 101.546875,
+            "width": 99.15625,
+            "height": 33.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 97,
+          "clientWidth": 97,
+          "selfClips": false
+        },
+        {
+          "label": "Money & liquidity",
+          "fraction": 1,
+          "box": {
+            "left": 141.15625,
+            "right": 285.078125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 143.921875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 144,
+          "clientWidth": 144,
+          "selfClips": false
+        },
+        {
+          "label": "Policy rates",
+          "fraction": 1,
+          "box": {
+            "left": 291.078125,
+            "right": 399.703125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 108.625,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 109,
+          "clientWidth": 109,
+          "selfClips": false
+        },
+        {
+          "label": "Rates & the curve",
+          "fraction": 1,
+          "box": {
+            "left": 405.703125,
+            "right": 536.625,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 130.921875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 131,
+          "clientWidth": 131,
+          "selfClips": false
+        },
+        {
+          "label": "Inflation",
+          "fraction": 0.21212669683257918,
+          "box": {
+            "left": 542.625,
+            "right": 628.953125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 86.328125,
+            "height": 31.546875
+          },
+          "underAnalyst": true,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 86,
+          "clientWidth": 86,
+          "selfClips": false
+        }
+      ]
+    },
+    "atMax": {
+      "scrollLeft": 68,
+      "listBox": {
+        "left": 36,
+        "right": 584.9375,
+        "width": 548.9375,
+        "height": 33.546875
+      },
+      "analystBox": {
+        "left": 616.9375,
+        "right": 732,
+        "width": 115.0625,
+        "height": 31.546875
+      },
+      "fadeWidth": 24,
+      "fadeLeft": 560.9375,
+      "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+      "chips": [
+        {
+          "label": "Overview",
+          "fraction": 0.3142136779073432,
+          "box": {
+            "left": -32,
+            "right": 67.15625,
+            "top": 68,
+            "bottom": 101.546875,
+            "width": 99.15625,
+            "height": 33.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 97,
+          "clientWidth": 97,
+          "selfClips": false
+        },
+        {
+          "label": "Money & liquidity",
+          "fraction": 1,
+          "box": {
+            "left": 73.15625,
+            "right": 217.078125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 143.921875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 144,
+          "clientWidth": 144,
+          "selfClips": false
+        },
+        {
+          "label": "Policy rates",
+          "fraction": 1,
+          "box": {
+            "left": 223.078125,
+            "right": 331.703125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 108.625,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 109,
+          "clientWidth": 109,
+          "selfClips": false
+        },
+        {
+          "label": "Rates & the curve",
+          "fraction": 1,
+          "box": {
+            "left": 337.703125,
+            "right": 468.625,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 130.921875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 131,
+          "clientWidth": 131,
+          "selfClips": false
+        },
+        {
+          "label": "Inflation",
+          "fraction": 0.9998190045248869,
+          "box": {
+            "left": 474.625,
+            "right": 560.953125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 86.328125,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 86,
+          "clientWidth": 86,
+          "selfClips": false
+        }
+      ]
+    },
+    "chips": [
+      {
+        "label": "Overview",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 97,
+        "clientWidth": 97,
+        "selfClips": false
+      },
+      {
+        "label": "Money & liquidity",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 144,
+        "clientWidth": 144,
+        "selfClips": false
+      },
+      {
+        "label": "Policy rates",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 109,
+        "clientWidth": 109,
+        "selfClips": false
+      },
+      {
+        "label": "Rates & the curve",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 131,
+        "clientWidth": 131,
+        "selfClips": false
+      },
+      {
+        "label": "Inflation",
+        "fullyVisibleAtScrollLeft": 68,
+        "fraction": 0.9998190045248869,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 86,
+        "clientWidth": 86,
+        "selfClips": false
+      }
+    ],
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 564.9375,
+    "fadeVisualStartX": 573.9375,
+    "fadeVisualHalfX": 573.9375,
+    "fadeHalfDelta": 13.0
+  },
+  "chip_material_dark_en_768": {
+    "ok": true,
+    "analyst": {
+      "borderRadius": "999px",
+      "borderTopWidth": "0px",
+      "borderRightWidth": "0px",
+      "borderBottomWidth": "0px",
+      "borderLeftWidth": "0px",
+      "borderTopStyle": "none",
+      "paddingTop": "7px",
+      "paddingRight": "10px",
+      "paddingBottom": "7px",
+      "paddingLeft": "10px",
+      "fontSize": "13.5px"
+    },
+    "sibling": {
+      "borderRadius": "999px",
+      "borderTopWidth": "0px",
+      "borderRightWidth": "0px",
+      "borderBottomWidth": "0px",
+      "borderLeftWidth": "0px",
+      "borderTopStyle": "none",
+      "paddingTop": "7px",
+      "paddingRight": "10px",
+      "paddingBottom": "7px",
+      "paddingLeft": "10px",
+      "fontSize": "13.5px"
+    },
+    "mismatches": []
+  },
+  "rail_viewport_dark_zh_768": {
+    "ok": true,
+    "firstFullyVisibleAt0": true,
+    "everyReachable": true,
+    "fadeBandOk": true,
+    "maskOk": true,
+    "ownLabelOk": true,
+    "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "fadeWidth": 24.0,
+    "fadeLeft": 600.90625,
+    "fadeBeginsBeforeAnalyst": 56,
+    "maxScrollLeft": 0.0,
+    "at0": {
+      "scrollLeft": 0,
+      "listBox": {
+        "left": 36,
+        "right": 624.90625,
+        "width": 588.90625,
+        "height": 33.546875
+      },
+      "analystBox": {
+        "left": 656.90625,
+        "right": 732,
+        "width": 75.09375,
+        "height": 31.546875
+      },
+      "fadeWidth": 24,
+      "fadeLeft": 600.90625,
+      "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+      "chips": [
+        {
+          "label": "\u603b\u89c8",
+          "fraction": 1,
+          "box": {
+            "left": 36,
+            "right": 101,
+            "top": 112.390625,
+            "bottom": 145.9375,
+            "width": 65,
+            "height": 33.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 63,
+          "clientWidth": 63,
+          "selfClips": false
+        },
+        {
+          "label": "\u8d44\u91d1\u4e0e\u6d41\u52a8\u6027",
+          "fraction": 1,
+          "box": {
+            "left": 107,
+            "right": 225.625,
+            "top": 112.390625,
+            "bottom": 143.9375,
+            "width": 118.625,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 119,
+          "clientWidth": 119,
+          "selfClips": false
+        },
+        {
+          "label": "\u653f\u7b56\u5229\u7387",
+          "fraction": 1,
+          "box": {
+            "left": 231.625,
+            "right": 322.71875,
+            "top": 112.390625,
+            "bottom": 143.9375,
+            "width": 91.09375,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 91,
+          "clientWidth": 91,
+          "selfClips": false
+        },
+        {
+          "label": "\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf",
+          "fraction": 1,
+          "box": {
+            "left": 328.71875,
+            "right": 458.890625,
+            "top": 112.390625,
+            "bottom": 143.9375,
+            "width": 130.171875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 130,
+          "clientWidth": 130,
+          "selfClips": false
+        },
+        {
+          "label": "\u901a\u80c0",
+          "fraction": 1,
+          "box": {
+            "left": 464.890625,
+            "right": 528.4375,
+            "top": 112.390625,
+            "bottom": 143.9375,
+            "width": 63.546875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 64,
+          "clientWidth": 64,
+          "selfClips": false
+        }
+      ]
+    },
+    "atMax": {
+      "scrollLeft": 0,
+      "listBox": {
+        "left": 36,
+        "right": 624.90625,
+        "width": 588.90625,
+        "height": 33.546875
+      },
+      "analystBox": {
+        "left": 656.90625,
+        "right": 732,
+        "width": 75.09375,
+        "height": 31.546875
+      },
+      "fadeWidth": 24,
+      "fadeLeft": 600.90625,
+      "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+      "chips": [
+        {
+          "label": "\u603b\u89c8",
+          "fraction": 1,
+          "box": {
+            "left": 36,
+            "right": 101,
+            "top": 112.390625,
+            "bottom": 145.9375,
+            "width": 65,
+            "height": 33.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 63,
+          "clientWidth": 63,
+          "selfClips": false
+        },
+        {
+          "label": "\u8d44\u91d1\u4e0e\u6d41\u52a8\u6027",
+          "fraction": 1,
+          "box": {
+            "left": 107,
+            "right": 225.625,
+            "top": 112.390625,
+            "bottom": 143.9375,
+            "width": 118.625,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 119,
+          "clientWidth": 119,
+          "selfClips": false
+        },
+        {
+          "label": "\u653f\u7b56\u5229\u7387",
+          "fraction": 1,
+          "box": {
+            "left": 231.625,
+            "right": 322.71875,
+            "top": 112.390625,
+            "bottom": 143.9375,
+            "width": 91.09375,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 91,
+          "clientWidth": 91,
+          "selfClips": false
+        },
+        {
+          "label": "\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf",
+          "fraction": 1,
+          "box": {
+            "left": 328.71875,
+            "right": 458.890625,
+            "top": 112.390625,
+            "bottom": 143.9375,
+            "width": 130.171875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 130,
+          "clientWidth": 130,
+          "selfClips": false
+        },
+        {
+          "label": "\u901a\u80c0",
+          "fraction": 1,
+          "box": {
+            "left": 464.890625,
+            "right": 528.4375,
+            "top": 112.390625,
+            "bottom": 143.9375,
+            "width": 63.546875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 64,
+          "clientWidth": 64,
+          "selfClips": false
+        }
+      ]
+    },
+    "chips": [
+      {
+        "label": "\u603b\u89c8",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 63,
+        "clientWidth": 63,
+        "selfClips": false
+      },
+      {
+        "label": "\u8d44\u91d1\u4e0e\u6d41\u52a8\u6027",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 119,
+        "clientWidth": 119,
+        "selfClips": false
+      },
+      {
+        "label": "\u653f\u7b56\u5229\u7387",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 91,
+        "clientWidth": 91,
+        "selfClips": false
+      },
+      {
+        "label": "\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 130,
+        "clientWidth": 130,
+        "selfClips": false
+      },
+      {
+        "label": "\u901a\u80c0",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 64,
+        "clientWidth": 64,
+        "selfClips": false
+      }
+    ],
+    "fadeVisualApplicable": false,
+    "fadeVisualReason": "maxScrollLeft=0",
+    "fadeOnsetX": null,
+    "fadeVisualStartX": null
+  },
+  "chip_material_dark_zh_768": {
+    "ok": true,
+    "analyst": {
+      "borderRadius": "999px",
+      "borderTopWidth": "0px",
+      "borderRightWidth": "0px",
+      "borderBottomWidth": "0px",
+      "borderLeftWidth": "0px",
+      "borderTopStyle": "none",
+      "paddingTop": "7px",
+      "paddingRight": "10px",
+      "paddingBottom": "7px",
+      "paddingLeft": "10px",
+      "fontSize": "13.5px"
+    },
+    "sibling": {
+      "borderRadius": "999px",
+      "borderTopWidth": "0px",
+      "borderRightWidth": "0px",
+      "borderBottomWidth": "0px",
+      "borderLeftWidth": "0px",
+      "borderTopStyle": "none",
+      "paddingTop": "7px",
+      "paddingRight": "10px",
+      "paddingBottom": "7px",
+      "paddingLeft": "10px",
+      "fontSize": "13.5px"
+    },
+    "mismatches": []
+  },
+  "rail_viewport_light_en_768": {
+    "ok": true,
+    "firstFullyVisibleAt0": true,
+    "everyReachable": true,
+    "fadeBandOk": true,
+    "maskOk": true,
+    "ownLabelOk": true,
+    "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "fadeWidth": 24.0,
+    "fadeLeft": 560.9375,
+    "fadeBeginsBeforeAnalyst": 56,
+    "maxScrollLeft": 68.0,
+    "at0": {
+      "scrollLeft": 0,
+      "listBox": {
+        "left": 36,
+        "right": 584.9375,
+        "width": 548.9375,
+        "height": 33.546875
+      },
+      "analystBox": {
+        "left": 616.9375,
+        "right": 732,
+        "width": 115.0625,
+        "height": 31.546875
+      },
+      "fadeWidth": 24,
+      "fadeLeft": 560.9375,
+      "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+      "chips": [
+        {
+          "label": "Overview",
+          "fraction": 1,
+          "box": {
+            "left": 36,
+            "right": 135.15625,
+            "top": 68,
+            "bottom": 101.546875,
+            "width": 99.15625,
+            "height": 33.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 97,
+          "clientWidth": 97,
+          "selfClips": false
+        },
+        {
+          "label": "Money & liquidity",
+          "fraction": 1,
+          "box": {
+            "left": 141.15625,
+            "right": 285.078125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 143.921875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 144,
+          "clientWidth": 144,
+          "selfClips": false
+        },
+        {
+          "label": "Policy rates",
+          "fraction": 1,
+          "box": {
+            "left": 291.078125,
+            "right": 399.703125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 108.625,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 109,
+          "clientWidth": 109,
+          "selfClips": false
+        },
+        {
+          "label": "Rates & the curve",
+          "fraction": 1,
+          "box": {
+            "left": 405.703125,
+            "right": 536.625,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 130.921875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 131,
+          "clientWidth": 131,
+          "selfClips": false
+        },
+        {
+          "label": "Inflation",
+          "fraction": 0.21212669683257918,
+          "box": {
+            "left": 542.625,
+            "right": 628.953125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 86.328125,
+            "height": 31.546875
+          },
+          "underAnalyst": true,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 86,
+          "clientWidth": 86,
+          "selfClips": false
+        }
+      ]
+    },
+    "atMax": {
+      "scrollLeft": 68,
+      "listBox": {
+        "left": 36,
+        "right": 584.9375,
+        "width": 548.9375,
+        "height": 33.546875
+      },
+      "analystBox": {
+        "left": 616.9375,
+        "right": 732,
+        "width": 115.0625,
+        "height": 31.546875
+      },
+      "fadeWidth": 24,
+      "fadeLeft": 560.9375,
+      "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+      "chips": [
+        {
+          "label": "Overview",
+          "fraction": 0.3142136779073432,
+          "box": {
+            "left": -32,
+            "right": 67.15625,
+            "top": 68,
+            "bottom": 101.546875,
+            "width": 99.15625,
+            "height": 33.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 97,
+          "clientWidth": 97,
+          "selfClips": false
+        },
+        {
+          "label": "Money & liquidity",
+          "fraction": 1,
+          "box": {
+            "left": 73.15625,
+            "right": 217.078125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 143.921875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 144,
+          "clientWidth": 144,
+          "selfClips": false
+        },
+        {
+          "label": "Policy rates",
+          "fraction": 1,
+          "box": {
+            "left": 223.078125,
+            "right": 331.703125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 108.625,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 109,
+          "clientWidth": 109,
+          "selfClips": false
+        },
+        {
+          "label": "Rates & the curve",
+          "fraction": 1,
+          "box": {
+            "left": 337.703125,
+            "right": 468.625,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 130.921875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 131,
+          "clientWidth": 131,
+          "selfClips": false
+        },
+        {
+          "label": "Inflation",
+          "fraction": 0.9998190045248869,
+          "box": {
+            "left": 474.625,
+            "right": 560.953125,
+            "top": 68,
+            "bottom": 99.546875,
+            "width": 86.328125,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 86,
+          "clientWidth": 86,
+          "selfClips": false
+        }
+      ]
+    },
+    "chips": [
+      {
+        "label": "Overview",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 97,
+        "clientWidth": 97,
+        "selfClips": false
+      },
+      {
+        "label": "Money & liquidity",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 144,
+        "clientWidth": 144,
+        "selfClips": false
+      },
+      {
+        "label": "Policy rates",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 109,
+        "clientWidth": 109,
+        "selfClips": false
+      },
+      {
+        "label": "Rates & the curve",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 131,
+        "clientWidth": 131,
+        "selfClips": false
+      },
+      {
+        "label": "Inflation",
+        "fullyVisibleAtScrollLeft": 68,
+        "fraction": 0.9998190045248869,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 86,
+        "clientWidth": 86,
+        "selfClips": false
+      }
+    ],
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 564.9375,
+    "fadeVisualStartX": 573.9375,
+    "fadeVisualHalfX": 573.9375,
+    "fadeHalfDelta": 13.0
+  },
+  "chip_material_light_en_768": {
+    "ok": true,
+    "analyst": {
+      "borderRadius": "999px",
+      "borderTopWidth": "0px",
+      "borderRightWidth": "0px",
+      "borderBottomWidth": "0px",
+      "borderLeftWidth": "0px",
+      "borderTopStyle": "none",
+      "paddingTop": "7px",
+      "paddingRight": "10px",
+      "paddingBottom": "7px",
+      "paddingLeft": "10px",
+      "fontSize": "13.5px"
+    },
+    "sibling": {
+      "borderRadius": "999px",
+      "borderTopWidth": "0px",
+      "borderRightWidth": "0px",
+      "borderBottomWidth": "0px",
+      "borderLeftWidth": "0px",
+      "borderTopStyle": "none",
+      "paddingTop": "7px",
+      "paddingRight": "10px",
+      "paddingBottom": "7px",
+      "paddingLeft": "10px",
+      "fontSize": "13.5px"
+    },
+    "mismatches": []
+  },
+  "rail_viewport_light_zh_768": {
+    "ok": true,
+    "firstFullyVisibleAt0": true,
+    "everyReachable": true,
+    "fadeBandOk": true,
+    "maskOk": true,
+    "ownLabelOk": true,
+    "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "fadeWidth": 24.0,
+    "fadeLeft": 600.90625,
+    "fadeBeginsBeforeAnalyst": 56,
+    "maxScrollLeft": 0.0,
+    "at0": {
+      "scrollLeft": 0,
+      "listBox": {
+        "left": 36,
+        "right": 624.90625,
+        "width": 588.90625,
+        "height": 33.546875
+      },
+      "analystBox": {
+        "left": 656.90625,
+        "right": 732,
+        "width": 75.09375,
+        "height": 31.546875
+      },
+      "fadeWidth": 24,
+      "fadeLeft": 600.90625,
+      "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+      "chips": [
+        {
+          "label": "\u603b\u89c8",
+          "fraction": 1,
+          "box": {
+            "left": 36,
+            "right": 101,
+            "top": 110.390625,
+            "bottom": 143.9375,
+            "width": 65,
+            "height": 33.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 63,
+          "clientWidth": 63,
+          "selfClips": false
+        },
+        {
+          "label": "\u8d44\u91d1\u4e0e\u6d41\u52a8\u6027",
+          "fraction": 1,
+          "box": {
+            "left": 107,
+            "right": 225.625,
+            "top": 110.390625,
+            "bottom": 141.9375,
+            "width": 118.625,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 119,
+          "clientWidth": 119,
+          "selfClips": false
+        },
+        {
+          "label": "\u653f\u7b56\u5229\u7387",
+          "fraction": 1,
+          "box": {
+            "left": 231.625,
+            "right": 322.71875,
+            "top": 110.390625,
+            "bottom": 141.9375,
+            "width": 91.09375,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 91,
+          "clientWidth": 91,
+          "selfClips": false
+        },
+        {
+          "label": "\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf",
+          "fraction": 1,
+          "box": {
+            "left": 328.71875,
+            "right": 458.890625,
+            "top": 110.390625,
+            "bottom": 141.9375,
+            "width": 130.171875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 130,
+          "clientWidth": 130,
+          "selfClips": false
+        },
+        {
+          "label": "\u901a\u80c0",
+          "fraction": 1,
+          "box": {
+            "left": 464.890625,
+            "right": 528.4375,
+            "top": 110.390625,
+            "bottom": 141.9375,
+            "width": 63.546875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 64,
+          "clientWidth": 64,
+          "selfClips": false
+        }
+      ]
+    },
+    "atMax": {
+      "scrollLeft": 0,
+      "listBox": {
+        "left": 36,
+        "right": 624.90625,
+        "width": 588.90625,
+        "height": 33.546875
+      },
+      "analystBox": {
+        "left": 656.90625,
+        "right": 732,
+        "width": 75.09375,
+        "height": 31.546875
+      },
+      "fadeWidth": 24,
+      "fadeLeft": 600.90625,
+      "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+      "chips": [
+        {
+          "label": "\u603b\u89c8",
+          "fraction": 1,
+          "box": {
+            "left": 36,
+            "right": 101,
+            "top": 110.390625,
+            "bottom": 143.9375,
+            "width": 65,
+            "height": 33.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 63,
+          "clientWidth": 63,
+          "selfClips": false
+        },
+        {
+          "label": "\u8d44\u91d1\u4e0e\u6d41\u52a8\u6027",
+          "fraction": 1,
+          "box": {
+            "left": 107,
+            "right": 225.625,
+            "top": 110.390625,
+            "bottom": 141.9375,
+            "width": 118.625,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 119,
+          "clientWidth": 119,
+          "selfClips": false
+        },
+        {
+          "label": "\u653f\u7b56\u5229\u7387",
+          "fraction": 1,
+          "box": {
+            "left": 231.625,
+            "right": 322.71875,
+            "top": 110.390625,
+            "bottom": 141.9375,
+            "width": 91.09375,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 91,
+          "clientWidth": 91,
+          "selfClips": false
+        },
+        {
+          "label": "\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf",
+          "fraction": 1,
+          "box": {
+            "left": 328.71875,
+            "right": 458.890625,
+            "top": 110.390625,
+            "bottom": 141.9375,
+            "width": 130.171875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 130,
+          "clientWidth": 130,
+          "selfClips": false
+        },
+        {
+          "label": "\u901a\u80c0",
+          "fraction": 1,
+          "box": {
+            "left": 464.890625,
+            "right": 528.4375,
+            "top": 110.390625,
+            "bottom": 141.9375,
+            "width": 63.546875,
+            "height": 31.546875
+          },
+          "underAnalyst": false,
+          "overflow": "visible",
+          "whiteSpace": "nowrap",
+          "scrollWidth": 64,
+          "clientWidth": 64,
+          "selfClips": false
+        }
+      ]
+    },
+    "chips": [
+      {
+        "label": "\u603b\u89c8",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 63,
+        "clientWidth": 63,
+        "selfClips": false
+      },
+      {
+        "label": "\u8d44\u91d1\u4e0e\u6d41\u52a8\u6027",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 119,
+        "clientWidth": 119,
+        "selfClips": false
+      },
+      {
+        "label": "\u653f\u7b56\u5229\u7387",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 91,
+        "clientWidth": 91,
+        "selfClips": false
+      },
+      {
+        "label": "\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 130,
+        "clientWidth": 130,
+        "selfClips": false
+      },
+      {
+        "label": "\u901a\u80c0",
+        "fullyVisibleAtScrollLeft": 0,
+        "fraction": 1,
+        "underAnalyst": false,
+        "fullyVisible": true,
+        "overflow": "visible",
+        "whiteSpace": "nowrap",
+        "scrollWidth": 64,
+        "clientWidth": 64,
+        "selfClips": false
+      }
+    ],
+    "fadeVisualApplicable": false,
+    "fadeVisualReason": "maxScrollLeft=0",
+    "fadeOnsetX": null,
+    "fadeVisualStartX": null
+  },
+  "chip_material_light_zh_768": {
+    "ok": true,
+    "analyst": {
+      "borderRadius": "999px",
+      "borderTopWidth": "0px",
+      "borderRightWidth": "0px",
+      "borderBottomWidth": "0px",
+      "borderLeftWidth": "0px",
+      "borderTopStyle": "none",
+      "paddingTop": "7px",
+      "paddingRight": "10px",
+      "paddingBottom": "7px",
+      "paddingLeft": "10px",
+      "fontSize": "13.5px"
+    },
+    "sibling": {
+      "borderRadius": "999px",
+      "borderTopWidth": "0px",
+      "borderRightWidth": "0px",
+      "borderBottomWidth": "0px",
+      "borderLeftWidth": "0px",
+      "borderTopStyle": "none",
+      "paddingTop": "7px",
+      "paddingRight": "10px",
+      "paddingBottom": "7px",
+      "paddingLeft": "10px",
+      "fontSize": "13.5px"
+    },
+    "mismatches": []
+  },
+  "clearance_1440_dark_en": {
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
+        "mmbBootBox": {
+          "top": 822,
+          "bottom": 878,
+          "left": 1215.90625,
+          "right": 1418
+        },
+        "scrollHeight": 1972,
+        "innerHeight": 900,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 1072,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "flex",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 122,
+            "left": 72,
+            "right": 304,
+            "bottom": 402.921875,
+            "width": 232,
+            "height": 280.921875
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 822,
+            "left": 1215.90625,
+            "right": 1418,
+            "bottom": 878,
+            "width": 202.09375,
+            "height": 56
+          }
+        ]
+      },
+      "50": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
+        "mmbBootBox": {
+          "top": 822,
+          "bottom": 878,
+          "left": 1215.90625,
+          "right": 1418
+        },
+        "scrollHeight": 1972,
+        "innerHeight": 900,
+        "target": "50",
+        "scrollY": 536,
+        "scrollWanted": 536,
+        "maxScroll": 1072,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "flex",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 84,
+            "left": 72,
+            "right": 304,
+            "bottom": 364.921875,
+            "width": 232,
+            "height": 280.921875
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 822,
+            "left": 1215.90625,
+            "right": 1418,
+            "bottom": 878,
+            "width": 202.09375,
+            "height": 56
+          }
+        ]
+      },
+      "max": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
+        "mmbBootBox": {
+          "top": 822,
+          "bottom": 878,
+          "left": 1215.90625,
+          "right": 1418
+        },
+        "scrollHeight": 1972,
+        "innerHeight": 900,
+        "target": "max",
+        "scrollY": 1072,
+        "scrollWanted": 1072,
+        "maxScroll": 1072,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "flex",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 84,
+            "left": 72,
+            "right": 304,
+            "bottom": 364.921875,
+            "width": 232,
+            "height": 280.921875
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 822,
+            "left": 1215.90625,
+            "right": 1418,
+            "bottom": 878,
+            "width": 202.09375,
+            "height": 56
+          }
+        ]
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
+    "mmbBootDisplay": "flex",
+    "mmbBootBox": {
+      "top": 822,
+      "bottom": 878,
+      "left": 1215.90625,
+      "right": 1418
+    },
+    "excusedCounts": {
+      "0": 0,
+      "50": 0,
+      "max": 0
+    }
+  },
+  "clearance_1440_dark_zh": {
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
+        "mmbBootBox": {
+          "top": 822,
+          "bottom": 878,
+          "left": 1246.9375,
+          "right": 1418
+        },
+        "scrollHeight": 1852,
+        "innerHeight": 900,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 952,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "flex",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 122,
+            "left": 72,
+            "right": 304,
+            "bottom": 402.921875,
+            "width": 232,
+            "height": 280.921875
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 822,
+            "left": 1246.9375,
+            "right": 1418,
+            "bottom": 878,
+            "width": 171.0625,
+            "height": 56
+          }
+        ]
+      },
+      "50": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
+        "mmbBootBox": {
+          "top": 822,
+          "bottom": 878,
+          "left": 1246.9375,
+          "right": 1418
+        },
+        "scrollHeight": 1852,
+        "innerHeight": 900,
+        "target": "50",
+        "scrollY": 476,
+        "scrollWanted": 476,
+        "maxScroll": 952,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "flex",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 84,
+            "left": 72,
+            "right": 304,
+            "bottom": 364.921875,
+            "width": 232,
+            "height": 280.921875
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 822,
+            "left": 1246.9375,
+            "right": 1418,
+            "bottom": 878,
+            "width": 171.0625,
+            "height": 56
+          }
+        ]
+      },
+      "max": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
+        "mmbBootBox": {
+          "top": 822,
+          "bottom": 878,
+          "left": 1246.9375,
+          "right": 1418
+        },
+        "scrollHeight": 1852,
+        "innerHeight": 900,
+        "target": "max",
+        "scrollY": 952,
+        "scrollWanted": 952,
+        "maxScroll": 952,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "flex",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 84,
+            "left": 72,
+            "right": 304,
+            "bottom": 364.921875,
+            "width": 232,
+            "height": 280.921875
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 822,
+            "left": 1246.9375,
+            "right": 1418,
+            "bottom": 878,
+            "width": 171.0625,
+            "height": 56
+          }
+        ]
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
+    "mmbBootDisplay": "flex",
+    "mmbBootBox": {
+      "top": 822,
+      "bottom": 878,
+      "left": 1246.9375,
+      "right": 1418
+    },
+    "excusedCounts": {
+      "0": 0,
+      "50": 0,
+      "max": 0
+    }
+  },
+  "clearance_1440_light_en": {
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
+        "mmbBootBox": {
+          "top": 822,
+          "bottom": 878,
+          "left": 1215.90625,
+          "right": 1418
+        },
+        "scrollHeight": 1978,
+        "innerHeight": 900,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 1078,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "flex",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 122,
+            "left": 72,
+            "right": 304,
+            "bottom": 402.921875,
+            "width": 232,
+            "height": 280.921875
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 822,
+            "left": 1215.90625,
+            "right": 1418,
+            "bottom": 878,
+            "width": 202.09375,
+            "height": 56
+          }
+        ]
+      },
+      "50": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
+        "mmbBootBox": {
+          "top": 822,
+          "bottom": 878,
+          "left": 1215.90625,
+          "right": 1418
+        },
+        "scrollHeight": 1978,
+        "innerHeight": 900,
+        "target": "50",
+        "scrollY": 539,
+        "scrollWanted": 539,
+        "maxScroll": 1078,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "flex",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 84,
+            "left": 72,
+            "right": 304,
+            "bottom": 364.921875,
+            "width": 232,
+            "height": 280.921875
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 822,
+            "left": 1215.90625,
+            "right": 1418,
+            "bottom": 878,
+            "width": 202.09375,
+            "height": 56
+          }
+        ]
+      },
+      "max": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
+        "mmbBootBox": {
+          "top": 822,
+          "bottom": 878,
+          "left": 1215.90625,
+          "right": 1418
+        },
+        "scrollHeight": 1978,
+        "innerHeight": 900,
+        "target": "max",
+        "scrollY": 1078,
+        "scrollWanted": 1078,
+        "maxScroll": 1078,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "flex",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 84,
+            "left": 72,
+            "right": 304,
+            "bottom": 364.921875,
+            "width": 232,
+            "height": 280.921875
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 822,
+            "left": 1215.90625,
+            "right": 1418,
+            "bottom": 878,
+            "width": 202.09375,
+            "height": 56
+          }
+        ]
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
+    "mmbBootDisplay": "flex",
+    "mmbBootBox": {
+      "top": 822,
+      "bottom": 878,
+      "left": 1215.90625,
+      "right": 1418
+    },
+    "excusedCounts": {
+      "0": 0,
+      "50": 0,
+      "max": 0
+    }
+  },
+  "clearance_1440_light_zh": {
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
+        "mmbBootBox": {
+          "top": 822,
+          "bottom": 878,
+          "left": 1246.9375,
+          "right": 1418
+        },
+        "scrollHeight": 1858,
+        "innerHeight": 900,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 958,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "flex",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 122,
+            "left": 72,
+            "right": 304,
+            "bottom": 402.921875,
+            "width": 232,
+            "height": 280.921875
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 822,
+            "left": 1246.9375,
+            "right": 1418,
+            "bottom": 878,
+            "width": 171.0625,
+            "height": 56
+          }
+        ]
+      },
+      "50": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
+        "mmbBootBox": {
+          "top": 822,
+          "bottom": 878,
+          "left": 1246.9375,
+          "right": 1418
+        },
+        "scrollHeight": 1858,
+        "innerHeight": 900,
+        "target": "50",
+        "scrollY": 479,
+        "scrollWanted": 479,
+        "maxScroll": 958,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "flex",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 84,
+            "left": 72,
+            "right": 304,
+            "bottom": 364.921875,
+            "width": 232,
+            "height": 280.921875
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 822,
+            "left": 1246.9375,
+            "right": 1418,
+            "bottom": 878,
+            "width": 171.0625,
+            "height": 56
+          }
+        ]
+      },
+      "max": {
+        "ok": true,
+        "textCount": 314,
+        "hits": [],
+        "excused": [],
+        "analystPosition": "static",
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
+        "mmbBootBox": {
+          "top": 822,
+          "bottom": 878,
+          "left": 1246.9375,
+          "right": 1418
+        },
+        "scrollHeight": 1858,
+        "innerHeight": 900,
+        "target": "max",
+        "scrollY": 958,
+        "scrollWanted": 958,
+        "maxScroll": 958,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "flex",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 84,
+            "left": 72,
+            "right": 304,
+            "bottom": 364.921875,
+            "width": 232,
+            "height": 280.921875
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 822,
+            "left": 1246.9375,
+            "right": 1418,
+            "bottom": 878,
+            "width": 171.0625,
+            "height": 56
+          }
+        ]
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
+    "mmbBootDisplay": "flex",
+    "mmbBootBox": {
+      "top": 822,
+      "bottom": 878,
+      "left": 1246.9375,
+      "right": 1418
+    },
+    "excusedCounts": {
+      "0": 0,
+      "50": 0,
+      "max": 0
+    }
+  },
+  "synthetic_clearance": {
+    "ok": true,
+    "positions": {
+      "0": {
+        "ok": false,
+        "textCount": 3,
+        "hits": [
+          {
+            "text": "inside zone",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 181,
+              "left": 0,
+              "right": 80.953125,
+              "bottom": 199
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 0,
+              "right": 1440,
+              "bottom": 260
+            },
+            "reason": "sticky-rail-full-cover-unexposable",
+            "docTop": 181,
+            "ovHeight": 200,
+            "ovBottom": 260,
+            "exposedAtScrollY": -79
+          },
+          {
+            "text": "under pill",
+            "overlay": "mmb-boot",
+            "overlayPos": "fixed",
+            "box": {
+              "top": 871,
+              "left": 0,
+              "right": 64.9375,
+              "bottom": 889
+            },
+            "ovBox": {
+              "top": 860,
+              "left": 0,
+              "right": 1440,
+              "bottom": 900
+            },
+            "reason": "fixed-overlay-intersects-text"
+          }
+        ],
+        "excused": [],
+        "analystPosition": null,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
+        "mmbBootBox": {
+          "top": 860,
+          "bottom": 900,
+          "left": 0,
+          "right": 1440
+        },
+        "scrollHeight": 1000,
+        "innerHeight": 900,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 100,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "block",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 0,
+            "right": 1440,
+            "bottom": 260,
+            "width": 1440,
+            "height": 200
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 860,
+            "left": 0,
+            "right": 1440,
+            "bottom": 900,
+            "width": 1440,
+            "height": 40
+          }
+        ]
+      },
+      "50": {
+        "ok": false,
+        "textCount": 3,
+        "hits": [
+          {
+            "text": "inside zone",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 131,
+              "left": 0,
+              "right": 80.953125,
+              "bottom": 149
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 0,
+              "right": 1440,
+              "bottom": 260
+            },
+            "reason": "sticky-rail-full-cover-unexposable",
+            "docTop": 181,
+            "ovHeight": 200,
+            "ovBottom": 260,
+            "exposedAtScrollY": -79
+          }
+        ],
+        "excused": [
+          {
+            "text": "below zone",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 231,
+              "left": 0,
+              "right": 80.953125,
+              "bottom": 249
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 0,
+              "right": 1440,
+              "bottom": 260
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 281,
+            "ovHeight": 200,
+            "ovBottom": 260,
+            "exposedAtScrollY": 21
+          }
+        ],
+        "analystPosition": null,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
+        "mmbBootBox": {
+          "top": 860,
+          "bottom": 900,
+          "left": 0,
+          "right": 1440
+        },
+        "scrollHeight": 1000,
+        "innerHeight": 900,
+        "target": "50",
+        "scrollY": 50,
+        "scrollWanted": 50,
+        "maxScroll": 100,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "block",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 0,
+            "right": 1440,
+            "bottom": 260,
+            "width": 1440,
+            "height": 200
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 860,
+            "left": 0,
+            "right": 1440,
+            "bottom": 900,
+            "width": 1440,
+            "height": 40
+          }
+        ]
+      },
+      "max": {
+        "ok": false,
+        "textCount": 3,
+        "hits": [
+          {
+            "text": "inside zone",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 81,
+              "left": 0,
+              "right": 80.953125,
+              "bottom": 99
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 0,
+              "right": 1440,
+              "bottom": 260
+            },
+            "reason": "sticky-rail-full-cover-unexposable",
+            "docTop": 181,
+            "ovHeight": 200,
+            "ovBottom": 260,
+            "exposedAtScrollY": -79
+          }
+        ],
+        "excused": [
+          {
+            "text": "below zone",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 181,
+              "left": 0,
+              "right": 80.953125,
+              "bottom": 199
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 0,
+              "right": 1440,
+              "bottom": 260
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 281,
+            "ovHeight": 200,
+            "ovBottom": 260,
+            "exposedAtScrollY": 21
+          }
+        ],
+        "analystPosition": null,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
+        "mmbBootBox": {
+          "top": 860,
+          "bottom": 900,
+          "left": 0,
+          "right": 1440
+        },
+        "scrollHeight": 1000,
+        "innerHeight": 900,
+        "target": "max",
+        "scrollY": 100,
+        "scrollWanted": 100,
+        "maxScroll": 100,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "block",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 0,
+            "right": 1440,
+            "bottom": 260,
+            "width": 1440,
+            "height": 200
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 860,
+            "left": 0,
+            "right": 1440,
+            "bottom": 900,
+            "width": 1440,
+            "height": 40
+          }
+        ]
+      }
+    },
+    "synthetic_hit_rule": {
+      "inside zone": {
+        "0": {
+          "verdict": "hit",
+          "reason": "sticky-rail-full-cover-unexposable",
+          "exposedAtScrollY": -79,
+          "docTop": 181,
+          "ovBottom": 260,
+          "scrollY": 0,
+          "maxScroll": 100
+        },
+        "50": {
+          "verdict": "hit",
+          "reason": "sticky-rail-full-cover-unexposable",
+          "exposedAtScrollY": -79,
+          "docTop": 181,
+          "ovBottom": 260,
+          "scrollY": 50,
+          "maxScroll": 100
+        },
+        "max": {
+          "verdict": "hit",
+          "reason": "sticky-rail-full-cover-unexposable",
+          "exposedAtScrollY": -79,
+          "docTop": 181,
+          "ovBottom": 260,
+          "scrollY": 100,
+          "maxScroll": 100
+        }
+      },
+      "below zone": {
+        "0": {
+          "verdict": "absent",
+          "scrollY": 0,
+          "maxScroll": 100
+        },
+        "50": {
+          "verdict": "excused",
+          "reason": "rail_fully_covered",
+          "exposedAtScrollY": 21,
+          "docTop": 281,
+          "ovBottom": 260,
+          "scrollY": 50,
+          "maxScroll": 100
+        },
+        "max": {
+          "verdict": "excused",
+          "reason": "rail_fully_covered",
+          "exposedAtScrollY": 21,
+          "docTop": 281,
+          "ovBottom": 260,
+          "scrollY": 100,
+          "maxScroll": 100
+        }
+      },
+      "under pill": {
+        "0": {
+          "verdict": "hit",
+          "reason": "fixed-overlay-intersects-text",
+          "exposedAtScrollY": null,
+          "docTop": null,
+          "ovBottom": null,
+          "scrollY": 0,
+          "maxScroll": 100
+        },
+        "50": {
+          "verdict": "absent",
+          "scrollY": 50,
+          "maxScroll": 100
+        },
+        "max": {
+          "verdict": "absent",
+          "scrollY": 100,
+          "maxScroll": 100
+        }
+      }
+    }
+  }
+}

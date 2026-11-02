@@ -1,0 +1,119 @@
+{
+  "admitted_at": "2026-10-04T00:51:55.181207Z",
+  "applied_curator": "/root/evaluation_capture",
+  "applied_decision_at": "2026-10-04T00:51:55.181207Z",
+  "independent_review": {
+    "concluded_at": "2026-10-04T00:33:06Z",
+    "reviewer": "/root/d2d_curation",
+    "sha256": "fc076ee1b52f37d807aa4c41a579bc1674323cad83d6d1abacf7c79dce0bc13c",
+    "temporary_report": "gmi-execution/analysis/d2d-curation.md"
+  },
+  "operation": "gmi-d2d-curation-decisions-20261004-astra-001",
+  "parent_decision_receipt": {
+    "body": "## Applied semantic decision before D2D source admission — 2026-10-04\n\nAstra accepts the independent review under **gmi-theme-subtheme-v3-completion-20261004-astra-001**: **reject the two offered canonical mapping relationships and retain both local concepts and their grid-application evidence.** This is the parent curation decision; source queue admission, exact source review and ordinary graph/reader consumption are still pending.\n\n- **prop:de400c2bb566c04c** — ltheme:ths:301096 → theme:grid_electrification: reject this vocabulary mapping; remain local.\n- **prop:a1b11d839c5d789d** — ltheme:ths:301174 → theme:grid_electrification: reject this vocabulary mapping; remain local.\n- Solid-state308294 keeps its application-scope hold. The missing basket-owner bindings for300733/307822 remain OWNER_BASKET_NOT_BOUND.\n\nThe current source resolves a material audit/proposal conflict. [contracts/theme_graph/README.md](https://github.com/mastermindx-market-intelligence/macro/blob/9ee1d9e702de1add7c5e6bd804aaf3f835053db7/contracts/theme_graph/README.md#L103-L107) defines local→canonical EXPRESSES as vocabulary resolution, and [materialize.py](https://github.com/mastermindx-market-intelligence/macro/blob/9ee1d9e702de1add7c5e6bd804aaf3f835053db7/engine/theme_graph/materialize.py#L1099-L1120) implements it. The drafts support narrower nonexclusive applications and disclaim identity. Adding their ths_concept_ids would also project whole matching baskets into canonical expression. Application evidence therefore does not warrant these offered mappings.\n\nThis ruling supersedes the ambiguous suggestion in the earlier acceptance checkpoint that these local→canonical drafts could be accepted merely as nonexclusive application expression. It preserves the audit, prior research, accepted controls, exact local IDs and supported application facts. It creates no new relationship enum or canonical mapping.\n\nIndependent reviewer **/root/d2d_curation**, review concluded **2026-10-04T00:33:06Z**, used frozen evidence and current source; no new Deep Research. Current queue contains234 proposed rows and neither draft ID. Source admission will preserve existing234 rows and historic draft bytes; use the existing rejected enum, ratified_by=null, actual admission/decision clocks, reviewer/authority in adjudication_note/evidence, and immutable original draft ancestry. No invented rejected_by, backdated visibility, THS public right, economic exposure or predictive permission.\n\nA bounded current-carrier changed-path check found no queue/probation writer overlap in #7870/#7886/#7967/#8324/#7891/#7455/#6514/#7234/#8240. Source custody remains scoped; dirty D2E, LaneC and shared-kernel carriers stay fenced. The next isolated curation source packet will apply only these two rejected proposal receipts and their review evidence through the existing owner path.\n\nThe structural review also recovered an existing **Stage/Data OS current-only industry relationship reader**. GMI's OWNER_NOT_BOUND means that owner has not yet been bound to the GMI view; it does not mean no industry owner exists. Its industry fallback cannot establish exact subindustry truth. No second GMI classification master will be created.\n\nFull D2D remains PARTIAL until source admission, exact-grain census, structural binding and ordinary reader consumption are proved. D2E, W3B release and predictive use remain unaccepted.",
+    "created_at": "2026-10-04T00:38:00Z",
+    "updated_at": "2026-10-04T00:38:00Z",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698"
+  },
+  "preservation": {
+    "original_234_row_byte_prefix_exact": true,
+    "prefix_bytes": 205671,
+    "prefix_sha256": "8ce0d428bb8d3d3164430da316f615e16bce1c188a0e4412ed3bcbca6c37632c",
+    "protected_historical_files": {
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/REVIEW.md": "d224801a0ddabdcd7aa1cc700692bfd0896ba2d3ead1b2ebdcb2762d8ab4bbc7",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/check_review.py": "2f783cb569aae46d49dd0cbe69c65ff055bfe859efdd2b16bc662d7b073f421f",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/draft-proposals.json": "107acf92bcae7dccb0b35deab4c1dc6848c3b05eff2d8307aaaed90f57f3cffc",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/draft-review-previews.json": "298079419582faf779ac0c91cac148b90f7bc549878dc0a7e118a3fe549e9f6d",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/draft-worklist-preview.json": "648394ca31e4f6f728e9d94250445b9469f604f1a4fcab161bb15e42e8ea08dc",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/basket_baskets_china_ths_ths_solid_state.json": "27833605e551221755ba081339c9dd91bdbaa9786b113fb7dc8eed6292cd5b25",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/basket_baskets_china_ths_ths_storage_ess.json": "0cb7439889da1b61aa36c0f4f1348ee4a28efe7d40a0c6f7c133eefd1161f927",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/basket_baskets_china_ths_thsc301096.json": "6aa7410fac9f6f9cbd83489109134ba9a7cf9eb4735df7ec68ff1fd10ba67c08",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/basket_baskets_china_ths_thsc301174.json": "28a180e0fbf8d7c4a09f2bacfebf0cf54eb83fe963e8b8a336a44b823553eb68",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/basket_baskets_china_ths_thsc308991.json": "8571ca72e5227f17893e2acace72656e7c8f6ef2aa2944583869f68f3cfe0651",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/ltheme_ths_300733.json": "da7177a519c288a0f76dac579751ee5e916b37490364a8c960b91faeaf43d5bd",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/ltheme_ths_301096.json": "de26c9081bc8fefbbd9a763534445ebf766199e7ea27310c1127c65c2d88d888",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/ltheme_ths_301174.json": "b1deca07886968bb237940588dbc4552fbf16837086864aa43609e0b5a67af84",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/ltheme_ths_306380.json": "c8635f38b565b4d466612a9efcce0707a3a63086f18fdd21505da85ef03a1b26",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/ltheme_ths_307822.json": "a7f3ee928d79772be0ba2a4d2f4b290bcaf4189173d0236ce2ab4ffa67848f5c",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/ltheme_ths_307904.json": "b9e94b8e0c4f2bb4f3aece20855d8b531448e6b3414f03e5214f2f77a2ab57d3",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/ltheme_ths_308294.json": "3b01c676f6ce551ea1c13b93bcca2e0ea2752f1916d6b7495f5a3766d505c3ce",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/ltheme_ths_308991.json": "16262235cf774d010342a695d4be210a7c6f644aabeb648a6fe586d615bab1a2",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/theme_grid_electrification.json": "493ec15b749e2c6822c1d217dd79d7c523ec285aa7f3f92e92c31355f2da2095",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/theme_rare_earth_critical_min.json": "a7d970f49ae40aabfae03ab8c84923b371762cf67f2a88b0b5ec48620b6ce136",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/theme_solar.json": "5696002d827411cf0546f1a0e12d93bdb015c0eb1c66f13a52c618dedefc25c6",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json": "29c178291e413953e7da24dd3cff722adb2a43389e368a5c8206a83c666230e6",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json": "363261e41030a6d4b675d0e858f61bc0182486121d86cdae3804f56a8796e395",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/verification.json": "5feab28def182720a34fc97278d1dbebae00bb00b7a4b36df085b77590129932"
+    },
+    "unchanged_source_paths": {
+      "config/theme_crosswalk.yml": "43450b71f8663c4625d34940cdf15b5cab37eaa52061e118686f89c0d80ae909",
+      "config/theme_sources.yml": "8bb48fb9117043f6ee45ab156a773aedda6bfaed688fc38a9c1ada7d881cd97e",
+      "contracts/theme_graph/probation_proposal.v1.schema.json": "0536073b73e9f8ae5a35299eab9e201427b081bcab60a03e5fd4c416112c004b",
+      "engine/theme_graph/materialize.py": "8dbcc3fd26ea79ee4e5f141276728002890b8016b79d2dbeeb685ff975106c48",
+      "engine/theme_graph/probation.py": "f8f7bc8dc42d74d04574d2b22a0038509d7c0044ff3a8d4bf5fede0f1f939ff5",
+      "engine/theme_graph/rights.py": "704ad0a9deea7ae48239406c7c4e6740e06c338e6cdf926679016f54126da2cc"
+    }
+  },
+  "queue_after": {
+    "bytes": 219615,
+    "rows": 236,
+    "sha256": "fb7a55fb7abb27261e8541742d9e79c143a7d52d21bb26962ca1150e77e59c7e",
+    "statuses": {
+      "proposed": 234,
+      "rejected": 2
+    }
+  },
+  "queue_before": {
+    "bytes": 205671,
+    "rows": 234,
+    "sha256": "8ce0d428bb8d3d3164430da316f615e16bce1c188a0e4412ed3bcbca6c37632c",
+    "statuses": {
+      "proposed": 234
+    }
+  },
+  "queue_path": "data/theme_graph/probation/proposals.jsonl",
+  "remaining_holds": [
+    "FULL_D2D_PARTIAL",
+    "STRUCTURAL_OWNER_BINDING",
+    "D2E_CURRENT_RIGHTS_AND_MEASUREMENT_COVERAGE",
+    "NATURAL_GRAPH_READER_CONSUMPTION",
+    "INDEPENDENT_EXACT_HEAD_SOURCE_REVIEW",
+    "W3B_W3C_RELEASE"
+  ],
+  "source_base": "7593bb1424477a880d24528eece5366b1ec41209",
+  "source_branch": "claude/gmi-d2d-curation-decisions-20261004-astra-001",
+  "status": "CURATED_SOURCE_ADMISSION_CANDIDATE_PENDING_ROOT_COMMIT_PR_REVIEW_AND_NATURAL_CONSUMPTION",
+  "validation": {
+    "append_proposals": [
+      2,
+      0
+    ],
+    "old_rows_unmodified": true,
+    "original_draft_origin_fields_and_source_evidence_preserved": true,
+    "reject_rows": [
+      {
+        "adjudicated_at": "2026-10-04T00:51:55.181207Z",
+        "created": "2026-10-04T00:51:55.181207Z",
+        "proposal_id": "prop:de400c2bb566c04c",
+        "ratified_by": null,
+        "subject": {
+          "canonical_theme": "theme:grid_electrification",
+          "local_theme": "ltheme:ths:301096"
+        }
+      },
+      {
+        "adjudicated_at": "2026-10-04T00:51:55.181207Z",
+        "created": "2026-10-04T00:51:55.181207Z",
+        "proposal_id": "prop:a1b11d839c5d789d",
+        "ratified_by": null,
+        "subject": {
+          "canonical_theme": "theme:grid_electrification",
+          "local_theme": "ltheme:ths:301174"
+        }
+      }
+    ],
+    "require_valid_rows": "PASS_236_COMPLETE_ROWS_IDENTITY_AND_NO_DUPLICATES",
+    "schema": "contracts/theme_graph/probation_proposal.v1.schema.json"
+  },
+  "verification_initial_issue": "Initial output validator attempted remote relative ontology schema retrieval and received HTTP401; resumed with fail-closed offline Registry of unchanged committed contracts. No second append or schema edits."
+}

@@ -30,6 +30,7 @@ log = logging.getLogger("tushare_freshness")
 # A Tushare drip may legitimately lag the free daily by one session (its cron runs on a
 # different lane); beyond that it is stale and the fresh free source should win.
 DEFAULT_MAX_LAG_SESSIONS = 1
+_DAILY_TRADE_TABLES = frozenset({"valuation", "margin", "moneyflow", "chips"})
 
 # Column names that carry a Tushare frame's data-through date, most-authoritative first.
 # trade_date = the actual market session the row describes (the honest data-through date).
@@ -79,7 +80,7 @@ def prefer_tushare(tushare_df: pd.DataFrame | None, free_df: pd.DataFrame | None
 
     Returns ``(chosen_df, source)`` where source ∈ {"tushare", "free", "none"}. Tushare
     wins only when present AND its data-through date is no more than ``max_lag_sessions``
-    calendar days behind the free source's (or the free source is itself undatable/missing).
+    sessions behind the free source's for trade_date tables (elapsed days for reports) (or the free source is itself undatable/missing).
     A frozen Tushare plane (older than the gate) loses to a fresh free frame. Conservative:
     an undatable Tushare frame de-prefers itself.
     """
@@ -93,8 +94,13 @@ def prefer_tushare(tushare_df: pd.DataFrame | None, free_df: pd.DataFrame | None
     if f_as is None:                            # can't date free → keep Tushare (its own asof known)
         return (tushare_df, "tushare")
     lag = (f_as - t_as).days
+    if "trade_date" in tushare_df.columns:
+        from lib.market_session import is_session_date, missed_sessions
+        if not is_session_date("CN", t_as.date()):
+            return (free_df, "free")
+        lag = missed_sessions("CN", t_as.date(), f_as.date())
     if lag > max_lag_sessions:
-        log.info("tushare_freshness: Tushare stale (through %s, free through %s, lag %dd > %d) — using free",
+        log.info("tushare_freshness: Tushare stale (through %s, free through %s, lag %d > %d) — using free",
                  t_as.date(), f_as.date(), lag, max_lag_sessions)
         return (free_df, "free")
     return (tushare_df, "tushare")
@@ -104,7 +110,9 @@ def staleness_badge(table: str, *, expected_cadence_days: int = 1,
                     ref: pd.Timestamp | None = None) -> dict:
     """Consume-time freshness descriptor for a Tushare table:
     ``{table, asof, lag_days, state}`` with state ∈ {fresh, slow, stale, dead}. ``ref`` is
-    the comparison date (default: today, UTC). ``dead`` = >10× cadence or missing."""
+    the comparison instant (default: now, UTC). Daily trade tables grade completed CN
+    sessions; periodic announcements retain elapsed days. lag_days remains raw elapsed
+    days. ``dead`` = >10× cadence, missing, or an invalid daily observation."""
     # ref must be tz-NAIVE to line up with frame_asof(), which returns naive timestamps.
     # pandas >= 3 makes Timestamp.utcnow() tz-AWARE (and deprecates it), so the old
     # `(ref or pd.Timestamp.utcnow()).normalize()` raised
@@ -113,7 +121,8 @@ def staleness_badge(table: str, *, expected_cadence_days: int = 1,
     # TypeError in its own try/except and logged "health registration failed", so
     # run_status never carried a `tushare` block and the STALE/DEAD warning could never
     # fire: the freeze guard was itself silently frozen. Strip the tz, never subtract raw.
-    ref = pd.Timestamp(ref) if ref is not None else pd.Timestamp.now("UTC")
+    instant = pd.Timestamp(ref) if ref is not None else pd.Timestamp.now("UTC")
+    ref = instant
     if ref.tzinfo is not None:
         ref = ref.tz_localize(None)
     ref = ref.normalize()
@@ -121,12 +130,25 @@ def staleness_badge(table: str, *, expected_cadence_days: int = 1,
     if asof is None:
         return {"table": table, "asof": None, "lag_days": None, "state": "dead"}
     lag = int((ref - asof).days)
-    if lag <= expected_cadence_days:
+    lag_sessions = None
+    grade_lag = lag
+    extra = {}
+    if table in _DAILY_TRADE_TABLES and expected_cadence_days == 1:
+        from lib.market_session import session_freshness
+        freshness = session_freshness("CN", asof.date(), instant.to_pydatetime())
+        lag_sessions = freshness["lag_sessions"]
+        extra = {"lag_sessions": lag_sessions, "expected_session": freshness["expected_session"],
+                 "calendar_verified": freshness["calendar_verified"]}
+        if freshness["state"] in ("missing", "invalid", "unverified") or lag_sessions is None:
+            return {"table": table, "asof": str(asof.date()), "lag_days": lag,
+                    "state": "dead", **extra}
+        grade_lag = lag_sessions
+    if grade_lag <= expected_cadence_days:
         state = "fresh"
-    elif lag <= expected_cadence_days * 3:
+    elif grade_lag <= expected_cadence_days * 3:
         state = "slow"
-    elif lag <= expected_cadence_days * 10:
+    elif grade_lag <= expected_cadence_days * 10:
         state = "stale"
     else:
         state = "dead"
-    return {"table": table, "asof": str(asof.date()), "lag_days": lag, "state": state}
+    return {"table": table, "asof": str(asof.date()), "lag_days": lag, "state": state, **extra}

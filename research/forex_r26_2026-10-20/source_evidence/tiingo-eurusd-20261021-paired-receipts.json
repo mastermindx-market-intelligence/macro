@@ -1,0 +1,100 @@
+{
+  "code_sha256": {
+    "lib/dataos/tiingo_reader.py": "f563efc37718fc509bc86159ff0bead4eb55ab2f6b4e5c1118088f606a6b54b3",
+    "lib/dataos/tiingo_views.py": "62e98c024b9c9019ed4b5d25818873463a6a0c1d4464ef3f3961f05677c6deb1",
+    "scripts/tiingo_ingest.py": "9ba5ef050594f4a7997470fa50f8d88870274a2159419d76e8679e17a3ee8f02",
+    "scripts/tiingo_materialize.py": "c554f9693cec7287d6953dc5a1a6d28c13012c85000af38fc0b607c0dc411500"
+  },
+  "new_api_requests_in_readback": 0,
+  "observed_at_utc": "2026-10-22T02:38:26.073388+00:00",
+  "schema": "forex_r26.paired_receipts.v1",
+  "source_records": {
+    "minute": {
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/8ca10857ca31af9b72bd2218604ce8bf2cd1b876d8bcc9e0634db525499fd893.parquet",
+        "rows": 1440,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "raw_bytes_verified": true,
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "first_vendor_label": "2026-10-21T00:00:00.000Z",
+        "last_vendor_label": "2026-10-21T23:59:00.000Z",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false,
+        "rows": 1440
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:38:03.836022+00:00",
+        "raw_bytes": 166710,
+        "raw_sha256": "8ca10857ca31af9b72bd2218604ce8bf2cd1b876d8bcc9e0634db525499fd893",
+        "receipt_id": "4bb5ae04fe41cbfc1b7c9527c59d2569f501ec7ad4ae867bb93536ba51cc8750",
+        "request_path": "/tiingo/fx/eurusd/prices?endDate=2026-10-21&resampleFreq=1min&startDate=2026-10-21",
+        "rows_hint": null,
+        "source": "forex-bars",
+        "symbol": "eurusd"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/e3ca8f4f9bdbcb37-8ca10857ca31af9b72bd2218.json"
+    },
+    "native": {
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/cc7c82b1cae6b154c7f45359d786ce91f08af7dd88260b52c15ad7a7afc78e8a.parquet",
+        "rows": 6,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "raw_bytes_verified": true,
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "first_vendor_label": "2026-10-21T00:00:00.000Z",
+        "last_vendor_label": "2026-10-21T20:00:00.000Z",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false,
+        "rows": 6
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:38:05.740210+00:00",
+        "raw_bytes": 694,
+        "raw_sha256": "cc7c82b1cae6b154c7f45359d786ce91f08af7dd88260b52c15ad7a7afc78e8a",
+        "receipt_id": "536e23b417aace9c8d6380983fb21c85b7af5939ef83d9c58ade06db80729f6a",
+        "request_path": "/tiingo/fx/eurusd/prices?endDate=2026-10-21&resampleFreq=4hour&startDate=2026-10-21",
+        "rows_hint": null,
+        "source": "forex-bars",
+        "symbol": "eurusd"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/3a031556aff492fc-cc7c82b1cae6b154c7f45359.json"
+    },
+    "retained_native": {
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-21/7c58219d4866e1d7aef2ab0da9c8f52e3ba9d4ca9a1ca1e6896b4fbb31c7e934.parquet",
+        "rows": 7,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "raw_bytes_verified": true,
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "first_vendor_label": "2026-10-19T20:00:00.000Z",
+        "last_vendor_label": "2026-10-20T20:00:00.000Z",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false,
+        "rows": 7
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-21T22:45:21.025233+00:00",
+        "raw_bytes": 809,
+        "raw_sha256": "7c58219d4866e1d7aef2ab0da9c8f52e3ba9d4ca9a1ca1e6896b4fbb31c7e934",
+        "receipt_id": "148ee86d4fec717d8d5c4e4214cbbb8cdd4703ac8260ef42ca31c2efaba524ba",
+        "request_path": "/tiingo/fx/eurusd/prices?endDate=2026-10-20&resampleFreq=4hour&startDate=2026-10-19",
+        "rows_hint": null,
+        "source": "forex-bars",
+        "symbol": "eurusd"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-21/f7f669cabd945086-7c58219d4866e1d7aef2ab0d.json"
+    }
+  }
+}

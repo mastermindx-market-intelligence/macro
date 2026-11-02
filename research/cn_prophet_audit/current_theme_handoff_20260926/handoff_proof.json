@@ -1,0 +1,413 @@
+{
+  "proof_kind": "pinned caller-to-consumer composition; synthetic inputs",
+  "not_proven": [
+    "production",
+    "independent review",
+    "whole-repo integration",
+    "investment performance"
+  ],
+  "caller": "c0d2a314f08e287ede354353cc45dc4e346aa6ec",
+  "caller_sha256": "3ea9083ec6cce3d3715c692cba8197a2b38ed744e67980435d4144002eb7364f",
+  "consumers": {
+    "mature": "9c8ff7315347eb8b6d00875603c55b1bd63ad8b5",
+    "emerging": "0fab873d85decf6ce72d08e9d4df6b7668e5626f"
+  },
+  "consumer_sha256": {
+    "mature": "fcb9c8996294e1f9cf0fe5e6835c27785ef4006cf43b9aba58cebff0b05cc8f7",
+    "emerging": "036e3f26676b3752e90260136daaa7111dd86dfdd6ddf3a0c4a570c3dcd26281"
+  },
+  "clock": "2026-09-23T10:00:00+00:00",
+  "cases": [
+    {
+      "stage": "mature",
+      "case": "current-continuing",
+      "owner_calls": [
+        "china"
+      ],
+      "sector_cards": 1,
+      "theme_buy": false,
+      "themes": [
+        {
+          "lane": "wait_pullback",
+          "id": "cn_probe",
+          "reco": "enter",
+          "route": null,
+          "decision": {
+            "source_as_of": "2026-09-23",
+            "final_reco": "enter",
+            "final_label": "emerging",
+            "status": "CURRENT",
+            "source_status": "CURRENT",
+            "source_conflict": false,
+            "scope": "theme_presentation_only",
+            "stock_entry_permission": false
+          }
+        }
+      ]
+    },
+    {
+      "stage": "mature",
+      "case": "initial-entry",
+      "owner_calls": [
+        "china"
+      ],
+      "sector_cards": 1,
+      "theme_buy": true,
+      "themes": [
+        {
+          "lane": "buy_now",
+          "id": "cn_probe",
+          "reco": "enter",
+          "route": "clean_entry",
+          "decision": {
+            "source_as_of": "2026-09-23",
+            "final_reco": "enter",
+            "final_label": "emerging",
+            "status": "CURRENT",
+            "source_status": "CURRENT",
+            "source_conflict": false,
+            "scope": "theme_presentation_only",
+            "stock_entry_permission": false
+          }
+        }
+      ]
+    },
+    {
+      "stage": "mature",
+      "case": "same-session-hold",
+      "owner_calls": [
+        "china"
+      ],
+      "sector_cards": 1,
+      "theme_buy": false,
+      "themes": [
+        {
+          "lane": "wait_pullback",
+          "id": "cn_probe",
+          "reco": "hold",
+          "route": null,
+          "decision": {
+            "source_as_of": "2026-09-23",
+            "final_reco": "hold",
+            "final_label": "emerging",
+            "status": "CURRENT",
+            "source_status": "CURRENT",
+            "source_conflict": false,
+            "scope": "theme_presentation_only",
+            "stock_entry_permission": false
+          }
+        }
+      ]
+    },
+    {
+      "stage": "mature",
+      "case": "stale-result",
+      "owner_calls": [
+        "china"
+      ],
+      "sector_cards": 1,
+      "theme_buy": false,
+      "themes": [
+        {
+          "lane": "wait_pullback",
+          "id": "cn_probe",
+          "reco": null,
+          "route": null,
+          "decision": {
+            "source_as_of": "2026-09-22",
+            "final_reco": "enter",
+            "final_label": "emerging",
+            "status": "UNAVAILABLE",
+            "source_status": "UNAVAILABLE",
+            "source_conflict": false,
+            "scope": "theme_presentation_only",
+            "stock_entry_permission": false
+          }
+        }
+      ]
+    },
+    {
+      "stage": "mature",
+      "case": "no-refresh-stale",
+      "owner_calls": [],
+      "sector_cards": 1,
+      "theme_buy": false,
+      "themes": [
+        {
+          "lane": "wait_pullback",
+          "id": "cn_probe",
+          "reco": null,
+          "route": null,
+          "decision": {
+            "source_as_of": "2026-09-22",
+            "final_reco": "enter",
+            "final_label": "emerging",
+            "status": "UNAVAILABLE",
+            "source_status": "UNAVAILABLE",
+            "source_conflict": false,
+            "scope": "theme_presentation_only",
+            "stock_entry_permission": false
+          }
+        }
+      ]
+    },
+    {
+      "stage": "mature",
+      "case": "owner-fails-stale",
+      "owner_calls": [
+        "china"
+      ],
+      "sector_cards": 1,
+      "theme_buy": false,
+      "themes": [
+        {
+          "lane": "wait_pullback",
+          "id": "cn_probe",
+          "reco": null,
+          "route": null,
+          "decision": {
+            "source_as_of": "2026-09-22",
+            "final_reco": "enter",
+            "final_label": "emerging",
+            "status": "UNAVAILABLE",
+            "source_status": "UNAVAILABLE",
+            "source_conflict": false,
+            "scope": "theme_presentation_only",
+            "stock_entry_permission": false
+          }
+        }
+      ]
+    },
+    {
+      "stage": "mature",
+      "case": "bad-envelope-refresh",
+      "owner_calls": [
+        "china"
+      ],
+      "sector_cards": 1,
+      "theme_buy": false,
+      "themes": [
+        {
+          "lane": "wait_pullback",
+          "id": "cn_probe",
+          "reco": "enter",
+          "route": null,
+          "decision": {
+            "source_as_of": "2026-09-23",
+            "final_reco": "enter",
+            "final_label": "emerging",
+            "status": "CURRENT",
+            "source_status": "CURRENT",
+            "source_conflict": false,
+            "scope": "theme_presentation_only",
+            "stock_entry_permission": false
+          }
+        }
+      ]
+    },
+    {
+      "stage": "mature",
+      "case": "bad-envelope-rerender",
+      "owner_calls": [],
+      "sector_cards": 1,
+      "theme_buy": false,
+      "themes": []
+    },
+    {
+      "stage": "emerging",
+      "case": "current-continuing",
+      "owner_calls": [
+        "china"
+      ],
+      "sector_cards": 1,
+      "theme_buy": true,
+      "themes": [
+        {
+          "lane": "buy_now",
+          "id": "cn_probe",
+          "reco": "enter",
+          "route": "theme_enter",
+          "decision": {
+            "source_as_of": "2026-09-23",
+            "final_reco": "enter",
+            "final_label": "emerging",
+            "status": "CURRENT",
+            "source_status": "CURRENT",
+            "source_conflict": false,
+            "scope": "theme_presentation_only",
+            "stock_entry_permission": false
+          }
+        }
+      ]
+    },
+    {
+      "stage": "emerging",
+      "case": "initial-entry",
+      "owner_calls": [
+        "china"
+      ],
+      "sector_cards": 1,
+      "theme_buy": true,
+      "themes": [
+        {
+          "lane": "buy_now",
+          "id": "cn_probe",
+          "reco": "enter",
+          "route": "clean_entry",
+          "decision": {
+            "source_as_of": "2026-09-23",
+            "final_reco": "enter",
+            "final_label": "emerging",
+            "status": "CURRENT",
+            "source_status": "CURRENT",
+            "source_conflict": false,
+            "scope": "theme_presentation_only",
+            "stock_entry_permission": false
+          }
+        }
+      ]
+    },
+    {
+      "stage": "emerging",
+      "case": "same-session-hold",
+      "owner_calls": [
+        "china"
+      ],
+      "sector_cards": 1,
+      "theme_buy": false,
+      "themes": [
+        {
+          "lane": "wait_pullback",
+          "id": "cn_probe",
+          "reco": "hold",
+          "route": null,
+          "decision": {
+            "source_as_of": "2026-09-23",
+            "final_reco": "hold",
+            "final_label": "emerging",
+            "status": "CURRENT",
+            "source_status": "CURRENT",
+            "source_conflict": false,
+            "scope": "theme_presentation_only",
+            "stock_entry_permission": false
+          }
+        }
+      ]
+    },
+    {
+      "stage": "emerging",
+      "case": "stale-result",
+      "owner_calls": [
+        "china"
+      ],
+      "sector_cards": 1,
+      "theme_buy": false,
+      "themes": [
+        {
+          "lane": "wait_pullback",
+          "id": "cn_probe",
+          "reco": null,
+          "route": null,
+          "decision": {
+            "source_as_of": "2026-09-22",
+            "final_reco": "enter",
+            "final_label": "emerging",
+            "status": "UNAVAILABLE",
+            "source_status": "UNAVAILABLE",
+            "source_conflict": false,
+            "scope": "theme_presentation_only",
+            "stock_entry_permission": false
+          }
+        }
+      ]
+    },
+    {
+      "stage": "emerging",
+      "case": "no-refresh-stale",
+      "owner_calls": [],
+      "sector_cards": 1,
+      "theme_buy": false,
+      "themes": [
+        {
+          "lane": "wait_pullback",
+          "id": "cn_probe",
+          "reco": null,
+          "route": null,
+          "decision": {
+            "source_as_of": "2026-09-22",
+            "final_reco": "enter",
+            "final_label": "emerging",
+            "status": "UNAVAILABLE",
+            "source_status": "UNAVAILABLE",
+            "source_conflict": false,
+            "scope": "theme_presentation_only",
+            "stock_entry_permission": false
+          }
+        }
+      ]
+    },
+    {
+      "stage": "emerging",
+      "case": "owner-fails-stale",
+      "owner_calls": [
+        "china"
+      ],
+      "sector_cards": 1,
+      "theme_buy": false,
+      "themes": [
+        {
+          "lane": "wait_pullback",
+          "id": "cn_probe",
+          "reco": null,
+          "route": null,
+          "decision": {
+            "source_as_of": "2026-09-22",
+            "final_reco": "enter",
+            "final_label": "emerging",
+            "status": "UNAVAILABLE",
+            "source_status": "UNAVAILABLE",
+            "source_conflict": false,
+            "scope": "theme_presentation_only",
+            "stock_entry_permission": false
+          }
+        }
+      ]
+    },
+    {
+      "stage": "emerging",
+      "case": "bad-envelope-refresh",
+      "owner_calls": [
+        "china"
+      ],
+      "sector_cards": 1,
+      "theme_buy": true,
+      "themes": [
+        {
+          "lane": "buy_now",
+          "id": "cn_probe",
+          "reco": "enter",
+          "route": "theme_enter",
+          "decision": {
+            "source_as_of": "2026-09-23",
+            "final_reco": "enter",
+            "final_label": "emerging",
+            "status": "CURRENT",
+            "source_status": "CURRENT",
+            "source_conflict": false,
+            "scope": "theme_presentation_only",
+            "stock_entry_permission": false
+          }
+        }
+      ]
+    },
+    {
+      "stage": "emerging",
+      "case": "bad-envelope-rerender",
+      "owner_calls": [],
+      "sector_cards": 1,
+      "theme_buy": false,
+      "themes": []
+    }
+  ],
+  "source_unchanged": true
+}

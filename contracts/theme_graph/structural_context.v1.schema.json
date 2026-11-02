@@ -1,0 +1,382 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "authority_ceiling",
+    "neighborhood",
+    "owner_reference_basis",
+    "historical_classification_claim",
+    "historical_hierarchy_claim",
+    "owner_reference",
+    "subject_reference",
+    "sector_references",
+    "source_parent_references",
+    "member_queries",
+    "counts",
+    "coverage",
+    "limitations"
+  ],
+  "properties": {
+    "schema": {
+      "const": "gmi.theme_structural_context/v1"
+    },
+    "authority_ceiling": {
+      "const": "research_internal_only"
+    },
+    "neighborhood": {
+      "$ref": "https://mastermind-x.com/contracts/theme_graph/ontology_neighborhood.v1.schema.json"
+    },
+    "owner_reference_basis": {
+      "const": "LATEST_STORED_CROSSWALK"
+    },
+    "historical_classification_claim": {
+      "const": false
+    },
+    "historical_hierarchy_claim": {
+      "const": false
+    },
+    "owner_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_path",
+        "sha256",
+        "registered_sector_baskets"
+      ],
+      "properties": {
+        "source_path": {
+          "const": "config/theme_crosswalk.yml"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "registered_sector_baskets": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "subject_reference": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "reference_kind",
+            "node_id",
+            "basket_id",
+            "owner_reason",
+            "source_pointer",
+            "neighborhood_query",
+            "membership_evidence"
+          ],
+          "properties": {
+            "reference_kind": {
+              "const": "REGISTERED_SECTOR_CONTEXT_BASKET"
+            },
+            "node_id": {
+              "type": "string"
+            },
+            "basket_id": {
+              "type": "string"
+            },
+            "owner_reason": {
+              "type": "string"
+            },
+            "source_pointer": {
+              "type": "string"
+            },
+            "neighborhood_query": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "node_id",
+                "asof",
+                "knowledge_cutoff"
+              ],
+              "properties": {
+                "node_id": {
+                  "type": "string"
+                },
+                "asof": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "knowledge_cutoff": {
+                  "type": "string",
+                  "format": "date"
+                }
+              }
+            },
+            "membership_evidence": {
+              "type": "array",
+              "items": {
+                "$ref": "https://mastermind-x.com/contracts/theme_graph/ontology_neighborhood.v1.schema.json#/$defs/relation"
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sector_references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reference_kind",
+          "node_id",
+          "basket_id",
+          "owner_reason",
+          "source_pointer",
+          "neighborhood_query",
+          "membership_evidence"
+        ],
+        "properties": {
+          "reference_kind": {
+            "const": "REGISTERED_SECTOR_CONTEXT_BASKET"
+          },
+          "node_id": {
+            "type": "string"
+          },
+          "basket_id": {
+            "type": "string"
+          },
+          "owner_reason": {
+            "type": "string"
+          },
+          "source_pointer": {
+            "type": "string"
+          },
+          "neighborhood_query": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "node_id",
+              "asof",
+              "knowledge_cutoff"
+            ],
+            "properties": {
+              "node_id": {
+                "type": "string"
+              },
+              "asof": {
+                "type": "string",
+                "format": "date"
+              },
+              "knowledge_cutoff": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          },
+          "membership_evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "https://mastermind-x.com/contracts/theme_graph/ontology_neighborhood.v1.schema.json#/$defs/relation"
+            }
+          }
+        }
+      }
+    },
+    "source_parent_references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reference_kind",
+          "local_node_id",
+          "source_family",
+          "parent_source_key",
+          "parent_source_label",
+          "reference_basis",
+          "rights",
+          "neighborhood_query",
+          "membership_evidence"
+        ],
+        "properties": {
+          "reference_kind": {
+            "const": "SOURCE_LOCAL_PARENT_REFERENCE"
+          },
+          "local_node_id": {
+            "type": "string"
+          },
+          "source_family": {
+            "type": "string"
+          },
+          "parent_source_key": {
+            "type": "string"
+          },
+          "parent_source_label": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "reference_basis": {
+            "const": "RECORDED_NODE_SOURCE_METADATA"
+          },
+          "rights": {
+            "anyOf": [
+              {
+                "$ref": "https://mastermind-x.com/contracts/theme_graph/ontology_neighborhood.v1.schema.json#/$defs/rights"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "neighborhood_query": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "node_id",
+              "asof",
+              "knowledge_cutoff"
+            ],
+            "properties": {
+              "node_id": {
+                "type": "string"
+              },
+              "asof": {
+                "type": "string",
+                "format": "date"
+              },
+              "knowledge_cutoff": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          },
+          "membership_evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "https://mastermind-x.com/contracts/theme_graph/ontology_neighborhood.v1.schema.json#/$defs/relation"
+            }
+          }
+        }
+      }
+    },
+    "member_queries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "node_id",
+          "asof",
+          "knowledge_cutoff"
+        ],
+        "properties": {
+          "node_id": {
+            "type": "string"
+          },
+          "asof": {
+            "type": "string",
+            "format": "date"
+          },
+          "knowledge_cutoff": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sector_references",
+        "source_parent_references",
+        "member_queries"
+      ],
+      "properties": {
+        "sector_references": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_parent_references": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "member_queries": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sector",
+        "industry",
+        "subindustry"
+      ],
+      "properties": {
+        "sector": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "reason"
+          ],
+          "properties": {
+            "state": {
+              "type": "string"
+            },
+            "reason": {
+              "type": "string"
+            }
+          }
+        },
+        "industry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "reason"
+          ],
+          "properties": {
+            "state": {
+              "const": "OWNER_NOT_BOUND"
+            },
+            "reason": {
+              "type": "string"
+            }
+          }
+        },
+        "subindustry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "reason"
+          ],
+          "properties": {
+            "state": {
+              "const": "OWNER_NOT_BOUND"
+            },
+            "reason": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/theme_graph/structural_context.v1.schema.json"
+}

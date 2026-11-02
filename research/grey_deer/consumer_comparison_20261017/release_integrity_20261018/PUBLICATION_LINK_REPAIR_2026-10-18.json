@@ -1,0 +1,160 @@
+{
+  "schema": "risk_radar.publication_link_repair.v1",
+  "repaired_at_utc": "2026-10-18T10:00:48.535952+00:00",
+  "source_head": "f11fa0c66273ca1976f37e2f529fe9ff689ee439",
+  "source_status": "WORKTREE_CANDIDATE",
+  "reason": "Repair 14 failed Markdown destinations in three historical reports; preserve complete original bytes and conclusions.",
+  "archive_suffix_links": 9,
+  "original_transfer_links": 5,
+  "documents": [
+    {
+      "path": "HELPER_REPAIR_IMPLEMENTATION_2026-10-18.md",
+      "original": {
+        "bytes": 13987,
+        "sha256": "ad594ef818feb2091bb1146464fbb93bfb26dde96988551e09af09d70f6c0416",
+        "git_blob": "76f7a66e7d9a3e44681af44524f414f0e58424d5"
+      },
+      "published": {
+        "bytes": 13999,
+        "sha256": "94c4402fcfb8b26a41ef5d6b77cf640ee32cc6c2a0da2b99a0a86bee119a3bb7",
+        "git_blob": "30fc3de4475bf59c125378ed0eee42be9e5369d7"
+      },
+      "links": [
+        {
+          "old": "candidate/scripts/deploy_code_to_vps.sh",
+          "new": "candidate/scripts/deploy_code_to_vps.sh.txt",
+          "occurrences": 1,
+          "cause": "archive_suffix"
+        },
+        {
+          "old": "candidate/tests/test_deploy_provenance.py",
+          "new": "candidate/tests/test_deploy_provenance.py.txt",
+          "occurrences": 1,
+          "cause": "archive_suffix"
+        },
+        {
+          "old": "helper_fixture_driver_20261018.py",
+          "new": "helper_fixture_driver_20261018.py.txt",
+          "occurrences": 1,
+          "cause": "archive_suffix"
+        }
+      ]
+    },
+    {
+      "path": "HELPER_REPAIR_PROPOSAL_2026-10-18.md",
+      "original": {
+        "bytes": 29939,
+        "sha256": "b4476c77760140b45c49de4d011250772636e7897e04139d1c06797566fdc8a4",
+        "git_blob": "c2a35776fc11318438f29b62780b8e52f369aa78"
+      },
+      "published": {
+        "bytes": 29911,
+        "sha256": "35b87c0adc1a3b62c4a4397f5648486875716244bd966e0e25b88cafd97a7f05",
+        "git_blob": "7d244465b5ab9ef71fa7d4b3b12d7de51ac0805a"
+      },
+      "links": [
+        {
+          "old": "source/scripts/deploy_code_to_vps.sh",
+          "new": "source/scripts/deploy_code_to_vps.sh.txt",
+          "occurrences": 1,
+          "cause": "archive_suffix"
+        },
+        {
+          "old": "source/scripts/deploy_from_git.sh",
+          "new": "source/scripts/deploy_from_git.sh.txt",
+          "occurrences": 1,
+          "cause": "archive_suffix"
+        },
+        {
+          "old": "source/portfolio/forward_evaluation.py",
+          "new": "source/portfolio/forward_evaluation.py.txt",
+          "occurrences": 1,
+          "cause": "archive_suffix"
+        },
+        {
+          "old": "source/control_plane/locks.py",
+          "new": "source/control_plane/locks.py.txt",
+          "occurrences": 1,
+          "cause": "archive_suffix"
+        },
+        {
+          "old": "../research_notes/consumer_comparison_20261017/LIVE_RELEASE_QUALIFICATION_2026-10-18.json",
+          "new": "../LIVE_RELEASE_QUALIFICATION_2026-10-18.json",
+          "occurrences": 1,
+          "cause": "original_transfer_path"
+        }
+      ]
+    },
+    {
+      "path": "MASTERmind_1567_RELEASE_SCOPE_REVIEW_2026-10-17.md",
+      "original": {
+        "bytes": 24283,
+        "sha256": "364b24db9b7de5f44fd96cf88eee3d62726edffef6782d000ef68d7ddae9923f",
+        "git_blob": "a9956705e4f0f5d56c50ef15632a8a6a0064eb23"
+      },
+      "published": {
+        "bytes": 24147,
+        "sha256": "a10aa044cb38bd1186b776621e6c7a0b71576c5cf42cf89b7d7e808f2f155cd6",
+        "git_blob": "8d70958ec240320a3147a903ec47c6f93142f87d"
+      },
+      "links": [
+        {
+          "old": "../research_notes/consumer_comparison_20261017/SOURCE_RELEASE_PREFLIGHT_20261017.json",
+          "new": "../SOURCE_RELEASE_PREFLIGHT_20261017.json",
+          "occurrences": 1,
+          "cause": "original_transfer_path"
+        },
+        {
+          "old": "../research_notes/consumer_comparison_20261017/README.md",
+          "new": "../README.md",
+          "occurrences": 1,
+          "cause": "original_transfer_path"
+        },
+        {
+          "old": "../research_notes/consumer_comparison_20261017/SOURCE_CLOCK_REPAIR_20261017.json",
+          "new": "../SOURCE_CLOCK_REPAIR_20261017.json",
+          "occurrences": 1,
+          "cause": "original_transfer_path"
+        },
+        {
+          "old": "../research_notes/risk_radar_source_consumer_audit_20261017.md",
+          "new": "../../risk_radar_source_consumer_audit_20261017.md",
+          "occurrences": 1,
+          "cause": "original_transfer_path"
+        },
+        {
+          "old": "source/scripts/deploy_from_git.sh",
+          "new": "source/scripts/deploy_from_git.sh.txt",
+          "occurrences": 1,
+          "cause": "archive_suffix"
+        },
+        {
+          "old": "source/scripts/deploy_code_to_vps.sh",
+          "new": "source/scripts/deploy_code_to_vps.sh.txt",
+          "occurrences": 1,
+          "cause": "archive_suffix"
+        }
+      ]
+    }
+  ],
+  "originals_record": "PUBLICATION_LINK_REPAIR_ORIGINALS_2026-10-18.json",
+  "findings_changed": false,
+  "code_changed": false,
+  "readme_before": {
+    "bytes": 10838,
+    "sha256": "50ebfefd6c7feb917b68b85c9b62f14a46adb12018f20e5cc58e46bba119cdee",
+    "git_blob": "51029f73ad361f7e546a618972cd43cf18a15615"
+  },
+  "readme_after": {
+    "bytes": 11949,
+    "sha256": "7ab81e6f718c2cd189588ea909469dab09353447e314e8230daf981a11e6230f",
+    "git_blob": "2cf759d72bfd4bea6f5bb013b3190fb429827e03"
+  },
+  "ci_acceptance": false,
+  "production_deploy": false,
+  "originals_record_identity": {
+    "bytes": 69664,
+    "sha256": "169f9ca123cdd87697c4596e351ba0b9c71b3ef501704e2932feed48991e0aa8",
+    "git_blob": "0f1a9011d18d7809b9f1ede68375cc4d78f2a8e3"
+  }
+}

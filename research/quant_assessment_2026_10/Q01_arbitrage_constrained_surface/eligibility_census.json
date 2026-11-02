@@ -1,0 +1,1128 @@
+{
+ "a1_sweep": {
+  "candidate_rule": "bid-like AND ask/offer-like AND strike-like AND expiry-like field",
+  "candidates": [
+   {
+    "bytes": 5845502,
+    "columns": [
+     "event_id",
+     "session_date",
+     "ts",
+     "root",
+     "group",
+     "group_zh",
+     "right",
+     "exp",
+     "strike",
+     "dte",
+     "dte_bucket",
+     "mny_bucket",
+     "side",
+     "n_prints",
+     "size",
+     "avg_price",
+     "premium",
+     "premium_z",
+     "baseline_source",
+     "vol_gt_oi",
+     "repeated",
+     "zerodte",
+     "signing_source",
+     "swept",
+     "detector_version",
+     "source",
+     "ingested_at",
+     "vol_gt_oi_ratio",
+     "microstructure_schema",
+     "source_print_count",
+     "nbbo_valid_print_count",
+     "source_premium_usd",
+     "nbbo_covered_premium_usd",
+     "nbbo_print_coverage",
+     "nbbo_premium_coverage",
+     "at_ask_share",
+     "at_bid_share",
+     "inside_share",
+     "outside_share",
+     "aggression_share",
+     "aggression_balance",
+     "spread_median_usd",
+     "spread_median_pct",
+     "quote_age_median_ms",
+     "quote_age_max_ms",
+     "bid_size_median",
+     "ask_size_median"
+    ],
+    "contract_complete": false,
+    "fields": {
+     "ask": true,
+     "bid": true,
+     "condition": false,
+     "discount": false,
+     "expiry": true,
+     "forward": false,
+     "quote_ts": false,
+     "settlement": false,
+     "strike": true,
+     "style": false
+    },
+    "kind": "parquet",
+    "relpath": "flow_signals/ledger.parquet",
+    "root_columns": {
+     "root": {
+      "index_roots_present": [],
+      "n_unique": 115
+     }
+    },
+    "rows": 92574,
+    "sha256": "c14b99cf92c29467d40a823a42e1b8974f018233c76b70d917b403f7a3898b62"
+   },
+   {
+    "bytes": 63202,
+    "contract_complete": false,
+    "fields": {
+     "ask": true,
+     "bid": true,
+     "condition": false,
+     "discount": true,
+     "expiry": true,
+     "forward": false,
+     "quote_ts": false,
+     "settlement": true,
+     "strike": true,
+     "style": false
+    },
+    "kind": "text",
+    "relpath": "macro/news_rss_cache/news_rss_v2_2026-08-06.json",
+    "root_columns": {
+     "_sniff_tokens": {
+      "index_roots_present": [],
+      "n_unique": 1309
+     }
+    },
+    "sha256": "e1b9ecf3ec30e2486e313df8682f42497ecafaf6aa674bfdf77c8f375627d8e9"
+   },
+   {
+    "bytes": 4461,
+    "contract_complete": false,
+    "fields": {
+     "ask": true,
+     "bid": true,
+     "condition": true,
+     "discount": false,
+     "expiry": true,
+     "forward": false,
+     "quote_ts": false,
+     "settlement": false,
+     "strike": true,
+     "style": false
+    },
+    "kind": "text",
+    "relpath": "options_flow/signing_gate.json",
+    "root_columns": {
+     "_sniff_tokens": {
+      "index_roots_present": [],
+      "n_unique": 157
+     }
+    },
+    "sha256": "13bf08a8983a099e6b662e060745e259f7a414b9f53990ec2d7be7fcb3b302af"
+   }
+  ],
+  "counts": {
+   "files": 71672,
+   "other": 7251,
+   "parquet": 25246,
+   "parquet_unreadable": 0,
+   "symlinks_skipped": 0,
+   "text_over_limit": 19,
+   "text_sniffed": 39156,
+   "text_unreadable": 0
+  },
+  "data_root": "/Users/chriswong/Documents/Cluade/macro-main/data",
+  "n_candidates": 3,
+  "non_candidate_count": 71669,
+  "non_candidate_listing_sha256": "f4fd0bbdae63af22b35eeade43c7a08987b74fdeab61fe8593f7ed8b1e5ba831",
+  "partial_match_counts_by_top_level_dir": {
+   "bid_and_ask": {
+    "china_funding": 1,
+    "china_news": 30,
+    "flow_signals": 1,
+    "macro": 7,
+    "massive": 1,
+    "options_flow": 1,
+    "special_situations": 77,
+    "tape_flow": 392
+   },
+   "strike_and_expiry": {
+    "altdata": 1,
+    "china_news": 6,
+    "china_sector_cycles": 1,
+    "drift_anchors": 1,
+    "edgar": 1,
+    "flow_signals": 1,
+    "index_gex_history": 1,
+    "macro": 7,
+    "options_dislocation": 1,
+    "options_flow": 1,
+    "options_session": 74,
+    "options_signal_campaign": 1,
+    "options_signal_episode": 1,
+    "policy": 1,
+    "polygon_gex": 28,
+    "prophet": 1,
+    "regime": 1,
+    "release_forecast": 1,
+    "research_vault": 1,
+    "signal_archive": 1,
+    "special_situations": 14
+   }
+  },
+  "patterns_parquet": {
+   "ask": "(^|[^a-z])(ask|offer)([^a-z]|$)",
+   "bid": "(^|[^a-z])bid([^a-z]|$)",
+   "condition": "condition",
+   "discount": "discount|^df$|(^|[^a-z])rate([^a-z]|$)",
+   "expiry": "expir|maturity|^t$|(^|[^a-z])dte([^a-z]|$)",
+   "forward": "forward|(^|[^a-z])fwd([^a-z]|$)",
+   "quote_ts": "quote.*(ts|time)|sip_timestamp|ms_of_day|quote_ts",
+   "settlement": "settle|am_pm",
+   "strike": "strike|^k$",
+   "style": "style|exercise"
+  },
+  "patterns_text": {
+   "ask": "(?<![a-z])(ask|offer)(?![a-z])",
+   "bid": "(?<![a-z])bid(?![a-z])",
+   "expiry": "expir|maturity|(?<![a-z])dte(?![a-z])",
+   "strike": "strike"
+  },
+  "vintage": "cdab6268"
+ },
+ "contract_complete_sources": [],
+ "eligible_sessions": 0,
+ "european_index_roots": [
+  "SPX",
+  "SPXW",
+  "XSP",
+  "NDX",
+  "NDXP",
+  "RUT",
+  "RUTW",
+  "DJX",
+  "MRUT"
+ ],
+ "polygon_gex_chains": {
+  "distinct_column_sets": [
+   [
+    "underlying",
+    "strike_ticker",
+    "expiry",
+    "K",
+    "T",
+    "is_call",
+    "oi",
+    "iv",
+    "gamma",
+    "delta",
+    "volume",
+    "spot",
+    "asof"
+   ]
+  ],
+  "per_file": {
+   "polygon_gex/chains/2026-06-15.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 27392
+   },
+   "polygon_gex/chains/2026-06-17.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 27367
+   },
+   "polygon_gex/chains/2026-06-18.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 154046
+   },
+   "polygon_gex/chains/2026-06-24.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 167702
+   },
+   "polygon_gex/chains/2026-06-26.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 157743
+   },
+   "polygon_gex/chains/2026-06-30.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 165157
+   },
+   "polygon_gex/chains/2026-07-01.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 150303
+   },
+   "polygon_gex/chains/2026-07-02.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 152215
+   },
+   "polygon_gex/chains/2026-07-07.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 174341
+   },
+   "polygon_gex/chains/2026-07-08.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 180309
+   },
+   "polygon_gex/chains/2026-07-09.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 166388
+   },
+   "polygon_gex/chains/2026-07-10.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 171769
+   },
+   "polygon_gex/chains/2026-07-13.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 172817
+   },
+   "polygon_gex/chains/2026-07-15.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 181953
+   },
+   "polygon_gex/chains/2026-07-17.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 161107
+   },
+   "polygon_gex/chains/2026-07-20.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 165275
+   },
+   "polygon_gex/chains/2026-07-21.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 173972
+   },
+   "polygon_gex/chains/2026-07-22.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 178294
+   },
+   "polygon_gex/chains/2026-07-23.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 160578
+   },
+   "polygon_gex/chains/2026-07-24.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 163564
+   },
+   "polygon_gex/chains/2026-07-27.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 166669
+   },
+   "polygon_gex/chains/2026-07-28.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 168541
+   },
+   "polygon_gex/chains/2026-07-29.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 169503
+   },
+   "polygon_gex/chains/2026-07-30.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 160161
+   },
+   "polygon_gex/chains/2026-08-06.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 164322
+   },
+   "polygon_gex/chains/2026-08-10.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 171845
+   },
+   "polygon_gex/chains/2026-08-12.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 180300
+   },
+   "polygon_gex/chains/2026-08-13.parquet": {
+    "contract_complete": false,
+    "index_roots_present": [],
+    "missing_fields": [
+     "ask",
+     "bid",
+     "condition",
+     "discount",
+     "forward",
+     "quote_ts",
+     "settlement",
+     "style"
+    ],
+    "rows": 185072
+   }
+  }
+ },
+ "sources": {
+  "cboe/gex_SPX.parquet": {
+   "columns": [
+    "spot",
+    "net_gex_bn",
+    "net_vex",
+    "net_cex",
+    "gamma_flip",
+    "dist_to_flip_pct",
+    "gamma_regime",
+    "magnet_up",
+    "magnet_down",
+    "charm_anchor",
+    "charm_net_sign",
+    "iv30",
+    "put_call_oi_ratio",
+    "max_pain",
+    "n_strikes",
+    "tier",
+    "__index_level_0__"
+   ],
+   "contract_complete": false,
+   "fields": {
+    "ask": false,
+    "bid": false,
+    "condition": false,
+    "discount": false,
+    "expiry": false,
+    "forward": false,
+    "quote_ts": false,
+    "settlement": false,
+    "strike": true,
+    "style": false
+   },
+   "index_roots_present": [],
+   "kind": "parquet",
+   "missing_fields": [
+    "ask",
+    "bid",
+    "condition",
+    "discount",
+    "expiry",
+    "forward",
+    "quote_ts",
+    "settlement",
+    "style"
+   ],
+   "root_columns": {},
+   "rows": 78
+  },
+  "deribit/options_structure.parquet": {
+   "columns": [
+    "underlying",
+    "total_oi_btc",
+    "put_call_oi_ratio",
+    "put_call_vol_ratio",
+    "atm_iv_7d",
+    "atm_iv_30d",
+    "atm_iv_90d",
+    "atm_iv_180d",
+    "term_slope_30_90",
+    "rr_25d",
+    "skew_25d",
+    "skew_tenor_d",
+    "skew_25d_7d",
+    "skew_25d_90d",
+    "skew_term",
+    "max_pain",
+    "max_pain_expiry_d",
+    "gex_per_1pct_usd",
+    "gamma_concentration_usd",
+    "gamma_flip",
+    "dist_to_flip_pct",
+    "gamma_regime",
+    "basis_front_ann",
+    "basis_ann",
+    "basis_slope",
+    "__index_level_0__"
+   ],
+   "contract_complete": false,
+   "fields": {
+    "ask": false,
+    "bid": false,
+    "condition": false,
+    "discount": false,
+    "expiry": true,
+    "forward": false,
+    "quote_ts": false,
+    "settlement": false,
+    "strike": false,
+    "style": false
+   },
+   "index_roots_present": [],
+   "kind": "parquet",
+   "missing_fields": [
+    "ask",
+    "bid",
+    "condition",
+    "discount",
+    "forward",
+    "quote_ts",
+    "settlement",
+    "strike",
+    "style"
+   ],
+   "root_columns": {
+    "underlying": {
+     "index_roots_present": [],
+     "n_unique": 99
+    }
+   },
+   "rows": 99
+  },
+  "options_dislocation/snapshots.parquet": {
+   "columns": [
+    "date",
+    "underlying",
+    "spot",
+    "iv_front",
+    "iv30",
+    "iv_back",
+    "term_slope",
+    "front_slope",
+    "em30",
+    "oi_tilt",
+    "turnover",
+    "strike_conc",
+    "expiry_conc",
+    "total_volume",
+    "total_oi",
+    "n_contracts",
+    "skew",
+    "ivspread",
+    "d5_skew",
+    "d5_ivspread",
+    "d5_term_slope",
+    "skew_accel",
+    "n_oi_tilt",
+    "n_d5_ivspread",
+    "n_d5_term_slope",
+    "n_skew_accel",
+    "n_skew",
+    "n_ivspread",
+    "n_term_slope"
+   ],
+   "contract_complete": false,
+   "fields": {
+    "ask": false,
+    "bid": false,
+    "condition": false,
+    "discount": false,
+    "expiry": true,
+    "forward": false,
+    "quote_ts": false,
+    "settlement": false,
+    "strike": true,
+    "style": false
+   },
+   "index_roots_present": [],
+   "kind": "parquet",
+   "missing_fields": [
+    "ask",
+    "bid",
+    "condition",
+    "discount",
+    "forward",
+    "quote_ts",
+    "settlement",
+    "style"
+   ],
+   "root_columns": {
+    "underlying": {
+     "index_roots_present": [],
+     "n_unique": 408
+    }
+   },
+   "rows": 15753
+  },
+  "options_ivspread/snapshots.parquet": {
+   "columns": [
+    "date",
+    "underlying",
+    "asof",
+    "spot",
+    "tenor_days",
+    "ivspread",
+    "atm_spread",
+    "n_pairs",
+    "weight_kind",
+    "ivspread_rel"
+   ],
+   "contract_complete": false,
+   "fields": {
+    "ask": false,
+    "bid": false,
+    "condition": false,
+    "discount": false,
+    "expiry": false,
+    "forward": false,
+    "quote_ts": false,
+    "settlement": false,
+    "strike": false,
+    "style": false
+   },
+   "index_roots_present": [],
+   "kind": "parquet",
+   "missing_fields": [
+    "ask",
+    "bid",
+    "condition",
+    "discount",
+    "expiry",
+    "forward",
+    "quote_ts",
+    "settlement",
+    "strike",
+    "style"
+   ],
+   "root_columns": {
+    "underlying": {
+     "index_roots_present": [],
+     "n_unique": 391
+    }
+   },
+   "rows": 9409
+  },
+  "options_session/ledger.parquet": {
+   "columns": [
+    "date",
+    "root",
+    "arc_shape",
+    "net_close",
+    "arc_points",
+    "events_total",
+    "events_flip_cross",
+    "events_call_wall_touch",
+    "events_put_wall_touch",
+    "events_premium_burst",
+    "events_hot_pocket",
+    "events_zero_dte_spike",
+    "zero_dte_peak_share",
+    "zero_dte_peak_at",
+    "wall_call_open",
+    "wall_put_open",
+    "wall_call_close",
+    "wall_put_close",
+    "wall_migrated",
+    "flip_crosses",
+    "flip_last_side",
+    "flip_level",
+    "levels_vintage",
+    "levels_source",
+    "levels_is_this_session",
+    "coverage_minutes",
+    "coverage_expected",
+    "coverage_gaps",
+    "coverage_absent_objects",
+    "clock_offset_min",
+    "clock_ambiguous",
+    "schema",
+    "asof"
+   ],
+   "contract_complete": false,
+   "fields": {
+    "ask": false,
+    "bid": false,
+    "condition": false,
+    "discount": false,
+    "expiry": true,
+    "forward": false,
+    "quote_ts": false,
+    "settlement": false,
+    "strike": false,
+    "style": false
+   },
+   "index_roots_present": [],
+   "kind": "parquet",
+   "missing_fields": [
+    "ask",
+    "bid",
+    "condition",
+    "discount",
+    "forward",
+    "quote_ts",
+    "settlement",
+    "strike",
+    "style"
+   ],
+   "root_columns": {
+    "root": {
+     "index_roots_present": [],
+     "n_unique": 3
+    }
+   },
+   "rows": 74
+  },
+  "options_skew/snapshots.parquet": {
+   "columns": [
+    "date",
+    "underlying",
+    "asof",
+    "spot",
+    "tenor_days",
+    "otm_put_iv",
+    "atm_call_iv",
+    "skew",
+    "n_strikes",
+    "source"
+   ],
+   "contract_complete": false,
+   "fields": {
+    "ask": false,
+    "bid": false,
+    "condition": false,
+    "discount": false,
+    "expiry": false,
+    "forward": false,
+    "quote_ts": false,
+    "settlement": false,
+    "strike": true,
+    "style": false
+   },
+   "index_roots_present": [
+    "SPX",
+    "SPXW"
+   ],
+   "kind": "parquet",
+   "missing_fields": [
+    "ask",
+    "bid",
+    "condition",
+    "discount",
+    "expiry",
+    "forward",
+    "quote_ts",
+    "settlement",
+    "style"
+   ],
+   "root_columns": {
+    "underlying": {
+     "index_roots_present": [
+      "SPX",
+      "SPXW"
+     ],
+     "n_unique": 425
+    }
+   },
+   "rows": 23505
+  },
+  "options_surface/index_etf.parquet": {
+   "columns": [
+    "root",
+    "date",
+    "root_class",
+    "dealer_sign_assumption",
+    "net_gex_bn",
+    "net_vex",
+    "net_cex",
+    "front7_abs_charm_share",
+    "front7_abs_gex_share",
+    "total_abs_gamma_notional",
+    "oi_notional",
+    "fw_gex_bn",
+    "fm_gex_bn",
+    "bk_gex_bn",
+    "fw_oi_frac",
+    "fm_oi_frac",
+    "n_contracts",
+    "spot"
+   ],
+   "contract_complete": false,
+   "fields": {
+    "ask": false,
+    "bid": false,
+    "condition": false,
+    "discount": false,
+    "expiry": false,
+    "forward": false,
+    "quote_ts": false,
+    "settlement": false,
+    "strike": false,
+    "style": false
+   },
+   "index_roots_present": [
+    "SPX",
+    "SPXW"
+   ],
+   "kind": "parquet",
+   "missing_fields": [
+    "ask",
+    "bid",
+    "condition",
+    "discount",
+    "expiry",
+    "forward",
+    "quote_ts",
+    "settlement",
+    "strike",
+    "style"
+   ],
+   "root_columns": {
+    "root": {
+     "index_roots_present": [
+      "SPX",
+      "SPXW"
+     ],
+     "n_unique": 6
+    }
+   },
+   "rows": 14371
+  },
+  "thetadata_eod/_backfill_state.json": {
+   "contract_complete": false,
+   "fields": {
+    "ask": false,
+    "bid": false,
+    "expiry": false,
+    "strike": false
+   },
+   "kind": "json",
+   "missing_fields": [
+    "ask",
+    "bid",
+    "expiry",
+    "strike"
+   ],
+   "shape": {
+    "completed": [
+     "dict",
+     0
+    ],
+    "version": [
+     "int",
+     1
+    ]
+   },
+   "top_level_type": "dict"
+  },
+  "thetadata_eod/_manifest.json": {
+   "contract_complete": false,
+   "fields": {
+    "ask": false,
+    "bid": false,
+    "expiry": false,
+    "strike": false
+   },
+   "kind": "json",
+   "missing_fields": [
+    "ask",
+    "bid",
+    "expiry",
+    "strike"
+   ],
+   "shape": {
+    "n_roots": [
+     "int",
+     0
+    ],
+    "per_root": [
+     "dict",
+     0
+    ],
+    "store": [
+     "str",
+     13
+    ],
+    "updated_at": [
+     "NoneType",
+     null
+    ]
+   },
+   "top_level_type": "dict"
+  }
+ }
+}

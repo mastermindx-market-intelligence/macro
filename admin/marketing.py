@@ -14,6 +14,7 @@ an honest accruing note — so the page renders gracefully on day 0.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import re
@@ -1113,12 +1114,83 @@ def _content_funnel(repo: Path, cp: dict, plan_as_of: Any,
     }
 
 
-def content(root=None) -> dict:
+_CONTENT_CHART_MAX_BYTES = 2_000_000
+
+
+def _content_revision(plan: dict) -> str:
+    """Identity of the complete source snapshot, including corrected chart bytes.
+
+    This is a read receipt, not a new store or publication authority. A delayed
+    preview must match the plan the operator is actually reviewing.
+    """
+    raw = json.dumps(plan, sort_keys=True, ensure_ascii=False,
+                     separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def _content_chart_metadata(chart: Any) -> dict:
+    if not isinstance(chart, dict):
+        return {"id": None, "preview_available": False}
+    svg = chart.get("svg")
+    readable = isinstance(svg, str) and bool(svg.strip())
+    available = readable and len(svg.encode("utf-8")) <= _CONTENT_CHART_MAX_BYTES
+    return {
+        "id": chart.get("id") if isinstance(chart.get("id"), str) else None,
+        "title": chart.get("title") if isinstance(chart.get("title"), str) else "",
+        "caption": chart.get("caption") if isinstance(chart.get("caption"), str) else "",
+        "preview_available": bool(available and isinstance(chart.get("id"), str)
+                                  and 0 < len(chart["id"]) <= 256),
+    }
+
+
+def content_chart(chart_id: str | None, revision: str | None, root=None) -> dict:
+    """Read one referenced chart from the exact plan; never accepts a file path."""
+    if (not isinstance(chart_id, str) or not chart_id or len(chart_id) > 256
+            or not isinstance(revision, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", revision)):
+        return {"ok": False, "reason": "invalid_request",
+                "error": "A chart ID and exact plan revision are required."}
+    repo = Path(root) if root is not None else _default_root()
+    plan = _read_json(repo / _CONTENT_REL)
+    if not isinstance(plan, dict):
+        return {"ok": False, "reason": "plan_unavailable",
+                "error": "The content plan is unavailable. Refresh Content Studio."}
+    if _content_revision(plan) != revision:
+        return {"ok": False, "reason": "plan_changed",
+                "error": "The plan has changed. Refresh Content Studio before opening this chart."}
+    accounts = plan.get("accounts")
+    referenced = any(
+        isinstance(post, dict) and post.get("chart_id") == chart_id
+        for account in (accounts if isinstance(accounts, list) else [])
+        if isinstance(account, dict) and isinstance(account.get("queue"), list)
+        for post in account["queue"]
+    )
+    charts = plan.get("featured_charts")
+    matches = [chart for chart in (charts if isinstance(charts, list) else [])
+               if isinstance(chart, dict) and chart.get("id") == chart_id]
+    if not referenced or not matches:
+        return {"ok": False, "reason": "chart_not_found",
+                "error": "This chart is not available in the selected plan."}
+    if len(matches) != 1:
+        return {"ok": False, "reason": "chart_ambiguous",
+                "error": "This plan has conflicting chart identifiers. Preview withheld."}
+    chart = matches[0]
+    metadata = _content_chart_metadata(chart)
+    if not metadata["preview_available"]:
+        return {"ok": False, "reason": "chart_unavailable",
+                "error": "A readable, bounded chart preview is not available."}
+    return {"ok": True, "content_revision": revision,
+            "chart": {**metadata, "svg": chart["svg"]}}
+
+
+def content(root=None, *, chart_mode: str = "inline") -> dict:
     """Content Studio panel: reads data/marketing/content_plan.json.
 
     Returns {ok, content_types, accounts, featured_charts, distinctness, summary}.
     Fail-soft with honest note when the file is absent (accruing state).
     """
+    if chart_mode not in {"inline", "metadata"}:
+        return {"ok": False, "reason": "invalid_request", "error": "Unknown chart representation."}
     repo = Path(root) if root is not None else _default_root()
     try:
         # The intraday Intelligence Desk is independent of the nightly content
@@ -1144,11 +1216,13 @@ def content(root=None) -> dict:
                 "content_types": [],
                 "accounts": [],
                 "featured_charts": [],
+                "content_revision": None,
                 "distinctness": None,
                 "summary": None,
                 "funnel": None,
                 "intelligence": intelligence,
             }
+        revision = _content_revision(cp)
         plan_as_of = cp.get("as_of")
 
         # slot_datetime resolves a plan slot to its real advisory post time (the
@@ -1287,8 +1361,12 @@ def content(root=None) -> dict:
         _charts_dropped = (len(_all_charts) - len(featured_charts)
                            if isinstance(_all_charts, list) else 0)
 
+        if chart_mode == "metadata" and isinstance(featured_charts, list):
+            featured_charts = [_content_chart_metadata(chart) for chart in featured_charts]
+
         return {
             "ok": True,
+            "content_revision": revision,
             "content_types": cp.get("content_types") or [],
             "accounts": accounts,
             "featured_charts": featured_charts,
@@ -2025,10 +2103,16 @@ def outbox(root=None) -> dict:
                 eff = e["_effective"]
                 if eff in acct_counts:
                     acct_counts[eff] += 1
-            # Build item dicts (drop internal keys)
+            # The review rail needs live/retryable items, not the entire
+            # terminal archive.  Posted/quarantined/recalled rows already ship in
+            # the bounded 50-row history window below, while the full counts stay
+            # in acct_counts + summary.  Keeping 2,000+ closed items here duplicated
+            # megabytes of old copy/media/provenance on every Outbox open and made
+            # the browser parse data it never rendered.
             items_out = [
                 {k: v for k, v in e.items() if not k.startswith("_")}
                 for e in acct_items
+                if e["status"] not in {"posted", "quarantined", "recalled"}
             ]
             accounts_out.append({
                 "id": acct_id,

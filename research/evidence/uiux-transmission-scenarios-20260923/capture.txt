@@ -1,0 +1,4 @@
+outcome: captured
+pages: 1  states: 24/24 captured
+manifest: /tmp/uiux-transmission-scenarios-20260923/fixture/mockups/evidence/uiux-transmission-scenarios-20260923/manifest.json
+smells: /tmp/uiux-transmission-scenarios-20260923/fixture/mockups/evidence/uiux-transmission-scenarios-20260923/smells.json

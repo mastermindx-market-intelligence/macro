@@ -1,0 +1,13 @@
+{
+  "seen": 5055,
+  "written": 499,
+  "existing": 4548,
+  "raw_only": 0,
+  "empty": 8,
+  "would_write": 0,
+  "refused": 0,
+  "errors": [],
+  "dry_run": false,
+  "raw_receipts_total": null,
+  "scope": "RESEARCH_ONLY_NOT_CANONICAL"
+}

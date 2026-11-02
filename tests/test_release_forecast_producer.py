@@ -16,6 +16,7 @@ Run:
 """
 from __future__ import annotations
 
+import copy
 import json
 import sys
 import types
@@ -30,6 +31,10 @@ _REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(_REPO))
 
 from scripts.build_release_forecast import (
+    FIRST_PRINT_ACTUAL_BASIS,
+    PROXY_ACTUAL_BASIS,
+    TRACK_RECORD_DISPLAY_MIN_N,
+    TRACK_RECORD_VERDICT_MIN_N,
     _attach_provenance,
     _append_ledger_rows,
     _build_projection_ledger_rows,
@@ -44,6 +49,7 @@ from scripts.build_release_forecast import (
     _read_cleveland_nowcast,
     _read_policy_backdrop,
     _run_projection,
+    _track_record_summary,
     _wilson,
 )
 
@@ -2662,3 +2668,348 @@ class TestCaptureHealth:
         assert "last_nightly_asof" in ch
         assert "nightly_gap_days" in ch
         assert "past_due_unscored" in ch
+
+
+# ============================================================
+# F1 track record — evaluation basis + summary (RIC-INCLUDED-CORE)
+# ============================================================
+
+
+def test_evaluation_basis_counts_split_first_print_and_proxy() -> None:
+    rows = [
+        {
+            **_scored_row(release="cpi_headline", period="2026-04", asof_night="2026-05-10"),
+            "actual_basis": FIRST_PRINT_ACTUAL_BASIS,
+            "target_epoch": "official_first_print_v1",
+        },
+        {
+            **_scored_row(release="cpi_headline", period="2026-05", asof_night="2026-06-10"),
+            "actual_basis": FIRST_PRINT_ACTUAL_BASIS,
+            "target_epoch": "official_first_print_v1",
+        },
+        {
+            **_scored_row(release="cpi_headline", period="2026-06", asof_night="2026-07-10"),
+            "actual_basis": PROXY_ACTUAL_BASIS,
+            "target_epoch": "official_first_print_v1",
+        },
+        {
+            **_scored_row(release="cpi_headline", period="2026-07", asof_night="2026-08-10"),
+            "target_epoch": "official_first_print_v1",
+        },
+    ]
+    board = _build_scoreboard(rows, "2026-05-01")
+    counts = board["evaluation_basis_counts"]["cpi_headline:champion"]
+    assert counts["n"] == 4
+    assert counts["first_print_matched_n"] == 2
+    assert counts["proxy_scored_n"] == 1
+    assert counts["other_basis_n"] == 1
+    assert counts["by_actual_basis"] == {
+        FIRST_PRINT_ACTUAL_BASIS: 2,
+        PROXY_ACTUAL_BASIS: 1,
+        "unspecified": 1,
+    }
+
+
+def test_evaluation_basis_counts_respects_canonical_supersession() -> None:
+    legacy = {
+        **_scored_row(release="nfp", period="2026-07", asof_night="2026-08-07"),
+        "actual": -126.0,
+        "frozen_asof_night": "2026-08-06",
+        "frozen_projection_point": 50.0,
+    }
+    official = {
+        **legacy,
+        "asof_night": "2026-08-09",
+        "actual": 57.0,
+        "actual_basis": FIRST_PRINT_ACTUAL_BASIS,
+        "actual_receipt_id": "official_actual:nfp-july",
+        "frozen_prediction_id": "NFP:2026-07:first:2026-08-06:v1",
+    }
+    board = _build_scoreboard([legacy, official], "2026-07-01")
+    counts = board["evaluation_basis_counts"]["nfp:champion"]
+    assert counts["n"] == 1
+    assert counts["first_print_matched_n"] == 1
+
+
+def test_track_record_display_states() -> None:
+    cases = [
+        (
+            "no_clean_scores",
+            {
+                "n": 0,
+                "first_print_matched_n": 0,
+                "proxy_scored_n": 0,
+                "other_basis_n": 0,
+                "target_epochs": [],
+            },
+            {},
+            False,
+        ),
+        (
+            "benchmark_only",
+            {
+                "n": 3,
+                "first_print_matched_n": 3,
+                "proxy_scored_n": 0,
+                "other_basis_n": 0,
+                "target_epochs": ["official_first_print_v1"],
+            },
+            {"mae_ours": None, "mae_naive_prior": 0.08},
+            False,
+        ),
+        (
+            "proxy_or_mixed_target",
+            {
+                "n": 12,
+                "first_print_matched_n": 10,
+                "proxy_scored_n": 2,
+                "other_basis_n": 0,
+                "target_epochs": ["official_first_print_v1"],
+            },
+            {"mae_ours": 0.05, "mae_naive_prior": 0.1},
+            False,
+        ),
+        (
+            "accruing",
+            {
+                "n": 11,
+                "first_print_matched_n": 11,
+                "proxy_scored_n": 0,
+                "other_basis_n": 0,
+                "target_epochs": ["official_first_print_v1"],
+            },
+            {"mae_ours": 0.05, "mae_naive_prior": 0.1},
+            False,
+        ),
+        (
+            "interval_pending",
+            {
+                "n": 12,
+                "first_print_matched_n": 12,
+                "proxy_scored_n": 0,
+                "other_basis_n": 0,
+                "target_epochs": ["official_first_print_v1"],
+            },
+            {"mae_ours": 0.05, "mae_naive_prior": 0.1},
+            False,
+        ),
+        (
+            "display_only",
+            {
+                "n": 12,
+                "first_print_matched_n": 12,
+                "proxy_scored_n": 0,
+                "other_basis_n": 0,
+                "target_epochs": ["official_first_print_v1"],
+            },
+            {"mae_ours": 0.05, "mae_ours_ci": [0.03, 0.07], "mae_naive_prior": 0.1},
+            True,
+        ),
+    ]
+    for expected_state, counts, stats, expect_mae in cases:
+        scoreboard = {
+            "evaluation_basis": "clean_structured_defect_epochs_v1",
+            "evaluation_basis_counts": {
+                "cpi_headline:champion": {
+                    **counts,
+                    "by_actual_basis": {FIRST_PRINT_ACTUAL_BASIS: counts["first_print_matched_n"]},
+                },
+            },
+            "by_release": {"cpi_headline": {**stats, "n": counts["n"]}},
+            "by_shadow": {},
+            "score_receipts": {},
+            "evaluation_exclusions": {"n": 0},
+        }
+        entry = _track_record_summary(scoreboard, None)["releases"][0]
+        assert entry["display_state"] == expected_state
+        assert entry["benchmark_only"] == (expected_state == "benchmark_only")
+        if expect_mae:
+            assert entry["mae_ours"] == stats["mae_ours"]
+            assert entry["mae_ours_ci"] == stats["mae_ours_ci"]
+            assert entry["mae_naive_prior"] == stats["mae_naive_prior"]
+        else:
+            assert entry["mae_ours"] is None
+            assert entry["mae_ours_ci"] is None
+            assert entry["mae_naive_prior"] is None
+            assert entry["early"] is False
+
+
+def test_track_record_never_exposes_mae_below_display_min() -> None:
+    def _board(clean_n: int, ci=None) -> dict:
+        return {
+            "evaluation_basis_counts": {
+                "cpi_headline:champion": {
+                    "n": clean_n,
+                    "by_actual_basis": {FIRST_PRINT_ACTUAL_BASIS: clean_n},
+                    "first_print_matched_n": clean_n,
+                    "proxy_scored_n": 0,
+                    "other_basis_n": 0,
+                    "target_epochs": ["official_first_print_v1"],
+                },
+            },
+            "by_release": {
+                "cpi_headline": {
+                    "n": clean_n,
+                    "mae_ours": 0.04,
+                    "mae_naive_prior": 0.06,
+                    **({"mae_ours_ci": ci} if ci is not None else {}),
+                },
+            },
+            "by_shadow": {},
+            "score_receipts": {},
+            "evaluation_exclusions": {"n": 0},
+        }
+
+    e11 = _track_record_summary(_board(11, [0.02, 0.06]), None)["releases"][0]
+    assert e11["display_state"] == "accruing"
+    assert e11["mae_ours"] is None
+    assert e11["mae_ours_ci"] is None
+    assert e11["mae_naive_prior"] is None
+
+    e12 = _track_record_summary(_board(12, [0.02, 0.06]), None)["releases"][0]
+    assert e12["display_state"] == "display_only"
+    assert e12["mae_ours"] == 0.04
+    assert e12["mae_ours_ci"] == [0.02, 0.06]
+    assert e12["mae_naive_prior"] == 0.06
+    assert e12["early"] is True
+
+    e24 = _track_record_summary(_board(24, [0.02, 0.06]), None)["releases"][0]
+    assert e24["display_state"] == "display_only"
+    assert e24["early"] is False
+
+
+def test_track_record_never_shows_mae_without_its_interval() -> None:
+    """E0 §5: from 12 episodes a forward MAE is shown only with its CI."""
+
+    def _entry(ci) -> dict:
+        board = {
+            "evaluation_basis_counts": {
+                "cpi_headline:champion": {
+                    "n": 15,
+                    "by_actual_basis": {FIRST_PRINT_ACTUAL_BASIS: 15},
+                    "first_print_matched_n": 15,
+                    "proxy_scored_n": 0,
+                    "other_basis_n": 0,
+                    "target_epochs": ["official_first_print_v1"],
+                },
+            },
+            "by_release": {
+                "cpi_headline": {"n": 15, "mae_ours": 0.04, "mae_naive_prior": 0.06, "mae_ours_ci": ci},
+            },
+            "by_shadow": {},
+            "score_receipts": {},
+            "evaluation_exclusions": {"n": 0},
+        }
+        return _track_record_summary(board, None)["releases"][0]
+
+    for bad in (None, [], [0.02], [0.02, 0.06, 0.08], [0.06, 0.02], [float("nan"), 0.06], ["x", 0.06]):
+        e = _entry(bad)
+        assert e["display_state"] == "interval_pending", bad
+        assert e["mae_ours"] is None
+        assert e["mae_ours_ci"] is None
+        assert e["mae_naive_prior"] is None
+    assert _entry((0.02, 0.06))["mae_ours_ci"] == [0.02, 0.06]
+
+
+def test_track_record_mixed_target_epochs_not_comparable() -> None:
+    scoreboard = {
+        "evaluation_basis_counts": {
+            "cpi_headline:champion": {
+                "n": 12,
+                "by_actual_basis": {FIRST_PRINT_ACTUAL_BASIS: 12},
+                "first_print_matched_n": 12,
+                "proxy_scored_n": 0,
+                "other_basis_n": 0,
+                "target_epochs": ["official_first_print_v1", "legacy_unspecified"],
+            },
+        },
+        "by_release": {
+            "cpi_headline": {"n": 12, "mae_ours": 0.03, "mae_naive_prior": 0.05},
+        },
+        "by_shadow": {},
+        "score_receipts": {},
+        "evaluation_exclusions": {"n": 0},
+    }
+    entry = _track_record_summary(scoreboard, None)["releases"][0]
+    assert entry["display_state"] == "proxy_or_mixed_target"
+    assert entry["mae_ours"] is None
+    assert entry["mae_naive_prior"] is None
+
+
+def test_track_record_is_never_a_verdict() -> None:
+    scoreboard = _build_scoreboard(
+        [
+            {
+                **_scored_row(period=f"2026-{m:02d}", asof_night=f"2026-{m+1:02d}-10"),
+                "actual_basis": FIRST_PRINT_ACTUAL_BASIS,
+                "target_epoch": "official_first_print_v1",
+            }
+            for m in range(1, 5)
+        ],
+        "2026-01-01",
+    )
+    claim = "withheld_until_clean_aligned_forward_evidence"
+    summary = _track_record_summary(scoreboard, claim)
+    assert summary["verdict_min_n"] == TRACK_RECORD_VERDICT_MIN_N
+    assert summary["display_min_n"] == TRACK_RECORD_DISPLAY_MIN_N
+    assert summary["evaluation_target"] == FIRST_PRINT_ACTUAL_BASIS
+    assert summary["schema"] == "release_forecast_track_record.v1"
+    assert summary["accuracy_claim"] == claim
+    for bucket in (summary["releases"], summary["shadows"]):
+        for entry in bucket:
+            assert "verdict" not in str(entry.get("display_state", ""))
+
+
+def test_revision_appends_and_original_forecast_recoverable() -> None:
+    legacy = {
+        **_scored_row(release="nfp", period="2026-07", asof_night="2026-08-07"),
+        "actual": -126.0,
+        "frozen_asof_night": "2026-08-06",
+        "frozen_projection_point": 50.0,
+        "frozen_prediction_id": "NFP:2026-07:first:2026-08-06:v1",
+    }
+    official = {
+        **legacy,
+        "asof_night": "2026-08-09",
+        "actual": 57.0,
+        "actual_basis": FIRST_PRINT_ACTUAL_BASIS,
+        "actual_receipt_id": "official_actual:nfp-july",
+    }
+    ledger = [legacy, official]
+    ledger_copy = copy.deepcopy(ledger)
+    board = _build_scoreboard(ledger, "2026-07-01")
+    assert ledger == ledger_copy
+    assert board["score_receipts"]["raw_n"] == 2
+    assert board["score_receipts"]["canonical_n"] == 1
+    assert board["score_receipts"]["superseded_n"] == 1
+    assert board["by_release"]["nfp"]["n"] == 1
+    canonical_rows = [
+        r for r in ledger
+        if r.get("row_type") == "scored"
+    ]
+    from engine.release_defects import canonical_scored_rows
+
+    winner = canonical_scored_rows(canonical_rows)[0]
+    assert winner["frozen_prediction_id"] == "NFP:2026-07:first:2026-08-06:v1"
+    assert winner["frozen_projection_point"] == 50.0
+
+
+def test_latest_carries_track_record(tmp_root: Path, monkeypatch) -> None:
+    import scripts.build_release_forecast as producer
+
+    monkeypatch.setattr(producer, "_find_upcoming_releases", lambda *a, **k: [])
+    monkeypatch.setattr(producer, "_read_policy_backdrop", lambda *a, **k: {
+        "fed_stance": None, "gap_bp": None,
+        "implied_cuts_12m": None, "next_fomc": None, "guidance_direction": None,
+    })
+    result = producer.build(tmp_root, dry_run=True)
+    keys = list(result.keys())
+    assert "track_record" in result
+    assert result["track_record"]["schema"] == "release_forecast_track_record.v1"
+    assert keys.index("track_record") == keys.index("last_scored") + 1
+    for key in (
+        "schema", "asof", "display_only", "authority", "methodology_status",
+        "last_scored_all_forward", "enrichments", "upcoming", "last_scored",
+        "scoreboard_ref", "capture_health",
+    ):
+        assert key in result

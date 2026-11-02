@@ -1,0 +1,9 @@
+{
+  "availability": {"state": "SOURCE_FAILED"},
+  "headline": {
+    "status": "ABSENT",
+    "state_id": null,
+    "effective_date": null
+  },
+  "changes": {"deltas": []}
+}

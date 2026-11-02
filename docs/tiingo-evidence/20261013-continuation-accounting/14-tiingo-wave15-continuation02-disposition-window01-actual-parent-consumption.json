@@ -1,0 +1,25 @@
+{
+  "schema": "tiingo.attended_disposition_window_actual_terminal_parent_consumption/v1",
+  "recorded_at_utc": "2026-10-13T02:55:53.872372+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "original_tool_session": 97444,
+  "original_exit_code": 0,
+  "actual_original_terminal_return_consumed": true,
+  "core_sha256": "c6932707a653fd825256a51531b1e320661b2561ef1633edc52880fd8412cebd",
+  "controller_sha256": "6b4c5eb1527b09078b6bcef1d1e3102c0ffeaf92a6bfa6070360332c34803c9e",
+  "original_log_sha256": "aec9925a978c78330d7eb011544ffff84fdc068a36c80f3009cc3e33a3df40ce",
+  "completed_prefixes": [
+    "01"
+  ],
+  "qualification_sha256": {
+    "eod-wave15-unadmitted-continuation02-prefix01-qualified.json": "b552cc0b6d833f693738f39318296d7e84c2600ca52b64b88df38c3c56e10f3e"
+  },
+  "coverage_sha256": {
+    "eod-qualified-catalogue-coverage-wave15-unadmitted-continuation02-prefix01-delta.json": "2ea5ada401e3d375c157f0fd7e5340045a05cac02cae57a6f95c2d94f2d9e145"
+  },
+  "all_listed_qualifier_and_coverage_returns_consumed": true,
+  "raw_capture_original_tool": 57125,
+  "raw_capture_terminal_return_consumed": true,
+  "all_121_successful_responses_dispositioned": true,
+  "raw_capture_complete_claimed": false
+}

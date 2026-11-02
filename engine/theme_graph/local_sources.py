@@ -297,6 +297,21 @@ class Interval:
     closed_by: str | None   # source_ref of the vintage that first showed it GONE
 
 
+@dataclass(frozen=True)
+class THSInterval:
+    """One owner-history THS membership interval, bounded by observed snapshots."""
+
+    basket_id: str
+    ticker: str
+    valid_from: str
+    valid_to: str | None
+    source_shape: str
+    closed_by: str | None = None
+    opening_collection_id: str | None = None
+    closing_collection_id: str | None = None
+    closure_basis: str | None = None
+
+
 def membership_intervals(ladder: Ladder) -> list[Interval]:
     """Every observed interval across the ladder, oldest first.
 
@@ -326,6 +341,32 @@ def membership_intervals(ladder: Ladder) -> list[Interval]:
                 run_start = None
     out.sort(key=lambda iv: (iv.valid_from, iv.subtheme_key, iv.symbol))
     return out
+
+
+def ths_membership_intervals(
+    history,
+    *,
+    shapes: frozenset[str] = frozenset({"membership"}),
+) -> list[THSInterval]:
+    """Turn the canonical THS owner history into observed membership intervals.
+
+    ``history`` is intentionally duck-typed: the graph remains a pure consumer of
+    the owner parquet and never inherits its writer or append semantics.  A member
+    opens only at the first snapshot that contains it; the first later snapshot
+    where it is absent closes the interval; a reappearance opens a new interval.
+
+    ``shapes`` defaults to ``{"membership"}`` only: ``ths_concept_dump`` rows used
+    the current concept map for basket resolution, so admitting them would backdate
+    a mapping we do not historically possess. Pass an explicit broader set only in
+    tests that intentionally exercise dump-row behaviour.
+    """
+    from engine import basket_membership_pit
+
+    rows = history.to_dict("records") if hasattr(history, "to_dict") else list(history)
+    allowed = frozenset(shapes)
+    selected = [row for row in rows if row.get("source_shape") in allowed]
+    return [THSInterval(**interval) for interval in
+            basket_membership_pit.membership_intervals_from_history(selected, include_receipt_refs=True)]
 
 
 def subtheme_registry(ladder: Ladder,

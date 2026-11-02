@@ -1,0 +1,9 @@
+# F01 live-chip status plane (O27 L5/L6). Cells captured by scripts/capture_page_evidence.py
+# --site-dir against a scratch copy of origin/main site/ whose extracted inline-style
+# assets were patched with the exact template line swaps (render re-hashes them later).
+# Route /sector_central.html#explore: the tape lives in the Explore view (hidden by default); forced hover/focus = the #theme-tape rules the guard links via #theme-tape.
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_theme_tape.html.j2
+  - templates/sector_central.html.j2
+manifest: mockups/evidence/f01-live-chip-theme-tape/manifest.json

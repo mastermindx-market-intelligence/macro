@@ -9,7 +9,7 @@
 <title>Research Vault — Institutional Desk Research | MastermindX</title>
 {% set seo_title = "Research Vault — Institutional Desk Research | MastermindX" %}{% set seo_desc = "A gated vault of third-party institutional research — buy-side and sell-side desk reports, indexed and readable in one place. Reference only, not investment advice." %}{% set seo_path = "research_vault.html" %}
 {% include "_seo_head.html.j2" %}
-<script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}document.documentElement.classList.add('rv-awaiting-live');window.__rvShellTimer=setTimeout(function(){var r=document.documentElement;r.classList.remove('rv-awaiting-live');var en=document.getElementById('rv-status-en'),zh=document.getElementById('rv-status-zh'),ven=document.getElementById('v-en-lead'),vzh=document.getElementById('v-zh-lead'),sh=document.getElementById('feed-shell');if(en)en.textContent='Saved snapshot · live refresh delayed';if(zh)zh.textContent='已保存快照 · 实时更新延迟';if(ven)ven.textContent='Showing the latest saved institutional reports.';if(vzh)vzh.textContent='正在显示最近保存的机构研报。';if(sh)sh.setAttribute('aria-busy','false');},15000);</script>
+<script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}document.documentElement.classList.add('rv-awaiting-live');window.__rvShellTimer=setTimeout(function(){var r=document.documentElement;r.classList.remove('rv-awaiting-live');var en=document.getElementById('rv-status-en'),zh=document.getElementById('rv-status-zh'),ven=document.getElementById('v-en-lead'),vzh=document.getElementById('v-zh-lead'),sh=document.getElementById('feed-shell');if(en)en.textContent='Saved snapshot · refresh still delayed';if(zh)zh.textContent='已保存快照 · 更新仍未完成';if(ven)ven.textContent='Showing the latest saved institutional reports.';if(vzh)vzh.textContent='正在显示最近保存的机构研报。';if(sh)sh.setAttribute('aria-busy','false');},15000);</script>
 <link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="onboard.css">
 <style>
@@ -609,14 +609,14 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
   <!-- ═══════════ 1 · THIS WEEK — mx5 command hero ═══════════ -->
   <section class="rv-hero glass">
     <div>
-      <span class="rv-eyebrow"><span class="dot"></span><span class="l-en" id="rv-status-en"><span class="rv-status-snapshot">Saved research snapshot</span><span class="rv-status-loading">Refreshing live research</span></span><span class="l-zh" id="rv-status-zh"><span class="rv-status-snapshot">已保存研报快照</span><span class="rv-status-loading">正在刷新实时研报</span></span></span>
+      <span class="rv-eyebrow"><span class="dot"></span><span class="l-en" id="rv-status-en"><span class="rv-status-snapshot">Saved research snapshot</span><span class="rv-status-loading">Checking the saved copy</span></span><span class="l-zh" id="rv-status-zh"><span class="rv-status-snapshot">已保存研报快照</span><span class="rv-status-loading">正在核对保存副本</span></span></span>
       <h1>
         <span class="l-en">The desk research, <span class="accent">the way the analysts wrote it.</span></span>
         <span class="l-zh">分析师原文研报，<span class="accent">原汁原味呈现。</span></span>
       </h1>
       <p class="rv-verdict" id="rv-verdict">
-        <span class="l-en"><b id="v-en-lead"><span class="rv-lead-snapshot">Showing the latest saved institutional reports.</span><span class="rv-lead-loading">Refreshing the latest institutional reports.</span></b> New buy-side and sell-side desk reports land here hourly — read the ones that touch what you hold.</span>
-        <span class="l-zh"><b id="v-zh-lead"><span class="rv-lead-snapshot">正在显示最近保存的机构研报。</span><span class="rv-lead-loading">正在刷新最新机构研报。</span></b>买方与卖方研究每小时更新至此 —— 挑与你持仓相关的读。</span>
+        <span class="l-en"><b id="v-en-lead"><span class="rv-lead-snapshot">Showing the latest saved institutional reports.</span><span class="rv-lead-loading">Refreshing the latest institutional reports.</span></b> New reports arrive as published — read those relevant to your holdings.</span>
+        <span class="l-zh"><b id="v-zh-lead"><span class="rv-lead-snapshot">正在显示最近保存的机构研报。</span><span class="rv-lead-loading">正在刷新最新机构研报。</span></b>机构研报陆续收录 —— 挑与你持仓相关的读。</span>
       </p>
       <span class="rv-stance">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -631,6 +631,27 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
         <div class="rv-fig"><span class="n sm" id="fig-theme">{{ sum.most_covered_theme or '—' }}</span><div class="k">{{ t('Most-covered theme', '覆盖最多主题') }}</div></div>
         <div class="rv-fig"><span class="n" id="fig-total">{{ sum.total if sum.total is defined else '—' }}</span><div class="k">{{ t('In the vault', '库内总量') }}</div></div>
       </div>
+      {% if saved_written or saved_latest %}
+      <p class="rv-web-cap" id="rv-saved-clock">
+        <span class="l-en">
+          {%- if saved_written -%}
+          Saved copy written {{ saved_written }}.
+          {%- endif -%}
+          {%- if saved_written and saved_latest %} {% endif -%}
+          {%- if saved_latest -%}
+          Newest report in that copy: {{ saved_latest }}.
+          {%- endif -%}
+        </span>
+        <span class="l-zh">
+          {%- if saved_written -%}
+          保存副本写入于 {{ saved_written }}。
+          {%- endif -%}
+          {%- if saved_latest -%}
+          该副本中最新研报：{{ saved_latest }}。
+          {%- endif -%}
+        </span>
+      </p>
+      {% endif %}
     </div>
 
     <!-- signature: THE DESK CONSTELLATION — a neural web of institutions (DESCRIPTIVE) -->
@@ -709,9 +730,9 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
             {{ t('Browse', '浏览') }}
           </button>
           <input type="search" id="q" aria-label="Search research"
-            data-ph-en="Search titles, summaries, and full text…"
-            data-ph-zh="搜索标题、摘要与全文…"
-            placeholder="Search titles, summaries, and full text…">
+            data-ph-en="Search titles, summaries, and indexed text…"
+            data-ph-zh="搜索标题、摘要与已索引正文…"
+            placeholder="Search titles, summaries, and indexed text…">
         </div>
         <div class="rv-facets" id="facets">
           <div class="facet-grp" data-dim="inst">
@@ -732,6 +753,7 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
         </div>
         <div class="rv-result">
           <span class="cnt">{{ t('Showing', '显示') }} <b id="cnt-n">—</b> {{ t('of', '/') }} <b id="cnt-t">—</b> {{ t('reports', '篇') }}</span>
+          <span class="rv-searching lens-term" id="rv-coverage-note" tabindex="0" role="status" aria-live="polite">{{ t('Search coverage unverified.', '搜索覆盖尚未核验。') }}</span>
           <div class="rv-active" id="active-chips"></div>
         </div>
       </div>

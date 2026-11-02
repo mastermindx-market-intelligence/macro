@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-24T21:12:49Z",
+ "accession": "0001274494-26-000021",
+ "cik": "0001274494",
+ "doc_byte_length": 2523372,
+ "doc_sha256": "ff883aa776a121c56d64e7638751b50bc84338328aa7bb5700bc84875b40f59a",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-24",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "fslr-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 399068,
+  "byte_start": 398363,
+  "normalized": "This includes cases where our ability to subsequently resell solar modules sold under terminated and/or renegotiated contracts may be constrained by the project lead times of our customers, their required module specifications, or other factors. For example, on September 30, 2025, First Solar filed a complaint in the Supreme Court of the State of New York asserting that BP Solar Holding LLC and its affiliate Lightsource Renewable Energy Trading, LLC breached their contractual obligations with First Solar, having entered into various master supply agreements to purchase solar modules from First Solar and then refusing to pay the amounts owed under the purchase orders. See Part I Item 3.",
+  "normalized_sha256": "59a5701b553704d4b859e5160505a5434b4e57f0245a0d16466f265a2bd35e3e",
+  "raw": " This includes cases where our ability to subsequently resell solar modules sold under terminated and/or renegotiated contracts may be constrained by the project lead times of our customers, their required module specifications, or other factors. For example, on September&#160;30,&#160;2025, First Solar filed a complaint in the Supreme Court of the State of New York asserting that BP Solar Holding LLC and its affiliate Lightsource Renewable Energy Trading, LLC breached their contractual obligations with First Solar, having entered into various master supply agreements to purchase solar modules from First Solar and then refusing to pay the amounts owed under the purchase orders. See Part I Item 3.",
+  "raw_sha256": "3f56245048249632b4d6f7f002ab73b077b17936b3666764d0f49d1d43cd025a"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1274494/000127449426000021/fslr-20251231.htm",
+ "xbrl_contexts": []
+}

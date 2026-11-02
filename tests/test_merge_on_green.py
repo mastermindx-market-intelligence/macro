@@ -506,6 +506,18 @@ def test_a_spurious_only_red_is_still_mergeable():
     assert verdict == "clean" and names == []
 
 
+def test_vercel_build_rate_limit_status_is_non_binding():
+    """Vercel quota state is external to the repository-owned CI proof."""
+    assert MOG.VERCEL_STATUS_CONTEXT == "Vercel"
+    assert MOG.is_non_binding_check("Vercel")
+    assert MOG.decide_verdict(
+        [
+            _run("ci-pack-1", conclusion="success"),
+            _run("Vercel", conclusion="failure"),
+        ]
+    ) == ("clean", [])
+
+
 def test_a_genuine_red_is_blocked_and_named():
     verdict, names = MOG.decide_verdict(
         [_run("ci-pack-1", conclusion="failure"), _run("tier-gate", conclusion="timed_out")]
@@ -786,7 +798,7 @@ def _fake_api(
     pull_payload=None,
     pull_status=200,
     main_commits=((BEFORE_THE_PROOF, ["data/nightly.json"]),),
-    pr_files=("engine/signal_quality.py",),
+    pr_files=("engine/signal_quality.py",),  # ci-trigger-closure: data — fixture changed-file name, never opened
     compare_files=None,
     compare_status=200,
     compare_base_sha=None,
@@ -1987,10 +1999,10 @@ def test_a_stale_proof_never_spends_the_hold_guards_comments_read(monkeypatch):
         check_pages={
             1: {"total_count": 1, "check_runs": [_run("ci-pack-1", conclusion="success")]}
         },
-        main_commits=((BEFORE_THE_PROOF, ["engine/signal_quality.py"]),),
+        main_commits=((BEFORE_THE_PROOF, ["engine/signal_quality.py"]),),  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     freshness = _freshness(
-        commits=((BEFORE_THE_PROOF, ["engine/signal_quality.py"]),)
+        commits=((BEFORE_THE_PROOF, ["engine/signal_quality.py"]),)  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     MOG.sweep_pull("acme/widgets", _pull(), "read", "write", freshness)
     assert not [c for c in calls if c[0] == "GET" and "/comments?" in c[1]]
@@ -2079,7 +2091,7 @@ def test_a_cap_exceeded_comment_history_blocks_with_distinct_wording(
         if "/compare/" in url:
             return 200, {
                 "base_commit": {"sha": DEFAULT_MAIN_SHA},
-                "files": [{"filename": "engine/signal_quality.py"}],
+                "files": [{"filename": "engine/signal_quality.py"}],  # ci-trigger-closure: data — fixture changed-file name, never opened
             }
         if "/commits?" in url:
             return 200, []
@@ -2328,7 +2340,7 @@ def test_cap_exceeded_dedup_probes_the_newest_page_not_the_partial(
         if "/compare/" in url:
             return 200, {
                 "base_commit": {"sha": DEFAULT_MAIN_SHA},
-                "files": [{"filename": "engine/signal_quality.py"}],
+                "files": [{"filename": "engine/signal_quality.py"}],  # ci-trigger-closure: data — fixture changed-file name, never opened
             }
         if "/commits?" in url:
             return 200, []
@@ -2457,7 +2469,7 @@ def test_an_ambiguous_merge_response_rereads_the_pr_and_consumes_the_snapshot(
         if "/compare/" in url:
             return 200, {
                 "base_commit": {"sha": DEFAULT_MAIN_SHA},
-                "files": [{"filename": "engine/signal_quality.py"}],
+                "files": [{"filename": "engine/signal_quality.py"}],  # ci-trigger-closure: data — fixture changed-file name, never opened
             }
         if method == "GET" and "/git/ref/heads/main" in url:
             return 200, {"object": {"sha": DEFAULT_MAIN_SHA}}
@@ -2765,7 +2777,7 @@ def test_the_concurrent_sweep_guard_fails_closed_on_an_unreadable_pull_request(
             # invariant passes and the test stays about the settled-guard read.
             return 200, {
                 "base_commit": {"sha": DEFAULT_MAIN_SHA},
-                "files": [{"filename": "engine/signal_quality.py"}],
+                "files": [{"filename": "engine/signal_quality.py"}],  # ci-trigger-closure: data — fixture changed-file name, never opened
             }
         if url.endswith("/merge"):
             return 409, {"message": "Pull Request is not mergeable"}
@@ -3579,6 +3591,15 @@ INCIDENT_4607_FILES = [
 ]
 PROVEN_AT_0742 = "2026-08-05T07:42:00Z"
 MAIN_MOVED_AT_1026 = "2026-08-05T10:26:00Z"
+#: #7958 originally changed only records, without owning a tested surface.
+#: Both historical locations are now intentionally gated: mockups/evidence/**
+#: since #8287, and agentos/** with the R2 knowledge contracts. Preserve the
+#: incident's unowned-record shape with notes/ instead of exempting Agent OS.
+#: The end-to-end test checks this exemplar against the actual workflow gates.
+INCIDENT_7958_FILES = [
+    "notes/WS-F04-X1-2026-09-24.md",
+    "notes/WS-F04-X1-2026-09-24-R2.md",
+]
 
 
 def test_the_4583_reconstruction_never_merges_a_proof_main_has_moved_past(
@@ -3682,7 +3703,7 @@ def test_main_moving_outside_the_surface_still_merges_on_the_existing_green(
             (MAIN_MOVED_AT_1026, ["collectors/biocatalyst/trials.py"]),
             ("2026-08-05T09:10:00Z", ["content/press/2026-08-05-note.md"]),
         ],
-        pr_files=["engine/signal_quality.py", "tests/test_validate_signals.py"],
+        pr_files=["engine/signal_quality.py", "tests/test_validate_signals.py"],  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     freshness = MOG.ProofFreshness.build("acme/widgets", "read")
 
@@ -3700,9 +3721,9 @@ def test_an_unfiltered_workflow_does_not_make_every_surface_everything():
     back door. It contributes no entries."""
     gates = [{"workflow": "fences.yml", "patterns": None}, {"workflow": "ci.yml", "patterns": ["engine/**"]}]
     freshness = _freshness(
-        commits=[(MAIN_MOVED_AT_1026, ["collectors/fred.py"])],
+        commits=[(MAIN_MOVED_AT_1026, ["collectors/fred.py"])],  # ci-trigger-closure: data — fixture changed-file name, never opened
         gates=gates,
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -3725,9 +3746,9 @@ def test_a_workflow_start_catchall_does_not_make_every_surface_everything():
         }
     ]
     freshness = _freshness(
-        commits=[(MAIN_MOVED_AT_1026, ["collectors/fred.py"])],
+        commits=[(MAIN_MOVED_AT_1026, ["collectors/fred.py"])],  # ci-trigger-closure: data — fixture changed-file name, never opened
         gates=gates,
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -3752,7 +3773,7 @@ def test_a_new_root_seen_only_by_the_start_catchall_does_not_invalidate_every_pr
     freshness = _freshness(
         commits=[(MAIN_MOVED_AT_1026, ["brand_new_root/subject.py"])],
         gates=gates,
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -3777,7 +3798,7 @@ def test_a_leaked_start_catchall_in_patterns_still_does_not_stale_the_fleet():
             )
         ],
         gates=gates,
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -3795,7 +3816,7 @@ def test_unowned_design_notes_do_not_stale_the_fleet():
             )
         ],
         gates=MOG.load_pr_gates(),
-        pull_files={4242: ["engine/signal_quality.py", "tests/test_validate_signals.py"]},
+        pull_files={4242: ["engine/signal_quality.py", "tests/test_validate_signals.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -3809,9 +3830,9 @@ def test_a_pipeline_bake_is_not_an_edit():
     livelocks any pull request that touches `site/` (18-26 re-prove cycles), which is
     the strict option wearing a filter."""
     freshness = _freshness(
-        commits=[(MAIN_MOVED_AT_1026, ["site/stocks/index.html", "data/research_vault/catalog.json"])],
+        commits=[(MAIN_MOVED_AT_1026, ["site/stocks/index.html", "data/research_vault/catalog.json"])],  # ci-trigger-closure: data — fixture changed-file name, never opened
         gates=[{"workflow": "ci.yml", "patterns": ["site/**", "data/**"]}],
-        pull_files={4242: ["site/chart.js"]},
+        pull_files={4242: ["site/chart.js"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -3824,9 +3845,9 @@ def test_one_source_file_defeats_the_pipeline_bake_exclusion():
     bake", never "ignore the baked files in this commit". One hand-edited file and
     the commit is judged normally."""
     freshness = _freshness(
-        commits=[(MAIN_MOVED_AT_1026, ["site/stocks/index.html", "engine/signal_quality.py"])],
+        commits=[(MAIN_MOVED_AT_1026, ["site/stocks/index.html", "engine/signal_quality.py"])],  # ci-trigger-closure: data — fixture changed-file name, never opened
         gates=[{"workflow": "ci.yml", "patterns": ["site/**", "engine/**"]}],
-        pull_files={4242: ["engine/signal_gate.py"]},
+        pull_files={4242: ["engine/signal_gate.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -3841,7 +3862,7 @@ def test_a_commit_changing_the_check_definitions_re_proves_every_pull_request():
     freshness = _freshness(
         commits=[(MAIN_MOVED_AT_1026, [".github/ci/legacy-jobs.yml"])],
         gates=[{"workflow": "ci.yml", "patterns": ["engine/**"]}],
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -3863,7 +3884,7 @@ def test_an_exact_proof_base_does_not_reprove_its_own_definition_commit(
             ("2026-08-05T10:26:00Z", [".github/ci/legacy-jobs.yml"]),
         ],
         gates=[{"workflow": "ci.yml", "patterns": ["engine/**"]}],
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     included = freshness.commits[0]["sha"]
     monkeypatch.setattr(
@@ -3897,7 +3918,7 @@ def test_only_main_commits_newer_than_the_heads_merge_base_are_classified(
             ("2026-08-05T10:26:00Z", ["data/nightly.json"]),
         ],
         gates=[{"workflow": "ci.yml", "patterns": ["engine/**"]}],
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     included = freshness.commits[1]["sha"]
     monkeypatch.setattr(
@@ -4059,7 +4080,7 @@ def test_a_PR_workflow_definition_re_proves_every_pull_request(workflow):
     freshness = _freshness(
         commits=[(MAIN_MOVED_AT_1026, [f".github/workflows/{workflow}"])],
         gates=gates,
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -4073,7 +4094,7 @@ def test_removing_a_proof_workflows_PR_trigger_still_invalidates_old_proof():
         commits=[(MAIN_MOVED_AT_1026, [".github/workflows/fences.yml"])],
         # Simulate fences.yml no longer appearing in post-change load_pr_gates().
         gates=[{"workflow": "ci.yml", "patterns": ["engine/**"]}],
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -4090,7 +4111,7 @@ def test_a_non_PR_workflow_edit_does_not_globally_invalidate_green_proof(workflo
     freshness = _freshness(
         commits=[(MAIN_MOVED_AT_1026, [f".github/workflows/{workflow}"])],
         gates=[{"workflow": "ci.yml", "patterns": ["engine/**"]}],
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -4108,9 +4129,9 @@ def test_a_non_PR_workflow_edit_does_not_globally_invalidate_green_proof(workflo
             "could not be established",
         ),
         (
-            "a footprint that matches no entry of any gate",
+            "a footprint that names no file at all",
             [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)],
-            {"pull_files": {4242: ["notes/whatever.txt"]}},
+            {"pull_files": {4242: []}},
             "could not be established",
         ),
     ],
@@ -4120,17 +4141,153 @@ def test_a_surface_that_cannot_be_determined_is_re_proven(
 ):
     """FAIL CLOSED, the whole reason this gate is worth having.
 
-    A definition of "tested surface" that silently resolves to the empty set turns
-    this into a no-op that REVIEWS as protection. Every way of not knowing therefore
-    lands on re-prove, including the empty footprint — a pull request whose files
-    match no path entry is not "outside every surface", it is unclassified.
+    Every way of NOT KNOWING the pull request's files lands on re-prove: an
+    unreadable files view, and a zero-file footprint (the clobbered-head shape,
+    which can be shown to be outside nothing). Knowing the files and finding
+    them owned by no gate is a different, affirmative answer — see the #7958
+    tests below — and is deliberately absent from this list.
     """
     freshness = _freshness(
-        commits=[(MAIN_MOVED_AT_1026, ["engine/signal_quality.py"])], **kwargs
+        commits=[(MAIN_MOVED_AT_1026, ["engine/signal_quality.py"])], **kwargs  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(_pull(), runs)
     assert stale, f"{case}: {reason}"
     assert expected_in_reason in reason, f"{case}: {reason}"
+
+
+def test_a_footprint_outside_every_gate_is_fresh_when_main_moves_inside_one():
+    """A main move inside a gate path cannot invalidate a proof that never
+    covered that gate.
+
+    The files were READ and CLASSIFIED — the same matcher that just found main's
+    commit inside `engine/**` found none of the pull request's files inside any
+    gate. That is not "unclassified"; it is classified as outside every tested
+    surface, and the exact-head checks that ran are the whole proof. Folding it
+    into "could not be established" re-proved #7958 three times in one evening
+    (once 25 s after its own green concluded), which under a main that moves
+    every few minutes with 60-110 min packs can never converge.
+    """
+    freshness = _freshness(
+        commits=[(MAIN_MOVED_AT_1026, ["engine/signal_quality.py"])],  # ci-trigger-closure: data — fixture changed-file name, never opened
+        pull_files={4242: ["notes/whatever.txt"]},
+    )
+    stale, reason = freshness.stale_for(
+        _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
+    )
+    assert stale is False, reason
+    assert "own no path-filtered gate entry" in reason, reason
+    assert "1 changed file(s)" in reason, reason
+
+
+def test_surface_of_distinguishes_unreadable_from_empty():
+    """`None` is "could not be read"; the empty set is "read, owned by nothing"."""
+    freshness = _freshness(
+        pull_files={1: None, 2: [], 3: ["notes/whatever.txt"], 4: ["engine/x.py"]}
+    )
+    assert freshness.surface_of(1) is None
+    assert freshness.surface_of(2) is None, "a zero-file footprint stays undeterminable"
+    assert freshness.surface_of(3) == set()
+    assert freshness.surface_of(4) == {"engine/**"}
+
+
+def test_incident_7958_a_records_only_pull_request_merges_on_its_concluded_green(
+    monkeypatch, capsys
+):
+    """#7958 (2026-09-24), against the REAL workflow gates.
+
+    An unowned records-only exemplar under `notes/` (both historical
+    `agentos/handoffs/` and `mockups/evidence/` are now gated — see
+    INCIDENT_7958_FILES); main takes product commits inside `engine/**` and
+    `scripts/` after the head's proof concluded green. The sweeper refreshed
+    this shape three times
+    (0ee772f1 -> d3f8bd8a -> fad0e00d -> 25e4a451), the third 25 s after run
+    36052314696 at fad0e00d had concluded green, logging "the pull request's own
+    changed files could not be established". They could: they were simply owned
+    by no gate. The merge must go through on the existing green, untouched.
+    """
+    calls = _fake_api(
+        monkeypatch,
+        check_pages={
+            1: {
+                "total_count": 1,
+                "check_runs": [
+                    _run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)
+                ],
+            }
+        },
+        main_commits=[
+            (MAIN_MOVED_AT_1026, ["engine/signal_quality.py"]),  # ci-trigger-closure: data — fixture changed-file name, never opened
+            ("2026-09-24T21:40:00Z", ["scripts/build_site.py", "templates/index.html"]),  # ci-trigger-closure: data — fixture changed-file name, never opened
+        ],
+        pr_files=INCIDENT_7958_FILES,
+        update_status=202,
+    )
+    freshness = MOG.ProofFreshness.build("acme/widgets", "read")
+    assert freshness.surface_of(4242) == set(), (
+        "the #7958 shape must own no entry of any real path-filtered gate; if a "
+        "workflow now owns notes/, this incident shape has "
+        "changed and the test — not the sweeper — needs a new exemplar"
+    )
+
+    assert (
+        MOG.sweep_pull(
+            "acme/widgets", _pull(), "read", "write", freshness,
+            budget=_authorized_budget(),
+        ) == "merged"
+    )
+    assert not any(call[1].endswith("/update-branch") for call in calls), (
+        "re-proving a pull request whose files own no tested surface is the "
+        "livelock #7958 measured"
+    )
+    assert any(call[0] == "PUT" and call[1].endswith("/merge") for call in calls)
+    out = capsys.readouterr().out
+    assert "own no path-filtered gate entry" in out, out
+
+
+def test_agentos_records_have_a_real_workflow_gate(monkeypatch):
+    """R2 handoffs can no longer use the historical unowned-record shortcut."""
+    _fake_api(
+        monkeypatch,
+        check_pages={1: {"total_count": 0, "check_runs": []}},
+        main_commits=[],
+        pr_files=["agentos/handoffs/WS-F04-X1-2026-09-24.md"],
+    )
+    freshness = MOG.ProofFreshness.build("acme/widgets", "read")
+    assert "agentos/**" in freshness.surface_of(4242)
+
+
+def test_incident_7958_shape_with_unreadable_files_still_re_proves(monkeypatch):
+    """The safety property survives: a pull request whose files could NOT be read
+    is never merged on a proof main has moved past — it is handed to update-branch
+    exactly as before, even though its (unknown) files might be the #7958 shape.
+    """
+    calls = _fake_api(
+        monkeypatch,
+        check_pages={
+            1: {
+                "total_count": 1,
+                "check_runs": [
+                    _run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)
+                ],
+            }
+        },
+        main_commits=[(MAIN_MOVED_AT_1026, ["engine/signal_quality.py"])],  # ci-trigger-closure: data — fixture changed-file name, never opened
+        pr_files=INCIDENT_7958_FILES,
+        update_status=202,
+    )
+    freshness = MOG.ProofFreshness.build("acme/widgets", "read")
+    freshness._pr_files[4242] = None  # the files view came back unreadable
+
+    assert (
+        MOG.sweep_pull(
+            "acme/widgets", _pull(), "read", "write", freshness,
+            budget=_authorized_budget(),
+        ) == "re-proving"
+    )
+    assert not any(
+        call[0] == "PUT" and call[1].endswith("/merge") for call in calls
+    ), "unreadable files must never become permission to merge"
+    assert any(call[1].endswith("/update-branch") for call in calls)
 
 
 def test_exact_proof_base_makes_job_start_timestamps_non_authoritative():
@@ -4154,7 +4311,7 @@ def test_a_proof_older_than_the_visible_timeline_stays_current_if_only_skip_ci_t
     ]
     freshness = _freshness(
         commits=commits,
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
         include_proof_base=False,
     )
     stale, reason = freshness.stale_for(
@@ -4187,11 +4344,11 @@ def test_too_many_product_commits_to_classify_is_re_proven():
     commits = [
         (
             f"2026-08-05T{13 + (index // 30):02d}:{index % 60:02d}:00Z",
-            ["engine/signal_quality.py"],
+            ["engine/signal_quality.py"],  # ci-trigger-closure: data — fixture changed-file name, never opened
         )
         for index in range(MOG.MAIN_COMMIT_FILE_CAP + 5)
     ]
-    freshness = _freshness(commits=commits, pull_files={4242: ["engine/signal_gate.py"]})
+    freshness = _freshness(commits=commits, pull_files={4242: ["engine/signal_gate.py"]})  # ci-trigger-closure: data — fixture changed-file name, never opened
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
     )
@@ -4213,7 +4370,7 @@ def test_a_generic_409_is_retryable_only_when_main_moved_by_skip_ci():
         "merge conflict between base and head", freshness, skip_sha
     )
     product = _freshness(
-        commits=(("2026-08-14T01:00:00Z", ["engine/signal_quality.py"], "fix: product"),)
+        commits=(("2026-08-14T01:00:00Z", ["engine/signal_quality.py"], "fix: product"),)  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     assert not MOG.is_retryable_base_tick(
         "Pull Request is not mergeable", product, product.snapshot_tip
@@ -4229,7 +4386,7 @@ def test_skip_ci_ticks_do_not_consume_the_commit_classification_cap():
         )
         for index in range(MOG.MAIN_COMMIT_FILE_CAP + 5)
     ]
-    freshness = _freshness(commits=commits, pull_files={4242: ["engine/signal_quality.py"]})
+    freshness = _freshness(commits=commits, pull_files={4242: ["engine/signal_quality.py"]})  # ci-trigger-closure: data — fixture changed-file name, never opened
     freshness._commit_files.clear()
     calls: list[str] = []
     freshness.files_of = lambda sha: calls.append(sha) or ([], False)  # type: ignore[method-assign]
@@ -4242,8 +4399,8 @@ def test_skip_ci_ticks_do_not_consume_the_commit_classification_cap():
 
 def test_an_unreadable_main_commit_is_re_proven(monkeypatch):
     freshness = _freshness(
-        commits=[(MAIN_MOVED_AT_1026, ["engine/signal_quality.py"])],
-        pull_files={4242: ["engine/signal_quality.py"]},
+        commits=[(MAIN_MOVED_AT_1026, ["engine/signal_quality.py"])],  # ci-trigger-closure: data — fixture changed-file name, never opened
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     freshness._commit_files.clear()
     monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: (502, None))
@@ -4280,7 +4437,7 @@ def test_a_truncated_pipeline_bake_is_proven_by_complete_root_trees(monkeypatch)
             {"sha": PROOF_BASE_SHA},
         ],
     )
-    freshness._pr_files[4242] = ["site/chart.js"]
+    freshness._pr_files[4242] = ["site/chart.js"]  # ci-trigger-closure: data — fixture changed-file name, never opened
 
     stable_engine = {"path": "engine", "type": "tree", "mode": "040000", "sha": "e" * 40}
     stable_tests = {"path": "tests", "type": "tree", "mode": "040000", "sha": "f" * 40}
@@ -4605,7 +4762,7 @@ def test_the_commit_classification_is_shared_across_pull_requests(monkeypatch):
             }
         },
         main_commits=window,
-        pr_files=["engine/signal_quality.py"],
+        pr_files=["engine/signal_quality.py"],  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     freshness = MOG.ProofFreshness.build("acme/widgets", "read")
     verdicts = [
@@ -4640,8 +4797,8 @@ def test_github_glob_semantics_not_fnmatch():
     # Every entry, not just the first: engine/signal_quality.py is listed explicitly
     # AND swept by engine/**, and an intersection must not depend on list order.
     assert matching_patterns(
-        "engine/signal_quality.py", ["engine/signal_quality.py", "tests/**", "engine/**"]
-    ) == ["engine/signal_quality.py", "engine/**"]
+        "engine/signal_quality.py", ["engine/signal_quality.py", "tests/**", "engine/**"]  # ci-trigger-closure: data — fixture changed-file name, never opened
+    ) == ["engine/signal_quality.py", "engine/**"]  # ci-trigger-closure: data — fixture changed-file name, never opened
 
 
 def test_the_module_records_that_4583_was_not_a_path_filter_gap():
@@ -5298,6 +5455,272 @@ def test_ambiguous_lease_claim_never_updates_or_tries_a_second_owner(monkeypatch
     assert len([call for call in calls if call[0] == "PATCH"]) == 1
 
 
+def test_affirmative_fresh_conflict_declines_before_lease_claim_or_write(monkeypatch):
+    """A live unmergeable head is declined before any lease claim, budget, or PUT.
+
+    Regression for the measured 2026-10-12 starvation: at 7 active/cap 8 an
+    earlier conflicting pull claimed the durable refresh lease, update-branch
+    confirmed the conflict, the workload slot refunded — but `claim_attempted`
+    stayed True, so the clean eligible pull behind it was denied for the rest of
+    the sweep at 0/1 used. The fresh authorized read that admission already
+    performs carries GitHub's own computed verdict, so the gateway can decline
+    on affirmative evidence (mergeable=false AND mergeable_state=dirty) before
+    anything is consumed, and the one high-load slot goes to the clean head.
+    """
+    calls: list[tuple[str, str]] = []
+    claimed = [False]
+    owner_number: list[int | None] = [None]
+    generation_description = [MOG.REFRESH_LEASE_DESCRIPTION]
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and "/pulls/" in url:
+            number = int(url.rstrip("/").rsplit("/", 1)[1])
+            fields = (
+                {"mergeable": False, "mergeable_state": "dirty"}
+                if number == 1
+                else {}
+            )
+            labels = ["merge-on-green"]
+            if number == owner_number[0]:
+                labels.append(MOG.REFRESH_LEASE_LABEL)
+            return 200, {**_pull(number, labels=tuple(labels)), **fields}
+        if method == "GET" and "/labels/" in url:
+            return 200, {
+                "name": MOG.REFRESH_LEASE_LABEL,
+                "description": generation_description[0],
+            }
+        if method == "PATCH" and "/labels/" in url:
+            generation_description[0] = payload["description"]
+            owner_number[0] = MOG.parse_refresh_lease_record(
+                payload["description"]
+            )[0]
+            claimed[0] = True
+            return 200, payload
+        if method == "POST" and url.endswith("/labels"):
+            return 200, [{"name": MOG.REFRESH_LEASE_LABEL}]
+        if method == "GET" and "/issues/" in url and "?" not in url:
+            number = int(url.rstrip("/").rsplit("/", 1)[1])
+            labels = [{"name": "merge-on-green"}]
+            if number == owner_number[0]:
+                labels.append({"name": MOG.REFRESH_LEASE_LABEL})
+            return 200, {"number": number, "labels": labels}
+        if method == "GET" and "/issues?" in url:
+            if owner_number[0] is None:
+                return 200, []
+            return 200, [
+                {
+                    "number": owner_number[0],
+                    "pull_request": {"url": "pr"},
+                    "labels": [
+                        {"name": "merge-on-green"},
+                        {"name": MOG.REFRESH_LEASE_LABEL},
+                    ],
+                }
+            ]
+        if method == "PUT" and url.endswith("/update-branch"):
+            number = int(url.split("/pulls/")[1].split("/")[0])
+            return (422 if number == 1 else 202), {
+                "message": (
+                    "merge conflict between base and head"
+                    if number == 1
+                    else "Updating"
+                )
+            }
+        raise AssertionError(f"unexpected {method} {url}")
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    budget = MOG.SweepBudget("read", max_refreshes=1)
+    budget.refresh_authorized = True
+    budget.max_refreshes = 1
+    budget.requires_refresh_lease = True
+    budget.refresh_lease = lease
+    first = _pull(1)
+    second = _pull(2)
+    assert MOG.attempt_update_branch(
+        "acme/widgets", first, "write", budget, "stale"
+    ) == "declined"
+    assert not [call for call in calls if call[0] == "PUT"], (
+        "a known conflict must never reach the update-branch write"
+    )
+    assert not [call for call in calls if call[0] == "PATCH"], (
+        "the durable lease must stay unclaimed for a known conflict"
+    )
+    assert not [call for call in calls if call[0] == "POST"], (
+        "no issue label write either"
+    )
+    assert budget.refreshes_used == 0 and budget.refresh_attempts_used == 0, (
+        "an affirmative conflict consumes no slot and no attempt"
+    )
+    assert lease.claim_attempted is False and lease.owner_number is None
+    # The clean eligible head behind it still gets the one slot, via the
+    # existing normal claim path.
+    assert MOG.attempt_update_branch(
+        "acme/widgets", second, "write", budget, "stale"
+    ) == "updated"
+    assert lease.owns(second)
+    assert budget.refresh_attempts_used == 1 and budget.refreshes_used == 1
+    puts = [call for call in calls if call[0] == "PUT"]
+    assert len(puts) == 1 and puts[0][1].endswith("/pulls/2/update-branch")
+
+
+def test_more_conflicts_than_attempt_slots_leave_the_budget_for_a_clean_head(
+    monkeypatch,
+):
+    """Every affirmatively conflicted head declines without touching the budget.
+
+    A backlog of known conflicts must not drain the 8 bounded update-branch
+    attempts before an eligible clean head is ever admitted.
+    """
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and "/pulls/" in url:
+            number = int(url.rstrip("/").rsplit("/", 1)[1])
+            if number <= 10:
+                return 200, {
+                    **_pull(number),
+                    "mergeable": False,
+                    "mergeable_state": "dirty",
+                }
+            return 200, _pull(number)
+        assert method == "PUT" and url.endswith("/update-branch")
+        return 202, {"message": "Updating"}
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    budget = _authorized_budget()
+    for number in range(1, 11):
+        assert MOG.attempt_update_branch(
+            "acme/widgets", _pull(number), "write", budget, "stale"
+        ) == "declined"
+    assert budget.refresh_attempts_used == 0, (
+        "affirmative conflicts never reach the bounded attempt budget"
+    )
+    assert budget.refreshes_used == 0
+    assert not [call for call in calls if call[0] == "PUT"]
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(11), "write", budget, "stale"
+    ) == "updated"
+    assert budget.refresh_attempts_used == 1 and budget.refreshes_used == 1
+
+
+@pytest.mark.parametrize(
+    "fresh_fields",
+    (
+        {"mergeable": None, "mergeable_state": "unknown"},
+        {},
+        {"mergeable": True, "mergeable_state": "clean"},
+    ),
+    ids=("unknown", "missing", "clean"),
+)
+def test_unaffirmative_mergeability_keeps_the_existing_admission_path(
+    monkeypatch, fresh_fields
+):
+    """Only the affirmative pair classifies; unknown stays write-then-classify.
+
+    GitHub answers mergeable=null while it computes and omits fields on odd
+    shapes, so those pulls keep the ordinary admission path and its caps.
+    """
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and "/pulls/" in url:
+            number = int(url.rstrip("/").rsplit("/", 1)[1])
+            return 200, {**_pull(number), **fresh_fields}
+        assert method == "PUT" and url.endswith("/update-branch")
+        return 202, {"message": "Updating"}
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    budget = _authorized_budget(max_refreshes=1)
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(1), "write", budget, "stale"
+    ) == "updated"
+    assert budget.refresh_attempts_used == 1 and budget.refreshes_used == 1
+    assert any(call[0] == "PUT" for call in calls)
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(2), "write", budget, "stale"
+    ) == "refresh-deferred", "the real cap still binds a spent slot"
+
+
+@pytest.mark.parametrize(
+    "fresh_fields",
+    (
+        {"mergeable": True, "mergeable_state": "clean"},
+        {"mergeable": None, "mergeable_state": "unknown"},
+        {},
+    ),
+    ids=("fresh-clean", "fresh-unknown", "fresh-missing"),
+)
+def test_a_stale_dirty_listing_never_overrides_a_fresh_read(
+    monkeypatch, fresh_fields
+):
+    """An old listing's dirty state is not evidence; the live read decides."""
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and "/pulls/" in url:
+            number = int(url.rstrip("/").rsplit("/", 1)[1])
+            return 200, {**_pull(number), **fresh_fields}
+        assert method == "PUT" and url.endswith("/update-branch")
+        return 202, {"message": "Updating"}
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    stale = {**_pull(1), "mergeable": False, "mergeable_state": "dirty"}
+    assert MOG.attempt_update_branch(
+        "acme/widgets", stale, "write", _authorized_budget(max_refreshes=1),
+        "stale",
+    ) == "updated"
+    assert any(call[0] == "PUT" for call in calls)
+
+
+@pytest.mark.parametrize(
+    ("fresh_status", "fresh_payload", "expected"),
+    (
+        (
+            200,
+            {
+                **_pull(1),
+                "head": {
+                    "sha": "b" * 40,
+                    "ref": "claude/feature",
+                    "repo": {"full_name": "acme/widgets"},
+                },
+            },
+            "head-moved",
+        ),
+        (200, {**_pull(1), "draft": True}, "draft"),
+        (200, {**_pull(1), "base": {"ref": "release"}}, "wrong-base"),
+        (200, {**_pull(1), "labels": []}, "disarmed"),
+        (500, None, "authorization-unreadable"),
+    ),
+    ids=("head-moved", "draft", "wrong-base", "disarmed", "unreadable"),
+)
+def test_lost_authorization_still_wins_over_a_dirty_listing(
+    monkeypatch, fresh_status, fresh_payload, expected
+):
+    """Authorization changes keep their original disposition, never a conflict."""
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and "/pulls/" in url:
+            return fresh_status, fresh_payload
+        raise AssertionError(f"unexpected {method} {url}")
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    stale = {**_pull(1), "mergeable": False, "mergeable_state": "dirty"}
+    assert MOG.attempt_update_branch(
+        "acme/widgets", stale, "write", _authorized_budget(max_refreshes=1),
+        "stale",
+    ) == expected
+    assert not [call for call in calls if call[0] == "PUT"]
+    assert not [call for call in calls if call[0] == "PATCH"]
+
+
 def test_lease_owner_outside_pull_page_is_fetched_and_promoted(monkeypatch):
     issue = {
         "number": 999,
@@ -5899,21 +6322,22 @@ def test_the_per_sweep_cap_bounds_the_work_and_names_what_it_deferred(
     seen = _main_harness(monkeypatch, armed)
     assert MOG.main() == 0
 
-    assert len(seen) == MOG.FALLBACK_PULL_CAP, (
-        f"expected at most {MOG.FALLBACK_PULL_CAP} pull requests per sweep, "
+    funded_cap = 23  # (1000 - 87 fixed - 8 attempts - 260 reserve) // 27
+    assert len(seen) == funded_cap, (
+        f"expected exactly {funded_cap} pull requests per sweep, "
         f"got {len(seen)}"
     )
-    expected = MOG.sweep_order(armed, cap=MOG.FALLBACK_PULL_CAP)
-    assert seen == [pull["number"] for pull in expected[: MOG.FALLBACK_PULL_CAP]]
+    expected = MOG.sweep_order(armed, cap=funded_cap)
+    assert seen == [pull["number"] for pull in expected[:funded_cap]]
 
-    deferred = sorted(pull["number"] for pull in expected[MOG.FALLBACK_PULL_CAP :])
+    deferred = sorted(pull["number"] for pull in expected[funded_cap:])
     notices = [
         line
         for line in capsys.readouterr().out.splitlines()
         if line.startswith("::notice") and "Per-sweep cap" in line
     ]
     assert notices, "the cap must announce itself"
-    assert f"{MOG.FALLBACK_PULL_CAP} of {len(armed)}" in notices[0]
+    assert f"{funded_cap} of {len(armed)}" in notices[0]
     assert "observed core limit is 1000" in notices[0]
     for number in deferred[:3]:
         assert f"#{number}" in notices[0], f"deferred #{number} must be named"
@@ -6080,6 +6504,55 @@ def test_the_rotation_reaches_every_pull_request_so_none_can_be_starved():
     )
 
 
+@pytest.mark.parametrize("span,cap", [(80, 100), (100, 100), (100, 25), (72, 100), (93, 25)])
+def test_rotation_reaches_every_first_position_despite_smaller_refresh_budget(span, cap):
+    """Evaluation coverage is insufficient when only one refresh slot is free.
+
+    With span=100/cap=100 the old order never moves; span=80/cap=100
+    visits only four first positions. Every ordinary PR must get a turn at
+    the front even when all prior update attempts prove conflicted.
+    """
+    armed = [_pull(number) for number in range(1, span + 1)]
+    reached = set()
+    for bucket in range(span):
+        ordered = MOG.sweep_order(
+            armed, cap=cap, now=bucket * MOG.ROTATION_BUCKET_SECONDS
+        )
+        assert {pull["number"] for pull in ordered} == set(range(1, span + 1))
+        assert len(ordered) == span
+        reached.add(ordered[0]["number"])
+    assert reached == set(range(1, span + 1))
+
+
+@pytest.mark.parametrize("span,cap,buckets", [(80, 100, 12), (100, 100, 15), (100, 25, 16)])
+def test_refresh_attempt_window_reaches_whole_backlog_without_larger_budget(span, cap, buckets):
+    armed = [_pull(number) for number in range(1, span + 1)]
+    reached = set()
+    for bucket in range(buckets):
+        ordered = MOG.sweep_order(
+            armed, cap=cap, now=bucket * MOG.ROTATION_BUCKET_SECONDS
+        )
+        reached.update(pull["number"] for pull in ordered[:MOG.MAX_REFRESHES_PER_SWEEP])
+    assert reached == set(range(1, span + 1))
+    assert MOG.MAX_REFRESHES_PER_SWEEP == 8
+    assert MOG.MAX_IN_FLIGHT_PR_PROOFS == 8
+
+
+def test_rotation_phase_preserves_repair_lease_and_trigger_priority():
+    ordinary = [_pull(number) for number in range(1, 78)]
+    repair = _pull(500, labels=("merge-on-green", "main-red-repair"))
+    lease = _pull(600)
+    hot = _pull(700)
+    hot["head"]["sha"] = "f" * 40
+    for bucket in (0, 4, 8, 79, 500):
+        ordered = MOG.sweep_order(
+            ordinary + [repair, lease, hot], cap=100,
+            refresh_lease_number=600, trigger_head_sha="F" * 40,
+            now=bucket * MOG.ROTATION_BUCKET_SECONDS,
+        )
+        assert [pull["number"] for pull in ordered[:3]] == [500, 600, 700]
+
+
 def test_a_main_red_repair_pull_request_is_never_deferred_by_the_cap():
     """The circuit breaker admits exactly ONE repair per sweep when main is red, so
     a repair pushed outside the cap defers the whole repo with it."""
@@ -6171,10 +6644,10 @@ def test_the_dynamic_cap_preserves_the_proven_budget_share():
     assert MOG.RATE_LIMIT_RESERVE < MOG.RATE_LIMIT_FLOOR
 
     assert MOG.pull_cap_for_budget(14_904, 15_000) == MOG.MAX_PULL_CAP
-    assert MOG.pull_cap_for_budget(600, 15_000) == 20
+    assert MOG.pull_cap_for_budget(600, 15_000) == 9
     affordable_cost = (
         MOG.FULL_SWEEP_FIXED_REQUESTS
-        + 20 * MOG.MAX_REQUESTS_PER_PULL
+        + 9 * MOG.MAX_REQUESTS_PER_PULL
         + MOG.MAX_REFRESHES_PER_SWEEP
         + MOG.RATE_LIMIT_RESERVE
     )
@@ -8075,14 +8548,14 @@ def test_a_stale_proof_refresh_also_draws_on_the_capped_slots(monkeypatch, capsy
         check_pages=pages,
         update_status=202,
         # main took a source commit AFTER the proof, inside the PR's surface.
-        main_commits=(("2026-08-05T13:00:00Z", ["engine/signal_quality.py"]),),
+        main_commits=(("2026-08-05T13:00:00Z", ["engine/signal_quality.py"]),),  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     verdict = MOG.sweep_pull(
         "acme/widgets",
         _pull(),
         "read",
         "write",
-        _freshness(commits=(("2026-08-05T13:00:00Z", ["engine/signal_quality.py"]),)),
+        _freshness(commits=(("2026-08-05T13:00:00Z", ["engine/signal_quality.py"]),)),  # ci-trigger-closure: data — fixture changed-file name, never opened
         _proof(),
         MOG.SweepBudget("read", max_refreshes=0),
     )
@@ -8859,3 +9332,745 @@ def test_the_mark_only_pass_never_removes_the_arm_label(monkeypatch):
         assert "remove-label merge-on-green" in law, (
             f"{doc} must name the exact command that caused it"
         )
+
+
+def test_commit_pagination_has_one_shared_sweep_read_budget(monkeypatch):
+    """Several bulk commits cannot multiply the per-commit page cap per PR."""
+    monkeypatch.setattr(MOG, "COMMIT_FILE_PAGE_READ_CAP", 8)
+    freshness = MOG.ProofFreshness("acme/widgets", "read", _gates(), [])
+    monkeypatch.setattr(freshness, "_truncated_pipeline_paths", lambda *_: None)
+    page_calls = []
+
+    def fake_request(method, url, token, payload=None):
+        assert method == "GET" and token == "read" and payload is None
+        parsed = MOG.urllib.parse.urlparse(url)
+        sha = parsed.path.rsplit("/", 1)[1]
+        query = MOG.urllib.parse.parse_qs(parsed.query)
+        rows = [{"filename": f"data/page-{i}.json", "status": "modified"}
+                for i in range(580)]
+        if query:
+            page_calls.append((sha, query["page"][0]))
+            start = (int(query["page"][0]) - 1) * 100
+            rows = rows[start:start + 100]
+        else:
+            rows = rows[:300]
+        return 200, {"sha": sha, "commit": {"tree": {"sha": "c" * 40}},
+                     "parents": [{"sha": "d" * 40}], "files": rows}
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    assert freshness.files_of("a" * 40)[1] is False
+    assert freshness.files_of("b" * 40)[1] is True
+    assert len(page_calls) == 8
+    # Failed completion is cached too, not retried for each later PR.
+    assert freshness.files_of("b" * 40)[1] is True
+    assert len(page_calls) == 8
+
+
+# ---------------------------------------------------------------------------
+# Complete commit-file retrieval: bounded pagination behind the >299-row path.
+# Append to tests/test_merge_on_green.py.  Uses only names already imported or
+# defined above in that module (MOG, pytest, _freshness, _pull, _run, and the
+# MAIN_MOVED_AT_1026 / PROVEN_AT_0742 constants).  All fixtures are synthetic;
+# nothing here reaches api.github.com (the autouse _no_unstubbed_http guard
+# stays in force, and every test installs its own MOG._request double).
+# ---------------------------------------------------------------------------
+
+_PAGING_SHA = f"{0x580C0FFEE:040x}"
+_PAGING_TREE = f"{0x580CAFE:040x}"
+_PAGING_OTHER_TREE = f"{0x580BE11E:040x}"
+_PAGING_PARENTS = [f"{0x580DAD:040x}"]
+
+
+def _paging_row(path: str, previous: str | None = None) -> dict:
+    """One synthetic GitHub file row; rename rows carry previous_filename."""
+    row = {
+        "sha": f"{len(path) * 7919:040x}",
+        "filename": path,
+        "status": "modified",
+        "additions": 1,
+        "deletions": 0,
+        "changes": 1,
+    }
+    if previous is not None:
+        row["status"] = "renamed"
+        row["previous_filename"] = previous
+    return row
+
+
+def _paging_body(rows, sha=_PAGING_SHA, tree=_PAGING_TREE, with_files=True):
+    """A commit body with one stable identity (full lowercase 40-hex throughout)."""
+    body = {
+        "sha": sha,
+        "node_id": "C_pagingfixture",
+        "commit": {"message": "paging fixture", "tree": {"sha": tree}},
+        "parents": [{"sha": parent} for parent in _PAGING_PARENTS],
+    }
+    if with_files:
+        body["files"] = list(rows)
+    return body
+
+
+def _paging_commit(monkeypatch, pages, probe_rows=None, anomalies=None,
+                   sha=_PAGING_SHA):
+    """ProofFreshness whose _request serves one commit by explicit page.
+
+    `pages` lists the per-page file rows for pages 1..N, served for the
+    ``per_page=100&page=N`` URLs the pagination fallback issues.  The one
+    unpaginated probe read that files_of always makes first returns
+    `probe_rows` — defaulting to the first 300 rows across `pages`, which is
+    what GitHub's 300-row cap would have sent.  `anomalies` maps a 1-based
+    page number to a payload dict (served with 200), an int status (served as
+    that status) or a BaseException instance (raised out of _request).
+    Returns (freshness, urls) so tests can assert on reads and call counts.
+    """
+    if probe_rows is None:
+        probe_rows = [row for page in pages for row in page][:300]
+    freshness = _freshness(commits=[(sha, [])])
+    freshness.commits[0]["sha"] = sha
+    monkeypatch.setattr(freshness, "_truncated_pipeline_paths", lambda *_: None)
+    freshness._commit_files.clear()
+    urls: list[str] = []
+
+    def serve(method, url, *args, **kwargs):
+        urls.append(url)
+        if "page=" not in url:
+            return 200, _paging_body(probe_rows, sha=sha)
+        page = int(url.rsplit("page=", 1)[1])
+        anomaly = (anomalies or {}).get(page)
+        if isinstance(anomaly, BaseException):
+            raise anomaly
+        if isinstance(anomaly, dict):
+            return 200, anomaly
+        if anomaly is not None:
+            return anomaly, {"message": "injected failure"}
+        return 200, _paging_body(pages[page - 1], sha=sha)
+
+    monkeypatch.setattr(MOG, "_request", serve)
+    return freshness, urls
+
+
+def _paging_probe_names(pages):
+    """Filenames of the 300-row probe listing, in transport order."""
+    return [row["filename"] for row in _paging_flat(pages)[:300]]
+
+
+def _paging_flat(pages):
+    return [row for page in pages for row in page]
+
+
+def test_paging_580_row_commit_is_fully_retrieved_not_truncated(monkeypatch):
+    """A 580-file commit must page to completion, keeping the hidden report and
+    the .github workflow the 300-row cap would have dropped."""
+    paths = (
+        [f"src/data/{i:03d}.json" for i in range(356)]
+        + [f"site/page{i:03d}.html" for i in range(222)]
+        + ["site/reports/signal-sanity.md", ".github/workflows/signal-sanity.yml"]
+    )
+    assert len(paths) == 580
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 580, 100)]
+    assert [len(p) for p in pages] == [100, 100, 100, 100, 100, 80]
+    freshness, urls = _paging_commit(monkeypatch, pages)
+    reads_before = freshness.commit_file_reads
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is False
+    assert names == paths, "full listing must preserve order and keep every file"
+    assert "site/reports/signal-sanity.md" in names
+    assert ".github/workflows/signal-sanity.yml" in names
+    assert freshness.commit_file_reads - reads_before == 7  # 1 probe + 6 pages
+    assert urls[1] == (
+        f"{MOG.GITHUB_API}/repos/{freshness.repo}/commits/{_PAGING_SHA}"
+        "?per_page=100&page=1"
+    )
+    assert freshness._commit_files[_PAGING_SHA] == (names, False)
+
+
+def test_paging_rename_keeps_old_and_new_endpoints(monkeypatch):
+    """Both rename endpoints are the tested surface; paging may not drop either."""
+    paths = [f"src/m{i:03d}.py" for i in range(579)]
+    rows = [_paging_row(p) for p in paths]
+    rows.append(_paging_row("src/renamed.py", previous="src/original.py"))
+    pages = [rows[i:i + 100] for i in range(0, len(rows), 100)]
+    freshness, _ = _paging_commit(monkeypatch, pages)
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is False
+    assert "src/original.py" in names and "src/renamed.py" in names
+    assert len(names) == 581  # 579 straight paths + both rename endpoints
+
+
+def test_paging_exact_100_multiple_needs_a_short_terminator_page(monkeypatch):
+    """300 rows = three FULL pages, so completion requires the next (empty) page."""
+    paths = [f"gen/{i:03d}" for i in range(300)]
+    pages = [
+        [_paging_row(p) for p in paths[0:100]],
+        [_paging_row(p) for p in paths[100:200]],
+        [_paging_row(p) for p in paths[200:300]],
+        [],
+    ]
+    freshness, _ = _paging_commit(monkeypatch, pages)
+    reads_before = freshness.commit_file_reads
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is False
+    assert names == paths
+    assert freshness.commit_file_reads - reads_before == 5  # probe + 4 pages
+
+
+def test_paging_ten_full_pages_cap_exhaustion_stays_truncated(monkeypatch):
+    """1000 rows with no short page by page 10 fails closed to the original
+    truncated answer — it is cached that way, and the probe listing is kept
+    unchanged rather than guessed at."""
+    paths = [f"gen/{i:04d}" for i in range(1000)]
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 1000, 100)]
+    freshness, urls = _paging_commit(monkeypatch, pages)
+    reads_before = freshness.commit_file_reads
+    probe_names = _paging_probe_names(pages)
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is True
+    assert names == probe_names
+    assert freshness.commit_file_reads - reads_before == 11  # probe + capped 10
+    assert len(urls) == 11
+    assert freshness._commit_files[_PAGING_SHA] == (probe_names, True)
+
+
+def test_paging_cap_exhaustion_keeps_the_commit_stale(monkeypatch):
+    """The operator-facing half of the cap: an exhausted read must still hold
+    the commit stale, exactly as today's 300-row truncation does."""
+    pages = [
+        [_paging_row(f"gen/{i:04d}") for i in range(page * 100, page * 100 + 100)]
+        for page in range(10)
+    ]
+    freshness, _ = _paging_commit(monkeypatch, pages)
+
+    stale, reason = freshness.stale_for(
+        _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
+    )
+
+    assert stale and "too many files" in reason, reason
+
+
+def test_paging_page_without_files_key_fails_closed(monkeypatch):
+    """A page whose body lacks `files` is malformed, not empty-and-fine."""
+    paths = [f"gen/{i:03d}" for i in range(580)]
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 580, 100)]
+    anomalies = {2: _paging_body(None, with_files=False)}
+    freshness, _ = _paging_commit(monkeypatch, pages, anomalies=anomalies)
+    reads_before = freshness.commit_file_reads
+    probe_names = _paging_probe_names(pages)
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is True and names == probe_names
+    assert freshness.commit_file_reads - reads_before == 3
+    assert freshness._commit_files[_PAGING_SHA] == (probe_names, True)
+
+
+def test_paging_tree_mismatch_fails_closed(monkeypatch):
+    """A page claiming a different tree is a different snapshot; never stitch."""
+    paths = [f"gen/{i:03d}" for i in range(580)]
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 580, 100)]
+    anomalies = {3: _paging_body(pages[2], tree=_PAGING_OTHER_TREE)}
+    freshness, _ = _paging_commit(monkeypatch, pages, anomalies=anomalies)
+    probe_names = _paging_probe_names(pages)
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is True and names == probe_names
+    assert freshness.commit_file_reads == 4
+
+
+def test_paging_noncanonical_page_sha_fails_closed(monkeypatch):
+    """An uppercased page sha is not a provable identity; fail closed."""
+    paths = [f"gen/{i:03d}" for i in range(580)]
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 580, 100)]
+    anomalies = {2: _paging_body(pages[1], sha=_PAGING_SHA.upper())}
+    freshness, _ = _paging_commit(monkeypatch, pages, anomalies=anomalies)
+    probe_names = _paging_probe_names(pages)
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is True and names == probe_names
+    assert freshness.commit_file_reads == 3
+
+
+def test_paging_duplicate_filename_across_pages_fails_closed(monkeypatch):
+    """A filename repeating on a LATER page is a stitching artifact, not a dupe."""
+    paths = [f"gen/{i:03d}" for i in range(580)]
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 580, 100)]
+    probe_rows = [dict(row) for row in _paging_flat(pages)[:300]]
+    pages[1][0] = _paging_row(paths[0])  # page-1's first name again on page 2
+    freshness, _ = _paging_commit(monkeypatch, pages, probe_rows=probe_rows)
+    probe_names = MOG._changed_file_paths(probe_rows)
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is True and names == probe_names
+    assert freshness.commit_file_reads == 3
+
+
+def test_paging_pages_that_lose_probe_files_fail_closed(monkeypatch):
+    """A 'full' listing that dropped a file the truncated read could see is not
+    a full read — the first-300 names must be a subset of the result."""
+    probe_rows = [_paging_row(f"probe/{i:03d}") for i in range(300)]
+    pages = [[_paging_row(f"other/{i:03d}") for i in range(p * 100, p * 100 + 100)]
+             for p in range(6)]
+    pages[5] = pages[5][:80]  # terminator on page 6, everything else plausible
+    freshness, _ = _paging_commit(monkeypatch, pages, probe_rows=probe_rows)
+    probe_names = [row["filename"] for row in probe_rows]
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is True and names == probe_names
+    assert freshness.commit_file_reads == 7
+
+
+def test_paging_http_error_status_fails_closed(monkeypatch):
+    """A non-200 page is a failed read, not a short page / no-change."""
+    paths = [f"gen/{i:03d}" for i in range(580)]
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 580, 100)]
+    freshness, _ = _paging_commit(monkeypatch, pages, anomalies={2: 500})
+    probe_names = _paging_probe_names(pages)
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is True and names == probe_names
+    assert freshness.commit_file_reads == 3
+    assert freshness._commit_files[_PAGING_SHA] == (probe_names, True)
+
+
+def test_paging_runtime_error_fails_closed(monkeypatch):
+    """A RuntimeError out of _request keeps the truncated answer (cached)."""
+    paths = [f"gen/{i:03d}" for i in range(580)]
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 580, 100)]
+    freshness, _ = _paging_commit(
+        monkeypatch, pages, anomalies={2: RuntimeError("transport down")}
+    )
+    probe_names = _paging_probe_names(pages)
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is True and names == probe_names
+    assert freshness.commit_file_reads == 3
+
+
+def test_paging_empty_first_page_cannot_become_empty_success(monkeypatch):
+    """A truncated commit whose first page comes back empty must stay
+    truncated — a missing/failed read is never 'no files changed'."""
+    probe_rows = [_paging_row(f"gen/{i:03d}") for i in range(300)]
+    freshness, _ = _paging_commit(monkeypatch, [[]], probe_rows=probe_rows)
+    probe_names = [row["filename"] for row in probe_rows]
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is True and names == probe_names
+    assert names != []
+    assert freshness.commit_file_reads == 2
+
+
+def test_paging_result_is_cached_for_the_sweep(monkeypatch):
+    """The completed listing is cached; the second files_of call re-reads none."""
+    paths = [f"gen/{i:03d}" for i in range(580)]
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 580, 100)]
+    freshness, urls = _paging_commit(monkeypatch, pages)
+    reads_before = freshness.commit_file_reads
+
+    first = freshness.files_of(_PAGING_SHA)
+    second = freshness.files_of(_PAGING_SHA)
+
+    assert first == second == (paths, False)
+    assert freshness.commit_file_reads - reads_before == 7
+    assert len(urls) == 7
+
+
+def test_paging_fast_pipeline_proof_short_circuits_without_paging(monkeypatch):
+    """The existing _truncated_pipeline_paths proof stays first and must keep
+    answering in one read, with no pagination GET at all — even a proof the
+    test furnishes without any sha evidence."""
+    probe_rows = [_paging_row(f"site/{i:03d}.html") for i in range(300)]
+    freshness, urls = _paging_commit(monkeypatch, [], probe_rows=probe_rows)
+    monkeypatch.setattr(
+        freshness, "_truncated_pipeline_paths", lambda sha, payload: ["data/_tree_proven_", "site/_tree_proven_"]
+    )
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert (names, truncated) == (["data/_tree_proven_", "site/_tree_proven_"], False)
+    assert len(urls) == 1 and "page=" not in urls[0]
+
+
+def test_paging_under_threshold_makes_exactly_one_read(monkeypatch):
+    """The <=299-file path is untouched: one read, no pagination, not truncated."""
+    probe_rows = [_paging_row(f"site/{i:02d}.html") for i in range(42)]
+    freshness, urls = _paging_commit(monkeypatch, [], probe_rows=probe_rows)
+    reads_before = freshness.commit_file_reads
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is False
+    assert names == [row["filename"] for row in probe_rows]
+    assert freshness.commit_file_reads - reads_before == 1
+    assert len(urls) == 1 and "page=" not in urls[0]
+
+
+def test_paging_does_not_swallow_test_sentinel_assertions(monkeypatch):
+    """Fallback absorbs RuntimeError ONLY.  An AssertionError — the unexpected-
+    call sentinel a test double raises — must propagate, so a stubbed test can
+    still fail loudly instead of silently degrading to truncated."""
+    probe_rows = [_paging_row(f"gen/{i:03d}") for i in range(300)]
+    freshness, _ = _paging_commit(monkeypatch, [], probe_rows=probe_rows)
+
+    def guard(method, url, *args, **kwargs):
+        if "page=" in url:
+            raise AssertionError("unexpected pagination read")
+        return 200, _paging_body(probe_rows)
+
+    monkeypatch.setattr(MOG, "_request", guard)
+    with pytest.raises(AssertionError):
+        freshness.files_of(_PAGING_SHA)
+
+
+@pytest.mark.parametrize("defect", [
+    "duplicate_within_page", "overlong_page", "missing_filename",
+    "bad_filename", "missing_rename_source", "null_rename_source",
+    "parents_reordered", "sha_changed", "tree_missing", "status_206",
+    "transport_oserror", "json_error", "changed_original_rename",
+])
+def test_paging_malformed_or_contradictory_page_keeps_original(monkeypatch, defect):
+    rows = [_paging_row(f"engine/file{i}.py") for i in range(580)]
+    rows[0] = _paging_row("engine/new.py", "engine/old.py")
+    pages = [rows[i:i + 100] for i in range(0, 580, 100)]
+    probe = [dict(row) for row in rows[:300]]
+    body = _paging_body([dict(row) for row in pages[0]])
+    if defect == "duplicate_within_page":
+        body["files"][1] = body["files"][0]
+    elif defect == "overlong_page":
+        body["files"].append(_paging_row("engine/extra.py"))
+    elif defect == "missing_filename":
+        body["files"][1].pop("filename")
+    elif defect == "bad_filename":
+        body["files"][1]["filename"] = 123
+    elif defect == "missing_rename_source":
+        body["files"][0].pop("previous_filename")
+    elif defect == "null_rename_source":
+        body["files"][0]["previous_filename"] = None
+    elif defect == "parents_reordered":
+        body["parents"] = [{"sha": "a" * 40}, {"sha": "b" * 40}]
+    elif defect == "sha_changed":
+        body["sha"] = "d" * 40
+    elif defect == "tree_missing":
+        body["commit"].pop("tree")
+    elif defect == "status_206":
+        body = 206
+    elif defect == "transport_oserror":
+        body = OSError("connection closed")
+    elif defect == "json_error":
+        body = ValueError("invalid JSON")
+    elif defect == "changed_original_rename":
+        body["files"][0]["previous_filename"] = "engine/other.py"
+    freshness, urls = _paging_commit(monkeypatch, pages, probe_rows=probe, anomalies={1: body})
+    expected = MOG._changed_file_paths(probe)
+    assert freshness.files_of(_PAGING_SHA) == (expected, True)
+    reads = len(urls)
+    assert freshness.files_of(_PAGING_SHA) == (expected, True)
+    assert len(urls) == reads
+
+
+def test_paging_rename_chain_preserves_shared_old_and_new_names(monkeypatch):
+    rows = [_paging_row(f"reports/{i}.md") for i in range(300)]
+    rows.extend([_paging_row("engine/b.py", "engine/a.py"),
+                 _paging_row("engine/c.py", "engine/b.py")])
+    pages = [rows[i:i + 100] for i in range(0, len(rows), 100)]
+    freshness, _ = _paging_commit(monkeypatch, pages)
+    names, truncated = freshness.files_of(_PAGING_SHA)
+    assert truncated is False
+    assert {"engine/a.py", "engine/b.py", "engine/c.py"} <= set(names)
+
+
+@pytest.mark.parametrize("hidden,expected_stale", [
+    ("reports/signal-sanity.md", False),
+    ("engine/changed.py", True),
+    (".github/workflows/ci.yml", True),
+])
+def test_paging_completed_inventory_uses_unchanged_surface_rules(monkeypatch, hidden, expected_stale):
+    rows = [_paging_row(f"reports/file{i}.md") for i in range(579)] + [_paging_row(hidden)]
+    pages = [rows[i:i + 100] for i in range(0, len(rows), 100)]
+    freshness, _ = _paging_commit(monkeypatch, pages)
+    freshness._pr_files[4242] = ["engine/product.py"]
+    stale, reason = freshness.stale_for(_pull(), [_run("ci-pack-1", conclusion="success")])
+    assert stale is expected_stale, reason
+    assert "too many files" not in reason
+
+
+@pytest.mark.parametrize("status", [None, "", 123, "unknown"])
+def test_paging_late_row_requires_known_change_kind(monkeypatch, status):
+    rows = [_paging_row(f"reports/{i}.md") for i in range(580)]
+    pages = [rows[i:i + 100] for i in range(0, len(rows), 100)]
+    pages[-1][-1]["status"] = status
+    freshness, _ = _paging_commit(monkeypatch, pages)
+    assert freshness.files_of(_PAGING_SHA)[1] is True
+
+
+def test_paging_allowance_is_funded_between_budget_polls():
+    assert MOG.RATE_LIMIT_RESERVE >= 120 + MOG.COMMIT_FILE_PAGE_READ_CAP
+    budget = MOG.pull_cap_for_budget(600, 15000)
+    assert (MOG.FULL_SWEEP_FIXED_REQUESTS + budget * MOG.MAX_REQUESTS_PER_PULL
+            + MOG.MAX_REFRESHES_PER_SWEEP + MOG.RATE_LIMIT_RESERVE) <= 600
+
+
+def test_paging_two_parent_order_must_match_probe(monkeypatch):
+    parents = ["a" * 40, "b" * 40]
+    monkeypatch.setitem(globals(), "_PAGING_PARENTS", parents)
+    rows = [_paging_row(f"reports/{i}.md") for i in range(580)]
+    pages = [rows[i:i + 100] for i in range(0, len(rows), 100)]
+    reversed_page = _paging_body(pages[-1])
+    reversed_page["parents"] = [{"sha": sha} for sha in reversed(parents)]
+    freshness, _ = _paging_commit(monkeypatch, pages, anomalies={6: reversed_page})
+    assert freshness.files_of(_PAGING_SHA)[1] is True
+
+
+def test_paging_late_row_missing_status_is_incomplete(monkeypatch):
+    rows = [_paging_row(f"reports/{i}.md") for i in range(580)]
+    pages = [rows[i:i + 100] for i in range(0, len(rows), 100)]
+    pages[-1][-1].pop("status")
+    freshness, _ = _paging_commit(monkeypatch, pages)
+    assert freshness.files_of(_PAGING_SHA)[1] is True
+
+
+@pytest.fixture
+def authority_supersession_pair(monkeypatch):
+    """The two native suites seen on PR 6789, with repository-local test identity."""
+    pull = _pull()
+    pull['head']['repo']['id'] = 1266869026
+    pull['base'].update({'repo': {'id': 1266869026, 'full_name': 'acme/widgets'}})
+    checks, native = [], {}
+    for check_id, run_id, suite, created, conclusion in [
+        (118014711933, 39238921499, 106325673146, '2026-10-19T10:38:42Z', 'cancelled'),
+        (118015268155, 39239089737, 106326124198, '2026-10-19T10:40:08Z', 'success'),
+    ]:
+        checks.append({
+            **_run('ci-authority', conclusion=conclusion), 'id': check_id,
+            'head_sha': 'a' * 40, 'app': {'id': 15368, 'slug': 'github-actions'},
+            'check_suite': {'id': suite},
+            'details_url': f'https://github.com/acme/widgets/actions/runs/{run_id}/job/{check_id}',
+        })
+        native[run_id] = {
+            'id': run_id, 'workflow_id': 335022837, 'check_suite_id': suite,
+            'path': '.github/workflows/ci-authority.yml', 'event': 'pull_request_target',
+            'head_sha': 'a' * 40, 'status': 'completed', 'conclusion': conclusion,
+            'created_at': created,
+            'repository': {'id': 1266869026, 'full_name': 'acme/widgets'},
+            'head_repository': {'id': 1266869026, 'full_name': 'acme/widgets'},
+            'pull_requests': [{
+                'number': pull['number'],
+                'url': f"https://api.github.com/repos/acme/widgets/pulls/{pull['number']}",
+                'head': {'sha': 'a' * 40, 'ref': 'claude/feature', 'repo': {
+                    'id': 1266869026, 'url': 'https://api.github.com/repos/acme/widgets'}},
+                'base': {'sha': 'b303c4b32d4d16401050b25d41131b49501720e5',
+                         'ref': 'main', 'repo': {
+                    'id': 1266869026, 'url': 'https://api.github.com/repos/acme/widgets'}},
+            }],
+        }
+    calls = []
+
+    def request(method, url, _token):
+        assert method == 'GET'
+        assert url.startswith('https://api.github.com/repos/acme/widgets/actions/runs/')
+        run_id = int(url.rsplit('/', 1)[1])
+        calls.append(run_id)
+        return 200, native[run_id]
+
+    monkeypatch.setattr(MOG, '_request', request)
+    return pull, checks, native, calls
+
+
+def test_authority_supersession_retained_pair_preserves_raw_and_binding_checks(authority_supersession_pair):
+    import copy
+    pull, checks, _, calls = authority_supersession_pair
+    checks += [_run('ci-authority/main', conclusion='success'), _run('ci-pack-0', conclusion='success')]
+    raw = copy.deepcopy(checks)
+    assert MOG.decide_verdict(checks)[0] == 'incomplete'
+    effective = MOG.authority_effective_checks('acme/widgets', pull, checks, 'read')
+    assert effective == checks[1:]
+    assert checks == raw
+    assert MOG.decide_verdict(effective)[0] == 'clean'
+    assert sorted(calls) == [39238921499, 39239089737]
+
+
+@pytest.mark.parametrize('field,value', [
+    ('workflow_id', 99), ('path', '.github/workflows/ci.yml'), ('event', 'push'),
+    ('head_sha', 'f' * 40), ('check_suite_id', 9), ('id', 9),
+    ('status', 'in_progress'), ('conclusion', 'failure'),
+    ('created_at', '2026-10-19T10:38:42Z'), ('created_at', '2026-10-19T10:38:41Z'),
+    ('created_at', None), ('created_at', 'not-a-clock'),
+    ('repository', {'id': 9, 'full_name': 'acme/widgets'}),
+    ('head_repository', {'id': 1266869026, 'full_name': 'other/widgets'}),
+    ('pull_requests', []), ('pull_requests', [None]), ('pull_requests', None),
+])
+def test_authority_supersession_invalid_native_identity_retains_cancellation(
+    authority_supersession_pair, field, value
+):
+    pull, checks, native, _ = authority_supersession_pair
+    native[39239089737][field] = value
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+@pytest.mark.parametrize('side,field,value', [
+    ('base', 'sha', 'c' * 40), ('base', 'sha', ''), ('base', 'ref', 'pilot'),
+    ('head', 'sha', 'c' * 40), ('head', 'ref', 'other'),
+    ('head', 'repo', {'id': 9, 'url': 'https://api.github.com/repos/other/widgets'}),
+    ('base', 'repo', {'id': 9, 'url': 'https://api.github.com/repos/acme/widgets'}),
+])
+def test_authority_supersession_different_event_binding_retains_cancellation(
+    authority_supersession_pair, side, field, value
+):
+    pull, checks, native, _ = authority_supersession_pair
+    native[39239089737]['pull_requests'][0][side][field] = value
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+@pytest.mark.parametrize('field,value', [('number', 9), ('url', 'https://api.github.com/repos/other/widgets/pulls/4242')])
+def test_authority_supersession_different_pr_retains_cancellation(authority_supersession_pair, field, value):
+    pull, checks, native, _ = authority_supersession_pair
+    native[39239089737]['pull_requests'][0][field] = value
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+@pytest.mark.parametrize('field,value', [
+    ('app', {'id': 99, 'slug': 'github-actions'}), ('app', None),
+    ('head_sha', 'c' * 40), ('check_suite', None), ('check_suite', {'id': 99}),
+    ('details_url', 'https://evil.invalid/acme/widgets/actions/runs/39239089737/job/118015268155'),
+    ('details_url', 'https://github.com/other/widgets/actions/runs/39239089737/job/118015268155'),
+    ('details_url', 'https://github.com/acme/widgets/actions/runs/39239089737/job/99'),
+])
+def test_authority_supersession_invalid_check_keeps_all(authority_supersession_pair, field, value):
+    pull, checks, _, _ = authority_supersession_pair
+    checks[0][field] = value
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+@pytest.mark.parametrize('old,new,status,verdict', [
+    ('failure', 'success', 'completed', 'blocked'),
+    ('cancelled', None, 'in_progress', 'pending'),
+    ('success', 'cancelled', 'completed', 'incomplete'),
+])
+def test_authority_supersession_never_hides_failure_or_newer_cancel_or_pending(
+    authority_supersession_pair, old, new, status, verdict
+):
+    pull, checks, native, _ = authority_supersession_pair
+    for check, conclusion in zip(checks, [old, new]):
+        check['conclusion'] = conclusion
+    checks[1]['status'] = status
+    native[39238921499]['conclusion'] = old
+    native[39239089737].update({'conclusion': new, 'status': status})
+    effective = MOG.authority_effective_checks('acme/widgets', pull, checks, 'read')
+    assert effective == checks
+    assert MOG.decide_verdict(effective)[0] == verdict
+
+
+def test_authority_supersession_keeps_later_cancellation(authority_supersession_pair):
+    import copy
+    pull, checks, native, _ = authority_supersession_pair
+    later = copy.deepcopy(checks[0])
+    later.update({'id': 118015999999, 'check_suite': {'id': 106326999999},
+                  'details_url': 'https://github.com/acme/widgets/actions/runs/39239099999/job/118015999999'})
+    checks.append(later)
+    native[39239099999] = copy.deepcopy(native[39238921499])
+    native[39239099999].update({'id': 39239099999, 'check_suite_id': 106326999999,
+                              'created_at': '2026-10-19T10:41:00Z'})
+    effective = MOG.authority_effective_checks('acme/widgets', pull, checks, 'read')
+    assert effective == checks[1:]
+    assert MOG.decide_verdict(effective)[0] == 'incomplete'
+
+
+@pytest.mark.parametrize('name,conclusion,status,verdict', [
+    ('ci-authority/main', 'failure', 'completed', 'blocked'),
+    ('ci-authority/main', None, 'in_progress', 'pending'),
+    ('ci-pack-4', 'failure', 'completed', 'blocked'),
+])
+def test_authority_supersession_preserves_other_binding_verdicts(
+    authority_supersession_pair, name, conclusion, status, verdict
+):
+    pull, checks, _, _ = authority_supersession_pair
+    checks.append(_run(name, conclusion=conclusion, status=status))
+    effective = MOG.authority_effective_checks('acme/widgets', pull, checks, 'read')
+    assert MOG.decide_verdict(effective)[0] == verdict
+
+
+def test_authority_supersession_same_run_is_not_newer_proof(authority_supersession_pair):
+    pull, checks, _, _ = authority_supersession_pair
+    checks[0]['details_url'] = 'https://github.com/acme/widgets/actions/runs/39239089737/job/118014711933'
+    checks[0]['check_suite'] = checks[1]['check_suite']
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+@pytest.mark.parametrize('failure', ['missing', 'transport', 'malformed'])
+def test_authority_supersession_metadata_failure_keeps_raw(authority_supersession_pair, monkeypatch, failure):
+    pull, checks, _, _ = authority_supersession_pair
+    def request(*_args):
+        if failure == 'transport':
+            raise OSError('network unavailable')
+        return (404, {'message': 'Not found'}) if failure == 'missing' else (200, [])
+    monkeypatch.setattr(MOG, '_request', request)
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+def test_authority_supersession_is_bounded_and_does_not_read_without_pair(authority_supersession_pair):
+    import copy
+    pull, checks, _, calls = authority_supersession_pair
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks[1:], 'read') == checks[1:]
+    for i in range(7):
+        extra = copy.deepcopy(checks[0])
+        extra.update({'id': i + 1, 'details_url': f'https://github.com/acme/widgets/actions/runs/{i+1}/job/{i+1}'})
+        checks.append(extra)
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+    assert calls == []
+
+
+def test_authority_supersession_is_used_by_sweep(authority_supersession_pair, monkeypatch):
+    pull, checks, native, _ = authority_supersession_pair
+    checks.append(_run('ci-pack-1', conclusion='success'))
+    calls = _fake_api(monkeypatch, check_pages={1: {'total_count': len(checks), 'check_runs': checks}})
+    fake = MOG._request
+    def request(method, url, token, payload=None):
+        if '/actions/runs/' in url:
+            return 200, native[int(url.rsplit('/', 1)[1])]
+        return fake(method, url, token, payload)
+    monkeypatch.setattr(MOG, '_request', request)
+    assert MOG.sweep_pull('acme/widgets', pull, 'read', 'write', _freshness()) == 'merged'
+    assert len([call for call in calls if call[1].endswith('/merge')]) == 1
+
+
+@pytest.mark.parametrize('run_id', [39238921499, 39239089737])
+@pytest.mark.parametrize('clock', ['2026-10-19T10:40:08', '2026-10-19'])
+def test_authority_supersession_refuses_unzoned_or_date_only_clocks(authority_supersession_pair, run_id, clock):
+    pull, checks, native, _ = authority_supersession_pair
+    native[run_id]['created_at'] = clock
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+def test_authority_supersession_duplicate_id_does_not_remove_foreign_failure(authority_supersession_pair):
+    pull, checks, _, _ = authority_supersession_pair
+    checks.append({**_run('security-authority', conclusion='failure'),
+                   'id': checks[0]['id'], 'app': {'id': 999}})
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+    assert MOG.decide_verdict(checks)[0] != 'clean'
+
+
+def test_authority_lookup_cost_and_pagination_fit_the_admitted_budget():
+    # The existing per-PR ceiling covered nineteen calls before native authority
+    # supersession added up to eight GETs. Five evaluated PRs may separate polls.
+    assert MOG.MAX_REQUESTS_PER_PULL >= 19 + 8
+    assert MOG.RATE_LIMIT_RESERVE >= (
+        (19 + 8) * MOG.BUDGET_RECHECK_EVERY + MOG.COMMIT_FILE_PAGE_READ_CAP
+    )
+    admitted = MOG.pull_cap_for_budget(MOG.RATE_LIMIT_FLOOR, 15_000)
+    assert (MOG.FULL_SWEEP_FIXED_REQUESTS
+            + admitted * MOG.MAX_REQUESTS_PER_PULL
+            + MOG.MAX_REFRESHES_PER_SWEEP
+            + MOG.RATE_LIMIT_RESERVE) <= MOG.RATE_LIMIT_FLOOR

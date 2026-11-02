@@ -1440,7 +1440,7 @@ def gather_china_state(root: Path | None = None) -> dict:
         # must propagate, not just the raw surface blocks (the whitelist gates them).
         keys = ("news", "policy", "altdata", "radar",
                 "analysis", "conviction", "cross_surface", "flagged_tickers",
-                "what_changed", "salience", "regime", "discovery")
+                "what_changed", "salience", "regime", "discovery", "us_theme_context")
         intel = {k: b.get(k) for k in keys if b.get(k)}
         if intel:
             intel["digest"] = b.get("digest")     # the synthesis-led plain-text rollup

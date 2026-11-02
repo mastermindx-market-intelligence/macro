@@ -1,0 +1,9 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/_risk_envelope_band.css.j2
+- templates/_risk_envelope_band.html.j2
+- templates/dashboard.html.j2
+- templates/risk_envelope_live.js
+- site/risk_envelope_live.js
+- site/macro.html
+manifest: mockups/evidence/risk-radar-live-explanations-20260920/manifest.json

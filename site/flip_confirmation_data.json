@@ -1,30 +1,18 @@
 {
-  "asof": "2026-09-16",
+  "asof": "2026-10-30",
   "last_event": {
-    "event_date": "2026-07-30",
-    "z": -3.2871,
-    "spread": -0.0816,
-    "direction": "offense",
-    "t1_attribution": {
-      "t1_date": "2026-07-31",
-      "t1_z": -0.2411,
-      "spread_persistence": {
-        "same_direction": true,
-        "magnitude": 0.0075,
-        "direction": "offense"
-      },
-      "breadth_follow_through": null,
-      "absorption_delta": -0.01,
-      "leadership_continuity": true,
-      "note_breadth": "breadth_follow_through omitted — no intraday advance/decline series in committed store"
-    },
-    "verdict": "MIXED"
+    "event_date": "2026-10-30",
+    "z": 2.7346,
+    "spread": 0.072,
+    "direction": "defensive",
+    "t1_attribution": null,
+    "verdict": null
   },
   "base_rates": {
-    "n_events": 27,
-    "n_graded": 27,
+    "n_events": 29,
+    "n_graded": 28,
     "confirmed": 7,
-    "faded": 15,
+    "faded": 16,
     "mixed": 5
   },
   "descriptive_scan": [
@@ -35,7 +23,7 @@
       "direction": "defensive",
       "t1_attribution": {
         "t1_date": "2024-01-03",
-        "t1_z": 0.9527,
+        "t1_z": 0.9529,
         "spread_persistence": {
           "same_direction": true,
           "magnitude": 0.0123,
@@ -50,7 +38,7 @@
     },
     {
       "event_date": "2024-02-22",
-      "z": -3.2135,
+      "z": -3.2132,
       "spread": -0.0495,
       "direction": "offense",
       "t1_attribution": {
@@ -70,12 +58,12 @@
     },
     {
       "event_date": "2024-04-19",
-      "z": 3.0054,
+      "z": 3.0052,
       "spread": 0.0444,
       "direction": "defensive",
       "t1_attribution": {
         "t1_date": "2024-04-22",
-        "t1_z": -0.523,
+        "t1_z": -0.5233,
         "spread_persistence": {
           "same_direction": false,
           "magnitude": 0.0096,
@@ -90,12 +78,12 @@
     },
     {
       "event_date": "2024-06-05",
-      "z": -2.5948,
+      "z": -2.5947,
       "spread": -0.0395,
       "direction": "offense",
       "t1_attribution": {
         "t1_date": "2024-06-06",
-        "t1_z": 0.6377,
+        "t1_z": 0.6381,
         "spread_persistence": {
           "same_direction": false,
           "magnitude": 0.0079,
@@ -110,12 +98,12 @@
     },
     {
       "event_date": "2024-06-24",
-      "z": 2.7498,
+      "z": 2.7495,
       "spread": 0.0397,
       "direction": "defensive",
       "t1_attribution": {
         "t1_date": "2024-06-25",
-        "t1_z": -1.6778,
+        "t1_z": -1.6775,
         "spread_persistence": {
           "same_direction": false,
           "magnitude": 0.0268,
@@ -130,7 +118,7 @@
     },
     {
       "event_date": "2024-07-11",
-      "z": 2.6273,
+      "z": 2.6275,
       "spread": 0.0384,
       "direction": "defensive",
       "t1_attribution": {
@@ -150,12 +138,12 @@
     },
     {
       "event_date": "2024-07-17",
-      "z": 4.4002,
+      "z": 4.4003,
       "spread": 0.068,
       "direction": "defensive",
       "t1_attribution": {
         "t1_date": "2024-07-18",
-        "t1_z": -1.0808,
+        "t1_z": -1.0817,
         "spread_persistence": {
           "same_direction": false,
           "magnitude": 0.0183,
@@ -170,7 +158,7 @@
     },
     {
       "event_date": "2024-07-24",
-      "z": 3.586,
+      "z": 3.5862,
       "spread": 0.0565,
       "direction": "defensive",
       "t1_attribution": {
@@ -190,7 +178,7 @@
     },
     {
       "event_date": "2024-07-31",
-      "z": -3.9231,
+      "z": -3.9237,
       "spread": -0.0666,
       "direction": "offense",
       "t1_attribution": {
@@ -215,7 +203,7 @@
       "direction": "defensive",
       "t1_attribution": {
         "t1_date": "2024-08-02",
-        "t1_z": 2.8034,
+        "t1_z": 2.8032,
         "spread_persistence": {
           "same_direction": true,
           "magnitude": 0.0479,
@@ -230,12 +218,12 @@
     },
     {
       "event_date": "2024-08-02",
-      "z": 2.8034,
+      "z": 2.8032,
       "spread": 0.0479,
       "direction": "defensive",
       "t1_attribution": {
         "t1_date": "2024-08-05",
-        "t1_z": 0.1584,
+        "t1_z": 0.1581,
         "spread_persistence": {
           "same_direction": true,
           "magnitude": 0.002,
@@ -250,12 +238,12 @@
     },
     {
       "event_date": "2024-09-03",
-      "z": 3.71,
+      "z": 3.7099,
       "spread": 0.0668,
       "direction": "defensive",
       "t1_attribution": {
         "t1_date": "2024-09-04",
-        "t1_z": 0.2556,
+        "t1_z": 0.2553,
         "spread_persistence": {
           "same_direction": true,
           "magnitude": 0.004,
@@ -271,11 +259,11 @@
     {
       "event_date": "2024-09-11",
       "z": -2.6563,
-      "spread": -0.05,
+      "spread": -0.0501,
       "direction": "offense",
       "t1_attribution": {
         "t1_date": "2024-09-12",
-        "t1_z": 0.0565,
+        "t1_z": 0.0566,
         "spread_persistence": {
           "same_direction": false,
           "magnitude": 0.0001,
@@ -290,12 +278,12 @@
     },
     {
       "event_date": "2025-01-27",
-      "z": 4.9644,
+      "z": 4.9653,
       "spread": 0.0999,
       "direction": "defensive",
       "t1_attribution": {
         "t1_date": "2025-01-28",
-        "t1_z": -1.5738,
+        "t1_z": -1.5733,
         "spread_persistence": {
           "same_direction": false,
           "magnitude": 0.0325,
@@ -310,12 +298,12 @@
     },
     {
       "event_date": "2025-04-03",
-      "z": 3.5658,
+      "z": 3.5655,
       "spread": 0.0769,
       "direction": "defensive",
       "t1_attribution": {
         "t1_date": "2025-04-04",
-        "t1_z": 0.9443,
+        "t1_z": 0.9442,
         "spread_persistence": {
           "same_direction": true,
           "magnitude": 0.0209,
@@ -330,12 +318,12 @@
     },
     {
       "event_date": "2025-04-09",
-      "z": -5.1741,
+      "z": -5.174,
       "spread": -0.1178,
       "direction": "offense",
       "t1_attribution": {
         "t1_date": "2025-04-10",
-        "t1_z": 1.9831,
+        "t1_z": 1.9824,
         "spread_persistence": {
           "same_direction": false,
           "magnitude": 0.0458,
@@ -350,12 +338,12 @@
     },
     {
       "event_date": "2026-04-24",
-      "z": -2.9094,
+      "z": -2.9101,
       "spread": -0.0535,
       "direction": "offense",
       "t1_attribution": {
         "t1_date": "2026-04-27",
-        "t1_z": -0.1894,
+        "t1_z": -0.1893,
         "spread_persistence": {
           "same_direction": true,
           "magnitude": 0.0061,
@@ -370,12 +358,12 @@
     },
     {
       "event_date": "2026-05-06",
-      "z": -2.5158,
+      "z": -2.5156,
       "spread": -0.0471,
       "direction": "offense",
       "t1_attribution": {
         "t1_date": "2026-05-07",
-        "t1_z": 0.6409,
+        "t1_z": 0.6412,
         "spread_persistence": {
           "same_direction": false,
           "magnitude": 0.0083,
@@ -390,7 +378,7 @@
     },
     {
       "event_date": "2026-05-08",
-      "z": -2.6749,
+      "z": -2.6751,
       "spread": -0.0507,
       "direction": "offense",
       "t1_attribution": {
@@ -410,7 +398,7 @@
     },
     {
       "event_date": "2026-05-26",
-      "z": -2.6048,
+      "z": -2.6049,
       "spread": -0.0496,
       "direction": "offense",
       "t1_attribution": {
@@ -430,12 +418,12 @@
     },
     {
       "event_date": "2026-06-05",
-      "z": 5.1246,
+      "z": 5.1243,
       "spread": 0.096,
       "direction": "defensive",
       "t1_attribution": {
         "t1_date": "2026-06-08",
-        "t1_z": -2.3658,
+        "t1_z": -2.3657,
         "spread_persistence": {
           "same_direction": false,
           "magnitude": 0.0487,
@@ -450,12 +438,12 @@
     },
     {
       "event_date": "2026-06-11",
-      "z": -2.7108,
+      "z": -2.7106,
       "spread": -0.0566,
       "direction": "offense",
       "t1_attribution": {
         "t1_date": "2026-06-12",
-        "t1_z": -0.5007,
+        "t1_z": -0.5012,
         "spread_persistence": {
           "same_direction": true,
           "magnitude": 0.0126,
@@ -470,12 +458,12 @@
     },
     {
       "event_date": "2026-06-18",
-      "z": -2.5922,
+      "z": -2.5927,
       "spread": -0.0563,
       "direction": "offense",
       "t1_attribution": {
         "t1_date": "2026-06-22",
-        "t1_z": -0.2475,
+        "t1_z": -0.2472,
         "spread_persistence": {
           "same_direction": true,
           "magnitude": 0.008,
@@ -490,12 +478,12 @@
     },
     {
       "event_date": "2026-06-23",
-      "z": 3.8099,
-      "spread": 0.0781,
+      "z": 3.81,
+      "spread": 0.0782,
       "direction": "defensive",
       "t1_attribution": {
         "t1_date": "2026-06-24",
-        "t1_z": 0.7675,
+        "t1_z": 0.7673,
         "spread_persistence": {
           "same_direction": true,
           "magnitude": 0.0137,
@@ -510,12 +498,12 @@
     },
     {
       "event_date": "2026-06-26",
-      "z": 2.6829,
+      "z": 2.6836,
       "spread": 0.0554,
       "direction": "defensive",
       "t1_attribution": {
         "t1_date": "2026-06-29",
-        "t1_z": -1.3506,
+        "t1_z": -1.3504,
         "spread_persistence": {
           "same_direction": false,
           "magnitude": 0.0315,
@@ -530,7 +518,7 @@
     },
     {
       "event_date": "2026-07-02",
-      "z": 3.0083,
+      "z": 3.0084,
       "spread": 0.0651,
       "direction": "defensive",
       "t1_attribution": {
@@ -550,12 +538,12 @@
     },
     {
       "event_date": "2026-07-30",
-      "z": -3.2871,
+      "z": -3.287,
       "spread": -0.0816,
       "direction": "offense",
       "t1_attribution": {
         "t1_date": "2026-07-31",
-        "t1_z": -0.2411,
+        "t1_z": -0.2412,
         "spread_persistence": {
           "same_direction": true,
           "magnitude": 0.0075,
@@ -567,6 +555,34 @@
         "note_breadth": "breadth_follow_through omitted — no intraday advance/decline series in committed store"
       },
       "verdict": "MIXED"
+    },
+    {
+      "event_date": "2026-10-22",
+      "z": 2.8307,
+      "spread": 0.0729,
+      "direction": "defensive",
+      "t1_attribution": {
+        "t1_date": "2026-10-23",
+        "t1_z": -0.7078,
+        "spread_persistence": {
+          "same_direction": false,
+          "magnitude": 0.0196,
+          "direction": "offense"
+        },
+        "breadth_follow_through": null,
+        "absorption_delta": null,
+        "leadership_continuity": false,
+        "note_breadth": "breadth_follow_through omitted — no intraday advance/decline series in committed store"
+      },
+      "verdict": "FADED"
+    },
+    {
+      "event_date": "2026-10-30",
+      "z": 2.7346,
+      "spread": 0.072,
+      "direction": "defensive",
+      "t1_attribution": null,
+      "verdict": null
     }
   ]
 }

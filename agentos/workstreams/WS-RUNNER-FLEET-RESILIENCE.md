@@ -23,6 +23,9 @@ owns_paths:
   - ".github/workflows/trusted-ci-executor.yml"
   - "ops/runner-host/**"
   - "tests/test_runner_policy.py"
+  - "scripts/check_runner_policy.py"
+  - "scripts/check_runner_queue_hostage.py"
+  - "tests/test_runner_queue_hostage.py"
   - "tests/test_ci_canary_tools.py"
   - "tests/test_ci_canary_workflows.py"
 depends_on: []
@@ -107,6 +110,7 @@ discoveries:
   - DSC:PERSISTENT-RUNNER-TEMP-PACKS-CAN-BREACH-THE-HOST-DISK-GUARD
   - DSC:REUSABLE-WORKFLOW-CALL-AND-HOST-HOOK-USE-DIFFERENT-REF-SHAPES
   - DSC:SEALED-PC-CI-REPLAY-AND-PORTABILITY-NEED-EXPLICIT-RUNTIME-BINDINGS
+  - DSC:DELABELLING-AN-ONLINE-RUNNER-IS-INVISIBLE-TO-EVERY-LIVENESS-INSTRUMENT
 artifacts:
   - research/RUNNER_FLEET_RESILIENCE_ARCHITECTURE_FREEZE_2026-08-20.md
   - research/RUNNER_FLEET_RESILIENCE_M0_ADVERSARIAL_AMENDMENT_2026-08-20.md
@@ -116,12 +120,34 @@ artifacts:
   - agentos/discoveries/DSC-PRIVATE-CI-HOSTED-MINUTES-REQUIRE-TWO-LEVER-CUTOVER.md
   - agentos/discoveries/DSC-PERSISTENT-RUNNER-TEMP-PACKS-CAN-BREACH-THE-HOST-DISK-GUARD.md
   - agentos/discoveries/DSC-REUSABLE-WORKFLOW-CALL-AND-HOST-HOOK-USE-DIFFERENT-REF-SHAPES.md
+  - research/RENDER_LANE_OUTAGE_2026_09_25_POSTMORTEM.md
+  - scripts/check_runner_queue_hostage.py
+  - agentos/discoveries/DSC-DELABELLING-AN-ONLINE-RUNNER-IS-INVISIBLE-TO-EVERY-LIVENESS-INSTRUMENT.md
 landmines:
   - >
-    pc-render-1 (the W3-accepted runner identity) is no longer in the repo
-    runner registry; render-linux is currently carried by pc-render-2/3/4
-    (census 2026-08-25). Do not cite pc-render-1 as live render capacity
-    without a fresh census.
+    `render-linux` has ZERO carriers as of the 2026-09-25 live census, and that is
+    the current cause of the wedged page-bake lanes. The 2026-08-25 census in this
+    slot said the opposite of today's state in BOTH halves and is superseded:
+    pc-render-1 is back and is org runner id 15, online and idle, but its custom
+    labels were stripped to `{self-hosted, Linux, X64}` inside
+    2026-09-23T12:05:04Z-12:05:09Z; pc-render-2/3/4 are absent from the live pool
+    entirely. Re-census before citing ANY render capacity - the direction of this
+    landmine has now flipped twice in a month. See
+    DSC:DELABELLING-AN-ONLINE-RUNNER-IS-INVISIBLE-TO-EVERY-LIVENESS-INSTRUMENT and
+    research/RENDER_LANE_OUTAGE_2026_09_25_POSTMORTEM.md.
+  - >
+    A runner can lose a label while staying `online`/`idle` under its original id,
+    so "the host is up" and "the label is declared" are both compatible with a lane
+    that can never run. The only positive observation of absence is live job state:
+    `queued`, no `runner_name`, self-hosted `runs-on`, past any honest wait. That is
+    `scripts/check_runner_queue_hostage.py`; `check_runner_policy.py` R11-R15 are
+    declaration hygiene and cannot see a death nobody wrote down.
+  - >
+    On a wedged coalescing lane the `cancelled` runs are NOT a `cancel-in-progress`
+    livelock. render.yml and engine-render.yml have carried
+    `cancel-in-progress: false` since the 2026-07-17 starvation postmortem; a
+    superseded PENDING run concludes `cancelled` exactly as a killed in-flight run
+    does. Check `startedAt`/`runner_name` before diagnosing.
   - >
     `parked` is not an exclusion label; positive label matching still routes jobs to
     that listener. See .github/runner-policy.yml.

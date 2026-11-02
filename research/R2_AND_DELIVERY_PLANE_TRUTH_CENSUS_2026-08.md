@@ -28,12 +28,12 @@ premium product / private operations / vendor raw
   -> browser receives only its tier's bytes
 ```
 
-This census contains **106 non-overlapping delivery families** at the level needed to make that split. Their single required classifications are:
+This census contains **108 non-overlapping delivery families** at the level needed to make that split. Their single required classifications are:
 
 | Classification | Count | Meaning in this census |
 |---|---:|---|
 | `PUBLIC_FACT` | 5 | Candidate for an anonymous allowlist projection; source rights, delay and provenance still bind. |
-| `PREMIUM_PRODUCT` | 41 | Sellable differentiated output. Full objects require Essential or Pro delivery. |
+| `PREMIUM_PRODUCT` | 43 | Sellable differentiated output. Full objects require Essential or Pro delivery. |
 | `PRIVATE_OPERATIONAL` | 27 | Internal state, controls, models, telemetry or authority material. No customer tier receives the raw object. |
 | `VENDOR_RAW` | 12 | Raw/transformed upstream material. Private service/operator access only unless a separate licensed projection is proved. |
 | `UNRESOLVED` | 21 | Field, source-rights, mixed-schema, or unregistered-key audit is incomplete. It fails closed to private. |
@@ -339,3 +339,24 @@ The enforcement includes immutable inventory/evidence receipts under `tests/fixt
 - Historical public-object and public-repository remediation scope after future cutover.
 
 Unknowns are not approvals. Every unresolved family remains private by default.
+
+
+## 2026-10-11 BOATS source qualification
+
+The August census identity and dated observations above are preserved. The two
+existing extended-quote families now qualify their entire BOATS-only facts object
+and route as PUBLIC_FACT / ANONYMOUS under Chairman-attested Tiingo redistribution
+and hash-bound producer/consumer review. Mixed legacy sources are excluded by the
+source gate; the separately held generic quote family is unchanged. This is source
+qualification, not evidence of installed publication, cleared scheduling controls
+or genuine live BOATS consumer acceptance. Exact old/current source pins, source
+allowlists, acceptance and remaining release gates are retained in
+`docs/tiingo-evidence/20261011-boats-source/`. Current qualified-source counts:
+
+| Classification | Families |
+|---|---:|
+| `PREMIUM_PRODUCT` | 43 |
+| `PRIVATE_OPERATIONAL` | 27 |
+| `PUBLIC_FACT` | 7 |
+| `UNRESOLVED` | 19 |
+| `VENDOR_RAW` | 12 |

@@ -427,7 +427,8 @@ def _mean(values: Iterable[float | None]) -> float | None:
 # --------------------------------------------------------------------------- #
 
 def extract_members(row: Mapping[str, Any],
-                    verdict: Mapping[str, Any] | None = None) -> dict[str, Any]:
+                    verdict: Mapping[str, Any] | None = None, *,
+                    earnings_semantics: str = "legacy") -> dict[str, Any]:
     """The registered members' RAW values off a live board row.
 
     Every derivation here is the one ``scripts/grade_us_board._row_features`` writes
@@ -443,13 +444,17 @@ def extract_members(row: Mapping[str, Any],
     and it is not a hidden zero: the variance floor is the layer that stands a
     constant member down, and it says so in the receipt.
     """
+    if earnings_semantics not in {"legacy", EARNINGS_EVIDENCE_VERSION}:
+        raise ValueError("unknown earnings semantics; no silent fallback")
+    revised = earnings_evidence_v2(row) if earnings_semantics != "legacy" else None
     sig = dict(verdict or {})
     return {
         "alpha": _finite(row.get("alpha")),
         "off_high": _finite(row.get("off_high")),
         "tier_cascade": _dig(row, ("signal", "tier_cascade"),
                              default=sig.get("tier_cascade")),
-        "sue_fresh": bool(row.get("sue_z") and (row.get("sue_fresh_days") or 999) <= 60),
+        "sue_fresh": (bool(row.get("sue_z") and (row.get("sue_fresh_days") or 999) <= 60)
+                      if revised is None else (revised["fresh_positive_relative"] is True)),
         "smartmoney_add": bool(row.get("smartmoney_chip")),
         "insider_cluster": bool((row.get("insider_buyers") or 0) >= 2),
         "gex_confirm_verdict": _dig(row, ("gex_confirm", "verdict"), default=None),
@@ -1042,3 +1047,77 @@ _STALENESS_BASIS: dict[str, str] = {
     "smartmoney_add": "registry max_staleness_sessions: 63 (13F disclosure lag)",
     "insider_cluster": "registry serving_dead: collector stopped at 2026q1",
 }
+
+
+# --------------------------------------------------------------------------- #
+# versioned earnings evidence semantics -- no live authority by default
+# --------------------------------------------------------------------------- #
+
+EARNINGS_EVIDENCE_VERSION = "numeric-sue-compat-v1.1"
+
+
+def earnings_evidence_v2(row: Mapping[str, Any]) -> dict[str, Any]:
+    """A corrected observation, not a consensus surprise or ranking promotion.
+
+    The board's sue_z is a cross-sectional standardization of a seasonal EPS-change
+    proxy.  A positive relative value does not prove a positive raw earnings change,
+    and this function never claims a licensed analyst-consensus beat.
+
+    Legacy extraction and old grades retain their original semantics by default.
+    Reported age is not proof of a real publication or licensed availability clock.
+    """
+    def number(value: Any) -> float | None:
+        if value is None or isinstance(value, bool):
+            return None
+        try:
+            parsed = float(value)
+        except (TypeError, ValueError, OverflowError):
+            return None
+        return (
+            parsed
+            if parsed == parsed and parsed not in (float("inf"), float("-inf"))
+            else None
+        )
+
+    if not isinstance(row, Mapping):
+        raise ValueError("earnings evidence row must be a mapping")
+
+    z = number(row.get("sue_z"))
+    age = number(row.get("sue_fresh_days"))
+    age_ok = age is not None and age >= 0 and age.is_integer()
+    reasons: list[str] = []
+
+    if z is None:
+        reasons.append("relative_value_missing_or_invalid")
+    if age is None:
+        reasons.append("reported_age_missing_or_invalid")
+    elif not age_ok:
+        reasons.append("reported_age_negative_or_fractional")
+
+    if z is None or not age_ok:
+        state, positive = "UNAVAILABLE", None
+    elif age > 60:
+        state, positive = "STALE", False
+    else:
+        state, positive = "FRESH_REPORTED_RELATIVE_VALUE", z > 0
+
+    return {
+        "schema": "prophet.sue_observation/v2",
+        "measure": "cross_sectional_z_of_seasonal_eps_momentum",
+        "relative_z": z,
+        "relative_direction": (
+            None if z is None
+            else "ABOVE_PEERS" if z > 0
+            else "BELOW_PEERS" if z < 0
+            else "AT_PEER_MEAN"
+        ),
+        "reported_age_days": int(age) if age_ok else None,
+        "age_basis": "legacy_reported_days_not_verified_event_availability",
+        "state": state,
+        "fresh_positive_relative": positive,
+        "raw_seasonal_surprise_direction": None,
+        "analyst_consensus_beat": None,
+        "rank_authority": False,
+        "entry_authority": False,
+        "reasons": reasons,
+    }

@@ -1,0 +1,15 @@
+{
+  "schema": "tiingo.actual_original_ci_observer_terminal_parent_consumption/v1",
+  "recorded_at_utc": "2026-10-13T04:44:52.739918+00:00",
+  "original_tool_session": 8767,
+  "original_terminal_chunk": "5e60a1",
+  "original_exit_code": 1,
+  "actual_original_terminal_return_consumed": true,
+  "run_id": 38346775069,
+  "observed_failure": "GitHub API TCP connection timed out while observing run",
+  "run_conclusion_not_inferred_from_observer_exit": true,
+  "observer_log_sha256": "d7c76a5987cf93102e2adc3711fc5b4394b587f11fba3d1a208dbef4e48a0d91",
+  "original_CI_not_cancelled_replayed_or_replaced": true,
+  "one_same_carrier_canonical_status_read_started": 28290,
+  "runtime_change": false
+}

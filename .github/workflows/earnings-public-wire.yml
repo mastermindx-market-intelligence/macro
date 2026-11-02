@@ -34,16 +34,21 @@ jobs:
   publish:
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    # A fully verified build + private read-back takes about 13 minutes. Leave
-    # room for one complete fresh-main regeneration after a ref-lock race, and
-    # keep a seven-minute job-timeout reserve beyond the push-loop deadline.
-    timeout-minutes: 40
+    # Admit at most forty minutes of fresh-main publication attempts and keep a
+    # ten-minute outer reserve for checkout/setup plus an in-flight attempt that
+    # began before the between-attempt deadline. The job timeout is the hard stop.
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 20
-          filter: blob:none
+          # This lane consumes the complete current tree: the incremental builder
+          # reconstructs the whole Wire and the normalization passes inspect site/.
+          # `filter: blob:none` without sparse checkout still materialized every blob
+          # lazily and spent 13m09s in production run 35020030398 before the bounded
+          # retry loop began. Fetch one shallow pack instead; each publication attempt
+          # explicitly refreshes origin/main before it builds.
+          fetch-depth: 1
           # The 2026-08-15 main freeze requires a PR for GITHUB_TOKEN and
           # forbids a GitHub Actions integration bypass. Deploy keys are
           # org-disabled. OrganizationAdmin is the only working bypass, so
@@ -82,11 +87,14 @@ jobs:
           git config user.name "dashboard-bot"
           git config user.email "actions@users.noreply.github.com"
           # Every attempt rebuilds and privately verifies the publication before
-          # it can push. Two 13-minute generations fit in this 33-minute loop;
-          # the second is a fresh-main regeneration after a ref race, never a
-          # replay of stale generated output.
-          PUSH_BUDGET_SECS=1980
-          PUSH_MAX_ATTEMPTS=2
+          # it can push. Production run 35161404497 completed two such generations
+          # but lost both pushes to ordinary main-ref contention. The audited complete
+          # attempt is below nine minutes, so a forty-minute between-attempt budget
+          # admits an initial try plus three regenerations with margin. `push_attempt`
+          # checks this deadline before each attempt; the outer fifty-minute timeout
+          # is the hard stop. No stale render is replayed.
+          PUSH_BUDGET_SECS=2400
+          PUSH_MAX_ATTEMPTS=4
           push_retry_init "earnings public wire"
           if ! push_on_main_ok; then exit 0; fi
           while push_attempt; do

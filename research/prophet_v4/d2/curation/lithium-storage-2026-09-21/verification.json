@@ -1,0 +1,50 @@
+{
+  "actual_cli_exports": 16,
+  "all_cli_exit_zero": true,
+  "canonical_input_hashes_unchanged": 11,
+  "canonical_queue_rows": 234,
+  "ci_polled": false,
+  "detached_worklist_to_review_roundtrips": 2,
+  "external_primary_sources": 9,
+  "graph_or_queue_writes": 0,
+  "mapped_controls": 3,
+  "mutations": [
+    {
+      "detected": true,
+      "mutation": "missing_becomes_zero"
+    },
+    {
+      "detected": true,
+      "mutation": "inflate_overlap"
+    },
+    {
+      "detected": true,
+      "mutation": "scope_laundering"
+    },
+    {
+      "detected": true,
+      "mutation": "invent_member"
+    },
+    {
+      "detected": true,
+      "mutation": "forged_proposal_subject"
+    },
+    {
+      "detected": true,
+      "mutation": "ratified_without_authority"
+    },
+    {
+      "detected": true,
+      "mutation": "false_queue_admission"
+    }
+  ],
+  "owner_basket_binding_gaps": 2,
+  "preview_origin": "UNPUBLISHED_DRAFT_OVERLAY_NOT_CANONICAL_QUEUE",
+  "production_source_changed": false,
+  "proposal_drafts": 2,
+  "raw_source_membership_receipt_sets": 8,
+  "review_accepted": false,
+  "reviewed_gap_concepts": 5,
+  "schema_valid_exports": 16,
+  "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+}

@@ -1,0 +1,648 @@
+{
+ "chain_provided_flags": {
+  "deliverable_multiplier": false,
+  "exercise_style": false,
+  "option_price": false,
+  "pit_dividend_schedule": false,
+  "settlement_clock": false
+ },
+ "chain_provided_flags_identical_across_files": true,
+ "cumulative_sensitivity": {
+  "deliverable_multiplier": [
+   0,
+   0
+  ],
+  "exercise_style": [
+   4418705,
+   9550
+  ],
+  "option_price": [
+   0,
+   0
+  ],
+  "parseable_occ": [
+   4418705,
+   9550
+  ],
+  "pit_dividend_schedule": [
+   0,
+   0
+  ],
+  "rate": [
+   0,
+   0
+  ],
+  "rows": [
+   4418705,
+   9550
+  ],
+  "settlement_clock": [
+   0,
+   0
+  ]
+ },
+ "cumulative_sensitivity_standard_root": {
+  "deliverable_multiplier": [
+   0,
+   0
+  ],
+  "exercise_style": [
+   4404397,
+   9550
+  ],
+  "option_price": [
+   0,
+   0
+  ],
+  "parseable_occ": [
+   4404397,
+   9550
+  ],
+  "pit_dividend_schedule": [
+   0,
+   0
+  ],
+  "rate": [
+   0,
+   0
+  ],
+  "rows": [
+   4404397,
+   9550
+  ],
+  "settlement_clock": [
+   0,
+   0
+  ]
+ },
+ "cumulative_strict": {
+  "deliverable_multiplier": [
+   0,
+   0
+  ],
+  "exercise_style": [
+   0,
+   0
+  ],
+  "option_price": [
+   0,
+   0
+  ],
+  "parseable_occ": [
+   4418705,
+   9550
+  ],
+  "pit_dividend_schedule": [
+   0,
+   0
+  ],
+  "rate": [
+   0,
+   0
+  ],
+  "rows": [
+   4418705,
+   9550
+  ],
+  "settlement_clock": [
+   0,
+   0
+  ]
+ },
+ "cumulative_strict_standard_root": {
+  "deliverable_multiplier": [
+   0,
+   0
+  ],
+  "exercise_style": [
+   0,
+   0
+  ],
+  "option_price": [
+   0,
+   0
+  ],
+  "parseable_occ": [
+   4404397,
+   9550
+  ],
+  "pit_dividend_schedule": [
+   0,
+   0
+  ],
+  "rate": [
+   0,
+   0
+  ],
+  "rows": [
+   4404397,
+   9550
+  ],
+  "settlement_clock": [
+   0,
+   0
+  ]
+ },
+ "marginal": {
+  "adjusted_looking_root": [
+   14308,
+   224
+  ],
+  "deliverable_multiplier": [
+   0,
+   0
+  ],
+  "exercise_style": [
+   0,
+   0
+  ],
+  "exercise_style_sensitivity_map": [
+   4418705,
+   9550
+  ],
+  "option_price": [
+   0,
+   0
+  ],
+  "parseable_occ": [
+   4418705,
+   9550
+  ],
+  "pit_dividend_schedule": [
+   0,
+   0
+  ],
+  "rate": [
+   4418705,
+   9550
+  ],
+  "rows": [
+   4418705,
+   9550
+  ],
+  "settlement_clock": [
+   0,
+   0
+  ],
+  "standard_looking_root": [
+   4404397,
+   9550
+  ]
+ },
+ "occ_consistency_rows": {
+  "call_put": 4418705,
+  "expiry": 4418705,
+  "parseable": 4418705,
+  "root_relation_unknown": 0,
+  "strike": 4404201
+ },
+ "per_date": [
+  {
+   "date": "2026-06-15",
+   "distinct_underlyings": 10,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 27392,
+   "rate_rows": 27392,
+   "rows": 27392,
+   "structural_pair_underlyings": 10,
+   "structural_pairs": 11421
+  },
+  {
+   "date": "2026-06-17",
+   "distinct_underlyings": 10,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 27367,
+   "rate_rows": 27367,
+   "rows": 27367,
+   "structural_pair_underlyings": 10,
+   "structural_pairs": 11717
+  },
+  {
+   "date": "2026-06-18",
+   "distinct_underlyings": 345,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 154046,
+   "rate_rows": 154046,
+   "rows": 154046,
+   "structural_pair_underlyings": 344,
+   "structural_pairs": 64500
+  },
+  {
+   "date": "2026-06-24",
+   "distinct_underlyings": 356,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 167702,
+   "rate_rows": 167702,
+   "rows": 167702,
+   "structural_pair_underlyings": 356,
+   "structural_pairs": 70131
+  },
+  {
+   "date": "2026-06-26",
+   "distinct_underlyings": 356,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 157743,
+   "rate_rows": 157743,
+   "rows": 157743,
+   "structural_pair_underlyings": 356,
+   "structural_pairs": 65515
+  },
+  {
+   "date": "2026-06-30",
+   "distinct_underlyings": 356,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 165157,
+   "rate_rows": 165157,
+   "rows": 165157,
+   "structural_pair_underlyings": 356,
+   "structural_pairs": 68582
+  },
+  {
+   "date": "2026-07-01",
+   "distinct_underlyings": 355,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 150303,
+   "rate_rows": 150303,
+   "rows": 150303,
+   "structural_pair_underlyings": 355,
+   "structural_pairs": 63045
+  },
+  {
+   "date": "2026-07-02",
+   "distinct_underlyings": 354,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 152215,
+   "rate_rows": 152215,
+   "rows": 152215,
+   "structural_pair_underlyings": 354,
+   "structural_pairs": 64019
+  },
+  {
+   "date": "2026-07-07",
+   "distinct_underlyings": 370,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 174341,
+   "rate_rows": 174341,
+   "rows": 174341,
+   "structural_pair_underlyings": 369,
+   "structural_pairs": 72543
+  },
+  {
+   "date": "2026-07-08",
+   "distinct_underlyings": 370,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 180309,
+   "rate_rows": 180309,
+   "rows": 180309,
+   "structural_pair_underlyings": 369,
+   "structural_pairs": 75282
+  },
+  {
+   "date": "2026-07-09",
+   "distinct_underlyings": 370,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 166388,
+   "rate_rows": 166388,
+   "rows": 166388,
+   "structural_pair_underlyings": 369,
+   "structural_pairs": 69096
+  },
+  {
+   "date": "2026-07-10",
+   "distinct_underlyings": 370,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 171769,
+   "rate_rows": 171769,
+   "rows": 171769,
+   "structural_pair_underlyings": 370,
+   "structural_pairs": 70865
+  },
+  {
+   "date": "2026-07-13",
+   "distinct_underlyings": 370,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 172817,
+   "rate_rows": 172817,
+   "rows": 172817,
+   "structural_pair_underlyings": 370,
+   "structural_pairs": 71102
+  },
+  {
+   "date": "2026-07-15",
+   "distinct_underlyings": 370,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 181953,
+   "rate_rows": 181953,
+   "rows": 181953,
+   "structural_pair_underlyings": 370,
+   "structural_pairs": 74970
+  },
+  {
+   "date": "2026-07-17",
+   "distinct_underlyings": 370,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 161107,
+   "rate_rows": 161107,
+   "rows": 161107,
+   "structural_pair_underlyings": 370,
+   "structural_pairs": 66736
+  },
+  {
+   "date": "2026-07-20",
+   "distinct_underlyings": 370,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 165275,
+   "rate_rows": 165275,
+   "rows": 165275,
+   "structural_pair_underlyings": 370,
+   "structural_pairs": 68643
+  },
+  {
+   "date": "2026-07-21",
+   "distinct_underlyings": 370,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 173972,
+   "rate_rows": 173972,
+   "rows": 173972,
+   "structural_pair_underlyings": 370,
+   "structural_pairs": 71817
+  },
+  {
+   "date": "2026-07-22",
+   "distinct_underlyings": 370,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 178294,
+   "rate_rows": 178294,
+   "rows": 178294,
+   "structural_pair_underlyings": 370,
+   "structural_pairs": 73743
+  },
+  {
+   "date": "2026-07-23",
+   "distinct_underlyings": 370,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 160578,
+   "rate_rows": 160578,
+   "rows": 160578,
+   "structural_pair_underlyings": 370,
+   "structural_pairs": 66581
+  },
+  {
+   "date": "2026-07-24",
+   "distinct_underlyings": 370,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 163564,
+   "rate_rows": 163564,
+   "rows": 163564,
+   "structural_pair_underlyings": 370,
+   "structural_pairs": 67311
+  },
+  {
+   "date": "2026-07-27",
+   "distinct_underlyings": 370,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 166669,
+   "rate_rows": 166669,
+   "rows": 166669,
+   "structural_pair_underlyings": 370,
+   "structural_pairs": 68521
+  },
+  {
+   "date": "2026-07-28",
+   "distinct_underlyings": 370,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 168541,
+   "rate_rows": 168541,
+   "rows": 168541,
+   "structural_pair_underlyings": 370,
+   "structural_pairs": 69219
+  },
+  {
+   "date": "2026-07-29",
+   "distinct_underlyings": 370,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 169503,
+   "rate_rows": 169503,
+   "rows": 169503,
+   "structural_pair_underlyings": 370,
+   "structural_pairs": 69773
+  },
+  {
+   "date": "2026-07-30",
+   "distinct_underlyings": 370,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 160161,
+   "rate_rows": 160161,
+   "rows": 160161,
+   "structural_pair_underlyings": 370,
+   "structural_pairs": 66346
+  },
+  {
+   "date": "2026-08-06",
+   "distinct_underlyings": 372,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 164322,
+   "rate_rows": 164322,
+   "rows": 164322,
+   "structural_pair_underlyings": 372,
+   "structural_pairs": 67994
+  },
+  {
+   "date": "2026-08-10",
+   "distinct_underlyings": 372,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 171845,
+   "rate_rows": 171845,
+   "rows": 171845,
+   "structural_pair_underlyings": 372,
+   "structural_pairs": 70511
+  },
+  {
+   "date": "2026-08-12",
+   "distinct_underlyings": 372,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 180300,
+   "rate_rows": 180300,
+   "rows": 180300,
+   "structural_pair_underlyings": 372,
+   "structural_pairs": 73777
+  },
+  {
+   "date": "2026-08-13",
+   "distinct_underlyings": 372,
+   "eligible_pairs_priced_sensitivity": 0,
+   "eligible_pairs_priced_strict": 0,
+   "eligible_pairs_sensitivity": 0,
+   "eligible_pairs_strict": 0,
+   "parseable": 185072,
+   "rate_rows": 185072,
+   "rows": 185072,
+   "structural_pair_underlyings": 372,
+   "structural_pairs": 76000
+  }
+ ],
+ "sensitivity_arm": {
+  "european_roots": [
+   "DJX",
+   "MRUT",
+   "NDX",
+   "NDXP",
+   "RUT",
+   "RUTW",
+   "SPX",
+   "SPXW",
+   "VIX",
+   "VIXW",
+   "XEO",
+   "XSP"
+  ],
+  "european_roots_seen": [],
+  "label": "ASSUMPTION: declared OCC product-class exercise-style map, support reporting only, not a trial",
+  "rows_mapped_european": 0
+ },
+ "sofr": {
+  "converted": "decimal = percent / 100",
+  "declared_unit": "percent",
+  "rows": 2128,
+  "share_within_module_rate_bounds": 1.0
+ },
+ "split": {
+  "test_dates": [
+   "2026-07-17",
+   "2026-07-20",
+   "2026-07-21",
+   "2026-07-22",
+   "2026-07-23",
+   "2026-07-24",
+   "2026-07-27",
+   "2026-07-28",
+   "2026-07-29",
+   "2026-07-30",
+   "2026-08-06",
+   "2026-08-10",
+   "2026-08-12",
+   "2026-08-13"
+  ],
+  "train_dates": [
+   "2026-06-15",
+   "2026-06-17",
+   "2026-06-18",
+   "2026-06-24",
+   "2026-06-26",
+   "2026-06-30",
+   "2026-07-01",
+   "2026-07-02",
+   "2026-07-07",
+   "2026-07-08",
+   "2026-07-09",
+   "2026-07-10",
+   "2026-07-13",
+   "2026-07-15"
+  ]
+ },
+ "stage3_partition": "standard-looking root (root equals underlying, no digit suffix) vs adjusted-looking; both carried into stage 4 in the 'cumulative_*' chains, standard-looking only in 'cumulative_*_standard_root'",
+ "stage_judgement": "stages 4-8 judged from the chain's own columns; the absence scan reports any other source that could be joined",
+ "stages_cumulative": [
+  "rows",
+  "parseable_occ",
+  "exercise_style",
+  "deliverable_multiplier",
+  "settlement_clock",
+  "pit_dividend_schedule",
+  "option_price",
+  "rate"
+ ],
+ "totals": {
+  "eligible_pairs_sensitivity": 0,
+  "eligible_pairs_strict": 0,
+  "rows": 4418705,
+  "rows_without_valuation_clock": 0,
+  "selector_available_sensitivity": 0,
+  "selector_available_strict": 0,
+  "sensitivity_european_rows": 0,
+  "structural_pairs": 1829760,
+  "structural_pairs_priced_both_legs": 0
+ },
+ "unit_note": "each count is [rows, distinct (date, underlying)]"
+}

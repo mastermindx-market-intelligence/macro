@@ -40,6 +40,7 @@ import json
 import math
 import os
 import re
+from dataclasses import dataclass
 from decimal import Decimal
 from datetime import date, datetime, timedelta, timezone
 from functools import lru_cache
@@ -53,6 +54,9 @@ from jsonschema import Draft202012Validator, FormatChecker
 from engine.ledger_lane import nightly_advance_enabled
 from engine.options_signal_episode_contract import (
     EpisodeSourceContractError,
+    SESSION_OUTCOME_PARTS_DIRNAME,
+    session_outcome_logical_bytes as _contract_session_outcome_logical_bytes,
+    session_outcome_part_paths as _contract_session_outcome_part_paths,
     validate_episode_pit,
     validate_h60_outcome_join,
     validate_session_outcome_join,
@@ -79,6 +83,8 @@ TIMESTAMP_BASIS = "aggregate_window_start_utc"
 EPISODE_REL = Path("options_signal_episode") / "episodes.jsonl"
 OUTCOME_REL = Path("options_signal_episode") / "outcomes_h60.jsonl"
 SESSION_OUTCOME_REL = Path("options_signal_episode") / "outcomes_session.jsonl"
+SESSION_OUTCOME_PART_MAX_BYTES = 48 * 1024 * 1024
+_SESSION_OUTCOME_PART_RE = re.compile(r"^part-(\d{6})\.jsonl$")
 CAMPAIGN_REL = Path("options_signal_episode") / "campaigns.jsonl"
 
 CAMPAIGN_RULE_ID = "exact_contract_first_threshold_prefix/v1"
@@ -1875,6 +1881,109 @@ def normalize_price_bars(frame: pd.DataFrame | None) -> pd.DataFrame:
     return out.dropna(how="all")
 
 
+@dataclass(frozen=True, slots=True)
+class _PreparedPriceBars:
+    """One normalized OHLC frame prepared for a single per-run snapshot.
+
+    The wrapper deliberately exposes metadata only.  The normalized dataframe
+    is internal to the derive path, so callers cannot mutate cached evidence
+    that another outcome in this run will consume. Construction is gated
+    through ``prepare_price_bars``; the leading underscore on every field
+    keeps the public surface explicit.
+
+    ``_PreparedPriceBars`` is a per-run seam: builders own one instance per
+    ticker, build it once after their snapshot's immutable-byte checks
+    complete, and reuse it across every H+60/session consumer that touches
+    the same snapshot. Nothing here is module-global and nothing survives
+    across builder invocations.
+    """
+
+    _ticker: str
+    _row_count: int
+    _first_time: str
+    _last_time: str
+    _frame: pd.DataFrame
+
+    @property
+    def ticker(self) -> str:
+        return self._ticker
+
+    @property
+    def row_count(self) -> int:
+        return self._row_count
+
+    @property
+    def first_time(self) -> str:
+        return self._first_time
+
+    @property
+    def last_time(self) -> str:
+        return self._last_time
+
+def prepare_price_bars(
+    raw_frame: pd.DataFrame | None, *, ticker: str,
+) -> _PreparedPriceBars:
+    """Public factory for the per-run prepared price-bars seam.
+
+    Validates the ticker identity, rejects ``None`` or non-DataFrame inputs,
+    invokes :func:`normalize_price_bars` exactly once, and freezes the
+    resulting UTC-indexed OHLC frame behind the typed wrapper. Builders
+    receive the snapshot's already-validated raw frame; this factory is the
+    only sanctioned way to construct :class:`_PreparedPriceBars`, and the
+    wrapper intentionally has no public dataframe accessor.  Derivation is the
+    sole internal consumer of the cached frame, which keeps a caller from
+    mutating evidence that later outcomes in the same run would reuse.
+    """
+    if not isinstance(ticker, str) or not ticker:
+        raise ContractError("prepare_price_bars requires a non-empty ticker")
+    if raw_frame is None:
+        raise ContractError(
+            f"prepare_price_bars requires a validated raw frame for {ticker}"
+        )
+    if not isinstance(raw_frame, pd.DataFrame):
+        raise ContractError(
+            f"prepare_price_bars requires a raw DataFrame input for {ticker}"
+        )
+    normalized = normalize_price_bars(raw_frame)
+    if normalized.empty:
+        raise ContractError(
+            f"prepare_price_bars: normalized frame is empty for {ticker}"
+        )
+    index = pd.to_datetime(normalized.index, utc=True)
+    first = (
+        index.min().to_pydatetime().astimezone(timezone.utc)
+        .isoformat().replace("+00:00", "Z")
+    )
+    last = (
+        index.max().to_pydatetime().astimezone(timezone.utc)
+        .isoformat().replace("+00:00", "Z")
+    )
+    return _PreparedPriceBars(
+        _ticker=ticker,
+        _row_count=len(normalized),
+        _first_time=first,
+        _last_time=last,
+        _frame=normalized,
+    )
+
+
+def _prepared_frame_for_derive(
+    prepared_bars: _PreparedPriceBars, *, ticker: str,
+) -> pd.DataFrame:
+    """Return the private cached frame after binding it to the episode ticker.
+
+    This is deliberately module-private: callers can construct a prepared
+    snapshot but cannot obtain the shared dataframe to alter later outcomes.
+    The ticker binding also prevents a cached snapshot for one issuer being
+    accidentally reused for another issuer by a future builder refactor.
+    """
+    if not isinstance(prepared_bars, _PreparedPriceBars):
+        raise ContractError("prepared_bars must be created by prepare_price_bars")
+    if prepared_bars._ticker != ticker:
+        raise ContractError("prepared_bars ticker does not match episode ticker")
+    return prepared_bars._frame
+
+
 def _terminal_incomplete(episode: dict[str, Any], *, reason: str,
                          computed_at: datetime, target_time: datetime) -> dict[str, Any]:
     row = {
@@ -1996,8 +2105,17 @@ def derive_session_outcome(
     bar_seconds: int | None = None,
     price_delay_minutes: int | None = None,
     price_receipt: dict[str, Any] | None = None,
+    prepared_bars: _PreparedPriceBars | None = None,
 ) -> dict[str, Any]:
-    """Derive one immutable close outcome without changing the H+60 v1 seam."""
+    """Derive one immutable close outcome without changing the H+60 v1 seam.
+
+    ``prepared_bars`` is an optional per-run seam: when the caller already
+    prepared the normalized OHLC frame for the same snapshot, the function
+    reuses it and skips the redundant ``normalize_price_bars`` invocation.
+    Callers that pass only the raw ``bars`` frame keep the historical path
+    — the normalizer still runs once. The seam is read-only; this function
+    never mutates the prepared frame.
+    """
     validate_episode(episode)
     if not isinstance(computed_at, datetime) or computed_at.tzinfo is None:
         raise ContractError("computed_at must be a timezone-aware datetime")
@@ -2035,7 +2153,10 @@ def derive_session_outcome(
             "status": "pending", "reason": "unknown_bar_cadence",
             "episode_id": episode["episode_id"], "horizon": horizon,
         }
-    frame = normalize_price_bars(bars)
+    frame = (
+        _prepared_frame_for_derive(prepared_bars, ticker=episode["ticker"])
+        if prepared_bars is not None else normalize_price_bars(bars)
+    )
     expected_sessions = nyse_calendar.sessions_between(episode_session, target_session)
     if len(expected_sessions) != horizon_sessions + 1:
         raise ContractError("session horizon mapping disagrees with the NYSE calendar")
@@ -2421,6 +2542,7 @@ def derive_h60_outcome(
     bar_seconds: int | None = None,
     price_delay_minutes: int | None = None,
     price_receipt: dict[str, Any] | None = None,
+    prepared_bars: _PreparedPriceBars | None = None,
 ) -> dict[str, Any]:
     """Derive a truthful same-session H+60 label or a non-persisted pending result.
 
@@ -2429,6 +2551,13 @@ def derive_h60_outcome(
     MFE and MAE describe the actual aligned-bar entry-to-exit window, which may
     end after the desired target. Measurement version/kind, alignment, bar size
     and source delay make coarse or delayed proxies training-ineligible.
+
+    ``prepared_bars`` is an optional per-run seam: when the caller already
+    prepared the normalized OHLC frame for the same snapshot, the function
+    reuses it and skips the redundant ``normalize_price_bars`` invocation.
+    Callers that pass only the raw ``bars`` frame keep the historical path
+    — the normalizer still runs once. The seam is read-only; this function
+    never mutates the prepared frame.
     """
     validate_episode(episode)
     if not isinstance(computed_at, datetime) or computed_at.tzinfo is None:
@@ -2475,7 +2604,10 @@ def derive_h60_outcome(
             "episode_id": episode["episode_id"],
         }
 
-    df = normalize_price_bars(bars)
+    df = (
+        _prepared_frame_for_derive(prepared_bars, ticker=episode["ticker"])
+        if prepared_bars is not None else normalize_price_bars(bars)
+    )
     session_df = df[(df.index >= pd.Timestamp(open_utc)) & (df.index < pd.Timestamp(close_utc))]
     entry_candidates = session_df[session_df.index >= pd.Timestamp(max(available, open_utc))]
     if entry_candidates.empty:
@@ -2693,6 +2825,25 @@ def load_jsonl(path: str | Path) -> list[dict[str, Any]]:
     return _decode_jsonl(raw, p)
 
 
+def _session_outcome_part_paths(path: Path) -> list[Path]:
+    try:
+        return _contract_session_outcome_part_paths(path)
+    except EpisodeSourceContractError as exc:
+        raise ContractError(str(exc)) from exc
+
+
+def session_outcome_logical_bytes(path: str | Path) -> bytes:
+    try:
+        return _contract_session_outcome_logical_bytes(Path(path))
+    except EpisodeSourceContractError as exc:
+        raise ContractError(str(exc)) from exc
+
+
+def load_session_outcomes(path: str | Path) -> list[dict[str, Any]]:
+    base = Path(path)
+    return _decode_jsonl(session_outcome_logical_bytes(base), base)
+
+
 def _decode_jsonl(raw: bytes, path: Path) -> list[dict[str, Any]]:
     if not raw:
         return []
@@ -2831,13 +2982,136 @@ def append_outcomes(path: Path, rows: Iterable[dict[str, Any]]) -> int:
 
 
 def append_session_outcomes(path: Path, rows: Iterable[dict[str, Any]]) -> int:
-    return _append_validated(
-        path,
-        rows,
-        id_field="outcome_id",
-        semantic_key=lambda row: (row.get("episode_id"), row.get("horizon")),
-        validator=validate_session_outcome,
-    )
+    """Append to one logical ledger while keeping each new Git blob bounded.
+
+    The historical ``outcomes_session.jsonl`` bytes are the immutable prefix.
+    Once that prefix reaches the physical part ceiling, future canonical rows are
+    appended to contiguous ``outcomes_session_parts/part-NNNNNN.jsonl`` files.
+    Readers concatenate those bytes under the original logical path/ordinal
+    contract, so this changes storage shape only — never identity or semantics.
+    """
+    if not nightly_advance_enabled():
+        return -1
+    candidates = list(rows)
+    for row in candidates:
+        validate_session_outcome(row)
+    parts_dir = path.parent / SESSION_OUTCOME_PARTS_DIRNAME
+    if not path.exists() and parts_dir.exists():
+        # Do not create a fresh base in front of orphaned physical extensions.
+        # The shared reader owns the exact topology error text and validation.
+        session_outcome_logical_bytes(path)
+    if not candidates and not path.exists():
+        return 0
+    _ensure_directory_durable(path.parent)
+
+    # The canonical base inode remains the one writer lock even after rollover.
+    # This preserves the existing single-writer serialization point.
+    with path.open("a+b") as lock_fh:
+        fcntl.flock(lock_fh.fileno(), fcntl.LOCK_EX)
+        try:
+            lock_fh.flush()
+            os.fsync(lock_fh.fileno())
+            _fsync_directory(path.parent)
+            existing_rows = load_session_outcomes(path)
+            by_id: dict[object, bytes] = {}
+            by_semantic: dict[object, bytes] = {}
+            for existing in existing_rows:
+                validate_session_outcome(existing)
+                canonical = _canonical_bytes(existing)
+                identity = existing.get("outcome_id")
+                semantic = (existing.get("episode_id"), existing.get("horizon"))
+                if identity in by_id and by_id[identity] != canonical:
+                    raise ContractError(
+                        f"conflicting existing payload for outcome_id={identity!r}"
+                    )
+                if semantic in by_semantic and by_semantic[semantic] != canonical:
+                    raise ContractError(
+                        f"conflicting existing payload for semantic key={semantic!r}"
+                    )
+                by_id[identity] = canonical
+                by_semantic[semantic] = canonical
+
+            fresh_lines: list[bytes] = []
+            for row in candidates:
+                canonical = _canonical_bytes(row)
+                identity = row.get("outcome_id")
+                semantic = (row.get("episode_id"), row.get("horizon"))
+                prior_id = by_id.get(identity)
+                prior_semantic = by_semantic.get(semantic)
+                if prior_id is not None or prior_semantic is not None:
+                    if ((prior_id is None or prior_id == canonical)
+                            and (prior_semantic is None or prior_semantic == canonical)):
+                        continue
+                    raise ContractError(
+                        f"conflicting append payload for outcome_id={identity!r}, "
+                        f"semantic key={semantic!r}"
+                    )
+                by_id[identity] = canonical
+                by_semantic[semantic] = canonical
+                line = canonical + b"\n"
+                if len(line) > SESSION_OUTCOME_PART_MAX_BYTES:
+                    raise ContractError("one session outcome row exceeds the physical part ceiling")
+                fresh_lines.append(line)
+            if not fresh_lines:
+                return 0
+
+            parts = _session_outcome_part_paths(path)
+            parts_dir = path.parent / SESSION_OUTCOME_PARTS_DIRNAME
+            base_size = path.stat().st_size
+            active_part = parts[-1] if parts else None
+            active_part_size = active_part.stat().st_size if active_part is not None else 0
+            if active_part_size > SESSION_OUTCOME_PART_MAX_BYTES:
+                raise ContractError("existing session outcome part exceeds the physical ceiling")
+
+            # Plan row-boundary rollover first, then write/fsync once per physical
+            # file.  A crash may expose a valid strict prefix, which the next
+            # checkpoint-last retry accepts idempotently; it can never expose a
+            # torn row or a rewritten historical byte.
+            base_batch = bytearray()
+            part_batches: dict[Path, bytearray] = {}
+            for line in fresh_lines:
+                if (
+                    active_part is None
+                    and base_size <= SESSION_OUTCOME_PART_MAX_BYTES
+                    and base_size + len(line) <= SESSION_OUTCOME_PART_MAX_BYTES
+                ):
+                    base_batch.extend(line)
+                    base_size += len(line)
+                    continue
+
+                if active_part is None:
+                    _ensure_directory_durable(parts_dir)
+                    active_part = parts_dir / "part-000001.jsonl"
+                    active_part_size = 0
+                elif active_part_size + len(line) > SESSION_OUTCOME_PART_MAX_BYTES:
+                    match = _SESSION_OUTCOME_PART_RE.fullmatch(active_part.name)
+                    if match is None:
+                        raise ContractError("active session outcome part name is invalid")
+                    active_part = parts_dir / f"part-{int(match.group(1)) + 1:06d}.jsonl"
+                    active_part_size = 0
+                part_batches.setdefault(active_part, bytearray()).extend(line)
+                active_part_size += len(line)
+
+            if base_batch:
+                lock_fh.seek(0, os.SEEK_END)
+                lock_fh.write(base_batch)
+                lock_fh.flush()
+                os.fsync(lock_fh.fileno())
+
+            for part, payload in part_batches.items():
+                existed = part.exists()
+                with part.open("a+b") as part_fh:
+                    part_fh.seek(0, os.SEEK_END)
+                    if part_fh.tell() + len(payload) > SESSION_OUTCOME_PART_MAX_BYTES:
+                        raise ContractError("session outcome part would exceed the physical ceiling")
+                    part_fh.write(payload)
+                    part_fh.flush()
+                    os.fsync(part_fh.fileno())
+                if not existed:
+                    _fsync_directory(parts_dir)
+            return len(fresh_lines)
+        finally:
+            fcntl.flock(lock_fh.fileno(), fcntl.LOCK_UN)
 
 
 def append_campaigns(path: Path, rows: Iterable[dict[str, Any]]) -> int:

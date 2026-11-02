@@ -1,0 +1,103 @@
+{
+  "current_main": "747899c6f7588dca6b79fe0857d3efae8fd18f33",
+  "findings_closed": [
+    {
+      "after": "stable latest-RTH whole-row selection preserves null/source identity",
+      "before": "pandas GroupBy.last could splice an older non-null quote_timestamp onto the latest trade row",
+      "green": "row-integrity-green.log",
+      "id": "WHOLE_ROW_SOURCE_IDENTITY",
+      "red": "row-integrity-red.log"
+    },
+    {
+      "after": "trade-event rows are filtered through the existing normal/early cash-session owner before latest-row selection",
+      "before": "surface Greek tap could choose 16:05 or 13:05 raw extended-hours trades",
+      "green": "rth-row-green.log",
+      "id": "RAW_TAPE_CASH_SESSION_BOUNDARY",
+      "red": "rth-quote-tap-red.log"
+    },
+    {
+      "after": "failed/unavailable same-minute Greek retry preserves the coherent prior minute atomically; supplied empty Greek snapshot authoritatively clears/replaces the current Greek column",
+      "before": "same-minute Greek failure retained old Greek values while replacing frame clocks and erasing source provenance; explicit empty replacement retained stale cells",
+      "green": "same-minute-atomic-green.log",
+      "id": "SAME_MINUTE_GREEK_ATOMICITY",
+      "red": "same-minute-atomic-red.log"
+    },
+    {
+      "after": "any missing, malformed, or timezone-naive clock in a summarized selected set makes both aggregate bounds null instead of publishing a known-only envelope",
+      "before": "mixed known and unknown quote clocks silently published quote_at_first/last from only the known subset",
+      "green": "public-provenance-green.log",
+      "id": "MIXED_UNKNOWN_SOURCE_CLOCK_ENVELOPE",
+      "red": "public-provenance-red.log"
+    },
+    {
+      "after": "reconstructed replay asof uses the selected column valuation_at when present, with legacy wrapper-asof fallback only when valuation metadata is absent",
+      "before": "an earlier replay column kept its own valuation_at but copied the newest full-frame asof",
+      "green": "public-provenance-green.log",
+      "id": "SELECTED_REPLAY_ASOF_IDENTITY",
+      "red": "public-provenance-red.log"
+    }
+  ],
+  "prior_integrated_proof": {
+    "base": "d2c2b085c46f0745f9996e7de3d1eb9b1a379984",
+    "commit": "f354804bac36660067930fcdb46eb097cfb55eaa",
+    "tree": "383299fd5f67537cf8c8a28da4c01bc9669e8a52"
+  },
+  "non_claims": [
+    "production deployment",
+    "live market freshness",
+    "observed dealer inventory",
+    "predictive edge",
+    "conditional forward surface parity",
+    "QuantedOptions parity",
+    "Greek field-completeness denominator repair"
+  ],
+  "operation": "options-workbench-r0-expiry-clock-20260917-sol-001",
+  "pre_hardening_head": "e7e0cfefae4591ad961c36e91da0c6745a1159e0",
+  "release_gates": {
+    "current_main_integration": "requires refresh on the frozen immutable head",
+    "hosted_ci": "requires refresh on the frozen immutable head",
+    "independent_review": "requires fresh exact-head review after the semantic repairs",
+    "production_proof": "not attempted"
+  },
+  "schema": "mastermind.options_workbench.expiry_clock_review_hardening.v1",
+  "skillpack_sha": "61a2ff79aba4e8a5685e779707ad5c4426cf5cc5",
+  "source_hashes": {
+    "collectors/thetadata.py": "b428cbd19e51bbf9e198d97d83e08317f2bde304fcd1b4bcd5cdc5556797746e",
+    "engine/intraday_greeks.py": "3592b1981bbe851a2d55cc1b711eb1eede7f21697918a290ba0a5950d03a6f90",
+    "engine/session_digest.py": "25ae25d29f1a1e6ce7d38372bbfaaf03e18925072e41aaea8bc3c1c730a14191",
+    "lib/nyse_calendar.py": "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce",
+    "research/OPTIONS_WORKBENCH_EXPIRY_CLOCK_REPAIR_2026-09-17.md": "552f6fc6e1809638a7e5f429db03733adccd6629fac954100d71cb9c2f027d82",
+    "scripts/build_flow_surface.py": "6fac5499cffb48e89e5fef16c3ef0307f19f58dd10cc123b62f48db595999da6",
+    "scripts/live_flow_poller.py": "830d2dcbf53dab68dc2c3ea844ee808984ff0a85a9b0fac5a1d618fdf0831bc1",
+    "tests/test_flow_surface.py": "151461f6d520571604163fe5e4f00ae07b49b0cc74ee3e10e5ce762de5b6a516",
+    "tests/test_live_flow.py": "1cffb8f3c4d9e073352e3c306b966e20676a2d909b7cc0df33f1e452730be9fb"
+  },
+  "state": "BUILT_NOT_PROVEN",
+  "verification": {
+    "candidate_owner_packs": {
+      "failed": 0,
+      "passed": 629,
+      "skipped": 1
+    },
+    "compileall_exit": 0,
+    "diff_check_exit": 0,
+    "focused_public_provenance_after": {
+      "failed": 0,
+      "passed": 6
+    },
+    "focused_public_provenance_before": {
+      "failed": 3,
+      "passed": 1
+    },
+    "pre_public_provenance_atomicity_pack": {
+      "failed": 0,
+      "passed": 626,
+      "skipped": 1
+    },
+    "pre_hardening_exact_head": {
+      "failed": 0,
+      "passed": 621,
+      "skipped": 1
+    }
+  }
+}

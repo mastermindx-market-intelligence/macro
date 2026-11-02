@@ -1,0 +1,397 @@
+{
+  "schema": "copy_templates.v1",
+  "authority": "context_only",
+  "word_budget": {
+    "title_en_words_max": 4,
+    "subtitle_en_words_max": 14,
+    "row_en_lines_max": 1,
+    "footer_en_sentences_max": 1,
+    "hover_en_words_max": 80,
+    "cite": "docs/DESIGN_DOCTRINE.md:25"
+  },
+  "banned_glance_tokens": {
+    "cite": "docs/DESIGN_DOCTRINE.md:50-56,93,162",
+    "tokens": [
+      "slow reco",
+      "IGNITION",
+      "WATCH",
+      "UPTURN_CONFIRMED",
+      "expected-null",
+      "forward meter",
+      "display-tier",
+      "display context only",
+      "organ",
+      "lobe",
+      "kernel",
+      "K-of-N",
+      "confluence",
+      "Oracle P8",
+      "gauntlet",
+      "prereg",
+      "falsifier",
+      "refutation",
+      "confidence",
+      "probability",
+      "score",
+      "price target",
+      "fair value",
+      "percentile",
+      "z-score",
+      "giveback",
+      "dead-cat",
+      "bounce",
+      "validated",
+      "alpha",
+      "contagion"
+    ]
+  },
+  "stance": {
+    "key": "stance_heads_up",
+    "en": "A heads-up, not a buy signal",
+    "zh": "仅为提示，非买入信号",
+    "cite": "docs/DESIGN_DOCTRINE.md:69"
+  },
+  "slot_dictionaries": {
+    "action_type": {
+      "share_repurchase": { "en": "buyback", "zh": "回购" },
+      "dividend": { "en": "dividend", "zh": "分红" },
+      "special_dividend": { "en": "special dividend", "zh": "特别分红" },
+      "equity_issuance": { "en": "share issue", "zh": "增发" },
+      "debt_issuance": { "en": "debt issue", "zh": "发债" },
+      "other_allocation": { "en": "capital move", "zh": "资本安排" }
+    },
+    "commitment_status": {
+      "authorized": { "en": "authorized", "zh": "已授权" },
+      "announced": { "en": "announced", "zh": "已宣布" },
+      "planned": { "en": "planned", "zh": "已规划" },
+      "executed": { "en": "executed", "zh": "已执行" },
+      "completed": { "en": "completed", "zh": "已完成" },
+      "withdrawn": { "en": "withdrawn", "zh": "已撤回" },
+      "conditional": { "en": "conditional", "zh": "附条件" }
+    },
+    "revision_direction": {
+      "raised": { "en": "raised", "zh": "上调" },
+      "cut": { "en": "cut", "zh": "下调" },
+      "introduced": { "en": "new", "zh": "新给出" },
+      "reiterated": { "en": "unchanged", "zh": "维持" },
+      "withdrawn": { "en": "withdrawn", "zh": "撤回" },
+      "awarded": { "en": "awarded", "zh": "已授予" },
+      "cancelled": { "en": "cancelled", "zh": "已取消" },
+      "not_stated": { "en": "not stated", "zh": "未说明" }
+    },
+    "metric": {
+      "revenue": { "en": "revenue", "zh": "收入" },
+      "eps": { "en": "EPS", "zh": "每股收益" },
+      "bookings": { "en": "bookings", "zh": "预订" },
+      "backlog": { "en": "backlog", "zh": "积压订单" },
+      "units": { "en": "units", "zh": "数量" },
+      "other": { "en": "figure", "zh": "数值" }
+    },
+    "event_kind": {
+      "product_release": { "en": "product release", "zh": "产品发布" },
+      "partnership": { "en": "partnership", "zh": "合作" },
+      "customer_deployment": { "en": "customer use", "zh": "客户落地" },
+      "license_change": { "en": "license change", "zh": "许可变更" },
+      "delay": { "en": "delay", "zh": "延期" },
+      "withdrawal": { "en": "withdrawal", "zh": "撤回" },
+      "other_strategic": { "en": "strategic step", "zh": "战略进展" }
+    },
+    "channel": {
+      "revenue_demand": { "en": "demand", "zh": "需求" },
+      "margin_cost": { "en": "costs", "zh": "成本" },
+      "capital_allocation": { "en": "capital return", "zh": "资本回报" },
+      "moat_duration": { "en": "lasting edge", "zh": "持续优势" },
+      "strategic_option": { "en": "new option", "zh": "新选择" },
+      "financial_incentives_survival": { "en": "cash and funding", "zh": "现金与融资" },
+      "market_only": { "en": "market move only", "zh": "仅市场波动" }
+    }
+  },
+  "templates": {
+    "T1_authorization": {
+      "template_id": "T1_authorization",
+      "family": "T1",
+      "title_key": "t1_auth_title",
+      "subtitle_key": "t1_auth_subtitle",
+      "window_key": "t1_auth_window",
+      "watching_key": "t1_auth_watching",
+      "en": {
+        "title": "{action_plain} {status_plain}",
+        "subtitle": "Extra {amount_plain} {window_plain}; shares not yet bought",
+        "window": "{window_plain}",
+        "watching": "What we are watching: actual buybacks and net share count",
+        "hover": "Authorization is permission to buy, not a completed purchase. Remaining room {remaining_plain}. Operating revenue impact is not established from this fact."
+      },
+      "zh": {
+        "title": "{action_plain}{status_plain}",
+        "subtitle": "新增{amount_plain}，{window_plain}；尚未买回",
+        "window": "{window_plain}",
+        "watching": "接下来看：实际回购与净股本",
+        "hover": "授权是买回许可，不是已完成的买回。剩余额度{remaining_plain}。此事未证明经营收入变化。"
+      }
+    },
+    "T1_execution": {
+      "template_id": "T1_execution",
+      "family": "T1",
+      "title_key": "t1_exec_title",
+      "subtitle_key": "t1_exec_subtitle",
+      "window_key": "t1_exec_window",
+      "watching_key": "t1_exec_watching",
+      "en": {
+        "title": "{action_plain} {status_plain}",
+        "subtitle": "{amount_plain} bought {window_plain}",
+        "window": "{window_plain}",
+        "watching": "What we are watching: remaining authorization and net dilution",
+        "hover": "Executed amount is what was bought in the cited window. It is not a forecast of future purchases."
+      },
+      "zh": {
+        "title": "{action_plain}{status_plain}",
+        "subtitle": "{window_plain}已买回{amount_plain}",
+        "window": "{window_plain}",
+        "watching": "接下来看：剩余额度与净稀释",
+        "hover": "已执行金额是该窗口内实际买回的数量，不是对后续买回的预测。"
+      }
+    },
+    "T1_no_change": {
+      "template_id": "T1_no_change",
+      "family": "T1",
+      "title_key": "t1_nc_title",
+      "subtitle_key": "t1_nc_subtitle",
+      "window_key": "t1_nc_window",
+      "watching_key": "t1_nc_watching",
+      "en": {
+        "title": "No change",
+        "subtitle": "Same {action_plain} {amount_plain}; reprint only",
+        "window": "as previously stated",
+        "watching": "What we are watching: the next new amount or completed purchase",
+        "hover": "This article restates a fact already on file. The authorization itself is unchanged."
+      },
+      "zh": {
+        "title": "无新变化",
+        "subtitle": "仍为{action_plain}{amount_plain}；仅为转载",
+        "window": "与此前相同",
+        "watching": "接下来看：新的金额或实际买回",
+        "hover": "本文重述已记录的事实，授权本身没有变化。"
+      }
+    },
+    "T2_guidance": {
+      "template_id": "T2_guidance",
+      "family": "T2",
+      "title_key": "t2_guid_title",
+      "subtitle_key": "t2_guid_subtitle",
+      "window_key": "t2_guid_window",
+      "watching_key": "t2_guid_watching",
+      "en": {
+        "title": "{metric_plain} {revision_plain}",
+        "subtitle": "{amount_plain} {window_plain}",
+        "window": "{window_plain}",
+        "watching": "What we are watching: the next reported period against this range",
+        "hover": "This is what management stated for the named period. It is not a completed result."
+      },
+      "zh": {
+        "title": "{metric_plain}{revision_plain}",
+        "subtitle": "{window_plain}{amount_plain}",
+        "window": "{window_plain}",
+        "watching": "接下来看：下一报告期是否落在该区间",
+        "hover": "这是管理层对该期间的表述，不是已实现的结果。"
+      }
+    },
+    "T2_contract": {
+      "template_id": "T2_contract",
+      "family": "T2",
+      "title_key": "t2_ctr_title",
+      "subtitle_key": "t2_ctr_subtitle",
+      "window_key": "t2_ctr_window",
+      "watching_key": "t2_ctr_watching",
+      "en": {
+        "title": "Contract {status_plain}",
+        "subtitle": "{amount_plain} {window_plain}",
+        "window": "{window_plain}",
+        "watching": "What we are watching: bookings turning into recognized revenue",
+        "hover": "A contract or award ceiling is not recognized revenue. Conditions in the source still apply."
+      },
+      "zh": {
+        "title": "合同{status_plain}",
+        "subtitle": "{window_plain}{amount_plain}",
+        "window": "{window_plain}",
+        "watching": "接下来看：预订是否确认为收入",
+        "hover": "合同或授予上限不是已确认收入。来源中的条件仍然有效。"
+      }
+    },
+    "T2_no_change": {
+      "template_id": "T2_no_change",
+      "family": "T2",
+      "title_key": "t2_nc_title",
+      "subtitle_key": "t2_nc_subtitle",
+      "window_key": "t2_nc_window",
+      "watching_key": "t2_nc_watching",
+      "en": {
+        "title": "No change",
+        "subtitle": "{metric_plain} still {amount_plain}",
+        "window": "as previously stated",
+        "watching": "What we are watching: a later raise, cut, or reported result",
+        "hover": "The same number is restated. This is not a new raise."
+      },
+      "zh": {
+        "title": "无新变化",
+        "subtitle": "{metric_plain}仍为{amount_plain}",
+        "window": "与此前相同",
+        "watching": "接下来看：之后的上调、下调或报告结果",
+        "hover": "同一数字被重述，这不是一次新的上调。"
+      }
+    },
+    "T3_option": {
+      "template_id": "T3_option",
+      "family": "T3",
+      "title_key": "t3_opt_title",
+      "subtitle_key": "t3_opt_subtitle",
+      "window_key": "t3_opt_window",
+      "watching_key": "t3_opt_watching",
+      "en": {
+        "title": "{event_plain}",
+        "subtitle": "{object_plain}; earnings effect not yet measured",
+        "window": "{window_plain}",
+        "watching": "What we are watching: paid use, not downloads",
+        "hover": "This opens a path the company named. Near-term earnings impact is not yet quantifiable from the source."
+      },
+      "zh": {
+        "title": "{event_plain}",
+        "subtitle": "{object_plain}；盈利影响尚无法计量",
+        "window": "{window_plain}",
+        "watching": "接下来看：付费使用，而非下载量",
+        "hover": "这是公司点名的一条路径。来源尚不能计量对近期盈利的影响。"
+      }
+    },
+    "T3_milestone": {
+      "template_id": "T3_milestone",
+      "family": "T3",
+      "title_key": "t3_ms_title",
+      "subtitle_key": "t3_ms_subtitle",
+      "window_key": "t3_ms_window",
+      "watching_key": "t3_ms_watching",
+      "en": {
+        "title": "{event_plain}",
+        "subtitle": "{object_plain} {status_plain} {window_plain}",
+        "window": "{window_plain}",
+        "watching": "What we are watching: repeat paid use and retained economics",
+        "hover": "This is a named milestone in the source. It is not proof that the path will pay."
+      },
+      "zh": {
+        "title": "{event_plain}",
+        "subtitle": "{object_plain}{status_plain}，{window_plain}",
+        "window": "{window_plain}",
+        "watching": "接下来看：重复付费使用与留存经济",
+        "hover": "这是来源中的一个具名节点，不能证明该路径将会兑现。"
+      }
+    },
+    "T3_no_change": {
+      "template_id": "T3_no_change",
+      "family": "T3",
+      "title_key": "t3_nc_title",
+      "subtitle_key": "t3_nc_subtitle",
+      "window_key": "t3_nc_window",
+      "watching_key": "t3_nc_watching",
+      "en": {
+        "title": "No change",
+        "subtitle": "Same {object_plain}; reprint only",
+        "window": "as previously stated",
+        "watching": "What we are watching: a new independent deployment or paid booking",
+        "hover": "This article restates a release already on file."
+      },
+      "zh": {
+        "title": "无新变化",
+        "subtitle": "仍为{object_plain}；仅为转载",
+        "window": "与此前相同",
+        "watching": "接下来看：新的独立落地或付费预订",
+        "hover": "本文重述已记录的发布。"
+      }
+    },
+    "ABSENCE_defer": {
+      "template_id": "ABSENCE_defer",
+      "family": "ABSENCE",
+      "title_key": "abs_defer_title",
+      "subtitle_key": "abs_defer_subtitle",
+      "window_key": "abs_defer_window",
+      "watching_key": "abs_defer_watching",
+      "en": {
+        "title": "Not yet readable",
+        "subtitle": "Source held; body not yet available to check",
+        "window": "until the source can be read",
+        "watching": "What we are watching: the source body becoming available",
+        "hover": "The item is counted. No fact is published from an unread body."
+      },
+      "zh": {
+        "title": "尚不可读",
+        "subtitle": "来源已收到，正文尚未可核",
+        "window": "直至正文可读",
+        "watching": "接下来看：正文是否可核",
+        "hover": "该条已计数。未读正文不会发布事实。"
+      }
+    },
+    "ABSENCE_rights": {
+      "template_id": "ABSENCE_rights",
+      "family": "ABSENCE",
+      "title_key": "abs_rights_title",
+      "subtitle_key": "abs_rights_subtitle",
+      "window_key": "abs_rights_window",
+      "watching_key": "abs_rights_watching",
+      "en": {
+        "title": "Source text withheld",
+        "subtitle": "Fact on file; excerpt not shown here",
+        "window": "as of the source date",
+        "watching": "What we are watching: the cited amounts on the primary filing",
+        "hover": "The excerpt is blank because the source text is rights-restricted or unsafe to display. Proof remains the hash and locator."
+      },
+      "zh": {
+        "title": "原文未展示",
+        "subtitle": "事实已记录；此处不展示摘录",
+        "window": "以来源日期为准",
+        "watching": "接下来看：主文件中的具名金额",
+        "hover": "因权利限制或展示不安全，摘录为空。证据仍是哈希与定位。"
+      }
+    },
+    "SUPERSEDED": {
+      "template_id": "SUPERSEDED",
+      "family": "HISTORY",
+      "title_key": "sup_title",
+      "subtitle_key": "sup_subtitle",
+      "window_key": "sup_window",
+      "watching_key": "sup_watching",
+      "en": {
+        "title": "Updated figure",
+        "subtitle": "Now {amount_plain}; earlier {prior_amount_plain} replaced",
+        "window": "{window_plain}",
+        "watching": "What we are watching: the corrected figure and later execution",
+        "hover": "A later source replaced the earlier amount. The old row stays in history and is not the current figure."
+      },
+      "zh": {
+        "title": "数字已更新",
+        "subtitle": "现为{amount_plain}；此前{prior_amount_plain}已被替换",
+        "window": "{window_plain}",
+        "watching": "接下来看：更正后的数字与后续执行",
+        "hover": "后来的来源替换了先前金额。旧行留在历史中，不是当前数字。"
+      }
+    }
+  },
+  "amount_format": {
+    "rule": "Deterministic from display_quantity. USD abs>=1e9 -> billions with one decimal if needed; abs>=1e6 -> millions; else raw with unit. Never derive EPS accretion, percent of market cap, or fair value. bound=approximately prefixes 'about'/'约'; up_to prefixes 'up to'/'至多'; at_least prefixes 'at least'/'至少'.",
+    "examples": [
+      { "value": 150000000000, "currency": "USD", "en": "$150 billion", "zh": "1500亿美元" },
+      { "value": 235000000000, "currency": "USD", "en": "$235 billion", "zh": "2350亿美元" },
+      { "value": 165000000000, "currency": "USD", "en": "$165 billion", "zh": "1650亿美元" }
+    ]
+  },
+  "window_format": {
+    "fiscal_year": { "en": "through fiscal {year}", "zh": "至{year}财年" },
+    "quarter": { "en": "in {year} Q{quarter}", "zh": "{year}年第{quarter}季" },
+    "as_previously_stated": { "en": "as previously stated", "zh": "与此前相同" },
+    "absent": { "en": "window not stated", "zh": "未说明窗口" }
+  },
+  "invariants": [
+    "Glance strings are rendered only from these templates plus slot dictionaries plus amount_format/window_format. Free model prose is refused.",
+    "After fill, English title has at most 4 words and English subtitle at most 14 words (DESIGN_DOCTRINE.md:25).",
+    "Glance copy never contains banned_glance_tokens.",
+    "Watching lines replace internal weakening conditions. They never use the words falsifier or refutation.",
+    "Panel footer is always stance_heads_up, once per panel, never per row.",
+    "ZH is equally plain; English state names are not dropped into ZH (DESIGN_DOCTRINE.md:155)."
+  ]
+}

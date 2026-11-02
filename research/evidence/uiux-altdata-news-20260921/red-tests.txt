@@ -1,0 +1,185 @@
+FFFFFFFFFFFF                                                             [100%]
+=================================== FAILURES ===================================
+_____________ test_altdata_news_signin_is_not_missing_feature[401] _____________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-13482/test_altdata_news_signin_is_no0')
+code = 401
+
+    @pytest.mark.parametrize("code", [401, 403])
+    def test_altdata_news_signin_is_not_missing_feature(tmp_path, code):
+        out = _news_client_result(tmp_path, {"responses":[{"status":code}]*3})
+>       assert out.get("state") == "gated"
+E       assert None == 'gated'
+E        +  where None = <built-in method get of dict object at 0x10fab8f40>('state')
+E        +    where <built-in method get of dict object at 0x10fab8f40> = {'initial': {'html': '<p class="mut" style="font-size:12px"><span class="l-en">News surface not built yet — runs on th...t yet — runs on the next daily build.</span><span class="l-zh">新闻层尚未生成——将在下次每日构建后出现。</span></p>', 'hidden': False, ...}.get
+
+tests/test_altdata_price_truth.py:402: AssertionError
+_____________ test_altdata_news_signin_is_not_missing_feature[403] _____________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-13482/test_altdata_news_signin_is_no1')
+code = 403
+
+    @pytest.mark.parametrize("code", [401, 403])
+    def test_altdata_news_signin_is_not_missing_feature(tmp_path, code):
+        out = _news_client_result(tmp_path, {"responses":[{"status":code}]*3})
+>       assert out.get("state") == "gated"
+E       assert None == 'gated'
+E        +  where None = <built-in method get of dict object at 0x10fc8f540>('state')
+E        +    where <built-in method get of dict object at 0x10fc8f540> = {'initial': {'html': '<p class="mut" style="font-size:12px"><span class="l-en">News surface not built yet — runs on th...t yet — runs on the next daily build.</span><span class="l-zh">新闻层尚未生成——将在下次每日构建后出现。</span></p>', 'hidden': False, ...}.get
+
+tests/test_altdata_price_truth.py:402: AssertionError
+___________ test_altdata_news_failure_is_not_no_headlines[failure0] ____________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-13482/test_altdata_news_failure_is_n0')
+failure = {'status': 503}
+
+    @pytest.mark.parametrize("failure", [{"status":503}, {"status":404}, {"network":True}, {"status":200,"invalid":True}, {"status":200,"data":[]}])
+    def test_altdata_news_failure_is_not_no_headlines(tmp_path, failure):
+        out = _news_client_result(tmp_path, {"responses":[failure]*3})
+>       assert out.get("state") == "unavailable"
+E       assert None == 'unavailable'
+E        +  where None = <built-in method get of dict object at 0x10fc98740>('state')
+E        +    where <built-in method get of dict object at 0x10fc98740> = {'initial': {'html': '<p class="mut" style="font-size:12px"><span class="l-en">News surface not built yet — runs on th...t yet — runs on the next daily build.</span><span class="l-zh">新闻层尚未生成——将在下次每日构建后出现。</span></p>', 'hidden': False, ...}.get
+
+tests/test_altdata_price_truth.py:411: AssertionError
+___________ test_altdata_news_failure_is_not_no_headlines[failure1] ____________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-13482/test_altdata_news_failure_is_n1')
+failure = {'status': 404}
+
+    @pytest.mark.parametrize("failure", [{"status":503}, {"status":404}, {"network":True}, {"status":200,"invalid":True}, {"status":200,"data":[]}])
+    def test_altdata_news_failure_is_not_no_headlines(tmp_path, failure):
+        out = _news_client_result(tmp_path, {"responses":[failure]*3})
+>       assert out.get("state") == "unavailable"
+E       assert None == 'unavailable'
+E        +  where None = <built-in method get of dict object at 0x10fe16b00>('state')
+E        +    where <built-in method get of dict object at 0x10fe16b00> = {'initial': {'html': '<p class="mut" style="font-size:12px"><span class="l-en">News surface not built yet — runs on th...t yet — runs on the next daily build.</span><span class="l-zh">新闻层尚未生成——将在下次每日构建后出现。</span></p>', 'hidden': False, ...}.get
+
+tests/test_altdata_price_truth.py:411: AssertionError
+___________ test_altdata_news_failure_is_not_no_headlines[failure2] ____________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-13482/test_altdata_news_failure_is_n2')
+failure = {'network': True}
+
+    @pytest.mark.parametrize("failure", [{"status":503}, {"status":404}, {"network":True}, {"status":200,"invalid":True}, {"status":200,"data":[]}])
+    def test_altdata_news_failure_is_not_no_headlines(tmp_path, failure):
+        out = _news_client_result(tmp_path, {"responses":[failure]*3})
+>       assert out.get("state") == "unavailable"
+E       assert None == 'unavailable'
+E        +  where None = <built-in method get of dict object at 0x10fd01540>('state')
+E        +    where <built-in method get of dict object at 0x10fd01540> = {'initial': {'html': '<p class="mut" style="font-size:12px"><span class="l-en">News surface not built yet — runs on th...t yet — runs on the next daily build.</span><span class="l-zh">新闻层尚未生成——将在下次每日构建后出现。</span></p>', 'hidden': False, ...}.get
+
+tests/test_altdata_price_truth.py:411: AssertionError
+___________ test_altdata_news_failure_is_not_no_headlines[failure3] ____________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-13482/test_altdata_news_failure_is_n3')
+failure = {'status': 200, 'invalid': True}
+
+    @pytest.mark.parametrize("failure", [{"status":503}, {"status":404}, {"network":True}, {"status":200,"invalid":True}, {"status":200,"data":[]}])
+    def test_altdata_news_failure_is_not_no_headlines(tmp_path, failure):
+        out = _news_client_result(tmp_path, {"responses":[failure]*3})
+>       assert out.get("state") == "unavailable"
+E       assert None == 'unavailable'
+E        +  where None = <built-in method get of dict object at 0x10fcfae00>('state')
+E        +    where <built-in method get of dict object at 0x10fcfae00> = {'initial': {'html': '<p class="mut" style="font-size:12px"><span class="l-en">News surface not built yet — runs on th...t yet — runs on the next daily build.</span><span class="l-zh">新闻层尚未生成——将在下次每日构建后出现。</span></p>', 'hidden': False, ...}.get
+
+tests/test_altdata_price_truth.py:411: AssertionError
+___________ test_altdata_news_failure_is_not_no_headlines[failure4] ____________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-13482/test_altdata_news_failure_is_n4')
+failure = {'status': 200, 'data': []}
+
+    @pytest.mark.parametrize("failure", [{"status":503}, {"status":404}, {"network":True}, {"status":200,"invalid":True}, {"status":200,"data":[]}])
+    def test_altdata_news_failure_is_not_no_headlines(tmp_path, failure):
+        out = _news_client_result(tmp_path, {"responses":[failure]*3})
+>       assert out.get("state") == "unavailable"
+E       assert None == 'unavailable'
+E        +  where None = <built-in method get of dict object at 0x10fa7e540>('state')
+E        +    where <built-in method get of dict object at 0x10fa7e540> = {'initial': {'html': '<p class="mut" style="font-size:12px"><span class="l-en">News surface not built yet — runs on th...t yet — runs on the next daily build.</span><span class="l-zh">新闻层尚未生成——将在下次每日构建后出现。</span></p>', 'hidden': False, ...}.get
+
+tests/test_altdata_price_truth.py:411: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+________________ test_altdata_news_successfully_empty_snapshot _________________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-13482/test_altdata_news_successfully0')
+
+    def test_altdata_news_successfully_empty_snapshot(tmp_path):
+        out = _news_client_result(tmp_path, {"responses":_empty_news_responses()})
+>       assert out.get("state") == "empty" and "No headlines in this snapshot" in out["status"]
+E       assert (None == 'empty')
+E        +  where None = <built-in method get of dict object at 0x10fc82b00>('state')
+E        +    where <built-in method get of dict object at 0x10fc82b00> = {'initial': {'html': '<p class="mut" style="font-size:12px"><span class="l-en">News surface not built yet — runs on th...t yet — runs on the next daily build.</span><span class="l-zh">新闻层尚未生成——将在下次每日构建后出现。</span></p>', 'hidden': False, ...}.get
+
+tests/test_altdata_price_truth.py:418: AssertionError
+______ test_altdata_market_fallback_does_not_claim_no_related_news_on_401 ______
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-13482/test_altdata_market_fallback_d0')
+
+    def test_altdata_market_fallback_does_not_claim_no_related_news_on_401(tmp_path):
+        responses=[{"status":401}, {"status":401}, {"status":200,"data":{"market":[{"title":"Market headline","url":"https://example.test/story"}]}}]
+        out = _news_client_result(tmp_path, {"responses":responses}, ["language"])
+>       assert out.get("state") == "market_gate" and "登录" in out["status"]
+E       assert (None == 'market_gate')
+E        +  where None = <built-in method get of dict object at 0x10fcb8b80>('state')
+E        +    where <built-in method get of dict object at 0x10fcb8b80> = {'initial': {'html': '<div style="font-size:11px;opacity:.6;margin-bottom:4px"><span class="l-en">No news yet on today...var(--link));text-decoration:none">Market headline</a> <span style="opacity:.5">· </span></div>', 'hidden': False, ...}.get
+
+tests/test_altdata_price_truth.py:425: AssertionError
+_____ test_altdata_related_headlines_keep_chinese_order_and_escape_markup ______
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-13482/test_altdata_related_headlines0')
+
+    def test_altdata_related_headlines_keep_chinese_order_and_escape_markup(tmp_path):
+        responses=_empty_news_responses()
+        responses[0]["data"]["signals"]=[{"ticker":"BBB","signal_score":99},{"ticker":"AAA"}]
+        responses[1]["data"]["tickers"]={"BBB":{"top":[{"title":"<script>bad</script>","title_zh":"中文标题","url":"javascript:alert(1)","source":"<img>"}]},"AAA":{"top":[{"title":"Second story","url":"https://example.test/two"}]}}
+        out = _news_client_result(tmp_path, {"responses":responses})
+>       assert out.get("state") == "related"
+E       assert None == 'related'
+E        +  where None = <built-in method get of dict object at 0x10fa3b1c0>('state')
+E        +    where <built-in method get of dict object at 0x10fa3b1c0> = {'initial': {'html': '<div style="font-size:11px;opacity:.6;margin-bottom:4px"><span class="l-en">Recent news for the ...(--link));text-decoration:none">Second story</a> <span style="opacity:.5">· </span></div></div>', 'hidden': False, ...}.get
+
+tests/test_altdata_price_truth.py:435: AssertionError
+_________ test_altdata_news_retry_is_single_flight_and_restores_focus __________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-13482/test_altdata_news_retry_is_sin0')
+
+    def test_altdata_news_retry_is_single_flight_and_restores_focus(tmp_path):
+        out = _news_client_result(tmp_path, {"attempts":[[{"status":503}]*3,_empty_news_responses()]}, ["retry"])
+>       assert out.get("state") == "empty" and out["initial"]["retry"]
+E       assert (None == 'empty')
+E        +  where None = <built-in method get of dict object at 0x10fcba580>('state')
+E        +    where <built-in method get of dict object at 0x10fcba580> = {'initial': {'html': '<p class="mut" style="font-size:12px"><span class="l-en">News surface not built yet — runs on th...t yet — runs on the next daily build.</span><span class="l-zh">新闻层尚未生成——将在下次每日构建后出现。</span></p>', 'hidden': False, ...}.get
+
+tests/test_altdata_price_truth.py:444: AssertionError
+_______ test_altdata_news_template_preserves_native_loading_and_actions ________
+
+    def test_altdata_news_template_preserves_native_loading_and_actions():
+        source=(Path(__file__).resolve().parents[1]/"templates/alt_data.html.j2").read_text()
+>       assert 'id="sid-news-status" role="status"' in source
+E       assert 'id="sid-news-status" role="status"' in '{% extends "report_base.html.j2" %}\n{% import "_desk_grader_panel.html.j2" as dg %}\n{% macro t(en, zh=\'\') -%}\n<s... build.</span><span class="l-zh">新闻层尚未生成——将在下次每日构建后出现。</span></p>\';\n    }\n  });\n})();\n</script>\n{% endblock %}\n'
+
+tests/test_altdata_price_truth.py:451: AssertionError
+=============================== warnings summary ===============================
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-7a8427cf-a69a-498b-a00d-b9b472c04a7c/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-7a8427cf-a69a-498b-a00d-b9b472c04a7c/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_altdata_price_truth.py::test_altdata_news_signin_is_not_missing_feature[401]
+FAILED tests/test_altdata_price_truth.py::test_altdata_news_signin_is_not_missing_feature[403]
+FAILED tests/test_altdata_price_truth.py::test_altdata_news_failure_is_not_no_headlines[failure0]
+FAILED tests/test_altdata_price_truth.py::test_altdata_news_failure_is_not_no_headlines[failure1]
+FAILED tests/test_altdata_price_truth.py::test_altdata_news_failure_is_not_no_headlines[failure2]
+FAILED tests/test_altdata_price_truth.py::test_altdata_news_failure_is_not_no_headlines[failure3]
+FAILED tests/test_altdata_price_truth.py::test_altdata_news_failure_is_not_no_headlines[failure4]
+FAILED tests/test_altdata_price_truth.py::test_altdata_news_successfully_empty_snapshot
+FAILED tests/test_altdata_price_truth.py::test_altdata_market_fallback_does_not_claim_no_related_news_on_401
+FAILED tests/test_altdata_price_truth.py::test_altdata_related_headlines_keep_chinese_order_and_escape_markup
+FAILED tests/test_altdata_price_truth.py::test_altdata_news_retry_is_single_flight_and_restores_focus
+FAILED tests/test_altdata_price_truth.py::test_altdata_news_template_preserves_native_loading_and_actions
+12 failed, 15 deselected, 1 warning in 2.59s

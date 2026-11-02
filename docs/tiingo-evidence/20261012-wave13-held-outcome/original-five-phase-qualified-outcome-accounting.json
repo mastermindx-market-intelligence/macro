@@ -1,0 +1,144 @@
+{
+  "schema": "tiingo.original_finite_scope_combined_qualified_outcome_accounting/v1",
+  "run_id": "eod-wave13-new-unreserved-20261012-01a12ab6",
+  "recorded_at_utc": "2026-10-12T22:44:16.219220+00:00",
+  "method_sha256": "adec99c0237f184f5b08e59d066f83cfa30ec823a37b9d0dba2f0f5abd34be5e",
+  "original_plan_sha256": "cfff5523c630fad205112d255fbd4e46cf0765e16179cfa41993e2c1aac8c9ce",
+  "original_scope_sha256": "98e8bb8fbfa59a3b0de7d86a2486fad121e049f9da6c7477d3adda24dc770240",
+  "original_initial_settlement_sha256": "1f3a1087638b48a33250f3153def1bd46e55e4eb2fd086a9b7d9dca61a1c9b20",
+  "original_outcome_partition_sha256": "0937f5c58dbd238346297e6649748fffdb8dd8d639daf5185fe14d073a5ac2ae",
+  "continuation01_plan_sha256": "ffddb762d45cdd8fc743f2b331b75c8213009fbec3789a5d7fd3c4f4ac2b6a00",
+  "continuation01_scope_sha256": "4b0aae204666f3dbf9634c9d325d0f76e748cb8318db722625096fdc3134f270",
+  "continuation01_settlement_sha256": "0ec8f3bd5fa5876d9d2ea01bfc15f7f578b54d025dd2b24878942b32fba9cc50",
+  "continuation01_all_selected_captured_remains_false": true,
+  "continuation02_plan_sha256": "4d7e298f7ac9af752f1eb5ba0b604a28b7cdd40fa98210440fd34e4a12255eb9",
+  "continuation02_scope_sha256": "417375ee12dea595825e9a949d8ae56cdb93368b639edc1ea2f2cca3abb74bb3",
+  "continuation02_settlement_sha256": "ec650a5732a2c90252499a95afc577c220025d7bf2c67556bcc6bb91abec443a",
+  "continuation02_all_selected_captured_remains_false": true,
+  "continuation_plan_sha256": "8b8db82872f0277e32a78bd442b52b707c0628f4607bc1145551ed55a225f50c",
+  "continuation_scope_sha256": "15d81993aae60737df6e12157648307473fc69d4d5552725746d4c453f54629b",
+  "continuation_settlement_sha256": "7c06590cbdca195af3f2afb6e2404eecace54d11edd6416e19ef7749276b6cc6",
+  "continuation_method_sha256": "6f500a1f241e6f29fe7f1a53c81ee2553661a1578f6488d4bd901628b9f743aa",
+  "all_contributing_execution_phases_settled": true,
+  "all_original_5000_identities_accounted_exactly_once": true,
+  "successful_requests": 4994,
+  "qualified_successes": 4994,
+  "held_attempted_failures": [
+    {
+      "source": "eod-bars",
+      "symbol": "LDHOF",
+      "request_path": "/tiingo/daily/LDHOF/prices?endDate=2026-10-09&startDate=2014-11-17",
+      "reason": "Tiingo transport unavailable"
+    },
+    {
+      "source": "eod-bars",
+      "symbol": "LDHUF",
+      "request_path": "/tiingo/daily/LDHUF/prices?endDate=2026-10-09&startDate=2022-04-07",
+      "reason": "Tiingo transport unavailable"
+    },
+    {
+      "source": "eod-bars",
+      "symbol": "LDKYQ",
+      "request_path": "/tiingo/daily/LDKYQ/prices?endDate=2019-04-24&startDate=2014-03-31",
+      "reason": "Tiingo transport unavailable"
+    },
+    {
+      "source": "eod-bars",
+      "symbol": "LDSSF",
+      "request_path": "/tiingo/daily/LDSSF/prices?endDate=2020-10-02&startDate=2018-02-22",
+      "reason": "Tiingo transport unavailable"
+    },
+    {
+      "source": "eod-bars",
+      "symbol": "LFYC",
+      "request_path": "/tiingo/daily/LFYC/prices?endDate=2017-09-14&startDate=2001-01-04",
+      "reason": "Tiingo transport unavailable",
+      "transport_reason_class": "TimeoutError",
+      "transport_message_retained": false
+    },
+    {
+      "source": "eod-bars",
+      "symbol": "LIBHB",
+      "request_path": "/tiingo/daily/LIBHB/prices?endDate=2017-06-14&startDate=1972-06-01",
+      "reason": "Tiingo transport unavailable",
+      "transport_reason_class": "TimeoutError",
+      "transport_message_retained": false
+    }
+  ],
+  "never_admitted": 0,
+  "all_successful_request_receipts_and_reader_lineage_verified": true,
+  "reused_accepted_qualification_sha256": {
+    "eod-wave13-prefix01-qualified.json": "66b902120072c2734bf3d17a1e153daf7c922320a7a7fc9280af6a397dfb02a5",
+    "eod-wave13-prefix02-qualified.json": "18c4bc105251ee54d1b05de9699539c7b3785ea6450d30c604f05d9ffd057943",
+    "eod-wave13-prefix03-qualified.json": "54f256523521cbdcc15bd57efe4fc0ff3fb392b1ed431b030acfdf0bae0c821c",
+    "eod-wave13-prefix04-qualified.json": "0df70d5b4806bf55597b9b6b08743946e1804658fc1a3f9f870d1929ff56f304",
+    "eod-wave13-prefix05-qualified.json": "95a39dcdd850fc38468e7c5f10d2b90cc0158476e407480b26c6f3afe8a69718",
+    "eod-wave13-prefix06-qualified.json": "f2af12e89aeeba2d45d398d8b09fb714fe76388160db9094238cf4f858288d02",
+    "eod-wave13-prefix07-qualified.json": "b9ed2b7d4f82870e3155fb13143228626a4cb711fbf3317dc56905a0f4e6a377",
+    "eod-wave13-prefix08-qualified.json": "f7ae6ba2d391672b92f20e155b0cd28f6298fd62734334a7bcc551c9bdf243b9",
+    "eod-wave13-prefix09-qualified.json": "ee6f0d911c9c5b64db2f0faf964d047a9009d847f1ac78af965be37c163fb2dd",
+    "eod-wave13-prefix10-qualified.json": "bfbfbfc9ed6aead1eeb512d929b4a3582f4d1ea49213f522bba25803172a24f1",
+    "eod-wave13-prefix11-qualified.json": "89a3f46a5feee9c0bf0e65c26f98dd5183f073bed4d2101e272adaba2f098bf0",
+    "eod-wave13-prefix12-qualified.json": "3e3117d01a5816df31edc9c8bd340c72f8a44b246a08ae6d7c09f261f14289a2",
+    "eod-wave13-prefix13-qualified.json": "5c13e7f2a5d77b5b72d4888d4f908850980e9e381a6bf71a9467d1fc013dc112",
+    "eod-wave13-prefix14-qualified.json": "09e10f1f3b6007b1e7fc6b5eff50f814eccc2c0753ac75a9c00e99254aa16ae1",
+    "eod-wave13-prefix15-qualified.json": "c2aa4848afe21cf4fab196b2e5db8b15464584127d578c200e5b10576cda4666",
+    "eod-wave13-prefix16-qualified.json": "1aaf5cf2bae791b4807f5c619e6682bd6c71abf3cf458bd0164dd0dd8d329f56",
+    "eod-wave13-prefix17-qualified.json": "4f8549f8c935a7962afd8be551b25d3b647fc25ab844e8ff976ee016e2474c74",
+    "eod-wave13-prefix18-qualified.json": "70084870300857b5a2e433121921be8efe0507bf2546695e676b631ca842cc23",
+    "eod-wave13-prefix19-qualified.json": "970b810d316d20727054ef6c8585320181f41c17c670b90baf3fc3367c06c0e9",
+    "eod-wave13-prefix20-qualified.json": "4c7711fc466ab22d9ebe370b56a4d7418a683447ca2fa658db4a15fdb8fc540d",
+    "eod-wave13-prefix21-qualified.json": "27a7becec320cd2f4ce39d2570f9fc435ea58afa3457ff11be01ed431b736710",
+    "eod-wave13-prefix22-qualified.json": "8b62001a4fb01181259d27c1c1c3e8458d6ef4770676a84f97cad0f19bc20e35",
+    "eod-wave13-prefix23-qualified.json": "e4ca9cc3a5bf7e6eda2282482b674e8988839b0202e38c30315357f4a2188bf5",
+    "eod-wave13-prefix24-qualified.json": "771aaf5b6559dca7a3d31b807d5c8deb08ed52df455caf9a89389e926b9554ca",
+    "eod-wave13-prefix25-qualified.json": "ab7cbc8c79bc781ccf89e24c16c0dedbb2c9a677b15ef6fb8874fba87efb0023",
+    "eod-wave13-prefix26-qualified.json": "9b8127cc66fccc324f9ee8f440962bbfa08a3b1a4b4235cb3c0ef353cbbf81b6",
+    "eod-wave13-prefix27-qualified.json": "3fd5570c0a493544f7f4136eec6f00e310834b7b680026ff0440f30358be36d9",
+    "eod-wave13-prefix28-qualified.json": "27dcb4752a03f8f2e0c8d9f0022b99aa424b8301f3d328786d6f5b326cf447f6"
+  },
+  "nonempty_histories": 4994,
+  "empty_responses": 0,
+  "distinct_bars": 10976717,
+  "raw_bytes": 2468556453,
+  "local_admission_trace_by_phase": [
+    {
+      "run_id": "eod-wave13-new-unreserved-20261012-01a12ab6",
+      "local_admission_count": 4886,
+      "minimum_four_admission_gap_seconds": 5.000034750089981
+    },
+    {
+      "run_id": "eod-wave13-original-unadmitted-continuation01-20261012-01a12ab6",
+      "local_admission_count": 22,
+      "minimum_four_admission_gap_seconds": 5.002167999977246
+    },
+    {
+      "run_id": "eod-wave13-original-unadmitted-continuation02-serial92-20261012-01a12ab6",
+      "local_admission_count": 42,
+      "minimum_four_admission_gap_seconds": 21.626104249968193
+    },
+    {
+      "run_id": "eod-wave13-original-unadmitted-continuation03-serial50-20261012-01a12ab6",
+      "local_admission_count": 47,
+      "minimum_four_admission_gap_seconds": 21.488478292012587
+    },
+    {
+      "run_id": "eod-wave13-original-unadmitted-continuation04-serial3-20261012-01a12ab6",
+      "local_admission_count": 3,
+      "minimum_four_admission_gap_seconds": null
+    }
+  ],
+  "continuation03_all_selected_captured_remains_false": true,
+  "final_plan_sha256": "8ea72f950a923795db2667a1261c90fec7a4a702f99ca0a21837f5c31f30ec39",
+  "final_scope_sha256": "ee0647a4527d36f016a4749aa6ba21b34990b5fad38feb6a7bdd534f14bdb09c",
+  "final_settlement_sha256": "a7fe781f617c337c4ec2c2eed59e35e90b4eac811a591d8fadfb6f6b44fc1638",
+  "final_method_sha256": "29dd9da6b0ca4cb03ff71fc48308c074c42ca6706879945527e9badd0337c575",
+  "initial_all_selected_captured_remains_false": true,
+  "all_5000_success_claimed": false,
+  "prior_failures_retried": false,
+  "raw_or_projection_rebuilt_for_accounting": false,
+  "provider_requests": 0,
+  "canonical_identity_admitted": false,
+  "pit_backtest_eligible": false,
+  "complete_vendor_history_proven": false
+}

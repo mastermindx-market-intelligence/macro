@@ -1,0 +1,128 @@
+{
+  "schema": "gmi.native_adoption_pilot_replay_receipt/v1",
+  "protocol_id": "native-adoption-pilot-c01-c06-20261009-v1",
+  "protocol_sha256": "cfff2160744ca51c6aabd1e6dd023ec07d6ddf99a345b93641056696b779763a",
+  "evidence_authority": "PRINCIPAL_REPORTED_STRUCTURAL_REPLAY; not this lane's execution, semantic adjudication, source-purpose permission, or production admission",
+  "native_execution_by_this_lane": false,
+  "status_at_protocol_freeze": "NOT_RUN_PENDING_ROOT_RECEIPT",
+  "current_status": "PRINCIPAL_REPORTED_PREMERGE_PASS",
+  "postmerge_proof": {
+    "status": "PENDING",
+    "receipt": null
+  },
+  "principal_report": {
+    "reporter": "/root",
+    "source_commit": "23002372c45a4543dac9f1650e4be1107d35896c",
+    "execution_source_receipt_sha256": "f3f839f462bfdc88eda5c8ab93403a15bb0a727fb94f1b285604ffea28a0c863",
+    "source_scope": {
+      "owned_paths": 30,
+      "dependency_paths": 71,
+      "unique_paths": 93
+    },
+    "consumer_sha256": "a558922c0586a5532f3912524b48f3cf592c3c6c9c21f689e3d416976e9cae55",
+    "combined_review_cli": {
+      "completed_at_utc": "2026-10-09T09:53:07Z",
+      "status": "PASS",
+      "guarded_processes": 11,
+      "literal_processes": 3,
+      "current_processing_counts": {
+        "requested_cases": 4,
+        "supplied_source_cases": 3,
+        "unique_supplied_source_byte_digests": 2,
+        "inspectable_cases": 2,
+        "refused_cases": 1,
+        "unavailable_cases": 1
+      },
+      "historical_processing_counts": {
+        "inspectable_cases": 0,
+        "refused_cases": 3,
+        "unavailable_cases": 1
+      },
+      "c01_current_and_historical_old_witness_match": true,
+      "regeneration_exact": true,
+      "c01_current_output_sha256": "6bbb39a463030c992760fb3309006f94bc10c37126894f0ae76a1288e46fb8b4",
+      "stdout_bytes": 8168,
+      "stdout_sha256": "e2366c4be966bbba4504b11feac1692e0fd3cf0be22339111625644cb51afffd",
+      "source_and_input_tree_unchanged": true,
+      "authority_promoted": false,
+      "admission_promoted": false
+    },
+    "retained_nvda_transport_control": {
+      "completed_at_utc": "2026-10-09T09:51:21Z",
+      "status": "PASS",
+      "calls": 5,
+      "complete_outputs_match": true,
+      "import_attempts": 0,
+      "side_effect_attempts": 0,
+      "tracked_files_unchanged": 104,
+      "stdout_bytes": 6555,
+      "stdout_sha256": "2633822ef913c3b4a964156c8beff2b51a7969b91f14b7de8e42999a332144ee",
+      "old_failures_reclassified": false,
+      "economic_case_denominator_contribution": 0
+    },
+    "raw_receipts_independently_read_by_this_lane": false
+  },
+  "pilot_scope": {
+    "requested_cases": 6,
+    "case_ids": [
+      "C01",
+      "C02",
+      "C03",
+      "C04",
+      "C05",
+      "C06"
+    ],
+    "current_native_replay_evidence_in_corpus": {
+      "C01": "PRINCIPAL_REPORTED_PASS",
+      "C02": "NOT_RUN_PDF_ROUTE_UNSUPPORTED",
+      "C03": "NOT_RUN_PDF_ROUTE_UNSUPPORTED",
+      "C04": "NOT_RUN_KIND_UNSUPPORTED",
+      "C05": "NOT_RUN_KIND_UNSUPPORTED",
+      "C06": "NOT_RUN_KIND_UNSUPPORTED"
+    },
+    "original_source_web_read_cases": 6,
+    "web_html_cases": 4,
+    "web_pdf_cases": 2,
+    "raw_original_bytes_acquired_by_this_lane": 0,
+    "known_prior_capture_metadata_cases": 1,
+    "case_semantic_review_basis": "Actual primary-source web text/table reads plus independently frozen source-meaning judgments; no substantive disagreements on six narrow claims and native holds/refusals.",
+    "no_seventh_economic_observation": true,
+    "independent_semantic_review": {
+      "status": "COMPLETE_NO_SUBSTANTIVE_DISAGREEMENT",
+      "reviewer": "/root/reader_boundary_readiness",
+      "receipt": {
+        "relative_path": "supporting_evidence/independent_semantic_judgments.json",
+        "sha256": "4357ab18cd8dddafd944b30641bf4c9168f755e1da60059a6ee5d8ded9192652",
+        "schema": "research.independent_semantic_judgments/v1",
+        "independent_judgment_frozen_at": "2026-10-09T09:57:56+00:00"
+      },
+      "reviewed_case_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "C04",
+        "C05",
+        "C06"
+      ],
+      "supported_with_qualifiers_cases": 6,
+      "unresolved_substantive_disagreements": 0,
+      "qualifications_integrated": [
+        "C02_and_C03_research_lifecycle_descriptors_are_not_native_enums",
+        "C04_percentage_ownership_does_not_imply_unrestricted_control"
+      ]
+    },
+    "consumer_disposition_counts": {
+      "basis": "Independent semantic eligibility judgment, not six executed native cases",
+      "selected_with_prior_original_source_binding": 1,
+      "original_pdf_format_holds": 2,
+      "unsupported_kind_refusals": 3
+    }
+  },
+  "limits": [
+    "The four-case principal replay counts are not the six-case pilot denominator.",
+    "Distinct source digests are not independent corroboration.",
+    "The web-rendered reads carry no original-byte hash.",
+    "C01's original capture binding is not the retained-NVIDIA SEC custody witness.",
+    "Postmerge execution, native dataset admission, rights, canonical identity, Graph1 and served-product acceptance are not established by this premerge replay report."
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "anchors": [
+    {
+      "new_fingerprint": "gamma_flow, 0DTE pct) is reliable. Accrual store: data/options_flow/summary_<SYM>.parquet",
+      "new_line": 5950,
+      "old_fingerprint": "gamma_flow, 0DTE pct) is reliable. Accrual store: data/options_flow/summary_<SYM>.parquet",
+      "old_line": 5940,
+      "path": "config/synapse.yml",
+      "qualification": "Independent old/current blob and #8374 semantic review for the 205-to-209 change; exact unique relocation otherwise."
+    },
+    {
+      "new_fingerprint": "path: data/options_entry/state.parquet",
+      "new_line": 6147,
+      "old_fingerprint": "path: data/options_entry/state.parquet",
+      "old_line": 6137,
+      "path": "config/synapse.yml",
+      "qualification": "Independent old/current blob and #8374 semantic review for the 205-to-209 change; exact unique relocation otherwise."
+    },
+    {
+      "new_fingerprint": "# --- prophet-ledger: Prophet forward outcome ledger ---",
+      "new_line": 11618,
+      "old_fingerprint": "# --- prophet-ledger: Prophet forward outcome ledger ---",
+      "old_line": 11574,
+      "path": "config/synapse.yml",
+      "qualification": "Independent old/current blob and #8374 semantic review for the 205-to-209 change; exact unique relocation otherwise."
+    },
+    {
+      "new_fingerprint": "R2_KEY = \"live_flow/ext_quotes.json\"",
+      "new_line": 57,
+      "old_fingerprint": "R2_KEY = \"live_flow/ext_quotes.json\"",
+      "old_line": 108,
+      "path": "scripts/build_ext_quotes.py",
+      "qualification": "Independent old/current blob and #8374 semantic review for the 205-to-209 change; exact unique relocation otherwise."
+    },
+    {
+      "new_fingerprint": "\"options_skew\",  # MO-PAID-013 W2-2 (A-F03-W2-2): ThetaData skew-accrual lane",
+      "new_line": 152,
+      "old_fingerprint": "\"options_skew\",  # MO-PAID-013 W2-2 (A-F03-W2-2): ThetaData skew-accrual lane",
+      "old_line": 150,
+      "path": "scripts/publish_r2.py",
+      "qualification": "Independent old/current blob and #8374 semantic review for the 205-to-209 change; exact unique relocation otherwise."
+    },
+    {
+      "new_fingerprint": "\"options_payoff_lab\",  # MO-A3 W2-5a (A-F03-W2-5a, 2026-09-23): options",
+      "new_line": 172,
+      "old_fingerprint": "\"options_payoff_lab\",  # MO-A3 W2-5a (A-F03-W2-5a, 2026-09-23): options",
+      "old_line": 170,
+      "path": "scripts/publish_r2.py",
+      "qualification": "Independent old/current blob and #8374 semantic review for the 205-to-209 change; exact unique relocation otherwise."
+    },
+    {
+      "new_fingerprint": "# gitignored \u2014 a CI runner checkout holds just the committed _manifest.json +",
+      "new_line": 188,
+      "old_fingerprint": "# gitignored \u2014 a CI runner checkout holds just the committed _manifest.json +",
+      "old_line": 186,
+      "path": "scripts/publish_r2.py",
+      "qualification": "Independent old/current blob and #8374 semantic review for the 205-to-209 change; exact unique relocation otherwise."
+    },
+    {
+      "new_fingerprint": "_DATA_DIR_MIN_FILES_OVERRIDE = {\"index_gex_history\": 4, \"price_pressure\": 3,",
+      "new_line": 209,
+      "old_fingerprint": "_DATA_DIR_MIN_FILES_OVERRIDE = {\"index_gex_history\": 5, \"price_pressure\": 3,",
+      "old_line": 205,
+      "path": "scripts/publish_r2.py",
+      "qualification": "Independent old/current blob and #8374 semantic review for the 205-to-209 change; exact unique relocation otherwise."
+    },
+    {
+      "new_fingerprint": "def _uploadable(d: str, base: Path, files: list[Path]) -> list[Path]:",
+      "new_line": 485,
+      "old_fingerprint": "def _uploadable(d: str, base: Path, files: list[Path]) -> list[Path]:",
+      "old_line": 480,
+      "path": "scripts/publish_r2.py",
+      "qualification": "Independent old/current blob and #8374 semantic review for the 205-to-209 change; exact unique relocation otherwise."
+    },
+    {
+      "new_fingerprint": "files = _uploadable(d, base, _walk_files(base))",
+      "new_line": 624,
+      "old_fingerprint": "files = _uploadable(d, base, _walk_files(base))",
+      "old_line": 594,
+      "path": "scripts/publish_r2.py",
+      "qualification": "Independent old/current blob and #8374 semantic review for the 205-to-209 change; exact unique relocation otherwise."
+    }
+  ],
+  "calling_source_head": "6eccb5aa3d3f640b8aea8dc61653bc0b4b5e9bde",
+  "census_identity_preserved": {
+    "macro": "772c8b36d2a70e9e72f870e76db73cf30c7dfed0",
+    "mastermind": "42ba5c76eb7ce1fdf44f3b44f332928668939df4",
+    "terminal": "b383d8c3579faeca1cdbcd29063535081aabf35b"
+  },
+  "claim": "Current source/control qualification only; historical data/site pins and August census identity are unchanged. No release or runtime admission follows from this receipt.",
+  "files": {
+    "config/synapse.yml": {
+      "current_line_count": 19143,
+      "current_sha256": "ec3f4ed483c1890710cc04f1766b4dd71785c195eab6d8872e57aaf5f026139f",
+      "previous_line_count": 19084,
+      "previous_sha256": "fb0d5805e5adefcf42a1e696d5ecd4d0112f849354c6f460b15ad005b70931c5"
+    },
+    "scripts/build_ext_quotes.py": {
+      "current_line_count": 760,
+      "current_sha256": "9d477b0128b744ed1423dd0135b697eb489f11aff156e3eee4f5e2af3febfc66",
+      "previous_line_count": 510,
+      "previous_sha256": "6dc557617b901b15a008e7ba78e07ee47b0c044ca94f58521ad2f64dd5b73d33"
+    },
+    "scripts/publish_r2.py": {
+      "current_line_count": 745,
+      "current_sha256": "d6446e1d3d66e5db51b19dde9e2c987a1f5f5d779c06a6c0e1400dbb8b1eaae0",
+      "previous_line_count": 715,
+      "previous_sha256": "6acbdcbeaa05a88a1725f6518cc1127e3eabec3ef4e96c00f9e65e99c83245e0"
+    }
+  },
+  "schema": "mastermind.qualified_live_pin_repair/v1"
+}

@@ -102,6 +102,7 @@ PUBLIC_PATHS = {
     "/plans.html",
     "/help.html",
     "/confluence_screener.html",
+    "/research_screener.html",
     "/macro.html",
     "/start.html",
     "/us_stocks.html",

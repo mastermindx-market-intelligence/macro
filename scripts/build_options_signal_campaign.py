@@ -25,11 +25,24 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="validate and derive without writing",
     )
+    parser.add_argument(
+        "--correction-activation-receipt",
+        default=None,
+        help=(
+            "path to a canonical reviewed activation receipt; the canonical "
+            "policy and all preconditions must still pass"
+        ),
+    )
     args = parser.parse_args(argv)
     try:
         summary = run(
             root_dir=Path(args.root_dir) if args.root_dir else None,
             dry_run=bool(args.dry_run),
+            correction_activation_receipt_path=(
+                Path(args.correction_activation_receipt)
+                if args.correction_activation_receipt
+                else None
+            ),
         )
     except (CampaignContractError, OSError, ValueError) as exc:
         print(

@@ -1,0 +1,108 @@
+{
+  "schema": "economic_network.ci_inventory_repair.v1",
+  "recorded_at": "2026-10-09T03:46:16.402101+00:00",
+  "operation_id": "gmi-economic-network-execution-20261009-pro-001",
+  "parent_head": "2a00eff6125d07cc2303b1edbafa00ba1d50d4a5",
+  "carrier": "https://github.com/mastermindx-market-intelligence/macro/pull/8667",
+  "failure": {
+    "run_id": 37877395436,
+    "job_id": 113649821453,
+    "logical_job": "ci-control-plane-contracts",
+    "pack": "ci-pack-0",
+    "test": "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+    "symmetric_difference": [
+      "company-relationship-candidates"
+    ],
+    "suite_result": "1 failed, 591 passed",
+    "aggregate": "failure",
+    "other_packs_passed": 11,
+    "candidate_job_result": "150 passed in 3.79s",
+    "contract_delta": {
+      "introduced": 0,
+      "inherited": 0,
+      "conclusion": "success"
+    }
+  },
+  "repair": {
+    "file": "tests/test_ci_pack.py",
+    "before_sha256": "55875715430d9e30873be72279d62e057cc5451f6ab093ebad031aec67485383",
+    "after_sha256": "c7fc028a53f58f6a9310cb874c535dee1fa1556b211691ea4bf5c873fae41357",
+    "added_lines": 3,
+    "added_inventory_member": "company-relationship-candidates",
+    "removed_members": [],
+    "all_other_top_level_ast_unchanged": true,
+    "manifest_unchanged": true,
+    "manifest_sha256": "195921e289363a9ecc6036c9b53fbcbb6c991df8ad8d08138b51fe23b63f2d64",
+    "packing_limits_unchanged": true,
+    "candidate_source_and_tests_unchanged": true
+  },
+  "targeted_validation": {
+    "command": [
+      "python3",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+      "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+      "tests/test_ci_pack.py::test_every_declared_scope_in_the_real_manifest_is_covered",
+      "tests/test_ci_pack.py::test_curated_exclusivity_drops_only_the_opaque_fallback_tier",
+      "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs"
+    ],
+    "exit_code": 0,
+    "seconds": 157.832,
+    "log": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/ci-inventory-targeted.log",
+    "log_sha256": "b23c8367dd2958a5a8d72b95ee246d2725c143aa2cdccc4714dd58156e7a334e",
+    "test_source_sha256": "c7fc028a53f58f6a9310cb874c535dee1fa1556b211691ea4bf5c873fae41357",
+    "candidate_head": "2a00eff6125d07cc2303b1edbafa00ba1d50d4a5",
+    "patch": "+3 lines curated inventory only"
+  },
+  "targeted_summary": {
+    "passed": 5,
+    "warnings": 8,
+    "warning_class": "preexisting pytest temporary Chromium directory cleanup",
+    "pytest_seconds": 157.32
+  },
+  "independent_review": {
+    "decision": "PASS",
+    "path": "research/theme_graph/economic_network_execution_20261009/CI_INVENTORY_INDEPENDENT_REVIEW.md",
+    "sha256": "48337b90b80d4fd3fe19ed1db38ddcb6489ed1a7778d186d7169f90e1ab6fa0f",
+    "independent_inventory_test_passed": 1,
+    "exit_code": 0
+  },
+  "collision_refresh": {
+    "source": "docs/ACTIVE_BUILD_MAP.md and live GitHub PR patches",
+    "open_prs": [
+      {
+        "pr": 8586,
+        "head": "fe3f076b7c9f0d365640c67ae148007c776c310c",
+        "change": "earlier distinct leadership-lab-recovery inventory entry"
+      },
+      {
+        "pr": 8444,
+        "head": "60a494ed8c647c45712a13c8919e6d51c8b60905",
+        "change": "dashboard assertions, preserved"
+      },
+      {
+        "pr": 8245,
+        "head": "b019f975c6959803e872fd5000601d6c4591bf62",
+        "change": "earlier distinct private-publication inventory entry"
+      },
+      {
+        "pr": 8192,
+        "head": "07136c56ec6f8492067b468f90c6b4372ca649b4",
+        "change": "new prospective-context test, preserved"
+      }
+    ],
+    "result": "No conflicting owned edit; all incumbent entries and assertions preserved"
+  },
+  "release": {
+    "current_head_after_commit": null,
+    "fresh_hosted_checks": "PENDING",
+    "merge": "PENDING",
+    "same_head_close_reopen": "NOT_PERFORMED; superseded by genuine source correction and normal synchronize",
+    "old_watch_pid": 79556,
+    "old_watch_exit_code": 1,
+    "full_project_mission_complete": false
+  },
+  "historical_evidence": "Earlier independent/source/CI records remain immutable stage records. This registration omission was not caught in the earlier closure review."
+}

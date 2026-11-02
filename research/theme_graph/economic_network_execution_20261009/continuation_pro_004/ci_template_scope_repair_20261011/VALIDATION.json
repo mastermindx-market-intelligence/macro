@@ -1,0 +1,44 @@
+{
+  "scope": "Inherited CI packing regression repair; not kernel semantic change or release authorization",
+  "base": "6ba70f04ecbc5d9e91316baae44f9e2247956a28",
+  "tested_head": "d783a58abb82cd742672c79f6301e6b2283cf651",
+  "red": {
+    "natural_run": 38138743851,
+    "job": 114468533433,
+    "test": "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+    "probe": "templates/index.html",
+    "selected_jobs": 135,
+    "weight": 5802,
+    "ceiling": 5800,
+    "baseline_failed_same_test": true
+  },
+  "green": [
+    {
+      "command": "python3 -m pytest tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared -q",
+      "passed": 2,
+      "seconds": 114.61,
+      "rc": 0
+    },
+    {
+      "command": "python3 -m pytest tests/test_integrated_answer_v0.py -q",
+      "passed": 17,
+      "seconds": 8.51,
+      "rc": 0
+    }
+  ],
+  "local_input_repair": {
+    "initial_test_result": "15 PASS, 2 FAIL due to omitted committed data/reference tables",
+    "restored_committed_blobs": {
+      "data/reference/security_master.parquet": "1166226d162ceb6e1239c34d6348041922992eff",
+      "data/reference/issuer_master.parquet": "fec60fb1e6e43255010e4543c6315b1223c9a277"
+    },
+    "golden_assertions_changed": false
+  },
+  "conservation": "36 kernel files,179 prior evidence files,53 observation sources conserved at d783;117 previously accepted tests reused",
+  "changed_files": {
+    ".github/ci/legacy-jobs.yml": "16569d15320cc8352a106b40fabcf140966ae19584f55170acb7b55525b7494c",
+    "tests/test_ci_pack.py": "87ea84b849b1b7de4ac378f24a597ebe733f7f5f45730f697d7c990d0b7ec145"
+  },
+  "limits_suite_commands_timeouts_changed": false,
+  "independent_review": "Native reasoning coordinator critique consumed; only broad templates/** removed, other opaque families retained, 650 static dependencies and 3 reviewed dynamic families included; narrative matching may broaden."
+}

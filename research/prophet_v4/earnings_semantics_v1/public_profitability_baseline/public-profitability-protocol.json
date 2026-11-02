@@ -1,0 +1,50 @@
+{
+  "schema": "prophet.public_profitability_descriptive_protocol/v1",
+  "question": "Does profitability-sorted stock selection improve average returns while leaving substantial downside risk?",
+  "scope": "PUBLIC_REVISED_VINTAGE_DESCRIPTIVE_BASELINE_NOT_NATIVE_GATE_E_OR_NEW_ALPHA_CLAIM",
+  "created_at": "2026-10-01T02:21:36.285696+00:00",
+  "data": "Kenneth French 25 portfolios formed on Size and Operating Profitability; first monthly value-weighted returns table only",
+  "source_page": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/tw_5_ports_me_op.html",
+  "download": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/25_Portfolios_ME_OP_5x5_CSV.zip",
+  "start": "1963-07",
+  "end_inclusive": "2026-08",
+  "definition": "In each of the 5 source size quintiles compare highest, middle and lowest OP quintiles. Across-size aggregates equally weight the five corresponding source portfolios each month. No stock selection, trend filter, switching rule or future regime condition is added.",
+  "primary_descriptive_contrast": "Across-size high-OP minus low-OP arithmetic mean monthly return, annualized by 12; not an alpha estimate",
+  "secondary_descriptive_measures": [
+    "CAGR",
+    "monthly-observed maximum drawdown",
+    "annualized monthly volatility",
+    "worst monthly return",
+    "arithmetic mean of worst 5% of months",
+    "matched-size high-minus-low returns for all five size groups"
+  ],
+  "eras": [
+    [
+      "1963-07",
+      "1989-12"
+    ],
+    [
+      "1990-01",
+      "2009-12"
+    ],
+    [
+      "2010-01",
+      "2026-08"
+    ]
+  ],
+  "uncertainty": "Exploratory paired moving-block resampling of the same high-minus-low series; candidate blocks overlap, starts sampled independently with replacement. 12-month contiguous blocks,4000replications,seed20260930,2.5/97.5quantiles of annualized mean. No promotion test, multiple-look stopping or chosen interval.",
+  "missing_rule": "Missing/nonfinite returns, duplicates or discontinuity in selected monthly sample fail; missing values never become zero.",
+  "costs": "Gross research-portfolio returns, no fees, capacity, implementation or underlying annual-reconstitution cost model. Aggregation is theoretical monthly rebalancing among source portfolios; no fund or executable broker strategy is claimed.",
+  "limitations": [
+    "Current revised vintage is not historical ingestion proof.",
+    "Source OP is operating profitability/book equity, not gross profits/assets or margin growth.",
+    "Negative book-equity firms and source-ineligible accounting cases are excluded by dataset construction.",
+    "Monthly drawdowns miss intramonth paths.",
+    "Equal weights across size cells are not the market cap-weighted market.",
+    "This does not validate Prophet stock-level earnings signals, calibrated conviction, event study or risk restrictions.",
+    "No private H1/Cycle outcomes or prior refused trend-frequency experiment are read or rerun."
+  ],
+  "parameter_search": "NONE",
+  "promotion_authority": false,
+  "native_trial_registration": false
+}

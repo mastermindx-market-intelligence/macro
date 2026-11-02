@@ -38,6 +38,8 @@ def build() -> dict:
     LATEST_JSON.parent.mkdir(parents=True, exist_ok=True)
     LATEST_JSON.write_text(json.dumps(vm, indent=2, default=str), encoding="utf-8")
 
+    # OFAC rungs only — public-news is rendered by the template
+    # (figure data-news-gbr), never a rung overwrite.
     rungs = sanctions_map.rungs_for(vm, _all_iso3())
 
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)

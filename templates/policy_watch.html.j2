@@ -218,7 +218,7 @@
 {%- endmacro %}
 {% macro confidence_tag(value) -%}
   {% set s = (value or '')|lower %}
-  {% if s.startswith('high') %}<span class="pw-meta">{{ t('High confidence','较高把握') }}</span>{% elif s.startswith('medium') %}<span class="pw-meta">{{ t('Medium confidence','中等把握') }}</span>{% else %}<span class="pw-meta">{{ t('Low confidence','较低把握') }}</span>{% endif %}
+  {% if s.startswith('high') %}<span class="pw-meta">{{ t('Analysis confidence: high','分析把握：较高') }}</span>{% elif s.startswith('medium') %}<span class="pw-meta">{{ t('Analysis confidence: medium','分析把握：中等') }}</span>{% else %}<span class="pw-meta">{{ t('Analysis confidence: low','分析把握：较低') }}</span>{% endif %}
 {%- endmacro %}
 {% macro lean_tag(value) -%}
   {% set labels = LEAN.get(value, [value, value]) %}
@@ -228,8 +228,17 @@
   {% if needs_review %}<span class="pw-badge warn">{{ t('Needs review','需要复核') }}</span>
   {% elif value == 'hit' %}<span class="pw-badge fact">{{ t('Right','正确') }}</span>
   {% elif value == 'miss' %}<span class="pw-badge miss">{{ t('Wrong','错误') }}</span>
-  {% elif value == 'void' %}<span class="pw-badge neutral">{{ t('Not scored','不计分') }}</span>
+  {% elif value == 'void' %}<span class="pw-badge neutral">{{ t('Excluded','不纳入记录') }}</span>
   {% else %}<span class="pw-badge neutral">{{ t('Open','待定') }}</span>{% endif %}
+{%- endmacro %}
+{% macro result_copy(call) -%}
+  {% set en = call.result_en or '' %}
+  {% set zh = call.result_zh or '' %}
+  {% if call.status == 'void' %}
+    {{ bl(en|replace('Not scored:', 'Excluded from track record:'), zh|replace('不计分：', '不纳入记录：')) }}
+  {% else %}
+    {{ bl(en, zh) }}
+  {% endif %}
 {%- endmacro %}
 {% macro section_head(kicker_en, kicker_zh, title_en, title_zh, desc_en='', desc_zh='') -%}
 <div class="pw-section-head">
@@ -638,7 +647,7 @@
         <span class="pw-card-label">{{ bl(actor[0], actor[1]) }}</span>
         <h3 class="pw-card-title">{{ view.subject }} · {{ lean_tag(view.lean) }}</h3>
         <p class="pw-primary">{{ bl(brief(view.thesis, 150), brief(view.thesis_zh, 72)) }}</p>
-        <div class="pw-meta-row"><span class="pw-chip">{{ t('Review by','复核日期') }} {{ view.check_by }}</span>{{ confidence_tag(view.conviction) }}</div>
+        <div class="pw-meta-row"><span class="pw-chip">{{ t('Next review','下次复核') }} {{ view.check_by }}</span>{{ confidence_tag(view.conviction) }}</div>
         {% if view.dissent or (view.falsifier and view.falsifier.text) %}
         <details class="pw-details">
           <summary class="gbtn gbtn-sm">{{ t('Risks & review','风险与复核条件') }}</summary>
@@ -815,7 +824,7 @@
       <span class="pw-stat"><strong>{{ counts.open }}</strong> {{ t('open','待定') }}</span>
       <span class="pw-stat"><strong>{{ counts.hit }}</strong> {{ t('right','正确') }}</span>
       <span class="pw-stat"><strong>{{ counts.miss }}</strong> {{ t('wrong','错误') }}</span>
-      {% if counts.void %}<span class="pw-stat"><strong>{{ counts.void }}</strong> {{ t('not scored','不计分') }}</span>{% endif %}
+      {% if counts.void %}<span class="pw-stat"><strong>{{ counts.void }}</strong> {{ t('excluded','不纳入记录') }}</span>{% endif %}
       {% if dates and dates.overdue_predictions %}<span class="pw-stat"><strong>{{ dates.overdue_predictions }}</strong> {{ t('need review','需要复核') }}</span>{% endif %}
     </div>
     <div class="pw-ledger">
@@ -824,9 +833,9 @@
       {% set call_copy = CALL_COPY.get(call.id, [brief(call.text_en,180),brief(call.text_zh,90)]) %}
       <article class="pw-call" data-policy-id="{{ call.id }}">
         <div>
-          <span class="pw-call-topic">{{ bl(topic[0],topic[1]) }}</span> <span class="pw-call-id">{{ call.id }}</span>
+          <span class="pw-call-topic">{{ bl(topic[0],topic[1]) }}</span>
           <p class="pw-call-text">{{ bl(call_copy[0],call_copy[1]) }}</p>
-          {% if call.result_en %}<p class="pw-meta">{{ t('Result','结果') }}: {{ bl(call.result_en,call.result_zh) }}{% if call.result_source %} · <a href="{{ call.result_source }}" target="_blank" rel="noopener">{{ t('Source','来源') }}</a>{% endif %}</p>{% endif %}
+          {% if call.result_en %}<p class="pw-meta">{{ t('Result','结果') }}: {{ result_copy(call) }}{% if call.result_source %} · <a href="{{ call.result_source }}" target="_blank" rel="noopener">{{ t('Source','来源') }}</a>{% endif %}</p>{% endif %}
         </div>
         <span class="pw-call-date">{% if call.reviewed_on %}{{ t('Reviewed','已复核') }} {{ call.reviewed_on }}{% else %}{{ t('Review','复核') }} {{ call.check_by }}{% endif %}</span>
         <span class="pw-call-status">{{ status_tag(call.status,call.needs_review) }}</span>
@@ -840,7 +849,7 @@
         {% set date_row = dates.predictions[call.id] if dates and dates.predictions and call.id in dates.predictions else none %}
         {% set topic = THREAD.get(call.thread,[call.thread,call.thread]) %}
         {% set call_copy = CALL_COPY.get(call.id, [brief(call.text_en,180),brief(call.text_zh,90)]) %}
-        <article class="pw-call" data-policy-id="full-{{ call.id }}"><div><span class="pw-call-topic">{{ bl(topic[0],topic[1]) }}</span> <span class="pw-call-id">{{ call.id }}</span><p class="pw-call-text">{{ bl(call_copy[0],call_copy[1]) }}</p>{% if call.result_en %}<p class="pw-meta">{{ t('Result','结果') }}: {{ bl(call.result_en,call.result_zh) }}{% if call.result_source %} · <a href="{{ call.result_source }}" target="_blank" rel="noopener">{{ t('Source','来源') }}</a>{% endif %}</p>{% endif %}</div><span class="pw-call-date">{% if call.reviewed_on %}{{ t('Reviewed','已复核') }} {{ call.reviewed_on }}{% else %}{{ t('Review','复核') }} {{ call.check_by }}{% endif %}</span><span class="pw-call-status">{{ status_tag(call.status,(date_row.overdue if date_row else false)) }}</span></article>
+        <article class="pw-call" data-policy-id="full-{{ call.id }}"><div><span class="pw-call-topic">{{ bl(topic[0],topic[1]) }}</span> <span class="pw-call-id">{{ call.id }}</span><p class="pw-call-text">{{ bl(call_copy[0],call_copy[1]) }}</p>{% if call.result_en %}<p class="pw-meta">{{ t('Result','结果') }}: {{ result_copy(call) }}{% if call.result_source %} · <a href="{{ call.result_source }}" target="_blank" rel="noopener">{{ t('Source','来源') }}</a>{% endif %}</p>{% endif %}</div><span class="pw-call-date">{% if call.reviewed_on %}{{ t('Reviewed','已复核') }} {{ call.reviewed_on }}{% else %}{{ t('Review','复核') }} {{ call.check_by }}{% endif %}</span><span class="pw-call-status">{{ status_tag(call.status,(date_row.overdue if date_row else false)) }}</span></article>
         {% endfor %}
       </div>
     </details>

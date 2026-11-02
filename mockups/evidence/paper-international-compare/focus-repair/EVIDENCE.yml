@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/intl_workspace.js
+manifest: mockups/evidence/paper-international-compare/focus-repair/manifest.json

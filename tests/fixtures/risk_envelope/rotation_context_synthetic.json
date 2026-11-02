@@ -1,0 +1,751 @@
+{
+  "schema": "mastermind.risk_envelope/v1",
+  "definition_id": "grey-deer-v1-2026-08-19",
+  "market": "US",
+  "revision": "settled",
+  "source_session": "2026-10-06",
+  "as_of": "2026-10-06",
+  "measured_state": {
+    "source_artifact": "market-state-latest",
+    "verdict": "MIXED",
+    "score": 51,
+    "role": "slow_confirmed_trend",
+    "as_of": "2026-10-06",
+    "usable": true
+  },
+  "hazard_summary": {
+    "stage": "NONE",
+    "stage_reason": "observed_settled_evidence",
+    "unreadable_sources": [],
+    "unmapped_required_sources": [],
+    "contributing_sources": [
+      "leadership-crack-latest",
+      "risk-radar-us"
+    ],
+    "capped_sources": [],
+    "primary_episode_id": null,
+    "active_episode_count": 0,
+    "stage_since": null,
+    "stage_since_basis": "no_episode_lifecycle_in_v0",
+    "display_only": true
+  },
+  "episodes": [],
+  "policies": [],
+  "policy_summary": {
+    "posture": "NORMAL",
+    "active_policy_ids": [],
+    "policy_count": 0,
+    "basis": "zero_active_policies",
+    "display_only": true
+  },
+  "data_state": "FRESH",
+  "repair_state": null,
+  "coherence": {
+    "state": "ALIGNED",
+    "scope": "market_reads",
+    "compares": [
+      "measured_state",
+      "hazard_evidence"
+    ],
+    "excludes": [
+      "policy_summary"
+    ],
+    "contradictions": [],
+    "contradiction_count": 0,
+    "display_only": true
+  },
+  "coverage": {
+    "required": [
+      "market-state-latest",
+      "leadership-crack-latest"
+    ],
+    "optional": [
+      "risk-radar-us",
+      "site-marketdata-rotation-events"
+    ],
+    "fresh": [
+      "market-state-latest",
+      "leadership-crack-latest",
+      "risk-radar-us",
+      "site-marketdata-rotation-events"
+    ],
+    "stale": [],
+    "missing": [],
+    "source_count": 4
+  },
+  "freshness": {
+    "source_session": "2026-10-06",
+    "per_source": {
+      "market-state-latest": {
+        "as_of": "2026-10-06",
+        "state": "FRESH",
+        "matches_session": true
+      },
+      "leadership-crack-latest": {
+        "as_of": "2026-10-06",
+        "state": "FRESH",
+        "matches_session": true
+      },
+      "risk-radar-us": {
+        "as_of": "2026-10-06",
+        "state": "FRESH",
+        "matches_session": true
+      },
+      "site-marketdata-rotation-events": {
+        "as_of": "2026-10-06",
+        "state": "FRESH",
+        "matches_session": true
+      }
+    },
+    "off_session_sources": [],
+    "all_on_session": true
+  },
+  "correction": null,
+  "provenance": {
+    "sources": [
+      {
+        "source_id": "market-state-latest",
+        "role": "measured_state",
+        "state": "MIXED",
+        "score": 51,
+        "as_of": "2026-10-06",
+        "coverage": "FRESH",
+        "required": true,
+        "hazard_stage": null,
+        "stage_ceiling": "FRAGILE",
+        "hazard_stage_claimed": null,
+        "label_en": "Market state",
+        "label_zh": "市场状态",
+        "detail": {
+          "any_input_stale": false,
+          "capped": false,
+          "components": [
+            {
+              "key": "risk",
+              "score": 40,
+              "weight": 0.18
+            },
+            {
+              "key": "breadth",
+              "score": 30,
+              "weight": 0.16
+            }
+          ],
+          "degraded_components": null,
+          "excluded_reason": null,
+          "expected_asof": null,
+          "freshness": {
+            "stale": false
+          },
+          "input_vintages": {
+            "breadth": "2026-10-06"
+          },
+          "lineage": {
+            "definition_id": "market-state-component-dependencies-v1",
+            "status": "PARTIAL",
+            "roots": [],
+            "dependency_groups": [
+              "equity_price"
+            ],
+            "derived_from": []
+          },
+          "market_transition": {
+            "basis": "market_state_forward_log_first_writer",
+            "status": "RECORDED",
+            "source_session": "2026-10-06",
+            "latest_recorded": {
+              "asof": "2026-10-06",
+              "logged_at": "2026-10-07T01:00:00Z",
+              "raw_score": 51,
+              "score": 51,
+              "verdict": "MIXED"
+            },
+            "previous_recorded": {
+              "asof": "2026-10-05",
+              "logged_at": "2026-10-06T01:00:00Z",
+              "raw_score": 48,
+              "score": 48,
+              "verdict": "MIXED"
+            },
+            "latest_comparison": {
+              "before": {
+                "asof": "2026-10-05",
+                "logged_at": "2026-10-06T01:00:00Z",
+                "raw_score": 48,
+                "score": 48,
+                "verdict": "MIXED"
+              },
+              "after": {
+                "asof": "2026-10-06",
+                "logged_at": "2026-10-07T01:00:00Z",
+                "raw_score": 51,
+                "score": 51,
+                "verdict": "MIXED"
+              },
+              "verdict_changed": false,
+              "adjacent_sessions": true,
+              "component_movements": [],
+              "changed_native_fields": [
+                "raw_score",
+                "score"
+              ],
+              "cause": "not_inferred_from_snapshot_differences"
+            },
+            "latest_recorded_change": {
+              "before": {
+                "asof": "2026-09-29",
+                "logged_at": "2026-09-30T01:00:00Z",
+                "raw_score": 61,
+                "score": 61,
+                "verdict": "RISK_ON",
+                "score_source": "blend",
+                "components": {
+                  "risk": {
+                    "score": 77,
+                    "weight": 0.18
+                  }
+                }
+              },
+              "after": {
+                "asof": "2026-09-30",
+                "logged_at": "2026-10-01T01:00:00Z",
+                "raw_score": 54,
+                "score": 54,
+                "verdict": "MIXED",
+                "score_source": "blend",
+                "components": {
+                  "risk": {
+                    "score": 37,
+                    "weight": 0.18
+                  }
+                }
+              },
+              "verdict_changed": true,
+              "adjacent_sessions": true,
+              "component_movements": [
+                {
+                  "key": "risk",
+                  "previous": {
+                    "score": 77,
+                    "weight": 0.18
+                  },
+                  "current": {
+                    "score": 37,
+                    "weight": 0.18
+                  },
+                  "score_delta": -40
+                }
+              ],
+              "changed_native_fields": [
+                "raw_score",
+                "score",
+                "verdict",
+                "components"
+              ],
+              "cause": "not_inferred_from_snapshot_differences"
+            },
+            "current_snapshot": {
+              "asof": "2026-10-06",
+              "logged_at": "2026-10-07T01:00:00Z",
+              "raw_score": 51,
+              "score": 51,
+              "verdict": "MIXED",
+              "capped": false,
+              "score_source": "blend",
+              "score_caps": [],
+              "score_ceiling": null,
+              "score_gap": null,
+              "overrides": [],
+              "components": [
+                {
+                  "key": "risk",
+                  "score": 40,
+                  "weight": 0.18
+                },
+                {
+                  "key": "breadth",
+                  "score": 30,
+                  "weight": 0.16
+                }
+              ],
+              "input_vintages": {
+                "breadth": "2026-10-06"
+              },
+              "freshness": {
+                "stale": false
+              }
+            },
+            "current_snapshot_basis": "current_persisted_snapshot_not_a_first_writer_receipt",
+            "current_matches_latest_record": true,
+            "excluded_record_count": 0,
+            "display_only": true,
+            "current_snapshot_excluded_reason": null
+          },
+          "overrides": [],
+          "raw_score": 51,
+          "score": 51,
+          "score_caps": [],
+          "score_ceiling": null,
+          "score_gap": null,
+          "score_source": "blend",
+          "stale_inputs": null,
+          "state_label_en": null,
+          "state_label_zh": null,
+          "verdict": "MIXED",
+          "worst_input_age_days": null
+        }
+      },
+      {
+        "source_id": "leadership-crack-latest",
+        "role": "hazard_evidence",
+        "state": "INTACT",
+        "score": null,
+        "as_of": "2026-10-06",
+        "coverage": "FRESH",
+        "required": true,
+        "hazard_stage": "NONE",
+        "stage_ceiling": "FRAGILE",
+        "hazard_stage_claimed": null,
+        "label_en": "Leadership cohort",
+        "label_zh": "龙头股群体",
+        "detail": {
+          "cohort_role": null,
+          "dislocation": false,
+          "excluded_reason": null,
+          "high_window_sessions": null,
+          "lineage": {},
+          "n_fresh": null,
+          "n_total": null,
+          "state_since": null
+        }
+      },
+      {
+        "source_id": "risk-radar-us",
+        "role": "hazard_evidence",
+        "state": "calm",
+        "score": 30,
+        "as_of": "2026-10-06",
+        "coverage": "FRESH",
+        "required": false,
+        "hazard_stage": "NONE",
+        "stage_ceiling": "FRAGILE",
+        "hazard_stage_claimed": null,
+        "label_en": "Cross-asset scares",
+        "label_zh": "跨资产风险扫描",
+        "detail": {
+          "excluded_reason": null,
+          "is_loud": false,
+          "is_warning": false,
+          "label_en": null,
+          "label_zh": null,
+          "lineage": {}
+        }
+      },
+      {
+        "source_id": "site-marketdata-rotation-events",
+        "role": "context",
+        "state": "DEFENSIVE_RELATIVE_STRENGTH",
+        "score": null,
+        "as_of": "2026-10-06",
+        "coverage": "FRESH",
+        "required": false,
+        "hazard_stage": null,
+        "stage_ceiling": "FRAGILE",
+        "hazard_stage_claimed": null,
+        "label_en": "Relative leadership",
+        "label_zh": "相对领导变化",
+        "detail": {
+          "availability_basis": "original_availability_unknown",
+          "confirmed_events": {
+            "active_count": 0,
+            "active_ids": [],
+            "active_ids_omitted": 0,
+            "as_of": "2026-09-25",
+            "usable": false
+          },
+          "early_context": {
+            "schema": "rotation_early_context/v1",
+            "definition_id": "synthetic-fixture-v1",
+            "as_of": "2026-10-06",
+            "availability": {
+              "status": "UNKNOWN",
+              "available_at": null
+            },
+            "display_only": true,
+            "state": "DEFENSIVE_RELATIVE_STRENGTH",
+            "reason_codes": [
+              "defensive_relative_strength_observed"
+            ],
+            "coverage": {
+              "registered_pairs": 1,
+              "evaluable_2s": 1,
+              "positive_2s": 1,
+              "missing_pair_ids": [],
+              "groups": {
+                "defensive_sector": {
+                  "registered": 1,
+                  "evaluable_2s": 1,
+                  "positive_2s": 1
+                }
+              }
+            },
+            "prior_loser_constituent_claim": false,
+            "pairs": [
+              {
+                "pair_id": "xlp_soxx",
+                "num": "XLP",
+                "den": "SOXX",
+                "context_group": "defensive_sector",
+                "eligible_2s": true,
+                "interpretation": "relative_leadership",
+                "horizons": {
+                  "2s": {
+                    "sessions": 2,
+                    "start": "2026-10-02",
+                    "end": "2026-10-06",
+                    "eligible": true,
+                    "numerator_return_pct": 1.58,
+                    "denominator_return_pct": 0.09,
+                    "ratio_return_pct": 1.49,
+                    "shape": "BOTH_UP",
+                    "reason_codes": []
+                  }
+                }
+              }
+            ],
+            "source_pair_count": 1,
+            "pairs_omitted": 0,
+            "omitted_pair_ids": [],
+            "lineage_source": "site-marketdata-rotation-events"
+          },
+          "excluded_reason": null,
+          "lineage": {
+            "definition_id": "synthetic-fixture-v1",
+            "status": "COMPLETE",
+            "roots": [
+              "synthetic:price:XLP:close:2026-10-06",
+              "synthetic:price:SOXX:close:2026-10-06"
+            ],
+            "dependency_groups": [
+              "equity_price"
+            ],
+            "derived_from": []
+          }
+        }
+      }
+    ],
+    "composer": "engine/risk_envelope.py",
+    "excludes": [
+      "engine/risk_state.py (frozen legacy fused score — excluded by contract)"
+    ]
+  },
+  "authority": {
+    "envelope_may_rank": false,
+    "envelope_may_gate": false,
+    "envelope_may_size": false,
+    "envelope_may_execute": false,
+    "policy_actions_require_individual_authority": true
+  },
+  "rotation_context": {
+    "source_artifact": "site-marketdata-rotation-events",
+    "state": "DEFENSIVE_RELATIVE_STRENGTH",
+    "as_of": "2026-10-06",
+    "usable": true,
+    "coverage": "FRESH",
+    "early_context": {
+      "schema": "rotation_early_context/v1",
+      "definition_id": "synthetic-fixture-v1",
+      "as_of": "2026-10-06",
+      "availability": {
+        "status": "UNKNOWN",
+        "available_at": null
+      },
+      "display_only": true,
+      "state": "DEFENSIVE_RELATIVE_STRENGTH",
+      "reason_codes": [
+        "defensive_relative_strength_observed"
+      ],
+      "coverage": {
+        "registered_pairs": 1,
+        "evaluable_2s": 1,
+        "positive_2s": 1,
+        "missing_pair_ids": [],
+        "groups": {
+          "defensive_sector": {
+            "registered": 1,
+            "evaluable_2s": 1,
+            "positive_2s": 1
+          }
+        }
+      },
+      "prior_loser_constituent_claim": false,
+      "pairs": [
+        {
+          "pair_id": "xlp_soxx",
+          "num": "XLP",
+          "den": "SOXX",
+          "context_group": "defensive_sector",
+          "eligible_2s": true,
+          "interpretation": "relative_leadership",
+          "horizons": {
+            "2s": {
+              "sessions": 2,
+              "start": "2026-10-02",
+              "end": "2026-10-06",
+              "eligible": true,
+              "numerator_return_pct": 1.58,
+              "denominator_return_pct": 0.09,
+              "ratio_return_pct": 1.49,
+              "shape": "BOTH_UP",
+              "reason_codes": []
+            }
+          }
+        }
+      ],
+      "source_pair_count": 1,
+      "pairs_omitted": 0,
+      "omitted_pair_ids": [],
+      "lineage_source": "site-marketdata-rotation-events"
+    },
+    "confirmed_events": {
+      "active_count": 0,
+      "active_ids": [],
+      "active_ids_omitted": 0,
+      "as_of": "2026-09-25",
+      "usable": false
+    },
+    "excluded_reason": null,
+    "display_only": true
+  },
+  "confluence": {
+    "definition_id": "rotation-risk-confluence-v1",
+    "state": "DEFENSIVE_RELATIVE_STRENGTH__MIXED",
+    "measured_backdrop": "MIXED",
+    "rotation_state": "DEFENSIVE_RELATIVE_STRENGTH",
+    "source_relationships": [
+      {
+        "sources": [
+          "market-state-latest",
+          "leadership-crack-latest"
+        ],
+        "relationship": "UNKNOWN",
+        "shared_roots": [],
+        "shared_dependency_groups": [],
+        "shared_ancestors": []
+      },
+      {
+        "sources": [
+          "market-state-latest",
+          "risk-radar-us"
+        ],
+        "relationship": "UNKNOWN",
+        "shared_roots": [],
+        "shared_dependency_groups": [],
+        "shared_ancestors": []
+      },
+      {
+        "sources": [
+          "market-state-latest",
+          "site-marketdata-rotation-events"
+        ],
+        "relationship": "SHARED",
+        "shared_roots": [],
+        "shared_dependency_groups": [
+          "equity_price"
+        ],
+        "shared_ancestors": []
+      },
+      {
+        "sources": [
+          "leadership-crack-latest",
+          "risk-radar-us"
+        ],
+        "relationship": "UNKNOWN",
+        "shared_roots": [],
+        "shared_dependency_groups": [],
+        "shared_ancestors": []
+      },
+      {
+        "sources": [
+          "leadership-crack-latest",
+          "site-marketdata-rotation-events"
+        ],
+        "relationship": "UNKNOWN",
+        "shared_roots": [],
+        "shared_dependency_groups": [],
+        "shared_ancestors": []
+      },
+      {
+        "sources": [
+          "risk-radar-us",
+          "site-marketdata-rotation-events"
+        ],
+        "relationship": "UNKNOWN",
+        "shared_roots": [],
+        "shared_dependency_groups": [],
+        "shared_ancestors": []
+      }
+    ],
+    "nonredundant_components": [
+      [
+        "leadership-crack-latest"
+      ],
+      [
+        "market-state-latest",
+        "site-marketdata-rotation-events"
+      ],
+      [
+        "risk-radar-us"
+      ]
+    ],
+    "nonredundant_component_count": null,
+    "unknown_lineage_sources": [
+      "leadership-crack-latest",
+      "market-state-latest",
+      "risk-radar-us"
+    ],
+    "excluded_sources": [],
+    "lineage_status": "PARTIAL",
+    "statistical_independence_established": false,
+    "changes_hazard_stage": false,
+    "changes_policy": false,
+    "display_only": true
+  },
+  "market_transition": {
+    "basis": "market_state_forward_log_first_writer",
+    "status": "RECORDED",
+    "source_session": "2026-10-06",
+    "latest_recorded": {
+      "asof": "2026-10-06",
+      "logged_at": "2026-10-07T01:00:00Z",
+      "raw_score": 51,
+      "score": 51,
+      "verdict": "MIXED"
+    },
+    "previous_recorded": {
+      "asof": "2026-10-05",
+      "logged_at": "2026-10-06T01:00:00Z",
+      "raw_score": 48,
+      "score": 48,
+      "verdict": "MIXED"
+    },
+    "latest_comparison": {
+      "before": {
+        "asof": "2026-10-05",
+        "logged_at": "2026-10-06T01:00:00Z",
+        "raw_score": 48,
+        "score": 48,
+        "verdict": "MIXED"
+      },
+      "after": {
+        "asof": "2026-10-06",
+        "logged_at": "2026-10-07T01:00:00Z",
+        "raw_score": 51,
+        "score": 51,
+        "verdict": "MIXED"
+      },
+      "verdict_changed": false,
+      "adjacent_sessions": true,
+      "component_movements": [],
+      "changed_native_fields": [
+        "raw_score",
+        "score"
+      ],
+      "cause": "not_inferred_from_snapshot_differences"
+    },
+    "latest_recorded_change": {
+      "before": {
+        "asof": "2026-09-29",
+        "logged_at": "2026-09-30T01:00:00Z",
+        "raw_score": 61,
+        "score": 61,
+        "verdict": "RISK_ON",
+        "score_source": "blend",
+        "components": {
+          "risk": {
+            "score": 77,
+            "weight": 0.18
+          }
+        }
+      },
+      "after": {
+        "asof": "2026-09-30",
+        "logged_at": "2026-10-01T01:00:00Z",
+        "raw_score": 54,
+        "score": 54,
+        "verdict": "MIXED",
+        "score_source": "blend",
+        "components": {
+          "risk": {
+            "score": 37,
+            "weight": 0.18
+          }
+        }
+      },
+      "verdict_changed": true,
+      "adjacent_sessions": true,
+      "component_movements": [
+        {
+          "key": "risk",
+          "previous": {
+            "score": 77,
+            "weight": 0.18
+          },
+          "current": {
+            "score": 37,
+            "weight": 0.18
+          },
+          "score_delta": -40
+        }
+      ],
+      "changed_native_fields": [
+        "raw_score",
+        "score",
+        "verdict",
+        "components"
+      ],
+      "cause": "not_inferred_from_snapshot_differences"
+    },
+    "current_snapshot": {
+      "asof": "2026-10-06",
+      "logged_at": "2026-10-07T01:00:00Z",
+      "raw_score": 51,
+      "score": 51,
+      "verdict": "MIXED",
+      "capped": false,
+      "score_source": "blend",
+      "score_caps": [],
+      "score_ceiling": null,
+      "score_gap": null,
+      "overrides": [],
+      "components": [
+        {
+          "key": "risk",
+          "score": 40,
+          "weight": 0.18
+        },
+        {
+          "key": "breadth",
+          "score": 30,
+          "weight": 0.16
+        }
+      ],
+      "input_vintages": {
+        "breadth": "2026-10-06"
+      },
+      "freshness": {
+        "stale": false
+      }
+    },
+    "current_snapshot_basis": "current_persisted_snapshot_not_a_first_writer_receipt",
+    "current_matches_latest_record": true,
+    "excluded_record_count": 0,
+    "display_only": true,
+    "current_snapshot_excluded_reason": null
+  },
+  "bundle_id": "a3a3d084e5e0caa4",
+  "observed_at": "2026-10-07T12:00:00Z",
+  "produced_at": "2026-10-07T12:00:00Z",
+  "stale_after": null,
+  "_fixture": "SYNTHETIC integration example generated through the real composer; not a historical emitted envelope or production capture."
+}

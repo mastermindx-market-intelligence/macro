@@ -1,0 +1,162 @@
+{
+  "schema": "risk-radar-t13-metadata-admission/v1",
+  "recorded_at": "2026-10-17T07:22:52Z",
+  "parent_session": "01a14837-d202-71fa-918c-99124fb860c5",
+  "status": "METADATA_READ_COMPLETE_EXECUTION_NOT_ADMITTED",
+  "mission_complete": false,
+  "scope": "Existing T13 H1/H2 intake only. No outcome join, model fit, sample regeneration, hydration, ledger write, forecast or policy promotion.",
+  "source": {
+    "commit": "3ab3382af89242c7b7fe8c65360bd883a7dd3504",
+    "path": "data/fred_vintage/vintages.parquet",
+    "git_blob": "f029ac2c7429196747bf826b8f2647e4996848b5",
+    "bytes": 233300,
+    "sha256": "4f44f23f00c15712fd67032e99def458b97a85cbff1856a1e3951b13a063e52f",
+    "rows": 16532,
+    "columns": {
+      "period": "datetime64[us]",
+      "realtime_end": "datetime64[us]",
+      "realtime_start": "datetime64[us]",
+      "series": "str",
+      "value": "float64"
+    },
+    "collector_path": "collectors/fred.py",
+    "collector_blob": "3773441b958e202bceea8746426d27e56545f13a",
+    "collector_output_type": 4,
+    "collector_semantics": "Initial-release-only rows according to the pinned collector, with API realtime_start/realtime_end; not a full revision matrix or an intraday availability ledger."
+  },
+  "series": {
+    "STLFSI4": {
+      "conflicting_period_start_values": 0,
+      "distinct_periods": 205,
+      "duplicate_period_start_rows": 0,
+      "duplicate_rows": 0,
+      "end_before_start": 0,
+      "missing_clock_cells": 0,
+      "missing_values": 0,
+      "period_max": "2026-10-09 00:00:00",
+      "period_min": "2022-11-11 00:00:00",
+      "periods_with_multiple_releases": 0,
+      "realtime_end_max": "9999-12-31 00:00:00",
+      "realtime_end_min": "2022-11-23 00:00:00",
+      "realtime_start_max": "2026-10-14 00:00:00",
+      "realtime_start_min": "2022-11-17 00:00:00",
+      "release_before_period": 0,
+      "rows": 205,
+      "rows_origin_window": 204,
+      "same_day_releases": 0
+    },
+    "THREEFYTP10": {
+      "conflicting_period_start_values": 0,
+      "distinct_periods": 2633,
+      "duplicate_period_start_rows": 0,
+      "duplicate_rows": 0,
+      "end_before_start": 0,
+      "missing_clock_cells": 0,
+      "missing_values": 0,
+      "period_max": "2026-10-09 00:00:00",
+      "period_min": "2016-04-01 00:00:00",
+      "periods_with_multiple_releases": 0,
+      "realtime_end_max": "9999-12-31 00:00:00",
+      "realtime_end_min": "2016-11-08 00:00:00",
+      "realtime_start_max": "2026-10-13 00:00:00",
+      "realtime_start_min": "2016-08-11 00:00:00",
+      "release_before_period": 0,
+      "rows": 2633,
+      "rows_origin_window": 1315,
+      "same_day_releases": 0
+    }
+  },
+  "origin_presence": {
+    "calendar_basis": "frozen census SPY-reference dates only; not the T13 Massive RAW input identity",
+    "origin_count": 1321,
+    "origin_end": "2026-10-07",
+    "origin_start": "2021-07-06",
+    "series": {
+      "STLFSI4": {
+        "available_origin_count": 973,
+        "first_eligible_origin": "2022-11-18",
+        "interpretation": "date-only cached release strictly before origin; absence count only, no staleness or source-purpose admission inferred",
+        "last_origin_latest_admissible_period": "2026-09-25 00:00:00",
+        "last_origin_latest_admissible_release": "2026-09-30 00:00:00",
+        "last_unavailable_origin": "2022-11-17",
+        "unavailable_origin_count": 348
+      },
+      "THREEFYTP10": {
+        "available_origin_count": 1321,
+        "first_eligible_origin": "2021-07-06",
+        "interpretation": "date-only cached release strictly before origin; absence count only, no staleness or source-purpose admission inferred",
+        "last_origin_latest_admissible_period": "2026-10-02 00:00:00",
+        "last_origin_latest_admissible_release": "2026-10-06 00:00:00",
+        "last_unavailable_origin": null,
+        "unavailable_origin_count": 0
+      }
+    }
+  },
+  "release_batches": {
+    "STLFSI4": {
+      "latest_admissible_release": "2026-10-07 strictly excluded; 2026-09-30 00:00:00",
+      "latest_batch_period_max": "2026-09-25 00:00:00",
+      "latest_batch_period_min": "2026-09-25 00:00:00",
+      "latest_batch_rows": 1,
+      "max_periods_per_release": 1,
+      "multi_period_release_dates": 0,
+      "release_dates": 205
+    },
+    "THREEFYTP10": {
+      "latest_admissible_release": "2026-10-07 strictly excluded; 2026-10-06 00:00:00",
+      "latest_batch_period_max": "2026-10-02 00:00:00",
+      "latest_batch_period_min": "2026-09-28 00:00:00",
+      "latest_batch_rows": 5,
+      "max_periods_per_release": 68,
+      "multi_period_release_dates": 361,
+      "release_dates": 361
+    }
+  },
+  "current_seat_decisions": {
+    "methodology_owner": "Sol, current Meta-CEO seat",
+    "clock": "A date-only realtime_start must be strictly earlier than the origin calendar date. Same-day releases are unusable until the next eligible session.",
+    "batch_selection": "For the next execution freeze: choose maximum eligible realtime_start, then maximum period within that batch. Exact duplicate/conflicting (series,period,realtime_start) rows must cause explicit qualification/refusal, never order-dependent selection.",
+    "features": "H1 THREEFYTP10 Kim-Wright 10y term-premium level; H2 STLFSI4 level; preserve positive directions. H3-H9 remain ineligible.",
+    "availability_boundary": "Counts are metadata presence on the frozen census SPY-reference calendar, before feature staleness, warm-up, label maturity or T12 sample membership. They do not establish fitted-row eligibility.",
+    "unavailable_rule": "STLFSI4 origins before 2022-11-18 abstain. Do not narrow the sample without a declared revision or fill from current/revised history.",
+    "fit_status": "Not admitted; unchanged T13 draft is not frozen by this metadata receipt."
+  },
+  "outstanding_bindings": [
+    {
+      "id": "SOURCE_PURPOSE",
+      "state": "UNRESOLVED",
+      "evidence": "PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md row/model-use UNKNOWN/not a source; downstream PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md rows 4/5 recorded internal fitting conflict with its own upstream-condition/G6. Current FRED legal terms inspected 2026-10-17. No new purpose-specific grant or interpretation was issued."
+    },
+    {
+      "id": "T12_PRICE_AND_SAMPLE",
+      "state": "NOT_REVERIFIED",
+      "code_blob": "0a0eecb98e743b780db1ee3b0382e268d592fa67",
+      "spec_blob": "fe68838867982e845297aeb0daf518e0387120f9",
+      "source": "Existing Massive RAW SPY, 2021-07-06 through 2026-10-07",
+      "expected_normalized_rows": 1321,
+      "expected_normalized_sha256": "c686f0bc683f3109c1be5431cab99661734f2481fc98e8479320e285507be6fb",
+      "seed": 20261013,
+      "expected_sample_hash": null,
+      "reason": "Actual Massive price bytes, canonical sample JSON digest, episode identities and daily-origin projection are not yet bound. Matching calendar counts are not input identity."
+    },
+    {
+      "id": "ESTIMATOR_AND_INFERENCE",
+      "state": "UNBOUND",
+      "reason": "T12 emits episode windows, not a complete fitted origin table. An exact runner/calibration/dependence/minimum-evidence packet remains necessary. Existing T13 leave-one-episode-out can train on later history and cannot establish chronological executable lead."
+    }
+  ],
+  "trial_custody": {
+    "t13_proposed_cells": 12,
+    "t13_new_fits": 0,
+    "t13_ledger_changes": 0,
+    "t14_unchanged": true,
+    "t19_unchanged": true,
+    "broader_design_not_charged_to_t13": true
+  },
+  "prior_worker_frontier": {
+    "transport": "remote_desktop_commander",
+    "submitted": "Read-only Python dependency probe only",
+    "result": "Tool aborted after 1036 seconds with no process handle. Probe completion is unknown. No parquet computation or mutation command was submitted; no worker metadata result was accepted.",
+    "parent_resolution": "Parent completed the bounded immutable-byte read through studio_direct; worker stopped and no watcher remains."
+  }
+}

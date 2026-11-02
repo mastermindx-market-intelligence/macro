@@ -7,9 +7,11 @@ ingest carve-outs stay explicit and public.
 """
 from __future__ import annotations
 
+from fnmatch import fnmatchcase
 import re
 from pathlib import Path
 
+import pytest
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -51,6 +53,21 @@ def _public_policy_tokens() -> set[str]:
     result = set(policy["public"]["exact"])
     result.update(prefix.rstrip("/") + "/*" for prefix in policy["public"]["prefixes"])
     return result
+
+
+def test_shell_opt_in_cache_policy_is_independent_of_parent_framing_admission():
+    """An unmatched parent must not prime a cache entry that denies the beta iframe."""
+    text = _read_caddyfile()
+    cache_selector = _extract_block(text, "@shared_shell_requested")
+    assert _path_tokens(cache_selector) == {"/", "*.html"}
+    assert "query mmx_shell=1" in cache_selector
+    assert "Referer" not in cache_selector
+    cache_headers = _extract_block(text, "header @shared_shell_requested")
+    assert 'Cache-Control "private, no-store"' in cache_headers
+    assert re.search(r"(?m)^\s*defer\s*$", cache_headers)
+    frame_selector = _extract_block(text, "@shared_shell_document")
+    assert "query mmx_shell=1" in frame_selector
+    assert r"header_regexp Referer ^https://(beta|app)\.mastermind-x\.com/" in frame_selector
 
 
 def test_broad_asset_matcher_protects_paid_json_and_keeps_only_carveouts_public():
@@ -95,6 +112,17 @@ def test_shared_cache_headers_match_only_reviewed_public_paths():
     assert re.search(r"(?m)^[ \t]*@static[ \t]*\{", text) is None
     assert re.search(r"(?m)^[ \t]*@versioned[ \t]*\{", text) is None
     assert re.search(r"(?m)^[ \t]*@reg_json[ \t]*\{", text) is None
+
+
+def test_shared_shell_presentation_assets_are_exact_public_paths_in_all_edge_matchers():
+    paths = {"/shared_shell_bridge.js", "/shared_shell.css"}
+    policy = yaml.safe_load(POLICY_FILE.read_text(encoding="utf-8"))
+    assert paths <= set(policy["public"]["exact"])
+    text = _read_caddyfile()
+    for matcher in ("@reg_asset", "@reg_asset_err", "@public_static", "@public_versioned"):
+        assert paths <= _path_tokens(_extract_block(text, matcher))
+    assert "not query v=*" in _extract_block(text, "@public_static")
+    assert "query v=*" in _extract_block(text, "@public_versioned")
 
 
 def test_public_pages_fetch_nothing_under_paid_prefixes():
@@ -148,3 +176,85 @@ def test_html_documents_are_served_open_not_registration_gated():
         assert wall not in open_handler, f"@open_html routes pages through {wall}"
     # Payloads: the asset wall is untouched and still fail-closed.
     assert "rewrite /api/regwall/check" in _extract_block(text, "handle @reg_asset")
+
+
+@pytest.mark.parametrize(("asset", "cache_matcher", "other_cache_matcher"), (
+    ("/stock-dashboard.css", "@public_versioned", "@watchlist_shell_versioned"),
+    ("/hk-stock-v36.js", "@watchlist_shell_versioned", "@public_versioned"),
+    ("/canada-stock-v36.js", "@watchlist_shell_versioned", "@public_versioned"),
+))
+def test_hkca_shell_dependencies_are_public_with_stamp_aware_cache(
+    asset, cache_matcher, other_cache_matcher
+):
+    """The three public shell files keep the cache lane implied by their stamp."""
+    policy = yaml.safe_load(POLICY_FILE.read_text(encoding="utf-8"))
+    assert policy["public"]["exact"].count(asset) == 1
+    assert asset not in policy["free_registered"]["exact"]
+    source = _read_caddyfile()
+    for matcher in ("@reg_asset", "@reg_asset_err", "@public_static"):
+        assert asset in _path_tokens(_extract_block(source, matcher)), matcher
+    assert asset in _path_tokens(_extract_block(source, cache_matcher)), cache_matcher
+    assert asset not in _path_tokens(_extract_block(source, other_cache_matcher)), (
+        f"{asset} must not be served by both cache lanes"
+    )
+
+
+@pytest.mark.parametrize("payload", (
+    "/factordata/hk_standouts.json", "/factordata/canada_standouts.json",
+    "/hkstockdata/0700_HK.json", "/canadastockdata/ATRL_TO.json",
+))
+def test_hkca_shell_restoration_keeps_analytical_payloads_private(payload):
+    """Opening presentation files never opens board or per-stock evidence."""
+    source = _read_caddyfile()
+    assert not any(fnmatchcase(payload, rule) for rule in _public_policy_tokens())
+    for matcher in (
+        "@reg_asset", "@reg_asset_err", "@public_static",
+        "@public_versioned", "@watchlist_shell_versioned",
+    ):
+        rules = _path_tokens(_extract_block(source, matcher))
+        assert not any(fnmatchcase(payload, rule) for rule in rules), matcher
+
+
+def test_prophet_leader_observation_source_is_early_paid_and_pricing_disclosed():
+    """The tier-preview wall is honest only when the raw ticker map cannot bypass it."""
+    policy = yaml.safe_load(POLICY_FILE.read_text(encoding="utf-8"))
+    source = "/anticipationdata/us_leader_pullback.json"
+
+    assert source in policy["premium"]["enforced_early"]["exact"]
+    assert source not in policy["public"]["exact"]
+    assert source not in policy["free_registered"]["exact"]
+    assert not any(
+        source.startswith(prefix)
+        for section in ("public", "free_registered")
+        for prefix in policy[section]["prefixes"]
+    )
+
+    plans = (REPO_ROOT / "templates" / "plans.html.j2").read_text(
+        encoding="utf-8"
+    )
+    assert "leaders waiting for entry" in plans
+    assert "领涨股" in plans
+    assert "1 before signup" in plans
+    assert "3 / list / day" in plans
+    assert "Full book" in plans
+
+
+def test_holding_research_code_assets_public_without_private_response_exemption():
+    """The anonymous shell loads code; exact-row data stays on the paid API."""
+    assets = {"/institutional_holding_research.js", "/institutional_holding_research.css"}
+    policy = _public_policy_tokens()
+    assert assets <= policy
+    text = _read_caddyfile()
+    for name in ("@reg_asset", "@reg_asset_err", "@public_static", "@public_versioned"):
+        paths = _path_tokens(_extract_block(text, name))
+        assert assets <= paths, name
+    private_paths = {
+        "/api/forensics/v1/institutional/reported-holding",
+        "/institutional_holding_research.json",
+        "/institutional_13f/holdings.parquet",
+    }
+    for path in private_paths:
+        assert not any(fnmatchcase(path, public) for public in policy), path
+        for name in ("@public_static", "@public_versioned"):
+            assert not any(fnmatchcase(path, public) for public in
+                           _path_tokens(_extract_block(text, name))), (name, path)

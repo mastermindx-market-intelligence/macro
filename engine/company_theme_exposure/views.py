@@ -1,16 +1,17 @@
 """Pure, deterministic projections for Company Theme Exposure."""
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 from hashlib import sha256
 import json
 from pathlib import Path
+import re
 import tempfile
 from typing import Any, Iterable, Mapping
 
 import yaml
 
-from engine.company_intelligence.contracts import ContractError, iso_timestamp, parse_date, safe_ticker, validate_context, validate_manifest as validate_company_manifest
+from engine.company_intelligence.contracts import ContractError, iso_timestamp, safe_ticker, validate_context, validate_manifest as validate_company_manifest
 from .contracts import (
     AUTHORITY, EXPOSURE_SCHEMA, MANIFEST_SCHEMA, bytes_sha256, canonical_json_bytes,
     canonical_json_sha256, company_filename, validate_exposure, validate_manifest,
@@ -19,14 +20,37 @@ from .contracts import (
 
 THEME_STATE_MAX_AGE_DAYS = 5
 
+# Exactly the extended ``YYYY-MM-DD`` day form.  ``date.fromisoformat`` /
+# ``datetime.fromisoformat`` also accept basic (``20260207``) and week
+# (``2026-W06-5``) forms on Python 3.11+, so the shape is pinned here instead.
+_ISO_DAY_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
+
 
 def _as_date(value: object) -> date | None:
+    """Parse exactly a ``YYYY-MM-DD`` day or a real ISO-8601 datetime; never raise.
+
+    ``engine.company_intelligence.contracts.parse_date`` deliberately accepts
+    ``text[:10]`` because its callers pass full timestamps; this projection
+    must not inherit that truncation (``"2026-02-07garbage"`` must not be age
+    0), so the field is parsed locally and everything else is ``None``.
+    """
     if value is None:
         return None
-    try:
-        return parse_date(value, field="date")
-    except ContractError:
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    if not isinstance(value, str) or not value:
         return None
+    text = value[:-1] + "+00:00" if value.endswith("Z") else value
+    try:
+        if _ISO_DAY_RE.fullmatch(text):
+            return date.fromisoformat(text)
+        if len(text) > 10 and text[4] == "-" and text[7] == "-":
+            return datetime.fromisoformat(text).date()
+    except ValueError:
+        return None
+    return None
 
 
 def _theme_state_receipt(
@@ -47,6 +71,9 @@ def _theme_state_receipt(
     structurally_complete = (
         isinstance(themes, list)
         and bool(themes)
+        # A bool is an int in Python (``True == 1``): refuse it as a count the
+        # same way ``contracts._coverage`` refuses bool coverage counts.
+        and not isinstance(payload.get("n_themes"), bool)
         and isinstance(payload.get("n_themes"), int)
         and payload["n_themes"] == len(themes)
         and len(theme_ids) == len(set(theme_ids))

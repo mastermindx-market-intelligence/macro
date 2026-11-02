@@ -87,6 +87,8 @@ def summarize(snapshot: Any, *, allow_stale: bool = False) -> dict:
             "dx": headline["one_month_vector"]["dx"],
             "dy": headline["one_month_vector"]["dy"],
             "status": headline["one_month_vector"]["status"],
+            "x_axis_id": headline["one_month_vector"].get("x_axis_id"),
+            "y_axis_id": headline["one_month_vector"].get("y_axis_id"),
         },
         "effective_date": headline["effective_date"],
         "freshness": fresh,
@@ -103,7 +105,7 @@ def summarize(snapshot: Any, *, allow_stale: bool = False) -> dict:
         "audit": {
             "consumer": "engine.market_os.macro_workspaces.consumer",
             "reason_code": "OK",
-            "detail": "snapshot validated against mastermind.macro_workspace_snapshot.v1",
+            "detail": "snapshot checked against mastermind.macro_workspace_snapshot.v1",
             "contract_ok": True,
             "generation_id": gen["generation_id"],
             "content_sha256": gen["content_sha256"],

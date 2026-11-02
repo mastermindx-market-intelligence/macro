@@ -1,0 +1,249 @@
+{
+  "document_kind": "DATED_CARRIER_NAVIGATION_NOT_RUNTIME_STATE",
+  "r5_snapshot": "c9978765aa0085eba0213430284cb4b41065d4e2",
+  "count": 13,
+  "carriers": [
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "number": 7180,
+      "role": "Completed-session and exact source-bound publication",
+      "status_basis": "Native metadata read during R6 preparation, 2026-09-23; no runtime/CI/review acceptance census",
+      "last_verified_status": "OPEN_DRAFT",
+      "last_verified_head": "a991d4d22a933ca8953a08260352cc4b30e2ee8d",
+      "current_head_and_runtime_state": "HEAD_OBSERVED_RUNTIME_UNPROBED",
+      "remaining_obligation": "Body qualification cited an older head; new head needs exact review/composition/proof. Ordinary served-path refresh remains distinct.",
+      "build_consumers": [
+        "B01",
+        "B03",
+        "B06",
+        "B23"
+      ],
+      "existing_finding_comments": [],
+      "action_law": "Refresh exact head, custody, original reviewer and effects before acting. Preserve original carrier.",
+      "branch": "sol/prophet-us-completed-session-sourcebound-20260915",
+      "program_accountable_owner": "Fable Meta-CEO"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "number": 7572,
+      "role": "Searchable lossless candidate field",
+      "status_basis": "Native metadata read during R6 preparation, 2026-09-23; no runtime/CI/review acceptance census",
+      "last_verified_status": "OPEN_DRAFT",
+      "last_verified_head": "5e43db462b5ffa4912874c0be32549f8e26baeda",
+      "current_head_and_runtime_state": "HEAD_OBSERVED_RUNTIME_UNPROBED",
+      "remaining_obligation": "Retain private payload, source digest and honest unscored rows. Do not apply older-head test claims to newer head; do not equate board-pool identity with B1.",
+      "build_consumers": [
+        "B03",
+        "B07",
+        "B20"
+      ],
+      "existing_finding_comments": [],
+      "action_law": "Refresh exact head, custody, original reviewer and effects before acting. Preserve original carrier.",
+      "branch": "sol/us-prophet-candidate-visibility-20260921",
+      "program_accountable_owner": "Fable Meta-CEO"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "number": 7581,
+      "role": "Sole B4 runtime source adapter",
+      "status_basis": "Native metadata read during R6 preparation, 2026-09-23; no runtime/CI/review acceptance census",
+      "last_verified_status": "OPEN_DRAFT",
+      "last_verified_head": "39ef2cd48e091d90f12771aab142c2197022aa79",
+      "current_head_and_runtime_state": "HEAD_OBSERVED_RUNTIME_UNPROBED",
+      "remaining_obligation": "Resolve source-session validity question, complete native owner facts and exact non-author review. No new review child or confluence waiver.",
+      "build_consumers": [
+        "B05",
+        "B07",
+        "B12"
+      ],
+      "existing_finding_comments": [
+        5789777976
+      ],
+      "action_law": "Refresh exact head, custody, original reviewer and effects before acting. Preserve original carrier.",
+      "branch": "sol/prophet-b4-runtime-owner-adapter-20260921",
+      "program_accountable_owner": "Fable Meta-CEO"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "number": 7584,
+      "role": "Price-basis provenance",
+      "status_basis": "Last verified in R2; not re-censused in R5",
+      "last_verified_status": "OPEN_DRAFT",
+      "last_verified_head": "87f85e88f75bf037e4f917ee30313444f766bb62",
+      "current_head_and_runtime_state": "NOT_RECHECKED_R5",
+      "remaining_obligation": "Accepted original review and downstream real-source proof required; numeric similarity alone is not provenance.",
+      "build_consumers": [
+        "B05",
+        "B08",
+        "B23"
+      ],
+      "existing_finding_comments": [],
+      "action_law": "Refresh exact head, custody, original reviewer and effects before acting. Preserve original carrier.",
+      "program_accountable_owner": "Fable Meta-CEO"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "number": 7734,
+      "role": "NBBO/current-session-open measurement substrate",
+      "status_basis": "Last verified in R2; not re-censused in R5",
+      "last_verified_status": "OPEN_DRAFT",
+      "last_verified_head": "55e8671317af3219785e7a14e490028a9933daa4",
+      "current_head_and_runtime_state": "NOT_RECHECKED_R5",
+      "remaining_obligation": "Measured facts only; no calibrated policy or capacity authority. Exact review and owner-compatible integration required.",
+      "build_consumers": [
+        "B05",
+        "B06",
+        "B23"
+      ],
+      "existing_finding_comments": [],
+      "action_law": "Refresh exact head, custody, original reviewer and effects before acting. Preserve original carrier.",
+      "program_accountable_owner": "Fable Meta-CEO"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "number": 7738,
+      "role": "B4 fillability/gap initial policy facts",
+      "status_basis": "Last verified in R1 source checkpoint; not re-censused in R5",
+      "last_verified_status": "DRAFT_CONTROL_SHADOW",
+      "last_verified_head": "b143e7000b6afa003a15a7f934f4aaf099968d42",
+      "current_head_and_runtime_state": "NOT_RECHECKED_R5",
+      "remaining_obligation": "Operation constants remain uncalibrated. Do not promote from configuration or source merge alone.",
+      "build_consumers": [
+        "B05",
+        "B06",
+        "B12"
+      ],
+      "existing_finding_comments": [],
+      "action_law": "Refresh exact head, custody, original reviewer and effects before acting. Preserve original carrier.",
+      "program_accountable_owner": "Fable Meta-CEO"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "number": 7751,
+      "role": "Prospective B4 calibration preregistration",
+      "status_basis": "Last verified in R1; not re-censused in R5",
+      "last_verified_status": "MERGED_REGISTRATION_ONLY",
+      "last_verified_head": "01de8a7d36a8ce2e09242c167ca5869d1db34a20",
+      "current_head_and_runtime_state": "NOT_RECHECKED_R5",
+      "remaining_obligation": "Merge ad48105910163e5709c75f28c0ae0edefa8eca57. Eight labels/six unique configurations finding remains; explicit alias or lawful amendment. No outcome read or capture-state claim.",
+      "build_consumers": [
+        "B06",
+        "B12"
+      ],
+      "existing_finding_comments": [
+        5787579945
+      ],
+      "action_law": "Refresh exact head, custody, original reviewer and effects before acting. Preserve original carrier.",
+      "program_accountable_owner": "Fable Meta-CEO"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "number": 7455,
+      "role": "Closed-session subtheme leadership",
+      "status_basis": "Last verified in R3; not re-censused in R5",
+      "last_verified_status": "OPEN_DRAFT",
+      "last_verified_head": "fdd731f18a7634c57cdc83fc80cbe13811ec745e",
+      "current_head_and_runtime_state": "NOT_RECHECKED_R5",
+      "remaining_obligation": "Last described scope Semiconductors; current-membership/non-PIT and basis limits. No all-US historical predictive claim.",
+      "build_consumers": [
+        "B09",
+        "B10",
+        "B20"
+      ],
+      "existing_finding_comments": [],
+      "action_law": "Refresh exact head, custody, original reviewer and effects before acting. Preserve original carrier.",
+      "program_accountable_owner": "Fable Meta-CEO"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "number": 7508,
+      "role": "Theme leadership/entry-context source",
+      "status_basis": "Last verified in Phase2; not re-censused in R5",
+      "last_verified_status": "EXISTING_CARRIER_STATUS_NOT_RECHECKED",
+      "last_verified_head": null,
+      "current_head_and_runtime_state": "NOT_RECHECKED_R5",
+      "remaining_obligation": "Preserve Theme Intelligence boundary and refresh actual payload/authority before consumption.",
+      "build_consumers": [
+        "B04",
+        "B09",
+        "B20"
+      ],
+      "existing_finding_comments": [],
+      "action_law": "Refresh exact head, custody, original reviewer and effects before acting. Preserve original carrier.",
+      "program_accountable_owner": "Fable Meta-CEO"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "number": 7604,
+      "role": "Emerging-subtheme funnel measurement",
+      "status_basis": "Last verified in Phase2; not re-censused in R5",
+      "last_verified_status": "DRAFT_ZERO_AUTHORITY",
+      "last_verified_head": null,
+      "current_head_and_runtime_state": "NOT_RECHECKED_R5",
+      "remaining_obligation": "Consume source coverage/funnel diagnostics; not a live stock-rank or entry gate.",
+      "build_consumers": [
+        "B09",
+        "B10",
+        "B22"
+      ],
+      "existing_finding_comments": [],
+      "action_law": "Refresh exact head, custody, original reviewer and effects before acting. Preserve original carrier.",
+      "program_accountable_owner": "Fable Meta-CEO"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "number": 7218,
+      "role": "Measurement/model-research correction dossier",
+      "status_basis": "Last verified in Phase2; not re-censused in R5",
+      "last_verified_status": "RESEARCH_HOLD",
+      "last_verified_head": null,
+      "current_head_and_runtime_state": "NOT_RECHECKED_R5",
+      "remaining_obligation": "PIT rank/sector and full-funnel research correction, no live-model approval.",
+      "build_consumers": [
+        "B06",
+        "B10",
+        "B11",
+        "B15",
+        "B18"
+      ],
+      "existing_finding_comments": [],
+      "action_law": "Refresh exact head, custody, original reviewer and effects before acting. Preserve original carrier.",
+      "program_accountable_owner": "Fable Meta-CEO"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "number": 7294,
+      "role": "Stage earnings source restore",
+      "status_basis": "Last verified in Phase2; not re-censused in R5",
+      "last_verified_status": "MERGED_SOURCE_REPAIR",
+      "last_verified_head": null,
+      "current_head_and_runtime_state": "NOT_RECHECKED_R5",
+      "remaining_obligation": "Do not redo source fix. Natural run and historical correction/PIT limits must remain distinguished.",
+      "build_consumers": [
+        "B04",
+        "B08"
+      ],
+      "existing_finding_comments": [],
+      "action_law": "Refresh exact head, custody, original reviewer and effects before acting. Preserve original carrier.",
+      "program_accountable_owner": "Fable Meta-CEO"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "number": 7295,
+      "role": "Bottom Ledger clock repair",
+      "status_basis": "Last verified in Phase2; not re-censused in R5",
+      "last_verified_status": "MERGED_SOURCE_REPAIR",
+      "last_verified_head": null,
+      "current_head_and_runtime_state": "NOT_RECHECKED_R5",
+      "remaining_obligation": "Do not redo source fix. Natural accrual/product governor proof remains a separate obligation unless later accepted.",
+      "build_consumers": [
+        "B06",
+        "B22"
+      ],
+      "existing_finding_comments": [],
+      "action_law": "Refresh exact head, custody, original reviewer and effects before acting. Preserve original carrier.",
+      "program_accountable_owner": "Fable Meta-CEO"
+    }
+  ],
+  "r6_snapshot": "fc5c1fc49e4f552d8e3e55b5528a6d280d7415e8"
+}

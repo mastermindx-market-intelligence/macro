@@ -4,9 +4,12 @@
    off or the ticker wasn't precomputed). All model output is escaped before
    insertion — no raw HTML is ever trusted from the JSON. Bilingual: renders English,
    or the DeepSeek-translated Chinese (brief.zh) under the 中文 toggle, re-rendering on
-   'langchange'. Exposes window.loadStockBrief(safe), called by stock.html's load(). */
+   'langchange'. Exposes window.loadStockBrief(safe), called by stock.html's load().
+   A generation counter fences in-flight fetches so a stale prior ticker cannot
+   replace or hide the current brief; identity is checked against the safe name. */
 (function () {
   var BRIEF = null;
+  var GEN = 0;
   var LBL = {
     en: { drivers: "Drivers", risks: "Risks", catalysts: "Catalysts to watch",
           ai: "AI-generated", conf: "confidence", foot: "research context only, not a signal" },
@@ -32,13 +35,22 @@
     return b && (b.summary || (b.drivers && b.drivers.length) ||
                  (b.risks && b.risks.length) || (b.catalysts && b.catalysts.length));
   }
+  function clearBody() {
+    var body = document.getElementById("stock-brief-body");
+    if (body) body.innerHTML = "";
+  }
+  function sameTicker(b, safe) {
+    if (b == null || typeof b !== "object" || Array.isArray(b)) return false;
+    if (b.ticker == null || b.ticker === "") return true;
+    return String(b.ticker).replace(/=/g, "_").replace(/\^/g, "_").toUpperCase() === String(safe).toUpperCase();
+  }
 
   function render() {
     var panel = document.getElementById("stock-brief");
     var body = document.getElementById("stock-brief-body");
     if (!panel || !body) return;
     var b = BRIEF;
-    if (!usable(b)) { panel.style.display = "none"; return; }   // degraded/empty -> stay hidden
+    if (!usable(b)) { panel.style.display = "none"; clearBody(); return; }   // degraded/empty -> stay hidden
     var lang = curLang(), t = LBL[lang];
     var summary = pick(b, lang, "summary"),
         drivers = pickList(b, lang, "drivers"),
@@ -59,13 +71,15 @@
   // Called with the filesystem-safe ticker stem (e.g. AAPL, GC_F). Hides the panel
   // first so switching tickers never shows a stale brief, then reveals on success.
   window.loadStockBrief = function (safe) {
+    var my = ++GEN;
     var panel = document.getElementById("stock-brief");
     if (panel) panel.style.display = "none";
     BRIEF = null;
+    clearBody();
     fetch("stockbrief/" + encodeURIComponent(safe) + ".json?_=" + Date.now())
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (b) { BRIEF = b; render(); })
-      .catch(function () { /* absent/offline -> panel stays hidden */ });
+      .then(function (r) { return (r && r.ok) ? r.json() : null; })
+      .then(function (b) { if (my !== GEN) return; BRIEF = sameTicker(b, safe) ? b : null; render(); })
+      .catch(function () { if (my !== GEN) return; BRIEF = null; render(); });
   };
   document.addEventListener("langchange", render);     // re-render the current brief on the EN/中文 toggle
 })();

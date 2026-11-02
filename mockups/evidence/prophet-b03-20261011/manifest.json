@@ -1,0 +1,692 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ],
+      "tablet": [
+        820,
+        1180
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-10-11T04:20:45Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 900,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 1397,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "tablet": {
+            "document_height_px": 1180,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 900,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 0,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 1,
+        "payload_bytes_total": 230713,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 2,
+        "screenshot_completion": 1.0,
+        "section_count": 3,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 159
+      },
+      "page_id": "observations.html",
+      "registry_route": "/observations.html",
+      "route": "/observations.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 192533,
+          "captured": true,
+          "file": "c754a22af5bae30e.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "en",
+          "sha256": "c754a22af5bae30e3b1d703d4481566a1ba98af0541f136a42c49778be4ddb51",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 186988,
+          "captured": true,
+          "file": "41f5907c53f79237.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "en",
+          "sha256": "41f5907c53f79237713330890dd915a7e1634acc81e0f6956aec552ebe4d8f2a",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 199358,
+          "captured": true,
+          "file": "64a9611ee7e70e1d.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "zh",
+          "sha256": "64a9611ee7e70e1db987273cef623855aabf22326db2568561c8553271b82a5d",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 194734,
+          "captured": true,
+          "file": "aa9f742446f16e4c.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "zh",
+          "sha256": "aa9f742446f16e4cdb1b8252218b7a1aa7c6ca5a8a423b30490342ac1bac7e17",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 191217,
+          "captured": true,
+          "file": "5743f9500160f9c7.png",
+          "force_state": null,
+          "height": 1180,
+          "locale": "en",
+          "sha256": "5743f9500160f9c7bc930608bb4ebf28f5eb76eb03533fc0aef98bb07bdb3097",
+          "theme": "dark",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820,
+          "width": 820
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 177892,
+          "captured": true,
+          "file": "596ddd1299dfd423.png",
+          "force_state": null,
+          "height": 1180,
+          "locale": "en",
+          "sha256": "596ddd1299dfd4234f5718999bd72a31fff5c957e31a8f0ee1d5ce1ea69c553d",
+          "theme": "light",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820,
+          "width": 820
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 196546,
+          "captured": true,
+          "file": "3859a709dcc2f32a.png",
+          "force_state": null,
+          "height": 1180,
+          "locale": "zh",
+          "sha256": "3859a709dcc2f32a4e6c2a85b4d546c979d6aa316d0987240803083486b181b3",
+          "theme": "dark",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820,
+          "width": 820
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 183786,
+          "captured": true,
+          "file": "ab6a33495b442aa1.png",
+          "force_state": null,
+          "height": 1180,
+          "locale": "zh",
+          "sha256": "ab6a33495b442aa1d1f317dd1542243f43682b326218e4b6ce8dc49297ab36cd",
+          "theme": "light",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820,
+          "width": 820
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 145384,
+          "captured": true,
+          "file": "641c66d958ac9d76.png",
+          "force_state": null,
+          "height": 1397,
+          "locale": "en",
+          "sha256": "641c66d958ac9d768f7725e92fcfa7f41c8ef08719205643e9c24ea5f7a64c09",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 143364,
+          "captured": true,
+          "file": "4237ca2f12c24c28.png",
+          "force_state": null,
+          "height": 1397,
+          "locale": "en",
+          "sha256": "4237ca2f12c24c285e5575f288d11989c7e90e6d8491c85b08067dbcedde689f",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 150219,
+          "captured": true,
+          "file": "707a8d042d78a9e7.png",
+          "force_state": null,
+          "height": 1354,
+          "locale": "zh",
+          "sha256": "707a8d042d78a9e7675376e2e617244d62b865554817d86195d102b450dbb15f",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 148195,
+          "captured": true,
+          "file": "f2aca7a576b98853.png",
+          "force_state": null,
+          "height": 1354,
+          "locale": "zh",
+          "sha256": "f2aca7a576b9885358c4c4a4ac9580a7e56d04421a7af771e9ac1ec6ee02125e",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    },
+    {
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 900,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 844,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "tablet": {
+            "document_height_px": 1180,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 900,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 0,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 1,
+        "payload_bytes_total": 264778,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 2,
+        "screenshot_completion": 1.0,
+        "section_count": 3,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 101
+      },
+      "page_id": "search.html",
+      "registry_route": "/search.html",
+      "route": "/search.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 187543,
+          "captured": true,
+          "file": "97e96420ba22a2e4.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "en",
+          "sha256": "97e96420ba22a2e4660e426294cfe9252174f7ff9ee68a8440f31039e821c35a",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 173654,
+          "captured": true,
+          "file": "6867e94d0c80df84.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "en",
+          "sha256": "6867e94d0c80df840154105100a1ac67857b799267096eae7caf4c99187600e8",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 195465,
+          "captured": true,
+          "file": "3238e73b0850e70e.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "zh",
+          "sha256": "3238e73b0850e70eda78bf714f697db2f24f68c922308177c9f8977cfe1b94aa",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 181719,
+          "captured": true,
+          "file": "c852009b2d4f6260.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "zh",
+          "sha256": "c852009b2d4f6260d5a519f934bc81ca5c5dba3e725f71acd1b3532d0cdea9b5",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 152877,
+          "captured": true,
+          "file": "dd71c9fc6c3857f4.png",
+          "force_state": null,
+          "height": 1180,
+          "locale": "en",
+          "sha256": "dd71c9fc6c3857f4a2516bb1b05d1b3b07838821e71ff3559c3670b6ed9b1131",
+          "theme": "dark",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820,
+          "width": 820
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 139574,
+          "captured": true,
+          "file": "605317cfdf9dcc06.png",
+          "force_state": null,
+          "height": 1180,
+          "locale": "en",
+          "sha256": "605317cfdf9dcc0677943e4e7399d33ac9df9930bc2d328a23bc1240ef13564b",
+          "theme": "light",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820,
+          "width": 820
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 160810,
+          "captured": true,
+          "file": "932fbb2c5fa5763b.png",
+          "force_state": null,
+          "height": 1180,
+          "locale": "zh",
+          "sha256": "932fbb2c5fa5763b8ff29cbef065ea0dc6f4be94c18902bcbc28b292760b1602",
+          "theme": "dark",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820,
+          "width": 820
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 147044,
+          "captured": true,
+          "file": "28709176673b2069.png",
+          "force_state": null,
+          "height": 1180,
+          "locale": "zh",
+          "sha256": "28709176673b2069324d1c72837e02e7dc62320daf0494cd0608438d3d8dcebf",
+          "theme": "light",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820,
+          "width": 820
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 116292,
+          "captured": true,
+          "file": "55cabea6e550f7f0.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "en",
+          "sha256": "55cabea6e550f7f07b62872ca91422d5cff2bb9b3669fda4b2244ca1403feb6e",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 113765,
+          "captured": true,
+          "file": "c1a9aa3d079ab814.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "en",
+          "sha256": "c1a9aa3d079ab81445b10f62e524ca3fa73a3ef15ac254f6717d624b7c0e5af4",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 126383,
+          "captured": true,
+          "file": "3e49206b8da331d5.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "zh",
+          "sha256": "3e49206b8da331d5cc394e6eb157851160a12283b4f062d71a33f809d3133905",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 122046,
+          "captured": true,
+          "file": "e9f2059d6fbbd618.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "zh",
+          "sha256": "e9f2059d6fbbd6189aa4887f7f85a3552cee7545b9ad84df0ec3690943a4f6a5",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/observations.html",
+      "/search.html"
+    ],
+    "max_pages": 2,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 331,
+    "repo": null,
+    "selected": 2
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "no git directory was found at or above --site-dir; nothing resolved",
+    "site_dir": "/Volumes/Mastermind/evidence/prophet-r6-local-20261008-01a11e89/b03-visual-fixture-r3-20261011"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 2,
+    "states_attempted": 24,
+    "states_captured": 24
+  }
+}

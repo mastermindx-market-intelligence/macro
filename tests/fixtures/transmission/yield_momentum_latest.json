@@ -1,0 +1,336 @@
+{
+  "yield_momentum": {
+    "schema": "yield_momentum.v1",
+    "calculation_version": "fixed_grid_origin.v4",
+    "asof": "2026-09-25",
+    "display_only": true,
+    "authority": false,
+    "can_score": false,
+    "can_size": false,
+    "can_trade": false,
+    "caveats": [
+      "Weekday grid intervals are not verified Treasury trading sessions.",
+      "Captured source rows do not certify historical availability.",
+      "Endpoint changes do not prove continuous deceleration or a market turn.",
+      "Expected absences are US federal holidays and Good Friday only; a carried print on any other weekday still withholds path qualification.",
+      "A trailing publication lag of at most 3 weekday rows is an expected absence: momentum is then measured and dated at the last captured source row (as_of), never at the frame date."
+    ],
+    "series": {
+      "2y": {
+        "source_column": "us2y",
+        "source_id": "DGS2",
+        "status": "available",
+        "as_of": "2026-09-24",
+        "frame_as_of": "2026-09-25",
+        "available_at": null,
+        "availability_status": "not_provided_by_feature_frame",
+        "historical_availability_qualified": false,
+        "observation_origin": "carried",
+        "origin_status": "matched_captured_alignment",
+        "path_qualified": true,
+        "holiday_basis": "us_federal_holidays_plus_good_friday_v1",
+        "expected_absent_grid_rows": 57,
+        "unexpected_carried_grid_rows": 1,
+        "path_qualification_basis": "captured_source_rows_or_expected_absent",
+        "trailing_publication_lag_rows": 1,
+        "trailing_expected_absent_rows": 0,
+        "lag_tolerance_rows": 3,
+        "lag_basis": "fred_next_business_day_publication_v1",
+        "measurement_origin": "last_captured_source_row",
+        "horizon_basis": "fixed_weekday_grid_intervals",
+        "level": 4.87,
+        "carried_level": 4.87,
+        "last_observed": {
+          "basis": "latest_two_captured_source_rows_on_retained_grid",
+          "as_of": "2026-09-24",
+          "level": 4.87,
+          "previous_as_of": "2026-09-23",
+          "previous_level": 4.85,
+          "change_bp": 2.0,
+          "elapsed_calendar_days": 1,
+          "elapsed_grid_intervals": 1,
+          "age_calendar_days": 1,
+          "age_grid_intervals": 1,
+          "is_current_grid_row": false,
+          "historical_availability_qualified": false
+        },
+        "velocity_bp": {
+          "5d": 20.0,
+          "22d": 70.0,
+          "63d": 77.0
+        },
+        "endpoint_dates": {
+          "5d": [
+            "2026-09-17",
+            "2026-09-24"
+          ],
+          "22d": [
+            "2026-08-25",
+            "2026-09-24"
+          ],
+          "63d": [
+            "2026-06-29",
+            "2026-09-24"
+          ]
+        },
+        "acceleration_bp": 86.0,
+        "turn_watch": "extreme_high_watch",
+        "null_reason": null,
+        "source_basis": "captured_source_rows",
+        "source_digest": "f8a8cf13d2df1b5d00e82396270090f68672557e945c47f9f4869d448f092b45"
+      },
+      "5y": {
+        "source_column": "us5y",
+        "source_id": "DGS5",
+        "status": "available",
+        "as_of": "2026-09-24",
+        "frame_as_of": "2026-09-25",
+        "available_at": null,
+        "availability_status": "not_provided_by_feature_frame",
+        "historical_availability_qualified": false,
+        "observation_origin": "carried",
+        "origin_status": "matched_captured_alignment",
+        "path_qualified": true,
+        "holiday_basis": "us_federal_holidays_plus_good_friday_v1",
+        "expected_absent_grid_rows": 57,
+        "unexpected_carried_grid_rows": 1,
+        "path_qualification_basis": "captured_source_rows_or_expected_absent",
+        "trailing_publication_lag_rows": 1,
+        "trailing_expected_absent_rows": 0,
+        "lag_tolerance_rows": 3,
+        "lag_basis": "fred_next_business_day_publication_v1",
+        "measurement_origin": "last_captured_source_row",
+        "horizon_basis": "fixed_weekday_grid_intervals",
+        "level": 5.03,
+        "carried_level": 5.03,
+        "last_observed": {
+          "basis": "latest_two_captured_source_rows_on_retained_grid",
+          "as_of": "2026-09-24",
+          "level": 5.03,
+          "previous_as_of": "2026-09-23",
+          "previous_level": 4.99,
+          "change_bp": 4.0,
+          "elapsed_calendar_days": 1,
+          "elapsed_grid_intervals": 1,
+          "age_calendar_days": 1,
+          "age_grid_intervals": 1,
+          "is_current_grid_row": false,
+          "historical_availability_qualified": false
+        },
+        "velocity_bp": {
+          "5d": 25.0,
+          "22d": 68.0,
+          "63d": 89.0
+        },
+        "endpoint_dates": {
+          "5d": [
+            "2026-09-17",
+            "2026-09-24"
+          ],
+          "22d": [
+            "2026-08-25",
+            "2026-09-24"
+          ],
+          "63d": [
+            "2026-06-29",
+            "2026-09-24"
+          ]
+        },
+        "acceleration_bp": 76.0,
+        "turn_watch": "extreme_high_watch",
+        "null_reason": null,
+        "source_basis": "captured_source_rows",
+        "source_digest": "35755178e1ee8f21a9b79d0531c0d1e8cb23988466e8dd5136e0b2fa21d024de"
+      },
+      "10y": {
+        "source_column": "us10y",
+        "source_id": "DGS10",
+        "status": "missing",
+        "as_of": null,
+        "frame_as_of": "2026-09-25",
+        "available_at": null,
+        "availability_status": "not_provided_by_feature_frame",
+        "historical_availability_qualified": false,
+        "observation_origin": "carried",
+        "origin_status": "matched_captured_alignment",
+        "path_qualified": false,
+        "holiday_basis": "us_federal_holidays_plus_good_friday_v1",
+        "expected_absent_grid_rows": 57,
+        "unexpected_carried_grid_rows": 1,
+        "path_qualification_basis": "captured_source_rows_or_expected_absent",
+        "trailing_publication_lag_rows": null,
+        "trailing_expected_absent_rows": 0,
+        "lag_tolerance_rows": 3,
+        "lag_basis": "fred_next_business_day_publication_v1",
+        "measurement_origin": "last_captured_source_row",
+        "horizon_basis": "fixed_weekday_grid_intervals",
+        "level": null,
+        "carried_level": 5.18,
+        "last_observed": {
+          "basis": "latest_two_captured_source_rows_on_retained_grid",
+          "as_of": "2026-09-24",
+          "level": 5.18,
+          "previous_as_of": "2026-09-23",
+          "previous_level": 5.11,
+          "change_bp": 7.0,
+          "elapsed_calendar_days": 1,
+          "elapsed_grid_intervals": 1,
+          "age_calendar_days": 1,
+          "age_grid_intervals": 1,
+          "is_current_grid_row": false,
+          "historical_availability_qualified": false
+        },
+        "velocity_bp": {
+          "5d": null,
+          "22d": null,
+          "63d": null
+        },
+        "endpoint_dates": {
+          "5d": [
+            "2026-09-17",
+            "2026-09-24"
+          ],
+          "22d": [
+            "2026-08-25",
+            "2026-09-24"
+          ],
+          "63d": [
+            "2026-06-29",
+            "2026-09-24"
+          ]
+        },
+        "acceleration_bp": 59.0,
+        "turn_watch": null,
+        "null_reason": "source column us10y unavailable for this fixture (synthesized null)",
+        "source_basis": "captured_source_rows",
+        "source_digest": "e04c90a2caf4fa43899e783b8fb72d69e46d4449d65674f581d323bf0aa58e16"
+      },
+      "20y": {
+        "source_column": "us20y",
+        "source_id": "DGS20",
+        "status": "missing",
+        "as_of": null,
+        "frame_as_of": "2026-09-25",
+        "available_at": null,
+        "availability_status": "not_provided_by_feature_frame",
+        "historical_availability_qualified": false,
+        "observation_origin": "carried",
+        "origin_status": "matched_captured_alignment",
+        "path_qualified": false,
+        "holiday_basis": "us_federal_holidays_plus_good_friday_v1",
+        "expected_absent_grid_rows": 57,
+        "unexpected_carried_grid_rows": 1,
+        "path_qualification_basis": "captured_source_rows_or_expected_absent",
+        "trailing_publication_lag_rows": null,
+        "trailing_expected_absent_rows": 0,
+        "lag_tolerance_rows": 3,
+        "lag_basis": "fred_next_business_day_publication_v1",
+        "measurement_origin": "last_captured_source_row",
+        "horizon_basis": "fixed_weekday_grid_intervals",
+        "level": null,
+        "carried_level": 5.53,
+        "last_observed": {
+          "basis": "latest_two_captured_source_rows_on_retained_grid",
+          "as_of": "2026-09-24",
+          "level": 5.53,
+          "previous_as_of": "2026-09-23",
+          "previous_level": 5.45,
+          "change_bp": 8.0,
+          "elapsed_calendar_days": 1,
+          "elapsed_grid_intervals": 1,
+          "age_calendar_days": 1,
+          "age_grid_intervals": 1,
+          "is_current_grid_row": false,
+          "historical_availability_qualified": false
+        },
+        "velocity_bp": {
+          "5d": null,
+          "22d": null,
+          "63d": null
+        },
+        "endpoint_dates": {
+          "5d": [
+            "2026-09-17",
+            "2026-09-24"
+          ],
+          "22d": [
+            "2026-08-25",
+            "2026-09-24"
+          ],
+          "63d": [
+            "2026-06-29",
+            "2026-09-24"
+          ]
+        },
+        "acceleration_bp": 39.0,
+        "turn_watch": null,
+        "null_reason": "source column us20y unavailable for this fixture (synthesized null)",
+        "source_basis": "captured_source_rows",
+        "source_digest": "391efe740c5fdaa287f3a733ab28c4aba17c87c04cd1c43dbcf0ef4dd695b109"
+      },
+      "30y": {
+        "source_column": "us30y",
+        "source_id": "DGS30",
+        "status": "missing",
+        "as_of": null,
+        "frame_as_of": "2026-09-25",
+        "available_at": null,
+        "availability_status": "not_provided_by_feature_frame",
+        "historical_availability_qualified": false,
+        "observation_origin": "carried",
+        "origin_status": "matched_captured_alignment",
+        "path_qualified": false,
+        "holiday_basis": "us_federal_holidays_plus_good_friday_v1",
+        "expected_absent_grid_rows": 57,
+        "unexpected_carried_grid_rows": 1,
+        "path_qualification_basis": "captured_source_rows_or_expected_absent",
+        "trailing_publication_lag_rows": null,
+        "trailing_expected_absent_rows": 0,
+        "lag_tolerance_rows": 3,
+        "lag_basis": "fred_next_business_day_publication_v1",
+        "measurement_origin": "last_captured_source_row",
+        "horizon_basis": "fixed_weekday_grid_intervals",
+        "level": null,
+        "carried_level": 5.47,
+        "last_observed": {
+          "basis": "latest_two_captured_source_rows_on_retained_grid",
+          "as_of": "2026-09-24",
+          "level": 5.47,
+          "previous_as_of": "2026-09-23",
+          "previous_level": 5.4,
+          "change_bp": 7.0,
+          "elapsed_calendar_days": 1,
+          "elapsed_grid_intervals": 1,
+          "age_calendar_days": 1,
+          "age_grid_intervals": 1,
+          "is_current_grid_row": false,
+          "historical_availability_qualified": false
+        },
+        "velocity_bp": {
+          "5d": null,
+          "22d": null,
+          "63d": null
+        },
+        "endpoint_dates": {
+          "5d": [
+            "2026-09-17",
+            "2026-09-24"
+          ],
+          "22d": [
+            "2026-08-25",
+            "2026-09-24"
+          ],
+          "63d": [
+            "2026-06-29",
+            "2026-09-24"
+          ]
+        },
+        "acceleration_bp": 29.0,
+        "turn_watch": null,
+        "null_reason": "source column us30y unavailable for this fixture (synthesized null)",
+        "source_basis": "captured_source_rows",
+        "source_digest": "11d7decd1185068eba9994efe8bdba926f6d912f4a5b30ec2354045b448fbbcb"
+      }
+    }
+  }
+}

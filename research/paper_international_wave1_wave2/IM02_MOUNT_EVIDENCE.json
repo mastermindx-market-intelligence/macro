@@ -1,0 +1,73 @@
+{
+  "schema": "paper.im02.compare.mount.evidence.v1",
+  "status": "SOURCE_BROWSER_VISUAL_ACCEPTED_SCOPED",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "source_hashes": {
+    "lib/intl_compare_view.py": "4f331b0ef4c670b763a4e5a0fee2bc93b91e7b8aa401a755a2e7cf71dc66ebc2",
+    "lib/intl_compare_mount.py": "eb9cd102a096a8425688a107d9898ee65aeff9787c126913d0dab95705578bcd",
+    "lib/intl_library_mount.py": "dd12a41ab245c1ba67a311bdda0362da5178f45c76ce4920184f506714639a17",
+    "templates/intl_workspace/compare.html.j2": "19b1da13f38023cc588abbc95c3540963829c1529320ff1161a3edf31ea07cd1",
+    "templates/intl_workspace/shell.html.j2": "ec9f6386325311e77fbe07b2e0d7debbe6971fb642517016392b8d992115d05f",
+    "templates/intl_workspace.css": "e321de56cf527fc980deb3cab0bb809fc48edc5b69c585601e6076ce651eb40e",
+    "templates/intl_workspace.js": "1a59c6390ee5aa41ecb97fa1f34628885870c34cffc08a8cab8287ba53e1d6f3",
+    "tests/test_intl_compare_mount.py": "7fc455d781b200738c5ce0ad0e1625cba6a45c62c54c4b7adf84b69c55a3f3d8",
+    "tests/test_intl_workspace_compare_render.py": "bf8df0b81148137ee2073a0e97156d6f787108b414b2a02dad02333be8cf44ff",
+    "tests/test_intl_compare_integration.py": "faa2c9a8a30b50bf567e93393abe7bf41480d85a21bfd3fc4f5b1561685ed0f1",
+    "tests/intl_workspace_compare_controller.test.cjs": "39406eb952a88cd58d75663fcf781fc3e5e630d1a81b3e2bc5ff79ea6e49788b",
+    "tests/intl_workspace_page.test.cjs": "4b021a46096427dbf13bf6b568c94cc62d8e5aeb8fb8f868b77759416fd54967",
+    ".github/ci/legacy-jobs.yml": "dbd17b134ad38030e68c1bbdd477cb4c5a71cffce304148ebf5e19dd0e9b9dcc"
+  },
+  "behavior": "Existing reducer/controller renders 0-4 selected original rows. Qualified identical-window selections use server-provided order; unknown/denied/different-window selections stay present. Strict slot catalogue, rollback, native fallback, bilingual picker. No numerical JS, chart-series permission or second selection state.",
+  "accepted_reviews": {
+    "IM02_COMPARE_RENDER_REVIEW_R2.json": {
+      "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM02_COMPARE_RENDER_REVIEW_R2.json",
+      "sha256": "a5e8b859897caddb1b2e05bf4ba21c80840e396459cc0429a46b03d07408aa80"
+    },
+    "IM02_COMPARE_MOUNT_REVIEW_R2.json": {
+      "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM02_COMPARE_MOUNT_REVIEW_R2.json",
+      "sha256": "738dbd2eabc865ec480d3046af76bf404dc31516beb5f2f988e9bf6959cc62e5"
+    },
+    "IM02_COMPARE_INTEGRATION_REVIEW_R1.json": {
+      "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM02_COMPARE_INTEGRATION_REVIEW_R1.json",
+      "sha256": "9af37df6555bf0712a16528c82c714a34b470b8d0726843a077e4f032a392c7b"
+    },
+    "IM02_COMPARE_VISUAL_PARENT_ACCEPTANCE.json": {
+      "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM02_COMPARE_VISUAL_PARENT_ACCEPTANCE.json",
+      "sha256": "5bce60be88dcdd4466cd1a612a139b4c3ef1be842b2f9298e2e9e7610e40a80e"
+    },
+    "IM02_CI_CLOSURE.json": {
+      "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM02_CI_CLOSURE.json",
+      "sha256": "e03780f22a535bc62140222f8c489cc9ac4101a09a4bb02e1eff42c6cd2a4e12"
+    },
+    "IM02_COMPARE_STRESS.json": {
+      "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM02_COMPARE_STRESS.json",
+      "sha256": "8c699e2f71dabb7e4754d020a29f56ef6186cbf64d92f93cfae113a97de5704b"
+    },
+    "IM02_COMPARE_CONTROLLER_REVIEW_R2.json": {
+      "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM02_COMPARE_CONTROLLER_REVIEW_R2.json",
+      "sha256": "71a7aa782282467c2f5716816c46cdb64b05a793af77f390dd9d11821e44d8ac"
+    },
+    "IM02_CONTROLLER_PARENT_ACCEPTANCE_R2.json": {
+      "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM02_CONTROLLER_PARENT_ACCEPTANCE_R2.json",
+      "sha256": "e7c0b23e2a673114581d9171fb2df07698b6d9b6e0e4a845bbd719e517a2d5ca"
+    },
+    "IM02_COMPARE_FOCUS_VISUAL_PARENT_ACCEPTANCE_R2.json": {
+      "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM02_COMPARE_FOCUS_VISUAL_PARENT_ACCEPTANCE_R2.json",
+      "sha256": "81b74ab8e73c46b52bdc6b7f1046d51a6ffea0b5a1e01f2528bc8577f95007f4"
+    }
+  },
+  "validation": {
+    "foundation": "370 passed before independent optional backend adapter delta; numerical Compare owner55+mount20 included",
+    "actual_render": "85 actual template/composition cases PASS",
+    "browser": "Prior97 cases covered, now99 with2 focus cases; independent16Compare+40controller+2Inspector+30frozen+7newcounterchecks=95PASS; parent16+30PASS.",
+    "visual": "48 earlier canonical component captures +16 focus-repair captures;8 focused Remove row-movement proofs; all EN/ZH,dark/light,1440/390,0console/resource errors. Earlier48 reused on accepted focus-only JS ruling; finalCSS independently parent-adjudicated.",
+    "responsive": "32 width/theme/language/text-scale states including320 and768 with doubledcomputedfonts; no overflow or lost pins",
+    "ci_scope": "Both existing exclusive job import closures have zero missing paths",
+    "focus_repair": "ReviewerR1found real Remove->BODY defect; parent2REDthen16GREEN,ReviewerR2F1CLOSED."
+  },
+  "limits": [
+    "Explicitly synthetic supplied owner frames and grants.",
+    "No authenticated current-data, live producer, publication, chart-series or programme acceptance.",
+    "V2 supplied-evidence backend accepted/pushed, remains unopted; server/client generation consumer vertical is next."
+  ]
+}

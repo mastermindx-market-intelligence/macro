@@ -1,0 +1,22 @@
+{
+  "acceptance_requires_original_raw_and_receipt_audit": true,
+  "bytes": 448959986,
+  "connections": 1,
+  "coverage_proven": false,
+  "first_gap_stops_without_reconnection": true,
+  "full_session_coverage": false,
+  "observer_outcome": {
+    "archived_bytes": 448959986,
+    "archived_segments": 2000,
+    "last_segment_bytes": 227146,
+    "stop_reason": null
+  },
+  "production_consumer_acceptance": false,
+  "r2_publication": false,
+  "raw_messages": 2000000,
+  "run_id": "tiingo-boats-raw-20261013-01a12ab6",
+  "schema": "tiingo_attended_raw_boats_result.v1",
+  "segments": 2000,
+  "settled_at_utc": "2026-10-13T00:09:30.437188+00:00",
+  "transport_breaks": 0
+}

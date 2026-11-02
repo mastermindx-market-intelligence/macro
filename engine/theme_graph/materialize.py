@@ -32,6 +32,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import re
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -119,6 +120,256 @@ MATERIAL_EDGE_FIELDS: tuple[str, ...] = (
     "valid_to", "evidence_time", "source_class", "date_provenance",
     "evidence_refs", "confidence_basis",
 )
+
+
+HIERARCHY_EPOCH = "2026-10-07"
+_HIERARCHY_SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9_]{1,62}$")
+_HIERARCHY_FORBIDDEN_KEY_WORDS = ("weight", "share", "count", "score")
+_HIERARCHY_TIER_ADJACENCIES = frozenset({
+    ("macro_category", "theme"),
+    ("theme", "sub_theme"),
+    ("sub_theme", "micro_theme"),
+    ("theme", "micro_theme"),
+})
+_VALUE_CHAIN_POSITIONS = ("upstream", "midstream", "downstream", "enabler")
+
+
+class ThemeHierarchyError(ValueError):
+    """The crosswalk hierarchy block is structurally or semantically invalid."""
+
+    def __init__(self, reason: str, message: str) -> None:
+        super().__init__(f"{reason}: {message}")
+        self.reason = reason
+
+
+def _hierarchy_row(row: object, *, allowed: tuple[str, ...], required: tuple[str, ...],
+                   context: str) -> dict:
+    if not isinstance(row, dict):
+        raise ThemeHierarchyError("BLOCK_SHAPE", f"{context} row must be a mapping")
+    for key in sorted(set(row) - set(allowed)):
+        lowered = str(key).lower()
+        if any(word in lowered for word in _HIERARCHY_FORBIDDEN_KEY_WORDS):
+            raise ThemeHierarchyError("FORBIDDEN_KEY", f"{context} key {key!r}")
+        raise ThemeHierarchyError("BLOCK_SHAPE", f"unknown {context} key {key!r}")
+    missing = [key for key in required if _text(row.get(key)) is None]
+    if missing:
+        if "asserted_on" in missing:
+            raise ThemeHierarchyError("ASSERTED_ON_MISSING", context)
+        raise ThemeHierarchyError("BLOCK_SHAPE",
+                                  f"{context} missing required key {missing[0]!r}")
+    return row
+
+
+def _hierarchy_date(row: dict, context: str) -> str:
+    value = _text(row.get("asserted_on"))
+    if value is None or not _is_date(value):
+        raise ThemeHierarchyError("ASSERTED_ON_MISSING", context)
+    if value < HIERARCHY_EPOCH:
+        raise ThemeHierarchyError("ASSERTED_ON_PRE_EPOCH",
+                                  f"{context} asserted_on {value}")
+    return value
+
+
+def _hierarchy_id(row: dict, context: str) -> str:
+    value = _text(row.get("id"))
+    if not value or not value.startswith("theme:"):
+        raise ThemeHierarchyError("SLUG_GRAMMAR", f"{context} id {value!r}")
+    slug = value[len("theme:"):]
+    if not _HIERARCHY_SLUG_RE.fullmatch(slug):
+        raise ThemeHierarchyError("SLUG_GRAMMAR", f"{context} id {value!r}")
+    return value
+
+
+def _validate_nominated_from(value: object) -> None:
+    """Delegate to the single nominator rule: probation.nominated_from_errors."""
+    from engine.theme_graph import probation
+
+    errors = probation.nominated_from_errors("" if value is None else str(value))
+    if errors:
+        reason, _, detail = errors[0].partition(": ")
+        raise ThemeHierarchyError(reason, detail)
+
+
+def _hierarchy_value_chain(row: dict, context: str) -> None:
+    if "value_chain_position" not in row:
+        return
+    value = row.get("value_chain_position")
+    if value not in _VALUE_CHAIN_POSITIONS:
+        raise ThemeHierarchyError(
+            "VALUE_CHAIN_POSITION",
+            f"{context}: {value!r} not in upstream|midstream|downstream|enabler")
+
+
+def _values(value: object) -> list[object]:
+    if isinstance(value, dict):
+        return list(value.values())
+    if isinstance(value, list):
+        return value
+    return [value]
+
+
+def validate_theme_hierarchy(doc: object) -> dict:
+    """Validate the complete hierarchy block before any PIT filtering."""
+    hierarchy = (doc or {}).get("hierarchy") if isinstance(doc, dict) else None
+    if hierarchy is None:
+        return {"categories": [], "micro_themes": [], "parents": []}
+    if not isinstance(hierarchy, dict):
+        raise ThemeHierarchyError("BLOCK_SHAPE", "hierarchy must be a mapping")
+    unknown = set(hierarchy) - {"categories", "sub_themes", "micro_themes", "parents"}
+    if unknown:
+        raise ThemeHierarchyError("BLOCK_SHAPE",
+                                  f"unknown hierarchy key {sorted(unknown)[0]!r}")
+    has_sub_themes = "sub_themes" in hierarchy
+    lists: dict[str, list] = {}
+    for key in ("categories", "sub_themes", "micro_themes", "parents"):
+        if key == "sub_themes" and not has_sub_themes:
+            continue
+        value = hierarchy.get(key, [])
+        if not isinstance(value, list):
+            raise ThemeHierarchyError("BLOCK_SHAPE", f"hierarchy.{key} must be a list")
+        lists[key] = value
+
+    categories = []
+    for position, row in enumerate(lists["categories"], start=1):
+        context = f"category {position}"
+        row = _hierarchy_row(row, allowed=("id", "name_en", "name_zh", "asserted_on", "note"),
+                             required=("id", "name_en", "name_zh", "asserted_on"),
+                             context=context)
+        node_id = _hierarchy_id(row, context)
+        asserted_on = _hierarchy_date(row, context)
+        categories.append({"id": node_id, "tier": "macro_category",
+                           "asserted_on": asserted_on, "row": row})
+
+    sub_themes = []
+    if has_sub_themes:
+        for position, row in enumerate(lists["sub_themes"], start=1):
+            context = f"sub_theme {position}"
+            row = _hierarchy_row(
+                row,
+                allowed=("id", "name_en", "name_zh", "asserted_on", "nominated_from",
+                         "note", "value_chain_position"),
+                required=("id", "name_en", "name_zh", "asserted_on", "nominated_from"),
+                context=context)
+            node_id = _hierarchy_id(row, context)
+            asserted_on = _hierarchy_date(row, context)
+            _hierarchy_value_chain(row, context)
+            sub_themes.append({"id": node_id, "tier": "sub_theme",
+                               "asserted_on": asserted_on, "row": row})
+
+    micro_themes = []
+    for position, row in enumerate(lists["micro_themes"], start=1):
+        context = f"micro_theme {position}"
+        row = _hierarchy_row(
+            row,
+            allowed=("id", "name_en", "name_zh", "asserted_on", "nominated_from", "note",
+                     "value_chain_position"),
+            required=("id", "name_en", "name_zh", "asserted_on", "nominated_from"),
+            context=context)
+        node_id = _hierarchy_id(row, context)
+        asserted_on = _hierarchy_date(row, context)
+        _hierarchy_value_chain(row, context)
+        micro_themes.append({"id": node_id, "tier": "micro_theme",
+                             "asserted_on": asserted_on, "row": row})
+
+    declared: dict[str, dict] = {}
+    for declaration in categories + sub_themes + micro_themes:
+        node_id = declaration["id"]
+        if node_id in declared:
+            raise ThemeHierarchyError("DUPLICATE_ID", node_id)
+        declared[node_id] = declaration
+    themes = doc.get("themes") if isinstance(doc.get("themes"), list) else []
+    for row in themes:
+        theme_id = _text(row.get("theme_node_id")) or identity.theme_node_id(_text(row.get("id")))
+        if theme_id in declared:
+            raise ThemeHierarchyError("CROSS_TIER_REUSE", theme_id)
+
+    parent_rows = []
+    for position, row in enumerate(lists["parents"], start=1):
+        context = f"parent {position}"
+        row = _hierarchy_row(row, allowed=("parent", "child", "asserted_on"),
+                             required=("parent", "child", "asserted_on"), context=context)
+        asserted_on = _hierarchy_date(row, context)
+        parent = _text(row.get("parent"))
+        child = _text(row.get("child"))
+        for role, endpoint in (("parent", parent), ("child", child)):
+            declaration = declared.get(endpoint)
+            if declaration is None and not any(
+                    (_text(theme.get("theme_node_id")) or identity.theme_node_id(
+                        _text(theme.get("id")))) == endpoint for theme in themes):
+                raise ThemeHierarchyError("UNDECLARED_ENDPOINT", f"{context} {endpoint!r}")
+            if declaration and asserted_on < declaration["asserted_on"]:
+                raise ThemeHierarchyError(
+                    "UNDECLARED_ENDPOINT",
+                    f"{context} precedes {endpoint!r} declaration")
+        parent_rows.append({"parent": parent, "child": child,
+                            "asserted_on": asserted_on})
+
+    theme_ids = {
+        _text(row.get("theme_node_id"))
+        or identity.theme_node_id(_text(row.get("id")))
+        for row in themes
+    }
+    children: dict[str, set[str]] = {
+        node_id: set() for node_id in set(declared) | theme_ids}
+    parent_count: dict[str, int] = {}
+    for row in parent_rows:
+        parent_tier = declared.get(row["parent"], {}).get("tier", "theme")
+        child_tier = declared.get(row["child"], {}).get("tier", "theme")
+        if row["parent"] == row["child"]:
+            raise ThemeHierarchyError("CYCLE", row["parent"])
+        if (parent_tier, child_tier) not in _HIERARCHY_TIER_ADJACENCIES:
+            raise ThemeHierarchyError("NON_ADJACENT_TIERS",
+                                      f"{row['parent']} -> {row['child']}")
+        children[row["parent"]].add(row["child"])
+        parent_count[row["child"]] = parent_count.get(row["child"], 0) + 1
+    if any(parent_count.get(node_id, 0) > 3
+           for node_id in set(declared) | theme_ids):
+        raise ThemeHierarchyError("TOO_MANY_PARENTS", "a hierarchy node has 4 parents")
+
+    state: dict[str, int] = {}
+
+    def visit(node_id: str) -> None:
+        if state.get(node_id) == 1:
+            raise ThemeHierarchyError("CYCLE", node_id)
+        if state.get(node_id) == 2:
+            return
+        state[node_id] = 1
+        for child in children[node_id]:
+            visit(child)
+        state[node_id] = 2
+
+    for node_id in declared:
+        visit(node_id)
+
+    new_tier_ids = set(declared)
+    for row in themes:
+        for value in (row.get("id"), row.get("theme_node_id")):
+            if _text(value) in new_tier_ids:
+                raise ThemeHierarchyError("NEW_TIER_IN_EXPRESSES_MAP", _text(value))
+
+    def contains_new_tier_id(value: object) -> bool:
+        if isinstance(value, dict):
+            return any(key in new_tier_ids or contains_new_tier_id(item)
+                       for key, item in value.items())
+        if isinstance(value, list):
+            return any(contains_new_tier_id(item) for item in value)
+        return _text(value) in new_tier_ids
+
+    for key, value in doc.items():
+        if key == "hierarchy":
+            continue
+        if key in new_tier_ids or contains_new_tier_id(value):
+            raise ThemeHierarchyError("NEW_TIER_IN_EXPRESSES_MAP",
+                                      key if key in new_tier_ids else "mapping value")
+
+    for row in sub_themes + micro_themes:
+        _validate_nominated_from(row["row"].get("nominated_from"))
+
+    validated = {"categories": categories, "micro_themes": micro_themes,
+                 "parents": parent_rows}
+    if has_sub_themes:
+        validated["sub_themes"] = sub_themes
+    return validated
 
 
 # ---------------------------------------------------------------------------
@@ -221,6 +472,17 @@ class Materialization:
     #: an outage weapon. Structural evidence only — no ticker literals anywhere in the
     #: logic that produces this list.
     company_mint_refusals: list[dict] = field(default_factory=list)
+    #: ORCH-PIPE 2026-10-21 (lane B1) — typed refusals from the activity-history fold
+    #: and its projection: the fold refused wholesale (ACTIVITY_FOLD_REFUSED), one per
+    #: refused/retained fold outcome (code = the fold's own reason), and one per
+    #: refused projection (endpoint absent, edge-id collision). Never a raise — same
+    #: nightly-bake rule as company_mint_refusals. Empty when ``activity_events`` is
+    #: None (the ledger is the only input; its absence is today's production state).
+    activity_refusals: list[dict] = field(default_factory=list)
+    #: Compact summary of the same fold: counts of current/history/retained/refused/
+    #: excluded_after_cutoff, projected_edges, projected_evidence, knowledge_cutoff.
+    #: Empty when the fold was refused wholesale or ``activity_events`` is None.
+    activity_fold: dict = field(default_factory=dict)
 
 
 # ---------------------------------------------------------------------------
@@ -242,6 +504,7 @@ class _Builder:
     def __init__(self, *, data_dir: Path, crosswalk_path: Path, era: str,
                  belief_time: str, computed_at: str,
                  raw_snapshot: tuple[str, dict] | None,
+                 ths_history=None,
                  finviz_seed_path: Path | None = None,
                  finviz_history_path: Path | None = None,
                  finviz_live_tree_path: Path | None = None,
@@ -253,6 +516,9 @@ class _Builder:
         self.belief_time = belief_time
         self.computed_at = computed_at
         self.raw_snapshot = raw_snapshot
+        # D2C: handed in by the owning membership-PIT reader.  Materialization
+        # remains a pure consumer and never discovers or writes the owner store.
+        self.ths_history = ths_history
         self.finviz_seed_path = finviz_seed_path
         self.finviz_history_path = finviz_history_path
         self.finviz_live_tree_path = finviz_live_tree_path
@@ -506,6 +772,220 @@ class _Builder:
 
     # -- THS concept map + raw snapshot ------------------------------------
 
+    def _ths_doc_coverage_fields(self) -> dict:
+        """Coverage disclosures consumers already cite from ``per_suite.baskets_china_ths``.
+
+        ``membership_published_at`` / ``seed_constant`` / ``tracks_edges`` remain
+        readable from today's membership doc even though MEMBER_OF now comes from
+        the PIT store — dropping them is a silent coverage-disclosure regression.
+        TRACKS stay honestly 0: the THS doc carries no top-level ``etfs``.
+        """
+        doc = self._membership(THS_SUITE)
+        if doc is None:
+            return {
+                "membership_published_at": None,
+                "seed_constant": None,
+                "tracks_edges": 0,
+            }
+        return {
+            "membership_published_at": _doc_published_at(doc),
+            "seed_constant": _text(doc.get("seed_date")),
+            "tracks_edges": 0,
+        }
+
+    def _ths_per_suite(self, **fields) -> dict:
+        """Full THS ``per_suite`` key set — both branches emit every key."""
+        base = {
+            "baskets": 0,
+            "companies": 0,
+            "member_edges": 0,
+            "tracks_edges": 0,
+            "membership_published_at": None,
+            "seed_constant": None,
+            "closed_member_edges": 0,
+            "membership_pit_rows": 0,
+            "excluded_source_shapes": [],
+            "skipped_unidentifiable": [],
+            "unlabelled_nodes": 0,
+            "note": None,
+        }
+        base.update(self._ths_doc_coverage_fields())
+        base.update(fields)
+        return base
+
+    def build_ths_membership_history(self) -> None:
+        """Emit THS memberships solely from the owner PIT history.
+
+        The owner store's ``ths_concept_dump`` rows deliberately do not enter the
+        graph: their concept-to-basket resolution used the current map, so a dated
+        graph edge would backdate a mapping we do not historically possess.  An empty
+        history therefore means unavailable membership coverage, never a fallback to
+        today's ``membership.json``.
+        """
+        # Names/labels are NOT owned by the PIT history (it carries no basket
+        # name_en/name_zh) — mint basket + company nodes with their labels from
+        # the current membership document FIRST (first-writer-wins via _node),
+        # independently of whether the PIT history has any rows for them. This
+        # keeps THS concept baskets and THS-only companies bilingual even though
+        # build_family(THS_SUITE) is deliberately skipped for MEMBER_OF/TRACKS,
+        # and keeps the basket nodes (and therefore the EXPRESSES plane +
+        # crosswalk) alive when the PIT history is empty/absent.
+        self._seed_ths_labels()
+
+        history = self.ths_history
+        rows = (history.to_dict("records") if hasattr(history, "to_dict")
+                else list(history or ()))
+        membership_rows = [row for row in rows
+                           if _text(row.get("source_shape")) == "membership"]
+        collection_rows = [row for row in membership_rows
+                           if row.get("record_kind") == "collection.v2"]
+        # A precise source receipt cannot be emitted as knowledge before it was
+        # known. Legacy daily rows have no fabricated intraday clock.
+        from engine import basket_membership_pit
+        for marker in collection_rows:
+            emitted = basket_membership_pit._collection_clock(self.computed_at)
+            receipt = json.loads(marker["collection_receipt"])
+            known = basket_membership_pit._collection_clock(receipt["known_at"])
+            if known > emitted or known.date().isoformat() > self.belief_time:
+                raise ValueError("collection known after graph knowledge/emission clock")
+            if (known.date().isoformat() == self.belief_time
+                    and known.time().isoformat() != "00:00:00"):
+                raise ValueError("DAILY_GRAPH_UNREPRESENTABLE: intraday collection knowledge")
+        excluded_shapes = sorted({
+            _text(row.get("source_shape")) or "unknown" for row in rows
+            if _text(row.get("source_shape")) != "membership"
+        })
+        if not membership_rows:
+            self.out.per_suite[THS_SUITE] = self._ths_per_suite(
+                membership_pit_rows=0,
+                excluded_source_shapes=excluded_shapes,
+                note="no historically receipted membership-shape THS snapshots",
+            )
+            return
+
+        # Shape filter lives inside ths_membership_intervals (default membership-only).
+        intervals = local_sources.ths_membership_intervals(rows)
+        basket_ids = sorted({iv.basket_id for iv in intervals}
+                            | {row["basket_id"] for row in collection_rows})
+        companies: set[str] = set()
+        n_closed = 0
+        n_edges = 0
+        skipped_unidentifiable: list[str] = []
+        for basket_id in basket_ids:
+            self._node(
+                identity.basket_node_id(THS_SUITE, basket_id),
+                kind="basket", market_scope="cn",
+                provenance=f"membership_history:{THS_SUITE}",
+                external_ids={"suite": THS_SUITE, "basket_id": basket_id},
+            )
+
+        for iv in intervals:
+            try:
+                company = identity.company_node_id(THS_SUITE, iv.ticker, breaks=self.breaks)
+            except ValueError as exc:
+                log.warning("theme_graph: THS PIT %s/%s skipped (%s)",
+                            iv.basket_id, iv.ticker, exc)
+                skipped_unidentifiable.append(f"{iv.basket_id}/{iv.ticker}")
+                continue
+            self._node(
+                company, kind="company", market_scope="cn",
+                provenance=f"membership_history:{THS_SUITE}",
+                external_ids={"symbol": iv.ticker.upper()},
+                identity_epoch=identity.identity_epoch("cn", iv.ticker, breaks=self.breaks),
+            )
+            companies.add(company)
+            opening = self._evidence_ref(
+                kind="scrape",
+                source_ref=(f"data/{THS_SUITE}/membership_history.parquet@"
+                            f"{iv.valid_from}"
+                            + (f"#{iv.opening_collection_id}" if iv.opening_collection_id else "")),
+                published_at=iv.valid_from, licensing=_licensing(THS_FAMILY),
+            )
+            refs = [opening]
+            if iv.closed_by:
+                refs.append(self._evidence_ref(
+                    kind="scrape",
+                    source_ref=(f"data/{THS_SUITE}/membership_history.parquet@"
+                                f"{iv.closed_by}"
+                                + (f"#{iv.closing_collection_id}" if iv.closing_collection_id else "")),
+                    published_at=iv.closed_by, licensing=_licensing(THS_FAMILY),
+                ))
+                n_closed += 1
+            self._edge(
+                edge_type="MEMBER_OF", src=company,
+                dst=identity.basket_node_id(THS_SUITE, iv.basket_id),
+                valid_from=iv.valid_from, valid_to=iv.valid_to,
+                evidence_time=iv.closed_by or iv.valid_from,
+                source_class="scrape", date_provenance="membership_pit",
+                evidence_refs=refs, confidence_basis="membership_pit.ths.v1",
+                era=self._era_for(iv.closed_by or iv.valid_from),
+            )
+            n_edges += 1
+
+        # PIT carries no labels: a company/basket present only in history and absent
+        # from today's membership.doc is minted without name_en/name_zh. Print the
+        # gap rather than hide it (m4).
+        unlabelled = 0
+        for node_id in list(companies) + [
+                identity.basket_node_id(THS_SUITE, bid) for bid in basket_ids]:
+            node = self._nodes.get(node_id) or {}
+            if not node.get("name_en") and not node.get("name_zh"):
+                unlabelled += 1
+
+        self.out.per_suite[THS_SUITE] = self._ths_per_suite(
+            baskets=len(basket_ids), companies=len(companies),
+            member_edges=n_edges, closed_member_edges=n_closed,
+            membership_pit_rows=len(membership_rows) - len(collection_rows),
+            collection_records=len(collection_rows),
+            collection_scope="PER_BASKET_ONLY",
+            excluded_source_shapes=excluded_shapes,
+            skipped_unidentifiable=skipped_unidentifiable,
+            unlabelled_nodes=unlabelled,
+        )
+
+    def _seed_ths_labels(self) -> None:
+        """Mint THS basket/company nodes with EN/ZH labels from membership.json.
+
+        Label-only: no MEMBER_OF/TRACKS edges are emitted here (those stay owned
+        solely by the PIT history per :meth:`build_ths_membership_history`'s own
+        docstring) — this exists only so THS nodes carry the same bilingual
+        labels ``build_family`` would have given them.
+        """
+        doc = self._membership(THS_SUITE)
+        if doc is None:
+            return
+        baskets = doc.get("baskets") or {}
+        if not baskets:
+            return
+        try:
+            symbol_key = self._symbol_key(THS_SUITE, baskets)
+        except ValueError:
+            symbol_key = "symbol"
+        for bid, basket in baskets.items():
+            self._node(
+                identity.basket_node_id(THS_SUITE, bid),
+                kind="basket", market_scope="cn",
+                provenance=f"membership_doc:{THS_SUITE}",
+                name_en=basket.get("name"), name_zh=basket.get("name_zh"),
+                external_ids={"suite": THS_SUITE, "basket_id": str(bid)},
+            )
+            for member in basket.get("members") or []:
+                symbol = member.get(symbol_key)
+                if not symbol:
+                    continue
+                try:
+                    c_node = identity.company_node_id(THS_SUITE, symbol, breaks=self.breaks)
+                except ValueError:
+                    continue
+                self._node(
+                    c_node, kind="company", market_scope="cn",
+                    provenance=f"membership_doc:{THS_SUITE}",
+                    name_en=member.get("name"), name_zh=member.get("name_zh"),
+                    external_ids={"symbol": str(symbol).strip().upper()},
+                    identity_epoch=identity.identity_epoch(
+                        "cn", symbol, breaks=self.breaks),
+                )
+
     def _concept_map(self) -> dict[str, str]:
         if not hasattr(self, "_cmap"):
             p = self.data_dir / THS_SUITE / "concept_map.json"
@@ -621,7 +1101,10 @@ class _Builder:
                     "parent_source_key": meta.parent_theme_key,
                     # The unlabelled layer above themes that the committed schema
                     # flattens: carried as METADATA, never resurrected as hierarchy
-                    # (PARENT_OF edges are W4's).
+                    # here. PARENT_OF is GMI-owned on the incumbent producer and is
+                    # emitted only from the crosswalk hierarchy block
+                    # (DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK; seat ruling 2026-10-07
+                    # retires standalone W4).
                     "supergroup_index": meta.supergroup_index,
                     "key_aliases": [],
                     "rights_family": FINVIZ_FAMILY,
@@ -745,6 +1228,7 @@ class _Builder:
 
         doc = self._membership(THS_SUITE)
         n_expresses, unresolved = 0, []
+        self._ths_basket_concept_dates: dict[str, str] = {}
         if doc:
             published_at = _doc_published_at(doc)
             doc_ev = self._evidence_ref(
@@ -765,14 +1249,28 @@ class _Builder:
                 lt_node = f"ltheme:ths:{code}"
                 if b_node not in self._nodes or lt_node not in self._nodes:
                     continue
+                # This is a dated association in the membership document, not a
+                # timeless property inferred from the current map.  Keep it for the
+                # later crosswalk gate as well as the source-local expression.
+                basket_node = self._nodes[b_node]
+                basket_external = json.loads(basket_node["external_ids"])
+                basket_external["ths_code"] = code
+                basket_node["external_ids"] = json.dumps(
+                    basket_external, ensure_ascii=False, sort_keys=True)
+                # B2: the association is only as fresh as the LATEST of the two
+                # owner receipts that produced it — a stale membership doc riding a
+                # freshly reloaded concept map (or vice versa) must not certify a
+                # canonical join dated earlier than either receipt actually landed.
+                assoc_date = max(d for d in (published_at, asof) if d)
+                self._ths_basket_concept_dates[b_node] = assoc_date
                 self._edge(
                     edge_type="EXPRESSES", src=b_node, dst=lt_node,
-                    valid_from=published_at or asof, valid_to=None,
-                    evidence_time=published_at or asof, source_class="scrape",
+                    valid_from=assoc_date, valid_to=None,
+                    evidence_time=assoc_date, source_class="scrape",
                     date_provenance="raw_snapshot",
                     evidence_refs=[doc_ev, cmap_ev],
                     confidence_basis=CONFIDENCE_BASIS,
-                    era=self._era_for(published_at or asof))
+                    era=self._era_for(assoc_date))
                 n_expresses += 1
 
         self.out.unknown_ths_concepts = sorted(set(unresolved))
@@ -817,6 +1315,7 @@ class _Builder:
                 ths_code_by_node[node_id] = ext["ths_code"]
 
         mapped_codes: set[str] = set()
+        joined_codes: set[str] = set()
         unknown: set[str] = set()
         n_expresses = 0
         n_ltheme_expresses = 0
@@ -862,11 +1361,23 @@ class _Builder:
             for b_node, code in ths_code_by_node.items():
                 if code not in wanted:
                     continue
+                association_date = getattr(
+                    self, "_ths_basket_concept_dates", {}).get(b_node)
+                if not association_date:
+                    # No dated basket→concept receipt means the canonical join is
+                    # unavailable; never infer it from the current node alone.
+                    continue
                 refs = [xwalk_ev] + ([cmap_ev] if cmap_ev else [])
+                # The mapping may become usable only once BOTH its curated
+                # crosswalk and source-local association are knowable. A later
+                # association delays the edge; it does not erase a still-valid
+                # one-hop canonical mapping forever.
+                mapping_date = max(xwalk_date, association_date)
                 self._edge(edge_type="EXPRESSES", src=b_node, dst=t_node,
-                           valid_from=xwalk_date, valid_to=None,
-                           evidence_time=xwalk_date, source_class="curated",
+                           valid_from=mapping_date, valid_to=None,
+                           evidence_time=mapping_date, source_class="curated",
                            date_provenance="crosswalk", evidence_refs=refs)
+                joined_codes.add(code)
                 n_expresses += 1
 
             # VOCABULARY RESOLUTION, not a second expression path (§9.12). The canonical
@@ -881,9 +1392,15 @@ class _Builder:
                 if lt_node not in self._nodes:
                     continue
                 refs = [xwalk_ev] + ([cmap_ev] if cmap_ev else [])
+                # The curated code→canonical mapping is the crosswalk's claim, but
+                # it cannot become usable before the concept-map receipt that
+                # establishes the source-local code node. Delay validity to the
+                # latest required receipt rather than backdating current vocabulary.
+                resolution_date = max(
+                    d for d in (xwalk_date, self._cmap_asof) if d)
                 self._edge(edge_type="EXPRESSES", src=lt_node, dst=t_node,
-                           valid_from=xwalk_date, valid_to=None,
-                           evidence_time=xwalk_date, source_class="curated",
+                           valid_from=resolution_date, valid_to=None,
+                           evidence_time=resolution_date, source_class="curated",
                            date_provenance="crosswalk", evidence_refs=refs)
                 n_ltheme_expresses += 1
 
@@ -895,13 +1412,71 @@ class _Builder:
             "local_theme_expresses_edges": n_ltheme_expresses,
             "published_at": xwalk_date,
             "ths_codes_mapped": len(mapped_codes),
+            "ths_codes_with_canonical_basket_join": len(joined_codes),
+            "ths_codes_without_canonical_basket_join": len(mapped_codes - joined_codes),
             "ths_codes_unknown": len(unknown),
         }
+
+    def build_hierarchy(self) -> None:
+        doc = yaml.safe_load(self.crosswalk_path.read_text(encoding="utf-8")) or {}
+        validated = validate_theme_hierarchy(doc)
+        belief_date = self.belief_time[:10]
+        evidence_cache: dict[str, str] = {}
+
+        def emittable(src: str, dst: str) -> bool:
+            source_node = self._nodes.get(src)
+            destination_node = self._nodes.get(dst)
+            if source_node is None or destination_node is None:
+                return False
+            return (source_node.get("kind") == "theme"
+                    and destination_node.get("kind") == "theme"
+                    and (source_node.get("tier"), destination_node.get("tier"))
+                    in _HIERARCHY_TIER_ADJACENCIES)
+
+        for entry in (validated["categories"]
+                      + validated.get("sub_themes", [])
+                      + validated["micro_themes"]):
+            if entry["asserted_on"] > belief_date:
+                continue
+            row = entry["row"]
+            source_meta = None
+            if entry["tier"] in {"sub_theme", "micro_theme"}:
+                source_meta = {"nominated_from": row.get("nominated_from")}
+                if "value_chain_position" in row:
+                    source_meta["value_chain_position"] = row["value_chain_position"]
+            self._node(
+                entry["id"], kind="theme", market_scope="global", tier=entry["tier"],
+                provenance="crosswalk:config/theme_crosswalk.yml",
+                name_en=row.get("name_en"), name_zh=row.get("name_zh"),
+                external_ids={}, birth_date=entry["asserted_on"],
+                source_meta=source_meta)
+
+        for row in validated["parents"]:
+            if row["asserted_on"] > belief_date:
+                continue
+            if not emittable(row["parent"], row["child"]):
+                continue
+            published_at = row["asserted_on"]
+            evidence_ref = evidence_cache.get(published_at)
+            if evidence_ref is None:
+                evidence_ref = self._evidence_ref(
+                    kind="operator_curation", source_ref="config/theme_crosswalk.yml",
+                    published_at=published_at,
+                    licensing=_licensing("mastermind_curated"))
+                evidence_cache[published_at] = evidence_ref
+            self._edge(edge_type="PARENT_OF", src=row["parent"], dst=row["child"],
+                       valid_from=published_at, valid_to=None,
+                       evidence_time=published_at, source_class="curated",
+                       date_provenance="crosswalk", evidence_refs=[evidence_ref])
 
     # -- drive -------------------------------------------------------------
 
     def run(self) -> Materialization:
         for suite in SUITES:
+            # D2C gives THS a distinct producer below: its live document has no
+            # historical membership authority.
+            if suite == THS_SUITE:
+                continue
             try:
                 self.build_family(suite)
             except ValueError as exc:
@@ -911,14 +1486,19 @@ class _Builder:
         # planes resolve against (a Finviz ticker already present must resolve to the
         # existing node, never to a twin), and the THS plane mints the concept nodes the
         # crosswalk's vocabulary-resolution edges point at.
-        for build_plane in (self.build_finviz_plane, self.build_ths_plane):
+        planes = (
+            ("build_ths_membership_history", self.build_ths_membership_history),
+            ("build_finviz_plane", self.build_finviz_plane),
+            ("build_ths_plane", self.build_ths_plane),
+        )
+        for plane_name, build_plane in planes:
             try:
                 build_plane()
-            except Exception as exc:  # noqa: BLE001 — a local plane is additive
-                log.warning("theme_graph: local plane %s failed (%s)",
-                            build_plane.__name__, exc)
-                self.out.local_plane[build_plane.__name__] = {"error": str(exc)}
+            except Exception as exc:  # noqa: BLE001 — orchestrator decides fatality
+                log.warning("theme_graph: local plane %s failed (%s)", plane_name, exc)
+                self.out.local_plane[plane_name] = {"error": str(exc)}
         self.build_crosswalk()
+        self.build_hierarchy()
         self.out.nodes = [self._nodes[k] for k in sorted(self._nodes)]
         self.out.edges = [self._edges[k] for k in sorted(self._edges)]
         self.out.evidence = [self._evidence[k] for k in sorted(self._evidence)]
@@ -1041,33 +1621,86 @@ def build(*, era: str, belief_time: str | None = None,
           data_dir: Path | None = None,
           crosswalk_path: Path | None = None,
           raw_snapshot: tuple[str, dict] | None = None,
+          ths_history=None,
           finviz_seed_path: Path | None = None,
           finviz_history_path: Path | None = None,
           finviz_live_tree_path: Path | None = None,
           substrate_dir: Path | None = None,
-          retired_node_ids: frozenset[str] | None = None) -> Materialization:
+          retired_node_ids: frozenset[str] | None = None,
+          activity_events: list[dict] | None = None) -> Materialization:
     """Compute the whole graph view. Pure: reads inputs, writes nothing.
 
     ``retired_node_ids`` (V4-D2B3, R-A6): node_ids whose latest ``node_lifecycle``
     status is retired/merged, read by the caller (the impure orchestrator) and handed
     in as a plain frozenset — materialize itself never touches the store.
+
+    ``activity_events`` (ORCH-PIPE 2026-10-21, lane B1): curated activity-membership
+    history events, folded with :func:`apply_activity_membership_events` as of
+    ``computed_at`` and projected into MEMBER_OF edges + evidence receipts by
+    :func:`project_activity_memberships`. ``None`` — no ledger present — is the exact
+    pre-fold path, byte-identical. The fold itself has no authority (its ``authority``
+    dict stays all-False); this projection of GRANTED+ACCEPT current beliefs is the
+    admitting act. NEVER raises on activity input — every failure becomes a typed
+    refusal row (nightly-bake rule, same as company_mint_refusals).
     """
     if era not in ("reconstruction", "observed"):
         raise ValueError(f"era must be reconstruction|observed, got {era!r}")
     root = Path(__file__).resolve().parent.parent.parent
-    return _Builder(
+    # Hoisted ONCE so the builder and the activity fold see the same stamps.
+    computed_at = computed_at or utc_now_stamp()
+    belief_time = belief_time or utc_today()
+    mat = _Builder(
         data_dir=data_dir or config.data_dir(),
         crosswalk_path=crosswalk_path or (root / "config" / "theme_crosswalk.yml"),
         era=era,
-        belief_time=belief_time or utc_today(),
-        computed_at=computed_at or utc_now_stamp(),
+        belief_time=belief_time,
+        computed_at=computed_at,
         raw_snapshot=raw_snapshot,
+        ths_history=ths_history,
         finviz_seed_path=finviz_seed_path,
         finviz_history_path=finviz_history_path,
         finviz_live_tree_path=finviz_live_tree_path,
         substrate_dir=substrate_dir,
         retired_node_ids=retired_node_ids,
     ).run()
+    if activity_events is None:
+        return mat
+    try:
+        fold = apply_activity_membership_events(activity_events,
+                                                knowledge_cutoff=computed_at)
+    except ActivityHistoryRefusal as exc:
+        mat.activity_refusals.append(
+            {"code": "ACTIVITY_FOLD_REFUSED", "reason": exc.code, "detail": str(exc)})
+        return mat
+    # Surface the fold's own refusals and retained removals verbatim (code = reason);
+    # a retained removal is a refused deletion, and the nightly must see it.
+    for row in fold["refused"] + fold["retained"]:
+        mat.activity_refusals.append(dict(row, code=row["reason"]))
+    edges, evidence, refusals = project_activity_memberships(
+        fold, events=activity_events, belief_time=belief_time, era=era,
+        computed_at=computed_at,
+        node_ids={str(n["node_id"]) for n in mat.nodes},
+        edge_ids={str(e["edge_id"]) for e in mat.edges})
+    mat.activity_refusals.extend(refusals)
+    mat.activity_fold = {
+        "current": len(fold["current"]), "history": len(fold["history"]),
+        "retained": len(fold["retained"]), "refused": len(fold["refused"]),
+        "excluded_after_cutoff": len(fold["excluded_after_cutoff"]),
+        "projected_edges": len(edges), "projected_evidence": len(evidence),
+        "knowledge_cutoff": computed_at,
+    }
+    # Merge and RE-SORT exactly the way _Builder.run() sorts (keep-first on id — the
+    # same first-writer-wins discipline as _edge/_evidence_ref).
+    if edges:
+        merged = {e["edge_id"]: e for e in mat.edges}
+        merged.update((e["edge_id"], e) for e in edges)
+        mat.edges = [merged[k] for k in sorted(merged)]
+    if evidence:
+        merged_ev = {e["evidence_id"]: e for e in mat.evidence}
+        for row in evidence:
+            merged_ev.setdefault(row["evidence_id"], row)
+        mat.evidence = [merged_ev[k] for k in sorted(merged_ev)]
+    return mat
 
 
 # ---------------------------------------------------------------------------
@@ -1079,9 +1712,75 @@ def source_family_of(node_id: object) -> str | None:
     return rights.family_for_node_id(node_id)
 
 
+
+def _explained_ths_closures(computed: list[dict], history, stored=None) -> set[str]:
+    """Derive exact closure proofs from the same validated owner history.
+
+    No caller-provided exemption ids: a qualifying owner interval must match the
+    computed identity/window/evidence and only its own closure is explained.
+    """
+    if history is None:
+        return set()
+    intervals = local_sources.ths_membership_intervals(history)
+    expected = {}
+    for iv in intervals:
+        if iv.valid_to is None or iv.closure_basis not in {"complete_collection", "removed"}:
+            continue
+        src = identity.company_node_id(THS_SUITE, iv.ticker)
+        dst = identity.basket_node_id(THS_SUITE, iv.basket_id)
+        eid = edge_id_for("MEMBER_OF", src, dst, iv.valid_from)
+        ref = (f"data/{THS_SUITE}/membership_history.parquet@{iv.closed_by}"
+               + (f"#{iv.closing_collection_id}" if iv.closing_collection_id else ""))
+        evidence = evidence_id_for("scrape", ref, iv.closed_by)
+        expected[eid] = (src, dst, iv.valid_from, iv.valid_to, iv.closed_by, evidence)
+    explained = set()
+    for row in computed:
+        proof = expected.get(row.get("edge_id"))
+        if proof is None or row.get("confidence_basis") != "membership_pit.ths.v1":
+            continue
+        src, dst, start, end, known, evidence = proof
+        if (row.get("type") == "MEMBER_OF" and row.get("src") == src
+                and row.get("dst") == dst and row.get("valid_from") == start
+                and row.get("valid_to") == end and row.get("evidence_time") == known
+                and row.get("source_class") == "scrape"
+                and row.get("date_provenance") == "membership_pit"
+                and evidence in _normalize_evidence_refs(row.get("evidence_refs"))):
+            explained.add(row["edge_id"])
+    # Preserve accepted legacy-generation annulment, scoped to the exact pairs
+    # this owner actually observed. A cutover is not a family-wide exemption.
+    birth = ths_membership_pit_birth(history)
+    pairs = set()
+    for iv in intervals:
+        try:
+            pairs.add((identity.company_node_id(THS_SUITE, iv.ticker),
+                       identity.basket_node_id(THS_SUITE, iv.basket_id)))
+        except ValueError:
+            continue
+    cache = {}
+    if birth and stored is not None:
+        for row in computed:
+            if row.get("confidence_basis") != THS_MEMBERSHIP_DOC_BASIS:
+                continue
+            clock = (row.get("belief_time"), row.get("era"), row.get("computed_at"))
+            if clock not in cache:
+                cache[clock] = {r["edge_id"]: r for r in supersede_ths_membership_doc_edges(
+                    stored, valid_to=birth, belief_time=clock[0], era=clock[1],
+                    computed_at=clock[2], pit_pairs=pairs)}
+            expected_row = cache[clock].get(row.get("edge_id"))
+            fields = ("type", "src", "dst", "valid_from", "valid_to", "evidence_time",
+                      "confidence_basis", "source_class", "date_provenance")
+            if (expected_row is not None
+                    and all(row.get(k) == expected_row.get(k) for k in fields)
+                    and _normalize_evidence_refs(row.get("evidence_refs"))
+                    == _normalize_evidence_refs(expected_row.get("evidence_refs"))):
+                explained.add(row["edge_id"])
+    return explained
+
+
 def source_shrink_refusals(computed: list[dict], stored, *,
                            allow: frozenset[str] | set[str] | tuple[str, ...] = (),
-                           max_shrink: float = MAX_SOURCE_SHRINK) -> list[str]:
+                           max_shrink: float = MAX_SOURCE_SHRINK,
+                           owner_membership_history=None) -> list[str]:
     """Refusal messages for every family whose live memberships would shrink too far.
 
     Behind the refresh contract's own interlocks, and aimed at a different attacker: a
@@ -1109,8 +1808,14 @@ def source_shrink_refusals(computed: list[dict], stored, *,
     if not live_by_family:
         return []
 
+    try:
+        explained = _explained_ths_closures(computed, owner_membership_history, stored)
+    except ValueError as exc:
+        return [f"THS membership closure proof refused: {exc}"]
     closing_by_family: dict[str, int] = {}
     for row in computed:
+        if str(row.get("edge_id")) in explained:
+            continue
         if _null(row.get("valid_to")):
             continue
         family = source_family_of(row.get("dst"))
@@ -1129,6 +1834,296 @@ def source_shrink_refusals(computed: list[dict], stored, *,
                 f"is likelier, and in an append-only store the closures are permanent. "
                 f"Pass --allow-source-shrink {family} to proceed deliberately")
     return out
+
+
+# ---------------------------------------------------------------------------
+# THS membership_doc → membership_pit generation cutover
+# ---------------------------------------------------------------------------
+
+THS_MEMBERSHIP_DOC_BASIS = CONFIDENCE_BASIS  # "membership_doc.v1"
+THS_BASKET_DST_PREFIX = f"basket:{THS_SUITE}:"
+
+
+def ths_membership_pit_birth(history) -> str | None:
+    """Earliest membership-shape snapshot_date in the owner PIT history, or None."""
+    rows = history.to_dict("records") if hasattr(history, "to_dict") else list(history or ())
+    dates = sorted({
+        str(row.get("snapshot_date") or "").strip()
+        for row in rows
+        if _text(row.get("source_shape")) == "membership"
+        and _is_date(row.get("snapshot_date"))
+    })
+    return dates[0] if dates else None
+
+
+def _normalize_evidence_refs(value: object) -> list[str]:
+    if _null(value):
+        return []
+    if isinstance(value, str):
+        try:
+            parsed = json.loads(value)
+        except (TypeError, ValueError):
+            return [value] if value.strip() else []
+        value = parsed
+    to_list = getattr(value, "tolist", None)
+    if callable(to_list):
+        value = to_list()
+    if isinstance(value, (list, tuple)):
+        out: list[str] = []
+        for item in value:
+            out.extend(_normalize_evidence_refs(item))
+        return out
+    text = str(value).strip()
+    return [text] if text else []
+
+
+def supersede_ths_membership_doc_edges(
+    stored: pd.DataFrame,
+    *,
+    valid_to: str,
+    belief_time: str,
+    era: str,
+    computed_at: str,
+    pit_pairs: "set[tuple[str, str]] | None" = None,
+) -> list[dict]:
+    """Retract superseded-generation THS MEMBER_OF edges the PIT plane re-observed.
+
+    The PIT cutover re-keys every THS membership (``edge_id`` embeds ``valid_from``),
+    and ``changed_edges`` deliberately never closes a vanished edge. Without an
+    explicit retracting row for each stored ``membership_doc.v1`` / ``@seed_constant``
+    edge, both generations stay live. Retraction reuses the SAME ``edge_id`` with
+    ``valid_from`` DEGENERATED to ``valid_to`` (the codebase's existing zero-width
+    annulment convention — see ``test_r_a1_i_annulled_edge_stays_closed...``) so the
+    latest-belief view asserts NO valid-time span for the un-observed 2021-onward
+    era; end-dating with the original 2021 seed date would instead assert that
+    backdated fiction as a TRUE membership up to the PIT birth date, which is
+    exactly the exposure this cutover exists to remove (review BLOCKER 1).
+
+    ``pit_pairs`` (MAJOR 1): only the (src, dst) pairs the PIT plane actually
+    RE-OBSERVED get retracted here. A pair the PIT history never covers is left
+    open (a disclosed coverage gap, not a fabricated exit) — closing every stored
+    row regardless of PIT coverage would assert an exit for pairs no source ever
+    observed ending, which ``changed_edges``'s own docstring forbids.
+    """
+    if stored is None or getattr(stored, "empty", True) or not _is_date(valid_to):
+        return []
+    out: list[dict] = []
+    for row in stored.to_dict("records"):
+        if str(row.get("type") or "") != "MEMBER_OF":
+            continue
+        if not str(row.get("dst") or "").startswith(THS_BASKET_DST_PREFIX):
+            continue
+        if str(row.get("confidence_basis") or "") != THS_MEMBERSHIP_DOC_BASIS:
+            continue
+        if not _null(row.get("valid_to")):
+            continue
+        src = str(row["src"])
+        dst = str(row["dst"])
+        if pit_pairs is not None and (src, dst) not in pit_pairs:
+            continue
+        closed = {col: row.get(col) for col in RESERVED_EDGE_FIELDS}
+        closed.update({
+            "edge_id": str(row["edge_id"]),
+            "type": "MEMBER_OF",
+            "src": src,
+            "dst": dst,
+            "valid_from": valid_to,
+            "valid_to": valid_to,
+            "evidence_time": str(row.get("evidence_time") or valid_to),
+            "belief_time": belief_time,
+            "era": era,
+            "source_class": str(row.get("source_class") or "scrape"),
+            "date_provenance": str(row.get("date_provenance") or "seed_constant"),
+            "evidence_refs": _normalize_evidence_refs(row.get("evidence_refs")),
+            "confidence_basis": THS_MEMBERSHIP_DOC_BASIS,
+            "computed_at": computed_at,
+            "engine_version": str(row.get("engine_version") or ENGINE_VERSION),
+        })
+        for f in RESERVED_EDGE_FIELDS:
+            if f not in closed:
+                closed[f] = None
+        out.append(closed)
+    out.sort(key=lambda r: r["edge_id"])
+    return out
+
+
+def supersede_ths_canonical_expression_edges(
+    stored: pd.DataFrame,
+    computed: list[dict],
+    *,
+    belief_time: str,
+    era: str,
+    computed_at: str,
+) -> list[dict]:
+    """Close older live THS basket→canonical-theme receipts replaced this run.
+
+    Canonical ``EXPRESSES`` edge ids include ``valid_from``.  A later THS or
+    crosswalk receipt therefore mints a new edge id even when the logical
+    basket→theme pair is unchanged.  This helper preserves that truthful clock
+    movement while appending a closing belief for every older live edge of the
+    same pair, preventing consumers from walking duplicate live provenance paths.
+    """
+    if stored is None or getattr(stored, "empty", True):
+        return []
+
+    def is_canonical_ths(row: dict) -> bool:
+        return (
+            str(row.get("type") or "") == "EXPRESSES"
+            and str(row.get("src") or "").startswith(f"basket:{THS_SUITE}:")
+            and str(row.get("dst") or "").startswith("theme:")
+            and str(row.get("source_class") or "") == "curated"
+            and str(row.get("date_provenance") or "") == "crosswalk"
+        )
+
+    replacement_by_pair: dict[tuple[str, str], dict] = {}
+    for row in computed:
+        if not is_canonical_ths(row) or not _null(row.get("valid_to")):
+            continue
+        pair = (str(row["src"]), str(row["dst"]))
+        prior = replacement_by_pair.get(pair)
+        if prior is not None and str(prior["edge_id"]) != str(row["edge_id"]):
+            raise ValueError(f"multiple live THS canonical replacements for {pair!r}")
+        replacement_by_pair[pair] = row
+
+    out: list[dict] = []
+    for row in stored.to_dict("records"):
+        if not is_canonical_ths(row) or not _null(row.get("valid_to")):
+            continue
+        pair = (str(row["src"]), str(row["dst"]))
+        replacement = replacement_by_pair.get(pair)
+        if replacement is None or str(replacement["edge_id"]) == str(row["edge_id"]):
+            continue
+        old_from = _text(row.get("valid_from"))
+        new_from = _text(replacement.get("valid_from"))
+        if not _is_date(old_from) or not _is_date(new_from) or new_from <= old_from:
+            raise ValueError(
+                f"non-forward THS canonical replacement for {pair!r}: "
+                f"stored={old_from!r}, computed={new_from!r}")
+        old_belief = _text(row.get("belief_time"))
+        if not _is_date(old_belief) or not _is_date(belief_time) or belief_time <= old_belief:
+            raise ValueError(
+                f"non-advancing THS canonical belief for {pair!r}: "
+                f"stored={old_belief!r}, computed={belief_time!r}; the daily "
+                "(edge_id, belief_time) ledger key cannot represent that closure")
+        closed = {col: row.get(col) for col in RESERVED_EDGE_FIELDS}
+        refs = sorted(set(_normalize_evidence_refs(row.get("evidence_refs"))
+                          + _normalize_evidence_refs(replacement.get("evidence_refs"))))
+        closed.update({
+            "edge_id": str(row["edge_id"]),
+            "type": "EXPRESSES",
+            "src": pair[0],
+            "dst": pair[1],
+            "valid_from": old_from,
+            "valid_to": new_from,
+            "evidence_time": str(replacement.get("evidence_time") or new_from),
+            "belief_time": belief_time,
+            "era": era,
+            "source_class": str(row.get("source_class") or "curated"),
+            "date_provenance": str(row.get("date_provenance") or "crosswalk"),
+            "evidence_refs": refs,
+            "confidence_basis": str(row.get("confidence_basis") or CONFIDENCE_BASIS),
+            "computed_at": computed_at,
+            "engine_version": str(row.get("engine_version") or ENGINE_VERSION),
+        })
+        for field in RESERVED_EDGE_FIELDS:
+            closed.setdefault(field, None)
+        out.append(closed)
+    out.sort(key=lambda row: str(row["edge_id"]))
+    return out
+
+
+def apply_relation_events(stored: pd.DataFrame, computed: list[dict], events: list,
+                          *, belief_time: str, era: str, computed_at: str
+                          ) -> tuple[list[dict], list[dict]]:
+    """Consume only the probation owner's accepted events, never snapshot absence.
+
+    Precise event clocks stay on the evidence receipt. The daily graph refuses
+    any effect/knowledge cut it cannot represent, before any append occurs.
+    """
+    from engine.theme_graph import probation
+
+    prior_by_id = {str(row["edge_id"]): row for row in stored.to_dict("records")}
+    closings, evidence, acted = [], [], set()
+    for event in events:
+        row = probation.require_daily_relation_event(
+            event, belief_time=belief_time, emitted_at=computed_at)
+        prior = row["prior_relation"]
+        old = prior_by_id.get(prior["edge_id"])
+        if old is None or any(str(old.get(key)) != value for key, value in prior.items()):
+            raise ValueError("relation event prior scope is not the stored owner relation")
+        if (old.get("source_class") != "curated"
+                or old.get("date_provenance") != "crosswalk"):
+            raise ValueError("relation event prior is not a canonical curation relation")
+        if prior["edge_id"] in acted:
+            raise ValueError("multiple relation events for one prior relation")
+        acted.add(prior["edge_id"])
+        effective = probation._relation_clock(row["effective_at"]).date().isoformat()
+        source_ref = ("data/theme_graph/probation/relation_events.v2.jsonl#"
+                      + row["event_id"])
+        eid = evidence_id_for("operator_curation", source_ref, row["known_at"])
+        if not _null(old.get("valid_to")):
+            if str(old["valid_to"]) == effective and eid in _normalize_evidence_refs(old.get("evidence_refs")):
+                continue  # exact already-applied event; no rewriting history
+            raise ValueError("relation event conflicts with a prior closure")
+        if not _is_date(_text(old.get("belief_time"))) or belief_time <= str(old["belief_time"]):
+            raise ValueError("daily relation event must advance the stored belief")
+        if prior["type"] == "EXPRESSES":
+            live = [candidate for candidate in computed
+                    if candidate.get("type") == "EXPRESSES"
+                    and candidate.get("src") == prior["src"]
+                    and str(candidate.get("dst", "")).startswith("theme:")
+                    and _null(candidate.get("valid_to"))]
+        else:
+            live = [candidate for candidate in computed
+                    if candidate.get("type") == prior["type"]
+                    and candidate.get("src") == prior["src"]
+                    and candidate.get("dst") == prior["dst"]
+                    and _null(candidate.get("valid_to"))]
+        if any(candidate.get("dst") == prior["dst"] for candidate in live):
+            raise ValueError("relation event contradicts the current curated mapping")
+        if row["action"] == "DESTINATION_CHANGE":
+            if prior["type"] == "PARENT_OF":
+                raise ValueError(
+                    "PARENT_OF_DESTINATION_CHANGE_REFUSED: curated hierarchy edges are "
+                    "withdrawn, never re-pointed")
+            matches = [candidate for candidate in live
+                       if candidate.get("dst") == row["new_destination"]
+                       and candidate.get("source_class") == "curated"
+                       and candidate.get("date_provenance") == "crosswalk"
+                       and candidate.get("valid_from") == effective]
+            if len(matches) != 1:
+                raise ValueError("destination change lacks the exact current owner mapping")
+        internal, display, redistribution = _licensing("mastermind_curated")
+        evidence.append({
+            "evidence_id": eid, "kind": "operator_curation",
+            "published_at": row["known_at"], "effective_at": row["effective_at"],
+            "source_ref": source_ref, "licensing_internal_ok": internal,
+            "licensing_display_ok": display,
+            "licensing_redistribution_ok": redistribution, "retention": None,
+            "computed_at": computed_at, "provider": None, "claim_type": None,
+        })
+        authority = event.authority_receipt
+        owner_eid = evidence_id_for("operator_curation", authority["receipt_ref"], authority["known_at"])
+        evidence.append({
+            "evidence_id": owner_eid, "kind": "operator_curation",
+            "published_at": authority["known_at"], "effective_at": authority["accepted_at"],
+            "source_ref": authority["receipt_ref"], "licensing_internal_ok": internal,
+            "licensing_display_ok": display, "licensing_redistribution_ok": redistribution,
+            "retention": None, "computed_at": computed_at, "provider": None, "claim_type": None,
+        })
+        closed = {field: old.get(field) for field in RESERVED_EDGE_FIELDS}
+        closed.update({
+            "edge_id": prior["edge_id"], "type": prior["type"],
+            "src": prior["src"], "dst": prior["dst"],
+            "valid_from": prior["valid_from"], "valid_to": effective,
+            "evidence_time": effective, "belief_time": belief_time, "era": era,
+            "source_class": "curated", "date_provenance": "crosswalk",
+            "evidence_refs": sorted(set(_normalize_evidence_refs(old.get("evidence_refs")) + [eid, owner_eid])),
+            "confidence_basis": old.get("confidence_basis") or CONFIDENCE_BASIS,
+            "computed_at": computed_at, "engine_version": ENGINE_VERSION,
+        })
+        closings.append(closed)
+    return closings, evidence
 
 
 # ---------------------------------------------------------------------------
@@ -1187,3 +2182,369 @@ def changed_edges(computed: list[dict], stored: pd.DataFrame) -> list[dict]:
     prior = {str(r["edge_id"]): _material(r) for r in stored.to_dict("records")}
     return [row for row in computed
             if prior.get(str(row["edge_id"])) != _material(row)]
+
+
+# ---------------------------------------------------------------------------------------
+# Native activity membership HISTORY (recovery 2026-10-16 §9 step 3; contract
+# contracts/theme_graph/activity_membership_history.v1.schema.json).
+#
+# A PURE fold over versioned APPEND / CORRECT / REMOVE events for owner-admitted native
+# activity memberships (today only the C01 species, planned_product_integration). It is
+# deliberately NOT called by build(), writes nothing, and feeds nothing into edges.v1:
+# the fold answers "what was believed at this knowledge cutoff" and grants no
+# materialize, publish or rank authority. The same discipline as apply_relation_events
+# holds: absence is never removal. Only a complete, authoritative observation of an
+# exhaustive roster that does not contain the subject removes a belief; a timeout, a
+# partial read, a changed shape or a non-exhaustive roster leaves the belief in place.
+# Knowledge-cutoff filtering runs BEFORE any selection, and no belief is ever deleted:
+# a superseded or removed belief moves to history with its closed knowledge interval.
+# ---------------------------------------------------------------------------------------
+
+ACTIVITY_HISTORY_EVENT_SCHEMA = "gmi.activity_membership_history_event/v1"
+ACTIVITY_HISTORY_STATE_SCHEMA = "gmi.activity_membership_history_state/v1"
+ADMITTED_ACTIVITY_HISTORY_SPECIES = frozenset({"planned_product_integration",
+                                               "principal_business_activity"})
+ACTIVITY_HISTORY_CONTRACT = "contracts/theme_graph/activity_membership_history.v1.schema.json"
+_ACTIVITY_HISTORY_SOURCE = re.compile(r"^co:[a-z]{2}:[A-Za-z0-9._-]+$")
+_ACTIVITY_HISTORY_TARGET = re.compile(r"^theme:[a-z0-9_]+$")
+_ACTIVITY_HISTORY_REMOVAL_REFUSAL = {
+    "TIMEOUT": "REMOVAL_REFUSED_TIMEOUT",
+    "PARTIAL": "REMOVAL_REFUSED_PARTIAL",
+    "CHANGED_SHAPE": "REMOVAL_REFUSED_CHANGED_SHAPE",
+}
+_ACTIVITY_HISTORY_VALIDATOR: list = []
+
+
+class ActivityHistoryRefusal(ValueError):
+    """A typed refusal of an activity history event or fold; ``code`` is stable."""
+
+    def __init__(self, code: str, detail: str = "") -> None:
+        super().__init__(f"{code}: {detail}" if detail else code)
+        self.code = code
+
+
+def _activity_history_canonical(value) -> bytes:
+    return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"),
+                      allow_nan=False).encode("utf-8")
+
+
+def activity_history_event_digest(event: dict) -> str:
+    """sha256 of the canonical event without ``event_id``/``event_sha256``."""
+    payload = {k: v for k, v in event.items() if k not in {"event_id", "event_sha256"}}
+    return hashlib.sha256(_activity_history_canonical(payload)).hexdigest()
+
+
+def activity_membership_id(*, source_node_id: str, target_node_id: str, species: str,
+                           scope: dict) -> str:
+    """The membership identity: directed endpoints, species and scope, nothing else."""
+    body = {"source_node_id": source_node_id, "target_node_id": target_node_id,
+            "species": species, "scope": scope}
+    return "actmem:" + hashlib.sha256(_activity_history_canonical(body)).hexdigest()[:24]
+
+
+def _activity_history_validator():
+    if not _ACTIVITY_HISTORY_VALIDATOR:
+        import jsonschema
+
+        path = Path(__file__).resolve().parents[2] / ACTIVITY_HISTORY_CONTRACT
+        schema = json.loads(path.read_text(encoding="utf-8"))
+        jsonschema.Draft202012Validator.check_schema(schema)
+        _ACTIVITY_HISTORY_VALIDATOR.append(jsonschema.Draft202012Validator(schema))
+    return _ACTIVITY_HISTORY_VALIDATOR[0]
+
+
+def _activity_history_instant(value, *, code: str) -> datetime:
+    text = value if isinstance(value, str) else ""
+    if "T" not in text:
+        raise ActivityHistoryRefusal(code, repr(value))
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ActivityHistoryRefusal(code, repr(value)) from exc
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise ActivityHistoryRefusal(code, f"{value!r} carries no zone")
+    return parsed
+
+
+def validate_activity_history_event(event: dict) -> None:
+    """Refuse an event that is not a closed, honestly digested, admitted history event.
+
+    Semantic refusals are named before the generic schema refusal so a caller learns
+    WHY: a basket / vendor-theme / non co:->theme: endpoint is ENDPOINT_NOT_ADMITTED
+    (the group-to-micro and vendor-family refusal), an unadmitted species is
+    SPECIES_NOT_ADMITTED, and the action rules are CURATION_REQUIRED (APPEND/CORRECT),
+    SUPERSEDES_REQUIRED (CORRECT) and OBSERVATION_REQUIRED (REMOVE).
+    """
+    if not isinstance(event, dict):
+        raise ActivityHistoryRefusal("EVENT_SCHEMA_INVALID", "event is not an object")
+    endpoints = event.get("endpoints")
+    if isinstance(endpoints, dict):
+        source, target = endpoints.get("source_node_id"), endpoints.get("target_node_id")
+        if not (isinstance(source, str) and _ACTIVITY_HISTORY_SOURCE.match(source)
+                and isinstance(target, str) and _ACTIVITY_HISTORY_TARGET.match(target)):
+            raise ActivityHistoryRefusal("ENDPOINT_NOT_ADMITTED", f"{source!r} -> {target!r}")
+    if "species" in event and event.get("species") not in ADMITTED_ACTIVITY_HISTORY_SPECIES:
+        raise ActivityHistoryRefusal("SPECIES_NOT_ADMITTED", repr(event.get("species")))
+    action = event.get("action")
+    if action in {"APPEND", "CORRECT"} and event.get("curation") is None:
+        raise ActivityHistoryRefusal("CURATION_REQUIRED", f"{action} needs a named curation")
+    if action == "CORRECT" and event.get("supersedes_event_sha256") is None:
+        raise ActivityHistoryRefusal("SUPERSEDES_REQUIRED", "CORRECT names the belief it corrects")
+    if action == "APPEND" and event.get("supersedes_event_sha256") is not None:
+        raise ActivityHistoryRefusal("EVENT_SCHEMA_INVALID", "APPEND supersedes nothing")
+    if action == "REMOVE" and event.get("observation") is None:
+        raise ActivityHistoryRefusal("OBSERVATION_REQUIRED", "REMOVE needs an observation")
+    errors = sorted(_activity_history_validator().iter_errors(event),
+                    key=lambda e: [str(p) for p in e.absolute_path])
+    if errors:
+        first = errors[0]
+        path = "/".join(str(p) for p in first.absolute_path) or "<root>"
+        raise ActivityHistoryRefusal("EVENT_SCHEMA_INVALID", f"{path}: {first.message}")
+    digest = activity_history_event_digest(event)
+    if event["event_sha256"] != digest or event["event_id"] != "actevt:" + digest[:24]:
+        raise ActivityHistoryRefusal("EVENT_DIGEST_MISMATCH", event["event_id"])
+    expected = activity_membership_id(
+        source_node_id=event["endpoints"]["source_node_id"],
+        target_node_id=event["endpoints"]["target_node_id"],
+        species=event["species"], scope=event["scope"])
+    if event["membership_id"] != expected:
+        raise ActivityHistoryRefusal("MEMBERSHIP_ID_MISMATCH", event["membership_id"])
+    _activity_history_instant(event["clocks"]["knowledge_at"], code="EVENT_SCHEMA_INVALID")
+
+
+def _activity_history_belief(event: dict) -> dict:
+    return {
+        "membership_id": event["membership_id"],
+        "endpoints": event["endpoints"],
+        "species": event["species"],
+        "scope": event["scope"],
+        "role": event["role"],
+        "lifecycle": event["lifecycle"],
+        "evidence_lineage": event["evidence_lineage"],
+        "use_qualification": event["use_qualification"],
+        "curation": event["curation"],
+        "event_sha256": event["event_sha256"],
+        "knowledge_from": event["clocks"]["knowledge_at"],
+        "knowledge_to": None,
+    }
+
+
+def _activity_history_outcome(event: dict, reason: str, **extra) -> dict:
+    row = {"event_sha256": event["event_sha256"], "event_id": event["event_id"],
+           "membership_id": event["membership_id"], "action": event["action"],
+           "knowledge_at": event["clocks"]["knowledge_at"], "reason": reason}
+    row.update(extra)
+    return row
+
+
+def apply_activity_membership_events(events: list[dict], *, knowledge_cutoff: str) -> dict:
+    """Fold activity history events into belief as of ``knowledge_cutoff`` (pure).
+
+    1. Every event is validated; one invalid event refuses the whole fold.
+    2. Events known after the cutoff are excluded BEFORE any selection.
+    3. The rest apply in (knowledge instant, event_sha256) order, per membership:
+       APPEND becomes belief only when curated ACCEPT and graph-membership use is
+       GRANTED; CORRECT must supersede the current belief (same rules); REMOVE needs a
+       COMPLETE_AUTHORITATIVE observation of an exhaustive roster without the subject,
+       otherwise the belief is RETAINED with the exact reason.
+    Nothing is deleted: superseded and removed beliefs move to ``history`` with a closed
+    [knowledge_from, knowledge_to) interval. No I/O, no clock reads, no authority.
+    """
+    cutoff = _activity_history_instant(knowledge_cutoff, code="KNOWLEDGE_CUTOFF_INVALID")
+    rows = [json.loads(_activity_history_canonical(e)) if isinstance(e, dict) else e
+            for e in events]
+    for event in rows:
+        validate_activity_history_event(event)
+    unique = {event["event_sha256"]: event for event in rows}
+
+    def known(event: dict) -> datetime:
+        return _activity_history_instant(event["clocks"]["knowledge_at"],
+                                         code="EVENT_SCHEMA_INVALID")
+
+    excluded = sorted(sha for sha, event in unique.items() if known(event) > cutoff)
+    admitted = sorted((event for sha, event in unique.items() if known(event) <= cutoff),
+                      key=lambda event: (known(event), event["event_sha256"]))
+
+    current: dict[str, dict] = {}
+    history: list[dict] = []
+    retained: list[dict] = []
+    refused: list[dict] = []
+    for event in admitted:
+        mid, action = event["membership_id"], event["action"]
+        prior = current.get(mid)
+        accepted = (event.get("curation") or {}).get("decision") == "ACCEPT"
+        granted = event["use_qualification"]["graph_membership_use"] == "GRANTED"
+        if action == "APPEND":
+            if prior is not None:
+                refused.append(_activity_history_outcome(event, "DUPLICATE_APPEND"))
+            elif not accepted:
+                refused.append(_activity_history_outcome(event, "APPEND_NOT_ACCEPTED"))
+            elif not granted:
+                refused.append(_activity_history_outcome(event, "GRAPH_MEMBERSHIP_USE_NOT_GRANTED"))
+            else:
+                current[mid] = _activity_history_belief(event)
+        elif action == "CORRECT":
+            if prior is None or prior["event_sha256"] != event["supersedes_event_sha256"]:
+                refused.append(_activity_history_outcome(event, "CORRECTION_TARGET_NOT_CURRENT"))
+            elif not accepted:
+                refused.append(_activity_history_outcome(event, "CORRECTION_NOT_ACCEPTED"))
+            elif not granted:
+                refused.append(_activity_history_outcome(event, "GRAPH_MEMBERSHIP_USE_NOT_GRANTED"))
+            else:
+                closed = dict(prior, knowledge_to=event["clocks"]["knowledge_at"],
+                              superseded_by_event_sha256=event["event_sha256"])
+                history.append(closed)
+                current[mid] = _activity_history_belief(event)
+        else:  # REMOVE
+            observation = event["observation"]
+            if prior is None:
+                refused.append(_activity_history_outcome(event, "NO_CURRENT_BELIEF"))
+                continue
+            completeness = observation["completeness"]
+            if completeness != "COMPLETE_AUTHORITATIVE":
+                reason = _ACTIVITY_HISTORY_REMOVAL_REFUSAL[completeness]
+            elif not observation["roster_exhaustive"]:
+                reason = "REMOVAL_REFUSED_NON_EXHAUSTIVE_ROSTER"
+            elif observation["subject_present"]:
+                reason = "REMOVAL_CONTRADICTED_SUBJECT_PRESENT"
+            else:
+                reason = None
+            if reason is not None:
+                retained.append(_activity_history_outcome(
+                    event, reason, retained_belief_event_sha256=prior["event_sha256"]))
+                continue
+            history.append(dict(prior, knowledge_to=event["clocks"]["knowledge_at"],
+                                removed_by_event_sha256=event["event_sha256"]))
+            del current[mid]
+
+    def order(row: dict) -> tuple:
+        return (row["membership_id"], row.get("knowledge_from") or row.get("knowledge_at"),
+                row["event_sha256"])
+
+    return {
+        "schema": ACTIVITY_HISTORY_STATE_SCHEMA,
+        "knowledge_cutoff": knowledge_cutoff,
+        "current": sorted(current.values(), key=order),
+        "history": sorted(history, key=order),
+        "retained": sorted(retained, key=order),
+        "refused": sorted(refused, key=order),
+        "excluded_after_cutoff": excluded,
+        "authority": {"may_materialize_edges": False, "may_publish": False, "may_rank": False},
+    }
+
+
+# ---------------------------------------------------------------------------
+# Activity-history projection (ORCH-PIPE 2026-10-21, lane B1)
+# ---------------------------------------------------------------------------------------
+
+#: The deterministic formula id stamped on every edge the projector mints — parallel to
+#: CONFIDENCE_BASIS ("membership_doc.v1") and "membership_pit.ths.v1": a basis names HOW
+#: a row came to be believed, never how much to trust it.
+ACTIVITY_HISTORY_CONFIDENCE_BASIS = "activity_history.v1"
+
+
+def project_activity_memberships(
+        fold: dict, *, events: list[dict], belief_time: str, era: str,
+        computed_at: str, node_ids: set[str],
+        edge_ids: set[str]) -> tuple[list[dict], list[dict], list[dict]]:
+    """Project a folded activity history into edges.v1 MEMBER_OF + evidence.v1 rows.
+
+    Pure: same inputs -> same outputs (sorted), no I/O, no clock reads. For every
+    CURRENT belief the fold produced (GRANTED + ACCEPT, post-cutoff, post-supersession):
+
+    * one ``operator_curation`` EVIDENCE receipt citing the event id, dated by the
+      curation decision. evidence.v1: ``provider``/``claim_type`` are null on
+      first-party receipts, and an operator curation IS first-party; ``effective_at``
+      stays null unless the event's clock states a KNOWN effective date.
+    * at most ONE MEMBER_OF edge per (source, target) pair — beliefs from different
+      memberships that name the same pair share one edge — its ``valid_from`` the
+      group's earliest effective date (the event's KNOWN ``effective_at``, else the
+      belief's knowledge date), ``date_provenance="activity_history"``, citing the
+      group's sorted evidence ids.
+
+    A curated, receipted activity membership is a FIRST-CLASS evidence-grain fact, not
+    a composition of membership with expression (ORCH-PIPE ruling E, 2026-10-21): so
+    these are the only company->theme edges this store may ever carry.
+
+    Refusals, never raises, never a minted node:
+      ACTIVITY_FOLD_REFUSED              — (recorded by build(), not here)
+      ACTIVITY_ENDPOINT_NODE_ABSENT      — an endpoint has no node row in this build;
+      ACTIVITY_EDGE_COLLIDES_WITH_EXISTING — the deterministic edge_id already exists
+                                           (the group gets no projection at all, its
+                                           receipts included: an edge nobody cites is
+                                           not published).
+    """
+    by_sha = {str(e.get("event_sha256")): e for e in events if isinstance(e, dict)}
+    refusals: list[dict] = []
+    groups: dict[tuple[str, str], dict] = {}
+    for belief in fold.get("current", []):
+        src = str(belief["endpoints"]["source_node_id"])
+        dst = str(belief["endpoints"]["target_node_id"])
+        missing = [n for n in (src, dst) if n not in node_ids]
+        if missing:
+            refusals.append({
+                "code": "ACTIVITY_ENDPOINT_NODE_ABSENT",
+                "membership_id": str(belief.get("membership_id")),
+                "event_sha256": str(belief.get("event_sha256")),
+                "missing": missing,
+            })
+            continue
+        # The fold validated every event, so the belief's event is always present in
+        # ``events``; the .get() chain only keeps this total over adversarial input.
+        event = by_sha.get(str(belief.get("event_sha256"))) or {}
+        effective = (event.get("clocks") or {}).get("effective_at") or {}
+        known_effective = (str(effective["value"])
+                           if effective.get("state") == "KNOWN" and effective.get("value")
+                           else None)
+        valid_from = known_effective or str(belief.get("knowledge_from"))[:10]
+        event_id = str(event.get("event_id") or belief.get("membership_id"))
+        published_at = str((belief.get("curation") or {}).get("decided_at"))[:10]
+        evidence_id = evidence_id_for("operator_curation", event_id, published_at)
+        group = groups.setdefault((src, dst), {"valid_from": valid_from, "evidence": [],
+                                               "membership_ids": []})
+        group["valid_from"] = min(group["valid_from"], valid_from)
+        group["membership_ids"].append(str(belief.get("membership_id")))
+        group["evidence"].append({
+            "evidence_id": evidence_id, "kind": "operator_curation",
+            "published_at": published_at, "effective_at": known_effective,
+            "source_ref": event_id,
+            # Mint-time snapshot (§9.4): first-party curation is internal-usable;
+            # display/redistribution stay false — the rights registry, not the
+            # curator, owns those answers and can move after this row is written.
+            "licensing_internal_ok": True, "licensing_display_ok": False,
+            "licensing_redistribution_ok": False,
+            "retention": None, "computed_at": computed_at,
+            "provider": None, "claim_type": None,
+        })
+    edges: list[dict] = []
+    evidence: list[dict] = []
+    for (src, dst), group in groups.items():
+        edge_id = edge_id_for("MEMBER_OF", src, dst, group["valid_from"])
+        if edge_id in edge_ids:
+            refusals.append({
+                "code": "ACTIVITY_EDGE_COLLIDES_WITH_EXISTING",
+                "edge_id": edge_id, "src": src, "dst": dst,
+                "membership_ids": sorted(group["membership_ids"]),
+            })
+            continue
+        edge_ids.add(edge_id)
+        row = {
+            "edge_id": edge_id, "type": "MEMBER_OF", "src": src, "dst": dst,
+            "valid_from": group["valid_from"], "valid_to": None,
+            "evidence_time": group["valid_from"], "belief_time": belief_time,
+            "era": era, "source_class": "curated",
+            "date_provenance": "activity_history",
+            "evidence_refs": sorted(e["evidence_id"] for e in group["evidence"]),
+            "confidence_basis": ACTIVITY_HISTORY_CONFIDENCE_BASIS,
+            "computed_at": computed_at, "engine_version": ENGINE_VERSION,
+        }
+        for f in RESERVED_EDGE_FIELDS:
+            row[f] = None
+        edges.append(row)
+        evidence.extend(group["evidence"])
+    edges.sort(key=lambda r: r["edge_id"])
+    evidence.sort(key=lambda r: r["evidence_id"])
+    refusals.sort(key=lambda r: (str(r.get("code")),
+                                 json.dumps(r, sort_keys=True, ensure_ascii=False,
+                                            default=str)))
+    return edges, evidence, refusals

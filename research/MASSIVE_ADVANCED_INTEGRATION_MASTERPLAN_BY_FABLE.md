@@ -892,3 +892,107 @@ entitled. Therefore:
 | 2026-08-08 | Plan authored on operator commission; TP-0 probe + manifest shipped in the same PR; census lanes (repo, Terminal, registry, vendor) + live probe grounded §1–§6. |
 | 2026-08-08 | TP-0.5 gate-1 + gate-3 measurements run same-day (scratchpad harness; durable probe upgrade ships as the TP-0.5 wave): WS buckets SEPARATE (delayed ≠ RT) but overflow EVICTS-OLDEST (§3.1b.4 — singleton discipline, slot-fight paging, REST-only tripwires while the daemon lives); REST `v3/quotes` depth verified to 2005; S3 LIST verified `trades_v1`+`quotes_v1` to 2005-06 with 2024 quote files ~4.8GB/day gz (TP-B quote strategy re-scoped to episode windows + per-name REST). TP-1 design freeze is UNBLOCKED on the bucket question; TP-0.5 still ships the durable probe + RTH data-frame re-proof. |
 | 2026-08-08 | Adversarial review (opus) returned HOLD: 4 blockers, 10 material, 8 minor — ALL accepted and folded pre-merge. Structural consequences: §0 gains the global licensing gate (B3) and wave TP-0.5 (B2/m1/m2); TP-1 now mints the PRIVATE R2 plane first (B1 — the existing publisher/beacon serve the public bucket only); the PSS-AF1 distinction restated on measured COVERAGE with signing accuracy explicitly unmeasured + a §4.4 accuracy-design prerequisite for any promotion (B4); stratified classification gates + TRF timestamp policy (M8); gap-heal quote replay + dedup key (M1); minute-of-session baselines (M2); in-wave split guard for TP-B (M3); part-file store layout (M4); 600-symbol cap + envelope-minting (M5/M6); §3.4 corrected to the additive `classify_print` contract with M4 sequencing (M7); tape-scoreboard D2/D6 tension named as amendment-proposal (M9); program-level usage falsifier at TP-3/TP-6 (M10); vocabulary bans extended (m3/m4); D4 lift marked ratification-pending (m8). Wave order is now TP-0.5 → TP-1. |
+
+## §13 Proposed TP1/R0 reuse continuation for rotation/risk context — 2026-10-09
+
+**Records-only proposal. No native activation, CI-enrollment permission, private/public
+delivery or predictive promotion.** Source anchors are Macro #8660
+`0c65ff24820eade42e09265dbe627c027480bda5` and #8659
+`f7d5e05705023912bd87cce17f10638b8bea9218`. Reuse these published source homes
+instead of introducing another cash signer, pressure engine, tape store or scheduler.
+
+### §13.1 Retained chain and remaining interfaces
+
+Retained chain:
+
+- Original-byte `stream_events` normalization and `InFlightNBBO`;
+- canonical `flow_signing.classify_print` and `observe_provisional_trade`;
+- `project_provisional_minute` / `compose_captured_minute`;
+- T-only `write_private_trade_part` and strict private-minute projection/readback;
+- R0 `project_tp1_pressure_context`, which consumes TP1 totals without re-signing;
+- private R0 projection and separately timed `measure_matured_response`.
+
+The original `measure_window` historical/revision-aware research and original options
+APIs remain separate and unchanged. The retained live classifier is an observational
+**lit SIP quote-location proxy**, with TRF/unknown sides excluded. Its SIP clock,
+receipt ordering, quote-age eligibility and historical fixtures remain its definition.
+
+Required missing source interfaces are bounded mixed-frame selection retaining
+original bytes/indices; actual capture generation and original-receipt continuity;
+cross-part native identity/dedup; bounded exact arithmetic; explicit private manifest,
+writer, complete readback and retention binding; a TP1-to-matured-response quote
+qualification/session-boundary adapter; and the actual live/settled advisory readers.
+These are finite extensions of the incumbents, not source adoption or activation.
+
+The existing Quote Hub remains the acquisition owner. Retain one socket, capture
+original bytes/receipt metadata before bounded async work, and keep T/Q denial or
+overflow from corrupting valid A/AM quote service. Any private local route checks its
+actual socket peer and is excluded from public proxy forwarding; Host headers do not
+establish locality. Original epoch receipt and monotonic processing-duration clocks
+are distinct. No raw T/Q work may silently block the quote callback.
+
+### §13.2 Clock amendment boundary
+
+This proposal does not retroactively change the incumbent SIP research proxy.
+If execution-referenced signing is separately admitted in the same canonical home,
+require trade participant `pt` and consolidated quote SIP `t` strictly before it,
+plus original receipt/knowledge qualification. Q participant time is not the time a
+consolidated NBBO became known. Preserve the narrow vendor-documented participant/SIP
+ordering exception rather than inventing a blanket source rule.
+
+The existing §3.5 TRF fallback language cannot qualify an execution-referenced method:
+`trft` records TRF receipt, not documented trade execution. Any receipt-clock proxy
+needs its own explicit method and remains outside execution-qualified signed totals.
+A future implementation must carry this explicit definition amendment; it may not
+silently relabel prior data or declare an original receipt from later REST vintage.
+
+### §13.3 Bounded minimum and delivery
+
+The minimum keeps Q in bounded memory, preserving the current no-raw-Q-persistence
+contract. A proposed first cohort is at most 16 preselected names, five-minute pressure
+and five-minute forward horizon in an exact RTH session. These are proposed profile
+choices, not measured resource adequacy. Keep all tighter inherited per-call limits.
+Freeze total queue/window/byte/part/partition/generation/manifest/tombstone budgets and
+finite retention before writes. Overflow, eviction, loss or expired identity makes
+the affected context unavailable; no history/duplicate removal to fit.
+
+The existing private-store CAS interface does not supply remote deletion. A specific
+lifecycle or expiry primitive must be admitted by that owner. Full quote replay after
+restart/expiry is not provided; derived bytes prove representation, not original tape
+reconstruction. Label horizons crossing session end, halt, gap, restart or missing
+evidence are censored, never filled from tomorrow's open or later corrected quotes.
+
+For current-day advisory delivery, use the existing live RiskEnvelope producer and
+qualified existing reader chain; five-minute derivation feeding only nightly Rotation
+does not provide a five-minute user experience. Keep settled context in the existing
+Rotation writer and renderer. Actual capture placement, private IPC/transport,
+source/reader clocks, expiry, whitelists, entitlement and visible reader behavior all
+require explicit integration. No second Rotation writer or polling service is proposed.
+
+The current private TP1/R0 schemas forbid public delivery. Admit a specific minimal
+derived consumer projection before placing anything on an existing public envelope.
+Pressure/response/forward labels share lineage and do not become independent confluence
+votes. No absorption threshold, actor attribution, ranking, trade or risk-switching
+policy is granted before the existing outcome-blind calibration/promotion process.
+
+### §13.4 Exact continuation and preserved refusals
+
+The existing #8659 source diagnosis and independent proposal review accept a test-only
+repair: the fixture's bid 100→90→110 at constant price/venue correctly has measured
+recovery; the UNKNOWN assertion at line 919 is wrong. The proposed change adds exact
+measured decimal-string assertions and a genuine no-depletion UNKNOWN control, leaving
+runtime math/shared fixture intact. It remains unapplied pending current writer/custody.
+
+Both supplied heads still have red binding CI. #8660 has an unenrolled classifier
+test, and its operation
+`massive-tp1-canonical-equity-print-classifier-20261008-sol-001` records an explicit
+CI-manifest platform refusal/no-change readback/no alternate carrier or retry.
+Original refusal recovery/adjudication belongs to its original effect owner.
+Preserve the original SSH `Permission denied (publickey)`, unknown current RT-slot
+custody and source supervisor's no-reconnect authority. A separate Quote-clock release
+does not clear these restrictions.
+
+Root may admit disjoint inactive source units after exact current source/collision
+binding while those specific effect questions remain pending. Published PR records
+do not prove live worker ownership or expired custody. No held carrier is absorbed
+through this appendix, and no global source freeze or alternate native path is created.

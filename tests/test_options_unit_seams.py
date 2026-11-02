@@ -125,8 +125,15 @@ class TestAnnotationShape:
 
 
 # ──────────────────────────────────────────────────────── prod-shaped: the stores
+#
+# Every test in this section reads a real store under data/, so its verdict can change
+# with no code change. `data_gate` (registered in tests/conftest.py) keeps these tests off
+# the code gate (-m "not data_gate" in the workflow-yaml legacy job) and on the data gate
+# (-m data_gate in engine-render-guards). test_screener_output_rows_land_on_the_percent_side
+# below is marked for the same reason.
 
 
+@pytest.mark.data_gate
 @pytest.mark.skipif(not SKEW.exists(), reason="options_skew store absent on this runner")
 @pytest.mark.parametrize("col", ["atm_call_iv", "otm_put_iv", "skew"])
 def test_prod_skew_columns_are_fraction_scaled(col):
@@ -140,6 +147,7 @@ def test_prod_skew_columns_are_fraction_scaled(col):
     )
 
 
+@pytest.mark.data_gate
 @pytest.mark.skipif(not IVSPREAD.exists(), reason="options_ivspread store absent")
 @pytest.mark.parametrize("col", ["ivspread", "ivspread_rel"])
 def test_prod_ivspread_columns_are_fraction_scaled(col):
@@ -149,6 +157,7 @@ def test_prod_ivspread_columns_are_fraction_scaled(col):
     assert options_units.check_iv_difference(df[col], f"options_ivspread.{col}") is None
 
 
+@pytest.mark.data_gate
 @pytest.mark.skipif(not GEX_DIR.exists(), reason="polygon_gex store absent")
 def test_prod_gex_summary_mixes_the_two_scales_exactly_as_documented():
     """iv30 is a FRACTION, dist_to_flip_pct is already PERCENT. The one store carrying
@@ -173,6 +182,7 @@ def test_prod_gex_summary_mixes_the_two_scales_exactly_as_documented():
     )
 
 
+@pytest.mark.data_gate
 @pytest.mark.skipif(not (GEX_DIR / "chains").exists(), reason="chains absent")
 def test_prod_chain_iv_is_fraction_scaled():
     files = sorted((GEX_DIR / "chains").glob("*.parquet"))
@@ -383,6 +393,8 @@ def test_dist_to_flip_is_never_multiplied_in_the_screener():
     assert "dist_to_flip_pct\") * 100" not in body
 
 
+# Builds screener rows from the real polygon_gex store: data_gate, like the section above.
+@pytest.mark.data_gate
 @pytest.mark.skipif(not GEX_DIR.exists(), reason="polygon_gex store absent")
 def test_screener_output_rows_land_on_the_percent_side():
     """End-to-end on the real store: the emitted rows must be percent-scaled, i.e. the

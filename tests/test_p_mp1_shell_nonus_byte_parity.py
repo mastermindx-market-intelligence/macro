@@ -177,11 +177,16 @@ def _sha256_text(text: str) -> str:
 #: replaced the merge-base functional-diff mechanism. No comment-stripping,
 #: no leniency: literal file bytes. A legitimate future edit to any of these
 #: four templates must recompute and update its hash here.
+# R20: exact existing 8710 host inputs; no non-US source edit. The former
+# HK/China/Intl pins also fail the clean source baseline. Native init-call
+# parity and the independent shared-CSS pin remain enforced.
 _EXPECTED_TEMPLATE_SHA256: dict[str, str] = {
-    "templates/hk.html.j2": "1ae1c8edb8554b3fa3a64c02e326522c99c6649f0f7e7f48e62cecb8bda082c5",
-    "templates/china.html.j2": "cb6e0685b96a6d897e9562418927c0bb5d5e656d4b31c99e843ec5f213fa7031",
+    "templates/hk.html.j2": "2fb1a5e1fb8b901e4dc4bc64cc7916542d0acb508547ee445676166b4edad86c",
+    # Accepted China migration #7054 (a8def4c24d584afe63f148c0d5ba6d8bf95ee506).
+    # Only this stale expectation changes; the migrated template is untouched.
+    "templates/china.html.j2": "12e2a3e024cef24788504421e111476a72a73c253e89fffe18f730841a24be4a",
     "templates/canada.html.j2": "878237e4c3d0bef90c2fce108b64cf859d8f67783dede4f77881392c2d1eb7e5",
-    "templates/intl.html.j2": "c62b4a6373ac3130a16f622b8dae9b73218642e261051a3bd3493fc95fd0d9a5",
+    "templates/intl.html.j2": "fba1ce6480a4854e864479fa4faf3f45acdedd3da4662f8a95f897f7326c2353",
 }
 
 
@@ -928,7 +933,7 @@ def test_init_call_source_ignores_parentheses_inside_regex_literal():
 #: merge. Pinning current bytes loses nothing: those bytes already ARE the
 #: fully-guarded post-rollout file. A legitimate future edit to
 #: templates/stocktable.js must recompute and update this hash.
-_EXPECTED_STOCKTABLEJS_SHA256 = "56f6f93366f2e21024b4cd5c971766a7c9506aea49c21b37b428674b8f086819"
+_EXPECTED_STOCKTABLEJS_SHA256 = "c5387799d9ba5988f4b8859eb34d8fac3f91e36584ba78e567a2384c083eb22c"
 
 
 def test_stocktablejs_is_byte_pinned_and_carries_both_stagefilter_guards():
@@ -1025,3 +1030,17 @@ def test_no_user_facing_stage_word_reachable_when_stagefilter_is_false():
     assert "cfg.stageFilter !== false" in call_line, (
         "the sole _makeDD('stage', ...) call site is not gated by cfg.stageFilter"
     )
+
+
+def test_detail_css_is_strictly_opted_in_by_us_only():
+    src = (ROOT / "templates/_prophet_card.html.j2").read_text()
+    macro = jinja2.Environment(autoescape=True).from_string(src).module
+    normal = str(macro.pv_css())
+    assert _sha256_text(normal) == _EXPECTED_PV_CSS_SHA256
+    assert str(macro.pv_css(setup_detail=False)) == normal
+    assert str(macro.pv_css(setup_detail="true")) == normal
+    assert "pv-setup-dialog" not in normal
+    assert "pv-setup-dialog" in str(macro.pv_css(setup_detail=True))
+    for path in NON_US_TEMPLATES:
+        assert "pv_css(setup_detail=true)" not in (ROOT / path).read_text()
+    assert "pv_css(setup_detail=true)" in (ROOT / "templates/dashboard.html.j2").read_text()

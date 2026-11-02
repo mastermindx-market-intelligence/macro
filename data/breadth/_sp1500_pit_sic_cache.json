@@ -1,0 +1,1640 @@
+{
+  "0000004447": {
+    "fetched_at": "2026-10-04T03:05:29.246448+00:00",
+    "name": "HESS CORP",
+    "sic": "2911",
+    "sic_desc": "Petroleum Refining"
+  },
+  "0000005981": {
+    "fetched_at": "2026-10-04T03:04:34.321241+00:00",
+    "name": "AMERICAN VANGUARD CORP",
+    "sic": "2870",
+    "sic_desc": "Agricultural Chemicals"
+  },
+  "0000007332": {
+    "fetched_at": "2026-10-04T03:06:48.023123+00:00",
+    "name": "SOUTHWESTERN ENERGY CO",
+    "sic": "1311",
+    "sic_desc": "Crude Petroleum & Natural Gas"
+  },
+  "0000008411": {
+    "fetched_at": "2026-10-04T03:04:33.622031+00:00",
+    "name": "ATWOOD OCEANICS INC",
+    "sic": "1381",
+    "sic_desc": "Drilling Oil & Gas Wells"
+  },
+  "0000009892": {
+    "fetched_at": "2026-10-04T03:04:36.320655+00:00",
+    "name": "BARD C R INC /NJ/",
+    "sic": "3841",
+    "sic_desc": "Surgical & Medical Instruments & Apparatus"
+  },
+  "0000014195": {
+    "fetched_at": "2026-10-04T03:04:37.666699+00:00",
+    "name": "BRIGGS & STRATTON CORP",
+    "sic": "3510",
+    "sic_desc": "Engines & Turbines"
+  },
+  "0000018255": {
+    "fetched_at": "2026-10-04T03:04:45.307138+00:00",
+    "name": "CATO CORP",
+    "sic": "5621",
+    "sic_desc": "Retail-Women's Clothing Stores"
+  },
+  "0000018349": {
+    "fetched_at": "2026-10-04T03:06:41.944754+00:00",
+    "name": "SYNOVUS FINANCIAL CORP",
+    "sic": "6021",
+    "sic_desc": "National Commercial Banks"
+  },
+  "0000018498": {
+    "fetched_at": "2026-10-04T03:05:21.527766+00:00",
+    "name": "GENESCO INC",
+    "sic": "5661",
+    "sic_desc": "Retail-Shoe Stores"
+  },
+  "0000018568": {
+    "fetched_at": "2026-10-04T03:04:46.167891+00:00",
+    "name": "COMPASS BANCSHARES INC",
+    "sic": "6021",
+    "sic_desc": "National Commercial Banks"
+  },
+  "0000018926": {
+    "fetched_at": "2026-10-04T03:04:56.447546+00:00",
+    "name": "Lumen Technologies, Inc.",
+    "sic": "4813",
+    "sic_desc": "Telephone Communications (No Radiotelephone)"
+  },
+  "0000019411": {
+    "fetched_at": "2026-10-04T03:05:57.237361+00:00",
+    "name": "MAGELLAN HEALTH INC",
+    "sic": "8060",
+    "sic_desc": "Services-Hospitals"
+  },
+  "0000028412": {
+    "fetched_at": "2026-10-04T03:04:51.403957+00:00",
+    "name": "COMERICA INC",
+    "sic": "6021",
+    "sic_desc": "National Commercial Banks"
+  },
+  "0000029669": {
+    "fetched_at": "2026-10-04T03:06:33.866982+00:00",
+    "name": "RR Donnelley & Sons Co",
+    "sic": "2750",
+    "sic_desc": "Commercial Printing"
+  },
+  "0000033769": {
+    "fetched_at": "2026-10-04T03:04:40.686772+00:00",
+    "name": "BOB EVANS FARMS INC",
+    "sic": "5812",
+    "sic_desc": "Retail-Eating  Places"
+  },
+  "0000034067": {
+    "fetched_at": "2026-10-04T03:04:41.315920+00:00",
+    "name": "DMC Global Inc.",
+    "sic": "3390",
+    "sic_desc": "Miscellaneous Primary Metal Products"
+  },
+  "0000038079": {
+    "fetched_at": "2026-10-04T03:05:20.941447+00:00",
+    "name": "SABINE OIL & GAS CORP",
+    "sic": "1311",
+    "sic_desc": "Crude Petroleum & Natural Gas"
+  },
+  "0000039899": {
+    "fetched_at": "2026-10-04T03:06:53.442578+00:00",
+    "name": "TEGNA INC",
+    "sic": "4833",
+    "sic_desc": "Television Broadcasting Stations"
+  },
+  "0000043362": {
+    "fetched_at": "2026-10-04T03:05:24.849569+00:00",
+    "name": "GREAT LAKES CHEMICAL CORP",
+    "sic": "2890",
+    "sic_desc": "Miscellaneous Chemical Products"
+  },
+  "0000045876": {
+    "fetched_at": "2026-10-04T03:06:10.632026+00:00",
+    "name": "ENVIRI LLC",
+    "sic": "8900",
+    "sic_desc": "Services-Services, NEC"
+  },
+  "0000046640": {
+    "fetched_at": "2026-10-04T03:05:30.718040+00:00",
+    "name": "Kraft Heinz Foods Co",
+    "sic": "2030",
+    "sic_desc": "Canned, Frozen & Preservd Fruit, Veg & Food Specialties"
+  },
+  "0000049754": {
+    "fetched_at": "2026-10-04T03:05:03.175679+00:00",
+    "name": "Dine Brands Global, Inc.",
+    "sic": "5812",
+    "sic_desc": "Retail-Eating  Places"
+  },
+  "0000050341": {
+    "fetched_at": "2026-10-04T03:05:15.877177+00:00",
+    "name": "FLEETBOSTON FINANCIAL CORP",
+    "sic": "6021",
+    "sic_desc": "National Commercial Banks"
+  },
+  "0000054381": {
+    "fetched_at": "2026-10-04T03:05:41.649791+00:00",
+    "name": "KAMAN Corp",
+    "sic": "3760",
+    "sic_desc": "Guided Missiles & Space Vehicles & Parts"
+  },
+  "0000054480": {
+    "fetched_at": "2026-10-04T03:05:44.779154+00:00",
+    "name": "KANSAS CITY SOUTHERN",
+    "sic": "4011",
+    "sic_desc": "Railroads, Line-Haul Operating"
+  },
+  "0000055135": {
+    "fetched_at": "2026-10-04T03:05:42.158516+00:00",
+    "name": "KELLY SERVICES INC",
+    "sic": "7363",
+    "sic_desc": "Services-Help Supply Services"
+  },
+  "0000057528": {
+    "fetched_at": "2026-10-04T03:05:47.620644+00:00",
+    "name": "SNYDER'S-LANCE, INC.",
+    "sic": "2052",
+    "sic_desc": "Cookies & Crackers"
+  },
+  "0000059440": {
+    "fetched_at": "2026-10-04T03:07:06.913765+00:00",
+    "name": "VECTOR GROUP LTD",
+    "sic": "2111",
+    "sic_desc": "Cigarettes"
+  },
+  "0000060977": {
+    "fetched_at": "2026-10-04T03:05:45.518269+00:00",
+    "name": "LYDALL INC /DE/",
+    "sic": "3714",
+    "sic_desc": "Motor Vehicle Parts & Accessories"
+  },
+  "0000062234": {
+    "fetched_at": "2026-10-04T03:05:53.763469+00:00",
+    "name": "MARCUS CORP",
+    "sic": "7830",
+    "sic_desc": "Services-Motion Picture Theaters"
+  },
+  "0000067472": {
+    "fetched_at": "2026-10-04T03:05:59.193556+00:00",
+    "name": "MOLEX INC",
+    "sic": "3678",
+    "sic_desc": "Electronic Connectors"
+  },
+  "0000069488": {
+    "fetched_at": "2026-10-04T03:06:01.803074+00:00",
+    "name": "MYERS INDUSTRIES INC",
+    "sic": "3089",
+    "sic_desc": "Plastics Products, NEC"
+  },
+  "0000070538": {
+    "fetched_at": "2026-10-04T03:06:07.875865+00:00",
+    "name": "NATIONAL SERVICE INDUSTRIES INC",
+    "sic": "7200",
+    "sic_desc": "Services-Personal Services"
+  },
+  "0000072207": {
+    "fetched_at": "2026-10-04T03:06:04.491541+00:00",
+    "name": "NOBLE ENERGY INC",
+    "sic": "1311",
+    "sic_desc": "Crude Petroleum & Natural Gas"
+  },
+  "0000072573": {
+    "fetched_at": "2026-10-04T03:05:59.765695+00:00",
+    "name": "MOVADO GROUP INC",
+    "sic": "3873",
+    "sic_desc": "Watches, Clocks, Clockwork Operated Devices/Parts"
+  },
+  "0000079958": {
+    "fetched_at": "2026-10-04T03:06:17.115912+00:00",
+    "name": "PRECISION CASTPARTS CORP",
+    "sic": "3320",
+    "sic_desc": "Iron & Steel Foundries"
+  },
+  "0000086144": {
+    "fetched_at": "2026-10-04T03:06:48.758129+00:00",
+    "name": "SAFEWAY INC",
+    "sic": "5411",
+    "sic_desc": "Retail-Grocery Stores"
+  },
+  "0000088948": {
+    "fetched_at": "2026-10-04T03:06:37.756979+00:00",
+    "name": "Seneca Foods Corp",
+    "sic": "2033",
+    "sic_desc": "Canned, Fruits, Veg, Preserves, Jams & Jellies"
+  },
+  "0000090185": {
+    "fetched_at": "2026-10-04T03:06:38.426043+00:00",
+    "name": "SIGMA ALDRICH CORP",
+    "sic": "5160",
+    "sic_desc": "Wholesale-Chemicals & Allied Products"
+  },
+  "0000095521": {
+    "fetched_at": "2026-10-04T03:06:46.017969+00:00",
+    "name": "SUPERVALU INC",
+    "sic": "5141",
+    "sic_desc": "Wholesale-Groceries, General Line"
+  },
+  "0000098246": {
+    "fetched_at": "2026-10-04T03:06:54.744843+00:00",
+    "name": "TIFFANY & CO",
+    "sic": "5944",
+    "sic_desc": "Retail-Jewelry Stores"
+  },
+  "0000100726": {
+    "fetched_at": "2026-10-04T03:07:00.759671+00:00",
+    "name": "UNIFI INC",
+    "sic": "2200",
+    "sic_desc": "Textile Mill Products"
+  },
+  "0000101778": {
+    "fetched_at": "2026-10-04T03:06:00.534750+00:00",
+    "name": "MARATHON OIL CORP",
+    "sic": "1311",
+    "sic_desc": "Crude Petroleum & Natural Gas"
+  },
+  "0000102379": {
+    "fetched_at": "2026-10-04T03:07:02.702138+00:00",
+    "name": "URS CORP /NEW/",
+    "sic": "8711",
+    "sic_desc": "Services-Engineering Services"
+  },
+  "0000104894": {
+    "fetched_at": "2026-10-04T03:05:10.580198+00:00",
+    "name": "Elme Communities",
+    "sic": "6798",
+    "sic_desc": "Real Estate Investment Trusts"
+  },
+  "0000203527": {
+    "fetched_at": "2026-10-04T03:07:06.242603+00:00",
+    "name": "VARIAN MEDICAL SYSTEMS INC",
+    "sic": "3845",
+    "sic_desc": "Electromedical & Electrotherapeutic Apparatus"
+  },
+  "0000317093": {
+    "fetched_at": "2026-10-04T03:04:25.506165+00:00",
+    "name": "ANDREW CORP",
+    "sic": "3357",
+    "sic_desc": "Drawing & Insulating of  Nonferrous Wire"
+  },
+  "0000317771": {
+    "fetched_at": "2026-10-04T03:06:56.066764+00:00",
+    "name": "TELLABS INC",
+    "sic": "3661",
+    "sic_desc": "Telephone & Telegraph Apparatus"
+  },
+  "0000352510": {
+    "fetched_at": "2026-10-04T03:06:05.988600+00:00",
+    "name": "NORTH FORK BANCORPORATION INC",
+    "sic": "6022",
+    "sic_desc": "State Commercial Banks"
+  },
+  "0000353944": {
+    "fetched_at": "2026-10-04T03:05:34.722664+00:00",
+    "name": "INTERNATIONAL GAME TECHNOLOGY",
+    "sic": "3990",
+    "sic_desc": "Miscellaneous Manufacturing Industries"
+  },
+  "0000354908": {
+    "fetched_at": "2026-10-04T03:05:17.124787+00:00",
+    "name": "Teledyne FLIR, LLC",
+    "sic": "3812",
+    "sic_desc": "Search, Detection, Navigation, Guidance, Aeronautical Sys"
+  },
+  "0000703361": {
+    "fetched_at": "2026-10-04T03:05:34.054687+00:00",
+    "name": "Renesas Electronics America Inc.",
+    "sic": "3674",
+    "sic_desc": "Semiconductors & Related Devices"
+  },
+  "0000704415": {
+    "fetched_at": "2026-10-04T03:06:58.611683+00:00",
+    "name": "TIVITY HEALTH, INC.",
+    "sic": "8090",
+    "sic_desc": "Services-Misc Health & Allied Services, NEC"
+  },
+  "0000708818": {
+    "fetched_at": "2026-10-04T03:06:11.255953+00:00",
+    "name": "NEXTGEN HEALTHCARE, INC.",
+    "sic": "7373",
+    "sic_desc": "Services-Computer Integrated Systems Design"
+  },
+  "0000708819": {
+    "fetched_at": "2026-10-04T03:05:55.134221+00:00",
+    "name": "MCDERMOTT INTERNATIONAL INC",
+    "sic": "3443",
+    "sic_desc": "Fabricated Plate Work (Boiler Shops)"
+  },
+  "0000713671": {
+    "fetched_at": "2026-10-04T03:05:04.562678+00:00",
+    "name": "DNB FINANCIAL CORP /PA/",
+    "sic": "6021",
+    "sic_desc": "National Commercial Banks"
+  },
+  "0000714603": {
+    "fetched_at": "2026-10-04T03:05:06.183539+00:00",
+    "name": "DST SYSTEMS INC",
+    "sic": "7374",
+    "sic_desc": "Services-Computer Processing & Data Preparation"
+  },
+  "0000714655": {
+    "fetched_at": "2026-10-04T03:04:36.988675+00:00",
+    "name": "BIOGEN IDEC MA INC",
+    "sic": "2836",
+    "sic_desc": "Biological Products, (No Diagnostic Substances)"
+  },
+  "0000716643": {
+    "fetched_at": "2026-10-04T03:06:29.100861+00:00",
+    "name": "REGIS CORP",
+    "sic": "7200",
+    "sic_desc": "Services-Personal Services"
+  },
+  "0000718877": {
+    "fetched_at": "2026-10-04T03:04:32.977665+00:00",
+    "name": "Activision Blizzard, Inc.",
+    "sic": "7372",
+    "sic_desc": "Services-Prepackaged Software"
+  },
+  "0000719739": {
+    "fetched_at": "2026-10-04T03:06:39.422433+00:00",
+    "name": "SVB FINANCIAL GROUP",
+    "sic": "6022",
+    "sic_desc": "State Commercial Banks"
+  },
+  "0000722723": {
+    "fetched_at": "2026-10-04T03:05:30.021714+00:00",
+    "name": "HANGER, INC.",
+    "sic": "8093",
+    "sic_desc": "Services-Specialty Outpatient Facilities, NEC"
+  },
+  "0000724004": {
+    "fetched_at": "2026-10-04T03:05:57.850841+00:00",
+    "name": "MESA LABORATORIES INC /CO/",
+    "sic": "3823",
+    "sic_desc": "Industrial Instruments For Measurement, Display, and Control"
+  },
+  "0000730255": {
+    "fetched_at": "2026-10-04T03:04:44.748252+00:00",
+    "name": "CalAmp Corp.",
+    "sic": "3663",
+    "sic_desc": "Radio & Tv Broadcasting & Communications Equipment"
+  },
+  "0000732485": {
+    "fetched_at": "2026-10-04T03:05:23.445950+00:00",
+    "name": "GENZYME CORP",
+    "sic": "2836",
+    "sic_desc": "Biological Products, (No Diagnostic Substances)"
+  },
+  "0000743316": {
+    "fetched_at": "2026-10-04T03:06:01.150730+00:00",
+    "name": "MAXIM INTEGRATED PRODUCTS INC",
+    "sic": "3674",
+    "sic_desc": "Semiconductors & Related Devices"
+  },
+  "0000743988": {
+    "fetched_at": "2026-10-04T03:07:19.281283+00:00",
+    "name": "XILINX INC",
+    "sic": "3674",
+    "sic_desc": "Semiconductors & Related Devices"
+  },
+  "0000790703": {
+    "fetched_at": "2026-10-04T03:06:51.979015+00:00",
+    "name": "TECH DATA CORP",
+    "sic": "5045",
+    "sic_desc": "Wholesale-Computers & Peripheral Equipment & Software"
+  },
+  "0000791519": {
+    "fetched_at": "2026-10-04T03:06:42.664201+00:00",
+    "name": "STAPLES INC",
+    "sic": "5940",
+    "sic_desc": "Retail-Miscellaneous Shopping Goods Stores"
+  },
+  "0000792977": {
+    "fetched_at": "2026-10-04T03:04:23.429823+00:00",
+    "name": "AMAG PHARMACEUTICALS, INC.",
+    "sic": "2834",
+    "sic_desc": "Pharmaceutical Preparations"
+  },
+  "0000794619": {
+    "fetched_at": "2026-10-04T03:04:24.745832+00:00",
+    "name": "AMERICAN WOODMARK CORP",
+    "sic": "2430",
+    "sic_desc": "Millwood, Veneer, Plywood, & Structural Wood Members"
+  },
+  "0000799729": {
+    "fetched_at": "2026-10-04T03:06:21.988881+00:00",
+    "name": "PAREXEL INTERNATIONAL CORP",
+    "sic": "8731",
+    "sic_desc": "Services-Commercial Physical & Biological Research"
+  },
+  "0000804212": {
+    "fetched_at": "2026-10-04T03:04:31.149360+00:00",
+    "name": "AIRGAS INC",
+    "sic": "5084",
+    "sic_desc": "Wholesale-Industrial Machinery & Equipment"
+  },
+  "0000804753": {
+    "fetched_at": "2026-10-04T03:04:47.916273+00:00",
+    "name": "CERNER Corp",
+    "sic": "7373",
+    "sic_desc": "Services-Computer Integrated Systems Design"
+  },
+  "0000812128": {
+    "fetched_at": "2026-10-04T03:06:37.167923+00:00",
+    "name": "SANDERSON FARMS INC",
+    "sic": "2015",
+    "sic_desc": "Poultry Slaughtering and Processing"
+  },
+  "0000814184": {
+    "fetched_at": "2026-10-04T03:06:50.576915+00:00",
+    "name": "TCF FINANCIAL CORP",
+    "sic": "6021",
+    "sic_desc": "National Commercial Banks"
+  },
+  "0000814549": {
+    "fetched_at": "2026-10-04T03:05:08.090553+00:00",
+    "name": "EBIX INC",
+    "sic": "7373",
+    "sic_desc": "Services-Computer Integrated Systems Design"
+  },
+  "0000815094": {
+    "fetched_at": "2026-10-04T03:04:20.263446+00:00",
+    "name": "ABIOMED INC",
+    "sic": "3841",
+    "sic_desc": "Surgical & Medical Instruments & Apparatus"
+  },
+  "0000824169": {
+    "fetched_at": "2026-10-04T03:06:11.956844+00:00",
+    "name": "NEXTEL COMMUNICATIONS INC",
+    "sic": "4812",
+    "sic_desc": "Radiotelephone Communications"
+  },
+  "0000828916": {
+    "fetched_at": "2026-10-04T03:07:16.361041+00:00",
+    "name": "WEINGARTEN REALTY INVESTORS /TX/",
+    "sic": "6798",
+    "sic_desc": "Real Estate Investment Trusts"
+  },
+  "0000835729": {
+    "fetched_at": "2026-10-04T03:04:40.033582+00:00",
+    "name": "BMC SOFTWARE INC",
+    "sic": "7372",
+    "sic_desc": "Services-Prepackaged Software"
+  },
+  "0000835910": {
+    "fetched_at": "2026-10-04T03:04:29.887689+00:00",
+    "name": "AMERICAN POWER CONVERSION CORP",
+    "sic": "3620",
+    "sic_desc": "Electrical Industrial Apparatus"
+  },
+  "0000836106": {
+    "fetched_at": "2026-10-04T03:06:09.986682+00:00",
+    "name": "NOVELLUS SYSTEMS INC",
+    "sic": "3559",
+    "sic_desc": "Special Industry Machinery, NEC"
+  },
+  "0000858655": {
+    "fetched_at": "2026-10-04T03:05:27.901919+00:00",
+    "name": "HAYNES INTERNATIONAL INC",
+    "sic": "3310",
+    "sic_desc": "Steel Works, Blast Furnaces & Rolling & Finishing Mills"
+  },
+  "0000861878": {
+    "fetched_at": "2026-10-04T03:06:43.971850+00:00",
+    "name": "STERICYCLE INC",
+    "sic": "4955",
+    "sic_desc": "Hazardous Waste Management"
+  },
+  "0000863157": {
+    "fetched_at": "2026-10-04T03:06:18.664701+00:00",
+    "name": "PETSMART INC",
+    "sic": "5990",
+    "sic_desc": "Retail-Retail Stores, NEC"
+  },
+  "0000865436": {
+    "fetched_at": "2026-10-04T03:07:12.847725+00:00",
+    "name": "WHOLE FOODS MARKET INC",
+    "sic": "5411",
+    "sic_desc": "Retail-Grocery Stores"
+  },
+  "0000866121": {
+    "fetched_at": "2026-10-04T03:06:13.269752+00:00",
+    "name": "Northrop Grumman Innovation Systems, Inc.",
+    "sic": "3760",
+    "sic_desc": "Guided Missiles & Space Vehicles & Parts"
+  },
+  "0000868809": {
+    "fetched_at": "2026-10-04T03:07:20.772606+00:00",
+    "name": "XTO ENERGY INC",
+    "sic": "1311",
+    "sic_desc": "Crude Petroleum & Natural Gas"
+  },
+  "0000872448": {
+    "fetched_at": "2026-10-04T03:04:31.906927+00:00",
+    "name": "ATMEL CORP",
+    "sic": "3674",
+    "sic_desc": "Semiconductors & Related Devices"
+  },
+  "0000875570": {
+    "fetched_at": "2026-10-04T03:06:22.705162+00:00",
+    "name": "PEOPLESOFT INC",
+    "sic": "7372",
+    "sic_desc": "Services-Prepackaged Software"
+  },
+  "0000877422": {
+    "fetched_at": "2026-10-04T03:06:43.341996+00:00",
+    "name": "SpartanNash Co",
+    "sic": "5141",
+    "sic_desc": "Wholesale-Groceries, General Line"
+  },
+  "0000877890": {
+    "fetched_at": "2026-10-04T03:04:57.666482+00:00",
+    "name": "CITRIX SYSTEMS INC",
+    "sic": "7372",
+    "sic_desc": "Services-Prepackaged Software"
+  },
+  "0000878526": {
+    "fetched_at": "2026-10-04T03:06:08.544811+00:00",
+    "name": "NATUS MEDICAL INC",
+    "sic": "3845",
+    "sic_desc": "Electromedical & Electrotherapeutic Apparatus"
+  },
+  "0000879585": {
+    "fetched_at": "2026-10-04T03:04:32.468764+00:00",
+    "name": "ATN International, Inc.",
+    "sic": "4813",
+    "sic_desc": "Telephone Communications (No Radiotelephone)"
+  },
+  "0000883569": {
+    "fetched_at": "2026-10-04T03:05:19.144987+00:00",
+    "name": "Fossil Group, Inc.",
+    "sic": "3873",
+    "sic_desc": "Watches, Clocks, Clockwork Operated Devices/Parts"
+  },
+  "0000884624": {
+    "fetched_at": "2026-10-04T03:06:13.955378+00:00",
+    "name": "Orthofix Medical Inc.",
+    "sic": "3841",
+    "sic_desc": "Surgical & Medical Instruments & Apparatus"
+  },
+  "0000886158": {
+    "fetched_at": "2026-10-04T03:04:35.754979+00:00",
+    "name": "20230930-DK-Butterfly-1, Inc.",
+    "sic": "5700",
+    "sic_desc": "Retail-Home Furniture, Furnishings & Equipment Stores"
+  },
+  "0000890801": {
+    "fetched_at": "2026-10-04T03:05:56.504710+00:00",
+    "name": "McAfee, Inc.",
+    "sic": "7372",
+    "sic_desc": "Services-Prepackaged Software"
+  },
+  "0000891024": {
+    "fetched_at": "2026-10-04T03:06:17.879990+00:00",
+    "name": "PATTERSON COMPANIES, INC.",
+    "sic": "5047",
+    "sic_desc": "Wholesale-Medical, Dental & Hospital Equipment & Supplies"
+  },
+  "0000891166": {
+    "fetched_at": "2026-10-04T03:07:04.713891+00:00",
+    "name": "UNIVERSAL INSURANCE HOLDINGS, INC.",
+    "sic": "6331",
+    "sic_desc": "Fire, Marine & Casualty Insurance"
+  },
+  "0000891456": {
+    "fetched_at": "2026-10-04T03:06:23.450528+00:00",
+    "name": "PLAINS EXPLORATION & PRODUCTION CO",
+    "sic": "1311",
+    "sic_desc": "Crude Petroleum & Natural Gas"
+  },
+  "0000896264": {
+    "fetched_at": "2026-10-04T03:07:03.350564+00:00",
+    "name": "USANA HEALTH SCIENCES INC",
+    "sic": "2833",
+    "sic_desc": "Medicinal Chemicals & Botanical Products"
+  },
+  "0000899866": {
+    "fetched_at": "2026-10-04T03:04:22.769475+00:00",
+    "name": "ALEXION PHARMACEUTICALS, INC.",
+    "sic": "2834",
+    "sic_desc": "Pharmaceutical Preparations"
+  },
+  "0000899923": {
+    "fetched_at": "2026-10-04T03:06:02.348743+00:00",
+    "name": "MYRIAD GENETICS INC",
+    "sic": "2835",
+    "sic_desc": "In Vitro & In Vivo Diagnostic Substances"
+  },
+  "0000906709": {
+    "fetched_at": "2026-10-04T03:06:07.149225+00:00",
+    "name": "NEKTAR THERAPEUTICS",
+    "sic": "2834",
+    "sic_desc": "Pharmaceutical Preparations"
+  },
+  "0000910406": {
+    "fetched_at": "2026-10-04T03:05:27.142104+00:00",
+    "name": "HAIN CELESTIAL GROUP INC",
+    "sic": "2000",
+    "sic_desc": "Food and Kindred Products"
+  },
+  "0000912513": {
+    "fetched_at": "2026-10-04T03:05:01.969298+00:00",
+    "name": "CYTEC INDUSTRIES INC/DE/",
+    "sic": "2890",
+    "sic_desc": "Miscellaneous Chemical Products"
+  },
+  "0000912750": {
+    "fetched_at": "2026-10-04T03:06:06.543620+00:00",
+    "name": "NEWFIELD EXPLORATION CO /DE/",
+    "sic": "1311",
+    "sic_desc": "Crude Petroleum & Natural Gas"
+  },
+  "0000917491": {
+    "fetched_at": "2026-10-04T03:05:15.204797+00:00",
+    "name": "FARO TECHNOLOGIES INC",
+    "sic": "3829",
+    "sic_desc": "Measuring & Controlling Devices, NEC"
+  },
+  "0000918386": {
+    "fetched_at": "2026-10-04T03:06:25.380431+00:00",
+    "name": "QLOGIC CORP",
+    "sic": "3576",
+    "sic_desc": "Computer Communications Equipment"
+  },
+  "0000935494": {
+    "fetched_at": "2026-10-04T03:06:03.768723+00:00",
+    "name": "NATIONAL INSTRUMENTS CORP",
+    "sic": "7372",
+    "sic_desc": "Services-Prepackaged Software"
+  },
+  "0000945436": {
+    "fetched_at": "2026-10-04T03:06:45.326801+00:00",
+    "name": "SUNEDISON, INC.",
+    "sic": "3674",
+    "sic_desc": "Semiconductors & Related Devices"
+  },
+  "0001000623": {
+    "fetched_at": "2026-10-04T03:05:53.104895+00:00",
+    "name": "Mativ Holdings, Inc.",
+    "sic": "2621",
+    "sic_desc": "Paper Mills"
+  },
+  "0001005757": {
+    "fetched_at": "2026-10-04T03:04:55.156291+00:00",
+    "name": "CSG SYSTEMS INTERNATIONAL INC",
+    "sic": "7374",
+    "sic_desc": "Services-Computer Processing & Data Preparation"
+  },
+  "0001007456": {
+    "fetched_at": "2026-10-04T03:05:09.368849+00:00",
+    "name": "ELECTRONIC DATA SYSTEMS CORP /DE/",
+    "sic": "7370",
+    "sic_desc": "Services-Computer Programming, Data Processing, Etc."
+  },
+  "0001008654": {
+    "fetched_at": "2026-10-04T03:06:58.007231+00:00",
+    "name": "TUPPERWARE BRANDS CORP",
+    "sic": "3089",
+    "sic_desc": "Plastics Products, NEC"
+  },
+  "0001008848": {
+    "fetched_at": "2026-10-04T03:04:20.968183+00:00",
+    "name": "Acorda Therapeutics, Inc.",
+    "sic": "2836",
+    "sic_desc": "Biological Products, (No Diagnostic Substances)"
+  },
+  "0001009356": {
+    "fetched_at": "2026-10-04T03:06:40.763456+00:00",
+    "name": "SALIX PHARMACEUTICALS LTD",
+    "sic": "2834",
+    "sic_desc": "Pharmaceutical Preparations"
+  },
+  "0001009626": {
+    "fetched_at": "2026-10-04T03:04:41.954315+00:00",
+    "name": "BROCADE COMMUNICATIONS SYSTEMS INC",
+    "sic": "3576",
+    "sic_desc": "Computer Communications Equipment"
+  },
+  "0001010552": {
+    "fetched_at": "2026-10-04T03:06:20.628762+00:00",
+    "name": "POLYCOM INC",
+    "sic": "3661",
+    "sic_desc": "Telephone & Telegraph Apparatus"
+  },
+  "0001010612": {
+    "fetched_at": "2026-10-04T03:06:49.320960+00:00",
+    "name": "SYKES ENTERPRISES INC",
+    "sic": "7373",
+    "sic_desc": "Services-Computer Integrated Systems Design"
+  },
+  "0001013462": {
+    "fetched_at": "2026-10-04T03:04:28.053340+00:00",
+    "name": "ANSYS INC",
+    "sic": "7372",
+    "sic_desc": "Services-Prepackaged Software"
+  },
+  "0001013880": {
+    "fetched_at": "2026-10-04T03:06:57.347775+00:00",
+    "name": "TTEC Holdings, Inc.",
+    "sic": "7363",
+    "sic_desc": "Services-Help Supply Services"
+  },
+  "0001015780": {
+    "fetched_at": "2026-10-04T03:05:12.370174+00:00",
+    "name": "E TRADE FINANCIAL CORP",
+    "sic": "6035",
+    "sic_desc": "Savings Institution, Federally Chartered"
+  },
+  "0001017008": {
+    "fetched_at": "2026-10-04T03:07:05.520005+00:00",
+    "name": "UNIVISION COMMUNICATIONS INC",
+    "sic": "4833",
+    "sic_desc": "Television Broadcasting Stations"
+  },
+  "0001021162": {
+    "fetched_at": "2026-10-04T03:06:52.691129+00:00",
+    "name": "TRIUMPH GROUP INC",
+    "sic": "3720",
+    "sic_desc": "Aircraft & Parts"
+  },
+  "0001023313": {
+    "fetched_at": "2026-10-04T03:05:18.576181+00:00",
+    "name": "FORRESTER RESEARCH, INC.",
+    "sic": "8700",
+    "sic_desc": "Services-Engineering, Accounting, Research, Management"
+  },
+  "0001023731": {
+    "fetched_at": "2026-10-04T03:05:09.890525+00:00",
+    "name": "8X8 INC /DE/",
+    "sic": "7374",
+    "sic_desc": "Services-Computer Processing & Data Preparation"
+  },
+  "0001027838": {
+    "fetched_at": "2026-10-04T03:06:51.320525+00:00",
+    "name": "TACTILE SYSTEMS TECHNOLOGY INC",
+    "sic": "3841",
+    "sic_desc": "Surgical & Medical Instruments & Apparatus"
+  },
+  "0001029142": {
+    "fetched_at": "2026-10-04T03:05:06.792511+00:00",
+    "name": "DYNAVAX TECHNOLOGIES CORP",
+    "sic": "2834",
+    "sic_desc": "Pharmaceutical Preparations"
+  },
+  "0001031316": {
+    "fetched_at": "2026-10-04T03:05:20.237825+00:00",
+    "name": "FRANKLIN STREET PROPERTIES CORP /MA/",
+    "sic": "6798",
+    "sic_desc": "Real Estate Investment Trusts"
+  },
+  "0001033905": {
+    "fetched_at": "2026-10-04T03:05:46.851928+00:00",
+    "name": "LUMINEX CORP",
+    "sic": "3841",
+    "sic_desc": "Surgical & Medical Instruments & Apparatus"
+  },
+  "0001038133": {
+    "fetched_at": "2026-10-04T03:05:32.746480+00:00",
+    "name": "HESKA CORP",
+    "sic": "2835",
+    "sic_desc": "In Vitro & In Vivo Diagnostic Substances"
+  },
+  "0001041859": {
+    "fetched_at": "2026-10-04T03:06:19.897677+00:00",
+    "name": "Childrens Place, Inc.",
+    "sic": "5651",
+    "sic_desc": "Retail-Family Clothing Stores"
+  },
+  "0001042810": {
+    "fetched_at": "2026-10-04T03:05:11.758369+00:00",
+    "name": "EQUITY ONE, INC.",
+    "sic": "6798",
+    "sic_desc": "Real Estate Investment Trusts"
+  },
+  "0001043604": {
+    "fetched_at": "2026-10-04T03:05:39.771119+00:00",
+    "name": "JUNIPER NETWORKS INC",
+    "sic": "3576",
+    "sic_desc": "Computer Communications Equipment"
+  },
+  "0001044777": {
+    "fetched_at": "2026-10-04T03:06:15.285563+00:00",
+    "name": "OneSpan Inc.",
+    "sic": "7373",
+    "sic_desc": "Services-Computer Integrated Systems Design"
+  },
+  "0001047122": {
+    "fetched_at": "2026-10-04T03:06:35.180132+00:00",
+    "name": "RAYTHEON CO/",
+    "sic": "3812",
+    "sic_desc": "Search, Detection, Navigation, Guidance, Aeronautical Sys"
+  },
+  "0001049782": {
+    "fetched_at": "2026-10-04T03:04:43.062233+00:00",
+    "name": "BROOKLINE BANCORP INC",
+    "sic": "6035",
+    "sic_desc": "Savings Institution, Federally Chartered"
+  },
+  "0001051741": {
+    "fetched_at": "2026-10-04T03:05:17.796786+00:00",
+    "name": "FIRST NIAGARA FINANCIAL GROUP INC",
+    "sic": "6021",
+    "sic_desc": "National Commercial Banks"
+  },
+  "0001052100": {
+    "fetched_at": "2026-10-04T03:07:12.215222+00:00",
+    "name": "WADDELL & REED FINANCIAL INC",
+    "sic": "6211",
+    "sic_desc": "Security Brokers, Dealers & Flotation Companies"
+  },
+  "0001054374": {
+    "fetched_at": "2026-10-04T03:04:42.551564+00:00",
+    "name": "BROADCOM CORP",
+    "sic": "3674",
+    "sic_desc": "Semiconductors & Related Devices"
+  },
+  "0001054833": {
+    "fetched_at": "2026-10-04T03:05:00.394175+00:00",
+    "name": "COVENTRY HEALTH CARE INC",
+    "sic": "6324",
+    "sic_desc": "Hospital & Medical Service Plans"
+  },
+  "0001057758": {
+    "fetched_at": "2026-10-04T03:06:59.515937+00:00",
+    "name": "tw telecom inc.",
+    "sic": "4813",
+    "sic_desc": "Telephone Communications (No Radiotelephone)"
+  },
+  "0001062449": {
+    "fetched_at": "2026-10-04T03:04:43.773289+00:00",
+    "name": "BUFFALO WILD WINGS INC",
+    "sic": "5812",
+    "sic_desc": "Retail-Eating  Places"
+  },
+  "0001066605": {
+    "fetched_at": "2026-10-04T03:05:32.047137+00:00",
+    "name": "HEIDRICK & STRUGGLES INTERNATIONAL INC",
+    "sic": "7361",
+    "sic_desc": "Services-Employment Agencies"
+  },
+  "0001071255": {
+    "fetched_at": "2026-10-04T03:05:22.061324+00:00",
+    "name": "NEW ROYAL HOLDCO I INC.",
+    "sic": "7990",
+    "sic_desc": "Services-Miscellaneous Amusement & Recreation"
+  },
+  "0001077771": {
+    "fetched_at": "2026-10-04T03:07:01.457047+00:00",
+    "name": "UMPQUA HOLDINGS CORP",
+    "sic": "6035",
+    "sic_desc": "Savings Institution, Federally Chartered"
+  },
+  "0001084765": {
+    "fetched_at": "2026-10-04T03:06:28.407399+00:00",
+    "name": "RESOURCES CONNECTION, INC.",
+    "sic": "7389",
+    "sic_desc": "Services-Business Services, NEC"
+  },
+  "0001085869": {
+    "fetched_at": "2026-10-04T03:06:21.325071+00:00",
+    "name": "PERFICIENT INC",
+    "sic": "7371",
+    "sic_desc": "Services-Computer Programming Services"
+  },
+  "0001087423": {
+    "fetched_at": "2026-10-04T03:06:29.761174+00:00",
+    "name": "RED HAT INC",
+    "sic": "7370",
+    "sic_desc": "Services-Computer Programming, Data Processing, Etc."
+  },
+  "0001096325": {
+    "fetched_at": "2026-10-04T03:05:38.498215+00:00",
+    "name": "INTERSIL CORP/DE",
+    "sic": "3674",
+    "sic_desc": "Semiconductors & Related Devices"
+  },
+  "0001102112": {
+    "fetched_at": "2026-10-04T03:06:16.492510+00:00",
+    "name": "PACWEST BANCORP",
+    "sic": "6021",
+    "sic_desc": "National Commercial Banks"
+  },
+  "0001102993": {
+    "fetched_at": "2026-10-04T03:05:51.111959+00:00",
+    "name": "LIVEPERSON INC",
+    "sic": "7372",
+    "sic_desc": "Services-Prepackaged Software"
+  },
+  "0001108109": {
+    "fetched_at": "2026-10-04T03:05:01.021797+00:00",
+    "name": "COMMUNITY HEALTH SYSTEMS INC",
+    "sic": "8062",
+    "sic_desc": "Services-General Medical & Surgical Hospitals, NEC"
+  },
+  "0001108827": {
+    "fetched_at": "2026-10-04T03:06:24.713821+00:00",
+    "name": "QEP RESOURCES, INC.",
+    "sic": "1311",
+    "sic_desc": "Crude Petroleum & Natural Gas"
+  },
+  "0001116463": {
+    "fetched_at": "2026-10-04T03:06:15.860745+00:00",
+    "name": "ORASURE TECHNOLOGIES INC",
+    "sic": "3841",
+    "sic_desc": "Surgical & Medical Instruments & Apparatus"
+  },
+  "0001122304": {
+    "fetched_at": "2026-10-04T03:04:21.629371+00:00",
+    "name": "AETNA INC /PA/",
+    "sic": "6324",
+    "sic_desc": "Hospital & Medical Service Plans"
+  },
+  "0001124827": {
+    "fetched_at": "2026-10-04T03:07:04.039896+00:00",
+    "name": "UTi WORLDWIDE INC",
+    "sic": "4731",
+    "sic_desc": "Arrangement of  Transportation of  Freight & Cargo"
+  },
+  "0001133470": {
+    "fetched_at": "2026-10-04T03:04:59.667009+00:00",
+    "name": "CALAVO GROWERS INC",
+    "sic": "0700",
+    "sic_desc": "Agricultural Services"
+  },
+  "0001135185": {
+    "fetched_at": "2026-10-04T03:04:19.644922+00:00",
+    "name": "ATLAS AIR WORLDWIDE HOLDINGS INC",
+    "sic": "4522",
+    "sic_desc": "Air Transportation, Nonscheduled"
+  },
+  "0001140536": {
+    "fetched_at": "2026-10-04T03:07:14.087949+00:00",
+    "name": "WILLIS TOWERS WATSON PLC",
+    "sic": "6411",
+    "sic_desc": "Insurance Agents, Brokers & Service"
+  },
+  "0001142596": {
+    "fetched_at": "2026-10-04T03:06:09.279522+00:00",
+    "name": "NUVASIVE INC",
+    "sic": "3841",
+    "sic_desc": "Surgical & Medical Instruments & Apparatus"
+  },
+  "0001156039": {
+    "fetched_at": "2026-10-04T03:04:28.566472+00:00",
+    "name": "Elevance Health, Inc.",
+    "sic": "6324",
+    "sic_desc": "Hospital & Medical Service Plans"
+  },
+  "0001157972": {
+    "fetched_at": "2026-10-04T03:05:03.898841+00:00",
+    "name": "DJO Opco Holdings, Inc.",
+    "sic": "3842",
+    "sic_desc": "Orthopedic, Prosthetic & Surgical Appliances & Supplies"
+  },
+  "0001159167": {
+    "fetched_at": "2026-10-04T03:05:36.615784+00:00",
+    "name": "IROBOT CORP",
+    "sic": "3630",
+    "sic_desc": "Household Appliances"
+  },
+  "0001162461": {
+    "fetched_at": "2026-10-04T03:04:58.390952+00:00",
+    "name": "CUTERA INC",
+    "sic": "3845",
+    "sic_desc": "Electromedical & Electrotherapeutic Apparatus"
+  },
+  "0001163739": {
+    "fetched_at": "2026-10-04T03:06:05.286514+00:00",
+    "name": "NABORS INDUSTRIES LTD",
+    "sic": "1381",
+    "sic_desc": "Drilling Oil & Gas Wells"
+  },
+  "0001168054": {
+    "fetched_at": "2026-10-04T03:07:18.592942+00:00",
+    "name": "CIMAREX ENERGY CO",
+    "sic": "1311",
+    "sic_desc": "Crude Petroleum & Natural Gas"
+  },
+  "0001170565": {
+    "fetched_at": "2026-10-04T03:07:13.508024+00:00",
+    "name": "WEATHERFORD INTERNATIONAL LTD",
+    "sic": "1381",
+    "sic_desc": "Drilling Oil & Gas Wells"
+  },
+  "0001171759": {
+    "fetched_at": "2026-10-04T03:06:34.543387+00:00",
+    "name": "RED ROBIN GOURMET BURGERS INC",
+    "sic": "5812",
+    "sic_desc": "Retail-Eating  Places"
+  },
+  "0001173489": {
+    "fetched_at": "2026-10-04T03:04:48.473470+00:00",
+    "name": "CEVA INC",
+    "sic": "7370",
+    "sic_desc": "Services-Computer Programming, Data Processing, Etc."
+  },
+  "0001207074": {
+    "fetched_at": "2026-10-04T03:07:08.923326+00:00",
+    "name": "VIRTUSA CORP",
+    "sic": "7371",
+    "sic_desc": "Services-Computer Programming Services"
+  },
+  "0001220754": {
+    "fetched_at": "2026-10-04T03:05:58.537051+00:00",
+    "name": "ModivCare Inc",
+    "sic": "4700",
+    "sic_desc": "Transportation Services"
+  },
+  "0001227654": {
+    "fetched_at": "2026-10-04T03:04:51.975231+00:00",
+    "name": "COMPASS MINERALS INTERNATIONAL INC",
+    "sic": "1400",
+    "sic_desc": "Mining & Quarrying of  Nonmetallic Minerals (No Fuels)"
+  },
+  "0001274057": {
+    "fetched_at": "2026-10-04T03:05:33.366848+00:00",
+    "name": "HOSPIRA INC",
+    "sic": "2834",
+    "sic_desc": "Pharmaceutical Preparations"
+  },
+  "0001275283": {
+    "fetched_at": "2026-10-04T03:06:26.673638+00:00",
+    "name": "REYNOLDS AMERICAN INC",
+    "sic": "2111",
+    "sic_desc": "Cigarettes"
+  },
+  "0001278027": {
+    "fetched_at": "2026-10-04T03:04:38.182206+00:00",
+    "name": "B&G Foods, Inc.",
+    "sic": "2000",
+    "sic_desc": "Food and Kindred Products"
+  },
+  "0001279363": {
+    "fetched_at": "2026-10-04T03:07:11.639185+00:00",
+    "name": "WELLCARE HEALTH PLANS, INC.",
+    "sic": "6324",
+    "sic_desc": "Hospital & Medical Service Plans"
+  },
+  "0001282977": {
+    "fetched_at": "2026-10-04T03:05:24.205128+00:00",
+    "name": "GREENHILL & CO INC",
+    "sic": "6211",
+    "sic_desc": "Security Brokers, Dealers & Flotation Companies"
+  },
+  "0001294133": {
+    "fetched_at": "2026-10-04T03:05:35.922752+00:00",
+    "name": "Inogen Inc",
+    "sic": "3842",
+    "sic_desc": "Orthopedic, Prosthetic & Surgical Appliances & Supplies"
+  },
+  "0001297401": {
+    "fetched_at": "2026-10-04T03:05:07.403453+00:00",
+    "name": "DreamWorks Animation, LLC",
+    "sic": "7812",
+    "sic_desc": "Services-Motion Picture & Video Tape Production"
+  },
+  "0001301063": {
+    "fetched_at": "2026-10-04T03:04:26.870732+00:00",
+    "name": "Alpha Natural Resources, Inc.",
+    "sic": "1221",
+    "sic_desc": "Bituminous Coal & Lignite Surface Mining"
+  },
+  "0001301611": {
+    "fetched_at": "2026-10-04T03:05:49.645470+00:00",
+    "name": "LEGACY LIFEPOINT HEALTH, INC.",
+    "sic": "8062",
+    "sic_desc": "Services-General Medical & Surgical Hospitals, NEC"
+  },
+  "0001304421": {
+    "fetched_at": "2026-10-04T03:04:52.621966+00:00",
+    "name": "Consolidated Communications Holdings, Inc.",
+    "sic": "4813",
+    "sic_desc": "Telephone Communications (No Radiotelephone)"
+  },
+  "0001309402": {
+    "fetched_at": "2026-10-04T03:05:25.375334+00:00",
+    "name": "Green Plains Inc.",
+    "sic": "2860",
+    "sic_desc": "Industrial Organic Chemicals"
+  },
+  "0001318008": {
+    "fetched_at": "2026-10-04T03:07:22.137324+00:00",
+    "name": "Zumiez Inc",
+    "sic": "5600",
+    "sic_desc": "Retail-Apparel & Accessory Stores"
+  },
+  "0001319947": {
+    "fetched_at": "2026-10-04T03:05:02.620290+00:00",
+    "name": "Designer Brands Inc.",
+    "sic": "5661",
+    "sic_desc": "Retail-Shoe Stores"
+  },
+  "0001339048": {
+    "fetched_at": "2026-10-04T03:07:14.785434+00:00",
+    "name": "Western Refining, Inc.",
+    "sic": "2911",
+    "sic_desc": "Petroleum Refining"
+  },
+  "0001347178": {
+    "fetched_at": "2026-10-04T03:07:07.546794+00:00",
+    "name": "Vanda Pharmaceuticals Inc.",
+    "sic": "2834",
+    "sic_desc": "Pharmaceutical Preparations"
+  },
+  "0001354327": {
+    "fetched_at": "2026-10-04T03:06:19.341220+00:00",
+    "name": "PGT Innovations, Inc.",
+    "sic": "3442",
+    "sic_desc": "Metal Doors, Sash, Frames, Moldings & Trim"
+  },
+  "0001357204": {
+    "fetched_at": "2026-10-04T03:05:05.123337+00:00",
+    "name": "DUNKIN' BRANDS GROUP, INC.",
+    "sic": "5810",
+    "sic_desc": "Retail-Eating & Drinking Places"
+  },
+  "0001357326": {
+    "fetched_at": "2026-10-04T03:06:35.852905+00:00",
+    "name": "Riverbed Technology, Inc.",
+    "sic": "3576",
+    "sic_desc": "Computer Communications Equipment"
+  },
+  "0001359841": {
+    "fetched_at": "2026-10-04T03:05:28.586272+00:00",
+    "name": "Hanesbrands Inc.",
+    "sic": "5600",
+    "sic_desc": "Retail-Apparel & Accessory Stores"
+  },
+  "0001361937": {
+    "fetched_at": "2026-10-04T03:05:13.824255+00:00",
+    "name": "Harvest Oil & Gas Corp.",
+    "sic": "1311",
+    "sic_desc": "Crude Petroleum & Natural Gas"
+  },
+  "0001368007": {
+    "fetched_at": "2026-10-04T03:06:12.642077+00:00",
+    "name": "NYSE Euronext",
+    "sic": "6200",
+    "sic_desc": "Security & Commodity Brokers, Dealers, Exchanges & Services"
+  },
+  "0001383094": {
+    "fetched_at": "2026-10-04T03:04:35.196863+00:00",
+    "name": "SANTANDER DRIVE AUTO RECEIVABLES LLC",
+    "sic": "6189",
+    "sic_desc": "Asset-Backed Securities"
+  },
+  "0001385187": {
+    "fetched_at": "2026-10-04T03:04:53.967496+00:00",
+    "name": "Covidien plc",
+    "sic": "3841",
+    "sic_desc": "Surgical & Medical Instruments & Apparatus"
+  },
+  "0001386278": {
+    "fetched_at": "2026-10-04T03:05:22.637102+00:00",
+    "name": "GREEN DOT CORP",
+    "sic": "6199",
+    "sic_desc": "Finance Services"
+  },
+  "0001418091": {
+    "fetched_at": "2026-10-04T03:07:00.073324+00:00",
+    "name": "TWITTER, INC.",
+    "sic": "7370",
+    "sic_desc": "Services-Computer Programming, Data Processing, Etc."
+  },
+  "0001420302": {
+    "fetched_at": "2026-10-04T03:05:48.962662+00:00",
+    "name": "LogMeIn, Inc.",
+    "sic": "7372",
+    "sic_desc": "Services-Prepackaged Software"
+  },
+  "0001424454": {
+    "fetched_at": "2026-10-04T03:06:33.169302+00:00",
+    "name": "Rovi Corp",
+    "sic": "6794",
+    "sic_desc": "Patent Owners & Lessors"
+  },
+  "0001429775": {
+    "fetched_at": "2026-10-04T03:05:50.376096+00:00",
+    "name": "Black Knight InfoServ, LLC",
+    "sic": "7389",
+    "sic_desc": "Services-Business Services, NEC"
+  },
+  "0001434620": {
+    "fetched_at": "2026-10-04T03:05:35.399154+00:00",
+    "name": "ILG, LLC",
+    "sic": "6531",
+    "sic_desc": "Real Estate Agents & Managers (For Others)"
+  },
+  "0001437071": {
+    "fetched_at": "2026-10-04T03:05:39.131556+00:00",
+    "name": "Invesco Mortgage Capital Inc.",
+    "sic": "6798",
+    "sic_desc": "Real Estate Investment Trusts"
+  },
+  "0001446847": {
+    "fetched_at": "2026-10-04T03:05:37.170976+00:00",
+    "name": "IRONWOOD PHARMACEUTICALS INC",
+    "sic": "2834",
+    "sic_desc": "Pharmaceutical Preparations"
+  },
+  "0001453814": {
+    "fetched_at": "2026-10-04T03:05:55.812865+00:00",
+    "name": "Medidata Solutions, Inc.",
+    "sic": "7372",
+    "sic_desc": "Services-Prepackaged Software"
+  },
+  "0001463258": {
+    "fetched_at": "2026-10-04T03:06:27.245223+00:00",
+    "name": "Renewable Energy Group, Inc.",
+    "sic": "2860",
+    "sic_desc": "Industrial Organic Chemicals"
+  },
+  "0001464790": {
+    "fetched_at": "2026-10-04T03:06:31.800770+00:00",
+    "name": "BRC Group Holdings, Inc.",
+    "sic": "6282",
+    "sic_desc": "Investment Advice"
+  },
+  "0001468516": {
+    "fetched_at": "2026-10-04T03:04:29.224389+00:00",
+    "name": "AOL Inc.",
+    "sic": "7374",
+    "sic_desc": "Services-Computer Processing & Data Preparation"
+  },
+  "0001476045": {
+    "fetched_at": "2026-10-04T03:04:50.647008+00:00",
+    "name": "Chatham Lodging Trust",
+    "sic": "6798",
+    "sic_desc": "Real Estate Investment Trusts"
+  },
+  "0001492422": {
+    "fetched_at": "2026-10-04T03:04:30.499648+00:00",
+    "name": "Apellis Pharmaceuticals, Inc.",
+    "sic": "2834",
+    "sic_desc": "Pharmaceutical Preparations"
+  },
+  "0001494319": {
+    "fetched_at": "2026-10-04T03:07:02.109506+00:00",
+    "name": "Univar Solutions Inc.",
+    "sic": "5160",
+    "sic_desc": "Wholesale-Chemicals & Allied Products"
+  },
+  "0001495320": {
+    "fetched_at": "2026-10-04T03:07:08.249159+00:00",
+    "name": "Vera Bradley, Inc.",
+    "sic": "3100",
+    "sic_desc": "Leather & Leather Products"
+  },
+  "0001514991": {
+    "fetched_at": "2026-10-04T03:04:24.096429+00:00",
+    "name": "AMC Global Media Inc.",
+    "sic": "4841",
+    "sic_desc": "Cable & Other Pay Television Services"
+  },
+  "0001518832": {
+    "fetched_at": "2026-10-04T03:07:15.478560+00:00",
+    "name": "WPX ENERGY, INC.",
+    "sic": "1311",
+    "sic_desc": "Crude Petroleum & Natural Gas"
+  },
+  "0001524741": {
+    "fetched_at": "2026-10-04T03:06:40.116288+00:00",
+    "name": "U.S. SILICA HOLDINGS, INC.",
+    "sic": "1400",
+    "sic_desc": "Mining & Quarrying of  Nonmetallic Minerals (No Fuels)"
+  },
+  "0001524931": {
+    "fetched_at": "2026-10-04T03:04:49.995307+00:00",
+    "name": "CHUY'S HOLDINGS, INC.",
+    "sic": "5812",
+    "sic_desc": "Retail-Eating  Places"
+  },
+  "0001528129": {
+    "fetched_at": "2026-10-04T03:07:10.312677+00:00",
+    "name": "Vital Energy, Inc.",
+    "sic": "1311",
+    "sic_desc": "Crude Petroleum & Natural Gas"
+  },
+  "0001531048": {
+    "fetched_at": "2026-10-04T03:06:03.014359+00:00",
+    "name": "Inari Medical, Inc.",
+    "sic": "3841",
+    "sic_desc": "Surgical & Medical Instruments & Apparatus"
+  },
+  "0001534992": {
+    "fetched_at": "2026-10-04T03:05:19.725196+00:00",
+    "name": "Fiesta Restaurant Group, Inc.",
+    "sic": "5812",
+    "sic_desc": "Retail-Eating  Places"
+  },
+  "0001545158": {
+    "fetched_at": "2026-10-04T03:05:44.146578+00:00",
+    "name": "Kraft Foods Group, Inc.",
+    "sic": "2000",
+    "sic_desc": "Food and Kindred Products"
+  },
+  "0001546417": {
+    "fetched_at": "2026-10-04T03:04:39.360736+00:00",
+    "name": "Bloomin' Brands, Inc.",
+    "sic": "5812",
+    "sic_desc": "Retail-Eating  Places"
+  },
+  "0001549346": {
+    "fetched_at": "2026-10-04T03:06:44.648465+00:00",
+    "name": "Shutterstock, Inc.",
+    "sic": "7374",
+    "sic_desc": "Services-Computer Processing & Data Preparation"
+  },
+  "0001553023": {
+    "fetched_at": "2026-10-04T03:04:53.282343+00:00",
+    "name": "CyrusOne Holdco LLC",
+    "sic": "6798",
+    "sic_desc": "Real Estate Investment Trusts"
+  },
+  "0001555365": {
+    "fetched_at": "2026-10-04T03:07:17.717543+00:00",
+    "name": "WHITEWAVE FOODS Co",
+    "sic": "2020",
+    "sic_desc": "Dairy Products"
+  },
+  "0001556739": {
+    "fetched_at": "2026-10-04T03:06:54.009618+00:00",
+    "name": "Thryv Holdings, Inc.",
+    "sic": "7310",
+    "sic_desc": "Services-Advertising"
+  },
+  "0001581091": {
+    "fetched_at": "2026-10-04T03:06:32.539264+00:00",
+    "name": "RE/MAX Holdings, Inc.",
+    "sic": "6531",
+    "sic_desc": "Real Estate Agents & Managers (For Others)"
+  },
+  "0001588972": {
+    "fetched_at": "2026-10-04T03:04:47.353131+00:00",
+    "name": "Societal CDMO, Inc.",
+    "sic": "2834",
+    "sic_desc": "Pharmaceutical Preparations"
+  },
+  "0001590560": {
+    "fetched_at": "2026-10-04T03:06:26.040777+00:00",
+    "name": "uniQure N.V.",
+    "sic": "2834",
+    "sic_desc": "Pharmaceutical Preparations"
+  },
+  "0001590877": {
+    "fetched_at": "2026-10-04T03:06:27.852710+00:00",
+    "name": "REGENXBIO Inc.",
+    "sic": "2836",
+    "sic_desc": "Biological Products, (No Diagnostic Substances)"
+  },
+  "0001593034": {
+    "fetched_at": "2026-10-04T03:05:11.130667+00:00",
+    "name": "Endo International plc",
+    "sic": "2834",
+    "sic_desc": "Pharmaceutical Preparations"
+  },
+  "0001594012": {
+    "fetched_at": "2026-10-04T03:05:37.841095+00:00",
+    "name": "Investors Bancorp, Inc.",
+    "sic": "6022",
+    "sic_desc": "State Commercial Banks"
+  },
+  "0001594109": {
+    "fetched_at": "2026-10-04T03:05:26.030433+00:00",
+    "name": "GrubHub Inc.",
+    "sic": "7389",
+    "sic_desc": "Services-Business Services, NEC"
+  },
+  "0001596783": {
+    "fetched_at": "2026-10-04T03:04:57.110730+00:00",
+    "name": "Catalent, Inc.",
+    "sic": "2834",
+    "sic_desc": "Pharmaceutical Preparations"
+  },
+  "0001597672": {
+    "fetched_at": "2026-10-04T03:06:36.483650+00:00",
+    "name": "RAYONIER ADVANCED MATERIALS INC.",
+    "sic": "2611",
+    "sic_desc": "Pulp Mills"
+  },
+  "0001599489": {
+    "fetched_at": "2026-10-04T03:07:09.614891+00:00",
+    "name": "Veritiv Corp",
+    "sic": "5110",
+    "sic_desc": "Wholesale-Paper & Paper Products"
+  },
+  "0001606366": {
+    "fetched_at": "2026-10-04T03:05:48.274359+00:00",
+    "name": "El Pollo Loco Holdings, Inc.",
+    "sic": "5812",
+    "sic_desc": "Retail-Eating  Places"
+  },
+  "0001609702": {
+    "fetched_at": "2026-10-04T03:04:46.738323+00:00",
+    "name": "CDK Global, Inc.",
+    "sic": "7389",
+    "sic_desc": "Services-Business Services, NEC"
+  },
+  "0001610950": {
+    "fetched_at": "2026-10-04T03:06:49.933488+00:00",
+    "name": "Syneos Health, Inc.",
+    "sic": "8731",
+    "sic_desc": "Services-Commercial Physical & Biological Research"
+  },
+  "0001612630": {
+    "fetched_at": "2026-10-04T03:05:40.992525+00:00",
+    "name": "JOINT Corp",
+    "sic": "6794",
+    "sic_desc": "Patent Owners & Lessors"
+  },
+  "0001613665": {
+    "fetched_at": "2026-10-04T03:05:26.533529+00:00",
+    "name": "Great Western Bancorp, Inc.",
+    "sic": "6022",
+    "sic_desc": "State Commercial Banks"
+  },
+  "0001617898": {
+    "fetched_at": "2026-10-04T03:05:43.465558+00:00",
+    "name": "KLX Inc.",
+    "sic": "3720",
+    "sic_desc": "Aircraft & Parts"
+  },
+  "0001618921": {
+    "fetched_at": "2026-10-04T03:07:10.985765+00:00",
+    "name": "Walgreens Boots Alliance, Inc.",
+    "sic": "5912",
+    "sic_desc": "Retail-Drug Stores and Proprietary Stores"
+  },
+  "0001620459": {
+    "fetched_at": "2026-10-04T03:05:40.487805+00:00",
+    "name": "James River Group Holdings, Inc.",
+    "sic": "6331",
+    "sic_desc": "Fire, Marine & Casualty Insurance"
+  },
+  "0001631569": {
+    "fetched_at": "2026-10-04T03:04:49.298446+00:00",
+    "name": "Community Healthcare Trust Inc",
+    "sic": "6798",
+    "sic_desc": "Real Estate Investment Trusts"
+  },
+  "0001635881": {
+    "fetched_at": "2026-10-04T03:05:14.491472+00:00",
+    "name": "Exterran Corp",
+    "sic": "7359",
+    "sic_desc": "Services-Equipment Rental & Leasing, NEC"
+  },
+  "0001642545": {
+    "fetched_at": "2026-10-04T03:06:46.712398+00:00",
+    "name": "Shockwave Medical, Inc.",
+    "sic": "3841",
+    "sic_desc": "Surgical & Medical Instruments & Apparatus"
+  },
+  "0001646383": {
+    "fetched_at": "2026-10-04T03:04:55.769768+00:00",
+    "name": "CSRA Inc.",
+    "sic": "7373",
+    "sic_desc": "Services-Computer Integrated Systems Design"
+  },
+  "0001651561": {
+    "fetched_at": "2026-10-04T03:06:56.782802+00:00",
+    "name": "Tabula Rasa HealthCare, Inc.",
+    "sic": "7389",
+    "sic_desc": "Services-Business Services, NEC"
+  },
+  "0001661181": {
+    "fetched_at": "2026-10-04T03:06:14.464267+00:00",
+    "name": "Organogenesis Holdings Inc.",
+    "sic": "2834",
+    "sic_desc": "Pharmaceutical Preparations"
+  },
+  "0001674930": {
+    "fetched_at": "2026-10-04T03:05:16.457266+00:00",
+    "name": "Fulgent Genetics, Inc.",
+    "sic": "8071",
+    "sic_desc": "Services-Medical Laboratories"
+  },
+  "0001675820": {
+    "fetched_at": "2026-10-04T03:06:55.419233+00:00",
+    "name": "TiVo Corp",
+    "sic": "6794",
+    "sic_desc": "Patent Owners & Lessors"
+  },
+  "0001677203": {
+    "fetched_at": "2026-10-04T03:06:24.124191+00:00",
+    "name": "QUALITY CARE PROPERTIES, INC.",
+    "sic": "6798",
+    "sic_desc": "Real Estate Investment Trusts"
+  },
+  "0001681689": {
+    "fetched_at": "2026-10-04T03:04:38.843871+00:00",
+    "name": "Bioverativ Inc.",
+    "sic": "2834",
+    "sic_desc": "Pharmaceutical Preparations"
+  },
+  "0001705110": {
+    "fetched_at": "2026-10-04T03:04:26.123217+00:00",
+    "name": "Angi Inc.",
+    "sic": "7310",
+    "sic_desc": "Services-Advertising"
+  },
+  "0001725526": {
+    "fetched_at": "2026-10-04T03:05:31.396438+00:00",
+    "name": "HighPoint Resources Corp",
+    "sic": "1311",
+    "sic_desc": "Crude Petroleum & Natural Gas"
+  },
+  "0001732845": {
+    "fetched_at": "2026-10-04T03:07:17.005602+00:00",
+    "name": "WestRock Co",
+    "sic": "2650",
+    "sic_desc": "Paperboard Containers & Boxes"
+  },
+  "0001739942": {
+    "fetched_at": "2026-10-04T03:06:47.391576+00:00",
+    "name": "SolarWinds Corp",
+    "sic": "7372",
+    "sic_desc": "Services-Prepackaged Software"
+  },
+  "0001742924": {
+    "fetched_at": "2026-10-04T03:05:51.625337+00:00",
+    "name": "Livent Corp.",
+    "sic": "2800",
+    "sic_desc": "Chemicals & Allied Products"
+  },
+  "0001743907": {
+    "fetched_at": "2026-10-04T03:06:41.439408+00:00",
+    "name": "Sun Country Airlines Holdings, LLC",
+    "sic": "4512",
+    "sic_desc": "Air Transportation, Scheduled"
+  },
+  "0001747009": {
+    "fetched_at": "2026-10-04T03:05:13.166184+00:00",
+    "name": "Midstream Co LLC",
+    "sic": "4922",
+    "sic_desc": "Natural Gas Transmission"
+  },
+  "0001749704": {
+    "fetched_at": "2026-10-04T03:04:22.197520+00:00",
+    "name": "AGILITI, INC. \\DE",
+    "sic": "7350",
+    "sic_desc": "Services-Miscellaneous Equipment Rental & Leasing"
+  },
+  "0001752836": {
+    "fetched_at": "2026-10-04T03:04:59.048258+00:00",
+    "name": "COVETRUS, INC.",
+    "sic": "5912",
+    "sic_desc": "Retail-Drug Stores and Proprietary Stores"
+  },
+  "0001768267": {
+    "fetched_at": "2026-10-04T03:04:54.485841+00:00",
+    "name": "Cerence Inc.",
+    "sic": "7372",
+    "sic_desc": "Services-Prepackaged Software"
+  },
+  "0001783400": {
+    "fetched_at": "2026-10-04T03:05:08.666882+00:00",
+    "name": "US Ecology, Inc.",
+    "sic": "4953",
+    "sic_desc": "Refuse Systems"
+  },
+  "0001788999": {
+    "fetched_at": "2026-10-04T03:07:20.028070+00:00",
+    "name": "Xperi Inc.",
+    "sic": "7372",
+    "sic_desc": "Services-Prepackaged Software"
+  },
+  "0001821806": {
+    "fetched_at": "2026-10-04T03:05:46.029026+00:00",
+    "name": "Leslie's, Inc.",
+    "sic": "5990",
+    "sic_desc": "Retail-Retail Stores, NEC"
+  },
+  "0001853513": {
+    "fetched_at": "2026-10-04T03:05:54.460194+00:00",
+    "name": "Mister Car Wash, Inc.",
+    "sic": "7500",
+    "sic_desc": "Services-Automotive Repair, Services & Parking"
+  },
+  "0001870997": {
+    "fetched_at": "2026-10-04T03:05:52.231171+00:00",
+    "name": "Loyalty Ventures Inc.",
+    "sic": "7389",
+    "sic_desc": "Services-Business Services, NEC"
+  },
+  "0001876588": {
+    "fetched_at": "2026-10-04T03:07:21.485336+00:00",
+    "name": "ZimVie Inc.",
+    "sic": "3843",
+    "sic_desc": "Dental Equipment & Supplies"
+  },
+  "0001959348": {
+    "fetched_at": "2026-10-04T03:05:42.750791+00:00",
+    "name": "WK Kellogg Co",
+    "sic": "2040",
+    "sic_desc": "Grain Mill Products"
+  }
+}
