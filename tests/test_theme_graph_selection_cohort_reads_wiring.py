@@ -9,6 +9,8 @@ from types import SimpleNamespace
 
 import pytest
 
+from engine.prophet_source_epochs import read_source_epochs
+
 from engine.theme_graph import selection_cohort_publication as publication_module
 from engine.theme_graph import selection_cohort_reads
 from engine.theme_graph.selection_cohort_publication import (
@@ -179,6 +181,7 @@ def seam_namespace(tmp_path, spy, monkeypatch):
         ast=ast, json=json, site=tmp_path,
         _us=board_path, _us_path=board_path, _us_source_bytes=source,
         us_standouts=None, _us_w3c=None, _us_w3c_binding=None,
+        read_source_epochs=read_source_epochs, _us_prophet_source_capture={},
         _fresh_source_bytes=None, _fresh_w3c=None, _fresh_w3c_binding=None,
         consume_us_source=spy, log=SimpleNamespace(warning=lambda *args: None),
         config=SimpleNamespace(data_dir=lambda: tmp_path),
