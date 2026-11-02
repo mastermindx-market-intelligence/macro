@@ -151,11 +151,15 @@ artifacts:
   - research/marketing_dockets/D07_FUNNEL_LIFECYCLE_MNZ.md
   - research/marketing_dockets/catalyst_fable_20261031/SEC_ISSUER_EARNINGS_RELEASE_PUBLIC_FACTS.json
 next_action: >
-  A3-SOURCE and GAPS are MERGED in PR #10379 (636abe2a66d2); the writer timer runs in production and
-  publishes the namespaced index (PRODUCTION_PROOF of the writer). Remaining: the operator's
-  flags-ON decision (CATALYST_PUBLIC_ENABLED / CATALYST_OPTIN_ENABLED / CATALYST_UX_ENABLED, then
-  restart macro-api), the hosted A2 live-scan proof after that, and the figure-yield follow-up
-  in engine/earnings_release/figures.py.
+  The public surface is ON and the hosted A2 journey is PROVEN (2026-11-02, Chairman delegation,
+  DEC:MX-CATALYST-FLAGS-ON-20261102). Armed merge-on-green: #10522 (v2 scan receipts + accurate
+  UX banner; then CATALYST_UX_ENABLED=1) and #10532 (opt-in wiring seam). Consent owner contract:
+  PR #10538 (migration 0009 + applier + rollback + runbook, DEC:MX-CATALYST-CONSENT-RPC-V2-APPLY-20261102);
+  after its merge apply from /opt/macro over the Management-API path and verify INSTALLED. Then
+  MAIL_UNSUB_SECRET on the host, restart, wiring log readback, one OTP request witnessed, and
+  CATALYST_OPTIN_ENABLED=1 under its own record. OTP mail has no custom SMTP (team-member-only
+  delivery, 2/hour) so a pilot cohort needs a Chairman-provisioned SMTP provider before B2. See
+  agentos/handoffs/MARKETING-X-CATALYST-LOOP-2026-11-02-CONSENT-RPC.md.
 ---
 
 # Marketing X — Catalyst Loop acquisition engine
