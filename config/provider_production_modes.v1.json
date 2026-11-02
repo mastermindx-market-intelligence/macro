@@ -33,6 +33,54 @@
       "subscription_fallback_allowed": false,
       "pricing_ref": "Z.ai platform pricing page (metered PAYG) — reviewable pointer, no rate is encoded here",
       "notes": "distinct from glm-coding-plan (#7103)"
+    },
+    "modelark_glm_flash_api": {
+      "provider_id": "byteplus",
+      "protocol": "responses_api",
+      "base_url": "https://ark.ap-southeast.bytepluses.com/api/v3",
+      "docs_ref": "https://docs.byteplus.com/en/docs/modelark/create-model-responses-api",
+      "default_model": "glm-5-3-flash-260828",
+      "secret_ref": "BYTEPLUS_MODELARK_API_KEY",
+      "usage_class": "production_api",
+      "billing_mode": "metered",
+      "cost_identity": "byteplus/metered",
+      "cap_id": "prod_api:byteplus",
+      "enabled": false,
+      "subscription_fallback_allowed": false,
+      "pricing_ref": "https://docs.byteplus.com/en/docs/modelark/model-list",
+      "notes": "Commercial ModelArk /api/v3 only; Personal Coding Plan /api/coding forbidden; pending issuer canary and Capacity owner"
+    },
+    "modelark_deepseek_flash_api": {
+      "provider_id": "byteplus",
+      "protocol": "responses_api",
+      "base_url": "https://ark.ap-southeast.bytepluses.com/api/v3",
+      "docs_ref": "https://docs.byteplus.com/en/docs/modelark/create-model-responses-api",
+      "default_model": "deepseek-v4-1-flash-261017",
+      "secret_ref": "BYTEPLUS_MODELARK_API_KEY",
+      "usage_class": "production_api",
+      "billing_mode": "metered",
+      "cost_identity": "byteplus/metered",
+      "cap_id": "prod_api:byteplus",
+      "enabled": false,
+      "subscription_fallback_allowed": false,
+      "pricing_ref": "https://docs.byteplus.com/en/docs/modelark/model-list",
+      "notes": "Commercial ModelArk /api/v3 only; Personal Coding Plan /api/coding forbidden; pending issuer canary and Capacity owner"
+    },
+    "modelark_dola_coding_api": {
+      "provider_id": "byteplus",
+      "protocol": "responses_api",
+      "base_url": "https://ark.ap-southeast.bytepluses.com/api/v3",
+      "docs_ref": "https://docs.byteplus.com/en/docs/modelark/create-model-responses-api",
+      "default_model": "dola-seed-2-1-turbo-260628",
+      "secret_ref": "BYTEPLUS_MODELARK_API_KEY",
+      "usage_class": "production_api",
+      "billing_mode": "metered",
+      "cost_identity": "byteplus/metered",
+      "cap_id": "prod_api:byteplus",
+      "enabled": false,
+      "subscription_fallback_allowed": false,
+      "pricing_ref": "https://docs.byteplus.com/en/docs/modelark/model-list",
+      "notes": "Commercial ModelArk /api/v3 only; Personal Coding Plan /api/coding forbidden; pending issuer canary and Capacity owner"
     }
   }
 }
