@@ -92,6 +92,41 @@ class OpportunityContextContractError(ValueError):
     """Raised when owner identities/clocks cannot be joined without guessing."""
 
 
+def _require_plain_json_tree(value: object, owner: str) -> None:
+    """Validate exactly the data that native owners and UI will read.
+
+    Mapping/list subclasses may lie through .get, .items, iteration or equality.
+    Native B3/B4/OEV outputs and authenticated JSON transport use plain objects.
+    Reject alternate Python protocols before validating owner provenance.
+    """
+    pending = [(value, False)]
+    active: set[int] = set()
+    while pending:
+        item, leaving = pending.pop()
+        if leaving:
+            active.remove(id(item))
+            continue
+        kind = type(item)
+        if kind is dict or kind is list:
+            identity = id(item)
+            if identity in active:
+                raise OpportunityContextContractError(
+                    f"{owner} must not contain cyclic JSON containers"
+                )
+            if kind is dict and any(type(key) is not str for key in item):
+                raise OpportunityContextContractError(
+                    f"{owner} must use ordinary JSON string keys"
+                )
+            active.add(identity)
+            pending.append((item, True))
+            children = item.values() if kind is dict else item
+            pending.extend((child, False) for child in children)
+        elif kind not in (str, int, float, bool, type(None)):
+            raise OpportunityContextContractError(
+                f"{owner} must contain ordinary JSON values, not custom objects"
+            )
+
+
 def _text(value: object, field: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise OpportunityContextContractError(f"{field} must be non-empty text")
@@ -113,6 +148,7 @@ def _candidate_row(
     candidate_projection: Mapping[str, object],
     episode_id: str,
 ) -> Mapping[str, object]:
+    _require_plain_json_tree(candidate_projection, "candidate projection")
     validate_candidate_state_projection(candidate_projection)
     if candidate_projection.get("schema") != B3_SCHEMA:
         raise OpportunityContextContractError("candidate projection schema mismatch")
@@ -204,6 +240,7 @@ def select_unique_active_episode_id(
     alias. It does not resolve aliases itself and never falls back to ticker equality.
     Zero or multiple ACTIVE rows are explicit ambiguity/unavailability, not a guess.
     """
+    _require_plain_json_tree(candidate_projection, "candidate projection")
     validate_candidate_state_projection(candidate_projection)
     security_id = _text(security_id, "security_id")
     if not security_id.startswith("SEC:"):
@@ -247,6 +284,7 @@ def resolve_display_alias_to_active_episode(
     current Candidate Pool uses the repository current-catalog store alias
     space, so that vendor is fixed here rather than caller-selectable.
     """
+    _require_plain_json_tree(candidate_projection, "candidate projection")
     validate_candidate_state_projection(candidate_projection)
     if not isinstance(aliases, VendorAliasTable):
         raise OpportunityContextContractError(
@@ -297,6 +335,7 @@ def resolve_display_alias_to_active_episode(
 
 def validate_opportunity_identity_binding(payload: Mapping[str, object]) -> None:
     """Validate the alias-to-canonical identity proof without recomputing it."""
+    _require_plain_json_tree(payload, "opportunity identity binding")
     if not isinstance(payload, Mapping):
         raise OpportunityContextContractError("opportunity identity binding must be an object")
     expected = {
@@ -363,6 +402,9 @@ def project_terminal_portfolio_relation(
     a negative without a canonical identity crosswalk, so they fail typed-unavailable.
     No notes, size, entry price, risk or other private fields are copied into OLI.
     """
+    _require_plain_json_tree(identity_binding, "opportunity identity binding")
+    if payload is not None:
+        _require_plain_json_tree(payload, "portfolio owner payload")
     validate_opportunity_identity_binding(identity_binding)
     if type(http_status) is not int:
         raise OpportunityContextContractError("portfolio owner http_status must be an integer")
@@ -458,6 +500,7 @@ def project_terminal_portfolio_relation(
 
 def validate_terminal_portfolio_relation(payload: Mapping[str, object]) -> None:
     """Validate the minimal private position relation without re-reading the owner."""
+    _require_plain_json_tree(payload, "portfolio relation")
     if not isinstance(payload, Mapping):
         raise OpportunityContextContractError("portfolio relation must be an object")
     expected = {
@@ -547,6 +590,8 @@ def project_opportunity_evidence_summary(
     evidence, choose a cause, reinterpret admission as entry, or consume OEV's
     legacy entry_availability leg. Fresh-entry authority remains B4.
     """
+    _require_plain_json_tree(candidate_projection, "candidate projection")
+    _require_plain_json_tree(evidence_vector, "opportunity evidence vector")
     if not isinstance(evidence_vector, Mapping):
         raise OpportunityContextContractError("opportunity evidence vector must be an object")
     row = _candidate_row(candidate_projection, _text(episode_id, "episode_id"))
@@ -685,6 +730,7 @@ def validate_opportunity_evidence_summary(
     market_session: object,
 ) -> None:
     """Validate the closed display summary without reinterpreting OEV semantics."""
+    _require_plain_json_tree(payload, "opportunity evidence summary")
     if not isinstance(payload, Mapping):
         raise OpportunityContextContractError("opportunity evidence summary must be an object")
     expected = {
@@ -783,6 +829,14 @@ def compose_opportunity_context(
     truthfully be dark. When absent, the output retains ``UNAVAILABLE_DATA`` and
     ``entry_open=None`` rather than manufacturing a local permission verdict.
     """
+    _require_plain_json_tree(candidate_projection, "candidate projection")
+    for name, optional in (
+        ("B4 entry availability", entry_availability),
+        ("portfolio relation", portfolio_relation),
+        ("opportunity evidence vector", opportunity_evidence),
+    ):
+        if optional is not None:
+            _require_plain_json_tree(optional, name)
     if not isinstance(candidate_projection, Mapping):
         raise OpportunityContextContractError("candidate_projection must be an object")
     episode_id = _text(episode_id, "episode_id")
@@ -856,6 +910,7 @@ def compose_opportunity_context(
 
 def validate_opportunity_context(payload: Mapping[str, object]) -> None:
     """Validate the closed presentation contract without re-deriving owner truth."""
+    _require_plain_json_tree(payload, "opportunity context")
     if not isinstance(payload, Mapping):
         raise OpportunityContextContractError("opportunity context must be an object")
     expected = {

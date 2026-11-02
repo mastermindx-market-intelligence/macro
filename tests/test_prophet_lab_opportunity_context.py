@@ -1119,9 +1119,9 @@ def test_contradictory_authority_mapping_does_not_pass_relation_or_context():
     relation["authority"] = _ContradictoryAuthority()
     assert relation["authority"]["ranking"] is True
 
-    with pytest.raises(OpportunityContextContractError, match="authority"):
+    with pytest.raises(OpportunityContextContractError, match="ordinary JSON values"):
         validate_terminal_portfolio_relation(relation)
-    with pytest.raises(OpportunityContextContractError, match="authority"):
+    with pytest.raises(OpportunityContextContractError, match="ordinary JSON values"):
         compose_opportunity_context(
             projection(), episode_id=eid(), portfolio_relation=relation,
         )
@@ -1185,7 +1185,7 @@ def test_private_unjoined_sentinel_cannot_hide_a_dict_subclass(surface):
     fake["state"] = "ACTIVE_PRIVATE_DATA"
     out["user_state"][surface] = fake
     assert out["user_state"][surface]["state"] == "ACTIVE_PRIVATE_DATA"
-    with pytest.raises(OpportunityContextContractError, match="private|portfolio|watchlist"):
+    with pytest.raises(OpportunityContextContractError, match="ordinary JSON values"):
         validate_opportunity_context(out)
 
 
@@ -1195,7 +1195,7 @@ def test_missing_b4_sentinel_cannot_hide_false_entry_permission():
     fake["entry_open"] = False
     out["fresh_entry"] = fake
     assert out["fresh_entry"]["entry_open"] is False
-    with pytest.raises(OpportunityContextContractError, match="fresh_entry|missing B4"):
+    with pytest.raises(OpportunityContextContractError, match="ordinary JSON values"):
         validate_opportunity_context(out)
 
 
@@ -1206,7 +1206,7 @@ def test_unqualified_forecast_subclass_cannot_hide_directional_heads():
     assert fake.get("heads") is None
     assert fake["heads"] is not None
     out["forecast"] = fake
-    with pytest.raises(OpportunityContextContractError, match="unqualified forecast"):
+    with pytest.raises(OpportunityContextContractError, match="ordinary JSON values"):
         validate_opportunity_context(out)
 
 
@@ -1215,7 +1215,7 @@ def test_unjoined_oev_sentinel_cannot_hide_directional_claim():
     fake = _LyingSentinelDict(out["evidence_summary"])
     fake["status"] = "JOINED"
     out["evidence_summary"] = fake
-    with pytest.raises(OpportunityContextContractError, match="evidence|cross-domain"):
+    with pytest.raises(OpportunityContextContractError, match="ordinary JSON values"):
         validate_opportunity_context(out)
 
 
@@ -1229,8 +1229,104 @@ def test_oev_support_sentinel_cannot_hide_positive_claim():
     fake["facts"] = [{"direction": "bullish"}]
     summary["support"] = fake
     assert summary["support"]["state"] == "AVAILABLE"
-    with pytest.raises(OpportunityContextContractError, match="directional support"):
+    with pytest.raises(OpportunityContextContractError, match="ordinary JSON values"):
         validate_opportunity_evidence_summary(
             summary, identity_security_id="SEC:US-XNAS-AAPL",
             market_session="2026-09-18",
         )
+
+
+# Exact-head independent Fabric review: source-owner objects may not lie through
+# overridden .get(), iteration, or equality before/after native validation.
+class _GetLieSource(dict):
+    def __init__(self, real, lies):
+        super().__init__(real)
+        self._lies = lies
+
+    def get(self, key, default=None):
+        return self._lies[key] if key in self._lies else dict.get(self, key, default)
+
+
+def test_owner_b4_get_lie_cannot_turn_wait_pullback_into_entry_open():
+    p = projection()
+    native = _non_open_owner_availability(p)
+    assert native["state"] == "WAIT_PULLBACK"
+    assert native["entry_open"] is False
+    adversary = _GetLieSource(native, {
+        "state": "ENTRY_OPEN", "entry_open": True, "blockers": [],
+    })
+    with pytest.raises(OpportunityContextContractError, match="ordinary|plain"):
+        compose_opportunity_context(p, episode_id=eid(), entry_availability=adversary)
+
+
+def test_owner_b3_get_lie_cannot_change_validated_decision_session():
+    native = projection()
+    adversary = _GetLieSource(native, {"market_session": "2026-09-19"})
+    assert native["market_session"] == "2026-09-18"
+    with pytest.raises(OpportunityContextContractError, match="ordinary|plain"):
+        compose_opportunity_context(adversary, episode_id=eid())
+
+
+def test_oev_get_lie_cannot_attach_invented_slot_to_validated_digest():
+    native = _opportunity_evidence_vector()
+    fake_slots = deepcopy(native["slots"])
+    fake_slots[0]["construct"] = "invented_bullish"
+    fake_projection = deepcopy(native["projection"])
+    fake_projection["observed"]["slot_refs"] = ["invented_bullish"]
+    adversary = _GetLieSource(native, {
+        "slots": fake_slots, "projection": fake_projection,
+    })
+    with pytest.raises(OpportunityContextContractError, match="ordinary|plain"):
+        project_opportunity_evidence_summary(
+            projection(), episode_id=eid(), evidence_vector=adversary,
+        )
+
+
+def test_oev_nested_owner_evidence_get_lie_cannot_hide_bullish_slot():
+    summary = project_opportunity_evidence_summary(
+        projection(), episode_id=eid(),
+        evidence_vector=_opportunity_evidence_vector(),
+    )
+    owner = deepcopy(summary["owner_evidence"])
+    owner["observed_slots"] = [{"construct": "fabricated_bullish"}]
+    summary["owner_evidence"] = _GetLieSource(
+        owner, {"observed_slots": []},
+    )
+    with pytest.raises(OpportunityContextContractError, match="ordinary|plain"):
+        validate_opportunity_evidence_summary(
+            summary, identity_security_id="SEC:US-XNAS-AAPL",
+            market_session="2026-09-18",
+        )
+
+
+def test_portfolio_relation_get_lie_cannot_hide_true_authority():
+    relation = project_terminal_portfolio_relation(
+        _identity_binding(), http_status=200, payload={"positions": []},
+    )
+    relation["authority"] = dict.fromkeys(ALL_FALSE_AUTHORITY, True)
+    adversary = _GetLieSource(relation, {"authority": dict(ALL_FALSE_AUTHORITY)})
+    with pytest.raises(OpportunityContextContractError, match="ordinary|plain"):
+        validate_terminal_portfolio_relation(adversary)
+
+
+def test_portfolio_owner_get_lie_cannot_hide_existing_open_position():
+    native = {"positions": [{"id": "p-actual", "ticker": "AAPL", "status": "open"}]}
+    adversary = _GetLieSource(native, {"positions": []})
+    with pytest.raises(OpportunityContextContractError, match="ordinary|plain"):
+        project_terminal_portfolio_relation(
+            _identity_binding(), http_status=200, payload=adversary,
+        )
+
+
+def test_native_plain_owner_objects_still_compose_and_json_round_trip():
+    p = projection()
+    b4 = _non_open_owner_availability(p)
+    evidence = _opportunity_evidence_vector()
+    out = compose_opportunity_context(
+        p, episode_id=eid(), entry_availability=b4,
+        opportunity_evidence=evidence,
+    )
+    assert out["fresh_entry"]["state"] == "WAIT_PULLBACK"
+    assert out["fresh_entry"]["entry_open"] is False
+    assert out["evidence_summary"]["support"]["state"] == "UNAVAILABLE"
+    validate_opportunity_context(json.loads(json.dumps(out)))
