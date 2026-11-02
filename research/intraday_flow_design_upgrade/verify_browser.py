@@ -167,6 +167,12 @@ def layout_and_controls(browser, url, theme, locale, width):
     exp.press("Enter")
     check(key+"/keyboard-expansion",exp.get_attribute("aria-expanded")=="true")
     check(key+"/full-evidence",page.locator('[data-detail="'+tk+'"]').is_visible())
+    overflow=page.evaluate("""(tk)=>{
+      const row=document.querySelector('[data-detail="'+tk+'"]'),inner=row.querySelector('.detail-inner'),r=inner.getBoundingClientRect();
+      return {scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth,innerWidth:inner.clientWidth,innerScroll:inner.scrollWidth,left:r.left,right:r.right};
+    }""",tk)
+    check(key+"/expanded-evidence-no-overflow",overflow["scrollWidth"]<=width and overflow["innerScroll"]<=overflow["innerWidth"]+1 and overflow["right"]<=width,**overflow)
+
     states=page.locator('[data-detail="'+tk+'"] .check-state:visible').all_inner_texts()
     check(key+"/seven-explicit-states",len(states)==7 and all(s.strip() in ("Met","Not met","Unavailable","已满足","未满足","不可用") for s in states),states=states)
     for selector in (["#ift-open-evidence","#ift-stock-overview"] if width>760 else [])+["#ift-evidence-"+tk]:

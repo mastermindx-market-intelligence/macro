@@ -6,7 +6,7 @@ The canonical capture produced **24 of 24 states**: eight resting cells and actu
 hover/focus variants of each. It records zero console errors, zero failed responses
 and no document-wide horizontal overflow at either viewport. Every observed theme
 and locale matches the requested state. These are anonymous local-render captures
-of committed source snapshots. They are not Paper canvas effects, live deployment
+of the committed source with real base data and available feed responses. They are not Paper canvas effects, live deployment
 proof or independent review acceptance.
 
 | Viewport | Theme | English | Chinese |
@@ -27,6 +27,22 @@ describe the browser window used for composition and above-the-fold checks.
 
 ![Intraday Flow, desktop dark](final-r2/1c2066fe82d806d5.png)
 
+## Expanded evidence
+
+These supplemental captures open CW's real evidence control with the keyboard and
+capture the actual detail region. They use the same implementation candidate and
+real base/feed paths, with no test fixture substitution. They supplement the
+canonical matrix without introducing a second receipt schema.
+
+| View | Light / English | Dark / Chinese |
+|---|---|---|
+| Desktop | [Open](expanded/desktop-light-en-evidence.png) | [Open](expanded/desktop-dark-zh-evidence.png) |
+| Phone | [Open](expanded/phone-light-en-evidence.png) | [Open](expanded/phone-dark-zh-evidence.png) |
+
+Reproduction: `research/intraday_flow_design_upgrade/capture_expanded.py` against
+the anonymous loopback preview. The browser harness checks open-evidence overflow
+in all eight canonical cells.
+
 ## What the proof covers
 
 The header separates session window, delayed prices, availability and source times.
@@ -35,7 +51,7 @@ selection, search, sorting and progressive evidence. The phone refinement keeps
 prices, activity and evidence actions clear of the existing floating assistant.
 The canonical feed-status help button remains beside its status phrase.
 
-The source's 395-check browser harness separately exercises keyboard/focus
+The source's 403-check browser harness separately exercises keyboard/focus
 continuity, sorting, filtering, expanded evidence, empty/short menus, and explicit
 synthetic test-only empty/loading/missing/partial/stale/populated responses. Those
 fixtures were never written to site data or used in these screenshots.

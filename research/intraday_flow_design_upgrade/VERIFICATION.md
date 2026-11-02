@@ -15,7 +15,7 @@ The separate timing/precursor work in macro #6867 is not replayed here.
 | Check | Observed result |
 |---|---|
 | Intraday pytest suite | 280 passed; final run 8.94 seconds |
-| Isolated browser harness | 395 passed, zero failures |
+| Isolated browser harness | 403 passed, zero failures |
 | Matrix | 1440×900 and 390×844 × light/dark × EN/ZH |
 | Canonical screenshots | 24/24 captured: eight resting + eight hover + eight focus |
 | Capture errors | Zero console errors and zero failed responses |
@@ -49,10 +49,13 @@ a native phone sort control; keyboard evidence expansion; selected-name evidence
 seven explicit localized check states; Activity help open/Escape without sorting;
 counted expansion and Tab continuity into the first newly revealed name; collapse;
 language changes; async refresh with focus retained in the row, sidebar, stock link,
-opened evidence region and count control. Short and empty menus remain unclipped.
+opened evidence region and count control. Short and empty menus remain unclipped. Open evidence has no document-wide
+horizontal overflow in all eight viewport/theme/language cells. Four supplemental
+actual-click evidence captures are linked from the visual README.
 
 The harness uses an isolated anonymous browser against the owned loopback preview.
-Normal cells use the committed real snapshot data. Six transport scenarios and an
+Normal cells use the real committed base snapshot and the available local/public
+feed responses; they are not fabricated market observations. Six transport scenarios and an
 additional populated phone check use clearly identified synthetic TEST FIXTURES.
 No fixture values were written to site data, published as observations or used to
 claim a current trading signal.

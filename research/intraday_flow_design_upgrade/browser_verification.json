@@ -142,6 +142,16 @@
       "passed": true
     },
     {
+      "check": "1440/light/en/expanded-evidence-no-overflow",
+      "passed": true,
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "innerWidth": 986,
+      "innerScroll": 986,
+      "left": 61,
+      "right": 1047
+    },
+    {
       "check": "1440/light/en/seven-explicit-states",
       "passed": true,
       "states": [
@@ -398,6 +408,16 @@
     {
       "check": "1440/light/zh/full-evidence",
       "passed": true
+    },
+    {
+      "check": "1440/light/zh/expanded-evidence-no-overflow",
+      "passed": true,
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "innerWidth": 986,
+      "innerScroll": 986,
+      "left": 61,
+      "right": 1047
     },
     {
       "check": "1440/light/zh/seven-explicit-states",
@@ -658,6 +678,16 @@
       "passed": true
     },
     {
+      "check": "1440/dark/en/expanded-evidence-no-overflow",
+      "passed": true,
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "innerWidth": 986,
+      "innerScroll": 986,
+      "left": 61,
+      "right": 1047
+    },
+    {
       "check": "1440/dark/en/seven-explicit-states",
       "passed": true,
       "states": [
@@ -914,6 +944,16 @@
     {
       "check": "1440/dark/zh/full-evidence",
       "passed": true
+    },
+    {
+      "check": "1440/dark/zh/expanded-evidence-no-overflow",
+      "passed": true,
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "innerWidth": 986,
+      "innerScroll": 986,
+      "left": 61,
+      "right": 1047
     },
     {
       "check": "1440/dark/zh/seven-explicit-states",
@@ -1210,6 +1250,16 @@
       "passed": true
     },
     {
+      "check": "390/light/en/expanded-evidence-no-overflow",
+      "passed": true,
+      "scrollWidth": 390,
+      "viewport": 390,
+      "innerWidth": 320,
+      "innerScroll": 320,
+      "left": 39,
+      "right": 359
+    },
+    {
       "check": "390/light/en/seven-explicit-states",
       "passed": true,
       "states": [
@@ -1217,7 +1267,7 @@
         "Not met",
         "Not met",
         "Not met",
-        "Not met",
+        "Unavailable",
         "Not met",
         "Met"
       ]
@@ -1476,6 +1526,16 @@
     {
       "check": "390/light/zh/full-evidence",
       "passed": true
+    },
+    {
+      "check": "390/light/zh/expanded-evidence-no-overflow",
+      "passed": true,
+      "scrollWidth": 390,
+      "viewport": 390,
+      "innerWidth": 320,
+      "innerScroll": 320,
+      "left": 39,
+      "right": 359
     },
     {
       "check": "390/light/zh/seven-explicit-states",
@@ -1746,6 +1806,16 @@
       "passed": true
     },
     {
+      "check": "390/dark/en/expanded-evidence-no-overflow",
+      "passed": true,
+      "scrollWidth": 390,
+      "viewport": 390,
+      "innerWidth": 320,
+      "innerScroll": 320,
+      "left": 39,
+      "right": 359
+    },
+    {
       "check": "390/dark/en/seven-explicit-states",
       "passed": true,
       "states": [
@@ -2012,6 +2082,16 @@
     {
       "check": "390/dark/zh/full-evidence",
       "passed": true
+    },
+    {
+      "check": "390/dark/zh/expanded-evidence-no-overflow",
+      "passed": true,
+      "scrollWidth": 390,
+      "viewport": 390,
+      "innerWidth": 320,
+      "innerScroll": 320,
+      "left": 39,
+      "right": 359
     },
     {
       "check": "390/dark/zh/seven-explicit-states",

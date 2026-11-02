@@ -89,7 +89,7 @@ coverage functions remain the source; preserve #6867's separate timing work.
 | P2 | P1 | blocked | Editable Paper light/dark desktop/mobile and meaningful states; exact file/page/node IDs, screenshots and JSX | Principal designer; Paper schema qualification required |
 | P2.1 | P1 | implementation_complete | DESIGN_SPEC.md and the paired template/CSS reference; NOT_APPLIED_TO_PAPER | Principal design; independent visual critique |
 | P3 | P2.1 | implementation_complete | Real template, paired page stylesheet and rendered page replaced; 15 core regions byte-identical to base | Principal retained: design judgment and critical path while audit admission waited |
-| P3.1 | P3 | implementation_complete | 280 pytest cases; 395 browser checks; 24 canonical screenshots and passing visual receipt | Regression and source-contract evidence; no production claim |
+| P3.1 | P3 | implementation_complete | 280 pytest cases; 403 browser checks; 24 canonical screenshots and passing visual receipt | Regression and source-contract evidence; no production claim |
 | P4 | P3.1 | ready | Independent exact-head code/visual review and bounded repair | Separate paid reviewer; principal adjudicates |
 | P5 | P2,P4 | blocked | Exact-head CI, permitted integration/release and served desktop/mobile proof | Existing release owner; no premature merge |
 
@@ -120,7 +120,7 @@ mockups or passing tests.
 
 On November 1, the direct Mastermind Paper and legacy Studio catalog both reported
 paper-desktop 0.5.14 with accepted_for_write=false. Observed catalog:
-16e6b93f0c51a1574ba8acee4df732052898707a04731d3957530971a88fdefd.
+16e6b93f0c51a1574ba8acee4df732052898707a04731d4037530971a88fdefd.
 Expected reviewed catalog:
 1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db.
 Exact-file read works for MASTERMIND PAGES:
@@ -152,20 +152,22 @@ The desktop scan begins 298.98px below navigation with seven
 complete rows visible at 1440×900. Fifteen classifier/coverage/session/leg functions
 are byte-identical to the initial base; see `model_preservation.json`.
 
-`browser_verification.json` records 395/395 successful checks. All 280 Intraday
+`browser_verification.json` records 403/403 successful checks. All 280 Intraday
 pytest cases pass; inline JavaScript syntax and paired stylesheet equality pass. Synthetic empty,
 loading, missing, partial, producer-stale and populated responses exist only in the
 isolated regression harness. They are not site data or live market evidence.
 
 The principal retained implementation for product judgment and a critical-path
 shortcut while the independently commissioned baseline contract audit waited for
-its provider lease. The audit remains the original Fabric run
-`intraday-design-contract-audit-20261101-c2`, controller 40460, under the operation
-above; no duplicate worker was started. Native design advice is advisory and does
+its provider lease. The original Fabric audit run
+`intraday-design-contract-audit-20261101-c2`, controller 40460, has returned.
+Its useful baseline inventory and stale observations are separately adjudicated in
+`BASELINE_AUDIT.md`; it is not final implementation acceptance. No duplicate worker
+was started. Native design advice is advisory and does
 not replace the required independent visual review.
 
 The latest read-only compatibility check against main
-`e4009c94d75770739844240b22f5fc915668aa9b` found no changes since the initial base in
+`75c68c5f4141b4f82674ec503b69f0b8de2a718b` found no changes since the initial base in
 the scoped Intraday template/page/tests, shared navigation/theme, producer,
 `lib/pages.py`, or product-experience configuration. No merge/rebase is claimed.
 
@@ -174,7 +176,10 @@ completed 24/24 states with no console errors or failed responses. The two phone
 findings from principal visual critique are repaired: metrics remain left of x315
 (the measured right edge is x311), and the feed-help trigger stays beside its status.
 The matrix and receipt are in `mockups/refs/intraday-flow-upgrade/`.
-The visual-receipt guard passed against the material source diff.
+The visual-receipt guard passed against the material source diff. Four supplemental
+actual-click captures show the expanded evidence region on desktop and phone in
+light/EN and dark/ZH. Eight additional browser checks confirm that open evidence
+also stays within the viewport.
 
 Initial-load traces identify substantial existing shared-navigation/search movement.
 Baseline and candidate measurements are in `layout_stability.json`; these are lab
