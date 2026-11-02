@@ -808,3 +808,29 @@ def test_abx3_atomic_failure_keeps_canonical(monkeypatch, tmp_path):
         contract.write_brief_atomic(out, {'summary': 'new'})
     assert json.loads(out.read_text())['summary'] == 'old'
     assert list(tmp_path.iterdir()) == [out]
+
+
+# Independent review of 38e4d16: missing confidence must remain unassessed.
+# These cases concern the model/rewrite contract only; no file-mode or enum tests.
+def test_abx3_empty_model_reply_has_no_confidence_assessment(monkeypatch, tmp_path):
+    monkeypatch.setattr(mb, '_call_model', lambda *args, **kwargs: (None, 'empty_reply'))
+    result = mb.synthesize({}, {'translate_zh': False, '_write_reply_cache': False}, root=tmp_path)
+    assert result['summary'] is None
+    assert result['degraded_reason'] == 'empty_reply'
+    assert result['confidence'] is None
+
+
+def test_abx3_accepted_rewrite_missing_confidence_stays_unassessed(monkeypatch, tmp_path):
+    replies = iter([
+        json.dumps({'summary': 'The growth_score is warming.', 'confidence': 'medium'}),
+        json.dumps({'summary': 'A usable rewrite', 'tldr': ['Driver: Real tape']}),
+    ])
+    calls = []
+    def call_model(*args, **kwargs):
+        calls.append(1)
+        return next(replies), None
+    monkeypatch.setattr(mb, '_call_model', call_model)
+    result = mb.synthesize({}, {'translate_zh': False, '_write_reply_cache': False}, root=tmp_path)
+    assert len(calls) == 2
+    assert result['summary'] == 'A usable rewrite'
+    assert result['confidence'] is None

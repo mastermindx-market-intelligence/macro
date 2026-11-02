@@ -14410,45 +14410,24 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
       </div>
       <div class="mx5-dlg-body">
-        {# ABX v2 — the ONE shared body renderer (_aibrief_body.html.j2). show_catalysts
-           because macro is the only lens with forward_watch. The footer link-out is
-           injected into the macro's footer slot. Fail-open: master_brief absent →
-           the existing news-teaser fallback below. #}
-        {% if master_brief is defined and master_brief and (master_brief.get('summary') or master_brief.get('tldr') or master_brief.get('regime_read')) %}
+        {# ABX3: malformed/absent inputs use the same escaped shared renderer. #}
         {% call aib.aibrief_body(master_brief, 'macro', show_catalysts=True) %}
+        {% set _mb = master_brief if master_brief is mapping else {} %}
+        {% set _news = macro_news if macro_news is mapping else {} %}
+        {% set _syn = _news.get('synthesis') if _news.get('synthesis') is mapping else {} %}
+        {% if not (_mb.get('summary') or _mb.get('tldr') or _mb.get('regime_read')) and _syn.get('read') %}
+        <details class="aib2-details"><summary>{{ t('Separate news context','独立新闻背景') }}</summary>
+          <p class="aib2-meta">{{ t('This is the news desk, not a replacement for the missing cross-asset brief.','以下来自新闻台，并非缺失的跨资产简报。') }}</p>
+          {% set _count = _syn.get('high_impact_count') %}
+          {% if _count is number and _count is not boolean %}<p>{{ t('High-impact items:','高影响事项：') }} {{ _count }}</p>{% endif %}
+          {% set _channel = _syn.get('dominant_channel') %}
+          {% set _labels = _news.get('channel_label') if _news.get('channel_label') is mapping else (CHANNEL_LABEL if CHANNEL_LABEL is defined and CHANNEL_LABEL is mapping else {}) %}
+          {% set _label = _labels.get(_channel) if _channel is string else none %}
+          {% if _label is sequence and _label is not string and _label|length >= 2 %}<p><span class="l-en">{{ _label[0] | e }}</span><span class="l-zh">{{ _label[1] | e }}</span></p>{% endif %}
+        </details>
+        {% endif %}
         <div class="isle-aibrief-footer"><span></span><a href="aibrief.html" class="isle-aibrief-link"><span class="l-en">Full brief page (China &amp; Bitcoin lenses) →</span><span class="l-zh">完整简报页（中国与比特币视角）→</span></a></div>
         {% endcall %}
-        {% else %}
-        {# Fallback teaser when master_brief is absent — keeps the mandatory badge visible #}
-        <div class="aib2"><div class="aib2-hdr">
-          <div class="aib2-icon" aria-hidden="true">AI</div>
-          <div class="aib2-hdr-meta">
-            <div class="aib2-hdr-title"><span class="l-en">AI Daily Brief · cross-asset synthesis</span><span class="l-zh">AI 每日简报 · 跨资产综合</span></div>
-          </div>
-          <span class="aib2-badge"><span class="l-en">A read-through of existing signals — not a signal source</span><span class="l-zh">仅为现有信号的汇总解读 — 非独立信号源</span></span>
-        </div></div>
-        {# Fallback teaser when master_brief is absent #}
-        {% if macro_news is defined and macro_news and macro_news.synthesis and macro_news.synthesis.get('read') %}
-        {% set _dlg_syn = macro_news.synthesis %}
-        {# Producer CHANNEL_LABEL (21/21 ZH twins); payload wins, env global covers older payloads. #}
-        {% set _dc = _dlg_syn.get('dominant_channel') %}
-        {% set _dlg_ch_ns = namespace(lab=none) %}
-        {% if _dc %}
-          {% if macro_news and macro_news.channel_label %}
-            {% set _dlg_ch_ns.lab = macro_news.channel_label.get(_dc) %}
-          {% elif CHANNEL_LABEL is defined %}
-            {% set _dlg_ch_ns.lab = CHANNEL_LABEL.get(_dc) %}
-          {% endif %}
-        {% endif %}
-        <div class="isle-aibrief-body">
-          <span class="l-en">{{ _dlg_syn.get('high_impact_count', 0) }} high-impact item{{ 's' if _dlg_syn.get('high_impact_count', 0) != 1 }} today{% if _dc %} · dominant: <strong>{{ _dlg_ch_ns.lab[0] if _dlg_ch_ns.lab else (_dc|replace('_',' ')) }}</strong>{% endif %}</span>
-          <span class="l-zh">今日 {{ _dlg_syn.get('high_impact_count', 0) }} 条高影响信息{% if _dc %} · 主导：<strong>{{ _dlg_ch_ns.lab[1] if _dlg_ch_ns.lab else (_dc|replace('_',' ')) }}</strong>{% endif %}</span>
-        </div>
-        {% else %}
-        <div class="isle-aibrief-body">{{ t('AI reads every dashboard in one place — the regime, where signals conflict, the rotation thesis and what to watch next. Research context only, never a signal.', 'AI 在一处解读每个看板 — 周期、信号冲突、轮动假设与后续关注。仅供研究参考，绝非交易信号。') }}</div>
-        {% endif %}
-        <div class="isle-aibrief-footer"><span></span><a href="aibrief.html" class="isle-aibrief-link">{{ t('Full AI brief →','完整 AI 简报 →') }}</a></div>
-        {% endif %}
       </div>
     </div>
   </div>

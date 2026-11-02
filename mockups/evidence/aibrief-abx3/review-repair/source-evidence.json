@@ -1,0 +1,34 @@
+{
+  "publication_state": "NOT_CANONICALLY_PERSISTED",
+  "last_durable_commit": "38e4d16e93a4699d7bd40b6178f602ea916f0c90",
+  "scope": "local confidence + host + introduced CI-trigger repairs, not a published successor or release",
+  "review_run": "aibrief-revamp-review-20261102-01",
+  "review_head": "38e4d16e93a4699d7bd40b6178f602ea916f0c90",
+  "review_response_sha256": "733b6bafa7c6335ce81c58b3c4f96128d4eb4d84cb639530970ebab10c55fa24",
+  "current_source_sha256": {
+    "engine/master_brain.py": "8785ddf3da6749759abc84ea294b3443f4860478fa7120b541890afc1b17391a",
+    "tests/test_master_brain.py": "fb1d49bb5004e5b660b5c874af45521da58769f1ff1de5f93b9ce38f89d684b0",
+    "tests/test_aibrief_page.py": "9996569f06260a161c4c7fe70b8d6c17f7552ea5f8bb6eb4b245d7d1ffa44520",
+    "templates/dashboard.html.j2": "cc97b61d464e111b5ef4a1744b002d8fce44410366b4ac9c9b756e5c67f0922b",
+    "templates/china.html.j2": "08550d89a8349db3f79eff808ccfe5eb1da4df99a52265e3637be088535516c3",
+    "templates/hk.html.j2": "92188de2161fe0236786275c31633f8e9aa2fee840697a9fdaa5b1a5386ffbd0",
+    ".github/ci/legacy-jobs.yml": "56df127a65c54ec1f101a57671bd37ea1c39d53a19d02682d070d2ab3eb6ed5a",
+    "research/aibrief_v2/verify_hosts.py": "85c40233e2f80068acdac25d34dbd3fe754d68f5a071685e1280096a09c8486e",
+    "research/aibrief_v2/SPEC.md": "7263c59c673d1908b57679adebfdfcfb5a7ab8b65bf9fc5af9fcc527b200cdef"
+  },
+  "verification": {
+    "confidence_targeted_suite_passed": 122,
+    "ancestor_guard_passed": 1,
+    "ancestor_pairs_before": 342,
+    "ancestor_pairs_after": 342,
+    "ci_paths_added": 34,
+    "host_fixture_states_passed": 24
+  },
+  "holds": [
+    "typed publisher precheck REFUSED/NOT_APPLIED; cause unknown",
+    "no post38e4 commit or push",
+    "new-head independent/native review and hosted CI not proven",
+    "production generation/deployment not proven",
+    "three previously refused backend tests remain unperformed"
+  ]
+}

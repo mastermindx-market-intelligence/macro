@@ -1966,7 +1966,8 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
         "state_asof": _state_asof(state),
         "tldr": [],
         "summary": None, "regime_read": None, "conflicts": [], "rotation_check": None,
-        "transmission": [], "watch_items": [], "confidence": "low",
+        # Low is an explicit assessment, not a substitute for an unknown one.
+        "transmission": [], "watch_items": [], "confidence": None,
         "theses": [],    # macro-lens producer leans (always present → additive when absent)
         "raw_text": None, "degraded_reason": None, "disclaimer": DISCLAIMER_TEXT,
     }
@@ -2047,6 +2048,9 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
                 if rw_reply:
                     rw_parsed = _extract_json(rw_reply)
                     if isinstance(rw_parsed, dict):
+                        # A rewrite is a new untrusted response. Missing fields
+                        # must not inherit a fabricated assessment from the draft.
+                        rw_parsed = normalize_brief(rw_parsed)
                         rw_violations = _collect_style_violations(rw_parsed)
                         if len(rw_violations) <= len(violations):
                             # Rewrite is better (or no worse) — accept it

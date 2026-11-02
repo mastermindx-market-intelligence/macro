@@ -275,3 +275,47 @@ assert.equal(freshness('2026-11-02','2026-11-02T06:00:00Z',1,now).state,'dated')
 def test_abx3_stance_requires_a_whole_approved_verb():
     html = _abx3_body({'tldr': ['Driver: Real', 'What to do: Actuary says wait']})
     assert 'class="aib2-stance ' not in html
+
+
+def _abx3_host_div(filename, needle):
+    """Render the actual host fragment, not a duplicate dialog implementation."""
+    import re
+    source = (config.ROOT / 'templates' / filename).read_text()
+    start = source.rfind('<div', 0, source.index(needle))
+    depth = 0
+    for match in re.finditer(r'<(/?)div\b[^>]*>', source[start:]):
+        depth += -1 if match.group(1) else 1
+        if depth == 0:
+            return _env().from_string('{% import "_aibrief_body.html.j2" as aib %}' + source[start:start + match.end()])
+    raise AssertionError('host fragment is not a balanced div')
+
+
+def test_abx3_real_host_dialogs_accept_bad_payloads():
+    hosts = [('dashboard.html.j2', 'id="dlg-aibrief"'),
+             ('china.html.j2', 'id="cnx-dlg-aibrief"'),
+             ('hk.html.j2', 'id="hkx-dlg-aibrief"')]
+    for filename, needle in hosts:
+        template = _abx3_host_div(filename, needle)
+        for payload in (['bad'], 'bad', 42, {'degraded_reason': 'unusable_reply'}):
+            html = template.render(master_brief=payload, china_brief=payload, macro_news=None, mode='macro')
+            assert 'data-aib-freshness' in html, filename
+            assert 'not a signal source' in html, filename
+            assert 'Summary building' not in html, filename
+
+
+def test_abx3_china_hk_teasers_escape_and_tolerate_bad_rows():
+    attack = '<img src=x onerror=alert(1)>'
+    for filename, prefix in [('china.html.j2', 'cnx'), ('hk.html.j2', 'hkx')]:
+        template = _abx3_host_div(filename, 'onclick="' + prefix + "OpenDlg('" + prefix + '-dlg-aibrief\')"')
+        for payload in (['bad'], {'summary': attack, 'zh': 'bad', 'tldr': 42,
+                                 'key_facts': ['bad', {'label_en': attack, 'value_en': attack}]}):
+            html = template.render(china_brief=payload, mode='macro')
+            assert '<img' not in html, filename
+            assert 'None' not in html, filename
+
+
+def test_abx3_hk_dialog_intro_has_no_legacy_colored_callout():
+    template = _abx3_host_div('hk.html.j2', 'id="hkx-dlg-aibrief"')
+    html = template.render(china_brief={'summary': 'Usable research'})
+    assert 'class="hkx-plain"' not in html
+    assert 'the same shared brief used on the China page' in html

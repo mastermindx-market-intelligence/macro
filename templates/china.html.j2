@@ -2439,15 +2439,15 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
        gist line (falls back to summary on v1 payloads). No raw slugs (doctrine Law 2). #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-aibrief')">
       <div class="cnx-ctitle">{{ t('AI Brief','AI 简报') }}</div>
-      {% if china_brief %}
+      {% if china_brief is mapping %}
       {% set _cb = china_brief %}
-      {% set _cbzh = _cb.zh if _cb.zh is defined and _cb.zh else {} %}
-      {% set _kf = _cb.key_facts or [] %}
+      {% set _cbzh = _cb.zh if _cb.zh is mapping else {} %}
+      {% set _kf = _cb.key_facts if _cb.key_facts is sequence and _cb.key_facts is not string and _cb.key_facts is not mapping else [] %}
       {% if _kf %}
       {# first ≤2 engine-computed key readings as chips (label · value) #}
       <div class="cnx-chips">
-        {% for _f in _kf[:2] %}
-        <span class="cnx-chip"><span class="l-en">{{ _f.get('label_en') }}: {{ _f.get('value_en') }}</span><span class="l-zh">{{ _f.get('label_zh') or _f.get('label_en') }}：{{ _f.get('value_zh') or _f.get('value_en') }}</span></span>
+        {% for _f in _kf[:2] if _f is mapping and _f.get('label_en') is string and _f.get('value_en') is string %}
+        <span class="cnx-chip"><span class="l-en">{{ _f.get('label_en') | e }}: {{ _f.get('value_en') | e }}</span><span class="l-zh">{{ (_f.get('label_zh') if _f.get('label_zh') is string and _f.get('label_zh') else _f.get('label_en')) | e }}：{{ (_f.get('value_zh') if _f.get('value_zh') is string and _f.get('value_zh') else _f.get('value_en')) | e }}</span></span>
         {% endfor %}
       </div>
       {% else %}
@@ -2458,14 +2458,14 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       </div>
       {% endif %}
       {# the plain-word gist: prefer the tldr stance line, else the one-line summary #}
-      {% set _tldr = _cb.tldr or [] %}
-      {% set _tldr_zh = _cbzh.get('tldr') or [] %}
-      {% if _tldr %}
+      {% set _tldr = _cb.tldr if _cb.tldr is sequence and _cb.tldr is not string and _cb.tldr is not mapping else [] %}
+      {% set _tldr_zh = _cbzh.get('tldr') if _cbzh.get('tldr') is sequence and _cbzh.get('tldr') is not string and _cbzh.get('tldr') is not mapping else [] %}
+      {% if _tldr and _tldr[0] is string and _tldr[0]|trim %}
       {% set _lead = _tldr[0] %}
-      {% set _lead_zh = _tldr_zh[0] if _tldr_zh else _lead %}
-      <p style="font-size:12px;margin:6px 0 0"><span class="l-en">{{ _lead }}</span><span class="l-zh">{{ _lead_zh }}</span></p>
-      {% elif _cb.summary %}
-      <p style="font-size:12px;margin:6px 0 0"><span class="l-en">{{ _cb.summary | truncate(110, true, '…') }}</span><span class="l-zh">{{ (_cbzh.get('summary') or _cb.summary) | truncate(110, true, '…') }}</span></p>
+      {% set _lead_zh = _tldr_zh[0] if _tldr_zh and _tldr_zh[0] is string and _tldr_zh[0] else _lead %}
+      <p class="aib2-prose"><span class="l-en">{{ _lead | e }}</span><span class="l-zh">{{ _lead_zh | e }}</span></p>
+      {% elif _cb.summary is string and _cb.summary|trim %}
+      <p class="aib2-prose"><span class="l-en">{{ _cb.summary | e }}</span><span class="l-zh">{{ (_cbzh.get('summary') if _cbzh.get('summary') is string and _cbzh.get('summary') else _cb.summary) | e }}</span></p>
       {% endif %}
       {% else %}
       <div class="cnx-chips"><span class="cnx-chip">{{ t('Regime','周期') }}</span><span class="cnx-chip">{{ t('Policy','政策') }}</span></div>
@@ -2980,21 +2980,10 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     <div class="cnx-dlg-panel">
       <div class="cnx-dlg-head"><span class="cnx-dlg-title"><span class="l-en">AI Brief — China Synthesis</span><span class="l-zh">AI简报 — 中国综合</span></span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
       <div class="cnx-dlg-body">
-        {# ABX v2 — the ONE shared body renderer. China lens; no catalysts (china_brief
-           has no forward_watch). The nightly receipt is injected into the footer slot. #}
-        {% if china_brief and (china_brief.get('summary') or china_brief.get('tldr') or china_brief.get('regime_read')) %}
+        {# ABX3: the shared renderer owns usable, partial and absent states. #}
         {% call aib.aibrief_body(china_brief, 'china', show_catalysts=False) %}
-        <div class="cnx-receipt">{{ t('Research context only — not a signal. Generated nightly from the dashboards; full brief at','仅供研究参考 — 非交易信号。每晚由看板生成；完整简报位于') }} <a href="aibrief.html">aibrief.html</a>.</div>
+        <div class="cnx-receipt">{{ t('Research context only — not a signal. Check the source dates;','仅供研究参考 — 非交易信号。请核对数据日期；') }} <a href="aibrief.html#china">{{ t('open the full brief','打开完整简报') }}</a>.</div>
         {% endcall %}
-        {% else %}
-        <div class="aib2"><div class="aib2-hdr">
-          <div class="aib2-icon" aria-hidden="true">AI</div>
-          <div class="aib2-hdr-meta"><div class="aib2-hdr-title"><span class="l-en">AI Daily Brief · China &amp; HK synthesis</span><span class="l-zh">AI 每日简报 · 中港综合</span></div></div>
-          <span class="aib2-badge"><span class="l-en">A read-through of existing signals — not a signal source</span><span class="l-zh">仅为现有信号的汇总解读 — 非独立信号源</span></span>
-        </div>
-        <p class="aib-empty">{{ t('The AI brief has not generated yet today. It rebuilds nightly from the dashboards — check back after the next run, or open the full brief page below.','今日AI简报尚未生成。每晚由看板重新生成 — 请在下次运行后再查看，或打开下方完整简报页。') }}
-        <div class="cnx-receipt" style="margin-top:12px">{{ t('Research context only — not a signal. Generated nightly from the dashboards; full brief at','仅供研究参考 — 非交易信号。每晚由看板生成；完整简报位于') }} <a href="aibrief.html">aibrief.html</a>.</div></div>
-        {% endif %}
       </div>
     </div>
   </div>
