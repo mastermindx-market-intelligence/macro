@@ -326,6 +326,161 @@
     </div>
   </header>
 
+  
+  <style>
+.cycle-lock{
+  box-sizing:border-box;
+  display:block;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  margin:16px 0;
+  padding:16px;
+  overflow-wrap:anywhere;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--r-card,12px);
+  color:var(--text);
+}
+.cycle-lock-h{
+  margin:0 0 8px;
+  font-size:17px;
+  line-height:1.35;
+  font-weight:700;
+  color:var(--text);
+}
+.cycle-lock-p{
+  margin:0 0 14px;
+  max-width:100%;
+  font-size:14px;
+  line-height:1.5;
+  color:var(--muted);
+}
+.cycle-lock-acts{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px 14px;
+  max-width:100%;
+  margin:0;
+}
+.cycle-lock-btn{
+  box-sizing:border-box;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+  max-width:100%;
+  padding:8px 16px;
+  border:1px solid var(--link);
+  border-radius:var(--r-ctl,8px);
+  color:var(--link);
+  font-weight:700;
+  line-height:1.2;
+  text-decoration:none;
+}
+.cycle-lock-signin{
+  box-sizing:border-box;
+  display:inline-flex;
+  align-items:center;
+  min-height:44px;
+  max-width:100%;
+  color:var(--link);
+  text-decoration:none;
+}
+.cycle-lock[hidden],.cycle-lock-signin[hidden]{display:none}
+</style>
+<div id="cycle-lock" class="cycle-lock" hidden
+  data-renderer="markets_app.js"
+  data-fill="cyc-cards"
+  data-hide=".cyc-stage,.mkt-grid,.cyc-cards-hd,#cyc-cards,.cyc-asof">
+  <h2 class="cycle-lock-h">
+    <span class="l-en">These readings are for members</span>
+    <span class="l-zh">这些读数仅向会员开放</span>
+  </h2>
+  <p class="cycle-lock-p">
+    <span class="l-en">Members get where each market sits on one clock, each market's scorecard, and the valuation map.</span>
+    <span class="l-zh">会员可查看各市场在同一张时钟上的位置、每个市场的记分卡，以及估值地图。</span>
+  </p>
+  <div class="cycle-lock-acts">
+    <a class="cycle-lock-btn" href="plans.html">
+      <span class="l-en">See plans</span>
+      <span class="l-zh">查看方案</span>
+    </a>
+    <a class="cycle-lock-signin" href="#" data-act="signin" hidden>
+      <span class="l-en">Already a member? Sign in</span>
+      <span class="l-zh">已是会员？登录</span>
+    </a>
+  </div>
+</div>
+<script>
+(function () {
+  function loaded(fill) {
+    var kids = fill && fill.children;
+    var i;
+    var el;
+    if (!kids || !kids.length) return false;
+    for (i = 0; i < kids.length; i++) {
+      el = kids[i];
+      if (el.classList && el.classList.contains("empty")) return false;
+    }
+    return true;
+  }
+  function reveal(slot, withSignIn) {
+    var sel = slot.getAttribute("data-hide") || "";
+    var nodes;
+    var i;
+    var link;
+    slot.hidden = false;
+    if (sel) {
+      nodes = document.querySelectorAll(sel);
+      for (i = 0; i < nodes.length; i++) {
+        nodes[i].style.setProperty("display", "none", "important");
+      }
+    }
+    if (!withSignIn) return;
+    link = slot.querySelector(".cycle-lock-signin");
+    if (link) link.hidden = false;
+  }
+  function onSignIn(ev) {
+    ev.preventDefault();
+    if (window.MMXSharedShell) {
+      window.MMXSharedShell.openAuth("signin");
+      return;
+    }
+    try {
+      window.MDXAuth.open("signin");
+    } catch (e1) {
+      location.href = "plans.html";
+    }
+  }
+  window.addEventListener("load", function () {
+    var slot;
+    var link;
+    var fillId;
+    var renderer;
+    try {
+      slot = document.getElementById("cycle-lock");
+      if (!slot) return;
+      link = slot.querySelector('[data-act="signin"]');
+      if (link) link.addEventListener("click", onSignIn);
+      fillId = slot.getAttribute("data-fill");
+      if (loaded(fillId && document.getElementById(fillId))) return;
+      renderer = slot.getAttribute("data-renderer");
+      fetch(renderer, {
+        method: "HEAD",
+        credentials: "same-origin",
+        cache: "no-store"
+      }).then(function (r) {
+        if (r && r.status === 401) reveal(slot, true);
+        else if (r && r.status === 403) reveal(slot, false);
+      }).catch(function () {});
+    } catch (e0) {}
+  });
+})();
+</script>
+  
+
   <section class="cyc-stage">
     <div class="cyc-hero">
       <div class="cyc-hero-hd">
