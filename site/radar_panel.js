@@ -1322,6 +1322,8 @@
     var settledOk = scored > 0 && ov.hits != null && ov.misses != null;
     var verdict = ic.verdict || {};
     var status = verdict.status || "insufficient";
+    var receiptStatusEn = status === "null" ? "no significant lead or lag" : status;
+    var receiptStatusZh = status === "null" ? "未显示显著领先或落后" : status;
     var bh = ic.by_horizon || {};
     var h21 = bh["21"] || {};
     var ep21 = h21.episodes || {};
@@ -1488,7 +1490,7 @@
       (hacC.t_hac != null ? "t=" + hacC.t_hac.toFixed(2) + " over " + (hacC.n || 0) + " daily cross-sections"
                           : "not yet valid (needs ≥ horizon-length run of daily cross-sections)") +
       ". Verdict gate: ≥" + (((verdict.gates || {}).min_claim_episodes) || 60) + " matured claim episodes AND |t| ≥ " +
-      (((verdict.gates || {}).t_sig) || 2) + " on a non-degenerate window — status: " + status + ". " +
+      (((verdict.gates || {}).t_sig) || 2) + " on a non-degenerate window — status: " + receiptStatusEn + ". " +
       "The seeded ~3-month theses (" + open + " open) grade separately at their own deadlines. " +
       recentEn +
       (eras.length ? "Scoring construction changed " + eras[eras.length - 1].date + " (era " + eras[eras.length - 1].era + ") — cross-era pooling carries both constructions. " : "") +
@@ -1505,7 +1507,7 @@
       (hacC.t_hac != null ? "t=" + hacC.t_hac.toFixed(2) + "，基于 " + (hacC.n || 0) + " 个每日横截面"
                           : "尚未有效（需累积不少于窗口长度的每日横截面）") +
       "。判定门槛：已到期判断片段 ≥" + (((verdict.gates || {}).min_claim_episodes) || 60) + " 且非退化窗口上 |t| ≥ " +
-      (((verdict.gates || {}).t_sig) || 2) + " —— 当前状态：" + status + "。" +
+      (((verdict.gates || {}).t_sig) || 2) + " —— 当前状态：" + receiptStatusZh + "。" +
       "约 3 个月期的观察论点（" + open + " 条进行中）按各自截止日另行评分。" +
       recentZh +
       (eras.length ? "评分构造已于 " + eras[eras.length - 1].date + " 调整（第 " + eras[eras.length - 1].era + " 代）—— 跨代合并统计含两种构造。" : "") +
