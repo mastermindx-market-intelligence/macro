@@ -10202,6 +10202,338 @@ def test_pk08_cli_writes_valid_envelope(tmp_path: Path) -> None:
     assert envelope["coverage"]["valued_fields"] == 5
 
 
+# 55. PK05 UTP dev-corpus verification pins (fif-pk05dev-20261101-r1) -----------
+#
+# Lane finding (diversified_v1 dev corpus, five issuers, nine 10-Ks, dev
+# assertions cross-checked against each filing's own rendered rollforward
+# table): the UTP field selection is already correct on every dev filing —
+# movements resolve from the fiscal-year context as the positive magnitudes
+# the rollforward identity subtracts, comparative-year and stub durations
+# never win, coarser narrative duplicates reconcile through the A.1 policy,
+# and a jurisdiction-dimensioned total is never admitted. The recall gaps
+# the corpus does show are genuine typed absences (issuers that disclose the
+# ETR-impact figure only on the plain balance concept) and rollforward lines
+# (FX translation, acquisitions) that map to no catalogue field. The tests
+# below are therefore PINS of that verified behavior, not new behavior: no
+# PK05 mapping declaration may change semantics, because every declaration's
+# digest is frozen by the BASE envelope-sha tables (the PK07/PK08 tables pin
+# PK05's own gold-fixture envelope) — the closing pin asserts the eight UTP
+# declarations byte-for-byte so a future edit fails here first.
+
+_UTP_CIK = "0000000099"
+
+_UTP_CONTEXTS = (
+    '<xbrli:context id="c-fy"><xbrli:entity><xbrli:identifier'
+    ' scheme="http://www.sec.gov/CIK">'
+    f"{_UTP_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+    "<xbrli:startDate>2025-07-01</xbrli:startDate>"
+    "<xbrli:endDate>2026-06-30</xbrli:endDate></xbrli:period></xbrli:context>"
+    '<xbrli:context id="c-prior"><xbrli:entity><xbrli:identifier'
+    ' scheme="http://www.sec.gov/CIK">'
+    f"{_UTP_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+    "<xbrli:startDate>2024-07-01</xbrli:startDate>"
+    "<xbrli:endDate>2025-06-30</xbrli:endDate></xbrli:period></xbrli:context>"
+    '<xbrli:context id="c-stub"><xbrli:entity><xbrli:identifier'
+    ' scheme="http://www.sec.gov/CIK">'
+    f"{_UTP_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+    "<xbrli:startDate>2026-04-05</xbrli:startDate>"
+    "<xbrli:endDate>2026-06-30</xbrli:endDate></xbrli:period></xbrli:context>"
+    '<xbrli:context id="c-close"><xbrli:entity><xbrli:identifier'
+    ' scheme="http://www.sec.gov/CIK">'
+    f"{_UTP_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+    "<xbrli:instant>2026-06-30</xbrli:instant></xbrli:period></xbrli:context>"
+    '<xbrli:context id="c-open"><xbrli:entity><xbrli:identifier'
+    ' scheme="http://www.sec.gov/CIK">'
+    f"{_UTP_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+    "<xbrli:instant>2025-06-30</xbrli:instant></xbrli:period></xbrli:context>"
+    '<xbrli:context id="c-old"><xbrli:entity><xbrli:identifier'
+    ' scheme="http://www.sec.gov/CIK">'
+    f"{_UTP_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+    "<xbrli:instant>2024-06-30</xbrli:instant></xbrli:period></xbrli:context>"
+    '<xbrli:context id="c-ax"><xbrli:entity><xbrli:identifier'
+    ' scheme="http://www.sec.gov/CIK">'
+    f"{_UTP_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+    "<xbrli:startDate>2025-07-01</xbrli:startDate>"
+    "<xbrli:endDate>2026-06-30</xbrli:endDate></xbrli:period>"
+    '<xbrli:scenario><xbrldi:explicitMember'
+    ' dimension="us-gaap:IncomeTaxAuthorityAxis">'
+    "us-gaap:ForeignCountryMember</xbrldi:explicitMember></xbrli:scenario>"
+    "</xbrli:context>"
+)
+
+# (qname local part, context, value, decimals) — the rollforward closes
+# exactly: 1229 + 50 + 70 - 6 - 19 - 58 = 1266.
+_UTP_FACTS = (
+    ("UnrecognizedTaxBenefits", "c-open", "1229000000", "-6"),
+    ("UnrecognizedTaxBenefits", "c-open", "1200000000", "-8"),
+    ("UnrecognizedTaxBenefits", "c-old", "1214000000", "-6"),
+    ("UnrecognizedTaxBenefits", "c-close", "1266000000", "-6"),
+    ("UnrecognizedTaxBenefits", "c-close", "1300000000", "-8"),
+    ("UnrecognizedTaxBenefitsIncreasesResultingFromPriorPeriodTaxPositions", "c-fy", "50000000", "-6"),
+    ("UnrecognizedTaxBenefitsIncreasesResultingFromPriorPeriodTaxPositions", "c-prior", "40000000", "-6"),
+    ("UnrecognizedTaxBenefitsDecreasesResultingFromPriorPeriodTaxPositions", "c-fy", "6000000", "-6"),
+    ("UnrecognizedTaxBenefitsIncreasesResultingFromCurrentPeriodTaxPositions", "c-fy", "70000000", "-6"),
+    ("UnrecognizedTaxBenefitsIncreasesResultingFromCurrentPeriodTaxPositions", "c-prior", "30000000", "-6"),
+    ("UnrecognizedTaxBenefitsDecreasesResultingFromSettlementsWithTaxingAuthorities", "c-fy", "19000000", "-6"),
+    ("UnrecognizedTaxBenefitsDecreasesResultingFromSettlementsWithTaxingAuthorities", "c-stub", "25000000", "-6"),
+    ("UnrecognizedTaxBenefitsDecreasesResultingFromSettlementsWithTaxingAuthorities", "c-ax", "12000000", "-6"),
+    ("UnrecognizedTaxBenefitsReductionsResultingFromLapseOfApplicableStatuteOfLimitations", "c-fy", "58000000", "-6"),
+    ("UnrecognizedTaxBenefitsThatWouldImpactEffectiveTaxRate", "c-close", "1400000000", "-8"),
+)
+_UTP_DOC = "utp-20260630.htm"
+
+
+def _pk05_utp_package(
+    facts: tuple[tuple[str, str, str, str], ...] = _UTP_FACTS,
+) -> GoldenFilingPackage:
+    """A synthetic inline-XBRL 10-K carrying a UTP rollforward (no filing bytes)."""
+    rows = "\n".join(
+        f"<tr><td>line {index}</td><td>"
+        f'<ix:nonFraction id="f-{index}" name="us-gaap:{qname}"'
+        f' contextRef="{context}" unitRef="usd" decimals="{decimals}">'
+        f"{value}</ix:nonFraction></td></tr>"
+        for index, (qname, context, value, decimals) in enumerate(facts, start=1)
+    )
+    document = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<html xmlns="http://www.w3.org/1999/xhtml"'
+        ' xmlns:ix="http://www.xbrl.org/2013/inlineXBRL"'
+        ' xmlns:xbrli="http://www.xbrl.org/2003/instance"'
+        ' xmlns:xbrldi="http://xbrl.org/2005/xbrldi"'
+        ' xmlns:iso4217="http://www.xbrl.org/2003/iso4217"'
+        ' xmlns:us-gaap="http://fasb.org/us-gaap/2025">\n'
+        "<head><title>TESTUTP 10-K</title></head>\n<body>\n"
+        '<div style="display:none"><ix:header><ix:resources>\n'
+        f"{_UTP_CONTEXTS}\n"
+        '<xbrli:unit id="usd"><xbrli:measure>iso4217:USD</xbrli:measure>'
+        "</xbrli:unit>\n</ix:resources></ix:header></div>\n"
+        "<p>A reconciliation of the beginning and ending liability for"
+        " uncertain tax positions is as follows:</p>\n"
+        f"<table>\n{rows}\n</table>\n</body></html>\n"
+    ).encode("utf-8")
+    manifest = {
+        "entity_id": "ISS:TEST",
+        "cik": _UTP_CIK,
+        "legal_name": "Test Co",
+        "accession": "0000000099-26-000002",
+        "form": "10-K",
+        "primary_document": _UTP_DOC,
+        "period_of_report": "2026-06-30",
+        "filing_date": "2026-08-04",
+        "source_accepted_at": "2026-08-04T12:00:00Z",
+        "fixture_recorded_at": "2026-08-05T00:00:00Z",
+        "members": [
+            {
+                "name": _UTP_DOC,
+                "state": "stored",
+                "role": "primary",
+                "content_sha256": sha256(document).hexdigest(),
+            }
+        ],
+    }
+    return GoldenFilingPackage(manifest=manifest, members={_UTP_DOC: document})
+
+
+def _pk05_utp_result(facts: tuple[tuple[str, str, str, str], ...]) -> dict:
+    return produce_pack(
+        "PK05",
+        _pk05_input(
+            packages=(_pk05_utp_package(facts),), entity=SYNTHETIC_ENTITY
+        ),
+    )
+
+
+def test_pk05_utp_rollforward_resolves_fiscal_year_with_schema_signs() -> None:
+    # PIN (passes on BASE): the report year's own contexts win — the opening
+    # is the prior fiscal-year end (not the stale comparative), the closing
+    # is the more precise of the reconciling duplicates, each movement comes
+    # from the fiscal-year duration (never the prior-year duration, the stub
+    # duration or the jurisdiction-dimensioned fact), and reductions are the
+    # positive magnitudes the rollforward identity subtracts.
+    result = _pk05_utp_result(_UTP_FACTS)
+    assert result["applicability"]["state"] == "applicable"
+    opening = _row(result, "utp_opening")
+    assert opening["value"] == "1229000000"
+    assert opening["period"] == {"kind": "instant", "end": "2025-06-30"}
+    assert len(opening["source_occurrence_ids"]) == 2  # -6 table + -8 bound
+    closing = _row(result, "utp_closing")
+    assert closing["value"] == "1266000000"
+    assert closing["period"] == {"kind": "instant", "end": "2026-06-30"}
+    assert len(closing["source_occurrence_ids"]) == 2
+    expected = {
+        "utp_rollforward_increases_prior_period": "50000000",
+        "utp_rollforward_decreases_prior_period": "6000000",
+        "utp_rollforward_increases_current_period": "70000000",
+        "utp_rollforward_settlements": "19000000",
+        "utp_rollforward_lapse_of_statute": "58000000",
+    }
+    for field_id, value in expected.items():
+        row = _row(result, field_id)
+        assert row["value"] == value, field_id
+        assert Decimal(row["value"]) > 0, field_id  # schema sign convention
+        assert row["period"] == {
+            "kind": "duration",
+            "start": "2025-07-01",
+            "end": "2026-06-30",
+        }
+    # The stub-duration and jurisdiction-member settlement decoys never enter.
+    assert len(_row(result, "utp_rollforward_settlements")["source_occurrence_ids"]) == 1
+    impact = _row(result, "utp_impact_on_etr")
+    assert impact["value"] == "1400000000"
+    assert impact["period"] == {"kind": "instant", "end": "2026-06-30"}
+    # 1229 + 50 + 70 - 6 - 19 - 58 = 1266: the identity closes on the
+    # fiscal-year facts under the schema's sign convention.
+    assert _check(result, "utp_rollforward")["status"] == "pass"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk05_utp_typed_absence_and_dimension_guard() -> None:
+    # PIN (passes on BASE): with no impact concept tagged and settlements
+    # carried only under a jurisdiction dimension, both fields stay typed
+    # absent — the plain balance concept is never aliased into the impact
+    # field, the dimensioned settlement never stands in for the total, and
+    # the rollforward refuses to imply the missing settlement (19,000,000).
+    facts = tuple(
+        fact
+        for fact in _UTP_FACTS
+        if fact[0] != "UnrecognizedTaxBenefitsThatWouldImpactEffectiveTaxRate"
+        and not (
+            fact[0]
+            == "UnrecognizedTaxBenefitsDecreasesResultingFromSettlements"
+            "WithTaxingAuthorities"
+            and fact[1] in ("c-fy", "c-stub")
+        )
+    )
+    result = _pk05_utp_result(facts)
+    impact = _row(result, "utp_impact_on_etr")
+    assert impact["quality_state"] == "missing"
+    assert impact["value"] is None
+    assert impact["reason"] == (
+        "missing_standard_fact:us-gaap:UnrecognizedTaxBenefitsThatWould"
+        "ImpactEffectiveTaxRate"
+    )
+    # The closing balance (1266) exists but is never reported as the impact.
+    assert _row(result, "utp_closing")["value"] == "1266000000"
+    settlements = _row(result, "utp_rollforward_settlements")
+    assert settlements["quality_state"] == "missing"
+    assert settlements["reason"] == "disallowed_dimension"
+    rollforward = _check(result, "utp_rollforward")
+    assert rollforward["status"] == "not_evaluable"
+    assert rollforward["reason"] == "missing_dependency"
+    assert (
+        "utp_rollforward: refused to imply utp_rollforward_settlements ="
+        " 19000000 (R-K3: never an implied value)"
+        in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk05_utp_mapping_declarations_are_pinned() -> None:
+    # PIN (passes on BASE): the eight UTP declarations, byte-for-byte. Every
+    # declaration's digest is frozen by the BASE envelope-sha tables (the
+    # PK07/PK08 tables pin PK05's own gold-fixture envelope), so any semantic
+    # edit here breaks those pins first — a repair needs a coordinated
+    # pin-update lane plus, for a member-filtered dimensioned stand-in or a
+    # negative-sign guard, base.py support the FactMapping surface lacks.
+    def declaration(field_id: str) -> tuple:
+        mapping = pk05_tax._FIELD_MAPPINGS[field_id]
+        return (
+            mapping.concepts,
+            mapping.dimensions_allowed,
+            mapping.period_select,
+            mapping.optional_axes,
+            mapping.consolidated_row,
+            mapping.limitation_when_absent,
+            mapping.duplicate_policy,
+        )
+
+    assert declaration("utp_opening") == (
+        ("us-gaap:UnrecognizedTaxBenefits",),
+        (),
+        "opening_instant",
+        (),
+        True,
+        None,
+        "precision_consistent",
+    )
+    assert declaration("utp_closing") == (
+        ("us-gaap:UnrecognizedTaxBenefits",),
+        (),
+        "primary",
+        (),
+        True,
+        None,
+        "precision_consistent",
+    )
+    assert declaration("utp_rollforward_increases_prior_period") == (
+        (
+            "us-gaap:UnrecognizedTaxBenefitsIncreasesResultingFromPriorPeriod"
+            "TaxPositions",
+        ),
+        (),
+        "primary",
+        (),
+        True,
+        None,
+        "precision_consistent",
+    )
+    assert declaration("utp_rollforward_decreases_prior_period") == (
+        (
+            "us-gaap:UnrecognizedTaxBenefitsDecreasesResultingFromPriorPeriod"
+            "TaxPositions",
+        ),
+        (),
+        "primary",
+        (),
+        True,
+        None,
+        "precision_consistent",
+    )
+    assert declaration("utp_rollforward_increases_current_period") == (
+        (
+            "us-gaap:UnrecognizedTaxBenefitsIncreasesResultingFromCurrent"
+            "PeriodTaxPositions",
+        ),
+        (),
+        "primary",
+        (),
+        True,
+        None,
+        "precision_consistent",
+    )
+    assert declaration("utp_rollforward_settlements") == (
+        (
+            "us-gaap:UnrecognizedTaxBenefitsDecreasesResultingFrom"
+            "SettlementsWithTaxingAuthorities",
+        ),
+        (),
+        "primary",
+        (),
+        True,
+        None,
+        "precision_consistent",
+    )
+    assert declaration("utp_rollforward_lapse_of_statute") == (
+        (
+            "us-gaap:UnrecognizedTaxBenefitsReductionsResultingFromLapseOf"
+            "ApplicableStatuteOfLimitations",
+        ),
+        (),
+        "primary",
+        (),
+        True,
+        None,
+        "precision_consistent",
+    )
+    assert declaration("utp_impact_on_etr") == (
+        ("us-gaap:UnrecognizedTaxBenefitsThatWouldImpactEffectiveTaxRate",),
+        (),
+        "primary",
+        (),
+        True,
+        None,
+        "precision_consistent",
+    )
 # 62. PK03 dev-corpus widened re-resolution (synthetic; lane fif-pk03dev-r2) -----
 #
 # DEC-FIF-PACK-GENERALIZATION-DEV-CORPUS: the finalize hook widens exactly
