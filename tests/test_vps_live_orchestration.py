@@ -2733,6 +2733,96 @@ def test_retained_cpi_archive_catch_up_still_works_and_keeps_its_budget():
     assert retained_state[wrp.DEFECT_REPAIR_STATE_KEY]["cpi:2026-10-14"]["attempts"] == 1
 
 
+@pytest.mark.parametrize("error", [
+    TimeoutError("dated report timed out"),
+    urllib.error.HTTPError(CPI_ARCHIVE_URL, 503, "unavailable", {}, None),
+    urllib.error.HTTPError(CPI_ARCHIVE_URL, 429, "rate limited", {}, None),
+])
+def test_historical_cpi_recovers_after_prolonged_transport_outage(monkeypatch, error):
+    monkeypatch.setattr(wrp, "SOURCES", tuple(s for s in wrp.SOURCES if s.source_id == "bls_cpi"))
+    key = "cpi:2026-10-14"
+    start = datetime(2026, 10, 26, 13, tzinfo=timezone.utc)
+    detected = "2026-10-14T12:31:17+00:00"
+    state = _cpi_state(publication={**_cpi_publication(), "detected_at": detected})
+    calls = []
+    for hour, expected_calls in [(0, 1), (0.5, 1), (1, 2), (2, 2), (3, 3),
+                                 (6, 3), (7, 4), (12, 4), (13, 5), (18, 5), (19, 6), (48, 7)]:
+        def fetch(spec, prior, timeout):
+            assert spec.url == CPI_ARCHIVE_URL
+            calls.append(spec.url)
+            if hour < 48:
+                raise error
+            return {**_http_result(CPI_SEPTEMBER_PAGE), "url": spec.url}
+
+        state, _ = wrp.detect(now=start + timedelta(hours=hour),
+                              state=json.loads(json.dumps(state)), fetcher=fetch)
+        assert len(calls) == expected_calls
+        assert state["publications"][key]["data_ready"] is (hour == 48)
+    assert state["publications"][key]["detected_at"] == detected
+    assert state[wrp.DEFECT_REPAIR_STATE_KEY][key]["attempts"] == 1
+
+
+@pytest.mark.parametrize("prior_evidence,expected_calls", [
+    ("matched_timeout", 1), ("different_archive", 0), ("different_time", 0),
+    ("ambiguous_http", 0), ("unverified_content", 0),
+])
+def test_historical_cpi_legacy_exhaustion_requires_matching_transport_evidence(
+    monkeypatch, prior_evidence, expected_calls,
+):
+    monkeypatch.setattr(wrp, "SOURCES", tuple(s for s in wrp.SOURCES if s.source_id == "bls_cpi"))
+    key = "cpi:2026-10-14"
+    start = datetime(2026, 10, 26, 13, tzinfo=timezone.utc)
+    def unavailable(spec, prior, timeout):
+        raise TimeoutError("archive not reachable")
+
+    state, _ = wrp.detect(now=start, state=_cpi_state(publication=_cpi_publication()), fetcher=unavailable)
+    source = state["sources"][f"bls_cpi:{key}"]
+    record = state[wrp.DEFECT_REPAIR_STATE_KEY][key]
+    # Old writers charged the final socket failure to the document budget.
+    record.update(status="exhausted", attempts=3, next_attempt_at=None)
+    record.pop("archive_budget_version", None)
+    if prior_evidence == "different_archive":
+        source["source_url"] = "https://www.bls.gov/feed/cpi.rss"
+    elif prior_evidence == "different_time":
+        source["last_error_at"] = (start - timedelta(days=1)).isoformat()
+    elif prior_evidence == "ambiguous_http":
+        source["last_error"] = record["last_error"] = "HTTPError"
+    elif prior_evidence == "unverified_content":
+        record["last_error"] = "detail_document_unverified"
+
+    calls = []
+    # An unverified document spends the one restored attempt. A later
+    # healthy response must not open a fourth validation attempt.
+    def wrong_document(spec, prior, timeout):
+        calls.append(spec.url)
+        return {**_http_result(CPI_SEPTEMBER_PAGE), "url": "https://www.bls.gov/feed/cpi.rss"}
+
+    state, _ = wrp.detect(now=start + timedelta(hours=48), state=state, fetcher=wrong_document)
+    state, _ = wrp.detect(now=start + timedelta(hours=96), state=json.loads(json.dumps(state)),
+                          fetcher=_cpi_fetcher(calls, CPI_SEPTEMBER_PAGE))
+    assert len(calls) == expected_calls
+    assert state[wrp.DEFECT_REPAIR_STATE_KEY][key]["attempts"] == 3
+    assert state["publications"][key]["data_ready"] is False
+
+
+def test_permanent_cpi_archive_error_keeps_three_attempt_limit(monkeypatch):
+    monkeypatch.setattr(wrp, "SOURCES", tuple(s for s in wrp.SOURCES if s.source_id == "bls_cpi"))
+    start = datetime(2026, 10, 26, 13, tzinfo=timezone.utc)
+    state = _cpi_state(publication=_cpi_publication())
+    calls = []
+
+    def gone(spec, prior, timeout):
+        calls.append(spec.url)
+        raise urllib.error.HTTPError(spec.url, 410, "gone", {}, None)
+
+    for hour in (0, 1, 3, 48):
+        state, _ = wrp.detect(now=start + timedelta(hours=hour),
+                              state=json.loads(json.dumps(state)), fetcher=gone)
+    assert calls == [CPI_ARCHIVE_URL] * 3
+    record = state[wrp.DEFECT_REPAIR_STATE_KEY]["cpi:2026-10-14"]
+    assert (record["attempts"], record["status"]) == (3, "exhausted")
+
+
 def test_governed_repair_bypasses_the_source_pacing():
     """A due governed repair is never held back by the ordinary pacing.
 

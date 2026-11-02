@@ -61,6 +61,7 @@ EVENT_ALERT_RETENTION = {
 UNRESOLVED_RETRY_INTERVAL_MIN = 15
 DEFECT_REPAIR_MAX_ATTEMPTS = 3
 DEFECT_REPAIR_BACKOFF_MIN = 60
+ARCHIVE_TRANSPORT_MAX_BACKOFF_MIN = 6 * 60
 DEFECT_REPAIR_STATE_KEY = "official_actual_defect_repairs"
 OFFICIAL_ACTUAL_DEFECTS_PATH = (
     _ROOT / "data" / "release_forecast" / "official_actual_defects.json"
@@ -1169,6 +1170,7 @@ def _admit_governed_defect_repairs(
     *,
     publications: dict[str, Any],
     repair_state: dict[str, Any],
+    source_state: dict[str, Any],
     now: datetime,
 ) -> tuple[list[dict[str, Any]], set[str]]:
     """Re-admit retained CPI archives and governed binding defects with bounded backoff."""
@@ -1247,6 +1249,18 @@ def _admit_governed_defect_repairs(
         if isinstance(attempts, bool) or not isinstance(attempts, int) or attempts < 0:
             attempts = 0
             record["attempts"] = 0
+        if (attempts == DEFECT_REPAIR_MAX_ATTEMPTS and archive_url and cpi_spec
+                and "archive_budget_version" not in record):
+            source_key, legacy_key = _scope_keys(cpi_spec, event)
+            failed_probe = source_state.get(source_key) or source_state.get(legacy_key) or {}
+            attempted_at = _state_time(record.get("last_attempt_at"))
+            if attempted_at and _legacy_archive_transport_failure(record, failed_probe, archive_url):
+                # Only the last old attempt is attributable; keep every earlier debit.
+                record["archive_budget_version"] = 2
+                record["restored_transport_attempt_at"] = record["last_attempt_at"]
+                attempts -= 1
+                record["attempts"] = attempts
+                _defer_archive_fetch(record, failed_probe, attempted_at)
         if attempts >= DEFECT_REPAIR_MAX_ATTEMPTS:
             record["status"] = "exhausted"
             repair_state[event_key] = record
@@ -1283,6 +1297,42 @@ def _start_defect_repair_attempt(record: dict[str, Any], now: datetime) -> None:
 
 def _fail_defect_repair(record: dict[str, Any], error: str) -> None:
     record["last_error"] = str(error or "detail_document_unverified")
+
+
+def _legacy_archive_transport_failure(
+    record: dict[str, Any], source: dict[str, Any], archive_url: str,
+) -> bool:
+    # The old writer stored the exception type but no HTTP status. A generic
+    # HTTPError cannot be classified from that receipt alone.
+    return (
+        record.get("status") == "exhausted"
+        and isinstance(source, dict)
+        and source.get("source_url") == archive_url
+        and source.get("last_attempt_status") == "error"
+        and source.get("last_error_at") == record["last_attempt_at"]
+        and source.get("last_attempt_at") == record["last_attempt_at"]
+        and source.get("last_error") == record.get("last_error")
+        and record.get("last_error") in {
+            "TimeoutError", "ConnectionError", "ConnectionResetError",
+            "ConnectionRefusedError", "ConnectionAbortedError", "URLError",
+        }
+    )
+
+
+def _retryable_archive_fetch(exc: Exception) -> bool:
+    if isinstance(exc, urllib.error.HTTPError):
+        return exc.code in (408, 425, 429) or 500 <= exc.code < 600
+    return isinstance(exc, (TimeoutError, ConnectionError, urllib.error.URLError))
+
+
+def _defer_archive_fetch(record: dict[str, Any], source: dict[str, Any], attempted_at: datetime) -> None:
+    # No document was available to validate. Pace the next historical fetch
+    # at one, two, four, then six hours. Normal source Retry-After still applies.
+    failures = source.get(PROBE_FAILURES_KEY)
+    exponent = min(max(failures - 1, 0), 3) if isinstance(failures, int) else 0
+    delay = min(DEFECT_REPAIR_BACKOFF_MIN * 2**exponent, ARCHIVE_TRANSPORT_MAX_BACKOFF_MIN)
+    record["status"] = "retry_wait"
+    record["next_attempt_at"] = (attempted_at + timedelta(minutes=delay)).isoformat()
 
 
 def _complete_defect_repair(
@@ -1518,6 +1568,7 @@ def detect(
     repair_events, forced_repair_keys = _admit_governed_defect_repairs(
         publications=publications,
         repair_state=repair_state,
+        source_state=source_state,
         now=now,
     )
     publications = _migrate_publication_keys(publications, repair_events)
@@ -1680,14 +1731,18 @@ def detect(
                     resolved = replace(spec, url=archive_url, feed_kind=None, follow_entry_link=False)
             if forced_repair and isinstance(repair_record, dict):
                 _start_defect_repair_attempt(repair_record, now)
+                if archive_url:
+                    repair_record["archive_budget_version"] = 2
             attempt = _begin_source_attempt(
                 prior,
                 now=now,
                 source_url=resolved.url,
             )
             interval_s = int(pacing["interval_s"])
+            received_response = False
             try:
                 result = fetch_primary(resolved, {} if forced_repair else prior)
+                received_response = True
                 if archive_url and (result.get("status") != 200 or result.get("url") != archive_url):
                     raise ValueError("CPIArchiveResponseMismatch")
                 # A statement can become visible seconds before the scheduled
@@ -2012,6 +2067,9 @@ def detect(
                     source_state.pop(legacy_state_key, None)
                 if forced_repair and isinstance(repair_record, dict):
                     _fail_defect_repair(repair_record, type(exc).__name__)
+                    if archive_url and not received_response and _retryable_archive_fetch(exc):
+                        repair_record["attempts"] -= 1
+                        _defer_archive_fetch(repair_record, source_state[state_key], now)
                 log.warning(
                     "source %s failed for %s: %s: %s",
                     resolved.source_id,
