@@ -960,3 +960,22 @@ def test_inputs_producer_selects_the_published_fif_store_and_nothing_else(steps)
     for key in research_keys:
         assert inputs_env[key] == "${{ secrets.%s }}" % key, (key, inputs_env[key])
         assert terms_env.get(key) == inputs_env[key], key
+
+
+def test_fif_production_mode_reaches_only_the_inputs_producer(daily):
+    """No other step, job or workflow-level env selects FIF production mode.
+
+    The selection is a per-step choice for cs_inputs, never a default
+    (DEC-FIF-D3): it must not widen to the workflow, a job, another step, or a
+    ``$GITHUB_ENV`` write that would leak it into later steps.
+    """
+    mode = "FIF_FINANCIAL_DATASET_MODE"
+    assert mode not in (daily.get("env") or {})
+    holders = []
+    for job_id, job_def in daily["jobs"].items():
+        assert mode not in (job_def.get("env") or {}), job_id
+        for step in job_def.get("steps") or []:
+            if mode in (step.get("env") or {}):
+                holders.append((job_id, step.get("id")))
+            assert mode not in str(step.get("run") or ""), (job_id, step.get("id"))
+    assert holders == [(JOB, "cs_inputs")], holders
