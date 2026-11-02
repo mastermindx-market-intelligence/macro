@@ -217,7 +217,7 @@ DEFAULT_ROOTS = [
 # R2 helpers (mirrored from scripts/live_flow_poller._r2_client/_upload_r2)   #
 # --------------------------------------------------------------------------- #
 
-def _r2_client():
+def _r2_client(*, single_attempt: bool = False):
     """Build a boto3 S3 client for R2, or None if creds absent."""
     ep = os.environ.get("R2_ENDPOINT")
     ak = os.environ.get("R2_ACCESS_KEY_ID")
@@ -231,7 +231,8 @@ def _r2_client():
             region_name="auto",
             signature_version="s3v4",
             max_pool_connections=16,
-            retries={"max_attempts": 3, "mode": "standard"},
+            retries=({"total_max_attempts": 1, "mode": "standard"} if single_attempt
+                     else {"max_attempts": 3, "mode": "standard"}),
         )
         try:
             cfg = Config(**kw,

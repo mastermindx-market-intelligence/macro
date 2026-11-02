@@ -48,6 +48,7 @@ import json
 import logging
 import os
 import sys
+import threading
 import time
 from datetime import date as calendar_date
 from pathlib import Path
@@ -228,12 +229,15 @@ def correct_archive_artifact(artifact: Path, binding: dict, *, apply: bool = Fal
     A binding is an input pin, not authorization, source qualification or proof of
     fresh custody. Those gates and the native whole-document matcher remain the
     caller's responsibility. This function never discovers a version or creates
-    a missing object. It invokes put_object once, without wrapper retries; the
-    incumbent SDK's own policy may perform multiple physical attempts.
+    a missing object. It invokes put_object once on a one-use client. The SDK
+    policy disables retries; a before-send fence independently blocks a second
+    transport admission, including redirects/custom retry handlers. An admission
+    is not proof that bytes reached the service or that the write committed.
     """
     result = {"schema": "options_hub.gex_archive_correction_result/v1",
               "status": "not_attempted", "wrapper_invocations": 0,
-              "physical_attempts": None, "remote_bytes_equal": None}
+              "physical_attempts": None, "remote_bytes_equal": None,
+              "transport_send_admissions": 0, "second_send_blocked": False}
     try:
         if not isinstance(binding, dict) or binding.get("schema") != "options_hub.gex_archive_correction/v1":
             raise _CorrectionRefused("invalid_binding")
@@ -306,7 +310,7 @@ def correct_archive_artifact(artifact: Path, binding: dict, *, apply: bool = Fal
     try:
         if client_factory is None:
             from scripts.build_options_hub_nightly import _r2_client
-            client_factory = _r2_client
+            client_factory = lambda: _r2_client(single_attempt=True)
         client = client_factory()
         if client is None:
             result["reason"] = "client_unavailable"
@@ -314,13 +318,31 @@ def correct_archive_artifact(artifact: Path, binding: dict, *, apply: bool = Fal
     except Exception:  # noqa: BLE001
         result["reason"] = "client_unavailable"
         return result
+    # Keep this fence on the dedicated client even after the call returns: a
+    # retained client must not become a retry path after an uncertain response.
+    send_lock = threading.Lock()
+    send_count = 0
+    def admit_send(**_kwargs):
+        nonlocal send_count
+        with send_lock:
+            if send_count:
+                result["transport_send_admissions"] = send_count
+                result["second_send_blocked"] = True
+                raise RuntimeError("correction_second_send_blocked")
+            send_count = 1
+            result["transport_send_admissions"] = send_count
+    try:
+        client.meta.events.register_first("before-send.s3.PutObject", admit_send)
+    except Exception:  # noqa: BLE001
+        result["reason"] = "transport_fence_unavailable"
+        return result
     result["wrapper_invocations"] = 1
     try:
         response = client.put_object(Bucket=target_bucket, Key=key, Body=body,
                                      ContentType="application/json", IfMatch=etag)
     except Exception as exc:  # noqa: BLE001
-        # No refresh, retry, existence probe or unconditional fallback. Even a
-        # conflict is not proof that an earlier internal SDK attempt had no effect.
+        # No refresh, retry, existence probe or unconditional fallback. A lost
+        # response stays UNKNOWN; a blocked retry does not settle the first send.
         error = getattr(exc, "response", {})
         error = error if isinstance(error, dict) else {}
         metadata = error.get("ResponseMetadata", {})
@@ -328,12 +350,15 @@ def correct_archive_artifact(artifact: Path, binding: dict, *, apply: bool = Fal
         details = error.get("Error", {})
         details = details if isinstance(details, dict) else {}
         code, status = details.get("Code"), metadata.get("HTTPStatusCode")
-        result["status"] = ("conflict" if status in (404, 412) or code in ("PreconditionFailed", "NoSuchKey")
+        result["status"] = ("unknown" if result["second_send_blocked"] else
+                            "conflict" if status in (404, 412) or code in ("PreconditionFailed", "NoSuchKey")
                             else "denied" if status in (401, 403) else "unknown")
         return result
     metadata = response.get("ResponseMetadata", {}) if isinstance(response, dict) else {}
     status = metadata.get("HTTPStatusCode") if isinstance(metadata, dict) else None
-    result["status"] = "acknowledged" if type(status) is int and status == 200 else "unknown"
+    result["status"] = ("acknowledged" if type(status) is int and status == 200
+                        and result["transport_send_admissions"] == 1
+                        and not result["second_send_blocked"] else "unknown")
     retries = metadata.get("RetryAttempts") if isinstance(metadata, dict) else None
     if type(retries) is int and retries >= 0:
         result["sdk_reported_retries"] = retries

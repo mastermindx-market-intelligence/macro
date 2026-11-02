@@ -2,6 +2,7 @@
 import hashlib
 import json
 from copy import deepcopy
+from types import SimpleNamespace
 
 import pytest
 
@@ -40,9 +41,13 @@ def artifact(tmp_path):
 class Client:
     def __init__(self, response=None, error=None):
         self.calls = []; self.error = error
+        self.before_send = []
+        self.meta = SimpleNamespace(events=SimpleNamespace(
+            register_first=lambda name, callback: self.before_send.insert(0, callback)))
         self.response = response if response is not None else {
             'ResponseMetadata': {'HTTPStatusCode': 200, 'RetryAttempts': 0}, 'ETag': '"new"'}
     def put_object(self, **kwargs):
+        for callback in self.before_send: callback()
         self.calls.append(kwargs)
         if self.error: raise self.error
         return self.response
@@ -182,7 +187,10 @@ def test_opt_in_cli_exit_and_no_legacy_or_index_work(artifact, monkeypatch, caps
     client=Client(error=error)
     def forbidden(*a,**kw):raise AssertionError('legacy/index path invoked')
     monkeypatch.setenv('R2_BUCKET','synthetic-bucket')
-    monkeypatch.setattr(hub,'_r2_client',lambda:client)
+    def factory(*, single_attempt=False):
+        assert single_attempt is True
+        return client
+    monkeypatch.setattr(hub,'_r2_client',factory)
     monkeypatch.setattr(hub,'load_exposure_contexts',forbidden)
     monkeypatch.setattr(hub,'publish_gex_history_index',forbidden)
     monkeypatch.setattr(repair,'repair_root',forbidden)
@@ -190,3 +198,86 @@ def test_opt_in_cli_exit_and_no_legacy_or_index_work(artifact, monkeypatch, caps
                         '--apply','--publish'])==expected_exit
     result=json.loads(capsys.readouterr().out)
     assert result['wrapper_invocations']==1 and len(client.calls)==1
+
+
+def test_sdk_retry_cannot_send_correction_twice(artifact, monkeypatch):
+    """Exercise real signing/retry/event machinery; the HTTP transport is offline."""
+    import boto3
+    from botocore.config import Config
+    from botocore.exceptions import ReadTimeoutError
+    client = boto3.client('s3', endpoint_url='https://r2.invalid',
+        aws_access_key_id='SYNTHETIC', aws_secret_access_key='SYNTHETIC',
+        config=Config(region_name='auto', retries={'max_attempts': 3, 'mode': 'standard'}))
+    sends = []
+    def lost_response(request):
+        sends.append(request)
+        raise ReadTimeoutError(endpoint_url='https://r2.invalid')
+    monkeypatch.setattr(client._endpoint.http_session, 'send', lost_response)
+    monkeypatch.setattr('botocore.endpoint.time.sleep', lambda _: None)
+    result = invoke(artifact, client)
+    assert len(sends) == 1
+    assert result['status'] == 'unknown'
+    assert result['transport_send_admissions'] == 1
+    assert result['second_send_blocked'] is True
+    assert result['physical_attempts'] is None
+
+
+@pytest.mark.parametrize('single_attempt,total', [(False,4),(True,1)])
+def test_native_client_policy_is_scoped_to_correction(monkeypatch, single_attempt, total):
+    from scripts import build_options_hub_nightly as hub
+    monkeypatch.setenv('R2_ENDPOINT', 'https://r2.invalid')
+    monkeypatch.setenv('R2_ACCESS_KEY_ID', 'SYNTHETIC')
+    monkeypatch.setenv('R2_SECRET_ACCESS_KEY', 'SYNTHETIC')
+    client = hub._r2_client(single_attempt=single_attempt)
+    assert client.meta.config.retries == {'mode':'standard', 'total_max_attempts':total}
+    client.close()
+
+
+@pytest.mark.parametrize('http_status,expected', [(200,'acknowledged'),(412,'conflict'),(503,'unknown')])
+def test_native_single_attempt_http_outcomes(artifact, monkeypatch, http_status, expected):
+    from scripts import build_options_hub_nightly as hub
+    from botocore.awsrequest import AWSResponse
+    monkeypatch.setenv('R2_ENDPOINT', 'https://r2.invalid')
+    monkeypatch.setenv('R2_ACCESS_KEY_ID', 'SYNTHETIC')
+    monkeypatch.setenv('R2_SECRET_ACCESS_KEY', 'SYNTHETIC')
+    client = hub._r2_client(single_attempt=True)
+    sends = []
+    responses = []
+    class Raw:
+        def stream(self, **kwargs):
+            yield b'' if http_status == 200 else b'<Error><Code>PreconditionFailed</Code></Error>' if http_status == 412 else b'<Error><Code>InternalError</Code></Error>'
+    def response(request):
+        sends.append(request)
+        assert request.headers['If-Match'] == ETAG.encode()
+        assert request.body.read() == artifact[1]
+        responses.append(http_status)
+        return AWSResponse(request.url, http_status, {}, Raw())
+    monkeypatch.setattr(client._endpoint.http_session, 'send', response)
+    result = invoke(artifact, client)
+    assert len(sends) == 1
+    assert responses == [http_status]
+    assert result['status'] == expected
+    assert result['transport_send_admissions'] == 1
+    assert result['second_send_blocked'] is False
+    client.close()
+
+
+def test_missing_transport_fence_refuses_before_wrapper(artifact):
+    client = Client(); client.meta = None
+    result = invoke(artifact, client)
+    assert result['status'] == 'not_attempted'
+    assert result['reason'] == 'transport_fence_unavailable'
+    assert result['wrapper_invocations'] == 0 and client.calls == []
+
+
+def test_retained_client_cannot_resend_after_unknown(artifact):
+    client = Client(error=TimeoutError('uncertain'))
+    result = invoke(artifact, client)
+    assert result['status'] == 'unknown'
+    # A returned receipt is not authority to reset the client's one-use fence.
+    result['transport_send_admissions'] = 0
+    result['second_send_blocked'] = False
+    with pytest.raises(RuntimeError, match='correction_second_send_blocked'):
+        client.put_object(**client.calls[0])
+    assert len(client.calls) == 1
+    assert result['transport_send_admissions'] == 1
