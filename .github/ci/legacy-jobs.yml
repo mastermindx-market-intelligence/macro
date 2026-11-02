@@ -12927,6 +12927,7 @@ jobs:
           tests/test_fundamental_forensics_q1_held_out_evaluate.py
           tests/test_fundamental_forensics_q1_held_out_g2_reports.py
           tests/test_fundamental_forensics_q1_held_out_g3_reports.py
+          tests/test_fundamental_forensics_q1_held_out_g4_reports.py
           tests/test_fundamental_forensics_query.py
           tests/test_fundamental_forensics_query_exports.py
           tests/test_fundamental_forensics_query_metric_qualification.py
