@@ -28,10 +28,10 @@
     "records"
   ],
   "summary": {
-    "CLOSED": 36,
-    "PARTIAL": 11,
+    "CLOSED": 43,
+    "PARTIAL": 5,
     "OPEN": 0,
-    "PENDING_LIVE": 3,
+    "PENDING_LIVE": 2,
     "HUMAN_GATE": 4
   },
   "final_acceptance": {
@@ -420,7 +420,7 @@
       ],
       "condition": "No new filings, source outage, duplicate delivery and retry",
       "required_behavior": "Differentiate checked-no-change from source_outage and stale; idempotent generation, no rerender freshness.",
-      "verdict": "PENDING_LIVE",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_filing_observation_state.py::test_observe_duplicate_delivery_is_idempotent",
         "tests/test_fundamental_forensics_filing_observation_state.py::test_mark_published_requires_successful_check_and_is_monotone",
@@ -437,16 +437,13 @@
         "tests/test_fif_a21_publish_observation.py::test_t7a_source_outage_exclusion_observes_source_outage",
         "tests/test_fif_a21_publish_observation.py::test_t7b_refusal_class_exclusion_observes_check_failed",
         "tests/test_fif_a21_publish_observation.py::test_t8_same_clock_rerun_is_byte_identical_zero_extra_writes",
-        "tests/test_fif_a21_publish_observation.py::test_t9_unchanged_check_at_later_clock_is_zero_write_like_t8b"
+        "tests/test_fif_a21_publish_observation.py::test_t9_unchanged_check_at_later_clock_is_zero_write_like_t8b",
+        "tests/test_fif_a21_publish_observation.py::test_t10_admission_refused_exclusion_withholds_identity_unproven",
+        "tests/test_fif_a21_publish_observation.py::test_t11_unchanged_generation_without_prior_record_withholds",
+        "research/financial_intelligence_fabric/FIF_A21_LIVE_OBSERVATION_2026-11-01.md::## Per-run publish rows (five published issuers)"
       ],
-      "obligations": [
-        {
-          "kind": "live_proof",
-          "owner": "natural schedule",
-          "next_action": "Observe one scheduled publish (never dispatched) after PR #9871 lands and a later no-new-filing cycle: issuers/<id>/observation.json carries new_filing then checked_no_change; a withheld row shows observation_write withheld:<reason>."
-        }
-      ],
-      "note": " 2026-10-20: PR #9871 wires FilingObservationState into publish (R-A21-T8B material-change rule; R-A21-STORE-TRACE withholds the record where A14/A18 forbid a store write)."
+      "obligations": [],
+      "note": " 2026-10-20: PR #9871 wires FilingObservationState into publish (R-A21-T8B material-change rule; R-A21-STORE-TRACE withholds the record where A14/A18 forbid a store write). 2026-11-01: closed on the natural schedule (no dispatch). Scheduled filing-forensics-sec run 39565177126 (2026-10-21, after #9871 landed as c304c027) persisted new_filing for all five issuers; the ten later scheduled runs through 41185445273 (2026-10-31) each report checked_no_change with the same five generation ids and zero store writes, the T8B/T9 zero-write rule reconciled cycle by cycle in FIF_A21_LIVE_OBSERVATION_2026-11-01.md. No run produced a withheld row; a withheld row needs a commit fault, an identity refusal or a missing prior record, none of which may be induced on production, so the three withheld causes are pinned offline through the publish CLI: commit_phase_fault (T4), identity_unproven (T10) and unchanged_without_prior (T11), added by #10396 (main 889da6ee). An unreadable prior record is a run refusal (observation_prior_unreadable, T6), not a withheld row."
     },
     {
       "id": "A22",
@@ -476,18 +473,18 @@
       ],
       "condition": "Different users or temporal query policies hit shared cache",
       "required_behavior": "Tenant/entitlement/policy/generation isolation; saved research does not alter canonical facts.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_financial_query_api.py::test_two_users_two_policies_share_no_answer_object",
-        "tests/test_fif_x2_ownership_guards.py::test_partition_never_reads_one_users_list_into_another_users_rows"
+        "tests/test_fif_x2_ownership_guards.py::test_partition_never_reads_one_users_list_into_another_users_rows",
+        "tests/test_fif_z0_gap_a23_a38.py::test_a23_two_generations_one_store_one_provider",
+        "tests/test_fif_z0_gap_a23_saved_research.py::test_a23_replaying_saved_views_leaves_store_and_answers_byte_identical",
+        "tests/test_fif_z0_gap_a23_saved_research.py::test_a23_router_has_no_saved_research_write_path",
+        "tests/test_fif_z0_gap_a23_saved_research.py::test_a23_store_write_guard_flags_a_planted_writer",
+        "tests/test_fif_z0_gap_a23_saved_research.py::test_a23_saved_research_producer_never_reaches_the_production_store"
       ],
-      "obligations": [
-        {
-          "kind": "test_gap",
-          "owner": "FIF seat",
-          "next_action": "Add generation isolation (two generations in one process never share an answer object) and prove saved research cannot alter canonical facts."
-        }
-      ]
+      "obligations": [],
+      "note": "Generation isolation is proven by #9858 (main 17f42f0e): one process, one store and one provider carry two admitted generations and never share an answer object. The saved-research half is proven by #10392 (main cd88f432): every committed saved view replayed with the page's restore bytes answers byte-identically to a direct query and leaves the production store's objects, versions and write counter unchanged; a view pinned before the generation's admission fails closed; the router has no saved-research write route and the notification producer names no store write API. Independent review (fresh read-only lane): PASS_WITH_NOTES; notes: a non-pinned restore posts a rebuilt body through the same route (the stored-bytes replay is the stricter instance), and the S3 writer guard is name-based AST with no dynamic-import blind spot in current sources."
     },
     {
       "id": "A24",
@@ -497,18 +494,17 @@
       ],
       "condition": "Public shell, source drawer, browser bundle and network errors",
       "required_behavior": "Do not leak locked licensed content or private receipts; authorized source trace works.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_page.py::test_anonymous_shell_leaks_no_occurrence_ids_or_company_names",
-        "tests/test_fundamental_forensics_page.py::test_public_summary_projection_emits_only_the_two_free_counts"
+        "tests/test_fundamental_forensics_page.py::test_public_summary_projection_emits_only_the_two_free_counts",
+        "tests/fundamental_forensics_a24_error_leak.test.mjs::S1: a bundle network failure keeps the authorized drawer and leaks no locked bytes",
+        "tests/fundamental_forensics_a24_error_leak.test.mjs::S2: a bundle 503 with a sentinel body shows the gate copy, never the body",
+        "tests/fundamental_forensics_a24_error_leak.test.mjs::S6: a missing node\\'s private receipt digest never renders; the authorized receipt does",
+        "tests/fundamental_forensics_a24_error_leak.test.mjs::S7: every fetched URL is page-constructed; none carries locked bytes"
       ],
-      "obligations": [
-        {
-          "kind": "test_gap",
-          "owner": "FIF seat",
-          "next_action": "Add a JS test that the browser bundle and network-error states leak no locked content or private receipt, while the authorized source trace still resolves."
-        }
-      ]
+      "obligations": [],
+      "note": "Closed 2026-11-01 on #9861 (main 68da9a79): the Node test drives the page bundle through network-error, 5xx-sentinel and missing-receipt states and asserts no locked bytes or private receipt digest render, while the authorized drawer and receipt still resolve; wired into the fif legacy CI job."
     },
     {
       "id": "A25",
@@ -771,20 +767,17 @@
       ],
       "condition": "Same query in Python/kernel/API/UI/CSV/Parquet/JSON",
       "required_behavior": "Identical normalized value, cutoff, basis and provenance; serialization differences explicit.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_query_exports.py::test_a38_decimal_parity_json_csv_parquet",
         "tests/test_fundamental_forensics_query_exports.py::test_a38_x1p_every_carried_field_is_identical_per_cell",
         "tests/test_fundamental_forensics_query_exports.py::test_a38_x1p_decimal_value_exact_roundtrip_all_formats",
-        "tests/test_fundamental_forensics_api_client.py::test_query_round_trip_equals_route_body"
+        "tests/test_fundamental_forensics_api_client.py::test_query_round_trip_equals_route_body",
+        "tests/test_fif_z0_gap_a23_a38.py::test_a38_one_query_every_leg_on_one_production_generation",
+        "tests/test_fif_z0_gap_a23_a38.py::test_a38_s4_full_leg_rerun_is_byte_identical"
       ],
-      "obligations": [
-        {
-          "kind": "test_gap",
-          "owner": "FIF seat",
-          "next_action": "Add one parity check across kernel, API, UI drawer, CSV, Parquet and JSON for a single query on the production generation."
-        }
-      ]
+      "obligations": [],
+      "note": "Closed 2026-11-01 on #9858 (main 17f42f0e): one query on a production generation answers identically through the kernel, API JSON route, CSV, Parquet, XLSX and the page drawer fields, Decimal-exact per root cell with one query_hash and one receipt digest; a full-leg rerun is byte-identical."
     },
     {
       "id": "A39",
@@ -1010,15 +1003,14 @@
       ],
       "condition": "Native Opus to Fabric operator to worker execution",
       "required_behavior": "Actual supported/admitted starts and consumed returns; one global envelope, no simulated fleet.",
-      "verdict": "PARTIAL",
-      "evidence": [],
-      "obligations": [
-        {
-          "kind": "records",
-          "owner": "FIF seat",
-          "next_action": "Reconcile the non-terminal lane-ledger rows and record the single global execution envelope in the workstream record."
-        }
-      ]
+      "verdict": "CLOSED",
+      "evidence": [
+        "agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md::### Single global execution envelope (A49)",
+        "agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md::Lane-ledger reconciliation, 2026-11-01",
+        "agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md::0 non-terminal rows; 0 effect-unknown."
+      ],
+      "obligations": [],
+      "note": "Closed 2026-11-01 on the workstream record: one principal seat with all labor in admitted Fabric lanes (no native labor, no simulated fleet); the 2026-10-20 ledger (143 rows) and the 2026-11-01 ledger (64 rows) are reconciled with 0 non-terminal and 0 effect-unknown rows."
     },
     {
       "id": "A50",
@@ -1028,15 +1020,13 @@
       ],
       "condition": "Pressure to finish excluded adjacent programs",
       "required_behavior": "No SNI/Grey Deer Risk/Market OS/Options/Prophet/Market Ontology/GMI/Executive/Fabric implementation; excluded legacy work recorded, not marked done.",
-      "verdict": "PARTIAL",
-      "evidence": [],
-      "obligations": [
-        {
-          "kind": "records",
-          "owner": "FIF seat",
-          "next_action": "Record the excluded programs (SNI, Grey Deer Risk, Market OS, Options, Prophet, Market Ontology, GMI, Executive OS, Fabric) in the workstream record as excluded, not done."
-        }
-      ]
+      "verdict": "CLOSED",
+      "evidence": [
+        "agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md::### Excluded programs (A50): excluded, not done",
+        "agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md::Prophet shadow component is EXCLUDED"
+      ],
+      "obligations": [],
+      "note": "Closed 2026-11-01 on the workstream record: the twelve excluded programs are listed as excluded, not done, and FIF-10's Prophet shadow component carries the same status."
     },
     {
       "id": "A51",
@@ -1064,19 +1054,18 @@
       ],
       "condition": "Unverified rights, licence renewal or attestation trust change",
       "required_behavior": "No purchase/credential/permission bypass; block only dependent release and continue safe independent work.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_coverage_contract.py::test_rights_lists_empty",
-        "tests/test_fundamental_forensics_coverage_contract.py::test_attested_false_everywhere"
+        "tests/test_fundamental_forensics_coverage_contract.py::test_attested_false_everywhere",
+        "tests/test_fif_source_rights.py::test_hold_on_one_contract_does_not_refuse_a_passing_contract",
+        "tests/test_fif_source_rights.py::test_held_capture_constructs_no_fetcher_and_performs_no_network",
+        "tests/test_fif_source_rights.py::test_main_refuses_held_contract_with_typed_line",
+        "tests/test_fif_source_rights.py::test_hold_precedence_credentials_then_licence_then_policy",
+        "tests/test_fif_source_rights.py::test_publisher_and_specialist_pack_scripts_do_not_use_source_rights"
       ],
-      "obligations": [
-        {
-          "kind": "implementation_gap",
-          "owner": "FIF seat",
-          "next_action": "No rights-gated release component exists: every admitted source is public SEC EDGAR and the coverage source_rights lists are empty and guarded. Before any non-public source is admitted, add a per-source rights hold that blocks only the dependent pack or release, with a test that independent work still publishes."
-        }
-      ],
-      "note": "Today's scope is public EDGAR only, so no release is rights-blocked; the hold mechanism itself is not built."
+      "obligations": [],
+      "note": "Today's scope is public EDGAR only, so no release is rights-blocked; the hold mechanism itself is not built. Closed 2026-11-01 on #9859 (main a815e54f): a per-source rights hold is wired into capture admission; a held contract is refused with a typed line before any fetcher or network call, a passing contract still runs, and the publisher and pack scripts are kept independent of the hold by guard."
     },
     {
       "id": "A53",

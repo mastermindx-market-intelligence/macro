@@ -360,7 +360,7 @@ fetch('../policy_lever.json',{cache:'no-cache'})
 
 <footer>
   <span class="l-en">Research dashboard, not investment advice. Theme and member scores help prioritize what to study; they are not a buy list or an order.</span><span class="l-zh">研究看板，非投资建议。主题与成分股评分用于安排研究优先级，不是买入清单或下单指令。</span>
-  <span class="l-en">Generated</span><span class="l-zh">生成于</span> <span>2026-11-01 08:35 UTC</span>.
+  <span class="l-en">Generated</span><span class="l-zh">生成于</span> <span>2026-11-02 01:57 UTC</span>.
 </footer>
 
 <script>
@@ -369,6 +369,10 @@ const L = (en,zh)=>`<span class="l-en">${en}</span><span class="l-zh">${zh==null
 const BENCH = DETAIL.bench_label || 'S&P 500';          // regional benchmark label (CSI 300 / Hang Seng / S&P-TSX)
 const BENCHZ = DETAIL.bench_label_zh || BENCH;
 const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// basket-sector-link: a US sector fund this basket is cross-checked against opens that fund's page.
+const SECTOR_FUND_PAGES = new Set(['XLB','XLC','XLE','XLF','XLI','XLK','XLP','XLRE','XLU','XLV','XLY']);
+const refLabelHtml = label => SECTOR_FUND_PAGES.has(label)?`<a href="../sectors/${esc(label)}.html">${esc(label)}</a>`:esc(label);
+// /basket-sector-link
 const briefText = (s,max=260) => {
   s = String(s || '').replace(/\s+/g,' ').trim();
   if(s.length <= max) return s;
@@ -1345,7 +1349,7 @@ function render(){
       <div><div class="k">${L('new hi / lo','新高/低')}</div><div class="v"><span class="pos">${bd.nh||0}</span>/<span class="neg">${bd.nl||0}</span></div></div>
       <div><div class="k">${L('adv / dec today','今日涨/跌')}</div><div class="v"><span class="pos">${th.adv||0}</span>/<span class="neg">${th.dec||0}</span></div></div>
     </div>
-    ${ref?`<div class="muted sm" style="margin-top:10px">${L('Cross-checked vs','交叉验证')} <b>${esc(ref.label)}</b>: ${L('daily corr','日相关')} <b>${ref.corr}</b>, ${L('market-adjusted','剔除市场')} <b>${ref.rel_corr}</b> (${ref.n} ${L('sessions','日')})</div>`:''}
+    ${ref?`<div class="muted sm" style="margin-top:10px">${L('Cross-checked vs','交叉验证')} <b>${refLabelHtml(ref.label)}</b>: ${L('daily corr','日相关')} <b>${ref.corr}</b>, ${L('market-adjusted','剔除市场')} <b>${ref.rel_corr}</b> (${ref.n} ${L('sessions','日')})</div>`:''}
   </div>`;
 
   // ---- score history + change timeline ----
