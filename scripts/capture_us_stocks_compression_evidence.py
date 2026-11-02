@@ -248,13 +248,15 @@ _FIXTURE_ASSETS = (
 
 
 def write_fixture_site(scratch: Path) -> None:
+    from lib.pages import write_unshimmed_html  # noqa: PLC0415
     scratch.mkdir(parents=True, exist_ok=True)
     for name in _FIXTURE_ASSETS:
         src = TEMPLATES_DIR / name
         if src.exists():
             shutil.copy(src, scratch / name)
-    (scratch / "us_stocks_s2.html").write_text(render_stocks_page(), encoding="utf-8")
-    (scratch / "sector_central_s2.html").write_text(
+    write_unshimmed_html(scratch / "us_stocks_s2.html", render_stocks_page(), encoding="utf-8")
+    write_unshimmed_html(
+        scratch / "sector_central_s2.html",
         render_sector_central_page(), encoding="utf-8")
 
 

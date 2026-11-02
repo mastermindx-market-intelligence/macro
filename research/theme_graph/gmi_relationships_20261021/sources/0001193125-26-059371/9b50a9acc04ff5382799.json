@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-19T21:11:12Z",
+ "accession": "0001193125-26-059371",
+ "cik": "0001005284",
+ "doc_byte_length": 4060884,
+ "doc_sha256": "b8f3af137eed03c862e9738ebfcaea1e61832607115a769e412b604eab6aeb0c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-19",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "oled-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2031417,
+  "byte_start": 2031140,
+  "normalized": "Under these agreements, the Company has granted BOE non-exclusive license rights under various patents owned or controlled by the Company to manufacture and sell OLED display products. The Company supplies phosphorescent OLED materials to BOE for use in its licensed products.",
+  "normalized_sha256": "bf23a18c09bbb59a802e84380531d84cd07e26a1427c7e6af36cdea697135df7",
+  "raw": " Under these agreements, the Company has granted BOE non-exclusive license rights under various patents owned or controlled by the Company to manufacture and sell OLED display products. The Company supplies phosphorescent OLED materials to BOE for use in its licensed products.",
+  "raw_sha256": "9b50a9acc04ff538279948cdffa5be2d811ad12051a14e0d36111136e980cb94"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1005284/000119312526059371/oled-20251231.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-02-25T21:06:31Z",
+ "accession": "0002074176-26-000010",
+ "cik": "0002074176",
+ "doc_byte_length": 2327507,
+ "doc_sha256": "4588f20c5359c90602aa11015540d7a72b0263abcdfcb005c496ca323b5161d8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "vnom-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1451290,
+  "byte_start": 1450197,
+  "normalized": "The Company is subject to risk resulting from the concentration of its royalty income in producing oil and natural gas properties and receivables with several significant operators. For the year ended December 31, 2025, two operators each accounted for more than 10% of royalty income: Diamondback (55%) and ExxonMobil Corporation (14%). For the year ended December 31, 2024, two operators each accounted for more than 10% of royalty income: Diamondback (54%) and Pioneer Natural Resources (11%).",
+  "normalized_sha256": "c2b84b1b7860e420ad5257a961860c20999ebad37614fa04bbae2ca87cefc62b",
+  "raw": "The Company is subject to risk resulting from the concentration of its royalty income in producing oil and natural gas properties and receivables with several significant operators. For the year ended December&#160;31, 2025, two operators each accounted for more than 10% of royalty income: Diamondback (<ix:nonFraction unitRef=\"number\" contextRef=\"c-108\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-517\">55</ix:nonFraction>%) and ExxonMobil Corporation (<ix:nonFraction unitRef=\"number\" contextRef=\"c-109\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-518\">14</ix:nonFraction>%). For the year ended December 31, 2024, two operators each accounted for more than 10% of royalty income: Diamondback (<ix:nonFraction unitRef=\"number\" contextRef=\"c-110\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-519\">54</ix:nonFraction>%) and Pioneer Natural Resources (<ix:nonFraction unitRef=\"number\" contextRef=\"c-111\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-520\">11</ix:nonFraction>%).",
+  "raw_sha256": "5226594d4c194c467eefb532c32dbbc97ac39ec467417b20e3f984316e3e77d6"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2074176/000207417626000010/vnom-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 50724,
+   "byte_start": 50046,
+   "context_ref": "c-108",
+   "raw": "<xbrli:context id=\"c-108\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0002074176</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">vnom:DiamondbackEnergyInc.Member</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueRightsGrantedMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "4b228b9d39b40b3ab1a697e93ebd55a4a1c3a8e8c868cf8d59a19fda9d9f790e"
+  },
+  {
+   "byte_end": 51402,
+   "byte_start": 50724,
+   "context_ref": "c-109",
+   "raw": "<xbrli:context id=\"c-109\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0002074176</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">vnom:ExxonMobilCorporationMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueRightsGrantedMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "9722b292e3510f479db5532d70b1dc296a60dd48aba33d06c571071c9e4b2221"
+  }
+ ]
+}
