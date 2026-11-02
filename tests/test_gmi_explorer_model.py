@@ -95,11 +95,26 @@ def test_kinds(model: dict, proof: dict) -> None:
 
 
 @pytest.mark.needs_full_checkout("data")
-def test_edges_state_empty_when_absent(model: dict) -> None:
-    assert not (ROOT / "data/company_intelligence/relationships").exists()
+def test_edges_state_empty_for_the_unwired_envelope(model: dict) -> None:
+    store = json.loads((ROOT / model_module.EDGES_PATH).read_text(encoding="utf-8"))
+    assert store["schema"] == "company_intelligence.relationship_edges/v1"
     assert model["edges_state"] == "empty"
     assert model["edges"] == []
-    assert model["deck"] is None
+    assert model["party_names"] == {}
+    assert model["edge_package"] is None
+    deck = json.loads((ROOT / model_module.DECK_PATH).read_text(encoding="utf-8"))
+    assert model["deck"] == deck
+
+
+def test_read_edges_absent_list_and_envelope(tmp_path: Path) -> None:
+    path = tmp_path / "relationship_edges.json"
+    assert model_module.read_edges(path) == ([], "empty")
+    path.write_text('[{"edge": "example"}]', encoding="utf-8")
+    assert model_module.read_edges(path) == ([{"edge": "example"}], "present")
+    path.write_text(json.dumps({"schema": "company_intelligence.relationship_edges/v1",
+                                "adoption_state": "proposed",
+                                "edges": [{"edge": "example"}]}), encoding="utf-8")
+    assert model_module.read_edges(path) == ([], "empty")
 
 
 @pytest.mark.needs_full_checkout("data")
