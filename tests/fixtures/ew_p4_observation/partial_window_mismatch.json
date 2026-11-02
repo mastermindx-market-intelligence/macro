@@ -49,5 +49,10 @@
     "oracle/ratio_pairs.json@9f2c1ab",
     "marketdata/rotation_events.json@1d253e1d"
   ],
-  "previous": null
+  "previous": null,
+  "recorded": {
+    "source": "macro.rotation_events.ledger",
+    "ledger": "rotation_events/events.jsonl",
+    "receipt_sha256": "793138b2cde1e801c9bc17869c0e0fe3177791a8cdcee0bf3d2b8c09cd005be2"
+  }
 }

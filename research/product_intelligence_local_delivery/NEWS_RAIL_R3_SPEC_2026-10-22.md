@@ -31,6 +31,14 @@ Light `--warn` must resolve to `#7d5922` where the rail renders on white (the sh
 light value fails 3:1); if the shared shell does not already supply it, set it on `.board`
 for light only. Doctrine: no accent edge on any container, any side.
 
+> **Amendment 2026-11-02 (seat ruling, build repair round 1).** The light `--warn` carve-out is
+> NOT shipped. The terminal's enforced product law D-W1 (`lib/__tests__/newsFlowTokens.test.ts`:
+> "dark ships, light is specimen-only", no owned news-flow file may contain `data-theme`) outranks
+> this frozen value; `#7d5922` remains specimen documentation for the Paper board and any future
+> light release, and no selector for it lives in `TickerNewsPanel.module.css`. Second amendment from
+> the same round: the persistent ladder underline sits on `.ladder .step` (and `.ladder:hover .step`),
+> never on the `›` separators. Every other value in this spec stands.
+
 ## 2. Row anatomy (TickerNewsPanel.tsx; content and order unchanged from R2 §3)
 
 1. **meta** — tag · publisher · topic · time, left to right, `flex-wrap:wrap`, gap 7 px, 9.5 px caps
@@ -122,6 +130,11 @@ Build lane owns: `components/news/TickerNewsPanel.module.css`, `components/news/
 `components/news/NewsCatchup.module.css` (`.markOne` and `.tag` rules only, if owned there),
 `lib/__tests__/tickerNewsPanel.test.tsx`, `lib/__tests__/tickerNewsA11y.test.tsx`,
 `e2e/news-flow-responsive.spec.ts`, `docs/pr-crops/news-r2/`. Nothing else.
+
+> **Amendment 2026-11-02 (seat grant, P2 polish).** `components/news/NewsCatchup.module.css` `.change`
+> is added to the owned set so the §2.4 review-change ink could ship; `lib/newsValidation.ts`
+> (`parseAnnotation` only) and `lib/__tests__/newsFlowContract.test.ts` were owned for the one P2
+> annotation-trim change. Shipped as terminal master 70ebc639 ([#1211](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1211)).
 
 ## 7. NOT DONE UNLESS
 
