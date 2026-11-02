@@ -15,10 +15,15 @@
 # Re-frozen 2026-11-01 at 66829d17 (repair wave 4, seat-direct, packets A 46160ab4 / B d9de99cc / C 66829d17: engine ZH doctrine vocabulary = deck,
 # leg-family clock rule + three labeled disagree states, one ZH phase word per face, no study ids on faces, HOLD rationale (SIC-ADJ-01a),
 # board 41 composite desk light/ZH, desk clock caption, manifest truth, null-stance FIXTURE card; boards 0-41; round 5 dual review).
+# Round 5 at 66829d17: Reviewer B PASS_WITH_CONDITIONS (filed PASS_WITH_NOTES; VTC-035..040 minor, VTC-042 from the pass-2 reveal) / Reviewer A BLOCK
+# (PRC-042 major: the Watch-stance drift record understates the production fork; PRC-043 minor, PRC-044/045 nit, PRC-037 residual) → verdict REVISE
+# round 5 with SIC-V5-C01..C13 and the zh-latin probe adjudication SIC-ADJ-03; repair wave 5 → re-freeze → round 6. Seat-disclosed SIC-V5-C13:
+# proposed_artifact.frozen_sha below was stale at 1ad748c8 (the 66829d17 re-freeze moved the manifest field only); the checker's stale-review-receipt rule
+# exposed it against the round-5 receipts and it is corrected to 66829d17 in the round-5 ledger commit; the re-freeze script now asserts the two fields agree.
 schema: mastermind.rig_proposal.v1
 reference_id: sector-intelligence-cycles-20261021
 proposed_artifact:
-  frozen_sha: 1ad748c8e785eda0a3e1f13167a9290c194d07ae
+  frozen_sha: 66829d178798f9226be7f668e82fe7c15e38b5e4
   paths:
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/boards_manifest.yml
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/00-components-desktop-both-en.png
