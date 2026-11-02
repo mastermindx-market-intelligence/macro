@@ -1535,6 +1535,41 @@ def test_fund_filing_provenance_legacy_and_conflicting_metadata_unavailable():
     assert fi._snapshot_filing_provenance(pd.concat([frame, other])) == {'status': 'unavailable'}
 
 
+@pytest.mark.parametrize('digest,expected', [
+    ('a' * 64, 'a' * 64), (None, None), (float('nan'), None),
+    ('legacy-not-a-hash', None), ('A' * 64, None), ('a' * 63, None),
+    ('g' * 64, None),
+])
+def test_optional_filing_digest_is_only_a_real_sha256_shape(digest, expected):
+    frame = _retained_fund_snapshot()
+    frame['source_sha256'] = digest
+    result = fi._snapshot_filing_provenance(frame)
+    assert result['status'] == 'available'
+    assert result['source_sha256'] == expected
+    assert result['index_url'].endswith('/0001193125-26-352200-index.html')
+
+
+def test_conflicting_optional_digest_does_not_hide_known_filing():
+    import pandas as pd
+    first = _retained_fund_snapshot().assign(source_sha256='a' * 64)
+    second = _retained_fund_snapshot().assign(source_sha256='b' * 64)
+    result = fi._snapshot_filing_provenance(pd.concat([first, second]))
+    assert result['status'] == 'available' and result['source_sha256'] is None
+
+
+@pytest.mark.skipif(jinja2 is None or _DOSSIER_DIR is None, reason='jinja2/template unavailable')
+def test_optional_filing_digest_does_not_change_rendered_report():
+    import copy
+    context = copy.deepcopy(MINIMAL_CTX)
+    frame = _retained_fund_snapshot().assign(source_sha256='a' * 64)
+    context['fi']['book_meta']['filing'] = fi._snapshot_filing_provenance(frame)
+    known = _env().get_template('fund_dossier.html.j2').render(**context)
+    frame['source_sha256'] = 'legacy-invalid-digest'
+    context['fi']['book_meta']['filing'] = fi._snapshot_filing_provenance(frame)
+    unavailable = _env().get_template('fund_dossier.html.j2').render(**context)
+    assert known == unavailable
+
+
 def test_fund_filing_provenance_uses_incumbent_receipt_index_on_real_read_path(tmp_path, monkeypatch):
     from engine import smart_money as sm
     import pandas as pd

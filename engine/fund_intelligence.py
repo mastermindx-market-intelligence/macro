@@ -585,11 +585,19 @@ def _snapshot_filing_provenance(frame: pd.DataFrame) -> dict:
                     or source.path != base.removeprefix("https://www.sec.gov") + source.path.rsplit('/', 1)[-1]
                     or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*\.(?:xml|txt|html?)", source.path.rsplit('/', 1)[-1])):
                 raise ValueError("filing source mismatch")
+        # A legacy/invalid optional digest must neither claim a hash nor hide
+        # an otherwise known filing. Only the collector's SHA-256 shape is public.
+        try:
+            source_sha256 = one("source_sha256")
+        except (TypeError, ValueError):
+            source_sha256 = None
+        if source_sha256 is not None and not re.fullmatch(r"[0-9a-f]{64}", source_sha256):
+            source_sha256 = None
         return {"status": "available", "manager": one("fund_name"),
                 "cik": str(int(cik)), "accession": accession, "form": form,
                 "index_url": index_url, "receipt_index_url": supplied_index,
                 "source_url": source_url,
-                "source_sha256": one("source_sha256")}
+                "source_sha256": source_sha256}
     except (TypeError, ValueError):
         return {"status": "unavailable"}
 

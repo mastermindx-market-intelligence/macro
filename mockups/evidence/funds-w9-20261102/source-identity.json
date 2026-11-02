@@ -4,10 +4,10 @@
   "reviewed_initial_candidate": "b56054a686bbfbd8da58c2949a6ffc78fb36f0b3",
   "receipt_correction": "cfdc34588dd590cd400cf39f01df04c642ba19e0",
   "source_sha256": {
-    "engine/fund_intelligence.py": "b8738e828cb8ea3c21cc021d26dc56417e37a731715a78fe1481de405777eb2c",
+    "engine/fund_intelligence.py": "0d3194659afa2ad43870a0bec9e5b125ed002589087918eb836ce52ece87b143",
     "templates/fund_index.html.j2": "b9ad53b8a69db9af1b806512edec452cd121f9f0f782997157417519abd07dbb",
     "templates/fund_dossier.html.j2": "80a70a8e22ef655ec63eb3985e21ae5ee461d36b9944bf16904055ee0b0e18ec",
-    "tests/test_smart_money_v3.py": "324a631d1c96c9d4a842387b89252c451e1947e3ffcc715d99ae96b4dcda4152",
+    "tests/test_smart_money_v3.py": "2b880c08cd008d0c5c8351231e4bd040d662c4b42597fbf174012fcf71b881e9",
     "tests/test_fund_page_typography.py": "bc103e950a04474fdba1dee9bb0d4882951a6d52df083b4c20626596cda777a8"
   },
   "rendered_sha256": {
@@ -19,6 +19,8 @@
     "4 degraded/empty render cases pass after unavailable-copy repair",
     "added-lines design guard passes",
     "16 canonical real-browser REST cells; explicit role/state gaps remain",
-    "2 standalone and2 composed unavailable-portal journeys, separate from normal healthy/authenticated/public proof"
-  ]
+    "2 standalone and2 composed unavailable-portal journeys, separate from normal healthy/authenticated/public proof",
+    "84 affected cases pass after optional-digest guard; valid/malformed digest produces byte-identical rendered report, so 16 REST captures reused"
+  ],
+  "optional_digest_contract": "Only uniform 64 lowercase hexadecimal characters are retained; malformed/legacy/NaN/conflicting optional values become null without changing known filing identity."
 }
