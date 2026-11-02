@@ -1,29 +1,30 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "30998ca145bc247cbb6fb67e18ad6f06a3588a8a",
+  "source_revision": "1eb0b75c7515d6c2337f492acefa9586c0725758",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
-  "script_sha256": "b4289d262052e7c7ff26a019b16930410c4d541161916ad5973ed7d701b19639",
-  "band_template_sha256": "ea98fb3f2d677800629dd582de622a45286ff524e2631db4d803cba1447508f6",
+  "script_sha256": "2856f51743b48565f8646541d8be9c1d0534822d5d6442b8e7bb409099e1f846",
+  "band_template_sha256": "2fed7411c41d1766433de158c88c8a5a7c4bf2d1642a454b0fe39a77ee75a11f",
   "fixtures": {
-    "conflict_20s.json": "06d235e8980585e8daaa69bd6a06b036fb1643b11b9370e9d28423ef36a023d1",
-    "corrected.json": "97b37a597b3da373925ff74fef57c74395499b39d4c2af226838d7d754b3563e",
-    "expected.json": "54aa195a68a291119ff6caf4f5e550724bf4cdc2c26f2a0c68618f025e934ac3",
-    "journey_b_both_fell.json": "ec3bbb92869ae8298e0c05fa03fcaa42b823b99b43f444efaff5c10d92cafb2e",
+    "conflict_20s.json": "ee262b676d41235fd77059c54f56395aea05ddb85fccaf0d3be2debcf4b9c7eb",
+    "corrected.json": "b7b4038c047615f3a71f57eebf8a5cacd868b2f42a7766ddbfed80c995920fb3",
+    "expected.json": "01a51d58cf667eae8417d28886ddce4e8ba179adebc67242141e1c2224e67bfa",
+    "journey_b_both_fell.json": "6e59fd762b35bbf46091882b1a992efd511f105f99f32160a4e3026ecaee2a16",
     "journey_c_envelope_1d253e1d.json": "ce20bb87d141c371dc2850c984da08b0f51522c51a5db889b8cf4dcba74f776a",
-    "malformed_blank_pair.json": "8623601cbc7b781f7e8ebbd1b5a9b50fd4ee1e9f8ce3d1866f63fe2558b35d50",
-    "malformed_calendar.json": "2ac98a491594780374c41c958cfede702bdaa9d0c13f5cf0e97c71679a4d6545",
-    "malformed_future.json": "9173f52645c7c36c00051bc30d6b6358adcf336bbdfa0f2a9b569a04249a84ed",
-    "malformed_id.json": "cdd6dd19dd824e0f55900e1a38a7f03fce060d8971e9b9e3c1241815d4f08897",
-    "malformed_ratio.json": "72851275760ce45bbaef43c849ded29b42c1e225faff58457ca3ed9b6e71ec4d",
-    "observed_rise.json": "f0163525d54252c60e22ddc1bd07235294ba04f7befde6ab67a42ffec8110a70",
-    "partial_missing_20s.json": "eb228d6aadba1f4dab3224c7b2acfd42143ea9a2ce3fee473931162f746f2ad9",
-    "partial_window_mismatch.json": "b502267836c4695012fa55663c5cfe1f48e7134e01651abed80dfdd3df4b42de",
-    "reversal.json": "d9da04d38391a8d76f0fb34f0c9b56cde3b73ff28f6eb9f9b5cc3b0654af6f7b",
-    "stale_obs.json": "fe04248904afaef1e8695c0927d20dd2ef920e892d1827923bfeaf18a7ea5b3e",
-    "withdrawn.json": "1fa0b72f335aeb7a5a7b4ed893066da892d863961c8e73434b3fd41915358451"
+    "malformed_blank_pair.json": "654398703f579d80a6fe24996393d7277575ea672d1bbc7a0a3c6489e3f58eb0",
+    "malformed_calendar.json": "23fa48836aac325599e77a4fe664a188227e7f8241ae106052e107335a39f42e",
+    "malformed_future.json": "b98cb5acdcdd76c5e1a8c26d5c7c1552916940a7387e5697e1dc0f3fc2420d8a",
+    "malformed_id.json": "53a1b3b9ec99a4bcfa75f0f57802c83a69e757bd8ab55d0ff26932712309716e",
+    "malformed_missing_recorded.json": "f0163525d54252c60e22ddc1bd07235294ba04f7befde6ab67a42ffec8110a70",
+    "malformed_ratio.json": "3cf36fdbe43375eafb1a16093a2d045f0ef12384c2a5e7ceed9515a9b0e45684",
+    "observed_rise.json": "0f758aa4a9fdf768535697065f659bad9d4b1c3a868826f9d156853c342ee119",
+    "partial_missing_20s.json": "0f228628ab9c2682ae26be490adca01bbb0a801782986a0a1f913096e823140a",
+    "partial_window_mismatch.json": "8546b90b8002264889d74ca904286f7be71ee782ed8419fcf841c533c1903745",
+    "reversal.json": "b3a3d6d366a49a06cff07d6481e3749fc710989fb6c1c44e1f27dd5021dd7959",
+    "stale_obs.json": "bd849db0a2bb9c9eaf912c7272a484abc9d2726f046e54747a871520a24a9de1",
+    "withdrawn.json": "934a1f695bf1ce1aece313944ba4735484577ce40c02e22fec70ab9dbb0c565d"
   },
   "cases": [
     {
@@ -984,14 +985,14 @@
     "sc-states": "contact-sc-states.html"
   },
   "pr_source_equivalence": {
-    "note": "Shots were rendered by the Grey Deer early-warning CEO seat (local Playwright Chromium) at source_revision, the EW-P4-FU code commit on the PR branch; the PR head carries byte-identical render inputs (equal git blob ids below), so the shots depict the PR source. tests/test_ew_p4_descriptive_ui.py re-checks the blob ids against the tested tree. Test-only and CI-manifest files are excluded from the render set.",
-    "pr_branch": "claude/gd-ew-p4-fu-20261101",
-    "pr_parent_of_evidence_commit": "30998ca145bc247cbb6fb67e18ad6f06a3588a8a",
+    "note": "Shots were rendered by the Grey Deer early-warning CEO seat (local Playwright Chromium) at source_revision, the EW-P4-ACT code commit on the PR branch; the PR head carries byte-identical render inputs (equal git blob ids below), so the shots depict the PR source. tests/test_ew_p4_descriptive_ui.py re-checks the blob ids against the tested tree. Test-only and CI-manifest files are excluded from the render set.",
+    "pr_branch": "claude/gd-ew-p4-act-20261101",
+    "pr_parent_of_evidence_commit": "1eb0b75c7515d6c2337f492acefa9586c0725758",
     "render_files": [
       {
         "path": "site/rotation_events.js",
-        "blob_at_source_revision": "c90c13d73e09a072646f4845ae683f811e8c6f6f",
-        "blob_on_pr_branch": "c90c13d73e09a072646f4845ae683f811e8c6f6f",
+        "blob_at_source_revision": "27d1c9adfd293c98f76ea3258b00f5a04eb49d8c",
+        "blob_on_pr_branch": "27d1c9adfd293c98f76ea3258b00f5a04eb49d8c",
         "equal": true
       },
       {
@@ -1002,38 +1003,38 @@
       },
       {
         "path": "templates/_risk_envelope_band.html.j2",
-        "blob_at_source_revision": "40ea00376e89055ab900d8d6de3de1f85ff595ff",
-        "blob_on_pr_branch": "40ea00376e89055ab900d8d6de3de1f85ff595ff",
+        "blob_at_source_revision": "364a926ff63b948662a5c1cab7581c50976214bd",
+        "blob_on_pr_branch": "364a926ff63b948662a5c1cab7581c50976214bd",
         "equal": true
       },
       {
         "path": "templates/rotation_events.js",
-        "blob_at_source_revision": "c90c13d73e09a072646f4845ae683f811e8c6f6f",
-        "blob_on_pr_branch": "c90c13d73e09a072646f4845ae683f811e8c6f6f",
+        "blob_at_source_revision": "27d1c9adfd293c98f76ea3258b00f5a04eb49d8c",
+        "blob_on_pr_branch": "27d1c9adfd293c98f76ea3258b00f5a04eb49d8c",
         "equal": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/conflict_20s.json",
-        "blob_at_source_revision": "d20a2ae9c6be5026205432fc3fb94537de96ca4c",
-        "blob_on_pr_branch": "d20a2ae9c6be5026205432fc3fb94537de96ca4c",
+        "blob_at_source_revision": "0dd5fce2265bca4d74afec6b74ce0be6522dc83a",
+        "blob_on_pr_branch": "0dd5fce2265bca4d74afec6b74ce0be6522dc83a",
         "equal": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/corrected.json",
-        "blob_at_source_revision": "a9bbdaed6a2c4abca025a8b6b6ca90ecfb8154c4",
-        "blob_on_pr_branch": "a9bbdaed6a2c4abca025a8b6b6ca90ecfb8154c4",
+        "blob_at_source_revision": "2859bc9a02f3ddbcfdc829c182bf737b9e7933af",
+        "blob_on_pr_branch": "2859bc9a02f3ddbcfdc829c182bf737b9e7933af",
         "equal": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/expected.json",
-        "blob_at_source_revision": "4a6c9ff1eabaf7644413a7e3c6236fbf491705f3",
-        "blob_on_pr_branch": "4a6c9ff1eabaf7644413a7e3c6236fbf491705f3",
+        "blob_at_source_revision": "bb334b7564217aa41858a3152c208839c43e4721",
+        "blob_on_pr_branch": "bb334b7564217aa41858a3152c208839c43e4721",
         "equal": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/journey_b_both_fell.json",
-        "blob_at_source_revision": "a576e81bc6d1c1c28ae877c2cc0c3bfa0f583603",
-        "blob_on_pr_branch": "a576e81bc6d1c1c28ae877c2cc0c3bfa0f583603",
+        "blob_at_source_revision": "6f65172c44453228dfc26f39b59c93163e02d3e9",
+        "blob_on_pr_branch": "6f65172c44453228dfc26f39b59c93163e02d3e9",
         "equal": true
       },
       {
@@ -1044,56 +1045,56 @@
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_future.json",
-        "blob_at_source_revision": "ba5a74eb6e184f5cf74a178d03d6328f5c9ad94b",
-        "blob_on_pr_branch": "ba5a74eb6e184f5cf74a178d03d6328f5c9ad94b",
+        "blob_at_source_revision": "30d86cba6dcf7f127b90dbba9c06340895eb6098",
+        "blob_on_pr_branch": "30d86cba6dcf7f127b90dbba9c06340895eb6098",
         "equal": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_id.json",
-        "blob_at_source_revision": "9f1e46a2eb9401d28cc106fc504257c45bb5c98e",
-        "blob_on_pr_branch": "9f1e46a2eb9401d28cc106fc504257c45bb5c98e",
+        "blob_at_source_revision": "7644ff22b6490d1f52c525c20026472c65010c82",
+        "blob_on_pr_branch": "7644ff22b6490d1f52c525c20026472c65010c82",
         "equal": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_ratio.json",
-        "blob_at_source_revision": "8299d018f1394ade0405454b70d792bc86e9fb9a",
-        "blob_on_pr_branch": "8299d018f1394ade0405454b70d792bc86e9fb9a",
+        "blob_at_source_revision": "608562757447a71e569c63ad72d3c1e3e60f6f54",
+        "blob_on_pr_branch": "608562757447a71e569c63ad72d3c1e3e60f6f54",
         "equal": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/observed_rise.json",
-        "blob_at_source_revision": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
-        "blob_on_pr_branch": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
+        "blob_at_source_revision": "238b8f6f61ff09158db2316ba9d47a6614ef0f3c",
+        "blob_on_pr_branch": "238b8f6f61ff09158db2316ba9d47a6614ef0f3c",
         "equal": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/partial_missing_20s.json",
-        "blob_at_source_revision": "46ee959d29cad1556b684010666541c68c139a33",
-        "blob_on_pr_branch": "46ee959d29cad1556b684010666541c68c139a33",
+        "blob_at_source_revision": "33c0d74f9dbce45e46e001a7569169c83422fdce",
+        "blob_on_pr_branch": "33c0d74f9dbce45e46e001a7569169c83422fdce",
         "equal": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/partial_window_mismatch.json",
-        "blob_at_source_revision": "100dfdf086e43f36ec6412ec3216317b0b65114a",
-        "blob_on_pr_branch": "100dfdf086e43f36ec6412ec3216317b0b65114a",
+        "blob_at_source_revision": "4dc92202b7be2db4623bc7b7f6efa9c56e6c2049",
+        "blob_on_pr_branch": "4dc92202b7be2db4623bc7b7f6efa9c56e6c2049",
         "equal": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/reversal.json",
-        "blob_at_source_revision": "13b172b3028a00b4630504eab6d34b9d2e562787",
-        "blob_on_pr_branch": "13b172b3028a00b4630504eab6d34b9d2e562787",
+        "blob_at_source_revision": "a5db3baed08990c12abfc655e774c347b0b6ee85",
+        "blob_on_pr_branch": "a5db3baed08990c12abfc655e774c347b0b6ee85",
         "equal": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/stale_obs.json",
-        "blob_at_source_revision": "d501f0a7571c87f54436980db6d9c300f49f6c8a",
-        "blob_on_pr_branch": "d501f0a7571c87f54436980db6d9c300f49f6c8a",
+        "blob_at_source_revision": "cbdde8065fc8490ea07be0476bfa6d520ef66f31",
+        "blob_on_pr_branch": "cbdde8065fc8490ea07be0476bfa6d520ef66f31",
         "equal": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/withdrawn.json",
-        "blob_at_source_revision": "5cfbd563ce0fe422b6dd8b915685e3131d15f39d",
-        "blob_on_pr_branch": "5cfbd563ce0fe422b6dd8b915685e3131d15f39d",
+        "blob_at_source_revision": "7a23d72c6b18ce76f918c33ec8a9a539a0fa0fca",
+        "blob_on_pr_branch": "7a23d72c6b18ce76f918c33ec8a9a539a0fa0fca",
         "equal": true
       },
       {
@@ -1104,14 +1105,20 @@
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_blank_pair.json",
-        "blob_at_source_revision": "966cfc96da7ae3a70395d7a9e5e850537f7600a3",
-        "blob_on_pr_branch": "966cfc96da7ae3a70395d7a9e5e850537f7600a3",
+        "blob_at_source_revision": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80",
+        "blob_on_pr_branch": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80",
         "equal": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_calendar.json",
-        "blob_at_source_revision": "ac09f2373f0bba6f2472352a5e9bd23bff61c2aa",
-        "blob_on_pr_branch": "ac09f2373f0bba6f2472352a5e9bd23bff61c2aa",
+        "blob_at_source_revision": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0",
+        "blob_on_pr_branch": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0",
+        "equal": true
+      },
+      {
+        "path": "tests/fixtures/ew_p4_observation/malformed_missing_recorded.json",
+        "blob_at_source_revision": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
+        "blob_on_pr_branch": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
         "equal": true
       }
     ],

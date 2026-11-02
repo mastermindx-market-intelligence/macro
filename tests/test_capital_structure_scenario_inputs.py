@@ -633,6 +633,40 @@ def test_u1b_producer_reports_candidates_compiled_after_the_cutoff_as_not_materi
     assert output.read_bytes() == good
 
 
+#: Before the I0 fixture candidates' 2026-08-08 availability: the nightly
+#: compiles candidates after the state step fixes its cutoff, so an issuer's
+#: first candidates sit on file one night before they are visible.
+EARLY_AS_OF = "2026-08-07T00:00:00Z"
+
+
+def test_u1b_candidates_on_file_but_not_yet_visible_are_typed_unavailability(
+    tmp_path: Path,
+) -> None:
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    root = _compiled_root(tmp_path)
+    projection_builder.build_from_disk(
+        root=root,
+        canonical_path=root / "projection.json",
+        public_path=tmp_path / "site" / "latest.json",
+        generated_at=PROJECTION_AT,
+    )
+    state_builder.build_from_disk(root=root, as_of=EARLY_AS_OF, generated_at=STATE_AT)
+    records = _candidate_ledger_rows()
+    assert all(row["point_in_time"]["available_at"] > EARLY_AS_OF for row in records)
+    _write_parquet(root / producer.CANDIDATE_TERMS_FILENAME, _to_frame(records))
+
+    # The whole run completes: no candidate visible at the cutoff is the
+    # stated unavailability, not the resolver's refusal of the issuer.
+    producer.build_from_disk(root=root)
+    entry = _read_produced_bundle(root)["issuers"][ISSUER][INSTRUMENTS_FAMILY]
+    assert entry == {
+        "support": "unavailable",
+        "reason_codes": ["candidate_terms_not_materialized"],
+        "binding": None,
+        "record": None,
+    }
+
+
 # ---------------------------------------------------------------------------
 # Gate 18 — covenant commitments bind per issuer into the real funding path
 # ---------------------------------------------------------------------------

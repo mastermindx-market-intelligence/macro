@@ -52,6 +52,7 @@
     cellEvidence: null,
     financialToken: 0,
     statementsToken: 0,
+    statementsResets: 0,
     financial: { phase: 'idle' },
     statementColumns: [],
     statements: { phase: 'idle' },
@@ -2536,12 +2537,14 @@
   // the generation never admitted, so production asks only for a listed one.
   // Golden/demonstration wiring has no catalog and keeps the panel accession.
   // The promise never rejects: any failure leaves the panel accession in force.
+  // A rejected request is marked failed and never reused — the next open asks
+  // the catalog again — while a foreign or malformed payload stays cached.
   function ensureCatalog(entityId) {
     if (state.datasetMode !== 'production' || !entityId) {
       return Promise.resolve({ phase: 'none', filings: [] });
     }
     var cached = state.catalog;
-    if (cached && cached.entityId === entityId && cached.promise) return cached.promise;
+    if (cached && cached.entityId === entityId && cached.promise && !cached.failed) return cached.promise;
     var entry = { entityId: entityId, phase: 'loading', filings: [], promise: null };
     state.catalog = entry;
     entry.promise = financialPost(FINANCIAL_CATALOG_URL, {
@@ -2558,12 +2561,13 @@
       return entry;
     }, function () {
       entry.phase = 'none';
+      entry.failed = true;
       return entry;
     });
     return entry.promise;
   }
 
-  var PERIODIC_FORM = /^(10-K|10-Q|20-F|40-F)(\/A)?$/;
+  var PERIODIC_FORM = /^(10-K|10-Q|10-KT|10-QT|20-F|40-F)(\/A)?$/;
 
   // Latest periodic report the catalog lists: latest period, the original
   // ahead of its amendment, then the later filing date. '' when none is listed.
@@ -2629,8 +2633,10 @@
   }
 
   // Revisions periods from the admitted generation's statement columns. Never
-  // rejects; columns land only for the same issuer and only when none exist.
+  // rejects; columns land only for the same issuer, before any statements
+  // reset (A → B → A drops a still-open prime), and only when none exist.
   function primeStatementColumns(entityId) {
+    var resets = state.statementsResets;
     return ensureCatalog(entityId).then(function () {
       var target = company();
       if (!target || String(target.entity_id || '') !== entityId) return null;
@@ -2639,6 +2645,7 @@
       return fetchStatements(entityId, accession).then(function (result) {
         var current = company();
         if (!current || String(current.entity_id || '') !== entityId) return;
+        if (state.statementsResets !== resets) return;
         if (state.statementColumns.length) return;
         state.statementColumns = result.columns;
       });
@@ -2647,6 +2654,7 @@
 
   function resetStatementsState() {
     state.statementsToken += 1;
+    state.statementsResets += 1;
     state.statements = { phase: 'idle' };
     state.statementCells = [];
     state.statementColumns = [];

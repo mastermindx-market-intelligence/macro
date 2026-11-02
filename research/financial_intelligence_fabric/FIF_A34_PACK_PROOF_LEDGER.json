@@ -1,8 +1,8 @@
 {
   "schema": "fif.a34_pack_proof_ledger.v1",
   "matrix_row": "A34",
-  "base_commit": "9eaefeeddd9fb22109c23ea3e5f966669c8fded8",
-  "generated_at": "2026-11-02T05:53:37.977640+00:00",
+  "base_commit": "a9e3f52396c945480cf3f59d3f0cdea71fa120ed",
+  "generated_at": "2026-11-02T12:51:48.814086+00:00",
   "protocol_id": "fif-q0-quality-protocol/v1",
   "packs": [
     {
@@ -68,7 +68,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 44,
+          "calibration_tests": 50,
           "calibration_labels": 0
         },
         "held_out": {
@@ -125,7 +125,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 42,
+          "calibration_tests": 45,
           "calibration_labels": 0
         },
         "held_out": {
@@ -170,7 +170,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 41,
+          "calibration_tests": 45,
           "calibration_labels": 0
         },
         "held_out": {
@@ -316,7 +316,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 39,
+          "calibration_tests": 57,
           "calibration_labels": 0
         },
         "held_out": {
@@ -373,7 +373,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 31,
+          "calibration_tests": 69,
           "calibration_labels": 0
         },
         "held_out": {
@@ -519,7 +519,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 15,
+          "calibration_tests": 24,
           "calibration_labels": 0
         },
         "held_out": {
@@ -572,7 +572,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 16,
+          "calibration_tests": 22,
           "calibration_labels": 0
         },
         "held_out": {
