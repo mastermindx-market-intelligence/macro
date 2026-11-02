@@ -72,8 +72,10 @@ async def main():
         await check_leader_clock(page)
         await ctx.close()
         ctx,page,calls=await context("race")
-        await page.goto(URL+"#ticker?t=SPY",wait_until="domcontentloaded")
-        await page.goto(URL+"#ticker?t=QQQ",wait_until="domcontentloaded")
+        async with page.expect_request(re.compile(r"/gex/SPY[.]json")):
+            await page.locator("#tab-ticker").click()
+        query=page.locator("#oew-tk-q");await query.fill("QQQ")
+        await query.press("ArrowDown");await query.press("Enter")
         await page.wait_for_timeout(2600)
         shown=await page.locator('#oew-tk-cnt').inner_text()
         report["checks"].append({"name":"ticker_latest_request_wins","pass":shown=="QQQ","observed":shown,"url":page.url})

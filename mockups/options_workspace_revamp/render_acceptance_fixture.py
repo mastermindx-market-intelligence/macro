@@ -8,6 +8,7 @@ sys.path.insert(0,str(ROOT))
 from tests.test_build_options_command import _stores
 from tests.test_options_intel_brief_ui import _brief, _card
 from scripts.build_options_command import render
+from fixture_assets import bind_template_assets
 out=HERE/"fixtures"
 out.mkdir(exist_ok=True)
 stores=_stores()
@@ -28,7 +29,7 @@ for sym in stores["gex"]:
 brief=_brief(opportunities=[_card("AAPL",direction="LONG",r=344),_card("QQQ",direction="SHORT",r=278)],
     as_of="2026-08-12",oi_counted="2026-08-13")
 html=render(ROOT,stores=stores,intel_brief=brief,now=datetime(2026,8,13,10,tzinfo=timezone.utc))
-html=html.replace("<head>","<head><base href=\"/templates/\">",1)
+html=bind_template_assets(html)
 html=html.replace('<body class="page-options">','<body class="page-options"><div style="padding:8px 24px;color:var(--ink-warn);font:14px var(--font-ui)">SYNTHETIC QA FIXTURE — NOT MARKET DATA</div>',1)
 (out/"workspace-current.html").write_text(html,encoding="utf-8")
 payloads={"flow_desk.json":stores["flow_desk"],"flowdata/cohorts.json":{},

@@ -1,0 +1,70 @@
+{
+  "fixture": "synthetic",
+  "label": "baseline",
+  "checks": [
+    {
+      "name": "ticker_deep_link_and_reload",
+      "pass": true,
+      "initial": "QQQ",
+      "reloaded": "QQQ",
+      "url": "http://127.0.0.1:8768/mockups/options_workspace_revamp/fixtures/workspace-current.html#ticker?t=QQQ"
+    },
+    {
+      "name": "typeahead_exposes_keyboard_selection",
+      "pass": false,
+      "active_descendant": null
+    },
+    {
+      "name": "typeahead_escape_closes",
+      "pass": true
+    },
+    {
+      "name": "ticker_shortcut_scoped_to_visible_task",
+      "pass": true,
+      "focused_outside": false,
+      "focused_inside": true
+    },
+    {
+      "name": "typeahead_keyboard_selection",
+      "pass": true,
+      "url": "http://127.0.0.1:8768/mockups/options_workspace_revamp/fixtures/workspace-current.html#ticker?t=QQQ"
+    },
+    {
+      "name": "task_back_forward_history",
+      "pass": false,
+      "added_history_entries": 0,
+      "back": null,
+      "forward": null
+    },
+    {
+      "name": "hash_change_updates_visible_task",
+      "pass": false,
+      "observed": "scanner",
+      "url": "http://127.0.0.1:8768/mockups/options_workspace_revamp/fixtures/workspace-current.html#leaders"
+    },
+    {
+      "name": "new_ticker_survives_old_success",
+      "pass": false,
+      "observed": "SPY",
+      "url": "http://127.0.0.1:8768/mockups/options_workspace_revamp/fixtures/workspace-current.html#ticker?t=QQQ",
+      "spy_requests": 1,
+      "qqq_requests": 1
+    },
+    {
+      "name": "new_ticker_survives_old_failure",
+      "pass": false,
+      "observed": "SPY",
+      "url": "http://127.0.0.1:8768/mockups/options_workspace_revamp/fixtures/workspace-current.html#ticker?t=QQQ",
+      "spy_requests": 1,
+      "qqq_requests": 1
+    }
+  ],
+  "passed": 4,
+  "failed": [
+    "typeahead_exposes_keyboard_selection",
+    "task_back_forward_history",
+    "hash_change_updates_visible_task",
+    "new_ticker_survives_old_success",
+    "new_ticker_survives_old_failure"
+  ]
+}

@@ -34,6 +34,17 @@
       "characters": 2999
     },
     {
+      "name": "leaders_session_not_build_clock",
+      "pass": false,
+      "observed_dates": [
+        "2026-11-02",
+        "2026-11-02",
+        "2026-11-02"
+      ],
+      "session_date": "2026-08-12",
+      "build_date": "2026-11-02"
+    },
+    {
       "name": "ticker_latest_request_wins",
       "pass": false,
       "observed": "SPY",
@@ -53,6 +64,7 @@
   "passed": 5,
   "failed": [
     "keyboard_tabs",
+    "leaders_session_not_build_clock",
     "ticker_latest_request_wins",
     "dedupe_inflight_scanner",
     "hanging_request_recovers_with_retry"

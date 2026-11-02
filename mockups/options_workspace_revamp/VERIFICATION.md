@@ -23,8 +23,9 @@ Run render_acceptance_fixture.py, serve the repository through the owned localho
 | Latest ticker response owns displayed values | Fail: URL QQQ, stale SPY result displayed |
 | Reentering pending Scanner deduplicates requests | Fail: 2 requests |
 | Hanging Scanner request offers usable timeout/retry | Fail: no recovery action |
+| Leaders research stamp uses its market session | Fail: November build date replaces August source date |
 
-The four failures reproduce existing defects; they are not candidate regressions. Candidate acceptance must turn these green without weakening the assertions or hiding errors.
+The five failures reproduce existing defects; they are not candidate regressions. Candidate acceptance must turn these green without weakening the assertions or hiding errors.
 
 ## Reference visual review
 
@@ -59,3 +60,11 @@ prepare_published_fixture.py recovered all 17 inputs at e4009c94d75770739844240b
 The supporting reference also now has two true initial-viewport captures (scroll reset to zero) with the shared navigation. Independent principal visual review finds all five mobile tasks discoverable and the first current index closes within the initial viewport. This still does not accept other task layouts, expanded states, Paper or the eventual integrated build.
 
 Reference reachability check: 1440 light EN and 390 dark ZH both expose every SPY price/regime/level/move item after normal scroll placement; Source details takes keyboard focus, opens with Enter, and has an unobstructed activation point. The first probe sampled a smooth scroll before it settled; deterministic scroll placement corrected the harness timing, without changing the page or hiding the assistant. See visual/reference-reachability.json and reachable-spy images. No global assistant change is warranted by this reference evidence. Repeat the boundary on the integrated candidate.
+
+## Navigation and fixture integrity — 2026-11-02
+
+verify_navigation.py exercises the actual search controls, direct links/reload, scoped slash shortcut, Back/Forward, hash changes, and both slow-success and slow-failure ticker races. Original source: 4 pass / 5 fail. The failures are missing active-descendant exposure in typeahead, collapsed task history, no visible-task update after a hash change, and both older SPY outcomes overwriting a newer QQQ choice. See navigation-baseline.json. These are acceptance targets, not candidate regressions.
+
+The QA fixture previously inserted a document-wide base element for source-tree assets. That also redirected relative history URLs to /templates/. fixture_assets.py now rebinds only script/link/image asset attributes, preserving each fixture document's real URL semantics. The navigation failures were reproduced again after this correction. The current three-view published fixture capture still has no overflow or page errors; no production source was altered.
+
+Source boundary reviewed: build_indexes takes each index interpretation from its own gex summary.regime and meta.asof, not the separate market_structure posture. All four published index records are Oct30 short-regime model estimates, with regime_passport basis=assumption and verdict=display-only. The Oct20 market-wide posture must keep its own date; the current index interpretation may remain beside its own Oct30 levels with model-estimate context.

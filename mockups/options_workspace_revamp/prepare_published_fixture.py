@@ -9,6 +9,7 @@ ROOT=Path(__file__).resolve().parents[2]
 HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT))
 from scripts.build_options_command import render
+from fixture_assets import bind_template_assets
 ap=argparse.ArgumentParser()
 ap.add_argument("--source-pin",default="e4009c94d75770739844240b22f5fc915668aa9b")
 args=ap.parse_args()
@@ -47,7 +48,8 @@ payoff_lab=records.get("site/options_payoff_lab/latest.json"),
 skew_source=records.get("site/options_skew/latest.json"),
 catalyst_links=records.get("site/options_catalyst_links/latest.json"),
 now=datetime(2026,11,2,3,30,tzinfo=timezone.utc))
-setup='<base href="/templates/"><script>var qa=new URLSearchParams(location.search);localStorage.setItem("theme",qa.get("theme")||"light");localStorage.setItem("lang",qa.get("lang")||"en");</script>'
+html=bind_template_assets(html)
+setup='<script>var qa=new URLSearchParams(location.search);localStorage.setItem("theme",qa.get("theme")||"light");localStorage.setItem("lang",qa.get("lang")||"en");</script>'
 html=html.replace("<head>","<head>"+setup,1)
 (OUT/"workspace.html").write_text(html,encoding="utf-8")
 payloads={k.removeprefix("site/"):v for k,v in records.items() if k.startswith("site/")}
