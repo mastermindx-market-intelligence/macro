@@ -72,7 +72,7 @@ Missing clocks remain unavailable; the browser's retrieval time is never substit
 | Price and session activity | Scan columns / labeled mobile fields |
 | Approximate call-only direction and unknown side | Full tape evidence, retaining ncp versus net_all distinction |
 | Unusual options size flags | Full tape evidence, bilingual badges |
-| Seven rule inputs and unknown/false/true state | Full evidence, unchanged computeLegs output |
+| Seven rule inputs and unknown/false/true state | Full evidence; display availability is distinct from unchanged computeLegs values |
 | Dealer regime, walls, pinning and expected move | Full dealer block |
 | Nightly stop, VWAP, session low, ATR and buy zone | Reference levels block |
 | Methodology and limitations | Collapsible field guide |
@@ -85,8 +85,8 @@ its native-details menu; Escape closes it and returns focus. Sorting uses keyboa
 buttons and aria-sort, with names/labels initially ascending and numbers descending.
 Row and side-panel evidence controls expose aria-expanded and aria-controls.
 Data or language renders preserve expanded rows and the focused evidence button.
-Reset returns focus to search; counted expansion returns focus to its replacement
-control. EN/ZH strings and labels are carried by the existing language mechanism.
+Reset returns focus to search; counted expansion continues at the first newly revealed ticker and collapse
+returns focus to its replacement control. EN/ZH strings and labels are carried by the existing language mechanism.
 Reduced motion removes page animations; the skeleton announces loading once per host.
 
 ## Regression migration
@@ -118,7 +118,9 @@ Data refresh preserves focus on row controls, the selected-name evidence action,
 the stock-overview link, an opened evidence region and the counted expansion
 control. Expanding the population focuses the first newly revealed ticker, so Tab
 continues through the additional names. The seven existing rule inputs display
-localized Met / Not met / Unavailable state names without changing their values.
+localized Met / Not met / Unavailable state names. Missing comparison prerequisites
+are masked as unavailable only in the presentation; leg values, K, the seven-rule
+denominator and classifications remain unchanged.
 Activity help uses a native popover, supports keyboard open and Escape, and cannot
 trigger column sorting. Theme menus remain visible on one-name and empty boards.
 The menu, focus and touch-target assertions query the current DOM atomically to
@@ -127,5 +129,17 @@ avoid treating an already replaced element as the current interactive target.
 The phone metric column reserves 44px beside the shared floating assistant; both
 unavailable and populated values are checked outside its footprint. The canonical
 feed-status help button stays anchored beside its status text instead of occupying
-an orphaned line. Shared navigation styling, markup, behavior and script order remain
-unchanged. Its observed startup layout shifts are separately documented for review.
+an orphaned line. This feature does not customize shared navigation styling, behavior or script
+order. The integrated main carries its own shared-shell updates, including the
+canonical Expectation Surface research link in the generated page. Its observed startup layout shifts are separately documented for review.
+
+### Independent review refinements
+
+Directional Buy now/In favour colors both follow the canonical locale-specific
+rising-price token. A neutral no-read count explains names outside the six stage
+counts without adding a trading classification. Full evidence includes source
+times, explicitly named nightly context and an unavailable dealer-chain clock.
+Phones retain a stock-overview link inside opened evidence. Identical count text
+is not repeatedly rewritten into the live region; feed help and dealer strength
+are localized, native selects share the focus ring, and untagged names appear only
+in All rather than bypassing a specific theme selection.

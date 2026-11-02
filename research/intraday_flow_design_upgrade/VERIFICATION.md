@@ -2,7 +2,7 @@
 
 ## Candidate and scope
 
-Implementation candidate: `9e1af791c76f1694f07ed82f44e9e8f49a99e0d6`.
+Implementation candidate: `aeff31db0803d75e41881fd566e13f6222d4ca05`.
 Initial base: `f754bdee6b803b18191841863c35527c0a74571e`.
 
 The template, rendered page and paired stylesheet implement the redesigned scan.
@@ -10,12 +10,19 @@ The shared navigation, producers, canonical freshness thresholds, six-class
 deterministic model and seven-leg calculation remain under their existing owners.
 The separate timing/precursor work in macro #6867 is not replayed here.
 
+The isolated branch incorporates main `f6fb23200bb2fee8368aecda7f23725ccf4a6add`.
+The conflict was limited to generated cache tags and was resolved by page-only
+rendering. The template and paired CSS retain the reviewed repairs; the generated
+page also receives main's canonical Expectation Surface navigation item. This
+feature does not customize shared navigation. Verification was repeated with the
+integrated shared assets.
+
 ## Results
 
 | Check | Observed result |
 |---|---|
-| Intraday pytest suite | 280 passed; final run 8.94 seconds |
-| Isolated browser harness | 403 passed, zero failures |
+| Intraday pytest suite | 280 passed; final run 12.99 seconds |
+| Isolated browser harness | 515 passed, zero failures |
 | Matrix | 1440×900 and 390×844 × light/dark × EN/ZH |
 | Canonical screenshots | 24/24 captured: eight resting + eight hover + eight focus |
 | Capture errors | Zero console errors and zero failed responses |
@@ -76,6 +83,25 @@ clipping, floating-assistant overlap with phone metrics, and an orphaned phone
 feed-help icon. All were addressed and covered by the browser paths above.
 Native advice is not independent human/Opus visual acceptance.
 
+## Independent review repairs
+
+The paid independent review at predecessor `cdc17bf634219135c000b0d97c84d1dd102014c6`
+returned changes required and a partial visual disposition. The bounded repairs
+are recorded in INDEPENDENT_REVIEW.md. Actual browser checks now cover both rising
+lanes against the shared locale token; phone stock-overview navigation and refresh
+focus; unchanged live-region silence; localized feed help and dealer strength;
+visible native-sort focus; and untagged-name filtering.
+
+Expanded evidence separates unavailable inputs from false rule results with a
+presentation-only mask. Missing, zero, positive and supported volume-fallback
+fixtures verify all four affected checks in both languages while the original K
+and seven-rule denominator remain intact. A separate neutral no-read count
+reconciles to the complete population. Quote clocks marked synthetic are excluded;
+nightly package dates and unavailable dealer-chain clocks are named explicitly.
+
+The author has not independently approved these repairs. The follow-up review and
+qualified human/Opus visual judgment remain separate gates.
+
 ## Performance limitation
 
 The initial-load trace on implementation commit
@@ -93,7 +119,7 @@ shared-component owner's assessment before unqualified performance acceptance.
 
 ## Outstanding gates
 
-1. Paper: current catalog is unqualified for writes. The latest read reports
+1. Paper: the intended file is now inspectable and its write binding is ready, but the current catalog is unqualified for writes. The latest read reports
    paper-desktop 0.5.18; the observed schema digest is unchanged and
    `accepted_for_write=false`. See PAPER_QUALIFICATION_HANDOFF.md.
 2. Independent exact-head code review and qualified human/Opus visual judgment.

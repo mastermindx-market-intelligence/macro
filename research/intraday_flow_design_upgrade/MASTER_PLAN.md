@@ -89,8 +89,8 @@ coverage functions remain the source; preserve #6867's separate timing work.
 | P2 | P1 | blocked | Editable Paper light/dark desktop/mobile and meaningful states; exact file/page/node IDs, screenshots and JSX | Principal designer; Paper schema qualification required |
 | P2.1 | P1 | implementation_complete | DESIGN_SPEC.md and the paired template/CSS reference; NOT_APPLIED_TO_PAPER | Principal design; independent visual critique |
 | P3 | P2.1 | implementation_complete | Real template, paired page stylesheet and rendered page replaced; 15 core regions byte-identical to base | Principal retained: design judgment and critical path while audit admission waited |
-| P3.1 | P3 | implementation_complete | 280 pytest cases; 403 browser checks; 24 canonical screenshots and passing visual receipt | Regression and source-contract evidence; no production claim |
-| P4 | P3.1 | ready | Independent exact-head code/visual review and bounded repair | Separate paid reviewer; principal adjudicates |
+| P3.1 | P3 | implementation_complete | 280 pytest cases; 515 browser checks; 24 canonical screenshots and passing visual receipt | Regression and source-contract evidence; no production claim |
+| P4 | P3.1 | in_progress | Independent review returned changes required; all seven findings repaired; exact-head follow-up pending; qualified visual judgment remains open | Paid reviewer; principal adjudicates |
 | P5 | P2,P4 | blocked | Exact-head CI, permitted integration/release and served desktop/mobile proof | Existing release owner; no premature merge |
 
 The Paper gate blocks canvas effects and final acceptance; independent design-reference
@@ -120,7 +120,7 @@ mockups or passing tests.
 
 On November 1, the direct Mastermind Paper and legacy Studio catalog both reported
 paper-desktop 0.5.14 with accepted_for_write=false. Observed catalog:
-16e6b93f0c51a1574ba8acee4df732052898707a04731d4037530971a88fdefd.
+16e6b93f0c51a1574ba8acee4df732052898707a04731d5157530971a88fdefd.
 Expected reviewed catalog:
 1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db.
 Exact-file read works for MASTERMIND PAGES:
@@ -152,7 +152,7 @@ The desktop scan begins 298.98px below navigation with seven
 complete rows visible at 1440×900. Fifteen classifier/coverage/session/leg functions
 are byte-identical to the initial base; see `model_preservation.json`.
 
-`browser_verification.json` records 403/403 successful checks. All 280 Intraday
+`browser_verification.json` records 515/515 successful checks. All 280 Intraday
 pytest cases pass; inline JavaScript syntax and paired stylesheet equality pass. Synthetic empty,
 loading, missing, partial, producer-stale and populated responses exist only in the
 isolated regression harness. They are not site data or live market evidence.
@@ -166,12 +166,15 @@ Its useful baseline inventory and stale observations are separately adjudicated 
 was started. Native design advice is advisory and does
 not replace the required independent visual review.
 
-The latest read-only compatibility check against main
-`75c68c5f4141b4f82674ec503b69f0b8de2a718b` found no changes since the initial base in
-the scoped Intraday template/page/tests, shared navigation/theme, producer,
-`lib/pages.py`, or product-experience configuration. No merge/rebase is claimed.
+Main `f6fb23200bb2fee8368aecda7f23725ccf4a6add` was merged into the isolated branch
+at `aeff31db0803d75e41881fd566e13f6222d4ca05`. The only conflict was the generated
+page's cache tags; page-only rendering resolved it. The repaired template and CSS
+remain byte-identical to `660136436850d1ad5ff38ffc611525c7c10dc573`. The generated
+page additionally receives the current canonical Expectation Surface research link.
+The feature does not author or override shared navigation changes. Applicable
+AGENTS/CLAUDE and routing/delivery instructions did not change in this integration.
 
-The final canonical capture on `9e1af791c76f1694f07ed82f44e9e8f49a99e0d6`
+The refreshed canonical capture on `aeff31db0803d75e41881fd566e13f6222d4ca05`
 completed 24/24 states with no console errors or failed responses. The two phone
 findings from principal visual critique are repaired: metrics remain left of x315
 (the measured right edge is x311), and the feed-help trigger stays beside its status.
@@ -189,7 +192,24 @@ order was changed. Global startup performance remains an explicit review limitat
 A fresh Paper catalog read observed version 0.5.18 with the same unqualified catalog
 hash and `accepted_for_write=false`; a newer app version did not clear the gate.
 
-Next: obtain independent exact-head review, resolve relevant CI,
+The first independent review (`intraday-final-review-20261102-c2`, GLM 5.3)
+returned CODE=CHANGES_REQUIRED and VISUAL=PARTIAL. All seven findings have bounded
+repairs: locale-correct directional colors, missing-input presentation, phone stock
+navigation, quiet unchanged count announcements, localized feed help, native sort
+focus and exact theme filtering. See `INDEPENDENT_REVIEW.md`. A display-only mask
+leaves legacy leg values and K untouched; missing/zero/positive/fallback inputs are
+exercised in both languages. No-read counts reconcile with the six stage counts.
+
+CI and fences passed on `cdc17bf634219135c000b0d97c84d1dd102014c6`; those results
+are predecessor evidence. The repaired head requires its own concluded checks.
+
+The latest Paper inspection now reaches the intended MASTERMIND PAGES file and
+reports `write_binding_ready=true`. Its unchanged catalog is still not accepted
+for writes. The file-context problem is resolved; schema qualification is the
+remaining Paper gate. The existing Claude session target discovery separately
+reports its Session Bridge owner unavailable, so no qualified visual route is claimed.
+
+Next: obtain independent exact-head repair verification, resolve relevant CI,
 and finish the normal integration path once the Paper gate is qualified. See
 `PAPER_QUALIFICATION_HANDOFF.md` for the bounded owner remedy. No Paper canvas effect,
 source merge, production deployment, live-page proof or final acceptance has occurred.

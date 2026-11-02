@@ -50,3 +50,14 @@ The service now reports paper-desktop 0.5.18. The observed catalog digest is sti
 but `catalog_compatible` and `accepted_for_write` remain false. This is the same
 catalog qualification gate; changing the app version does not authorize a write.
 No prepare/edit effect was attempted after this recheck.
+
+## Current file binding — 2026-11-02 — final read-only check
+
+A fresh `paper_inspect` returns CONNECTED for the intended MASTERMIND PAGES file
+`01M2WGNCX9475G79JRKJTCM08P` and `write_binding_ready=true`. The current page is
+`p-5-0`, Archetype Starters · Governed; no Intraday page is listed. The earlier
+general-context DOCUMENT_UNAVAILABLE condition is resolved. A simultaneous
+catalog read still reports paper-desktop 0.5.18, the same observed digest above,
+`catalog_compatible=false` and `accepted_for_write=false`. Opening the file is no
+longer a required remedy; the existing runtime owner must qualify the catalog.
+No prepare/edit effect was attempted.
