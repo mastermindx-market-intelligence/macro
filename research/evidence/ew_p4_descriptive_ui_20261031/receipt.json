@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "5d6fcf2aae32b7f7de6b4cd94aa461b6e89957d5",
+  "source_revision": "4a0d7fabf6c048910e0f300ef434ca2d045750f6",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1412,7 +1412,7 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/sc-stale-en-dark-390.png",
-      "sha256": "99a4168ffa1e2f03f2b946451d8d1064a49ac05aa1afbd262f482d0921f546a6",
+      "sha256": "6f89a1209fd765f13ce75beae2fb59a42f378fa552c77a3994365b1bb7960432",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
@@ -1496,7 +1496,7 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/sc-unreadable-en-dark-390.png",
-      "sha256": "5eb57c75755390a0daf35a94f3886ac7b4ebe688067ef667dd42a8d41f84f777",
+      "sha256": "cf76b5116a47408bf08a80fc9fa96aca4cc7d7b0e2f0ed0df1e28c5904ba2e24",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
@@ -1992,9 +1992,9 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "Shots were rendered by the Grey Deer early-warning CEO seat (local Playwright Chromium) at source_revision, the EW-P5 FU2 recapture commit on the PR branch (1440 width, every degraded state in both themes, per-theme keyboard focus, L4 warning ink); the PR head carries byte-identical render inputs (equal git blob ids below), so the shots depict the PR source. tests/test_ew_p4_descriptive_ui.py re-checks the blob ids against the tested tree. Test-only and CI-manifest files are excluded from the render set.",
-    "pr_branch": "claude/gd-ew-p5-fu2-20261101",
-    "pr_parent_of_evidence_commit": "5d6fcf2aae32b7f7de6b4cd94aa461b6e89957d5",
+    "note": "Re-captured all 68 real Chromium cases from exact source 4a0d7fab before this evidence-only commit; all render input Git blobs below bind that source. Contact sheets and image SHA256s are from the new capture, not rewritten to pass a test.",
+    "pr_branch": "claude/ssd-macro-events-reactive-20261023-cc9f7eb3946eda5a",
+    "pr_parent_of_evidence_commit": "4a0d7fabf6c048910e0f300ef434ca2d045750f6",
     "render_files": [
       {
         "path": "site/rotation_events.js",
@@ -2148,8 +2148,8 @@
       },
       {
         "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "512a9af50b804fa2eae856e18ccb2bb82196dd14",
-        "blob_on_pr_branch": "512a9af50b804fa2eae856e18ccb2bb82196dd14",
+        "blob_at_source_revision": "a646d041ad2106681445fd71c074d19508787aac",
+        "blob_on_pr_branch": "a646d041ad2106681445fd71c074d19508787aac",
         "equal": true
       },
       {
