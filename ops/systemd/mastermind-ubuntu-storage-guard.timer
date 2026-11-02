@@ -1,0 +1,13 @@
+[Unit]
+Description=Run Mastermind Ubuntu storage pressure sentinel every 20 minutes
+
+[Timer]
+OnBootSec=4min
+OnUnitInactiveSec=20min
+RandomizedDelaySec=2min
+AccuracySec=1min
+Persistent=yes
+Unit=mastermind-ubuntu-storage-guard.service
+
+[Install]
+WantedBy=timers.target
