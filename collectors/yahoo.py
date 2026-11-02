@@ -129,7 +129,10 @@ class YahooAdapter(Adapter):
         from lib.market_session import cash_market_for_symbol
         return cash_market_for_symbol(name)
 
-    def __init__(self) -> None:
+    def __init__(self, *, native_wti_session_reader=None) -> None:
+        # Server-supplied reader of already retained native evidence. The ordinary
+        # yf.download frame has no session authority. Never adopt dataframe attrs.
+        self.native_wti_session_reader = native_wti_session_reader
         self.cfg = config.load()["yahoo"]
 
     def all_tickers(self) -> list[str]:

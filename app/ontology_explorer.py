@@ -287,7 +287,9 @@ async def evaluate_private_scenario(request: Request,
     except (ScenarioInputError,TypeError,ValueError,RecursionError):
         raise _post_error(400,'invalid_assumption') from None
     try:
-        result = await run_in_threadpool(evaluate_current_scenario,_repo_root(),assumption,manifest)
+        selector = getattr(request.app.state, 'wti_session_selector', None)
+        options = {} if selector is None else {'wti_session_selector': selector}
+        result = await run_in_threadpool(evaluate_current_scenario, _repo_root(), assumption, manifest, **options)
     except ScenarioSnapshotChanged:
         raise _post_error(409,'source_changed') from None
     except (SourceUnavailable,SourceIncoherent,OSError):

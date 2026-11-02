@@ -222,6 +222,7 @@ def test_directory_durability_failure_is_not_accepted(modules, monkeypatch, tmp_
 def setup_yahoo(modules, monkeypatch, *, adj=True):
     store, base, yahoo = modules
     adapter = yahoo.YahooAdapter.__new__(yahoo.YahooAdapter)
+    adapter.native_wti_session_reader = None
     adapter.cfg = {"batch_size": 1, "tickers": {"vol": []}}
     monkeypatch.setattr(adapter, "all_tickers", lambda: ["XLB"])
     monkeypatch.setattr(adapter, "maintained_tickers", lambda: ["XLB"])
@@ -659,3 +660,33 @@ def test_unrelated_rebase_cannot_erase_wti_temporal_context(modules, monkeypatch
     adapter._rebase_shifted(frames, set(), capture_source_metadata=True)
     assert adapter.wti_temporal_metadata() == before
     assert "CL=F" in frames
+
+
+@pytest.mark.parametrize("invalid", [None, "provider_sha256", "context_sha256", "known_by", "rights_ref", "historical_labels", "purpose"])
+def test_wti_runner_retains_only_current_versioned_native_facts(modules, monkeypatch, tmp_path, invalid):
+    store, base, _ = modules
+    adapter = setup_wti(modules, monkeypatch)
+    def supplied(provider_sha, merged_sha, context_sha, observed):
+        facts = dict(schema="yahoo.wti_native_sessions.v1", ticker="CL=F", purpose="ontology_scenario_display",
+            vendor_receipt_ref="sha256:"+"a"*64, rights_ref="sha256:"+"b"*64,
+            provider_sha256=provider_sha, merged_sha256=merged_sha, context_sha256=context_sha, known_by=observed.isoformat(),
+            last_session_completed_at=observed.isoformat(), calendar_id="fixture", calendar_version="v1",
+            label_convention="fixture-session-date", historical_labels=[[d.date().isoformat()]*2 for d in frame().index],
+            future_sessions=["2024-01-04"])
+        if invalid:
+            facts[invalid] = "2099-01-01T00:00:00Z" if invalid == "known_by" else "wrong"
+        return facts
+    adapter.native_wti_session_reader = supplied
+    result = base.run_adapter(adapter, full_history=True, capture_wti_receipts=True)
+    path = tmp_path / "yahoo/CL_F.observation.json"
+    if invalid:
+        assert any("WTI observation refused" in note for note in result.notes)
+        assert not path.exists()
+    else:
+        import base64
+        export = json.loads(path.read_bytes())
+        receipt = json.loads(base64.b64decode(export["capture_receipt"]["content_base64"]))
+        assert export["schema"] == "yahoo.wti_observation_export.v2"
+        assert receipt["schema"] == "yahoo.wti_observation_capture.v2"
+        assert receipt["native_sessions"]["provider_sha256"] == export["provider_return_image"]["sha256"]
+        assert receipt["scenario_adoption"] == "UNQUALIFIED_NATIVE_INPUTS"

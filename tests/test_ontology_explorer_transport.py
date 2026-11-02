@@ -1054,7 +1054,7 @@ with TestClient(app) as client:
 
 
 @pytest.fixture
-def published_wti(monkeypatch, tmp_path, x2_inputs):
+def published_wti(monkeypatch, tmp_path, x2_inputs, request):
     """Synthetic prices through the real WTI capture/export writer. No acquisition."""
     import hashlib
     import pandas as pd
@@ -1082,7 +1082,27 @@ def published_wti(monkeypatch, tmp_path, x2_inputs):
     frame = historical.series.to_frame('close')
     path = yahoo / 'CL_F.parquet'
     frame.to_parquet(path)
+    def fixture_sessions(provider_sha, merged_sha, context_sha, observed):
+        return dict(schema="yahoo.wti_native_sessions.v1", ticker="CL=F", purpose="ontology_scenario_display",
+            vendor_receipt_ref="sha256:"+"a"*64, rights_ref=historical.rights_ref,
+            provider_sha256=provider_sha, merged_sha256=merged_sha, context_sha256=context_sha, known_by=observed.isoformat(),
+            last_session_completed_at=observed.isoformat(), calendar_id=historical.calendar_id,
+            calendar_version=historical.calendar_version, label_convention="fixture-session-date",
+            historical_labels=[[day.date().isoformat()]*2 for day in frame.index],
+            future_sessions=list(historical.future_sessions))
+    reader = fixture_sessions if getattr(request, "param", None) == "v2" else None
+    temporal = None
+    if reader:
+        temporal = dict(schema="yahoo.wti_adapter_temporal_context.v1",
+            scope="adapter_extracted_index_before_collector_validation_not_vendor_wire",
+            index=dict(kind="datetime", unit="ns", timezone=None, timezone_aware=False, already_midnight=True,
+                       labels=[stamp.isoformat() for stamp in frame.index]),
+            request=None, parser_versions=dict(yfinance=None, pandas=None),
+            on_disk_source_sha256_not_execution_attestation=dict.fromkeys(["collectors/yahoo.py","collectors/base.py","lib/store.py"]),
+            resolved_request_defaults=None, vendor_session_metadata=None, vendor_daily_label_convention=None,
+            provider_available_at=None, futures_session_completion=None)
     native = store.capture_yahoo_wti_observation(frame, frame, adapter_return_known_by=observed,
+        native_session_reader=reader, temporal_context=temporal,
         lineage=dict(provider='yahoo', ticker='CL=F', series_identity='vendor_continuous_CL=F',
                      field='Close', basis='vendor_continuous_close_no_adj_close_returned'))
     export = store.export_yahoo_wti_observation(native, frame, frame)
@@ -1122,7 +1142,7 @@ def test_wti_real_adapter_uses_only_server_verified_sessions(monkeypatch, publis
     assert qualified['owner_receipt']['source_manifest_hash'] == manifest
 
 
-@pytest.mark.parametrize('bad', ['late','completion','preclose','cutoff','labels','txi','export','parquet'])
+@pytest.mark.parametrize('bad', ['late','completion','preclose','prior_session','preexport','cutoff','labels','txi','export','parquet'])
 def test_wti_baseline_refuses_unbound_or_late_inputs(published_wti, bad):
     from dataclasses import replace
     from engine import ontology_scenario_runtime as runtime
@@ -1134,6 +1154,8 @@ def test_wti_baseline_refuses_unbound_or_late_inputs(published_wti, bad):
         updates = dict(late={'known_by': '2099-01-01T00:00:00Z'}, cutoff={'knowledge_cutoff':'2020-01-01T00:00:00Z'},
                        completion={'last_session_completed_at':'2099-01-01T00:00:00Z'},
                        preclose={'last_session_completed_at':sessions.knowledge_cutoff},
+                       prior_session={'last_session_completed_at':'2024-01-01T21:00:00Z'},
+                       preexport={'known_by':sessions.last_session_completed_at},
                        labels={'historical_labels':sessions.historical_labels[:-1]},
                        txi={'txi_generation':stale}, export={'observation_sha256':'0'*64})
         sessions = replace(sessions, **updates[bad])
@@ -1143,3 +1165,65 @@ def test_wti_baseline_refuses_unbound_or_late_inputs(published_wti, bad):
     assert out['owner_receipt'] is None
     if bad == 'preclose':
         assert 'completed_session_at_capture' in out['root_evaluation']['missing_owner_inputs']
+
+
+@pytest.mark.parametrize("published_wti", ["v2"], indirect=True)
+def test_prospective_wti_http_requires_independent_native_admission(monkeypatch, published_wti):
+    import base64
+    import hashlib
+    from dataclasses import replace
+    from engine import ontology_scenario_runtime as runtime
+    from lib import store
+    root, _, snapshot, sessions = published_wti
+    raw = (root / "data/yahoo/CL_F.observation.json").read_bytes()
+    export = json.loads(raw)
+    facts = json.loads(base64.b64decode(export["capture_receipt"]["content_base64"]))["native_sessions"]
+    expected = runtime.WTISessionSubject(hashlib.sha256(raw).hexdigest(), export["canonical_parquet"]["sha256"],
+        sessions.txi_generation, sessions.manifest_hash, sessions.knowledge_cutoff)
+    admission = runtime.WTISessionAdmission(expected, hashlib.sha256(store._availability_json(facts)).hexdigest(),
+                                            sessions.knowledge_cutoff)
+    with _client(monkeypatch, root, root=root, chain=snapshot["source"]["chain"]) as client:
+        payload = _scenario_payload(snapshot)
+        def result():
+            response = client.post(SCENARIO_ROUTE, json=payload)
+            assert response.status_code == 200, response.text
+            return response.json()["root_evaluation"]["status"]
+        def forbidden_decode(*args, **kwargs):
+            raise AssertionError("unadmitted HTTP request decoded parquet")
+        original_decode = store._wti_parquet_image
+        monkeypatch.setattr(store, "_wti_parquet_image", forbidden_decode)
+        assert result() == "UNAVAILABLE"
+        for stale in (replace(admission, native_facts_sha256="0"*64),
+                      replace(admission, subject=replace(expected, txi_generation="stale")),
+                      replace(admission, subject=replace(expected, knowledge_cutoff="stale")),
+                      replace(admission, known_by="2099-01-01T00:00:00Z")):
+            client.app.state.wti_session_selector = lambda subject: stale
+            assert result() == "UNAVAILABLE"
+        monkeypatch.setattr(store, "_wti_parquet_image", original_decode)
+        client.app.state.wti_session_selector = lambda subject: admission if subject == expected else None
+        assert result() == "ROOT_THRESHOLD_MET"
+        incompatible = dict(payload, assumption={**payload["assumption"], "horizon": "63d"})
+        unavailable = client.post(SCENARIO_ROUTE, json=incompatible).json()
+        assert unavailable["root_evaluation"]["status"] == "UNAVAILABLE"
+        assert unavailable["owner_receipt"] is None
+        injected = dict(payload, wti_session_selector="caller")
+        assert client.post(SCENARIO_ROUTE, json=injected).status_code == 400
+
+
+@pytest.mark.parametrize("published_wti", ["v2"], indirect=True)
+def test_mixed_capture_export_versions_refuse_before_admission(monkeypatch, published_wti):
+    from datetime import datetime
+    from engine import ontology_scenario_runtime as runtime
+    root, assumption, snapshot, _ = published_wti
+    path = root / "data/yahoo/CL_F.observation.json"
+    export = json.loads(path.read_bytes())
+    export["schema"] = "yahoo.wti_observation_export.v1"
+    path.write_text(json.dumps(export))
+    snap = runtime.compose_snapshot(root, chain=snapshot["source"]["chain"],
+        now=datetime.fromisoformat(snapshot["source"]["built"].replace("Z", "+00:00")))
+    def forbidden(*args):
+        raise AssertionError("mixed versions reached issuer admission")
+    result = runtime.evaluate_current_scenario(root, assumption, snap["source"]["source_manifest_hash"],
+                                               wti_session_selector=forbidden)
+    assert result["root_evaluation"]["status"] == "UNAVAILABLE"
+    assert result["owner_receipt"] is None
