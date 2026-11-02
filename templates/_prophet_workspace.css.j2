@@ -3,17 +3,27 @@
 {% include '_prophet_opportunity.css.j2' %}
 #us-standouts :is(#us-today-grid, #us-cand-grid) {
   grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: 12px;
+  gap: var(--sp-4,16px);
   align-items: start;
+}
+/* A three-card public preview fills its row. The entitled shelf retains a
+   maximum of four columns and the native responsive breakpoints below. */
+#us-standouts #us-today-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%,280px),1fr)) !important;
+}
+@media (min-width:1200px) {
+  #us-standouts #us-today-grid:has(> .po-card:nth-of-type(4)) {
+    grid-template-columns: repeat(4,minmax(0,1fr)) !important;
+  }
 }
 /* Remove inherited full-card link overlays, semantic chart recolouring and
    card stretching. Only the new component participates in these overrides. */
 #us-standouts .pvcard.po-card {
   display: flex;
-  gap: 10px;
-  padding: 14px;
+  gap: var(--sp-3,12px);
+  padding: var(--sp-4,16px);
   border: 1px solid var(--line);
-  border-radius: var(--r-ctl, 8px);
+  border-radius: var(--r-card,12px);
   background: var(--panel);
   color: var(--text);
   box-shadow: none;
@@ -29,7 +39,7 @@ html[data-theme="light"] #us-standouts .pvcard.po-card {
 #us-standouts .po-card:hover { border-color: var(--gbtn-brd-hover); }
 #us-standouts .po-chip { white-space: normal; border-radius: calc(var(--r-ctl,8px) / 2); padding: 4px 8px; }
 #us-standouts .po-buy .po-chip { background: var(--po-ink); color: var(--panel); border-color: transparent; }
-#us-standouts .po-price.nb-px { margin: 0; font-size: 22px; font-weight: 650; letter-spacing: -.025em; }
+#us-standouts .po-price.nb-px { margin: 0; font-size: 24px; font-weight: 650; letter-spacing: -.025em; }
 #us-standouts .po-chg.nb-chg { font-size: 12px; margin: 0; }
 #us-standouts .po-asof { font-size: 11px; max-width: 150px; }
 #us-standouts .po-live-slots.pv-ov { position: static; max-width: 100%; gap: 4px; }
@@ -48,11 +58,11 @@ html[data-theme="light"] #us-standouts .pvcard.po-card {
 #us-standouts .po-ticker.pv-setup-stock-link:hover { color: var(--link); text-decoration: underline; }
 #us-standouts .po-priority { grid-column: 2; grid-row: 1; justify-content: end; font-size: 11px; cursor: help; }
 #us-standouts .po-name, #us-standouts .po-class, #us-standouts .po-marks { grid-column: 1 / -1; }
-#us-standouts .po-name { font-size: 13px; }
+#us-standouts .po-name { font-size: var(--fs-body,14px); }
 #us-standouts .po-class { font-size: 12px; }
 #us-standouts .po-marks { margin-top: 5px; }
 #us-standouts .po-mark { border-radius: calc(var(--r-ctl,8px) / 2); padding: 1px 5px; font-size: 11px; }
-#us-standouts .po-obs { font-size: 13px; line-height: 1.5; }
+#us-standouts .po-obs { font-size: var(--fs-body,14px); line-height: 1.5; }
 #us-standouts :is(.po-cautions > summary, .po-caution-single, .po-caution-list) { font-size: 12px; line-height: 1.5; }
 #us-standouts .po-stage-on .po-stage-dot { background: var(--link); }
 #us-standouts .po-stage-label { font-size: 11px; }
@@ -141,7 +151,7 @@ html[data-theme="light"] #us-standouts .pvs-study-pick[aria-pressed="true"] { ba
 .pv-setup-body[data-opportunity-detail] .pvs-snapshot { display: grid; text-align: right; gap: 3px; font-size: var(--fs-label); color: var(--muted); }
 .pv-setup-body[data-opportunity-detail] .pvs-snapshot strong { font-size: var(--fs-num-lg,24px); color: var(--text); font-variant-numeric: tabular-nums; }
 .pv-setup-body[data-opportunity-detail] .pvs-chart-clock { margin-bottom: 0; color: var(--muted); font-size: var(--fs-sm); }
-.pv-setup-body[data-opportunity-detail] .pvs-opportunity-cautions { border-inline-start: 2px solid var(--ink-warn); padding: 14px; background: var(--surface-warn-subtle); }
+.pv-setup-body[data-opportunity-detail] .pvs-opportunity-cautions { border: 1px solid var(--line); border-radius: var(--r-card,12px); padding: 16px; background: var(--panel2); }
 .pv-setup-body[data-opportunity-detail] .pvs-opportunity-cautions h3 { color: var(--ink-warn); }
 .pv-setup-body[data-opportunity-detail] .pvs-opportunity-cautions ul { margin: 0; padding-inline-start: 18px; display: grid; gap: 8px; font-size: var(--fs-sm); line-height: 1.55; }
 @media (max-width: 639px) { .pv-setup-body[data-opportunity-detail] .pvs-opportunity-identity { flex-wrap: wrap; } }

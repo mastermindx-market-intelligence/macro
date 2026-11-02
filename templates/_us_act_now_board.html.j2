@@ -647,8 +647,10 @@
             {% if x.kind == 'theme' %}<div data-theme-id="{{ x.slug or x.ticker }}">{{ ab_theme_row(x) }}</div>{% else %}{{ ab_sector_row(x) }}{% endif %}
           {% endfor %}
           {% if _ab_gate and _hold_cnt > ((_hold_rows|length) + (_avoid_rows|length)) %}{{ ab_more(_hold_cnt - (_hold_rows|length) - (_avoid_rows|length)) }}{% endif %}
-          {%- if _more_hold > 0 %}<p class="muted sm" style="padding:4px 12px 8px"><a href="sector_central.html#actnow-section"><span class="l-en">+{{ _more_hold }} more — full list on Sector Intelligence →</span><span class="l-zh">还有 {{ _more_hold }} 个 — 完整列表见行业情报页 →</span></a></p>{%- endif %}
         </div>
+        {# The native overlay counts list children. Carry the explanatory link as a
+           sibling so it travels with the list without becoming a phantom item. #}
+        {%- if _more_hold > 0 %}<p class="muted sm" data-ovl-carry style="padding:4px 12px 8px"><a href="sector_central.html#actnow-section"><span class="l-en">+{{ _more_hold }} more — full list on Sector Intelligence →</span><span class="l-zh">还有 {{ _more_hold }} 个 — 完整列表见行业情报页 →</span></a></p>{%- endif %}
         {% if _hold_cnt > 3 and not _ab_gate %}
         <button class="lst-more" type="button" aria-expanded="false" style="margin:6px 10px 8px;width:calc(100% - 20px)"><span class="lm-show">{{ t('Show more', '显示更多') }} ({{ _hold_cnt - 3 }}) ▾</span><span class="lm-hide">{{ t('Show less', '收起') }} ▴</span></button>
         {% endif %}

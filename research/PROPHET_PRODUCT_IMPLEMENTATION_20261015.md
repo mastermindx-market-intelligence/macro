@@ -48,9 +48,9 @@ Continue this incumbent specification and PR #9495; original root remains
 |---|---|
 | Live baseline and incumbent designs | Inspected live US page and Paper SYI-0 / L3E-0; first useful setups remain below oversized context. |
 | Paper redesign | NOT APPLIED. Exact file 01M3NT5Y3G5HTJHVR0K5W2MDJM, new work belongs on p-C-0; p-A-0 preserved. Read succeeds but writes are schema-blocked: observed catalog 16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd is not accepted by the current adapter. Do not bypass its guard or claim canvas completion. |
-| Full-page implementation | Extend this branch with the frozen composition above, preserving existing rich card and setup work. |
-| Bounded source map | Fabric child prophet-page-revamp-20261102-source-map; read-only. Delivery is not START or acceptance. |
-| Render and browser proof | Use the canonical renderer and actual dated repository data; an isolated preview is not a production deployment. |
+| Full-page implementation | Implemented as a source candidate: compact Prophet header and named navigation, stock workspace before context, observation shelf after cards, token-based page styling, independent stock/theme failure behavior, honest missing-date state, and corrected Stand aside overlay counting. Existing rich card and setup owners retained. |
+| Bounded source map | Fabric child prophet-page-revamp-20261102-source-map, controller 41428; original carrier. Observed RUN_RESERVED / LEASE_WAIT on ubuntu3, pool minimax. START and result remain unproven; do not replay or claim accepted worker labor. |
+| Render and browser proof | Production dashboard template plus incumbent native public/plan/panel splits rendered successfully using the committed 2026-10-29 stock snapshot. Local review output SHA256 8f7675abd748f5b811a342e30e7eb6e0078dd60dadbc59dcfbeb817dfd42d323. This harness omits unavailable auxiliary context; it is not the complete production builder. The connected browser inspected the live baseline but could not reach either loopback preview URL (ERR_SOCKET_NOT_CONNECTED); its URL policy also refused data-URL previews. No new visual or authenticated acceptance. |
 | Publication | Source review, CI, actual production bytes and authenticated journeys remain separate release evidence. No self-approval or self-merge. |
 
 The pre-existing untracked `tests/test_prophet_plan_review_integration.py` belongs to
@@ -58,6 +58,30 @@ the held original Plan operation. Preserve it unchanged and exclude it from stag
 test selection. No other active writer of this incumbent worktree was observed at
 continuation entry. The protected source-law pin used for this continuation is
 `19cb00cfed26b68f0a8a5cdc0f2f1a9463a3feec`.
+
+### Verification and remaining gates for this continuation
+
+- Initial focused verification: 86 checks passed across
+  `test_dashboard_template_render.py`, `test_prophet_opportunity_integration.py`,
+  and `test_us_prophet_original_card_layout.py`.
+- After degraded-state and count repairs: 17 checks passed across
+  `test_prophet_page_composition.py`, `test_action_board_hover_cards.py`,
+  and `test_prophet_leader_observation_shelf.py`. The new output-level tests caught
+  a missing-sector navigation target and distinguish native grouped card order from
+  input row order. Both are resolved without changing the source ordering policy.
+- Design-system enforce-added: zero blocking findings. Runtime style-injection
+  ratchet: passed. No global stylesheet or runtime stylesheet injection was added.
+- Paper principal review remains read-only. The observed catalog has four new blocked
+  resource tools and a breaking `set_text_content` contract (`updates[].html`
+  replaces `updates[].textContent`). Only allowed descriptors are exported by the
+  current maintained diagnostics, so the complete upstream fingerprint cannot be
+  independently reconstructed. Do not accept the new fingerprint from this partial
+  evidence. A supported complete-catalog capture, independent review, guard tests and
+  actual seat/runtime qualification remain necessary.
+- Production publication remains held. Paper has not been modified. The new layout
+  has not passed desktop/mobile/light/dark/EN/ZH browser acceptance, connected account
+  journeys, or the complete production artifact regeneration. Keep this PR draft;
+  no merge, deployment, award-quality claim or finished-project claim is supported.
 
 ## Outcome and failure being corrected
 

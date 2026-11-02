@@ -2561,6 +2561,7 @@
   }
   html[data-theme="light"] body.page-stocks .chip{ border-color:#dde2ea; }
   </style>
+  <style id="prophet-page-css">{% include "_prophet_page.css.j2" %}</style>
   <div class="panel span12" id="stocks-header">
     {% set _stk_hdr_su = us_standouts if (us_standouts is defined and us_standouts) else none %}
     {% set _stk_hdr_delayed = (_stk_hdr_su.get('staleness') or {}).get('delayed') if _stk_hdr_su else false %}
@@ -2608,27 +2609,35 @@
          ~ ('入场信号按各自较慢的周期重新评分，当前这一批的日期是 ' ~ _sig_asof ~ '，所以卡片上的信号可能比榜单更早。' if _sig_asof else '')
          ~ ('数据延迟时，榜单会继续显示最后一批有效数据，而不是留空——操作前请先看一下实时报价。' if _stk_hdr_delayed else '') -%}
     <div class="stk-headline">
-      <h1>{{ t('US Stocks', '美国股票') }}</h1>
+      <div class="prophet-heading">
+        <div class="prophet-eyebrow">{{ t('US equity intelligence', '美股研究') }}</div>
+        <h1>Prophet <span>{{ t('US stocks', '美国股票') }}</span></h1>
+      </div>
       <div class="stk-head-meta">
         <span class="stk-status{{ ' is-delayed' if _stk_hdr_delayed else '' }}"
               {%- if _stk_hdr_su and _stk_hdr_su.get('as_of') %} data-tip-en="{{ _vint_tip_en|e }}" data-tip-zh="{{ _vint_tip_zh|e }}"{% endif %}>
-          <span class="stk-fresh-dot" aria-hidden="true"></span>
+          {% if _stk_hdr_su and _stk_hdr_su.get('as_of') %}<span class="stk-fresh-dot" aria-hidden="true"></span>{% endif %}
           {%- if _stk_hdr_su and _stk_hdr_su.get('as_of') %}
           <span class="l-en">{{ 'Delayed · data through' if _stk_hdr_delayed else 'Data through' }}</span><span class="l-zh">{{ '已延迟 · 数据截至' if _stk_hdr_delayed else '数据截至' }}</span>
           <strong>{{ _stk_hdr_su.as_of }}</strong>
           {%- else %}
-          <span class="l-en">{{ 'Delayed' if _stk_hdr_delayed else 'Fresh' }}</span><span class="l-zh">{{ '延迟' if _stk_hdr_delayed else '新鲜' }}</span>
+          {{ t('Board date unavailable', '榜单日期暂不可用') }}
           {%- endif %}
         </span>
         <span class="stk-status"><span class="l-en">Regime</span><span class="l-zh">周期</span> <strong>{{ td(latest.quad_name) }}</strong></span>
         {% if pb and pb.dial %}<span class="stk-status"><span class="l-en">Posture</span><span class="l-zh">姿态</span> <strong>{{ td(pb.dial.posture) }}</strong></span>{% endif %}
       </div>
     </div>
-    <div class="stk-header-links">
-      <a href="macro.html"><span class="l-en">Market posture</span><span class="l-zh">市场姿态</span> →</a>
-      <a href="us_stocks_lab.html">🧪 <span class="l-en">Pick Lab</span><span class="l-zh">选股实验室</span> →</a>
-      <a href="alerts.html"><span class="l-en">Alerts</span><span class="l-zh">提醒</span> →</a>
-    </div>
+    <nav class="stk-header-links prophet-section-nav" aria-label="Prophet">
+      <a href="#us-standouts">{{ t('Opportunities', '机会') }}</a>
+      <a href="#prophet-market-context">{{ t('Market context', '市场背景') }}</a>
+      <a href="{{ '#sectors' if sector_setups else 'sector_central.html#actnow-section' }}">{{ t('Sector timing', '板块时机') }}</a>
+      <a href="us_track_record.html">{{ t('Track record', '历史表现') }} <span aria-hidden="true">↗</span></a>
+      <span class="prophet-nav-tools">
+        <a href="us_stocks_lab.html">{{ t('Pick Lab', '选股实验室') }} <span aria-hidden="true">↗</span></a>
+        <a href="alerts.html">{{ t('Alerts', '提醒') }} <span aria-hidden="true">↗</span></a>
+      </span>
+    </nav>
   </div>
   {# MEGA-CAP TAPE folded into #action-board header (S2 §1.3). Include lives in
      templates/_us_act_now_board.html.j2, mode-gated so sector_central does not leak it. #}
@@ -16358,7 +16367,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {% set _b4_label_en = (market_state.label_en if (market_state.label_en is defined and market_state.label_en) else _b4_color) %}
   {% set _b4_label_zh = (market_state.label_zh if (market_state.label_zh is defined and market_state.label_zh) else _b4_label_en) %}
   {% set _b4_nalert = (intl_cascade.n_alert if (intl_cascade is defined and intl_cascade and intl_cascade.n_alert is not none and intl_cascade.n_alert > 0) else 0) %}
-  <div class="stk-ctx-strip {{ _b4_cls }} span12">
+  <div class="stk-ctx-strip {{ _b4_cls }} span12" id="prophet-market-brief">
     <span class="scx-dot" aria-hidden="true"></span>
     <span class="scx-head">
       <span class="scx-label"><span class="l-en">Market state</span><span class="l-zh">市场状态</span></span>
@@ -16379,9 +16388,17 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
      Until 2026-10-02 this include sat inside the macro-only block behind `mode != 'macro'`
      and therefore rendered on no page (MO-PAID-001_FIX_R1). Stocks mode is its host;
      `_regime_read_panel.html.j2` hides itself unless latest.base_effect carries both axes. #}
-  {% include "_regime_read_panel.html.j2" %}
-  {% if action_board %}
-  {% include "_us_act_now_board.html.j2" %}
+  {# The named navigation landing remains useful when the board has no artifact. #}
+  {% if not ((us_standouts and us_standouts.buy) or (action_board and action_board.notable)) %}
+  <section class="panel span12 prophet-empty-workspace" id="us-standouts">
+    <h2>{{ t('Opportunities unavailable', '机会数据暂不可用') }}</h2>
+    <p>{{ t('The stock board has not loaded. Market context remains available below.', '股票榜单暂未加载，下方市场背景仍可查看。') }}</p>
+    <a href="macro.html">{{ t('Explore market context', '查看市场背景') }} →</a>
+  </section>
+  {% endif %}
+  {# Detailed context follows the opportunity workspace in source and focus order.
+     The stock workspace remains available if the independent theme board is absent. #}
+  {% if action_board or (us_standouts and us_standouts.buy) %}
     {% set _su = us_standouts if (us_standouts and us_standouts.buy) else None %}
     {{ pv.pv_css(setup_detail=true) }}
     <style>{% include "_prophet_workspace.css.j2" %}</style>
@@ -16669,8 +16686,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
          {%- if _su and _su.get('as_of') %} data-board-asof="{{ _su.as_of|e }}"{% endif %}
          {%- if _su and _su.get('staleness') %} data-board-delayed="{{ '1' if _su.staleness.get('delayed') else '0' }}"{% endif %}
          {%- if _bs and _bs.get('rel') %} data-boardstate="{{ _bs.rel }}"{% endif %}>
-      <div class="pb-hdrow" style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
-        <h2 style="margin:0">{{ t('Prophet Stock Signals', 'Prophet 选股') }}</h2>
+      <div class="pb-hdrow">
+        <h2>{{ t('Opportunity workspace', '机会工作台') }}</h2>
         {#- W-L1 board-state stamp (spec §2 A, §5.1). BOTH variants are SSR-baked and both
             ship their l-en/l-zh pair, because the copy has to exist in the page in both
             languages before the live plane can ever reach it (bilingual from birth), and
@@ -16719,8 +16736,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
            full-board eligible count — live: "60 shown · 76 setups") and
            neither matched what was actually on screen. Deleted outright;
            the dot legend below is the whole line now. -#}
-        {% if _su %}{% set _su_delayed = (_su.get('staleness') or {}).get('delayed') %}<span class="muted" id="us-board-sub" style="font-size:11.5px">{% if _su_delayed %}{{ t("dots reflect prices as of " ~ ((_su.staleness or {}).get('price_through') or '?') ~ " — verify before acting.", "价格点位截至 " ~ ((_su.staleness or {}).get('price_through') or '?') ~ "，操作前请确认最新价格。") }}{% else %}{{ t("green dot = entry open, yellow = wait for pullback.", "绿点＝现在可入场，黄点＝等回调。") }}{% endif %}
-          <span class="help">?<span class="tip tip-wide">{% if _su_delayed %}<span class="l-en">Board is delayed — prices are as of {{ ((_su.staleness or {}).get('price_through') or '?') }}. Dots and entry signals may not reflect current prices. Use the card to judge the company, then check a live quote before acting.</span><span class="l-zh">数据延迟 — 价格截至 {{ ((_su.staleness or {}).get('price_through') or '?') }}。绿点及入场信号可能不反映最新价格。先用卡片判断公司，再查看实时报价后操作。</span>{% else %}<span class="l-en">Each card separates two questions: is the stock worth owning, and is today a good entry? A strong company can still be a wait if price has run too far. Green means the entry is open; yellow means wait.</span><span class="l-zh">每张卡片分开回答两个问题：这只股票是否值得持有，以及今天是否适合入场。好公司若股价已经跑远，仍然应该等待。绿点表示入场窗口已开；黄点表示等待。</span>{% endif %}</span></span></span>{% endif %}
+        {% if _su %}{% set _su_delayed = (_su.get('staleness') or {}).get('delayed') %}<span class="muted" id="us-board-sub" style="font-size:11.5px">{% if _su_delayed %}{{ t("dots reflect prices as of " ~ ((_su.staleness or {}).get('price_through') or '?') ~ " — verify before acting.", "价格点位截至 " ~ ((_su.staleness or {}).get('price_through') or '?') ~ "，操作前请确认最新价格。") }}{% else %}{{ t("A strong setup still needs a current entry assessment.", "好形态也需要当前有效的入场判读。") }}{% endif %}
+          <span class="help">?<span class="tip tip-wide">{% if _su_delayed %}<span class="l-en">Board is delayed — prices are as of {{ ((_su.staleness or {}).get('price_through') or '?') }}. Dots and entry signals may not reflect current prices. Use the card to judge the company, then check a live quote before acting.</span><span class="l-zh">数据延迟 — 价格截至 {{ ((_su.staleness or {}).get('price_through') or '?') }}。绿点及入场信号可能不反映最新价格。先用卡片判断公司，再查看实时报价后操作。</span>{% else %}<span class="l-en">Each card separates two questions: is the stock worth owning, and is today a good entry? A strong company can still be a wait if price has run too far. Use the entry assessment and its date before acting.</span><span class="l-zh">每张卡片分开回答两个问题：这只股票是否值得持有，以及今天是否适合入场。好公司若股价已经跑远，仍然应该等待。操作前，请查看入场判读及其日期。</span>{% endif %}</span></span></span>{% endif %}
         {% if not _su %}<span class="muted" style="font-size:11.5px">{{ t("Up to 10 names per sector · grouped by setup, strongest names first.", "每个板块最多 10 只 · 按形态分组，较强者优先。") }}
           {{ help("Shows up to ten holdings from each sector when their price action reaches a clear buy, turning or topping point. Cards are grouped by setup stage; stronger names within the sector appear first. A cap keeps one sector from taking over. Click any card for the full breakdown.", "当价格走势出现明确的买入、转向或见顶时，每个板块最多展示十只股票。卡片按形态阶段分组，同板块中较强者优先。数量上限可避免单一板块占满页面。点击卡片查看完整拆解。") }}</span>{% endif %}
       </div>
@@ -16772,45 +16789,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         {% if _stale.get('unknown') or not _stale.get('price_through') %}<span class="l-en">We can’t confirm how current these prices are, so treat this board as out of date — check a live quote before you act.</span><span class="l-zh">目前无法确认这些价格是否最新，请把本榜单当作过期数据——操作前先看一下实时报价。</span>{% else %}<span class="l-en">Still ranked on prices as of {{ _stale.get('price_through') }}{% if _stale_behind is not none %} — {{ _stale_behind }} session{{ '' if _stale_behind == 1 else 's' }} behind{% endif %}. We’re updating it; check a live quote before you act.</span><span class="l-zh">仍按截至 {{ _stale.get('price_through') }} 的价格排序{% if _stale_behind is not none %}，落后 {{ _stale_behind }} 个交易日{% endif %}。数据正在更新，操作前请先看一下实时报价。</span>{% endif %}
       </div>
       {% endif %}
-      {# P1 — incumbent leader-pullback organ projected as a separate display shelf.
-          It is neither Candidates nor Plans and carries no rank, entry, or trade authority. #}
-      {% if us_leader_observations %}
-      {% set _plo = us_leader_observations %}
-      {% set _plo_src = _plo.get('source') or {} %}
-      {% set _plo_counts = _plo.get('counts') or {} %}
-      {% set _plo_gate = (pgate.get('leader_observations') if pgate else none) %}
-      <section class="plo" id="us-leader-observations" data-status="{{ _plo.get('status')|e }}">
-        <div class="plo-hd">
-          <h3><span class="l-en">Leaders / waiting for entry</span><span class="l-zh">领涨股 / 等待入场条件</span></h3>
-          <span class="plo-asof">
-            <span class="l-en">Source</span><span class="l-zh">数据日期</span>
-            {{ _plo_src.get('data_session') or _plo_src.get('as_of') or '—' }}
-          </span>
-        </div>
-        <div class="plo-summary">
-          <span><b>{{ _plo_counts.get('active', 0) }}</b> <span class="l-en">active observations</span><span class="l-zh">个活跃观察</span></span>
-          <span class="plo-authority"><span class="l-en">Context only · not a recommendation</span><span class="l-zh">仅供背景参考 · 非推荐</span></span>
-        </div>
-        {% if _plo.get('status') == 'unavailable' %}
-        <div class="plo-state"><span class="l-en">Leader observations unavailable.</span><span class="l-zh">领涨股观察暂不可用。</span></div>
-        {% elif _plo.get('status') == 'empty' %}
-        <div class="plo-state"><span class="l-en">No active leader-reset states.</span><span class="l-zh">暂无活跃的领涨重置状态。</span></div>
-        {% elif _plo.get('status') == 'degraded' %}
-        <div class="plo-state"><span class="l-en">Some source rows could not be classified.</span><span class="l-zh">部分来源条目无法分类。</span></div>
-        {% endif %}
-        <div class="plo-rows">
-          {% with rows=(_plo.get('rows') or []) %}{% include "_us_leader_observation_rows.html.j2" %}{% endwith %}
-        </div>
-        {% if _plo_gate %}
-        <div class="pg-more plo-more">
-          <span class="l-en">{{ _plo_gate.locked }} more observed names</span>
-          <span class="l-zh">另有 {{ _plo_gate.locked }} 个观察标的</span>
-        </div>
-        {% endif %}
-      </section>
-      {% endif %}
       {% include "_us_candidate_pool.html.j2" %}
-      {% include "_us_early_observations.html.j2" %}
       {# B4 Conviction Delta — data prep for the "What changed today" dashboard.
          Rendered only when us_standouts.delta exists and has >=1 entry.
          Purely descriptive: shows which verb and which reason-codes changed.
@@ -17097,7 +17076,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           <span class="mx-sec-total"><span class="l-en"><b>{{ _today_visible|length }}</b> of <b>{{ _today_total }}</b> Featured</span><span class="l-zh">精选 <b>{{ _today_visible|length }}</b> / <b>{{ _today_total }}</b></span></span>
           <button type="button" class="mx-sec-link" onclick="if(window.USProphetSource){window.USProphetSource.set('candidates')}">{{ t('Open Screener', '打开筛选器') }}</button>
         </div>
-        <p class="mx-sec-note">{{ t('Selected setups in the board’s published order. Compare the structure and cautions, then open a setup for its full evidence.', '按榜单发布顺序展示精选形态。比较价格结构与风险提示，再打开形态查看完整证据。') }}</p>
+        <p class="mx-sec-note">{{ t('Compare price structure and key risks. Open a setup for the full picture.', '比较价格结构与主要风险，打开形态查看完整分析。') }}</p>
         {%- if _today_visible %}
         <div class="nbgrid" id="us-today-grid">
           {% with items=_today_visible, opportunity_prefix='today', sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh, plan_rel=plan_rel if plan_rel is defined else none %}{% include "_us_board_cards.html.j2" %}{% endwith %}
@@ -17529,6 +17508,44 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       <p class="pb-fn"><span class="l-en">Priority is the published ordering score, not entry permission or a win probability. The card explains its scoring basis. Featured highlights up to 12 of the highest-priority eligible names, with no more than four per sector; every qualifying name still appears on this board.{% if _xfu %} We could not check whether {{ _xfu }} featured name{{ '' if _xfu == 1 else 's' }} had already run too far.{% endif %}{{ _rw_en }}</span><span class="l-zh">优先级是已发布的排序分数，并非入场许可或胜率；评分依据见卡片说明。精选区最多突出 12 只股票、每个板块不超过 4 只；所有合格股票仍会保留在本榜。{% if _xfu %}其中 {{ _xfu }} 只精选股票无法检查是否已经涨得太远。{% endif %}{{ _rw_zh }}</span></p>
       {% endif %}
       </div>{# end .nb-grid-section #}
+      {# P1 — incumbent leader-pullback organ projected as a separate display shelf.
+          It is neither Candidates nor Plans and carries no rank, entry, or trade authority. #}
+      {% if us_leader_observations %}
+      {% set _plo = us_leader_observations %}
+      {% set _plo_src = _plo.get('source') or {} %}
+      {% set _plo_counts = _plo.get('counts') or {} %}
+      {% set _plo_gate = (pgate.get('leader_observations') if pgate else none) %}
+      <section class="plo" id="us-leader-observations" data-status="{{ _plo.get('status')|e }}">
+        <div class="plo-hd">
+          <h3 id="us-leader-observation-title"><span class="l-en">Leaders / waiting for entry</span><span class="l-zh">领涨股 / 等待入场条件</span></h3>
+          <span class="plo-asof">
+            <span class="l-en">Source</span><span class="l-zh">数据日期</span>
+            {{ _plo_src.get('data_session') or _plo_src.get('as_of') or '—' }}
+          </span>
+        </div>
+        <div class="plo-summary">
+          <span><b>{{ _plo_counts.get('active', 0) }}</b> <span class="l-en">active observations</span><span class="l-zh">个活跃观察</span></span>
+          <span class="plo-authority"><span class="l-en">Context only · not a recommendation</span><span class="l-zh">仅供背景参考 · 非推荐</span></span>
+        </div>
+        {% if _plo.get('status') == 'unavailable' %}
+        <div class="plo-state"><span class="l-en">Leader observations unavailable.</span><span class="l-zh">领涨股观察暂不可用。</span></div>
+        {% elif _plo.get('status') == 'empty' %}
+        <div class="plo-state"><span class="l-en">No active leader-reset states.</span><span class="l-zh">暂无活跃的领涨重置状态。</span></div>
+        {% elif _plo.get('status') == 'degraded' %}
+        <div class="plo-state"><span class="l-en">Some source rows could not be classified.</span><span class="l-zh">部分来源条目无法分类。</span></div>
+        {% endif %}
+        <div class="plo-rows" tabindex="0" role="region" aria-labelledby="us-leader-observation-title">
+          {% with rows=(_plo.get('rows') or []) %}{% include "_us_leader_observation_rows.html.j2" %}{% endwith %}
+        </div>
+        {% if _plo_gate %}
+        <div class="pg-more plo-more">
+          <span class="l-en">{{ _plo_gate.locked }} more observed names</span>
+          <span class="l-zh">另有 {{ _plo_gate.locked }} 个观察标的</span>
+        </div>
+        {% endif %}
+      </section>
+      {% endif %}
+      {% include "_us_early_observations.html.j2" %}
       {% set _has_outcomes = us_board_outcomes and us_board_outcomes.get('rows') %}
       {% if _has_outcomes %}<div class="prophet-board-tools">{% endif %}
       {# W2 outcomes strip: recently surfaced → outcome. Renders only when the artifact
@@ -17892,6 +17909,16 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     </div>
     {% endif %}
   {% endif %}
+  <div class="span12 prophet-context-heading" id="prophet-market-context">
+    <div>
+      <span class="prophet-eyebrow">{{ t('The bigger picture', '全局视角') }}</span>
+      <h2>{{ t('Market context', '市场背景') }}</h2>
+      <p>{{ t('The environment behind every setup.', '理解每个形态背后的市场环境。') }}</p>
+    </div>
+    <a href="macro.html">{{ t('Open market outlook', '查看市场展望') }} <span aria-hidden="true">↗</span></a>
+  </div>
+  {% include "_regime_read_panel.html.j2" %}
+  {% if action_board %}{% include "_us_act_now_board.html.j2" %}{% endif %}
   {% endif %}{# /mode != macro — action board #}
 
 
