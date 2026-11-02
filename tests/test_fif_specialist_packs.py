@@ -981,7 +981,7 @@ def test_pk02_sbc_expense_total(pk02_result: dict) -> None:
     row = _row(pk02_result, "sbc_expense_total")
     assert row["quality_state"] == "valued"
     assert row["value"] == "12863000000"
-    assert row["concept"] == "us-gaap:AllocatedShareBasedCompensationExpense"
+    assert row["concept"] == "us-gaap:ShareBasedCompensation"
     assert row["unit"] == "USD"
     assert row["evidence_kind"] == "xbrl_fact"
     assert row["mapping_rule_id"] == "PK02.sbc_expense_total.fact/v1"
@@ -4075,7 +4075,7 @@ PK04_QUERY = {**QUERY, "requested_metrics": ["revenue"]}
 # the PK04 lane base; PK04 edits must not move it (PK06/PK01 have their own
 # pins above).
 PK02_ENVELOPE_SHA256 = (
-    "9f621f9e750b1c9df6731eae1f9e0c8c2094006214d37b29066c08ea7e51d981"
+    "8d868ce982fff7c5e45693d4a81df9e07afee166df4f4996c3a4e141b2790869"
 )
 PRODUCT_OR_SERVICE_LEDGER_AXIS = "{http://fasb.org/srt/2025}ProductOrServiceAxis"
 GEOGRAPHICAL_LEDGER_AXIS = "{http://fasb.org/srt/2025}StatementGeographicalAxis"
@@ -4932,7 +4932,7 @@ PK10_QUERY = {**QUERY, "requested_metrics": ["proxy"]}
 BASE_AAPL_ENVELOPE_SHA256 = {
     "PK06": "64b2d42f2148bdf4c9aaf69aae562e53aae26d54bc9386264ce485f80a322c05",
     "PK01": "c40156a18aafe50874476dd7354a0cf8eb9dc90cb25afe88d409dd3320f56310",
-    "PK02": "9f621f9e750b1c9df6731eae1f9e0c8c2094006214d37b29066c08ea7e51d981",
+    "PK02": "8d868ce982fff7c5e45693d4a81df9e07afee166df4f4996c3a4e141b2790869",
     "PK11": "f425680270c2a267d8dca5f44e6a1e3c2ac708b124e2d2a7723c0674056d9b2f",
     "PK12": "da96915b1d81f0f4417e6cb4d5acbc551f5fbfcc5975dc37091adfec9be5cceb",
     "PK09": "3d9130f6de6cc0c4b89760a14102dec6986f24c74b174c066d4aef10fddf81d3",
@@ -5639,7 +5639,7 @@ BASE_PACK_ENVELOPE_SHA256 = {
         "4799c1a1554c8ee9fc939a0461cc30d13192d01e1c16a48b561c884f0a5d998f"
     ),
     "PK02": (
-        "e6f4536ff6867f71b95693247c72e01eee0671fe1870b3be85b727c511a28464"
+        "0df0ded90c1347aea68031a6e715edf6c19a6d735de2188d1257da45df218998"
     ),
     "PK04": (
         "cbbf83b3f9e4e258095c8428b8e5f343bf96ac93e05c512566ca5463e9a92227"
@@ -6591,7 +6591,7 @@ PK05_QUERY = {**QUERY, "requested_metrics": ["tax"]}
 # edits; PK05 registration must not move any of them.
 PK05_BASE_PACK_ENVELOPE_SHA256 = {
     "PK01": "c9a96b80e29f59bb529572103e3512375a09feef52ef00b233452275ca573447",
-    "PK02": "3ca4ca2886034b783be63a5aa8b2be3e763b004511f94163664fc022307e6fc1",
+    "PK02": "101b6e2613bb7c893195c7a06e3ee81e63222ffa3a655a25e00dab36d1fb32c4",
     "PK03": "17a26aa6d276414927f9c68ddbd37595e79bc6120a289abcb254f83f4095057d",
     "PK04": "e4746fbf9126b233d759caeb235dfec72d1895b20b6a6b13a20dd6d16802d5dd",
     "PK06": "2126d42b4a608ad2a9f8e9a48b8692fe8c11c8ed187d5beb33e27df68182df17",
@@ -8377,7 +8377,7 @@ PK07_QUERY = {**QUERY, "requested_metrics": ["mna"]}
 # pack's AAPL envelope.
 PK07_BASE_PACK_ENVELOPE_SHA256 = {
     "PK01": "520237dee6613f84f1900a051bc3ffb26db88fe5724b9ca466f9334ac09d8c92",
-    "PK02": "453b9dd1b547953d761436ac8c99aeca1ef42a66cf2a91e339b60ca83d70ce31",
+    "PK02": "ca09d9a5aeef2863c2d2ebd945f2c4bd6da7a5e234aa0d6100a24d2944218183",
     "PK03": "0f62a747724035a233b1db209b34d5cf2bcd3920fb0e994b99543cf7d955bd6e",
     "PK04": "281d84d196751caca6ac23a217004766fb1483e2d5fc729309eb1bc30f64dc8f",
     "PK05": "3628a5ddde284650978617bcd7ae7ff922dd32ac0bbb8ab6e8f35ad2545967ac",
@@ -9032,7 +9032,7 @@ PK08_QUERY = {**QUERY, "requested_metrics": ["contingencies"]}
 # pack's AAPL envelope.
 PK08_BASE_PACK_ENVELOPE_SHA256 = {
     "PK01": "b08df45a24f9a59a5c319f67b0cd998d75a9424e676e606691a5245fcee2e194",
-    "PK02": "a89bea23867fd4f80ac651546b4d51308a675e75354b9ef2961d4f88bfd5aef3",
+    "PK02": "00b145057234ba9489bfaed3a49c9a79f1da7f7b1f66ee21132ce64ccd583400",
     "PK03": "a7939783be7a12f1454287af7a5ba124a079d80d33a14ff1f127276f03807684",
     "PK04": "74782c242d506963311af36d6b5be35b5513963e78c706259f1ed3c648e32825",
     "PK05": "ac0cf6c6d5fb655b622d57317c376602ac357a7e3c075b60c8ef4fa7e6679740",
@@ -10925,6 +10925,515 @@ def test_pk03_widened_near_misses_never_resolve(
     # outside-group diagnostic is dropped with the rest of its rows.
     assert "outside every definition group" not in " ".join(result["limitations"])
     assert contract.validate_pack_result(result) == []
+
+
+# 99. PK02 dev-corpus lane: duration contract, duplicates, aliases, guard ------
+#
+# Synthetic inline-XBRL 10-Q shapes built inside the tests (no filing bytes),
+# pinned to the behaviors the dev corpora (diversified_v1, litigation_v1)
+# verified on the staged filings:
+#   * a duration field carries the primary fiscal duration ending at the
+#     period of report (base.py keeps the longest context), so a 10-Q row is
+#     the year-to-date figure and the row period reports 2026-01-01..2026-09-30;
+#   * identical duplicate facts are not a conflict; differing values at the
+#     same concept/period stay not_evaluable (A.6) with the R-F9 limitation;
+#   * sbc_expense_total falls back to the cash-flow alias when the allocated
+#     alias is absent, and dimensioned-only facts stay disallowed_dimension;
+#   * a negative AllocatedShareBasedCompensationExpense resolution (the dev
+#     finding: issuers tag that element for sign-flipped reconciliation rows
+#     where the cash-flow add-back carries the positive total) names a
+#     sign-conflict limitation. Since the section-100 alias repair the
+#     cash-flow add-back is tried first, so the limitation fires only when
+#     the negative value resolves through the allocated fallback.
+
+PKQ2_CIK = "0000000002"
+PKQ2_SIC = "3571"
+PKQ2_DOC = "pkq2-20260930.htm"
+PKQ2_ENTITY = {
+    "entity_id": PKQ2_CIK,
+    "cik": PKQ2_CIK,
+    "ticker": "PKQ2",
+    "name": "PKQ2 CORP",
+    "identity_basis": "golden_filing_package_fixture_v1",
+    "source_entity_id": PKQ2_CIK,
+}
+PKQ2_QUERY = {
+    "policy": "as_reported",
+    "source_event_cutoff": "2026-12-31T23:59:59Z",
+    "system_recorded_cutoff": "2026-12-31T23:59:59Z",
+    "requested_metrics": ["stock_compensation"],
+    "requested_periods": ["2026-09-30"],
+    "evaluation_mode": "historical_replay",
+}
+_PKQ2_CONTEXTS = {
+    "c-q": (
+        "<xbrli:context id=\"c-q\"><xbrli:entity><xbrli:identifier"
+        " scheme=\"http://www.sec.gov/CIK\">"
+        f"{PKQ2_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:startDate>2026-07-01</xbrli:startDate>"
+        "<xbrli:endDate>2026-09-30</xbrli:endDate></xbrli:period>"
+        "</xbrli:context>"
+    ),
+    "c-ytd": (
+        "<xbrli:context id=\"c-ytd\"><xbrli:entity><xbrli:identifier"
+        " scheme=\"http://www.sec.gov/CIK\">"
+        f"{PKQ2_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:startDate>2026-01-01</xbrli:startDate>"
+        "<xbrli:endDate>2026-09-30</xbrli:endDate></xbrli:period>"
+        "</xbrli:context>"
+    ),
+    "c-aw": (
+        "<xbrli:context id=\"c-aw\"><xbrli:entity><xbrli:identifier"
+        " scheme=\"http://www.sec.gov/CIK\">"
+        f"{PKQ2_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:startDate>2026-01-01</xbrli:startDate>"
+        "<xbrli:endDate>2026-09-30</xbrli:endDate></xbrli:period>"
+        "<xbrli:scenario><xbrldi:explicitMember dimension=\"us-gaap:"
+        "ShareBasedCompensationArrangementByShareBasedPaymentAwardTypeAxis\">"
+        "us-gaap:RestrictedStockUnitsMember</xbrldi:explicitMember>"
+        "</xbrli:scenario></xbrli:context>"
+    ),
+}
+_PKQ2_UNITS = {
+    "usd": (
+        '<xbrli:unit id="usd"><xbrli:measure>iso4217:USD</xbrli:measure>'
+        "</xbrli:unit>"
+    ),
+    "shares": (
+        '<xbrli:unit id="shares"><xbrli:measure>xbrli:shares</xbrli:measure>'
+        "</xbrli:unit>"
+    ),
+    "ps": (
+        '<xbrli:unit id="ps"><xbrli:divide><xbrli:unitNumerator>'
+        "<xbrli:measure>iso4217:USD</xbrli:measure></xbrli:unitNumerator>"
+        "<xbrli:unitDenominator><xbrli:measure>xbrli:shares</xbrli:measure>"
+        "</xbrli:unitDenominator></xbrli:divide></xbrli:unit>"
+    ),
+}
+
+
+def _pkq2_document(
+    facts: tuple[tuple[str, str, str, str, str] | tuple[str, str, str, str, str, str], ...],
+) -> bytes:
+    """A minimal inline-XBRL PKQ2 10-Q.
+
+    Each fact is (qname, context, value, unit, decimals) with an optional
+    sixth field carrying the iXBRL sign attribute ("-").
+    """
+
+    def sign_of(item: tuple) -> str:
+        return f' sign="{item[5]}"' if len(item) > 5 else ""
+
+    rows = "\n".join(
+        f"<tr><td>item {index}</td><td>"
+        f'<ix:nonFraction id="f-{index}" name="{qname}"'
+        f' contextRef="{context}" unitRef="{unit}" decimals="{decimals}"'
+        f"{sign_of(item)}>{value}</ix:nonFraction></td></tr>"
+        for index, item in enumerate(facts, start=1)
+        for qname, context, value, unit, decimals in (item[:5],)
+    )
+    wanted_contexts = {item[1] for item in facts}
+    wanted_units = {item[3] for item in facts}
+    contexts = "\n".join(
+        _PKQ2_CONTEXTS[context_id]
+        for context_id in ("c-q", "c-ytd", "c-aw")
+        if context_id in wanted_contexts
+    )
+    units = "\n".join(
+        _PKQ2_UNITS[unit_id]
+        for unit_id in ("usd", "shares", "ps")
+        if unit_id in wanted_units
+    )
+    template = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<html xmlns="http://www.w3.org/1999/xhtml"'
+        ' xmlns:ix="http://www.xbrl.org/2013/inlineXBRL"'
+        ' xmlns:xbrli="http://www.xbrl.org/2003/instance"'
+        ' xmlns:xbrldi="http://xbrl.org/2005/xbrldi"'
+        ' xmlns:iso4217="http://www.xbrl.org/2003/iso4217"'
+        ' xmlns:us-gaap="http://fasb.org/us-gaap/2025">\n'
+        "<head><title>PKQ2 10-Q</title></head>\n<body>\n"
+        '<div style="display:none"><ix:header><ix:resources>\n'
+        f"{contexts}\n{units}\n</ix:resources></ix:header></div>\n"
+        f"<table>\n{rows}\n</table>\n</body></html>\n"
+    )
+    return template.encode("utf-8")
+
+
+def _pkq2_result(
+    facts: tuple[tuple[str, str, str, str, str] | tuple[str, str, str, str, str, str], ...],
+) -> dict:
+    document = _pkq2_document(facts)
+    manifest = {
+        "entity_id": PKQ2_CIK,
+        "cik": PKQ2_CIK,
+        "legal_name": "PKQ2 CORP",
+        "form": "10-Q",
+        "period_of_report": "2026-09-30",
+        "filing_date": "2026-11-01",
+        "accession": "0000000002-26-000001",
+        "primary_document": PKQ2_DOC,
+        "source_accepted_at": "2026-11-01T16:00:00Z",
+        "fixture_recorded_at": "2026-11-01T16:05:00Z",
+        "members": [
+            {
+                "name": PKQ2_DOC,
+                "state": "stored",
+                "content_sha256": sha256(document).hexdigest(),
+            }
+        ],
+    }
+    package = GoldenFilingPackage(
+        manifest=manifest, members={PKQ2_DOC: document}
+    )
+    return produce_pack(
+        "PK02",
+        PackInput(
+            packages=(package,),
+            entity=PKQ2_ENTITY,
+            query=PKQ2_QUERY,
+            issuer_sic=PKQ2_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+
+
+_PKQ2_SIGN_LIMITATION = (
+    "sbc_expense_total: AllocatedShareBasedCompensationExpense resolved"
+    " negative"
+)
+
+
+def test_pk02dev_10q_duration_fields_take_primary_fiscal_duration() -> None:
+    # PIN (passes at the lane base): the longest context ending at the period
+    # of report wins, so every duration row is the year-to-date figure.
+    result = _pkq2_result(
+        (
+            ("us-gaap:EarningsPerShareBasic", "c-q", "2.09", "ps", "2"),
+            ("us-gaap:EarningsPerShareBasic", "c-ytd", "22.59", "ps", "2"),
+            ("us-gaap:EarningsPerShareDiluted", "c-q", "2.08", "ps", "2"),
+            ("us-gaap:EarningsPerShareDiluted", "c-ytd", "22.46", "ps", "2"),
+            (
+                "us-gaap:WeightedAverageNumberOfSharesOutstandingBasic",
+                "c-q",
+                "317500000",
+                "shares",
+                "-5",
+            ),
+            (
+                "us-gaap:WeightedAverageNumberOfSharesOutstandingBasic",
+                "c-ytd",
+                "317300000",
+                "shares",
+                "-5",
+            ),
+            (
+                "us-gaap:PaymentsForRepurchaseOfCommonStock",
+                "c-q",
+                "300000000",
+                "usd",
+                "-6",
+            ),
+            (
+                "us-gaap:PaymentsForRepurchaseOfCommonStock",
+                "c-ytd",
+                "1000000000",
+                "usd",
+                "-6",
+            ),
+            (
+                "us-gaap:ShareBasedCompensation",
+                "c-ytd",
+                "182000000",
+                "usd",
+                "-6",
+            ),
+        )
+    )
+    assert contract.validate_pack_result(result) == []
+    eps_basic = _row(result, "eps_basic")
+    assert eps_basic["quality_state"] == "valued"
+    assert eps_basic["value"] == "22.59"
+    assert eps_basic["period"] == {
+        "kind": "duration",
+        "start": "2026-01-01",
+        "end": "2026-09-30",
+    }
+    assert _row(result, "eps_diluted")["value"] == "22.46"
+    assert _row(result, "weighted_average_shares_basic")["value"] == "317300000"
+    repurchase = _row(result, "share_repurchase_amount")
+    assert repurchase["value"] == "1000000000"
+    assert repurchase["period"]["start"] == "2026-01-01"
+    # The allocated alias is absent, so the cash-flow alias resolves.
+    sbc = _row(result, "sbc_expense_total")
+    assert sbc["value"] == "182000000"
+    assert sbc["concept"] == "us-gaap:ShareBasedCompensation"
+
+
+def test_pk02dev_conflicting_duplicates_are_not_evaluable() -> None:
+    # PIN: same concept and period, different values -> A.6 not_evaluable with
+    # the R-F9 limitation naming both occurrences.
+    result = _pkq2_result(
+        (
+            ("us-gaap:EarningsPerShareBasic", "c-ytd", "2.09", "ps", "2"),
+            ("us-gaap:EarningsPerShareBasic", "c-ytd", "2.10", "ps", "2"),
+        )
+    )
+    row = _row(result, "eps_basic")
+    assert row["quality_state"] == "not_evaluable"
+    assert row["reason"] == "missing_dependency"
+    assert row["value"] is None
+    assert any(
+        "eps_basic: conflicting duplicate facts" in line
+        for line in result["limitations"]
+    )
+
+
+def test_pk02dev_identical_duplicate_eps_valued_with_both_ids() -> None:
+    # PIN: identical duplicates are not a conflict (the AAPL fixture pins the
+    # same rule; this is the synthetic 10-Q shape).
+    result = _pkq2_result(
+        (
+            ("us-gaap:EarningsPerShareBasic", "c-ytd", "22.59", "ps", "2"),
+            ("us-gaap:EarningsPerShareBasic", "c-ytd", "22.59", "ps", "2"),
+        )
+    )
+    row = _row(result, "eps_basic")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "22.59"
+    assert len(row["source_occurrence_ids"]) == 2
+
+
+def test_pk02dev_dimensioned_sbc_only_is_disallowed_dimension() -> None:
+    # PIN (a 10-K dev shape): facts only under an award-type axis member
+    # never stand in for the undimensioned total.
+    result = _pkq2_result(
+        (
+            (
+                "us-gaap:AllocatedShareBasedCompensationExpense",
+                "c-aw",
+                "815000000",
+                "usd",
+                "-6",
+            ),
+        )
+    )
+    row = _row(result, "sbc_expense_total")
+    assert row["quality_state"] == "missing"
+    assert row["non_value_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+
+
+def test_pk02dev_absent_sbc_is_missing_standard_fact() -> None:
+    # PIN (typed absence): no SBC concept anywhere names the first alias.
+    # 2026-11-01 alias repair: the first alias is now the cash-flow total.
+    result = _pkq2_result(
+        (
+            ("us-gaap:EarningsPerShareBasic", "c-ytd", "22.59", "ps", "2"),
+        )
+    )
+    row = _row(result, "sbc_expense_total")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == (
+        "missing_standard_fact:us-gaap:ShareBasedCompensation"
+    )
+
+
+def test_pk02dev_cashflow_total_outranks_negative_allocated() -> None:
+    # UPDATED by the 2026-11-01 alias repair (fails at the lane base): the
+    # 2026 10-Q dev shape — the filing tags the allocated element
+    # negative for its reconciliation note while its cash-flow statement
+    # tags the positive add-back. The cash-flow total is the company-wide
+    # expense total the field names, so it wins and the sign-conflict
+    # limitation does not fire.
+    result = _pkq2_result(
+        (
+            (
+                "us-gaap:AllocatedShareBasedCompensationExpense",
+                "c-ytd",
+                "182000000",
+                "usd",
+                "-6",
+                "-",
+            ),
+            (
+                "us-gaap:ShareBasedCompensation",
+                "c-ytd",
+                "182000000",
+                "usd",
+                "-6",
+            ),
+        )
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "sbc_expense_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "182000000"
+    assert row["concept"] == "us-gaap:ShareBasedCompensation"
+    assert not any(
+        line.startswith(_PKQ2_SIGN_LIMITATION) for line in result["limitations"]
+    )
+
+
+def test_pk02dev_positive_allocated_sbc_adds_no_sign_limitation() -> None:
+    # NEW guard (passes at the lane base too): a positive allocated total —
+    # the AAPL-golden shape — must not mint the sign-conflict limitation.
+    result = _pkq2_result(
+        (
+            (
+                "us-gaap:AllocatedShareBasedCompensationExpense",
+                "c-ytd",
+                "196000000",
+                "usd",
+                "-6",
+            ),
+        )
+    )
+    row = _row(result, "sbc_expense_total")
+    assert row["value"] == "196000000"
+    assert not any(
+        line.startswith(_PKQ2_SIGN_LIMITATION) for line in result["limitations"]
+    )
+
+
+# 100. PK02 alias repair (2026-11-01): cash-flow total first ------------------
+#
+# DEC-FIF-PACK-MAPPING-DIGEST-PIN-RE-RECORD re-recorded the PK02 AAPL pins so
+# sbc_expense_total could try the cash-flow add-back
+# (us-gaap:ShareBasedCompensation) before the plan-scoped
+# us-gaap:AllocatedShareBasedCompensationExpense: the dev corpora proved the
+# allocated element resolves to the wrong quantity (plan-scoped or
+# allocation-total note rows) and to sign-flipped 10-Q reconciliation
+# rows. Synthetic
+# shapes below pin the repaired resolution order; (a) and (c) fail at the
+# repair's parent commit 9171964fb4ed3c66f4bf2d1028baa261b9fc1bf8.
+
+
+def test_pk02dev2_cashflow_total_preferred_when_both_present() -> None:
+    # (a) Both concepts tagged undimensioned on the primary duration with
+    # different values: the cash-flow total is the company-wide expense the
+    # field names, so it wins over the plan-scoped allocated figure.
+    result = _pkq2_result(
+        (
+            (
+                "us-gaap:AllocatedShareBasedCompensationExpense",
+                "c-ytd",
+                "741000000",
+                "usd",
+                "-6",
+            ),
+            (
+                "us-gaap:ShareBasedCompensation",
+                "c-ytd",
+                "730000000",
+                "usd",
+                "-6",
+            ),
+        )
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "sbc_expense_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "730000000"
+    assert row["concept"] == "us-gaap:ShareBasedCompensation"
+    assert row["unit"] == "USD"
+
+
+def test_pk02dev2_allocated_fallback_when_cashflow_absent() -> None:
+    # (b) Only the allocated element tagged: the fallback still values it, so
+    # issuers whose cash-flow statement omits the add-back keep a row.
+    result = _pkq2_result(
+        (
+            (
+                "us-gaap:AllocatedShareBasedCompensationExpense",
+                "c-ytd",
+                "196000000",
+                "usd",
+                "-6",
+            ),
+        )
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "sbc_expense_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "196000000"
+    assert row["concept"] == "us-gaap:AllocatedShareBasedCompensationExpense"
+
+
+def test_pk02dev2_cashflow_total_wins_over_negative_allocated() -> None:
+    # (c) The 2026 10-Q dev shape: the reconciliation note tags the
+    # allocated element sign-flipped while the cash-flow statement carries the
+    # positive add-back. The positive cash-flow total is chosen; the
+    # sign-conflict limitation does not fire.
+    result = _pkq2_result(
+        (
+            (
+                "us-gaap:AllocatedShareBasedCompensationExpense",
+                "c-ytd",
+                "182000000",
+                "usd",
+                "-6",
+                "-",
+            ),
+            (
+                "us-gaap:ShareBasedCompensation",
+                "c-ytd",
+                "182000000",
+                "usd",
+                "-6",
+            ),
+        )
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "sbc_expense_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "182000000"
+    assert row["concept"] == "us-gaap:ShareBasedCompensation"
+    assert not any(
+        line.startswith(_PKQ2_SIGN_LIMITATION) for line in result["limitations"]
+    )
+
+
+def test_pk02dev2_absence_names_cashflow_alias() -> None:
+    # (d) Neither concept tagged: the typed absence keeps the pack convention
+    # of naming the mapping's first alias.
+    result = _pkq2_result(
+        (
+            ("us-gaap:EarningsPerShareBasic", "c-ytd", "22.59", "ps", "2"),
+        )
+    )
+    row = _row(result, "sbc_expense_total")
+    assert row["quality_state"] == "missing"
+    assert row["non_value_state"] == "missing"
+    assert row["value"] is None and row["text_value"] is None
+    assert row["reason"] == "missing_standard_fact:us-gaap:ShareBasedCompensation"
+
+
+def test_pk02dev2_negative_allocated_alone_keeps_sign_limitation() -> None:
+    # Guard: the sign-conflict limitation code is byte-identical to the parent
+    # commit and still fires where it should — when the cash-flow total is
+    # absent and the allocated fallback alone resolves negative.
+    result = _pkq2_result(
+        (
+            (
+                "us-gaap:AllocatedShareBasedCompensationExpense",
+                "c-ytd",
+                "182000000",
+                "usd",
+                "-6",
+                "-",
+            ),
+        )
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "sbc_expense_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "-182000000"
+    assert row["concept"] == "us-gaap:AllocatedShareBasedCompensationExpense"
+    assert any(
+        line.startswith(_PKQ2_SIGN_LIMITATION) for line in result["limitations"]
+    )
 # 45. PK01 covenant text-span search (2026-11-01 repair lane, dev corpus
 # diversified_v1) -----------------------------------------------------------
 #
