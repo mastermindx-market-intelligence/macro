@@ -774,4 +774,3 @@ premium:
       # API. Lock the whole static estate so a guessed direct URL cannot bypass
       # the Capital Structure desk entitlement boundary.
       - /capital-structure-data/
-
