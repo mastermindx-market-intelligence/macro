@@ -1919,10 +1919,13 @@ def test_pk11_synthetic_bank_ledger(monkeypatch: pytest.MonkeyPatch) -> None:
     assert _row(result, "credit_loss_expense_off_balance_sheet")["value"] == "50"
     assert _row(result, "allowance_for_credit_losses")["value"] == "1100"
     assert _row(result, "net_write_offs")["value"] == "300"
+    # D7: net-of-allowance loans are not an acl_coverage denominator
     assert _row(result, "loans_held_for_investment")["concept"] == (
-        "us-gaap:LoansAndLeasesReceivableNetReportedAmount"
+        "us-gaap:FinancingReceivableExcludingAccruedInterest"
+        "BeforeAllowanceForCreditLoss"
     )
-    assert _row(result, "loans_held_for_investment")["value"] == "50000"
+    # D7: net-of-allowance loans are not an acl_coverage denominator
+    assert _row(result, "loans_held_for_investment")["value"] is None
     assert _row(result, "cet1_capital")["concept"] == (
         "us-gaap:BankingRegulationCommonEquityTier1Capital"
     )
@@ -1936,9 +1939,10 @@ def test_pk11_synthetic_bank_ledger(monkeypatch: pytest.MonkeyPatch) -> None:
         assert row["quality_state"] == "unsupported"
         assert row["evidence_kind"] == "table_cell"
         assert row["reason"] == "missing_dependency"
+    # D7: net-of-allowance loans are not an acl_coverage denominator
     assert result["coverage"] == {
-        "valued_fields": 9,
-        "missing_fields": 1,
+        "valued_fields": 8,
+        "missing_fields": 2,
         "unsupported_fields": 6,
         "not_evaluable_fields": 0,
         "not_applicable_fields": 0,
@@ -1949,7 +1953,8 @@ def test_pk11_synthetic_bank_ledger(monkeypatch: pytest.MonkeyPatch) -> None:
     assert rollforward["status"] == "pass"
     assert rollforward["tolerance"] == "1"  # 1x10^-d, closing fact decimals 0
     acl = _check(result, "acl_coverage")
-    assert acl["status"] == "pass"
+    # D7: net-of-allowance loans are not an acl_coverage denominator
+    assert acl["status"] == "not_evaluable"
     assert acl["tolerance"] is None
     assert acl["evidence_field_ids"] == [
         "allowance_for_credit_losses",
@@ -1969,7 +1974,10 @@ def test_pk11_synthetic_bank_ledger(monkeypatch: pytest.MonkeyPatch) -> None:
 
     limitations = result["limitations"]
     assert limitations[0] == pack_base.DISPLAY_ONLY_LIMITATION
-    assert "pk11.acl_coverage: 0.022000" in limitations
+    # D7: net-of-allowance loans are not an acl_coverage denominator
+    assert not any(
+        line.startswith("pk11.acl_coverage:") for line in limitations
+    )
     assert "pk11.table_cell_reserved" in limitations
     assert any(
         line.startswith("pk11.industrial_basis_excluded:") for line in limitations
@@ -2004,7 +2012,8 @@ def test_pk11_zero_loans_and_missing_off_balance_sheet(
     )
     acl = _check(result, "acl_coverage")
     assert acl["status"] == "not_evaluable"
-    assert acl["reason"] == "division_by_zero"
+    # D7: net-of-allowance loans are not an acl_coverage denominator
+    assert acl["reason"] == "missing_dependency"
     assert not any(
         line.startswith("pk11.acl_coverage:") for line in result["limitations"]
     )
@@ -2293,9 +2302,10 @@ def test_pk11_cet1_ratio_table_cell_prefers_consolidated_lower_approach(
     )
     # The still-reserved liquidity fields keep the reserved limitation.
     assert "pk11.table_cell_reserved" in result["limitations"]
+    # D7: net-of-allowance loans are not an acl_coverage denominator
     assert result["coverage"] == {
-        "valued_fields": 8,
-        "missing_fields": 3,
+        "valued_fields": 7,
+        "missing_fields": 4,
         "unsupported_fields": 5,
         "not_evaluable_fields": 0,
         "not_applicable_fields": 0,
@@ -2303,12 +2313,14 @@ def test_pk11_cet1_ratio_table_cell_prefers_consolidated_lower_approach(
     }
 
 
-def test_pk11_regulatory_minimum_uses_latest_disclosed_instant_on_or_before_por(
+def test_pk11_regulatory_minimum_admits_only_the_period_of_report_instant(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     # The consolidated holding-company minimum is disclosed at the prior
     # year-end column; only the depositary-subsidiary minimum sits at por.
-    # The consolidated cell wins and the row reports the instant used.
+    # D2: only the period-of-report column is admitted, and the subsidiary
+    # cell is not the issuer's consolidated cell, so no admissible cell
+    # remains and the field stays reserved.
     events = _testbank_events() + (
         _ratio_fact(
             _CET1_MINIMUM,
@@ -2340,10 +2352,9 @@ def test_pk11_regulatory_minimum_uses_latest_disclosed_instant_on_or_before_por(
     result = _produce_tablebank(monkeypatch, events, (_CET1_MINIMUM_LOCAL,))
     assert contract.validate_pack_result(result) == []
     row = _row(result, "regulatory_minimum_disclosed")
-    assert row["quality_state"] == "valued"
-    assert row["value"] == "0.115"
-    assert row["period"] == {"kind": "instant", "end": "2024-12-31"}
-    assert row["table_cell"]["column"] == 1  # prior-year column, latest first
+    assert row["quality_state"] == "unsupported"
+    assert row["value"] is None
+    assert row["table_cell"] is None
     # One operand alone keeps the comparison check typed.
     minimum_check = _check(result, "cet1_vs_minimum")
     assert minimum_check["status"] == "not_evaluable"
@@ -2536,6 +2547,328 @@ def test_pk11_non_bank_gate_holds_with_disclosed_facts_present(
     assert control["applicability"]["state"] == "applicable"
     assert _row(control, "cet1_ratio_disclosed")["quality_state"] == "valued"
     assert _row(control, "cet1_ratio_disclosed")["value"] == "0.1126"
+
+
+# 20c. PK11 repair packet (2026-11-02): the seven review defects, each pinned
+# by a synthetic ledger built with the same helpers as 20b above.
+
+
+_STD = "us-gaap:StandardizedApproachMember"
+_ADV = "us-gaap:AdvancedApproachMember"
+
+
+def _std_cell(
+    concept: str, context_id: str, value: str, key: str
+) -> RawFactOccurrence:
+    """A consolidated-parent standardized-approach ratio cell at por."""
+    return _ratio_fact(
+        concept,
+        _ratio_context(context_id, "2025-12-31", {**_PARENT, _METHODOLOGY: _STD}),
+        value,
+        key,
+    )
+
+
+def test_pk11_cet1_vs_minimum_pass_fail_and_approach_mismatch(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T1 (D1): the hook re-decides the comparison after the cells are valued
+    # — minimum <= CET1 ratio under the same approach, never the inverted
+    # placeholder the framework froze before valuation.
+    def events(cet1: str, minimum: str, minimum_member: str) -> tuple:
+        return _testbank_events() + (
+            _std_cell(_CET1_RATIO, "c-r-std", cet1, "cet1_std"),
+            _ratio_fact(
+                _CET1_MINIMUM,
+                _ratio_context(
+                    "c-m-cell",
+                    "2025-12-31",
+                    {**_PARENT, _METHODOLOGY: minimum_member},
+                ),
+                minimum,
+                "min_cell",
+            ),
+        )
+
+    pre = ("CommonEquityTierOneCapitalRatio", _CET1_MINIMUM_LOCAL)
+    passing = _produce_tablebank(
+        monkeypatch, events("0.12", "0.045", _STD), pre
+    )
+    assert contract.validate_pack_result(passing) == []
+    check = _check(passing, "cet1_vs_minimum")
+    assert check["status"] == "pass"
+    assert check["evidence_field_ids"] == [
+        "cet1_ratio_disclosed",
+        "regulatory_minimum_disclosed",
+    ]
+
+    failing = _produce_tablebank(
+        monkeypatch, events("0.04", "0.045", _STD), pre
+    )
+    assert _check(failing, "cet1_vs_minimum")["status"] == "fail"
+    assert contract.validate_pack_result(failing) == []
+
+    mismatched = _produce_tablebank(
+        monkeypatch, events("0.12", "0.045", _ADV), pre
+    )
+    check = _check(mismatched, "cet1_vs_minimum")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "unit_mismatch"
+    assert contract.validate_pack_result(mismatched) == []
+
+
+def test_pk11_disclosed_cells_admit_only_the_period_of_report_instant(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T2 (D2): the prior-year comparative column never wins — only a cell at
+    # por does, and with no por cell the field stays reserved.
+    def prior_std_cell(key: str) -> RawFactOccurrence:
+        return _ratio_fact(
+            _CET1_RATIO,
+            _ratio_context(
+                "c-r-prior", "2024-12-31", {**_PARENT, _METHODOLOGY: _STD}
+            ),
+            "0.109",
+            key,
+        )
+
+    events = _testbank_events(drop=("cet1", "rwa")) + (
+        prior_std_cell("cet1_prior"),
+        _std_cell(_CET1_RATIO, "c-r-por", "0.1126", "cet1_por"),
+    )
+    result = _produce_tablebank(
+        monkeypatch, events, ("CommonEquityTierOneCapitalRatio",)
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "cet1_ratio_disclosed")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "0.1126"
+    assert row["period"] == {"kind": "instant", "end": "2025-12-31"}
+
+    # The prior-instant cell alone must not resolve the field.
+    prior_only = _produce_tablebank(
+        monkeypatch,
+        _testbank_events(drop=("cet1", "rwa")) + (prior_std_cell("cet1_prior_only"),),
+        ("CommonEquityTierOneCapitalRatio",),
+    )
+    row = _row(prior_only, "cet1_ratio_disclosed")
+    assert row["quality_state"] == "unsupported"
+    assert row["value"] is None
+
+
+def test_pk11_capital_ratio_requires_matching_approach(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T3 (D3): an advanced-approach disclosed ratio against undimensioned
+    # (standardized-basis) RWA is not one calculation.
+    events = _testbank_events() + (
+        _ratio_fact(
+            _CET1_RATIO,
+            _ratio_context(
+                "c-r-adv", "2025-12-31", {**_PARENT, _METHODOLOGY: _ADV}
+            ),
+            "0.1308",
+            "cet1_adv",
+        ),
+    )
+    result = _produce_tablebank(
+        monkeypatch, events, ("CommonEquityTierOneCapitalRatio",)
+    )
+    assert contract.validate_pack_result(result) == []
+    check = _check(result, "capital_ratio_arithmetic")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "unit_mismatch"
+    assert check["tolerance"] == "0.001"
+    assert check["evidence_field_ids"] == [
+        "cet1_capital",
+        "risk_weighted_assets",
+        "cet1_ratio_disclosed",
+    ]
+
+
+def test_pk11_regulatory_minimum_follows_the_cet1_approach(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T4 (D4): CET1 is disclosed under the standardized approach only; the
+    # minimum under both approaches with differing values. The minimum takes
+    # the standardized cell — the lower-of splice belongs to the ratio, not
+    # the minimum — and says so through the approach-matched limitation.
+    events = _testbank_events(drop=("cet1", "rwa")) + (
+        _std_cell(_CET1_RATIO, "c-r-std", "0.1126", "cet1_std"),
+        _std_cell(_CET1_MINIMUM, "c-m-std", "0.09", "min_std"),
+        _ratio_fact(
+            _CET1_MINIMUM,
+            _ratio_context(
+                "c-m-adv", "2025-12-31", {**_PARENT, _METHODOLOGY: _ADV}
+            ),
+            "0.07",
+            "min_adv",
+        ),
+    )
+    result = _produce_tablebank(
+        monkeypatch, events, ("CommonEquityTierOneCapitalRatio", _CET1_MINIMUM_LOCAL)
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "regulatory_minimum_disclosed")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "0.09"
+    assert {dim["member"] for dim in row["dimensions"]} == {
+        "srt:ParentCompanyMember",
+        "us-gaap:StandardizedApproachMember",
+    }
+    assert (
+        "pk11.regulatory_minimum_disclosed: approach matched to"
+        " cet1_ratio_disclosed" in result["limitations"]
+    )
+    assert not any(
+        "lower ratio taken" in line
+        for line in result["limitations"]
+        if line.startswith("pk11.regulatory_minimum_disclosed:")
+    )
+    # Same approach, same instant: the re-decided comparison now ties.
+    assert _check(result, "cet1_vs_minimum")["status"] == "pass"
+
+
+def test_pk11_rollforward_opens_at_the_prior_fiscal_period_end(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T5 (D5): nine-month 10-Q flows. The allowance also exists at the prior
+    # quarter end (2025-06-30, 1050), but the YTD window opened 2025-01-01,
+    # so the opening is the prior fiscal year-end balance (1000):
+    # 1000 + 400 - 300 = 1100 = the closing allowance.
+    def allowance_at(instant: str, value: str, key: str) -> RawFactOccurrence:
+        return usd_fact(
+            _tablebank_filing_row(),
+            "us-gaap:FinancingReceivableExcludingAccruedInterestAllowanceForCreditLoss",
+            _ratio_context(f"c-acl-{key}", instant, {}),
+            value,
+            source_span=(0, len(value)),
+            source_occurrence_key=key,
+        )
+
+    events = _testbank_events(por="2025-09-30", drop=("allow_open",)) + (
+        allowance_at("2024-12-31", "1000", "allow_fye"),
+        allowance_at("2025-06-30", "1050", "allow_prior_qtr"),
+    )
+    _patch_testbank_converter(monkeypatch, events)
+    result = produce_pack(
+        "PK11",
+        _pk11_bank_input(
+            packages=_testbank_packages(form="10-Q", por="2025-09-30")
+        ),
+    )
+    assert contract.validate_pack_result(result) == []
+    assert _row(result, "allowance_for_credit_losses")["value"] == "1100"
+    rollforward = _check(result, "provision_vs_acl_rollforward")
+    assert rollforward["status"] == "pass"
+
+
+def test_pk11_ratio_cell_outside_unit_range_is_refused(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T6 (D6): 11.5 is a percent written as a number, not a ratio; the cell
+    # is refused as a typed unit_mismatch absence and no check may pass on
+    # top of it.
+    events = _testbank_events() + (
+        _std_cell(_CET1_RATIO, "c-r-pct", "11.5", "cet1_pct"),
+    )
+    result = _produce_tablebank(
+        monkeypatch, events, ("CommonEquityTierOneCapitalRatio",)
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "cet1_ratio_disclosed")
+    assert row["quality_state"] == "not_evaluable"
+    assert row["non_value_state"] == "not_evaluable"
+    assert row["coverage_state"] == "unmapped"
+    assert row["reason"] == "unit_mismatch"
+    assert row["value"] is None
+    assert _check(result, "cet1_vs_minimum")["status"] != "pass"
+    assert _check(result, "capital_ratio_arithmetic")["status"] != "pass"
+
+
+def test_pk11_loans_held_for_investment_requires_gross_loans(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T7 (D7): the net-of-allowance carrying amount is not the acl_coverage
+    # denominator; the base ledger's only loans fact is exactly that net
+    # concept, so the field stays missing and the coverage ratio cannot run.
+    result = _produce_testbank(monkeypatch)
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "loans_held_for_investment")
+    assert row["quality_state"] == "missing"
+    assert row["value"] is None
+    assert row["reason"] == (
+        "missing_standard_fact:"
+        "us-gaap:FinancingReceivableExcludingAccruedInterest"
+        "BeforeAllowanceForCreditLoss"
+    )
+    acl = _check(result, "acl_coverage")
+    assert acl["status"] == "not_evaluable"
+    assert acl["reason"] == "missing_dependency"
+
+
+def test_pk11_gross_loans_restore_acl_coverage(monkeypatch: pytest.MonkeyPatch) -> None:
+    # T8 (D7): a gross loans fact restores the acl_coverage arithmetic the
+    # base ledger lost with the net alias. The ledger is the base synthetic
+    # bank ledger with its single net-loans fact swapped for the gross
+    # concept — same key, value, period, unit and context — built through
+    # _testbank_events' drop/extra surface so the shared _TESTBANK_FACTS
+    # constant is never mutated.
+    gross = (
+        "us-gaap:FinancingReceivableExcludingAccruedInterest"
+        "BeforeAllowanceForCreditLoss"
+    )
+    result = _produce_testbank(
+        monkeypatch,
+        drop=("loans",),
+        extra=(("loans", gross, "instant", "50000"),),
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "loans_held_for_investment")
+    assert row["quality_state"] == "valued"
+    assert row["concept"] == gross
+    assert row["value"] == "50000"
+    acl = _check(result, "acl_coverage")
+    assert acl["status"] == "pass"
+    # allowance_for_credit_losses 1100 / loans_held_for_investment 50000 = 0.022
+    assert "pk11.acl_coverage: 0.022000" in result["limitations"]
+    # Same ledger shape as the synthetic bank ledger: the gross swap restores
+    # its pre-D7 counts (9 valued, 1 missing — deposits is still the only
+    # missing standard fact; the six table-cell rows stay unsupported).
+    assert result["coverage"] == {
+        "valued_fields": 9,
+        "missing_fields": 1,
+        "unsupported_fields": 6,
+        "not_evaluable_fields": 0,
+        "not_applicable_fields": 0,
+        "disclosure_coverage_state": "present",
+    }
+
+
+def test_pk11_zero_gross_loans_acl_coverage_division_by_zero(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T9 (D7): a zero GROSS denominator is the division_by_zero refusal the
+    # zero-loans test pinned before D7. Here the ledger carries a valued
+    # gross loans fact at 0 (same swap as T8), so the check refuses on the
+    # denominator itself, not on a missing dependency.
+    gross = (
+        "us-gaap:FinancingReceivableExcludingAccruedInterest"
+        "BeforeAllowanceForCreditLoss"
+    )
+    result = _produce_testbank(
+        monkeypatch,
+        drop=("loans",),
+        extra=(("loans", gross, "instant", "0"),),
+    )
+    assert _row(result, "loans_held_for_investment")["value"] == "0"
+    acl = _check(result, "acl_coverage")
+    assert acl["status"] == "not_evaluable"
+    assert acl["reason"] == "division_by_zero"
+    assert not any(
+        line.startswith("pk11.acl_coverage:") for line in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
 
 
 def test_base_pack_envelopes_identical_after_pk11() -> None:
@@ -2876,9 +3209,21 @@ def test_pk12_biotech_checks_and_limitations(pk12_biotech_result: dict) -> None:
     financing_check = _check(result, "financing_disclosed_not_forecast")
     assert financing_check["status"] == "pass"
     assert financing_check["kind"] == "qualitative_presence"
-    # 200 / (108 / 12) and 60 / 120, quantized 6 dp, ride the limitations.
-    assert "pk12.runway_months_fcf: 22.222222" in result["limitations"]
+    # 60 / 120, quantized 6 dp, rides the limitations; the FCF month count
+    # itself is withheld (D3) and the capex operand is cited by provenance.
+    assert not any(
+        item.startswith("pk12.runway_months_fcf:")
+        for item in result["limitations"]
+    )
     assert "pk12.rd_to_cash: 0.500000" in result["limitations"]
+    assert any(
+        item.startswith(
+            "runway_months_annual_fcf_div_12: capex operand"
+            " us-gaap:PaymentsToAcquirePropertyPlantAndEquipment"
+        )
+        and "period 2025-01-01..2025-12-31 unit USD" in item
+        for item in result["limitations"]
+    )
     assert any(
         item.startswith("runway_months_annual_fcf_div_12:")
         for item in result["limitations"]
@@ -3112,6 +3457,314 @@ def test_pk12_capital_raise_line_outranks_stock_plan_line() -> None:
     assert row["quality_state"] == "valued"
     assert row["value"] == "150"
     assert row["concept"] == "us-gaap:ProceedsFromIssuanceOfCommonStock"
+    assert contract.validate_pack_result(result) == []
+
+
+# 28c. PK12 runway period/unit gates (per-pack review D1-D4) -------------------
+#
+# The independent per-pack review FAILED this pack's runway arithmetic: the
+# runway row divided operating cash flow by 4 without checking that the opCF
+# fact covers a full fiscal year (a Q4-only opCF of -25 minted 32 quarters
+# and the recomputation check still passed), and the FCF month count consumed
+# a capex operand with no unit or period test (EUR, share-count and
+# quarter-only capex each produced a confident wrong number). The tests below
+# pin the refusal edges: a non-annual opCF row retracts the runway row and
+# both runway checks as unit_mismatch (D1); a capex operand that is not
+# annual USD makes the FCF check unit_mismatch while a missing alias stays
+# missing_dependency (D2); the month count is withheld in favour of capex
+# provenance (D3); and a valued runway row carries its static assumptions
+# (D4). Facts here are 5-tuples (qname, context, value, sign, unitRef) over
+# the same strict-parser document template as _biotech_document.
+
+_SYN_CONTEXT_Q4 = (
+    '<xbrli:context id="c-q4"><xbrli:entity><xbrli:identifier'
+    ' scheme="http://www.sec.gov/CIK">'
+    f'{SYN_BIO_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>'
+    "<xbrli:startDate>2025-10-02</xbrli:startDate>"
+    "<xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>"
+)
+_SYN_UNIT_EUR = (
+    '<xbrli:unit id="eur"><xbrli:measure>iso4217:EUR</xbrli:measure>'
+    "</xbrli:unit>"
+)
+_SYN_UNIT_SHARES = (
+    '<xbrli:unit id="shr"><xbrli:measure>xbrli:shares</xbrli:measure>'
+    "</xbrli:unit>"
+)
+
+
+def _biotech_rich_document(
+    facts: tuple[tuple[str, str, str, str, str], ...],
+    extra_contexts: str = "",
+    extra_units: str = "",
+) -> bytes:
+    rows = "\n".join(
+        f"<tr><td>item {index}</td><td>"
+        f'<ix:nonFraction id="f-{index}" name="{qname}"'
+        f' contextRef="{context}" unitRef="{unit}" decimals="0"{sign}>{value}'
+        "</ix:nonFraction></td></tr>"
+        for index, (qname, context, value, sign, unit) in enumerate(facts, start=1)
+    )
+    template = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<html xmlns="http://www.w3.org/1999/xhtml"'
+        ' xmlns:ix="http://www.xbrl.org/2013/inlineXBRL"'
+        ' xmlns:xbrli="http://www.xbrl.org/2003/instance"'
+        ' xmlns:iso4217="http://www.xbrl.org/2003/iso4217"'
+        ' xmlns:us-gaap="http://fasb.org/us-gaap/2025">\n'
+        "<head><title>TESTBIO 10-K</title></head>\n<body>\n"
+        '<div style="display:none"><ix:header><ix:resources>\n'
+        f"{_SYN_CONTEXT_INST}\n{_SYN_CONTEXT_FY}\n{extra_contexts}\n"
+        '<xbrli:unit id="usd"><xbrli:measure>iso4217:USD</xbrli:measure>'
+        f"</xbrli:unit>\n{extra_units}\n</ix:resources></ix:header></div>\n"
+        "<p>The registrant maintains an at-the-market offering program and"
+        " believes existing resources are sufficient to fund operations for"
+        " the next twelve months.</p>\n"
+        f"<table>\n{rows}\n</table>\n</body></html>\n"
+    )
+    return template.encode("utf-8")
+
+
+def _biotech_rich_package(
+    facts: tuple[tuple[str, str, str, str, str], ...],
+    extra_contexts: str = "",
+    extra_units: str = "",
+) -> GoldenFilingPackage:
+    document = _biotech_rich_document(facts, extra_contexts, extra_units)
+    manifest = {
+        "entity_id": SYN_BIO_CIK,
+        "cik": SYN_BIO_CIK,
+        "legal_name": "TESTBIO CORP",
+        "form": "10-K",
+        "period_of_report": "2025-12-31",
+        "filing_date": "2026-02-15",
+        "accession": "0000000003-26-000010",
+        "primary_document": SYN_BIO_DOC,
+        "source_accepted_at": "2026-02-15T16:00:00Z",
+        "fixture_recorded_at": "2026-02-15T16:05:00Z",
+        "members": [
+            {
+                "name": SYN_BIO_DOC,
+                "state": "stored",
+                "content_sha256": sha256(document).hexdigest(),
+            }
+        ],
+    }
+    return GoldenFilingPackage(
+        manifest=manifest, members={SYN_BIO_DOC: document}
+    )
+
+
+def _rich_facts(
+    *,
+    opcf_context: str = "c-fy",
+    opcf_value: str = "100",
+    capex_context: str = "c-fy",
+    capex_value: str = "8",
+    capex_unit: str = "usd",
+    capex: bool = True,
+) -> tuple[tuple[str, str, str, str, str], ...]:
+    """_SYN_BIO_FACTS as 5-tuples with the opCF period and the capex operand
+    (context, value, unit — or presence) overridable per test."""
+    facts = [
+        ("us-gaap:CashAndCashEquivalentsAtCarryingValue", "c-inst", "120", "", "usd"),
+        ("us-gaap:ShortTermInvestments", "c-inst", "80", "", "usd"),
+        ("us-gaap:ResearchAndDevelopmentExpense", "c-fy", "60", "", "usd"),
+        (
+            "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+            opcf_context,
+            opcf_value,
+            ' sign="-"',
+            "usd",
+        ),
+        ("us-gaap:NetCashProvidedByUsedInFinancingActivities", "c-fy", "150", "", "usd"),
+    ]
+    if capex:
+        facts.append(
+            (
+                "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+                capex_context,
+                capex_value,
+                "",
+                capex_unit,
+            )
+        )
+    facts.append(
+        ("us-gaap:ProceedsFromIssuanceOfCommonStock", "c-fy", "150", "", "usd")
+    )
+    return tuple(facts)
+
+
+def test_pk12_quarter_only_opcf_retracts_runway_as_unit_mismatch() -> None:
+    # D1: the opCF fact covers one 91-day quarter (2025-10-02..2025-12-31),
+    # so the /4 burn basis is a period-basis unit_mismatch: the runway row is
+    # a typed absence and both runway checks follow, never a 4x runway.
+    result = produce_pack(
+        "PK12",
+        _pk12_input(
+            packages=(
+                _biotech_rich_package(
+                    _rich_facts(opcf_context="c-q4", opcf_value="25"),
+                    extra_contexts=_SYN_CONTEXT_Q4,
+                ),
+            )
+        ),
+    )
+    opcf = _row(result, "net_cash_from_operating_activities")
+    assert opcf["quality_state"] == "valued"
+    assert opcf["value"] == "-25"
+    assert opcf["period"] == {
+        "kind": "duration",
+        "start": "2025-10-02",
+        "end": "2025-12-31",
+    }
+    runway = _row(result, "cash_runway_quarters")
+    assert runway["quality_state"] == "not_evaluable"
+    assert runway["non_value_state"] == "not_evaluable"
+    assert runway["coverage_state"] == "unmapped"
+    assert runway["reason"] == "unit_mismatch"
+    assert runway["value"] is None
+    assert runway["formula_rule_id"] == "pk12.cash_runway_quarters/v1"
+    assert runway["dependency_field_ids"] == [
+        "cash_and_cash_equivalents",
+        "short_term_investments",
+        "net_cash_from_operating_activities",
+    ]
+    for check_id in ("cash_runway_quarters", "runway_months_annual_fcf_div_12"):
+        check = _check(result, check_id)
+        assert check["status"] == "not_evaluable"
+        assert check["reason"] == "unit_mismatch"
+    assert result["coverage"]["valued_fields"] == 6
+    assert result["coverage"]["not_evaluable_fields"] == 1
+    # D4's assumptions limitation is withdrawn with the retracted row.
+    assert not any(
+        item.startswith("cash_runway_quarters: static formula")
+        for item in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk12_eur_capex_is_not_an_fcf_operand() -> None:
+    # D2: a EUR capex fact fails the R-F1 USD test, so the FCF check refuses
+    # as unit_mismatch instead of minting months from a mixed-currency burn.
+    result = produce_pack(
+        "PK12",
+        _pk12_input(
+            packages=(
+                _biotech_rich_package(
+                    _rich_facts(capex_unit="eur"), extra_units=_SYN_UNIT_EUR
+                ),
+            )
+        ),
+    )
+    assert _row(result, "cash_runway_quarters")["quality_state"] == "valued"
+    assert _check(result, "cash_runway_quarters")["status"] == "pass"
+    fcf = _check(result, "runway_months_annual_fcf_div_12")
+    assert fcf["status"] == "not_evaluable"
+    assert fcf["reason"] == "unit_mismatch"
+    assert not any(
+        item.startswith("pk12.runway_months_fcf:") for item in result["limitations"]
+    )
+    assert not any("capex operand" in item for item in result["limitations"])
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk12_share_count_capex_is_not_an_fcf_operand() -> None:
+    # D2: a share-count capex fact is a unit_mismatch, never a near-zero
+    # payments figure.
+    result = produce_pack(
+        "PK12",
+        _pk12_input(
+            packages=(
+                _biotech_rich_package(
+                    _rich_facts(capex_unit="shr"), extra_units=_SYN_UNIT_SHARES
+                ),
+            )
+        ),
+    )
+    assert _row(result, "cash_runway_quarters")["quality_state"] == "valued"
+    assert _check(result, "cash_runway_quarters")["status"] == "pass"
+    fcf = _check(result, "runway_months_annual_fcf_div_12")
+    assert fcf["status"] == "not_evaluable"
+    assert fcf["reason"] == "unit_mismatch"
+    assert not any(
+        item.startswith("pk12.runway_months_fcf:") for item in result["limitations"]
+    )
+    assert not any("capex operand" in item for item in result["limitations"])
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk12_quarter_only_capex_is_not_an_fcf_operand() -> None:
+    # D2: a USD capex fact that covers only the 91-day final quarter is a
+    # period-basis unit_mismatch, never a 4x-understated burn.
+    result = produce_pack(
+        "PK12",
+        _pk12_input(
+            packages=(
+                _biotech_rich_package(
+                    _rich_facts(capex_context="c-q4"),
+                    extra_contexts=_SYN_CONTEXT_Q4,
+                ),
+            )
+        ),
+    )
+    assert _row(result, "cash_runway_quarters")["quality_state"] == "valued"
+    assert _check(result, "cash_runway_quarters")["status"] == "pass"
+    fcf = _check(result, "runway_months_annual_fcf_div_12")
+    assert fcf["status"] == "not_evaluable"
+    assert fcf["reason"] == "unit_mismatch"
+    assert not any(
+        item.startswith("pk12.runway_months_fcf:") for item in result["limitations"]
+    )
+    assert not any("capex operand" in item for item in result["limitations"])
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk12_annual_usd_operands_keep_runway_and_cite_provenance() -> None:
+    # T5 pin: annual USD opCF and annual USD capex keep the parent envelope's
+    # runway row and both check statuses; D4's assumptions limitation and
+    # D3's capex provenance ride along, and the month count is withheld.
+    result = produce_pack(
+        "PK12", _pk12_input(packages=(_biotech_rich_package(_rich_facts()),))
+    )
+    runway = _row(result, "cash_runway_quarters")
+    assert runway["quality_state"] == "valued"
+    assert runway["value"] == "8"
+    assert _check(result, "cash_runway_quarters")["status"] == "pass"
+    assert _check(result, "runway_months_annual_fcf_div_12")["status"] == "pass"
+    assert _check(result, "runway_months_annual_fcf_div_12")["reason"] is None
+    assert not any(
+        item.startswith("pk12.runway_months_fcf:") for item in result["limitations"]
+    )
+    assert any(
+        item.startswith("cash_runway_quarters: static formula")
+        for item in result["limitations"]
+    )
+    assert any(
+        item.startswith(
+            "runway_months_annual_fcf_div_12: capex operand"
+            " us-gaap:PaymentsToAcquirePropertyPlantAndEquipment"
+        )
+        and "period 2025-01-01..2025-12-31 unit USD" in item
+        for item in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk12_absent_capex_alias_stays_missing_dependency() -> None:
+    # D2 pin: with no capex alias fact at all, the FCF check keeps the honest
+    # missing_dependency (passes before and after the gate).
+    result = produce_pack(
+        "PK12", _pk12_input(packages=(_biotech_rich_package(_rich_facts(capex=False)),))
+    )
+    assert _row(result, "cash_runway_quarters")["quality_state"] == "valued"
+    assert _check(result, "cash_runway_quarters")["status"] == "pass"
+    fcf = _check(result, "runway_months_annual_fcf_div_12")
+    assert fcf["status"] == "not_evaluable"
+    assert fcf["reason"] == "missing_dependency"
+    assert not any(
+        item.startswith("pk12.runway_months_fcf:") for item in result["limitations"]
+    )
     assert contract.validate_pack_result(result) == []
 
 
@@ -8631,6 +9284,152 @@ def test_pk04_grouped_conflict_names_the_duplicate_facts(monkeypatch) -> None:
     assert contract.validate_pack_result(result) == []
 
 
+# PK04 review repair (run A1): the typed-dimensioned selector admits a
+# start-date bucket at ANY distance on or after the period of report, so a
+# filing whose only RevenueRemainingPerformanceObligationPercentage bucket
+# starts beyond 12 months was valued under a field whose catalogue name
+# promises "expected within 12 months". The finalize hook bounds the selected
+# member to the rpo_total guard's window: por < member_date <= por + 92 days.
+
+
+def _pk04_rpo_pct_events(buckets: tuple[tuple[str, str], ...]) -> tuple:
+    """Synthetic percentage facts, one per (typed start date, value) bucket."""
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+    events = []
+    for index, (day, value) in enumerate(buckets):
+        events.append(
+            make_raw_fact(
+                source=filing_row["source"],
+                concept_qname=(
+                    "us-gaap:RevenueRemainingPerformanceObligationPercentage"
+                ),
+                context=FactContext(
+                    context_id=f"c-pct-{index}",
+                    entity_scheme="http://www.sec.gov/CIK",
+                    entity_identifier=TESTREV_CIK,
+                    instant="2025-12-31",
+                    typed_dimensions=((_RPO_AXIS, _typed_member(day)),),
+                ),
+                unit=FactUnit("xbrli:pure", ["xbrli:pure"]),
+                raw_token=value,
+                parsed_value=value,
+                dimensions_known=True,
+                decimals="2",
+                source_span=(0, len(value)),
+                source_occurrence_key=f"pct-{index}",
+                accepted_at=filing_row["accepted_at"],
+                recorded_at=filing_row["recorded_at"],
+            )
+        )
+    return tuple(events)
+
+
+def _produce_pk04_rpo_pct(
+    monkeypatch: pytest.MonkeyPatch, buckets: tuple[tuple[str, str], ...]
+) -> dict:
+    events = _pk04_rpo_pct_events(buckets)
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(
+        ixbrl_module, "parse_and_convert_golden_packages", _convert
+    )
+    return produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+
+
+def test_pk04_rpo_percentage_lone_bucket_beyond_window_is_not_valued(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T1: run A1's shape — the only bucket starts 2027-07-01, more than a
+    # year past por 2025-12-31; the field says "within 12 months", so the
+    # value never ships: the row is the resolver's own typed absence.
+    result = _produce_pk04_rpo_pct(monkeypatch, (("2027-07-01", "0.4"),))
+    row = _testrev_row(result, "rpo_percentage_next_12m")
+    assert row["quality_state"] == "missing"
+    assert row["non_value_state"] == "missing"
+    assert row["value"] is None
+    assert row["reason"] == (
+        "missing_standard_fact:us-gaap:RevenueRemainingPerformanceObligation"
+        "Percentage"
+    )
+    assert row["dimensions"] == []
+    assert row["source_occurrence_ids"] == []
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk04_rpo_percentage_in_window_bucket_wins_over_later(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T2 (control): with a within-window bucket present the selector's
+    # earliest-on-or-after pick is unchanged — 2026-01-01 beats 2027-07-01.
+    result = _produce_pk04_rpo_pct(
+        monkeypatch, (("2026-01-01", "0.47"), ("2027-07-01", "0.26"))
+    )
+    row = _testrev_row(result, "rpo_percentage_next_12m")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "0.47"
+    assert row["dimensions"] == [{"axis": _RPO_AXIS, "member": "2026-01-01"}]
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk04_rpo_percentage_bucket_on_report_date_is_not_valued(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T3: a bucket dated exactly on the report date mirrors the rpo_total
+    # guard's strict ``por < member_date`` lower bound: not valued.
+    result = _produce_pk04_rpo_pct(monkeypatch, (("2025-12-31", "0.55"),))
+    row = _testrev_row(result, "rpo_percentage_next_12m")
+    assert row["quality_state"] == "missing"
+    assert row["value"] is None
+    assert row["reason"] == (
+        "missing_standard_fact:us-gaap:RevenueRemainingPerformanceObligation"
+        "Percentage"
+    )
+
+
+def test_pk04_rpo_percentage_bucket_at_window_edge_is_valued(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T4: por + 92 days (2026-04-02) is the inclusive upper bound: valued.
+    edge = (_date(2025, 12, 31) + timedelta(days=92)).isoformat()
+    result = _produce_pk04_rpo_pct(monkeypatch, ((edge, "0.31"),))
+    row = _testrev_row(result, "rpo_percentage_next_12m")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "0.31"
+    assert row["dimensions"] == [{"axis": _RPO_AXIS, "member": edge}]
+    assert contract.validate_pack_result(result) == []
+
+
 def test_pk03_grouped_conflict_names_the_duplicate_facts(monkeypatch) -> None:
     # R-F9 sink repair F1: same disclosure on a PK03 dimensioned segment field.
     revenue = "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"
@@ -11433,6 +12232,168 @@ def test_pk03_widened_near_misses_never_resolve(
     assert contract.validate_pack_result(result) == []
 
 
+_PK03_SYN_ELIMINATION_CLARK_MEMBER = (
+    "{http://fasb.org/srt/2025}ConsolidationEliminationsMember"
+)
+
+
+def _pk03_elimination_bridge_facts(
+    elimination_member: str,
+) -> tuple[RawFactOccurrence, ...]:
+    """One consolidated + one segment + one elimination revenue fact.
+
+    The bridge only ties with the elimination counted once: 1,500,000,000
+    (segment) + elimination == 1,000,000,000 (consolidated) inside the
+    check's 1,000,000 tolerance, while a double-counted elimination is off
+    by its own full magnitude.
+    """
+    return (
+        _pk03_syn_fact(
+            "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            (),
+            "1000000000",
+        ),
+        _pk03_syn_fact(
+            "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            (
+                (_PK03_SYN_SEG_AXIS, "us-gaap:AlphaSegmentMember"),
+                (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+            ),
+            "1500000000",
+        ),
+        _pk03_syn_fact(
+            "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            ((_PK03_SYN_CONS_AXIS, elimination_member),),
+            "-500000000",
+        ),
+    )
+
+
+def test_pk03_clark_form_elimination_member_emits_one_row(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A Clark-form elimination member is one row, never two.
+
+    The ledger canonicalizes only us-gaap and dei namespaces, so an
+    srt-namespace member stays in Clark form and binds by local name: both
+    declared ConsolidationEliminationsMember entries would admit the same
+    occurrence. The first declared entry owns it; the second emits nothing.
+    """
+    result = _produce_pk03_synthetic(
+        monkeypatch,
+        _pk03_elimination_bridge_facts(_PK03_SYN_ELIMINATION_CLARK_MEMBER),
+    )
+    rows = _pk03_field_rows(result, "unallocated_corporate_and_eliminations")
+    assert [row["quality_state"] for row in rows] == ["valued"]
+    assert rows[0]["value"] == "-500000000"
+    assert len(rows[0]["source_occurrence_ids"]) == 1
+    # The row keeps the ledger's own Clark spelling.
+    assert rows[0]["dimensions"] == [
+        {
+            "axis": _PK03_SYN_CONS_AXIS,
+            "member": _PK03_SYN_ELIMINATION_CLARK_MEMBER,
+        }
+    ]
+    # Counted once the bridge ties: 1,500,000,000 - 500,000,000 equals the
+    # consolidated 1,000,000,000. A second -500,000,000 row from the same
+    # occurrence misses by 500,000,000, far past the 1,000,000 tolerance.
+    check = _check(result, "segment_sum_plus_eliminations_equals_consolidated")
+    assert check["status"] == "pass"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk03_prefixed_elimination_member_still_one_row(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The prefixed srt spelling binds exactly one entry (regression guard).
+
+    Exact QName equality admits the occurrence under the srt entry only, so
+    the Clark-form dedupe changes nothing for prefixed spellings.
+    """
+    result = _produce_pk03_synthetic(
+        monkeypatch,
+        _pk03_elimination_bridge_facts("srt:ConsolidationEliminationsMember"),
+    )
+    rows = _pk03_field_rows(result, "unallocated_corporate_and_eliminations")
+    assert [row["quality_state"] for row in rows] == ["valued"]
+    assert rows[0]["value"] == "-500000000"
+    assert len(rows[0]["source_occurrence_ids"]) == 1
+    assert rows[0]["dimensions"] == [
+        {
+            "axis": _PK03_SYN_CONS_AXIS,
+            "member": "srt:ConsolidationEliminationsMember",
+        }
+    ]
+    check = _check(result, "segment_sum_plus_eliminations_equals_consolidated")
+    assert check["status"] == "pass"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk03_distinct_elimination_members_keep_two_rows(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Two genuinely distinct members on two occurrences stay two rows.
+
+    The dedupe collapses only a repeated source occurrence, never a second
+    distinct elimination member.
+    """
+    result = _produce_pk03_synthetic(
+        monkeypatch,
+        (
+            _pk03_syn_fact(
+                "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+                (),
+                "1000000000",
+            ),
+            _pk03_syn_fact(
+                "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+                (
+                    (_PK03_SYN_SEG_AXIS, "us-gaap:AlphaSegmentMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "1500000000",
+            ),
+            _pk03_syn_fact(
+                "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+                ((_PK03_SYN_CONS_AXIS, "us-gaap:CorporateNonSegmentMember"),),
+                "-200000000",
+            ),
+            _pk03_syn_fact(
+                "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+                ((_PK03_SYN_CONS_AXIS, _PK03_SYN_ELIMINATION_CLARK_MEMBER),),
+                "-300000000",
+            ),
+        ),
+    )
+    rows = _pk03_field_rows(result, "unallocated_corporate_and_eliminations")
+    # Declared member order: CorporateNonSegmentMember first, then the
+    # Clark-form ConsolidationEliminationsMember under the us-gaap entry.
+    assert [row["quality_state"] for row in rows] == ["valued", "valued"]
+    assert [row["value"] for row in rows] == ["-200000000", "-300000000"]
+    assert [row["dimensions"] for row in rows] == [
+        [
+            {
+                "axis": _PK03_SYN_CONS_AXIS,
+                "member": "us-gaap:CorporateNonSegmentMember",
+            }
+        ],
+        [
+            {
+                "axis": _PK03_SYN_CONS_AXIS,
+                "member": _PK03_SYN_ELIMINATION_CLARK_MEMBER,
+            }
+        ],
+    ]
+    # Two rows, two distinct source occurrences.
+    first_ids = rows[0]["source_occurrence_ids"]
+    second_ids = rows[1]["source_occurrence_ids"]
+    assert len(first_ids) == len(second_ids) == 1
+    assert not set(first_ids) & set(second_ids)
+    check = _check(result, "segment_sum_plus_eliminations_equals_consolidated")
+    assert check["status"] == "pass"
+    assert contract.validate_pack_result(result) == []
+
+
 # 99. PK02 dev-corpus lane: duration contract, duplicates, aliases, guard ------
 #
 # Synthetic inline-XBRL 10-Q shapes built inside the tests (no filing bytes),
@@ -12896,6 +13857,339 @@ def test_pk07_guard_completion_after_the_fiscal_period_is_typed_absence() -> Non
     row = _row(result, "acquisition_date")
     assert row["quality_state"] != "valued"
     assert row["text_value"] is None
+
+
+# 50.3 §TESTS (third repair lane): the frozen-variant acquisition-date guard
+# and the goodwill rollforward unit gate. The frozen "Note N – Business
+# Combinations" search values the date only from a sentence the guard accepts
+# — a completion verb (including the passive "acquisition … was completed"
+# shape), no announcement/agreement/payment wording, and a date inside the
+# fiscal period — and the rollforward's prior-instant opening probe is
+# compared with the closing row's unit before the identity is asserted,
+# exactly as impairment_vs_carrying already refuses differing units. Fixtures
+# marked "fail-on-parent" assert behavior the pre-repair pack got wrong;
+# fixtures marked "pin" hold on both the pre- and post-repair pack.
+
+
+def test_pk07_frozen_heading_announcement_sentence_is_typed_absence() -> None:
+    # (T1, fail-on-parent): the frozen note heading locates, but the only
+    # date sentence announces a pending agreement — the guard refuses it and
+    # the field is the same typed absence the widened path produces.
+    paragraphs = (
+        "Note 3 – Business Combinations. The Company announced on June 1,"
+        " 2025 a definitive agreement to acquire Testcorp Incorporated in an"
+        " all-cash transaction. The transaction is pending.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+    assert row["reason"] == "missing_dependency"
+    assert any(
+        "pk07.acquisition_date: narrative_span_not_located;" in line
+        for line in result["limitations"]
+    )
+
+
+def test_pk07_frozen_heading_out_of_period_completion_is_typed_absence() -> None:
+    # (T2, fail-on-parent): a passive completion sentence dated before the
+    # fiscal period start (a prior-year deal re-narrated in a FY2025 pack) is
+    # refused by the in-period bound even under the frozen heading.
+    paragraphs = (
+        "Note 3 – Business Combinations. The acquisition of Testcorp"
+        " Industries was completed on March 15, 2024.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+
+
+def test_pk07_frozen_heading_in_period_passive_completion_values() -> None:
+    # (T3, pin): the passive "acquisition … was completed" shape inside the
+    # fiscal period still values the date through the frozen search, whose
+    # own rule digest names the mapping that produced the value.
+    paragraphs = (
+        "Note 3 – Business Combinations. The acquisition of Testco Industries"
+        " was completed on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "June 15, 2025"
+    assert row["mapping_rule_digest"] == pack_base._text_span_digest(
+        pk07_mna._ACQUISITION_DATE_MAPPING
+    )
+
+
+def test_pk07_rollforward_eur_opening_against_usd_closing_is_unit_mismatch() -> None:
+    # (T4, fail-on-parent): the prior-instant goodwill fact is tagged EUR
+    # while the closing row is USD; the identity 1000+300-50-100+10 = 1160
+    # ties numerically but across two currencies — differing units are never
+    # compared, exactly as impairment_vs_carrying refuses them.
+    facts = (
+        ("us-gaap:Goodwill", "c-ip", "1000", "eur"),
+        ("us-gaap:Goodwill", "c-i", "1160", "usd"),
+        ("us-gaap:GoodwillAcquiredDuringPeriod", "c-fy", "300", "usd"),
+        ("us-gaap:GoodwillWrittenOffRelatedToSaleOfBusinessUnit", "c-fy", "50", "usd"),
+        ("us-gaap:GoodwillImpairmentLoss", "c-fy", "100", "usd"),
+        ("us-gaap:GoodwillForeignCurrencyTranslationGainLoss", "c-fy", "10", "usd"),
+    )
+    result = produce_pack("PK07", _pk07_testco_input(facts))
+    assert contract.validate_pack_result(result) == []
+    check = _pk07_check(result, "goodwill_rollforward_closed")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "unit_mismatch"
+
+
+def test_pk07_rollforward_all_usd_still_passes_with_the_unit_gate() -> None:
+    # (T5, pin): the same roll-forward entirely in USD still passes through
+    # the unit gate — opening USD against closing USD never refuses.
+    result = produce_pack("PK07", _pk07_testco_input(_TESTCO_ROLLFORWARD))
+    check = _pk07_check(result, "goodwill_rollforward_closed")
+    assert check["status"] == "pass"
+    assert check["reason"] is None
+    assert check["tolerance"] == "1"
+
+
+# 50.4 §TESTS (fourth repair lane): the passive completion window tightened.
+# An agreement, payment or financing "was completed" sentence is not the
+# deal's completion, so it may never value acquisition_date: the passive
+# accept alternative now requires "acquisition of/by …" or a bare
+# "acquisition was completed", and the reject pattern names agreement,
+# payment and financing wording (the wording matters because "payment for
+# the acquisition was completed" literally contains "the acquisition was
+# completed"). Fixtures marked "fail-on-parent" assert behavior the
+# pre-repair pack got wrong; fixtures marked "pin" hold on both the pre-
+# and post-repair pack.
+
+
+def test_pk07_frozen_heading_agreement_completion_is_typed_absence() -> None:
+    # (T6, fail-on-parent): the passive alternative's unconstrained window
+    # let "The Company's acquisition agreement was completed …" value as
+    # the acquisition date under the frozen heading; it is a typed absence.
+    paragraphs = (
+        "Note 3 – Business Combinations. The Company's acquisition agreement"
+        " was completed on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+
+
+def test_pk07_frozen_heading_payment_completion_is_typed_absence() -> None:
+    # (T7, fail-on-parent): "The final payment for the acquisition was
+    # completed …" literally contains "the acquisition was completed" —
+    # the payment wording refuses it.
+    paragraphs = (
+        "Note 3 – Business Combinations. The final payment for the"
+        " acquisition was completed on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+
+
+def test_pk07_frozen_heading_acquisition_payment_completion_is_typed_absence() -> None:
+    # (T8, fail-on-parent): "The acquisition payment was completed …" is a
+    # payment sentence, never a deal completion.
+    paragraphs = (
+        "Note 3 – Business Combinations. The acquisition payment was"
+        " completed on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+
+
+def test_pk07_frozen_heading_financing_completion_is_typed_absence() -> None:
+    # (T9, fail-on-parent): "Financing for the acquisition was completed …"
+    # again literally contains "the acquisition was completed" — the
+    # financing wording refuses it.
+    paragraphs = (
+        "Note 3 – Business Combinations. Financing for the acquisition was"
+        " completed on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+
+
+def test_pk07_widened_heading_wording_completion_sentences_are_typed_absence() -> None:
+    # (T10, fail-on-parent): the same agreement, payment and financing
+    # "was completed" sentences under the widened heading family.
+    for sentence in (
+        "The Company's acquisition agreement was completed on June 15, 2025.",
+        "The final payment for the acquisition was completed on June 15, 2025.",
+        "Financing for the acquisition was completed on June 15, 2025.",
+    ):
+        paragraphs = (
+            "Note 2. Acquisitions. " + sentence,
+            _PK07_DEV_IMPAIRMENT_NOTE,
+        )
+        result = produce_pack(
+            "PK07", _pk07_guard_input(_PK07_GUARD_FACTS, paragraphs)
+        )
+        assert contract.validate_pack_result(result) == []
+        row = _row(result, "acquisition_date")
+        assert row["quality_state"] != "valued"
+        assert row["text_value"] is None
+
+
+def test_pk07_widened_heading_completed_acquisition_agreement_is_typed_absence() -> None:
+    # (T11, fail-on-parent): the active "completed the acquisition
+    # agreement" shape is an agreement sentence — the guard refuses it.
+    paragraphs = (
+        "Note 2. Acquisitions. The Company completed the acquisition"
+        " agreement on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_guard_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+
+
+def test_pk07_frozen_heading_passive_of_completion_still_values() -> None:
+    # (T12, pin): "The acquisition of X was completed on <date>" inside the
+    # fiscal period still values through the frozen search on both sides of
+    # the repair.
+    paragraphs = (
+        "Note 3 – Business Combinations. The acquisition of Testco Industries"
+        " was completed on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "June 15, 2025"
+
+
+def test_pk07_frozen_heading_passive_by_completion_still_values() -> None:
+    # (T13, pin): "The acquisition by the Company of X was completed on
+    # <date>" — the by-form of the same passive shape — still values.
+    paragraphs = (
+        "Note 3 – Business Combinations. The acquisition by the Company of"
+        " Testco Industries was completed on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "June 15, 2025"
+
+
+def test_pk07_frozen_heading_bare_passive_completion_still_values() -> None:
+    # (T14, pin): the bare "The acquisition was completed on <date>" shape
+    # — no target named — still values.
+    paragraphs = (
+        "Note 3 – Business Combinations. The acquisition was completed on"
+        " June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "June 15, 2025"
+
+
+# 50.5 §TESTS (fifth repair lane): the payment and financing reject words
+# widened. Matching only the singular underived forms let a repayment,
+# prepayment or refinancing "was completed" sentence — and the plural
+# "payments" / "financings" forms — slip past the guard and value the
+# event's date as acquisition_date (each contains the literal "the
+# acquisition was completed"); the reject words now cover the plural and
+# re-/pre- derived forms. Fixtures marked "fail-on-parent" assert behavior
+# the pre-repair pack got wrong.
+
+
+def test_pk07_frozen_heading_repayment_completion_is_typed_absence() -> None:
+    # (T15, fail-on-parent): "The repayment in connection with the
+    # acquisition was completed …" is a repayment sentence, not the deal's
+    # completion — the widened payment reject word refuses it.
+    paragraphs = (
+        "Note 3 – Business Combinations. The repayment in connection with the"
+        " acquisition was completed on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+
+
+def test_pk07_frozen_heading_refinancing_completion_is_typed_absence() -> None:
+    # (T16, fail-on-parent): "The refinancing of the acquisition was
+    # completed …" is a refinancing sentence — the widened financing reject
+    # word refuses it.
+    paragraphs = (
+        "Note 3 – Business Combinations. The refinancing of the acquisition"
+        " was completed on June 15, 2025.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+
+
+def test_pk07_widened_heading_derived_completion_sentences_are_typed_absence() -> None:
+    # (T17, fail-on-parent): the repayment, refinancing, prepayment and
+    # plural payments/financings "was completed" sentences under the
+    # widened heading family.
+    for sentence in (
+        "The repayment in connection with the acquisition was completed on"
+        " June 15, 2025.",
+        "The refinancing of the acquisition was completed on June 15, 2025.",
+        "The prepayment of the acquisition was completed on June 15, 2025.",
+        "Payments for the acquisition was completed on June 15, 2025.",
+        "Financings for the acquisition was completed on June 15, 2025.",
+    ):
+        paragraphs = (
+            "Note 2. Acquisitions. " + sentence,
+            _PK07_DEV_IMPAIRMENT_NOTE,
+        )
+        result = produce_pack(
+            "PK07", _pk07_guard_input(_PK07_GUARD_FACTS, paragraphs)
+        )
+        assert contract.validate_pack_result(result) == []
+        row = _row(result, "acquisition_date")
+        assert row["quality_state"] != "valued"
+        assert row["text_value"] is None
+
+
+def test_pk07_frozen_heading_prepayment_plural_completions_are_typed_absence() -> None:
+    # (T18, fail-on-parent): the prepayment and plural payments/financings
+    # "was completed" sentences under the frozen heading.
+    for sentence in (
+        "The prepayment of the acquisition was completed on June 15, 2025.",
+        "Payments for the acquisition was completed on June 15, 2025.",
+        "Financings for the acquisition was completed on June 15, 2025.",
+    ):
+        paragraphs = (
+            "Note 3 – Business Combinations. " + sentence,
+            _PK07_DEV_IMPAIRMENT_NOTE,
+        )
+        result = produce_pack("PK07", _pk07_dev_input(_PK07_GUARD_FACTS, paragraphs))
+        assert contract.validate_pack_result(result) == []
+        row = _row(result, "acquisition_date")
+        assert row["quality_state"] != "valued"
+        assert row["text_value"] is None
 
 
 # 31b. PK09 dev-corpus recall repairs (diversified_v1 + litigation_v1) --------
@@ -15006,3 +16300,1186 @@ def test_pk04dev3_rpo_total_unparseable_typed_member_stays_absent(
     assert row["reason"] == "disallowed_dimension"
     assert row["value"] is None
     assert row["source_occurrence_ids"] == []
+
+
+# 51.6 dev-corpus repair (litigation_v1, DEC-FIF-PACK-GENERALIZATION-DEV-
+# CORPUS): synthetic coverage for the R1/R1b/R2/R3 narrative rules and the
+# R4/R5 dimension rules. Every non-pin test below fails on the parent pack
+# (verified against 8f806b042f1c during the repair).
+
+
+def _pk08_v2_context(
+    context_id: str, dimensions: tuple[tuple[str, str, str], ...] = ()
+) -> str:
+    """An instant context at 2025-12-31 carrying explicit/typed members.
+
+    ``dimensions`` entries are ``(axis qname, "explicit" | "typed",
+    member)``; the typed form mirrors the converter's own serialization
+    (the member value is the typedMember's element text).
+    """
+    scenario = ""
+    for axis, kind, member in dimensions:
+        if kind == "typed":
+            scenario += (
+                f'<xbrldi:typedMember dimension="{axis}">'
+                f"<test:domain>{member}</test:domain>"
+                "</xbrldi:typedMember>"
+            )
+        else:
+            scenario += (
+                f'<xbrldi:explicitMember dimension="{axis}">'
+                f"{member}</xbrldi:explicitMember>"
+            )
+    if scenario:
+        scenario = f"<xbrli:scenario>{scenario}</xbrli:scenario>"
+    return (
+        f'<xbrli:context id="{context_id}"><xbrli:entity><xbrli:identifier'
+        f' scheme="http://www.sec.gov/CIK">'
+        f"{PK08_TESTCO_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:instant>2025-12-31</xbrli:instant></xbrli:period>"
+        f"{scenario}</xbrli:context>"
+    )
+
+
+_PK08_AXIS_LITIGATION = "srt:LitigationCaseAxis"
+_PK08_AXIS_NATURE = "us-gaap:LossContingenciesByNatureOfContingencyAxis"
+_PK08_AXIS_LOCATION = "us-gaap:BalanceSheetLocationAxis"
+_PK08_AXIS_RANGE = "srt:RangeAxis"
+_PK08_ACCRUAL_CONCEPT = "us-gaap:LossContingencyAccrualAtCarryingValue"
+_PK08_ESTIMATE_CONCEPT = "us-gaap:LossContingencyEstimateOfPossibleLoss"
+
+
+def _pk08_v2_document(
+    facts: tuple[tuple[str, str, str | None, str], ...],
+    contexts: tuple[str, ...],
+    paragraphs: tuple[str, ...],
+) -> bytes:
+    """A TESTCO inline-XBRL filing with free-form contexts and paragraphs."""
+    rows = []
+    for index, (qname, context, value, unit) in enumerate(facts, start=1):
+        if value is None:
+            rows.append(
+                f'<tr><td>item {index}</td><td>'
+                f'<ix:nonFraction id="f-{index}" name="{qname}"'
+                f' contextRef="{context}" unitRef="{unit}" xsi:nil="true"/>'
+                "</td></tr>"
+            )
+        else:
+            rows.append(
+                f'<tr><td>item {index}</td><td>'
+                f'<ix:nonFraction id="f-{index}" name="{qname}"'
+                f' contextRef="{context}" unitRef="{unit}"'
+                f' decimals="0">{value}</ix:nonFraction></td></tr>'
+            )
+    template = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<html xmlns="http://www.w3.org/1999/xhtml"'
+        ' xmlns:ix="http://www.xbrl.org/2013/inlineXBRL"'
+        ' xmlns:xbrli="http://www.xbrl.org/2003/instance"'
+        ' xmlns:xbrldi="http://xbrl.org/2006/xbrldi"'
+        ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+        ' xmlns:iso4217="http://www.xbrl.org/2003/iso4217"'
+        ' xmlns:test="http://www.testco.com/2025"'
+        ' xmlns:srt="http://fasb.org/srt/2025"'
+        ' xmlns:us-gaap="http://fasb.org/us-gaap/2025">\n'
+        "<head><title>TESTCO filing</title></head>\n<body>\n"
+        '<div style="display:none"><ix:header><ix:resources>\n'
+        + "\n".join(contexts)
+        + '\n<xbrli:unit id="usd"><xbrli:measure>iso4217:USD</xbrli:measure>'
+        "</xbrli:unit>\n</ix:resources></ix:header></div>\n"
+        + "\n".join(paragraphs)
+        + f'\n<table>\n{chr(10).join(rows)}\n</table>\n</body></html>\n'
+    )
+    return template.encode("utf-8")
+
+
+def _pk08_v2_input(
+    *,
+    facts: tuple[tuple[str, str, str | None, str], ...],
+    contexts: tuple[str, ...],
+    paragraphs: tuple[str, ...],
+    form: str = "10-K",
+) -> PackInput:
+    document = _pk08_v2_document(facts, contexts, paragraphs)
+    manifest = {
+        "entity_id": PK08_TESTCO_CIK,
+        "cik": PK08_TESTCO_CIK,
+        "legal_name": "TESTCO TWO CORP",
+        "form": form,
+        "period_of_report": "2025-12-31",
+        "filing_date": "2026-02-15",
+        "accession": "0000000002-26-000012",
+        "primary_document": PK08_TESTCO_DOC,
+        "source_accepted_at": "2026-02-15T16:00:00Z",
+        "fixture_recorded_at": "2026-02-15T16:05:00Z",
+        "members": [
+            {
+                "name": PK08_TESTCO_DOC,
+                "state": "stored",
+                "content_sha256": sha256(document).hexdigest(),
+            }
+        ],
+    }
+    return PackInput(
+        packages=(
+            GoldenFilingPackage(manifest=manifest, members={PK08_TESTCO_DOC: document}),
+        ),
+        entity=PK08_TESTCO_ENTITY,
+        query=PK08_QUERY,
+        issuer_sic="3571",
+        sic_source="sec_submissions",
+    )
+
+
+_PK08_V2_BASE_CONTEXTS = (_pk08_v2_context("d-i"),)
+_PK08_V2_NIL_FACT = ("us-gaap:CommitmentsAndContingencies", "d-i", None, "usd")
+
+
+def _pk08_litigation_context(context_id: str, member: str) -> str:
+    return _pk08_v2_context(
+        context_id,
+        ((_PK08_AXIS_LITIGATION, "explicit", member),),
+    )
+
+
+# R4: the accrual reported only under contingency-identity axes ----------
+
+
+def test_pk08_accrual_dimension_rule_values_litigation_case_axis() -> None:
+    # A filer reports the whole accrual only under srt:LitigationCaseAxis
+    # (an issuer member naming the matter). With no undimensioned accrual
+    # the row values from that fact — the exact (axis, member) pair-tuple
+    # context shape that crashed the first repair draft's set() union.
+    pack_input = _pk08_v2_input(
+        facts=(
+            _PK08_V2_NIL_FACT,
+            (_PK08_ACCRUAL_CONCEPT, "d-lc", "3400000000", "usd"),
+        ),
+        contexts=(
+            *_PK08_V2_BASE_CONTEXTS,
+            _pk08_litigation_context("d-lc", "test:TalcMember"),
+        ),
+        paragraphs=(
+            "<p>Note 12 – Commitments and Contingencies. The Company has "
+            "entered into certain unconditional purchase obligations.</p>",
+            f"<p>{_PK08_CONTING_CLEAN}</p>",
+            "<p>Note 13 – Subsequent Events. None.</p>",
+            f"<p>{_PK08_ITEM3_BODY}</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    accrual = _row(result, "loss_contingency_accrual")
+    assert accrual["quality_state"] == "valued"
+    assert accrual["value"] == "3400000000"
+    assert accrual["evidence_kind"] == "xbrl_fact"
+    assert accrual["mapping_rule_id"] == (
+        "PK08.loss_contingency_accrual.fact_dimensioned/v1"
+    )
+    assert accrual["period"] == {"kind": "instant", "end": "2025-12-31"}
+    assert accrual["unit"] == "USD"
+    assert accrual["source_occurrence_ids"]
+    axis_names = {dim["axis"] for dim in accrual["dimensions"]}
+    assert any(axis.endswith("LitigationCaseAxis") for axis in axis_names)
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_accrual_dimension_rule_admits_typed_member_axis() -> None:
+    # The same rule over a context whose identity axis carries a typed
+    # member: the ledger hands both dimension containers as canonical
+    # (axis, member) pair tuples, so the rule must read the axis from the
+    # pair, never from a set() of the containers (the crash shape).
+    pack_input = _pk08_v2_input(
+        facts=(
+            _PK08_V2_NIL_FACT,
+            (_PK08_ACCRUAL_CONCEPT, "d-ty", "500000000", "usd"),
+        ),
+        contexts=(
+            *_PK08_V2_BASE_CONTEXTS,
+            _pk08_v2_context(
+                "d-ty", ((_PK08_AXIS_NATURE, "typed", "environmental"),)
+            ),
+        ),
+        paragraphs=(
+            "<p>Note 12 – Commitments and Contingencies. The Company has "
+            "entered into certain unconditional purchase obligations.</p>",
+            f"<p>{_PK08_CONTING_CLEAN}</p>",
+            "<p>Note 13 – Subsequent Events. None.</p>",
+            f"<p>{_PK08_ITEM3_BODY}</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    accrual = _row(result, "loss_contingency_accrual")
+    assert accrual["quality_state"] == "valued"
+    assert accrual["value"] == "500000000"
+    assert accrual["mapping_rule_id"] == (
+        "PK08.loss_contingency_accrual.fact_dimensioned/v1"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_accrual_dimension_rule_excludes_location_axis() -> None:
+    # Agreeing litigation-axis candidates pool; a differently-valued accrual
+    # under a balance-sheet-location axis is never in the pool.
+    pack_input = _pk08_v2_input(
+        facts=(
+            _PK08_V2_NIL_FACT,
+            (_PK08_ACCRUAL_CONCEPT, "d-lc", "3400000000", "usd"),
+            (_PK08_ACCRUAL_CONCEPT, "d-lc2", "3400000000", "usd"),
+            (_PK08_ACCRUAL_CONCEPT, "d-bs", "6600000000", "usd"),
+        ),
+        contexts=(
+            *_PK08_V2_BASE_CONTEXTS,
+            _pk08_litigation_context("d-lc", "test:TalcMember"),
+            _pk08_litigation_context("d-lc2", "test:OtherMatterMember"),
+            _pk08_v2_context(
+                "d-bs",
+                ((_PK08_AXIS_LOCATION, "explicit", "us-gaap:OtherCurrentLiabilitiesMember"),),
+            ),
+        ),
+        paragraphs=(
+            "<p>Note 12 – Commitments and Contingencies. The Company has "
+            "entered into certain unconditional purchase obligations.</p>",
+            f"<p>{_PK08_CONTING_CLEAN}</p>",
+            "<p>Note 13 – Subsequent Events. None.</p>",
+            f"<p>{_PK08_ITEM3_BODY}</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    accrual = _row(result, "loss_contingency_accrual")
+    assert accrual["quality_state"] == "valued"
+    assert accrual["value"] == "3400000000"
+    assert len(accrual["source_occurrence_ids"]) == 2
+    assert contract.validate_pack_result(result) == []
+
+
+# R5: range endpoints from srt:RangeAxis-dimensioned estimates -----------
+
+
+def _pk08_range_context(context_id: str, member: str) -> str:
+    return _pk08_v2_context(
+        context_id,
+        (
+            (_PK08_AXIS_LITIGATION, "explicit", "test:CaseMember"),
+            (_PK08_AXIS_RANGE, "explicit", member),
+        ),
+    )
+
+
+def test_pk08_range_axis_rule_values_endpoints_from_facts() -> None:
+    # EstimateOfPossibleLoss facts dimensioned by srt:RangeAxis with the
+    # minimum/maximum members value the range rows; the co-occurring
+    # matter axis is never consulted. A disagreeing accrual pool in the
+    # same filing keeps its typed absence (never pooled into one row).
+    pack_input = _pk08_v2_input(
+        facts=(
+            _PK08_V2_NIL_FACT,
+            (_PK08_ACCRUAL_CONCEPT, "d-lc", "3400000000", "usd"),
+            (_PK08_ACCRUAL_CONCEPT, "d-lc2", "9000000000", "usd"),
+            (_PK08_ESTIMATE_CONCEPT, "d-min", "10500000000", "usd"),
+            (_PK08_ESTIMATE_CONCEPT, "d-max", "12500000000", "usd"),
+        ),
+        contexts=(
+            *_PK08_V2_BASE_CONTEXTS,
+            _pk08_litigation_context("d-lc", "test:TalcMember"),
+            _pk08_litigation_context("d-lc2", "test:OtherMatterMember"),
+            _pk08_range_context("d-min", "srt:MinimumMember"),
+            _pk08_range_context("d-max", "srt:MaximumMember"),
+        ),
+        paragraphs=(
+            "<p>Note 12 – Commitments and Contingencies. The Company has "
+            "entered into certain unconditional purchase obligations.</p>",
+            f"<p>{_PK08_CONTING_CLEAN}</p>",
+            "<p>Note 13 – Subsequent Events. None.</p>",
+            f"<p>{_PK08_ITEM3_BODY}</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    rows = {row["field_id"]: row for row in result["fields"]}
+    accrual = rows["loss_contingency_accrual"]
+    assert accrual["quality_state"] == "missing"
+    assert accrual["reason"] == (
+        "disallowed_dimension"
+    )
+    low = rows["loss_contingency_range_low"]
+    high = rows["loss_contingency_range_high"]
+    assert low["quality_state"] == "valued"
+    assert low["value"] == "10500000000"
+    assert low["mapping_rule_id"] == (
+        "PK08.loss_contingency_range_low.fact_range_axis/v1"
+    )
+    assert high["quality_state"] == "valued"
+    assert high["value"] == "12500000000"
+    assert high["mapping_rule_id"] == (
+        "PK08.loss_contingency_range_high.fact_range_axis/v1"
+    )
+    assert _check(result, "accrual_vs_range")["status"] == "not_evaluable"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_range_axis_rule_skips_disagreeing_endpoint() -> None:
+    # Two minimum members carrying different estimates never value the low
+    # row; the agreeing maximum still values the high row.
+    pack_input = _pk08_v2_input(
+        facts=(
+            _PK08_V2_NIL_FACT,
+            (_PK08_ESTIMATE_CONCEPT, "d-min", "10500000000", "usd"),
+            (_PK08_ESTIMATE_CONCEPT, "d-min2", "99000000", "usd"),
+            (_PK08_ESTIMATE_CONCEPT, "d-max", "12500000000", "usd"),
+        ),
+        contexts=(
+            *_PK08_V2_BASE_CONTEXTS,
+            _pk08_range_context("d-min", "srt:MinimumMember"),
+            _pk08_range_context("d-min2", "srt:MinimumMember"),
+            _pk08_range_context("d-max", "srt:MaximumMember"),
+        ),
+        paragraphs=(
+            "<p>Note 12 – Commitments and Contingencies. The Company has "
+            "entered into certain unconditional purchase obligations.</p>",
+            f"<p>{_PK08_CONTING_CLEAN}</p>",
+            "<p>Note 13 – Subsequent Events. None.</p>",
+            f"<p>{_PK08_ITEM3_BODY}</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    rows = {row["field_id"]: row for row in result["fields"]}
+    assert rows["loss_contingency_range_low"]["quality_state"] == "missing"
+    high = rows["loss_contingency_range_high"]
+    assert high["quality_state"] == "valued"
+    assert high["value"] == "12500000000"
+    assert contract.validate_pack_result(result) == []
+
+
+# R1b: range-arm v3 refuses the negated range idiom ----------------------
+
+
+def test_pk08_range_arm_v3_negated_idiom_is_not_estimable() -> None:
+    # The ASC 450 refusal sentence carries the disclosed arm's phrase
+    # inside its own negation ("unable to reasonably estimate a possible
+    # loss or range of possible loss"); without an amount after the phrase
+    # it is not_estimable, never disclosed_range.
+    prose = (
+        "Contingencies The Company is a party to certain pending legal "
+        "matters. Given the nature of the litigation and the complexities "
+        "involved in these matters, the Company is unable to reasonably "
+        "estimate a possible loss or range of possible loss for such "
+        "matters until the remaining claims are resolved."
+    )
+    result = produce_pack("PK08", _pk08_testco_input(contingencies_prose=prose))
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["text_value"] == "not_estimable"
+    assert contract.validate_pack_result(result) == []
+
+
+# R1: note-title v2 locates real filings' note headings ------------------
+
+
+def test_pk08_note_title_v2_resolves_note_fields() -> None:
+    # Real litigation filings title the contingencies note without the v1
+    # heading's shape ("19. Legal proceedings", no "Note" word, no
+    # "Commitments"); the v2 fallback locates it and the note-ledger
+    # fields resolve. A note with no title-shaped "Contingencies" uses the
+    # whole note as its contingencies subsection.
+    pack_input = _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        paragraphs=(
+            "<p>19. Legal proceedings The Company and its subsidiaries are "
+            "involved in various lawsuits and claims regarding product "
+            "liability that arise from time to time in the ordinary course "
+            "of their business.</p>",
+            "<p>20. Subsequent Events None.</p>",
+            f"<p>{_PK08_ITEM3_BODY}</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    rows = {row["field_id"]: row for row in result["fields"]}
+    block = rows["commitments_text_block"]
+    assert block["quality_state"] == "valued"
+    assert block["text_value"].startswith(
+        "19. Legal proceedings The Company and its subsidiaries"
+    )
+    assert rows["commitments_and_contingencies_bs_state"]["text_value"] == (
+        "nil_disclosed"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+# R2: a table-of-contents line is never the governing item section -------
+
+
+def test_pk08_item3_toc_line_is_not_the_governing_section() -> None:
+    # A 10-K whose only "Item 3. Legal Proceedings" match is the table of
+    # contents (a page number, then the next item heading) keeps the item
+    # fields typed absent instead of valuing them on the remnant.
+    pack_input = _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        paragraphs=(
+            "<p>Note 12 – Commitments and Contingencies. The Company has "
+            "entered into certain unconditional purchase obligations.</p>",
+            f"<p>{_PK08_CONTING_CLEAN}</p>",
+            "<p>Note 13 – Subsequent Events. None.</p>",
+            "<p>Item 3. Legal Proceedings 114 Item 4. Mine Safety "
+            "Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    item3 = _row(result, "legal_proceedings_item3")
+    assert item3["quality_state"] == "not_evaluable"
+    assert item3["reason"] == "missing_dependency"
+    assert any(
+        line.startswith("pk08.legal_proceedings_item3: governing_section_")
+        for line in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+# R3: the item section's cross-reference into the note --------------------
+
+
+def test_pk08_note_fallback_resolves_spans_and_skips_boilerplate() -> None:
+    # An item section that only incorporates the note by reference leaves
+    # the span fields to the contingencies note; the procedural guard
+    # skips the estimation-methodology keyword collision ("a complex
+    # series of judgments about future events") and lands on the sentence
+    # that actually reports the proceeding's status.
+    pack_input = _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        paragraphs=(
+            "<p>19. Legal proceedings The Company and certain of its "
+            "subsidiaries are involved in various lawsuits and claims. "
+            "Amounts accrued for legal contingencies often result from a "
+            "complex series of judgments about future events and "
+            "uncertainties that rely heavily on estimates and assumptions. "
+            "A significant number of personal injury claims alleging that "
+            "the product causes cancer have been asserted against the "
+            "Company. In cases that have gone to trial, the Company has "
+            "obtained a number of defense verdicts.</p>",
+            "<p>20. Subsequent Events None.</p>",
+            "<p>Item 3. Legal Proceedings The information called for by "
+            "this item is incorporated herein by reference to Note 19 of "
+            "the financial statements.</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    rows = {row["field_id"]: row for row in result["fields"]}
+    allegation = rows["allegation_span"]
+    assert allegation["quality_state"] == "valued"
+    assert allegation["mapping_rule_id"] == "pk08.allegation_span.text_span_note/v1"
+    assert "alleging that the product causes cancer" in allegation["text_value"]
+    procedural = rows["procedural_status_span"]
+    assert procedural["quality_state"] == "valued"
+    assert procedural["mapping_rule_id"] == (
+        "pk08.procedural_status_span.text_span_note/v1"
+    )
+    assert procedural["text_value"].startswith(
+        "In cases that have gone to trial"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_note_fallback_without_qualifying_sentence_stays_absent() -> None:
+    # A note whose only keyword sentences are estimation boilerplate keeps
+    # the procedural row typed absent — never a methodology span.
+    pack_input = _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        paragraphs=(
+            "<p>19. Legal proceedings The Company is involved in various "
+            "claims. Amounts accrued for legal contingencies often result "
+            "from a complex series of judgments about future events and "
+            "uncertainties that rely heavily on estimates and "
+            "assumptions.</p>",
+            "<p>20. Subsequent Events None.</p>",
+            "<p>Item 3. Legal Proceedings The information called for by "
+            "this item is incorporated herein by reference to Note 19 of "
+            "the financial statements.</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    procedural = _row(result, "procedural_status_span")
+    assert procedural["quality_state"] == "missing"
+    assert procedural["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_allegation_note_guard_skips_methodology_boilerplate() -> None:
+    # A disclosure-process sentence whose "alleged actual damages" phrase
+    # collides with the allegation keyword is methodology, not an
+    # allegation; the note fallback continues to the later sentence that
+    # actually asserts claims against the issuer.
+    pack_input = _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        paragraphs=(
+            "<p>19. Legal proceedings The Company and certain of its "
+            "subsidiaries are involved in various lawsuits and claims. "
+            "Process for Disclosure and Recording of Liabilities Related "
+            "to Legal Proceedings: Many lawsuits and claims involve "
+            "complex issues relating to causation and alleged actual "
+            "damages, all of which are subject to substantial "
+            "uncertainties. A significant number of personal injury "
+            "claims alleging that the product causes cancer have been "
+            "asserted against the Company.</p>",
+            "<p>20. Subsequent Events None.</p>",
+            "<p>Item 3. Legal Proceedings The information called for by "
+            "this item is incorporated herein by reference to Note 19 of "
+            "the financial statements.</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    allegation = _row(result, "allegation_span")
+    assert allegation["quality_state"] == "valued"
+    assert allegation["mapping_rule_id"] == "pk08.allegation_span.text_span_note/v1"
+    assert allegation["text_value"].startswith("A significant number")
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_allegation_note_guard_boilerplate_only_stays_absent() -> None:
+    # A note whose only allegation-keyword sentence is the methodology
+    # boilerplate keeps the allegation row typed absent — never a process
+    # span valued as an allegation.
+    pack_input = _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        paragraphs=(
+            "<p>19. Legal proceedings The Company and certain of its "
+            "subsidiaries are involved in various lawsuits and claims. "
+            "Process for Disclosure and Recording of Liabilities Related "
+            "to Legal Proceedings: Many lawsuits and claims involve "
+            "complex issues relating to causation and alleged actual "
+            "damages, all of which are subject to substantial "
+            "uncertainties.</p>",
+            "<p>20. Subsequent Events None.</p>",
+            "<p>Item 3. Legal Proceedings The information called for by "
+            "this item is incorporated herein by reference to Note 19 of "
+            "the financial statements.</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    allegation = _row(result, "allegation_span")
+    assert allegation["quality_state"] == "missing"
+    assert allegation["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_procedural_note_guard_skips_possibility_sentence() -> None:
+    # A sentence whose only proceeding references sit in a modal clause
+    # ("can also lead to … proceedings … as well as to settlements")
+    # states a possibility, not a status; the fallback continues to the
+    # later sentence reporting actual tried and defended matters.
+    pack_input = _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        paragraphs=(
+            "<p>19. Legal proceedings The Company and certain of its "
+            "subsidiaries are involved in various lawsuits and claims. "
+            "Such requests can also lead to the assertion of claims or "
+            "the commencement of administrative, civil, or criminal "
+            "legal proceedings against the Company and others, as well "
+            "as to settlements. Over the past twenty years, the Company "
+            "has prevailed in nineteen of the twenty cases tried to a "
+            "jury and has successfully defended two later trials.</p>",
+            "<p>20. Subsequent Events None.</p>",
+            "<p>Item 3. Legal Proceedings The information called for by "
+            "this item is incorporated herein by reference to Note 19 of "
+            "the financial statements.</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    procedural = _row(result, "procedural_status_span")
+    assert procedural["quality_state"] == "valued"
+    assert procedural["mapping_rule_id"] == (
+        "pk08.procedural_status_span.text_span_note/v1"
+    )
+    assert procedural["text_value"].startswith("Over the past twenty years")
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_procedural_note_guard_possibility_only_stays_absent() -> None:
+    # A note whose only keyword sentence is the modal possibility statement
+    # keeps the procedural row typed absent — never a possibility span
+    # valued as a status.
+    pack_input = _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        paragraphs=(
+            "<p>19. Legal proceedings The Company and certain of its "
+            "subsidiaries are involved in various lawsuits and claims. "
+            "Such requests can also lead to the assertion of claims or "
+            "the commencement of administrative, civil, or criminal "
+            "legal proceedings against the Company and others, as well "
+            "as to settlements.</p>",
+            "<p>20. Subsequent Events None.</p>",
+            "<p>Item 3. Legal Proceedings The information called for by "
+            "this item is incorporated herein by reference to Note 19 of "
+            "the financial statements.</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    procedural = _row(result, "procedural_status_span")
+    assert procedural["quality_state"] == "missing"
+    assert procedural["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+# v3 note-guard closings: modal and forward-looking admissions ---------------
+
+
+def _pk08_v3_note_input(payload: str) -> PackInput:
+    """A contingencies note whose payload sentences follow the lead-in."""
+    return _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        paragraphs=(
+            "<p>19. Legal proceedings The Company and certain of its "
+            "subsidiaries are involved in various lawsuits and claims. "
+            + payload
+            + "</p>",
+            "<p>20. Subsequent Events None.</p>",
+            "<p>Item 3. Legal Proceedings The information called for by "
+            "this item is incorporated herein by reference to Note 19 of "
+            "the financial statements.</p>",
+            "<p>Item 4. Mine Safety Disclosures Not applicable.</p>",
+        ),
+    )
+
+
+# Wrong-kind sentences from the second dev-corpus review: each states a
+# forward-looking possibility the v2 guards still admitted.
+_PK08_V3_MODAL_PROCEDURAL = (
+    "Any adverse judgment obtained at trial could be reversed on appeal.",
+    "Litigation outcomes are inherently uncertain, and a trial verdict "
+    "may be reversed on appeal.",
+    "Further proceedings could result in additional settlements.",
+    "Claims may be asserted in the future that could lead to trials.",
+)
+_PK08_V3_MODAL_ALLEGATION = (
+    "Future claims alleging fraud may be brought against the Company.",
+)
+# Genuine sentences the tightened guards must still accept.
+_PK08_V3_GENUINE_PROCEDURAL = (
+    "The court granted the Company's motion to dismiss the complaint.",
+    "The parties have settled the litigation.",
+    "Trial in the first case is scheduled to begin in March 2027.",
+    "The motion to dismiss was denied by the district court.",
+    "The lawsuit is pending trial in the Northern District.",
+)
+_PK08_V3_GENUINE_ALLEGATION = (
+    "A complaint filed in federal court asserts claims for breach of "
+    "contract against the Company.",
+    "Numerous lawsuits alleging failure to warn have been filed against "
+    "the Registrant.",
+    "In these actions, plaintiffs allege that they suffered personal "
+    "injuries.",
+)
+
+
+@pytest.mark.parametrize("sentence", _PK08_V3_MODAL_PROCEDURAL)
+def test_pk08_procedural_note_guard_rejects_modal_possibility(
+    sentence: str,
+) -> None:
+    # v3: a bare-participle anchor with a modal in its verb group
+    # ("obtained … could be reversed", "may be reversed") and proceeding
+    # nouns whose clauses carry a modal on either side state a
+    # possibility, never the status of a matter.
+    assert pk08_contingencies._procedural_note_sentence(sentence) is False
+
+
+@pytest.mark.parametrize("sentence", _PK08_V3_GENUINE_PROCEDURAL)
+def test_pk08_procedural_note_guard_accepts_genuine_status(
+    sentence: str,
+) -> None:
+    # The v3 tightening still accepts an indicative status sentence.
+    assert pk08_contingencies._procedural_note_sentence(sentence) is True
+
+
+@pytest.mark.parametrize("sentence", _PK08_V3_MODAL_ALLEGATION)
+def test_pk08_allegation_note_guard_rejects_forward_looking_possibility(
+    sentence: str,
+) -> None:
+    # v3: an against-issuer reference whose clause carries a modal and a
+    # forward-looking marker is a possibility, not a made claim.
+    assert pk08_contingencies._allegation_note_sentence(sentence) is False
+
+
+@pytest.mark.parametrize("sentence", _PK08_V3_GENUINE_ALLEGATION)
+def test_pk08_allegation_note_guard_accepts_genuine_claim(
+    sentence: str,
+) -> None:
+    # The v3 tightening still accepts an indicative made-against shape.
+    assert pk08_contingencies._allegation_note_sentence(sentence) is True
+
+
+@pytest.mark.parametrize("sentence", _PK08_V3_MODAL_PROCEDURAL)
+def test_pk08_procedural_note_modal_possibility_alone_stays_absent(
+    sentence: str,
+) -> None:
+    # Alone in the note, the possibility sentence leaves the procedural
+    # row typed absent — never a possibility span valued as a status.
+    result = produce_pack("PK08", _pk08_v3_note_input(sentence))
+    procedural = _row(result, "procedural_status_span")
+    assert procedural["quality_state"] == "missing"
+    assert procedural["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+@pytest.mark.parametrize(
+    ("possibility", "genuine"),
+    (
+        # anchor with the modal after it -> a granted motion
+        (_PK08_V3_MODAL_PROCEDURAL[0], _PK08_V3_GENUINE_PROCEDURAL[0]),
+        # anchor with the modal before it -> a denied motion
+        (_PK08_V3_MODAL_PROCEDURAL[1], _PK08_V3_GENUINE_PROCEDURAL[3]),
+        # no anchor, modal after the noun -> a settled litigation
+        (_PK08_V3_MODAL_PROCEDURAL[2], _PK08_V3_GENUINE_PROCEDURAL[1]),
+        # no anchor, modals after both nouns -> a pending lawsuit
+        (_PK08_V3_MODAL_PROCEDURAL[3], _PK08_V3_GENUINE_PROCEDURAL[4]),
+    ),
+)
+def test_pk08_procedural_note_guard_skips_modal_possibility(
+    possibility: str, genuine: str
+) -> None:
+    # The possibility sentence precedes the genuine status; the fallback
+    # skips it and selects the genuine sentence.
+    result = produce_pack("PK08", _pk08_v3_note_input(f"{possibility} {genuine}"))
+    procedural = _row(result, "procedural_status_span")
+    assert procedural["quality_state"] == "valued"
+    assert procedural["mapping_rule_id"] == (
+        "pk08.procedural_status_span.text_span_note/v1"
+    )
+    assert procedural["text_value"].startswith(genuine)
+    assert contract.validate_pack_result(result) == []
+
+
+@pytest.mark.parametrize("sentence", _PK08_V3_MODAL_ALLEGATION)
+def test_pk08_allegation_note_forward_looking_alone_stays_absent(
+    sentence: str,
+) -> None:
+    # Alone in the note, the possibility sentence leaves the allegation
+    # row typed absent — never a risk-factor span valued as a claim.
+    result = produce_pack("PK08", _pk08_v3_note_input(sentence))
+    allegation = _row(result, "allegation_span")
+    assert allegation["quality_state"] == "missing"
+    assert allegation["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_allegation_note_guard_skips_forward_looking_possibility() -> None:
+    # The possibility sentence precedes the genuine claim; the fallback
+    # skips it and selects the genuine sentence.
+    payload = (
+        _PK08_V3_MODAL_ALLEGATION[0] + " " + _PK08_V3_GENUINE_ALLEGATION[1]
+    )
+    result = produce_pack("PK08", _pk08_v3_note_input(payload))
+    allegation = _row(result, "allegation_span")
+    assert allegation["quality_state"] == "valued"
+    assert allegation["mapping_rule_id"] == "pk08.allegation_span.text_span_note/v1"
+    assert allegation["text_value"].startswith("Numerous lawsuits")
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_note_genuine_sentences_alone_stay_valued() -> None:
+    # The v3 tightening does not over-reject: alone in the note, the
+    # genuine status and claim sentences are still selected (these two
+    # also pass on the pre-v3 pack).
+    payload = (
+        _PK08_V3_GENUINE_PROCEDURAL[4] + " " + _PK08_V3_GENUINE_ALLEGATION[1]
+    )
+    result = produce_pack("PK08", _pk08_v3_note_input(payload))
+    procedural = _row(result, "procedural_status_span")
+    assert procedural["quality_state"] == "valued"
+    assert procedural["text_value"].startswith("The lawsuit is pending trial")
+    allegation = _row(result, "allegation_span")
+    assert allegation["quality_state"] == "valued"
+    assert allegation["text_value"].startswith("Numerous lawsuits")
+    assert contract.validate_pack_result(result) == []
+
+
+# v4 note-guard closings: whole-clause governance ------------------------------
+
+
+# Wrong-kind sentences from the third dev-corpus review: a modal or a
+# forward-looking marker anywhere in the anchor's clause — not only
+# inside a four-word verb-group window — states a possibility, never a
+# status. "should"/"shall" are modals, "expected to"/"likely" are
+# markers, and a demonstrative "that" ("in that matter could") shields
+# nothing.
+_PK08_V4_GOVERNED_PROCEDURAL = (
+    "The judgment entered by the trial court in that matter could, in "
+    "the event of an appeal, ultimately be reversed.",
+    "The injunction obtained by the three plaintiffs in the coordinated "
+    "proceedings may be dissolved on appeal.",
+    "Damages awarded at trial should be reduced on appeal.",
+    "The trial schedule for these actions should be confirmed next quarter.",
+    "Damages awarded to the prevailing plaintiffs in the trial actions "
+    "might, upon appeal, be reduced.",
+    "Any award granted in the derivative actions would be payable only "
+    "to the corporation.",
+    "Verdicts entered by courts of appeal can be appealed no further.",
+    "The judgment filed in the register of actions will be enforceable "
+    "only after the appeal period lapses.",
+    "No further trial proceedings are expected to occur in this litigation.",
+    # v5: the bare verb with a noun object or a negation (fourth review).
+    "The Company does not expect the pending cases to reach trial before "
+    "2027.",
+    "The Company does not anticipate further proceedings in the trial "
+    "court this year.",
+    "The Company expects a ruling on the dispositive motions in the cases "
+    "by year end.",
+)
+# Wrong-kind sentences the earlier guards already rejected: whole-clause
+# governance keeps every one of them rejected.
+_PK08_V4_STAY_REJECTED_PROCEDURAL = (
+    "Costs awarded may not be recoverable in these actions.",
+    "If the Company were to lose the bellwether trials, the judgment "
+    "amount could exceed insurance.",
+    "In the event that the appeals court reverses, a new trial could be "
+    "ordered in these actions.",
+    "There can be no assurance that the pending class actions will "
+    "settle within the policy limits.",
+    "Any adverse judgment obtained at trial could be reversed on appeal.",
+    "Further proceedings could result in additional settlements.",
+)
+_PK08_V4_REJECT_ALLEGATION = (
+    "No actions alleging securities fraud are expected to be brought "
+    "against the Company.",
+    # v5: the bare verb with a negation (fourth review).
+    "The Company does not expect further claims alleging antitrust "
+    "violations to be brought against the Registrant.",
+    "Counterclaims alleging breach that shall be asserted against the "
+    "Company in the bankruptcy proceedings are covered.",
+)
+_PK08_V4_STAY_REJECTED_ALLEGATION = (
+    "Potential claims alleging patent infringement have not been "
+    "asserted against the Company.",
+    "Plaintiffs will likely allege that the claims against the Company "
+    "are without merit.",
+    "Claims alleging new theories that may in the future be asserted "
+    "against us are not presently insured.",
+    "Future claims alleging fraud may be brought against the Company.",
+)
+# Genuine sentences whole-clause governance must still accept: a dated
+# report of another party's intention behind a complementizer "that", and
+# the calendar "May" the v3 window misread as a modal when the window cut
+# off the day number.
+_PK08_V4_GENUINE_PROCEDURAL = (
+    "On May 14, 2024, the court granted the Company's motion for summary "
+    "judgment.",
+    "The Company has been named as a defendant in the underlying litigation.",
+    "The jury returned a verdict of $118 million for the plaintiffs "
+    "after a six-week trial.",
+    "The Company's appeal in the infringement litigation is pending "
+    "before the Ninth Circuit.",
+    "The court approved the settlement of the class action claims.",
+    "The district court dismissed the complaint with prejudice in 2024.",
+    "The court granted final approval of the settlement on May 2.",
+    "The court granted the motion on May 2.",
+    "In March 2024 the agency notified the Company of its determination "
+    "that the Department would not move to dismiss the action.",
+)
+_PK08_V4_GENUINE_ALLEGATION = (
+    "In these actions, plaintiffs allege that they suffered personal "
+    "injuries.",
+    "The complaints allege breach-of-contract claims against the Company "
+    "in excess of $10 million.",
+    "The scope of the claims alleging misrepresentation against the "
+    "Company was narrowed in May 2024.",
+    "A complaint filed in federal court asserts claims for breach of "
+    "contract against the Company.",
+)
+
+
+@pytest.mark.parametrize(
+    "sentence",
+    _PK08_V4_GOVERNED_PROCEDURAL + _PK08_V4_STAY_REJECTED_PROCEDURAL,
+)
+def test_pk08_procedural_note_guard_rejects_clause_governed_possibility(
+    sentence: str,
+) -> None:
+    # v4: a modal or forward-looking marker anywhere in the anchor's
+    # clause, before or after it at any distance, states a possibility —
+    # the sentences the v3 four-word window let slip past included.
+    assert pk08_contingencies._procedural_note_sentence(sentence) is False
+
+
+@pytest.mark.parametrize("sentence", _PK08_V4_GENUINE_PROCEDURAL)
+def test_pk08_procedural_note_guard_accepts_clause_ungoverned_status(
+    sentence: str,
+) -> None:
+    # The v4 tightening still accepts an indicative status sentence,
+    # including a calendar "May" and a reported intention behind a
+    # complementizer "that".
+    assert pk08_contingencies._procedural_note_sentence(sentence) is True
+
+
+@pytest.mark.parametrize(
+    "sentence", _PK08_V4_REJECT_ALLEGATION + _PK08_V4_STAY_REJECTED_ALLEGATION
+)
+def test_pk08_allegation_note_guard_rejects_clause_governed_possibility(
+    sentence: str,
+) -> None:
+    # v4: an against-issuer reference whose whole clause carries a modal
+    # ("shall", the calendar rule excepted) or a forward-looking marker
+    # ("expected to", "likely") is a possibility, not a made claim.
+    assert pk08_contingencies._allegation_note_sentence(sentence) is False
+
+
+@pytest.mark.parametrize("sentence", _PK08_V4_GENUINE_ALLEGATION)
+def test_pk08_allegation_note_guard_accepts_clause_ungoverned_claim(
+    sentence: str,
+) -> None:
+    # The v4 tightening still accepts an indicative made-against shape,
+    # including the "narrowed in May 2024" sentence the calendar rule
+    # keeps modal-free.
+    assert pk08_contingencies._allegation_note_sentence(sentence) is True
+
+
+@pytest.mark.parametrize(
+    "sentence",
+    _PK08_V4_GOVERNED_PROCEDURAL + _PK08_V4_STAY_REJECTED_PROCEDURAL,
+)
+def test_pk08_procedural_note_clause_possibility_alone_stays_absent(
+    sentence: str,
+) -> None:
+    # Alone in the note, the possibility sentence leaves the procedural
+    # row typed absent — never a possibility span valued as a status.
+    # (The frozen keyword pattern itself never reaches the sentences it
+    # does not name; the guard-level tests above carry their rejection.)
+    result = produce_pack("PK08", _pk08_v3_note_input(sentence))
+    procedural = _row(result, "procedural_status_span")
+    assert procedural["quality_state"] == "missing"
+    assert procedural["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+@pytest.mark.parametrize(
+    "sentence",
+    _PK08_V4_GOVERNED_PROCEDURAL + _PK08_V4_STAY_REJECTED_PROCEDURAL,
+)
+def test_pk08_procedural_note_guard_skips_clause_possibility(
+    sentence: str,
+) -> None:
+    # The possibility sentence precedes the genuine status; the fallback
+    # skips it and selects the genuine sentence.
+    genuine = "The district court dismissed the complaint with prejudice in 2024."
+    result = produce_pack("PK08", _pk08_v3_note_input(f"{sentence} {genuine}"))
+    procedural = _row(result, "procedural_status_span")
+    assert procedural["quality_state"] == "valued"
+    assert procedural["mapping_rule_id"] == (
+        "pk08.procedural_status_span.text_span_note/v1"
+    )
+    assert procedural["text_value"].startswith(genuine)
+    assert contract.validate_pack_result(result) == []
+
+
+@pytest.mark.parametrize(
+    "sentence", _PK08_V4_REJECT_ALLEGATION + _PK08_V4_STAY_REJECTED_ALLEGATION
+)
+def test_pk08_allegation_note_clause_possibility_alone_stays_absent(
+    sentence: str,
+) -> None:
+    # Alone in the note, the possibility sentence leaves the allegation
+    # row typed absent — never a span valued as a made claim.
+    result = produce_pack("PK08", _pk08_v3_note_input(sentence))
+    allegation = _row(result, "allegation_span")
+    assert allegation["quality_state"] == "missing"
+    assert allegation["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+@pytest.mark.parametrize(
+    "sentence", _PK08_V4_REJECT_ALLEGATION + _PK08_V4_STAY_REJECTED_ALLEGATION
+)
+def test_pk08_allegation_note_guard_skips_clause_possibility(
+    sentence: str,
+) -> None:
+    # The possibility sentence precedes the genuine claim; the fallback
+    # skips it and selects the genuine sentence.
+    genuine = _PK08_V4_GENUINE_ALLEGATION[2]
+    result = produce_pack("PK08", _pk08_v3_note_input(f"{sentence} {genuine}"))
+    allegation = _row(result, "allegation_span")
+    assert allegation["quality_state"] == "valued"
+    assert allegation["mapping_rule_id"] == "pk08.allegation_span.text_span_note/v1"
+    assert allegation["text_value"].startswith("The scope of the claims")
+    assert contract.validate_pack_result(result) == []
+
+
+@pytest.mark.parametrize(
+    "sentence",
+    tuple(
+        s
+        for s in _PK08_V4_GENUINE_PROCEDURAL
+        if re.search(pk08_contingencies.PROCEDURAL_STATUS_PATTERN, s)
+    ),
+)
+def test_pk08_procedural_note_clause_genuine_alone_stays_valued(
+    sentence: str,
+) -> None:
+    # The v4 tightening does not over-reject: alone in the note, every
+    # genuine status sentence the frozen keyword pattern reaches is
+    # still selected.
+    result = produce_pack("PK08", _pk08_v3_note_input(sentence))
+    procedural = _row(result, "procedural_status_span")
+    assert procedural["quality_state"] == "valued"
+    assert procedural["text_value"].startswith(sentence[:30])
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_allegation_note_clause_genuine_alone_stays_valued() -> None:
+    # The "narrowed in May 2024" sentence — a genuine claim the v3
+    # window rejected as modal-governed — is selected alone in the note.
+    result = produce_pack("PK08", _pk08_v3_note_input(_PK08_V4_GENUINE_ALLEGATION[2]))
+    allegation = _row(result, "allegation_span")
+    assert allegation["quality_state"] == "valued"
+    assert allegation["mapping_rule_id"] == "pk08.allegation_span.text_span_note/v1"
+    assert allegation["text_value"].startswith("The scope of the claims")
+    assert contract.validate_pack_result(result) == []
+
+
+# K3K4: quarterly forms carry legal proceedings in Part II Item 1 --------
+
+
+def test_pk08_quarterly_item1_section_resolves_span_fields() -> None:
+    # On a 10-Q the two span fields search Part II Item 1 — Legal
+    # Proceedings; legal_proceedings_item3 itself stays form-excluded.
+    pack_input = _pk08_v2_input(
+        facts=(_PK08_V2_NIL_FACT,),
+        contexts=_PK08_V2_BASE_CONTEXTS,
+        form="10-Q",
+        paragraphs=(
+            "<p>Note 12 – Commitments and Contingencies. The Company has "
+            "entered into certain unconditional purchase obligations.</p>",
+            f"<p>{_PK08_CONTING_CLEAN}</p>",
+            "<p>Item 1 — Legal Proceedings Within 120 days after a "
+            "putative class action was filed against the Company alleging "
+            "violations of federal antitrust laws, the Company has "
+            "appealed an adverse ruling in one proceeding.</p>",
+            "<p>Item 1A. Risk Factors None.</p>",
+        ),
+    )
+    result = produce_pack("PK08", pack_input)
+    rows = {row["field_id"]: row for row in result["fields"]}
+    assert rows["legal_proceedings_item3"]["quality_state"] == "not_applicable"
+    allegation = rows["allegation_span"]
+    assert allegation["quality_state"] == "valued"
+    assert allegation["mapping_rule_id"] == "pk08.allegation_span.text_span/v1"
+    assert "alleging" in allegation["text_value"]
+    procedural = rows["procedural_status_span"]
+    assert procedural["quality_state"] == "valued"
+    assert "appealed" in procedural["text_value"]
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_lossy_quarterly_without_item_section_stays_typed_absent() -> None:
+    # PIN (F6 lossy, parent-identical): a quarterly filing with no legal-
+    # proceedings item section at all keeps the two span rows typed absent
+    # (not_evaluable / missing_dependency with the governing-section
+    # limitation) — the quarterly v2 path never invents a span.
+    result = produce_pack("PK08", _pk08_testco_input(form="10-Q", item3=False))
+    rows = {row["field_id"]: row for row in result["fields"]}
+    for field_id in ("allegation_span", "procedural_status_span"):
+        assert rows[field_id]["quality_state"] == "not_evaluable", field_id
+        assert rows[field_id]["reason"] == "missing_dependency", field_id
+        assert any(
+            line.startswith(f"pk08.{field_id}: governing_section_not_supplied;")
+            for line in result["limitations"]
+        ), field_id
+    assert contract.validate_pack_result(result) == []
+
+
+# §TESTS (nil_bs_vs_note repair): a locator miss is "could not look" --------
+
+
+def test_pk08_nil_bs_line_with_unlocatable_note_is_not_evaluable() -> None:
+    # PIN (review): a nil balance-sheet line on a filing whose contingencies
+    # note heading the frozen NOTE_CC locator (and its v2 fallbacks) cannot
+    # find leaves the block row not_evaluable — "could not look" is never a
+    # finding against the issuer, so the check abstains with
+    # missing_dependency instead of asserting the nil line lacks a note
+    # explanation.
+    result = produce_pack(
+        "PK08",
+        _pk08_v2_input(
+            facts=(_PK08_V2_NIL_FACT,),
+            contexts=_PK08_V2_BASE_CONTEXTS,
+            paragraphs=(
+                "<p>The Company operates in a single reportable segment.</p>",
+                "<p>No amounts were recorded for loss contingencies in the "
+                "period.</p>",
+            ),
+        ),
+    )
+    rows = {row["field_id"]: row for row in result["fields"]}
+    bs_state = rows["commitments_and_contingencies_bs_state"]
+    assert bs_state["quality_state"] == "valued"
+    assert bs_state["text_value"] == "nil_disclosed"
+    block = rows["commitments_text_block"]
+    assert block["quality_state"] == "not_evaluable"
+    assert block["reason"] == "missing_dependency"
+    check = _check(result, "nil_bs_vs_note")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_nil_bs_line_with_confirmed_absent_note_fails() -> None:
+    # The retained fail arm: a nil balance-sheet line whose commitments
+    # block is a typed absence (a confirmed absence, not a locator miss) is
+    # a finding against the issuer. Row-level: through produce_pack a
+    # confirmed-absent block only arises without a retained narrative
+    # document, which also leaves the balance-sheet line unvalued.
+    catalogue = contract.load_pack_schema("PK08")
+    catalogue_check = {
+        check["check_id"]: check for check in catalogue["checks"]
+    }["nil_bs_vs_note"]
+    rows = {
+        "commitments_and_contingencies_bs_state": {
+            "quality_state": "valued",
+            "text_value": "nil_disclosed",
+        },
+        "commitments_text_block": {
+            "quality_state": "missing",
+            "reason": "missing_dependency",
+        },
+    }
+    check_row = pk08_contingencies._nil_bs_vs_note_row(rows, catalogue_check)
+    assert check_row["status"] == "fail"
+    assert check_row["reason"] is None
+
+
+def test_pk08_nil_bs_line_with_valued_note_passes() -> None:
+    # The unchanged pass arm: a located contingencies note explains the
+    # nil line.
+    result = produce_pack(
+        "PK08",
+        _pk08_v2_input(
+            facts=(_PK08_V2_NIL_FACT,),
+            contexts=_PK08_V2_BASE_CONTEXTS,
+            paragraphs=(
+                "<p>Note 12 – Commitments and Contingencies. The Company has "
+                "entered into certain unconditional purchase obligations.</p>",
+                f"<p>{_PK08_CONTING_CLEAN}</p>",
+            ),
+        ),
+    )
+    rows = {row["field_id"]: row for row in result["fields"]}
+    assert rows["commitments_text_block"]["quality_state"] == "valued"
+    check = _check(result, "nil_bs_vs_note")
+    assert check["status"] == "pass"
+    assert check["reason"] is None
+    assert contract.validate_pack_result(result) == []
