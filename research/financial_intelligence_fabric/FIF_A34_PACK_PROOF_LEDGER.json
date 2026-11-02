@@ -1,8 +1,8 @@
 {
   "schema": "fif.a34_pack_proof_ledger.v1",
   "matrix_row": "A34",
-  "base_commit": "192500ef6b69dd641980c4856980bffec10ab2b4",
-  "generated_at": "2026-11-02T12:49:56.280025+00:00",
+  "base_commit": "a9e3f52396c945480cf3f59d3f0cdea71fa120ed",
+  "generated_at": "2026-11-02T12:51:48.814086+00:00",
   "protocol_id": "fif-q0-quality-protocol/v1",
   "packs": [
     {
@@ -572,7 +572,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 16,
+          "calibration_tests": 22,
           "calibration_labels": 0
         },
         "held_out": {
