@@ -4388,7 +4388,7 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
                 guard = guards['test_frozen_files_match_origin_main_or_exact_accepted_country_theme']
                 for path in _CM_FROZEN_PATHS:
                     if changed and path == _CM_FROZEN_PATHS[0]:
-                        with self.assertRaisesRegex(AssertionError, 'changed outside the exact accepted country-theme composition'):
+                        with self.assertRaisesRegex(AssertionError, 'only a pure end-of-file append is permitted'):
                             guard(path)
                     else:
                         guard(path)
