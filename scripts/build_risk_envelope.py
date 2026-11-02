@@ -804,8 +804,43 @@ def build(root: Path | None = None, now: datetime | None = None) -> dict[str, An
 
 
 def write(root: Path | None = None, now: datetime | None = None) -> dict[str, Any]:
-    """Build and atomically write both copies. Never raises; returns the envelope."""
+    """Write settled copies only in a publisher lane; render-only lanes reuse evidence.
+
+    Site-only renders must not issue a new "settled" envelope whose durable
+    companion is left uncommitted. In read-only mode, reuse only an unchanged,
+    matching existing pair for the source session; otherwise withhold the
+    envelope rather than silently promote a provisional observation.
+    """
     try:
+        if os.environ.get("RISK_ENVELOPE_RENDER_READ_ONLY") == "1":
+            source_root = root or _REPO_ROOT
+            durable = data_path(source_root)
+            public = site_path(source_root)
+            try:
+                durable_bytes = durable.read_bytes()
+                if durable_bytes != public.read_bytes():
+                    log.warning("risk_envelope: renderer-only settled mirrors differ; withholding")
+                    return {}
+                existing = json.loads(durable_bytes)
+                market_state = _read_json(source_root / "data" / "market_state" / "latest.json")
+                if (
+                    not isinstance(existing, dict)
+                    or existing.get("schema") != "mastermind.risk_envelope/v1"
+                    or existing.get("revision") != "settled"
+                    or not isinstance(existing.get("bundle_id"), str)
+                    or not existing["bundle_id"]
+                    or not isinstance(existing.get("source_session"), str)
+                    or existing["source_session"] != existing.get("as_of")
+                    or not isinstance(market_state, dict)
+                    or market_state.get("asof") != existing["source_session"]
+                ):
+                    log.warning("risk_envelope: renderer-only source/session unqualified; withholding")
+                    return {}
+                return existing
+            except (OSError, ValueError, TypeError) as exc:
+                log.warning("risk_envelope: renderer-only source unavailable (%s); withholding", type(exc).__name__)
+                return {}
+
         env = build(root, now)
         payload = canonical_json(env) + "\n"
         _atomic_write(data_path(root), payload)
