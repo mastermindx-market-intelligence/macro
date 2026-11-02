@@ -81,8 +81,8 @@ html[data-theme="dark"] .grade.D { color:#ef6a6a; }
 .relchip.improving { color:var(--ink-up, var(--up)); background:rgba(69,184,115,.1); border:1px solid rgba(69,184,115,.35); }
 .relchip.deteriorating { color:var(--ink-down, var(--down)); background:rgba(224,100,100,.12); border:1px solid rgba(224,100,100,.35); }
 .relchip.stable, .relchip.na { color:var(--muted); background:var(--panel2); border:1px solid var(--line); }
-.fx-disc { color:var(--muted); font-size:11.5px; border-left:3px solid var(--info); padding:8px 12px; margin:14px 0 8px;
-           background:var(--panel2); border-radius:0 8px 8px 0; }
+.fx-disc { color:var(--muted); font-size:11.5px; border:1px solid var(--line); padding:8px 12px; margin:14px 0 8px;
+           background:var(--panel2); border-radius:8px; }
 .fx-closed { opacity:.62; }
 {% endblock %}
 
@@ -119,6 +119,8 @@ html[data-theme="dark"] .grade.D { color:#ef6a6a; }
       <a class="fx-chip" href="smart_money.html">← {{ t('Ownership Intelligence Desk','持仓情报台') }}</a>
     </div>
   </section>
+
+  <p class="fx-disc">{{ t('Reported period-end holdings, not current positions. Open a manager for its filing date and original source; later amendments may change the reported book.','此处为已披露的期末持仓，并非当前仓位。打开管理人档案可查看申报日期和原始来源；后续修订可能更改披露持仓。') }}</p>
 
   <div class="fx-filters" id="fx-seg" role="tablist">
     <button aria-selected="true" data-grade="all">{{ t('All','全部') }}</button>

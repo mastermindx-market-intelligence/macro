@@ -37,7 +37,9 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from datetime import datetime, timezone
+from urllib.parse import urlsplit
 
 import pandas as pd
 
@@ -543,6 +545,54 @@ def conviction_score(pos: dict, book_positions: list[dict],
 # Snapshot history — resolved once per fund, shared by book + series            #
 # --------------------------------------------------------------------------- #
 
+def _snapshot_filing_provenance(frame: pd.DataFrame) -> dict:
+    """Project one retained original filing's identity, never a latest lookup.
+
+    Holdings aggregation must not discard the receipt. Conflicting or partial
+    identities degrade to unavailable rather than linking another filing.
+    """
+    def one(column: str, required: bool = False) -> str | None:
+        if column not in frame or frame.empty:
+            if required:
+                raise ValueError(column)
+            return None
+        values = frame[column].dropna().astype(str).str.strip()
+        values = values[~values.isin(["", "nan", "None", "NaT"])]
+        if values.empty and not required:
+            return None
+        if len(values) != len(frame) or values.nunique() != 1:
+            raise ValueError(column)
+        return str(values.iloc[0])
+
+    try:
+        cik = one("fund_cik", True)
+        accession = one("accession", True)
+        form = one("form", True)
+        if (not re.fullmatch(r"[0-9]{1,10}", cik or "") or int(cik) <= 0
+                or not re.fullmatch(r"[0-9]{10}-[0-9]{2}-[0-9]{6}", accession or "")
+                or form != "13F-HR"):
+            raise ValueError("original filing identity")
+        base = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{accession.replace('-', '')}/"
+        index_url = f"{base}{accession}-index.html"
+        supplied_index = one("source_index_url")
+        if supplied_index and supplied_index != index_url:
+            raise ValueError("filing index mismatch")
+        source_url = one("source_url")
+        if source_url:
+            source = urlsplit(source_url)
+            if (source.scheme != "https" or source.netloc != "www.sec.gov"
+                    or not source_url.startswith(base) or source.query or source.fragment
+                    or source.path != base.removeprefix("https://www.sec.gov") + source.path.rsplit('/', 1)[-1]
+                    or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*\.(?:xml|txt|html?)", source.path.rsplit('/', 1)[-1])):
+                raise ValueError("filing source mismatch")
+        return {"status": "available", "manager": one("fund_name"),
+                "cik": str(int(cik)), "accession": accession, "form": form,
+                "index_url": index_url, "source_url": source_url,
+                "source_sha256": one("source_sha256")}
+    except (TypeError, ValueError):
+        return {"status": "unavailable"}
+
+
 def _resolved_history(slug: str, name_map: dict[str, str],
                       cusip_map: dict[str, str]) -> list[tuple[str, str, pd.DataFrame]]:
     """Every retained snapshot for a fund as a slim RESOLVED frame, ascending:
@@ -569,6 +619,7 @@ def _resolved_history(slug: str, name_map: dict[str, str],
             g = resolve_tickers(g, name_map, cusip_map)
             g["sh_type"] = "SH"                      # keep diff_snapshots happy on slims
             g["available_date"] = _snapshot_available_date(df) or filing_date
+            g.attrs["filing"] = _snapshot_filing_provenance(df)
             out.append((period_end, filing_date, g))
         except Exception:  # noqa: BLE001 — one bad quarter must not drop the fund
             log.debug("_resolved_history: %s quarter %s skipped", slug, period_end,
@@ -923,7 +974,8 @@ def _book_meta(slug: str, name_map: dict[str, str], cusip_map: dict[str, str],
                 "resolution_pct": (round(100.0 * n_res / n_pos, 1) if n_pos else None),
                 "book_value_usd": round(total, 0),
                 "filing_date": filing_date, "available_date": available_date,
-                "period_end": period_end}
+                "period_end": period_end,
+                "filing": dict(sdf.attrs.get("filing") or {"status": "unavailable"})}
     except Exception:  # noqa: BLE001
         log.debug("_book_meta: %s failed", slug, exc_info=True)
         return {}

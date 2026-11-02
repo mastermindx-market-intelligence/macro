@@ -99,3 +99,17 @@ def test_dossier_sparklines_keep_a_real_mono_face():
         "templates/fund_index.html.j2 gained a .spark rule; it now needs its "
         "own --mono token (see the .fd definition in fund_dossier.html.j2)."
     )
+
+
+@pytest.mark.parametrize('name,selector', [
+    ('fund_index.html.j2', '.fx-disc'),
+    ('fund_dossier.html.j2', '.lean-hero'),
+    ('fund_dossier.html.j2', '.banner'),
+    ('fund_dossier.html.j2', '.disc'),
+])
+def test_fund_containers_use_even_neutral_borders(name, selector):
+    import re
+    rule = re.search(re.escape(selector) + r'\s*\{([^}]+)\}', _src(name))
+    assert rule
+    assert 'border:1px solid var(--line)' in rule.group(1)
+    assert not re.search(r'border-(left|right|top|bottom)\s*:', rule.group(1))

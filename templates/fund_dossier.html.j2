@@ -103,7 +103,7 @@ html[data-theme="dark"] .grade.D { color:#ef6a6a; }
 .fd-stat .s { font-size:10.5px; color:var(--muted); margin-top:3px; }
 
 /* ---- core lean hero card ---- */
-.lean-hero { background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--info);
+.lean-hero { background:var(--panel); border:1px solid var(--line);
              border-radius:14px; padding:18px 20px; margin-top:12px; }
 .lean-hero .eyebrow { font-weight:600; font-size:10.5px; line-height:1; letter-spacing:.14em; text-transform:uppercase;
                       color:var(--ink-info, var(--info)); margin-bottom:8px; }
@@ -131,9 +131,9 @@ html[data-theme="dark"] .grade.D { color:#ef6a6a; }
 .sm-card { background:var(--panel); border:1px solid var(--line); border-radius:12px;
            padding:14px 16px; margin-top:10px; overflow-x:auto; }
 .banner { font-size:11.5px; color:var(--muted); background:var(--panel2); border:1px solid var(--line);
-          border-left:3px solid var(--info); border-radius:9px; padding:8px 12px; margin:8px 0 4px;
+          border-radius:9px; padding:8px 12px; margin:8px 0 4px;
           line-height:1.55; }
-.disc { background:var(--panel2); border:1px solid var(--line); border-left:3px solid var(--info);
+.disc { background:var(--panel2); border:1px solid var(--line);
         border-radius:10px; padding:11px 14px; margin:14px 0 4px; font-size:12px;
         line-height:1.55; color:var(--muted); }
 .cnt { font-size:11.5px; color:var(--muted); margin:6px 0 2px; }
@@ -240,6 +240,7 @@ table.sm-t th.sorted { color:var(--text); }
 {% set SLUG = BF.get('slug') or LB.get('slug') or '' %}
 {% set FILED = BM.get('filing_date') or BF.get('filing_date') or '' %}
 {% set PEND = BM.get('period_end') or BF.get('period_end') or '' %}
+{% set FILING = BM.get('filing') or {} %}
 {% set BOOKUSD = BM.get('book_value_usd') or BF.get('book_value_usd') %}
 {% set NPOS = BM.get('n_positions') if BM.get('n_positions') is not none else (BOOK | length if BOOK else None) %}
 {% set TREND = REL.get('trend') or '' %}
@@ -287,6 +288,16 @@ table.sm-t th.sorted { color:var(--text); }
     {% if generated_utc %}<span class="chip-fresh">{{ t('generated','生成于') }} <span class="num">{{ generated_utc }}</span></span>{% endif %}
     {% if SLUG %}<a class="chip-fresh" href="funddata/{{ SLUG }}.json">{{ t('Data (JSON)','数据 (JSON)') }}</a>{% endif %}
   </div>
+</div>
+
+<div class="banner fd-filing">
+  <p><strong>{{ t('Reported period-end holdings','已披露的期末持仓') }}</strong> — {{ t('not current positions. This view uses original filings; later amendments may change reported holdings and are retained separately.','并非当前仓位。本视图使用原始申报；后续修订可能更改披露持仓，修订申报另行保留。') }}</p>
+  {% if FILING.get('status') == 'available' %}
+  <p>{{ t('Reporting manager','申报管理人') }}: {{ FILING.get('manager') or FNAME or '—' }} · CIK <span class="num">{{ FILING.get('cik') }}</span> · {{ FILING.get('form') }}</p>
+  <p><a href="{{ FILING.get('index_url') }}">{{ t('Original SEC filing','SEC 原始申报') }}</a> · <span class="num">{{ FILING.get('accession') }}</span></p>
+  {% else %}
+  <p>{{ t('Original filing source unavailable for this retained snapshot. Reported dates and holdings remain available below.','此留存快照的原始申报来源暂不可用。下方仍可查看已披露的日期和持仓。') }}</p>
+  {% endif %}
 </div>
 
 {# ======================================================================== #}
@@ -444,7 +455,7 @@ table.sm-t th.sorted { color:var(--text); }
   {% if WEIGHTS %}
   <div class="fd-2col">
     <div>
-      <div class="rot-h">{{ t('Current weights','当前权重') }}{% if LATESTQ.get('period_end') %} · <span class="num">{{ LATESTQ.get('period_end') }}</span>{% endif %}</div>
+      <div class="rot-h">{{ t('Reported period-end weights','已披露的期末权重') }}{% if LATESTQ.get('period_end') %} · <span class="num">{{ LATESTQ.get('period_end') }}</span>{% endif %}</div>
       {# number-filtered tuple sort — a stray None weight must degrade, never raise #}
       {% set wp = namespace(v=[]) %}
       {% for sec, w in WEIGHTS.items() %}{% if w is number %}{% set wp.v = wp.v + [(w, sec)] %}{% endif %}{% endfor %}
@@ -580,7 +591,7 @@ table.sm-t th.sorted { color:var(--text); }
           data-sector="{{ p.get('sector') or '' }}"
           data-since="{{ dv(p.get('since_excess')) }}">
         <td class="rk num">{{ p.get('position_rank') if p.get('position_rank') is not none else '—' }}</td>
-        <td class="l">{{ tklogo(p.get('ticker')) }} <span class="tk">{{ p.get('ticker') or '—' }}</span></td>
+        <td class="l">{{ tklogo(p.get('ticker')) }} {% if p.get('ticker') %}<a class="fund-link" href="stock.html#{{ p.get('ticker') | urlencode }}"><span class="tk">{{ p.get('ticker') }}</span></a>{% else %}<span class="tk">—</span>{% endif %}</td>
         <td class="l mut">{{ p.get('issuer') | title if p.get('issuer') else '—' }}</td>
         <td class="num"><b>{{ pctf(p.get('pct_book')) }}</b></td>
         <td class="num">{{ usd(p.get('value_usd')) }}</td>

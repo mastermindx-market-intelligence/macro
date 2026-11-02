@@ -1481,3 +1481,74 @@ def test_fix9_sector_etf_covers_all_canon_and_theme_sector_values():
     assert not missing, (
         f"These sector values have no ETF in fund_followability.SECTOR_ETF: {missing}"
     )
+
+
+# P12.T18.S1: a retained original filing must survive the resolved-book boundary.
+def _retained_fund_snapshot():
+    import pandas as pd
+    return pd.DataFrame([{
+        'cusip': '037833100', 'issuer': 'APPLE INC', 'shares': 10.0,
+        'value_usd': 100.0, 'sh_type': 'SH', 'fund_cik': 1067983,
+        'fund_name': 'Berkshire Hathaway (Buffett)',
+        'accession': '0001193125-26-352200', 'form': '13F-HR',
+        'source_url': 'https://www.sec.gov/Archives/edgar/data/1067983/000119312526352200/56757.xml',
+        'available_date': '2026-08-15',
+    }])
+
+
+def test_retained_fund_filing_survives_resolution_and_book_meta(monkeypatch):
+    monkeypatch.setattr(fi, '_HIST_CACHE', {})
+    snapshot = _retained_fund_snapshot()
+    monkeypatch.setattr(fi, '_read_all', lambda slug: [('2026-06-30', '2026-08-14', snapshot)])
+    monkeypatch.setattr(fi, 'resolve_tickers', lambda frame, *args: frame.assign(ticker='AAPL'))
+    meta = fi._book_meta('berkshire', {}, {})
+    assert (meta['n_positions'], meta['n_resolved'], meta['book_value_usd']) == (1, 1, 100.0)
+    assert (meta['period_end'], meta['filing_date'], meta['available_date']) == ('2026-06-30', '2026-08-14', '2026-08-15')
+    assert meta['filing']['status'] == 'available'
+    assert meta['filing']['accession'] == '0001193125-26-352200'
+    assert meta['filing']['index_url'] == 'https://www.sec.gov/Archives/edgar/data/1067983/000119312526352200/0001193125-26-352200-index.html'
+
+
+@pytest.mark.parametrize('column,value', [
+    ('fund_cik', float('nan')), ('fund_cik', '1067983/other'),
+    ('accession', 'not-an-accession'), ('form', '13F-HR/A'),
+    ('source_url', 'javascript:alert(1)'),
+    ('source_url', 'https://www.sec.gov.evil.test/Archives/edgar/data/1067983/000119312526352200/56757.xml'),
+    ('source_url', 'https://www.sec.gov/Archives/edgar/data/1067983/000119312526352200/../other.xml'),
+    ('source_url', 'https://www.sec.gov/Archives/edgar/data/1067983/000119312526352200/%2e%2e.xml'),
+    ('source_url', 'https://www.sec.gov/Archives/edgar/data/1067983/OTHER/56757.xml'),
+    ('source_index_url', 'https://www.sec.gov/Archives/edgar/data/1067983/OTHER/other-index.html'),
+])
+def test_fund_filing_provenance_does_not_invent_or_redirect_source(column, value):
+    frame = _retained_fund_snapshot()
+    frame[column] = value
+    assert fi._snapshot_filing_provenance(frame) == {'status': 'unavailable'}
+
+
+def test_fund_filing_provenance_legacy_and_conflicting_metadata_unavailable():
+    import pandas as pd
+    frame = _retained_fund_snapshot()
+    assert fi._snapshot_filing_provenance(frame.drop(columns=['accession'])) == {'status': 'unavailable'}
+    other = frame.copy()
+    other['accession'] = '0001193125-26-000001'
+    assert fi._snapshot_filing_provenance(pd.concat([frame, other])) == {'status': 'unavailable'}
+
+
+@pytest.mark.skipif(jinja2 is None or _DOSSIER_DIR is None, reason='jinja2/template unavailable')
+def test_fund_dossier_source_reported_holding_link_and_unavailable_states():
+    import copy
+    context = copy.deepcopy(MINIMAL_CTX)
+    context['fi']['book_meta']['filing'] = fi._snapshot_filing_provenance(_retained_fund_snapshot())
+    context['fi']['book'].append({'ticker': None, 'issuer': 'Unresolved issuer'})
+    html = _env().get_template('fund_dossier.html.j2').render(**context)
+    assert 'Reported period-end holdings' in html and '已披露的期末持仓' in html
+    assert 'not current positions' in html and '后续修订' in html
+    assert '0001193125-26-352200-index.html' in html
+    assert 'href="stock.html#SNDK"' in html
+    assert 'href="stock.html#None"' not in html
+    assert 'href="stock.html#"' not in html
+    assert 'href="fund_index.html"' in html
+    context['fi']['book_meta'].pop('filing')
+    legacy = _env().get_template('fund_dossier.html.j2').render(**context)
+    assert 'Original filing source unavailable' in legacy
+    assert 'SEC 原始申报' not in legacy
