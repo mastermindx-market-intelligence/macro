@@ -249,19 +249,25 @@ def test_close_reveals_dashboard_immediately_without_an_opaque_exit_frame():
     assert ("#mm-terminal-overlay.is-closing{visibility:visible;opacity:1;"
             "pointer-events:none;background:transparent}") in code
     assert "if (remount) {" in code
-    assert "destroyFrame();\n      unlockDashboard({ restoreFocus: false });\n      return;" in code
+    assert "destroyFrame();\n      unlockDashboard({ restoreFocus: state.returnFocusVisible });\n      return;" in code
     assert "transition-duration:.16s,.28s,.28s" in code
     assert "}, CLOSE_ANIMATION_MS);" in code
     assert "}, 650);" not in code
 
 
-def test_mobile_close_does_not_refocus_ticker_and_override_saved_scroll():
+def test_mobile_close_restores_keyboard_focus_without_pointer_scroll_jumps():
     code = _read("templates/terminal_overlay.js")
     assert "function unlockDashboard(options)" in code
     from rjsmin import jsmin
 
     assert "options&&options.restoreFocus===false?null:(state.returnFocus||state.activeElement)" in jsmin(code)
-    assert "unlockDashboard({ restoreFocus: false });" in code
+    assert "unlockDashboard({ restoreFocus: state.returnFocusVisible });" in code
+    assert "state.returnFocusVisible = false;" in code
+    assert "state.returnFocus.matches(':focus-visible')" in code
+    opened = code.index("state.returnFocus = config.returnFocus")
+    sampled = code.index("state.returnFocus.matches(':focus-visible')", opened)
+    focused = code.index("state.back.focus", sampled)
+    assert opened < sampled < focused
     assert "unlockDashboard();" in code  # Desktop keeps keyboard focus restoration.
 
 

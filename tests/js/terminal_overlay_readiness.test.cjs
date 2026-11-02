@@ -93,13 +93,19 @@ function browser(mobile = false) {
     clearTimeout: id => timers.delete(id), requestAnimationFrame: fn => setTimeout(fn, 16)};
   vm.runInNewContext(source, context);
   const emit = (name, event) => (listeners[name] || []).forEach(fn => fn(event));
-  function open(symbol = 'POWI') {
-    window.MDXTerminalOverlay.open({url: 'https://app.mastermind-x.com/terminal?symbol=' + symbol + '&embed=dashboard', symbol});
+  function open(symbol = 'POWI', trigger) {
+    window.MDXTerminalOverlay.open({url: 'https://app.mastermind-x.com/terminal?symbol=' + symbol + '&embed=dashboard', symbol, trigger});
     return document.getElementById('mm-terminal-overlay').querySelector('.mmto-frame');
   }
   return {open, advance, emit, close: () => window.MDXTerminalOverlay.close(),
     root: () => document.getElementById('mm-terminal-overlay'),
     activeElement: () => activeEl,
+    trigger: (keyboard) => {
+      const el = new Element('a'); body.appendChild(el);
+      el.matches = selector => selector === ':focus-visible' && keyboard;
+      el.closest = () => el.inert || el.getAttribute('aria-hidden') === 'true' ? body : null;
+      return el;
+    },
     message: (frame, type, overrides = {}) => emit('message', {source: frame.contentWindow,
       origin: 'https://app.mastermind-x.com', data: {source: 'mastermind-terminal', type, symbol: 'POWI'}, ...overrides})};
 }
@@ -224,4 +230,11 @@ test('prior visual-ready focus cannot cross a close/reopen of the same warm desk
 test('confirmed current visual-ready still focuses its healthy iframe', () => {
   const b = browser(), frame = b.open();
   b.message(frame, 'terminal:visual-ready'); b.advance(1080); assert.equal(b.activeElement(), frame);
+});
+
+for (const keyboard of [true, false]) test(`compact close preserves ${keyboard ? 'keyboard return focus' : 'touch scroll without refocusing'}`, () => {
+  const b = browser(true), trigger = b.trigger(keyboard); trigger.focus();
+  b.open('POWI', trigger); const back = b.root().querySelector('.mmto-back');
+  assert.equal(b.activeElement(), back); b.close();
+  assert.equal(b.activeElement() === trigger, keyboard);
 });
