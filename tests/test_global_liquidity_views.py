@@ -1552,3 +1552,65 @@ def test_t22_audit_g_confidence_never_attaches_to_a_row(tmp_path):
             for _field, _lang, text in _visible_texts(r):
                 assert "confidence" not in text.lower()
                 assert "置信" not in text
+
+
+# --- T22 M5r producer gate ---
+from tests.test_global_liquidity_transmission import glt_builder  # noqa: F401,E402
+from engine.global_liquidity_views import VIEW_VERSION  # noqa: E402
+
+
+@pytest.mark.parametrize("stored_shape", ["absent", "old_version", "not_a_dict"])
+def test_t22_producer_rewrites_views_less_artifact_once(glt_builder, capsys, stored_shape):
+    """A stored contract whose views block is absent or of another view version is
+    rewritten once (first_known_at preserved); the next identical run is unchanged."""
+    glt_builder.run()  # seed the stored artifact set
+    seed = glt_builder.contract()
+    assert seed["views"]["view_version"] == VIEW_VERSION
+    assert set(VIEW_NAMES) <= set(seed["views"])
+    fk = seed["state"]["event_reference"]["clocks"]["first_known_at"]
+
+    # Store the shapes a pre-T22 (or version-bumped) host can hold.
+    stored = glt_builder.contract()
+    if stored_shape == "absent":
+        del stored["views"]
+    elif stored_shape == "old_version":
+        stored["views"]["view_version"] = "glt_views_v0"
+    else:
+        stored["views"] = None
+    glt_builder.mod.CONTRACT_PATH.write_text(json.dumps(stored, indent=2, sort_keys=True))
+
+    capsys.readouterr()
+    glt_builder.run()  # same asof + same source_snapshot_hash, views not current
+    out = capsys.readouterr().out
+    notices = [ln for ln in out.splitlines() if ln.startswith("::notice title=glt-nightly::")]
+    assert len(notices) == 1 and "outcome=written" in notices[0]
+
+    rewritten = glt_builder.contract()
+    assert rewritten["views"]["view_version"] == VIEW_VERSION
+    assert set(rewritten["views"]) == set(seed["views"])  # same five view names
+    assert set(VIEW_NAMES) <= set(rewritten["views"])
+    assert rewritten["state"]["event_reference"]["clocks"]["first_known_at"] == fk
+    assert rewritten["freshness"]["clocks"]["first_known_at"] == fk
+
+    snap = {p: (p.read_bytes(), p.stat().st_mtime_ns) for p in glt_builder.paths()}
+    capsys.readouterr()
+    glt_builder.run()  # the next identical run is unchanged again
+    out = capsys.readouterr().out
+    notices = [ln for ln in out.splitlines() if ln.startswith("::notice title=glt-nightly::")]
+    assert len(notices) == 1 and "outcome=unchanged" in notices[0]
+    for p in glt_builder.paths():
+        assert (p.read_bytes(), p.stat().st_mtime_ns) == snap[p]
+
+
+def test_t22_producer_current_views_artifact_stays_unchanged(glt_builder, capsys):
+    """Views present and version current: the T23 idempotency holds unchanged."""
+    glt_builder.run()
+    snap = {p: (p.read_bytes(), p.stat().st_mtime_ns) for p in glt_builder.paths()}
+
+    capsys.readouterr()
+    glt_builder.run()  # identical asof + hash + current views block
+    out = capsys.readouterr().out
+    notices = [ln for ln in out.splitlines() if ln.startswith("::notice title=glt-nightly::")]
+    assert len(notices) == 1 and "outcome=unchanged" in notices[0]
+    for p in glt_builder.paths():
+        assert (p.read_bytes(), p.stat().st_mtime_ns) == snap[p]

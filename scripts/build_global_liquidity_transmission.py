@@ -23,6 +23,7 @@ from engine.global_liquidity_transmission import (  # noqa: E402
 )
 from engine import global_liquidity_outlook as _glt_outlook  # noqa: E402
 from engine.global_liquidity_views import (  # noqa: E402
+    VIEW_VERSION,
     compose_views,
     failed_views,
     validate_views,
@@ -240,7 +241,10 @@ def build(asof: str | None = None, *, out: str | None = None, print_notice: bool
         prev_hash = (previous.get("meta") or {}).get("source_snapshot_hash")
         new_hash = (payload.get("meta") or {}).get("source_snapshot_hash")
 
-        if trusted and prev_asof == new_asof and prev_hash == new_hash:
+        # A stored contract without the current views block is rewritten once (T22), never kept as-is.
+        prev_views = previous.get("views")
+        views_current = isinstance(prev_views, dict) and prev_views.get("view_version") == VIEW_VERSION
+        if trusted and prev_asof == new_asof and prev_hash == new_hash and views_current:
             # (b) write NOTHING. An untrusted (future-clocked) artifact is never kept
             # as-is: it falls through and is rewritten with fresh clocks (C11).
             outcome = "unchanged"
