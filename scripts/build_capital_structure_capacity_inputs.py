@@ -160,16 +160,52 @@ def _read_jsonl_records(path: Path, label: str) -> tuple[dict[str, Any], ...]:
     return tuple(records)
 
 
-def _issuer_rows(path: Path, json_column: str, issuer_id: str, label: str) -> tuple[dict[str, Any], ...]:
+#: Payload indexes per (file, json_column) pair: ``(stat stamp, index)``, where
+#: the stamp is ``(st_mtime_ns, st_size, st_ino)`` — a rewritten ledger is
+#: re-read — and the index maps each ``issuer_id`` string to its raw payload
+#: values in file order.  Rows are cached UNPARSED (lazy ``json.loads`` stays
+#: with ``_issuer_rows``), and at most 8 keys are held: inserting a 9th drops
+#: the oldest inserted.
+_ISSUER_PAYLOAD_CACHE: dict[
+    tuple[str, str], tuple[tuple[int, int, int], dict[str, tuple[Any, ...]]]
+] = {}
+
+
+def _issuer_payloads(path: Path, json_column: str, label: str) -> dict[str, tuple[Any, ...]]:
+    """Read one (file, json_column) pair once per file version.
+
+    Returns ``{issuer_id_string: (raw payload values in original row order)}``.
+    Raw values stay unparsed, so ``_issuer_rows`` still validates and
+    ``json.loads`` lazily, per row, only for the issuers actually bound.
+    """
     import pandas as pd
 
+    st = path.stat()
+    stamp = (st.st_mtime_ns, st.st_size, st.st_ino)
+    key = (str(path.resolve()), json_column)
+    cached = _ISSUER_PAYLOAD_CACHE.get(key)
+    if cached is not None and cached[0] == stamp:
+        return cached[1]
     frame = pd.read_parquet(path)
     if "issuer_id" not in frame.columns:
         raise ScenarioInputsError(f"{label} carries no issuer_id column")
-    mask = frame["issuer_id"].astype(str) == issuer_id
-    selected = frame.loc[mask]
+    payloads = frame[json_column]  # before grouping: a missing column raises the same KeyError
+    identifiers = frame["issuer_id"].astype(str)
+    grouped: dict[str, list[Any]] = {}
+    for issuer_key, raw in zip(identifiers.tolist(), payloads.tolist()):
+        grouped.setdefault(issuer_key, []).append(raw)
+    index = {issuer_key: tuple(rows) for issuer_key, rows in grouped.items()}
+    _ISSUER_PAYLOAD_CACHE.pop(key, None)
+    _ISSUER_PAYLOAD_CACHE[key] = (stamp, index)
+    while len(_ISSUER_PAYLOAD_CACHE) > 8:
+        _ISSUER_PAYLOAD_CACHE.pop(next(iter(_ISSUER_PAYLOAD_CACHE)))
+    return index
+
+
+def _issuer_rows(path: Path, json_column: str, issuer_id: str, label: str) -> tuple[dict[str, Any], ...]:
+    raw_values = _issuer_payloads(path, json_column, label).get(issuer_id, ())
     rows: list[dict[str, Any]] = []
-    for index, raw in enumerate(selected[json_column].tolist()):
+    for index, raw in enumerate(raw_values):
         if not isinstance(raw, str) or not raw:
             raise ScenarioInputsError(f"{label} row {index} lacks a {json_column} payload")
         try:
