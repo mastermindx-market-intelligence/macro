@@ -1,5 +1,6 @@
 """Exercise the offline Dark Pool design reference in a real browser."""
 import argparse
+import csv
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
@@ -39,6 +40,12 @@ def main():
                         assert page.locator("#inspector").evaluate("e => document.activeElement === e")
                         page.locator("#back").click()
                         assert page.evaluate("document.activeElement.dataset.tk") == "CIEN"
+                    assert "259" in page.locator(".stats").inner_text()
+                    page.locator('[data-scope="above"]').click()
+                    assert page.locator("#map [data-tk]").count() == 27
+                    assert page.locator('#map [data-tk="APH"]').count() == 1
+                    page.locator('[data-scope="unusual"]').click()
+                    assert page.locator('#map [data-tk="APH"]').count() == 0
                     page.locator('[data-group="flat"]').click()
                     assert page.locator(".rows tbody tr").count() == 3
                     page.locator('[data-scope="older"]').click()
@@ -52,7 +59,10 @@ def main():
                         page.locator("#csv").click()
                     assert download.value.suggested_filename.endswith("-older.csv")
                     csv_text = Path(download.value.path()).read_text()
-                    assert '"ETHA","2026-08-04","stale","","",' in csv_text
+                    record = next(csv.DictReader(csv_text.splitlines()))
+                    assert (record["ticker"], record["asof"]) == ("ETHA","2026-08-04")
+                    assert all(record[k] == "" for k in ("participation","participation_z","pattern","ats_frac","venue_week"))
+                    assert record["price_change_pct"] != ""
                     page.locator("#query").fill("NO-MATCH-XYZ")
                     assert page.locator("#clear").count() == 1
                     page.locator("#clear").click()
@@ -70,6 +80,14 @@ def main():
                     page.locator("#findStock").click()
                     assert page.locator("#query").evaluate("e => document.activeElement === e")
                     assert page.locator('[data-scope="all"]').get_attribute("aria-pressed") == "true"
+                    page.locator(".adv summary").click()
+                    page.locator('[data-preset="rising"]').click()
+                    assert page.locator("#minShare").input_value() == "2"
+                    assert page.locator("#advTrend").input_value() == "rising"
+                    page.locator('[data-preset="short"]').click()
+                    assert page.locator('[data-preset="short"]').get_attribute("aria-pressed") == "true"
+                    page.locator("#resetAdvanced").click()
+                    assert page.locator("#minShare").input_value() == ""
                     assert not errors, errors
                     page.close()
                     tested += 1
