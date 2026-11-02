@@ -12980,7 +12980,11 @@ jobs:
     # hard gate. Document and candidate terms remain pre-instrument transcriptions,
     # never capacity/risk math.
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Was 10. Run 41265081416 stopped at 28% of this suite, about 32-36 min of work,
+    # and a timed-out job leaves settlement unknown, so run_ci_pack marked all ten
+    # later jobs in data-pack-5 infrastructure unknown, tests/test_admin_research_tools.py
+    # among them. That law stays. The job gets room to finish instead.
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -37986,7 +37990,9 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
-    timeout-minutes: 5
+    # Was 5. It stopped at 43% of its tests and voided the four later jobs in
+    # data-pack-2 the same way as capital-structure-intelligence above.
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
