@@ -2001,3 +2001,99 @@ def test_a_committed_s3_fee_table_total_is_still_a_known_positive_amount() -> No
     assert f"fee_table_multi_row:{accession}" not in evaluation.envelope.blockers
     assert evaluation.envelope.aggregate_bound.status == "known"
     assert evaluation.envelope.aggregate_bound.value == "1009975.00"
+
+
+# ---------------------------------------------------------------------------
+# U1C review F1/F2 -- the latest FILING states the amount; a present but
+# unobserved total is never replaced by a lone per-security row
+# ---------------------------------------------------------------------------
+
+
+def _amended_registration(amend_stamp: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    amendment = {
+        "event_id": "evt:amend-1",
+        "accession": ACC_A2,
+        "form": "S-3",
+        "sec_accepted_at": amend_stamp,
+        "mastermind_available_at": amend_stamp,
+        "correction_version": 1,
+        "relationship": "amended",
+    }
+    return standard_registration(
+        registered="20000000",
+        float_value="300000000",
+        amendments=[amendment],
+        extra_fee_rows=[
+            fee_row(ACC_A2, "30000000", available_at=amend_stamp, observation_id="doc:amend")
+        ],
+    )
+
+
+def _zero_usage_evaluation(reg: list[dict[str, Any]], shares: list[dict[str, Any]]):
+    evaluation, _, _ = evaluate(
+        registration=reg,
+        share_basis=shares,
+        resolutions=[
+            usd(f"shelf_usage:{PATH_A}", "0"),
+            usd(f"continuing_offering:{PATH_A}", "0"),
+        ],
+    )
+    return evaluation
+
+
+def test_u1c_a_recompiled_original_does_not_outrank_its_later_amendment() -> None:
+    # The original was filed 30 days before the sale but re-compiled 5 days
+    # before it; its amendment was filed 20 days before.  Its materialization
+    # instant is the newest, its FILING is not, so the amendment's amount wins.
+    reg, shares = _amended_registration(f"{shift(SALE, 20)}T21:00:00Z")
+    original = next(row for row in reg if row.get("observation_id") == f"doc:{PATH_A[-6:]}")
+    original["point_in_time"] = {
+        **original["point_in_time"],
+        "available_at": f"{shift(SALE, 5)}T21:00:00Z",
+    }
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "known"
+    assert path["registered_amount"]["value"] == "30000000"
+    assert path["fee_table_accession"] == ACC_A2
+
+
+def test_u1c_two_filings_at_one_filing_instant_leave_the_amount_unknown() -> None:
+    reg, shares = _amended_registration(f"{shift(SALE, 30)}T21:00:00Z")
+    evaluation = _zero_usage_evaluation(reg, shares)
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "unknown"
+    assert registered["value"] is None
+    assert f"fee_table_order_tied:{PATH_A}" in evaluation.envelope.blockers
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+
+
+def test_u1c_an_unobserved_total_row_is_not_replaced_by_a_security_row() -> None:
+    stamp = f"{shift(SALE, 30)}T21:00:00Z"
+    reg, shares = standard_registration(registered="20000000", float_value="300000000")
+    reg.append(
+        total_fee_row(
+            ACC_A, None, available_at=stamp, observation_id="doc:total-amb", disposition="ambiguous"
+        )
+    )
+    evaluation = _zero_usage_evaluation(reg, shares)
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "unknown"
+    assert registered["value"] is None
+    assert f"fee_table_total_indeterminate:{ACC_A}" in evaluation.envelope.blockers
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+
+
+def test_u1c_an_observed_total_beside_an_unobserved_total_is_two_totals() -> None:
+    stamp = f"{shift(SALE, 30)}T21:00:00Z"
+    reg, shares = standard_registration(registered="20000000", float_value="300000000")
+    reg.append(total_fee_row(ACC_A, "25000000", available_at=stamp, observation_id="doc:total"))
+    reg.append(
+        total_fee_row(
+            ACC_A, None, available_at=stamp, observation_id="doc:total-amb", disposition="unavailable"
+        )
+    )
+    evaluation = _zero_usage_evaluation(reg, shares)
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "unknown"
+    assert f"fee_table_multi_row:{ACC_A}" in evaluation.envelope.blockers

@@ -374,6 +374,15 @@ def _nested(body: Any, *keys: str) -> Any:
     return node
 
 
+def _filing_instant(body: Any) -> datetime | None:
+    """A document-term row's FILING clock: its source availability, else
+    the SEC acceptance of its filing.  Never the materialization instant --
+    re-compiling an old filing must not move it later in filing order."""
+    return _utc(_nested(body, "point_in_time", "source_available_at")) or _utc(
+        _nested(body, "filing", "accepted_at")
+    )
+
+
 def _text(value: Any) -> str | None:
     if isinstance(value, str) and value.strip():
         return value.strip()
@@ -1535,11 +1544,21 @@ class _Builder:
 
     def _fee_table(self, path: _ShelfPath) -> _FeeTable:
         rows: list[tuple[_Observation, str]] = []
+        # A total row the compiler found but could not observe (ambiguous or
+        # unavailable) still says the filing HAS a stated total, so a lone
+        # per-security row must not stand in for it.  Such rows never join
+        # the filing ordering below: an amendment without its own fee table
+        # is common and must not displace the original's amount.
+        unobserved_totals: Counter[str] = Counter()
         for observation in self.read.fee_rows:  # type: ignore[union-attr]
             body = observation.body
             if _text(_nested(body, "term", "name")) != FEE_TABLE_TERM_NAME:
                 continue
             if _text(_nested(body, "state", "disposition")) != "observed":
+                if _text(_nested(body, "term", "scope")) == "registration_fee_table_total":
+                    unobserved = _text(_nested(body, "filing", "accession"))
+                    if unobserved is not None and unobserved in path.accessions:
+                        unobserved_totals[unobserved] += 1
                 continue
             normalized = body.get("normalized") if isinstance(body.get("normalized"), Mapping) else {}
             currency = _text(normalized.get("currency"))
@@ -1579,8 +1598,38 @@ class _Builder:
 
         if not rows:
             return missing("no fee-table row for this registration is then-known")
-        latest = max(rows, key=lambda item: (item[0].available, item[1]))
-        accession = latest[1]
+        # The registered amount is the one stated by the LATEST FILING on the
+        # path, ranked by the filing's own clock -- never by ``available``,
+        # which also carries the materialization instant and so would let a
+        # re-compiled original outrank its own later amendment.  A filing
+        # without a clock, or two filings at one instant, cannot be ordered,
+        # so the amount is unknown rather than picked by accession spelling.
+        filed: dict[str, datetime | None] = {}
+        for observation, row_accession in rows:
+            stamp = _filing_instant(observation.body)
+            if row_accession in filed:
+                previous = filed[row_accession]
+                stamp = None if previous is None or stamp is None else max(previous, stamp)
+            filed[row_accession] = stamp
+        if len(filed) == 1:
+            accession = next(iter(filed))
+        else:
+            clocks = [stamp for stamp in filed.values() if stamp is not None]
+            if len(clocks) < len(filed):
+                return missing(
+                    f"not every filing under {path.path_id} with a fee table carries a "
+                    "filing instant, so the latest one cannot be named",
+                    blockers=(f"fee_table_order_unknown:{path.path_id}",),
+                )
+            newest = max(clocks)
+            leaders = sorted(acc for acc, stamp in filed.items() if stamp == newest)
+            if len(leaders) > 1:
+                return missing(
+                    f"{len(leaders)} filings under {path.path_id} share the latest "
+                    "filing instant, so neither fee table can be chosen",
+                    blockers=(f"fee_table_order_tied:{path.path_id}",),
+                )
+            accession = leaders[0]
         group = [item for item in rows if item[1] == accession]
         contradicted = any(
             _sequence(_nested(item[0].body, "relationships", "contradiction_ids")) for item in group
@@ -1604,9 +1653,15 @@ class _Builder:
             for item in group
             if _text(_nested(item[0].body, "term", "scope")) == "registration_fee_table_total"
         ]
-        if len(total_rows) == 1:
+        if unobserved_totals[accession] and not total_rows:
+            return missing(
+                f"the fee-table total of {accession} is present but not observed, so "
+                "no per-security row may stand in for it",
+                blockers=(f"fee_table_total_indeterminate:{accession}",),
+            )
+        if len(total_rows) == 1 and not unobserved_totals[accession]:
             chosen = total_rows
-        elif len(total_rows) > 1:
+        elif total_rows:
             chosen = []
         else:
             chosen = list(group)

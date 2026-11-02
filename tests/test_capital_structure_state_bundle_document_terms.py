@@ -634,6 +634,16 @@ def test_explicit_as_of_never_seals_fee_rows_available_after_it(pack, tmp_path):
     fee = _fee_rows(family["records"])
     assert [row["normalized"]["value"] for row in fee] == ["1000000"]
 
+    # The binding still names the WHOLE artifact: its byte digest, and its
+    # clock is the ledger's newest availability -- later than the view, and
+    # deliberately not clamped to it (U1C review F3).
+    terms = next(
+        row for row in bundle["input_generations"] if row["input_family"] == DOCUMENT_TERMS_FAMILY
+    )
+    assert terms["artifact_sha256"] == hashlib.sha256(ledger.read_bytes()).hexdigest()
+    assert terms["as_of"] == "2026-08-03T00:00:00Z"
+    assert terms["as_of"] > bundle["as_of"]
+
     generation = read_verified_projection_generation(root)
     inputs = issuer_inputs(bundle, generation, issuer_id, document_terms_ledger=ledger)
     assert inputs.input_digest == (

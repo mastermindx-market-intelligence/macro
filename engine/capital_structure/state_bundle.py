@@ -51,6 +51,7 @@ from collections.abc import Callable, Mapping, Sequence
 from copy import deepcopy
 from datetime import date, datetime
 import hashlib
+import io
 import json
 from pathlib import Path
 from typing import Any
@@ -254,17 +255,20 @@ def read_document_terms_ledger(path: Path) -> tuple[str, tuple[dict[str, Any], .
     """The sealed ledger artifact: its byte digest plus every row, in ledger order.
 
     The digest is taken over the EXACT file bytes, so the ``document_terms``
-    binding names an artifact, not a reading of one.  Rows are the json-decoded
-    ``observation_json`` payloads, mirroring the capacity inputs reader; pandas
-    is imported here rather than at module import so the state bundle stays
-    importable without it.  Per-issuer selection happens once, in
-    :func:`_select_document_terms`, over the rows this returns.
+    binding names an artifact, not a reading of one.  The rows are parsed from
+    those same bytes, never from a second read of the path, so a file replaced
+    between the two reads cannot seal one artifact's digest over another's
+    rows.  Rows are the json-decoded ``observation_json`` payloads, mirroring
+    the capacity inputs reader; pandas is imported here rather than at module
+    import so the state bundle stays importable without it.  Per-issuer
+    selection happens once, in :func:`_select_document_terms`, over the rows
+    this returns.
     """
     import pandas as pd
 
     location = Path(path)
     raw = location.read_bytes()
-    frame = pd.read_parquet(location)
+    frame = pd.read_parquet(io.BytesIO(raw))
     for column in ("observation_json",):
         if column not in frame.columns:
             raise ValueError(f"document-term ledger {location} carries no {column} column")
@@ -1133,6 +1137,12 @@ def build_state_bundle(
             "registration_receipt": reg.receipt.as_record(),
         }
 
+    # A binding's ``as_of`` names the ARTIFACT generation -- for document
+    # terms, the newest availability anywhere in the sealed ledger -- not this
+    # bundle's view instant, and it is never clamped to ``as_of``.  The reader
+    # proves the binding names that exact file by its byte digest; the rows a
+    # bundle seals are filtered by its own cutoff instead, so a later row never
+    # enters an earlier view.
     input_generations = [binding.as_record() for binding in whole.bindings]
     rule_pack_record = {
         "rule_pack_id": rule_pack.rule_pack_id,
