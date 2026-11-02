@@ -78,6 +78,8 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css?v=29ec9caa">
+<link rel="stylesheet" href="macro_news_intelligence.css?v=584aae01">
+<script defer src="macro_news_intelligence.js?v=bfb36c45"></script>
 
 <script>
 (function(){
@@ -5091,11 +5093,11 @@
         
         <span class="mx5-ai-ticker-pill">USO</span>
         
+        <span class="mx5-ai-ticker-pill">QQQ</span>
+        
         <span class="mx5-ai-ticker-pill">SPY</span>
         
         <span class="mx5-ai-ticker-pill">XLF</span>
-        
-        <span class="mx5-ai-ticker-pill">AAPL</span>
         
       </div>
       
@@ -5104,12 +5106,12 @@
         
         <span class="l-en">
           <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">4 High-Impact Items</span><br>
-          Dominant theme: <span style="color:var(--mx5-accent-ink);font-weight:600">earnings</span><br>
+          Dominant theme: <span style="color:var(--mx5-accent-ink);font-weight:600">rates</span><br>
           4 high-impact signals across channels
         </span>
         <span class="l-zh">
           <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">4 条高影响信息</span><br>
-          主线：<span style="color:var(--mx5-accent-ink);font-weight:600">业绩</span><br>
+          主线：<span style="color:var(--mx5-accent-ink);font-weight:600">利率</span><br>
           4 条高影响信号
         </span>
         
@@ -5211,7 +5213,7 @@
               <span class="mx5-alert-k"><span class="l-en">Headline</span><span class="l-zh">头条</span></span>
               <span style="font-size:12px;margin-right:3px">📰</span>
               <span class="l-en">Norwegian shares surge 13% on earnings beat, guidance raise</span>
-              <span class="l-zh">挪威股市因盈利超预期及上调指引大涨13%</span>
+              <span class="l-zh">Norwegian shares surge 13% on earnings beat, guidance raise</span>
             </div>
             <div class="mx5-alert-detail">
               <span>CNBC - Markets</span> · 
@@ -8137,408 +8139,784 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
   </div>
 
   
-  <div class="mx5-dlg" id="dlg-news" role="dialog" aria-modal="true" tabindex="-1">
+  <div class="mx5-dlg" id="dlg-news" role="dialog" aria-labelledby="ni-dialog-title" aria-modal="true" tabindex="-1">
     <div class="mx5-dlg-backdrop" onclick="mx5CloseDlg()"></div>
     <div class="mx5-dlg-panel">
       <div class="mx5-dlg-header">
-        <span class="mx5-dlg-title"><span class="l-en">News — Market Intelligence</span><span class="l-zh">新闻 — 市场情报</span></span>
+        <span class="mx5-dlg-title" id="ni-dialog-title"><span class="l-en">News — Market Intelligence</span><span class="l-zh">新闻 — 市场情报</span></span>
         <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
       </div>
       <div class="mx5-dlg-body">
         
+
+
+
+
+
+  
+    
+      
+    
+  
+
+  
+    
+  
+
+  
+    
+  
+
+  
+    
+  
+
+  
+    
+  
+
+  
+    
+  
+
+  
+    
+  
+
+  
+    
+  
+
+  
+    
+      
+    
+  
+
+
+
+
+
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+
+
+
+
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+
+
+
+
+
+<section class="ni" data-news-intelligence aria-label="Market intelligence">
+  <div class="ni-intro">
+    
+    <div><span class="ni-eyebrow"><span class="l-en">BRIEFING OVERVIEW</span><span class="l-zh">简报概览</span></span><p><span class="l-en">2 items need attention</span><span class="l-zh">2 项动态值得关注</span></p></div>
+    <span class="ni-coverage"><span class="l-en">Signals · context · headlines</span><span class="l-zh">信号 · 背景 · 新闻</span></span>
+  </div>
+  <aside class="ni-release" data-news-release data-state="unknown" aria-label="Official releases" data-news-aria-en="Official releases" data-news-aria-zh="官方发布">
+    <div><span class="ni-release-label"><span class="l-en">OFFICIAL RELEASES</span><span class="l-zh">官方发布</span></span><p data-news-release-summary><span class="l-en">Release status not checked yet.</span><span class="l-zh">尚未检查发布状态。</span></p><span class="ni-clock" data-news-release-clock><span class="l-en">Dashboard snapshot below.</span><span class="l-zh">下方内容来自看板快照。</span></span></div>
+    <a class="ni-source-link" href="#dlg-events" data-news-panel="dlg-events"><span class="l-en">Event calendar</span><span class="l-zh">事件日历</span> <span aria-hidden="true">↗</span></a>
+  </aside>
+  
+  <div class="ni-notice" role="status" data-news-coverage="partial"><strong><span class="l-en">Headline coverage is partial.</span><span class="l-zh">新闻覆盖不完整。</span></strong> <span class="l-en">Some sources are unavailable; available reports remain below.</span><span class="l-zh">部分来源暂不可用；下方保留可用报道。</span></div>
+  
+  <div class="ni-tools" data-news-toolbar hidden>
+    <div class="ni-filters" role="group" aria-label="Filter developments" data-news-aria-en="Filter developments" data-news-aria-zh="筛选动态">
+      <button type="button" class="ni-filter is-selected" data-news-filter="all" aria-pressed="true"><span class="l-en">All</span><span class="l-zh">全部</span></button>
+      <button type="button" class="ni-filter" data-news-filter="priority" aria-pressed="false"><span class="l-en">Priority</span><span class="l-zh">优先</span> <span class="ni-filter-count">2</span></button>
+      <button type="button" class="ni-filter" data-news-filter="context" aria-pressed="false"><span class="l-en">Context</span><span class="l-zh">背景</span> <span class="ni-filter-count">7</span></button>
+      <button type="button" class="ni-filter" data-news-filter="headlines" aria-pressed="false"><span class="l-en">Headlines</span><span class="l-zh">新闻</span> <span class="ni-filter-count">27</span></button>
+    </div>
+    <label class="ni-search"><span class="ni-sr-only"><span class="l-en">Search intelligence</span><span class="l-zh">搜索情报</span></span><input type="search" data-news-search placeholder="Search signals, tickers, sources" data-news-placeholder-en="Search signals, tickers, sources" data-news-placeholder-zh="搜索信号、代码或来源" autocomplete="off" maxlength="200"></label>
+  </div>
+  <div class="ni-results-line"><span data-news-count>36 <span class="l-en">developments</span><span class="l-zh">条动态</span></span><button class="ni-reset" type="button" data-news-reset hidden><span class="l-en">Reset filters</span><span class="l-zh">重置筛选</span></button><span class="ni-sr-only" data-news-announcement role="status" aria-live="polite" aria-atomic="true"></span></div>
+  
+  <section class="ni-section" data-news-section="priority" aria-labelledby="ni-priority-heading">
+    <div class="ni-section-head"><h2 id="ni-priority-heading"><span class="l-en">Needs attention</span><span class="l-zh">重点关注</span></h2><span><span class="l-en">Review the change</span><span class="l-zh">核查变化</span></span></div>
+    <div class="ni-priority-grid">
+    
+    
+  
+  
+  <article class="ni-row ni-row--priority" data-al-row data-news-item="priority" data-news-rule="gex_flip_cross">
+    <div class="ni-row-top">
+      <span class="ni-kind"><span class="l-en">Priority signal</span><span class="l-zh">优先信号</span></span>
+      <span class="ni-status"><span class="l-en">Watch</span><span class="l-zh">关注</span></span>
+    </div>
+    <h3 class="ni-title" data-news-title><span class="l-en">Options “gravity” flipped — bigger swings more likely</span><span class="l-zh">期权“引力”反转 — 波动可能加大</span></h3>
+    <p class="ni-observation" data-news-observation><span class="l-en">GEX: spot crossed the gamma flip (net -71bn, spot vs flip +0.3%) — measured across 4 sessions, not overnight: no chain snapshot exists for 2026-10-27, 2026-10-28, 2026-10-29, so the crossing point inside that span is unobserved</span><span class="l-zh">GEX：现价穿越 gamma 翻转点（净 -71bn，现价相对翻转点 +0.3%） — 该变化跨越 4 个交易日，并非隔夜发生：2026-10-27, 2026-10-28, 2026-10-29 无期权链快照，其间的穿越时点无法观测</span></p>
+    <p class="ni-limit"><span class="l-en">Medium — changes the volatility backdrop, not the direction.</span><span class="l-zh">中 — 改变的是波动背景，而非方向。</span></p>
+    <div class="ni-row-bottom">
+      <span class="ni-clock ni-clock--unknown"><span class="l-en">Observation time unavailable</span><span class="l-zh">观测时间未提供</span></span>
+      
+    </div>
+    <details class="ni-evidence mx-disc">
+      <summary><span class="l-en">Why it matters &amp; evidence</span><span class="l-zh">影响与依据</span><span class="ni-chevron" aria-hidden="true">⌄</span></summary>
+      <div class="ni-evidence-body">
+        <div><h4><span class="l-en">The implication</span><span class="l-zh">意义</span></h4><p><span class="l-en">Options hedging just flipped from damping moves to amplifying them — expect bigger swings both ways.</span><span class="l-zh">期权对冲由抑制波动转为放大波动——双向波动可能加大。</span></p></div>
+        <div><h4><span class="l-en">How to read this</span><span class="l-zh">如何解读</span></h4><p><span class="l-en">Dealer gamma (GEX) measures how options hedging pushes the market around. Positive gamma damps moves (calmer); negative amplifies them (sharper swings, both ways). This flag means that backdrop just changed — expect the market to move more freely until it flips back.</span><span class="l-zh">做市商 gamma（GEX）衡量期权对冲如何推动市场。正 gamma 抑制波动（更平静）；负 gamma 放大波动（双向更剧烈）。此信号表示该背景刚刚改变 —在它再次反转前，市场可能波动得更自由。</span></p></div>
+        <div class="ni-evidence-foot"><span class="l-en">Dashboard signal · priority follows the existing alert rule. A signal is not a verified news report.</span><span class="l-zh">看板信号 · 优先级遵循现有警报规则。信号不等于已核实的新闻报道。</span></div>
+      </div>
+    </details>
+  </article>
+
+  
+  
+  <article class="ni-row ni-row--priority" data-al-row data-news-item="priority" data-news-rule="event_risk" data-news-event-alert>
+    <div class="ni-row-top">
+      <span class="ni-kind"><span class="l-en">Economic event</span><span class="l-zh">经济事件</span></span>
+      <span class="ni-status"><span class="l-en">Event</span><span class="l-zh">事件</span></span>
+    </div>
+    <h3 class="ni-title" data-news-title><span class="l-en">Major event on deck — expect bigger swings either way</span><span class="l-zh">重大事件临近 — 双向波动或加大</span></h3>
+    <p class="ni-observation" data-news-observation><span class="l-en">Event-risk window: Jobs report (nonfarm payrolls) in 5 days — high two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：非农就业报告（5 天后）—— 预计偏高的两面性波动。非卖出信号；按噪声调整仓位。</span></p>
+    <p class="ni-limit"><span class="l-en">Context — a volatility window, not a direction call. Size for the noise.</span><span class="l-zh">背景 — 波动窗口而非方向判断。按噪声调整仓位。</span></p>
+    <div class="ni-row-bottom">
+      <span class="ni-clock ni-clock--unknown"><span class="l-en">Observation time unavailable</span><span class="l-zh">观测时间未提供</span></span>
+      <a class="ni-source-link" href="#dlg-events" data-news-panel="dlg-events"><span class="l-en">Open event calendar</span><span class="l-zh">查看事件日历</span> <span aria-hidden="true">↗</span></a>
+    </div>
+    <details class="ni-evidence mx-disc">
+      <summary><span class="l-en">Why it matters &amp; evidence</span><span class="l-zh">影响与依据</span><span class="ni-chevron" aria-hidden="true">⌄</span></summary>
+      <div class="ni-evidence-body">
+        <div><h4><span class="l-en">The implication</span><span class="l-zh">意义</span></h4><p><span class="l-en">A big print is close — expect two-sided noise and avoid adding risk right into it.</span><span class="l-zh">重磅数据临近——预计双向波动，公布前不宜加仓。</span></p></div>
+        <div><h4><span class="l-en">How to read this</span><span class="l-zh">如何解读</span></h4><p><span class="l-en">A high-impact scheduled release (CPI, Fed decision, jobs report) lands in the coming sessions — the message says which and when. Moves around these prints are two-sided and often retraced — a volatility warning, not a directional call. Size positions for the noise; avoid forcing new trades right into the print.</span><span class="l-zh">未来数个交易日内将有高影响力的既定事件（CPI、美联储决议、就业报告）——具体是哪个、何时，见提示内容。事件前后的波动是双向的、常被回补 —这是波动性提示，并非方向判断。按噪声调整仓位，避免在数据公布前强行开新仓。</span></p></div>
+        <div class="ni-evidence-foot"><span class="l-en">Dashboard signal · priority follows the existing alert rule. A signal is not a verified news report.</span><span class="l-zh">看板信号 · 优先级遵循现有警报规则。信号不等于已核实的新闻报道。</span></div>
+      </div>
+    </details>
+  </article>
+
+    </div>
+  </section>
+  
+  
+  <section class="ni-section" data-news-section="context" aria-labelledby="ni-context-heading">
+    <div class="ni-section-head"><h2 id="ni-context-heading"><span class="l-en">The wider picture</span><span class="l-zh">市场全景</span></h2><span><span class="l-en">Context, not a trade trigger</span><span class="l-zh">背景信息，非交易触发</span></span></div>
+    
+  
+  
+  <article class="ni-row ni-row--context" data-al-row data-news-item="context" data-news-rule="sector_holdings_accumulation">
+    <div class="ni-row-top">
+      <span class="ni-kind"><span class="l-en">Market context</span><span class="l-zh">市场背景</span></span>
+      <span class="ni-status"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+    </div>
+    <h3 class="ni-title" data-news-title><span class="l-en">A sector ETF is over-weighting a stock beyond its price move</span><span class="l-zh">某板块 ETF 对个股的权重提升超过其价格涨幅</span></h3>
+    <p class="ni-observation" data-news-observation><span class="l-en">XLV: LLY weight +1.19pp beyond price (≈+$579M est. rebalance flow) (accumulating), 2026-10-22..2026-10-29 — cycle UPTREND·HOLD</span><span class="l-zh">XLV：LLY 权重较价格多变动 +1.19pp（≈+$579M 估算再平衡资金流）（增持），2026-10-22..2026-10-29 — 周期 上涨趋势·持有</span></p>
+    <p class="ni-limit"><span class="l-en">Context — passive index-flow, not discretionary conviction.</span><span class="l-zh">背景 — 被动指数资金流，而非主动信念。</span></p>
+    <div class="ni-row-bottom">
+      <span class="ni-clock ni-clock--unknown"><span class="l-en">Observation time unavailable</span><span class="l-zh">观测时间未提供</span></span>
+      
+    </div>
+    <details class="ni-evidence mx-disc">
+      <summary><span class="l-en">Why it matters &amp; evidence</span><span class="l-zh">影响与依据</span><span class="ni-chevron" aria-hidden="true">⌄</span></summary>
+      <div class="ni-evidence-body">
+        <div><h4><span class="l-en">The implication</span><span class="l-zh">意义</span></h4><p><span class="l-en">Index-fund buying is being forced into a name — check the setup, not an instant buy.</span><span class="l-zh">指数基金买盘正被强制导向某只个股——先核对其形态，不是立即买入。</span></p></div>
+        <div><h4><span class="l-en">How to read this</span><span class="l-zh">如何解读</span></h4><p><span class="l-en">Each sector SPDR’s top-10 weights are split into the part explained by the stock’s own price move and a residual — weight that grew MORE than price alone. A big residual means real buying flowed into the name beyond market drift. Important honesty note: these SPDRs are PASSIVE index funds, so the residual is index reconstitution / float-weight flow (forced index-fund buying), not a discretionary manager’s conviction. It’s a where-is-flow-being-forced signal, and a cue to check the stock’s own technical setup — not an instant buy.</span><span class="l-zh">每只板块 SPDR 的前十大权重被拆分为“由个股自身价格变动解释的部分”与“残差”——即权重增长超过价格涨幅的部分。残差较大意味着除市场漂移外，确有真实买盘流入该股。重要的诚实提示：这些 SPDR 是被动指数基金，故残差代表指数再平衡／流通权重调整带来的资金流（指数基金的被动强制买入），而非主动经理的信念。这是“资金被强制导向何处”的信号，也提示去核查该股自身的技术形态——并非立即买入。</span></p></div>
+        <div class="ni-evidence-foot"><span class="l-en">Dashboard signal · priority follows the existing alert rule. A signal is not a verified news report.</span><span class="l-zh">看板信号 · 优先级遵循现有警报规则。信号不等于已核实的新闻报道。</span></div>
+      </div>
+    </details>
+  </article>
+
+  
+  
+  <article class="ni-row ni-row--context" data-al-row data-news-item="context" data-news-rule="sector_rs_cross_high">
+    <div class="ni-row-top">
+      <span class="ni-kind"><span class="l-en">Market context</span><span class="l-zh">市场背景</span></span>
+      <span class="ni-status"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+    </div>
+    <h3 class="ni-title" data-news-title><span class="l-en">A sector broke into leadership</span><span class="l-zh">某板块跃升为领先</span></h3>
+    <p class="ni-observation" data-news-observation><span class="l-en">XLB RS vs SPY crossed above 90th pctile of 90d (now 92)</span><span class="l-zh">XLB RS 相对 SPY 上穿 90 天第 90 百分位（现为 92）</span></p>
+    <p class="ni-limit"><span class="l-en">Context — descriptive rotation, not a timing signal.</span><span class="l-zh">背景 — 描述性的轮动，而非择时信号。</span></p>
+    <div class="ni-row-bottom">
+      <span class="ni-clock ni-clock--unknown"><span class="l-en">Observation time unavailable</span><span class="l-zh">观测时间未提供</span></span>
+      
+    </div>
+    <details class="ni-evidence mx-disc">
+      <summary><span class="l-en">Why it matters &amp; evidence</span><span class="l-zh">影响与依据</span><span class="ni-chevron" aria-hidden="true">⌄</span></summary>
+      <div class="ni-evidence-body">
+        <div><h4><span class="l-en">The implication</span><span class="l-zh">意义</span></h4><p><span class="l-en">A sector just started leading — this is rotation, not an instant buy.</span><span class="l-zh">某板块刚开始领先——这是轮动，不是立即买入。</span></p></div>
+        <div><h4><span class="l-en">How to read this</span><span class="l-zh">如何解读</span></h4><p><span class="l-en">One sector’s strength versus the market just pushed into the top of its recent range — it’s starting to lead. This describes where money is rotating, not an instant buy. Check the sector’s heat and trigger column before acting.</span><span class="l-zh">某板块相对市场的强度刚冲入其近期区间的顶部 — 开始领先。这描述的是资金轮动的方向，并非立即买入。行动前请查看该板块的热度与触发列。</span></p></div>
+        <div class="ni-evidence-foot"><span class="l-en">Dashboard signal · priority follows the existing alert rule. A signal is not a verified news report.</span><span class="l-zh">看板信号 · 优先级遵循现有警报规则。信号不等于已核实的新闻报道。</span></div>
+      </div>
+    </details>
+  </article>
+
+  
+  
+  <article class="ni-row ni-row--context" data-al-row data-news-item="context" data-news-rule="sector_rs_cross_high">
+    <div class="ni-row-top">
+      <span class="ni-kind"><span class="l-en">Market context</span><span class="l-zh">市场背景</span></span>
+      <span class="ni-status"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+    </div>
+    <h3 class="ni-title" data-news-title><span class="l-en">A sector broke into leadership</span><span class="l-zh">某板块跃升为领先</span></h3>
+    <p class="ni-observation" data-news-observation><span class="l-en">XLP RS vs SPY crossed above 90th pctile of 90d (now 99)</span><span class="l-zh">XLP RS 相对 SPY 上穿 90 天第 90 百分位（现为 99）</span></p>
+    <p class="ni-limit"><span class="l-en">Context — descriptive rotation, not a timing signal.</span><span class="l-zh">背景 — 描述性的轮动，而非择时信号。</span></p>
+    <div class="ni-row-bottom">
+      <span class="ni-clock ni-clock--unknown"><span class="l-en">Observation time unavailable</span><span class="l-zh">观测时间未提供</span></span>
+      
+    </div>
+    <details class="ni-evidence mx-disc">
+      <summary><span class="l-en">Why it matters &amp; evidence</span><span class="l-zh">影响与依据</span><span class="ni-chevron" aria-hidden="true">⌄</span></summary>
+      <div class="ni-evidence-body">
+        <div><h4><span class="l-en">The implication</span><span class="l-zh">意义</span></h4><p><span class="l-en">A sector just started leading — this is rotation, not an instant buy.</span><span class="l-zh">某板块刚开始领先——这是轮动，不是立即买入。</span></p></div>
+        <div><h4><span class="l-en">How to read this</span><span class="l-zh">如何解读</span></h4><p><span class="l-en">One sector’s strength versus the market just pushed into the top of its recent range — it’s starting to lead. This describes where money is rotating, not an instant buy. Check the sector’s heat and trigger column before acting.</span><span class="l-zh">某板块相对市场的强度刚冲入其近期区间的顶部 — 开始领先。这描述的是资金轮动的方向，并非立即买入。行动前请查看该板块的热度与触发列。</span></p></div>
+        <div class="ni-evidence-foot"><span class="l-en">Dashboard signal · priority follows the existing alert rule. A signal is not a verified news report.</span><span class="l-zh">看板信号 · 优先级遵循现有警报规则。信号不等于已核实的新闻报道。</span></div>
+      </div>
+    </details>
+  </article>
+
+  
+  
+  <article class="ni-row ni-row--context" data-al-row data-news-item="context" data-news-rule="holdings_active_change">
+    <div class="ni-row-top">
+      <span class="ni-kind"><span class="l-en">Market context</span><span class="l-zh">市场背景</span></span>
+      <span class="ni-status"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+    </div>
+    <h3 class="ni-title" data-news-title><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></h3>
+    <p class="ni-observation" data-news-observation><span class="l-en">ARKK: manager cut GOOG by -31% of position (2026-10-14..2026-10-30, flow-normalized)</span><span class="l-zh">ARKK：经理 减仓 GOOG 仓位 -31%（2026-10-14..2026-10-30，已按资金流标准化）</span></p>
+    <p class="ni-limit"><span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></p>
+    <div class="ni-row-bottom">
+      <span class="ni-clock ni-clock--unknown"><span class="l-en">Observation time unavailable</span><span class="l-zh">观测时间未提供</span></span>
+      
+    </div>
+    <details class="ni-evidence mx-disc">
+      <summary><span class="l-en">Why it matters &amp; evidence</span><span class="l-zh">影响与依据</span><span class="ni-chevron" aria-hidden="true">⌄</span></summary>
+      <div class="ni-evidence-body">
+        <div><h4><span class="l-en">The implication</span><span class="l-zh">意义</span></h4><p><span class="l-en">An active manager made a notable move — information, not a recommendation to copy.</span><span class="l-zh">主动经理出现显著动作——这是信息，不是照搬的建议。</span></p></div>
+        <div><h4><span class="l-en">How to read this</span><span class="l-zh">如何解读</span></h4><p><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></p></div>
+        <div class="ni-evidence-foot"><span class="l-en">Dashboard signal · priority follows the existing alert rule. A signal is not a verified news report.</span><span class="l-zh">看板信号 · 优先级遵循现有警报规则。信号不等于已核实的新闻报道。</span></div>
+      </div>
+    </details>
+  </article>
+
+  
+  
+  <article class="ni-row ni-row--context" data-al-row data-news-item="context" data-news-rule="holdings_active_change">
+    <div class="ni-row-top">
+      <span class="ni-kind"><span class="l-en">Market context</span><span class="l-zh">市场背景</span></span>
+      <span class="ni-status"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+    </div>
+    <h3 class="ni-title" data-news-title><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></h3>
+    <p class="ni-observation" data-news-observation><span class="l-en">ARKW: manager cut AMD by -31% of position (2026-09-23..2026-10-06, flow-normalized)</span><span class="l-zh">ARKW：经理 减仓 AMD 仓位 -31%（2026-09-23..2026-10-06，已按资金流标准化）</span></p>
+    <p class="ni-limit"><span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></p>
+    <div class="ni-row-bottom">
+      <span class="ni-clock ni-clock--unknown"><span class="l-en">Observation time unavailable</span><span class="l-zh">观测时间未提供</span></span>
+      
+    </div>
+    <details class="ni-evidence mx-disc">
+      <summary><span class="l-en">Why it matters &amp; evidence</span><span class="l-zh">影响与依据</span><span class="ni-chevron" aria-hidden="true">⌄</span></summary>
+      <div class="ni-evidence-body">
+        <div><h4><span class="l-en">The implication</span><span class="l-zh">意义</span></h4><p><span class="l-en">An active manager made a notable move — information, not a recommendation to copy.</span><span class="l-zh">主动经理出现显著动作——这是信息，不是照搬的建议。</span></p></div>
+        <div><h4><span class="l-en">How to read this</span><span class="l-zh">如何解读</span></h4><p><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></p></div>
+        <div class="ni-evidence-foot"><span class="l-en">Dashboard signal · priority follows the existing alert rule. A signal is not a verified news report.</span><span class="l-zh">看板信号 · 优先级遵循现有警报规则。信号不等于已核实的新闻报道。</span></div>
+      </div>
+    </details>
+  </article>
+
+  
+  
+  <article class="ni-row ni-row--context" data-al-row data-news-item="context" data-news-rule="holdings_active_change">
+    <div class="ni-row-top">
+      <span class="ni-kind"><span class="l-en">Market context</span><span class="l-zh">市场背景</span></span>
+      <span class="ni-status"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+    </div>
+    <h3 class="ni-title" data-news-title><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></h3>
+    <p class="ni-observation" data-news-observation><span class="l-en">ARKW: manager added NVDA by +26% of position (2026-09-23..2026-10-06, flow-normalized)</span><span class="l-zh">ARKW：经理 加仓 NVDA 仓位 +26%（2026-09-23..2026-10-06，已按资金流标准化）</span></p>
+    <p class="ni-limit"><span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></p>
+    <div class="ni-row-bottom">
+      <span class="ni-clock ni-clock--unknown"><span class="l-en">Observation time unavailable</span><span class="l-zh">观测时间未提供</span></span>
+      
+    </div>
+    <details class="ni-evidence mx-disc">
+      <summary><span class="l-en">Why it matters &amp; evidence</span><span class="l-zh">影响与依据</span><span class="ni-chevron" aria-hidden="true">⌄</span></summary>
+      <div class="ni-evidence-body">
+        <div><h4><span class="l-en">The implication</span><span class="l-zh">意义</span></h4><p><span class="l-en">An active manager made a notable move — information, not a recommendation to copy.</span><span class="l-zh">主动经理出现显著动作——这是信息，不是照搬的建议。</span></p></div>
+        <div><h4><span class="l-en">How to read this</span><span class="l-zh">如何解读</span></h4><p><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></p></div>
+        <div class="ni-evidence-foot"><span class="l-en">Dashboard signal · priority follows the existing alert rule. A signal is not a verified news report.</span><span class="l-zh">看板信号 · 优先级遵循现有警报规则。信号不等于已核实的新闻报道。</span></div>
+      </div>
+    </details>
+  </article>
+
+  
+  
+  <article class="ni-row ni-row--context" data-al-row data-news-item="context" data-news-rule="sector_holdings_accumulation">
+    <div class="ni-row-top">
+      <span class="ni-kind"><span class="l-en">Market context</span><span class="l-zh">市场背景</span></span>
+      <span class="ni-status"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+    </div>
+    <h3 class="ni-title" data-news-title><span class="l-en">A sector ETF is over-weighting a stock beyond its price move</span><span class="l-zh">某板块 ETF 对个股的权重提升超过其价格涨幅</span></h3>
+    <p class="ni-observation" data-news-observation><span class="l-en">XLRE: EQIX weight +0.54pp beyond price (≈+$44M est. rebalance flow) (accumulating), 2026-10-22..2026-10-29 — cycle DOWNTREND·AVOID</span><span class="l-zh">XLRE：EQIX 权重较价格多变动 +0.54pp（≈+$44M 估算再平衡资金流）（增持），2026-10-22..2026-10-29 — 周期 下跌趋势·回避</span></p>
+    <p class="ni-limit"><span class="l-en">Context — passive index-flow, not discretionary conviction.</span><span class="l-zh">背景 — 被动指数资金流，而非主动信念。</span></p>
+    <div class="ni-row-bottom">
+      <span class="ni-clock ni-clock--unknown"><span class="l-en">Observation time unavailable</span><span class="l-zh">观测时间未提供</span></span>
+      
+    </div>
+    <details class="ni-evidence mx-disc">
+      <summary><span class="l-en">Why it matters &amp; evidence</span><span class="l-zh">影响与依据</span><span class="ni-chevron" aria-hidden="true">⌄</span></summary>
+      <div class="ni-evidence-body">
+        <div><h4><span class="l-en">The implication</span><span class="l-zh">意义</span></h4><p><span class="l-en">Index-fund buying is being forced into a name — check the setup, not an instant buy.</span><span class="l-zh">指数基金买盘正被强制导向某只个股——先核对其形态，不是立即买入。</span></p></div>
+        <div><h4><span class="l-en">How to read this</span><span class="l-zh">如何解读</span></h4><p><span class="l-en">Each sector SPDR’s top-10 weights are split into the part explained by the stock’s own price move and a residual — weight that grew MORE than price alone. A big residual means real buying flowed into the name beyond market drift. Important honesty note: these SPDRs are PASSIVE index funds, so the residual is index reconstitution / float-weight flow (forced index-fund buying), not a discretionary manager’s conviction. It’s a where-is-flow-being-forced signal, and a cue to check the stock’s own technical setup — not an instant buy.</span><span class="l-zh">每只板块 SPDR 的前十大权重被拆分为“由个股自身价格变动解释的部分”与“残差”——即权重增长超过价格涨幅的部分。残差较大意味着除市场漂移外，确有真实买盘流入该股。重要的诚实提示：这些 SPDR 是被动指数基金，故残差代表指数再平衡／流通权重调整带来的资金流（指数基金的被动强制买入），而非主动经理的信念。这是“资金被强制导向何处”的信号，也提示去核查该股自身的技术形态——并非立即买入。</span></p></div>
+        <div class="ni-evidence-foot"><span class="l-en">Dashboard signal · priority follows the existing alert rule. A signal is not a verified news report.</span><span class="l-zh">看板信号 · 优先级遵循现有警报规则。信号不等于已核实的新闻报道。</span></div>
+      </div>
+    </details>
+  </article>
+
+  </section>
+  
+  
+  <section class="ni-section" data-news-section="headlines" aria-labelledby="ni-headlines-heading">
+    <div class="ni-section-head"><h2 id="ni-headlines-heading"><span class="l-en">Reported developments</span><span class="l-zh">新闻动态</span></h2><span><span class="l-en">Read the source</span><span class="l-zh">查看来源</span></span></div>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.marketwatch.com/story/apples-new-earnings-era-begins-at-a-critical-time-for-big-tech-2236a44e?mod=mw_rss_topstories" target="_blank" rel="noopener noreferrer"><span class="l-en">Apple’s new earnings era begins at a critical time for Big Tech</span><span class="l-zh">Apple’s new earnings era begins at a critical time for Big Tech</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-11-02T00:21:00+00:00" data-news-clock="2026-11-02T00:21:00+00:00" data-news-clock-kind="reported">2026-11-02T00:21:00+00:00</time>
         
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.cnbc.com/2026/10/29/norwegian-earnings-guidance-shares.html" target="_blank" rel="noopener noreferrer"><span class="l-en">Norwegian shares surge 13% on earnings beat, guidance raise</span><span class="l-zh">Norwegian shares surge 13% on earnings beat, guidance raise</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-10-29T20:14:15+00:00" data-news-clock="2026-10-29T20:14:15+00:00" data-news-clock-kind="reported">2026-10-29T20:14:15+00:00</time>
         
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://seekingalpha.com/news/4661898-oil-prices-retreat-ahead-of-u-s-midterms-despite-renewed-strait-of-hormuz-attacks?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener noreferrer"><span class="l-en">Oil prices retreat ahead of U.S. midterms despite renewed Strait of Hormuz attacks</span><span class="l-zh">Oil prices retreat ahead of U.S. midterms despite renewed Strait of Hormuz attacks</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-11-02T00:06:12+00:00" data-news-clock="2026-11-02T00:06:12+00:00" data-news-clock-kind="reported">2026-11-02T00:06:12+00:00</time>
         
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://seekingalpha.com/news/4661896-elon-musk-sees-orbital-ai-surpassing-data-centers-as-colossus-leads?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener noreferrer"><span class="l-en">Elon Musk sees orbital AI surpassing data centers as Colossus leads</span><span class="l-zh">Elon Musk sees orbital AI surpassing data centers as Colossus leads</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-11-01T23:37:25+00:00" data-news-clock="2026-11-01T23:37:25+00:00" data-news-clock-kind="reported">2026-11-01T23:37:25+00:00</time>
         
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://seekingalpha.com/news/4660669-quant-snapshot-iovance-biotherapeutics-and-diamondrock-hospitality-company-lead-top-rated-names-as-intact-financial-and-fiserv-payments-lag?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener noreferrer"><span class="l-en">Quant snapshot: Iovance Biotherapeutics and DiamondRock Hospitality Company lead top-rated names as Intact Financial and Fiserv Payments lag</span><span class="l-zh">Quant snapshot: Iovance Biotherapeutics and DiamondRock Hospitality Company lead top-rated names as Intact Financial and Fiserv Payments lag</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-11-02T02:57:06+00:00" data-news-clock="2026-11-02T02:57:06+00:00" data-news-clock-kind="reported">2026-11-02T02:57:06+00:00</time>
         
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.cnbc.com/2026/10/30/meta-outlook-to-revised-to-negative-by-sp-after-cash-flow-negative.html" target="_blank" rel="noopener noreferrer"><span class="l-en">Meta outlook revised downward by S&amp;P on cash flow and capex concerns</span><span class="l-zh">Meta outlook revised downward by S&amp;P on cash flow and capex concerns</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-10-30T22:42:26+00:00" data-news-clock="2026-10-30T22:42:26+00:00" data-news-clock-kind="reported">2026-10-30T22:42:26+00:00</time>
         
-        <div class="isle-head"><div class="isle-head-dot"></div><span class="isle-head-label"><span class="l-en">Priority</span><span class="l-zh">优先</span></span><div class="isle-head-line"></div></div>
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://seekingalpha.com/news/4661897-johnson-and-johnson-reports-94-percent-success-rate-in-trial-of-coronary-artery-device?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener noreferrer"><span class="l-en">Johnson &amp; Johnson reports 94% success rate in trial of coronary artery device</span><span class="l-zh">Johnson &amp; Johnson reports 94% success rate in trial of coronary artery device</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-11-01T23:57:52+00:00" data-news-clock="2026-11-01T23:57:52+00:00" data-news-clock-kind="reported">2026-11-01T23:57:52+00:00</time>
         
-        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
-          
-          
-          
-          
-          <div data-al-row>
-          <div style="display:flex;gap:10px;padding:12px;background:rgba(245,158,11,.06);border-radius:10px;border:1px solid rgba(245,158,11,.18)">
-            <div style="width:8px;height:8px;border-radius:50%;background:var(--mx5-warn);flex-shrink:0;margin-top:5px"></div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px">
-                <div style="font-size:13px;font-weight:600;color:var(--mx5-warn)">
-                  <span style="font-size:12px;margin-right:3px">🧲</span>
-                  <span class="l-en">Options “gravity” flipped — bigger swings more likely</span><span class="l-zh">期权“引力”反转 — 波动可能加大</span>
-                </div>
-                
-                
-                <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:rgba(245,158,11,.12);color:var(--mx5-warn-ink,#9c6212);border:1px solid rgba(245,158,11,.22);white-space:nowrap"><span class="l-en">Watch</span><span class="l-zh">关注</span></span>
-                
-              </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5"><span class="l-en">GEX: spot crossed the gamma flip (net -71bn, spot vs flip +0.3%) — measured across 4 sessions, not overnight: no chain snapshot exists for 2026-10-27, 2026-10-28, 2026-10-29, so the crossing point inside that span is unobserved</span><span class="l-zh">GEX：现价穿越 gamma 翻转点（净 -71bn，现价相对翻转点 +0.3%） — 该变化跨越 4 个交易日，并非隔夜发生：2026-10-27, 2026-10-28, 2026-10-29 无期权链快照，其间的穿越时点无法观测</span></div>
-              
-              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">Dealer gamma (GEX) measures how options hedging pushes the market around. Positive gamma damps moves (calmer); negative amplifies them (sharper swings, both ways). This flag means that backdrop just changed — expect the market to move more freely until it flips back.</span><span class="l-zh">做市商 gamma（GEX）衡量期权对冲如何推动市场。正 gamma 抑制波动（更平静）；负 gamma 放大波动（双向更剧烈）。此信号表示该背景刚刚改变 —在它再次反转前，市场可能波动得更自由。</span></div>
-              
-            </div>
-          </div>
-          </div>
-          
-          
-          
-          <div data-al-row>
-          <div style="display:flex;gap:10px;padding:12px;background:rgba(245,158,11,.06);border-radius:10px;border:1px solid rgba(245,158,11,.18)">
-            <div style="width:8px;height:8px;border-radius:50%;background:var(--mx5-warn);flex-shrink:0;margin-top:5px"></div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px">
-                <div style="font-size:13px;font-weight:600;color:var(--mx5-warn)">
-                  <span style="font-size:12px;margin-right:3px">📅</span>
-                  <span class="l-en">Major event on deck — expect bigger swings either way</span><span class="l-zh">重大事件临近 — 双向波动或加大</span>
-                </div>
-                
-                
-                <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:rgba(245,158,11,.12);color:var(--mx5-warn-ink,#9c6212);border:1px solid rgba(245,158,11,.22);white-space:nowrap"><span class="l-en">Event</span><span class="l-zh">事件</span></span>
-                
-              </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5"><span class="l-en">Event-risk window: Jobs report (nonfarm payrolls) in 5 days — high two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：非农就业报告（5 天后）—— 预计偏高的两面性波动。非卖出信号；按噪声调整仓位。</span></div>
-              
-              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">A high-impact scheduled release (CPI, Fed decision, jobs report) lands in the coming sessions — the message says which and when. Moves around these prints are two-sided and often retraced — a volatility warning, not a directional call. Size positions for the noise; avoid forcing new trades right into the print.</span><span class="l-zh">未来数个交易日内将有高影响力的既定事件（CPI、美联储决议、就业报告）——具体是哪个、何时，见提示内容。事件前后的波动是双向的、常被回补 —这是波动性提示，并非方向判断。按噪声调整仓位，避免在数据公布前强行开新仓。</span></div>
-              
-            </div>
-          </div>
-          </div>
-          
-        </div>
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.benzinga.com/money/best-prop-trading-firms" target="_blank" rel="noopener noreferrer"><span class="l-en">Best Prop Trading Firms</span><span class="l-zh">Best Prop Trading Firms</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-11-01T22:04:39+00:00" data-news-clock="2026-11-01T22:04:39+00:00" data-news-clock-kind="reported">2026-11-01T22:04:39+00:00</time>
         
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.cnbc.com/2026/10/30/reddit-stock-q3-earnings.html" target="_blank" rel="noopener noreferrer"><span class="l-en">Reddit stock plunges 29% after weak outlook, wrapping its worst day ever</span><span class="l-zh">Reddit stock plunges 29% after weak outlook, wrapping its worst day ever</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-10-30T20:11:12+00:00" data-news-clock="2026-10-30T20:11:12+00:00" data-news-clock-kind="reported">2026-10-30T20:11:12+00:00</time>
         
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.cnbc.com/2026/10/30/trump-tech-allies-swap-ai-for-super-intelligence-in-earnings-calls.html" target="_blank" rel="noopener noreferrer"><span class="l-en">Musk and Zuckerberg echo Trump&#39;s push to rebrand AI as &#39;super intelligence&#39; on earnings calls. Others do not</span><span class="l-zh">Musk and Zuckerberg echo Trump&#39;s push to rebrand AI as &#39;super intelligence&#39; on earnings calls. Others do not</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-10-30T15:14:27+00:00" data-news-clock="2026-10-30T15:14:27+00:00" data-news-clock-kind="reported">2026-10-30T15:14:27+00:00</time>
         
-        <div class="isle-head"><div class="isle-head-dot"></div><span class="isle-head-label"><span class="l-en">Context</span><span class="l-zh">背景</span></span><div class="isle-head-line"></div></div>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;opacity:.8">
-          
-          <div data-al-row>
-          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
-            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
-                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
-                  <span style="font-size:11px;margin-right:3px">🐳</span>
-                  <span class="l-en">A sector ETF is over-weighting a stock beyond its price move</span><span class="l-zh">某板块 ETF 对个股的权重提升超过其价格涨幅</span>
-                </div>
-                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
-              </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">XLV: LLY weight +1.19pp beyond price (≈+$579M est. rebalance flow) (accumulating), 2026-10-22..2026-10-29 — cycle UPTREND·HOLD</span><span class="l-zh">XLV：LLY 权重较价格多变动 +1.19pp（≈+$579M 估算再平衡资金流）（增持），2026-10-22..2026-10-29 — 周期 上涨趋势·持有</span></div>
-              
-              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">Each sector SPDR’s top-10 weights are split into the part explained by the stock’s own price move and a residual — weight that grew MORE than price alone. A big residual means real buying flowed into the name beyond market drift. Important honesty note: these SPDRs are PASSIVE index funds, so the residual is index reconstitution / float-weight flow (forced index-fund buying), not a discretionary manager’s conviction. It’s a where-is-flow-being-forced signal, and a cue to check the stock’s own technical setup — not an instant buy.</span><span class="l-zh">每只板块 SPDR 的前十大权重被拆分为“由个股自身价格变动解释的部分”与“残差”——即权重增长超过价格涨幅的部分。残差较大意味着除市场漂移外，确有真实买盘流入该股。重要的诚实提示：这些 SPDR 是被动指数基金，故残差代表指数再平衡／流通权重调整带来的资金流（指数基金的被动强制买入），而非主动经理的信念。这是“资金被强制导向何处”的信号，也提示去核查该股自身的技术形态——并非立即买入。</span></div>
-              
-            </div>
-          </div>
-          </div>
-          
-          <div data-al-row>
-          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
-            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
-                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
-                  <span style="font-size:11px;margin-right:3px">📈</span>
-                  <span class="l-en">A sector broke into leadership</span><span class="l-zh">某板块跃升为领先</span>
-                </div>
-                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
-              </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">XLB RS vs SPY crossed above 90th pctile of 90d (now 92)</span><span class="l-zh">XLB RS 相对 SPY 上穿 90 天第 90 百分位（现为 92）</span></div>
-              
-              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One sector’s strength versus the market just pushed into the top of its recent range — it’s starting to lead. This describes where money is rotating, not an instant buy. Check the sector’s heat and trigger column before acting.</span><span class="l-zh">某板块相对市场的强度刚冲入其近期区间的顶部 — 开始领先。这描述的是资金轮动的方向，并非立即买入。行动前请查看该板块的热度与触发列。</span></div>
-              
-            </div>
-          </div>
-          </div>
-          
-          <div data-al-row>
-          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
-            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
-                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
-                  <span style="font-size:11px;margin-right:3px">📈</span>
-                  <span class="l-en">A sector broke into leadership</span><span class="l-zh">某板块跃升为领先</span>
-                </div>
-                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
-              </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">XLP RS vs SPY crossed above 90th pctile of 90d (now 99)</span><span class="l-zh">XLP RS 相对 SPY 上穿 90 天第 90 百分位（现为 99）</span></div>
-              
-              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One sector’s strength versus the market just pushed into the top of its recent range — it’s starting to lead. This describes where money is rotating, not an instant buy. Check the sector’s heat and trigger column before acting.</span><span class="l-zh">某板块相对市场的强度刚冲入其近期区间的顶部 — 开始领先。这描述的是资金轮动的方向，并非立即买入。行动前请查看该板块的热度与触发列。</span></div>
-              
-            </div>
-          </div>
-          </div>
-          
-          <div data-al-row>
-          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
-            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
-                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
-                  <span style="font-size:11px;margin-right:3px">🐳</span>
-                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
-                </div>
-                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
-              </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKK: manager cut GOOG by -31% of position (2026-10-14..2026-10-30, flow-normalized)</span><span class="l-zh">ARKK：经理 减仓 GOOG 仓位 -31%（2026-10-14..2026-10-30，已按资金流标准化）</span></div>
-              
-              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
-              
-            </div>
-          </div>
-          </div>
-          
-          <div data-al-row>
-          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
-            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
-                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
-                  <span style="font-size:11px;margin-right:3px">🐳</span>
-                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
-                </div>
-                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
-              </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKW: manager cut AMD by -31% of position (2026-09-23..2026-10-06, flow-normalized)</span><span class="l-zh">ARKW：经理 减仓 AMD 仓位 -31%（2026-09-23..2026-10-06，已按资金流标准化）</span></div>
-              
-              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
-              
-            </div>
-          </div>
-          </div>
-          
-          <div data-al-row>
-          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
-            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
-                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
-                  <span style="font-size:11px;margin-right:3px">🐳</span>
-                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
-                </div>
-                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
-              </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKW: manager added NVDA by +26% of position (2026-09-23..2026-10-06, flow-normalized)</span><span class="l-zh">ARKW：经理 加仓 NVDA 仓位 +26%（2026-09-23..2026-10-06，已按资金流标准化）</span></div>
-              
-              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
-              
-            </div>
-          </div>
-          </div>
-          
-          <div data-al-row>
-          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
-            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
-                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
-                  <span style="font-size:11px;margin-right:3px">🐳</span>
-                  <span class="l-en">A sector ETF is over-weighting a stock beyond its price move</span><span class="l-zh">某板块 ETF 对个股的权重提升超过其价格涨幅</span>
-                </div>
-                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
-              </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">XLRE: EQIX weight +0.54pp beyond price (≈+$44M est. rebalance flow) (accumulating), 2026-10-22..2026-10-29 — cycle DOWNTREND·AVOID</span><span class="l-zh">XLRE：EQIX 权重较价格多变动 +0.54pp（≈+$44M 估算再平衡资金流）（增持），2026-10-22..2026-10-29 — 周期 下跌趋势·回避</span></div>
-              
-              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">Each sector SPDR’s top-10 weights are split into the part explained by the stock’s own price move and a residual — weight that grew MORE than price alone. A big residual means real buying flowed into the name beyond market drift. Important honesty note: these SPDRs are PASSIVE index funds, so the residual is index reconstitution / float-weight flow (forced index-fund buying), not a discretionary manager’s conviction. It’s a where-is-flow-being-forced signal, and a cue to check the stock’s own technical setup — not an instant buy.</span><span class="l-zh">每只板块 SPDR 的前十大权重被拆分为“由个股自身价格变动解释的部分”与“残差”——即权重增长超过价格涨幅的部分。残差较大意味着除市场漂移外，确有真实买盘流入该股。重要的诚实提示：这些 SPDR 是被动指数基金，故残差代表指数再平衡／流通权重调整带来的资金流（指数基金的被动强制买入），而非主动经理的信念。这是“资金被强制导向何处”的信号，也提示去核查该股自身的技术形态——并非立即买入。</span></div>
-              
-            </div>
-          </div>
-          </div>
-          
-        </div>
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.npr.org/2026/10/28/nx-s1-6020425/federal-reserve-interest-rates-inflation" target="_blank" rel="noopener noreferrer"><span class="l-en">Fed holds interest rates steady even as inflation remains stubborn</span><span class="l-zh">Fed holds interest rates steady even as inflation remains stubborn</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-10-28T18:04:42+00:00" data-news-clock="2026-10-28T18:04:42+00:00" data-news-clock-kind="reported">2026-10-28T18:04:42+00:00</time>
         
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.npr.org/2026/10/31/nx-s1-6008072/oil-company-profits-gasoline-diesel-prices" target="_blank" rel="noopener noreferrer"><span class="l-en">Oil company earnings skyrocket — again</span><span class="l-zh">Oil company earnings skyrocket — again</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-10-31T09:00:00+00:00" data-news-clock="2026-10-31T09:00:00+00:00" data-news-clock-kind="reported">2026-10-31T09:00:00+00:00</time>
         
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">official</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm" target="_blank" rel="noopener noreferrer"><span class="l-en">Federal Reserve issues FOMC statement</span><span class="l-zh">美联储发布FOMC声明</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-10-28T18:00:00+00:00" data-news-clock="2026-10-28T18:00:00+00:00" data-news-clock-kind="reported">2026-10-28T18:00:00+00:00</time>
         
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.npr.org/2026/10/27/nx-s1-6015161/michigan-midterm-elections-trump-tariffs-canadian-steel" target="_blank" rel="noopener noreferrer"><span class="l-en">Trump&#39;s tariffs are costing this Michigan couple. They still hope they&#39;ll pay off</span><span class="l-zh">Trump&#39;s tariffs are costing this Michigan couple. They still hope they&#39;ll pay off</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-10-27T08:48:12+00:00" data-news-clock="2026-10-27T08:48:12+00:00" data-news-clock-kind="reported">2026-10-27T08:48:12+00:00</time>
         
-        <div class="isle-head"><div class="isle-head-dot"></div><span class="isle-head-label"><span class="l-en">Market Intelligence</span><span class="l-zh">市场情报</span></span><div class="isle-head-line"></div></div>
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">official</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.bea.gov/about/budget-and-performance" target="_blank" rel="noopener noreferrer"><span class="l-en">Budget and Performance</span><span class="l-zh">预算与绩效</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <span class="ni-clock ni-clock--unknown"><span class="l-en">Report time unavailable</span><span class="l-zh">报道时间未提供</span></span>
         
-        <div class="nbx-list">
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.marketwatch.com/story/apples-new-earnings-era-begins-at-a-critical-time-for-big-tech-2236a44e?mod=mw_rss_topstories" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">Apple’s new earnings era begins at a critical time for Big Tech</span><span class="l-zh">苹果新盈利时代在大型科技公司的关键时刻开启</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Nov 1</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.cnbc.com/2026/10/29/norwegian-earnings-guidance-shares.html" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">Norwegian shares surge 13% on earnings beat, guidance raise</span><span class="l-zh">挪威股市因盈利超预期及上调指引大涨13%</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 29</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.cnbc.com/2026/10/31/trump-big-oil-refining-profits.html" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">Trump called out Big Oil profits. Here’s how much their refining earnings have surged since</span><span class="l-zh">特朗普点名批评大型石油公司利润，以下是其炼油利润自那以来的飙升幅度</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 31</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.benzinga.com/money/best-prop-trading-firms" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Best Prop Trading Firms</span><span class="l-zh">最佳自营交易公司</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Nov 1</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.cnbc.com/2026/10/30/meta-outlook-to-revised-to-negative-by-sp-after-cash-flow-negative.html" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Guidance</span><span class="l-zh">指引</span></span>
-              <span class="nbx-title"><span class="l-en">Meta outlook revised downward by S&amp;P on cash flow and capex concerns</span><span class="l-zh">标普因现金流和资本支出担忧下调Meta展望</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 30</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.cnbc.com/2026/10/29/reddit-rddt-q3-2026.html" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Guidance</span><span class="l-zh">指引</span></span>
-              <span class="nbx-title"><span class="l-en">Reddit shares sink on weak sales guidance and plans login requirement test as Google search traffic shrinks</span><span class="l-zh">Reddit股价下跌，因销售指引疲软且计划测试登录要求，谷歌搜索流量萎缩</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 30</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.npr.org/2026/10/28/nx-s1-6020425/federal-reserve-interest-rates-inflation" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
-              <span class="nbx-title"><span class="l-en">Fed holds interest rates steady even as inflation remains stubborn</span><span class="l-zh">尽管通胀依然顽固，美联储仍维持利率不变</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 28</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.npr.org/2026/10/31/nx-s1-6008072/oil-company-profits-gasoline-diesel-prices" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">Oil company earnings skyrocket — again</span><span class="l-zh">石油公司利润再次飙升</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 31</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
-              <span class="nbx-title"><span class="l-en">Federal Reserve issues FOMC statement</span><span class="l-zh">美联储发布FOMC声明</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">official</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 28</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.npr.org/2026/10/27/nx-s1-6015161/michigan-midterm-elections-trump-tariffs-canadian-steel" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Fiscal</span><span class="l-zh">财政</span></span>
-              <span class="nbx-title"><span class="l-en">Trump&#39;s tariffs are costing this Michigan couple. They still hope they&#39;ll pay off</span><span class="l-zh">特朗普的关税正让这对密歇根夫妇付出代价，他们仍希望最终能有所回报</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 27</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-        </div>
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.marketwatch.com/story/this-is-the-biggest-threat-to-the-ai-powered-bull-market-e757ca37?mod=mw_rss_topstories" target="_blank" rel="noopener noreferrer"><span class="l-en">This is the biggest threat to the AI-powered bull market</span><span class="l-zh">This is the biggest threat to the AI-powered bull market</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-11-02T00:22:00+00:00" data-news-clock="2026-11-02T00:22:00+00:00" data-news-clock-kind="reported">2026-11-02T00:22:00+00:00</time>
         
-        <div style="margin-top:16px;text-align:center">
-          <a href="news.html" style="color:var(--ink-link, var(--link));font-weight:700;font-size:13px"><span class="l-en">Open the full news feed →</span><span class="l-zh">打开完整新闻流 →</span></a>
-        </div>
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">official</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.federalreserve.gov/newsevents/pressreleases/orders20261029a.htm" target="_blank" rel="noopener noreferrer"><span class="l-en">Federal Reserve Board announces approval of application by The Bank of Nova Scotia</span><span class="l-zh">Federal Reserve Board announces approval of application by The Bank of Nova Scotia</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-10-29T20:30:00+00:00" data-news-clock="2026-10-29T20:30:00+00:00" data-news-clock-kind="reported">2026-10-29T20:30:00+00:00</time>
+        
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">official</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026" target="_blank" rel="noopener noreferrer"><span class="l-en">GDP (Advance Estimate), 3rd Quarter 2026</span><span class="l-zh">GDP (Advance Estimate), 3rd Quarter 2026</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-10-29T12:30:00+00:00" data-news-clock="2026-10-29T12:30:00+00:00" data-news-clock-kind="reported">2026-10-29T12:30:00+00:00</time>
+        
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">official</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.bea.gov/news/2026/real-personal-consumption-expenditures-state-and-real-personal-income-state-2024" target="_blank" rel="noopener noreferrer"><span class="l-en">Real Personal Consumption Expenditures by State and Real Personal Income by State, 2024</span><span class="l-zh">2024年各州实际个人消费支出与实际个人收入</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <span class="ni-clock ni-clock--unknown"><span class="l-en">Report time unavailable</span><span class="l-zh">报道时间未提供</span></span>
+        
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.marketwatch.com/story/if-you-really-want-to-help-your-adult-kids-and-grandkids-give-them-money-while-youre-still-alive-bef6b056?mod=mw_rss_topstories" target="_blank" rel="noopener noreferrer"><span class="l-en">If you really want to help your adult kids and grandkids, give them money while you’re still alive</span><span class="l-zh">If you really want to help your adult kids and grandkids, give them money while you’re still alive</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-11-02T03:23:00+00:00" data-news-clock="2026-11-02T03:23:00+00:00" data-news-clock-kind="reported">2026-11-02T03:23:00+00:00</time>
+        
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.npr.org/2026/10/28/nx-s1-6017978/fed-expected-to-hold-interest-rates-steady-but-a-hike-is-anticipated-by-years-end" target="_blank" rel="noopener noreferrer"><span class="l-en">Fed expected to hold interest rates steady but a hike is anticipated by year&#39;s end</span><span class="l-zh">Fed expected to hold interest rates steady but a hike is anticipated by year&#39;s end</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-10-28T08:45:31+00:00" data-news-clock="2026-10-28T08:45:31+00:00" data-news-clock-kind="reported">2026-10-28T08:45:31+00:00</time>
+        
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.marketwatch.com/story/fancy-cars-hold-no-appeal-my-wife-and-i-have-a-99-chance-of-outliving-our-savings-why-dont-we-spend-it-all-932a2166?mod=mw_rss_topstories" target="_blank" rel="noopener noreferrer"><span class="l-en">‘Showy jewelry and fancy cars hold no appeal’: We have a 99% chance of outliving our life savings. Why not spend it all?</span><span class="l-zh">‘Showy jewelry and fancy cars hold no appeal’: We have a 99% chance of outliving our life savings. Why not spend it all?</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-11-01T19:20:00+00:00" data-news-clock="2026-11-01T19:20:00+00:00" data-news-clock-kind="reported">2026-11-01T19:20:00+00:00</time>
+        
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.economist.com/finance-and-economics/2026/11/01/intensive-parenting-is-no-longer-the-preserve-of-the-rich" target="_blank" rel="noopener noreferrer"><span class="l-en">Intensive parenting is no longer the preserve of the rich</span><span class="l-zh">Intensive parenting is no longer the preserve of the rich</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-11-01T16:08:43+00:00" data-news-clock="2026-11-01T16:08:43+00:00" data-news-clock-kind="reported">2026-11-01T16:08:43+00:00</time>
+        
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.economist.com/finance-and-economics/2026/10/28/chinas-stock-markets-are-the-great-global-exception" target="_blank" rel="noopener noreferrer"><span class="l-en">China’s stock markets are the great global exception</span><span class="l-zh">China’s stock markets are the great global exception</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-10-28T19:48:19+00:00" data-news-clock="2026-10-28T19:48:19+00:00" data-news-clock-kind="reported">2026-10-28T19:48:19+00:00</time>
+        
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">official</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.census.gov/housing/hvs/" target="_blank" rel="noopener noreferrer"><span class="l-en">Housing Vacancies and Homeownership</span><span class="l-zh">住房空置率与自有率</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-10-28T14:00:00+00:00" data-news-clock="2026-10-28T14:00:00+00:00" data-news-clock-kind="reported">2026-10-28T14:00:00+00:00</time>
+        
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.economist.com/finance-and-economics/2026/10/29/the-never-ending-absurdity-of-global-oil-markets" target="_blank" rel="noopener noreferrer"><span class="l-en">The never-ending absurdity of global oil markets</span><span class="l-zh">The never-ending absurdity of global oil markets</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-10-29T11:16:13+00:00" data-news-clock="2026-10-29T11:16:13+00:00" data-news-clock-kind="reported">2026-10-29T11:16:13+00:00</time>
+        
+      </article>
+    
+      
+      
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">news_rss</span><span class="ni-status ni-status--neutral"><span class="l-en">Reported</span><span class="l-zh">报道</span></span></div>
+        <h3 class="ni-title"><a href="https://www.economist.com/finance-and-economics/2026/10/29/the-task-facing-the-new-head-of-indias-biggest-private-bank" target="_blank" rel="noopener noreferrer"><span class="l-en">The task facing the new head of India’s biggest private bank</span><span class="l-zh">The task facing the new head of India’s biggest private bank</span> <span class="ni-external" aria-hidden="true">↗</span></a></h3>
+        <time class="ni-clock" datetime="2026-10-29T10:06:28+00:00" data-news-clock="2026-10-29T10:06:28+00:00" data-news-clock-kind="reported">2026-10-29T10:06:28+00:00</time>
+        
+      </article>
+    
+  </section>
+  
+  
+  <div class="ni-empty mx-empty" data-news-no-matches hidden><h3><span class="l-en">No matching developments</span><span class="l-zh">没有匹配动态</span></h3><p class="mx-empty-why"><span class="l-en">Try another term or reset the filters.</span><span class="l-zh">请尝试其他关键词或重置筛选。</span></p></div>
+  <footer class="ni-footer"><p><span class="l-en">Signal observations and reported news use different clocks. Missing times stay unknown.</span><span class="l-zh">信号观测与新闻报道使用不同时间口径；缺失时间不会被推测填补。</span></p><a href="news.html" class="ni-feed-link"><span class="l-en">Open the full news feed</span><span class="l-zh">打开完整新闻流</span> <span aria-hidden="true">↗</span></a></footer>
+</section>
+
       </div>
     </div>
   </div>
@@ -10085,10 +10463,16 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
       }
       /* Close any open scorecard popovers first */
       if(window.mx5CloseAllPopovers) window.mx5CloseAllPopovers();
+      /* Keep the page opener while following links between dialog surfaces. */
+      var closingSource = document.activeElement && document.activeElement.closest('.mx5-dlg-closing');
+      var openingTrigger = _dlgActive ? _dlgTrigger :
+        ((closingSource && closingSource._returnFocus) || document.activeElement);
       /* Switching dialogs: tear the previous one down instantly (no lingering animation). */
       if(_dlgActive){ _dlgTeardown(_dlgActive, false); _dlgActive = null; }
       var dlg = document.getElementById(id);
       if(!dlg) return;
+      /* Reopening during the close transition must cancel its old teardown. */
+      if(dlg._closeTimer || dlg._endH) _dlgTeardown(dlg, false);
       /* One-time hydration happens ONLY after the existing registration gate.
          This keeps the sentiment panel out of the cold DOM; it preserves
          server-rendered metrics and delegated [data-rpop] handlers. */
@@ -10112,7 +10496,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           window.dispatchEvent(new Event('resize'));
         }
       }
-      _dlgTrigger = document.activeElement;
+      _dlgTrigger = openingTrigger;
       _dlgActive = dlg;
       dlg.classList.remove('mx5-dlg-closing');
       /* 1) make it displayed (start state painted) */
@@ -10161,7 +10545,8 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
       var bd = dlg.querySelector('.mx5-dlg-backdrop');
       if(bd && bd._clickH){ bd.removeEventListener('click', bd._clickH); delete bd._clickH; }
       var trig = _dlgTrigger; _dlgTrigger = null;
-      var refocus = function(){ if(trig && typeof trig.focus === 'function') trig.focus(); };
+      dlg._returnFocus = trig;
+      var refocus = function(){ if(!_dlgActive && trig && typeof trig.focus === 'function') trig.focus(); };
       if(_prefReduced()){
         _dlgTeardown(dlg, false); refocus(); return;
       }
@@ -12061,9 +12446,9 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
     </table>
       </div>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
-       Generated 2026-11-01 22:51 UTC · <a href="aibrief.html">AI daily brief</a> ·
+       Generated 2026-11-02 03:16 UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
-       生成于 2026-11-01 22:51 UTC · <a href="aibrief.html">AI每日简报</a> ·
+       生成于 2026-11-02 03:16 UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
     </template>
   </details>
@@ -12187,7 +12572,7 @@ window.__CHART_SWAP__ = {
 
 <script async src="risk_envelope_live.js?v=47a6eb04"></script>
 <script defer src="risk_radar_workspace.js?v=4df5cb03"></script>
-<script async src="release_publications_live.js?v=d9a19340"></script>
+<script async src="release_publications_live.js?v=502d9ccc"></script>
 <script>
 /* Keep .help tooltips on-screen: flip below the icon when it's near the top of
    the viewport, and clamp horizontally near the left/right edges. Hover-only,

@@ -575,4 +575,3 @@ def test_release_publication_client_uses_current_immutable_asset_hash():
     versioned = caddy[caddy.index("@public_versioned {") :]
     versioned = versioned[: versioned.index("}")]
     assert "/release_publications_live.js" in versioned
-
