@@ -291,7 +291,13 @@ def producer_provenance() -> dict:
     root = Path(__file__).resolve().parents[3]
     path = root / "engine" / "news_impact" / "producer_facts.py"
     tree = ast.parse(path.read_text(encoding="utf-8"))
-    out = {"family": None, "family_line": 0, "origin_line": 0, "own_document": False}
+    out = {
+        "family": None,
+        "family_line": 0,
+        "origin_line": 0,
+        "own_document": False,
+        "origin_found": False,
+    }
     for node in ast.walk(tree):
         if (
             isinstance(node, ast.Assign)
@@ -303,6 +309,7 @@ def producer_provenance() -> dict:
             for key, value in zip(node.keys, node.values):
                 if isinstance(key, ast.Constant) and key.value == "origin_document_id":
                     out["origin_line"] = key.lineno
+                    out["origin_found"] = True
                     out["own_document"] = (
                         isinstance(value, ast.Name) and value.id == "document_id"
                     )
@@ -395,8 +402,8 @@ def p1_original_report_stays_versioned(scratch: Path) -> str:
         f"identical replay dup={replay.duplicate_revisions} inserted="
         f"{replay.inserted_revisions} rows_still=2; "
         f"engine/qbus_news_store.py:242 engine/qbus_news_store.py:260 "
-        f"engine/qbus_news_reducer.py:189 engine/qbus_news_store.py:1606 "
-        f"tests/test_qbus_news_store.py:177"
+        f"engine/qbus_news_reducer.py:189 engine/qbus_news_reducer.py:274 "
+        f"engine/qbus_news_store.py:1606 tests/test_qbus_news_store.py:177"
     )
     return verdict
 
@@ -439,7 +446,8 @@ def p2_independent_confirmation_recognised(scratch: Path) -> str:
     pos_fired = "new_independent_source" in pos["material_delta_triggers"]
     neg_silent = neg["material_delta_triggers"] == []
     shaped_silent = "new_independent_source" not in shaped["material_delta_triggers"]
-    if pos_fired and neg_silent and shaped_silent:
+    # An unrecognised producer provenance shape cannot evidence the reprint case.
+    if pos_fired and neg_silent and shaped_silent and producer["origin_found"]:
         verdict = "PROVEN"
     elif pos_fired:
         verdict = "PARTIAL"
@@ -452,7 +460,8 @@ def p2_independent_confirmation_recognised(scratch: Path) -> str:
         f"view_groups={len(pos['provenance_group_ids'])}, same-group reprint "
         f"triggers={sorted(neg['material_delta_triggers'])} "
         f"groups={len(neg['provenance_group_ids'])}; producer-shaped reprint "
-        f"(origin_document_id=own document is {producer['own_document']}, "
+        f"(origin_document_id key found={producer['origin_found']}, "
+        f"own document is {producer['own_document']}, "
         f"source_family={producer['family']}) "
         f"triggers={sorted(shaped['material_delta_triggers'])} "
         f"groups={len(shaped['provenance_group_ids'])}; non-test modules naming a "
@@ -592,7 +601,7 @@ def p3_copied_wires_do_not_inflate(scratch: Path) -> str:
     )
     store_ok = copied_one_source and independent_two
     thesis_copy_one = len(copy_view["provenance_group_ids"]) == 1
-    if store_ok and edited_sources == 1 and thesis_copy_one:
+    if store_ok and edited_sources == 1 and thesis_copy_one and producer["origin_found"]:
         verdict = "PROVEN"
     elif store_ok:
         verdict = "PARTIAL"
@@ -793,10 +802,16 @@ def p5_current_view_and_replay_differ(scratch: Path) -> str:
     possession = (
         flow_before["reports_24h"] == 1 and flow_after["reports_24h"] == 2
     )
-    verdict = "PROVEN" if replay_ok and current_ok and possession else "PARTIAL"
+    # The as-of replay below is this script filtering the journal by observed_at;
+    # no engine or API reader takes an as-of time, so the replay half is not
+    # producer evidence and the property cannot reach PROVEN here.
+    verdict = "PARTIAL" if replay_ok and current_ok and possession else "ABSENT"
     print(
         f"V5 P5 {verdict} "
-        f"journal replay as-of 20T15Z titles={replay_at_t1}; current read has "
+        f"gap: no engine or API reader gives content as of a time; only the "
+        f"24h/7d flow counts are bounded by possession "
+        f"(engine/qbus_news_velocity.py:303); script-side journal cut as-of 20T15Z "
+        f"titles={replay_at_t1} (not producer evidence); current read has "
         f"v2={T_DENIAL in current_titles} v1_never_current="
         f"{T_RUMOR_V1 not in current_titles and T_RUMOR_V1 not in projected_titles}; "
         f"archive pub=20T10Z rcv=21T09Z flow_24h as-of 20T19Z="
@@ -828,11 +843,19 @@ def p6_signed_in_view(scratch: Path) -> str:
             if text == text.lstrip() and stripped.endswith(":"):
                 tier, tier_line = stripped[:-1], back + 1
                 break
+    api_lines = (
+        (gate.parent.parent / "app" / "main.py").read_text(encoding="utf-8").splitlines()
+    )
+    api_gate = next(
+        (i + 1 for i, line in enumerate(api_lines) if line.startswith("def require_user(")),
+        0,
+    )
     verdict = "HUMAN_GATE" if tier and tier not in ("public", "anonymous") else "ABSENT"
     print(
         f"V5 P6 {verdict} "
         f"news view path /news/ is listed at config/site_access.yml:{news_entry or 1} "
-        f"under tier {tier} (config/site_access.yml:{tier_line or 1}): viewing the "
+        f"under tier {tier} (config/site_access.yml:{tier_line or 1}); the news API "
+        f"reads verify a user token at app/main.py:{api_gate or 1}: viewing the "
         f"versioned stories needs a signed-in human session, not reproducible offline; "
         f"no-test"
     )
