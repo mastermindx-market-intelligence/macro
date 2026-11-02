@@ -87,3 +87,15 @@ frozen :2190 qualifier), so the authority revises as the rule says: wave 8 corre
 C03, C04, VT1; one literal test assertion; the PNG set byte-identical), re-freezes, and a bounded confirmatory round 9 re-reads it
 under the same rule (SIC-ADJ-06, `../verdict.yml`); the two non-binding notes (VTC-049, PRC-054) become implementation-bound
 conditions of the approval receipt, verified at the production proof.
+
+Re-freeze 2026-11-02 at `4161d40440a050ec3c03229475ef5938e0fa6c49` (repair wave 8: SIC-V8-C01/C03/C04/VT1, record and docstrings only; boards 0–41 byte-identical to
+213a91b9; one seat-direct tree commit 4161d404): the round-8 receipts listed above are archived byte-exact under `round8_213a91b9/` (`critic_return/`
+plus the normalized `visual_taste.yml` / `product_regression.yml`, same sha256 as the table). The top-level `critic_return/`, `visual_taste.yml` and
+`product_regression.yml` remain the round-8 receipts until the round-9 critics (same two identities, r9, same quarantine, which now also covers
+`round8_213a91b9/*<other role>*`) return against `4161d404`; the round-9 receipts then replace them (review_round 9) and the header above is
+rewritten. `manifest.yml` carries `in_review` from this re-freeze; `proposal.yml` carries `revision_mandate_round8` (three cure rows and two
+implementation-bound rows) and its `proposed_artifact.frozen_sha` moves with the manifest field (asserted by the re-freeze script; no header lines
+were inserted, so the wave-7 and wave-8 line references hold at 4161d404). Round 9 is bounded and confirmatory under SIC-ADJ-05/06 (`../verdict.yml`):
+each critic verifies its own lane's wave-8 condition from the diff, the PNG blob identity and the test run — Reviewer B SIC-V8-VT1 (clause (d) read
+under SIC-ADJ-06(b): the one test file in the diff is the product_regression lane's), Reviewer A SIC-V8-C01 and C03 — plus the seat-bound SIC-V8-C04;
+a round-9 DEFECT revises again, and a note both critics hold non-binding becomes an implementation-bound approval condition rather than another wave.
