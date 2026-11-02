@@ -1,64 +1,73 @@
-<!-- RIG round 8 · pass 2 · visual_taste · reviewer agent a48a38779cafe1df4 · artifact 213a91b9428f339dcac3ddf7dd1dd3d1346d5c17 ·
-     stored byte-exact from the agent's final message (sha256 of the message body below: 6328bd667ea0dd5929eb42a01609edef1de560c9118654d99ec4258331c3c104) -->
+<!-- RIG round 9 · pass 2 · visual_taste · reviewer agent a48a38779cafe1df4 · artifact 4161d40440a050ec3c03229475ef5938e0fa6c49 ·
+     stored byte-exact from the agent's final message (sha256 of the message body below: 8c1815eb8738edf116612a15d63debd1b2564e6f50a31671cfa54276813bcc9b) -->
 
-STATUS: PARTIAL
-RESULT: Round 8 pass 2: the verdict stays PASS_WITH_CONDITIONS and pass 2 is complete. VTC-048 stays a minor DEFECT, now citing all four record copies and the wave-7 commit message, with SIC-V8-VT1 reworded so its check can actually pass. VTC-049 stays a non-binding, implementation-bound note. The seat's rationale is adequate on both findings.
-EVIDENCE:
-RIG round 8 · PASS 2 (rationale reveal)
+STATUS: PASS
+RESULT: My round-9 pass-2 verdict for the visual_taste lane stays PASS for frozen 4161d404. The revealed rationale is adequate on all three items and creates no new blocker, major or minor finding. VTC-048 is cured: the round-8 mandate row's proof matches what I measured in pass 1. SIC-V8-VT2 (verdict.yml :79) is my round-8 recommended text word for word. It binds correctly as an implementation-bound condition checked on the production proof captures (P19-P23), not at this freeze. The disclosed "2260 lines" figure is wrong: I counted 2227, 2259, 2259 and 2295 lines at the four shas. That is a ledger-record defect for the authority's verdict 9 and changes nothing in the visual lane. No visual condition is needed at this freeze.
+RIG round 9 · PASS 2 (rationale reveal)
 pass: 2
-pass2_status: COMPLETE
 rig: sector-intelligence-cycles-20261021
-issue: 'macro #7646'
-review_round: 8
-artifact_sha: 213a91b9428f339dcac3ddf7dd1dd3d1346d5c17
+issue: macro#7646
+review_round: 9
+artifact_sha: 4161d40440a050ec3c03229475ef5938e0fa6c49
 role: visual_taste
-reviewer_identity: opus-auditor-visual-taste-sic-20261021-r8
+reviewer_identity: opus-auditor-visual-taste-sic-20261021-r9
 mode: READ_ONLY
-tree_check: 'HEAD 3fce3c35 (post-receipt record commits). git grep at 213a91b9, at 4356fa60 and at HEAD finds the label "hero-title band" in these places: cycles_repair/README.md:136, cycles_repair/capture.log:57 and proposal.yml:1329, all at 213a91b9; proposal.yml:2231, added by the re-freeze commit 4356fa60; the 213a91b9 commit message ("all inside x 16-374 / y 82-116 (the hero-title band; Chrome antialiasing nondeter…"); and, at HEAD, the quotations in this reviewer''s stored first-pass receipt reviews/critic_return/first_pass_visual_taste.md:5/:30-32/:49. It is absent from the 4356fa60 commit message, from boards_manifest.yml and from verdict.yml:54-65 (the SIC-V7-C06 text speaks of "named in the wave-7 record" without a region label). The seat''s list of four tracked copies plus the immutable wave-7 message is exact and complete.'
-amendments:
-- {id: VTC-043, change: upheld, reason: 'Cured. The rationale does not touch it.'}
-- {id: VTC-044, change: upheld, reason: 'Cured. The rationale does not touch it.'}
-- {id: VTC-045, change: upheld, reason: 'Cured. The rationale does not touch it.'}
-- {id: VTC-046, change: upheld, reason: 'Cured. The rationale does not touch it.'}
-- {id: VTC-047, change: upheld, reason: 'Cured. proposal.yml:2254-2258 records it under SIC-V7-C04, matching this reviewer''s round-7 rewording.'}
-- {id: SIC-V7-C04, change: upheld, reason: 'Met. Unchanged.'}
-- {id: SIC-V7-C06, change: upheld, reason: 'Met for the byte and record discipline. The wrong region label stays a separate finding (VTC-048), because the condition text in verdict.yml does not carry the label.'}
-- {id: VTC-048, change: reworded, reason: 'The severity (minor) and the class (DEFECT under SIC-ADJ-05: a false claim in the record) are upheld. The seat confirms the geometry independently: search field x 16-374 / y 82-115, hero title at about y 167-190, diff bounding box (16, 82, 374, 116) on both boards, 761 and 752 pixels each off by 1 in one channel, nothing outside the box. The finding is reworded to name the exact copies: README.md:136, capture.log:57 and proposal.yml:1329 at 213a91b9; proposal.yml:2231 from the re-freeze commit; and the immutable 213a91b9 commit message. SIC-V8-VT1 is reworded below because the pass-1 grep, as written, can never pass: the reviews/ receipts quote the phrase.'}
-- {id: VTC-049, change: upheld, reason: 'Minor, NON-BINDING NOTE, implementation-bound. The seat confirms the breaks on 34/35 (inside 来源抽屉) and 41 (来 / 源抽屉). Keeping the specimen as drawn and binding the cure to production is the correct application of SIC-ADJ-05.'}
-findings:
-- id: VTC-048
-  severity: minor
-  class: DEFECT
-  title: 'The record calls the 31/39 pixel-diff box the hero-title band, but x 16-374 / y 82-116 at 390 px is the global header search-field row'
-  evidence: 'The label appears at design_refs/sector-paper-20261021/cycles_repair/README.md:136, cycles_repair/capture.log:57 (wave-7 header comment) and proposal.yml:1329 (coverage_matrix.wave7_summary), all at 213a91b9. It also appears at proposal.yml:2231 (round-7 mandate comment, re-freeze commit 4356fa60) and in the 213a91b9 commit message. On board 31 the box (16, 82, 374, 116) is the site-nav search input row and the hero title sits at about y 167-190. Board 39 shares the geometry. The face is unaffected, and the cause (rasterization nondeterminism, no EN string change) remains credible.'
-  cure: 'Correct the four tracked copies to name the region as the global header search-field row (the site-nav search input), keeping the box x 16-374 / y 82-116 at 390 px. The wave-8 commit message records that the 213a91b9 message carries the wrong label. No PNG, deck, builder, CSS or test changes.'
-  binding: condition
-- id: VTC-049
-  severity: minor
-  class: NON-BINDING NOTE
-  title: 'The longer ZH ladder line breaks inside the compound 来源抽屉'
-  evidence: 'Boards 34/35 (XLF Clocks, …引擎说明见来源 / 抽屉) and board 41 (desk XLF, …引擎说明见来 / 源抽屉). The seat confirms both breaks.'
-  cure: 'Production implementation keeps the drawer pointer on one line (see advisory_notes for the checkable text).'
-  binding: implementation-bound (approval.yml condition per SIC-ADJ-05)
+pass1_receipt: {path: research/reference_integrity/sector-intelligence-cycles-20261021/reviews/critic_return/first_pass_visual_taste.md, file_sha256: 9dc6fbe2f3bf8b87719cda0cce87453c62fe3f0b3e824a36e3e2fffd30fa89a9, verdict_in_pass1: PASS}
 rationale_adequacy:
-- {id: VTC-048, adequate: true, note: 'Accepting the finding as a DEFECT, the record-only wave-8 scope, the no-re-render discipline (git diff --stat 213a91b9..<wave 8> naming only record files) and the erratum in the wave-8 commit message is adequate and proportionate. The seat found the fourth copy (proposal.yml:2231), which this reviewer''s pass 1 did not list.'}
-- {question: 'Is the grep the complete check, or must the corrected sentence name the placeholder text as the differing glyphs?', answer: 'The grep alone is not complete, for two reasons. First, an absence grep proves deletion, not correction. Second, unscoped, it can never pass, because reviews/critic_return/first_pass_visual_taste.md (and later receipt archives) quote the phrase. The check is positive and scoped (SIC-V8-VT1 below): each of the four copies names the global header search-field row (site-nav search input) and keeps the box numbers. The grep then runs over the record files only and excludes reviews/**. Naming the placeholder text as the differing glyphs is permitted but not required. If a copy says it, the claim rests on the seat''s own measurement (bounding box inside the placeholder row) and must say so, for example "the search field''s placeholder-text row (measured bounding box (16, 82, 374, 116))". It must not assert glyph-level attribution beyond what was measured.'}
-- {id: VTC-049, adequate: true, note: 'Keeping the specimen as drawn, re-rendering nothing in wave 8, and binding the cure to production as an approval.yml condition verified in the production proof (P19-P23) before acceptance is the right reading of SIC-ADJ-05 and keeps round 9 a record check.'}
-- {question: 'Is "the drawer pointer 来源抽屉 does not break across lines on any ZH Cycles card at 1440 and 390" the checkable condition text, or must it name the mechanism?', answer: 'Outcome text, not mechanism. The mechanism (no-break span, keep-all on the pointer, or the shorter tail) is the implementer''s choice. The text needs one widening and one clarification: it must cover the shorter-tail option, and it must state the scope as cards and any desk or Clocks surface that renders the ladder pattern. Recommended text: "On every ZH Cycles surface that renders cycles.ladder_state_pattern (each sector card''s Clocks block), the drawer pointer — 来源抽屉, or 抽屉 if the production copy source adopts the shorter tail 引擎说明见抽屉 — never breaks across lines at viewport widths 1440 and 390; verified on the production proof captures (P19-P23) before acceptance." Theme does not affect wrapping, so one theme per width suffices.'}
-advisory_notes: 'VTC-048 stays a DEFECT (minor, record-only) under SIC-ADJ-05. Its cure is SIC-V8-VT1 as reworded below, and round 9 should confirm it alongside the unchanged-bytes proof. VTC-049 stays a NON-BINDING NOTE. It does not reopen a wave and is carried in approval.yml as the implementation-bound condition text recommended above. This reviewer''s visual judgment of the frozen face at 213a91b9 is unchanged: C04 and C06 are landed and there is no layout regression on any re-rendered board.'
-verdict: PASS_WITH_CONDITIONS
-verdict_as_filed: PASS_WITH_CONDITIONS
-conditions:
-- 'SIC-V8-VT1 (VTC-048, DEFECT, record-only; reworded in pass 2). (a) design_refs/sector-paper-20261021/cycles_repair/README.md (wave-7 paragraph, :136 at 213a91b9), cycles_repair/capture.log (wave-7 header comment, :57) and research/reference_integrity/sector-intelligence-cycles-20261021/proposal.yml (coverage_matrix.wave7_summary, :1329, and the round-7 mandate comment, :2231) each name the 31/39 diff region as the global header search-field row (site-nav search input), with x 16-374 / y 82-116 at 390 px retained. (b) git grep -n "hero-title band" over design_refs/sector-paper-20261021/ and research/reference_integrity/sector-intelligence-cycles-20261021/proposal.yml returns nothing; reviews/** quotations are excluded. (c) The wave-8 commit message states that the 213a91b9 commit message carries the wrong label. (d) git diff --stat 213a91b9..<wave 8> names no PNG, copy_deck.json, build_cycles.py, cycles.css, cycles.html or test file. (e) Any statement that placeholder glyphs are the differing pixels is attributed to the seat''s measured bounding box (16, 82, 374, 116).'
+  - {id: VTC-048, adequate: true, note: "The revision_mandate_round8 VTC-048 row (proposal.yml:2266-2271 at 2c55ac13) uses the verdict.yml :53 note verbatim as its cure. Its proof is the same set of facts I checked in pass 1: the four label lines, the empty label grep with proposal.yml:39 naming the mislabel without quoting it, the wave-8 commit message statement, the diff set outside the ledger under SIC-ADJ-06(b), and the 42-PNG plus boards_manifest.yml blob identity. It claims nothing beyond that. One wording point is in advisory_notes: the phrase 'the only placeholder-glyph attribution is to that measured bounding box'."}
+  - {id: VTC-049/SIC-V8-VT2, adequate: true, note: "The carried text at verdict.yml :79 and at the proposal.yml VTC-049 mandate row is my round-8 pass-2 recommended text (round8_213a91b9/critic_return/second_pass_visual_taste.md:47) word for word, from 'On every ZH Cycles surface that renders cycles.ladder_state_pattern' to 'verified on the production proof captures (P19-P23) before acceptance.' It binds correctly. It is implementation-bound under SIC-ADJ-05 / SIC-ADJ-06(c) with disposition implementation_bound_approval_condition. Its proof says it is not a wave-8 edit and the specimen is not re-rendered. It is outcome text that leaves the mechanism to the implementer. The finding note it carries names boards 34/35 and the desk board 41, so the desk surface is unambiguously in scope."}
+  - {id: record-disclosure-2260, adequate: true, note: "Verified independently. `git show <sha>:proposal.yml | wc -l` gives 2227 at 213a91b9, 2259 at 4356fa60, 2259 at 4161d404 and 2295 at 2c55ac13. The 2c55ac13 message contains '2260 → 2295 lines only by the EOF append'. proposal.yml:2283 contains '(the file keeps 2260 lines through wave 8'. So the figure is wrong by one at the frozen sha and the EOF append is +36, as disclosed. The material claim (nothing inserted above :2067/:2190) does not depend on the figure. It touches no PNG, boards_manifest.yml, copy_deck.json, build_cycles.py, cycles.css, cycles.html or design_refs byte, and no visual-lane clause cites a line count. It changes nothing in the visual lane. I concur that it is a minor DEFECT of the record for the authority to adjudicate in the ledger; I do not refile it as a VTC finding. My pass-1 receipt cites no line count, so this does not make any of my pass-1 statements false."}
+amendments:
+  - {id: verdict-pass1, action: upheld, reason: "Nothing in verdict.yml :40-90, the revision_mandate_round8 rows, continuity.yml (five R3C carried-block items, unchanged) or the reviews/README.md round-8 / re-freeze-8 text contradicts the pass-1 facts. The PNG subtree is identical to 213a91b9, so the faces are not re-reviewed (SIC-ADJ-06(a))."}
+  - {id: VTC-048, action: upheld, reason: "Cured, as filed in pass 1. The seat's proof row matches the measured facts."}
+findings_after_pass2: []
+round8_dispositions_after_pass2: [{id: VTC-048, disposition: cured}, {id: VTC-049, disposition: implementation_bound}]
+conditions_check_after_pass2:
+  - {id: SIC-V8-VT1, result: met, note: "Clauses (a)-(e) are met as in pass 1, with (d) under SIC-ADJ-06(b). The verdict.yml :74 condition text is the one I verified against."}
+  - {id: SIC-V8-C04, result: partial (visual-lane half), note: "Visual half met: outside the ledger the diff names only README.md, capture.log and the test file; all 43 blobs are identical. verdict.yml :76 carries no line count, so the 2260 disclosure does not touch this condition's text. The test-run half and the proposal.yml diff-confinement half belong to the product lane or the authority."}
+implementation_bound_check: {id: SIC-V8-VT2, text_is_mine: true, binds_at: P19-P23, note: "Word for word from round8_213a91b9/critic_return/second_pass_visual_taste.md:47. Verified before acceptance on ZH captures at 1440 and 390. One theme per width is enough because theme does not affect wrapping."}
+verdict: PASS
+verdict_as_filed: PASS
+conditions: []
+advisory_notes:
+  - "In the VTC-048 proof row (proposal.yml:2271 at 2c55ac13), the phrase 'the only placeholder-glyph attribution is to that measured bounding box' implies that such an attribution exists. My pass-1 scan found 'placeholder' zero times in README.md:136, capture.log:57, proposal.yml:1329, proposal.yml:2231 and the wave-8 message, so clause (e) holds only vacuously. The tree has other 'placeholder' hits, for example copy_deck.json:296 search_placeholder, and 8 occurrences in proposal.yml at 4161d404 versus 10 at 2c55ac13. I could not read their context inside this call budget, so this is not a finding. If the authority touches :2271 for the 2260 cure anyway, 'any placeholder-glyph statement is attributed to that box (none in the four lines)' would be exact."
+  - "Carried from pass 1: proposal.yml:2231 states the box only as bbox (16, 82, 374, 116). The coordinates are the same and the line makes no false claim."
 inputs_opened_pass2:
-- 'git rev-parse --short HEAD'
-- 'git grep -F "hero-title band" / "hero title band" / "hero-title" / "title band" at 213a91b9 over design_refs/sector-paper-20261021, mockups/refs/reference_integrity/sector-intelligence-cycles-20261021 and research/reference_integrity/sector-intelligence-cycles-20261021 (product_regression excluded)'
-- 'git grep -F "title band" at 4356fa60 and HEAD (same paths, product_regression excluded)'
-- 'git log -1 --format=%B 213a91b9 and 4356fa60 (grep for the label only)'
-- 'research/reference_integrity/sector-intelligence-cycles-20261021/verdict.yml:54-65 (SIC-V7-C06 row)'
-- 'proposal.yml at 4356fa60 :2228-2234 (round-7 mandate comment) and :2254-2258 (VTC-047 row)'
-- 'not opened: continuity.yml; own round-7 receipts under reviews/round7_78c14f7d/ (lifted, not needed); proposal.yml :2236-:2253 (PRC-050/051/052 rows, Reviewer A lane); every product_regression file (reviews/critic_return/*product_regression*, reviews/round7_78c14f7d/*product_regression*, reviews/round6_204500aa/*product_regression*, reviews/product_regression.yml); Reviewer A receipts and task output'
+  - "reviews/critic_return/first_pass_visual_taste.md (hash only, HEAD be8a2010)"
+  - "verdict.yml :40-90 (HEAD), lines cut to 900 characters"
+  - "proposal.yml line counts at 213a91b9 / 4356fa60 / 4161d404 / 2c55ac13"
+  - "proposal.yml :2261-2295 (2c55ac13), lines cut to 700 characters; full text of :2271 from ':2231' onward and the context around '2260' in :2283"
+  - "reviews/round8_213a91b9/critic_return/second_pass_visual_taste.md (lines matching VTC-049 / SIC-V8-VT2 / ladder_state_pattern)"
+  - "git log -1 --format=%B 2c55ac13 (only the '2260' phrase extracted)"
+  - "continuity.yml (id lines only)"
+  - "reviews/README.md (round 8 / re-freeze 8 / round 9 lines)"
+  - "git grep -i 'placeholder' over design_refs/sector-paper-20261021 and proposal.yml at 4161d404 and 2c55ac13, output cut to 80 characters"
 quarantine_breaches: []
+tool_calls: 5 of 5
 END PASS 2
-GAPS: The seat's per-pixel diff counts (761 and 752) were not re-measured here; this reviewer has no pixel tools.
-DEVIATIONS: The STATUS label is PARTIAL rather than COMPLETE because the return guard accepts only PASS, PARTIAL, BLOCKED or FAIL; PARTIAL reflects the PASS_WITH_CONDITIONS verdict. The coordinator's COMPLETE is recorded inside the receipt as pass2_status. Four tool calls were used, within the five allowed.
+EVIDENCE:
+- **Pass-1 receipt hash and HEAD (call 1):** `git rev-parse HEAD` gives be8a2010432ce11807f8793d81cf8e5a22c20cda. `git show HEAD:.../first_pass_visual_taste.md | shasum -a 256` gives 9dc6fbe2f3bf8b87719cda0cce87453c62fe3f0b3e824a36e3e2fffd30fa89a9, which equals the coordinator's figure.
+- **proposal.yml line counts (call 1):** `wc -l` gives 2227 at 213a91b9, 2259 at 4356fa60, 2259 at 4161d404 and 2295 at 2c55ac13.
+- **verdict.yml (call 1):**
+  - VTC-048 is upheld_revise with the four-copy note.
+  - SIC-ADJ-06 (a) makes wave 8 record/docstring-only with the PNG set byte-identical.
+  - The VTC-049 implementation_bound_note carries approval_condition_id SIC-V8-VT2 and the recommended text, and closes with "(Reviewer B's recommended text, pass 2 verbatim …)".
+- **VT2 wording comparison (call 2):** round8_213a91b9/critic_return/second_pass_visual_taste.md:47 "Recommended text: \"On every ZH Cycles surface that renders cycles.ladder_state_pattern (each sector card's Clocks block), the drawer pointer — 来源抽屉, or 抽屉 if the production copy source adopts the shorter tail 引擎说明见抽屉 — never breaks across lines at viewport widths 1440 and 390; verified on the production proof captures (P19-P23) before acceptance.\"" The verdict.yml note and the proposal.yml VTC-049 mandate row (disposition implementation_bound_approval_condition) have the same wording.
+- **Line-count phrases (calls 3 and 4):**
+  - The 2c55ac13 message contains "2260 → 2295 lines only by the EOF append".
+  - proposal.yml:2283 contains "(the file keeps 2260 lines through wave 8".
+- **VTC-048 proof row (call 4):** proposal.yml:2271 quotes :2231 as "inside the global header search-field row, bbox (16, 82, 374, 116) at 390 px (measured; …)". It also states the empty label grep, the :39 handling, the wave-8 message statement, the diff set under SIC-ADJ-06(b), and the ls-tree identity. All of these match my pass-1 results.
+- **continuity.yml and reviews/README.md (call 3):**
+  - continuity.yml lists five carried-block items: R3C-HEATMAP-LEGIBILITY, R3C-AUTH-PREMIUM, R3C-TIME-MACHINE, R3C-VALIDATED-21D and R3C-NO-UNSUPPORTED-INVENTION. None bears on the record-only wave 8.
+  - reviews/README.md has no round-9 rows yet, as the coordinator said.
+- **Placeholder grep (call 5):** `git grep -c -i -F placeholder` gives proposal.yml 8 at 4161d404 and 10 at 2c55ac13. cycles_repair/README.md has 2 hits, neither at :136, which pass 1 confirmed. copy_deck.json:296 is search_placeholder.
+
+GAPS:
+- I did not read the context of the 8 or 10 'placeholder' hits in proposal.yml and the 2 in cycles_repair/README.md, because output was cut to 80 characters and the 5-call budget ran out. So I cannot say whether any of them is a placeholder-glyph statement about the 31/39 region. Clause (e) rests on the pass-1 scan of the four VT1 lines and the wave-8 message, where the count is zero.
+- Several long verdict.yml and proposal.yml lines were cut for display, including the SIC-ADJ-06 (b)/(c) tail and the end of SIC-V8-C04. The parts the visual lane relies on were read in full or confirmed in pass 1.
+- I did not run the test suite; that is the product lane's work.
+
+DEVIATIONS:
+- I put "RIG round 9 · PASS 2 (rationale reveal)" and the receipt between RESULT and EVIDENCE, as the coordinator asked. STATUS uses the hook-valid PASS.
+- I wrote only to the session scratchpad (/private/tmp/claude-501/-Volumes-Mastermind-2-agent-workspaces-claude-14851c4656838a3b-sector-intelligence-macro-7646-82cb8b-35c697a089b670b0/1a26b044-27bb-486e-8953-f080b7c95df3/scratchpad/p2c.yml, a copy of proposal.yml at 2c55ac13). I wrote nothing to the tree and changed no git state.
+- I did not open any product_regression file, the be8a2010 message body, Reviewer A's output, agentos/**, .claude/** or research/sector_completion_20261021/**.
