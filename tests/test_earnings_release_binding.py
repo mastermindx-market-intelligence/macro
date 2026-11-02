@@ -786,17 +786,21 @@ def test_an_eps_label_naming_a_different_number_is_not_eps(label: str) -> None:
     assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
 
 
+def _eps_statement(label: str, issuer: str = "") -> str:
+    """One diluted EPS row, under a caption that names the issuer when given."""
+    caption = (f"<div>{issuer}</div>" if issuer else "") + _GAAP_CAPTION
+    return _statement(f"{_DATED}<tr><td>{label}</td><td>$</td><td>1.23</td></tr>", caption=caption)
+
+
 @pytest.mark.parametrize(
-    "label",
+    ("issuer", "label"),
     [
-        "Diluted earnings per share attributable to Acme common shareholders",
-        "Diluted EPS (GAAP)",
+        ("Acme Corporation", "Diluted earnings per share attributable to Acme common shareholders"),
+        ("", "Diluted EPS (GAAP)"),
     ],
 )
-def test_an_eps_label_with_an_attribution_or_basis_tag_is_still_eps(label: str) -> None:
-    eps = _extract(
-        _statement(f"{_DATED}<tr><td>{label}</td><td>$</td><td>1.23</td></tr>")
-    ).figure("eps_diluted")
+def test_an_eps_label_with_an_attribution_or_basis_tag_is_still_eps(issuer: str, label: str) -> None:
+    eps = _extract(_eps_statement(label, issuer)).figure("eps_diluted")
     assert eps is not None
     assert eps.value == 1.23
 
@@ -1042,19 +1046,23 @@ def test_an_eps_attributed_to_anything_but_the_parent_is_not_eps(label: str) -> 
 
 
 @pytest.mark.parametrize(
-    "label",
+    ("issuer", "label"),
     [
-        "Diluted earnings per share attributable to Walmart",
-        "Diluted EPS attributable to The Coca-Cola Company",
-        "Diluted earnings per share attributable to Procter &amp; Gamble",
-        "Diluted earnings per share attributable to common stockholders of Acme, Inc.",
-        "Diluted EPS attributable to common stockholders",
+        ("Walmart Inc.", "Diluted earnings per share attributable to Walmart"),
+        ("WALMART INC.", "Diluted earnings per share attributable to Walmart"),
+        ("The Coca-Cola Company", "Diluted EPS attributable to The Coca-Cola Company"),
+        ("The Procter &amp; Gamble Company",
+         "Diluted earnings per share attributable to Procter &amp; Gamble"),
+        ("Acme Holdings, Inc.", "Diluted EPS attributable to Acme Holdings common stockholders"),
+        ("Acme Holdings, Inc.", "Diluted EPS attributable to common stockholders of Acme Holdings"),
+        ("", "Diluted earnings per share attributable to common stockholders of Acme, Inc."),
+        ("", "Diluted EPS attributable to common stockholders"),
+        ("", "Diluted EPS attributable to the Company's common stockholders"),
+        ("", "Diluted EPS attributable to the Company"),
     ],
 )
-def test_an_eps_attributed_to_the_parent_or_its_holders_is_eps(label: str) -> None:
-    eps = _extract(
-        _statement(f"{_DATED}<tr><td>{label}</td><td>$</td><td>1.23</td></tr>")
-    ).figure("eps_diluted")
+def test_an_eps_attributed_to_the_parent_or_its_holders_is_eps(issuer: str, label: str) -> None:
+    eps = _extract(_eps_statement(label, issuer)).figure("eps_diluted")
     assert eps is not None
     assert eps.value == 1.23
 
@@ -1170,6 +1178,128 @@ def test_the_shortest_span_wins_only_when_it_is_a_quarter() -> None:
     ))
     assert result.figure("net_income") is None
     assert result.absence("net_income").reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# The delta review's findings (NF1-NF4).
+# ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.mark.parametrize(
+    "caption",
+    [
+        "Core Results Compared With GAAP Results",
+        "Comparable Basis versus GAAP",
+        "Comparable EPS versus GAAP EPS",
+        "Pro Forma Results Compared With GAAP",
+        "Results Excluding Special Items Compared with GAAP",
+        "Underlying results compared to GAAP",
+    ],
+)
+def test_a_comparison_that_names_another_measure_leaves_the_section(caption: str) -> None:
+    """NF1: whatever the comparison sets against GAAP is not the GAAP statement."""
+    rows = f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
+    result = _extract(_statement(rows, caption=f"{_GAAP_CAPTION}<div>{caption}</div>"))
+    assert result.figure("revenue") is None
+    assert result.absence("revenue").reason == fig.AbsenceReason.BASIS_UNDECLARED.value
+
+
+@pytest.mark.parametrize(
+    "caption",
+    ["Compared with GAAP results", "Fourth Quarter 2025 compared with GAAP", "Q3 FY25 vs. GAAP"],
+)
+def test_a_comparison_of_only_periods_and_the_same_basis_keeps_the_gaap_section(caption: str) -> None:
+    rows = f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
+    revenue = _extract(_statement(rows, caption=f"{_GAAP_CAPTION}<div>{caption}</div>")).figure("revenue")
+    assert revenue is not None
+    assert revenue.basis == fig.Basis.GAAP.value
+
+
+@pytest.mark.parametrize(
+    "target",
+    [
+        "Goodwill Impairment", "Acquisition-Related Charges", "Litigation Settlement",
+        "Mark-to-Market Losses", "Participating Securities", "the Merger", "Spin-Off",
+        "COVID-19", "Foreign Currency", "Share Repurchases", "Net Income", "TCJA", "Core",
+        "Gain on Sale", "Q3 2025", "US Tax Reform", "Class A Common Stock", "Class A",
+        "Acme", "Acme Holdings",
+    ],
+)
+@pytest.mark.parametrize("issuer", ["", "Walmart Inc."], ids=["no-issuer", "other-issuer"])
+def test_an_eps_attributed_to_a_name_the_release_gives_no_company_is_not_eps(
+    target: str, issuer: str
+) -> None:
+    """NF2: a capitalized attribution is the parent only when the release names a company by it."""
+    result = _extract(_eps_statement(f"Diluted EPS attributable to {target}", issuer))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+
+
+def test_an_eps_attributed_to_the_issuer_needs_the_release_to_name_the_issuer() -> None:
+    label = "Diluted earnings per share attributable to Walmart"
+    assert _extract(_eps_statement(label)).figure("eps_diluted") is None
+    assert _extract(_eps_statement(label, "Walmart Inc.")).figure("eps_diluted").value == 1.23
+    # Only a trailing run of the corporate name is the issuer: "Acme" is not "Acme Holdings".
+    shareholders = "Diluted earnings per share attributable to Acme common shareholders"
+    assert _extract(_eps_statement(shareholders, "Acme Holdings, Inc.")).figure("eps_diluted") is None
+
+
+@pytest.mark.parametrize(
+    "caption",
+    [
+        "Consolidated Statements of Operations - Pro-Forma",
+        "Unaudited Pro-Forma Condensed Consolidated Statements of Operations",
+        "Consolidated Statements of Earnings - Comparable Basis",
+        "Consolidated Statements of Earnings - Core",
+        "Consolidated Statements of Operations, As Recast",
+        "Consolidated Statements of Earnings - Underlying",
+    ],
+)
+def test_a_statement_title_qualified_as_another_basis_declares_no_basis(caption: str) -> None:
+    """NF4: pro-forma, comparable, core, underlying and recast statements are not GAAP."""
+    rows = f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
+    result = _extract(_statement(rows, caption=f"<div>{caption}</div>"))
+    assert result.figure("revenue") is None
+    assert result.absence("revenue").reason == fig.AbsenceReason.BASIS_UNDECLARED.value
+
+
+@pytest.mark.parametrize(
+    "header",
+    [
+        "Twenty–Six Weeks Ended December 28, 2025",
+        "Twenty—Six Weeks Ended December 28, 2025",
+        "Twenty Six Weeks Ended December 28, 2025",
+        "Thirty Nine Weeks Ended December 28, 2025",
+        "Fourth Quarter &amp; Fiscal Year Ended December 28, 2025",
+        "Fourth Quarter / Full Year Ended December 28, 2025",
+        "Quarter &amp; Year Ended December 28, 2025",
+        "Quarter Ended December 28, 2025 and Year Ended December 28, 2025",
+        "Three Months Ended, and Year Ended December 28, 2025",
+    ],
+    ids=["en-dash-count", "em-dash-count", "spaced-count", "unlisted-spaced-count",
+         "ampersand-join", "slash-join", "bare-ampersand-join", "two-ended-clauses",
+         "comma-and-join"],
+)
+def test_a_header_joining_periods_or_counting_in_an_unread_form_declares_no_span(header: str) -> None:
+    """NF3: every spelling of a count or a join the span reader cannot resolve refuses."""
+    result = _extract(_quarter_beside_cash_flow(header, "Twelve Months Ended December 28, 2025"))
+    assert result.figure("net_income") is None
+    assert result.absence("net_income").reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
+
+
+@pytest.mark.parametrize(
+    ("header", "months"),
+    [
+        ("Three Months Ended December 28, 2025 and December 29, 2024", 3),
+        ("Fourth Quarter Ended December 28, 2025", 3),
+        ("13 Weeks Ended December 28, 2025", 3),
+        ("Twelve Weeks Ended December 28, 2025", 3),
+        ("Sixteen Weeks Ended December 28, 2025", 4),
+        ("Six Months Ended December 28, 2025", 6),
+    ],
+)
+def test_a_single_period_header_still_declares_its_span(header: str, months: int) -> None:
+    """NF3 control: two dates of one period are not two periods."""
+    assert fig._declared_period_months(header) == months
 
 
 # ─────────────────────────────────────────────────────────────────────────────

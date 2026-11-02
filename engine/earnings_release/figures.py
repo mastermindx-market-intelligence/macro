@@ -146,11 +146,30 @@ _BASIS_COMPARISON_RE = re.compile(
 # _NON_GAAP_CAPTION_RE because only a GAAP-titled caption is read this way;
 # prose that merely says "excluding" declares nothing.  "(In millions,
 # excluding per share amounts)" qualifies the units, not the statement.
+# "Comparable", "Core", "Underlying", "Recast" and "Pro-Forma" name the same
+# kind of restated presentation.
 _ADJUSTED_QUALIFIER_RE = re.compile(
-    r"\badjusted\b|\bexcluding\b(?!\s+(?:share\s+and\s+)?per[\s-]+share)|\bpro\s+forma\b|"
-    r"\bspecial\s+items\b",
+    r"\badjusted\b|\bexcluding\b(?!\s+(?:share\s+and\s+)?per[\s-]+share)|\bpro[\s-]*forma\b|"
+    r"\bspecial\s+items\b|\bcomparable\b|\bcore\b|\bunderlying\b|\brecast\b",
     re.I,
 )
+# What may stand beside the basis a comparison is drawn against and still leave
+# that basis the section's: "Compared with GAAP results", "Q3 2025 vs. GAAP".
+# Any other word names what is being compared ("Core Results Compared With
+# GAAP", "Comparable EPS versus GAAP EPS"), and that is not the GAAP section.
+_COMPARISON_FILLER = frozenset({
+    "results", "result", "measures", "measure", "financial", "information", "figures",
+    "amounts", "basis", "as", "reported", "the", "of", "and", "in", "on", "to", "for", "a",
+    "an", "our", "its", "with",
+    "quarter", "quarters", "year", "years", "prior", "period", "periods", "fiscal", "full",
+    "first", "second", "third", "fourth", "three", "six", "nine", "twelve", "months",
+    "weeks", "ended", "ending", "same", "last", "current",
+    "january", "february", "march", "april", "may", "june", "july", "august", "september",
+    "october", "november", "december", "jan", "feb", "mar", "apr", "jun", "jul", "aug",
+    "sep", "sept", "oct", "nov", "dec",
+})
+_COMPARISON_TOKEN_RE = re.compile(r"[a-z0-9][a-z0-9'’-]*")
+_COMPARISON_PERIOD_TOKEN_RE = re.compile(r"\A(?:\d+|q[1-4]|fy\d*)\Z")
 
 _NUMERIC_CELL_RE = re.compile(r"\A\(?-?\d{1,3}(?:,\d{3})*(?:\.\d+)?\)?%?\Z")
 _BARE_NUMERIC_RE = re.compile(r"\A\(?-?\d+(?:\.\d+)?\)?%?\Z")
@@ -176,10 +195,13 @@ _PERIOD_PREFIX_RE = re.compile(
 # How long a period header says its period runs: "Three Months Ended",
 # "12 Weeks Ended", "Fiscal Year Ended", "Fourth Quarter".
 _SPAN_WORDS = {"three": 3, "six": 6, "nine": 9, "twelve": 12, "thirteen": 13, "sixteen": 16}
-# A count after a hyphen is the tail of a larger number: "Twenty-Six Weeks" is
-# not six weeks.
+# A count after a dash or a tens word is the tail of a larger number:
+# "Twenty-Six Weeks", "Twenty–Six Weeks" and "Thirty Nine Weeks" are not six or
+# nine weeks.
+_SPAN_COUNT_START = r"\b(?<![-–—])(?<!\btwenty\s)(?<!\bthirty\s)(?<!\bforty\s)(?<!\bfifty\s)"
 _PERIOD_SPAN_RE = re.compile(
-    r"\b(?<!-)(three|six|nine|twelve|thirteen|sixteen|\d{1,2})[\s-]+(month|week)s?\b", re.I
+    _SPAN_COUNT_START + r"(three|six|nine|twelve|thirteen|sixteen|\d{1,2})[\s-]+(month|week)s?\b",
+    re.I,
 )
 _YEAR_SPAN_RE = re.compile(r"\byears?\s+(?:ended|ending)\b|\bfiscal\s+(?:year\b|\d{4})", re.I)
 _QUARTER_SPAN_RE = re.compile(
@@ -188,9 +210,12 @@ _QUARTER_SPAN_RE = re.compile(
 )
 # "Three and Nine Months Ended" heads two spans; "Three Quarters Ended" is nine
 # months; a year-to-date column's length depends on the quarter it closes.
+# Two periods are joined by "and", "&", "/" or a comma: "Quarter & Year",
+# "Fourth Quarter / Full Year", "Three Months Ended, and Year Ended".
+_PERIOD_JOINER = r"(?:\s+and\s+|\s*[&/,]\s*(?:and\s+)?)"
 _SPAN_PAIR_RE = re.compile(
-    r"\b(?<!-)(three|six|nine|twelve|thirteen|sixteen|\d{1,2})\s+and\s+"
-    r"(three|six|nine|twelve|thirteen|sixteen|\d{1,2})[\s-]+(month|week)s?\b",
+    _SPAN_COUNT_START + r"(three|six|nine|twelve|thirteen|sixteen|\d{1,2})" + _PERIOD_JOINER
+    + r"(three|six|nine|twelve|thirteen|sixteen|\d{1,2})[\s-]+(month|week)s?\b",
     re.I,
 )
 _QUARTER_COUNT_RE = re.compile(r"\b(two|three|four|[1-4])\s+quarters\b", re.I)
@@ -199,9 +224,14 @@ _YEAR_TO_DATE_RE = re.compile(r"\bYTD\b|\byear[\s-]+to[\s-]+date\b", re.I)
 # "Fourth Quarter and Fiscal Year Ended", "Q4 and Full Year 2025", "Twelve
 # Weeks and Forty Weeks Ended": a header that joins two periods.  "Ended
 # September 30, 2025 and 2024" joins two years of one period, not two periods.
+# The second period may follow a date ("Quarter Ended December 28, 2025 and
+# Year Ended") or another joiner, with at most two words before its name; a
+# second date ("..., 2025 and December 29, 2024") names no period.
 _TWO_PERIOD_HEADER_RE = re.compile(
-    r"\b(?:quarter|Q[1-4]|year|half|months?|weeks?)\b[^,]*?\band\b[^,]*?"
-    r"\b(?:quarter|year|half|months?|weeks?|fiscal)\b",
+    r"\b(?:quarter|Q[1-4]|year|half|months?|weeks?)\b"
+    r"(?:[^,]*?\band\b[^,]*?|.*?" + _PERIOD_JOINER
+    + r"(?:(?:[a-z]+(?:[-–—][a-z]+)?|\d{1,2})\s+){0,2})"
+    r"\b(?:quarter|Q[1-4]|year|half|months?|weeks?|fiscal|FY)\b",
     re.I,
 )
 # A cell that holds a column's place but no value: "—", "n/m", "*".
@@ -249,27 +279,42 @@ _GUIDANCE_MAGNITUDE = {"thousand": "usd_thousands", "million": "usd_millions", "
 # closed list because anything else names a different number: "Diluted EPS
 # excluding special items" is an adjusted measure and "Diluted EPS growth" is a
 # percentage, and both would otherwise bind as the GAAP per-share amount.
-# The attribution is closed too: it names the parent's holders ("Acme common
-# stockholders") or the parent by its proper name ("Walmart", "Acme Inc.").
-# "attributable to discontinued operations" and "... to the Tax Act" name a
-# component of EPS, not EPS, so a lowercase or component word refuses.
+# The attribution is closed too: it names the parent's holders ("common
+# stockholders"), the parent by self-reference ("the Company"), or the parent by
+# its proper name ("Walmart", "Acme Inc.").  "attributable to discontinued
+# operations" and "... to the Tax Act" name a component of EPS, not EPS, so a
+# lowercase or component word refuses.  A capitalized phrase is only the parent
+# when the release names a company by it ("Walmart Inc."): "attributable to
+# Goodwill Impairment" is shaped like a name and is a component.  The named
+# parent is captured as ``parent`` / ``holder_parent`` for _concept_for to check.
 _EPS_BASIS_TAG = r"(?:\s*\((?:GAAP|non-?GAAP|EPS)\))?"
 _EPS_HOLDERS = r"(?:common\s+)?(?:stockholders|shareholders|shareowners|share\s*owners|equity\s+holders)"
 _EPS_NAME_WORD = r"(?:(?-i:[A-Z][\w&.'’-]*)|&)"
-_EPS_ENTITY = (
-    _EPS_NAME_WORD + r"(?:\s+" + _EPS_NAME_WORD + r"){0,4}"
-    r"(?:,?\s+(?:Inc|Corp|Corporation|Co|Company|plc|N\.V|Ltd|LLC|L\.P|S\.A|AG|SE)\.?)?"
-)
+_EPS_NAME = _EPS_NAME_WORD + r"(?:\s+" + _EPS_NAME_WORD + r"){0,4}"
+_EPS_SUFFIX = r"(?:Inc|Corp|Corporation|Co|Company|plc|N\.V|Ltd|LLC|L\.P|S\.A|AG|SE)\.?"
+_EPS_SELF = r"(?:the\s+)?(?:Company|Corporation)(?:['’]s)?"
 _EPS_LABEL_TAIL = (
     _EPS_BASIS_TAG
     + r"(?:\s*,?\s+attributable\s+to\s+"
     r"(?![^()%:]*\b(?:excluding|before|after|from|growth|change|operations|continuing|"
-    r"discontinued|charges|act|tax|pro\s+forma|adjusted|restructuring|items|special|"
-    r"non-?controlling|minority|interests?|preferred)\b)"
-    r"(?:" + _EPS_HOLDERS + r"(?:\s+of\s+(?:the\s+)?" + _EPS_ENTITY + r")?"
-    r"|(?:the\s+)?" + _EPS_ENTITY + r"(?:\s+" + _EPS_HOLDERS + r")?))?"
+    r"discontinued|charges|act|tax|pro[\s-]*forma|adjusted|restructuring|items|special|"
+    r"non-?controlling|minority|interests?|preferred|participating|securities|class)\b)"
+    r"(?:" + _EPS_HOLDERS + r"(?:\s+of\s+(?:" + _EPS_SELF
+    + r"|(?:the\s+)?(?P<holder_parent>" + _EPS_NAME + r")(?:,?\s+" + _EPS_SUFFIX + r")?))?"
+    r"|" + _EPS_SELF + r"(?:\s+" + _EPS_HOLDERS + r")?"
+    r"|(?:the\s+)?(?P<parent>" + _EPS_NAME + r")(?:,?\s+" + _EPS_SUFFIX + r")?"
+    r"(?:\s+" + _EPS_HOLDERS + r")?))?"
     + _EPS_BASIS_TAG
     + r"\s*:?\Z"
+)
+# A company the release names by its corporate form: "Walmart Inc.", "The
+# Procter & Gamble Company", "WALMART INC.".  Each trailing run of its words is
+# a name the release may use for it ("Acme Holdings, Inc." is also "Holdings").
+_ISSUER_MENTION_RE = re.compile(
+    r"(" + _EPS_NAME + r"),?\s+(?i:inc|corp|corporation|co|company|plc|n\.v|ltd|llc|l\.p|s\.a|ag|se)\b"
+)
+_ISSUER_SUFFIX_RE = re.compile(
+    r"(?:,?\s+(?:inc|corp|corporation|co|company|plc|n\.v|ltd|llc|l\.p|s\.a|ag|se)\.?)+\Z"
 )
 # A multi-class issuer reports EPS once per class of common stock: "Class A
 # common stock" rows under a "Basic Earnings Per Share" scope.  No class row is
@@ -573,6 +618,9 @@ class _Context:
     currency_from_caption: str | None = None
     basis: str | None = None
     basis_source: str = ""
+    # Names the release gives a company by its corporate form ("Walmart Inc."):
+    # the only proper names an EPS line may be attributed to.
+    issuers: frozenset[str] = frozenset()
 
     def observe(self, text: str) -> None:
         units = _UNITS_CAPTION_RE.search(text)
@@ -586,12 +634,20 @@ class _Context:
         comparison = _BASIS_COMPARISON_RE.search(text)
         if comparison:
             # A comparison declares no basis.  The section stays what it was
-            # only when it is the basis compared against and nothing else in
-            # the text names one; otherwise the basis is unknown.
+            # only when it is the basis compared against and the rest of the
+            # text is filler or periods; anything else names what is being
+            # compared ("Core Results Compared With GAAP"), and that is not
+            # this section, so the basis is unknown.
             compared = (Basis.GAAP.value if comparison.group(1).lower() == "gaap"
                         else Basis.NON_GAAP.value)
             remainder = f"{text[:comparison.start()]} {text[comparison.end():]}"
-            if self.basis != compared or _names_basis(remainder):
+            same = {"gaap"} if compared == Basis.GAAP.value else {"non-gaap", "nongaap", "adjusted"}
+            names_other = any(
+                not (token in _COMPARISON_FILLER or token in same
+                     or _COMPARISON_PERIOD_TOKEN_RE.match(token))
+                for token in _COMPARISON_TOKEN_RE.findall(remainder.lower())
+            )
+            if self.basis != compared or names_other or _names_basis(remainder):
                 self.basis, self.basis_source = None, ""
             return
         # Non-GAAP is checked first: "Reconciliation of GAAP to non-GAAP"
@@ -643,6 +699,28 @@ def _is_caption_shaped(text: str) -> bool:
 def _names_basis(text: str) -> bool:
     return bool(_NON_GAAP_CAPTION_RE.search(text) or _GAAP_CAPTION_RE.search(text)
                 or _NON_GAAP_INLINE_RE.search(text))
+
+
+def _issuer_names(document: DisclosureDocument) -> frozenset[str]:
+    names: set[str] = set()
+    for block in document.blocks:
+        for mention in _ISSUER_MENTION_RE.finditer(block.text):
+            words = _normalize_issuer(mention.group(1)).split()
+            names.update(" ".join(words[start:]) for start in range(len(words)))
+    names.discard("")
+    return frozenset(names)
+
+
+def _normalize_issuer(name: str) -> str:
+    text = " ".join(name.lower().replace("’", "'").split())
+    text = _ISSUER_SUFFIX_RE.sub("", text).rstrip(",. ")
+    return text[4:] if text.startswith("the ") else text
+
+
+def _attributes_to_another(match: re.Match[str], issuers: frozenset[str]) -> bool:
+    groups = match.groupdict()
+    named = groups.get("parent") or groups.get("holder_parent")
+    return bool(named) and _normalize_issuer(named) not in issuers
 
 
 _INLINE_CURRENCY_RE = re.compile(r"\A(US\$|\$|€|£|¥)\s*")
@@ -1237,7 +1315,7 @@ def _extract_table(
             # nothing about the kind of the missing amount.
             kind_hint = next((item.kind for item in groups if item.value is not None
                               and item.kind != ValueKind.PERCENT.value), "")
-            concept = _concept_for(label=label, scope=scope, kind=_observed_kind(
+            concept = _concept_for(label=label, scope=scope, issuers=context.issuers, kind=_observed_kind(
                 kind_hint=kind_hint, label=label, scope=scope, currency=None, context=context))
             if concept is not None and concept != _HEADLINE_EPS:
                 absences.append(TypedAbsence(
@@ -1319,7 +1397,7 @@ def _bind_row(
     kind = _observed_kind(
         kind_hint=kind_hint, label=label, scope=scope, currency=currency, context=context
     )
-    concept = _concept_for(label=label, scope=scope, kind=kind)
+    concept = _concept_for(label=label, scope=scope, kind=kind, issuers=context.issuers)
     if concept is None:
         return False
     counted = concept != _HEADLINE_EPS
@@ -1404,7 +1482,9 @@ def _bind_row(
     return counted
 
 
-def _concept_for(*, label: str, scope: str, kind: str | None) -> str | None:
+def _concept_for(
+    *, label: str, scope: str, kind: str | None, issuers: frozenset[str] = frozenset()
+) -> str | None:
     if not label:
         return None
     if _SEGMENT_SCOPE_RE.search(scope):
@@ -1414,8 +1494,13 @@ def _concept_for(*, label: str, scope: str, kind: str | None) -> str | None:
             return None
         return f"segment_revenue:{_slugify(label)}"
     for rule in _ROW_RULES:
-        if not rule.pattern.match(label):
+        matched = rule.pattern.match(label)
+        if not matched:
             continue
+        if _attributes_to_another(matched, issuers):
+            # "... attributable to Goodwill Impairment" names a component, not
+            # the issuer; it is no roster concept and no other rule applies.
+            return None
         if rule.scope_forbidden is not None and rule.scope_forbidden.search(scope):
             return None
         if rule.scope_required is not None and not (
@@ -1431,7 +1516,10 @@ def _concept_for(*, label: str, scope: str, kind: str | None) -> str | None:
         per_class = _CLASS_EPS_SCOPE_RE.match(scope)
         if per_class and _SHARE_CLASS_LABEL_RE.match(label):
             return f"{_CLASS_EPS_PREFIX}eps_{per_class.group(1).lower()}:{_slugify(label)}"
-        if _HEADLINE_EPS_LABEL_RE.match(label) and not _BASIC_OR_DILUTED_RE.search(scope):
+        headline = _HEADLINE_EPS_LABEL_RE.match(label)
+        if headline and _attributes_to_another(headline, issuers):
+            return None
+        if headline and not _BASIC_OR_DILUTED_RE.search(scope):
             return _HEADLINE_EPS
     if _NON_GAAP_CAPTION_RE.search(scope) and kind == ValueKind.MONETARY.value:
         return f"non_gaap_adjustment:{_slugify(label)}"
@@ -1771,6 +1859,7 @@ def extract_release_figures(
     figures: list[ReleaseFigure] = []
     absences: list[TypedAbsence] = []
     context = _Context()
+    context.issuers = _issuer_names(document)
     guidance_seen: set[str] = set()
     stats = _TableStats()
 
