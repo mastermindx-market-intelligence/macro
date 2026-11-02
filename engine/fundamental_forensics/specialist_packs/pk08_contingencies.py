@@ -30,14 +30,70 @@ The declared text mappings are the reserved form, so a producer that
 registers no finalize hook stays byte-identical to BASE. Private imports from
 :mod:`base` (``_select_primary`` precedent: PK10/PK07) reuse the frozen span
 and digest shapes instead of duplicating them.
+
+Dev-corpus generalization (litigation_v1, DEC-FIF-PACK-GENERALIZATION-DEV-
+CORPUS; five litigation-heavy issuers disjoint from the held-out split). The
+held-out run showed the pack abstaining on nearly every other filing; the
+dev filings named four causes, each repaired behind its own explicit rule:
+
+* **Note-title v2 (R1).** Real filings title the contingencies note
+  ``19. Legal proceedings`` (no ``Note`` word, no ``Commitments``),
+  ``NOTE 19. Commitments and Contingencies`` (dot, uppercase) or
+  ``Note 23 – Legal Proceedings``. The frozen v1 heading matches none of
+  them, so every note-ledger field abstained. v2 keeps NOTE_CC as the
+  primary spec and adds three fallback specs (commitments / contingencies /
+  legal-proceedings titles) consulted only when v1 locates nothing; every
+  existing v1 result is therefore unchanged by construction.
+* **Item-section v2 (R2/R3).** Litigation-heavy issuers put the allegations
+  in the note and leave Part II Item 3 (10-K) / Part II Item 1 (10-Q) as a
+  one-sentence incorporation-by-reference, and some 10-Ks carry no Part II
+  Item 3 body at all (only the table-of-contents line, which the stock
+  locator mistakes for the section — the held-out precision miss). v2
+  artifact-guards the located item section (a page-number remnant is never a
+  governing section) and, when a supplied item section carries no matching
+  sentence, follows the issuer's own cross-reference into the contingencies
+  subsection for ``allegation_span`` / ``procedural_status_span``. An item
+  section that is not supplied at all keeps the frozen not_evaluable
+  typed absence (K3K4). Inside that note fallback the procedural row also
+  carries a precision guard: a matched sentence that names no proceeding
+  (case, lawsuit, litigation, court, claim, proceeding, trial, action), or
+  that carries estimation vocabulary, is accrual-methodology boilerplate
+  the frozen keyword pattern collides with ("a complex series of judgments
+  about future events"), not a procedural status, and is skipped; a note
+  with no qualifying sentence keeps the typed absence. The primary
+  item-section search is unchanged.
+* **Range-arm v3 (R1b).** The note-location fix exposed the disclosed arm
+  matching inside the standard ASC 450 refusal sentence ("unable to
+  reasonably estimate a possible loss or range of possible loss"), which
+  fixed arm priority then typed as disclosed_range. v3 requires a dollar
+  amount after the phrase inside the same sentence — every genuine
+  disclosure carries one ("range of reasonably possible loss of $10
+  million to $20 million") — so the refusal idiom falls through to the
+  not_estimable arm that already matches its verb.
+* **Accrual dimension rule (R4).** ``us-gaap:LossContingencyAccrualAtCarrying
+  Value`` is reported only under contingency-identity axes (a filer that
+  reports the whole accrual only under an ``srt:LitigationCaseAxis`` or
+  ``srt:ProductOrServiceAxis`` member on the dev corpus). The rule admits
+  those facts when no undimensioned accrual resolves, every candidate's
+  axes are inside the declared contingency-identity set and all candidates
+  agree on one value; any other shape (extra axes such as a
+  balance-sheet-location or litigation-status axis, or disagreeing member
+  values) keeps the typed absence.
+* **Range-axis rule (R5).** ``us-gaap:LossContingencyEstimateOfPossibleLoss``
+  facts dimensioned by ``srt:RangeAxis`` ``MinimumMember``/``MaximumMember``
+  carry the same range endpoints the frozen minimum/maximum concepts carry.
+  The rule values the range rows from those facts (never from prose, R-K4');
+  the row reports the instant the fact actually carries.
 """
 from __future__ import annotations
 
+from datetime import date
 from decimal import Decimal
 import re
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 
 from .. import specialist_pack_contract as contract
+from ..raw_ledger import decimal_text
 from . import narrative
 from .base import (
     AxisMemberMapping,
@@ -51,10 +107,14 @@ from .base import (
     Presence,
     SpecialistPackError,
     TextSpanMapping,
+    _dimension_qname_matches,
     _dimensions_admitted,
+    _mapping_digest,
     _raw_span,
     _select_primary,
     _text_span_digest,
+    _unit_equivalents,
+    _unit_measure,
     primary_period,
     register_extra_receipts,
 )
@@ -77,7 +137,348 @@ ITEM3 = narrative.SectionSpec(
     r"Item\s+3\.?\s*Legal Proceedings",
     (r"Item\s+4\.",),
 )
+# K3K4: on quarterly forms legal proceedings live in Part II Item 1; the
+# heading there uses the same title with the quarterly item number (a filer
+# whose quarterly heading reads "Item 1 — Legal proceedings"). Searched for
+# the two span fields only; legal_proceedings_item3 itself stays
+# form-excluded on 10-Q.
+ITEM1_QUARTERLY = narrative.SectionSpec(
+    r"Item\s+1\s*[.·:–—-]?\s*Legal Proceedings",
+    (r"Item\s+1A\.?", r"Item\s+2\.?"),
+)
 CONTINGENCIES_WORD = "Contingencies"
+
+# R1 note-title v2. Real note titles: "Note N – Commitments and
+# Contingencies" (v1), "NOTE N. Commitments and Contingencies", "N.
+# Contingencies ...", "Note N – Legal Proceedings", "N. Legal proceedings".
+# A note number is separated from its title by a dot or a spaced dash (a
+# dash without spaces is a product/model number: "737-10", "450-20-25"),
+# must not be glued to a preceding number or dot ("$1.2.", "2024.") and must
+# not belong to an "Item N." heading. Cross-references ("See Note 19. The
+# Company…") never carry a contingencies/commitments/legal-proceedings
+# title, and the last match wins: every in-text cross-reference precedes
+# the note body it cites. A table-of-contents line ("Legal Proceedings 114")
+# is rejected by the page-number lookahead.
+_NOTE_NUMBER = r"(?<![\d.·:–—/-])(?<!Item )(?:Note\s+)?\d{1,2}\s*(?:\.\s*|\s[.·:–—-]\s)"
+_NOTE_HEADING_END = (
+    # The next note-shaped heading: number + dot/spaced-dash + TitleCase,
+    # with the same number-gluing guards.
+    r"(?<![\d.·:–—/-])(?<!Item )(?:Note\s+)?\d{1,2}\s*(?:\.\s*|\s[.·:–—-]\s)[A-Z]",
+    # The notes end where the next Part I/II item heading begins.
+    r"Item\s+\d",
+)
+NOTE_CC_V2_SPECS = (
+    narrative.SectionSpec(
+        _NOTE_NUMBER + r"Commitments(?:\s+(?:and|&)\s+Contingencies)?(?!\s*\d)",
+        _NOTE_HEADING_END,
+    ),
+    narrative.SectionSpec(
+        _NOTE_NUMBER + r"Contingencies(?:\s+[A-Z][A-Za-z]+){0,3}(?!\s*\d)",
+        _NOTE_HEADING_END,
+    ),
+    narrative.SectionSpec(
+        _NOTE_NUMBER + r"Legal\s+Proceedings(?!\s*\d)",
+        _NOTE_HEADING_END,
+    ),
+)
+# The v2 contingencies subsection starts at the first title-shaped
+# "Contingencies" occurrence (a capital-C word heading a run of text:
+# "Contingencies The Company…", "Contingencies Warranties…"); a note without
+# one ("19. Legal proceedings …") uses the whole note. The v1 path keeps the
+# frozen last-occurrence rule (the golden fixture's subsection start is
+# pinned by the existing envelope digest).
+_CONTINGENCIES_TITLE = re.compile(r"Contingencies\s+[A-Z]")
+# A located item section whose body is a bare page-number remnant (the
+# section's end heading cut at the next TOC entry, leaving only " 114 "), or
+# whose opening window carries a page number followed by the next item
+# heading ("Legal Proceedings 22 Item 4. …"), is a table-of-contents line,
+# never the governing section.
+_ITEM_TOC_ARTIFACT = re.compile(r"\b\d{1,3}\s+Item\b")
+_ITEM_TOC_REMNANT = re.compile(r"^[\s\d.,;:()\-–—]*$")
+
+# R3 note-fallback precision guard (procedural_status_span): the frozen
+# keyword pattern also matches estimation boilerplate — "a complex series of
+# judgments about future events" and "estimates and judgments can be
+# affected by" are accrual-methodology sentences, not a procedural status,
+# and a proceeding noun alone does not separate them (the methodology
+# sentence goes on to name ongoing litigation). Inside the note fallback a
+# matched sentence must name the proceeding itself (case/lawsuit/litigation/
+# court/claim/proceeding/trial/action, singular or plural) AND carry no
+# estimation vocabulary ("estimate", "estimation", "assumption") and no
+# "subject to … uncertainties" hedging; a note whose keyword sentences all
+# fail the guard keeps the typed absence. The primary item-section search
+# keeps the frozen first-match behavior.
+#
+# v2 (dev-corpus review, 2026-11-01) refuses two more wrong kinds. Accept:
+# a sentence whose proceeding noun is stated indicatively ("lawsuits are
+# pending", "verdicts … have been reversed on appeal"), and a sentence that
+# reports an actual matter even though the reported words sit in a modal
+# clause ("the Department notified us of its determination that it would
+# not move to dismiss the case" — a dated report of an actual
+# determination is a status). An actual matter is anchored by a
+# pending/has-been state or a past-tense proceeding event
+# (notified/ruled/dismissed/settled/tried/prevailed/…). Reject: (a) a
+# sentence whose every proceeding noun is governed by a modal or
+# forward-looking verb (can/may/could/might/would/will — "such requests
+# can also lead to the assertion of claims … as well as to settlements",
+# "the Company will retain … liabilities resulting from … litigation
+# matters") and that carries no actual-matter anchor: it states a
+# possibility or an allocation, not the status of any matter, and the
+# search continues to a later genuine status sentence; (b) uncertainty
+# hedging ("litigation is subject to inherent uncertainties"), which is
+# accrual methodology whatever proceeding noun it names.
+#
+# v3 (second dev-corpus review, 2026-11-01) closes two admissions in v2.
+# A bare-participle anchor ("obtained", "reversed") no longer fires when a
+# modal sits in its immediate verb group: "any adverse judgment obtained
+# at trial could be reversed on appeal" and "a trial verdict may be
+# reversed on appeal" state possibilities, not statuses, while a modal
+# reported in a distant subordinate clause ("notified us of its
+# determination that the Department would not move to dismiss") does not
+# govern the anchor and a dated report stays a status. And the no-anchor
+# fallthrough now demands every proceeding noun's whole clause — left and
+# right of the noun, up to the clause boundary — be modal-free, so
+# "further proceedings could result in additional settlements" and
+# "claims may be asserted in the future that could lead to trials" state
+# possibilities even though a noun precedes the modal.
+#
+# v4 (third dev-corpus review, 2026-11-01) replaces v3's four-word
+# verb-group window with whole-clause governance. An anchor is governed
+# when a modal ("should"/"shall" now included) or a forward-looking
+# marker ("expect"/"anticipate" in any form, "likely", "intends to",
+# "plans to", "future", "potential") sits anywhere in its clause, before
+# or after it at any distance; after the anchor a reported clause opened
+# by a complementizer "that"/"whether" shields the governor so a dated
+# report of another party's intention stays a status. The no-anchor
+# fallthrough and the allegation against-branch test the same vocabulary
+# over the whole clause. A "may" is the calendar month, never a modal,
+# when whitespace and a digit follow it or when it is written "May" past
+# the sentence's first word.
+_PROCEEDING_NOUN = re.compile(
+    r"\b(?:cases?|lawsuits?|litigation|courts?|claims?|proceedings?|trials?|actions?)\b",
+    re.IGNORECASE,
+)
+_ESTIMATION_VOCAB = re.compile(r"\bestimat|\bassumption", re.IGNORECASE)
+_UNCERTAINTY_VOCAB = re.compile(
+    r"subject to (?:[a-z]+ ){0,2}uncertaint", re.IGNORECASE
+)
+# v4 modality vocabulary: a clause that carries a modal verb or a
+# forward-looking marker states a possibility or an expectation, never
+# the status of a matter or a made claim. ``must`` and ``seeks to`` are
+# deliberately absent: an obligation or a request is not a possibility.
+# v5 (fourth dev-corpus review): the bare verbs "expect"/"anticipate"
+# with a noun object or a negation ("does not expect the cases to reach
+# trial", "expects a ruling by year end") state an expected future just
+# as the to-complement forms do, so every inflection is a marker.
+_MODAL_WORD = re.compile(
+    r"\b(?:can|could|may|might|would|will|should|shall)\b", re.IGNORECASE
+)
+_FORWARD_MARKER = re.compile(
+    r"\b(?:expect(?:s|ed|ing)?|anticipat(?:e|es|ed|ing)|likely"
+    r"|intends to|plans to|future|potential)\b",
+    re.IGNORECASE,
+)
+# A reported clause opened by "that"/"whether" carries its own modality,
+# which never governs an earlier anchor: "notified us of its
+# determination that the Department would not move to dismiss". The
+# opening word is a complementizer only when the next word is a
+# determiner, a pronoun or a capitalized word; a demonstrative ("in that
+# matter could") opens nothing and leaves the modal governing.
+_COMPLEMENTIZER = re.compile(r"\b(?:that|whether)\b", re.IGNORECASE)
+_COMPLEMENTIZER_HEAD = frozenset(
+    "the a an it its we our they their he she this these those such no any".split()
+)
+_MAY_NUMBER = re.compile(r"\s+\d")
+_ANY_WORD = re.compile(r"\w")
+_NEXT_WORD = re.compile(r"\s+(\w+)")
+_ACTUAL_MATTER = re.compile(
+    r"\b(?:is|are|was|were|remains?|remain)\s+(?:currently\s+)?pending"
+    r"|\b(?:has|have|had)\s+been"
+    r"|\b(?:notified|determined|ruled|decided|dismissed|settled|entered|"
+    r"filed|granted|denied|prevailed|obtained|reversed|tried|defended|"
+    r"begun|began|delivered|returned|held|awarded|appealed|paid|accrued)\b",
+    re.IGNORECASE,
+)
+
+
+def _clause_head(sentence: str, upto: int) -> int:
+    """Offset just past the last clause-breaking punctuation before ``upto``."""
+    cut = -1
+    for match in re.finditer(r"[.!?;:]", sentence[:upto]):
+        cut = match.end()
+    return cut + 1
+
+
+def _clause_end(sentence: str, after: int) -> int:
+    """Offset of the next clause-breaking punctuation at/after ``after``."""
+    match = re.search(r"[.!?;:]", sentence[after:])
+    return after + match.start() if match else len(sentence)
+
+
+def _is_calendar_may(sentence: str, m: "re.Match[str]") -> bool:
+    """True when a matched "may" is the calendar month, never a modal.
+
+    Either whitespace and a digit follow the word ("May 2", "May 2024"),
+    or it is written exactly ``May`` (capital M, rest lowercase) at a
+    position past the sentence's first word.
+    """
+    if _MAY_NUMBER.match(sentence, m.end()):
+        return True
+    return m.group(0) == "May" and _ANY_WORD.search(sentence, 0, m.start())
+
+
+def _has_modal(sentence: str, start: int, end: int) -> bool:
+    """A modal verb in sentence[start:end], calendar months excepted."""
+    return any(
+        not _is_calendar_may(sentence, m)
+        for m in _MODAL_WORD.finditer(sentence, start, end)
+    )
+
+
+def _clause_states_possibility(sentence: str, start: int, end: int) -> bool:
+    """A modal or a forward-looking marker anywhere in sentence[start:end]."""
+    return _has_modal(sentence, start, end) or bool(
+        _FORWARD_MARKER.search(sentence, start, end)
+    )
+
+
+def _reported_clause_between(sentence: str, start: int, end: int) -> bool:
+    """A complementizer opens a reported clause between start and end."""
+    for m in _COMPLEMENTIZER.finditer(sentence, start, end):
+        nxt = _NEXT_WORD.match(sentence, m.end())
+        if nxt is None:
+            continue
+        word = nxt.group(1)
+        if word.lower() in _COMPLEMENTIZER_HEAD or word[:1].isupper():
+            return True
+    return False
+
+
+def _governs_after(sentence: str, start: int, end: int) -> bool:
+    """A modal or marker after ``start`` that no reported clause shields.
+
+    A governor sitting beyond a complementizer ("determination that the
+    Department would not move to dismiss") belongs to the reported
+    clause, not to the anchor.
+    """
+    for m in _MODAL_WORD.finditer(sentence, start, end):
+        if _is_calendar_may(sentence, m):
+            continue
+        if not _reported_clause_between(sentence, start, m.start()):
+            return True
+    for m in _FORWARD_MARKER.finditer(sentence, start, end):
+        if not _reported_clause_between(sentence, start, m.start()):
+            return True
+    return False
+
+
+def _anchor_is_governed(sentence: str, start: int, end: int) -> bool:
+    """True when a modal or a forward-looking marker governs the anchor.
+
+    The anchor's whole clause — the text between clause-breaking
+    punctuation around it, commas included — is searched on both sides at
+    any distance: "a trial verdict may be reversed" and "judgment
+    obtained by the trial court in that matter could, in the event of an
+    appeal, ultimately be reversed" are governed possibilities, while a
+    modal reported in a subordinate clause ("notified us of its
+    determination that the Department would not move to dismiss") does
+    not govern the anchor and a dated report stays a status. A calendar
+    "May" is never a modal.
+    """
+    if _clause_states_possibility(sentence, _clause_head(sentence, start), start):
+        return True
+    return _governs_after(sentence, end, _clause_end(sentence, end))
+
+
+def _procedural_note_sentence(sentence: str) -> bool:
+    """R3 guard: this keyword sentence is a procedural status, not method."""
+    if _ESTIMATION_VOCAB.search(sentence) or _UNCERTAINTY_VOCAB.search(sentence):
+        return False
+    proceedings = list(_PROCEEDING_NOUN.finditer(sentence))
+    if not proceedings:
+        return False
+    if any(
+        not _anchor_is_governed(sentence, m.start(), m.end())
+        for m in _ACTUAL_MATTER.finditer(sentence)
+    ):
+        return True
+    # No anchor of an actual matter: a sentence states a possibility, not
+    # the status of a matter, unless every proceeding noun sits in a
+    # clause free of modals and forward-looking markers.
+    return all(
+        not _clause_states_possibility(
+            sentence,
+            _clause_head(sentence, m.start()),
+            _clause_end(sentence, m.end()),
+        )
+        for m in proceedings
+    )
+
+
+# R3 note-fallback precision guard (allegation_span), symmetric to
+# _procedural_note_sentence: the frozen allegation keyword also matches
+# methodology and process sentences — a disclosure-process heading whose
+# sentence goes on to hedge alleged damages as "subject to substantial
+# uncertainties", a categories sentence ("the categories of legal
+# proceedings … may involve … plaintiffs, raising claims"), a matter-
+# progress sentence and a liability-allocation sentence ("will retain …
+# liabilities resulting from … claims alleging harm"). The caller's
+# pattern guarantees the assertion word (alleges/alleged/alleging/
+# allegation(s)); the guard adds the claimed shape. Accept: a proceeding
+# noun (case/lawsuit/litigation/court/claim/proceeding/trial/action)
+# together with the assertion being made against the issuer — an
+# "against the Company/Issuer/Registrant/us" reference whose own clause
+# is indicative, an asserter shape (plaintiffs allege/assert/claim/
+# contend; a complaint alleges/asserts/seeks), or claims that have been
+# asserted/filed/brought. Reject: methodology vocabulary ("estimat",
+# "assumption", a "process for disclosure" heading, "subject to …
+# uncertainties" hedging), any sentence without a made-against shape,
+# and an against-issuer reference whose whole clause carries a modal
+# (can/could/may/might/would/will/should/shall, a calendar "May"
+# excepted) or a forward-looking marker ("expect"/"anticipate" in any
+# form, "likely", "intends to", "plans to", "future", "potential" —
+# "future claims alleging fraud may be brought against the Company" is
+# a possibility, not a made claim — the asserter and been-asserted
+# shapes carry their own tense and stay accepted); a
+# note whose keyword sentences all fail the guard keeps the typed
+# absence. The primary item-section search keeps the frozen first-match
+# behavior.
+_ASSERTED_AGAINST_ISSUER = re.compile(
+    r"\bagainst (?:the )?(?:company|issuer|registrant)\b"
+    r"|\bagainst us\b"
+    r"|\b(?:plaintiffs?|complainants?)\s+"
+    r"(?:alleg\w*|assert\w*|claims?\b|claiming|contend\w*)"
+    r"|\bcomplaint\s+(?:alleges|asserts|seeks)\b"
+    r"|\b(?:have|has|had|were|was)\s+(?:been\s+)?(?:asserted|filed|brought)\b",
+    re.IGNORECASE,
+)
+_METHODOLOGY_VOCAB = re.compile(
+    r"\bestimat|\bassumption|\bprocess for disclosure\b"
+    r"|subject to (?:[a-z]+ ){0,2}uncertaint",
+    re.IGNORECASE,
+)
+
+
+def _allegation_note_sentence(sentence: str) -> bool:
+    """R3 guard: this keyword sentence states a claim against the issuer."""
+    if _METHODOLOGY_VOCAB.search(sentence):
+        return False
+    if not _PROCEEDING_NOUN.search(sentence):
+        return False
+    for m in _ASSERTED_AGAINST_ISSUER.finditer(sentence):
+        if m.group(0).startswith("against"):
+            # A bare against-issuer reference carries no tense of its
+            # own: accept it only when its whole clause is indicative —
+            # no modal, no forward-looking marker, a calendar "May"
+            # excepted.
+            if _clause_states_possibility(
+                sentence,
+                _clause_head(sentence, m.start()),
+                _clause_end(sentence, m.end()),
+            ):
+                continue
+        return True
+    return False
 
 # B.3 patterns (frozen). The enum literals come from the catalogue field's
 # own name (A.3): disclosed_range | not_estimable | no_range_language. The
@@ -96,8 +497,11 @@ CONTINGENCIES_WORD = "Contingencies"
 # performed the match, so the declared mapping below stamps
 # mapping_rule_digest from the live RANGE_DISCLOSED_PATTERN — never from a
 # shadow copy of older bytes kept only to hold a pin still.
-RANGE_PATTERN_REVISION = "v2"
+RANGE_PATTERN_REVISION = "v3"
 RANGE_ARM_PRIORITY = ("disclosed", "not_estimable", "not_material")
+# The arm bytes stay frozen (v2): every mapping digest pins
+# RANGE_DISCLOSED_PATTERN, and the golden envelope pin carries that digest, so
+# the v3 refusal below lives in the chooser, never in the pattern.
 _RANGE_DISCLOSED_ARMS = (
     ("disclosed", r"range of (?:reasonably )?possible loss"),
     (
@@ -178,6 +582,43 @@ _RANGE_HIGH = ("us-gaap:LossContingencyRangeOfPossibleLossMaximum",)
 _BS_STATE_CONCEPT = "us-gaap:CommitmentsAndContingencies"
 _NATURE_AXIS = "us-gaap:LossContingenciesByNatureOfContingencyAxis"
 
+# R4 accrual dimension rule (dev corpus litigation_v1): the accrual is often
+# reported ONLY under axes that identify the contingency matter. The rule
+# admits exactly the contingency-identity axes — the us-gaap nature axis,
+# srt:LitigationCaseAxis (a filer that reports the whole accrual only under
+# a litigation-case-axis member, e.g. a single indemnity matter) and
+# srt:ProductOrServiceAxis (the same filer tags a second matter's accrual
+# under the product-or-service axis) — all standard taxonomy (us-gaap/srt;
+# no issuer extension axis is ever named here; axes bind by local name the
+# way the framework's own dimension rules bind a Clark-form ledger qname,
+# across srt yearly namespaces). It fires only when no undimensioned accrual
+# resolved, every candidate fact's axes lie inside this set, and every
+# candidate agrees on one value. An accrual under any other axis — for
+# example a balance-sheet-location axis or a litigation-status axis, which
+# also carry per-member values that must not be pooled — or disagreeing
+# member values keep the typed absence.
+_ACCRUAL_IDENTITY_AXES = (
+    "us-gaap:LossContingenciesByNatureOfContingencyAxis",
+    "srt:LitigationCaseAxis",
+    "srt:ProductOrServiceAxis",
+)
+_ACCRUAL_DIMENSIONED_MAPPING = FactMapping(
+    _ACCRUAL, dimensions_allowed=_ACCRUAL_IDENTITY_AXES
+)
+
+# R5 range-axis rule: issuers that do not tag the frozen minimum/maximum
+# concepts tag the same endpoints as us-gaap:LossContingencyEstimateOf
+# PossibleLoss dimensioned by srt:RangeAxis with the srt MinimumMember /
+# MaximumMember members (standard taxonomy only; matter-identifying
+# co-occurring axes are never consulted, so an issuer-extension member on a
+# standard axis does not enter the rule). Both endpoints must carry one
+# agreeing value each; the row reports the instant the fact carries.
+_RANGE_CONCEPT = "us-gaap:LossContingencyEstimateOfPossibleLoss"
+_RANGE_AXIS = "srt:RangeAxis"
+_RANGE_AXIS_MIN_MEMBER = "srt:MinimumMember"
+_RANGE_AXIS_MAX_MEMBER = "srt:MaximumMember"
+_RANGE_AXIS_MAPPING = FactMapping((_RANGE_CONCEPT,), dimensions_allowed=(_RANGE_AXIS,))
+
 # The B.3 text-value contracts the finalize hook executes (and whose digests
 # it stamps). Every narrative field is searched inside its governing section
 # or the Contingencies subsection derived from it, so each mapping declares
@@ -198,6 +639,16 @@ _ALLEGATION_MAPPING = TextSpanMapping(
 )
 _PROCEDURAL_MAPPING = TextSpanMapping(
     section=ITEM3, pattern=PROCEDURAL_STATUS_PATTERN, kind="text"
+)
+# R3 note-fallback mappings: the same frozen patterns searched inside the
+# contingencies note when the item section cross-references it and carries
+# no matching sentence of its own. The digest pins the bytes that performed
+# the match, so the fallback row carries its own rule id and digest.
+_ALLEGATION_NOTE_MAPPING = TextSpanMapping(
+    section=NOTE_CC, pattern=ALLEGATION_PATTERN, kind="text"
+)
+_PROCEDURAL_NOTE_MAPPING = TextSpanMapping(
+    section=NOTE_CC, pattern=PROCEDURAL_STATUS_PATTERN, kind="text"
 )
 
 TABLE_CELL_RESERVED_LIMITATION = (
@@ -303,6 +754,75 @@ def _contingencies_span(nt: Any, note_span: tuple[int, int]) -> tuple[int, int] 
     return (note_span[0] + last.start(), note_span[1])
 
 
+def _locate_note_last(nt: Any, spec: "narrative.SectionSpec") -> tuple[int, int] | None:
+    """Locate a v2 note section: the LAST heading match governs.
+
+    Every in-text cross-reference to a note ("See Note 19. The …") precedes
+    the note body it cites, so the last match is the body; the heading
+    grammar itself already refuses cross-reference and TOC shapes.
+    """
+    matches = list(re.finditer(spec.heading, nt.text, re.IGNORECASE))
+    if not matches:
+        return None
+    chosen = matches[-1]
+    end = len(nt.text)
+    for end_heading in spec.end_headings:
+        boundary = re.compile(end_heading, re.IGNORECASE).search(
+            nt.text, chosen.end()
+        )
+        if boundary is not None:
+            end = min(end, boundary.start())
+    return (chosen.start(), end)
+
+
+def _contingencies_span_v2(
+    nt: Any, note_span: tuple[int, int]
+) -> tuple[int, int] | None:
+    """The v2 contingencies subsection: first title-shaped "Contingencies".
+
+    A v2 note title ("Contingencies and Environmental Liabilities",
+    "Legal proceedings") is itself the contingencies disclosure, so the
+    subsection starts at the first capital-C "Contingencies" that heads a
+    run of text ("Contingencies The Company…", "Contingencies
+    Warranties…") and is the whole note when no such occurrence exists
+    (a "19. Legal proceedings" note). Mid-sentence occurrences
+    ("Contingencies, and related guidance") never head a run of text and
+    are skipped by the same shape test.
+    """
+    segment = nt.text[note_span[0] : note_span[1]]
+    match = _CONTINGENCIES_TITLE.search(segment)
+    if match is None:
+        return note_span
+    return (note_span[0] + match.start(), note_span[1])
+
+
+def _item_section_or_none(
+    nt: Any, span: tuple[int, int] | None, heading: str
+) -> tuple[int, int] | None:
+    """The located item section, or ``None`` when only a TOC line matched.
+
+    A governing section never reduces to a page-number remnant ("Item 3.
+    Legal Proceedings 114" with the end heading cutting at the next TOC
+    entry) and never opens on a page number followed by the next item
+    heading ("Legal Proceedings 22 Item 4. …" is the table of contents);
+    the stock locator keeps such a line when no body match exists, so both
+    artifact checks run on the located span itself. The heading match is
+    stripped first — the section's own heading is not an artifact.
+    """
+    if span is None:
+        return None
+    lo, hi = span
+    heading_match = re.compile(heading, re.IGNORECASE).match(nt.text, lo, hi)
+    body_start = heading_match.end() if heading_match is not None else lo
+    body = nt.text[body_start:hi]
+    if _ITEM_TOC_REMNANT.match(body):
+        return None
+    window = body[:200]
+    if _ITEM_TOC_ARTIFACT.search(window):
+        return None
+    return span
+
+
 def _trimmed_block(text: str, limit: int) -> str:
     """The first ``limit`` characters, trimmed back to a sentence boundary."""
     if len(text) <= limit:
@@ -328,16 +848,37 @@ def _declared_enum_literals(
 class _Sections:
     """The located governing sections of one production."""
 
-    def __init__(self, nt: Any) -> None:
+    def __init__(self, nt: Any, *, quarterly: bool = False) -> None:
         self.note_cc: tuple[int, int] | None = None
+        self.note_v2 = False
         self.conting: tuple[int, int] | None = None
         self.item3: tuple[int, int] | None = None
+        # The item section the span fields search: Part II Item 3 on annual
+        # forms, Part II Item 1 on quarterly forms (K3K4). Both carry the
+        # TOC-artifact guard.
+        self.item_section: tuple[int, int] | None = None
         if nt is None:
             return
         self.note_cc = narrative.locate_section(nt, NOTE_CC)
         if self.note_cc is not None:
             self.conting = _contingencies_span(nt, self.note_cc)
-        self.item3 = narrative.locate_section(nt, ITEM3)
+        else:
+            # R1: the v2 fallbacks are consulted only when v1 located
+            # nothing, so every v1 result is unchanged by construction.
+            for spec in NOTE_CC_V2_SPECS:
+                span = _locate_note_last(nt, spec)
+                if span is not None:
+                    self.note_cc = span
+                    self.note_v2 = True
+                    self.conting = _contingencies_span_v2(nt, span)
+                    break
+        self.item3 = _item_section_or_none(
+            nt, narrative.locate_section(nt, ITEM3), ITEM3.heading
+        )
+        item1 = _item_section_or_none(
+            nt, narrative.locate_section(nt, ITEM1_QUARTERLY), ITEM1_QUARTERLY.heading
+        )
+        self.item_section = item1 if quarterly else self.item3
 
 
 class _RowRewriter:
@@ -396,6 +937,18 @@ class _RowRewriter:
         self.note = note
 
 
+# R1b (range-arm v3): the disclosed arm's phrase also appears inside the
+# standard ASC 450 refusal idiom — "unable to reasonably estimate a possible
+# loss or range of possible loss" — which fixed arm priority then typed as
+# disclosed_range from the filer's own refusal sentence. A disclosed match
+# governs only when the phrase's own sentence carries its amount: a dollar
+# sign within 80 characters after the phrase, never crossing a sentence
+# boundary. Every genuine disclosure has one ("range of reasonably possible
+# loss of $10 million to $20 million"); the bare negated idiom falls through
+# to the not_estimable arm that already matches its verb.
+_DISCLOSED_AMOUNT_FOLLOWS = re.compile(r"[^.]{0,80}\$")
+
+
 def _governing_range_arm(
     text: str, lo: int, hi: int
 ) -> tuple[str, re.Match[str] | None]:
@@ -404,11 +957,17 @@ def _governing_range_arm(
     F2: arms evaluate in RANGE_ARM_PRIORITY order (disclosed >
     not_estimable > not_material) over the whole Contingencies span, so a
     ``no material`` phrase earlier in the span never ousts a governing
-    estimate clause. Returns ``("", None)`` when no arm matches.
+    estimate clause. R1b (v3): a disclosed-arm match whose sentence carries
+    no amount is the refusal idiom's own phrase and never governs; the
+    search continues to the next disclosed match before falling through to
+    the lower arms. Returns ``("", None)`` when no arm matches.
     """
     for arm in RANGE_ARM_PRIORITY:
-        match = _RANGE_ARM_SEARCH[arm].search(text, lo, hi)
-        if match is not None:
+        for match in _RANGE_ARM_SEARCH[arm].finditer(text, lo, hi):
+            if arm == "disclosed" and not _DISCLOSED_AMOUNT_FOLLOWS.match(
+                text, match.end()
+            ):
+                continue
             return arm, match
     return "", None
 
@@ -490,6 +1049,8 @@ def _rewrite_sentence_row(
     *,
     mapping: TextSpanMapping,
     pattern: str,
+    note_mapping: TextSpanMapping,
+    note_guard: "Callable[[str], bool] | None" = None,
 ) -> _RowRewriter:
     rewriter = _RowRewriter(row, nt, accession)
     if row.get("quality_state") == "not_applicable":
@@ -497,17 +1058,36 @@ def _rewrite_sentence_row(
     if nt is None:
         rewriter.absent(mapping, "narrative document not retained")
         return rewriter
-    if sections.item3 is None:
+    if sections.item_section is None:
         rewriter.absent(mapping, "governing_section_not_supplied")
         return rewriter
-    lo, hi = sections.item3
+    lo, hi = sections.item_section
     match = re.compile(pattern).search(nt.text, lo, hi)
-    if match is None:
-        rewriter.absent(mapping, "narrative_span_not_located")
+    if match is not None:
+        span = narrative.sentence_span(nt.text, match.start(), match.end(), (lo, hi))
+        text_value = nt.text[span[0] : span[1]].strip()[: mapping.max_chars]
+        rewriter.valued(mapping, text_value, span)
         return rewriter
-    span = narrative.sentence_span(nt.text, match.start(), match.end(), (lo, hi))
-    text_value = nt.text[span[0] : span[1]].strip()[: mapping.max_chars]
-    rewriter.valued(mapping, text_value, span)
+    # R3: a supplied item section without a matching sentence is the
+    # issuer's incorporation-by-reference — the contingencies note it names
+    # is the governing disclosure for the span fields. A guard, when one is
+    # declared, skips a matched sentence of the wrong kind (the
+    # keyword-collision methodology, process, possibility and allocation
+    # boilerplate the frozen patterns admit).
+    if sections.conting is not None:
+        clo, chi = sections.conting
+        for note_match in re.compile(pattern).finditer(nt.text, clo, chi):
+            span = narrative.sentence_span(
+                nt.text, note_match.start(), note_match.end(), (clo, chi)
+            )
+            sentence = nt.text[span[0] : span[1]]
+            if note_guard is not None and not note_guard(sentence):
+                continue
+            text_value = sentence.strip()[: note_mapping.max_chars]
+            rewriter.valued(note_mapping, text_value, span)
+            row["mapping_rule_id"] = f"pk08.{row['field_id']}.text_span_note/v1"
+            return rewriter
+    rewriter.absent(mapping, "narrative_span_not_located")
     return rewriter
 
 
@@ -524,6 +1104,157 @@ def _prose_range_fires(nt: Any, sections: _Sections) -> bool:
         if PROSE_RANGE_AMOUNT.search(window):
             return True
     return False
+
+
+# --- R4/R5 dimension rules over the raw ledger -----------------------------------
+
+
+def _value_dimensioned_fact_row(
+    row: dict[str, Any],
+    occurrences: list[Any],
+    representative: Any,
+    *,
+    mapping: FactMapping,
+    rule_id: str,
+) -> None:
+    """Rewrite one ``missing`` row as valued from dimensioned facts.
+
+    Mirrors the framework's own valued ``xbrl_fact`` row shape (concept,
+    occurrence ids, the representative's dimensions, the instant actually
+    used, the catalogue unit); the rule id and digest name the dimension
+    rule that performed the resolution.
+    """
+    row["quality_state"] = "valued"
+    row["non_value_state"] = None
+    row["coverage_state"] = "source_trace_complete"
+    row["reason"] = None
+    row["evidence_kind"] = "xbrl_fact"
+    row["required_evidence_kind"] = "xbrl_fact"
+    row["value"] = decimal_text(Decimal(str(representative.parsed_value)))
+    row["text_value"] = None
+    row["source_span"] = None
+    row["table_cell"] = None
+    row["concept"] = representative.concept_qname
+    row["taxonomy"] = representative.concept_qname.split(":", 1)[0]
+    row["source_occurrence_ids"] = sorted(
+        {item.occurrence_id for item in occurrences}
+    )
+    row["dimensions"] = [
+        {"axis": axis, "member": str(member)}
+        for axis, member in sorted(representative.context.explicit_dimensions)
+    ]
+    # The row reports the period the fact actually carries (the framework's
+    # own cover-instant precedent): the dev corpus reports both the accrual
+    # and the range endpoints as instants at the balance-sheet date.
+    row["period"] = {
+        "kind": "instant",
+        "end": representative.context.instant.isoformat(),
+    }
+    row["unit"] = "USD"
+    row["mapping_rule_id"] = rule_id
+    row["mapping_rule_digest"] = _mapping_digest(mapping)
+
+
+def _usd_occurrence(occurrence: Any) -> bool:
+    """The fact satisfies the catalogue's USD unit law (R-F1)."""
+    return _unit_measure(occurrence.unit) in (_unit_equivalents("USD") or frozenset())
+
+
+def _apply_accrual_dimension_rule(
+    rows: Mapping[str, dict[str, Any]], ledger: Any, por: date | None
+) -> None:
+    """R4: the accrual reported only under contingency-identity axes.
+
+    Fires only on a ``missing`` row (a conflicting undimensioned pool stays
+    the framework's own not_evaluable) with no undimensioned candidate, and
+    only when every dimensioned candidate's axes lie inside
+    ``_ACCRUAL_IDENTITY_AXES`` and all candidates agree on one value.
+    """
+    row = rows["loss_contingency_accrual"]
+    if por is None or row.get("quality_state") != "missing":
+        return
+    candidates: list[Any] = []
+    for occurrence in ledger.events:
+        if occurrence.concept_qname not in _ACCRUAL or occurrence.is_nil:
+            continue
+        if occurrence.context.instant != por or not _usd_occurrence(occurrence):
+            continue
+        # ``Context`` dimensions are canonical (axis, member) pair tuples
+        # (raw_ledger), never a mapping: iterating the container yields the
+        # pair tuples, so the axis qname is the pair's first element.
+        axes = {axis for axis, _member in occurrence.context.explicit_dimensions} | {
+            axis for axis, _member in occurrence.context.typed_dimensions
+        }
+        if not axes:
+            continue  # undimensioned facts are the framework's own path
+        if all(
+            any(
+                _dimension_qname_matches(axis, declared)
+                for declared in _ACCRUAL_IDENTITY_AXES
+            )
+            for axis in axes
+        ):
+            candidates.append(occurrence)
+    if not candidates:
+        return
+    if len({str(item.parsed_value) for item in candidates}) > 1:
+        return  # disagreeing member values never pool into one row
+    representative = min(candidates, key=lambda item: item.occurrence_id)
+    _value_dimensioned_fact_row(
+        row,
+        candidates,
+        representative,
+        mapping=_ACCRUAL_DIMENSIONED_MAPPING,
+        rule_id="PK08.loss_contingency_accrual.fact_dimensioned/v1",
+    )
+
+
+def _apply_range_axis_rule(
+    rows: Mapping[str, dict[str, Any]], ledger: Any, por: date | None
+) -> None:
+    """R5: range endpoints from ``srt:RangeAxis``-dimensioned estimates.
+
+    ``us-gaap:LossContingencyEstimateOfPossibleLoss`` facts at the primary
+    instant whose ``srt:RangeAxis`` member is the srt minimum/maximum member
+    value the low/high row; other co-occurring axes identify the matter and
+    are never consulted. All candidates for one endpoint must agree on one
+    value; the row reports the instant the fact carries. Valued only from
+    XBRL facts, never from prose (R-K4').
+    """
+    if por is None:
+        return
+    for field_id, wanted_member in (
+        ("loss_contingency_range_low", _RANGE_AXIS_MIN_MEMBER),
+        ("loss_contingency_range_high", _RANGE_AXIS_MAX_MEMBER),
+    ):
+        row = rows[field_id]
+        if row.get("quality_state") != "missing":
+            continue
+        candidates: list[Any] = []
+        for occurrence in ledger.events:
+            if occurrence.concept_qname != _RANGE_CONCEPT or occurrence.is_nil:
+                continue
+            if occurrence.context.instant != por or not _usd_occurrence(occurrence):
+                continue
+            carries_member = any(
+                _dimension_qname_matches(axis, _RANGE_AXIS)
+                and _dimension_qname_matches(member, wanted_member)
+                for axis, member in occurrence.context.explicit_dimensions
+            )
+            if carries_member:
+                candidates.append(occurrence)
+        if not candidates:
+            continue
+        if len({str(item.parsed_value) for item in candidates}) > 1:
+            continue  # disagreeing endpoints never value the row
+        representative = min(candidates, key=lambda item: item.occurrence_id)
+        _value_dimensioned_fact_row(
+            row,
+            candidates,
+            representative,
+            mapping=_RANGE_AXIS_MAPPING,
+            rule_id=f"PK08.{field_id}.fact_range_axis/v1",
+        )
 
 
 # --- B.4 checks (producer-owned rows) ------------------------------------------
@@ -661,11 +1392,28 @@ class Pk08Producer(PackProducer):
     ) -> dict[str, Any]:
         if result["applicability"]["state"] != "applicable":
             return result  # the not-applicable path is already exact (B.1)
+        from ..ixbrl_raw_ledger import (  # call-time: a test double is honoured
+            parse_and_convert_golden_packages
+        )
+
+        ledger, _filing_metadata, _report = parse_and_convert_golden_packages(
+            pack_input.packages
+        )
         primary, _matched = _select_primary(pack_input.packages, SPEC.forms)
         accession = str(primary.manifest.get("accession") or "")
         rows = {row["field_id"]: row for row in result["fields"]}
         nt = _narrative_or_none(primary)
-        sections = _Sections(nt)
+        sections = _Sections(
+            nt, quarterly=str(primary.manifest.get("form") or "") in _QUARTERLY_FORMS
+        )
+        # A manifest without a parseable period_of_report simply leaves the
+        # dimension rules inert; the narrative rules never needed it.
+        try:
+            por = date.fromisoformat(
+                str(primary.manifest.get("period_of_report") or "")[:10]
+            )
+        except ValueError:
+            por = None
         catalogue = contract.load_pack_schema("PK08")
         declared = _declared_enum_literals(
             catalogue, "loss_contingency_range_disclosed"
@@ -712,6 +1460,8 @@ class Pk08Producer(PackProducer):
             accession,
             mapping=_ALLEGATION_MAPPING,
             pattern=ALLEGATION_PATTERN,
+            note_mapping=_ALLEGATION_NOTE_MAPPING,
+            note_guard=_allegation_note_sentence,
         )
         if rewriter.note is not None:
             notes.append(("allegation_span", rewriter.note))
@@ -722,9 +1472,17 @@ class Pk08Producer(PackProducer):
             accession,
             mapping=_PROCEDURAL_MAPPING,
             pattern=PROCEDURAL_STATUS_PATTERN,
+            note_mapping=_PROCEDURAL_NOTE_MAPPING,
+            note_guard=_procedural_note_sentence,
         )
         if rewriter.note is not None:
             notes.append(("procedural_status_span", rewriter.note))
+
+        # R4/R5: the dimension rules run before the checks and the C2
+        # retype, so the arithmetic sees the XBRL-valued rows and the
+        # prose-only ruling touches only the rows still without a value.
+        _apply_accrual_dimension_rule(rows, ledger, por)
+        _apply_range_axis_rule(rows, ledger, por)
 
         # C2: the prose-only range ruling retypes the absent range rows.
         prose_range = _prose_range_fires(nt, sections)
