@@ -85,3 +85,38 @@ def test_malformed_leg_does_not_break_the_normal_dashboard_entry():
     assert page.select_one("#sx-evidence [aria-haspopup=dialog]")
     assert len(page.select("#dlg-evidence .ev-factor")) == 1
     assert page.select_one("#dlg-evidence .ev-factor-value b").string == "0"
+
+def test_score_trace_reconciles_the_october_30_example():
+    observations = [(39, 0.24), (14, 0.18), (48, 0.16), (68, 0.16), (48, 0.14), (80, 0.12)]
+    page = render(score=47, raw_score=47, capped=False, components=[factor(s, w) for s, w in observations])
+    assert [node.string for node in page.select(".ev-equation b")] == ["50", "−9.72", "+6.48", "= 46.76"]
+    assert [node.string for node in page.select(".ev-factor .ev-impact b")] == [
+        "-6.48", "-2.64", "-0.32", "-0.28", "+2.88", "+3.60",
+    ]
+    assert page.select_one('input[value="impact"][checked]') is not None
+    assert "Rounded blend" in page.select_one(".ev-trace").get_text()
+    assert not page.select_one(".ev-trace").has_attr("open")
+
+
+def test_missing_weights_leave_raw_scores_available_but_no_trace():
+    page = render(score=51, components=[factor(50, None), factor(90, 0.3)])
+    assert page.select_one('input[value="impact"][disabled]') is not None
+    assert page.select_one('input[value="score"][checked]') is not None
+    assert page.select_one(".ev-equation") is None
+    assert "Weights unavailable" in page.get_text()
+
+
+def test_published_blend_disagreement_is_explicit():
+    page = render(score=47, raw_score=75, capped=True, components=[factor(40, 1)])
+    assert "75 → 47" in page.select_one(".ev-cap").get_text()
+    assert "do not reconcile" in page.select_one(".ev-trace .ev-flag").get_text()
+    assert page.select_one(".ev-drivers") is None
+
+
+def test_neutral_blend_keeps_zero_distinct_from_unavailable():
+    page = render(score=50, raw_score=50, components=[factor(50, 1)])
+    assert page.select_one(".ev-impact b").string == "+0.00"
+    assert page.select_one(".ev-equation b:last-of-type") is not None
+    assert "= 50.00" in page.select_one(".ev-equation").get_text()
+    assert "balanced at neutral" in page.select_one(".ev-drivers").get_text()
+    assert all("nan" not in el.get("style", "").lower() for el in page.select("[style]"))
