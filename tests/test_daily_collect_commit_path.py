@@ -1579,7 +1579,12 @@ def _write_shims(shim_dir, real_git):
     it also publishes the racer's racing-lane.txt (clean-race injection). The
     counter file lives next to the shim dir, so each test starts at zero.
     SHIM_RESTORE_MODE (unset = pass-through) faults `git restore`: `refuse`
-    exits 74 without calling git; `noop` exits 0 without calling git."""
+    exits 74 without calling git; `noop` exits 0 without calling git.
+    SHIM_FAULT_MODE (unset = pass-through) faults the restore step's object
+    reads (#9556 post-merge findings 6285214966 / 6290288707): `lookup` makes
+    every snapshot existence probe (`ls-tree`, `cat-file -e`) exit 128 like an
+    unreadable object store; `blob` makes `cat-file blob` exit 128 with no
+    stdout, mid-restore."""
     shim_dir.mkdir(exist_ok=True)
     counter_file = shim_dir.parent / "push_count"
     counter_file.write_text("0")
@@ -1591,6 +1596,27 @@ def _write_shims(shim_dir, real_git):
         "racer_dir=\"${SHIM_RACER_DIR:-}\"\n"
         "real_git=\"${SHIM_REAL_GIT:?SHIM_REAL_GIT not set}\"\n"
         "restore_mode=\"${SHIM_RESTORE_MODE:-}\"\n"
+        "fault_mode=\"${SHIM_FAULT_MODE:-}\"\n"
+        "if [ -n \"$fault_mode\" ]; then\n"
+        "  sub=\"\"; has_e=0; has_blob=0\n"
+        "  for a in \"$@\"; do\n"
+        "    case \"$a\" in\n"
+        "      ls-tree|cat-file) [ -n \"$sub\" ] || sub=\"$a\" ;;\n"
+        "      -e) has_e=1 ;;\n"
+        "      blob) has_blob=1 ;;\n"
+        "    esac\n"
+        "  done\n"
+        "  if [ \"$fault_mode\" = \"lookup\" ] && { [ \"$sub\" = \"ls-tree\" ] || "
+        "{ [ \"$sub\" = \"cat-file\" ] && [ \"$has_e\" = \"1\" ]; }; }; then\n"
+        "    echo \"fatal: shim: object lookup unavailable (simulated)\" >&2\n"
+        "    exit 128\n"
+        "  fi\n"
+        "  if [ \"$fault_mode\" = \"blob\" ] && [ \"$sub\" = \"cat-file\" ] && "
+        "[ \"$has_blob\" = \"1\" ]; then\n"
+        "    echo \"fatal: shim: blob read failed (simulated)\" >&2\n"
+        "    exit 128\n"
+        "  fi\n"
+        "fi\n"
         "if [ -n \"$restore_mode\" ]; then\n"
         "  for a in \"$@\"; do\n"
         "    if [ \"$a\" = \"restore\" ]; then\n"
@@ -1657,10 +1683,11 @@ def _git(repo, *args, **kw):
     )
 
 
-def _run_carve_publish(tmp_path, collect_steps, monkeypatch, race, park_mode=None):
+def _run_carve_publish(tmp_path, collect_steps, monkeypatch, race, park_mode=None, restore_fault=None):
     """Build the carve-custody harness. Returns a namespace dict with the repo,
     racer, origin, deferred/HEAD blob ids, step procs and outputs. park_mode
-    (refuse | noop) faults `git restore` in the park step only."""
+    (refuse | noop) faults `git restore` in the park step only; restore_fault
+    (lookup | blob) faults the snapshot object reads in the restore step only."""
     # 1. Cleanup parent env so a contaminated host cannot leak into the steps.
     for k in list(os.environ):
         if k.startswith("GIT_") or k.startswith("PUSH_") or k in ("BASH_ENV", "ENV"):
@@ -1823,7 +1850,10 @@ def _run_carve_publish(tmp_path, collect_steps, monkeypatch, race, park_mode=Non
         procs["push"] = _run_step(push_run, repo, step_env_for("push"))
 
     if restore_run and snapshot:
-        procs["restore"] = _run_step(restore_run, repo, step_env_for("restore"))
+        restore_env = step_env_for("restore")
+        if restore_fault:
+            restore_env["SHIM_FAULT_MODE"] = restore_fault
+        procs["restore"] = _run_step(restore_run, repo, restore_env)
 
     return {
         "commit_proc": commit_proc,
@@ -2091,6 +2121,66 @@ def test_qledger_carve_custody_survives_the_market_push(
             f"job (capital_structure and government_revenue_projection need "
             f"collect to succeed). Output: {text!r}"
         )
+
+
+@pytest.mark.parametrize("fault", ["lookup", "blob"])
+def test_qledger_restore_never_destroys_surviving_bytes_on_a_failed_read(
+    tmp_path, collect_steps, monkeypatch, fault,
+):
+    """PR #9556 post-merge findings 6285214966 + 6290288707: the restore step
+    classified a path by the EXIT CODE of `git cat-file -e` and wrote the blob
+    straight over the live file. An unreadable object store (lookup) therefore
+    looked like a deferred deletion and `rm -f`'d the parked claims; a failed
+    `cat-file blob` (blob) truncated them to 0 bytes. Either way the only
+    reachable copy of the carved bytes in the workspace was destroyed and the
+    step still reported the path as restored. The fix classifies against the
+    snapshot TREE (`ls-tree`) and swaps in a hash-verified temp copy only, so a
+    failed read leaves the parked HEAD bytes in place and reports LOST."""
+    h = _run_carve_publish(
+        tmp_path, collect_steps, monkeypatch, "clean", restore_fault=fault,
+    )
+    assert h["park_outputs"].get("parked") == "true", (
+        f"park did not verify its parked state: {h['park_outputs']!r}"
+    )
+    restore = h["procs"].get("restore")
+    assert restore is not None, "restore step missing from the harness"
+    claims = h["repo"] / "data" / "qledger" / "claims.jsonl"
+    # BYTES: the parked (HEAD) copy survives untouched — not deleted, not
+    # truncated, not replaced by a partial read.
+    assert claims.exists(), (
+        f"restore step DELETED the parked claims on a failed {fault} read; the "
+        f"workspace no longer holds any copy of the carved bytes"
+    )
+    assert claims.read_bytes() == h["claims_at_base"], (
+        f"restore step rewrote the parked claims on a failed {fault} read "
+        f"(size now {claims.stat().st_size}); a failed read must leave the "
+        f"surviving bytes exactly as parked"
+    )
+    for leftover in claims.parent.glob("claims.jsonl.restore.*"):
+        pytest.fail(f"restore step left a temp file behind: {leftover}")
+    # SIGNAL: the path is reported LOST, never as restored/deleted.
+    restore_text = (restore.stdout or "") + (restore.stderr or "")
+    assert "::error title=qledger carve custody LOST::" in restore_text, (
+        f"restore step did not report custody LOST on a failed {fault} read; "
+        f"output: {restore_text!r}"
+    )
+    assert "data/qledger/claims.jsonl" in restore_text.split("custody LOST::", 1)[1].splitlines()[0], (
+        f"LOST line does not name the claims path; output: {restore_text!r}"
+    )
+    assert "data/qledger/claims.jsonl(deleted)" not in restore_text, (
+        f"a failed {fault} read was classified as a deferred deletion; "
+        f"output: {restore_text!r}"
+    )
+    summary_text = (
+        h["summary_path"].read_text() if h["summary_path"].exists() else ""
+    )
+    assert "LOST (not restorable here):" in summary_text and "none" not in summary_text.split("LOST (not restorable here):", 1)[1].splitlines()[0], (
+        f"step summary does not list the claims path as LOST; got: {summary_text!r}"
+    )
+    # The step itself still exits 0 — custody loss is reported, never a job failure.
+    assert restore.returncode == 0, (
+        f"restore step exited {restore.returncode}; stderr: {restore.stderr!r}"
+    )
 
 
 def test_qledger_carve_custody_steps_are_wired(collect_steps):
