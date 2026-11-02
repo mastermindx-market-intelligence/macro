@@ -15,6 +15,7 @@
     toast: null,
     slow: null,
     newTab: null,
+    back: null,
     open: false,
     ready: false,
     booted: false,
@@ -248,6 +249,13 @@
         'color:#dbe4f7;text-decoration:none;font:650 12px/1 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;',
         'cursor:pointer;transition:background .16s ease,border-color .16s ease,transform .16s ease}',
       '.mmto-loader button:hover,.mmto-loader a:hover{background:rgba(38,50,76,.82);border-color:rgba(77,130,255,.55);transform:translateY(-1px)}',
+      /* The host return stays outside the loader/stage: iframe load fallback
+         cannot hide it or place a cross-origin document over it. */
+      '.mmto-back{position:absolute;z-index:6;top:max(14px,env(safe-area-inset-top));left:max(14px,env(safe-area-inset-left));',
+        'min-height:44px;max-width:calc(100vw - 28px);padding:10px 14px;border:1px solid var(--line);border-radius:var(--r-btn,10px);',
+        'background:var(--panel);color:var(--text);font:650 12px/1.4 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}',
+      '.mmto-back:hover{background:var(--panel2,var(--panel))}',
+      '.mmto-back:focus-visible{outline:2px solid var(--link);outline-offset:3px}',
       '.mmto-toast{position:absolute;z-index:5;top:max(14px,env(safe-area-inset-top));left:50%;',
         'display:flex;align-items:center;gap:9px;max-width:calc(100vw - 28px);padding:9px 13px 9px 10px;',
         'border:1px solid rgba(119,143,196,.3);border-radius:12px;background:rgba(10,14,23,.84);',
@@ -313,6 +321,7 @@
     root.setAttribute('aria-label', 'Mastermind Terminal');
     root.setAttribute('aria-hidden', 'true');
     root.innerHTML =
+      '<button type="button" class="mmto-back">' + bilingual('Back to Dashboard', '返回仪表盘') + '</button>' +
       '<div class="mmto-stage">' +
         '<div class="mmto-loader" role="status" aria-live="polite">' +
           '<div class="mmto-loader-inner">' +
@@ -327,7 +336,6 @@
             '<div class="mmto-loader-sub">' + bilingual('Opening your live market workspace…', '正在打开实时市场工作台…') + '</div>' +
             '<div class="mmto-progress" aria-hidden="true"></div>' +
             '<div class="mmto-slow">' +
-              '<button type="button" class="mmto-back">' + bilingual('Back to Dashboard', '返回仪表盘') + '</button>' +
               '<a class="mmto-newtab" href="https://app.mastermind-x.com/terminal" target="_blank" rel="noopener">' + bilingual('Open separately', '单独打开') + '</a>' +
             '</div>' +
           '</div>' +
@@ -346,7 +354,8 @@
     state.slow = root.querySelector('.mmto-slow');
     state.newTab = root.querySelector('.mmto-newtab');
 
-    root.querySelector('.mmto-back').addEventListener('click', requestClose);
+    state.back = root.querySelector('.mmto-back');
+    state.back.addEventListener('click', requestClose);
     return root;
   }
 
@@ -640,9 +649,13 @@
     if (!state.overlay) return;
     state.overlay.classList.remove('is-loading', 'is-slow');
     state.overlay.classList.add('is-ready');
-    if (state.open) {
+    // Only confirmed Terminal paint transfers keyboard focus into the child.
+    // A document/shell fallback may be a 503/auth/error page that cannot relay Esc.
+    if (state.open && data && data.type === 'terminal:visual-ready') {
+      var readyFrame = state.frame;
       setTimeout(function () {
-        try { state.frame.focus(); } catch (e) {}
+        if (!state.open || state.frame !== readyFrame) return;
+        try { readyFrame.focus(); } catch (e) {}
       }, 180);
     }
   }
@@ -738,6 +751,7 @@
       root.classList.add('is-open');
       lockDashboard();
       armHistoryGuard();
+      try { state.back.focus({ preventScroll: true }); } catch (e) { try { state.back.focus(); } catch (ignore) {} }
     }
 
     showToast();
