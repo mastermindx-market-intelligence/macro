@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-19T21:11:12Z",
+ "accession": "0001193125-26-059371",
+ "cik": "0001005284",
+ "doc_byte_length": 4060884,
+ "doc_sha256": "b8f3af137eed03c862e9738ebfcaea1e61832607115a769e412b604eab6aeb0c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-19",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "oled-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2426521,
+  "byte_start": 2426181,
+  "normalized": "Acquired technology primarily consists of acquired license rights for patents and know-how obtained from Merck KGaA, BASF and Fujifilm. These intangible assets consist of the following (in thousands):",
+  "normalized_sha256": "945221e6a03308fbef1c65179d6ab7b14ef3e9db4688322816d2cd4a8e823435",
+  "raw": "Acquired technology primarily consists of acquired license rights for patents and know-how obtained from Merck KGaA, BASF and Fujifilm. These intangible assets consist of the following (in thousands)</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">:",
+  "raw_sha256": "e042071f29b3ba56780ca69b420222b4049a851f36758b761baf89fd4e31bb5f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1005284/000119312526059371/oled-20251231.htm",
+ "xbrl_contexts": []
+}

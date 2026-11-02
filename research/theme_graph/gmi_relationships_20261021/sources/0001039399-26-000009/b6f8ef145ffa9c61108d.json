@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-02-20T21:07:51Z",
+ "accession": "0001039399-26-000009",
+ "cik": "0001039399",
+ "doc_byte_length": 2522351,
+ "doc_sha256": "2f2077bc3513d71ee53569b03af75c5fca52a7ebe0cb1180c37b363603f5fab6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-20",
+ "form": "10-K",
+ "period_of_report": "2025-12-27",
+ "primary_document": "form-20251227.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1468704,
+  "byte_start": 1466866,
+  "normalized": "Intel Corporation*14.6 %17.1 %",
+  "normalized_sha256": "bd442e5f591035087954929a16457ff05f32795181ed998347ae7c541ab4f4bc",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:left;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">Intel Corporation</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">*</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#ffffff;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-58\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-520\">14.6</ix:nonFraction>&#160;</span></td><td style=\"background-color:#ffffff;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">%</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#ffffff;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-59\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-521\">17.1</ix:nonFraction>&#160;</span></td><td style=\"background-color:#ffffff;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">%</span></td></tr>",
+  "raw_sha256": "b6f8ef145ffa9c61108d329b092a99c46829dc8709fe1c680f11071a09326eae"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1039399/000103939926000009/form-20251227.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 29875,
+   "byte_start": 29219,
+   "context_ref": "c-58",
+   "raw": "<xbrli:context id=\"c-58\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001039399</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">form:IntelMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-12-31</xbrli:startDate><xbrli:endDate>2024-12-28</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "57ad35833310915a4238b149156f3269205a32c4e31eeaad815c780221440a48"
+  },
+  {
+   "byte_end": 30531,
+   "byte_start": 29875,
+   "context_ref": "c-59",
+   "raw": "<xbrli:context id=\"c-59\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001039399</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">form:IntelMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-30</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "f8273a0cf7d23cd414d76655f224bc724e1b69ceaaf958c6d8616cc7bb1310e3"
+  }
+ ]
+}
