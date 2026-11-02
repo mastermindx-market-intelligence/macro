@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-23T20:12:53Z",
+ "accession": "0001178913-26-001595",
+ "cik": "0001419612",
+ "doc_byte_length": 3695422,
+ "doc_sha256": "2de9d2e45c17fa457e489e2a6094f18fb4943ea4d92985e725f7be51b634991e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-23",
+ "form": "10-K/A",
+ "period_of_report": "2025-12-31",
+ "primary_document": "zk2634863.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 778412,
+  "byte_start": 778249,
+  "normalized": "For the year ended December 31, 2025, one customer accounted for 18.6% of our revenues and our top three customers together represented 35.8% of our revenues.",
+  "normalized_sha256": "dafefe5df80c207bcfd044083b9d2be4de0bebd732d74633242528860e56527f",
+  "raw": "For the year ended December&#160;31, 2025, one customer accounted for 18.6% of our revenues and our top three customers together represented 35.8% of our revenues.",
+  "raw_sha256": "567d65fbc0756ef9c1d2fe460b5c3ee40a6793d4413376f1daaae3f17e7d355c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1419612/000117891326001595/zk2634863.htm",
+ "xbrl_contexts": []
+}

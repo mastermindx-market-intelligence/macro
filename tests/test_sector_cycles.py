@@ -26,6 +26,21 @@ def _saw(ampl=0.5, period=180, n=900, trend=0.0003):
 
 # ── ZigZag swing detection ───────────────────────────────────────────────────
 
+def test_cycle_tabs_wrap_on_a_phone() -> None:
+    # A string pin cannot prove layout. The 375 browser read in the PR carries that.
+    root = Path(__file__).resolve().parent.parent
+    rule = "@media (max-width: 560px) { .sc-tabs { flex-wrap: wrap; } }"
+    assert rule in (root / "templates" / "sector_cycles.css").read_text(encoding="utf-8")
+
+
+def test_cycle_cards_keep_a_readable_width_on_a_phone() -> None:
+    # Two narrow columns squeeze a name to one letter a line beside its tags.
+    # A string pin cannot prove layout. The browser read in the PR carries that.
+    root = Path(__file__).resolve().parent.parent
+    rule = "@media (max-width: 880px) { .sc-page .cyc-cards { grid-template-columns: repeat(auto-fill, minmax(258px, 1fr)); } }"
+    assert rule in (root / "templates" / "sector_cycles.css").read_text(encoding="utf-8")
+
+
 def test_zigzag_alternates_and_is_significant():
     s = _saw(ampl=0.5, period=180)
     turns = sc._detect_swings(s, pct=12.0)
@@ -274,6 +289,167 @@ def test_broad_sector_cycles_builder_keeps_last_good_when_engine_has_no_session(
 
 # ── Leadership Migration W3A: truthful reconstructed daily RS history ────────
 
+def _extract_js_fn(text, name):
+    token = "function " + name + "("
+    start = text.find(token)
+    assert start != -1, name + " missing from sector_cycles.js"
+    i = text.find("{", start)
+    depth = 0
+    for j, ch in enumerate(text[i:], i):
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return text[start:j + 1]
+    raise AssertionError("unbalanced " + name)
+
+
+def _hz_fns(text):
+    names = (
+        "esc",
+        "_hzPass",
+        "_hzTip",
+        "_hzBadge",
+        "_hzPick",
+        "_hzWithheld",
+        "hazardLineHTML",
+        "hazardCardChip",
+    )
+    chunks = []
+    for name in names:
+        if name == "_hzWithheld" and "function _hzWithheld(" not in text:
+            continue
+        chunks.append(_extract_js_fn(text, name))
+    return "\n".join(chunks)
+
+
+def _eval_hz_fn(fn_name, sector, lang):
+    import json
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed")
+    text = _template_text("sector_cycles.js")
+    source = "\n".join([
+        "function curLang() { return " + json.dumps(lang) + "; }",
+        'function L(en, zh) { return curLang() === "zh" ? (zh || en) : en; }',
+        _hz_fns(text),
+        "console.log(" + fn_name + "(" + json.dumps(sector) + "));",
+    ])
+    done = subprocess.run(
+        [node, "-e", source],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=True,
+    )
+    return done.stdout.strip()
+
+
+def test_sector_card_says_when_hazard_withheld():
+    en_a = "Unavailable today — the model's short- and long-window reads disagreed, "
+    en_b = "so no clean probability can be shown."
+    en_cdf = en_a + en_b
+    zh_cdf = (
+        "今日暂不可用——模型的短窗与长窗读数不一致，无法给出可靠概率。"
+    )
+    en_def = "Unavailable today — a required input didn't settle cleanly."
+    zh_def = "今日暂不可用——所需输入未能完整结算。"
+    text = _template_text("sector_cycles.js")
+    start = text.find("function hazardLineHTML")
+    end = text.find("function forecastCardHTML")
+    assert start != -1 and end > start
+    hz_block = text[start:end]
+    chip = _extract_js_fn(text, "hazardCardChip")
+    line = _extract_js_fn(text, "hazardLineHTML")
+    why = _extract_js_fn(text, "_hzWithheld")
+    assert en_a in hz_block and en_b in hz_block
+    assert zh_cdf in hz_block
+    assert en_a in why and en_b in why
+    assert zh_cdf in why
+    assert en_def in why and zh_def in why
+    assert "if (hz.unavailable)" in chip
+    assert "if (hz.unavailable)" in line
+    assert "_hzWithheld" in chip and "_hzWithheld" in line
+    assert "non_monotone_cdf" not in chip
+    assert "non_monotone_cdf" not in line
+    assert "unavailable_reason" not in chip
+    assert "unavailable_reason" not in line
+    chip_head = chip.split("var pick = _hzPick")[0]
+    line_head = line.split("function cell")[0]
+    assert "%" not in chip_head and "_hzPick" not in chip_head
+    assert "%" not in line_head and "_hzPick" not in line_head
+    assert "_hzTip" not in chip_head and "_hzTip" not in line_head
+    assert "cc-hz hz-muted" in chip_head
+    assert "cyc-hazard sc-hazard" in line_head
+    assert "Turn hazard unavailable" not in why
+    assert "转折风险暂不可用" not in why
+    withheld = {
+        "now": {
+            "hazard": {
+                "unavailable": True,
+                "unavailable_reason": "non_monotone_cdf",
+            }
+        }
+    }
+    other = {
+        "now": {
+            "hazard": {
+                "unavailable": True,
+                "unavailable_reason": "unknown_phase",
+            }
+        }
+    }
+    figures = {
+        "now": {
+            "hazard": {
+                "direction": "down",
+                "3m": {
+                    "p": 0.25,
+                    "cell_verdict": "PASS",
+                    "source": "MODEL",
+                },
+            }
+        }
+    }
+    chip_en = _eval_hz_fn("hazardCardChip", withheld, "en")
+    chip_zh = _eval_hz_fn("hazardCardChip", withheld, "zh")
+    assert '<span class="cc-hz-k">Turn hazard</span> Unavailable today</div>' in chip_en
+    assert '<span class="cc-hz-k">转折风险</span> 今日暂不可用</div>' in chip_zh
+    assert 'title="' + en_cdf + '"' in chip_en
+    assert 'title="' + zh_cdf + '"' in chip_zh
+    line_en = _eval_hz_fn("hazardLineHTML", withheld, "en")
+    line_zh = _eval_hz_fn("hazardLineHTML", withheld, "zh")
+    assert '<span class="hz-label">Turn hazard</span>' + en_cdf + "</div>" in line_en
+    assert '<span class="hz-label">转折风险</span>' + zh_cdf + "</div>" in line_zh
+    for fn in ("hazardCardChip", "hazardLineHTML"):
+        en = _eval_hz_fn(fn, withheld, "en")
+        zh = _eval_hz_fn(fn, withheld, "zh")
+        assert en_cdf in en and zh_cdf not in en
+        assert zh_cdf in zh and en_cdf not in zh
+        assert "non_monotone_cdf" not in en
+        assert "non_monotone_cdf" not in zh
+        assert "%" not in en and "%" not in zh
+        assert "unavailable_reason" not in en
+        assert "unavailable_reason" not in zh
+        assert _eval_hz_fn(fn, {}, "en") == ""
+        assert _eval_hz_fn(fn, {"now": {}}, "zh") == ""
+        fig_en = _eval_hz_fn(fn, figures, "en")
+        fig_zh = _eval_hz_fn(fn, figures, "zh")
+        assert en_cdf not in fig_en and zh_cdf not in fig_zh
+        assert "Unavailable today" not in fig_en
+        assert "今日暂不可用" not in fig_zh
+        o_en = _eval_hz_fn(fn, other, "en")
+        o_zh = _eval_hz_fn(fn, other, "zh")
+        assert en_def in o_en and zh_def in o_zh
+        assert en_cdf not in o_en and zh_cdf not in o_zh
+        assert "non_monotone_cdf" not in o_en
+        assert "%" not in o_en and "%" not in o_zh
+
+
 def _rs_history_panel(n: int = 520) -> pd.DataFrame:
     idx = pd.bdate_range("2024-01-02", periods=n)
     # A non-linear benchmark plus a smoothly accelerating sector-relative ratio
@@ -369,6 +545,375 @@ def test_rs_history_zero_benchmark_close_cannot_emit_infinity():
     json.dumps(clean_rows, allow_nan=False)    # must not raise
 
 
+_CYCLE_LOCK_BANNED = (
+    "实时", "申报", "validated", "已验证", "live", "forecast",
+    "falsifier", "refuted", "证伪", "z-score", "percentile rank",
+)
+
+# Frozen reader sentences. Split only so each source line stays short.
+_CYCLE_LOCK_SHELLS = (
+    (
+        "sector_cycles.html.j2",
+        "sector_cycles.js",
+        "sc-cards",
+        (
+            "Members get each sector fund on the cycle clock, "
+            "its scorecard, and what drove each leg of the move."
+        ),
+        "会员可查看每只板块 ETF 的周期时钟、记分卡，以及每一段走势背后的原因。",
+    ),
+    (
+        "sector_cycles_china.html.j2",
+        "sector_cycles.js",
+        "sc-cards",
+        (
+            "Members get each Shenwan sector and A-share basket "
+            "on the cycle clock, its scorecard, and the typical "
+            "next-turn rhythm."
+        ),
+        "会员可查看每个申万行业与 A 股主题篮子的周期时钟、记分卡，以及典型的下一拐点节奏。",
+    ),
+    (
+        "country_cycles.html.j2",
+        "sector_cycles.js",
+        "sc-cards",
+        (
+            "Members get each country fund and regional bloc "
+            "on the cycle clock, its scorecard, and its strength "
+            "against the US."
+        ),
+        "会员可查看每只国家 ETF 与区域板块的周期时钟、记分卡，以及相对美国的强弱。",
+    ),
+    (
+        "cycle.html.j2",
+        "cycle_app.js",
+        "cyc-cards",
+        (
+            "Members get where each cycle sits on one clock, "
+            "each cycle's scorecard, and the projection drawn "
+            "from its backing tape."
+        ),
+        "会员可查看各周期在同一张时钟上的位置、每个周期的记分卡，以及由其底层数据得出的推算。",
+    ),
+    (
+        "markets.html.j2",
+        "markets_app.js",
+        "cyc-cards",
+        (
+            "Members get where each market sits on one clock, "
+            "each market's scorecard, and the valuation map."
+        ),
+        "会员可查看各市场在同一张时钟上的位置、每个市场的记分卡，以及估值地图。",
+    ),
+    (
+        "subsectors.html.j2",
+        "subsectors.js",
+        "sc-app",
+        (
+            "Members get each sub-industry's timing score, "
+            "which groups just turned buyable, which are late "
+            "or fading, and the stocks firing inside them."
+        ),
+        "会员可查看每个子行业的时机评分、哪些刚转为可买、哪些已偏晚或转弱，以及其中触发的个股。",
+    ),
+)
+
+
+def _cycle_lock_script():
+    """The slot's inline script, cut out of the partial. It holds no Jinja."""
+    import re
+
+    text = _template_text("_cycle_locked_slot.html.j2")
+    match = re.search(r"<script>([\s\S]*?)</script>", text)
+    assert match is not None, "cycle lock partial has no inline script"
+    return match.group(1)
+
+
+def _run_cycle_lock(children, mode, status):
+    """Run the shipped lock script under node with a fake window and fetch."""
+    import json
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed")
+    flags = json.dumps([name == "empty" for name in children])
+    lines = [
+        "var flags = " + flags + ";",
+        "var mode = " + json.dumps(mode) + ";",
+        "var status = " + str(int(status)) + ";",
+        "var fetches = [];",
+        "var hideCalls = [];",
+        "function dead() {",
+        "  return {style: {setProperty: function (p, v, pri) {",
+        "    hideCalls.push([p, v, pri]);",
+        "  }}};",
+        "}",
+        "var deads = [dead(), dead()];",
+        "var signin = {hidden: true};",
+        "signin.addEventListener = function () {};",
+        "var slot = {",
+        "  hidden: true,",
+        '  attrs: {"data-fill": "the-fill",',
+        '    "data-renderer": "sector_cycles.js",',
+        '    "data-hide": "#dead-a,#dead-b"},',
+        "  getAttribute: function (k) { return this.attrs[k] || null; },",
+        "  querySelector: function (sel) {",
+        '    if (sel === ".cycle-lock-signin") return signin;',
+        "    if (sel.indexOf('signin') !== -1) return signin;",
+        "    return null;",
+        "  }",
+        "};",
+        "var kids = flags.map(function (isEmpty) {",
+        "  return {classList: {contains: function (c) {",
+        '    return c === "empty" && isEmpty;',
+        "  }}};",
+        "});",
+        "var fill = {children: kids};",
+        "var document = {",
+        "  getElementById: function (id) {",
+        '    if (id === "cycle-lock") return slot;',
+        '    if (id === "the-fill") return fill;',
+        "    return null;",
+        "  },",
+        "  querySelectorAll: function () { return deads; }",
+        "};",
+        "var listeners = [];",
+        "var window = {addEventListener: function (t, fn) {",
+        "  listeners.push(fn);",
+        "}};",
+        "var location = {href: ''};",
+        "function fetch(url, opts) {",
+        "  fetches.push({url: url, opts: opts});",
+        '  if (mode === "throw") throw new Error("sync");',
+        '  if (mode === "reject") return Promise.reject(new Error("no"));',
+        "  return Promise.resolve({status: status});",
+        "}",
+    ]
+    lines.append(_cycle_lock_script())
+    lines.extend([
+        "listeners[0]();",
+        "Promise.resolve().then(function () {",
+        "  var opts = fetches.length ? fetches[0].opts : null;",
+        "  console.log(JSON.stringify({",
+        "    n: fetches.length,",
+        "    url: fetches.length ? fetches[0].url : '',",
+        "    method: opts ? opts.method : '',",
+        "    credentials: opts ? opts.credentials : '',",
+        "    cache: opts ? opts.cache : '',",
+        "    slotHidden: slot.hidden,",
+        "    signinHidden: signin.hidden,",
+        "    hides: hideCalls",
+        "  }));",
+        "});",
+    ])
+    done = subprocess.run(
+        [node, "-e", "\n".join(lines)],
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert done.returncode == 0, done.stderr
+    return json.loads(done.stdout.strip())
+
+
+def _cycle_lock_expr(block, name):
+    """String value of one lock_* assignment, joining Jinja ~ pieces."""
+    import re
+
+    found = re.search(r"\b" + name + r"\s*=\s*", block)
+    assert found is not None, name
+    rest = block[found.end():]
+    out = []
+    depth = 0
+    quote = ""
+    i = 0
+    while i < len(rest):
+        c = rest[i]
+        if quote:
+            out.append(c)
+            if c == quote:
+                quote = ""
+            i += 1
+            continue
+        if c in "'\"":
+            quote = c
+            out.append(c)
+            i += 1
+            continue
+        if c in "([":
+            depth += 1
+        elif c in ")]" and depth:
+            depth -= 1
+        elif c == "," and depth == 0:
+            break
+        out.append(c)
+        i += 1
+    parts = re.findall(r"'([^']*)'|\"([^\"]*)\"", "".join(out))
+    return "".join(a if a != "" else b for a, b in parts)
+
+
+def _cycle_lock_with(text, name):
+    import re
+
+    pat = (
+        r"\{%\s*with\b(.*?)%\}"
+        r"\s*\{%\s*include\s+\"_cycle_locked_slot\.html\.j2\"\s*%\}"
+    )
+    found = re.search(pat, text, re.S)
+    assert found is not None, (
+        name + " does not include _cycle_locked_slot.html.j2"
+    )
+    return found.group(1)
+
+
+def test_cycle_lock_skips_fetch_when_fill_has_a_child():
+    got = _run_cycle_lock(["card"], "ok", 401)
+    assert got["n"] == 0
+    assert got["slotHidden"] is True
+    assert got["signinHidden"] is True
+    assert got["hides"] == []
+
+
+def test_cycle_lock_shows_signin_on_401():
+    got = _run_cycle_lock([], "ok", 401)
+    assert got["n"] == 1
+    assert got["url"] == "sector_cycles.js"
+    assert got["method"] == "HEAD"
+    assert got["credentials"] == "same-origin"
+    assert got["cache"] == "no-store"
+    assert got["slotHidden"] is False
+    assert got["signinHidden"] is False
+    assert got["hides"] == [
+        ["display", "none", "important"],
+        ["display", "none", "important"],
+    ]
+
+
+def test_cycle_lock_hides_signin_on_403():
+    got = _run_cycle_lock([], "ok", 403)
+    assert got["n"] == 1
+    assert got["slotHidden"] is False
+    assert got["signinHidden"] is True
+
+
+def test_cycle_lock_treats_only_empty_marker_as_unfilled():
+    got = _run_cycle_lock(["empty"], "ok", 401)
+    assert got["n"] == 1
+    assert got["slotHidden"] is False
+    assert got["signinHidden"] is False
+
+
+@pytest.mark.parametrize("status", [200, 500])
+def test_cycle_lock_ignores_other_statuses(status):
+    got = _run_cycle_lock([], "ok", status)
+    assert got["n"] == 1
+    assert got["slotHidden"] is True
+    assert got["signinHidden"] is True
+    assert got["hides"] == []
+
+
+@pytest.mark.parametrize("mode", ["reject", "throw"])
+def test_cycle_lock_ignores_fetch_failures(mode):
+    got = _run_cycle_lock([], mode, 401)
+    assert got["n"] == 1
+    assert got["slotHidden"] is True
+    assert got["signinHidden"] is True
+    assert got["hides"] == []
+
+
+def test_cycle_lock_shells_parse_and_name_their_slots():
+    import re
+    import jinja2
+
+    env = jinja2.Environment()
+    for name, renderer, fill, en, zh in _CYCLE_LOCK_SHELLS:
+        text = _template_text(name)
+        env.parse(text)
+        block = _cycle_lock_with(text, name)
+        assert _cycle_lock_expr(block, "lock_renderer") == renderer
+        assert re.search(
+            r'<script src="' + re.escape(renderer) + r'"',
+            text,
+        )
+        got_fill = _cycle_lock_expr(block, "lock_fill")
+        assert got_fill == fill
+        assert ('id="' + fill + '"') in text
+        hide = _cycle_lock_expr(block, "lock_hide")
+        for ident in re.findall(r"#([A-Za-z0-9_-]+)", hide):
+            assert ('id="' + ident + '"') in text, (name, ident)
+        got_en = _cycle_lock_expr(block, "lock_en")
+        got_zh = _cycle_lock_expr(block, "lock_zh")
+        assert got_en == en
+        assert got_zh == zh
+        assert got_en and got_zh
+        assert re.search(r"\d", got_en) is None
+        assert re.search(r"\d", got_zh) is None
+
+
+def test_cycle_lock_each_shell_renders_its_own_slot():
+    """Through Jinja, each shell's with-block fills the partial with its values."""
+    import re
+    import jinja2
+
+    root = Path(__file__).resolve().parents[1] / "templates"
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(root)))
+    pattern = re.compile(
+        r"\{%\s*with\b.*?%\}\s*"
+        r"\{%\s*include\s+\"_cycle_locked_slot\.html\.j2\"\s*%\}\s*"
+        r"\{%\s*endwith\s*%\}",
+        re.S,
+    )
+    for name, renderer, fill, en, zh in _CYCLE_LOCK_SHELLS:
+        found = pattern.findall(_template_text(name))
+        assert len(found) == 1, name
+        html = env.from_string(found[0]).render()
+        tag = re.search(r"<div\b[^>]*\bid=\"cycle-lock\"[^>]*>", html)
+        assert tag is not None, name
+        assert ('data-renderer="' + renderer + '"') in tag.group(0), name
+        assert ('data-fill="' + fill + '"') in tag.group(0), name
+        hide = re.search(r"data-hide=\"([^\"]+)\"", html)
+        assert hide is not None, name
+        assert ("#" + fill) in hide.group(1), name
+        assert 'href="plans.html"' in html, name
+        assert en in html, name
+        assert zh in html, name
+
+
+def test_cycle_lock_partial_is_hidden_and_plain():
+    import re
+
+    text = _template_text("_cycle_locked_slot.html.j2")
+    slot = re.search(
+        r'<div\b[^>]*\bid="cycle-lock"[^>]*>',
+        text,
+        re.S,
+    )
+    assert slot is not None and re.search(r"\bhidden\b", slot.group(0))
+    link = re.search(
+        r'<a\b[^>]*\bcycle-lock-signin\b[^>]*>',
+        text,
+        re.S,
+    )
+    assert link is not None and re.search(r"\bhidden\b", link.group(0))
+    assert "These readings are for members" in text
+    assert "这些读数仅向会员开放" in text
+    assert "See plans" in text
+    assert "查看方案" in text
+    assert "Already a member? Sign in" in text
+    assert "已是会员？登录" in text
+    blob = text
+    for name, _renderer, _fill, en, zh in _CYCLE_LOCK_SHELLS:
+        block = _cycle_lock_with(_template_text(name), name)
+        blob += _cycle_lock_expr(block, "lock_en")
+        blob += _cycle_lock_expr(block, "lock_zh")
+        assert en == _cycle_lock_expr(block, "lock_en")
+        assert zh == _cycle_lock_expr(block, "lock_zh")
+    for word in _CYCLE_LOCK_BANNED:
+        assert word not in blob, word
+
+
 def test_rs_benchmark_ffill_is_bounded():
     # MUTATION: `.ffill()` without `limit=RS_BENCH_FFILL_LIMIT` -> the benchmark gap is
     # carried forever, so the last 3 stale dates reappear in the RS series.
@@ -388,6 +933,436 @@ def test_rs_benchmark_ffill_is_bounded():
     assert all(d in dates for d in carried), "bounded ffill dropped an in-limit session"
     assert not any(d in dates for d in stale), "benchmark ffill is unbounded"
     assert sc.RS_BENCH_FFILL_LIMIT == 5
+
+
+_HALF = 4.5
+
+
+def _page_x(year, month, day):
+    """The _yf rule, year + (dayofyear - 1) / 365.25, rounded to 3 places like META.today."""
+    import datetime
+    when = datetime.date(year, month, day)
+    doy = when.timetuple().tm_yday
+    return round(year + (doy - 1) / 365.25, 3)
+
+
+def _extract_shipped(text, name):
+    """One function from the template, multi-line or a single line."""
+    import re
+    head = r"\n  function " + re.escape(name) + r"\("
+    multi = re.search(head + r"[^)]*\) \{\n(?:.*\n)*?  \}\n", text)
+    if multi:
+        return multi.group(0)
+    one = re.search(head + r"[^)]*\) \{.*?\}[^\n]*\n", text)
+    assert one is not None, name + " missing from sector_cycles.js"
+    return one.group(0)
+
+
+def _cycle_fns():
+    """Shipped helpers, cut out of the template text."""
+    import re
+    text = _template_text("sector_cycles.js")
+    found = re.search(r"\n  var MONTHS = \[.*?\];", text)
+    assert found is not None, "MONTHS missing"
+    names = [
+        "fmtMon",
+        "projPast",
+        "cardNextTxt",
+        "detailNextLabel",
+        "unitE",
+        "unitZ",
+        "forecastCardHTML",
+    ]
+    parts = [found.group(0)]
+    for name in names:
+        parts.append(_extract_shipped(text, name))
+    return "\n".join(parts)
+
+
+def _case(meta, lang, proj, point):
+    return {"meta": meta, "lang": lang, "proj": proj, "point": point}
+
+
+def _eval_cases(cases):
+    """Run shipped cycle text helpers for hand-written records."""
+    import json
+    import shutil
+    import subprocess
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed")
+    script = [
+        "var LANG = 'en';",
+        "var IS_INTL = false;",
+        "var META = {today: 0, forecastPoint: false};",
+        "function curLang() {",
+        "  return LANG === 'zh' ? 'zh' : 'en';",
+        "}",
+        "function L(en, zh) {",
+        "  return curLang() === 'zh' ? (zh || en) : en;",
+        "}",
+        _cycle_fns(),
+        "var CASES = " + json.dumps(cases) + ";",
+        "var outs = CASES.map(function (c) {",
+        "  META = c.meta;",
+        "  META.forecastPoint = c.point === true;",
+        "  LANG = c.lang;",
+        "  var P = c.proj;",
+        "  var mon = (P && P.central) ? fmtMon(P.central) : '';",
+        "  var lo = (P && P.low) ? fmtMon(P.low) : '';",
+        "  var hi = (P && P.high) ? fmtMon(P.high) : '';",
+        "  return {",
+        "    past: projPast(P),",
+        "    mon: mon,",
+        "    lo: lo,",
+        "    hi: hi,",
+        "    card: cardNextTxt(P),",
+        "    label: detailNextLabel(P),",
+        "    box: forecastCardHTML({proj: P})",
+        "  };",
+        "});",
+        "console.log(JSON.stringify(outs));",
+    ]
+    done = subprocess.run(
+        [node, "-e", "\n".join(script)],
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert done.returncode == 0, done.stderr
+    return json.loads(done.stdout)
+
+
+def _past_proj(kind):
+    return {
+        "central": "2025-09",
+        "low": "2025-07",
+        "high": "2025-11",
+        "overdue": True,
+        "nextTurn": kind,
+        "period_yrs": {"median": _HALF},
+    }
+
+
+def _future_proj(kind):
+    return {
+        "central": "2026-11",
+        "low": "2026-09",
+        "high": "2027-01",
+        "overdue": True,
+        "nextTurn": kind,
+        "period_yrs": {"median": _HALF},
+    }
+
+
+def _len_text(lang):
+    if lang == "en":
+        return str(_HALF) + " yr"
+    return str(_HALF) + " 年"
+
+
+def _reg_past(kind, lang, row):
+    mon, lo, hi = row["mon"], row["lo"], row["hi"]
+    if lang == "en":
+        noun = "Peak" if kind == "peak" else "Trough"
+        turn = "peak" if kind == "peak" else "trough"
+        return (
+            noun + " was projected \u2248 " + mon
+            + " (" + lo + "\u2013" + hi + "), from this "
+            + "sector\u2019s own median half-cycle. "
+            + "That month has passed with no confirmed "
+            + turn + "."
+        )
+    noun = "顶部" if kind == "peak" else "底部"
+    return (
+        noun + "原预计约在 " + mon
+        + "（" + lo + "\u2013" + hi + "），基于该"
+        + "板块自身的中位半周期。"
+        + "该月已过，尚无确认的" + noun + "。"
+    )
+
+
+def _reg_next(kind, lang, row):
+    mon, lo, hi = row["mon"], row["lo"], row["hi"]
+    if lang == "en":
+        return (
+            "Projected next " + kind + " \u2248 " + mon
+            + " (" + lo + "\u2013" + hi + "), from this "
+            + "sector\u2019s own median half-cycle. "
+            + "A timing estimate, not a guarantee."
+        )
+    noun = "顶部" if kind == "peak" else "底部"
+    return (
+        "预计下次" + noun + "约在 " + mon
+        + "（" + lo + "\u2013" + hi + "），基于该"
+        + "板块自身的中位半周期。仅为时间估计。"
+    )
+
+
+def _note_past(kind, lang):
+    length = _len_text(lang)
+    if lang == "en":
+        turn = "peak" if kind == "peak" else "trough"
+        return (
+            "That month has passed with no confirmed " + turn
+            + ". From this series\u2019 own median half-cycle ("
+            + length
+            + ") \u2014 a timing RHYTHM, not a backtested prediction."
+        )
+    noun = "顶部" if kind == "peak" else "底部"
+    return (
+        "该月已过，尚无确认的" + noun
+        + "。基于该序列自身的中位半周期（" + length
+        + "）\u2014\u2014属时间节奏，并非回测预测。"
+    )
+
+
+def _note_next(lang):
+    length = _len_text(lang)
+    if lang == "en":
+        return (
+            "From this series\u2019 own median half-cycle ("
+            + length
+            + ") \u2014 a timing RHYTHM, not a backtested prediction."
+        )
+    return (
+        "基于该序列自身的中位半周期（" + length
+        + "）\u2014\u2014属时间节奏，并非回测预测。"
+    )
+
+
+def _heading(kind, lang, past):
+    if lang == "en":
+        if past:
+            if kind == "peak":
+                return "Peak was projected"
+            return "Trough was projected"
+        return "Projected next " + kind
+    noun = "顶部" if kind == "peak" else "底部"
+    if past:
+        return noun + "原预计"
+    return "推演下一" + noun
+
+
+def _reg_html(body):
+    return '<div class="cyc-regnote">' + body + "</div>"
+
+
+def _fcast_html(kind, lang, row, past):
+    mon, lo, hi = row["mon"], row["lo"], row["hi"]
+    arrow = "\u25b2" if kind == "peak" else "\u25bc"
+    klass = "pk" if kind == "peak" else "tr"
+    if lang == "en":
+        range_word = "typical range "
+    else:
+        range_word = "典型区间 "
+    band = lo + " \u2013 " + hi
+    if past:
+        note = _note_past(kind, lang)
+    else:
+        note = _note_next(lang)
+    head = _heading(kind, lang, past)
+    return (
+        '<div class="sc-fcast ' + klass + '">'
+        + '<div class="sc-fcast-hd">'
+        + '<span class="sc-fcast-ar">' + arrow + "</span>"
+        + '<span class="sc-fcast-k">' + head + "</span></div>"
+        + '<div class="sc-fcast-date">' + mon + "</div>"
+        + '<div class="sc-fcast-band">'
+        + range_word + band + "</div>"
+        + '<div class="sc-fcast-note">' + note + "</div>"
+        + "</div>"
+    )
+
+
+def _turn_views(meta):
+    """Past and not-past renders for both turns, languages, and boxes."""
+    cases = []
+    keys = []
+    for kind in ("peak", "trough"):
+        paired = {"past": _past_proj(kind), "next": _future_proj(kind)}
+        for lang in ("en", "zh"):
+            for point in (False, True):
+                for when in ("past", "next"):
+                    cases.append(_case(meta, lang, paired[when], point))
+                    keys.append((kind, lang, point, when))
+    rows = _eval_cases(cases)
+    return {k: row for k, row in zip(keys, rows)}
+
+
+def test_proj_past_on_a_page_dated_2026_10_30():
+    """A gone month is past. This month, next month, and a flag alone are not."""
+    meta = {"today": _page_x(2026, 10, 30)}
+    specs = [
+        ("2025-09", True, True),
+        ("2026-10", True, False),
+        ("2026-11", True, False),
+        ("2026-04", False, False),
+    ]
+    cases = []
+    for central, overdue, _want in specs:
+        proj = {"central": central, "overdue": overdue, "nextTurn": "peak"}
+        cases.append(_case(meta, "en", proj, False))
+    cases.append(_case(meta, "en", None, False))
+    got = _eval_cases(cases)
+    for spec, row in zip(specs, got):
+        assert row["past"] is spec[2], spec[0]
+    assert got[-1]["past"] is False
+    assert not got[-1]["card"].startswith("Next ")
+
+
+def test_proj_past_splits_the_page_month_on_its_edges():
+    """Last day stays in-month. The next first day marks that month past."""
+    import calendar
+    cases = []
+    wanted = []
+    for year in range(2020, 2032):
+        for month in range(1, 13):
+            last = calendar.monthrange(year, month)[1]
+            central = "%04d-%02d" % (year, month)
+            proj = {
+                "central": central,
+                "overdue": True,
+                "nextTurn": "peak",
+            }
+            last_meta = {"today": _page_x(year, month, last)}
+            cases.append(_case(last_meta, "en", proj, False))
+            wanted.append(False)
+            if month == 12:
+                ny, nm = year + 1, 1
+            else:
+                ny, nm = year, month + 1
+            first_meta = {"today": _page_x(ny, nm, 1)}
+            cases.append(_case(first_meta, "en", proj, False))
+            wanted.append(True)
+    got = _eval_cases(cases)
+    assert len(got) == len(wanted)
+    for row, want, case in zip(got, wanted, cases):
+        assert row["past"] is want, case["proj"]["central"]
+
+
+def test_card_says_elapsed_when_the_projected_month_is_past():
+    """Past card copy is the frozen elapsed line, in both languages."""
+    text = _template_text("sector_cycles.js")
+    assert "var nextTxt = cardNextTxt(s.proj);" in text
+    assert 'class="cc-arrow"' in text
+    meta = {"today": _page_x(2026, 10, 30)}
+    cases = [
+        _case(meta, "en", _past_proj("peak"), False),
+        _case(meta, "zh", _past_proj("peak"), False),
+        _case(meta, "en", _past_proj("trough"), False),
+        _case(meta, "zh", _past_proj("trough"), False),
+    ]
+    en_pk, zh_pk, en_tr, zh_tr = _eval_cases(cases)
+    mon = en_pk["mon"]
+    assert en_pk["card"] == (
+        "ref: Peak was proj. " + mon + " \u2014 elapsed"
+    )
+    assert zh_pk["card"] == (
+        "参考：顶部原预计 " + zh_pk["mon"] + " \u2014 已过"
+    )
+    assert en_tr["card"] == (
+        "ref: Trough was proj. " + mon + " \u2014 elapsed"
+    )
+    assert zh_tr["card"] == (
+        "参考：底部原预计 " + zh_tr["mon"] + " \u2014 已过"
+    )
+    for row in (en_pk, zh_pk, en_tr, zh_tr):
+        assert not row["card"].startswith("Next ")
+        assert not row["card"].startswith("下次")
+        assert "\u25b2" not in row["card"]
+        assert "\u25bc" not in row["card"]
+
+
+def test_card_keeps_next_when_the_month_is_not_past():
+    """Not-past card text stays Next plus the arrow and the month."""
+    meta = {"today": _page_x(2026, 10, 30)}
+    cases = [
+        _case(meta, "en", _future_proj("peak"), False),
+        _case(meta, "zh", _future_proj("peak"), False),
+        _case(meta, "en", _future_proj("trough"), False),
+        _case(meta, "zh", _future_proj("trough"), False),
+    ]
+    en_pk, zh_pk, en_tr, zh_tr = _eval_cases(cases)
+    assert en_pk["past"] is False
+    assert en_pk["card"] == "Next \u25b2 " + en_pk["mon"]
+    assert zh_pk["card"] == "下次\u25b2 " + zh_pk["mon"]
+    assert en_tr["card"] == "Next \u25bc " + en_tr["mon"]
+    assert zh_tr["card"] == "下次\u25bc " + zh_tr["mon"]
+
+
+def test_detail_label_names_a_passed_projection_and_keeps_next():
+    """Detail label swaps only when the projected month is past."""
+    text = _template_text("sector_cycles.js")
+    assert "detailNextLabel(s.proj)" in text
+    assert "fmtMon(s.proj.central)" in text
+    meta = {"today": _page_x(2026, 10, 30)}
+    cases = []
+    for kind in ("peak", "trough"):
+        cases.append(_case(meta, "en", _past_proj(kind), False))
+        cases.append(_case(meta, "zh", _past_proj(kind), False))
+        cases.append(_case(meta, "en", _future_proj(kind), False))
+        cases.append(_case(meta, "zh", _future_proj(kind), False))
+    rows = _eval_cases(cases)
+    assert rows[0]["label"] == "Peak was projected"
+    assert rows[1]["label"] == "顶部原预计"
+    assert rows[2]["label"] == "Next peak"
+    assert rows[3]["label"] == "下次顶部"
+    assert rows[4]["label"] == "Trough was projected"
+    assert rows[5]["label"] == "底部原预计"
+    assert rows[6]["label"] == "Next trough"
+    assert rows[7]["label"] == "下次底部"
+    alone = _eval_cases([
+        _case(meta, "en", None, False),
+        _case(meta, "zh", None, False),
+    ])
+    assert alone[0]["label"] == "Next turn"
+    assert alone[1]["label"] == "下次底部"
+
+
+def test_long_lines_name_a_passed_month_and_stay_off_otherwise():
+    """Regnote and the box note appear when past, and not otherwise."""
+    meta = {"today": _page_x(2026, 10, 30)}
+    view = _turn_views(meta)
+    for kind in ("peak", "trough"):
+        for lang in ("en", "zh"):
+            past_reg = view[(kind, lang, False, "past")]
+            next_reg = view[(kind, lang, False, "next")]
+            past_box = view[(kind, lang, True, "past")]
+            next_box = view[(kind, lang, True, "next")]
+            got = _reg_html(_reg_past(kind, lang, past_reg))
+            assert past_reg["box"] == got
+            got = _reg_html(_reg_next(kind, lang, next_reg))
+            assert next_reg["box"] == got
+            got = _fcast_html(kind, lang, past_box, True)
+            assert past_box["box"] == got
+            got = _fcast_html(kind, lang, next_box, False)
+            assert next_box["box"] == got
+            assert "That month has passed" not in next_reg["box"]
+            assert "That month has passed" not in next_box["box"]
+            assert "该月已过" not in next_reg["box"]
+            assert "该月已过" not in next_box["box"]
+
+
+def test_rendered_turn_copy_never_says_overdue():
+    """Reader text never names the flag or a lateness count."""
+    meta = {"today": _page_x(2026, 10, 30)}
+    cases = []
+    for kind in ("peak", "trough"):
+        proj = _past_proj(kind)
+        proj["overdue_frac"] = 1.42
+        fut = _future_proj(kind)
+        fut["overdue_frac"] = 0.2
+        for lang in ("en", "zh"):
+            for point in (False, True):
+                cases.append(_case(meta, lang, proj, point))
+                cases.append(_case(meta, lang, fut, point))
+    rows = _eval_cases(cases)
+    for row in rows:
+        blob = row["card"] + "\n" + row["label"] + "\n" + row["box"]
+        assert "overdue" not in blob
+        assert "1.42" not in blob
+        assert "0.2" not in blob
 
 
 def test_sector_page_says_rs_rank_is_rebuilt_from_price():
@@ -519,6 +1494,469 @@ def test_cycle_page_prints_its_date_after_the_deferred_data(template):
     assert out["kids"] == []
 
 
+def _two_fund_scorecard():
+    """Two funds whose met turns (5) are not the same number as right calls (6)."""
+    return {
+        "as_of": "2026-07-02T18:59:30.481487+00:00",
+        "cohorts": {
+            "BACKTEST": {
+                "cohort": "BACKTEST",
+                "turn_pr": {
+                    "per_instrument": {
+                        "xlk": {
+                            "tp": 2,
+                            "fp": 32,
+                            "fn": 13,
+                            "n_truth_turns": 15,
+                            "tau_months": 3,
+                        },
+                        "xle": {
+                            "tp": 4,
+                            "fp": 42,
+                            "fn": 10,
+                            "n_truth_turns": 13,
+                            "tau_months": 3,
+                        },
+                    },
+                    "pooled": {"tp": 6, "fp": 74, "fn": 23},
+                },
+            }
+        },
+    }
+
+
+def _scorecard_path(tmp_path, payload):
+    import json
+
+    path = tmp_path / "score.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return path
+
+
+def test_backtest_turn_record_pools_met_apart_from_right(tmp_path):
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    path = _scorecard_path(tmp_path, _two_fund_scorecard())
+    got = backtest_turn_record(path)
+    assert got == {
+        "as_of": "2026-07-02",
+        "tau_months": 3,
+        "funds": ["xle", "xlk"],
+        "turns": 28,
+        "met": 5,
+        "right": 6,
+        "false": 74,
+    }
+
+
+def test_backtest_turn_record_missing_path_is_none(tmp_path):
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    missing = tmp_path / "missing.json"
+    assert backtest_turn_record(missing) is None
+
+
+@pytest.mark.parametrize(
+    "kind",
+    ["bool", "fn_over", "tau", "pooled", "as_of", "empty", "cohort"],
+)
+def test_backtest_turn_record_rejects_a_bad_file(tmp_path, kind):
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    payload = _two_fund_scorecard()
+    cohort = payload["cohorts"]["BACKTEST"]
+    turn = cohort["turn_pr"]
+    rows = turn["per_instrument"]
+    if kind == "bool":
+        rows["xle"]["tp"] = True
+    elif kind == "fn_over":
+        rows["xle"]["fn"] = 14
+    elif kind == "tau":
+        rows["xlk"]["tau_months"] = 4
+    elif kind == "pooled":
+        turn["pooled"]["tp"] = 7
+    elif kind == "as_of":
+        payload["as_of"] = "July 2"
+    elif kind == "empty":
+        turn["per_instrument"] = {}
+    elif kind == "cohort":
+        cohort["cohort"] = "PAPER"
+    else:
+        raise AssertionError(kind)
+    path = _scorecard_path(tmp_path, payload)
+    assert backtest_turn_record(path) is None
+
+
+def test_committed_turn_record_matches_its_pooled_counts():
+    import json
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    root = Path(__file__).resolve().parents[1]
+    path = root / "data" / "sector_cycles" / "scorecards"
+    path = path / "promises_price_v1_zz14_v0.json"
+    if not path.is_file():
+        pytest.skip("scorecard promises_price_v1_zz14_v0.json is absent")
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    got = backtest_turn_record(path)
+    pooled = raw["cohorts"]["BACKTEST"]["turn_pr"]["pooled"]
+    assert got["right"] == pooled["tp"]
+    assert got["false"] == pooled["fp"]
+    assert got["turns"] - got["met"] == pooled["fn"]
+    assert got["as_of"] == raw["as_of"][:10]
+
+
+def test_sector_cycles_template_has_no_per_card_turn_count():
+    text = _template_text("sector_cycles.js")
+    assert "function turnRecordText(" in text
+    assert "function mountTurnRecord(" in text
+    assert "mountTurnRecord(sortedActive())" in text
+    assert "turnCallLine" not in text
+    assert "per_instrument" not in text
+    assert "17 of 98" not in text
+    assert "409" not in text
+
+
+_TURN_BANNED = (
+    "verdict",
+    "falsified",
+    "failed",
+    "passed",
+    "proven",
+    "validated",
+    "已验证",
+    "live",
+    "实时",
+    "forecast",
+    "falsifier",
+    "refuted",
+    "申报",
+    "z-score",
+    "percentile rank",
+    "证伪",
+)
+
+
+def _turn_record_sentence(record, lang):
+    """Run shipped turnRecordText in node, same pattern as _hz_tip."""
+    import json
+    import re
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed")
+    text = _template_text("sector_cycles.js")
+    pattern = r"\n  function turnRecordText\(r\) \{\n(?:.*\n)*?  \}\n"
+    match = re.search(pattern, text)
+    assert match is not None
+    header = (
+        "function L(en, zh) { return "
+        + json.dumps(lang)
+        + ' === "zh" ? zh : en; }'
+    )
+    call = "console.log(turnRecordText(" + json.dumps(record) + "));"
+    source = "\n".join([header, match.group(0), call])
+    done = subprocess.run(
+        [node, "-e", source],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=True,
+    )
+    return done.stdout.strip()
+
+
+def _assert_no_turn_ban(text):
+    folded = text.lower()
+    for word in _TURN_BANNED:
+        assert word.lower() not in folded
+
+
+def test_turn_record_text_reads_the_record_in_both_languages():
+    sample = {
+        "as_of": "2026-07-02",
+        "tau_months": 3,
+        "funds": ["a", "b"],
+        "turns": 28,
+        "met": 5,
+        "right": 6,
+        "false": 74,
+    }
+    en = _turn_record_sentence(sample, "en")
+    zh = _turn_record_sentence(sample, "zh")
+    for bit in (
+        "2026-07-02",
+        "earlier version",
+        "not a record of the method behind this month",
+        "met 5 of 28 real turns",
+        "6 calls were right and 74 were false",
+        "within 3 months",
+    ):
+        assert bit in en
+    for bit in (
+        "2026-07-02",
+        "早期版本",
+        "28 个实际转折中的 5 个",
+        "正确 6 次",
+        "错误 74 次",
+        "3 个月",
+    ):
+        assert bit in zh
+    other = {
+        "as_of": "2025-01-31",
+        "tau_months": 4,
+        "funds": ["a", "b", "c"],
+        "turns": 40,
+        "met": 9,
+        "right": 11,
+        "false": 2,
+    }
+    en2 = _turn_record_sentence(other, "en")
+    zh2 = _turn_record_sentence(other, "zh")
+    assert "2025-01-31" in en2
+    assert "met 9 of 40 real turns" in en2
+    assert "11 calls were right and 2 were false" in en2
+    assert "within 4 months" in en2
+    assert "2025-01-31" in zh2
+    assert "40 个实际转折中的 9 个" in zh2
+    assert "正确 11 次" in zh2
+    assert "错误 2 次" in zh2
+    assert "4 个月" in zh2
+    _assert_no_turn_ban(en)
+    _assert_no_turn_ban(zh)
+    _assert_no_turn_ban(en2)
+    _assert_no_turn_ban(zh2)
+
+
+def test_backtest_turn_record_rejects_a_bool_fn_when_pooled_matches(tmp_path):
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    payload = _two_fund_scorecard()
+    turn = payload["cohorts"]["BACKTEST"]["turn_pr"]
+    rows = turn["per_instrument"]
+    # False is a bool. As a count it would add like 0 and still match pooled.
+    rows["xle"]["fn"] = False
+    turn["pooled"] = {"tp": 6, "fp": 74, "fn": 13}
+    path = _scorecard_path(tmp_path, payload)
+    assert backtest_turn_record(path) is None
+
+
+def test_backtest_turn_record_rejects_fn_above_truth_when_pooled_matches(tmp_path):
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    payload = _two_fund_scorecard()
+    turn = payload["cohorts"]["BACKTEST"]["turn_pr"]
+    rows = turn["per_instrument"]
+    rows["xle"]["fn"] = 14
+    turn["pooled"]["fn"] = 27
+    path = _scorecard_path(tmp_path, payload)
+    assert backtest_turn_record(path) is None
+
+
+def test_backtest_turn_record_empty_rows_without_pooled_is_none(tmp_path):
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    payload = _two_fund_scorecard()
+    turn = payload["cohorts"]["BACKTEST"]["turn_pr"]
+    turn["per_instrument"] = {}
+    del turn["pooled"]
+    path = _scorecard_path(tmp_path, payload)
+    assert backtest_turn_record(path) is None
+
+
+def test_backtest_turn_record_as_of_lacking_three_parts_is_none(tmp_path):
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    payload = _two_fund_scorecard()
+    # Ten characters, one hyphen, all digits: a missing part check must not raise.
+    payload["as_of"] = "2026-07021"
+    path = _scorecard_path(tmp_path, payload)
+    assert backtest_turn_record(path) is None
+
+
+def test_main_writes_turn_record_into_the_core_file(monkeypatch, tmp_path):
+    import json
+    from scripts import build_sector_cycles
+
+    root = tmp_path
+    folder = root / "data" / "sector_cycles" / "scorecards"
+    folder.mkdir(parents=True)
+    name = "promises_price_v1_zz14_v0.json"
+    payload = _two_fund_scorecard()
+    (folder / name).write_text(json.dumps(payload), encoding="utf-8")
+    templates = root / "templates"
+    templates.mkdir()
+    page = templates / "sector_cycles.html.j2"
+    page.write_text("ok\n", encoding="utf-8")
+    monkeypatch.setattr(build_sector_cycles.config, "ROOT", root)
+    monkeypatch.setattr(
+        build_sector_cycles.config,
+        "load",
+        lambda: {"storage": {"site_dir": "site"}},
+    )
+    monkeypatch.setattr(sc, "compute", lambda: {"sectors": [{"id": "xlk"}]})
+    assert build_sector_cycles.main() == 0
+    path = root / "site" / "sector_cycles_data.js"
+    text = path.read_text(encoding="utf-8")
+    body = text.split("=", 1)[1]
+    assert body.endswith(";\n")
+    core = json.loads(body[:-2])
+    got = core["turn_record"]
+    assert got["funds"] == ["xle", "xlk"]
+    assert got["turns"] == 28
+    assert got["met"] == 5
+    assert got["right"] == 6
+    assert got["false"] == 74
+    assert got["as_of"] == "2026-07-02"
+    assert got["tau_months"] == 3
+
+
+def _shown_turn_record():
+    return {
+        "as_of": "2026-07-02",
+        "tau_months": 3,
+        "funds": ["xle", "xlk"],
+        "turns": 28,
+        "met": 5,
+        "right": 6,
+        "false": 74,
+    }
+
+
+def _js_fn(name):
+    import re
+
+    text = _template_text("sector_cycles.js")
+    head = "\n  function " + name + r"\("
+    pattern = head + r"[^)]*\) \{\n(?:.*\n)*?  \}\n"
+    found = re.search(pattern, text)
+    assert found is not None
+    return found.group(0)
+
+
+def _mount_shots(lang, is_cn, record, lists):
+    import json
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed")
+    flag = "true" if is_cn else "false"
+    prelude = "\n".join([
+        "function L(en, zh) { return " + json.dumps(lang) + ' === "zh" ? zh : en; }',
+        "var IS_CN = " + flag + ";",
+        "var DATA = { turn_record: " + json.dumps(record) + " };",
+        "var created = [];",
+        "var calls = [];",
+        "var byId = {};",
+        "var grid = {",
+        "  insertAdjacentElement: function (where, node) {",
+        '    calls.push({ op: "insertAdjacentElement", where: where });',
+        "    if (node.id) byId[node.id] = node;",
+        "  },",
+        "  appendChild: function (node) {",
+        '    calls.push({ op: "appendChild" });',
+        "    if (node.id) byId[node.id] = node;",
+        "  }",
+        "};",
+        "var document = {",
+        "  createElement: function (tag) {",
+        "    var node = {",
+        "      tagName: tag,",
+        '      id: "",',
+        '      className: "",',
+        "      hidden: false,",
+        '      textContent: ""',
+        "    };",
+        "    created.push(node);",
+        "    return node;",
+        "  },",
+        "  getElementById: function (id) {",
+        '    if (id === "sc-cards") return grid;',
+        "    return byId[id] || null;",
+        "  }",
+        "};",
+        "function el(tag, cls) {",
+        "  var node = document.createElement(tag);",
+        "  if (cls) node.className = cls;",
+        "  return node;",
+        "}",
+        _js_fn("turnRecordText"),
+        _js_fn("mountTurnRecord"),
+        "var lists = " + json.dumps(lists) + ";",
+        "var shots = [];",
+        "for (var n = 0; n < lists.length; n++) {",
+        "  mountTurnRecord(lists[n]);",
+        '  var node = byId["sc-turnrec"] || null;',
+        "  var expect = turnRecordText(DATA.turn_record);",
+        "  var ops = calls.map(function (c) {",
+        '    return c.where ? c.op + ":" + c.where : c.op;',
+        "  });",
+        "  shots.push({",
+        "    created: created.length,",
+        "    hidden: node ? node.hidden : null,",
+        '    text: node ? node.textContent : "",',
+        "    match: !!(node && node.textContent === expect),",
+        "    ops: ops",
+        "  });",
+        "}",
+        "console.log(JSON.stringify(shots));",
+    ])
+    done = subprocess.run(
+        [node, "-e", prelude],
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert done.returncode == 0, done.stderr
+    return json.loads(done.stdout)
+
+
+def test_mount_turn_record_hides_matching_funds_when_is_cn():
+    lists = [[{"id": "xle"}, {"id": "xlk"}]]
+    shots = _mount_shots("en", True, _shown_turn_record(), lists)
+    assert shots[0]["hidden"] is True
+    assert shots[0]["text"] == ""
+
+
+def test_mount_turn_record_hides_when_ids_miss_the_fund_list():
+    # Shenwan ids from the China page, not the US funds on the record.
+    lists = [[{"id": "801080"}, {"id": "801750"}]]
+    shots = _mount_shots("en", False, _shown_turn_record(), lists)
+    assert shots[0]["hidden"] is True
+    assert shots[0]["text"] == ""
+
+
+def test_mount_turn_record_places_the_note_after_the_grid():
+    lists = [[{"id": "xlk"}]]
+    shots = _mount_shots("en", False, _shown_turn_record(), lists)
+    ops = shots[0]["ops"]
+    assert "insertAdjacentElement:afterend" in ops
+    assert "appendChild" not in "".join(ops)
+
+
+def test_mount_turn_record_hides_same_element_after_the_match_goes():
+    lists = [[{"id": "xlk"}], []]
+    shots = _mount_shots("en", False, _shown_turn_record(), lists)
+    assert shots[0]["hidden"] is False
+    assert shots[0]["match"] is True
+    assert shots[1]["hidden"] is True
+    assert shots[1]["text"] == ""
+    assert shots[0]["created"] == 1
+    assert shots[1]["created"] == 1
+
+
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_mount_turn_record_shows_the_sentence_for_a_matching_fund(lang):
+    lists = [[{"id": "xlk"}]]
+    shots = _mount_shots(lang, False, _shown_turn_record(), lists)
+    assert shots[0]["hidden"] is False
+    assert shots[0]["match"] is True
+    assert shots[0]["text"] != ""
+
+
 def test_sector_page_prints_the_rs_sentence_from_the_record():
     out = _run_page_date_scripts({
         "asOf": "2026-10-30",
@@ -600,3 +2038,15 @@ def test_hazard_tooltip_revision_clause_reads_in_the_readers_language(lang, want
     got = _hz_tip(hz, "13w", True, lang)
     assert want in got and other not in got
     assert want not in _hz_tip({"epoch": "2031-Q1", "direction": "UP"}, "13w", True, lang)
+
+
+def test_reader_copy_in_sector_cycles_js_never_says_forecast():
+    # The page's copy law bans "forecast". Code names (forecastPoint) and // comments
+    # are not copy; every quoted string is, so none of them may carry the word.
+    import re
+
+    text = re.sub(r"(?m)^\s*//.*$", "", _template_text("sector_cycles.js"))
+    literals = re.findall(r'"(?:[^"\\\n]|\\.)*"|\'(?:[^\'\\\n]|\\.)*\'', text)
+    assert len(literals) > 1000
+    assert [s for s in literals if "forecast" in s.lower()] == []
+    assert sum("not a backtested prediction" in s for s in literals) == 3

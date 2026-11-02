@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-31T21:08:15Z",
+ "accession": "0001193125-26-134908",
+ "cik": "0001323404",
+ "doc_byte_length": 2017216,
+ "doc_sha256": "822fb43ef34e6a54b405c8ce42e572648a199b3a213508b5dbca7fff878e1460",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "d56281dex991.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 443672,
+  "byte_start": 442410,
+  "normalized": "In connection with First Majestic Silver Corp.’s (“First Majestic”) acquisition of all the issued and outstanding common shares of Primero Mining Corp. (the “Acquisition”), on May 10, 2018, the Company terminated the San Dimas SPA4 and entered into a new precious metal purchase agreement with First Majestic (the “San Dimas PMPA”) to purchase an amount of gold equal to 25% of the life of mine payable gold production from the San Dimas mine plus an additional amount of gold equal to 25% of the life of mine payable silver production from the San Dimas mine converted to gold at a fixed gold to silver exchange ratio of 70:1.5 The Company paid a total upfront cash payment of $220 million for the San Dimas PMPA and, in addition, will make ongoing payments of $600 per gold ounce delivered. As consideration for terminating the San Dimas SPA, the Company received a cash payment of $220 million and 20,914,590 First Majestic common shares with a fair value of $151 million, which were subsequently sold, and the Goldcorp Guarantee was terminated in exchange for a payment of $10 million.",
+  "normalized_sha256": "f7165394c4dccb893c31e34f7e8468e3145dfda041b1892cec8145330a5b606e",
+  "raw": "In connection\nwith First Majestic Silver Corp.&#8217;s (&#8220;First Majestic&#8221;) acquisition of all the issued and outstanding common shares of Primero Mining Corp. (the &#8220;Acquisition&#8221;), on May&nbsp;10, 2018, the Company terminated the San Dimas\nSPA<SUP STYLE=\"font-size:75%; vertical-align:top\">4</SUP> and entered into a new precious metal purchase agreement with First Majestic (the &#8220;San Dimas PMPA&#8221;) to purchase an amount of gold equal to 25% of the life of mine payable gold\nproduction from the San Dimas mine plus an additional amount of gold equal to 25% of the life of mine payable silver production from the San Dimas mine converted to gold at a fixed gold to silver exchange ratio of 70:1.<SUP\nSTYLE=\"font-size:75%; vertical-align:top\">5</SUP> The Company paid a total upfront cash payment of $220&nbsp;million for the San Dimas PMPA and, in addition, will make ongoing payments of $600 per gold ounce delivered. As consideration for\nterminating the San Dimas SPA, the Company received a cash payment of $220&nbsp;million and 20,914,590 First Majestic common shares with a fair value of $151&nbsp;million, which were subsequently sold, and the Goldcorp Guarantee was terminated in\nexchange for a payment of $10&nbsp;million.",
+  "raw_sha256": "b89f5cd90adead893b70a72981a6fba845500ae20621956200b3b7b8877972f8"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1323404/000119312526134908/d56281dex991.htm",
+ "xbrl_contexts": []
+}

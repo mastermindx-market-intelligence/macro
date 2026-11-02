@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-01-30T21:06:48Z",
+ "accession": "0000004127-26-000003",
+ "cik": "0000004127",
+ "doc_byte_length": 704554,
+ "doc_sha256": "1980e39deee39660a502bf20af3b030cdc02b4695ef3633b42a388f9e9138c55",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-01-30",
+ "form": "10-K/A",
+ "period_of_report": "2025-10-03",
+ "primary_document": "swks-20251003.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 30253,
+  "byte_start": 29908,
+  "normalized": "The Company is filing this Amendment No. 1 for the sole purpose of providing the information required in Part III of Form 10-K, as the Company’s 2026 Annual Meeting of Stockholders is scheduled for May 13, 2026, and, accordingly, the Company’s Proxy Statement relating to such Annual Meeting will be filed after the date hereof.",
+  "normalized_sha256": "04b3c26657ee0a96244d37b32bec777cc92bb5847c95c8a60d7b0afe95d41b7f",
+  "raw": "The Company is filing this Amendment No. 1 for the sole purpose of providing the information required in Part III of Form 10-K, as the Company&#8217;s 2026 Annual Meeting of Stockholders is scheduled for May&#160;13, 2026, and, accordingly, the Company&#8217;s Proxy Statement relating to such Annual Meeting will be filed after the date hereof.",
+  "raw_sha256": "7b8dea2fef48ca76d2c70a58ffffa5fcc04df97dfd7e2df8349026835778bf55"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/4127/000000412726000003/swks-20251003.htm",
+ "xbrl_contexts": []
+}

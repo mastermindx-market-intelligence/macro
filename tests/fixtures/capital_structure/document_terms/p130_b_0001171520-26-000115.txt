@@ -1,0 +1,73 @@
+<SEC-DOCUMENT>0001171520-26-000115.txt : 20260528
+<SEC-HEADER>0001171520-26-000115.hdr.sgml : 20260528
+<ACCEPTANCE-DATETIME>20260528112056
+ACCESSION NUMBER:		0001171520-26-000115
+CONFORMED SUBMISSION TYPE:	S-1/A
+PUBLIC DOCUMENT COUNT:		3
+FILED AS OF DATE:		20260528
+DATE AS OF CHANGE:		20260528
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Dravica Corp
+		CENTRAL INDEX KEY:			0002106607
+		STANDARD INDUSTRIAL CLASSIFICATION:	SERVICES-COMPUTER PROGRAMMING SERVICES [7371]
+		ORGANIZATION NAME:           	06 Technology
+		EIN:				384370361
+		STATE OF INCORPORATION:			NV
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		S-1/A
+		SEC ACT:		1933 Act
+		SEC FILE NUMBER:	333-294274
+		FILM NUMBER:		261030475
+
+	BUSINESS ADDRESS:	
+		STREET 1:		3827 S CARSON ST 505-25
+		CITY:			CARSON CITY
+		STATE:			NV
+		ZIP:			89701
+		BUSINESS PHONE:		15177597837
+
+	MAIL ADDRESS:	
+		STREET 1:		3827 S CARSON ST 505-25
+		CITY:			CARSON CITY
+		STATE:			NV
+		ZIP:			89701
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>S-1/A
+<SEQUENCE>1
+<FILENAME>eps12626_drav.htm
+<TEXT>
+use the extended transition period for complying with any
+new or revised financial accounting standards provided pursuant to Section 7(a)(2)(B) of the Securities Act. &#9744;</P>
+
+<P STYLE="font: 8pt Times New Roman,serif; margin: 0; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman,serif; margin: 0 0 12pt; text-align: center"><B><I>CALCULATION OF REGISTRATION FEE</I></B></P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="width: 100%; background-color: #F2F2F2; border-collapse: collapse; font-size: 10pt">
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="border: black 1pt solid; vertical-align: bottom; width: 19%; padding-right: 5.4pt; padding-bottom: 8pt; padding-left: 5.4pt; text-align: center; font-family: Times New Roman,serif"><FONT STYLE="font-family: Times New Roman,serif; font-size: 10pt">Securities to be Registered</FONT></TD>
+    <TD STYLE="border-top: black 1pt solid; vertical-align: bottom; width: 19%; border-right: black 1pt solid; border-bottom: black 1pt solid; padding-right: 5.4pt; padding-bottom: 8pt; padding-left: 5.4pt; text-align: center; font-family: Times New Roman,serif; text-indent: -3.3pt"><FONT STYLE="font-family: Times New Roman,serif; font-size: 10pt">Amount To Be Registered (1)</FONT></TD>
+    <TD STYLE="border-top: black 1pt solid; vertical-align: bottom; width: 19%; border-right: black 1pt solid; border-bottom: black 1pt solid; padding-right: 5.4pt; padding-bottom: 8pt; padding-left: 5.4pt; text-align: center; font-family: Times New Roman,serif"><FONT STYLE="font-family: Times New Roman,serif; font-size: 10pt">Offering Price Per Share</FONT></TD>
+    <TD STYLE="border-top: black 1pt solid; vertical-align: bottom; width: 20%; border-right: black 1pt solid; border-bottom: black 1pt solid; padding-right: 5.4pt; padding-bottom: 8pt; padding-left: 5.4pt; text-align: center; font-family: Times New Roman,serif"><FONT STYLE="font-family: Times New Roman,serif; font-size: 10pt">Aggregate Offering Price</FONT></TD>
+    <TD STYLE="border-top: black 1pt solid; vertical-align: bottom; width: 23%; border-right: black 1pt solid; border-bottom: black 1pt solid; padding-right: 5.4pt; padding-bottom: 8pt; padding-left: 5.4pt; text-align: center; font-family: Times New Roman,serif"><FONT STYLE="font-family: Times New Roman,serif; font-size: 10pt">Registration Fee</FONT></TD></TR>
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; border-left: black 1pt solid; padding-right: 5.4pt; padding-bottom: 8pt; padding-left: 5.4pt; text-align: center; font-family: Times New Roman,serif"><FONT STYLE="font-family: Times New Roman,serif; font-size: 10pt">Common Stock</FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-right: 5.4pt; padding-bottom: 8pt; padding-left: 5.4pt; text-align: center; font-family: Times New Roman,serif"><FONT STYLE="font-family: Times New Roman,serif; font-size: 10pt">4,000,000</FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-right: 5.4pt; padding-bottom: 8pt; padding-left: 5.4pt; text-align: center; font-family: Times New Roman,serif"><FONT STYLE="font-family: Times New Roman,serif; font-size: 10pt">0.03</FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-right: 5.4pt; padding-bottom: 8pt; padding-left: 5.4pt; text-align: center; font-family: Times New Roman,serif"><FONT STYLE="font-family: Times New Roman,serif; font-size: 10pt">120,000</FONT></TD>
+    <TD STYLE="border-right: black 1pt solid; border-bottom: black 1pt solid; padding-right: 5.4pt; padding-bottom: 8pt; padding-left: 5.4pt; text-align: center; font-family: Times New Roman,serif"><FONT STYLE="font-family: Times New Roman,serif; font-size: 10pt">$16.57*</FONT></TD></TR>
+  </TABLE>
+<P STYLE="font: 10pt Times New Roman,serif; margin-top: 0; margin-bottom: 0; margin-left: 0in; text-indent: 0in">(1) Estimated solely
+for the purpose of calculating the registration fee pursuant to Rule 457(a) of the Securities Act.</P>
+
+<P STYLE="font: 10pt Times New Roman,serif; margin-top: 0; margin-bottom: 0; margin-left: 0in; text-indent: 0in">*- Amount of registration
+fee was previously pai
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
