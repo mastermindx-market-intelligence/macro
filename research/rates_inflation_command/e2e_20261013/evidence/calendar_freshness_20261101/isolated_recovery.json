@@ -1,0 +1,259 @@
+{
+  "schema": "release_publications.v2",
+  "built": "2026-11-02T03:02:24.417406+00:00",
+  "as_of_et": "2026-11-01T22:02:24.417406-05:00",
+  "coverage_started_at_by_type": {
+    "CLAIMS": "2026-11-02T03:02:24.417406+00:00",
+    "CPI": "2026-11-02T03:02:24.417406+00:00",
+    "FOMC": "2026-11-02T03:02:24.417406+00:00",
+    "GDP": "2026-11-02T03:02:24.417406+00:00",
+    "NFP": "2026-11-02T03:02:24.417406+00:00",
+    "PCE": "2026-11-02T03:02:24.417406+00:00",
+    "PPI": "2026-11-02T03:02:24.417406+00:00"
+  },
+  "timezone": "America/New_York",
+  "poll_window": {
+    "before_min": 12,
+    "after_min": 360,
+    "per_type_after_min": {
+      "CLAIMS": 360,
+      "CPI": 360,
+      "FOMC": 1440,
+      "GDP": 360,
+      "NFP": 360,
+      "PCE": 360,
+      "PPI": 360
+    },
+    "unresolved_retention_min": {
+      "CLAIMS": 10080,
+      "CPI": 10080,
+      "FOMC": 10080,
+      "GDP": 10080,
+      "NFP": 10080,
+      "PCE": 10080,
+      "PPI": 10080
+    }
+  },
+  "due": [
+    {
+      "event_id": "cpi:2026-10-14",
+      "type": "CPI",
+      "date": "2026-10-14",
+      "time_et": "08:30",
+      "label": "CPI (consumer prices)",
+      "label_zh": "\u6d88\u8d39\u8005\u7269\u4ef7\u6307\u6570\uff08CPI\uff09",
+      "schedule_source": "static",
+      "scheduled_at": "2026-10-14T08:30:00-04:00",
+      "is_context_only": true
+    }
+  ],
+  "events": [
+    {
+      "event_id": "cpi:2026-10-14",
+      "type": "CPI",
+      "date": "2026-10-14",
+      "time_et": "08:30",
+      "label": "CPI (consumer prices)",
+      "label_zh": "\u6d88\u8d39\u8005\u7269\u4ef7\u6307\u6570\uff08CPI\uff09",
+      "schedule_source": "static",
+      "scheduled_at": "2026-10-14T08:30:00-04:00",
+      "is_context_only": true,
+      "status": "published",
+      "detected_at": "2026-10-14T12:31:17.596439+00:00",
+      "first_seen_at": "2026-10-14T12:31:17.596439+00:00",
+      "observed_at": "2026-10-14T12:31:17.596439+00:00",
+      "official_embargo_at": "2026-10-14T08:30:00-04:00",
+      "source_released_at": "2026-10-14T12:30:00+00:00",
+      "source_time_basis": "scheduled_embargo_floor",
+      "publisher": "U.S. Bureau of Labor Statistics",
+      "source_id": "bls_cpi",
+      "source_url": "https://www.bls.gov/news.release/archives/cpi_10142026.htm",
+      "content_sha256": "b9f981390c08f4a530d839495fce582124015b979bac0398bfcc35ffde0544e4",
+      "source_sha256": "b9f981390c08f4a530d839495fce582124015b979bac0398bfcc35ffde0544e4",
+      "data_ready": true,
+      "reference_period": "September 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "cpi",
+        "version": 2
+      },
+      "extraction": {
+        "status": "verified",
+        "last_attempt_at": "2026-11-02T03:02:24.417406+00:00",
+        "attempted_parser": {
+          "name": "cpi",
+          "version": 2
+        },
+        "last_success_at": "2026-11-02T03:02:24.417406+00:00",
+        "error_code": null
+      },
+      "actual": {
+        "kind": "inflation",
+        "headline_mom": 0.6,
+        "core_mom": 0.3,
+        "headline_yoy": 3.7,
+        "core_yoy": 2.6,
+        "unit": "percent",
+        "reference_period": "September 2026",
+        "metrics": [
+          {
+            "metric_id": "cpi_headline_mom",
+            "value": 0.6,
+            "unit": "percent",
+            "period": "September 2026"
+          },
+          {
+            "metric_id": "cpi_core_mom",
+            "value": 0.3,
+            "unit": "percent",
+            "period": "September 2026"
+          },
+          {
+            "metric_id": "cpi_headline_yoy",
+            "value": 3.7,
+            "unit": "percent",
+            "period": "September 2026"
+          },
+          {
+            "metric_id": "cpi_core_yoy",
+            "value": 2.6,
+            "unit": "percent",
+            "period": "September 2026"
+          }
+        ],
+        "headline_en": "CPI +0.6% m/m; core +0.3%",
+        "headline_zh": "\u6d88\u8d39\u8005\u4ef7\u683c\u6307\u6570\u73af\u6bd4 +0.6%\uff1b\u6838\u5fc3\u73af\u6bd4 +0.3%",
+        "summary_en": "CPI +0.6% m/m; core +0.3%. Year over year: 3.7% headline and 2.6% core.",
+        "summary_zh": "\u6d88\u8d39\u8005\u4ef7\u683c\u6307\u6570\u73af\u6bd4 +0.6%\uff1b\u6838\u5fc3\u73af\u6bd4 +0.3%\u3002\u540c\u6bd4\uff1a\u6574\u4f53 3.7%\uff0c\u6838\u5fc3 2.6%\u3002",
+        "source_url": "https://www.bls.gov/news.release/archives/cpi_10142026.htm"
+      },
+      "verified_at": "2026-11-02T03:02:24.417406+00:00"
+    }
+  ],
+  "upcoming": [],
+  "publications": [
+    {
+      "event_id": "cpi:2026-10-14",
+      "type": "CPI",
+      "date": "2026-10-14",
+      "time_et": "08:30",
+      "label": "CPI (consumer prices)",
+      "label_zh": "\u6d88\u8d39\u8005\u7269\u4ef7\u6307\u6570\uff08CPI\uff09",
+      "schedule_source": "static",
+      "is_context_only": true,
+      "scheduled_at": "2026-10-14T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-10-14T12:31:17.596439+00:00",
+      "first_seen_at": "2026-10-14T12:31:17.596439+00:00",
+      "observed_at": "2026-10-14T12:31:17.596439+00:00",
+      "official_embargo_at": "2026-10-14T08:30:00-04:00",
+      "source_released_at": "2026-10-14T12:30:00+00:00",
+      "source_time_basis": "scheduled_embargo_floor",
+      "publisher": "U.S. Bureau of Labor Statistics",
+      "source_id": "bls_cpi",
+      "source_url": "https://www.bls.gov/news.release/archives/cpi_10142026.htm",
+      "content_sha256": "b9f981390c08f4a530d839495fce582124015b979bac0398bfcc35ffde0544e4",
+      "source_sha256": "b9f981390c08f4a530d839495fce582124015b979bac0398bfcc35ffde0544e4",
+      "data_ready": true,
+      "reference_period": "September 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "cpi",
+        "version": 2
+      },
+      "extraction": {
+        "status": "verified",
+        "last_attempt_at": "2026-11-02T03:02:24.417406+00:00",
+        "attempted_parser": {
+          "name": "cpi",
+          "version": 2
+        },
+        "last_success_at": "2026-11-02T03:02:24.417406+00:00",
+        "error_code": null
+      },
+      "actual": {
+        "kind": "inflation",
+        "headline_mom": 0.6,
+        "core_mom": 0.3,
+        "headline_yoy": 3.7,
+        "core_yoy": 2.6,
+        "unit": "percent",
+        "reference_period": "September 2026",
+        "metrics": [
+          {
+            "metric_id": "cpi_headline_mom",
+            "value": 0.6,
+            "unit": "percent",
+            "period": "September 2026"
+          },
+          {
+            "metric_id": "cpi_core_mom",
+            "value": 0.3,
+            "unit": "percent",
+            "period": "September 2026"
+          },
+          {
+            "metric_id": "cpi_headline_yoy",
+            "value": 3.7,
+            "unit": "percent",
+            "period": "September 2026"
+          },
+          {
+            "metric_id": "cpi_core_yoy",
+            "value": 2.6,
+            "unit": "percent",
+            "period": "September 2026"
+          }
+        ],
+        "headline_en": "CPI +0.6% m/m; core +0.3%",
+        "headline_zh": "\u6d88\u8d39\u8005\u4ef7\u683c\u6307\u6570\u73af\u6bd4 +0.6%\uff1b\u6838\u5fc3\u73af\u6bd4 +0.3%",
+        "summary_en": "CPI +0.6% m/m; core +0.3%. Year over year: 3.7% headline and 2.6% core.",
+        "summary_zh": "\u6d88\u8d39\u8005\u4ef7\u683c\u6307\u6570\u73af\u6bd4 +0.6%\uff1b\u6838\u5fc3\u73af\u6bd4 +0.3%\u3002\u540c\u6bd4\uff1a\u6574\u4f53 3.7%\uff0c\u6838\u5fc3 2.6%\u3002",
+        "source_url": "https://www.bls.gov/news.release/archives/cpi_10142026.htm"
+      },
+      "verified_at": "2026-11-02T03:02:24.417406+00:00"
+    }
+  ],
+  "source_health": [
+    {
+      "source_id": "bls_cpi",
+      "event_id": "cpi:2026-10-14",
+      "status": "ok",
+      "http_status": 200,
+      "changed": false,
+      "document_urls": [
+        "https://www.bls.gov/news.release/archives/cpi_10142026.htm"
+      ]
+    }
+  ],
+  "schedule_coverage": {
+    "status": "incomplete",
+    "checked_from": "2026-11-01",
+    "horizon_days": 140,
+    "next_by_type": {
+      "FOMC": null,
+      "CPI": null,
+      "PPI": null,
+      "NFP": null,
+      "GDP": null,
+      "PCE": null,
+      "CLAIMS": null
+    },
+    "missing_or_too_distant": [
+      "FOMC",
+      "CPI",
+      "PPI",
+      "NFP",
+      "GDP",
+      "PCE",
+      "CLAIMS"
+    ]
+  },
+  "canonical_reconciliation": "nightly",
+  "official_actual_defect_repair": {
+    "state_key": "official_actual_defect_repairs",
+    "max_attempts": 3,
+    "backoff_minutes": 60
+  },
+  "is_context_only": true
+}

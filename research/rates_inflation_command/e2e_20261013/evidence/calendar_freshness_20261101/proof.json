@@ -1,0 +1,103 @@
+{
+  "scope": "isolated Chromium component replay; controlled clock; not production latency",
+  "client_sha256": "5c6d1439de8c46baa97761301c51121ffebdfd0498ba623c21b60c751763c26b",
+  "original_event": "cpi:2026-10-14",
+  "original_detection_preserved": true,
+  "official_source_url": "https://www.bls.gov/news.release/archives/cpi_10142026.htm",
+  "official_source_sha256": "b9f981390c08f4a530d839495fce582124015b979bac0398bfcc35ffde0544e4",
+  "parser": {
+    "name": "cpi",
+    "version": 2
+  },
+  "cases": [
+    {
+      "theme": "light",
+      "language": "en",
+      "viewport": "desktop",
+      "snapshot_to_visible_ms": 1796.11,
+      "polls": 2,
+      "document_requests": 1,
+      "dialog_identity_preserved": true,
+      "page_errors": [],
+      "screenshot": "light_en_desktop.png"
+    },
+    {
+      "theme": "light",
+      "language": "en",
+      "viewport": "mobile",
+      "snapshot_to_visible_ms": 1792.08,
+      "polls": 2,
+      "document_requests": 1,
+      "dialog_identity_preserved": true,
+      "page_errors": [],
+      "screenshot": "light_en_mobile.png"
+    },
+    {
+      "theme": "light",
+      "language": "zh",
+      "viewport": "desktop",
+      "snapshot_to_visible_ms": 1792.7,
+      "polls": 2,
+      "document_requests": 1,
+      "dialog_identity_preserved": true,
+      "page_errors": [],
+      "screenshot": "light_zh_desktop.png"
+    },
+    {
+      "theme": "light",
+      "language": "zh",
+      "viewport": "mobile",
+      "snapshot_to_visible_ms": 1787.65,
+      "polls": 2,
+      "document_requests": 1,
+      "dialog_identity_preserved": true,
+      "page_errors": [],
+      "screenshot": "light_zh_mobile.png"
+    },
+    {
+      "theme": "dark",
+      "language": "en",
+      "viewport": "desktop",
+      "snapshot_to_visible_ms": 1791.76,
+      "polls": 2,
+      "document_requests": 1,
+      "dialog_identity_preserved": true,
+      "page_errors": [],
+      "screenshot": "dark_en_desktop.png"
+    },
+    {
+      "theme": "dark",
+      "language": "en",
+      "viewport": "mobile",
+      "snapshot_to_visible_ms": 1789.0,
+      "polls": 2,
+      "document_requests": 1,
+      "dialog_identity_preserved": true,
+      "page_errors": [],
+      "screenshot": "dark_en_mobile.png"
+    },
+    {
+      "theme": "dark",
+      "language": "zh",
+      "viewport": "desktop",
+      "snapshot_to_visible_ms": 1791.63,
+      "polls": 2,
+      "document_requests": 1,
+      "dialog_identity_preserved": true,
+      "page_errors": [],
+      "screenshot": "dark_zh_desktop.png"
+    },
+    {
+      "theme": "dark",
+      "language": "zh",
+      "viewport": "mobile",
+      "snapshot_to_visible_ms": 1791.46,
+      "polls": 2,
+      "document_requests": 1,
+      "dialog_identity_preserved": true,
+      "page_errors": [],
+      "screenshot": "dark_zh_mobile.png"
+    }
+  ],
+  "max_snapshot_to_visible_ms": 1796.11
+}

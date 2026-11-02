@@ -1,7 +1,15 @@
 from __future__ import annotations
 
+import email.message
+import fcntl
+import shlex
 import json
+import os
+import subprocess
 import sys
+import threading
+import time
+import urllib.error
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from types import SimpleNamespace
@@ -1560,14 +1568,16 @@ def test_live_setup_retires_legacy_only_after_smoke_and_timer_enable():
     enable = text.index("systemctl enable --now")
     retire = text.index('grep -v "macro-live')
     assert smoke < enable < retire
-    assert "first install failed; restoring legacy-only ownership" in text
+    assert "previous units and timer intent restored" in text
     assert 'systemd-analyze verify "${unit_sources[@]}"' in text
 
 
 def test_live_rollback_is_non_destructive_and_restores_legacy_writer():
     root = Path(__file__).resolve().parents[1]
     text = (root / "app" / "deploy" / "live-rollback.sh").read_text()
-    assert "systemctl disable --now" in text
+    assert 'systemctl disable "$unit"' in text
+    assert 'stop_live_unit "macro-live-$lane.service"' in text
+    assert 'flock -n 9' in text
     assert "systemctl stop" in text
     assert "/usr/local/bin/macro-live" in text
     assert 'mv "$PUBLIC_DIR" "$backup_dir"' in text
@@ -1874,7 +1884,7 @@ def test_live_setup_installs_and_arms_the_breadth_lane():
     root = Path(__file__).resolve().parents[1]
     live_setup = (root / "app" / "deploy" / "live-setup.sh").read_text()
     assert "macro-live-breadth.service macro-live-breadth.timer" in live_setup
-    enable_block = live_setup.split("systemctl enable --now")[1].split("\n\n")[0]
+    enable_block = live_setup.rsplit("systemctl enable --now", 1)[1].split("\n\n")[0]
     assert "macro-live-breadth.timer" in enable_block
 
 
@@ -2221,3 +2231,1190 @@ def test_overdue_source_failure_lineage_survives_then_recovers(monkeypatch) -> N
         if row["event_id"] == "claims:2026-09-10"
     )
     assert publication["status"] == "published"
+
+
+# ===========================================================================
+# B1.LIVE.1 / B1.LIVE.2 — the official-release publication lane owns its own
+# timing and the incumbent producer stays the single writer. Every test here
+# FAILS on the pre-B1.LIVE.1 tree except the one marked PRESERVATION.
+# ===========================================================================
+
+CPI_SCHEDULED_2026_10_14 = datetime(2026, 10, 14, 12, 30, tzinfo=timezone.utc)
+CPI_ARCHIVE_URL = "https://www.bls.gov/news.release/archives/cpi_10142026.htm"
+CPI_SEPTEMBER_PAGE = b"""
+<html><body><h1>CONSUMER PRICE INDEX - SEPTEMBER 2026</h1>
+<p>The Consumer Price Index for All Urban Consumers (CPI-U) increased 0.2 percent
+on a seasonally adjusted basis in September after rising 0.1 percent in August.</p>
+<p>Over the last 12 months, the all items index increased 2.7 percent
+before seasonal adjustment.</p>
+<p>The index for all items less food and energy rose 0.3 percent in September.</p>
+<p>The index for all items less food and energy rose 2.9 percent over the
+past 12 months.</p></body></html>
+"""
+_CPI_EVENT = {
+    "event_id": "cpi:2026-10-14",
+    "type": "CPI",
+    "date": "2026-10-14",
+    "time_et": "08:30",
+    "label": "CPI (consumer prices)",
+    "label_zh": "consumer prices",
+    "schedule_source": "static",
+    "scheduled_at": "2026-10-14T08:30:00-04:00",
+    "is_sep": False,
+    "is_context_only": True,
+}
+
+
+def _cpi_row(*, last_probe_at: str | None = None, **overrides) -> dict:
+    """One retained source row. ``last_probe_at=None`` keeps ONLY the fields
+    that predate the pacing change, so a preservation test stays valid on the
+    pre-patch tree."""
+    row = {
+        "source_id": "bls_cpi",
+        "attempt_count": 3,
+        "last_attempt_status": "ok",
+        "last_success_at": last_probe_at,
+        "checked_at": last_probe_at,
+        "source_url": "https://www.bls.gov/feed/cpi.rss",
+        "fingerprint": "c" * 64,
+        "etag": '"fixture"',
+        "last_modified": "Wed, 14 Oct 2026 12:30:00 GMT",
+        "content_type": "application/atom+xml",
+    }
+    if last_probe_at:
+        row.update({
+            "first_attempt_at": last_probe_at,
+            "last_attempt_at": last_probe_at,
+            wrp.PROBE_LAST_AT_KEY: last_probe_at,
+            wrp.PROBE_NEXT_AT_KEY: last_probe_at,
+            wrp.PROBE_INTERVAL_KEY: wrp.NORMAL_PROBE_INTERVAL_S,
+            wrp.PROBE_FAILURES_KEY: 0,
+            wrp.PROBE_RETRY_AFTER_KEY: None,
+            wrp.PROBE_BACKOFF_KEY: None,
+        })
+    row.update(overrides)
+    return row
+
+
+def _cpi_state(*, row: dict | None = None, publication: dict | None = None) -> dict:
+    state = {
+        "schema": "release_publication_state.v2",
+        "coverage_started_at_by_type": {
+            event_type: "2026-10-01T00:00:00+00:00"
+            for event_type in wrp.RESULT_EVENT_TYPES
+        },
+        "sources": {"bls_cpi:cpi:2026-10-14": row or _cpi_row()},
+        "publications": {},
+        wrp.DEFECT_REPAIR_STATE_KEY: {},
+    }
+    if publication is not None:
+        state["publications"]["cpi:2026-10-14"] = publication
+    return state
+
+
+def _cpi_publication(
+    *, data_ready: bool = False, parser_version: int = 1, period: str = "September 2026"
+) -> dict:
+    return {
+        "event_id": "cpi:2026-10-14",
+        "type": "CPI",
+        "date": "2026-10-14",
+        "time_et": "08:30",
+        "scheduled_at": "2026-10-14T12:30:00+00:00",
+        "status": "published" if data_ready else "published_unparsed",
+        "data_ready": data_ready,
+        "source_id": "bls_cpi",
+        "source_url": CPI_ARCHIVE_URL,
+        "source_sha256": "a" * 64,
+        "content_sha256": "a" * 64,
+        "reference_period": period,
+        "parser": {"name": "cpi", "version": parser_version},
+        "extraction": {
+            "status": "incomplete",
+            "attempted_parser": {"name": "cpi", "version": parser_version},
+        },
+    }
+
+
+def _cpi_calls(calls: list[str]) -> list[str]:
+    return [url for url in calls if url.endswith("cpi.rss")]
+
+
+def _cpi_fetcher(calls: list[str], body: bytes | None = None):
+    def fetcher(spec, prior, timeout):
+        calls.append(spec.url)
+        if body is None:
+            return {**_http_result(_bls_cpi_feed(event_date="2026-10-14")), "url": spec.url}
+        return {**_http_result(body), "url": spec.url}
+
+    return fetcher
+
+
+def _release_payload(now: datetime) -> dict:
+    return {"schema": "release_publications.v2", "built": now.isoformat(),
+            "events": [], "due": [], "publications": [], "source_health": []}
+
+
+def _dedicated_release_installed(tmp_path: Path, monkeypatch):
+    marker = tmp_path / "macro-live-releases.timer"
+    marker.write_text("installed but not necessarily enabled")
+    monkeypatch.setattr(vlo, "RELEASE_TIMER_PATH", marker)
+
+
+def test_fast_lane_no_longer_invokes_the_release_writer(tmp_path: Path, monkeypatch):
+    """ONE writer, one lane: the fast lane must not run the producer.
+
+    The release watcher used to be the FIRST leaf of the fast lane, so the
+    fast lane's 60s timer and 150s oneshot timeout were also the
+    publication's timing. The producer now belongs to its own lane.
+    """
+    _dedicated_release_installed(tmp_path, monkeypatch)
+    orch = vlo.Orchestrator(
+        live_dir=tmp_path / "live",
+        state_dir=tmp_path / "state",
+        data_dir=tmp_path / "data",
+        now=datetime(2026, 10, 14, 15, 1, tzinfo=timezone.utc),
+    )
+    names: list[str] = []
+    orch.module = lambda name, *args, **kwargs: names.append(name) or vlo.TaskResult(  # type: ignore[method-assign]
+        name, "ok", 0.0
+    )
+    orch.fast()
+    assert "release_publications" not in names
+    assert "display_quotes" in names
+
+
+def test_release_lane_publishes_while_the_fast_leaves_are_broken(tmp_path: Path, monkeypatch):
+    """A slow/failing quote leaf must not be able to delay a publication."""
+    _dedicated_release_installed(tmp_path, monkeypatch)
+    live = tmp_path / "live"
+    stage = tmp_path / "stage"
+    stage.mkdir()
+
+    def runner(args, **kwargs):
+        module = args[2] if len(args) > 2 else ""
+        if module == "scripts.watch_release_publications":
+            live.mkdir(exist_ok=True)
+            (live / "release_publications.json").write_text(
+                json.dumps(_release_payload(datetime(2026, 10, 14, 3, 1, tzinfo=timezone.utc))),
+                encoding="utf-8",
+            )
+            return SimpleNamespace(returncode=0, stdout="wrote", stderr="")
+        raise subprocess.TimeoutExpired(args, 45)
+
+    fast = vlo.Orchestrator(
+        live_dir=live,
+        state_dir=tmp_path / "state",
+        data_dir=tmp_path / "data",
+        runner=runner,
+        now=datetime(2026, 10, 14, 3, 1, tzinfo=timezone.utc),
+    )
+    fast.stage_dir = stage
+    fast.fast()
+    assert [result.name for result in fast.results] == ["display_quotes"]
+    assert all(result.status == "timeout" for result in fast.results)
+
+    releases = vlo.Orchestrator(
+        live_dir=live,
+        state_dir=tmp_path / "state",
+        data_dir=tmp_path / "data",
+        runner=runner,
+        now=datetime(2026, 10, 14, 3, 1, tzinfo=timezone.utc),
+    )
+    releases.stage_dir = stage
+    releases.releases()
+    assert [result.name for result in releases.results] == ["release_publications"]
+    assert releases.results[0].status == "ok"
+    published = json.loads((live / "release_publications.json").read_text())
+    assert published["schema"] == "release_publications.v2"
+
+
+def test_release_lane_idle_tick_costs_no_producer_run_and_no_request(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """The timer may wake often; the request rate stays with the state."""
+    monkeypatch.setattr(wrp, "scheduled_releases", lambda *args, **kwargs: [_CPI_EVENT])
+    live = tmp_path / "live"
+    live.mkdir()
+    state_dir = tmp_path / "state"
+    state_dir.mkdir()
+    artifact = live / "release_publications.json"
+    now = datetime(2026, 10, 14, 15, 1, tzinfo=timezone.utc)
+    artifact.write_text(json.dumps(_release_payload(now - timedelta(seconds=10))))
+    stamp = int((now - timedelta(seconds=10)).timestamp())
+    os.utime(artifact, (stamp, stamp))
+    (state_dir / "release_publications_state.json").write_text(
+        json.dumps(
+            _cpi_state(row=_cpi_row(last_probe_at=(now - timedelta(seconds=30)).isoformat()))
+        ),
+        encoding="utf-8",
+    )
+    orch = vlo.Orchestrator(
+        live_dir=live, state_dir=state_dir, data_dir=tmp_path / "data", now=now
+    )
+    calls: list[str] = []
+    orch.module = lambda name, *args, **kwargs: calls.append(name) or vlo.TaskResult(  # type: ignore[method-assign]
+        name, "ok", 0.0
+    )
+    orch.releases()
+    assert calls == []
+
+
+def test_release_lane_refreshes_the_public_heartbeat_when_nothing_is_due(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """The published sidecar is a heartbeat: it must not go stale.
+
+    The external dead-man fails closed once release_publications.json is more
+    than five minutes old, so an idle lane still refreshes it on the bounded
+    heartbeat interval.
+    """
+    monkeypatch.setattr(wrp, "scheduled_releases", lambda *args, **kwargs: [_CPI_EVENT])
+    live = tmp_path / "live"
+    live.mkdir()
+    state_dir = tmp_path / "state"
+    state_dir.mkdir()
+    artifact = live / "release_publications.json"
+    now = datetime(2026, 10, 14, 15, 1, tzinfo=timezone.utc)
+    artifact.write_text(json.dumps(_release_payload(now - timedelta(seconds=90))))
+    stale = int(
+        (now - timedelta(seconds=vlo.RELEASE_HEARTBEAT_MAX_AGE_S + 30)).timestamp()
+    )
+    os.utime(artifact, (stale, stale))
+    (state_dir / "release_publications_state.json").write_text(
+        json.dumps(
+            _cpi_state(row=_cpi_row(last_probe_at=(now - timedelta(seconds=30)).isoformat()))
+        ),
+        encoding="utf-8",
+    )
+    orch = vlo.Orchestrator(
+        live_dir=live, state_dir=state_dir, data_dir=tmp_path / "data", now=now
+    )
+    calls: list[str] = []
+    orch.module = lambda name, *args, **kwargs: calls.append(name) or vlo.TaskResult(  # type: ignore[method-assign]
+        name, "ok", 0.0
+    )
+    orch.releases()
+    assert calls == ["release_publications"]
+
+
+def test_source_probe_is_fast_inside_the_hot_window_and_slow_outside_it():
+    """Hot window vs ordinary cadence, measured on the retained state."""
+    scheduled = CPI_SCHEDULED_2026_10_14
+    calls: list[str] = []
+    fetcher = _cpi_fetcher(calls)
+
+    # 30 seconds after the last probe, INSIDE the bounded hot window: the fast
+    # cadence says the row is due again.
+    hot = _cpi_state(row=_cpi_row(last_probe_at=(scheduled - timedelta(seconds=30)).isoformat()))
+    wrp.detect(now=scheduled, state=hot, fetcher=fetcher)
+    assert _cpi_calls(calls) == ["https://www.bls.gov/feed/cpi.rss"]
+
+    # The same row 30 seconds after a probe but 30 minutes after the schedule:
+    # outside the hot window the ordinary cadence applies, so a 30-second-old
+    # probe is NOT due and the source is left alone.
+    calls.clear()
+    idle = _cpi_state(
+        row=_cpi_row(last_probe_at=(scheduled + timedelta(minutes=29, seconds=30)).isoformat())
+    )
+    _, idle_payload = wrp.detect(
+        now=scheduled + timedelta(minutes=30), state=idle, fetcher=fetcher
+    )
+    assert _cpi_calls(calls) == []
+    health = [row for row in idle_payload["source_health"] if row["source_id"] == "bls_cpi"]
+    assert health and health[0]["status"] == "paced"
+
+
+def test_already_verified_release_returns_to_the_ordinary_pace():
+    """A verified release leaves the hot window immediately."""
+    scheduled = CPI_SCHEDULED_2026_10_14
+    calls: list[str] = []
+    publication = _cpi_publication(data_ready=True)
+    publication["actual"] = {"headline_mom": 0.2, "core_mom": 0.3}
+    state = _cpi_state(
+        row=_cpi_row(last_probe_at=(scheduled - timedelta(seconds=2)).isoformat()),
+        publication=publication,
+    )
+    _, payload = wrp.detect(now=scheduled, state=state, fetcher=_cpi_fetcher(calls))
+    assert _cpi_calls(calls) == []
+    health = [row for row in payload["source_health"] if row["source_id"] == "bls_cpi"]
+    assert health and health[0]["status"] == "paced"
+
+
+def test_transient_failure_backs_off_then_recovers_without_faking_success():
+    """A failing source is backed off, then recovers — and never lies."""
+    scheduled = CPI_SCHEDULED_2026_10_14
+    calls: list[str] = []
+
+    def failing(spec, prior, timeout):
+        calls.append(spec.url)
+        raise urllib.error.URLError("upstream refused the connection")
+
+    state = _cpi_state(
+        row=_cpi_row(last_probe_at=(scheduled - timedelta(seconds=30)).isoformat())
+    )
+    failed_state, _ = wrp.detect(now=scheduled, state=state, fetcher=failing)
+    row = failed_state["sources"]["bls_cpi:cpi:2026-10-14"]
+    assert row["last_attempt_status"] == "error"
+    assert row["last_error"] == "URLError"
+    assert row["consecutive_failures"] == 1
+    # The retained last success stays truthful: a failure never invents one.
+    assert row["last_success_at"] == (scheduled - timedelta(seconds=30)).isoformat()
+    # The bounded backoff keeps the fast loop off the failing source.
+    assert row["backoff_until"] == (scheduled + timedelta(seconds=5)).isoformat()
+    plan = wrp.tick_due(now=scheduled + timedelta(seconds=1), state=failed_state)
+    assert [
+        entry["event_key"]
+        for entry in plan["due_rows"]
+        if entry["source_id"] == "bls_cpi"
+    ] == []
+
+    recovered_state, _ = wrp.detect(
+        now=scheduled + timedelta(seconds=6),
+        state=failed_state,
+        fetcher=_cpi_fetcher(calls),
+    )
+    recovered = recovered_state["sources"]["bls_cpi:cpi:2026-10-14"]
+    assert recovered["last_attempt_status"] == "ok"
+    assert recovered["consecutive_failures"] == 0
+    assert recovered["last_success_at"] == (scheduled + timedelta(seconds=6)).isoformat()
+    # The earlier failure lineage is not erased by the recovery.
+    assert recovered["last_error"] == "URLError"
+
+
+def test_upstream_retry_after_is_honoured_instead_of_hammering_the_source(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """A blocked source (429/503) is left alone for as long as it asked."""
+    headers = email.message.Message()
+    headers["Retry-After"] = "120"
+
+    def fake_urlopen(request, timeout=None):
+        raise urllib.error.HTTPError(
+            request.full_url, 429, "Too Many Requests", headers, None
+        )
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    with pytest.raises(urllib.error.HTTPError) as excinfo:
+        wrp._fetch(wrp.SOURCES[1], {}, 1.0)
+    assert excinfo.value.retry_after_s == 120
+
+    now = datetime(2026, 10, 14, 12, 30, tzinfo=timezone.utc)
+    row = wrp._fail_source_attempt(
+        {"consecutive_failures": 0},
+        now=now,
+        source_url="https://www.bls.gov/feed/cpi.rss",
+        error="HTTPError",
+        interval_s=wrp.HOT_PROBE_INTERVAL_S,
+        retry_after_s=120,
+    )
+    assert row["retry_after_at"] == (now + timedelta(seconds=120)).isoformat()
+    blocked = wrp._probe_blocked_until(row)
+    assert blocked == now + timedelta(seconds=120)
+    assert wrp._probe_due_at(
+        row, now=now, interval_s=wrp.HOT_PROBE_INTERVAL_S, blocked_until=blocked
+    ) == now + timedelta(seconds=120)
+
+
+def test_retained_cpi_archive_catch_up_still_works_and_keeps_its_budget():
+    """PRESERVATION: the incumbent archive catch-up still recovers the facts.
+
+    The repair recovers an already-detected but unparsed release from its
+    dated BLS archive. It keeps its bounded 3-attempt budget and is not
+    re-armed by a tick.
+    """
+    state = _cpi_state(publication=_cpi_publication())
+    now = datetime(2026, 10, 26, 13, 0, tzinfo=timezone.utc)
+    calls: list[str] = []
+    new_state, _ = wrp.detect(now=now, state=state, fetcher=_cpi_fetcher(calls, CPI_SEPTEMBER_PAGE))
+    assert CPI_ARCHIVE_URL in calls
+    repaired = new_state["publications"]["cpi:2026-10-14"]
+    assert repaired["status"] == "published"
+    assert repaired["data_ready"] is True
+    assert repaired["actual"]["headline_mom"] == 0.2
+    assert repaired["actual"]["core_mom"] == 0.3
+    assert repaired["actual"]["reference_period"] == "September 2026"
+    repair = new_state[wrp.DEFECT_REPAIR_STATE_KEY]["cpi:2026-10-14"]
+    assert repair["status"] == "repaired"
+    assert repair["attempts"] == 1
+    assert repair["attempt_limit"] == 3
+
+    calls.clear()
+    retained_state, _ = wrp.detect(
+        now=now + timedelta(seconds=2),
+        state=new_state,
+        fetcher=_cpi_fetcher(calls, CPI_SEPTEMBER_PAGE),
+    )
+    assert CPI_ARCHIVE_URL not in calls
+    assert retained_state[wrp.DEFECT_REPAIR_STATE_KEY]["cpi:2026-10-14"]["attempts"] == 1
+
+
+def test_governed_repair_bypasses_the_source_pacing():
+    """A due governed repair is never held back by the ordinary pacing.
+
+    The repair carries its OWN backoff and attempt budget; the ordinary
+    per-source cadence must not add a second, longer wait in front of it.
+    """
+    state = _cpi_state(
+        row=_cpi_row(last_probe_at="2026-10-26T12:59:30+00:00"),
+        publication=_cpi_publication(),
+    )
+    calls: list[str] = []
+    new_state, _ = wrp.detect(
+        now=datetime(2026, 10, 26, 13, 0, tzinfo=timezone.utc),
+        state=state,
+        fetcher=_cpi_fetcher(calls, CPI_SEPTEMBER_PAGE),
+    )
+    # The source row was probed 30 seconds ago, so the ordinary one-minute
+    # cadence would skip it; the governed repair is due and must bypass it.
+    assert CPI_ARCHIVE_URL in calls
+    assert new_state["publications"]["cpi:2026-10-14"]["data_ready"] is True
+    assert new_state[wrp.DEFECT_REPAIR_STATE_KEY]["cpi:2026-10-14"]["attempts"] == 1
+
+
+def test_parser_upgrade_bypasses_the_pacing_exactly_once():
+    """A parser deployment retries once, immediately, and not again.
+
+    The moment is deliberately OUTSIDE the hot window but inside the poll
+    window, so the ordinary one-minute cadence would skip the row. The
+    deployed parser has never tried this row, so the upgrade must bypass
+    that pacing exactly once.
+    """
+    now = CPI_SCHEDULED_2026_10_14 + timedelta(minutes=30)
+    state = _cpi_state(
+        row=_cpi_row(last_probe_at=(now - timedelta(seconds=2)).isoformat()),
+        publication=_cpi_publication(parser_version=1),
+    )
+    calls: list[str] = []
+
+    def fetcher(spec, prior, timeout):
+        calls.append(spec.url)
+        body = CPI_JULY_14_PAGE if spec.url.endswith(".htm") else _bls_cpi_feed(
+            event_date="2026-10-14"
+        )
+        return {**_http_result(body), "url": spec.url}
+
+    new_state, _ = wrp.detect(now=now, state=state, fetcher=fetcher)
+    assert _cpi_calls(calls) == ["https://www.bls.gov/feed/cpi.rss"]
+    attempted = new_state["publications"]["cpi:2026-10-14"]["extraction"][
+        "attempted_parser"
+    ]
+    assert attempted == {"name": "cpi", "version": 2}
+    # The upgrade was CONSUMED, not re-armed by every tick.
+    assert "cpi:2026-10-14" not in wrp._parser_upgrade_keys(
+        [_CPI_EVENT], new_state["publications"]
+    )
+
+    calls.clear()
+    wrp.detect(now=now + timedelta(seconds=2), state=new_state, fetcher=fetcher)
+    assert _cpi_calls(calls) == []
+
+
+def test_concurrent_producers_cannot_write_twice(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """One writer lock covers load -> detect -> state+output write.
+
+    The lock is inside the producer, so it also covers a manual invocation
+    and any retired cron remnant — not just the release lane's own name.
+    """
+    state_dir = tmp_path / "state"
+    out = tmp_path / "release_publications.json"
+    writes: list[str] = []
+
+    def fake_detect(*, now, state, timeout=8.0):
+        writes.append(now.isoformat())
+        time.sleep(0.3)
+        return (
+            {"schema": "release_publication_state.v2"},
+            {
+                "schema": "release_publications.v2",
+                "built": now.isoformat(),
+                "due": [],
+                "events": [],
+                "publications": [],
+                "source_health": [],
+            },
+        )
+
+    monkeypatch.setattr(wrp, "detect", fake_detect)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["watch_release_publications", "--out", str(out), "--state-dir", str(state_dir)],
+    )
+    results: list[int] = []
+    threads = [
+        threading.Thread(target=lambda: results.append(wrp.main())) for _ in range(2)
+    ]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert sorted(results) == [0, wrp.PRODUCER_BUSY_EXIT]
+    assert len(writes) == 1
+    assert json.loads(out.read_text())["schema"] == "release_publications.v2"
+
+
+def test_producer_lock_is_released_for_the_next_writer(tmp_path: Path):
+    """A busy producer must not wedge the lane permanently."""
+    state_dir = tmp_path / "state"
+    lock = wrp.producer_lock(state_dir)
+    assert lock is not None
+    try:
+        assert wrp.producer_lock(state_dir) is None
+    finally:
+        lock.close()
+    again = wrp.producer_lock(state_dir)
+    assert again is not None
+    again.close()
+
+
+def test_release_lane_units_installer_and_rollback_are_wired():
+    """The new lane must be installed, armed, drained and rolled back."""
+    root = Path(__file__).resolve().parents[1]
+    service = (root / "app" / "deploy" / "macro-live-releases.service").read_text()
+    timer = (root / "app" / "deploy" / "macro-live-releases.timer").read_text()
+    assert "--lane releases" in service
+    assert "Unit=macro-live-releases.service" in timer
+    # EXPLICIT BOUNDS on the wake cadence: the wake period plus systemd's own
+    # coalescing slop must stay inside the 5s source-probe gap target.
+    assert "OnUnitInactiveSec=2s" in timer
+    assert "AccuracySec=100ms" in timer
+    assert "RandomizedDelaySec=0" in timer
+
+    setup = (root / "app" / "deploy" / "live-setup.sh").read_text()
+    assert "macro-live-releases.service macro-live-releases.timer" in setup
+    assert "systemctl start macro-live-releases.service" in setup
+    assert "release_publications.v2" in setup
+    # The incumbent writer is drained BEFORE the new lane is armed, so two
+    # release writers can never overlap.
+    drain = setup.index("stop_live_unit macro-live-fast.service")
+    arm = setup.index("systemctl enable --now")
+    smoke = setup.index("systemctl start macro-live-releases.service")
+    assert drain < smoke < arm
+
+    rollback = (root / "app" / "deploy" / "live-rollback.sh").read_text()
+    assert "lanes=(fast releases snapshot bars prophet closepass breadth)" in rollback
+    assert 'stop_live_unit "macro-live-$lane.service"' in rollback
+    # The rollback keeps the last-good artifacts and the retained state.
+    assert 'mv "$PUBLIC_DIR" "$backup_dir"' in rollback
+    assert "rm -rf" not in rollback
+
+
+def test_release_lane_bounds_are_explicit_and_self_consistent():
+    """Every pacing parameter carries an explicit bound."""
+    assert wrp.HOT_PROBE_INTERVAL_S <= wrp.MAX_SOURCE_PROBE_GAP_S
+    assert wrp.NORMAL_PROBE_INTERVAL_S >= 60
+    assert wrp.ERROR_BACKOFF_BASE_S <= wrp.ERROR_BACKOFF_MAX_S
+    assert wrp.RETRY_AFTER_MAX_S > 0
+    assert wrp.HOT_WINDOW_LEAD < wrp.HOT_WINDOW_TRAIL
+    assert wrp.UNRESOLVED_PROBE_INTERVAL_S == wrp.UNRESOLVED_RETRY_INTERVAL_MIN * 60
+
+
+def test_idle_release_lane_leaves_the_shared_public_status_alone(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """A lane that wakes on a short timer must not rewrite a public artifact
+    (and fsync it) on every wake."""
+    real_now = datetime.now(timezone.utc).replace(microsecond=0)
+    et = real_now.astimezone(wrp.NY)
+    event_at = (real_now - timedelta(hours=3)).astimezone(wrp.NY)
+    event = {
+        "event_id": f"cpi:{event_at.date().isoformat()}",
+        "type": "CPI",
+        "date": event_at.date().isoformat(),
+        "time_et": event_at.strftime("%H:%M"),
+        "label": "CPI (consumer prices)",
+        "label_zh": "consumer prices",
+        "schedule_source": "static",
+        "scheduled_at": event_at.isoformat(),
+        "is_sep": False,
+        "is_context_only": True,
+    }
+    monkeypatch.setattr(wrp, "scheduled_releases", lambda *args, **kwargs: [event])
+    live = tmp_path / "live"
+    live.mkdir()
+    state_dir = tmp_path / "state"
+    state_dir.mkdir()
+    artifact = live / "release_publications.json"
+    artifact.write_text(json.dumps(_release_payload(real_now)), encoding="utf-8")
+    os.utime(artifact, (int(real_now.timestamp()), int(real_now.timestamp())))
+    state = {
+        "schema": "release_publication_state.v2",
+        "coverage_started_at_by_type": {
+            event_type: "2026-01-01T00:00:00+00:00"
+            for event_type in wrp.RESULT_EVENT_TYPES
+        },
+        "sources": {
+            f"bls_cpi:{event['event_id']}": _cpi_row(
+                last_probe_at=(real_now - timedelta(seconds=30)).isoformat()
+            )
+        },
+        "publications": {},
+        wrp.DEFECT_REPAIR_STATE_KEY: {},
+    }
+    (state_dir / "release_publications_state.json").write_text(json.dumps(state), encoding="utf-8")
+    public = live / "orchestrator_status.json"
+    public.write_text(
+        json.dumps({"schema": "vps_live_orchestrator.v1", "updated_at": "x", "lanes": {}}),
+        encoding="utf-8",
+    )
+    before = public.stat().st_mtime_ns
+    producer_calls: list[str] = []
+
+    def fake_module(self, name, module, module_args, **kwargs):
+        # The producer is NOT spawned here: this test is about when the lane
+        # decides to run it, not about what the producer does.
+        producer_calls.append(name)
+        stage = Path(module_args[list(module_args).index("--out") + 1])
+        stage.parent.mkdir(parents=True, exist_ok=True)
+        stage.write_text(json.dumps(_release_payload(real_now)), encoding="utf-8")
+        return vlo.TaskResult(name, "ok", 0.0)
+
+    monkeypatch.setattr(vlo.Orchestrator, "module", fake_module)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "vps_live_orchestrator",
+            "--lane",
+            "releases",
+            "--live-dir",
+            str(live),
+            "--state-dir",
+            str(state_dir),
+            "--data-dir",
+            str(tmp_path / "data"),
+        ],
+    )
+    assert vlo.main() == 0
+    assert producer_calls == []
+    assert public.stat().st_mtime_ns == before
+    assert not (state_dir / "status-releases.json").exists()
+
+    # A stale public heartbeat forces the producer to run, and only then does
+    # the lane write its own status.
+    stale = real_now - timedelta(seconds=vlo.RELEASE_HEARTBEAT_MAX_AGE_S + 60)
+    artifact.write_text(json.dumps(_release_payload(stale)))
+    os.utime(artifact, (int(stale.timestamp()), int(stale.timestamp())))
+    assert vlo.main() == 0
+    assert producer_calls == ["release_publications"]
+    assert (state_dir / "status-releases.json").exists()
+    assert "releases" in json.loads(public.read_text())["lanes"]
+
+
+# Transaction regressions: exercise the real watcher entry point and canonical
+# publication path, not a stand-in parent copy or a mock-only success signal.
+def _watcher_argv(monkeypatch, state_dir, out, now):
+    monkeypatch.setattr(sys, "argv", [
+        "watch_release_publications", "--out", str(out),
+        "--state-dir", str(state_dir), "--now", now.isoformat(),
+    ])
+
+
+def test_producer_holds_lock_until_final_public_replacement(tmp_path, monkeypatch):
+    now = datetime(2026, 10, 14, 12, 31, tzinfo=timezone.utc)
+    state_dir, out = tmp_path / "state", tmp_path / "public.json"
+    _watcher_argv(monkeypatch, state_dir, out, now)
+    monkeypatch.setattr(wrp, "detect", lambda **kw: ({}, _release_payload(now)))
+    real_write = wrp.atomic_write_json
+    entered, finish = threading.Event(), threading.Event()
+    results, errors = [], []
+
+    def paused_write(path, payload, **kwargs):
+        if path == out:
+            entered.set()
+            assert finish.wait(5), "test did not release final replacement"
+        return real_write(path, payload, **kwargs)
+
+    def first_writer():
+        try:
+            results.append(wrp.main())
+        except BaseException as exc:
+            errors.append(exc)
+
+    monkeypatch.setattr(wrp, "atomic_write_json", paused_write)
+    thread = threading.Thread(target=first_writer)
+    thread.start()
+    try:
+        assert entered.wait(5)
+        assert (state_dir / "release_publications_state.json").exists()
+        assert not out.exists()
+        assert wrp.main() == wrp.PRODUCER_BUSY_EXIT
+    finally:
+        finish.set()
+        thread.join(5)
+    assert not thread.is_alive() and not errors
+    assert results == [0]
+    assert json.loads(out.read_text())["built"] == now.isoformat()
+    assert out.stat().st_mode & 0o777 == 0o644
+    assert (state_dir / "release_publications_state.json").stat().st_mode & 0o777 == 0o600
+
+
+def test_state_advance_public_failure_self_heals_on_ordinary_tick(tmp_path, monkeypatch):
+    now = datetime(2026, 10, 14, 12, 31, tzinfo=timezone.utc)
+    state_dir, out = tmp_path / "state", tmp_path / "live/release_publications.json"
+    old = _release_payload(now - timedelta(seconds=10))
+    wrp.atomic_write_json(out, old, mode=0o644)
+    old_bytes = out.read_bytes()
+    _watcher_argv(monkeypatch, state_dir, out, now)
+    candidate = _release_payload(now)
+    candidate["publications"] = [{"event_id": "cpi:2026-10-14", "data_ready": True}]
+    monkeypatch.setattr(wrp, "detect", lambda **kw: (dict(kw["state"]), candidate))
+    real_write = wrp.atomic_write_json
+
+    def fail_public(path, payload, **kwargs):
+        if path == out:
+            raise OSError("controlled failed public replacement")
+        return real_write(path, payload, **kwargs)
+
+    monkeypatch.setattr(wrp, "atomic_write_json", fail_public)
+    with pytest.raises(OSError):
+        wrp.main()
+    assert out.read_bytes() == old_bytes
+    state = json.loads((state_dir / "release_publications_state.json").read_text())
+    assert state["publication_candidate_sha256"] == wrp.publication_digest(candidate)
+    monkeypatch.setattr(wrp, "atomic_write_json", real_write)
+    monkeypatch.setattr(wrp, "tick_due", lambda **kw: {"probe_due": False})
+    calls = []
+
+    def runner(args, **kwargs):
+        calls.append(args)
+        assert Path(args[args.index("--out") + 1]) == out
+        return SimpleNamespace(returncode=wrp.main(), stdout="", stderr="")
+
+    orch = vlo.Orchestrator(live_dir=out.parent, state_dir=state_dir,
+        data_dir=tmp_path / "data", now=now, runner=runner)
+    orch.releases()
+    assert len(calls) == 1  # The fresh old heartbeat must not hide the lost write.
+    assert out.read_bytes() != old_bytes
+    assert json.loads(out.read_text()) == candidate
+    assert orch.results[0].status == "ok"
+    assert not orch.results[0].published
+
+
+@pytest.mark.parametrize("defect", ["schema", "rows", "clock", "nonfinite"])
+def test_invalid_candidate_never_changes_state_or_public(tmp_path, monkeypatch, defect):
+    now = datetime(2026, 10, 14, 12, 31, tzinfo=timezone.utc)
+    state_dir, out = tmp_path / "state", tmp_path / "public.json"
+    state_path = state_dir / "release_publications_state.json"
+    wrp.atomic_write_json(state_path, {"sentinel": "last-good"})
+    wrp.atomic_write_json(out, _release_payload(now), mode=0o644)
+    before = state_path.read_bytes(), out.read_bytes()
+    candidate = _release_payload(now)
+    if defect == "schema": candidate["schema"] = "wrong"
+    elif defect == "rows": candidate["publications"] = ["not an object"]
+    elif defect == "clock": candidate["built"] = "2026-10-14T12:31:00"
+    else: candidate["invalid_number"] = float("nan")
+    monkeypatch.setattr(wrp, "detect", lambda **kw: ({}, candidate))
+    _watcher_argv(monkeypatch, state_dir, out, now)
+    with pytest.raises(ValueError):
+        wrp.main()
+    assert (state_path.read_bytes(), out.read_bytes()) == before
+    lock = wrp.producer_lock(state_dir)
+    assert lock is not None
+    lock.close()
+
+
+@pytest.mark.parametrize("artifact", ["missing", "stale", "invalid", "future"])
+def test_zero_exit_cannot_report_unusable_public_artifact_healthy(tmp_path, monkeypatch, artifact):
+    now = datetime(2026, 10, 14, 12, 31, tzinfo=timezone.utc)
+    out = tmp_path / "live/release_publications.json"
+    if artifact != "missing":
+        payload = _release_payload(now - timedelta(minutes=5))
+        if artifact == "invalid": payload["publications"] = None
+        if artifact == "future": payload["built"] = (now + timedelta(minutes=5)).isoformat()
+        wrp.atomic_write_json(out, payload, mode=0o644)
+    before = out.read_bytes() if out.exists() else None
+    monkeypatch.setattr(wrp, "tick_due", lambda **kw: {"probe_due": True})
+    orch = vlo.Orchestrator(live_dir=out.parent, state_dir=tmp_path / "state",
+        data_dir=tmp_path / "data", now=now,
+        runner=lambda *a, **kw: SimpleNamespace(returncode=0, stdout="", stderr=""))
+    orch.releases()
+    assert orch.results[0].status == "invalid"
+    assert not orch.results[0].published
+    assert (out.read_bytes() if out.exists() else None) == before
+
+
+def test_lock_io_error_is_not_a_successful_busy_skip(tmp_path, monkeypatch):
+    def broken_lock(*args):
+        raise OSError("controlled lock I/O failure")
+    monkeypatch.setattr(wrp.fcntl, "flock", broken_lock)
+    with pytest.raises(OSError):
+        wrp.producer_lock(tmp_path / "state")
+
+
+def test_parser_upgrade_honors_upstream_backoff(tmp_path):
+    now = CPI_SCHEDULED_2026_10_14 + timedelta(minutes=30)
+    row = _cpi_row(last_probe_at=(now - timedelta(seconds=2)).isoformat())
+    row["retry_after_at"] = (now + timedelta(seconds=120)).isoformat()
+    row["backoff_until"] = (now + timedelta(seconds=30)).isoformat()
+    state = _cpi_state(row=row, publication=_cpi_publication(parser_version=1))
+    calls = []
+    new_state, _ = wrp.detect(now=now, state=state,
+        fetcher=_cpi_fetcher(calls, CPI_SEPTEMBER_PAGE))
+    assert _cpi_calls(calls) == []
+    assert "cpi:2026-10-14" in wrp._parser_upgrade_keys(
+        [_CPI_EVENT], new_state["publications"])
+    wrp.detect(now=now + timedelta(seconds=121), state=new_state,
+        fetcher=_cpi_fetcher(calls, CPI_SEPTEMBER_PAGE))
+    assert _cpi_calls(calls)
+
+
+def test_fast_compatibility_exists_only_until_dedicated_unit_install(tmp_path, monkeypatch):
+    marker = tmp_path / "release.timer"
+    monkeypatch.setattr(vlo, "RELEASE_TIMER_PATH", marker)
+    for installed in (False, True):
+        if installed: marker.symlink_to("/dev/null")  # A deliberate mask owns the lane.
+        orch = vlo.Orchestrator(live_dir=tmp_path / "live", state_dir=tmp_path / "state",
+            data_dir=tmp_path / "data", now=datetime(2026, 10, 14, 3, 1, tzinfo=timezone.utc))
+        calls = []
+        def release_tick():
+            calls.append("releases")
+            orch.idle = True
+        orch.releases = release_tick
+        orch.module = lambda name, *a, **kw: calls.append(name) or vlo.TaskResult(name, "ok", 0)
+        orch.fast()
+        assert ("releases" in calls) is not installed
+        assert "display_quotes" in calls
+        assert not orch.idle
+
+
+# Execute the actual deployment scripts against a hermetic systemd model.
+ROOT = Path(__file__).resolve().parents[1]
+UPDATE = ROOT / "app/deploy/update.sh"
+SERVICE = "macro-live-releases.service"
+TIMER = "macro-live-releases.timer"
+
+STUB = r'''
+import datetime, fcntl, json, os, pathlib, shutil, sys
+root = pathlib.Path(os.environ["DEPLOY_FIXTURE_DIR"])
+state_file = root / "manager.json"
+state = json.loads(state_file.read_text())
+name = pathlib.Path(sys.argv[0]).name
+args = sys.argv[1:]
+with (root / "trace.jsonl").open("a") as output:
+    output.write(json.dumps([name, *args]) + "\n")
+def save():
+    state_file.write_text(json.dumps(state))
+def finish(rc=0):
+    save()
+    raise SystemExit(rc)
+if name == "journalctl": finish()
+if name == "id": print(0); finish()
+if name == "crontab":
+    if args == ["-l"]: print("# retained crontab")
+    else: (root / "crontab").write_text(pathlib.Path(args[0]).read_text())
+    finish()
+if name == "systemd-analyze":
+    finish(1 if os.environ.get("FAIL_PREFLIGHT") else 0)
+if name == "install":
+    if os.environ.get("FAIL_INSTALL") and args[-1].endswith(".timer") and not (root / "install_failed").exists():
+        (root / "install_failed").touch()
+        finish(1)
+    shutil.copyfile(args[-2], args[-1]); finish()
+if name == "flock":
+    try:
+        fcntl.flock(int(args[-1]), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        finish(1)
+    finish()
+action = args[0]
+unit = args[-1]
+row = state.setdefault(unit, {})
+if action == "is-enabled": finish(0 if row.get("enabled") else 1)
+if action == "is-active": finish(0 if row.get("active") else 1)
+if action == "show":
+    prop = args[args.index("-p")+1]
+    present = (root / "units" / unit).exists()
+    if prop == "LoadState": print("loaded" if present else "not-found")
+    elif prop == "ActiveState": print("active" if row.get("active") else "inactive")
+    else: print(100 if row.get("active") and unit.endswith(".service") else 0)
+    finish()
+if action == "stop":
+    if os.environ.get("FAIL_STOP_UNIT") == unit: finish(1)
+    if unit == "macro-live-releases.service" and state.get("smoke_started") and os.environ.get("FAIL_ROLLBACK_DRAIN"):
+        row["active"] = True; finish(1)
+    if not (root / "units" / unit).exists(): finish(1)
+    row["active"] = False; finish()
+if action == "daemon-reload": finish()
+if action == "disable":
+    row["active"] = False; row["enabled"] = False; finish()
+if action == "enable":
+    row["enabled"] = True; row["active"] = "--now" in args; finish()
+if action == "start":
+    if unit == "macro-live-releases.service":
+        assert not state["macro-live-fast.timer"].get("active")
+        assert not state["macro-live-fast.service"].get("active")
+        # A manual fast process must also be excluded throughout handoff.
+        with (root / "state/fast.lock").open("a") as lock:
+            try:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                pass
+            else:
+                raise AssertionError("dedicated writer started without owning fast.lock")
+        state["smoke_started"] = True
+        row["active"] = bool(os.environ.get("FAIL_ROLLBACK_DRAIN"))
+        if not os.environ.get("STALE_SMOKE"):
+            (root / "live/release_publications.json").write_text(json.dumps({
+                "built": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                "schema": "release_publications.v2", "due": [], "source_health": [],
+                "events": [], "publications": []}))
+        finish(1 if os.environ.get("FAIL_SMOKE") else 0)
+    if unit == "macro-live-fast.service":
+        with (root / "state/fast.lock").open("a") as lock:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        (root / "live/orchestrator_status.json").write_text("{}")
+        (root / "live/quotes.json").write_text('{"meta":{"resolved":20}}')
+        row["active"] = False
+        finish(1 if os.environ.get("FAIL_FAST_SMOKE") else 0)
+    row["active"] = True; finish()
+raise AssertionError((name, args))
+'''
+
+
+@pytest.fixture
+def deploy(tmp_path):
+    for path in ("units", "state", "live", "bin", "app/app/deploy", "app/.venv/bin"):
+        (tmp_path / path).mkdir(parents=True, exist_ok=True)
+    for unit in ("macro-live-fast.service", "macro-live-fast.timer", SERVICE, TIMER):
+        (tmp_path / "app/app/deploy" / unit).write_text("[Unit]\nDescription=fixture\n")
+        if "fast" in unit:
+            (tmp_path / "units" / unit).write_text("existing fast unit\n")
+    (tmp_path / "app/.venv/bin/python").symlink_to(sys.executable)
+    manager = {
+        "macro-live-fast.timer": {"enabled": True, "active": True},
+        "macro-live-fast.service": {"active": True},
+    }
+    (tmp_path / "manager.json").write_text(json.dumps(manager))
+    for name in ("systemctl", "systemd-analyze", "install", "flock", "journalctl"):
+        path = tmp_path / "bin" / name
+        path.write_text("#!" + sys.executable + "\n" + STUB)
+        path.chmod(0o755)
+    (tmp_path / "live/release_publications.json").write_text(
+        '{"built":"2000-01-01T00:00:00+00:00","events":[],"publications":[]}')
+    return tmp_path
+
+
+def run_deploy(root, **faults):
+    source = UPDATE.read_text()
+    helpers = source.split("# BEGIN W1B5_UNIT_STOP_HELPERS\n", 1)[1].split(
+        "# END W1B5_UNIT_STOP_HELPERS", 1)[0]
+    handoff = source.split("# BEGIN RELEASE_LANE_RECONCILIATION\n", 1)[1].split(
+        "# END RELEASE_LANE_RECONCILIATION", 1)[0]
+    handoff = handoff.replace("/etc/systemd/system", str(root / "units"))
+    handoff = handoff.replace("/var/lib/macro-live/state", str(root / "state"))
+    handoff = handoff.replace("/var/lib/macro-live/public/live", str(root / "live"))
+    handoff = handoff.replace("/etc/macro-live.env", str(root / "no-env"))
+    script = "set -euo pipefail\nAPP_DIR=" + shlex.quote(str(root / "app"))
+    script += "\nCHANGED=''\nRECONCILED=0\n" + helpers + handoff
+    result = subprocess.run(["bash"], input=script, text=True, capture_output=True,
+        env={**os.environ, "PATH": str(root / "bin") + os.pathsep + os.environ["PATH"],
+             "DEPLOY_FIXTURE_DIR": str(root), **faults}, timeout=20)
+    state = json.loads((root / "manager.json").read_text())
+    calls = [json.loads(line) for line in (root / "trace.jsonl").read_text().splitlines()]
+    return result, state, calls
+
+
+def test_missing_lane_migrates_on_repository_noop_and_is_idempotent(deploy):
+    result, state, calls = run_deploy(deploy)
+    assert result.returncode == 0, result.stderr
+    assert state[TIMER] == {"enabled": True, "active": True}
+    assert state["macro-live-fast.timer"]["active"]
+    stop = calls.index(["systemctl", "stop", "macro-live-fast.service"])
+    smoke = calls.index(["systemctl", "start", SERVICE])
+    arm = calls.index(["systemctl", "enable", "--now", TIMER])
+    assert stop < smoke < arm
+    (deploy / "trace.jsonl").unlink()
+    result, _, calls = run_deploy(deploy)
+    assert result.returncode == 0, result.stderr
+    assert not any(call[1] in ("start", "stop", "enable") for call in calls)
+
+
+@pytest.mark.parametrize("fault", ["FAIL_PREFLIGHT", "FAIL_INSTALL", "FAIL_SMOKE", "STALE_SMOKE"])
+def test_failed_handoff_preserves_or_restores_legacy_ownership(deploy, fault):
+    result, state, calls = run_deploy(deploy, **{fault: "1"})
+    assert result.returncode != 0
+    assert state["macro-live-fast.timer"]["active"]
+    assert not (deploy / "units" / TIMER).exists()
+    assert not state.get(TIMER, {}).get("enabled")
+    if fault == "FAIL_PREFLIGHT":
+        assert not any(call[1] == "stop" for call in calls)
+    if fault in ("FAIL_SMOKE", "STALE_SMOKE"):
+        smoke = calls.index(["systemctl", "start", SERVICE])
+        drain = calls.index(["systemctl", "stop", SERVICE], smoke)
+        resume = calls.index(["systemctl", "start", "macro-live-fast.timer"], drain)
+        assert smoke < drain < resume
+
+
+def test_uncertain_dedicated_writer_never_restores_fast_ownership(deploy):
+    result, state, calls = run_deploy(deploy, FAIL_SMOKE="1", FAIL_ROLLBACK_DRAIN="1")
+    assert result.returncode != 0
+    assert not state["macro-live-fast.timer"]["active"]
+    assert (deploy / "units" / TIMER).exists()
+    assert ["systemctl", "start", "macro-live-fast.timer"] not in calls
+    assert "dedicated writer not drained" in result.stderr
+
+
+def test_manual_fast_invocation_blocks_handoff_even_with_inactive_service(deploy):
+    with (deploy / "state/fast.lock").open("a") as lock:
+        fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        result, state, calls = run_deploy(deploy)
+    assert result.returncode != 0
+    assert ["systemctl", "start", SERVICE] not in calls
+    assert not (deploy / "units" / TIMER).exists()
+    assert state["macro-live-fast.timer"]["active"]
+
+
+def test_installed_but_disabled_release_timer_stays_paused_on_unit_update(deploy):
+    for unit in (SERVICE, TIMER):
+        (deploy / "units" / unit).write_text("previous unit revision\n")
+    result, state, calls = run_deploy(deploy)
+    assert result.returncode == 0, result.stderr
+    assert not state.get(TIMER, {}).get("enabled")
+    assert not state.get(TIMER, {}).get("active")
+    assert ["systemctl", "start", SERVICE] not in calls
+    assert ["systemctl", "enable", "--now", TIMER] not in calls
+
+
+def test_paused_live_plane_defers_first_handoff(deploy):
+    state = json.loads((deploy / "manager.json").read_text())
+    state["macro-live-fast.timer"]["active"] = False
+    (deploy / "manager.json").write_text(json.dumps(state))
+    result, _, calls = run_deploy(deploy)
+    assert result.returncode == 0, result.stderr
+    assert ["systemctl", "start", SERVICE] not in calls
+    assert not (deploy / "units" / TIMER).exists()
+
+
+def test_masked_release_timer_is_preserved(deploy):
+    (deploy / "units" / TIMER).symlink_to("/dev/null")
+    result, _, calls = run_deploy(deploy)
+    assert result.returncode == 0, result.stderr
+    assert (deploy / "units" / TIMER).is_symlink()
+    assert not any(call[1] in ("start", "stop", "enable") for call in calls)
+
+
+
+def run_setup_transaction(root, *, fail_after_smoke=False, **faults):
+    source = (ROOT / "app/deploy/live-setup.sh").read_text()
+    transaction = source.split("# BEGIN LIVE_SETUP_TRANSACTION\n", 1)[1].split(
+        "# END LIVE_SETUP_TRANSACTION", 1)[0]
+    smoke = 'log "[3/6] systemd services + timers"' + source.split(
+        'log "[3/6] systemd services + timers"', 1)[1].split(
+        'log "[5/6] enable replacement timers"', 1)[0]
+    for lane in ("fast", "releases", "snapshot", "bars", "prophet", "closepass", "breadth"):
+        for suffix in ("service", "timer"):
+            unit = f"macro-live-{lane}.{suffix}"
+            target = root / "app/app/deploy" / unit
+            if not target.exists(): target.write_text("[Unit]\nDescription=new fixture\n")
+    script = "set -euo pipefail\n"
+    for key, value in {
+        "APP_DIR": root / "app", "BASE_DIR": root, "STATE_DIR": root / "state",
+        "PUBLIC_DIR": root / "live", "LIVE_DIR": root / "live", "VENV": root / "app/.venv",
+    }.items():
+        script += key + "=" + shlex.quote(str(value)) + "\n"
+    script += 'log() { echo "$*"; }\n' + transaction + smoke
+    script += "\nexit 23\n" if fail_after_smoke else "\nsetup_complete=1\n"
+    script = script.replace("/etc/systemd/system", str(root / "units"))
+    result = subprocess.run(["bash"], input=script, text=True, capture_output=True,
+        env={**os.environ, "PATH": str(root / "bin") + os.pathsep + os.environ["PATH"],
+             "DEPLOY_FIXTURE_DIR": str(root), **faults}, timeout=25)
+    state = json.loads((root / "manager.json").read_text())
+    calls = [json.loads(line) for line in (root / "trace.jsonl").read_text().splitlines()]
+    return result, state, calls
+
+
+@pytest.mark.parametrize("fault", ["FAIL_PREFLIGHT", "FAIL_INSTALL", "FAIL_SMOKE", "FAIL_FAST_SMOKE"])
+def test_setup_failure_restores_original_unit_bytes_and_timer_intent(deploy, fault):
+    before = {p.name: p.read_bytes() for p in (deploy / "units").iterdir()}
+    result, state, calls = run_setup_transaction(deploy, **{fault: "1"})
+    assert result.returncode != 0
+    assert {p.name: p.read_bytes() for p in (deploy / "units").iterdir()} == before
+    assert state["macro-live-fast.timer"]["active"]
+    assert state["macro-live-fast.timer"]["enabled"]
+    assert not state.get(TIMER, {}).get("enabled")
+    assert (deploy / "live/release_publications.json").exists()
+    if fault == "FAIL_FAST_SMOKE":
+        smoke = calls.index(["systemctl", "start", "macro-live-fast.service"])
+        drain = calls.index(["systemctl", "stop", "macro-live-fast.service"], smoke)
+        resume = calls.index(["systemctl", "start", "macro-live-fast.timer"], drain)
+        assert smoke < drain < resume
+
+
+def test_setup_uncertain_writer_preserves_units_and_does_not_resume_legacy(deploy):
+    result, state, calls = run_setup_transaction(deploy, FAIL_SMOKE="1", FAIL_ROLLBACK_DRAIN="1")
+    assert result.returncode != 0
+    assert (deploy / "units" / TIMER).exists()
+    assert not state["macro-live-fast.timer"]["active"]
+    assert ["systemctl", "start", "macro-live-fast.timer"] not in calls
+    assert "rollback held" in result.stdout
+
+
+def test_setup_preserves_preexisting_disabled_release_ownership(deploy):
+    for unit in (SERVICE, TIMER):
+        (deploy / "units" / unit).write_text("previous release bytes\n")
+    result, state, calls = run_setup_transaction(deploy, fail_after_smoke=True)
+    assert result.returncode == 23
+    assert (deploy / "units" / TIMER).read_text() == "previous release bytes\n"
+    assert not state.get(TIMER, {}).get("active")
+    assert not state.get(TIMER, {}).get("enabled")
+    assert ["systemctl", "start", SERVICE] not in calls
+
+
+def test_first_setup_failure_withdraws_public_only_after_all_writers_drain(deploy):
+    for p in (deploy / "units").iterdir(): p.unlink()
+    (deploy / "manager.json").write_text("{}")
+    result, state, calls = run_setup_transaction(deploy, fail_after_smoke=True)
+    assert result.returncode == 23
+    assert not (deploy / "live").exists()
+    backups = list(deploy.glob("public.failed.*"))
+    assert len(backups) == 1 and (backups[0] / "release_publications.json").exists()
+    assert (deploy / "state/fast.lock").exists()
+    assert (deploy / "state/release_publications.lock").exists()
+    assert not list((deploy / "units").iterdir())
+    assert all(not row.get("active") for row in state.values() if isinstance(row, dict))
+
+
+
+def run_rollback(root, **faults):
+    source = (ROOT / "app/deploy/live-rollback.sh").read_text()
+    source = source.replace('BASE_DIR="/var/lib/macro-live"', "BASE_DIR=" + shlex.quote(str(root)))
+    source = source.replace('PUBLIC_DIR="$BASE_DIR/public"', 'PUBLIC_DIR="$BASE_DIR/live"')
+    source = source.replace("/etc/systemd/system", str(root / "units"))
+    source = source.replace("/etc/macro-live.env", str(root / "no-env"))
+    for name in ("id", "crontab"):
+        path = root / "bin" / name
+        path.write_text("#!" + sys.executable + "\n" + STUB)
+        path.chmod(0o755)
+    result = subprocess.run(["bash"], input=source, text=True, capture_output=True,
+        env={**os.environ, "PATH": str(root / "bin") + os.pathsep + os.environ["PATH"],
+             "DEPLOY_FIXTURE_DIR": str(root), **faults}, timeout=25)
+    return result, json.loads((root / "manager.json").read_text())
+
+
+def test_rollback_preserves_last_good_files_until_manual_publisher_is_drained(deploy):
+    before = (deploy / "live/release_publications.json").read_bytes()
+    with (deploy / "state/release_publications.lock").open("a") as lock:
+        fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        result, state = run_rollback(deploy)
+    assert result.returncode != 0
+    assert (deploy / "live/release_publications.json").read_bytes() == before
+    assert not (deploy / "crontab").exists()
+    assert not state["macro-live-fast.timer"]["active"]
+    result, state = run_rollback(deploy)
+    assert result.returncode == 0, result.stderr
+    assert not (deploy / "live").exists()
+    saved = list(deploy.glob("public.rollback.*"))
+    assert len(saved) == 1 and (saved[0] / "release_publications.json").read_bytes() == before
+    assert "/usr/local/bin/macro-live" in (deploy / "crontab").read_text()
+
+
+def test_rollback_failed_service_drain_cannot_withdraw_public_artifacts(deploy):
+    result, state = run_rollback(deploy, FAIL_STOP_UNIT="macro-live-fast.service")
+    assert result.returncode != 0
+    assert (deploy / "live/release_publications.json").exists()
+    assert not (deploy / "crontab").exists()
+    assert state["macro-live-fast.service"]["active"]

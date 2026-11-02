@@ -1918,6 +1918,142 @@ if [ "${W2C_LANE_FROZEN:-0}" -eq 1 ]; then
 fi
 # END W2C_LANE_FROZEN_CONTINUE
 
+# BEGIN RELEASE_LANE_RECONCILIATION
+# Older updater processes continue executing their original inode after pulling
+# this code. The fast lane therefore retains release work until the dedicated
+# timer is installed. Reconcile missing/drifted units even when CHANGED is empty.
+reconcile_live_release_lane() {
+	local unit source changed=0 first_install=0 fast_active=0 releases_active=0
+	local unit_dir=/etc/systemd/system state_dir=/var/lib/macro-live/state
+	local live_dir=/var/lib/macro-live/public/live value
+	systemctl is-enabled macro-live-fast.timer >/dev/null 2>&1 || return 0
+	[ -f "$APP_DIR/app/deploy/macro-live-releases.service" ] || return 0
+	[ -f "$APP_DIR/app/deploy/macro-live-releases.timer" ] || return 0
+	[ -e "$unit_dir/macro-live-releases.timer" ] || first_install=1
+	for unit in macro-live-releases.service macro-live-releases.timer; do
+		# A mask or externally managed symlink is an explicit operator boundary.
+		if [ -L "$unit_dir/$unit" ]; then
+			echo "macro-update: preserving operator-managed $unit" >&2
+			return 0
+		fi
+		cmp -s "$APP_DIR/app/deploy/$unit" "$unit_dir/$unit" || changed=1
+	done
+	[ "$changed" -eq 1 ] || return 0
+	systemctl is-active macro-live-fast.timer >/dev/null 2>&1 && fast_active=1
+	systemctl is-active macro-live-releases.timer >/dev/null 2>&1 && releases_active=1
+	if [ "$first_install" -eq 1 ] && [ "$fast_active" -eq 0 ]; then
+		echo "macro-update: release handoff deferred while the live plane is paused"
+		return 0
+	fi
+	# live-setup owns these EnvironmentFile values. Read only the two paths;
+	# never source the file as shell code or expose the credentials it contains.
+	if [ -r /etc/macro-live.env ]; then
+		value=$(sed -n 's/^MACRO_LIVE_STATE_DIR=//p' /etc/macro-live.env | tail -n 1)
+		value=${value#\"}; value=${value%\"}
+		[ -z "$value" ] || state_dir=$value
+		value=$(sed -n 's/^MACRO_LIVE_DIR=//p' /etc/macro-live.env | tail -n 1)
+		value=${value#\"}; value=${value%\"}
+		[ -z "$value" ] || live_dir=$value
+	fi
+	case "$state_dir:$live_dir" in /*:/*) ;; *) return 1 ;; esac
+	systemd-analyze verify \
+		"$APP_DIR/app/deploy/macro-live-releases.service" \
+		"$APP_DIR/app/deploy/macro-live-releases.timer"
+	(
+		# A local transaction keeps this rollback separate from the option-OI
+		# fail-closed EXIT trap in the enclosing updater.
+		set -euo pipefail
+		backup=$(mktemp -d)
+		install_attempted=0
+		complete=0
+		for unit in macro-live-releases.service macro-live-releases.timer; do
+			if [ -f "$unit_dir/$unit" ]; then
+				cp "$unit_dir/$unit" "$backup/$unit"
+			fi
+		done
+		release_lane_exit() {
+			rc=$?
+			trap - EXIT
+			if [ "$rc" -ne 0 ] && [ "$complete" -eq 0 ]; then
+				if [ "$install_attempted" -eq 1 ]; then
+					# Do not restore fast ownership while a dedicated writer
+					# may still be running or about to start.
+					if ! stop_unit_and_verify_inactive macro-live-releases.timer \
+						"$unit_dir/macro-live-releases.timer" ||
+					   ! stop_unit_and_verify_inactive macro-live-releases.service \
+						"$unit_dir/macro-live-releases.service"; then
+						echo "macro-update: release rollback held; dedicated writer not drained" >&2
+						exit "$rc"
+					fi
+					if [ "$first_install" -eq 1 ]; then
+						systemctl disable macro-live-releases.timer >/dev/null 2>&1 || exit "$rc"
+					fi
+					for unit in macro-live-releases.service macro-live-releases.timer; do
+						if [ -f "$backup/$unit" ]; then
+							install -m 0644 "$backup/$unit" "$unit_dir/$unit" || exit "$rc"
+						else
+							rm -f "$unit_dir/$unit" || exit "$rc"
+						fi
+					done
+					systemctl daemon-reload || exit "$rc"
+				fi
+				if [ "$releases_active" -eq 1 ]; then
+					systemctl start macro-live-releases.timer || exit "$rc"
+				fi
+				if [ "$fast_active" -eq 1 ]; then
+					systemctl start macro-live-fast.timer || exit "$rc"
+				fi
+				echo "macro-update: release handoff failed; previous timer intent restored" >&2
+			fi
+			rm -rf "$backup"
+			exit "$rc"
+		}
+		trap release_lane_exit EXIT
+		stop_unit_and_verify_inactive macro-live-fast.timer "$unit_dir/macro-live-fast.timer"
+		stop_unit_and_verify_inactive macro-live-fast.service "$unit_dir/macro-live-fast.service"
+		# The systemd service alone does not cover a manual fast invocation.
+		# Hold its EXISTING lane lock until handoff/rollback finishes.
+		exec 8>"$state_dir/fast.lock"
+		if ! flock -n 8; then
+			echo "macro-update: release handoff held by an active fast invocation" >&2
+			exit 1
+		fi
+		stop_unit_and_verify_inactive macro-live-releases.timer "$unit_dir/macro-live-releases.timer"
+		stop_unit_and_verify_inactive macro-live-releases.service "$unit_dir/macro-live-releases.service"
+		install_attempted=1
+		for unit in macro-live-releases.service macro-live-releases.timer; do
+			install -m 0644 "$APP_DIR/app/deploy/$unit" "$unit_dir/$unit"
+		done
+		systemctl daemon-reload
+		if [ "$first_install" -eq 1 ] || [ "$releases_active" -eq 1 ]; then
+			smoke_started=$(date -u +%s)
+			systemctl start macro-live-releases.service
+			"$APP_DIR/.venv/bin/python" - "$live_dir/release_publications.json" "$smoke_started" <<'PY'
+import json, sys
+from datetime import datetime
+payload = json.load(open(sys.argv[1]))
+assert isinstance(payload.get("events"), list)
+assert isinstance(payload.get("publications"), list)
+built = datetime.fromisoformat(payload["built"].replace("Z", "+00:00"))
+age = int(sys.argv[2]) - built.timestamp()
+assert built.tzinfo is not None and -5 <= age < 75
+PY
+			if [ "$first_install" -eq 1 ]; then
+				systemctl enable --now macro-live-releases.timer
+			else
+				systemctl start macro-live-releases.timer
+			fi
+		fi
+		if [ "$fast_active" -eq 1 ]; then
+			systemctl start macro-live-fast.timer
+		fi
+		complete=1
+	)
+	RECONCILED=1
+}
+reconcile_live_release_lane
+# END RELEASE_LANE_RECONCILIATION
+
 # Live-plane systemd definitions are installed by live-setup.sh. Once that setup
 # has happened, keep unit/resource/timer changes tracking main automatically.
 # Python task code needs no restart because every lane is a fresh oneshot process.

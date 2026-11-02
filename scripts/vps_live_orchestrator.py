@@ -4,11 +4,18 @@ The VPS owns short-lived ``site/live`` products; the Mac/PC nightly runners own
 canonical history, revisions, forward ledgers, calibration, and the full render.
 Each lane is independently scheduled and locked so a slow full-universe quote pull
 cannot block the one-minute publication/fast-price lane.
+
+``fast`` is the one-minute quote/signal lane. ``releases`` owns the official
+release publication: it runs the SAME incumbent producer that used to run
+inside ``fast``, so only the CADENCE moved and a slow quote or risk leaf can no
+longer decide when an official publication is detected. ``snapshot`` is the
+five-minute full-universe quote snapshot and ``bars`` the hourly accrual.
 """
 from __future__ import annotations
 
 import argparse
 import fcntl
+import hashlib
 import json
 import logging
 import os
@@ -24,6 +31,17 @@ from typing import Any, Callable
 
 log = logging.getLogger("vps_live")
 ROOT = Path(__file__).resolve().parent.parent
+# The release lane imports the incumbent producer from THIS repo. Pin the repo
+# root at sys.path[0] so a foreign ``scripts`` package on the host can never
+# satisfy that import (tests/test_check_script_import_pinning.py).
+sys.path.insert(0, str(ROOT))
+
+#: The published release artifact is a PUBLIC heartbeat: the external dead-man
+#: (scripts/check_vps_live_health.py) fails closed once it is more than five
+#: minutes old, so the release lane refreshes it at least this often even when
+#: no upstream probe is due.
+RELEASE_HEARTBEAT_MAX_AGE_S = 60
+RELEASE_TIMER_PATH = Path("/etc/systemd/system/macro-live-releases.timer")
 
 
 @dataclass
@@ -173,6 +191,11 @@ class Orchestrator:
         self.runner = runner
         self.python = Path(sys.executable)
         self.results: list[TaskResult] = []
+        #: Set by a lane that woke, decided there was nothing to do, and
+        #: returned without running a task. The CLI then leaves the shared
+        #: public status alone: a lane on a short timer must not rewrite (and
+        #: fsync) a public artifact on every wake.
+        self.idle = False
 
     def command(
         self,
@@ -183,6 +206,7 @@ class Orchestrator:
         timeout: int,
         env: dict[str, str] | None = None,
         validator: Callable[[Path], str | None] | None = None,
+        skip_returncodes: tuple[int, ...] = (),
     ) -> TaskResult:
         started = time.monotonic()
         merged_env = os.environ.copy()
@@ -253,6 +277,12 @@ class Orchestrator:
                         published.append(label)
                     status = "ok"
                     detail = (completed.stdout or "").strip()[-500:] or None
+            elif completed.returncode in skip_returncodes:
+                # The producer found another writer already holding the
+                # single-writer lock. That is a coalesced tick, not a failure:
+                # the other writer owns the publication for this round.
+                status = "skipped"
+                detail = (completed.stderr or completed.stdout or "").strip()[-800:] or None
             else:
                 status = "failed"
                 detail = (completed.stderr or completed.stdout or "").strip()[-800:] or None
@@ -294,19 +324,21 @@ class Orchestrator:
         return tuple((self.stage_dir / name, self.live_dir / name) for name in names)
 
     def fast(self) -> None:
-        """One-minute lane: releases first, then small quote/signal leaves."""
-        self.module(
-            "release_publications",
-            "scripts.watch_release_publications",
-            [
-                "--out",
-                str(self.stage_dir / "release_publications.json"),
-                "--state-dir",
-                str(self.state_dir),
-            ],
-            outputs=self._publish_pairs(("release_publications.json",)),
-            timeout=60,
-        )
+        """One-minute lane: small quote/signal leaves only.
+
+        The official release watcher used to run HERE, first in the sequence.
+        The release subprocess, the display quotes and the overlay/risk leaves
+        all shared one flock, one oneshot timeout and one 60s timer, so a slow
+        quote or risk leaf decided when a publication was detected. The
+        producer now owns the ``releases`` lane: still exactly ONE writer.
+        """
+        # During updater self-replacement, the predecessor inode cannot install
+        # the new timer. Keep release work under the existing fast.lock until
+        # installation establishes dedicated ownership. Disabled/masked installed
+        # timers remain dedicated ownership; never silently undo an operator pause.
+        if not (RELEASE_TIMER_PATH.exists() or RELEASE_TIMER_PATH.is_symlink()):
+            self.releases()
+            self.idle = False
         self.module(
             "display_quotes",
             "scripts.build_live_quotes",
@@ -396,6 +428,75 @@ class Orchestrator:
                 timeout=100,
             )
 
+    def releases(self) -> None:
+        """Official-release publication lane — independent of quote/risk work.
+
+        This lane runs the SAME incumbent producer that used to run inside
+        ``fast`` (``scripts.watch_release_publications``): no second feed, no
+        second writer, no second scheduler. Two bounds are kept apart: the lane
+        TIMER may wake often (``macro-live-releases.timer``), while the
+        upstream REQUEST rate is owned by the RETAINED per-source state, so an
+        idle tick costs no request and a bounded hot window around a scheduled
+        release is probed on the fast cadence. When nothing is due and the
+        published artifact is still fresh, the tick does nothing at all.
+        """
+        from scripts import watch_release_publications as wrp
+
+        state_path = self.state_dir / "release_publications_state.json"
+        state = wrp.load_state(state_path)
+        plan = wrp.tick_due(now=self.now, state=state)
+        artifact = self.live_dir / "release_publications.json"
+        heartbeat_due = self.release_artifact_error(
+            artifact, state=state, max_age_s=RELEASE_HEARTBEAT_MAX_AGE_S
+        ) is not None
+        if not plan["probe_due"] and not heartbeat_due:
+            log.info(
+                "releases lane idle — no source row is due and the published "
+                "heartbeat is still fresh"
+            )
+            self.idle = True
+            return
+        result = self.module(
+            "release_publications",
+            "scripts.watch_release_publications",
+            ["--out", str(artifact), "--state-dir", str(self.state_dir)],
+            # The watcher validates and atomically publishes under its producer
+            # lock. Never clear staging or copy public bytes after that lock ends.
+            outputs=(),
+            timeout=60,
+            skip_returncodes=(wrp.PRODUCER_BUSY_EXIT,),
+        )
+        if result.status == "ok":
+            error = self.release_artifact_error(artifact, max_age_s=120)
+            if error:
+                result.status = "invalid"
+                result.detail = error
+            else:
+                # Availability readback does not attribute a concurrent writer's
+                # output to this invocation.
+                result.detail = "public release artifact verified"
+
+    def release_artifact_error(
+        self, path: Path, *, max_age_s: int, state: dict[str, Any] | None = None
+    ) -> str | None:
+        """Read-only publication postcondition; this method never repairs bytes."""
+        from scripts import watch_release_publications as wrp
+
+        try:
+            body = path.read_bytes()
+            payload = json.loads(body)
+            wrp.validate_publication_payload(payload)
+            built = datetime.fromisoformat(payload["built"].replace("Z", "+00:00"))
+            age = (self.now - built).total_seconds()
+            if age < -5 or age >= max_age_s:
+                return "release publication heartbeat is stale or future-dated"
+            expected = (state or {}).get("publication_candidate_sha256")
+            if expected and expected != hashlib.sha256(body).hexdigest():
+                return "release state has an unpublished candidate"
+        except (OSError, ValueError, TypeError, AttributeError):
+            return "release publication is missing or invalid"
+        return None
+
     def snapshot(self) -> None:
         """Five-minute, network-heavy full snapshot followed by both basket pulses."""
         snapshot_stage = self.stage_dir / "quotes_full.json"
@@ -480,7 +581,11 @@ class Orchestrator:
             "lane": lane,
             "started_at": started_at.isoformat(),
             "finished_at": datetime.now(timezone.utc).isoformat(),
-            "ok": all(result.status == "ok" for result in self.results),
+            # A coalesced tick (another producer already held the single-writer
+            # lock) is not a failure: the other writer owns that publication.
+            "ok": all(
+                result.status in ("ok", "skipped") for result in self.results
+            ),
             "tasks": [asdict(result) for result in self.results],
         }
         atomic_write_json(self.state_dir / f"status-{lane}.json", lane_payload)
@@ -537,7 +642,11 @@ def _lock_lane(state_dir: Path, lane: str):
 def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--lane", choices=("fast", "snapshot", "bars"), required=True)
+    parser.add_argument(
+        "--lane",
+        choices=("fast", "releases", "snapshot", "bars"),
+        required=True,
+    )
     parser.add_argument(
         "--live-dir",
         default=os.environ.get("MACRO_LIVE_DIR", "/var/lib/macro-live/public/live"),
@@ -571,8 +680,13 @@ def main() -> int:
             live_dir=live_dir, state_dir=state_dir, data_dir=data_dir, now=now
         )
         getattr(orchestrator, args.lane)()
-        orchestrator.write_status(args.lane, started_at)
-        return 0 if all(result.status == "ok" for result in orchestrator.results) else 1
+        if not getattr(orchestrator, "idle", False):
+            orchestrator.write_status(args.lane, started_at)
+        return (
+            0
+            if all(result.status in ("ok", "skipped") for result in orchestrator.results)
+            else 1
+        )
     finally:
         lock_file.close()
 

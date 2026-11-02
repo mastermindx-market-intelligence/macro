@@ -22,6 +22,7 @@ the rest of the live loop.
 from __future__ import annotations
 
 import argparse
+import fcntl
 import hashlib
 import html
 import json
@@ -64,6 +65,58 @@ DEFECT_REPAIR_STATE_KEY = "official_actual_defect_repairs"
 OFFICIAL_ACTUAL_DEFECTS_PATH = (
     _ROOT / "data" / "release_forecast" / "official_actual_defects.json"
 )
+
+# ---------------------------------------------------------------------------
+# Source-probe pacing (B1.LIVE.1 / B1.LIVE.2)
+# ---------------------------------------------------------------------------
+# The TIMER WAKE (how often systemd wakes the release lane) and the HTTP
+# PACING (how often a source is actually probed) are separate concerns. The
+# RETAINED per-source state is the sole pacing authority, so the same bounds
+# apply no matter which entry point ran the producer. Every value is bounded;
+# tests/test_vps_live_orchestration.py asserts the bounds.
+#
+#: Healthy-source engineering target, not a guarantee under upstream timeout,
+#: backoff or host contention. Runtime measurements must establish the actual gap.
+MAX_SOURCE_PROBE_GAP_S = 5
+#: Hot-window probe interval. Bounded by MAX_SOURCE_PROBE_GAP_S.
+HOT_PROBE_INTERVAL_S = 2
+#: Ordinary probe interval: the incumbent fast lane's own contract was
+#: ``OnUnitActiveSec=60s`` (plus up to 5s of jitter, mean ~62.5s), so this
+#: lane never probes a source more often than the lane it replaces.
+NORMAL_PROBE_INTERVAL_S = 60
+#: Ordinary cadence for a row past its poll window, kept for the bounded
+#: unresolved-retry sweep. Matches UNRESOLVED_RETRY_INTERVAL_MIN exactly.
+UNRESOLVED_PROBE_INTERVAL_S = UNRESOLVED_RETRY_INTERVAL_MIN * 60
+#: The hot window opens this long BEFORE the scheduled release time...
+HOT_WINDOW_LEAD = timedelta(minutes=2)
+#: ... and closes this long AFTER it, unless the release verifies first.
+HOT_WINDOW_TRAIL = timedelta(minutes=10)
+#: Bounded exponential backoff for a failing source.
+ERROR_BACKOFF_BASE_S = 5
+ERROR_BACKOFF_MAX_S = 60
+#: Upper bound on an upstream ``Retry-After`` this producer will honour.
+RETRY_AFTER_MAX_S = 3600
+
+#: Retained per-source pacing fields (existing source rows, not a new store).
+PROBE_LAST_AT_KEY = "last_probe_at"
+PROBE_NEXT_AT_KEY = "next_probe_at"
+PROBE_INTERVAL_KEY = "probe_interval_s"
+PROBE_FAILURES_KEY = "consecutive_failures"
+PROBE_RETRY_AFTER_KEY = "retry_after_at"
+PROBE_BACKOFF_KEY = "backoff_until"
+
+#: The single-writer lock for the release producer. It lives beside the
+#: durable state file and covers the whole load -> detect -> write sequence
+#: for EVERY entry point (the release lane, a manual run, a cron remnant).
+PRODUCER_LOCK_NAME = "release_publications.lock"
+#: Exit code used when another producer already holds the lock. The release
+#: lane maps it to a skipped tick; it is not a failure.
+PRODUCER_BUSY_EXIT = 75
+
+
+def _clamp(value: int, low: int, high: int) -> int:
+    """Bound one pacing parameter explicitly."""
+    return max(low, min(high, int(value)))
 
 
 @dataclass(frozen=True)
@@ -161,16 +214,17 @@ SOURCES: tuple[SourceSpec, ...] = (
 )
 
 
-def atomic_write_json(path: Path, payload: dict[str, Any]) -> None:
+def atomic_write_json(path: Path, payload: dict[str, Any], *, mode: int = 0o600) -> None:
     """Write valid JSON by same-directory temp file + replace."""
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as fh:
-            json.dump(payload, fh, separators=(",", ":"), ensure_ascii=False)
+            json.dump(payload, fh, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
             fh.write("\n")
             fh.flush()
             os.fsync(fh.fileno())
+            os.fchmod(fh.fileno(), mode)
         os.replace(tmp_name, path)
     finally:
         try:
@@ -421,6 +475,30 @@ def active_events(events: list[dict[str, Any]], now: datetime) -> list[dict[str,
     ]
 
 
+def _parse_retry_after(value: Any, *, now: datetime) -> int | None:
+    """Parse an upstream ``Retry-After`` into a bounded number of seconds."""
+    if value is None:
+        return None
+    text = str(value).strip()
+    if not text:
+        return None
+    try:
+        seconds = int(float(text))
+    except (TypeError, ValueError):
+        try:
+            stamp = parsedate_to_datetime(text)
+        except (TypeError, ValueError, OverflowError):
+            return None
+        if stamp is None:
+            return None
+        if stamp.tzinfo is None:
+            stamp = stamp.replace(tzinfo=timezone.utc)
+        seconds = int((stamp - now).total_seconds())
+    if seconds < 0:
+        return 0
+    return _clamp(seconds, 0, RETRY_AFTER_MAX_S)
+
+
 def _fetch(spec: SourceSpec, prior: dict[str, Any], timeout: float) -> dict[str, Any]:
     headers = {"User-Agent": USER_AGENT, "Accept": "text/html,application/pdf;q=0.9,*/*;q=0.5"}
     if prior.get("etag"):
@@ -439,6 +517,9 @@ def _fetch(spec: SourceSpec, prior: dict[str, Any], timeout: float) -> dict[str,
                 "etag": response.headers.get("ETag"),
                 "last_modified": response.headers.get("Last-Modified"),
                 "content_type": response.headers.get("Content-Type"),
+                "retry_after": _parse_retry_after(
+                    response.headers.get("Retry-After"), now=datetime.now(timezone.utc)
+                ),
             }
     except urllib.error.HTTPError as exc:
         if exc.code == 304:
@@ -449,7 +530,17 @@ def _fetch(spec: SourceSpec, prior: dict[str, Any], timeout: float) -> dict[str,
                 "etag": prior.get("etag"),
                 "last_modified": prior.get("last_modified"),
                 "content_type": prior.get("content_type"),
+                "retry_after": None,
             }
+        # A blocked source (429/503) carries its own cool-down. Keep it on the
+        # exception so the caller can honour it instead of hammering the source
+        # on the next fast tick.
+        try:
+            exc.retry_after_s = _parse_retry_after(
+                exc.headers.get("Retry-After"), now=datetime.now(timezone.utc)
+            )
+        except (AttributeError, TypeError, ValueError):
+            pass
         raise
 
 
@@ -485,9 +576,16 @@ def _complete_source_attempt(
     now: datetime,
     source_url: str,
     result: dict[str, Any],
+    interval_s: int = NORMAL_PROBE_INTERVAL_S,
 ) -> dict[str, Any]:
     """Record a successful observation without erasing prior failure lineage."""
     completed = dict(attempt)
+    retry_after_until = None
+    retry_after_s = result.get("retry_after")
+    if retry_after_s:
+        retry_after_until = now + timedelta(
+            seconds=_clamp(int(retry_after_s), 0, RETRY_AFTER_MAX_S)
+        )
     completed.update(
         {
             "fingerprint": result.get("fingerprint"),
@@ -498,6 +596,16 @@ def _complete_source_attempt(
             "source_url": source_url,
             "last_attempt_status": "ok",
             "last_success_at": now.isoformat(),
+            PROBE_LAST_AT_KEY: now.isoformat(),
+            PROBE_INTERVAL_KEY: int(interval_s),
+            PROBE_FAILURES_KEY: 0,
+            PROBE_RETRY_AFTER_KEY: (
+                retry_after_until.isoformat() if retry_after_until else None
+            ),
+            PROBE_BACKOFF_KEY: None,
+            PROBE_NEXT_AT_KEY: _next_probe_at(
+                now=now, interval_s=interval_s, blocked_until=retry_after_until
+            ).isoformat(),
         }
     )
     return completed
@@ -509,9 +617,30 @@ def _fail_source_attempt(
     now: datetime,
     source_url: str,
     error: str,
+    interval_s: int = NORMAL_PROBE_INTERVAL_S,
+    retry_after_s: int | None = None,
 ) -> dict[str, Any]:
     """Persist coarse failure lineage while keeping validators and last success."""
     failed = dict(attempt)
+    try:
+        failures = max(0, int(attempt.get(PROBE_FAILURES_KEY) or 0)) + 1
+    except (TypeError, ValueError):
+        failures = 1
+    backoff_s = _clamp(
+        ERROR_BACKOFF_BASE_S * (2 ** min(max(failures - 1, 0), 16)),
+        1,
+        ERROR_BACKOFF_MAX_S,
+    )
+    backoff_until = now + timedelta(seconds=backoff_s)
+    retry_after_until = None
+    if retry_after_s:
+        retry_after_until = now + timedelta(
+            seconds=_clamp(int(retry_after_s), 0, RETRY_AFTER_MAX_S)
+        )
+    blocked_until = max(
+        [stamp for stamp in (backoff_until, retry_after_until) if stamp is not None],
+        default=None,
+    )
     failed.update(
         {
             "checked_at": now.isoformat(),
@@ -519,9 +648,101 @@ def _fail_source_attempt(
             "last_attempt_status": "error",
             "last_error": error,
             "last_error_at": now.isoformat(),
+            PROBE_LAST_AT_KEY: now.isoformat(),
+            PROBE_INTERVAL_KEY: int(interval_s),
+            PROBE_FAILURES_KEY: failures,
+            PROBE_RETRY_AFTER_KEY: (
+                retry_after_until.isoformat() if retry_after_until else None
+            ),
+            PROBE_BACKOFF_KEY: backoff_until.isoformat(),
+            PROBE_NEXT_AT_KEY: _next_probe_at(
+                now=now, interval_s=interval_s, blocked_until=blocked_until
+            ).isoformat(),
         }
     )
     return failed
+
+
+def _next_probe_at(
+    *,
+    now: datetime,
+    interval_s: int,
+    blocked_until: datetime | None,
+) -> datetime:
+    """The earliest time this source row may be probed upstream again."""
+    due = now + timedelta(seconds=max(1, int(interval_s)))
+    if blocked_until is not None and blocked_until > due:
+        due = blocked_until
+    return due
+
+
+def _probe_interval_s(
+    event: dict[str, Any] | None,
+    publication: dict[str, Any],
+    *,
+    now_et: datetime,
+    in_fast_window: bool,
+) -> int:
+    """The bounded probe cadence that applies to one source row right now.
+
+    * inside the bounded hot window -> the fast cadence (<= the 5s gap target);
+    * inside the ordinary poll window -> the incumbent one-minute cadence;
+    * past the poll window -> the incumbent unresolved-retry sweep cadence.
+
+    The hot window is bounded by the scheduled release time AND by the event's
+    own readiness: a VERIFIED release leaves it immediately, so a published
+    and verified event never keeps its source on the fast cadence.
+    """
+    if event is None:
+        return NORMAL_PROBE_INTERVAL_S
+    if publication.get("data_ready") is not True:
+        try:
+            event_at = _event_at(event)
+        except (KeyError, TypeError, ValueError):
+            event_at = None
+        if event_at is not None and (
+            event_at - HOT_WINDOW_LEAD <= now_et <= event_at + HOT_WINDOW_TRAIL
+        ):
+            return _clamp(HOT_PROBE_INTERVAL_S, 1, MAX_SOURCE_PROBE_GAP_S)
+    if not in_fast_window:
+        return UNRESOLVED_PROBE_INTERVAL_S
+    return NORMAL_PROBE_INTERVAL_S
+
+
+def _probe_blocked_until(prior: dict[str, Any]) -> datetime | None:
+    """The later of an upstream Retry-After and this row's error backoff."""
+    stamps = [
+        _state_time(prior.get(PROBE_RETRY_AFTER_KEY)),
+        _state_time(prior.get(PROBE_BACKOFF_KEY)),
+    ]
+    stamps = [stamp for stamp in stamps if stamp is not None]
+    return max(stamps) if stamps else None
+
+
+def _probe_due_at(
+    prior: dict[str, Any],
+    *,
+    now: datetime,
+    interval_s: int,
+    blocked_until: datetime | None,
+) -> datetime | None:
+    """When this source row may next be probed upstream.
+
+    The RETAINED STATE is the sole pacing authority: the row's own last probe
+    stamp plus the cadence in force, never a caller's in-memory clock. The
+    stamp is recomputed against the CURRENT cadence rather than read from the
+    stored ``next_probe_at``, so a cadence change (the hot window opening, or
+    a verified release closing it) takes effect on the very next tick instead
+    of one cadence later. ``None`` means "never probed" — due immediately.
+    """
+    last = _state_time(prior.get(PROBE_LAST_AT_KEY)) or _state_time(
+        prior.get("last_attempt_at")
+    )
+    if last is None:
+        return None
+    return _next_probe_at(
+        now=last, interval_s=interval_s, blocked_until=blocked_until
+    )
 
 
 def _resolved_spec(spec: SourceSpec, event: dict[str, Any] | None) -> SourceSpec:
@@ -1162,14 +1383,67 @@ def _prepare_official_document(
         return document, True, type(exc).__name__
 
 
+def _source_scope_groups(due: list[dict[str, Any]]):
+    """Yield ``(spec, work_items)`` for the tick, in the producer's own order."""
+    for spec in SOURCES:
+        matching = [event for event in due if event["type"] in spec.event_types]
+        if not matching:
+            continue
+        yield spec, (
+            [(event, [event]) for event in matching]
+            if spec.event_scoped
+            else [(None, matching)]
+        )
+
+
+def _scope_keys(spec: SourceSpec, scoped_event: dict[str, Any] | None) -> tuple[str, str]:
+    """The retained row key (and its legacy spelling) for one work item."""
+    state_key = spec.source_id
+    legacy_state_key = spec.source_id
+    if scoped_event is not None:
+        state_key += f":{_event_key(scoped_event)}"
+        legacy_state_key += f":{scoped_event['type']}:{scoped_event['date']}"
+    return state_key, legacy_state_key
+
+
+def load_state(path: Path) -> dict[str, Any]:
+    """Read the retained durable state (empty when absent or unreadable)."""
+    return _load_json(path)
+
+
+def tick_due(*, now: datetime, state: dict[str, Any]) -> dict[str, Any]:
+    """Decide whether this tick may probe upstream. No network, no writes.
+
+    The release lane uses this as a cheap preflight: it lets the lane's timer
+    wake often while the ACTUAL request rate stays inside the retained
+    pacing bounds.
+    """
+    rows = detect(now=now, state=state, probe=False)
+    due_rows = [row for row in rows if row["due"]]
+    return {
+        "probe_due": bool(due_rows),
+        "rows": rows,
+        "due_rows": due_rows,
+        "hot": any(row["interval_s"] <= HOT_PROBE_INTERVAL_S for row in due_rows),
+        "forced": any(row["forced"] for row in due_rows),
+    }
+
+
 def detect(
     *,
     now: datetime,
     state: dict[str, Any],
     fetcher=_fetch,
     timeout: float = 8.0,
-) -> tuple[dict[str, Any], dict[str, Any]]:
-    """Run one detection tick; pure apart from the injected HTTP fetcher."""
+    probe: bool = True,
+) -> tuple[dict[str, Any], dict[str, Any]] | list[dict[str, Any]]:
+    """Run one detection tick; pure apart from the injected HTTP fetcher.
+
+    ``probe=False`` resolves the tick WITHOUT touching the network and
+    returns the per-source pacing decisions instead of ``(state, payload)``.
+    The release lane uses it as a cheap preflight, so the lane's timer may
+    wake often while the request rate stays with the retained pacing state.
+    """
     now = now.astimezone(timezone.utc)
     now_et = now.astimezone(NY)
     today_et = now_et.date()
@@ -1197,6 +1471,7 @@ def detect(
         )
     ]
     due = active_events(events, now)
+    fast_window_keys = {_event_key(event) for event in due}
     # Past the high-frequency window, keep every unresolved result-capable row
     # visible and retry at low frequency. A parser hotfix can therefore self-heal
     # CPI/GDP/PCE/payrolls/claims just as it can an FOMC statement.
@@ -1245,6 +1520,66 @@ def detect(
         if event_key not in due_keys:
             due.append(event)
             due_keys.add(event_key)
+
+    def scope_pacing(
+        source_id: str,
+        scoped_event: dict[str, Any] | None,
+        state_key: str,
+        legacy_state_key: str,
+        prior: dict[str, Any],
+    ) -> dict[str, Any]:
+        """The retained pacing decision for ONE source row (no network).
+
+        A row is due when the retained state says so.  Two governed paths
+        bypass the ordinary pacing and are deliberately NOT re-armed by a
+        tick: the FIRST parser-upgrade retry, and a governed defect repair
+        that is itself due (its own attempt budget and backoff still apply).
+        """
+        scoped_event_key = _event_key(scoped_event) if scoped_event else None
+        forced_repair = bool(
+            scoped_event_key and scoped_event_key in forced_repair_keys
+        )
+        parser_upgrade = bool(
+            scoped_event_key and scoped_event_key in parser_upgrade_keys
+        )
+        publication = (
+            _publication_for(publications, scoped_event) if scoped_event else {}
+        )
+        in_fast_window = bool(
+            scoped_event_key and scoped_event_key in fast_window_keys
+        )
+        interval_s = _probe_interval_s(
+            scoped_event,
+            publication,
+            now_et=now_et,
+            in_fast_window=in_fast_window,
+        )
+        blocked_until = _probe_blocked_until(prior)
+        due_at = _probe_due_at(
+            prior,
+            now=now,
+            interval_s=interval_s,
+            blocked_until=blocked_until,
+        )
+        return {
+            "state_key": state_key,
+            "source_id": source_id,
+            "legacy_state_key": legacy_state_key,
+            "event_key": scoped_event_key,
+            "forced": forced_repair or parser_upgrade,
+            "forced_repair": forced_repair,
+            "parser_upgrade": parser_upgrade,
+            "interval_s": interval_s,
+            "blocked_until": blocked_until,
+            "due_at": due_at,
+            "due": bool(
+                (blocked_until is None or now >= blocked_until)
+                and (forced_repair or parser_upgrade or due_at is None or now >= due_at)
+            ),
+            "in_fast_window": in_fast_window,
+        }
+
+    probe_rows: list[dict[str, Any]] = []
     health: list[dict[str, Any]] = []
     feed_fetch_cache: dict[tuple[str, str, str], dict[str, Any]] = {}
 
@@ -1263,34 +1598,64 @@ def detect(
             feed_fetch_cache[cache_key] = fetcher(source, prior_state, timeout)
         return dict(feed_fetch_cache[cache_key])
 
-    for spec in SOURCES:
-        matching = [event for event in due if event["type"] in spec.event_types]
-        if not matching:
-            continue
-        work_items = (
-            [(event, [event]) for event in matching]
-            if spec.event_scoped
-            else [(None, matching)]
-        )
+    for spec, work_items in _source_scope_groups(due):
         for scoped_event, scoped_matching in work_items:
             resolved = _resolved_spec(spec, scoped_event)
-            state_key = spec.source_id
-            if scoped_event is not None:
-                state_key += f":{_event_key(scoped_event)}"
-            legacy_state_key = spec.source_id
-            if scoped_event is not None:
-                legacy_state_key += (
-                    f":{scoped_event['type']}:{scoped_event['date']}"
-                )
+            state_key, legacy_state_key = _scope_keys(spec, scoped_event)
             prior = dict(
                 source_state.get(state_key)
                 or source_state.get(legacy_state_key)
                 or {}
             )
-            scoped_event_key = _event_key(scoped_event) if scoped_event else None
-            forced_repair = bool(
-                scoped_event_key and scoped_event_key in forced_repair_keys
+            pacing = scope_pacing(
+                spec.source_id,
+                scoped_event,
+                state_key,
+                legacy_state_key,
+                prior,
             )
+            if not probe:
+                probe_rows.append(pacing)
+                continue
+            if not pacing["due"]:
+                # PACED: the retained state says this source is not due yet.
+                # Nothing upstream was touched, so attempt_count, last_success_at
+                # and last_error stay exactly as the last real probe left them.
+                if state_key not in source_state and legacy_state_key in source_state:
+                    source_state[state_key] = source_state.pop(legacy_state_key)
+                if state_key in source_state:
+                    # Refresh the pacing fields WITHOUT claiming an upstream
+                    # attempt: attempt_count, last_success_at and last_error
+                    # stay exactly as the last real probe left them.
+                    paced = dict(source_state[state_key])
+                    paced[PROBE_NEXT_AT_KEY] = pacing["due_at"].isoformat()
+                    paced[PROBE_INTERVAL_KEY] = int(pacing["interval_s"])
+                    source_state[state_key] = paced
+                health.append(
+                    {
+                        "source_id": spec.source_id,
+                        "event_id": (
+                            scoped_event.get("event_id") if scoped_event else None
+                        ),
+                        "status": (
+                            "error"
+                            if prior.get("last_attempt_status") == "error"
+                            else "paced"
+                        ),
+                        "http_status": None,
+                        "changed": False,
+                        "document_urls": [],
+                        **(
+                            {"error": prior.get("last_error")}
+                            if prior.get("last_attempt_status") == "error"
+                            and prior.get("last_error")
+                            else {}
+                        ),
+                    }
+                )
+                continue
+            scoped_event_key = pacing["event_key"]
+            forced_repair = bool(pacing["forced_repair"])
             repair_record = (
                 repair_state.get(scoped_event_key) if scoped_event_key else None
             )
@@ -1307,6 +1672,7 @@ def detect(
                 now=now,
                 source_url=resolved.url,
             )
+            interval_s = int(pacing["interval_s"])
             try:
                 result = fetch_primary(resolved, {} if forced_repair else prior)
                 if archive_url and (result.get("status") != 200 or result.get("url") != archive_url):
@@ -1339,6 +1705,7 @@ def detect(
                     now=now,
                     source_url=resolved.url,
                     result=result,
+                    interval_s=interval_s,
                 )
                 if legacy_state_key != state_key:
                     source_state.pop(legacy_state_key, None)
@@ -1617,6 +1984,8 @@ def detect(
                     now=now,
                     source_url=resolved.url,
                     error=type(exc).__name__,
+                    interval_s=interval_s,
+                    retry_after_s=getattr(exc, "retry_after_s", None),
                 )
                 if legacy_state_key != state_key:
                     source_state.pop(legacy_state_key, None)
@@ -1641,6 +2010,9 @@ def detect(
                         "error": type(exc).__name__,
                     }
                 )
+
+    if not probe:
+        return probe_rows
 
     lifecycle: list[dict[str, Any]] = []
     for event in events:
@@ -1699,6 +2071,18 @@ def detect(
         "poll_window": {
             "before_min": 12,
             "after_min": 360,
+            # The bounded source-probe cadence the release lane enforces. The
+            # timer wake is deliberately NOT published here: the wake rate and
+            # the request rate are separate concerns, and only the request rate
+            # is a promise about upstream load.
+            "hot_window_lead_min": round(HOT_WINDOW_LEAD.total_seconds() / 60),
+            "hot_window_trail_min": round(HOT_WINDOW_TRAIL.total_seconds() / 60),
+            "hot_probe_interval_s": _clamp(
+                HOT_PROBE_INTERVAL_S, 1, MAX_SOURCE_PROBE_GAP_S
+            ),
+            "target_max_source_probe_gap_s": MAX_SOURCE_PROBE_GAP_S,
+            "normal_probe_interval_s": NORMAL_PROBE_INTERVAL_S,
+            "unresolved_probe_interval_s": UNRESOLVED_PROBE_INTERVAL_S,
             "per_type_after_min": {
                 event_type: round(_poll_after({"type": event_type}).total_seconds() / 60)
                 for event_type in sorted(RESULT_EVENT_TYPES)
@@ -1733,6 +2117,47 @@ def detect(
     return new_state, payload
 
 
+def validate_publication_payload(payload: dict[str, Any]) -> None:
+    """Validate the browser contract before replacing either durable artifact."""
+    if payload.get("schema") != "release_publications.v2":
+        raise ValueError("invalid release publication schema")
+    for field in ("events", "publications", "due", "source_health"):
+        rows = payload.get(field)
+        if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
+            raise ValueError("invalid release publication rows")
+    built = datetime.fromisoformat(str(payload.get("built", "")).replace("Z", "+00:00"))
+    if built.tzinfo is None:
+        raise ValueError("release publication clock must include an offset")
+    json.dumps(payload, allow_nan=False)
+
+
+def publication_digest(payload: dict[str, Any]) -> str:
+    """Digest the exact UTF-8 bytes atomic_write_json publishes."""
+    body = json.dumps(payload, separators=(",", ":"), ensure_ascii=False, allow_nan=False) + "\n"
+    return hashlib.sha256(body.encode("utf-8")).hexdigest()
+
+
+def producer_lock(state_dir: Path):
+    """Take the single-writer lock for the release producer.
+
+    The lock is NON-blocking and covers the whole load -> detect -> state and
+    output write sequence, so no entry point — the release lane, a manual run,
+    or a retired cron remnant — can write the durable state and the published
+    artifact twice at once.  ``None`` means another producer already holds it.
+    """
+    state_dir.mkdir(parents=True, exist_ok=True)
+    lock_file = (state_dir / PRODUCER_LOCK_NAME).open("a+")
+    try:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        lock_file.close()
+        return None
+    except OSError:
+        lock_file.close()
+        raise
+    return lock_file
+
+
 def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     parser = argparse.ArgumentParser(description=__doc__)
@@ -1744,13 +2169,25 @@ def main() -> int:
 
     state_dir = Path(args.state_dir)
     state_path = state_dir / "release_publications_state.json"
-    state = _load_json(state_path)
     now = datetime.fromisoformat(args.now) if args.now else datetime.now(timezone.utc)
     if now.tzinfo is None:
         now = now.replace(tzinfo=timezone.utc)
-    new_state, payload = detect(now=now, state=state, timeout=args.timeout)
-    atomic_write_json(state_path, new_state)
-    atomic_write_json(Path(args.out), payload)
+    lock_file = producer_lock(state_dir)
+    if lock_file is None:
+        log.info("release producer already active; skipping this tick")
+        return PRODUCER_BUSY_EXIT
+    try:
+        state = _load_json(state_path)
+        new_state, payload = detect(now=now, state=state, timeout=args.timeout)
+        validate_publication_payload(payload)
+        # This is the intended public digest, not a successful-publication claim.
+        # If the second replace fails, the normal lane detects the mismatch and
+        # retries publication even while upstream probes remain paced.
+        new_state["publication_candidate_sha256"] = publication_digest(payload)
+        atomic_write_json(state_path, new_state)
+        atomic_write_json(Path(args.out), payload, mode=0o644)
+    finally:
+        lock_file.close()
     log.info(
         "wrote %s — due=%d published=%d sources=%d",
         args.out,

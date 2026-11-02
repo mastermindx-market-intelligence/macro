@@ -1,0 +1,35 @@
+# Official-release publication lane (B1.LIVE.1 / B1.LIVE.2).
+#
+# This unit owns the SAME incumbent producer that used to run as the first leaf
+# of macro-live-fast.service. There is still exactly ONE release writer; only
+# its TIMING moved. The producer's own single-writer lock
+# (state/release_publications.lock) covers the load -> detect -> state+output
+# write sequence for EVERY entry point, so this lane, a manual run and any
+# retired cron remnant can never write twice at once.
+#
+# TimeoutStartSec is deliberately generous: the upstream request timeout is the
+# producer's own (8s per request) and one tick may issue several requests. An
+# upstream that stalls therefore stretches the probe gap — that is an UPSTREAM
+# delay and is reported as one, never as a broken detection guarantee.
+[Unit]
+Description=Mastermind macro official-release publication lane
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/macro
+EnvironmentFile=-/etc/macro-live.env
+ExecStart=/opt/macro/.venv/bin/python -m scripts.vps_live_orchestrator --lane releases
+TimeoutStartSec=150
+Nice=3
+CPUWeight=70
+CPUQuota=180%
+MemoryHigh=1G
+MemoryMax=1536M
+IOWeight=60
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

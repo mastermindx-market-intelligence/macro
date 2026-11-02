@@ -1,0 +1,1576 @@
+{
+  "schema": "release_publications.v2",
+  "built": "2026-11-02T03:01:49.219357+00:00",
+  "as_of_et": "2026-11-01T22:01:49.219357-05:00",
+  "coverage_started_at_by_type": {
+    "CLAIMS": "2026-07-30T05:48:24.210210+00:00",
+    "CPI": "2026-07-30T05:48:24.210210+00:00",
+    "FOMC": "2026-07-30T05:48:24.210210+00:00",
+    "GDP": "2026-07-30T05:48:24.210210+00:00",
+    "NFP": "2026-07-30T05:48:24.210210+00:00",
+    "PCE": "2026-07-30T05:48:24.210210+00:00",
+    "PPI": "2026-07-30T05:48:24.210210+00:00"
+  },
+  "timezone": "America/New_York",
+  "poll_window": {
+    "before_min": 12,
+    "after_min": 360,
+    "per_type_after_min": {
+      "CLAIMS": 360,
+      "CPI": 360,
+      "FOMC": 1440,
+      "GDP": 360,
+      "NFP": 360,
+      "PCE": 360,
+      "PPI": 360
+    },
+    "unresolved_retention_min": {
+      "CLAIMS": 10080,
+      "CPI": 10080,
+      "FOMC": 10080,
+      "GDP": 10080,
+      "NFP": 10080,
+      "PCE": 10080,
+      "PPI": 10080
+    }
+  },
+  "due": [],
+  "events": [
+    {
+      "event_id": "fomc:2026-10-28",
+      "type": "FOMC",
+      "date": "2026-10-28",
+      "time_et": "14:00",
+      "label": "FOMC rate decision",
+      "label_zh": "\u7f8e\u8054\u50a8\u8bae\u606f\u4f1a\u8bae",
+      "schedule_source": "federal_reserve",
+      "is_sep": false,
+      "is_context_only": true,
+      "scheduled_at": "2026-10-28T14:00:00-04:00",
+      "status": "published",
+      "detected_at": "2026-10-28T18:01:01.395457+00:00",
+      "first_seen_at": "2026-10-28T18:01:01.395457+00:00",
+      "observed_at": "2026-10-28T18:01:01.395457+00:00",
+      "official_embargo_at": "2026-10-28T14:00:00-04:00",
+      "source_released_at": "2026-10-28T18:00:18+00:00",
+      "source_time_basis": "official_source",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "source_id": "fed_fomc",
+      "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm",
+      "content_sha256": "40893a7a62592072be71a236b16cf9e18f217e63256d2099527ff1e4f3ecf08b",
+      "source_sha256": "40893a7a62592072be71a236b16cf9e18f217e63256d2099527ff1e4f3ecf08b",
+      "data_ready": true,
+      "reference_period": null,
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "fomc",
+        "version": 2
+      },
+      "actual": {
+        "kind": "policy_rate",
+        "action": "hold",
+        "target_low": 3.75,
+        "target_high": 4.0,
+        "unit": "percent",
+        "vote_for": 10,
+        "vote_against": 2,
+        "dissent_preference": "hike",
+        "dissent_basis_points": 25,
+        "headline_en": "Fed holds at 3.75%\u20134.00%",
+        "headline_zh": "\u7f8e\u8054\u50a8\u7ef4\u6301\u5229\u7387\u5728 3.75%\u20134.00%",
+        "summary_en": "Fed holds at 3.75%\u20134.00% on a 10\u20132 vote. Dissenters preferred a rate increase of 25 basis points.",
+        "summary_zh": "\u7f8e\u8054\u50a8\u7ef4\u6301\u5229\u7387\u5728 3.75%\u20134.00%\uff0c\u8868\u51b3\u7ed3\u679c\u4e3a 10\u20132\u3002 \u53cd\u5bf9\u8005\u503e\u5411\u4e8e\u52a0\u606f 25 \u4e2a\u57fa\u70b9\u3002",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm"
+      },
+      "verified_at": "2026-10-28T18:01:01.395457+00:00"
+    },
+    {
+      "event_id": "claims:2026-10-29",
+      "type": "CLAIMS",
+      "date": "2026-10-29",
+      "time_et": "08:30",
+      "label": "Initial jobless claims",
+      "label_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1",
+      "schedule_source": "computed",
+      "is_context_only": true,
+      "scheduled_at": "2026-10-29T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-10-29T12:30:04.221908+00:00",
+      "first_seen_at": "2026-10-29T12:30:04.221908+00:00",
+      "observed_at": "2026-10-29T12:30:04.221908+00:00",
+      "official_embargo_at": "2026-10-29T08:30:00-04:00",
+      "source_released_at": "2026-10-29T12:30:00+00:00",
+      "source_time_basis": "scheduled_embargo_floor",
+      "publisher": "U.S. Department of Labor",
+      "source_id": "dol_claims",
+      "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta",
+      "content_sha256": "e6912a52241845630b1d6f944aa0ad15fe40abb52cf5dbdd428ddc7dea9144b1",
+      "source_sha256": "e6912a52241845630b1d6f944aa0ad15fe40abb52cf5dbdd428ddc7dea9144b1",
+      "data_ready": true,
+      "reference_period": "October 17, 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "claims",
+        "version": 1
+      },
+      "actual": {
+        "kind": "jobless_claims",
+        "initial_claims": 194000,
+        "change": -6000,
+        "prior_initial_claims": 200000,
+        "four_week_average": 197750,
+        "unit": "persons",
+        "reference_period": "October 17, 2026",
+        "metrics": [
+          {
+            "metric_id": "claims_initial",
+            "value": 194000,
+            "unit": "persons",
+            "period": "October 17, 2026"
+          },
+          {
+            "metric_id": "claims_change",
+            "value": -6000,
+            "unit": "persons",
+            "period": "October 17, 2026"
+          },
+          {
+            "metric_id": "claims_four_week_avg",
+            "value": 197750,
+            "unit": "persons",
+            "period": "October 17, 2026"
+          }
+        ],
+        "headline_en": "Initial claims 194k (-6k)",
+        "headline_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1 194\u5343\uff08-6\u5343\uff09",
+        "summary_en": "Initial claims 194k (-6k) for the week ending October 17, 2026; four-week average 197.8k.",
+        "summary_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1 194\u5343\uff08-6\u5343\uff09\uff0c\u622a\u81f3 October 17, 2026 \u5f53\u5468\uff1b\u56db\u5468\u5747\u503c 197.8\u5343\u3002",
+        "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta"
+      },
+      "verified_at": "2026-10-29T12:30:04.221908+00:00"
+    },
+    {
+      "event_id": "gdp:2026-10-29",
+      "type": "GDP",
+      "date": "2026-10-29",
+      "time_et": "08:30",
+      "label": "GDP (BEA estimate)",
+      "label_zh": "GDP \u6570\u636e",
+      "schedule_source": "static",
+      "is_context_only": true,
+      "scheduled_at": "2026-10-29T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-10-29T12:31:07.496621+00:00",
+      "first_seen_at": "2026-10-29T12:31:07.496621+00:00",
+      "observed_at": "2026-10-29T12:31:07.496621+00:00",
+      "official_embargo_at": "2026-10-29T08:30:00-04:00",
+      "source_released_at": "2026-10-29T12:30:00+00:00",
+      "source_time_basis": "official_source",
+      "publisher": "U.S. Bureau of Economic Analysis",
+      "source_id": "bea_gdp",
+      "source_url": "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026",
+      "content_sha256": "b51d2f8f5bb721a5b37d17426a7512dcbfce1949aeb1e33b3ff28c823fcaaa30",
+      "source_sha256": "b51d2f8f5bb721a5b37d17426a7512dcbfce1949aeb1e33b3ff28c823fcaaa30",
+      "data_ready": true,
+      "reference_period": "Q3 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "gdp",
+        "version": 1
+      },
+      "actual": {
+        "kind": "economic_growth",
+        "real_gdp_annualized": 3.4,
+        "prior_real_gdp_annualized": 2.2,
+        "vintage": "advance",
+        "unit": "percent",
+        "reference_period": "Q3 2026",
+        "metrics": [
+          {
+            "metric_id": "gdp_real_annualized",
+            "value": 3.4,
+            "unit": "percent_annualized",
+            "period": "Q3 2026"
+          }
+        ],
+        "headline_en": "Real GDP +3.4% annualized (Q3 2026)",
+        "headline_zh": "\u5b9e\u9645 GDP \u5e74\u5316 +3.4%\uff08Q3 2026\uff09",
+        "summary_en": "Real GDP +3.4% annualized (Q3 2026). Previous quarter: +2.2%.",
+        "summary_zh": "\u5b9e\u9645 GDP \u5e74\u5316 +3.4%\uff08Q3 2026\uff09\u3002 \u4e0a\u5b63\u5ea6\uff1a+2.2%\u3002",
+        "source_url": "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026"
+      },
+      "verified_at": "2026-10-29T12:31:07.496621+00:00"
+    },
+    {
+      "event_id": "pce:2026-10-29",
+      "type": "PCE",
+      "date": "2026-10-29",
+      "time_et": "08:30",
+      "label": "PCE / personal income (BEA)",
+      "label_zh": "PCE \u7269\u4ef7\u6307\u6570",
+      "schedule_source": "static",
+      "is_context_only": true,
+      "scheduled_at": "2026-10-29T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-10-29T12:31:07.496621+00:00",
+      "first_seen_at": "2026-10-29T12:31:07.496621+00:00",
+      "observed_at": "2026-10-29T12:31:07.496621+00:00",
+      "official_embargo_at": "2026-10-29T08:30:00-04:00",
+      "source_released_at": "2026-10-29T12:30:00+00:00",
+      "source_time_basis": "official_source",
+      "publisher": "U.S. Bureau of Economic Analysis",
+      "source_id": "bea_pce",
+      "source_url": "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026",
+      "content_sha256": "ecebe8c3ca45d0e8b73d1036edee38838e930b6d96b89f7098235d76ea6b1f07",
+      "source_sha256": "ecebe8c3ca45d0e8b73d1036edee38838e930b6d96b89f7098235d76ea6b1f07",
+      "data_ready": true,
+      "reference_period": "September 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "pce",
+        "version": 1
+      },
+      "actual": {
+        "kind": "pce_inflation",
+        "headline_mom": 0.5,
+        "core_mom": 0.3,
+        "headline_yoy": 3.6,
+        "core_yoy": 3.1,
+        "unit": "percent",
+        "reference_period": "September 2026",
+        "metrics": [
+          {
+            "metric_id": "pce_headline_mom",
+            "value": 0.5,
+            "unit": "percent",
+            "period": "September 2026"
+          },
+          {
+            "metric_id": "pce_core_mom",
+            "value": 0.3,
+            "unit": "percent",
+            "period": "September 2026"
+          },
+          {
+            "metric_id": "pce_headline_yoy",
+            "value": 3.6,
+            "unit": "percent",
+            "period": "September 2026"
+          },
+          {
+            "metric_id": "pce_core_yoy",
+            "value": 3.1,
+            "unit": "percent",
+            "period": "September 2026"
+          }
+        ],
+        "headline_en": "PCE prices +0.5% m/m; core +0.3%",
+        "headline_zh": "PCE \u4ef7\u683c\u73af\u6bd4 +0.5%\uff1b\u6838\u5fc3\u73af\u6bd4 +0.3%",
+        "summary_en": "PCE prices +0.5% m/m; core +0.3%. Year over year: 3.6% headline and 3.1% core.",
+        "summary_zh": "PCE \u4ef7\u683c\u73af\u6bd4 +0.5%\uff1b\u6838\u5fc3\u73af\u6bd4 +0.3%\u3002\u540c\u6bd4\uff1a\u6574\u4f53 3.6%\uff0c\u6838\u5fc3 3.1%\u3002",
+        "source_url": "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
+      },
+      "verified_at": "2026-10-29T12:31:07.496621+00:00"
+    },
+    {
+      "event_id": "claims:2026-11-05",
+      "type": "CLAIMS",
+      "date": "2026-11-05",
+      "time_et": "08:30",
+      "label": "Initial jobless claims",
+      "label_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1",
+      "schedule_source": "computed",
+      "is_context_only": true,
+      "scheduled_at": "2026-11-05T08:30:00-05:00",
+      "status": "scheduled"
+    },
+    {
+      "event_id": "nfp:2026-11-06",
+      "type": "NFP",
+      "date": "2026-11-06",
+      "time_et": "08:30",
+      "label": "Jobs report (nonfarm payrolls)",
+      "label_zh": "\u975e\u519c\u5c31\u4e1a\u62a5\u544a",
+      "schedule_source": "static",
+      "is_context_only": true,
+      "scheduled_at": "2026-11-06T08:30:00-05:00",
+      "status": "scheduled"
+    }
+  ],
+  "upcoming": [
+    {
+      "event_id": "claims:2026-11-05",
+      "type": "CLAIMS",
+      "date": "2026-11-05",
+      "time_et": "08:30",
+      "label": "Initial jobless claims",
+      "label_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1",
+      "schedule_source": "computed",
+      "is_context_only": true,
+      "scheduled_at": "2026-11-05T08:30:00-05:00",
+      "status": "scheduled"
+    },
+    {
+      "event_id": "nfp:2026-11-06",
+      "type": "NFP",
+      "date": "2026-11-06",
+      "time_et": "08:30",
+      "label": "Jobs report (nonfarm payrolls)",
+      "label_zh": "\u975e\u519c\u5c31\u4e1a\u62a5\u544a",
+      "schedule_source": "static",
+      "is_context_only": true,
+      "scheduled_at": "2026-11-06T08:30:00-05:00",
+      "status": "scheduled"
+    }
+  ],
+  "publications": [
+    {
+      "event_id": "pce:2026-08-26",
+      "type": "PCE",
+      "date": "2026-08-26",
+      "time_et": "08:30",
+      "label": "PCE / personal income (BEA)",
+      "label_zh": "PCE \u7269\u4ef7\u6307\u6570",
+      "schedule_source": "static",
+      "is_context_only": true,
+      "scheduled_at": "2026-08-26T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-08-26T12:30:34.384730+00:00",
+      "first_seen_at": "2026-08-26T12:30:34.384730+00:00",
+      "observed_at": "2026-08-26T12:30:34.384730+00:00",
+      "official_embargo_at": "2026-08-26T08:30:00-04:00",
+      "source_released_at": "2026-08-26T12:30:00+00:00",
+      "source_time_basis": "official_source",
+      "publisher": "U.S. Bureau of Economic Analysis",
+      "source_id": "bea_pce",
+      "source_url": "https://www.bea.gov/news/2026/personal-income-and-outlays-july-2026",
+      "content_sha256": "a337f8b0884a5ce18df833a7a5f678f27c0e2bbd1b6ae5d6700fd2223505431e",
+      "source_sha256": "a337f8b0884a5ce18df833a7a5f678f27c0e2bbd1b6ae5d6700fd2223505431e",
+      "data_ready": true,
+      "reference_period": "July 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "pce",
+        "version": 1
+      },
+      "actual": {
+        "kind": "pce_inflation",
+        "headline_mom": 0.2,
+        "core_mom": 0.2,
+        "headline_yoy": 3.7,
+        "core_yoy": 3.3,
+        "unit": "percent",
+        "reference_period": "July 2026",
+        "metrics": [
+          {
+            "metric_id": "pce_headline_mom",
+            "value": 0.2,
+            "unit": "percent",
+            "period": "July 2026"
+          },
+          {
+            "metric_id": "pce_core_mom",
+            "value": 0.2,
+            "unit": "percent",
+            "period": "July 2026"
+          },
+          {
+            "metric_id": "pce_headline_yoy",
+            "value": 3.7,
+            "unit": "percent",
+            "period": "July 2026"
+          },
+          {
+            "metric_id": "pce_core_yoy",
+            "value": 3.3,
+            "unit": "percent",
+            "period": "July 2026"
+          }
+        ],
+        "headline_en": "PCE prices +0.2% m/m; core +0.2%",
+        "headline_zh": "PCE \u4ef7\u683c\u73af\u6bd4 +0.2%\uff1b\u6838\u5fc3\u73af\u6bd4 +0.2%",
+        "summary_en": "PCE prices +0.2% m/m; core +0.2%. Year over year: 3.7% headline and 3.3% core.",
+        "summary_zh": "PCE \u4ef7\u683c\u73af\u6bd4 +0.2%\uff1b\u6838\u5fc3\u73af\u6bd4 +0.2%\u3002\u540c\u6bd4\uff1a\u6574\u4f53 3.7%\uff0c\u6838\u5fc3 3.3%\u3002",
+        "source_url": "https://www.bea.gov/news/2026/personal-income-and-outlays-july-2026"
+      },
+      "verified_at": "2026-08-26T12:32:42.227606+00:00"
+    },
+    {
+      "event_id": "nfp:2026-09-04",
+      "type": "NFP",
+      "date": "2026-09-04",
+      "time_et": "08:30",
+      "label": "Jobs report (nonfarm payrolls)",
+      "label_zh": "\u975e\u519c\u5c31\u4e1a\u62a5\u544a",
+      "schedule_source": "static",
+      "is_context_only": true,
+      "scheduled_at": "2026-09-04T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-09-04T12:30:30.688000+00:00",
+      "first_seen_at": "2026-09-04T12:30:30.688000+00:00",
+      "observed_at": "2026-09-04T12:30:30.688000+00:00",
+      "official_embargo_at": "2026-09-04T08:30:00-04:00",
+      "source_released_at": "2026-09-04T12:30:00+00:00",
+      "source_time_basis": "scheduled_embargo_floor",
+      "publisher": "U.S. Bureau of Labor Statistics",
+      "source_id": "bls_employment",
+      "source_url": "https://www.bls.gov/news.release/archives/empsit_09042026.htm",
+      "content_sha256": "1f389085a52b7e312873f677bb2e7ac8d4b401409e668e068308f4197456c5d2",
+      "source_sha256": "1f389085a52b7e312873f677bb2e7ac8d4b401409e668e068308f4197456c5d2",
+      "data_ready": true,
+      "reference_period": "August 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "nfp",
+        "version": 1
+      },
+      "actual": {
+        "kind": "employment",
+        "payroll_change": 162000,
+        "unemployment_rate": 4.1,
+        "unit": "persons",
+        "reference_period": "August 2026",
+        "metrics": [
+          {
+            "metric_id": "nfp_payroll_change",
+            "value": 162000,
+            "unit": "persons",
+            "period": "August 2026"
+          },
+          {
+            "metric_id": "nfp_unemployment_rate",
+            "value": 4.1,
+            "unit": "percent",
+            "period": "August 2026"
+          }
+        ],
+        "headline_en": "Payrolls +162k; unemployment 4.1%",
+        "headline_zh": "\u975e\u519c\u5c31\u4e1a +162k\uff1b\u5931\u4e1a\u7387 4.1%",
+        "summary_en": "Payrolls +162k; unemployment 4.1%.",
+        "summary_zh": "\u975e\u519c\u5c31\u4e1a +162k\uff1b\u5931\u4e1a\u7387 4.1%\u3002",
+        "source_url": "https://www.bls.gov/news.release/archives/empsit_09042026.htm"
+      },
+      "verified_at": "2026-09-04T12:30:30.688000+00:00"
+    },
+    {
+      "event_id": "ppi:2026-09-10",
+      "type": "PPI",
+      "date": "2026-09-10",
+      "time_et": "08:30",
+      "label": "PPI (producer prices)",
+      "label_zh": "\u751f\u4ea7\u8005\u7269\u4ef7\u6307\u6570\uff08PPI\uff09",
+      "schedule_source": "static",
+      "is_context_only": true,
+      "scheduled_at": "2026-09-10T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-09-10T12:30:44.327538+00:00",
+      "first_seen_at": "2026-09-10T12:30:44.327538+00:00",
+      "observed_at": "2026-09-10T12:30:44.327538+00:00",
+      "official_embargo_at": "2026-09-10T08:30:00-04:00",
+      "source_released_at": "2026-09-10T12:30:00+00:00",
+      "source_time_basis": "scheduled_embargo_floor",
+      "publisher": "U.S. Bureau of Labor Statistics",
+      "source_id": "bls_ppi",
+      "source_url": "https://www.bls.gov/feed/ppi.rss",
+      "content_sha256": "c4f62187b5f92dfadf9a8abbadd402d60c6ef3fa1b99659a9520cc072411f245",
+      "source_sha256": "c4f62187b5f92dfadf9a8abbadd402d60c6ef3fa1b99659a9520cc072411f245",
+      "data_ready": true,
+      "reference_period": null,
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "ppi",
+        "version": 1
+      },
+      "actual": {
+        "kind": "producer_prices",
+        "headline_mom": -0.3,
+        "headline_yoy": 4.7,
+        "goods_mom": -0.7,
+        "services_mom": 0.2,
+        "unit": "percent",
+        "reference_period": null,
+        "metrics": [
+          {
+            "metric_id": "ppi_headline_mom",
+            "value": -0.3,
+            "unit": "percent",
+            "period": null
+          },
+          {
+            "metric_id": "ppi_headline_yoy",
+            "value": 4.7,
+            "unit": "percent",
+            "period": null
+          },
+          {
+            "metric_id": "ppi_goods_mom",
+            "value": -0.7,
+            "unit": "percent",
+            "period": null
+          },
+          {
+            "metric_id": "ppi_services_mom",
+            "value": 0.2,
+            "unit": "percent",
+            "period": null
+          }
+        ],
+        "headline_en": "PPI -0.3% m/m; goods -0.7%, services +0.2%",
+        "headline_zh": "\u751f\u4ea7\u8005\u4ef7\u683c\u6307\u6570\u73af\u6bd4 -0.3%\uff1b\u5546\u54c1 -0.7%\uff0c\u670d\u52a1 +0.2%",
+        "summary_en": "PPI -0.3% m/m; goods -0.7%, services +0.2%. Final demand was 4.7% higher year over year.",
+        "summary_zh": "\u751f\u4ea7\u8005\u4ef7\u683c\u6307\u6570\u73af\u6bd4 -0.3%\uff1b\u5546\u54c1 -0.7%\uff0c\u670d\u52a1 +0.2%\u3002\u6700\u7ec8\u9700\u6c42\u540c\u6bd4 4.7%\u3002",
+        "source_url": "https://www.bls.gov/feed/ppi.rss"
+      },
+      "verified_at": "2026-09-10T12:30:44.327538+00:00"
+    },
+    {
+      "event_id": "cpi:2026-09-11",
+      "type": "CPI",
+      "date": "2026-09-11",
+      "time_et": "08:30",
+      "label": "CPI (consumer prices)",
+      "label_zh": "\u6d88\u8d39\u8005\u7269\u4ef7\u6307\u6570\uff08CPI\uff09",
+      "schedule_source": "static",
+      "is_context_only": true,
+      "scheduled_at": "2026-09-11T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-09-11T12:30:22.892663+00:00",
+      "first_seen_at": "2026-09-11T12:30:22.892663+00:00",
+      "observed_at": "2026-09-11T12:30:22.892663+00:00",
+      "official_embargo_at": "2026-09-11T08:30:00-04:00",
+      "source_released_at": "2026-09-11T12:30:00+00:00",
+      "source_time_basis": "scheduled_embargo_floor",
+      "publisher": "U.S. Bureau of Labor Statistics",
+      "source_id": "bls_cpi",
+      "source_url": "https://www.bls.gov/feed/cpi.rss",
+      "content_sha256": "22667ee0b51e15934d0ea57a57f86c83b3a3dba3e01b8088bec89d63124d2a50",
+      "source_sha256": "22667ee0b51e15934d0ea57a57f86c83b3a3dba3e01b8088bec89d63124d2a50",
+      "data_ready": true,
+      "reference_period": null,
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "cpi",
+        "version": 1
+      },
+      "actual": {
+        "kind": "inflation",
+        "headline_mom": 0.1,
+        "core_mom": 0.2,
+        "headline_yoy": 3.4,
+        "core_yoy": 2.5,
+        "unit": "percent",
+        "reference_period": null,
+        "metrics": [
+          {
+            "metric_id": "cpi_headline_mom",
+            "value": 0.1,
+            "unit": "percent",
+            "period": null
+          },
+          {
+            "metric_id": "cpi_core_mom",
+            "value": 0.2,
+            "unit": "percent",
+            "period": null
+          },
+          {
+            "metric_id": "cpi_headline_yoy",
+            "value": 3.4,
+            "unit": "percent",
+            "period": null
+          },
+          {
+            "metric_id": "cpi_core_yoy",
+            "value": 2.5,
+            "unit": "percent",
+            "period": null
+          }
+        ],
+        "headline_en": "CPI +0.1% m/m; core +0.2%",
+        "headline_zh": "\u6d88\u8d39\u8005\u4ef7\u683c\u6307\u6570\u73af\u6bd4 +0.1%\uff1b\u6838\u5fc3\u73af\u6bd4 +0.2%",
+        "summary_en": "CPI +0.1% m/m; core +0.2%. Year over year: 3.4% headline and 2.5% core.",
+        "summary_zh": "\u6d88\u8d39\u8005\u4ef7\u683c\u6307\u6570\u73af\u6bd4 +0.1%\uff1b\u6838\u5fc3\u73af\u6bd4 +0.2%\u3002\u540c\u6bd4\uff1a\u6574\u4f53 3.4%\uff0c\u6838\u5fc3 2.5%\u3002",
+        "source_url": "https://www.bls.gov/feed/cpi.rss"
+      },
+      "verified_at": "2026-09-11T12:30:22.892663+00:00"
+    },
+    {
+      "event_id": "fomc:2026-09-16",
+      "type": "FOMC",
+      "date": "2026-09-16",
+      "time_et": "14:00",
+      "label": "FOMC rate decision",
+      "label_zh": "\u7f8e\u8054\u50a8\u8bae\u606f\u4f1a\u8bae",
+      "schedule_source": "federal_reserve",
+      "is_sep": true,
+      "is_context_only": true,
+      "scheduled_at": "2026-09-16T14:00:00-04:00",
+      "status": "published",
+      "detected_at": "2026-09-16T18:00:31.713158+00:00",
+      "first_seen_at": "2026-09-16T18:00:31.713158+00:00",
+      "observed_at": "2026-09-16T18:00:31.713158+00:00",
+      "official_embargo_at": "2026-09-16T14:00:00-04:00",
+      "source_released_at": "2026-09-16T18:00:17+00:00",
+      "source_time_basis": "official_source",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "source_id": "fed_fomc",
+      "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+      "content_sha256": "ecc04c4aa1d8c88c110d2d5421baff15f9357ba307fc0f753379040f3134c944",
+      "source_sha256": "ecc04c4aa1d8c88c110d2d5421baff15f9357ba307fc0f753379040f3134c944",
+      "data_ready": true,
+      "reference_period": null,
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "fomc",
+        "version": 2
+      },
+      "actual": {
+        "kind": "policy_rate",
+        "action": "hike",
+        "target_low": 3.75,
+        "target_high": 4.0,
+        "unit": "percent",
+        "vote_for": 12,
+        "vote_against": 0,
+        "dissent_preference": null,
+        "dissent_basis_points": null,
+        "headline_en": "Fed raises at 3.75%\u20134.00%",
+        "headline_zh": "\u7f8e\u8054\u50a8\u4e0a\u8c03\u5229\u7387\u5728 3.75%\u20134.00%",
+        "summary_en": "Fed raises at 3.75%\u20134.00% on a 12\u20130 vote.",
+        "summary_zh": "\u7f8e\u8054\u50a8\u4e0a\u8c03\u5229\u7387\u5728 3.75%\u20134.00%\uff0c\u8868\u51b3\u7ed3\u679c\u4e3a 12\u20130\u3002",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"
+      },
+      "verified_at": "2026-09-22T15:00:26.389065+00:00"
+    },
+    {
+      "event_id": "claims:2026-09-17",
+      "type": "CLAIMS",
+      "date": "2026-09-17",
+      "time_et": "08:30",
+      "label": "Initial jobless claims",
+      "label_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1",
+      "schedule_source": "computed",
+      "is_context_only": true,
+      "scheduled_at": "2026-09-17T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-09-22T15:00:26.389065+00:00",
+      "first_seen_at": "2026-09-22T15:00:26.389065+00:00",
+      "observed_at": "2026-09-22T15:00:26.389065+00:00",
+      "official_embargo_at": "2026-09-17T08:30:00-04:00",
+      "source_released_at": "2026-09-17T12:30:00+00:00",
+      "source_time_basis": "scheduled_embargo_floor",
+      "publisher": "U.S. Department of Labor",
+      "source_id": "dol_claims",
+      "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta/eta20260917",
+      "content_sha256": "c09a60fffab9f916c68c7bad20a3d2ee8efa5ed1f9d842338656e736b1fe7ffe",
+      "source_sha256": "c09a60fffab9f916c68c7bad20a3d2ee8efa5ed1f9d842338656e736b1fe7ffe",
+      "data_ready": true,
+      "reference_period": "September 12, 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "claims",
+        "version": 1
+      },
+      "actual": {
+        "kind": "jobless_claims",
+        "initial_claims": 196000,
+        "change": -10000,
+        "prior_initial_claims": 206000,
+        "four_week_average": 203250,
+        "unit": "persons",
+        "reference_period": "September 12, 2026",
+        "metrics": [
+          {
+            "metric_id": "claims_initial",
+            "value": 196000,
+            "unit": "persons",
+            "period": "September 12, 2026"
+          },
+          {
+            "metric_id": "claims_change",
+            "value": -10000,
+            "unit": "persons",
+            "period": "September 12, 2026"
+          },
+          {
+            "metric_id": "claims_four_week_avg",
+            "value": 203250,
+            "unit": "persons",
+            "period": "September 12, 2026"
+          }
+        ],
+        "headline_en": "Initial claims 196k (-10k)",
+        "headline_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1 196\u5343\uff08-10\u5343\uff09",
+        "summary_en": "Initial claims 196k (-10k) for the week ending September 12, 2026; four-week average 203.2k.",
+        "summary_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1 196\u5343\uff08-10\u5343\uff09\uff0c\u622a\u81f3 September 12, 2026 \u5f53\u5468\uff1b\u56db\u5468\u5747\u503c 203.2\u5343\u3002",
+        "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta/eta20260917"
+      },
+      "verified_at": "2026-09-22T15:00:26.389065+00:00"
+    },
+    {
+      "event_id": "claims:2026-09-24",
+      "type": "CLAIMS",
+      "date": "2026-09-24",
+      "time_et": "08:30",
+      "label": "Initial jobless claims",
+      "label_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1",
+      "schedule_source": "computed",
+      "is_context_only": true,
+      "scheduled_at": "2026-09-24T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-09-24T12:30:09.772952+00:00",
+      "first_seen_at": "2026-09-24T12:30:09.772952+00:00",
+      "observed_at": "2026-09-24T12:30:09.772952+00:00",
+      "official_embargo_at": "2026-09-24T08:30:00-04:00",
+      "source_released_at": "2026-09-24T12:30:00+00:00",
+      "source_time_basis": "scheduled_embargo_floor",
+      "publisher": "U.S. Department of Labor",
+      "source_id": "dol_claims",
+      "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta",
+      "content_sha256": "82463735e5630fe00ee953bd38a60740d62dfed2b4b1d5510edadcf37f933c0f",
+      "source_sha256": "82463735e5630fe00ee953bd38a60740d62dfed2b4b1d5510edadcf37f933c0f",
+      "data_ready": true,
+      "reference_period": "September 12, 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "claims",
+        "version": 1
+      },
+      "actual": {
+        "kind": "jobless_claims",
+        "initial_claims": 196000,
+        "change": -10000,
+        "prior_initial_claims": 206000,
+        "four_week_average": 203250,
+        "unit": "persons",
+        "reference_period": "September 12, 2026",
+        "metrics": [
+          {
+            "metric_id": "claims_initial",
+            "value": 196000,
+            "unit": "persons",
+            "period": "September 12, 2026"
+          },
+          {
+            "metric_id": "claims_change",
+            "value": -10000,
+            "unit": "persons",
+            "period": "September 12, 2026"
+          },
+          {
+            "metric_id": "claims_four_week_avg",
+            "value": 203250,
+            "unit": "persons",
+            "period": "September 12, 2026"
+          }
+        ],
+        "headline_en": "Initial claims 196k (-10k)",
+        "headline_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1 196\u5343\uff08-10\u5343\uff09",
+        "summary_en": "Initial claims 196k (-10k) for the week ending September 12, 2026; four-week average 203.2k.",
+        "summary_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1 196\u5343\uff08-10\u5343\uff09\uff0c\u622a\u81f3 September 12, 2026 \u5f53\u5468\uff1b\u56db\u5468\u5747\u503c 203.2\u5343\u3002",
+        "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta"
+      },
+      "verified_at": "2026-09-24T12:30:09.772952+00:00"
+    },
+    {
+      "event_id": "gdp:2026-09-30",
+      "type": "GDP",
+      "date": "2026-09-30",
+      "time_et": "08:30",
+      "label": "GDP (BEA estimate)",
+      "label_zh": "GDP \u6570\u636e",
+      "schedule_source": "static",
+      "is_context_only": true,
+      "scheduled_at": "2026-09-30T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-09-30T12:31:03.474128+00:00",
+      "first_seen_at": "2026-09-30T12:31:03.474128+00:00",
+      "observed_at": "2026-09-30T12:31:03.474128+00:00",
+      "official_embargo_at": "2026-09-30T08:30:00-04:00",
+      "source_released_at": "2026-09-30T12:30:00+00:00",
+      "source_time_basis": "official_source",
+      "publisher": "U.S. Bureau of Economic Analysis",
+      "source_id": "bea_gdp",
+      "source_url": "https://www.bea.gov/news/2026/gdp-third-estimate-industries-corporate-profits-state-gdp-and-state-personal-income-2nd",
+      "content_sha256": "0206ea4e583d343b9349c62b6582dbdd82eb24948b89ce43320e6ff822c2b163",
+      "source_sha256": "0206ea4e583d343b9349c62b6582dbdd82eb24948b89ce43320e6ff822c2b163",
+      "data_ready": true,
+      "reference_period": "Q2 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "gdp",
+        "version": 1
+      },
+      "actual": {
+        "kind": "economic_growth",
+        "real_gdp_annualized": 2.2,
+        "prior_real_gdp_annualized": 2.5,
+        "vintage": "third",
+        "unit": "percent",
+        "reference_period": "Q2 2026",
+        "metrics": [
+          {
+            "metric_id": "gdp_real_annualized",
+            "value": 2.2,
+            "unit": "percent_annualized",
+            "period": "Q2 2026"
+          }
+        ],
+        "headline_en": "Real GDP +2.2% annualized (Q2 2026)",
+        "headline_zh": "\u5b9e\u9645 GDP \u5e74\u5316 +2.2%\uff08Q2 2026\uff09",
+        "summary_en": "Real GDP +2.2% annualized (Q2 2026). Previous quarter: +2.5%.",
+        "summary_zh": "\u5b9e\u9645 GDP \u5e74\u5316 +2.2%\uff08Q2 2026\uff09\u3002 \u4e0a\u5b63\u5ea6\uff1a+2.5%\u3002",
+        "source_url": "https://www.bea.gov/news/2026/gdp-third-estimate-industries-corporate-profits-state-gdp-and-state-personal-income-2nd"
+      },
+      "verified_at": "2026-09-30T12:32:03.815933+00:00"
+    },
+    {
+      "event_id": "pce:2026-09-30",
+      "type": "PCE",
+      "date": "2026-09-30",
+      "time_et": "08:30",
+      "label": "PCE / personal income (BEA)",
+      "label_zh": "PCE \u7269\u4ef7\u6307\u6570",
+      "schedule_source": "static",
+      "is_context_only": true,
+      "scheduled_at": "2026-09-30T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-09-30T12:32:03.815933+00:00",
+      "first_seen_at": "2026-09-30T12:32:03.815933+00:00",
+      "observed_at": "2026-09-30T12:32:03.815933+00:00",
+      "official_embargo_at": "2026-09-30T08:30:00-04:00",
+      "source_released_at": "2026-09-30T12:31:00+00:00",
+      "source_time_basis": "official_source",
+      "publisher": "U.S. Bureau of Economic Analysis",
+      "source_id": "bea_pce",
+      "source_url": "https://www.bea.gov/news/2026/personal-income-and-outlays-august-2026",
+      "content_sha256": "76c9c3038747212f0fb7246ae613651f10f5439c9ab90fdc440076918efcf4eb",
+      "source_sha256": "76c9c3038747212f0fb7246ae613651f10f5439c9ab90fdc440076918efcf4eb",
+      "data_ready": true,
+      "reference_period": "August 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "pce",
+        "version": 1
+      },
+      "actual": {
+        "kind": "pce_inflation",
+        "headline_mom": 0.3,
+        "core_mom": 0.2,
+        "headline_yoy": 3.4,
+        "core_yoy": 3.0,
+        "unit": "percent",
+        "reference_period": "August 2026",
+        "metrics": [
+          {
+            "metric_id": "pce_headline_mom",
+            "value": 0.3,
+            "unit": "percent",
+            "period": "August 2026"
+          },
+          {
+            "metric_id": "pce_core_mom",
+            "value": 0.2,
+            "unit": "percent",
+            "period": "August 2026"
+          },
+          {
+            "metric_id": "pce_headline_yoy",
+            "value": 3.4,
+            "unit": "percent",
+            "period": "August 2026"
+          },
+          {
+            "metric_id": "pce_core_yoy",
+            "value": 3.0,
+            "unit": "percent",
+            "period": "August 2026"
+          }
+        ],
+        "headline_en": "PCE prices +0.3% m/m; core +0.2%",
+        "headline_zh": "PCE \u4ef7\u683c\u73af\u6bd4 +0.3%\uff1b\u6838\u5fc3\u73af\u6bd4 +0.2%",
+        "summary_en": "PCE prices +0.3% m/m; core +0.2%. Year over year: 3.4% headline and 3.0% core.",
+        "summary_zh": "PCE \u4ef7\u683c\u73af\u6bd4 +0.3%\uff1b\u6838\u5fc3\u73af\u6bd4 +0.2%\u3002\u540c\u6bd4\uff1a\u6574\u4f53 3.4%\uff0c\u6838\u5fc3 3.0%\u3002",
+        "source_url": "https://www.bea.gov/news/2026/personal-income-and-outlays-august-2026"
+      },
+      "verified_at": "2026-09-30T12:32:03.815933+00:00"
+    },
+    {
+      "event_id": "claims:2026-10-01",
+      "type": "CLAIMS",
+      "date": "2026-10-01",
+      "time_et": "08:30",
+      "label": "Initial jobless claims",
+      "label_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1",
+      "schedule_source": "computed",
+      "is_context_only": true,
+      "scheduled_at": "2026-10-01T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-10-01T12:30:27.846756+00:00",
+      "first_seen_at": "2026-10-01T12:30:27.846756+00:00",
+      "observed_at": "2026-10-01T12:30:27.846756+00:00",
+      "official_embargo_at": "2026-10-01T08:30:00-04:00",
+      "source_released_at": "2026-10-01T12:30:00+00:00",
+      "source_time_basis": "scheduled_embargo_floor",
+      "publisher": "U.S. Department of Labor",
+      "source_id": "dol_claims",
+      "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta",
+      "content_sha256": "7072d5835979a86dcf0543e99e537c7b28666bf66f4f8bfea9bc1a019ef4e73d",
+      "source_sha256": "7072d5835979a86dcf0543e99e537c7b28666bf66f4f8bfea9bc1a019ef4e73d",
+      "data_ready": true,
+      "reference_period": "September 19, 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "claims",
+        "version": 1
+      },
+      "actual": {
+        "kind": "jobless_claims",
+        "initial_claims": 197000,
+        "change": -1000,
+        "prior_initial_claims": 198000,
+        "four_week_average": 202250,
+        "unit": "persons",
+        "reference_period": "September 19, 2026",
+        "metrics": [
+          {
+            "metric_id": "claims_initial",
+            "value": 197000,
+            "unit": "persons",
+            "period": "September 19, 2026"
+          },
+          {
+            "metric_id": "claims_change",
+            "value": -1000,
+            "unit": "persons",
+            "period": "September 19, 2026"
+          },
+          {
+            "metric_id": "claims_four_week_avg",
+            "value": 202250,
+            "unit": "persons",
+            "period": "September 19, 2026"
+          }
+        ],
+        "headline_en": "Initial claims 197k (-1k)",
+        "headline_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1 197\u5343\uff08-1\u5343\uff09",
+        "summary_en": "Initial claims 197k (-1k) for the week ending September 19, 2026; four-week average 202.2k.",
+        "summary_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1 197\u5343\uff08-1\u5343\uff09\uff0c\u622a\u81f3 September 19, 2026 \u5f53\u5468\uff1b\u56db\u5468\u5747\u503c 202.2\u5343\u3002",
+        "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta"
+      },
+      "verified_at": "2026-10-01T12:30:27.846756+00:00"
+    },
+    {
+      "event_id": "nfp:2026-10-02",
+      "type": "NFP",
+      "date": "2026-10-02",
+      "time_et": "08:30",
+      "label": "Jobs report (nonfarm payrolls)",
+      "label_zh": "\u975e\u519c\u5c31\u4e1a\u62a5\u544a",
+      "schedule_source": "static",
+      "is_context_only": true,
+      "scheduled_at": "2026-10-02T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-10-02T12:30:25.072067+00:00",
+      "first_seen_at": "2026-10-02T12:30:25.072067+00:00",
+      "observed_at": "2026-10-02T12:30:25.072067+00:00",
+      "official_embargo_at": "2026-10-02T08:30:00-04:00",
+      "source_released_at": "2026-10-02T12:30:00+00:00",
+      "source_time_basis": "scheduled_embargo_floor",
+      "publisher": "U.S. Bureau of Labor Statistics",
+      "source_id": "bls_employment",
+      "source_url": "https://www.bls.gov/feed/empsit.rss",
+      "content_sha256": "cfe730c2e47ca8ffa152b97de8ded485465ac31826aee28e6cdd8ea7c60fdbd8",
+      "source_sha256": "cfe730c2e47ca8ffa152b97de8ded485465ac31826aee28e6cdd8ea7c60fdbd8",
+      "data_ready": true,
+      "reference_period": null,
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "nfp",
+        "version": 1
+      },
+      "actual": {
+        "kind": "employment",
+        "payroll_change": 57000,
+        "unemployment_rate": 4.1,
+        "unit": "persons",
+        "reference_period": null,
+        "metrics": [
+          {
+            "metric_id": "nfp_payroll_change",
+            "value": 57000,
+            "unit": "persons",
+            "period": null
+          },
+          {
+            "metric_id": "nfp_unemployment_rate",
+            "value": 4.1,
+            "unit": "percent",
+            "period": null
+          }
+        ],
+        "headline_en": "Payrolls +57k; unemployment 4.1%",
+        "headline_zh": "\u975e\u519c\u5c31\u4e1a +57k\uff1b\u5931\u4e1a\u7387 4.1%",
+        "summary_en": "Payrolls +57k; unemployment 4.1%.",
+        "summary_zh": "\u975e\u519c\u5c31\u4e1a +57k\uff1b\u5931\u4e1a\u7387 4.1%\u3002",
+        "source_url": "https://www.bls.gov/feed/empsit.rss"
+      },
+      "verified_at": "2026-10-02T12:30:25.072067+00:00"
+    },
+    {
+      "event_id": "claims:2026-10-08",
+      "type": "CLAIMS",
+      "date": "2026-10-08",
+      "time_et": "08:30",
+      "label": "Initial jobless claims",
+      "label_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1",
+      "schedule_source": "computed",
+      "is_context_only": true,
+      "scheduled_at": "2026-10-08T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-10-08T22:45:23.045007+00:00",
+      "first_seen_at": "2026-10-08T22:45:23.045007+00:00",
+      "observed_at": "2026-10-08T22:45:23.045007+00:00",
+      "official_embargo_at": "2026-10-08T08:30:00-04:00",
+      "source_released_at": "2026-10-08T12:30:00+00:00",
+      "source_time_basis": "scheduled_embargo_floor",
+      "publisher": "U.S. Department of Labor",
+      "source_id": "dol_claims",
+      "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta",
+      "content_sha256": "4696c5ba5b365680267eaf3d13f666201bdb7b39d076e79ae68c0d1f3072008b",
+      "source_sha256": "4696c5ba5b365680267eaf3d13f666201bdb7b39d076e79ae68c0d1f3072008b",
+      "data_ready": true,
+      "reference_period": "September 26, 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "claims",
+        "version": 1
+      },
+      "actual": {
+        "kind": "jobless_claims",
+        "initial_claims": 197000,
+        "change": -1000,
+        "prior_initial_claims": 198000,
+        "four_week_average": 200000,
+        "unit": "persons",
+        "reference_period": "September 26, 2026",
+        "metrics": [
+          {
+            "metric_id": "claims_initial",
+            "value": 197000,
+            "unit": "persons",
+            "period": "September 26, 2026"
+          },
+          {
+            "metric_id": "claims_change",
+            "value": -1000,
+            "unit": "persons",
+            "period": "September 26, 2026"
+          },
+          {
+            "metric_id": "claims_four_week_avg",
+            "value": 200000,
+            "unit": "persons",
+            "period": "September 26, 2026"
+          }
+        ],
+        "headline_en": "Initial claims 197k (-1k)",
+        "headline_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1 197\u5343\uff08-1\u5343\uff09",
+        "summary_en": "Initial claims 197k (-1k) for the week ending September 26, 2026; four-week average 200.0k.",
+        "summary_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1 197\u5343\uff08-1\u5343\uff09\uff0c\u622a\u81f3 September 26, 2026 \u5f53\u5468\uff1b\u56db\u5468\u5747\u503c 200.0\u5343\u3002",
+        "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta"
+      },
+      "verified_at": "2026-10-08T22:45:23.045007+00:00"
+    },
+    {
+      "event_id": "cpi:2026-10-14",
+      "type": "CPI",
+      "date": "2026-10-14",
+      "time_et": "08:30",
+      "label": "CPI (consumer prices)",
+      "label_zh": "\u6d88\u8d39\u8005\u7269\u4ef7\u6307\u6570\uff08CPI\uff09",
+      "schedule_source": "static",
+      "is_context_only": true,
+      "scheduled_at": "2026-10-14T08:30:00-04:00",
+      "status": "published_unparsed",
+      "detected_at": "2026-10-14T12:31:17.596439+00:00",
+      "first_seen_at": "2026-10-14T12:31:17.596439+00:00",
+      "observed_at": "2026-10-14T12:31:17.596439+00:00",
+      "official_embargo_at": "2026-10-14T08:30:00-04:00",
+      "source_released_at": "2026-10-14T12:30:00+00:00",
+      "source_time_basis": "scheduled_embargo_floor",
+      "publisher": "U.S. Bureau of Labor Statistics",
+      "source_id": "bls_cpi",
+      "source_url": "https://www.bls.gov/news.release/archives/cpi_10142026.htm",
+      "content_sha256": "3a95c83156402aae3d251cb6b897787343fd0e461e719250b2f5383a3546f37a",
+      "source_sha256": "3a95c83156402aae3d251cb6b897787343fd0e461e719250b2f5383a3546f37a",
+      "data_ready": false,
+      "reference_period": "September 2026",
+      "note": "Official publication detected; verified values are still being extracted. Canonical scoring reconciles nightly.",
+      "parser": {
+        "name": "cpi",
+        "version": 1
+      }
+    },
+    {
+      "event_id": "claims:2026-10-15",
+      "type": "CLAIMS",
+      "date": "2026-10-15",
+      "time_et": "08:30",
+      "label": "Initial jobless claims",
+      "label_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1",
+      "schedule_source": "computed",
+      "is_context_only": true,
+      "scheduled_at": "2026-10-15T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-10-15T12:30:38.289724+00:00",
+      "first_seen_at": "2026-10-15T12:30:38.289724+00:00",
+      "observed_at": "2026-10-15T12:30:38.289724+00:00",
+      "official_embargo_at": "2026-10-15T08:30:00-04:00",
+      "source_released_at": "2026-10-15T12:30:00+00:00",
+      "source_time_basis": "scheduled_embargo_floor",
+      "publisher": "U.S. Department of Labor",
+      "source_id": "dol_claims",
+      "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta",
+      "content_sha256": "af976df7e5aa5d90f5a5f1ca8227f997cf02476e2e9082af9ae63ad3f17a5735",
+      "source_sha256": "af976df7e5aa5d90f5a5f1ca8227f997cf02476e2e9082af9ae63ad3f17a5735",
+      "data_ready": true,
+      "reference_period": "October 3, 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "claims",
+        "version": 1
+      },
+      "actual": {
+        "kind": "jobless_claims",
+        "initial_claims": 197000,
+        "change": -2000,
+        "prior_initial_claims": 199000,
+        "four_week_average": 198000,
+        "unit": "persons",
+        "reference_period": "October 3, 2026",
+        "metrics": [
+          {
+            "metric_id": "claims_initial",
+            "value": 197000,
+            "unit": "persons",
+            "period": "October 3, 2026"
+          },
+          {
+            "metric_id": "claims_change",
+            "value": -2000,
+            "unit": "persons",
+            "period": "October 3, 2026"
+          },
+          {
+            "metric_id": "claims_four_week_avg",
+            "value": 198000,
+            "unit": "persons",
+            "period": "October 3, 2026"
+          }
+        ],
+        "headline_en": "Initial claims 197k (-2k)",
+        "headline_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1 197\u5343\uff08-2\u5343\uff09",
+        "summary_en": "Initial claims 197k (-2k) for the week ending October 3, 2026; four-week average 198.0k.",
+        "summary_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1 197\u5343\uff08-2\u5343\uff09\uff0c\u622a\u81f3 October 3, 2026 \u5f53\u5468\uff1b\u56db\u5468\u5747\u503c 198.0\u5343\u3002",
+        "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta"
+      },
+      "verified_at": "2026-10-15T12:30:38.289724+00:00"
+    },
+    {
+      "event_id": "ppi:2026-10-15",
+      "type": "PPI",
+      "date": "2026-10-15",
+      "time_et": "08:30",
+      "label": "PPI (producer prices)",
+      "label_zh": "\u751f\u4ea7\u8005\u7269\u4ef7\u6307\u6570\uff08PPI\uff09",
+      "schedule_source": "static",
+      "is_context_only": true,
+      "scheduled_at": "2026-10-15T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-10-15T12:30:38.289724+00:00",
+      "first_seen_at": "2026-10-15T12:30:38.289724+00:00",
+      "observed_at": "2026-10-15T12:30:38.289724+00:00",
+      "official_embargo_at": "2026-10-15T08:30:00-04:00",
+      "source_released_at": "2026-10-15T12:30:00+00:00",
+      "source_time_basis": "scheduled_embargo_floor",
+      "publisher": "U.S. Bureau of Labor Statistics",
+      "source_id": "bls_ppi",
+      "source_url": "https://www.bls.gov/news.release/archives/ppi_10152026.htm",
+      "content_sha256": "8800f61a2fde5e1e290405ebc997ddd05fd72076403621b1a0e551abc69d2954",
+      "source_sha256": "8800f61a2fde5e1e290405ebc997ddd05fd72076403621b1a0e551abc69d2954",
+      "data_ready": true,
+      "reference_period": "September 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "ppi",
+        "version": 1
+      },
+      "actual": {
+        "kind": "producer_prices",
+        "headline_mom": 1.3,
+        "headline_yoy": 6.3,
+        "goods_mom": 2.6,
+        "services_mom": 0.8,
+        "unit": "percent",
+        "reference_period": "September 2026",
+        "metrics": [
+          {
+            "metric_id": "ppi_headline_mom",
+            "value": 1.3,
+            "unit": "percent",
+            "period": "September 2026"
+          },
+          {
+            "metric_id": "ppi_headline_yoy",
+            "value": 6.3,
+            "unit": "percent",
+            "period": "September 2026"
+          },
+          {
+            "metric_id": "ppi_goods_mom",
+            "value": 2.6,
+            "unit": "percent",
+            "period": "September 2026"
+          },
+          {
+            "metric_id": "ppi_services_mom",
+            "value": 0.8,
+            "unit": "percent",
+            "period": "September 2026"
+          }
+        ],
+        "headline_en": "PPI +1.3% m/m; goods +2.6%, services +0.8%",
+        "headline_zh": "\u751f\u4ea7\u8005\u4ef7\u683c\u6307\u6570\u73af\u6bd4 +1.3%\uff1b\u5546\u54c1 +2.6%\uff0c\u670d\u52a1 +0.8%",
+        "summary_en": "PPI +1.3% m/m; goods +2.6%, services +0.8%. Final demand was 6.3% higher year over year.",
+        "summary_zh": "\u751f\u4ea7\u8005\u4ef7\u683c\u6307\u6570\u73af\u6bd4 +1.3%\uff1b\u5546\u54c1 +2.6%\uff0c\u670d\u52a1 +0.8%\u3002\u6700\u7ec8\u9700\u6c42\u540c\u6bd4 6.3%\u3002",
+        "source_url": "https://www.bls.gov/news.release/archives/ppi_10152026.htm"
+      },
+      "verified_at": "2026-10-15T12:30:38.289724+00:00"
+    },
+    {
+      "event_id": "claims:2026-10-22",
+      "type": "CLAIMS",
+      "date": "2026-10-22",
+      "time_et": "08:30",
+      "label": "Initial jobless claims",
+      "label_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1",
+      "schedule_source": "computed",
+      "is_context_only": true,
+      "scheduled_at": "2026-10-22T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-10-22T12:30:24.434143+00:00",
+      "first_seen_at": "2026-10-22T12:30:24.434143+00:00",
+      "observed_at": "2026-10-22T12:30:24.434143+00:00",
+      "official_embargo_at": "2026-10-22T08:30:00-04:00",
+      "source_released_at": "2026-10-22T12:30:00+00:00",
+      "source_time_basis": "scheduled_embargo_floor",
+      "publisher": "U.S. Department of Labor",
+      "source_id": "dol_claims",
+      "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta",
+      "content_sha256": "d0a68189ff45b1110bf3b02b3a6241d33a9c28c6dff43588ec07a0b2850605ed",
+      "source_sha256": "d0a68189ff45b1110bf3b02b3a6241d33a9c28c6dff43588ec07a0b2850605ed",
+      "data_ready": true,
+      "reference_period": "October 10, 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "claims",
+        "version": 1
+      },
+      "actual": {
+        "kind": "jobless_claims",
+        "initial_claims": 199000,
+        "change": 1000,
+        "prior_initial_claims": 198000,
+        "four_week_average": 198500,
+        "unit": "persons",
+        "reference_period": "October 10, 2026",
+        "metrics": [
+          {
+            "metric_id": "claims_initial",
+            "value": 199000,
+            "unit": "persons",
+            "period": "October 10, 2026"
+          },
+          {
+            "metric_id": "claims_change",
+            "value": 1000,
+            "unit": "persons",
+            "period": "October 10, 2026"
+          },
+          {
+            "metric_id": "claims_four_week_avg",
+            "value": 198500,
+            "unit": "persons",
+            "period": "October 10, 2026"
+          }
+        ],
+        "headline_en": "Initial claims 199k (+1k)",
+        "headline_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1 199\u5343\uff08+1\u5343\uff09",
+        "summary_en": "Initial claims 199k (+1k) for the week ending October 10, 2026; four-week average 198.5k.",
+        "summary_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1 199\u5343\uff08+1\u5343\uff09\uff0c\u622a\u81f3 October 10, 2026 \u5f53\u5468\uff1b\u56db\u5468\u5747\u503c 198.5\u5343\u3002",
+        "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta"
+      },
+      "verified_at": "2026-10-22T12:30:24.434143+00:00"
+    },
+    {
+      "event_id": "fomc:2026-10-28",
+      "type": "FOMC",
+      "date": "2026-10-28",
+      "time_et": "14:00",
+      "label": "FOMC rate decision",
+      "label_zh": "\u7f8e\u8054\u50a8\u8bae\u606f\u4f1a\u8bae",
+      "schedule_source": "federal_reserve",
+      "is_sep": false,
+      "is_context_only": true,
+      "scheduled_at": "2026-10-28T14:00:00-04:00",
+      "status": "published",
+      "detected_at": "2026-10-28T18:01:01.395457+00:00",
+      "first_seen_at": "2026-10-28T18:01:01.395457+00:00",
+      "observed_at": "2026-10-28T18:01:01.395457+00:00",
+      "official_embargo_at": "2026-10-28T14:00:00-04:00",
+      "source_released_at": "2026-10-28T18:00:18+00:00",
+      "source_time_basis": "official_source",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "source_id": "fed_fomc",
+      "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm",
+      "content_sha256": "40893a7a62592072be71a236b16cf9e18f217e63256d2099527ff1e4f3ecf08b",
+      "source_sha256": "40893a7a62592072be71a236b16cf9e18f217e63256d2099527ff1e4f3ecf08b",
+      "data_ready": true,
+      "reference_period": null,
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "fomc",
+        "version": 2
+      },
+      "actual": {
+        "kind": "policy_rate",
+        "action": "hold",
+        "target_low": 3.75,
+        "target_high": 4.0,
+        "unit": "percent",
+        "vote_for": 10,
+        "vote_against": 2,
+        "dissent_preference": "hike",
+        "dissent_basis_points": 25,
+        "headline_en": "Fed holds at 3.75%\u20134.00%",
+        "headline_zh": "\u7f8e\u8054\u50a8\u7ef4\u6301\u5229\u7387\u5728 3.75%\u20134.00%",
+        "summary_en": "Fed holds at 3.75%\u20134.00% on a 10\u20132 vote. Dissenters preferred a rate increase of 25 basis points.",
+        "summary_zh": "\u7f8e\u8054\u50a8\u7ef4\u6301\u5229\u7387\u5728 3.75%\u20134.00%\uff0c\u8868\u51b3\u7ed3\u679c\u4e3a 10\u20132\u3002 \u53cd\u5bf9\u8005\u503e\u5411\u4e8e\u52a0\u606f 25 \u4e2a\u57fa\u70b9\u3002",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm"
+      },
+      "verified_at": "2026-10-28T18:01:01.395457+00:00"
+    },
+    {
+      "event_id": "claims:2026-10-29",
+      "type": "CLAIMS",
+      "date": "2026-10-29",
+      "time_et": "08:30",
+      "label": "Initial jobless claims",
+      "label_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1",
+      "schedule_source": "computed",
+      "is_context_only": true,
+      "scheduled_at": "2026-10-29T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-10-29T12:30:04.221908+00:00",
+      "first_seen_at": "2026-10-29T12:30:04.221908+00:00",
+      "observed_at": "2026-10-29T12:30:04.221908+00:00",
+      "official_embargo_at": "2026-10-29T08:30:00-04:00",
+      "source_released_at": "2026-10-29T12:30:00+00:00",
+      "source_time_basis": "scheduled_embargo_floor",
+      "publisher": "U.S. Department of Labor",
+      "source_id": "dol_claims",
+      "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta",
+      "content_sha256": "e6912a52241845630b1d6f944aa0ad15fe40abb52cf5dbdd428ddc7dea9144b1",
+      "source_sha256": "e6912a52241845630b1d6f944aa0ad15fe40abb52cf5dbdd428ddc7dea9144b1",
+      "data_ready": true,
+      "reference_period": "October 17, 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "claims",
+        "version": 1
+      },
+      "actual": {
+        "kind": "jobless_claims",
+        "initial_claims": 194000,
+        "change": -6000,
+        "prior_initial_claims": 200000,
+        "four_week_average": 197750,
+        "unit": "persons",
+        "reference_period": "October 17, 2026",
+        "metrics": [
+          {
+            "metric_id": "claims_initial",
+            "value": 194000,
+            "unit": "persons",
+            "period": "October 17, 2026"
+          },
+          {
+            "metric_id": "claims_change",
+            "value": -6000,
+            "unit": "persons",
+            "period": "October 17, 2026"
+          },
+          {
+            "metric_id": "claims_four_week_avg",
+            "value": 197750,
+            "unit": "persons",
+            "period": "October 17, 2026"
+          }
+        ],
+        "headline_en": "Initial claims 194k (-6k)",
+        "headline_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1 194\u5343\uff08-6\u5343\uff09",
+        "summary_en": "Initial claims 194k (-6k) for the week ending October 17, 2026; four-week average 197.8k.",
+        "summary_zh": "\u521d\u8bf7\u5931\u4e1a\u91d1 194\u5343\uff08-6\u5343\uff09\uff0c\u622a\u81f3 October 17, 2026 \u5f53\u5468\uff1b\u56db\u5468\u5747\u503c 197.8\u5343\u3002",
+        "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta"
+      },
+      "verified_at": "2026-10-29T12:30:04.221908+00:00"
+    },
+    {
+      "event_id": "gdp:2026-10-29",
+      "type": "GDP",
+      "date": "2026-10-29",
+      "time_et": "08:30",
+      "label": "GDP (BEA estimate)",
+      "label_zh": "GDP \u6570\u636e",
+      "schedule_source": "static",
+      "is_context_only": true,
+      "scheduled_at": "2026-10-29T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-10-29T12:31:07.496621+00:00",
+      "first_seen_at": "2026-10-29T12:31:07.496621+00:00",
+      "observed_at": "2026-10-29T12:31:07.496621+00:00",
+      "official_embargo_at": "2026-10-29T08:30:00-04:00",
+      "source_released_at": "2026-10-29T12:30:00+00:00",
+      "source_time_basis": "official_source",
+      "publisher": "U.S. Bureau of Economic Analysis",
+      "source_id": "bea_gdp",
+      "source_url": "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026",
+      "content_sha256": "b51d2f8f5bb721a5b37d17426a7512dcbfce1949aeb1e33b3ff28c823fcaaa30",
+      "source_sha256": "b51d2f8f5bb721a5b37d17426a7512dcbfce1949aeb1e33b3ff28c823fcaaa30",
+      "data_ready": true,
+      "reference_period": "Q3 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "gdp",
+        "version": 1
+      },
+      "actual": {
+        "kind": "economic_growth",
+        "real_gdp_annualized": 3.4,
+        "prior_real_gdp_annualized": 2.2,
+        "vintage": "advance",
+        "unit": "percent",
+        "reference_period": "Q3 2026",
+        "metrics": [
+          {
+            "metric_id": "gdp_real_annualized",
+            "value": 3.4,
+            "unit": "percent_annualized",
+            "period": "Q3 2026"
+          }
+        ],
+        "headline_en": "Real GDP +3.4% annualized (Q3 2026)",
+        "headline_zh": "\u5b9e\u9645 GDP \u5e74\u5316 +3.4%\uff08Q3 2026\uff09",
+        "summary_en": "Real GDP +3.4% annualized (Q3 2026). Previous quarter: +2.2%.",
+        "summary_zh": "\u5b9e\u9645 GDP \u5e74\u5316 +3.4%\uff08Q3 2026\uff09\u3002 \u4e0a\u5b63\u5ea6\uff1a+2.2%\u3002",
+        "source_url": "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026"
+      },
+      "verified_at": "2026-10-29T12:31:07.496621+00:00"
+    },
+    {
+      "event_id": "pce:2026-10-29",
+      "type": "PCE",
+      "date": "2026-10-29",
+      "time_et": "08:30",
+      "label": "PCE / personal income (BEA)",
+      "label_zh": "PCE \u7269\u4ef7\u6307\u6570",
+      "schedule_source": "static",
+      "is_context_only": true,
+      "scheduled_at": "2026-10-29T08:30:00-04:00",
+      "status": "published",
+      "detected_at": "2026-10-29T12:31:07.496621+00:00",
+      "first_seen_at": "2026-10-29T12:31:07.496621+00:00",
+      "observed_at": "2026-10-29T12:31:07.496621+00:00",
+      "official_embargo_at": "2026-10-29T08:30:00-04:00",
+      "source_released_at": "2026-10-29T12:30:00+00:00",
+      "source_time_basis": "official_source",
+      "publisher": "U.S. Bureau of Economic Analysis",
+      "source_id": "bea_pce",
+      "source_url": "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026",
+      "content_sha256": "ecebe8c3ca45d0e8b73d1036edee38838e930b6d96b89f7098235d76ea6b1f07",
+      "source_sha256": "ecebe8c3ca45d0e8b73d1036edee38838e930b6d96b89f7098235d76ea6b1f07",
+      "data_ready": true,
+      "reference_period": "September 2026",
+      "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+      "parser": {
+        "name": "pce",
+        "version": 1
+      },
+      "actual": {
+        "kind": "pce_inflation",
+        "headline_mom": 0.5,
+        "core_mom": 0.3,
+        "headline_yoy": 3.6,
+        "core_yoy": 3.1,
+        "unit": "percent",
+        "reference_period": "September 2026",
+        "metrics": [
+          {
+            "metric_id": "pce_headline_mom",
+            "value": 0.5,
+            "unit": "percent",
+            "period": "September 2026"
+          },
+          {
+            "metric_id": "pce_core_mom",
+            "value": 0.3,
+            "unit": "percent",
+            "period": "September 2026"
+          },
+          {
+            "metric_id": "pce_headline_yoy",
+            "value": 3.6,
+            "unit": "percent",
+            "period": "September 2026"
+          },
+          {
+            "metric_id": "pce_core_yoy",
+            "value": 3.1,
+            "unit": "percent",
+            "period": "September 2026"
+          }
+        ],
+        "headline_en": "PCE prices +0.5% m/m; core +0.3%",
+        "headline_zh": "PCE \u4ef7\u683c\u73af\u6bd4 +0.5%\uff1b\u6838\u5fc3\u73af\u6bd4 +0.3%",
+        "summary_en": "PCE prices +0.5% m/m; core +0.3%. Year over year: 3.6% headline and 3.1% core.",
+        "summary_zh": "PCE \u4ef7\u683c\u73af\u6bd4 +0.5%\uff1b\u6838\u5fc3\u73af\u6bd4 +0.3%\u3002\u540c\u6bd4\uff1a\u6574\u4f53 3.6%\uff0c\u6838\u5fc3 3.1%\u3002",
+        "source_url": "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
+      },
+      "verified_at": "2026-10-29T12:31:07.496621+00:00"
+    }
+  ],
+  "source_health": [],
+  "schedule_coverage": {
+    "status": "ok",
+    "checked_from": "2026-11-01",
+    "horizon_days": 140,
+    "next_by_type": {
+      "FOMC": "2026-12-09",
+      "CPI": "2026-11-10",
+      "PPI": "2026-11-13",
+      "NFP": "2026-11-06",
+      "GDP": "2026-11-25",
+      "PCE": "2026-11-25",
+      "CLAIMS": "2026-11-05"
+    },
+    "missing_or_too_distant": []
+  },
+  "canonical_reconciliation": "nightly",
+  "official_actual_defect_repair": {
+    "state_key": "official_actual_defect_repairs",
+    "max_attempts": 3,
+    "backoff_minutes": 60
+  },
+  "is_context_only": true
+}

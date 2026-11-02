@@ -860,3 +860,61 @@ browser timing, independent review, final integrated CI and production proof rem
 open. A source-census suggestion to infer a 07:50 BLS release time from RSS metadata
 was rejected: a feed timestamp read after release does not prove early availability.
 The existing official schedule, embargo gate and dated-document bindings are preserved.
+
+### November 1 backend and deployment verification checkpoint
+
+The parent candidate implements B1.LIVE.1/2 and the remaining transaction boundary
+in V0.LIVE.2. The incumbent watcher now publishes the canonical public path while
+holding its own lock through validation, state save and final atomic replacement.
+The orchestrator has no later copy/unlink step for release publications. It reports
+verified artifact availability without claiming that a concurrent writer's output
+belongs to its invocation. A candidate digest in the existing private state makes
+a state-success/public-failure mismatch retry on the next ordinary lane wake.
+
+The dedicated systemd timer schedules two seconds after the preceding invocation
+finishes, with 100 ms coalescing accuracy and no jitter. Source rows retain pacing:
+two-second hot probes from two minutes before to ten minutes after a pending
+scheduled release, ordinary sixty-second probes, and the incumbent fifteen-minute
+overdue retry cadence. Upstream Retry-After/error backoff also applies during parser
+upgrade and governed repair. The idle artifact heartbeat is sixty seconds, inside
+the browser's 180-second freshness limit. The five-second source-gap budget remains
+a healthy-source target, not a guarantee under slow requests or host contention.
+
+Normal update reconciles missing or drifted release units even on a repository
+no-op. During the handoff it drains the incumbent fast service and holds its existing
+fast.lock; the compatibility fast invocation remains until the dedicated timer is
+installed. An installed disabled or masked timer retains ownership. Setup failure
+restores previous unit bytes and timer intent. Public-directory rollback drains all
+writers and holds the same existing producer lock before moving last-good files.
+
+Local final-source tests before current-main integration:
+- 122 passed in tests/test_vps_live_orchestration.py, including direct-entry-point
+  concurrency at final replacement, failed public-write healing, invalid candidate
+  last-good preservation, false zero-exit postconditions, lock I/O errors, upgrade
+  backoff, updater idempotency, setup rollback and manual-producer rollback exclusion.
+- 100 passed across tests/test_official_release_parsers.py,
+  tests/test_release_actuals.py, tests/test_release_publications_live_client.py and
+  tests/test_status_error_leak.py; five existing FastAPI lifespan deprecation warnings.
+- All new deployment cases are in the already CI-enrolled orchestration suite.
+- Bash syntax and git diff whitespace checks passed. AgentOS validation: zero errors
+  with existing repository-wide review-age warnings.
+
+Eight isolated real Chromium cases in evidence/calendar_freshness_20261101/ cover
+both themes, EN/ZH and desktop/mobile. A visible already-open dialog accepted the
+verified snapshot without reload in at most 1796.11 ms. The evidence README names
+the controlled clock/routes and component-only scope. A read-only probe from the
+actual VPS fetched the official CPI archive in 0.251 s and the feed in 0.025 s;
+this is source reachability, not an end-to-end production latency measurement.
+
+Independent Grok 4.7 review of countdown PR #10106 at
+1ad0a0e45eaae42dc0163d7bccb71470efa983b8 returned source-review PASS with two minor
+findings. Parent reproduced its eight focused tests and accepted the exact Fabric
+response hash. Formal GitHub APPROVED is not claimed. The existing normal
+merge-on-green path is armed; actual merge, served-source and signed-in proof remain
+required. The backend proposal was not accepted: parent corrected its post-lock
+copy, oversized heartbeat and rollout transaction defects. The resulting material
+candidate needs a fresh independent non-author review before release.
+
+The durable continuation record is
+agentos/handoffs/RATES-INFLATION-COMMAND-2026-11-01.md. This checkpoint is not a
+production acceptance claim.
