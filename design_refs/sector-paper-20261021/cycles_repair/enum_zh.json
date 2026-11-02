@@ -1,5 +1,5 @@
 {
- "_source": "ZH forms for producer enums used by copy_deck cycles.forecast_footnote placeholders: next_turn from templates/sector_cycles.js:1420 L(\"Next \"+nextTurn, \"下次\"+(peak?\"顶部\":\"底部\")); unit sector/basket from the deck placeholder gloss | wave 2 (SIC-V2-C04): direction up/down from sector_cycles.js L('up'/'down') family rendered as 向上/向下; basis price 价格; status aligned 已对齐",
+ "_source": "Per-value production origins, grep-verified 2026-11-01 (SIC-V3-C07): 顶部/底部 templates/sector_cycles.js:1144; 板块 templates/sector_cycles.js:93; 篮子 templates/sector_cycles.js:736; 价格 templates/sector_cycles.js:592 (L(Price, 价格)); 向上 engine/cycle_ontology.py:291; 向下 engine/cycle_ontology.py:312; 已对齐 NEW deck copy (wave-2 proposal for the events-clock status aligned; no production ZH string for this status was found by grep of templates/ and engine/)",
  "peak": "顶部",
  "trough": "底部",
  "sector": "板块",

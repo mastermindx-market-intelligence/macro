@@ -3,6 +3,7 @@
  "captured_at": "d86344b93a0bd",
  "meta": {
   "asOf": "2026-10-20",
+  "doctrine_stamp": {"engine": "engine/cycle_ontology.py", "map": "DOCTRINE_STANCE (:147)", "fn": "doctrine_for (:179)", "stamped_by": "design_refs/sector-paper-20261021/cycles_repair/stamp_doctrine.py"},
   "benchmark": "SPY",
   "rebaseDate": "2011-10-20",
   "phase_age_version": 2,
@@ -201,6 +202,10 @@
     "divergence": true,
     "tone": "bullish",
     "stance_zh": "持有",
+    "doctrine_stance": "watch",
+    "doctrine_stance_en": "Watch — don't chase",
+    "doctrine_stance_zh": "观望——勿追高",
+    "doctrine_ink": "warn",
     "divergence_note": "The cycle is in Downturn but the daily ladder shows a rallying structure. Hold, but trim into strength — the larger trend is down.",
     "divergence_note_zh": "周期处于下行阶段，但日线阶梯显示反弹结构。持有，但逢强减仓——更大趋势向下。",
     "clocks": {
@@ -393,6 +398,10 @@
     "divergence": false,
     "tone": "caution",
     "stance_zh": "高风险反弹",
+    "doctrine_stance": "watch",
+    "doctrine_stance_en": "Watch — don't chase",
+    "doctrine_stance_zh": "观望——勿追高",
+    "doctrine_ink": "warn",
     "divergence_note": "",
     "divergence_note_zh": "",
     "clocks": {
@@ -572,6 +581,10 @@
     "divergence": false,
     "tone": "bearish",
     "stance_zh": "卖出",
+    "doctrine_stance": "protect",
+    "doctrine_stance_en": "Protect gains",
+    "doctrine_stance_zh": "保护收益",
+    "doctrine_ink": "warn",
     "divergence_note": "",
     "divergence_note_zh": "",
     "clocks": {
@@ -684,6 +697,23 @@
   ]
  },
  "_fixtures": {
+  "prior_cell": {
+   "label": "FIXTURE",
+   "note": "Not a live sector. Producer field shape of a hazard horizon that fell back to the KM prior (engine/hazard_score.py:436: source PRIOR, cell_verdict PRIOR); the historical up/3m and up/6m PRIOR cells (W4.2) have this shape. p values are illustrative; the shape is the contract.",
+   "shape_source": "engine/hazard_score.py:432-436",
+   "name": "Fixture sector",
+   "name_zh": "示例板块",
+   "ticker": "FIX",
+   "hazard": {
+    "epoch": "price_c4414dcb",
+    "revision_optimistic": true,
+    "direction": "up",
+    "turn_kind": "peak",
+    "1m": {"p": 0.2971, "source": "MODEL", "cell_verdict": "PASS"},
+    "3m": {"p": 0.33, "source": "PRIOR", "cell_verdict": "PRIOR"},
+    "6m": {"p": 0.5, "source": "PRIOR", "cell_verdict": "PRIOR"}
+   }
+  },
   "incompatible_generation": {
    "label": "FIXTURE",
    "query": "?state=incompatible_generation",

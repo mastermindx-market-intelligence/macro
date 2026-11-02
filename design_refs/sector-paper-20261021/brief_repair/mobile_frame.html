@@ -3,7 +3,7 @@
 <body><iframe id="f" title="specimen"></iframe>
 <script>
 (function(){var q=new URLSearchParams(location.search),src=(q.get("src")||"brief.html"),p=[];
-["theme","lang","state"].forEach(function(k){if(q.get(k))p.push(k+"="+encodeURIComponent(q.get(k)));});
+["theme","lang","state","desk"].forEach(function(k){if(q.get(k))p.push(k+"="+encodeURIComponent(q.get(k)));});
 var f=document.getElementById("f");f.src=src+(p.length?"?"+p.join("&"):"");
 f.addEventListener("load",function(){try{var d=f.contentDocument.documentElement,h=d.scrollHeight;f.style.height=h+"px";
 document.documentElement.setAttribute("data-h",String(h));document.documentElement.setAttribute("data-w",String(d.scrollWidth));

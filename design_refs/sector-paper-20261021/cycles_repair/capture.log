@@ -6,3 +6,14 @@
 34-cycles-desktop-light-zh.png 1440x1944 (30,300)=(247,248,250) (30,972)=(247,248,250) (1400,1884)=(247,248,250) (300,135)=(247,248,250)
 35-cycles-desktop-dark-zh.png 1440x1944 (30,300)=(15,17,21) (30,972)=(15,17,21) (1400,1884)=(15,17,21) (300,135)=(15,17,21)
 36-cycles-mobile-light-zh.png 390x3992 (30,300)=(247,248,250) (30,1996)=(255,255,255) (350,3932)=(247,248,250) (300,135)=(241,239,250)
+
+# wave 3 (SIC-V3-C01..C17) 2026-11-01 — specimen re-render after the producer doctrine stamp (engine/cycle_ontology.py DOCTRINE_STANCE :147 · doctrine_for :179 · resolve_state :948 at a232e64975a2; tests tests/test_cycle_ontology.py :979 :991 :1007 :1023); dataset stamped by cycles_repair/stamp_doctrine.py; family-match read rule build_cycles.py family_match; probe = components/board_probe.py (theme pixels (247,248,250)/(15,17,21), 390 overflow, six-link switcher + current item), ZH faces = components/zh_latin_grep.py (SIC-V3-C06/C10/C15)
+28-cycles-desktop-light-en.png 1440x2352 (30,300)=(247,248,250) (30,1176)=(247,248,250) (1400,2292)=(247,248,250) (300,135)=(247,248,250) probe data-w="1440" data-ovf="" switcher=6 current=cycles
+29-cycles-desktop-dark-en.png 1440x2352 (30,300)=(15,17,21) (30,1176)=(15,17,21) (1400,2292)=(15,17,21) (300,135)=(15,17,21) probe data-w="1440" data-ovf="" switcher=6 current=cycles
+30-cycles-mobile-dark-zh.png 390x4326 (30,300)=(15,17,21) (30,2163)=(24,27,33) (350,4266)=(15,17,21) (300,135)=(31,26,49) probe data-w="390" data-ovf="" switcher=6 current=cycles zh-latin=0
+31-cycles-mobile-light-en.png 390x4967 (30,300)=(247,248,250) (30,2483)=(255,255,255) (350,4907)=(247,248,250) (300,135)=(240,238,250) probe data-w="390" data-ovf="" switcher=6 current=cycles
+34-cycles-desktop-light-zh.png 1440x2206 (30,300)=(247,248,250) (30,1103)=(247,248,250) (1400,2146)=(247,248,250) (300,135)=(247,248,250) probe data-w="1440" data-ovf="" switcher=6 current=cycles zh-latin=0
+35-cycles-desktop-dark-zh.png 1440x2206 (30,300)=(15,17,21) (30,1103)=(15,17,21) (1400,2146)=(15,17,21) (300,135)=(15,17,21) probe data-w="1440" data-ovf="" switcher=6 current=cycles zh-latin=0
+36-cycles-mobile-light-zh.png 390x4326 (30,300)=(247,248,250) (30,2163)=(255,255,255) (350,4266)=(247,248,250) (300,135)=(240,238,250) probe data-w="390" data-ovf="" switcher=6 current=cycles zh-latin=0
+39-cycles-mobile-dark-en.png 390x4863 (30,300)=(15,17,21) (30,2431)=(24,27,33) (350,4803)=(15,17,21) (300,135)=(31,27,50) probe data-w="390" data-ovf="" switcher=6 current=cycles
+40-cycles-desk-desktop-dark-en.png 1440x3348 (30,300)=(15,17,21) (30,1674)=(15,17,21) (1400,3288)=(15,17,21) (300,135)=(15,17,21) probe data-w="1440" data-ovf="" switcher=6 current=cycles

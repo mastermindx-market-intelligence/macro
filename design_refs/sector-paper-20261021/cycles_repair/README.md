@@ -37,7 +37,7 @@ specimen, not production**: the production template remains `templates/sector_cy
 |---|---|---|
 | Position is the v2 family only | `now.pos_v2` rendered as the headline `/100` under `cycles.pos_label`; legacy `pos`, `phase`, `action`, `timing_state`, `signal` are **not rendered** on the face. Wave 2 (SIC-V2-C07/PRC-025): the legacy cycle-position numerals and projected-turn dates inside `now.read`/`read_zh` are stripped from 'The read' (`STRIP_EN`/`STRIP_ZH` in `build_cycles.py`) and the verbatim read is kept under `cycles.read_provenance` in the card's provenance drawer | card head / drawer |
 | Phase is `phase_v2` | `spc-phase-chip[data-phase]` from `now.phase_v2`; XLC shows the legacy/v2 disagreement the mandate names (legacy `Trough`, v2 `Downturn`) by drawing v2 only | card head |
-| One stance vocabulary (SIC-V2-C01/VTC-013) | `now.stance` (engine vocabulary `engine/cycle_ontology.py:113-123`: AVOID · WAIT · GET READY · BUY · HOLD · TRIM · SELL · COUNTERTREND ONLY · HIGH-RISK BOUNCE) is bound by `STANCE_MAP` in `build_cycles.py` to the six doctrine stances (`components.stance_*`): BUY→Act · GET READY→Get ready · HOLD, HIGH-RISK BOUNCE→Watch — don't chase · TRIM, SELL→Protect gains · WAIT, AVOID, COUNTERTREND ONLY→Stand aside · null→Ignore. Stance ink by `data-stance` (`--ink-ok` / `--ink-warn` / `--muted`), never `--up`/`--down`. The engine stance + tone (`cycles.stance_engine_pattern`) and `now.divergence_note` stay in the provenance drawer; `cycles.clocks_chip` only when `now.divergence`. Captured rows: XLF HOLD→Watch, XLK HIGH-RISK BOUNCE→Watch, XLC SELL→Protect gains | card head / drawer |
+| One stance vocabulary (SIC-V2-C01/VTC-013) | `now.stance` (engine vocabulary `engine/cycle_ontology.py:113-123`: AVOID · WAIT · GET READY · BUY · HOLD · TRIM · SELL · COUNTERTREND ONLY · HIGH-RISK BOUNCE) is mapped by the producer, not the specimen (wave 3, SIC-ADJ-01 / SIC-V3-C01, C02): `engine/cycle_ontology.py` `DOCTRINE_STANCE` :147 → `doctrine_for` :179, stamped on every cell by `resolve_state` :948 (dataset: `stamp_doctrine.py`) — BUY→Act · GET READY→Get ready · HOLD, HIGH-RISK BOUNCE, COUNTERTREND ONLY→Watch — don't chase · TRIM, SELL→Protect gains · WAIT, AVOID→Stand aside; no None entry — a null stance draws the muted `cycles.stance_unavailable` line and no chip. The face prints `doctrine_stance_en/zh` under the `cycles.stance_source_eyebrow` line ("Engine mapping · Sector Cycles"); ink by `doctrine_ink` (`--ink-ok` / `--ink-warn` / `--muted`), never `--up`/`--down`; tests `tests/test_cycle_ontology.py:979/:991/:1007/:1023`. The engine stance + tone (`cycles.stance_engine_pattern`) and `now.divergence_note` stay in the provenance drawer; `cycles.clocks_chip` only when `now.divergence`. Captured rows: XLF HOLD→Watch, XLK HIGH-RISK BOUNCE→Watch, XLC SELL→Protect gains | card head / drawer |
 | Measured phase age, not zero | `now.phase_v2_age` by `status`: `lower_bound` → `cycles.phase_age_lower_bound` (n = sessions, date = observed_from); `measured` → `phase_age_measured`; else `phase_age_unknown`. All three captured rows are `lower_bound` (history_rows 56) | card head |
 | Hazard: MODEL vs PRIOR vs unavailable | `now.hazard.{1m,3m,6m}` → `spc-hz-val` + `spc-model-prior-badge[data-source]` + `cell_verdict`; `unavailable: true` → three gap cells (CSS dashed mark, no typed glyph, never 0 %) + `cycles.hazard_unavailable` + `unavailable_reason`; `estimate_kinds.model_cell_current_claim = parity_failed` → ladder muted + `cycles.hazard_parity_chip` + the claim code | hazard section |
 | Live parity recorded, not repaired | `meta.live_hazard_parity` (PARITY_FAILS · 15 failing features · measured_on a038b3f3) in the basis panel, the methods panel and metadata | header, methods, metadata |
@@ -52,14 +52,32 @@ specimen, not production**: the production template remains `templates/sector_cy
 
 | # | File | Viewport | Theme | Locale | Query | Height px |
 |---|---|---|---|---|---|---|
-| 28 | `28-cycles-desktop-light-en.png` | 1440 | light | EN | `?theme=light&lang=en` | 2368 |
-| 29 | `29-cycles-desktop-dark-en.png` | 1440 | dark | EN | `?theme=dark&lang=en` | 2368 |
-| 30 | `30-cycles-mobile-dark-zh.png` | 390 (iframe host) | dark | ZH | `mobile_frame.html?src=cycles.html&theme=dark&lang=zh` | 5436 |
-| 31 | `31-cycles-mobile-light-en.png` | 390 (iframe host) | light | EN | `…&theme=light&lang=en&state=incompatible_generation` (fixture) | 6116 |
+| 28 | `28-cycles-desktop-light-en.png` | 1440 | light | EN | `?theme=light&lang=en` | 2352 |
+| 29 | `29-cycles-desktop-dark-en.png` | 1440 | dark | EN | `?theme=dark&lang=en` | 2352 |
+| 30 | `30-cycles-mobile-dark-zh.png` | 390 (iframe host) | dark | ZH | `mobile_frame.html?src=cycles.html&theme=dark&lang=zh` | 4326 |
+| 31 | `31-cycles-mobile-light-en.png` | 390 (iframe host) | light | EN | `…&theme=light&lang=en&state=incompatible_generation` (fixture) | 4967 |
+| 34 | `34-cycles-desktop-light-zh.png` | 1440 | light | ZH | `?theme=light&lang=zh` | 2206 |
+| 35 | `35-cycles-desktop-dark-zh.png` | 1440 | dark | ZH | `?theme=dark&lang=zh` | 2206 |
+| 36 | `36-cycles-mobile-light-zh.png` | 390 (iframe host) | light | ZH | `mobile_frame.html?src=cycles.html&theme=light&lang=zh` | 4326 |
+| 39 | `39-cycles-mobile-dark-en.png` | 390 (iframe host) | dark | EN | `mobile_frame.html?src=cycles.html&theme=dark&lang=en` | 4863 |
+| 40 | `40-cycles-desk-desktop-dark-en.png` | 1440 | dark | EN | `?theme=dark&lang=en&desk=composite` (composite desk) | 3348 |
 
-Boards 30/31 are rendered inside `mobile_frame.html` because headless Chrome clamps its
+Boards 30/31/36/39 are rendered inside `mobile_frame.html` because headless Chrome clamps its
 window width to ≥500 px; the host page copies `data-h`/`data-w`/`data-ovf` from the 390 px
 iframe document so the measurement is the mobile document's own.
+
+Wave 3 (SIC-V3, 2026-11-01): every Cycles board draws the producer-stamped doctrine chip
+(`doctrine_stance*` fields stamped by `stamp_doctrine.py` from `engine/cycle_ontology.py`
+`doctrine_for`; no map in this builder), the filled context card (as-of · generation ·
+hazard epoch), the family-match read rule (`family_match` in `build_cycles.py`; XLC draws
+the labeled Clocks-disagree state) and, after the live card grid, exactly one labeled
+FIXTURE card carrying the KM PRIOR cell shape (SIC-V3-C17). Board 40 opens the composite
+desk (`?desk=composite`): the production chart capture recorded in `prod_capture.json`
+(`site/sector_cycles.html` at d86344b93a0b, as of 2026-10-20) labeled with render source
+and as-of beside the correction cards, the as-of difference stated on the board face
+(SIC-V3-C09). Board heights in this table equal `png_px` in `boards_manifest.yml`
+(SIC-V3-C11). Probes: `components/board_probe.py` (theme pixels, 390 overflow, six-link
+switcher) and `components/zh_latin_grep.py` (ZH faces) — lines in `capture.log`.
 
 ## How to render
 

@@ -1,0 +1,8 @@
+# SIC-V3-C06 allow-list for components/zh_latin_grep.py on the Brief ZH boards (25, 32, 33, 38).
+# Each token is a Latin product term inside a production ZH string; everything else on the ZH face must be Chinese.
+# AI    — basket names in example_dataset.json name_zh ("AI 基础设施", "非AI软件"; production basket names)
+# GLP-  — basket name "GLP-1 与减肥药" (production basket name)
+# ETF   — deck copy brief.basket_footnote / brief.glyph_sector zh ("并非板块ETF", "板块ETF"; production copy, see copy_deck.json sources)
+AI
+GLP-
+ETF

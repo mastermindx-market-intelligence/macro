@@ -24,3 +24,6 @@ shot 31-cycles-mobile-light-en   390 "${H31:-$(measure 390 "$M&theme=light&lang=
 shot 34-cycles-desktop-light-zh 1440 "${H34:-$(measure 1440 "$B?theme=light&lang=zh")}" "$B?theme=light&lang=zh"
 shot 35-cycles-desktop-dark-zh  1440 "${H35:-$(measure 1440 "$B?theme=dark&lang=zh")}" "$B?theme=dark&lang=zh"
 shot 36-cycles-mobile-light-zh   390 "${H36:-$(measure 390 "$M&theme=light&lang=zh")}" "$M&theme=light&lang=zh"
+# wave 3 (SIC-V3-C09/C13): the Cycles coverage GAP cell (mobile dark EN) and the labeled composite desk (production chart capture)
+shot 39-cycles-mobile-dark-en    390 "${H39:-$(measure 390 "$M&theme=dark&lang=en")}" "$M&theme=dark&lang=en"
+shot 40-cycles-desk-desktop-dark-en 1440 "${H40:-$(measure 1440 "$B?theme=dark&lang=en&desk=composite")}" "$B?theme=dark&lang=en&desk=composite"

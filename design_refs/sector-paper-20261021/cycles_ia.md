@@ -140,16 +140,50 @@ renders stamped fields only — it never recomputes a stance (W3.6 comment
 `sector_cycles.js:143-152`); a null stance (resolve failure,
 `engine/sector_cycles.py:852-854`) omits the chip (`stanceHTML:159`).
 
-Wave 2 (SIC-V2-C01, VTC-013): the accepted design presents the engine stance through
-the six doctrine stances (`docs/DESIGN_DOCTRINE.md:44`; `STANCE_MAP` in
-`design_refs/sector-paper-20261021/cycles_repair/build_cycles.py`: BUY→Act ·
-GET READY→Get ready · HOLD, HIGH-RISK BOUNCE→Watch — don't chase · TRIM, SELL→Protect
-gains · WAIT, AVOID, COUNTERTREND ONLY→Stand aside · null→Ignore). This is a
-presentation binding applied to the stamped `now.stance`, not a recomputation; the
-engine stance and tone stay visible in the card's provenance drawer. The production
-port applies the same map inside `stanceHTML` (`sector_cycles.js:159`) and keeps the
-null-stance omission; stance ink is `--ink-ok` / `--ink-warn` / `--muted`, never
+Wave 3 (SIC-ADJ-01, SIC-V3-C01/C02; supersedes the wave-2 `STANCE_MAP`): the stance
+is not mapped in any frontend. The producer stamps `doctrine_stance`, `doctrine_stance_en`,
+`doctrine_stance_zh` and `doctrine_ink` on every cell (`engine/cycle_ontology.py`
+`DOCTRINE_STANCE` :147 → `doctrine_for` :179, called from `resolve_state` :948;
+`engine/sector_cycles.py` carries the fields through `_DOCTRINE_KEYS` into `now`), and the
+card face draws exactly one doctrine chip from those fields, labeled as the engine's mapping
+by the `cycles.stance_source_eyebrow` line and inked by `doctrine_ink` (asserted never to
+contradict the engine tone: `_TONE_INK_GROUPS` :164, assertions :171-174). The map and its
+per-row rationale: BUY → Act (entry condition confirmed) · GET READY → Get ready (setup
+formed, trigger pending) · HOLD → Watch — don't chase (position kept, no add) · HIGH-RISK
+BOUNCE → Watch — don't chase (bounce inside a down leg, no chase) · COUNTERTREND ONLY →
+Watch — don't chase (counter-trend structure only; moved from Stand aside so the ink group
+follows the engine tone) · TRIM → Protect gains (reduce into strength) · SELL → Protect
+gains (exit the leg) · WAIT → Stand aside (no entry condition) · AVOID → Stand aside
+(structure broken). There is no None entry: a null stance (resolve failure,
+`engine/sector_cycles.py:852-854`) draws the muted `cycles.stance_unavailable` line and no
+chip. The engine stance and tone stay verbatim as the first line of the card's provenance
+drawer; no engine stance word (HOLD, SELL, TRIM, BUY, WAIT, AVOID, GET READY, COUNTERTREND
+ONLY, HIGH-RISK BOUNCE) and no ladder state appears on a face — the divergence note, which
+carries stance words, is drawer-only under the amber Clocks-disagree chip, whose face note
+(`cycles.clocks_ladder_pattern`) names the phase clock and the timing ladder only. Tests:
+`tests/test_cycle_ontology.py:979` (every engine stance mapped exactly once), `:991` (ink
+never contradicts tone), `:1007` (`resolve_state` stamps every cell), `:1023` (export payload
+carries the fields without logic). The specimen dataset is stamped by
+`design_refs/sector-paper-20261021/cycles_repair/stamp_doctrine.py` from the same function.
+The production port deletes the wave-2 map inside `stanceHTML` (`sector_cycles.js:159`) and
+prints the stamped fields; stance ink is `--ink-ok` / `--ink-warn` / `--muted`, never
 `--up`/`--down`.
+
+Wave 3 (SIC-V3-C03) — one phase per face: the chip is `phase_v2`; the legacy read sits on
+the face only when its phase word belongs to the chip's family, where family = the engine
+short label (`engine/cycle_ontology.py:70-81`; `engine/sector_cycles.py:134-139` and
+`:391-403` emit the same `(phase, short)` pairs) and the test is
+`PHASE_SHORT[now.phase] == PHASE_SHORT[now.phase_v2] and PHASE_SHORT[now.phase_v2] in now.read`
+(`build_cycles.py` `family_match`) — never `clocks.agree`. Otherwise the read section draws
+the labeled Clocks-disagree state naming both clocks (`cycles.clocks_disagree_pattern`:
+"cycle read says Bottoming · phase clock says Rolling over" for XLC) and
+`cycles.read_withheld_face`, with the legacy read verbatim in the drawer. XLF (match,
+divergence) and XLC (mismatch) demonstrate both states on boards 28–31/34–36/39/40.
+
+Port note (SIC-V3-C06, wave 3): the production ZH read (`engine/sector_cycles.py:97-101`)
+interpolates the English sector name and the Latin abbreviation `RS` into the zh sentence
+("Financials下行阶段 … 相对标普RS（63日）"). The specimen draws the zh sector name and
+`相对标普（63日）` on the ZH face; the port should emit that from `read_zh`/`rs_zh` directly.
 
 ## R6 — timing & projection (ladder, gate, rhythm, hazard)
 

@@ -110,19 +110,7 @@ html[data-lang="zh"] .cyc .l-en{display:none}
 .cyc-hz-gap{display:block;width:16px;height:0;margin:9px auto;border-top:1px dashed var(--muted)}
 
 /* wave 2 — C04 provenance drawers: producer identifiers live here, closed by default */
-.cyc-prov{margin-top:12px;border-top:1px solid var(--line);padding-top:6px}
-.cyc-prov summary{font:600 var(--fs-label)/1.5 var(--font-ui);color:var(--muted);cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;min-height:32px}
-.cyc-prov summary::-webkit-details-marker{display:none}
-.cyc-prov summary::before{content:"";width:0;height:0;border:4px solid transparent;border-left:6px solid currentColor;transform:translateX(2px);transition:transform .12s}
-.cyc-prov[open] summary::before{transform:rotate(90deg) translateY(-2px)}
-.cyc-prov summary:focus-visible{outline:2px solid var(--focus,var(--accent));outline-offset:2px;border-radius:4px}
-.cyc-prov-hint{font-weight:500;color:var(--muted);opacity:.85}
-.cyc-prov-body{display:grid;grid-template-columns:minmax(0,1fr);gap:0;margin:4px 0 0}
-.cyc-prov-body > div{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.6fr);gap:4px 12px;padding:6px 0;border-top:1px dashed var(--line);align-items:baseline;min-width:0}
-.cyc-prov-body dt{font:600 var(--fs-micro)/1.45 var(--font-ui);color:var(--muted);overflow-wrap:anywhere}
-.cyc-prov-body dd{margin:0;font:500 var(--fs-micro)/1.45 var(--font-ui);color:var(--text);overflow-wrap:anywhere;min-width:0}
-.cyc-prov-body dd .mono,.cyc-prov-body dd code,.cyc-prov-body dt code{font:500 var(--fs-micro)/1.45 var(--font-mono,var(--font-ui))}
-.cyc-prov-read{font:400 var(--fs-micro)/1.5 var(--font-ui);color:var(--muted)}
+/* wave 3: the provenance-drawer rules (.cyc-prov*) moved to ../components/si_shell.css — shared by the Brief and Cycles specimens */
 .cyc-prov-meta .cyc-prov-body{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px}
 .cyc-sec-h2{font-size:var(--fs-h3);margin:0 0 8px}
 /* C04: hazard ladder muted while the producer records model_cell_current_claim (parity unproven) */
@@ -136,6 +124,37 @@ html[data-state="incompatible_generation"] .cyc .cyc-ev-chip{opacity:.55}
 html[data-state="incompatible_generation"] .cyc .cyc-ev-qual{display:inline-flex}
 .cyc-fixture{margin:8px 0 0}
 .cyc-fixture-chip{--c:var(--muted)}
-@media (max-width:720px){.cyc-prov-meta .cyc-prov-body{grid-template-columns:minmax(0,1fr)}.cyc-prov-body > div{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:720px){.cyc-prov-meta .cyc-prov-body{grid-template-columns:minmax(0,1fr)}}
 /* wave 2 (SIC-V2-C06): the dated qualifier is a wrapping note, not a nowrap pill (390px EN overflow) */
 .cyc-ev-qual{white-space:normal;line-height:1.35;border-radius:10px;text-align:left;max-width:100%;padding:5px 10px}
+/* wave 3 (SIC-V3-C01..C03, C08, C09, C17): producer doctrine chip inked by doctrine_ink; source eyebrow; stance-unavailable line;
+   hero context card; Clocks-disagree read state; definition label; the labeled FIXTURE PRIOR card; the composite desk (board 40) */
+.cyc-stance[data-ink="ok"]{--c:var(--ink-ok,var(--ok))}
+.cyc-stance[data-ink="warn"]{--c:var(--ink-warn,var(--warn))}
+.cyc-stance[data-ink="muted"]{--c:var(--muted)}
+.cyc-stance-src{font:500 var(--fs-micro)/1.3 var(--font-ui);color:var(--muted);letter-spacing:.02em}
+.cyc-stance-na{font:500 var(--fs-sm)/1.3 var(--font-ui);color:var(--muted)}
+.cyc-ctx{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;margin:0 0 10px;font:400 var(--fs-sm)/1.4 var(--font-ui)}
+.cyc-ctx > div{display:contents}
+.cyc-ctx dt{color:var(--muted);font-weight:500;white-space:nowrap}
+.cyc-ctx dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.cyc-gen-incompat{display:none}
+html[data-state="incompatible_generation"] .cyc .cyc-gen-fresh{display:none}
+html[data-state="incompatible_generation"] .cyc .cyc-gen-incompat{display:inline}
+.cyc-clocks-state{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:0 0 6px}
+.cyc-clocks-both{font:500 var(--fs-sm)/1.4 var(--font-ui)}
+.cyc-read-withheld{color:var(--muted)}
+.cyc-def-lbl{font:600 var(--fs-micro)/1.3 var(--font-ui);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.cyc-fixture-card{margin-top:16px;border-style:dashed}
+.cyc-fx-id{display:flex;align-items:baseline;gap:10px;margin:6px 0}
+.cyc-fx-name{font-weight:600}
+.cyc-fx-body{margin:0 0 10px;color:var(--muted)}
+.cyc-desk{margin-top:16px}
+.cyc-desk[hidden]{display:none}
+html[data-desk="composite"] .cyc > .cyc-cards{display:none}
+.cyc-desk-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.cyc-capture{margin:0}
+.cyc-capture img{display:block;max-width:100%;height:auto;margin-top:8px;border:1px solid var(--line);border-radius:8px}
+.cyc-capture figcaption{margin-top:8px;font:400 var(--fs-sm)/1.45 var(--font-ui);color:var(--muted)}
+.cyc-desk-cards > .cyc-chips{margin-bottom:8px}
+.cyc-ctx dd code{white-space:nowrap;display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}

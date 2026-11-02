@@ -7,3 +7,13 @@
 32-brief-desktop-light-zh.png 1440x2752 (30,300)=(247,248,250) (30,1376)=(247,248,250) (1400,2692)=(247,248,250) (300,135)=(247,248,250)
 33-brief-desktop-dark-zh.png 1440x2752 (30,300)=(15,17,21) (30,1376)=(15,17,21) (1400,2692)=(15,17,21) (300,135)=(15,17,21)
 37-brief-mobile-dark-en.png 390x4903 (30,300)=(15,17,21) (30,2451)=(24,27,33) (350,4843)=(15,17,21) (300,135)=(31,27,50) probe data-w="390" data-ovf=""
+
+# wave 3 (SIC-V3-C04..C06, C08, C10, C12, C13, C15) 2026-11-01 — Brief specimen re-render (lane criteria, lane-provenance drawer, regime-read drawer, coverage title, two-line 390 rows, board 38); probe = components/board_probe.py, ZH faces = components/zh_latin_grep.py with brief_repair/zh_face_latin_allow.txt
+23-brief-desktop-light-en.png 1440x2752 (30,300)=(247,248,250) (30,1376)=(247,248,250) (1400,2692)=(247,248,250) (300,135)=(247,248,250) probe data-w="1440" data-ovf="" switcher=6 current=brief
+24-brief-desktop-dark-en.png 1440x2752 (30,300)=(15,17,21) (30,1376)=(15,17,21) (1400,2692)=(15,17,21) (300,135)=(15,17,21) probe data-w="1440" data-ovf="" switcher=6 current=brief
+25-brief-mobile-dark-zh.png 390x4604 (30,300)=(15,17,21) (30,2302)=(24,27,33) (350,4544)=(15,17,21) (300,135)=(31,27,50) probe data-w="390" data-ovf="" switcher=6 current=brief zh-latin=0
+26-brief-mobile-light-en.png 390x4625 (30,300)=(247,248,250) (30,2312)=(255,255,255) (350,4565)=(247,248,250) (300,135)=(240,238,250) probe data-w="390" data-ovf="" switcher=6 current=brief
+32-brief-desktop-light-zh.png 1440x2777 (30,300)=(247,248,250) (30,1388)=(247,248,250) (1400,2717)=(247,248,250) (300,135)=(247,248,250) probe data-w="1440" data-ovf="" switcher=6 current=brief zh-latin=0
+33-brief-desktop-dark-zh.png 1440x2777 (30,300)=(15,17,21) (30,1388)=(15,17,21) (1400,2717)=(15,17,21) (300,135)=(15,17,21) probe data-w="1440" data-ovf="" switcher=6 current=brief zh-latin=0
+37-brief-mobile-dark-en.png 390x4860 (30,300)=(15,17,21) (30,2430)=(24,27,33) (350,4800)=(15,17,21) (300,135)=(31,27,50) probe data-w="390" data-ovf="" switcher=6 current=brief
+38-brief-mobile-light-zh.png 390x4604 (30,300)=(247,248,250) (30,2302)=(255,255,255) (350,4544)=(247,248,250) (300,135)=(240,238,250) probe data-w="390" data-ovf="" switcher=6 current=brief zh-latin=0
