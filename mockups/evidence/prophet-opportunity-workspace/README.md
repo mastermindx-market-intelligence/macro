@@ -24,3 +24,17 @@ python3 "$proof/inspect_public_sources.py" "$fixture" "$proof/public-sources"
 ```
 
 The HK/Canada P0B receipts are separate. Their pinned recipe, executable, fixture assets and historical baseline are derived from `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout*.json` by `scripts/check_p0b_receipt_closure.py`.
+
+## Compact Today shelf
+
+The anonymous shelf keeps the same track widths as the full grid when fewer
+cards are available. On the ordinary US build at 8303a96f83d7, the two emitted
+articles occupied two of four 328px tracks at 1440px. The predecessor stretched
+each to 672px. At 1024px the layout has three tracks, at 768px two, and at 390px
+one. No cards were added. The anonymous access treatment remains visible.
+
+The 16 crops and measurements in `compact-sizing/` cover those four widths in
+both languages and themes. To reproduce, run `inspect_card_grid.py` with the
+public-only directory containing the normally generated page and its static
+assets, followed by an output directory. The observations bind the rendered
+HTML and each crop by SHA-256. The Essential payload stays outside that directory.
