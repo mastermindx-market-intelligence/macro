@@ -68,6 +68,405 @@
   var timer = null;
   var inflight = false;
 
+  // ---- Attempt accounting (observational only) --------------------------
+  //
+  // The 41/600 cap is an OPERATOR obligation; nothing here knows it, enforces
+  // it, or is consulted by anything that does. This ledger only observes THIS
+  // document's quote attempts so an operator can later ask "how many did this
+  // page actually make?" without trusting a network log or a green pip. It is
+  // deliberately NOT authoritative, so a snapshot structurally cannot claim a
+  // complete count: writer.exclusive_proven is pinned false, because a
+  // same-origin frame, a duplicate script tag or a bfcache-restored old
+  // document can never be ruled out from inside one document.
+  //
+  // Storage is one namespaced key in per-tab sessionStorage: it survives
+  // reload and same-tab navigation, dies with the tab, and is NOT treated as
+  // a trusted tab identity — only as whatever evidence it happens to hold.
+  // The aggregate only ever climbs; the history keeps at most 64 records and
+  // says so once it has dropped any. Every fault (write denial, quota, parse,
+  // deletion, rollback, concurrent writer, duplicate script) becomes a STICKY
+  // degradation that survives reload; the counter is never silently restarted
+  // at a healthy 0, and where the prior total becomes unknowable the snapshot
+  // says `aggregate_known: false` instead of inventing one. Records carry a
+  // sequence, a clock, the symbol and an outcome word — never a quote, a
+  // credential or a response body. Quoting itself never waits on accounting:
+  // every entry point below is guarded and faults there cannot stop a poll.
+  var LEDGER_KEY = 'dq:attempt-ledger:v1';
+  var LEDGER_MAX = 64;
+  var LEDGER_SCHEMA = 1;
+  // Sticky uncertainty flags. `rollback` is surfaced under `reset`: from the
+  // reader's chair both mean "earlier evidence stopped being true".
+  var UNC_KEYS = ['storage', 'parse', 'reset', 'loss', 'concurrent_writer'];
+  var UNC_OF = { storage: 'storage', parse: 'parse', reset: 'reset',
+                 rollback: 'reset', loss: 'loss', concurrent_writer: 'concurrent_writer' };
+
+  var loadClock = Date.now();
+  var instanceId = 'i' + loadClock.toString(36) + Math.random().toString(36).slice(2, 8);
+  var docId = 'd' + loadClock.toString(36) + Math.random().toString(36).slice(2, 8);
+
+  var ledger = {
+    v: LEDGER_SCHEMA,
+    series: null,            // { id, started_clock, provenance } (provenance not persisted)
+    aggregate: 0,
+    aggregate_known: false,  // false => prior total UNKNOWN, never "zero"
+    records: [],             // { seq, clock, symbol, outcome }, oldest first
+    truncated: false,        // at least one record has fallen off the history
+    seq: 0,
+    degraded: null,          // { reasons: [...], at_clock } — sticky, persisted
+    unc: { storage: false, parse: false, reset: false, loss: false, concurrent_writer: false },
+    gen: 0,                  // document-load generation in this storage scope
+    inst: instanceId
+  };
+  var seriesPrior = false;   // a readable prior series was adopted at load
+  var lastObservedInst = null;
+  var passive = false;       // duplicate script: count nothing, flag the loss
+  // Local increments not yet reconciled against storage. They are carried
+  // across a merge so a foreign writer's advance is ADDED to ours instead of
+  // either side's count being silently dropped.
+  var unsynced = 0;
+
+  function storage() {
+    try {
+      var s = window.sessionStorage;
+      if (s && typeof s.getItem === 'function' && typeof s.setItem === 'function') return s;
+    } catch (e) { /* access denied (e.g. blocked storage) */ }
+    return null;
+  }
+
+  // Sticky means sticky: a fault, once seen in this scope, is never un-seen
+  // by a later reload.
+  function degrade(reason) {
+    if (!ledger.degraded) ledger.degraded = { reasons: [], at_clock: Date.now() };
+    if (ledger.degraded.reasons.indexOf(reason) === -1) ledger.degraded.reasons.push(reason);
+    var key = UNC_OF[reason];
+    if (key) ledger.unc[key] = true;
+  }
+
+  function newSeriesId() {
+    return 's' + loadClock.toString(36) + Math.random().toString(36).slice(2, 10);
+  }
+
+  function counter(n) {
+    return typeof n === 'number' && isFinite(n) && Math.floor(n) === n &&
+      n >= 0 && n < 9007199254740000;
+  }
+
+  function validLedger(d) {
+    if (!d || typeof d !== 'object' || Array.isArray(d) || d.v !== LEDGER_SCHEMA ||
+        !counter(d.aggregate) || !counter(d.seq) || !counter(d.gen) ||
+        typeof d.inst !== 'string' || d.inst.length > 80 ||
+        !Array.isArray(d.records) || d.records.length > LEDGER_MAX ||
+        typeof d.truncated !== 'boolean' || typeof d.aggregate_known !== 'boolean' ||
+        !d.series || typeof d.series.id !== 'string' || d.series.id.length > 80 ||
+        !counter(d.series.started_clock)) return false;
+    if (d.degraded && (!Array.isArray(d.degraded.reasons) ||
+        d.degraded.reasons.length > 6 || !counter(d.degraded.at_clock) ||
+        d.degraded.reasons.some(function (r) {
+          return typeof r !== 'string' || !Object.prototype.hasOwnProperty.call(UNC_OF, r);
+        }))) return false;
+    return d.records.every(function (r) {
+      return r && counter(r.seq) && counter(r.clock) &&
+        typeof r.document === 'string' && r.document.length <= 80 &&
+        typeof r.symbol === 'string' && /^[A-Z0-9][A-Z0-9.\-]{0,15}$/.test(r.symbol) &&
+        ['pending', 'response', 'http-error', 'reject', 'sync-error', 'timeout'].indexOf(r.outcome) !== -1;
+    });
+  }
+
+  // Read the stored ledger, flagging (never swallowing) what is wrong with it.
+  // Three outcomes that must NOT be conflated: 'absent' (no evidence — a
+  // first visit, or evidence destroyed), 'unreadable' (evidence present but
+  // corrupt), and 'failed' (we were DENIED the read — which is not evidence
+  // about the past at all, and must never be called a reset).
+  function readLedger(s) {
+    var raw = null;
+    try { raw = s.getItem(LEDGER_KEY); }
+    catch (e) { ledger.unc.storage = true; degrade('storage'); return { state: 'failed', data: null }; }
+    if (raw === null || typeof raw !== 'string') return { state: 'absent', data: null };
+    if (raw.length > 32768) { degrade('parse'); return { state: 'unreadable', data: null }; }
+    var d = null;
+    try { d = JSON.parse(raw); }
+    catch (e) { ledger.unc.parse = true; degrade('parse'); return { state: 'unreadable', data: null }; }
+    if (!validLedger(d)) { ledger.unc.parse = true; degrade('parse'); return { state: 'unreadable', data: null }; }
+    return { state: 'ok', data: d };
+  }
+
+  // Adopt sticky facts from whatever is in storage just before our write
+  // lands. The aggregate itself is reconciled by the caller: it is the one
+  // value where being conservative means arithmetic, not flag-copying.
+  function adoptSticky(d) {
+    if (!d) return;
+    var i;
+    if (d.unc) for (i = 0; i < UNC_KEYS.length; i++) if (d.unc[UNC_KEYS[i]]) ledger.unc[UNC_KEYS[i]] = true;
+    if (d.degraded && Array.isArray(d.degraded.reasons)) {
+      for (i = 0; i < d.degraded.reasons.length; i++) degrade(d.degraded.reasons[i]);
+    }
+    if (d.aggregate_known === false) ledger.aggregate_known = false;
+    if (typeof d.seq === 'number' && isFinite(d.seq) && d.seq > ledger.seq) ledger.seq = d.seq;
+    if (Array.isArray(d.records) && d.records.length > ledger.records.length) {
+      ledger.records = d.records.slice(-LEDGER_MAX);
+    }
+    if (d.truncated) ledger.truncated = true;
+  }
+
+  function stateForStorage() {
+    return {
+      v: LEDGER_SCHEMA,
+      series: ledger.series ? { id: ledger.series.id, started_clock: ledger.series.started_clock } : null,
+      aggregate: ledger.aggregate,
+      aggregate_known: ledger.aggregate_known,
+      records: ledger.records.slice(-LEDGER_MAX),
+      truncated: ledger.truncated,
+      seq: ledger.seq,
+      degraded: ledger.degraded,
+      unc: ledger.unc,
+      gen: ledger.gen,
+      inst: ledger.inst
+    };
+  }
+
+  // One read-modify-write against the storage scope. Between the read and the
+  // write no other task can run, so same-origin frames cannot silently lose
+  // increments — but a writer that was NOT the document we took over from is
+  // proof we are not alone, and that is recorded rather than papered over.
+  function writeLedger() {
+    var s = storage();
+    if (!s) { ledger.unc.storage = true; degrade('storage'); return; }
+
+    var r = readLedger(s);
+    var d = r.state === 'ok' ? r.data : null;
+    if (d) {
+      if (typeof d.gen === 'number' && isFinite(d.gen) && d.gen > ledger.gen) {
+        // A newer document generation owns this scope: we are the old document
+        // (a bfcache restore racing a reload). Our attempts still really
+        // happened and still count — but this ledger can no longer be read as
+        // one writer's complete record.
+        ledger.unc.concurrent_writer = true;
+        degrade('concurrent_writer');
+      }
+      if (typeof d.inst === 'string' && d.inst !== instanceId && d.inst !== lastObservedInst) {
+        ledger.unc.concurrent_writer = true;
+        degrade('concurrent_writer');
+      }
+      var storedAgg = typeof d.aggregate === 'number' && isFinite(d.aggregate) && d.aggregate >= 0
+        ? d.aggregate : null;
+      var baseline = ledger.aggregate - unsynced;   // what we last wrote (or adopted)
+      if (storedAgg !== null) {
+        if (storedAgg < baseline) {
+          // Monotonicity violation: storage is behind even our last written
+          // value, so it was rolled back to an older copy. Keep ours and say so.
+          degrade('rollback');
+        } else {
+          // A foreign writer may have advanced the shared count while we held
+          // unsynced local increments; add ours on top of what is stored
+          // rather than letting either side's attempts vanish.
+          var merged = storedAgg + unsynced;
+          if (merged > ledger.aggregate) {
+            ledger.aggregate = merged;
+            if (d.aggregate_known === true) ledger.aggregate_known = true;
+          }
+        }
+      } else {
+        // The stored counter itself is unreadable: the past is unknown again.
+        ledger.aggregate_known = false;
+      }
+      adoptSticky(d);
+    } else if (r.state === 'absent' && lastObservedInst !== null && ledger.seq > 0) {
+      // Evidence we ourselves wrote is GONE — genuinely absent, not merely
+      // denied to us. The prior total is now unknown and stays unknown; this
+      // is not a healthy fresh start.
+      ledger.unc.reset = true;
+      degrade('reset');
+      ledger.aggregate_known = false;
+    }
+
+    ledger.inst = instanceId;
+    var payload;
+    try { payload = JSON.stringify(stateForStorage()); }
+    catch (e) { ledger.unc.storage = true; degrade('storage'); return; }
+    try { s.setItem(LEDGER_KEY, payload); }
+    catch (e) { ledger.unc.storage = true; degrade('storage'); return; }
+    lastObservedInst = instanceId;
+    unsynced = 0;
+    // A write that cannot be read back is not a durable write; the in-memory
+    // count stands, but the snapshot must say storage is not trustworthy.
+    try { if (s.getItem(LEDGER_KEY) !== payload) { ledger.unc.storage = true; degrade('storage'); } }
+    catch (e) { ledger.unc.storage = true; degrade('storage'); }
+  }
+
+  function initLedger() {
+    // A duplicate script tag (or double evaluation) in this document means two
+    // pollers would each count attempts the other also made. The late instance
+    // stands down from counting and records the loss instead of letting the
+    // ledger keep pretending it is complete.
+    try {
+      if (window.__dqAttemptInst) { window.__dqAttemptConflict = true; passive = true; ledger.unc.loss = true; degrade('loss'); }
+      else window.__dqAttemptInst = instanceId;
+    } catch (e) { passive = true; ledger.unc.loss = true; degrade('loss'); }
+
+    var s = storage();
+    if (!s) {
+      ledger.unc.storage = true;
+      degrade('storage');
+      ledger.aggregate_known = false;   // nothing readable: prior total unknown
+      ledger.series = { id: newSeriesId(), started_clock: loadClock, provenance: 'unstored' };
+      return;
+    }
+    var found = readLedger(s);
+    if (found.state !== 'ok') {
+      // No readable prior evidence: a first visit, corrupt evidence, or a
+      // read we were denied. All three start a NEW series, and none may claim
+      // anything about what came before.
+      ledger.series = { id: newSeriesId(), started_clock: loadClock,
+                        provenance: found.state === 'unreadable' ? 'unreadable'
+                                  : found.state === 'failed' ? 'unstored' : 'new' };
+      ledger.aggregate_known = found.state === 'absent';
+      ledger.gen = 1;
+      writeLedger();
+      return;
+    }
+    var d = found.data;
+    // Restore everything a reload must carry forward: series identity, the
+    // monotonic aggregate, the bounded history and every sticky fault.
+    seriesPrior = true;
+    ledger.aggregate = d.aggregate;
+    ledger.aggregate_known = d.aggregate_known === true;
+    ledger.seq = d.seq;
+    ledger.truncated = d.truncated;
+    var i, rec, ok = true;
+    ledger.records = [];
+    for (i = 0; i < d.records.length && i < LEDGER_MAX; i++) {
+      rec = d.records[i];
+      if (rec && typeof rec === 'object' && !Array.isArray(rec) &&
+          typeof rec.seq === 'number' && isFinite(rec.seq) &&
+          typeof rec.clock === 'number' && isFinite(rec.clock) &&
+          typeof rec.symbol === 'string' && typeof rec.outcome === 'string') {
+        ledger.records.push({ seq: rec.seq, clock: rec.clock, document: rec.document, symbol: rec.symbol, outcome: rec.outcome });
+      } else ok = false;
+    }
+    if (!ok || d.records.length > LEDGER_MAX) { ledger.unc.parse = true; degrade('parse'); }
+    adoptSticky(d);
+    if (d.series && typeof d.series.id === 'string' && d.series.id &&
+        typeof d.series.started_clock === 'number' && isFinite(d.series.started_clock) && d.series.started_clock > 0) {
+      ledger.series = { id: d.series.id, started_clock: d.series.started_clock, provenance: 'restored' };
+    } else {
+      ledger.unc.parse = true;
+      degrade('parse');
+      ledger.series = { id: newSeriesId(), started_clock: loadClock, provenance: 'rebuilt' };
+      ledger.aggregate_known = false;
+    }
+    ledger.gen = typeof d.gen === 'number' && isFinite(d.gen) && d.gen >= 0 ? d.gen + 1 : 1;
+    lastObservedInst = typeof d.inst === 'string' && d.inst ? d.inst : null;
+    writeLedger();
+  }
+
+  // Counted exactly once, before the request exists: a fetch that throws
+  // before originating, or a promise that never settles, is still an attempt
+  // the operator should hear about. Outcomes only NAME the record afterwards.
+  function beginAttempt(symbol) {
+    if (passive) return null;
+    try {
+      ledger.seq += 1;
+      ledger.aggregate += 1;
+      unsynced += 1;
+      ledger.records.push({ seq: ledger.seq, clock: Date.now(), document: docId, symbol: symbol, outcome: 'pending' });
+      if (ledger.records.length > LEDGER_MAX) {
+        ledger.records.splice(0, ledger.records.length - LEDGER_MAX);
+        ledger.truncated = true;
+      }
+      writeLedger();
+      publishLedgerSnapshot();
+      return ledger.seq;
+    } catch (e) {
+      try { ledger.unc.storage = true; degrade('storage'); } catch (e2) { /* stay quiet */ }
+      return null;
+    }
+  }
+
+  function settleAttempt(seq, outcome) {
+    if (seq === null || seq === undefined) return;
+    try {
+      for (var i = ledger.records.length - 1; i >= 0; i--) {
+        if (ledger.records[i].seq === seq) { ledger.records[i].outcome = outcome; break; }
+      }
+      writeLedger();
+      publishLedgerSnapshot();
+    } catch (e) {
+      try { ledger.unc.storage = true; degrade('storage'); } catch (e2) { /* stay quiet */ }
+    }
+  }
+
+  function freezeDeep(v) {
+    var k;
+    if (v && typeof v === 'object') {
+      Object.freeze(v);
+      for (k in v) if (Object.prototype.hasOwnProperty.call(v, k)) freezeDeep(v[k]);
+    }
+    return v;
+  }
+
+  // The only outward surface: a frozen deep copy of plain data. Mutating a
+  // snapshot cannot reach the ledger, and nothing in it is a quote, a
+  // credential or a response body. `writer.exclusive_proven` is pinned false
+  // on purpose — no document can prove no other writer exists, so no snapshot
+  // can honestly claim a complete count.
+  function snapshotState() {
+    if (window.__dqAttemptConflict) { degrade('loss'); ledger.aggregate_known = false; }
+    return {
+      schema: 'dq-attempt-ledger/1',
+      mode: 'observational',        // counting only: not enforcement, not a budget
+      authoritative: false,
+      enforcement: 'none',
+      document: docId,
+      symbol: ticker,
+      clock: Date.now(),
+      series: ledger.series ? {
+        id: ledger.series.id,
+        started_clock: ledger.series.started_clock,
+        prior_evidence: seriesPrior,
+        provenance: ledger.series.provenance
+      } : null,
+      aggregate: ledger.aggregate,
+      aggregate_known: ledger.aggregate_known,
+      prior_history_complete: false,
+      records: ledger.records.map(function (r) {
+        return { seq: r.seq, clock: r.clock, document: r.document, symbol: r.symbol, outcome: r.outcome };
+      }),
+      history_truncated: ledger.truncated,
+      history_limit: LEDGER_MAX,
+      degraded: ledger.degraded
+        ? { reasons: ledger.degraded.reasons.slice(), at_clock: ledger.degraded.at_clock }
+        : null,
+      uncertainty: {
+        storage: ledger.unc.storage,
+        parse: ledger.unc.parse,
+        reset: ledger.unc.reset,
+        loss: ledger.unc.loss,
+        concurrent_writer: ledger.unc.concurrent_writer
+      },
+      writer: { exclusive_proven: false, instance: instanceId, generation: ledger.gen }
+    };
+  }
+
+  function publishLedgerSnapshot() {
+    try {
+      if (stamp) stamp.setAttribute('data-dq-accounting', JSON.stringify(snapshotState()));
+    } catch (e) { /* diagnostics must never block quoting */ }
+  }
+
+  try {
+    if (!window.__dqAttemptLedger || typeof window.__dqAttemptLedger.snapshot !== 'function') {
+      window.__dqAttemptLedger = { snapshot: function () {
+        try { return freezeDeep(snapshotState()); } catch (e) { return null; }
+      } };
+    }
+  } catch (e) { /* no window to expose on: accounting stays internal */ }
+
+  try { initLedger(); } catch (e) {
+    // The same rule as everywhere else: a broken ledger must not take the
+    // quote it is observing down with it.
+    try { ledger.unc.storage = true; degrade('storage'); } catch (e2) { /* stay quiet */ }
+  }
+
   // Bilingual pairs. The page ships both strings and CSS reveals one, so a
   // JS-written label must set BOTH or the other language silently keeps the
   // previous text.
@@ -290,6 +689,7 @@
       if (ctrl) { try { ctrl.abort(); } catch (e) { /* already gone */ } }
       inflight = false;
       lapse();
+      try { settleAttempt(attempt, 'timeout'); } catch (e) { /* accounting stays best-effort */ }
     }, TIMEOUT_MS);
 
     function done() {
@@ -300,17 +700,39 @@
       return false;
     }
 
-    fetch('/api/dossier-quote/' + encodeURIComponent(ticker), {
-      signal: ctrl ? ctrl.signal : undefined,
-      credentials: 'omit',
-      headers: { Accept: 'application/json' }
-    })
+    var pending;
+    // Exactly at the invocation boundary: setup failures above are not fetches.
+    var attempt = null;
+    try { attempt = beginAttempt(ticker); } catch (e) { /* counting cannot block fetch */ }
+    try {
+      pending = fetch('/api/dossier-quote/' + encodeURIComponent(ticker), {
+        signal: ctrl ? ctrl.signal : undefined,
+        credentials: 'omit',
+        headers: { Accept: 'application/json' }
+      });
+    } catch (e) {
+      // The fetch threw before originating. This used to be left for the
+      // watchdog to trip over 6s later; naming it now keeps the record honest
+      // (it really was an attempt) and frees the poller immediately.
+      done();
+      lapse();
+      try { settleAttempt(attempt, 'sync-error'); } catch (e2) { /* best-effort */ }
+      return;
+    }
+
+    pending
       .then(function (r) { return r.ok ? r.json() : null; })
       // A non-200 (503 hub down, 429 throttled) and a thrown fetch (offline,
       // abort) are the same fact to a reader: this price is no longer being
       // confirmed. Both demote the claim and keep the numbers.
-      .then(function (q) { if (done()) return; if (q) { paint(q); } else { lapse(); } })
-      .catch(function () { if (done()) return; lapse(); });
+      .then(function (q) {
+        if (done()) return;   // a late response after a timeout is NOT a second attempt
+        try { settleAttempt(attempt, q ? 'response' : 'http-error'); } catch (e) { /* best-effort */ }
+        if (q) { paint(q); } else { lapse(); }
+      })
+      .catch(function () { if (done()) return; lapse();
+        try { settleAttempt(attempt, 'reject'); } catch (e) { /* best-effort */ }
+      });
   }
 
   // Always attempt an immediate read, then ensure the interval exists. The

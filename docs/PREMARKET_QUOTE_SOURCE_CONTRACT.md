@@ -136,3 +136,38 @@ derived use subject to dataset-specific written conditions. It grants no legacy
 provider rights and proves no current credential/feed access. Macro template
 merge also triggers render publication, in addition to the API restart boundary;
 both source PRs retain root-controlled draft/no-merge holds.
+
+## Draft attempt-accounting boundary (source only)
+
+The bounded P1 observation requires actual client attempt accounting. Server logs,
+shared API rate-limit buckets and 15-second interval arithmetic cannot count
+attempts that fail before reaching the origin. The source draft adds diagnostics
+in the existing dossier controller; it creates no backend, provider request,
+account, flag, subscription, allowance or activation mechanism.
+
+A diagnostic record must be made immediately before each actual fetch invocation,
+including synchronous failure, rejection, HTTP error, abort and timeout. Hidden
+or already-inflight no-ops are not attempts. Same-tab navigation, reload and
+symbol changes retain the aggregate. History is bounded; loss, reset, corruption,
+storage failure and unsupported concurrent writers must be visible rather than
+silently returning a healthy zero. Fresh storage alone cannot establish a
+complete history or trusted browser identity. Only synthetic tests are in scope.
+
+Counting is not enforcement. The original one-visible-page, at-most-two-symbol,
+41 TOTAL attempts and 600-second aggregate limits, existing 15-second cadence,
+source isolation and actual attended stop remain separate obligations. A snapshot
+never arms an observation, extends its window or establishes live acceptance.
+Ordinary quoting and expiry must continue unchanged if diagnostics fail.
+
+This draft is held from merge, installation, deployment and restart until the
+commissioning Astra release decision. The original-profile binding, observation
+window, unchanged unknown/refused effects and future real-path qualification
+remain required. Source review and synthetic checks do not install this code.
+
+The Draft exposes a frozen copy through `window.__dqAttemptLedger.snapshot()`
+and a JSON `data-dq-accounting` attribute on the existing freshness stamp. The
+attribute is a projection of the last accounting event, not a new counter or
+freshness attestation. Records retain document id, symbol, sequence, clock and
+outcome only. The aggregate and 64 retained records survive same-tab navigation;
+`prior_history_complete:false`, `authoritative:false` and `enforcement:none`
+prevent a diagnostic series from claiming complete browser custody or a budget.
