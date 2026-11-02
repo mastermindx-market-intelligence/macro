@@ -1,0 +1,161 @@
+{
+  "site/macro.html": {
+    "bytes": 609351,
+    "sha256": "69a8fc67b897c8afea6f89c8ad89e90e02554e93b1359d0e723ba6aeb91dcaa6",
+    "outside_allowed_regions_byte_identical": true,
+    "outside_news_visible_text_identical": true,
+    "preserved_region_sha256": "b6e3d2a2fb91ee381d7eed2d1d6206ff2753c81241e57fe43037bca6cd4ae471",
+    "host_script_replacements": 1
+  },
+  "site/us_stocks.html": {
+    "bytes": 758503,
+    "sha256": "6f63a31f336b2add183fba6e050f44e4f950b5f3108fa3941e21fcbad400f31a",
+    "outside_allowed_regions_byte_identical": true,
+    "outside_news_visible_text_identical": true,
+    "preserved_region_sha256": "7db0498650fe75a191c2940834224e06c735e6c263a117ea42259716997f8dee",
+    "host_script_replacements": 0
+  },
+  "main": "75c68c5f4141b4f82674ec503b69f0b8de2a718b",
+  "candidate_parent": "2247d23e59b6d9b94060444659e7a0c02697444b",
+  "alerts": [
+    {
+      "rule": "event_risk",
+      "observation": "Event-risk window: Jobs report (nonfarm payrolls) in 5 days — high two-sided volatility expected. Not a sell signal; size for the noise.",
+      "translation": "事件风险窗口：非农就业报告（5 天后）—— 预计偏高的两面性波动。非卖出信号；按噪声调整仓位。",
+      "observed_time_supplied": false
+    },
+    {
+      "rule": "sector_rs_cross_high",
+      "observation": "XLB RS vs SPY crossed above 90th pctile of 90d (now 92)",
+      "translation": "XLB RS 相对 SPY 上穿 90 天第 90 百分位（现为 92）",
+      "observed_time_supplied": false
+    },
+    {
+      "rule": "sector_rs_cross_high",
+      "observation": "XLP RS vs SPY crossed above 90th pctile of 90d (now 99)",
+      "translation": "XLP RS 相对 SPY 上穿 90 天第 90 百分位（现为 99）",
+      "observed_time_supplied": false
+    },
+    {
+      "rule": "holdings_active_change",
+      "observation": "ARKK: manager cut GOOG by -31% of position (2026-10-14..2026-10-30, flow-normalized)",
+      "translation": "ARKK：经理 减仓 GOOG 仓位 -31%（2026-10-14..2026-10-30，已按资金流标准化）",
+      "observed_time_supplied": false
+    },
+    {
+      "rule": "holdings_active_change",
+      "observation": "ARKW: manager cut AMD by -31% of position (2026-09-23..2026-10-06, flow-normalized)",
+      "translation": "ARKW：经理 减仓 AMD 仓位 -31%（2026-09-23..2026-10-06，已按资金流标准化）",
+      "observed_time_supplied": false
+    },
+    {
+      "rule": "holdings_active_change",
+      "observation": "ARKW: manager added NVDA by +26% of position (2026-09-23..2026-10-06, flow-normalized)",
+      "translation": "ARKW：经理 加仓 NVDA 仓位 +26%（2026-09-23..2026-10-06，已按资金流标准化）",
+      "observed_time_supplied": false
+    }
+  ],
+  "headlines": [
+    {
+      "url": "https://www.marketwatch.com/story/apples-new-earnings-era-begins-at-a-critical-time-for-big-tech-2236a44e?mod=mw_rss_topstories",
+      "title": "Apple’s new earnings era begins at a critical time for Big Tech",
+      "title_zh": "苹果的新盈利时代在大型科技公司的关键时刻开启",
+      "published_date_label": "Nov 2",
+      "recovered_time": "2026-11-02T00:21:00+00:00",
+      "clock_matches": 1,
+      "distinct_clock_matches": 1
+    },
+    {
+      "url": "https://www.cnbc.com/2026/10/29/norwegian-earnings-guidance-shares.html",
+      "title": "Norwegian shares surge 13% on earnings beat, guidance raise",
+      "title_zh": "挪威股市上涨13%，因盈利超预期并上调指引",
+      "published_date_label": "Oct 29",
+      "recovered_time": "2026-10-29T20:14:15+00:00",
+      "clock_matches": 1,
+      "distinct_clock_matches": 1
+    },
+    {
+      "url": "https://seekingalpha.com/news/4661898-oil-prices-retreat-ahead-of-u-s-midterms-despite-renewed-strait-of-hormuz-attacks?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+      "title": "Oil prices retreat ahead of U.S. midterms despite renewed Strait of Hormuz attacks",
+      "title_zh": "尽管霍尔木兹海峡袭击再起，油价在美国中期选举前回落",
+      "published_date_label": "Nov 2",
+      "recovered_time": "2026-11-02T00:06:12+00:00",
+      "clock_matches": 1,
+      "distinct_clock_matches": 1
+    },
+    {
+      "url": "https://seekingalpha.com/news/4661896-elon-musk-sees-orbital-ai-surpassing-data-centers-as-colossus-leads?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+      "title": "Elon Musk sees orbital AI surpassing data centers as Colossus leads",
+      "title_zh": "Elon Musk认为轨道AI将超越数据中心，Colossus领先",
+      "published_date_label": "Nov 1",
+      "recovered_time": "2026-11-01T23:37:25+00:00",
+      "clock_matches": 1,
+      "distinct_clock_matches": 1
+    },
+    {
+      "url": "https://www.cnbc.com/2026/10/31/trump-big-oil-refining-profits.html",
+      "title": "Trump called out Big Oil profits. Here’s how much their refining earnings have surged since",
+      "title_zh": "特朗普点名批评大型石油公司利润。以下是它们的炼油利润自那以来飙升的幅度",
+      "published_date_label": "Oct 31",
+      "recovered_time": null,
+      "clock_matches": 0,
+      "distinct_clock_matches": 0
+    },
+    {
+      "url": "https://seekingalpha.com/news/4661897-johnson-and-johnson-reports-94-percent-success-rate-in-trial-of-coronary-artery-device?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+      "title": "Johnson & Johnson reports 94% success rate in trial of coronary artery device",
+      "title_zh": "Johnson & Johnson报告冠状动脉设备试验成功率达94%",
+      "published_date_label": "Nov 1",
+      "recovered_time": "2026-11-01T23:57:52+00:00",
+      "clock_matches": 1,
+      "distinct_clock_matches": 1
+    },
+    {
+      "url": "https://www.cnbc.com/2026/10/30/meta-outlook-to-revised-to-negative-by-sp-after-cash-flow-negative.html",
+      "title": "Meta outlook revised downward by S&P on cash flow and capex concerns",
+      "title_zh": "S&P因现金流和资本支出担忧下调Meta展望",
+      "published_date_label": "Oct 30",
+      "recovered_time": "2026-10-30T22:42:26+00:00",
+      "clock_matches": 1,
+      "distinct_clock_matches": 1
+    },
+    {
+      "url": "https://www.benzinga.com/money/best-prop-trading-firms",
+      "title": "Best Prop Trading Firms",
+      "title_zh": "最佳自营交易公司",
+      "published_date_label": "Nov 1",
+      "recovered_time": "2026-11-01T22:04:39+00:00",
+      "clock_matches": 1,
+      "distinct_clock_matches": 1
+    },
+    {
+      "url": "https://www.cnbc.com/2026/10/29/reddit-rddt-q3-2026.html",
+      "title": "Reddit shares sink on weak sales guidance and plans login requirement test as Google search traffic shrinks",
+      "title_zh": "Reddit股价下跌，因销售指引疲软且计划测试登录要求，同时Google搜索流量萎缩",
+      "published_date_label": "Oct 30",
+      "recovered_time": null,
+      "clock_matches": 0,
+      "distinct_clock_matches": 0
+    },
+    {
+      "url": "https://www.npr.org/2026/10/28/nx-s1-6020425/federal-reserve-interest-rates-inflation",
+      "title": "Fed holds interest rates steady even as inflation remains stubborn",
+      "title_zh": "美联储维持利率不变，尽管通胀依然顽固",
+      "published_date_label": "Oct 28",
+      "recovered_time": "2026-10-28T18:04:42+00:00",
+      "clock_matches": 1,
+      "distinct_clock_matches": 1
+    }
+  ],
+  "counts": {
+    "all": 16,
+    "priority": 1,
+    "context": 5,
+    "headlines": 10,
+    "clock_known": 8,
+    "clock_unknown": 2
+  },
+  "health_inferred": false,
+  "canonical_writer": "lib.pages.write_page",
+  "canonical_optimizer": "scripts.optimize_assets.make_optimizer"
+}
