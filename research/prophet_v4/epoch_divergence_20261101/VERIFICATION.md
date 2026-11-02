@@ -41,32 +41,15 @@ snapshot hashes/byte lengths are retained; no raw source rows are published.
 
 ## Browser proof
 
-A preliminary browser run passed 8 responsive/theme/language cells and 5 refusal
-cases against the real rendered dashboard and existing paid payload route.
-Chromium version: `151.0.7922.34`. No page JavaScript errors were observed.
-Unrelated live-data/config requests were unavailable in the isolated synthetic
-fixture; their paths are retained in the browser receipt rather than presented
-as production health.
+The final browser run passed **8 responsive/theme/language cells and 5 refusal cases** against the real rendered dashboard and existing paid payload route. The receipt binds implementation commit `409c08d0d5df78ffb068db20eb9ded9976c0c4aa` and SHA-256 of all five production source files; the subsequent evidence-only commit does not change those bytes. Chromium version: `151.0.7922.34`. No page JavaScript errors were observed. Unrelated live-data/config requests were unavailable in the isolated synthetic fixture; their paths are retained in `browser/receipt.json`, not presented as production health.
 
-The first browser attempt tried to focus the disclosure while the Plans panel
-was hidden. The harness was corrected to enter through the actual Plans selector.
-The observed final journey must include source selection, keyboard/pointer
-disclosure, paid-row loading/refusal, and return to Screener. The retained final
-receipt will bind the source commit and exact file hashes.
+Observed journey: actual Plans selector, keyboard Enter open/close, pointer open, matching paid-payload row loading, then return to Screener. The first preliminary attempt tried to focus the disclosure while Plans was hidden and failed; the harness was corrected to use the real selector before this final run.
 
-Final command:
+Command: `python3 tests/tools/prove_prophet_source_epochs_browser.py --output research/prophet_v4/epoch_divergence_20261101/browser`.
 
-```sh
-python tests/tools/prove_prophet_source_epochs_browser.py \
-  --output research/prophet_v4/epoch_divergence_20261101/browser
-```
+Passed matrix: 1440px and 390px × dark/light × EN/ZH. Passed refusal cases: different board hash, different index hash, missing source metadata, forged SETTLED, and 403 access denial. Every refusal retained the wall, appended no paid rows, and preserved PENDING. The proof preserved the floating assistant and centered the disclosure by scrolling; no product controls were hidden. All eight scenes satisfied unoccluded metadata, no disclosure overflow, and a native summary target at least 40px tall.
 
-Expected matrix: 1440px and 390px × dark/light × EN/ZH. Failure cases:
-different board hash, different index hash, missing source metadata, forged
-SETTLED, and 403 access denial. The proof preserves the existing floating assistant
-and centers the disclosure by scrolling; it does not hide product controls.
-The metadata rows must be unoccluded, the disclosure must not overflow, and the
-native summary target must be at least 40px tall.
+All eight final screenshots and the mobile index-refusal screenshot were visually inspected. Hashes and copy are legible, including mobile EN/ZH and dark/light. Screenshots are synthetic candidate evidence, not deployed-production evidence.
 
 ## No-false-SETTLED attestation
 

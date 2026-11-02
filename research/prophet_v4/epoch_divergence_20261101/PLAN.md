@@ -125,8 +125,8 @@ source base, diff, tests, browser evidence and all forbidden effects.
 Post the actual independent verdict with run/reviewer provenance; do not self-approve.
 
 Tasks: E1 complete; E2 implemented and pre-audit adjudicated; E3 selected local
-checks green (545 passed, 2 skipped, 5 deselected) and preliminary browser 8-cell /
-5-refusal matrix passed; final immutable-commit browser receipt next; E4 PR/CI and
+checks green (545 passed, 2 skipped, 5 deselected) and final browser 8-cell /
+5-refusal matrix passed against implementation 409c08d0d5df78ffb068db20eb9ded9976c0c4aa; E4 PR/CI and
 final independent non-author review pending. These are editorial task labels,
 not Runtime Job states.
 

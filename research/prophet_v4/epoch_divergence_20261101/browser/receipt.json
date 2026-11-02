@@ -1,0 +1,243 @@
+{
+  "schema": "prophet_source_epochs.browser_proof.v1",
+  "environment": "local candidate; synthetic data; no production or real account",
+  "route": "/us_stocks.html",
+  "head": "409c08d0d5df78ffb068db20eb9ded9976c0c4aa",
+  "source_sha256": {
+    "engine/prophet_source_epochs.py": "c8c3205ab446d3f2a78fbe0246cfffb85c439466844d414bf138aa420bc6bc70",
+    "scripts/build_site.py": "4439083de222d4a024fe4de9ea9beaf00b4713750126d4f173b017a287ccab44",
+    "templates/dashboard.html.j2": "bc977f2f9181955b37bf1ace9a87720c7848347cbf920e4513418572f3c0ac61",
+    "templates/_prophet_source_epochs.html.j2": "c4d4c599134b540139164d9e090787f06ac2711af4c96a0ebc076c5220a0aa48",
+    "templates/_prophet_source_epochs.js.j2": "24e096f24f06922c573c3157d53da10df3d5f32028a1759a3b62573a96758dbb"
+  },
+  "matrix": [
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "language": "en",
+      "relation": "SEPARATE_EPOCHS",
+      "settlement": "PENDING",
+      "same_epoch_payload_loaded": true,
+      "keyboard_toggle": true,
+      "pointer_toggle": true,
+      "bounds": {
+        "scrollWidth": 1322,
+        "clientWidth": 1322,
+        "right": 1381,
+        "viewport": 1440,
+        "summaryHeight": 40,
+        "theme": "dark",
+        "lang": "en",
+        "unoccluded": true
+      },
+      "screenshot": "1440-dark-en.png",
+      "page_errors": [],
+      "return_to_screener": true
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "relation": "SEPARATE_EPOCHS",
+      "settlement": "PENDING",
+      "same_epoch_payload_loaded": true,
+      "keyboard_toggle": true,
+      "pointer_toggle": true,
+      "bounds": {
+        "scrollWidth": 1322,
+        "clientWidth": 1322,
+        "right": 1381,
+        "viewport": 1440,
+        "summaryHeight": 40,
+        "theme": "dark",
+        "lang": "zh",
+        "unoccluded": true
+      },
+      "screenshot": "1440-dark-zh.png",
+      "page_errors": [],
+      "return_to_screener": true
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "language": "en",
+      "relation": "SEPARATE_EPOCHS",
+      "settlement": "PENDING",
+      "same_epoch_payload_loaded": true,
+      "keyboard_toggle": true,
+      "pointer_toggle": true,
+      "bounds": {
+        "scrollWidth": 1322,
+        "clientWidth": 1322,
+        "right": 1381,
+        "viewport": 1440,
+        "summaryHeight": 40,
+        "theme": "light",
+        "lang": "en",
+        "unoccluded": true
+      },
+      "screenshot": "1440-light-en.png",
+      "page_errors": [],
+      "return_to_screener": true
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "language": "zh",
+      "relation": "SEPARATE_EPOCHS",
+      "settlement": "PENDING",
+      "same_epoch_payload_loaded": true,
+      "keyboard_toggle": true,
+      "pointer_toggle": true,
+      "bounds": {
+        "scrollWidth": 1322,
+        "clientWidth": 1322,
+        "right": 1381,
+        "viewport": 1440,
+        "summaryHeight": 40,
+        "theme": "light",
+        "lang": "zh",
+        "unoccluded": true
+      },
+      "screenshot": "1440-light-zh.png",
+      "page_errors": [],
+      "return_to_screener": true
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "language": "en",
+      "relation": "SEPARATE_EPOCHS",
+      "settlement": "PENDING",
+      "same_epoch_payload_loaded": true,
+      "keyboard_toggle": true,
+      "pointer_toggle": true,
+      "bounds": {
+        "scrollWidth": 316,
+        "clientWidth": 316,
+        "right": 353,
+        "viewport": 390,
+        "summaryHeight": 59,
+        "theme": "dark",
+        "lang": "en",
+        "unoccluded": true
+      },
+      "screenshot": "390-dark-en.png",
+      "page_errors": [],
+      "return_to_screener": true
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "language": "zh",
+      "relation": "SEPARATE_EPOCHS",
+      "settlement": "PENDING",
+      "same_epoch_payload_loaded": true,
+      "keyboard_toggle": true,
+      "pointer_toggle": true,
+      "bounds": {
+        "scrollWidth": 316,
+        "clientWidth": 316,
+        "right": 353,
+        "viewport": 390,
+        "summaryHeight": 40,
+        "theme": "dark",
+        "lang": "zh",
+        "unoccluded": true
+      },
+      "screenshot": "390-dark-zh.png",
+      "page_errors": [],
+      "return_to_screener": true
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "language": "en",
+      "relation": "SEPARATE_EPOCHS",
+      "settlement": "PENDING",
+      "same_epoch_payload_loaded": true,
+      "keyboard_toggle": true,
+      "pointer_toggle": true,
+      "bounds": {
+        "scrollWidth": 316,
+        "clientWidth": 316,
+        "right": 353,
+        "viewport": 390,
+        "summaryHeight": 59,
+        "theme": "light",
+        "lang": "en",
+        "unoccluded": true
+      },
+      "screenshot": "390-light-en.png",
+      "page_errors": [],
+      "return_to_screener": true
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "language": "zh",
+      "relation": "SEPARATE_EPOCHS",
+      "settlement": "PENDING",
+      "same_epoch_payload_loaded": true,
+      "keyboard_toggle": true,
+      "pointer_toggle": true,
+      "bounds": {
+        "scrollWidth": 316,
+        "clientWidth": 316,
+        "right": 353,
+        "viewport": 390,
+        "summaryHeight": 40,
+        "theme": "light",
+        "lang": "zh",
+        "unoccluded": true
+      },
+      "screenshot": "390-light-zh.png",
+      "page_errors": [],
+      "return_to_screener": true
+    }
+  ],
+  "refusal_cases": [
+    {
+      "case": "different_board",
+      "paid_rows_appended": false,
+      "wall_retained": true,
+      "settlement": "PENDING"
+    },
+    {
+      "case": "different_index",
+      "paid_rows_appended": false,
+      "wall_retained": true,
+      "settlement": "PENDING"
+    },
+    {
+      "case": "missing",
+      "paid_rows_appended": false,
+      "wall_retained": true,
+      "settlement": "PENDING"
+    },
+    {
+      "case": "false_settled",
+      "paid_rows_appended": false,
+      "wall_retained": true,
+      "settlement": "PENDING"
+    },
+    {
+      "case": "denied",
+      "paid_rows_appended": false,
+      "wall_retained": true,
+      "settlement": "PENDING"
+    }
+  ],
+  "page_errors": [],
+  "missing_assets": [
+    "/basketdata/baskets.json",
+    "/live/basket_pulse.json",
+    "/live/prophet_live.json",
+    "/live/release_publications.json",
+    "/live/risk_state.json",
+    "/live_config.js"
+  ],
+  "origin": "ephemeral loopback HTTP server",
+  "browser": "151.0.7922.34",
+  "verdict": "PASS"
+}
