@@ -410,7 +410,20 @@ landmines:
     plus the job-level if: always() && needs.et_gate.outputs.run != 'false' idiom
     (DSC:DAILY-ENGINE-RESULT-IS-FAILURE-AFTER-ITS-COMMIT).
 next_action: >
-  2026-11-02: the 2026-10-21 Chairman completion commission has returned all five
+  2026-11-02 ship checkpoint (agentos/handoffs/GMI-THEME-GRAPH-2026-11-02-completion-ship.md):
+  O5 verdicts + G-UI-8 (#10530 -> 501dd034), the S3 relationship_edges/v1 envelope
+  wiring (#10556 -> 36cea924, O6) and the nav entry (#10520 -> 0d56cffc) are MERGED and
+  land-checked; the taxonomy owner-disposition contract (#10563 -> d0fed53e, O7) carries
+  research/theme_graph/micro_owner_dispositions.yml with zero rows and the coverage
+  proof's owner_review block, so remainder (2) below is now a data act for the taxonomy
+  owner, not a missing implementation. PRODUCTION_PROOF is held: the six site/gmi*.html
+  are live on www.mastermind-x.com (render 41445582969; live bytes == main), and #10583
+  (-> f3d4eb62) made /gmi.css and /gmi.js public so the open shells render styled
+  (they sat behind the default-deny asset gate as 401 JSON). The post-authority main
+  baseline waits on two foreign reds (tests/test_macro_command_panels.py data drift,
+  macro-suite owner; tests/test_markets_regime_strip.py render-sync). The envelope DEC ratify-or-replace is an EXACT_HUMAN_GATE asked
+  once on #agent-dispatch (ts 1793619136.295869). O5/O6/O7 are consumed: DO_NOT_REDO.
+  Earlier 2026-11-02 state: the 2026-10-21 Chairman completion commission has returned all five
   orchestrators. Both integration PRs are merged (#10482 -> 17040f00 relationships; #10099
   -> fd27c31a GMI explorer, six site/gmi*.html pages); the nav entry is #10520; O5's
   independent verdicts are recorded in research/theme_graph/GMI_O5_VERIFICATION_VERDICTS_2026-11-02.md,

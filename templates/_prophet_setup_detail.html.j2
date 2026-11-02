@@ -20,7 +20,7 @@
 {%- if v is string and v|trim -%}{{ t(names[v][0],names[v][1]) if v in names else t('Unmapped status','状态未映射') }}
 {%- else -%}{{ value(none) }}{%- endif -%}
 {%- endmacro %}
-{% macro body(row, kind, as_of=none, plan_rel={'state': 'none', 'plans': []}, display=none) -%}
+{% macro body(row, kind, as_of=none, plan_rel={'state': 'none', 'plans': []}, why_copy=none, display=none) -%}
 {% set es = row.get('entry_signal') if kind == 'board' and row.get('entry_signal') is mapping else {} %}
 {% set sig = row.get('signal') if kind == 'board' and row.get('signal') is mapping else {} %}
 {% set hold = row.get('hold') if kind == 'board' and row.get('hold') is mapping else {} %}
@@ -68,7 +68,10 @@
       </section>
       {% endif %}
       <section class="pvs-section"><h3>{{ t('Why it is here','入选理由') }}</h3>
-        {% if display and display.get('assessment_detail') %}<p class="pvs-assessment-detail">{{ t(display.assessment_detail.en,display.assessment_detail.zh) }}</p>
+        {# Use the pool's own bilingual reason for the same candidate row. #}
+        {% if kind != 'board' and why_copy is sequence and why_copy is not string and why_copy|length >= 2 and why_copy[0] is string and why_copy[1] is string %}
+        <p data-reason="{{ (row.get('headline_reason') or 'unknown')|e }}">{{ t(why_copy[0], why_copy[1]) }}</p>
+        {% elif display and display.get('assessment_detail') %}<p class="pvs-assessment-detail">{{ t(display.assessment_detail.en,display.assessment_detail.zh) }}</p>
         {% else %}<p>{{ original(sig.get('reason') if kind == 'board' else row.get('headline_reason')) }}</p>{% endif %}
       </section>
       {% if display and display.get('evidence_profile') %}

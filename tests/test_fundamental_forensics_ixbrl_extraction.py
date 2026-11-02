@@ -54,7 +54,7 @@ assert HARD_MAX_FFXBRL_BYTES == 96 * 1024 * 1024
 assert HARD_MAX_PARSER_OUTPUT_BYTES == 64 * 1024 * 1024
 assert HARD_MAX_JSON_DECODED_STRING_BYTES == 64 * 1024 * 1024
 assert FFXBRL_LIMITS["max_facts"] == 12_000
-assert FFXBRL_LIMITS["max_continuation_chain"] == 32
+assert FFXBRL_LIMITS["max_continuation_chain"] == 256
 
 
 STAMP = "2026-08-02T12:00:00.000000Z"
@@ -1052,25 +1052,25 @@ def test_round_trip_parser_output_boundary_is_exact_and_mint_only(install_parser
         build_ixbrl_extraction(_package(), "annual.htm", CONTENT, computed_at="2026-08-02T14:00:00Z")
 
 
-def test_continuation_chain_boundary_round_trips_at_32(install_parser):
+def test_continuation_chain_boundary_round_trips_at_256(install_parser):
     def chain_output(count: int) -> dict:
         output = _parser_output(CONTENT, "annual.htm")
         output["continuations"] = [
             {
-                "continuation_id": f"cont{index:02d}",
+                "continuation_id": f"cont{index:03d}",
                 "continued_at": None,
                 "source_span": {"start": 4, "end": 5},
             }
             for index in range(count)
         ]
-        output["facts"][0]["continuation_chain"] = [f"cont{index:02d}" for index in range(count)]
+        output["facts"][0]["continuation_chain"] = [f"cont{index:03d}" for index in range(count)]
         return output
 
     install_parser(output=chain_output(FFXBRL_LIMITS["max_continuation_chain"]))
     extraction = build_ixbrl_extraction(
         _package(), "annual.htm", CONTENT, computed_at="2026-08-02T14:00:00Z"
     )
-    assert len(extraction.to_dict()["facts"][0]["continuation_chain"]) == 32
+    assert len(extraction.to_dict()["facts"][0]["continuation_chain"]) == 256
     content = extraction.to_json_bytes()
     assert ixbrl_extraction_from_json_bytes(content).to_json_bytes() == content
 
@@ -1205,7 +1205,7 @@ def test_b2_cap_literals_and_closure():
     assert HARD_MAX_PARSER_OUTPUT_BYTES == 64 * 1024 * 1024
     assert HARD_MAX_JSON_DECODED_STRING_BYTES == 64 * 1024 * 1024
     assert FFXBRL_LIMITS["max_facts"] == 12_000
-    assert FFXBRL_LIMITS["max_continuation_chain"] == 32
+    assert FFXBRL_LIMITS["max_continuation_chain"] == 256
     # Cross-module closure: the wrapper envelope must equal the real parser
     # hard limits for every coupled field (max_facts, max_continuation_chain,
     # max_output_bytes).  Import under its real name only here - this test
