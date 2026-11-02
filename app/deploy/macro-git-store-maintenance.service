@@ -10,8 +10,8 @@
 #
 # The droplet is shared with macro-api and Terminal production builds: idle
 # I/O class, lowest CPU weight, and a memory cap so a repack can never push
-# the API into the OOM killer. RuntimeMaxSec bounds a wedged run so it cannot
-# overlap the next night.
+# the API into the OOM killer. TimeoutStartSec bounds a wedged run so it
+# cannot overlap the next night; systemd ignores RuntimeMaxSec on a oneshot.
 [Unit]
 Description=Mastermind bounded Git store maintenance for /opt/macro
 After=network-online.target
@@ -21,7 +21,6 @@ Type=oneshot
 ExecStart=/usr/local/sbin/macro-git-store-maintenance
 SuccessExitStatus=75
 TimeoutStartSec=6h
-RuntimeMaxSec=6h
 Nice=19
 IOSchedulingClass=idle
 CPUWeight=10
