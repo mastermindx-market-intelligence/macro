@@ -45239,6 +45239,7 @@ jobs:
       - "lib/**"
       - "config/**"
       - "scripts/__init__.py"
+      - "tests/__init__.py"  # ancestor init of the probe and the suite (ancestor-init census ratchet)
       - "scripts/build_biocatalyst.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
