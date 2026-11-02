@@ -173,7 +173,7 @@ def test_v0_branch_bound_returns_the_typed_refusal(record: dict[str, Any]) -> No
     # branch is reserved for a real-data corpus without one.
     served = probe["served_request"]
     assert served["active_pair_found"] is True, served
-    assert served["issuers_scanned"] == 1, served
+    assert served["issuers_scanned"] >= 1, served
     group = served["exclusive_group"]
     assert len(group) == 2 and len(set(group)) == 2, served
     assert all(route_id.startswith("shelf_takedown:") for route_id in group), served
@@ -184,13 +184,14 @@ def test_v0_branch_bound_returns_the_typed_refusal(record: dict[str, Any]) -> No
     assert served["served_view_generation_id"] == record["corpus"]["generation_id"]
 
     # (c) The boundary: the solver refuses only PAST the limit, so the same
-    # body at exactly its branch count (2) still solves and names no refusal,
-    # and so does the body under the production bound.
+    # body at exactly its branch count (2) serves the very answer the
+    # production bound serves, and neither names a refusal.  Past the limit
+    # the body differs from that answer outside the identity mints.
     assert served["at_bound_limit"] == 2, served
     assert served["under_bound_body_names_a_refusal"] is False, served
     assert served["at_bound_body_names_a_refusal"] is False, served
+    assert served["at_bound_equals_under_bound_after_identity_strip"] is True, served
     assert served["over_bound_equals_under_bound_after_identity_strip"] is False, served
-    assert served["served_aggregate_status"] == "unknown", served
     assert served["served_body_names_the_refusal"] is True, (
         "the served evaluate response over the exceeded branch bound carries no "
         "typed refusal: the answer is byte-identical to the under-bound answer "

@@ -1031,6 +1031,10 @@ def _branch_bound_probe(world: ServingWorld) -> dict[str, Any]:
             "over_bound_equals_under_bound_after_identity_strip": (
                 _strip_identity(under_bound_body) == _strip_identity(over_bound_body)
             ),
+            "at_bound_equals_under_bound_after_identity_strip": (
+                under_bound_body is not None
+                and _strip_identity(under_bound_body) == _strip_identity(at_bound_body)
+            ),
             "served_body_names_the_refusal": (
                 any(blocker in over_text for blocker in kernel_blockers)
                 if kernel_blockers

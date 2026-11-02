@@ -38,8 +38,10 @@ pre-insert SELECT of the ids this run would mint is the FIF producer's
 belt-and-braces dedupe.  ``fire_event_id`` is the FROZEN literal
 concatenation (no hashing), and ``write_outcome`` lands only once that row's
 alert provably sits in the outbox — its own enqueue succeeded, the UNIQUE
-index absorbed it as a duplicate, or the pre-insert SELECT found it — so a
-failed enqueue is planned again next night, and a deduped firing still
+index absorbed it as a duplicate that a re-read of the outbox then finds, or
+the pre-insert SELECT found it — so a failed enqueue is planned again next
+night, a conflict whose row is not in the outbox records nothing, and a
+deduped firing still
 records its pair (a prior night whose enqueue landed but whose write failed
 would otherwise leave ``last_seen`` behind and break the attribution chain).
 
@@ -216,7 +218,7 @@ class ProducerResult:
     notes: list[str] = field(default_factory=list)
     observed_n: int = 0
     #: Firing outcome writes that landed: an enqueued row, or a duplicate
-    #: whose alert already sits in the outbox.
+    #: whose alert a read of the outbox found.
     recorded_n: int = 0
 
 
@@ -883,25 +885,50 @@ def enqueue(
 
 def _enqueue_and_record(
     entries: list[tuple[dict, str, str, str]], *, dry_run: bool
-) -> tuple[int, int, int, str | None]:
+) -> tuple[int, int, int, str | None, str | None]:
     """Enqueue, then ``write_outcome`` for each row whose alert is now
     provably in the outbox — its OWN enqueue succeeded, or the UNIQUE index
-    absorbed it as a duplicate of a landed row.  Never before the POST, never
-    for a failed or unattempted row, and nothing at all on a dry run.
-    Returns ``(enqueued, duplicates, written, error_class)``."""
+    absorbed it and a re-read of the outbox finds the landed row.  A
+    ``"duplicate"`` status is only the HTTP shape of a conflict (409/23505),
+    so an absorbed id the re-read does not return records nothing, and an
+    unreadable re-read records none of them: the next night's pre-insert
+    SELECT finds whatever did land.  Never before the POST, never for a
+    failed or unattempted row, and nothing at all on a dry run.
+    Returns ``(enqueued, duplicates, written, error_class, write_error)`` —
+    ``write_error`` names the first reason a provable row went unrecorded."""
     statuses, error_class = enqueue(entries, dry_run=dry_run)
     enqueued = sum(1 for status in statuses if status is None)
     duplicates = sum(1 for status in statuses if status == "duplicate")
     written = 0
+    write_error: str | None = None
     if dry_run:
-        return (enqueued, duplicates, written, error_class)
-    for (_row, saved_id, outcome, generation), status in zip(entries, statuses):
-        if status is not None and status != "duplicate":
+        return (enqueued, duplicates, written, error_class, write_error)
+    absorbed = [
+        str(row["fire_event_id"])
+        for (row, _saved_id, _outcome, _generation), status in zip(entries, statuses)
+        if status == "duplicate"
+    ]
+    landed: set[str] = set()
+    if absorbed:
+        confirm = read_existing_fire_ids(absorbed)
+        if confirm.state == READ_UNAVAILABLE:
+            write_error = f"duplicate_unconfirmed_{confirm.error_class}"
+        else:
+            landed = {str(row.get("fire_event_id")) for row in confirm.rows or []}
+            if write_error is None and len(landed) < len(set(absorbed)):
+                write_error = "conflict_not_in_outbox"
+    for (row, saved_id, outcome, generation), status in zip(entries, statuses):
+        if status == "duplicate":
+            if str(row["fire_event_id"]) not in landed:
+                continue
+        elif status is not None:
             continue
         write = write_outcome(saved_id, outcome, generation)
         if write.state == "ok":
             written += 1
-    return (enqueued, duplicates, written, error_class)
+        elif write_error is None:
+            write_error = str(getattr(write, "error_class", None) or write.state)
+    return (enqueued, duplicates, written, error_class, write_error)
 
 
 def _record_observed(
@@ -982,11 +1009,13 @@ def run(
         if row["fire_event_id"] in existing_ids
     ]
     duplicate_n = len(probe.entries) - len(entries)
-    enqueued_n, enqueue_duplicates, written_n, error_class = _enqueue_and_record(
-        entries, dry_run=dry_run
+    enqueued_n, enqueue_duplicates, written_n, error_class, write_error = (
+        _enqueue_and_record(entries, dry_run=dry_run)
     )
     if error_class is not None:
         notes.append(f"enqueue stopped early ({error_class})")
+    if write_error is not None:
+        notes.append(f"enqueued outcome write failed ({write_error})")
     present_n, present_error = _record_observed(present, dry_run=dry_run)
     if present_error is not None:
         notes.append(f"deduped outcome write failed ({present_error})")
