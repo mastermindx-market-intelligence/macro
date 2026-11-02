@@ -90,7 +90,7 @@ coverage functions remain the source; preserve #6867's separate timing work.
 | P2.1 | P1 | implementation_complete | DESIGN_SPEC.md and the paired template/CSS reference; NOT_APPLIED_TO_PAPER | Principal design; independent visual critique |
 | P3 | P2.1 | implementation_complete | Real template, paired page stylesheet and rendered page replaced; 15 core regions byte-identical to base | Principal retained: design judgment and critical path while audit admission waited |
 | P3.1 | P3 | implementation_complete | 280 pytest cases; 515 browser checks; 24 canonical screenshots and passing visual receipt | Regression and source-contract evidence; no production claim |
-| P4 | P3.1 | in_progress | Independent review returned changes required; all seven findings repaired; exact-head follow-up pending; qualified visual judgment remains open | Paid reviewer; principal adjudicates |
+| P4 | P3.1 | in_progress | Independent repair follow-up at 99b615153016 returns CODE=PASS; qualified human/Opus visual judgment remains open | Paid reviewer; principal adjudicates |
 | P5 | P2,P4 | blocked | Exact-head CI, permitted integration/release and served desktop/mobile proof | Existing release owner; no premature merge |
 
 The Paper gate blocks canvas effects and final acceptance; independent design-reference
@@ -120,7 +120,7 @@ mockups or passing tests.
 
 On November 1, the direct Mastermind Paper and legacy Studio catalog both reported
 paper-desktop 0.5.14 with accepted_for_write=false. Observed catalog:
-16e6b93f0c51a1574ba8acee4df732052898707a04731d5157530971a88fdefd.
+16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd.
 Expected reviewed catalog:
 1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db.
 Exact-file read works for MASTERMIND PAGES:
@@ -209,7 +209,17 @@ for writes. The file-context problem is resolved; schema qualification is the
 remaining Paper gate. The existing Claude session target discovery separately
 reports its Session Bridge owner unavailable, so no qualified visual route is claimed.
 
-Next: obtain independent exact-head repair verification, resolve relevant CI,
-and finish the normal integration path once the Paper gate is qualified. See
+The follow-up repair review at `99b6151530160f1fb432277e48274040f2581660`
+returned CODE=PASS (xAI / Grok 4.7); the exact return is accepted and adjudicated in
+REPAIR_REVIEW.md. It executed independent Node/Chrome probes and source/hash checks,
+with its partial-tree test limits stated. Native principal visual critique found no
+blocking issue in five representative captures; that is not qualified visual acceptance.
+Fences on this proof head passed; CI was still in progress at the documentation checkpoint.
+The final matrix retains substantial initial-load movement (desktop CLS 0.681–0.881;
+phone 0.252–0.307), so no performance acceptance is claimed.
+
+Next: complete qualified visual/Paper gates, observe concluded binding CI on the
+actual final head, and finish the normal integration path once those gates pass.
+CLOSEOUT.md preserves the exact resume frontier; the PR carries post-checkpoint CI. See
 `PAPER_QUALIFICATION_HANDOFF.md` for the bounded owner remedy. No Paper canvas effect,
-source merge, production deployment, live-page proof or final acceptance has occurred.
+merge into main, production deployment, live-page proof or final acceptance has occurred.

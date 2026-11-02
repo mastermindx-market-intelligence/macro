@@ -99,8 +99,13 @@ and seven-rule denominator remain intact. A separate neutral no-read count
 reconciles to the complete population. Quote clocks marked synthetic are excluded;
 nightly package dates and unavailable dealer-chain clocks are named explicitly.
 
-The author has not independently approved these repairs. The follow-up review and
-qualified human/Opus visual judgment remain separate gates.
+The independent follow-up at `99b6151530160f1fb432277e48274040f2581660`
+returned CODE=PASS from xAI / Grok 4.7. See REPAIR_REVIEW.md for the complete result,
+methods and limitations. Its Node/Chrome probes, protected-function comparisons,
+image hashes and 57 contract tests independently verify the bounded repairs. The
+full 280/515 suites were not relaunched by the reviewer; its six additional test
+attempts lacked supporting files in its partial scratch tree. Qualified human/Opus
+visual judgment remains an open, separate gate.
 
 ## Performance limitation
 
@@ -112,6 +117,11 @@ The dominant entries contain the existing shared search/control re-layout and th
 resulting main-content movement. These are isolated lab observations, not field
 Core Web Vitals or a performance pass.
 
+The final integrated matrix also records this limitation: resting desktop light/EN
+CLS is approximately 0.881; other desktop cells are 0.681–0.706, and phone cells
+are 0.252–0.307. The final-r3 manifest is the exact measurement record. These values
+are not covered by the interaction pass or by the review's CODE=PASS.
+
 An in-memory experiment relocating the existing theme script did not materially
 resolve the desktop movement; it was not adopted. Shared navigation source,
 styling and script order remain unchanged. This limitation needs the existing
@@ -122,8 +132,9 @@ shared-component owner's assessment before unqualified performance acceptance.
 1. Paper: the intended file is now inspectable and its write binding is ready, but the current catalog is unqualified for writes. The latest read reports
    paper-desktop 0.5.18; the observed schema digest is unchanged and
    `accepted_for_write=false`. See PAPER_QUALIFICATION_HANDOFF.md.
-2. Independent exact-head code review and qualified human/Opus visual judgment.
+2. Qualified human/Opus visual judgment. Independent exact-head repair code review passed.
 3. Concluded binding CI checks and permitted integration/release.
 4. Served production proof on desktop and phone, followed by commissioning acceptance.
 
-No Paper mutation, merge, production deployment or final acceptance is claimed.
+No Paper mutation, merge into main, production deployment or final acceptance is claimed.
+See CLOSEOUT.md for the release frontier and the PR for the final containing head's CI.
