@@ -1919,10 +1919,13 @@ def test_pk11_synthetic_bank_ledger(monkeypatch: pytest.MonkeyPatch) -> None:
     assert _row(result, "credit_loss_expense_off_balance_sheet")["value"] == "50"
     assert _row(result, "allowance_for_credit_losses")["value"] == "1100"
     assert _row(result, "net_write_offs")["value"] == "300"
+    # D7: net-of-allowance loans are not an acl_coverage denominator
     assert _row(result, "loans_held_for_investment")["concept"] == (
-        "us-gaap:LoansAndLeasesReceivableNetReportedAmount"
+        "us-gaap:FinancingReceivableExcludingAccruedInterest"
+        "BeforeAllowanceForCreditLoss"
     )
-    assert _row(result, "loans_held_for_investment")["value"] == "50000"
+    # D7: net-of-allowance loans are not an acl_coverage denominator
+    assert _row(result, "loans_held_for_investment")["value"] is None
     assert _row(result, "cet1_capital")["concept"] == (
         "us-gaap:BankingRegulationCommonEquityTier1Capital"
     )
@@ -1936,9 +1939,10 @@ def test_pk11_synthetic_bank_ledger(monkeypatch: pytest.MonkeyPatch) -> None:
         assert row["quality_state"] == "unsupported"
         assert row["evidence_kind"] == "table_cell"
         assert row["reason"] == "missing_dependency"
+    # D7: net-of-allowance loans are not an acl_coverage denominator
     assert result["coverage"] == {
-        "valued_fields": 9,
-        "missing_fields": 1,
+        "valued_fields": 8,
+        "missing_fields": 2,
         "unsupported_fields": 6,
         "not_evaluable_fields": 0,
         "not_applicable_fields": 0,
@@ -1949,7 +1953,8 @@ def test_pk11_synthetic_bank_ledger(monkeypatch: pytest.MonkeyPatch) -> None:
     assert rollforward["status"] == "pass"
     assert rollforward["tolerance"] == "1"  # 1x10^-d, closing fact decimals 0
     acl = _check(result, "acl_coverage")
-    assert acl["status"] == "pass"
+    # D7: net-of-allowance loans are not an acl_coverage denominator
+    assert acl["status"] == "not_evaluable"
     assert acl["tolerance"] is None
     assert acl["evidence_field_ids"] == [
         "allowance_for_credit_losses",
@@ -1969,7 +1974,10 @@ def test_pk11_synthetic_bank_ledger(monkeypatch: pytest.MonkeyPatch) -> None:
 
     limitations = result["limitations"]
     assert limitations[0] == pack_base.DISPLAY_ONLY_LIMITATION
-    assert "pk11.acl_coverage: 0.022000" in limitations
+    # D7: net-of-allowance loans are not an acl_coverage denominator
+    assert not any(
+        line.startswith("pk11.acl_coverage:") for line in limitations
+    )
     assert "pk11.table_cell_reserved" in limitations
     assert any(
         line.startswith("pk11.industrial_basis_excluded:") for line in limitations
@@ -2004,7 +2012,8 @@ def test_pk11_zero_loans_and_missing_off_balance_sheet(
     )
     acl = _check(result, "acl_coverage")
     assert acl["status"] == "not_evaluable"
-    assert acl["reason"] == "division_by_zero"
+    # D7: net-of-allowance loans are not an acl_coverage denominator
+    assert acl["reason"] == "missing_dependency"
     assert not any(
         line.startswith("pk11.acl_coverage:") for line in result["limitations"]
     )
@@ -2293,9 +2302,10 @@ def test_pk11_cet1_ratio_table_cell_prefers_consolidated_lower_approach(
     )
     # The still-reserved liquidity fields keep the reserved limitation.
     assert "pk11.table_cell_reserved" in result["limitations"]
+    # D7: net-of-allowance loans are not an acl_coverage denominator
     assert result["coverage"] == {
-        "valued_fields": 8,
-        "missing_fields": 3,
+        "valued_fields": 7,
+        "missing_fields": 4,
         "unsupported_fields": 5,
         "not_evaluable_fields": 0,
         "not_applicable_fields": 0,
@@ -2303,12 +2313,14 @@ def test_pk11_cet1_ratio_table_cell_prefers_consolidated_lower_approach(
     }
 
 
-def test_pk11_regulatory_minimum_uses_latest_disclosed_instant_on_or_before_por(
+def test_pk11_regulatory_minimum_admits_only_the_period_of_report_instant(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     # The consolidated holding-company minimum is disclosed at the prior
     # year-end column; only the depositary-subsidiary minimum sits at por.
-    # The consolidated cell wins and the row reports the instant used.
+    # D2: only the period-of-report column is admitted, and the subsidiary
+    # cell is not the issuer's consolidated cell, so no admissible cell
+    # remains and the field stays reserved.
     events = _testbank_events() + (
         _ratio_fact(
             _CET1_MINIMUM,
@@ -2340,10 +2352,9 @@ def test_pk11_regulatory_minimum_uses_latest_disclosed_instant_on_or_before_por(
     result = _produce_tablebank(monkeypatch, events, (_CET1_MINIMUM_LOCAL,))
     assert contract.validate_pack_result(result) == []
     row = _row(result, "regulatory_minimum_disclosed")
-    assert row["quality_state"] == "valued"
-    assert row["value"] == "0.115"
-    assert row["period"] == {"kind": "instant", "end": "2024-12-31"}
-    assert row["table_cell"]["column"] == 1  # prior-year column, latest first
+    assert row["quality_state"] == "unsupported"
+    assert row["value"] is None
+    assert row["table_cell"] is None
     # One operand alone keeps the comparison check typed.
     minimum_check = _check(result, "cet1_vs_minimum")
     assert minimum_check["status"] == "not_evaluable"
@@ -2536,6 +2547,328 @@ def test_pk11_non_bank_gate_holds_with_disclosed_facts_present(
     assert control["applicability"]["state"] == "applicable"
     assert _row(control, "cet1_ratio_disclosed")["quality_state"] == "valued"
     assert _row(control, "cet1_ratio_disclosed")["value"] == "0.1126"
+
+
+# 20c. PK11 repair packet (2026-11-02): the seven review defects, each pinned
+# by a synthetic ledger built with the same helpers as 20b above.
+
+
+_STD = "us-gaap:StandardizedApproachMember"
+_ADV = "us-gaap:AdvancedApproachMember"
+
+
+def _std_cell(
+    concept: str, context_id: str, value: str, key: str
+) -> RawFactOccurrence:
+    """A consolidated-parent standardized-approach ratio cell at por."""
+    return _ratio_fact(
+        concept,
+        _ratio_context(context_id, "2025-12-31", {**_PARENT, _METHODOLOGY: _STD}),
+        value,
+        key,
+    )
+
+
+def test_pk11_cet1_vs_minimum_pass_fail_and_approach_mismatch(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T1 (D1): the hook re-decides the comparison after the cells are valued
+    # — minimum <= CET1 ratio under the same approach, never the inverted
+    # placeholder the framework froze before valuation.
+    def events(cet1: str, minimum: str, minimum_member: str) -> tuple:
+        return _testbank_events() + (
+            _std_cell(_CET1_RATIO, "c-r-std", cet1, "cet1_std"),
+            _ratio_fact(
+                _CET1_MINIMUM,
+                _ratio_context(
+                    "c-m-cell",
+                    "2025-12-31",
+                    {**_PARENT, _METHODOLOGY: minimum_member},
+                ),
+                minimum,
+                "min_cell",
+            ),
+        )
+
+    pre = ("CommonEquityTierOneCapitalRatio", _CET1_MINIMUM_LOCAL)
+    passing = _produce_tablebank(
+        monkeypatch, events("0.12", "0.045", _STD), pre
+    )
+    assert contract.validate_pack_result(passing) == []
+    check = _check(passing, "cet1_vs_minimum")
+    assert check["status"] == "pass"
+    assert check["evidence_field_ids"] == [
+        "cet1_ratio_disclosed",
+        "regulatory_minimum_disclosed",
+    ]
+
+    failing = _produce_tablebank(
+        monkeypatch, events("0.04", "0.045", _STD), pre
+    )
+    assert _check(failing, "cet1_vs_minimum")["status"] == "fail"
+    assert contract.validate_pack_result(failing) == []
+
+    mismatched = _produce_tablebank(
+        monkeypatch, events("0.12", "0.045", _ADV), pre
+    )
+    check = _check(mismatched, "cet1_vs_minimum")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "unit_mismatch"
+    assert contract.validate_pack_result(mismatched) == []
+
+
+def test_pk11_disclosed_cells_admit_only_the_period_of_report_instant(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T2 (D2): the prior-year comparative column never wins — only a cell at
+    # por does, and with no por cell the field stays reserved.
+    def prior_std_cell(key: str) -> RawFactOccurrence:
+        return _ratio_fact(
+            _CET1_RATIO,
+            _ratio_context(
+                "c-r-prior", "2024-12-31", {**_PARENT, _METHODOLOGY: _STD}
+            ),
+            "0.109",
+            key,
+        )
+
+    events = _testbank_events(drop=("cet1", "rwa")) + (
+        prior_std_cell("cet1_prior"),
+        _std_cell(_CET1_RATIO, "c-r-por", "0.1126", "cet1_por"),
+    )
+    result = _produce_tablebank(
+        monkeypatch, events, ("CommonEquityTierOneCapitalRatio",)
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "cet1_ratio_disclosed")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "0.1126"
+    assert row["period"] == {"kind": "instant", "end": "2025-12-31"}
+
+    # The prior-instant cell alone must not resolve the field.
+    prior_only = _produce_tablebank(
+        monkeypatch,
+        _testbank_events(drop=("cet1", "rwa")) + (prior_std_cell("cet1_prior_only"),),
+        ("CommonEquityTierOneCapitalRatio",),
+    )
+    row = _row(prior_only, "cet1_ratio_disclosed")
+    assert row["quality_state"] == "unsupported"
+    assert row["value"] is None
+
+
+def test_pk11_capital_ratio_requires_matching_approach(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T3 (D3): an advanced-approach disclosed ratio against undimensioned
+    # (standardized-basis) RWA is not one calculation.
+    events = _testbank_events() + (
+        _ratio_fact(
+            _CET1_RATIO,
+            _ratio_context(
+                "c-r-adv", "2025-12-31", {**_PARENT, _METHODOLOGY: _ADV}
+            ),
+            "0.1308",
+            "cet1_adv",
+        ),
+    )
+    result = _produce_tablebank(
+        monkeypatch, events, ("CommonEquityTierOneCapitalRatio",)
+    )
+    assert contract.validate_pack_result(result) == []
+    check = _check(result, "capital_ratio_arithmetic")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "unit_mismatch"
+    assert check["tolerance"] == "0.001"
+    assert check["evidence_field_ids"] == [
+        "cet1_capital",
+        "risk_weighted_assets",
+        "cet1_ratio_disclosed",
+    ]
+
+
+def test_pk11_regulatory_minimum_follows_the_cet1_approach(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T4 (D4): CET1 is disclosed under the standardized approach only; the
+    # minimum under both approaches with differing values. The minimum takes
+    # the standardized cell — the lower-of splice belongs to the ratio, not
+    # the minimum — and says so through the approach-matched limitation.
+    events = _testbank_events(drop=("cet1", "rwa")) + (
+        _std_cell(_CET1_RATIO, "c-r-std", "0.1126", "cet1_std"),
+        _std_cell(_CET1_MINIMUM, "c-m-std", "0.09", "min_std"),
+        _ratio_fact(
+            _CET1_MINIMUM,
+            _ratio_context(
+                "c-m-adv", "2025-12-31", {**_PARENT, _METHODOLOGY: _ADV}
+            ),
+            "0.07",
+            "min_adv",
+        ),
+    )
+    result = _produce_tablebank(
+        monkeypatch, events, ("CommonEquityTierOneCapitalRatio", _CET1_MINIMUM_LOCAL)
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "regulatory_minimum_disclosed")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "0.09"
+    assert {dim["member"] for dim in row["dimensions"]} == {
+        "srt:ParentCompanyMember",
+        "us-gaap:StandardizedApproachMember",
+    }
+    assert (
+        "pk11.regulatory_minimum_disclosed: approach matched to"
+        " cet1_ratio_disclosed" in result["limitations"]
+    )
+    assert not any(
+        "lower ratio taken" in line
+        for line in result["limitations"]
+        if line.startswith("pk11.regulatory_minimum_disclosed:")
+    )
+    # Same approach, same instant: the re-decided comparison now ties.
+    assert _check(result, "cet1_vs_minimum")["status"] == "pass"
+
+
+def test_pk11_rollforward_opens_at_the_prior_fiscal_period_end(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T5 (D5): nine-month 10-Q flows. The allowance also exists at the prior
+    # quarter end (2025-06-30, 1050), but the YTD window opened 2025-01-01,
+    # so the opening is the prior fiscal year-end balance (1000):
+    # 1000 + 400 - 300 = 1100 = the closing allowance.
+    def allowance_at(instant: str, value: str, key: str) -> RawFactOccurrence:
+        return usd_fact(
+            _tablebank_filing_row(),
+            "us-gaap:FinancingReceivableExcludingAccruedInterestAllowanceForCreditLoss",
+            _ratio_context(f"c-acl-{key}", instant, {}),
+            value,
+            source_span=(0, len(value)),
+            source_occurrence_key=key,
+        )
+
+    events = _testbank_events(por="2025-09-30", drop=("allow_open",)) + (
+        allowance_at("2024-12-31", "1000", "allow_fye"),
+        allowance_at("2025-06-30", "1050", "allow_prior_qtr"),
+    )
+    _patch_testbank_converter(monkeypatch, events)
+    result = produce_pack(
+        "PK11",
+        _pk11_bank_input(
+            packages=_testbank_packages(form="10-Q", por="2025-09-30")
+        ),
+    )
+    assert contract.validate_pack_result(result) == []
+    assert _row(result, "allowance_for_credit_losses")["value"] == "1100"
+    rollforward = _check(result, "provision_vs_acl_rollforward")
+    assert rollforward["status"] == "pass"
+
+
+def test_pk11_ratio_cell_outside_unit_range_is_refused(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T6 (D6): 11.5 is a percent written as a number, not a ratio; the cell
+    # is refused as a typed unit_mismatch absence and no check may pass on
+    # top of it.
+    events = _testbank_events() + (
+        _std_cell(_CET1_RATIO, "c-r-pct", "11.5", "cet1_pct"),
+    )
+    result = _produce_tablebank(
+        monkeypatch, events, ("CommonEquityTierOneCapitalRatio",)
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "cet1_ratio_disclosed")
+    assert row["quality_state"] == "not_evaluable"
+    assert row["non_value_state"] == "not_evaluable"
+    assert row["coverage_state"] == "unmapped"
+    assert row["reason"] == "unit_mismatch"
+    assert row["value"] is None
+    assert _check(result, "cet1_vs_minimum")["status"] != "pass"
+    assert _check(result, "capital_ratio_arithmetic")["status"] != "pass"
+
+
+def test_pk11_loans_held_for_investment_requires_gross_loans(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T7 (D7): the net-of-allowance carrying amount is not the acl_coverage
+    # denominator; the base ledger's only loans fact is exactly that net
+    # concept, so the field stays missing and the coverage ratio cannot run.
+    result = _produce_testbank(monkeypatch)
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "loans_held_for_investment")
+    assert row["quality_state"] == "missing"
+    assert row["value"] is None
+    assert row["reason"] == (
+        "missing_standard_fact:"
+        "us-gaap:FinancingReceivableExcludingAccruedInterest"
+        "BeforeAllowanceForCreditLoss"
+    )
+    acl = _check(result, "acl_coverage")
+    assert acl["status"] == "not_evaluable"
+    assert acl["reason"] == "missing_dependency"
+
+
+def test_pk11_gross_loans_restore_acl_coverage(monkeypatch: pytest.MonkeyPatch) -> None:
+    # T8 (D7): a gross loans fact restores the acl_coverage arithmetic the
+    # base ledger lost with the net alias. The ledger is the base synthetic
+    # bank ledger with its single net-loans fact swapped for the gross
+    # concept — same key, value, period, unit and context — built through
+    # _testbank_events' drop/extra surface so the shared _TESTBANK_FACTS
+    # constant is never mutated.
+    gross = (
+        "us-gaap:FinancingReceivableExcludingAccruedInterest"
+        "BeforeAllowanceForCreditLoss"
+    )
+    result = _produce_testbank(
+        monkeypatch,
+        drop=("loans",),
+        extra=(("loans", gross, "instant", "50000"),),
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "loans_held_for_investment")
+    assert row["quality_state"] == "valued"
+    assert row["concept"] == gross
+    assert row["value"] == "50000"
+    acl = _check(result, "acl_coverage")
+    assert acl["status"] == "pass"
+    # allowance_for_credit_losses 1100 / loans_held_for_investment 50000 = 0.022
+    assert "pk11.acl_coverage: 0.022000" in result["limitations"]
+    # Same ledger shape as the synthetic bank ledger: the gross swap restores
+    # its pre-D7 counts (9 valued, 1 missing — deposits is still the only
+    # missing standard fact; the six table-cell rows stay unsupported).
+    assert result["coverage"] == {
+        "valued_fields": 9,
+        "missing_fields": 1,
+        "unsupported_fields": 6,
+        "not_evaluable_fields": 0,
+        "not_applicable_fields": 0,
+        "disclosure_coverage_state": "present",
+    }
+
+
+def test_pk11_zero_gross_loans_acl_coverage_division_by_zero(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # T9 (D7): a zero GROSS denominator is the division_by_zero refusal the
+    # zero-loans test pinned before D7. Here the ledger carries a valued
+    # gross loans fact at 0 (same swap as T8), so the check refuses on the
+    # denominator itself, not on a missing dependency.
+    gross = (
+        "us-gaap:FinancingReceivableExcludingAccruedInterest"
+        "BeforeAllowanceForCreditLoss"
+    )
+    result = _produce_testbank(
+        monkeypatch,
+        drop=("loans",),
+        extra=(("loans", gross, "instant", "0"),),
+    )
+    assert _row(result, "loans_held_for_investment")["value"] == "0"
+    acl = _check(result, "acl_coverage")
+    assert acl["status"] == "not_evaluable"
+    assert acl["reason"] == "division_by_zero"
+    assert not any(
+        line.startswith("pk11.acl_coverage:") for line in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
 
 
 def test_base_pack_envelopes_identical_after_pk11() -> None:
