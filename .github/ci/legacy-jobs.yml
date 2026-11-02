@@ -10161,6 +10161,7 @@ jobs:
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/industrials_profiles.py"
       - "engine/company_intelligence/issuer_profiles.py"
       - "engine/company_intelligence/issuer_supplements.py"
       - "engine/company_intelligence/pg_envelope.py"
