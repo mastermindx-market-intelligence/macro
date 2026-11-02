@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 HERE = Path(__file__).parent
-spec = importlib.util.spec_from_file_location("ubuntu_storage_guard", HERE / "ubuntu_storage_guard.py")
+spec = importlib.util.spec_from_file_location("ubuntu_storage_guard", HERE.parent / "scripts" / "ubuntu_storage_guard.py")
 guard = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(guard)
 
