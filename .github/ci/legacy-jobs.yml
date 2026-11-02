@@ -1362,6 +1362,119 @@ jobs:
       - name: Private directory boundary and deployment refusal contracts
         run: python -m pytest tests/test_company_intelligence_private_roots.py -q
 
+  company-intelligence-relationships:
+    if: ${{ false }}
+    gate: code
+    # GMI ORCH-REL (M1/M2/M3, 2026-10-21..23): the relationship-envelope suites —
+    # contracts, the M1 SWKS->AAPL primary-source record, the derivation battery,
+    # the M2 EDGAR harvest / source keys / judge / precision / recall / envelope
+    # measures, and the M3 descriptive renderer. Registered by the GMI COMPLETION
+    # seat (A25) from the lanes' ci_registration_proposal*.yml under
+    # research/theme_graph/gmi_relationships_20261021/: `scope: exclusive`, paths =
+    # the union of the measured import/read closures those proposals carry.
+    # test_curated_exclusive_scopes_cover_their_own_import_closure keeps it honest.
+    scope: exclusive
+    paths:
+      - "contracts/company_intelligence/relationship_extraction.v1.schema.json"
+      - "contracts/company_intelligence/relationship_source_excerpt.v1.schema.json"
+      - "contracts/company_intelligence/relationship_observation_package.v2.schema.json"
+      - "contracts/company_intelligence/relationship_edges.v1.schema.json"
+      - "engine/__init__.py"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/company_intelligence/relationships/__init__.py"
+      - "engine/company_intelligence/relationships/clock.py"
+      - "engine/company_intelligence/relationships/package_v2.py"
+      - "engine/company_intelligence/relationships/replay.py"
+      - "lib/__init__.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/identity.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
+      - "scripts/build_relationship_observations.py"
+      - "research/theme_graph/gmi_relationships_20261021/extraction/swks_aapl_m1.jsonl"
+      - "research/theme_graph/gmi_relationships_20261021/extraction/m2/P.jsonl"
+      - "research/theme_graph/gmi_relationships_20261021/extraction/m2/D1a.jsonl"
+      - "research/theme_graph/gmi_relationships_20261021/extraction/m2/D1b.jsonl"
+      - "research/theme_graph/gmi_relationships_20261021/extraction/m2/D2a.jsonl"
+      - "research/theme_graph/gmi_relationships_20261021/extraction/m2/D2b.jsonl"
+      - "research/theme_graph/gmi_relationships_20261021/sources/0000004127-24-000131.json"
+      - "research/theme_graph/gmi_relationships_20261021/sources/0000004127-25-000085.json"
+      - "research/theme_graph/gmi_relationships_20261021/sources/0000004127-26-000003.json"
+      - "research/theme_graph/coverage_20261019/UNIVERSE_MANIFEST.json"
+      - "data/company_intelligence/relationships/observation_package.v2.json"
+      - "data/company_intelligence/relationships/relationship_edges.json"
+      - "tests/conftest.py"
+      - "tests/test_relationship_contracts.py"
+      - "tests/test_relationship_m1_swks_aapl.py"
+      - "tests/test_relationship_battery.py"
+      - "engine/company_intelligence/relationships/envelope.py"
+      - "scripts/relationship_m2_envelope.py"
+      - "research/theme_graph/gmi_relationships_20261021/m2_inputs/envelope_panel_v1.json"
+      - "tests/test_relationship_m2_envelope.py"
+      - "engine/company_intelligence/relationships/edgar.py"
+      - "engine/company_intelligence/relationships/harvest.py"
+      - "scripts/__init__.py"
+      - "scripts/relationship_m2_harvest.py"
+      - "research/theme_graph/gmi_relationships_20261021/m2_inputs/curated_aliases_v1.json"
+      - "research/theme_graph/gmi_relationships_20261021/m2_inputs/filing_census_v1.json"
+      - "research/theme_graph/gmi_relationships_20261021/m2_inputs/leaves_v1.json"
+      - "research/theme_graph/gmi_relationships_20261021/m2_inputs/resolver_us_issuers_v1.json"
+      - "tests/test_relationship_m2_harvest.py"
+      - "engine/company_intelligence/relationships/resolve.py"
+      - "engine/company_intelligence/relationships/judge.py"
+      - "scripts/relationship_m2_judge.py"
+      - "tests/test_relationship_m2_judge.py"
+      - "tests/test_relationship_m2_capfix.py"
+      - "tests/test_relationship_m2_keys.py"
+      - "engine/company_intelligence/relationships/precision.py"
+      - "scripts/relationship_m2_precision.py"
+      - "tests/test_relationship_m2_precision.py"
+      - "engine/company_intelligence/relationships/recall.py"
+      - "scripts/relationship_m2_recall.py"
+      - "tests/test_relationship_m2_recall.py"
+      - "research/theme_graph/gmi_relationships_20261021/m2_recall/recall_corpus_v1.json"
+      - "engine/company_intelligence/relationships/describe.py"
+      - "scripts/relationship_m3_describe.py"
+      - "research/theme_graph/gmi_relationships_20261021/m3/describe_premises_v1.json"
+      - "tests/test_relationship_m3_describe.py"
+      - "tests/__init__.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Install relationship contract test dependencies
+        run: pip install pytest jsonschema tzdata
+      - name: Relationship contract schemas
+        run: python -m pytest tests/test_relationship_contracts.py -q
+      - name: Relationship M1 SWKS->AAPL primary-source record
+        run: python -m pytest tests/test_relationship_m1_swks_aapl.py -q
+      - name: Relationship derivation battery
+        run: python -m pytest tests/test_relationship_battery.py -q
+      - name: Relationship M2 envelope (§8.2 measures)
+        run: python -m pytest tests/test_relationship_m2_envelope.py -q
+      - name: Relationship M2 EDGAR harvest
+        run: python -m pytest tests/test_relationship_m2_harvest.py -q
+      - name: Relationship M2 judge pack/verify/materialize
+        run: python -m pytest tests/test_relationship_m2_judge.py -q
+      - name: Relationship M2 cap fix (per-filing caps, doc-order tie-break, unjudged packing)
+        run: python -m pytest tests/test_relationship_m2_capfix.py -q
+      - name: Relationship M2 source keys and identity
+        run: python -m pytest tests/test_relationship_m2_keys.py -q
+      - name: Relationship M2 precision sample and scorer
+        run: python -m pytest tests/test_relationship_m2_precision.py -q
+      - name: Relationship M2 recall corpus, scan and compare
+        run: python -m pytest tests/test_relationship_m2_recall.py -q
+      - name: Relationship M3 descriptive renderer + correction demo
+        run: python -m pytest tests/test_relationship_m3_describe.py -q
+
   microstructure-pressure-response-r0:
     if: ${{ false }}
     gate: code
