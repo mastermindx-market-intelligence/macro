@@ -166,6 +166,9 @@ def _load_protocol(path: Path) -> dict:
         _fail(f"cannot read protocol file {path}: {exc.strerror or exc}")
     except json.JSONDecodeError as exc:
         _fail(f"protocol file {path} is not valid JSON: {exc.msg}")
+    except (ValueError, RecursionError):
+        # Bad UTF-8, an over-long integer literal or runaway nesting.
+        _fail(f"protocol file {path} is not valid JSON")
     if not isinstance(protocol, dict):
         _fail(f"protocol file {path}: top level is not a JSON object")
     for key in ("protocol_id", "issuers", "packs", "label_classes", "minimum_n"):
@@ -219,7 +222,8 @@ def _load_contract(path: Path, packs_by_id: dict, protocol_issuers: set) -> dict
             contract = json.load(handle)
     except OSError as exc:
         _fail(f"cannot read contract file {path}: {exc.strerror or exc}")
-    except json.JSONDecodeError:
+    except (ValueError, RecursionError):
+        # JSONDecodeError, bad UTF-8, an over-long integer or runaway nesting.
         _fail(f"contract file {path} is not valid JSON")
     if not isinstance(contract, dict):
         _fail(f"contract file {path}: top level is not a JSON object")
@@ -278,6 +282,9 @@ def _load_contract(path: Path, packs_by_id: dict, protocol_issuers: set) -> dict
                         "split_decisions"
                     )
         # _contract_model takes min() over these; mixed types would raise.
+        # It skips protocol tickers, so the check does too.
+        if issuer_entry["ticker"] in protocol_issuers:
+            continue
         scoped_decisions = [
             row["split_decision"]
             for row in issuer_entry["accessions"]
@@ -400,7 +407,8 @@ def _read_label_rows(labels_dir: Path) -> list[dict]:
                 payload = json.load(handle)
         except OSError as exc:
             _fail(f"cannot read label file {path}: {exc.strerror or exc}")
-        except json.JSONDecodeError:
+        except (ValueError, RecursionError):
+            # JSONDecodeError, bad UTF-8, an over-long integer or runaway nesting.
             _fail(f"label file {path} is not valid JSON")
         if not isinstance(payload, list):
             _fail(f"label file {path}: expected a JSON list of label records")

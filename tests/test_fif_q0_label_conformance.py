@@ -1095,3 +1095,59 @@ def test_comparable_split_decisions_still_admitted(tmp_path):
     assert report["packs"]["PK12"]["by_issuer"][SYNB1]["split_decision"] == 1
     assert report["packs"]["PK12"]["by_issuer"][SYNB2]["split_decision"] == SPLIT_ID
 
+
+# (31) bytes that json.load cannot turn into a value (bad UTF-8, an integer
+# past the interpreter's digit limit, runaway nesting) exit 2 through the
+# error path for every input file, never rc 1: rc 1 means non-conforming.
+UNPARSEABLE_BYTES = {
+    "invalid_utf8": b'{"issuers": ["' + CONTRACT_SENTINEL.encode() + b'\xff\xfe"]}',
+    "nesting_200000": b'{"issuers": ' + b"[" * 200000 + b"]" * 200000 + b"}",
+}
+if hasattr(sys, "get_int_max_str_digits"):
+    UNPARSEABLE_BYTES["integer_5000_digits"] = (
+        b'{"split_decisions": [{"id": ' + b"9" * 5000 + b'}], "issuers": []}'
+    )
+
+
+@pytest.mark.parametrize("kind", ["contract", "label", "protocol"])
+@pytest.mark.parametrize(
+    "shape", sorted(UNPARSEABLE_BYTES), ids=sorted(UNPARSEABLE_BYTES)
+)
+def test_unparseable_input_file_exits_two_cleanly(kind, shape, tmp_path):
+    root = tmp_path / "root"
+    root.mkdir()
+    bad = tmp_path / "bad.json"
+    bad.write_bytes(UNPARSEABLE_BYTES[shape])
+    extra = ["--packs", "PK12"]
+    if kind == "contract":
+        extra += ["--contract", str(bad)]
+    elif kind == "protocol":
+        extra += ["--protocol", str(bad)]
+    else:
+        labels_dir = write_labels(root, "PK12", [])
+        (labels_dir / "labels.json").write_bytes(UNPARSEABLE_BYTES[shape])
+    result = run_tool(root, *extra)
+    assert result.returncode == 2
+    assert "Traceback" not in result.stderr
+    assert f"{kind} file" in result.stderr
+    assert "is not valid JSON" in result.stderr
+    assert CONTRACT_SENTINEL not in result.stderr
+    assert CONTRACT_SENTINEL not in result.stdout
+
+
+# (32) a protocol ticker is never admitted, so the comparability check skips
+# it as _contract_model does: incomparable ids on its pack_scope rows still load.
+def test_protocol_ticker_with_incomparable_ids_is_not_checked(tmp_path):
+    root = tmp_path / "root"
+    root.mkdir()
+    rows = two_scoped_rows(SPLIT_ID, "s")
+    rows["ticker"] = PROTOCOL["issuers"][0]
+    contract = contract_path(
+        tmp_path,
+        {"split_decisions": [{"id": SPLIT_ID}, {"id": "s"}], "issuers": [rows]},
+    )
+    result = run_tool(root, "--packs", "PK12", "--contract", str(contract))
+    assert result.returncode in (0, 1), result.stderr
+    assert "Traceback" not in result.stderr
+    assert report_of(result)["split_cohorts"] == {}
+
