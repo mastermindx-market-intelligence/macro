@@ -1,8 +1,8 @@
 {
   "schema": "fif.a34_pack_proof_ledger.v1",
   "matrix_row": "A34",
-  "base_commit": "506d4718250cfb1b8b8d5cab6b48a8d0acf81efa",
-  "generated_at": "2026-11-01T21:09:40.008630+00:00",
+  "base_commit": "9eaefeeddd9fb22109c23ea3e5f966669c8fded8",
+  "generated_at": "2026-11-02T05:53:37.977640+00:00",
   "protocol_id": "fif-q0-quality-protocol/v1",
   "packs": [
     {
@@ -19,7 +19,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 21,
+          "calibration_tests": 49,
           "calibration_labels": 0
         },
         "held_out": {
@@ -68,7 +68,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 32,
+          "calibration_tests": 44,
           "calibration_labels": 0
         },
         "held_out": {
@@ -170,7 +170,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 25,
+          "calibration_tests": 41,
           "calibration_labels": 0
         },
         "held_out": {
@@ -231,7 +231,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 15,
+          "calibration_tests": 18,
           "calibration_labels": 0
         },
         "held_out": {
@@ -316,7 +316,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 17,
+          "calibration_tests": 39,
           "calibration_labels": 0
         },
         "held_out": {
@@ -426,7 +426,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 45,
+          "calibration_tests": 63,
           "calibration_labels": 0
         },
         "held_out": {

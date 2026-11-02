@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "VTRS-BULL-20260917",
-  "asof": "2026-11-01",
+  "asof": "2026-11-02",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
   "management_confidence": 66.3,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 2.025,
     "dist_to_t1_r": 0.475,
     "dist_to_t2_r": 1.975,
-    "horizon_pct_used": 97.8,
+    "horizon_pct_used": 100.0,
     "p1": 0.683,
     "p2": 0.3415,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-09-19",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 44,
-  "tau": 0.9778
+  "days_elapsed": 45,
+  "tau": 1.0
 }

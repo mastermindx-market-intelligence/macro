@@ -54,7 +54,8 @@ def test_critical_css_preserves_canonical_components_order_and_link_identity():
              "government-revenue-theme-context.css", "government-revenue-parity.css")
     icon = (ROOT / "templates/product-nav-icons.css").read_text()
     parts = [(ROOT / "templates" / name).read_text() for name in names]
-    parts[0] = parts[0].replace('@import url("product-nav-icons.css?v=093ad1ea");', icon, 1)
+    parts[0] = re.sub(r'@import url\("product-nav-icons\.css\?v=[0-9a-f]{8}"\);', lambda _m: icon, parts[0], count=1)
+    assert icon in parts[0], "theme.css must import product-nav-icons.css with an 8-hex stamp"
     assert owner._government_revenue_critical_css(env) == cssmin("\n".join(parts), keep_bang_comments=True)
     source = (ROOT / "templates/government_revenue.html.j2").read_text()
     assert 'href="government-revenue-critical-theme.css"' in source

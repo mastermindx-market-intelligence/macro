@@ -1,7 +1,7 @@
 # Marketing X Catalyst — SEC source cycle writer (A3-W-r2) runbook
 
-Status: writer shipped (this lane); the READER lane that turns the index into
-the `AdmittedEdgarSource` consumed by `/api/catalyst/scan` is still to come.
+Status: writer and reader merged to main in PR #10379 (`636abe2a66d2`); the
+production deploy installs and arms the writer timer; the public flags stay OFF.
 This file is the only runbook home for the cycle.
 
 ## What the cycle does
@@ -60,7 +60,7 @@ sort_keys, `(",", ":")` separators, `ensure_ascii`, no trailing newline).
 | 3 | TRUNCATED — the request budget ran out, or SEC refused access (403) or rate-limited (429 after retries); later issuers are `not_checked` and carry their prior events; the index is still published |
 | 4 | PARTIAL — at least one issuer ended not ok |
 | 5 | PUBLISH_FAILED — the snapshot publish failed; the prior pointer stays as it was |
-| 6 | FAILED — no issuer was swept, or none was verified (only deferred/failed work, including a halt before anything was verified); nothing published and the prior pointer is left unchanged, but the reader serves it only until that snapshot is 10 minutes old (`MAX_SNAPSHOT_AGE`), so FAILED on two consecutive runs means the catalyst surface is dark; reason `no_issuer_swept` / `no_issuer_verified` / the halt reason; systemd records a failure |
+| 6 | FAILED — no issuer was swept, or none was verified (only deferred/failed work, including a halt before anything was verified); nothing published and the prior pointer is left unchanged, but the reader serves it only until 10 minutes after that snapshot's `cycle_started_at` (`MAX_SNAPSHOT_AGE`), so FAILED on two consecutive runs means the catalyst surface is dark; reason `no_issuer_swept` / `no_issuer_verified` / the halt reason; systemd records a failure |
 
 ## Request budget and rate
 
@@ -74,16 +74,14 @@ sort_keys, `(",", ":")` separators, `ensure_ascii`, no trailing newline).
   1 + 1 per carried filing. With the 20-issuer pilot and a 5-minute timer that
   is roughly `20 + 1 per carried filing` GETs every 5 minutes in steady state.
 
-## Install steps NOT performed here (operator acts, explicit owner decision)
+## Install (performed by the deploy)
 
-The units ship dormant. After merge, on the macro-api host:
-
-    cp app/deploy/macro-catalyst-source-cycle.service /etc/systemd/system/
-    cp app/deploy/macro-catalyst-source-cycle.timer /etc/systemd/system/
-    systemctl daemon-reload
-    systemctl enable --now macro-catalyst-source-cycle.timer
-
-Installation/enablement is an operator decision; this lane performed none of it.
+`app/deploy/update.sh` installs both units from the checkout when the reviewed
+bytes differ from `/etc/systemd/system/`, verifies them with
+`systemd-analyze verify`, reloads systemd, restarts the timer when a unit
+changed, and runs `systemctl enable --now macro-catalyst-source-cycle.timer`
+on every deploy. Arming the writer publishes only the namespaced index; it does
+not turn on `CATALYST_PUBLIC_ENABLED` and restarts no other unit.
 
 ## Environment variable NAMES (values never recorded here)
 
@@ -122,14 +120,16 @@ namespace prefix is also safe once the timer is off.
 - Snapshot accumulation: the timer publishes a new immutable snapshot every
   5 minutes (~288 per day) with NO pruning policy; an owner decision on
   retention/pruning is still needed.
-- SEC `acceptanceDateTime` timezone handling is not verified against real
-  EDGAR data (the writer parses the ISO value as UTC); a witness run against
-  live EDGAR was out of scope for this lane (no network in tests by design).
+- RESOLVED 2026-11-01: SEC `acceptanceDateTime` timezone. Checked against
+  live EDGAR for MSFT 0001193125-26-436122 and KO 0001628280-26-067403: the
+  submissions-JSON value (`...Z`) equals the filing index page's "Accepted"
+  time (US Eastern) plus 4 hours under EDT, so the `Z` is true UTC and the
+  writer's UTC parse (`_parse_clock`) is correct. No code change.
 - 8-K/A attestation is rare in submissions data: `amendsAccessionNumber` is
   often absent, so most 8-K/A filings surface as `unattested_amendment`
   skips rather than corrections.
-- The reader lane (index -> `AdmittedEdgarSource` -> `/api/catalyst/scan`) is
-  still to come; until it exists nothing public consumes this index.
+- Nothing public consumes this index until the operator turns on
+  `CATALYST_PUBLIC_ENABLED` and restarts macro-api (see "Reader and wiring").
 ## Reader and wiring (A3-R)
 
 The reader half lives in `engine/marketing/catalyst_source_adapter.py`
@@ -152,11 +152,43 @@ The reader half lives in `engine/marketing/catalyst_source_adapter.py`
   anonymous scan refuses (empty read) until that registry row is on main.
 - Wiring runs at app import: after setting `CATALYST_PUBLIC_ENABLED=1` the
   macro-api process must be restarted for the source to be configured.
-- Enabling order (the operator acts; NOT performed by code): (1) merge the
-  `sec_issuer_earnings_release_facts` rights row; (2) install the units and
-  run the macro-catalyst-source-cycle timer; (3) observe the first COMPLETE
-  cycle in the namespaced store; (4) set the flag; (5) restart macro-api.
+- Enabling order: steps (1)–(3) are done — the
+  `sec_issuer_earnings_release_facts` rights row is on main, the deploy armed
+  the writer timer, and the first production cycles are recorded below. The
+  operator still acts for (4) setting the flag and (5) restarting macro-api.
 - Rollback: unset `CATALYST_PUBLIC_ENABLED` and restart macro-api — the scan
   returns its existing disabled status and admission stays unconfigured.
 - Environment variable NAMES only: `CATALYST_PUBLIC_ENABLED`,
   `RESEARCH_LOCAL_STORE`.
+
+## Production writer proof (636abe2a66d2)
+
+Observed 2026-11-01 on the macro-api host (counts and states only; no env values):
+
+- Deploy: macro-api restarted 22:00:34Z on 636abe2a66d (`/healthz` commit and checkout both 636abe2a66d). The cron deploy tick installed both catalyst units (reviewed bytes) and armed the timer.
+- Flags OFF in production: `CATALYST_PUBLIC_ENABLED`, `CATALYST_OPTIN_ENABLED`, `CATALYST_UX_ENABLED`, `MAIL_CATALYST_ENABLED` all absent from the service env. `/api/catalyst` 503; `/api/catalyst/scan` GET (`?tickers=AAPL`) and POST both 503 "Catalyst scan is not publicly enabled"; `/api/catalyst/nojs` 503.
+- Writer env names present: `SEC_USER_AGENT` and the four `R2_RESEARCH_*` names; `RESEARCH_LOCAL_STORE` absent.
+- Timer at 22:09:06Z: `macro-catalyst-source-cycle.timer` enabled + active; last trigger 22:08:28Z, next 22:13:28Z (5-minute cadence). Service is a timer-driven oneshot (inactive between runs): Result=success, ExecMainStatus=0, NRestarts=0.
+- First two cycles (22:03:59Z and 22:08:41Z finished): both COMPLETE exit 0; issuers ok 20 / incomplete 0 / failed 0 / not_checked 0; events 6; snapshot published both runs. SEC GETs 32 on the bootstrap cycle, 26 on the next (inside the 150 budget).
+
+## Production reader proof (in-process, flags OFF)
+
+Observed 2026-11-01 ~22:25Z on the macro-api host, checkout `7bc879e90cf5`
+(counts and public status names only). Admission was configured inside a
+probe process only; the running macro-api, its flags and the timer were not
+touched.
+
+- `production_store=True`; the `sec_issuer_earnings_release_facts` emission
+  is allowed by the rights registry.
+- `read_qualified_event_context(now)`: 6 qualified packets, 20 issuers, and
+  a source-coverage receipt covering all 20 tickers (complete-current).
+- `scan_tickers([t])` across the 20 pilot names: 14 NO_QUALIFIED_EVENT
+  (COMPLETE_EMPTY), 1 SUPPORTED (V, PUBLIC_QUALIFIED), 5
+  TEMPORARILY_UNAVAILABLE (PARTIAL: AMZN, MA, MSFT, GOOGL, KO).
+- The five unavailable results all carry `missing_or_invalid_eps_actual`,
+  `missing_or_invalid_rev_actual` and `no_supported_material_facts`: the
+  incumbent `engine/earnings_release/figures.py` binder extracts no EPS or
+  revenue actuals from those EX-99.1 releases. Failing closed is correct,
+  but it limits usefulness until the figure-yield follow-up lands. V binds
+  revenue but not EPS.
+- The public HTTP surface stays 503 until the operator's flags-ON decision.
