@@ -1,15 +1,15 @@
-# RIG round 7 receipt — normalized from critic_return/*_visual_taste.md (byte-exact agent returns) by the seat's rig_normalize7.py; values copied, not rewritten.
+# RIG round 8 receipt — normalized from critic_return/*_visual_taste.md (byte-exact agent returns) by the seat's rig_normalize8.py; values copied, not rewritten.
 schema: mastermind.rig_review.v1
 reference_id: sector-intelligence-cycles-20261021
 role: visual_taste
-artifact_sha: 78c14f7d1fb5d0b46f4dbf3cb093e9dfa6ccd86e
-review_round: 7
+artifact_sha: 213a91b9428f339dcac3ddf7dd1dd3d1346d5c17
+review_round: 8
 supersedes:
-  artifact_sha: 204500aa619c95677eee8f3bb2133f454847f792
-  receipt: reviews/round6_204500aa/visual_taste.yml
+  artifact_sha: 78c14f7d1fb5d0b46f4dbf3cb093e9dfa6ccd86e
+  receipt: reviews/round7_78c14f7d/visual_taste.yml
 reviewer:
-  identity: opus-auditor-visual-taste-sic-20261021-r7
-  model: 'claude-opus-5-5 (native reviewer agent a48a38779cafe1df4, ROUTE: review, MODE: READ_ONLY; the round-6
+  identity: opus-auditor-visual-taste-sic-20261021-r8
+  model: 'claude-opus-5-5 (native reviewer agent a48a38779cafe1df4, ROUTE: review, MODE: READ_ONLY; the round-7
     agent resumed by message, no re-spawn)'
   independent_of_author: true
   prior_design_participation: false
@@ -19,220 +19,302 @@ quarantine:
   - user/business job (baseline.yml user_job)
   - production-before artifact (16 served-site captures + production source paths)
   - proposed-after artifact (42 frozen boards 0-41 incl. HTML specimen boards 23-41 + design_refs/sector-paper-20261021
-    at 78c14f7d)
-  - capability ledger (baseline.yml) + 9-row user task manifest + the reviewer's own round-6 receipt (reviews/round6_204500aa/<role>.yml)
-  - the round-6 verdict conditions SIC-V6-C01..C09 (compressed) and the adjudications SIC-ADJ-04 / SIC-ADJ-03 /
-    SIC-ADJ-02 / SIC-ADJ-01a / SIC-ADJ-01 as stated in the commission
+    at 213a91b9)
+  - capability ledger (baseline.yml) + 9-row user task manifest + the reviewer's own round-7 receipt (reviews/round7_78c14f7d/<role>.yml)
+  - the round-7 verdict conditions SIC-V7-C01..C06 (restated) and the adjudications SIC-ADJ-05 / SIC-ADJ-04 / SIC-ADJ-03
+    / SIC-ADJ-02 / SIC-ADJ-01a / SIC-ADJ-01 as stated in the commission
   first_pass_path: critic_return/first_pass_visual_taste.md
   rationale_received_after_first_pass: true
 first_pass:
   frozen_at: '2026-11-02T02:16:38.104Z'
-  verdict: PASS
-  round6_dispositions:
+  verdict: PASS_WITH_CONDITIONS
+  round7_dispositions:
   - finding: VTC-043
     severity: minor
     status: cured
-    evidence: copy_deck.json:177 hazard_mismatch_pattern zh is now "{a_name}：{leg}，趋向{turn} · {b_name}显示{phase}，下一拐点为{expected}",
-      and :178 rhythm_mismatch_pattern zh is now "{a_name}显示下一拐点为{turn} · {b_name}显示{phase}，下一拐点为{expected}". The
-      EN patterns are unchanged. A word-diff of cycles.html 204500aa..78c14f7d shows 6 rhythm lines and 2 hazard
-      lines rewritten (3 cards plus the desk copy). Boards 34/35 (XLF rhythm, XLK rhythm, XLC hazard and rhythm),
-      30 and 41 draw 节律时钟显示下一拐点为顶部 and 风险时钟：向上段，趋向顶部. The two un-scoped 为 lines that remain are filed as VTC-047.
+    evidence: Still cured at 213a91b9. The hazard line keeps its colon form, 风险时钟：向上段，趋向顶部 · 阶段时钟显示回落中，下一拐点为底部 (×2
+      in cycles.html, XLC on boards 34/35/41). The rhythm line reads 节律时钟显示下一拐点为顶部 · … (×6). copy_deck.json :177/:178
+      are not in the wave-7 deck diff.
   - finding: VTC-044
     severity: minor
     status: cured
-    evidence: cycles.css:28 .cyc-cards now carries align-items:start, with the SIC-V6-C06 comment. On boards 28/29/34/35
-      the XLC card ends at its own drawer row (about y=870 of the 2000px display on 34/35, about y=875 on 28) with
-      no empty band, while XLF runs to its drawer (about y=1090). The fixture row starts below the tallest card.
-      The desk copy on board 41 behaves the same way. The Clocks block is the first section after the head, stance
-      and age on every card (boards 28/34/35/41; build_cycles.py card order unchanged).
+    evidence: cycles.css is unchanged since 78c14f7d (align-items:start). On boards 34/35/41 the XLC card ends at
+      its drawer (34/35 display about y=870) and the XLK card ends at its drawer (about y=1010). There is no empty
+      band. The fixture row starts below XLF, the tallest card, and the Clocks block comes first on every card.
   - finding: VTC-045
     severity: minor
     status: cured
-    evidence: cycles.css:72 .cyc-method .spc-chip{align-self:flex-start}, with the SIC-V6-C07 comment. On boards
-      28/29/34/35/41 the first methods tile (Turn hazard (historical qualification only) / 转折风险（仅历史校验）) draws Live
-      parity unproven / 实时一致性未证实 at its intrinsic width.
+    evidence: cycles.css is unchanged. In methods tile 1 on 34/35/41, the 实时一致性未证实 chip is drawn at its intrinsic
+      width.
   - finding: VTC-046
     severity: minor
     status: cured
-    evidence: 'The events panel (cycles.html:373) draws "Events data · aligned" / 事件数据 · 一致 and "Fragmentation data
-      · aligned" / 分化数据 · 一致 (copy_deck.json:247/:248; enum_zh.json:10 aligned → 一致). The dated qualifier reads
-      "Data sessions aligned on the history day 2026-10-16; not current under this banner" / 数据交易日在历史日 2026-10-16
-      一致；在此横幅下并非当前 (copy_deck.json:249; board 31 events panel). A DOM census of cycles.html (text split on "<")
-      finds 时钟 only in the per-card Clocks block, the hero dek and the desk clock note, and finds 对齐 nowhere. Face-level
-      "clock" also appears outside the Clocks family, but only in nav menu entries, the hero dek and the desk clock
-      note. boards_manifest.yml:758/:940/:972/:1005/:1095 read "rotation data aligned (fresh)". The per-card Clocks
-      / 时钟 heading is kept. The #i-clock glyph on the events freshness row (:373) and the card age rows (:284 etc.)
-      is an aria-hidden time icon, not vocabulary.'
-  findings:
-  - id: VTC-047
+    evidence: The events panel on 34/35/41 draws 事件数据 · 一致 / 分化数据 · 一致. Board 31 draws Events data · aligned / Fragmentation
+      data · aligned and the qualifier "Data sessions aligned on the history day 2026-10-16; not current under this
+      banner". None of these strings is in the wave-7 cycles.html word-diff.
+  - finding: VTC-047
     severity: minor
-    title: Two ZH Clocks lines still use 为, so one Clocks block phrases the same phase clock two ways
-    finding: The ladder line (阶段时钟为回落中 · 时序阶梯为上涨趋势——引擎说明见来源抽屉) and the read line (周期读数为筑底中 · 阶段时钟为回落中) keep the
-      为 construction (cycles.html Clocks blocks; board 34/35 XLF and XLC). They sit directly beside the new rhythm
-      and hazard lines that say 阶段时钟显示回落中. In the XLF block (board 34, about y=669 versus y=716) and the XLC block
-      (about y=732 versus y=771), the same clause about the same clock reads 为 in one line and 显示 in the next. Before
-      wave 6 the block was uniformly stiff. It is now inconsistent, though more natural overall.
-    cure: Rewrite the ZH ladder_state_pattern and the read-mismatch pattern (clocks_disagree_pattern) to the same
-      verb construction, for example 阶段时钟显示回落中 · 时序阶梯显示上涨趋势——引擎说明见来源抽屉 and 周期读数显示筑底中 · 阶段时钟显示回落中. EN stays unchanged.
+    status: cured
+    evidence: 'copy_deck.json:162 ZH reads "{a_name}显示{a} · {b_name}显示{b}". :176 ZH reads "{phase_name}显示{phase}
+      · {ladder_name}显示{ladder}——引擎说明见来源抽屉". :163 ZH reads "{phase_name}显示{phase} · {ladder_name}分歧——阶梯状态与引擎说明见来源抽屉".
+      The EN halves are byte-equal in the diff. The cycles.html word-diff has exactly four l-zh changes: 周期读数为→显示
+      ×2, 阶段时钟为→显示 ×4 and 时序阶梯为→显示 ×2. grep counts in cycles.html: 时钟为 0, 阶梯为 0, 读数为 0. The drawn lines read 阶段时钟显示回落中
+      · 时序阶梯显示上涨趋势——引擎说明见来源抽屉 (×2: XLF card and desk copy) and 周期读数显示筑底中 · 阶段时钟显示回落中 (×2: XLC card and desk copy).
+      Both appear on 34/35 (XLF about y=663; XLC read chip row about y=764) and on 41.'
+  findings:
+  - id: VTC-048
+    severity: minor
+    title: The record calls the 31/39 pixel-diff box the hero-title band, but x 16-374 / y 82-116 at 390 px is the
+      global header search-field row
+    finding: cycles_repair/README.md, wave-7 paragraph (:133-136), places every differing pixel of 31 and 39 "inside
+      x 16-374 / y 82-116 — the hero-title band". The commission restates this as the C06 cause. On board 31 (390x4879),
+      the full-width search field "Search any stock — US, China, HK, Canada & more" spans x 16-374 at about y 85-115.
+      The hero title "Sector Intelligence" with its as-of line sits at about y 170-200, below the Brief/Explore/Dossier/Research
+      tab row. Board 30 has the same geometry (search about y 98, 板块情报 about y 179). The box therefore describes
+      the site-nav search row, not the hero title. The cause itself (Chrome rasterization nondeterminism with no
+      EN string change) stays credible, and arguably more so for an input placeholder. The face is unaffected. The
+      record states the location wrongly, which SIC-ADJ-05 classes as a false claim or wrong citation.
+    cure: README.md wave-7 paragraph, and any proposal or verdict copy of the C06 cause, names the region as the
+      header search-field row (x 16-374 / y 82-116 at 390 px, the site-nav search input), not the hero-title band.
+      No re-render is needed.
+  - id: VTC-049
+    severity: minor
+    title: The longer ZH ladder line breaks inside the compound 来源抽屉
+    finding: On boards 34/35 (XLF Clocks, about y=663-678), 阶段时钟显示回落中 · 时序阶梯显示上涨趋势——引擎说明见来源 is followed by 抽屉 alone
+      on the second line. This is the +18 px. On board 41 (desk XLF, about y=1024-1035) the line breaks as …引擎说明见来
+      / 源抽屉. CJK text may break anywhere, so this is legal. It still splits the drawer pointer, which is the one
+      phrase on the line the user acts on. The 显示 cure added two characters and moved the break point.
+    cure: 'Production implementation: keep the drawer pointer together. Options are to wrap 来源抽屉 (or ——引擎说明见来源抽屉)
+      in a no-break span in the ZH pattern rendering, or to shorten the tail to 引擎说明见抽屉. Verify at 1440 and 390
+      in the production proof.'
   strengths:
-  - All four round-6 polish items landed exactly as scoped, sourced from the deck and CSS, with build_cycles.py
-    untouched.
-  - The Clocks block on the ZH boards now reads as desk prose for the hazard and rhythm clocks. The cards end where
-    their content ends, so the 3-up grid no longer shows a dead band.
-  - The page-level session family speaks of data (事件数据 · 一致, Data sessions aligned ...). "Clock" on a card now means
-    only the trust set the user must read.
-  - No regression on the re-rendered boards. Dark 35 mirrors light 34 with legible outline chips. The mobile boards
-    keep the single column with the decision and the next action on the face (30/31). The composite desks (40/41)
-    are unchanged apart from the card strings. The height deltas (34/35/41 +17px) come only from the longer ZH lines
-    wrapping.
-  - The record triple (PNG header, capture.log, manifest/proposal) is consistent for every re-rendered board.
+  - 'The VTC-047 cure is exact and minimal: three ZH deck strings, four drawn spans, no builder or CSS change, and
+    EN byte-equal.'
+  - Every Clocks block on 34/35/41 now speaks one predicate (显示), with the hazard gloss kept on purpose in its colon
+    form. The block reads as a single desk register in light and dark.
+  - The re-render discipline is the strongest yet. Byte identity is proven by the diff for 35 of 42 PNGs, the EN
+    re-encodes keep their size and face, and png_px agrees across PNG, capture.log, manifest and proposal for all
+    ten Cycles boards.
+  - 'No layout regression: three-up cards with ragged bottoms, single-column recomposition on 30/31 with the decision
+    chip and next action on the face, an intact composite desk on 41, one warn chip per card plus the single events
+    qualifier on the page.'
   round1_residuals: []
   rig: sector-intelligence-cycles-20261021
   issue: 'macro #7646'
   mode: READ_ONLY
-  tree_check: HEAD bdd9206f (post-freeze record). git diff --stat 78c14f7d is empty for mockups/ and design_refs/,
-    so the working tree equals the frozen tree for every judged path. git diff --stat 204500aa 78c14f7d -- mockups/
-    design_refs/ lists exactly the ten Cycles PNGs (28, 29, 30, 31, 34, 35, 36, 39, 40, 41), boards_manifest.yml,
-    COMPONENTS.md, copy_deck.json, cycles_ia.md, cycles_repair/README.md, capture.log, cycles.css, cycles.html and
-    enum_zh.json. build_cycles.py and zh_latin_grep.py are unchanged. Boards 0-27, 32, 33, 37 and 38 are untouched.
+  tree_check: 'HEAD 4356fa60 (re-freeze record). git diff --stat 213a91b9 HEAD -- design_refs/ mockups/ is empty,
+    so every judged path is the frozen bytes. git diff --stat 78c14f7d 213a91b9 lists the following face and record
+    paths: copy_deck.json (10 lines), cycles_repair/README.md, capture.log (+12), cycles.html (20 lines), boards_manifest.yml,
+    and seven PNGs (30, 31, 34, 35, 36, 39, 41). The rest of the diff is review records, proposal.yml, manifest.yml,
+    verdict.yml and tests/test_sector_paper_copy_deck.py. build_cycles.py, cycles.css and enum_zh.json do not appear,
+    so they are unchanged. PNGs 28, 29 and 40 and every Brief or Paper PNG do not appear, so they are byte-identical
+    to 78c14f7d.'
   inputs_opened_pass1:
-  - git rev-parse HEAD 78c14f7d; git diff --stat 204500aa 78c14f7d -- mockups/ design_refs/; git diff --stat 78c14f7d
-    -- mockups/ design_refs/
-  - git diff 204500aa 78c14f7d -- cycles_repair/cycles.css cycles_repair/enum_zh.json
-  - design_refs/sector-paper-20261021/copy_deck.json:159, :161, :177-178, :247-249
-  - git diff --word-diff 204500aa 78c14f7d -- cycles_repair/cycles.html
-  - design_refs/sector-paper-20261021/cycles_repair/cycles.html (DOM census for 时钟 / 对齐 / clock / cyc-warn; lines
-    284, 325, 372-376)
-  - design_refs/sector-paper-20261021/cycles_repair/capture.log:44-56
-  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/boards_manifest.yml (png_px rows
-    28-41; tag lines 758/940/972/1005/1095)
-  - research/reference_integrity/sector-intelligence-cycles-20261021/proposal.yml screenshots entries :120-337 only
-    (note board ids, png_px, capture.log wave)
-  - PNGs 28, 30, 31, 34, 35, 41
+  - git rev-parse HEAD 213a91b9; git diff --stat 78c14f7d 213a91b9; git diff --stat 213a91b9 HEAD -- design_refs/
+    mockups/
+  - git diff -U0 78c14f7d 213a91b9 -- design_refs/sector-paper-20261021/copy_deck.json (:162, :163, :176, :241,
+    :272)
+  - git diff --word-diff 78c14f7d 213a91b9 -- cycles_repair/cycles.html; cycles.html greps (时钟为, 阶梯为, 读数为, 显示, cyc-warn
+    → :373, open details, 时钟 noun census)
+  - design_refs/sector-paper-20261021/cycles_repair/capture.log:57-67
+  - design_refs/sector-paper-20261021/cycles_repair/README.md:126-137
+  - boards_manifest.yml png_px rows :748-:1171 (awk extraction) and note line numbers
+  - proposal.yml:45 and screenshot entries :251-:345 (notes, png_px, capture.log wave)
+  - shasum -a 256 of PNGs 31 and 39 at 78c14f7d and at the working tree
+  - PNGs 34, 35, 30, 41, 31
   not_opened:
-  - proposal.yml outside the screenshots entries (dispositions, revision_mandate_round6, wave6_summary)
-  - verdict.yml, continuity.yml
-  - reviews/product_regression.yml, reviews/critic_return/*product_regression*, reviews/round6_204500aa/*product_regression*,
-    reviews/round5_66829d17/*product_regression*, reviews/round4_1ad748c8/*product_regression*
+  - proposal.yml outside the screenshot entries and :45 (dispositions, coverage_matrix.wave7_summary, revision_mandate_round6/7)
+  - verdict.yml, continuity.yml, approval.yml
+  - every product_regression file (reviews/product_regression.yml, reviews/critic_return/*product_regression*, reviews/round7_78c14f7d/*product_regression*,
+    reviews/round6_204500aa/*product_regression*, reviews/round5_66829d17/*product_regression*), Reviewer A receipts
+    and task output
+  - wave-7 and re-freeze commit message bodies
   - agentos/**, .claude/**, research/sector_completion_20261021/**, scratchpad/memory
-  - Reviewer A receipts and task output
-  - PNGs 29, 36, 39, 40 (judged from capture.log probes, the manifest and the shared DOM/CSS, not by direct viewing)
-  - git log -1 --format=%B 78c14f7d (the sha256 lines were not needed; byte identity was established by git diff
-    --stat)
-  conditions: []
+  - PNGs 28, 29, 40 (byte-identical per diff), 36 and 39 (judged from capture.log, manifest, shared DOM/CSS and
+    shasum)
+  - tests/test_sector_paper_copy_deck.py (Reviewer A lane; not run)
+  conditions:
+  - 'SIC-V8-VT1 (VTC-048, DEFECT, record-only): design_refs/sector-paper-20261021/cycles_repair/README.md wave-7
+    paragraph, and every proposal.yml or verdict.yml restatement of the SIC-V7-C06 31/39 cause, name the region
+    x 16-374 / y 82-116 at 390 px as the header search-field row, not the hero-title band. No PNG changes, and the
+    check is a grep for "hero-title band" returning no Cycles C06 cause line.'
   conditions_check:
-  - condition: SIC-V6-C05
+  - condition: SIC-V7-C04
     result: met
-    evidence: 'Deck :177/:178 ZH use the colon and 显示 constructions. The EN patterns are unchanged. The new lines
-      are drawn on 30/34/35/36/41 (PNG and cycles.html). Residual: the ladder line 阶段时钟为回落中 · 时序阶梯为上涨趋势 and the
-      read line 周期读数为筑底中 · 阶段时钟为回落中 keep 为, which C05 did not name. They now sit next to 显示 lines in the same Clocks
-      block; this is filed as VTC-047 and is not a C05 failure.'
-  - condition: SIC-V6-C06
+    evidence: 'Deck rows :162/:163/:176 are exactly as the condition specifies (see VTC-047) and the EN patterns
+      are unchanged. build_cycles.py is absent from the diff, so no face string is typed in the builder. The 时钟
+      label and noun uses survive in cycles.html at 213a91b9: the Clocks heading 时钟 ×6; the hero dek 每个板块的阶段时钟、策略立场、拐点风险阶梯与节律窗口，附引擎读数及其来源。
+      (boards 34/35/41); the desk note 时钟设计上不同：… (board 41 caption); 各分歧时钟自身的数值保留于来源抽屉。 ×6; 旧版周期读数所指阶段族与阶段时钟不同…
+      ×2. So the count is not driven to zero (SIC-V6-C08), and the hazard line keeps its colon form (SIC-V6-C05).
+      The Clocks block still reads as one calm unit on 34/35 and dark mirrors light. The wrap of the ladder line
+      is noted separately as VTC-049.'
+  - condition: SIC-V7-C06
     result: met
-    evidence: cycles.css:28 align-items:start. Boards 28/29/34/35/41 show ragged card bottoms with no empty band
-      under XLC. The fixture row follows the tallest card. Clocks is the first section of every card.
-  - condition: SIC-V6-C07
-    result: met
-    evidence: cycles.css:72. The parity chip hugs its text in methods tile 1 on 28/34/35/41.
-  - condition: SIC-V6-C08
-    result: met
-    evidence: 'The face chips and the qualifier are in data vocabulary and deck-bound (copy_deck.json:247-249, enum_zh.json:10).
-      No clock / 时钟 / 对齐 term remains on the face in the page-level session family. The manifest tag has been renamed
-      at five rows. data-clock="events|fragmentation" on build_cycles.py:318-320 / cycles.html:373 is an undrawn
-      attribute name and does not count. Drawer note, not a failure: inside the events <details> the producer field
-      "clock settled_daily_session" is verbatim engine vocabulary, and the fixture record sentence "The Cycles events/fragmentation
-      clocks were aligned on 2026-10-20" is drawer-only record prose.'
-  - condition: SIC-V6-C09
-    result: met
-    evidence: Only Cycles PNGs 28-41 changed (git diff --stat). For all ten re-rendered boards, png_px agrees across
-      the PNG header, capture.log wave 6 (:45-55), boards_manifest.yml and the proposal.yml screenshots notes. The
-      values are 28/29 1440x2343, 30/36 390x4327, 31 390x4879, 34/35 1440x2242, 39 390x4775, 40 1440x3400 and 41
-      1440x3279. The Read tool reported headers of 1440x2242 for 34/35, 390x4879 for 31, 1440x3279 for 41, 390x4327
-      for 30 and 1440x2343 for 28. The proposal notes point at capture.log wave 6. Every ZH line (30/34/35/36/41)
-      reads zh-latin=0 with the SIC-ADJ-03 scope string and no allow-file. All ten boards have data-ovf="" and switcher=6
-      current=cycles. cycles.html holds exactly one cyc-warn, the qualifier chip at :373, and none inside a card.
-      Each card draws one warn-ink doctrine chip, and its disagree chips are neutral outlines (boards 28/34/35/41).
-      The deck tests and tests/test_cycle_ontology.py were not run by this reviewer (scripts are barred in this
-      mode). The seat's pass claim is recorded but not independently verified here.
-  review_round: 7
-  advisory_notes: VTC-047 is minor polish with no doctrine impact on these bytes, so it is advisory and not a condition.
-    Under SIC-ADJ-04 the authority may choose to adopt it; if adopted, the cure is the two ZH deck patterns named
-    above, which change only the ZH Cycles faces.
-  verdict_as_filed: PASS
+    evidence: 'Only the ten Cycles boards were re-rendered. The diff shows seven PNG byte changes (30/31/34/35/36/39/41);
+      28/29/40 and the 32 other PNGs are absent from the diff, so they are byte-identical to 78c14f7d. Among the
+      EN boards, 28/29/40 are byte-identical and 31/39 are re-encoded. sha256 prefixes, 78c14f7d → 213a91b9: board
+      31 3724d8744f50a74d → 60c321e4b0808822 (449320 → 449325 bytes); board 39 e4703a8ce2a84ef4 → 056f44b5c4c97dc7
+      (456355 → 456354 bytes). capture.log wave 7 (:59-67) keeps the same png_px for both (390x4879, 390x4775).
+      The record names a cause (README.md:126-137). That cause is credible: the only cycles.html changes are four
+      l-zh spans, which .l-en boards do not draw, and source text inside collapsed cyc-prov drawers (no open details
+      in cycles.html). Boards 28/29/40, rendered from the same HTML, are byte-identical. Board 31 shows the same
+      EN face as at 78c14f7d. The region label in that cause is wrong; see VTC-048. png_px check, four sources per
+      board (PNG header via Read, capture.log :58-67, boards_manifest.yml png_px at :782/:809/:841/:869/:959/:991/:1024/:1113/:1141/:1171,
+      proposal.yml screenshot entries :276-:345): 28 1440x2343, 29 1440x2343, 30 390x4350, 31 390x4879, 34 1440x2260,
+      35 1440x2260, 36 390x4350, 39 390x4775, 40 1440x3400, 41 1440x3279. All agree, and the proposal entries cite
+      capture.log wave 7. proposal.yml:45 frozen_sha is 213a91b9. Every ZH probe line (30/34/35/36/41) reads zh-latin=0
+      with the full SIC-ADJ-03 scope string and no allow-file. All ten boards show data-ovf="" and switcher=6 current=cycles.
+      cycles.html holds one cyc-warn, at :373 in the events panel, and none in the card block (:284-:349). Height
+      deltas: 34/35 +18, 30/36 +23, 41 +0. The only face-reachable DOM changes are the four l-zh spans and cycles.css
+      is unchanged, so these deltas can come only from the ZH Clocks lines rewrapping. On 34/35 the XLF ladder line
+      now runs to a second line. On 41 it already wrapped, so the height holds.'
+  review_round: 8
+  advisory_notes: VTC-049 is a NON-BINDING NOTE under SIC-ADJ-05. It does not reopen a wave and goes to approval.yml
+    as an implementation-bound condition verified at the production proof. VTC-048 is classed DEFECT only because
+    SIC-ADJ-05 names a false claim or wrong citation as one. It is a one-sentence record correction with no face
+    or byte consequence, and this reviewer considers a narrowly scoped record repair adequate.
+  verdict_as_filed: PASS_WITH_CONDITIONS
   quarantine_breaches: []
 second_pass:
-  amended_at: '2026-11-02T07:25:07.231Z'
+  amended_at: '2026-11-02T08:19:36.537Z'
   rationale_received: true
   amendments:
   - finding: VTC-043
     action: upheld
-    note: Cured at 78c14f7d. The rationale does not touch it.
+    note: Cured. The rationale does not touch it.
   - finding: VTC-044
     action: upheld
-    note: Cured at 78c14f7d. The rationale does not touch it.
+    note: Cured. The rationale does not touch it.
   - finding: VTC-045
     action: upheld
-    note: Cured at 78c14f7d. The rationale does not touch it.
+    note: Cured. The rationale does not touch it.
   - finding: VTC-046
     action: upheld
-    note: Cured at 78c14f7d. The rationale does not touch it.
+    note: Cured. The rationale does not touch it.
   - finding: VTC-047
     action: upheld
+    note: Cured. proposal.yml:2254-2258 records it under SIC-V7-C04, matching this reviewer's round-7 rewording.
+  - finding: SIC-V7-C04
+    action: upheld
+    note: Met. Unchanged.
+  - finding: SIC-V7-C06
+    action: upheld
+    note: Met for the byte and record discipline. The wrong region label stays a separate finding (VTC-048), because
+      the condition text in verdict.yml does not carry the label.
+  - finding: VTC-048
+    action: upheld
     action_as_filed: reworded
-    note: Severity minor and binding advisory are upheld. The finding is reworded only to cite its exact sources,
-      which the author named and this pass verified at the frozen sha. The ladder line is copy_deck.json:176 ladder_state_pattern,
-      ZH "{phase_name}为{phase} · {ladder_name}为{ladder}——引擎说明见来源抽屉", built at build_cycles.py:116-117. The read
-      line is copy_deck.json:162 clocks_disagree_pattern, ZH "{a_name}为{a} · {b_name}为{b}", built at build_cycles.py:130-131.
-      The undrawn sibling copy_deck.json:163 clocks_ladder_pattern also carries 为 ("{phase_name}为{phase} · {ladder_name}分歧——…").
-      The frozen bytes are unchanged, so the severity does not change.
-  verdict: PASS
-  conditions: []
-  conditions_check_restated: SIC-V6-C05..C09 remain met at 78c14f7d, unchanged from pass 1. Rows 45-56 and 69-77
-    of verdict.yml frame them as this reviewer did.
+    note: 'The severity (minor) and the class (DEFECT under SIC-ADJ-05: a false claim in the record) are upheld.
+      The seat confirms the geometry independently: search field x 16-374 / y 82-115, hero title at about y 167-190,
+      diff bounding box (16, 82, 374, 116) on both boards, 761 and 752 pixels each off by 1 in one channel, nothing
+      outside the box. The finding is reworded to name the exact copies: README.md:136, capture.log:57 and proposal.yml:1329
+      at 213a91b9; proposal.yml:2231 from the re-freeze commit; and the immutable 213a91b9 commit message. SIC-V8-VT1
+      is reworded below because the pass-1 grep, as written, can never pass: the reviews/ receipts quote the phrase.'
+  - finding: VTC-049
+    action: upheld
+    note: Minor, NON-BINDING NOTE, implementation-bound. The seat confirms the breaks on 34/35 (inside 来源抽屉) and
+      41 (来 / 源抽屉). Keeping the specimen as drawn and binding the cure to production is the correct application
+      of SIC-ADJ-05.
+  verdict: PASS_WITH_CONDITIONS
+  pass2_status: COMPLETE
+  conditions:
+  - SIC-V8-VT1 (VTC-048, DEFECT, record-only; reworded in pass 2). (a) design_refs/sector-paper-20261021/cycles_repair/README.md
+    (wave-7 paragraph, :136 at 213a91b9), cycles_repair/capture.log (wave-7 header comment, :57) and research/reference_integrity/sector-intelligence-cycles-20261021/proposal.yml
+    (coverage_matrix.wave7_summary, :1329, and the round-7 mandate comment, :2231) each name the 31/39 diff region
+    as the global header search-field row (site-nav search input), with x 16-374 / y 82-116 at 390 px retained.
+    (b) git grep -n "hero-title band" over design_refs/sector-paper-20261021/ and research/reference_integrity/sector-intelligence-cycles-20261021/proposal.yml
+    returns nothing; reviews/** quotations are excluded. (c) The wave-8 commit message states that the 213a91b9
+    commit message carries the wrong label. (d) git diff --stat 213a91b9..<wave 8> names no PNG, copy_deck.json,
+    build_cycles.py, cycles.css, cycles.html or test file. (e) Any statement that placeholder glyphs are the differing
+    pixels is attributed to the seat's measured bounding box (16, 82, 374, 116).
+  findings_after_pass2:
+  - id: VTC-048
+    severity: minor
+    class: DEFECT
+    title: The record calls the 31/39 pixel-diff box the hero-title band, but x 16-374 / y 82-116 at 390 px is the
+      global header search-field row
+    evidence: The label appears at design_refs/sector-paper-20261021/cycles_repair/README.md:136, cycles_repair/capture.log:57
+      (wave-7 header comment) and proposal.yml:1329 (coverage_matrix.wave7_summary), all at 213a91b9. It also appears
+      at proposal.yml:2231 (round-7 mandate comment, re-freeze commit 4356fa60) and in the 213a91b9 commit message.
+      On board 31 the box (16, 82, 374, 116) is the site-nav search input row and the hero title sits at about y
+      167-190. Board 39 shares the geometry. The face is unaffected, and the cause (rasterization nondeterminism,
+      no EN string change) remains credible.
+    cure: Correct the four tracked copies to name the region as the global header search-field row (the site-nav
+      search input), keeping the box x 16-374 / y 82-116 at 390 px. The wave-8 commit message records that the 213a91b9
+      message carries the wrong label. No PNG, deck, builder, CSS or test changes.
+    binding: condition
+  - id: VTC-049
+    severity: minor
+    class: NON-BINDING NOTE
+    title: The longer ZH ladder line breaks inside the compound 来源抽屉
+    evidence: Boards 34/35 (XLF Clocks, …引擎说明见来源 / 抽屉) and board 41 (desk XLF, …引擎说明见来 / 源抽屉). The seat confirms
+      both breaks.
+    cure: Production implementation keeps the drawer pointer on one line (see advisory_notes for the checkable text).
+    binding: implementation-bound (approval.yml condition per SIC-ADJ-05)
+  reviewer_identity: opus-auditor-visual-taste-sic-20261021-r8
+  mode: READ_ONLY
   rationale_adequacy:
-  - id: VTC-047
+  - id: VTC-048
     adequate: true
-    note: The author accepts the advisory and the cure is the one this reviewer proposed. Pattern ids and builder
-      lines check out against the tree. Moving the undrawn :163 is sound hygiene with no face effect. Landing it
-      in wave 7 under SIC-ADJ-04 with a confirmatory round 8 is the right route, because it changes face bytes and
-      approval binds to the shipped bytes. The plan to re-render the EN boards and compare them byte-wise matches
-      the C09 discipline.
-  - question: Once the two drawn patterns move, is the Clocks family consistent, or must the hero-dek and desk-note
-      时钟 vocabulary change too?
-    answer: 'Once :176 and :162 move, the family is consistent and no other string needs a change. A census of every
-      时钟 text node at 78c14f7d found three kinds of use outside the mismatch lines. (1) The Clocks heading 时钟 (×6)
-      and the chips 节律时钟分歧 / 风险时钟分歧 are labels, not predicates. (2) The hero dek 每个板块的阶段时钟、策略立场、拐点风险阶梯与节律窗口… names
-      the per-card phase clock as a noun in a list. (3) The drawer and face notes are 各分歧时钟自身的数值保留于来源抽屉 (×6), 旧版周期读数所指阶段族与阶段时钟不同…
-      (×2), and the desk note 时钟设计上不同：…. None of them carries a 为 predicate. All of them use 时钟 to mean the same
-      per-card trust set, and each mirrors its EN line (Clocks / phase clock / Clocks differ by design). Keep them
-      as they are. The 时钟 count must not be driven to zero: the per-card family keeps its name under SIC-V6-C08.
-      The hazard line stays in the colon form on purpose (SIC-V6-C05), because its leg-then-turn content reads better
-      as a gloss than as a 显示 predicate. That is a deliberate construction, not a residual inconsistency.'
-  tree_check: HEAD 7c82a91d (post-freeze receipt and record commits). git diff --stat 78c14f7d -- design_refs/ mockups/
-    is empty, so the working-tree copy_deck.json and build_cycles.py read in this pass are the frozen bytes. cycles.html
-    was read through git show 78c14f7d.
-  advisory_notes: 'VTC-047 is minor polish with no doctrine impact. It does NOT become a condition on this reviewer''s
-    verdict for the frozen bytes; it stays advisory. The authority has adopted it as wave-7 polish under SIC-ADJ-04.
-    That adoption is adequate, and round 8 should check: the two drawn ZH lines read 阶段时钟显示回落中 · 时序阶梯显示上涨趋势——引擎说明见来源抽屉
-    and 周期读数显示筑底中 · 阶段时钟显示回落中; no drawn ZH Clocks line keeps a "时钟为" or "阶梯为" predicate; :163 matches; the EN Cycles
-    boards are byte-identical or named in the record; ZH boards zh-latin=0 with the SIC-ADJ-03 scope; png_px matches
-    across PNG, capture.log, manifest and proposal; cyc-warn = 1. Pass 1 also observed two drawer-only items, which
-    remain non-findings: the events-drawer record sentence "clocks were aligned" and the orphan 屉 wrap on board
-    41.'
+    note: Accepting the finding as a DEFECT, the record-only wave-8 scope, the no-re-render discipline (git diff
+      --stat 213a91b9..<wave 8> naming only record files) and the erratum in the wave-8 commit message is adequate
+      and proportionate. The seat found the fourth copy (proposal.yml:2231), which this reviewer's pass 1 did not
+      list.
+  - question: Is the grep the complete check, or must the corrected sentence name the placeholder text as the differing
+      glyphs?
+    answer: 'The grep alone is not complete, for two reasons. First, an absence grep proves deletion, not correction.
+      Second, unscoped, it can never pass, because reviews/critic_return/first_pass_visual_taste.md (and later receipt
+      archives) quote the phrase. The check is positive and scoped (SIC-V8-VT1 below): each of the four copies names
+      the global header search-field row (site-nav search input) and keeps the box numbers. The grep then runs over
+      the record files only and excludes reviews/**. Naming the placeholder text as the differing glyphs is permitted
+      but not required. If a copy says it, the claim rests on the seat''s own measurement (bounding box inside the
+      placeholder row) and must say so, for example "the search field''s placeholder-text row (measured bounding
+      box (16, 82, 374, 116))". It must not assert glyph-level attribution beyond what was measured.'
+  - id: VTC-049
+    adequate: true
+    note: Keeping the specimen as drawn, re-rendering nothing in wave 8, and binding the cure to production as an
+      approval.yml condition verified in the production proof (P19-P23) before acceptance is the right reading of
+      SIC-ADJ-05 and keeps round 9 a record check.
+  - question: Is "the drawer pointer 来源抽屉 does not break across lines on any ZH Cycles card at 1440 and 390" the
+      checkable condition text, or must it name the mechanism?
+    answer: 'Outcome text, not mechanism. The mechanism (no-break span, keep-all on the pointer, or the shorter
+      tail) is the implementer''s choice. The text needs one widening and one clarification: it must cover the shorter-tail
+      option, and it must state the scope as cards and any desk or Clocks surface that renders the ladder pattern.
+      Recommended text: "On every ZH Cycles surface that renders cycles.ladder_state_pattern (each sector card''s
+      Clocks block), the drawer pointer — 来源抽屉, or 抽屉 if the production copy source adopts the shorter tail 引擎说明见抽屉
+      — never breaks across lines at viewport widths 1440 and 390; verified on the production proof captures (P19-P23)
+      before acceptance." Theme does not affect wrapping, so one theme per width suffices.'
+  tree_check: 'HEAD 3fce3c35 (post-receipt record commits). git grep at 213a91b9, at 4356fa60 and at HEAD finds
+    the label "hero-title band" in these places: cycles_repair/README.md:136, cycles_repair/capture.log:57 and proposal.yml:1329,
+    all at 213a91b9; proposal.yml:2231, added by the re-freeze commit 4356fa60; the 213a91b9 commit message ("all
+    inside x 16-374 / y 82-116 (the hero-title band; Chrome antialiasing nondeter…"); and, at HEAD, the quotations
+    in this reviewer''s stored first-pass receipt reviews/critic_return/first_pass_visual_taste.md:5/:30-32/:49.
+    It is absent from the 4356fa60 commit message, from boards_manifest.yml and from verdict.yml:54-65 (the SIC-V7-C06
+    text speaks of "named in the wave-7 record" without a region label). The seat''s list of four tracked copies
+    plus the immutable wave-7 message is exact and complete.'
+  advisory_notes: 'VTC-048 stays a DEFECT (minor, record-only) under SIC-ADJ-05. Its cure is SIC-V8-VT1 as reworded
+    below, and round 9 should confirm it alongside the unchanged-bytes proof. VTC-049 stays a NON-BINDING NOTE.
+    It does not reopen a wave and is carried in approval.yml as the implementation-bound condition text recommended
+    above. This reviewer''s visual judgment of the frozen face at 213a91b9 is unchanged: C04 and C06 are landed
+    and there is no layout regression on any re-rendered board.'
   inputs_opened_pass2:
-  - design_refs/sector-paper-20261021/copy_deck.json:160-164, :176 (verified frozen by git diff --stat 78c14f7d)
-  - design_refs/sector-paper-20261021/cycles_repair/build_cycles.py:110-132
-  - git show 78c14f7d:design_refs/sector-paper-20261021/cycles_repair/cycles.html (text-node census for 时钟 and clock)
-  - research/reference_integrity/sector-intelligence-cycles-20261021/verdict.yml:13, :45-56, :69-77 (grep rows only)
-  - git rev-parse HEAD; git diff --stat 78c14f7d -- design_refs/ mockups/
-  - 'not opened: proposal.yml (lifted, not needed), continuity.yml (lifted, not needed), own round-6 receipts (lifted,
-    not needed), every product_regression file (reviews/critic_return/*product_regression*, reviews/round6_204500aa/*product_regression*,
-    reviews/round5_66829d17/*product_regression*, reviews/product_regression.yml), Reviewer A receipts and task
-    output'
-  verdict_as_filed: PASS
+  - git rev-parse --short HEAD
+  - git grep -F "hero-title band" / "hero title band" / "hero-title" / "title band" at 213a91b9 over design_refs/sector-paper-20261021,
+    mockups/refs/reference_integrity/sector-intelligence-cycles-20261021 and research/reference_integrity/sector-intelligence-cycles-20261021
+    (product_regression excluded)
+  - git grep -F "title band" at 4356fa60 and HEAD (same paths, product_regression excluded)
+  - git log -1 --format=%B 213a91b9 and 4356fa60 (grep for the label only)
+  - research/reference_integrity/sector-intelligence-cycles-20261021/verdict.yml:54-65 (SIC-V7-C06 row)
+  - proposal.yml at 4356fa60 :2228-2234 (round-7 mandate comment) and :2254-2258 (VTC-047 row)
+  - 'not opened: continuity.yml; own round-7 receipts under reviews/round7_78c14f7d/ (lifted, not needed); proposal.yml
+    :2236-:2253 (PRC-050/051/052 rows, Reviewer A lane); every product_regression file (reviews/critic_return/*product_regression*,
+    reviews/round7_78c14f7d/*product_regression*, reviews/round6_204500aa/*product_regression*, reviews/product_regression.yml);
+    Reviewer A receipts and task output'
+  verdict_as_filed: PASS_WITH_CONDITIONS
   quarantine_breaches: []
   second_pass_path: critic_return/second_pass_visual_taste.md
-  disposition_notes: 'Judged as frozen at 78c14f7d; the pass-2 grant revealed proposal.yml revision_mandate_round6
-    + wave6_summary, verdict.yml (round 6: SIC-V6-C01..C09, SIC-ADJ-04) and continuity.yml only. Amendment actions
-    are normalized to the checker vocabulary (upheld/downgraded/withdrawn); the critic''s own wording is kept in
-    action_as_filed and a raised severity in severity_after_pass2.'
+  disposition_notes: 'Judged as frozen at 213a91b9; the pass-2 grant revealed proposal.yml revision_mandate_round7
+    + wave7_summary (+ the :2067 / :2190 record lines), verdict.yml (round 7: SIC-V7-C01..C06, SIC-ADJ-05), continuity.yml
+    and the wave-7 / re-freeze commit message bodies only. Amendment actions are normalized to the checker vocabulary
+    (upheld/downgraded/withdrawn); the critic''s own wording is kept in action_as_filed and a raised severity in
+    severity_after_pass2.'
