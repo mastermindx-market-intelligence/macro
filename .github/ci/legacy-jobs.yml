@@ -2373,9 +2373,25 @@ jobs:
       - "templates/support.html.j2"
       - "tests/fixtures/fundamental_forensics/aapl_10k_2025/**"
       - "tests/fixtures/fundamental_forensics/aapl_10q_2026q3/**"
+      - "tests/test_build_capital_structure_projection.py"
+      - "tests/test_capital_structure_api.py"
+      - "tests/test_capital_structure_capacity.py"
+      - "tests/test_capital_structure_funding.py"
+      - "tests/test_capital_structure_instrument_candidates.py"
+      - "tests/test_capital_structure_instrument_economics.py"
+      - "tests/test_capital_structure_instrument_resolution.py"
+      - "tests/test_capital_structure_issuer_state_contracts.py"
+      - "tests/test_capital_structure_registration_integration.py"
+      - "tests/test_capital_structure_registration_lifecycle.py"
+      - "tests/test_capital_structure_scenario_inputs.py"
+      - "tests/test_capital_structure_state_api.py"
+      - "tests/test_capital_structure_state_bundle.py"
+      - "tests/test_capital_structure_supply_scenarios.py"
+      - "tests/test_capital_structure_term_integration.py"
       - "tests/test_company_theme_exposure.py"
       - "tests/test_integrated_answer_clock.py"
       - "tests/test_integrated_answer_consumer_receipt.py"
+      - "tests/test_integrated_answer_cs_context_leg.py"
       - "tests/test_integrated_answer_v0.py"
       - "tools/**"
       - "worker/**"
@@ -2389,7 +2405,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest fastapi httpx pyyaml requests pandas numpy pyarrow jsonschema
       - name: integrated answer v0 composer
-        run: python -m pytest tests/test_integrated_answer_v0.py tests/test_integrated_answer_clock.py tests/test_integrated_answer_consumer_receipt.py -q
+        run: python -m pytest tests/test_integrated_answer_v0.py tests/test_integrated_answer_clock.py tests/test_integrated_answer_consumer_receipt.py tests/test_integrated_answer_cs_context_leg.py -q
 
   c19-wp19-integrated-answer-pins:
     if: ${{ false }}
