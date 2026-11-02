@@ -166,3 +166,18 @@ inherited main red; main fixed it in #10541/#10556 and b6b4743f534d merges main 
 
 Next: fresh READ_ONLY Opus review of the P20 diff (commission in flight) → binding CI green on the new merge ref →
 squash-merge #9917 as a PARTIAL release → Cycles build wave → P22/P23.
+
+## Checkpoint 6 — P20 review returned, MAJOR repaired (2026-11-02 12:2xZ)
+
+Reviewer D (fresh READ_ONLY Opus, task a886a3e5798d5d3fe) returned ACCEPT-WITH-NOTES on the P20 diff: receipt
+`research/sector_completion_20261021/p19/verifier_D_P20_source_review.md` (sha256 `980f84be…326e04`), ledger entry
+`P20-REVIEWER-D-RECEIPT` in the RIG proposal. Its one MAJOR — the `templates/subsectors.js` R3A-66 repair had added three lines
+and shifted four frozen state-matrix citations — is repaired line-count-neutral in the same commit (582 lines; `:309/:496/:506/:508`
+carry the cited content again; pinned strings kept; `tests/test_subsector_confluence.py` + `tests/test_sector_paper_state_matrix.py`
+21 passed / 3 skipped). R3A-75 is now located (reviewer pointer), R3A-47/52 confirmed, R3A-86 confirmed-partial. CI at the previous
+head b46a47f34f38 read 7 passing / 13 pending / 1 failing (merge-queue-pilot, standing non-binding) before this push.
+
+Next: binding CI green on the new head -> PR-body addendum (partial-release scope + review receipt) -> squash-merge #9917 as a
+PARTIAL release (`--match-head-commit`, no auto-merge, HOLD label = barrier) -> land check -> Cycles build-wave commission from
+main -> P22 production + natural-update proof -> P23 separate acceptances.
+

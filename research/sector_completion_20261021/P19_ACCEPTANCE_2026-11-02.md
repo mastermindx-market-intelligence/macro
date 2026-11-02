@@ -86,3 +86,16 @@ after the fresh P20 source review and binding CI; that merge is never described 
 build wave (SIC-I03/I09B against the approved `cycles_ia.md`, with C19 badge qualification, U07 Dossier port, typed states
 and light/ZH/1440/390 cells) is commissioned next, followed by P22 production/natural-update proof on both served surfaces
 and P23's separate acceptances. This note is seat-authored; the independent part is the verifier receipts.
+
+**P20 source review (Reviewer D, 2026-11-02).** The fresh READ_ONLY review of the P20 diff (`p19/verifier_D_P20_source_review.md`,
+`980f84be…326e04`) returned ACCEPT-WITH-NOTES: every repair clears the CI failure it names, no guard is weakened, nothing touches
+GMI (0 paths differ from main 838a69c08deb). Its one MAJOR finding — the `templates/subsectors.js` repair added three lines and
+shifted four frozen state-matrix citations (csv rows 19/26/33/34, md 62/69/74/75) — is repaired line-count-neutral in the same
+commit as this paragraph (582 lines; `:309/:496/:506/:508` carry the cited content again; the design reference is untouched).
+The reviewer located R3A-75 (`engine/subsector_confluence.py:270-271` sort; `templates/subsector_detail.html.j2:191,194`
+producer order), confirmed R3A-47 (adding `templates/desk_watch.js:20-21`) and R3A-52, and left R3A-86 CONFIRMED-PARTIAL
+(Overview at `:1496`; runtime destination order is P22's). Residuals it names for P22 rather than repair: the merged P0B
+receipts were never re-measured on the merged tree; the research-vault textarea restyle and the Measured/已实测 badge have no
+dual-theme/ZH visual evidence; `templates/sector_central.html.j2:2280` still carries the word 'validated' inside the
+board-ordering receipt tooltip (inherited from main, not forward-track-record wording — for the P22 observer, see ledger
+`P20-SIC-APR-04`). The reviewer re-confirmed the release scope: #9917 lands only as the PARTIAL Sector Central release.

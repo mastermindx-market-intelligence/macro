@@ -2423,6 +2423,17 @@ p19_p20_dispositions_20261102:
     R3A-86 hrefs templates/sector_central.html.j2:1503-1507,1535-1536,2096,2438,3872 at ec1f1ea6 (all inside si_workspace
     VIEWS). R3A-75 stays UNSUPPORTED (not located by the seat either).
   disposition: seat pointers are not independent confirmation; the P20 reviewer is asked to confirm or reject them
+  reviewer_D_confirmation: >-
+    (fresh READ_ONLY P20 source review, receipt p19/verifier_D_P20_source_review.md, 2026-11-02) R3A-47 CONFIRMED with a
+    correction — the contract names five artifacts and the seat pointer covered three; the missing two are
+    templates/desk_watch.js:20-21 (oracle_turn_desk.json, oracle_tape_onset.json). R3A-52 CONFIRMED (templates/heatmap.js:242
+    setInterval; :264 skips when generated_utc is unchanged = poll-and-swap). R3A-86 CONFIRMED-PARTIAL — the hrefs resolve and
+    Overview lives at templates/sector_central.html.j2:1496 (href="#overview"), which the seat pointer omitted; whether the
+    runtime-generated destinations keep their native order and semantics is not proven at source (P22 readback). R3A-75
+    LOCATED by the reviewer (not by Verifier B or the seat): engine/subsector_confluence.py:270-271 sorts members_detail by
+    (-stock_weight, -vs_basket) and templates/subsector_detail.html.j2:191,194 render the members in producer order — the
+    row moves to CONFIRMED on that reviewer-located pointer; the CSV keeps Verifier B's verbatim UNSUPPORTED with this
+    ledger entry as the later disposition.
 - id: P20-SIC-APR-04
   condition: SIC-APR-04 (re-carried R3C-VALIDATED-21D)
   finding: >-
@@ -2470,6 +2481,41 @@ p19_p20_dispositions_20261102:
     chrome, not programme changes. Verifier B flagged templates/forming_narratives.js:53-58 (runtime stylesheet injection)
     as out of scope — noted for the design-law owner, no change here.
   disposition: P22 re-captures on the served build; the cells are candidate-stage evidence only
+- id: P20-REVIEWER-D-RECEIPT
+  reviewer: fresh READ_ONLY native Opus reviewer (task a886a3e5798d5d3fe; resumed once at the 24-turn limit with a bounded budget)
+  receipt: research/sector_completion_20261021/p19/verifier_D_P20_source_review.md
+  receipt_sha256: 980f84beee71ba1f70a2744b0c27cad92eb4a52ac3df966b732a8e84de326e04
+  verdict: ACCEPT-WITH-NOTES (STATUS PARTIAL — the reviewer's own GAPS are named below); one MAJOR finding, repaired before merge
+  scope_reviewed: 1e4d9980e615, 442713973f2a, 8d1fe9324402 per file; b6b4743f534d conflict paths; named pytest selections rerun
+  major_finding: >-
+    templates/subsectors.js (R3A-66 / SC-066 repair in 1e4d9980e615) added three lines at :220 (582 -> 585), moving the code
+    under four frozen state-matrix citations — design_refs/sector-paper-20261021/state_matrix.csv rows 19, 26, 33, 34 and
+    state_matrix.md lines 62, 69, 74, 75 (subsectors.js:508/506/309/496 landed three lines early). CI could not catch it:
+    tests/test_sector_paper_state_matrix.py:101 only checks that a cited line lies inside the file.
+  major_repair: >-
+    the repair is made line-count-neutral in the same commit as this record: the two comment lines are folded into a
+    trailing comment and covTotal is declared on the existing 'var cov = stats.cov;' line, keeping every substring that
+    tests/test_subsector_confluence.py pins (var covTotal = ...; the && covTotal != null guard; the two covTotal spans).
+    templates/subsectors.js is 582 lines again and :309 / :496 / :506 / :508 carry the cited 'Nothing extended', '0 / N',
+    'No data yet' and 'as of' content byte-for-byte as at the merge-base f125051fdb37. The frozen design reference is
+    untouched. The behaviour fix itself was CONFIRMED (baskets carry n_listed, engine/subsector_confluence.py:489;
+    sectors carry n_subsectors, :414, :605).
+  notes_not_blocking: >-
+    (1) the merged P0B receipts combine main's nav re-mint and the branch's stocktable re-mint; every hashed input matches
+    the merged tree and the closure gate passes, but the layout numbers were never re-measured on the merged tree itself —
+    a GAP for the next real re-mint (P22 / the first P0B-affecting change), not a repair here. (2) the research-vault
+    textarea restyle (radius 11px -> var(--r-ctl,8px); hover border -> --mx5-hover-border) changes rendering with no
+    dual-theme evidence; the block is new on the branch and both themes define the token — a P22 cell. (3) 'Measured' vs
+    'Measuring' is a near-homograph for opposite states — a copy-clarity note for the deck owner, no change here.
+    (4) tests/test_ci_pack.py narrative vs tuple job counts for the free-content probe (137 vs 138) — a docstring nit.
+    (5) the :2280 'validated' tooltip leftover was recorded only in this ledger (P20-SIC-APR-04) — now also named in
+    P19_ACCEPTANCE §E. (6) tests/test_stock_dashboard_first_frame.py alone is 120 passed (the seat's earlier 143 figure
+    was a bundle count, not that suite); the reviewer's 120 is the figure of record for the suite.
+  reviewer_gaps: >-
+    no P0B browser re-mint run; full tests/test_ci_pack.py not rerun by the reviewer (the seat's 238-passed run on the
+    merged tree stands as the seat's measurement); test_check_p0b_receipt_closure.py, the research_vault suites and the GMI
+    suites out of the named scope; no dual-theme/EN-ZH visual evidence (P22); the 3 sector-paper skips were not read.
+  release_scope_confirmed: P21 may land only as a PARTIAL release (Sector Central shell, engines, design reference, CI wiring); never the Cycles replacement
 - id: P20-AUTHOR-APPROVER
   note: >-
     The seat authored the claim packet and this ledger; the three P19 verifier receipts and the P20 reviewer receipt are

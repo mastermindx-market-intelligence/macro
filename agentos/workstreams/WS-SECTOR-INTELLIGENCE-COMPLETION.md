@@ -77,7 +77,7 @@ waves:
     status: in_progress
     depends_on: [P19-P20]
     next_action: "P21 = PARTIAL release only (Sector Central half + CI wiring) after the P20 review and binding CI; squash-merge with --match-head-commit; never described as completion. P22 on both served surfaces after the Cycles wave lands; P23 separate acceptances + matrix *_to_record fill."
-next_action: "P20 CI repairs are committed on #9917 (442713973f2a, 8d1fe9324402) and main 838a69c08deb is merged (b6b4743f534d; the inherited gmi-explorer red arrives fixed from main #10541/#10556). Next: fresh READ_ONLY Opus review of the P20 diff -> binding CI green on the new merge ref -> squash-merge #9917 as a PARTIAL release (Sector Central half; the Cycles replacement is NOT DELIVERED) -> commission the Cycles build wave -> P22 production + natural-update proof -> P23 separate acceptances."
+next_action: "P20 CI repairs are committed on #9917 (442713973f2a, 8d1fe9324402) and main 838a69c08deb is merged (b6b4743f534d; the inherited gmi-explorer red arrives fixed from main #10541/#10556). Reviewer D (fresh READ_ONLY, receipt p19/verifier_D_P20_source_review.md) returned ACCEPT-WITH-NOTES and its one MAJOR (subsectors.js +3 lines shifted four state-matrix citations) is repaired line-neutral. Next: binding CI green on the new head -> squash-merge #9917 as a PARTIAL release (Sector Central half; the Cycles replacement is NOT DELIVERED) -> commission the Cycles build wave -> P22 production + natural-update proof -> P23 separate acceptances."
 ---
 
 # Sector Intelligence + Sector Cycles completion
