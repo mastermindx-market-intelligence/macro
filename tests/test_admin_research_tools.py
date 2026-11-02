@@ -5,6 +5,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import yaml
+
 
 ROOT = Path(__file__).resolve().parent.parent
 APP_JS = ROOT / "admin" / "static" / "app.js"
@@ -111,6 +113,19 @@ def _public_links_to_internal_pages():
         if count:
             found[str(path.relative_to(_TEMPLATES))] = count
     return found
+
+
+def test_this_suite_is_on_the_merge_gate():
+    """ci.yml packs `gate: code` only. On `gate: data` a public link to an internal page merges on green."""
+    job = yaml.safe_load((ROOT / ".github/ci/legacy-jobs.yml").read_text(encoding="utf-8"))["jobs"]["admin-research-tools"]
+    assert job["gate"] == "code"
+    assert job["scope"] == "exclusive"
+    assert {f"templates/{name}" for name in _KNOWN_PUBLIC_LINKS} <= set(job["paths"])
+    # The tests below read these through a variable, so the trigger closure check cannot see them.
+    for name in ("alerts", "macro_context", "methodology", "seasonality"):
+        assert f"templates/{name}.html.j2" in job["paths"]
+    for asset in (APP_JS, STYLES_CSS):
+        assert asset.relative_to(ROOT).as_posix() in job["paths"]
 
 
 def test_public_templates_do_not_link_to_internal_pages():

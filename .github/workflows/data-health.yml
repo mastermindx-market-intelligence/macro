@@ -68,6 +68,12 @@ jobs:
     # lane. workflow_dispatch and the schedule fallback are unconditional:
     # both are an operator/backstop choice to check the CURRENT tree, whatever
     # advanced it last.
+    #
+    # This gate reads only the conclusion, so it lets the DST no-op through (that
+    # run concludes success: 41160796391 and 41265081416 tested a tree nobody had
+    # advanced) and it stops a real night that was cancelled. The report job below
+    # says so whenever it skips, because a green run of this workflow can otherwise
+    # mean that no test ran at all. The schedule fallback is what still tests.
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     # NEVER self-hosted. This lane is deliberately off the render/nightly
     # pool (CLAUDE.md — render budget is law); it runs on GitHub's hosted
@@ -194,17 +200,21 @@ jobs:
           # succeeded, "skipped" when the nightly-success gate skipped every
           # instance, anything else ("failure"/"cancelled") otherwise.
           PACK_RESULT: ${{ needs.data-pack.result }}
+          NIGHTLY_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          NIGHTLY_URL: ${{ github.event.workflow_run.html_url }}
         run: |
           set -euo pipefail
           ISSUE_TITLE="data-health: failing data receipts"
 
           # The nightly-success gate on data-pack means "skipped" is a normal
           # no-op (the nightly itself did not succeed, so this lane correctly
-          # did not assert against its tree) — not a data-health finding.
-          # Report nothing rather than opening an issue about a lane that
-          # never ran.
+          # did not assert against its tree) — not a data-health finding, so no
+          # issue is opened about a lane that never ran. It still concludes
+          # success, so it has to say that no test ran or the green reads as a pass.
           if [ "$PACK_RESULT" = "skipped" ]; then
-            echo "data-pack was skipped (nightly did not report success); nothing to report"
+            NOTE="No gate: data test ran. The nightly that triggered this run concluded ${NIGHTLY_CONCLUSION:-unknown} (${NIGHTLY_URL:-no run url}). This green is not a data-health pass; the 13:30Z schedule run is the one that tests."
+            echo "::warning title=data-health tested nothing::$NOTE"
+            echo "$NOTE" >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
 
