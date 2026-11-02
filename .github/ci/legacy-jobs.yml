@@ -44782,6 +44782,8 @@ jobs:
       # Reached through scripts/build_sector_central.py's import chain (closure guard).
       - "app/mailer.py"
       - "scripts/build_sector_holdings_coverage.py"
+      # Read by name in the receipt test since EW-P5 FU2 (site copy of a bound render input).
+      - "site/si_workspace.js"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
