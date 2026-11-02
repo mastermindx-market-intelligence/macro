@@ -921,11 +921,41 @@ def _np_ctx(tmp_path, entries, recorded_at=NP_CLOCK):
 # T1: byte identity without the flag -------------------------------------------------
 
 
+# CI checks out without history, so PARENT_COMMIT may be unreachable. The parent
+# writer's dump for _rewrite_fixture() and its count keys are pinned here (recorded
+# by running the PARENT_COMMIT writer on this fixture) and asserted on every run; the
+# live comparison against the parent module runs too whenever git can reach it.
+PARENT_T1_DUMP_SHA256 = "93a8aa6a5bc393672f5a6e32e39438daa47ba08e1fd32d03f28992a7b5a2b1b5"
+PARENT_T1_COUNT_KEYS = frozenset({
+    "by_reason",
+    "cells_rewritten",
+    "cover_date_multi_class",
+    "cover_fallback_alias_not_visible",
+    "cover_fallback_form_not_covered",
+    "cover_fallback_policy_not_visible",
+    "cover_multi_value",
+    "cover_window_ambiguous",
+    "facts_unavailable_issuers",
+    "formula_blocked_by_qualified_operand",
+    "invalid_slot_date",
+    "issuer_rollups",
+    "metric_not_visible",
+    "present_qualified",
+    "present_strict",
+    "slot_accession_mismatch",
+    "slot_row_missing",
+})
+
+
 def _parent_module(tmp_path):
-    source = subprocess.run(
+    """The PARENT_COMMIT writer, or None when git cannot reach that commit."""
+    shown = subprocess.run(
         ["git", "-c", "gc.auto=0", "show", f"{PARENT_COMMIT}:scripts/fif_coverage_writer.py"],
-        cwd=str(ROOT), capture_output=True, check=True,
-    ).stdout
+        cwd=str(ROOT), capture_output=True,
+    )
+    if shown.returncode != 0:
+        return None
+    source = shown.stdout
     path = tmp_path / "parent_fif_coverage_writer.py"
     path.write_bytes(source)
     spec = importlib.util.spec_from_file_location("parent_fif_coverage_writer", path)
@@ -936,17 +966,23 @@ def _parent_module(tmp_path):
 
 def test_t1_without_the_flag_the_output_is_byte_identical_to_the_parent_writer(tmp_path):
     base, slots, loader, specs, provenance = _rewrite_fixture()
-    parent = _parent_module(tmp_path)
-    parent_manifest, parent_counts = parent.rewrite_manifest(
-        copy.deepcopy(base), slots, loader, copy.deepcopy(specs), RULE_CLOCK, copy.deepcopy(provenance)
-    )
     mine_manifest, mine_counts = w.rewrite_manifest(
         copy.deepcopy(base), slots, loader, copy.deepcopy(specs), RULE_CLOCK, copy.deepcopy(provenance),
         np_context=None,
     )
-    assert w.dump_manifest(mine_manifest) == parent.dump_manifest(parent_manifest)
-    assert set(mine_counts) == set(parent_counts)
+    mine_dump = w.dump_manifest(mine_manifest)
+    assert hashlib.sha256(mine_dump).hexdigest() == PARENT_T1_DUMP_SHA256
+    assert set(mine_counts) == PARENT_T1_COUNT_KEYS
     assert w.NP_COUNTERS_KEY not in mine_counts
+
+    parent = _parent_module(tmp_path)
+    if parent is not None:
+        base, slots, loader, specs, provenance = _rewrite_fixture()
+        parent_manifest, parent_counts = parent.rewrite_manifest(
+            copy.deepcopy(base), slots, loader, copy.deepcopy(specs), RULE_CLOCK, copy.deepcopy(provenance)
+        )
+        assert mine_dump == parent.dump_manifest(parent_manifest)
+        assert set(parent_counts) == PARENT_T1_COUNT_KEYS
 
 
 # T2: a strict metric with governed NP evidence ---------------------------------------
