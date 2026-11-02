@@ -21,6 +21,15 @@ def test_legacy_fallback_keeps_original_card_geometry():
             assert ".pvcard:not(.po-card)" in selector
 
 
+def test_short_today_shelf_preserves_shared_card_tracks():
+    css = (ROOT / "templates/_prophet_workspace.css.j2").read_text()
+    grids = re.findall(r"([^{}]+)\{([^{}]+)\}", css)
+    regular = [body for selector, body in grids if "#us-today-grid" in selector
+               and ".pvs-study-active" not in selector and "grid-template-columns:" in body]
+    assert len(regular) == 4
+    assert all("auto-fit" not in body and "auto-fill" not in body for body in regular)
+
+
 def test_original_shared_card_remains_chart_first():
     template = (ROOT / "templates/_prophet_card.html.j2").read_text()
     assert "pv-chart" in template

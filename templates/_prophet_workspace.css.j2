@@ -6,16 +6,6 @@
   gap: var(--sp-4,16px);
   align-items: start;
 }
-/* A three-card public preview fills its row. The entitled shelf retains a
-   maximum of four columns and the native responsive breakpoints below. */
-#us-standouts #us-today-grid {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%,280px),1fr)) !important;
-}
-@media (min-width:1200px) {
-  #us-standouts #us-today-grid:has(> .po-card:nth-of-type(4)) {
-    grid-template-columns: repeat(4,minmax(0,1fr)) !important;
-  }
-}
 /* Remove inherited full-card link overlays, semantic chart recolouring and
    card stretching. Only the new component participates in these overrides. */
 #us-standouts .pvcard.po-card {
