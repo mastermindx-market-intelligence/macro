@@ -41787,6 +41787,7 @@ jobs:
       - tests/test_dataos_quality.py
       - tests/test_dataos_read_coherence.py
       - tests/test_dataos_read_contract.py
+      - scripts/research/attach_asc_daily_source_contract.py
       - tests/test_dataos_registry.py
       - tests/test_dataos_registry_consumers.py
       - tests/test_dataos_temporal.py

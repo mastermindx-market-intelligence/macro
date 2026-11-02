@@ -132,6 +132,51 @@ def test_the_measured_price_bases_reach_the_registry_schema() -> None:
     assert registry.get("equity.bars.daily.massive").schema["close"]["basis"] == "raw"
 
 
+def test_asc_preaccess_request_exposes_daily_ohlc_without_upgrading_evidence():
+    import json
+    import subprocess
+    import sys
+
+    request = {
+        "schema": "asc.scientific_source_owner_requirements.v1",
+        "status": "REQUEST_READY_NOT_SENT_NOT_ADMITTED",
+        "candidate_only": {"vendor": "polygon", "research_admitted": False},
+        "required_return": ["qualified daily prior-confirmed ATR14 input"],
+    }
+    run = subprocess.run(
+        [sys.executable, "-m", "scripts.research.attach_asc_daily_source_contract"],
+        cwd=ROOT, input=json.dumps(request), text=True, capture_output=True, check=True,
+    )
+    result = json.loads(run.stdout)
+    daily = result.pop("registered_daily_source_contract")
+    assert result == request
+    assert daily["dataset_id"] == "equity.bars.daily.massive"
+    assert daily["identity_type"] == "symbol"
+    assert daily["declared_clocks"] is None
+    assert daily["point_in_time_corporate_actions"] is None
+    assert set(daily["ohlc_schema"]) == {"open", "high", "low", "close"}
+    for field in daily["ohlc_schema"].values():
+        assert field and field["basis"] == "raw" and field["nullable"] is True
+        assert field["unit"] == "quote_currency"
+        assert "note" not in field
+
+
+def test_asc_preaccess_attachment_preserves_unavailable_fields_and_conflicting_evidence():
+    from scripts.research.attach_asc_daily_source_contract import attach_daily_contract
+
+    request = {"schema": "asc.scientific_source_owner_requirements.v1",
+               "status": "REQUEST_READY_NOT_SENT_NOT_ADMITTED",
+               "candidate_only": {"vendor": "polygon", "research_admitted": False}}
+    registry = Registry([contract("equity.bars.daily.massive", schema={"close": {"basis": "raw"}})])
+    attached = attach_daily_contract(request, registry)
+    assert attached["registered_daily_source_contract"]["ohlc_schema"]["high"] is None
+    assert attach_daily_contract(attached, registry) == attached
+    with pytest.raises(ValueError, match="differs from the catalog"):
+        attach_daily_contract({**request, "registered_daily_source_contract": {"basis": "adjusted"}}, registry)
+    with pytest.raises(ValueError, match="unadmitted Polygon candidate"):
+        attach_daily_contract({**request, "candidate_only": {"vendor": "polygon", "research_admitted": True}}, registry)
+
+
 def test_every_ambiguous_price_column_declares_the_canonical_name_it_renames_to() -> None:
     """The V1 migration in one invariant: 132 files keep reading `close`, and the
     basis stops being a guess.
