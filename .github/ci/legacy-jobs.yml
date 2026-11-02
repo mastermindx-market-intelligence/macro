@@ -25222,6 +25222,12 @@ jobs:
       - "engine/marketing/state.py"
       - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
+      - "engine/alert_delivery_drain.py"
+      - "engine/capital_structure/saved_scenario_store.py"
+      - "engine/capital_structure/saved_scenarios.py"
+      - "engine/capital_structure/scenario_export.py"
+      - "engine/capital_structure/state_changes.py"
+      - "lib/frozen_delivery_client.py"
 
 
   quant-q12-parity-forward:
