@@ -934,3 +934,29 @@ def test_the_handoff_carries_every_part_and_no_staged_write(daily):
         "continuation parts must ride the handoff under data/capital_structure, "
         "never be excluded by name"
     )
+
+
+def test_inputs_producer_selects_the_published_fif_store_and_nothing_else(steps):
+    """cs_inputs binds financials from FIF's published production datasets (F0).
+
+    Without an explicit per-step selection the binder never builds a FIF store, so
+    every issuer's financials family is ``fif_production_store_not_selected``. The
+    step selects production mode and the dedicated R2_RESEARCH store family the FIF
+    publisher writes with, each bound to its own secret; no generic R2_* value,
+    flag or authority variable rides along, and the mode is never a default.
+    """
+    terms = next(s for s in steps if s.get("id") == "cs_terms")
+    inputs = next(s for s in steps if s.get("id") == "cs_inputs")
+    terms_env = dict(terms.get("env") or {})
+    inputs_env = dict(inputs.get("env") or {})
+    research_keys = {
+        "R2_RESEARCH_ENDPOINT",
+        "R2_RESEARCH_ACCESS_KEY_ID",
+        "R2_RESEARCH_SECRET_ACCESS_KEY",
+        "R2_RESEARCH_BUCKET",
+    }
+    assert set(inputs_env) == research_keys | {"FIF_FINANCIAL_DATASET_MODE"}, inputs_env
+    assert inputs_env["FIF_FINANCIAL_DATASET_MODE"] == "production"
+    for key in research_keys:
+        assert inputs_env[key] == "${{ secrets.%s }}" % key, (key, inputs_env[key])
+        assert terms_env.get(key) == inputs_env[key], key
