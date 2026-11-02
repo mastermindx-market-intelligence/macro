@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-04T22:20:43Z",
+ "accession": "0001628280-26-014733",
+ "cik": "0001438423",
+ "doc_byte_length": 1326156,
+ "doc_sha256": "d1e239f43c04a857c00616b6a24a5e30b6a6b5b94eb3d640ec9b2de9e4aa1245",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-04",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mram-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 193383,
+  "byte_start": 192865,
+  "normalized": "We may also be obligated to pay for unused capacity if our demand decreases in the future, or if our estimates prove inaccurate. We do not currently source these wafers from anyone other than GLOBALFOUNDRIES, which has the ability to discontinue its manufacture of any of our wafers upon due notice and completion of the notice period. This would cause us to have to find another foundry to manufacture those wafers or redesign our core technology and would mean that we may not have products to sell until such time.",
+  "normalized_sha256": "a9c9f20d38bc805364f57b086404705a19f161c09830406089d4b3df1d7e21b3",
+  "raw": " We may also be obligated to pay for unused capacity if our demand decreases in the future, or if our estimates prove inaccurate. We do not currently source these wafers from anyone other than GLOBALFOUNDRIES, which has the ability to discontinue its manufacture of any of our wafers upon due notice and completion of the notice period. This would cause us to have to find another foundry to manufacture those wafers or redesign our core technology and would mean that we may not have products to sell until such time.",
+  "raw_sha256": "629212017337fcc945c656e0ab90116603f9d92c487b9c8c3182467346d27e6f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1438423/000162828026014733/mram-20251231.htm",
+ "xbrl_contexts": []
+}

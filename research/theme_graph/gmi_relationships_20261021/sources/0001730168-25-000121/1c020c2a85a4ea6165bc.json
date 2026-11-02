@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2025-12-18T21:04:47Z",
+ "accession": "0001730168-25-000121",
+ "cik": "0001730168",
+ "doc_byte_length": 2700143,
+ "doc_sha256": "56e0679168cd372cfd176f6a682ccd9743a3891ba8375978cd51a94fbb15b9de",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-12-18",
+ "form": "10-K",
+ "period_of_report": "2025-11-02",
+ "primary_document": "avgo-20251102.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 349771,
+  "byte_start": 348733,
+  "normalized": "Accordingly, we outsource a majority of our manufacturing operations, utilizing third-party foundry and assembly and test capabilities, as well as some of our corporate infrastructure functions. The majority of our front-end wafer manufacturing operations is outsourced to external foundries, including Taiwan Semiconductor Manufacturing Company Limited (“TSMC”). We use third-party CMs for a significant majority of our assembly and test operations, including TSMC, Advanced Semiconductor Engineering, Inc., Foxconn Technology Group, Amkor Technology, Inc. and Siliconware Precision Industries Co., Ltd. We use our internal fabrication facilities for products utilizing our innovative and proprietary processes, such as our FBAR filters for wireless communications and our vertical-cavity surface emitting laser and side emitting lasers based on gallium arsenide (“GaAs”) and indium phosphide (“InP”) lasers for fiber optic communications, while outsourcing commodity processes such as standard CMOS.",
+  "normalized_sha256": "f16308a3716a8d7bceab19a88994e087ddda9c6db11728d9827770ea43bcd6d4",
+  "raw": " Accordingly, we outsource a majority of our manufacturing operations, utilizing third-party foundry and assembly and test capabilities, as well as some of our corporate infrastructure functions. The majority of our front-end wafer manufacturing operations is outsourced to external foundries, including Taiwan Semiconductor Manufacturing Company Limited (&#8220;TSMC&#8221;). We use third-party CMs for a significant majority of our assembly and test operations, including TSMC, Advanced Semiconductor Engineering, Inc., Foxconn Technology Group, Amkor Technology, Inc. and Siliconware Precision Industries Co., Ltd. We use our internal fabrication facilities for products utilizing our innovative and proprietary processes, such as our FBAR filters for wireless communications and our vertical-cavity surface emitting laser and side emitting lasers based on gallium arsenide (&#8220;GaAs&#8221;) and indium phosphide (&#8220;InP&#8221;) lasers for fiber optic communications, while outsourcing commodity processes such as standard CMOS.",
+  "raw_sha256": "1c020c2a85a4ea6165bc2573c5d62e06381f2d5058951d07a665cfaed6b08ff8"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1730168/000173016825000121/avgo-20251102.htm",
+ "xbrl_contexts": []
+}

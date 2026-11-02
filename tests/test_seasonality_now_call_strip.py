@@ -153,3 +153,17 @@ def test_w21g_absent_now_renders_no_cards():
         assert 'class="now-strip"' not in html
         assert "style by style" not in html
         assert html.count('class="mos"') == 216
+
+
+def test_w38_narrow_now_chip_wraps():
+    compact = re.sub(r"\s+", "", _render(_seas()))
+    assert "@media(max-width:480px){.now-chip{white-space:normal;max-width:100%;}}" in compact
+
+
+def test_w38_base_now_chip_nowrap_precedes_media_rule():
+    compact = re.sub(r"\s+", "", _render(_seas()))
+    media_at = compact.find("@media(max-width:480px)")
+    base = re.search(r"\.now-chip\{[^}]*\}", compact)
+    assert base is not None
+    assert "white-space:nowrap" in base.group(0)
+    assert base.end() <= media_at

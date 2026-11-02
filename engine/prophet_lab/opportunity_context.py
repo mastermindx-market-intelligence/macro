@@ -15,10 +15,15 @@ from __future__ import annotations
 
 import re
 from copy import deepcopy
+from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Mapping, Sequence
 
-from engine.prophet_candidate_state import validate_candidate_state_projection
+from engine.prophet_candidate_state import (
+    build_native_factual_assessment_result,
+    validate_candidate_state_projection,
+)
+from engine.us_candidate_episode import CandidateEpisodeStoreSnapshot
 from engine.prophet_entry_availability import (
     AVAILABILITY_STATES,
     validate_entry_availability,
@@ -1068,3 +1073,83 @@ __all__ = [
     "validate_opportunity_identity_binding",
     "validate_terminal_portfolio_relation",
 ]
+
+
+@dataclass(frozen=True)
+class NativeOLIRead:
+    """One source-verified private research read, not a network or event schema."""
+
+    context: dict[str, object]
+    identity_binding: dict[str, object]
+    native_b3_source_receipt: str
+
+
+def build_native_oli_read(
+    snapshot: CandidateEpisodeStoreSnapshot,
+    *,
+    candidate_source_event_id: str,
+    candidate_source_receipt: str,
+    aliases: VendorAliasTable,
+    display_symbol: str,
+    entry_availability: Mapping[str, object] | None = None,
+) -> NativeOLIRead:
+    """Consume native B1/B3 and existing Data OS identity for an OLI view.
+
+    The caller must supply the Candidate Pool owner's actual source event ID and
+    receipt; a display ticker never selects a B1 event. The B3 owner's exact
+    verified pair supplies the market session, generation, and episode. B4 is
+    optional but when present must be an owner-issued fully valid receipt; a
+    missing owner remains unknown, not an invented negative permission verdict.
+
+    This helper mounts no route, performs no second source read, and writes
+    no store. The existing private Prophet Lab route owns auth and delivery.
+    """
+    native = build_native_factual_assessment_result(
+        snapshot,
+        candidate_source_event_id=candidate_source_event_id,
+        candidate_source_receipt=candidate_source_receipt,
+    )
+    assessment, projection = native.verified_pair()
+    session = assessment.get("market_session")
+    if not isinstance(session, str):
+        raise OpportunityContextContractError(
+            "native B3 assessment has no market_session"
+        )
+    try:
+        decision_date = date.fromisoformat(session)
+    except ValueError as exc:
+        raise OpportunityContextContractError(
+            "native B3 assessment session is invalid"
+        ) from exc
+
+    identity = resolve_display_alias_to_active_episode(
+        projection,
+        aliases=aliases,
+        display_symbol=display_symbol,
+        decision_date=decision_date,
+    )
+    if (
+        identity["episode_id"] != assessment.get("episode_id")
+        or identity["security_id"] != assessment.get("security_id")
+        or identity["candidate_generation_id"] != snapshot.generation_id
+        or identity["candidate_state_projection_id"]
+        != projection.get("projection_id")
+    ):
+        raise OpportunityContextContractError(
+            "Data OS alias and native B3 candidate source relation disagree"
+        )
+
+    context = compose_opportunity_context(
+        projection,
+        episode_id=identity["episode_id"],
+        entry_availability=entry_availability,
+    )
+    validate_opportunity_context(context)
+    receipt = assessment.get("source_receipt")
+    if not isinstance(receipt, str) or not receipt.startswith("sha256:"):
+        raise OpportunityContextContractError("native B3 source receipt missing")
+    return NativeOLIRead(
+        context=context,
+        identity_binding=identity,
+        native_b3_source_receipt=receipt,
+    )

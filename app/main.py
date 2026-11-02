@@ -2881,6 +2881,21 @@ except Exception as _catalyst_exc:  # noqa: BLE001
         "catalyst public bridge not mounted (fail closed): %r", _catalyst_exc)
 
 
+# ---------------------------------------------------------------------------
+# Catalyst SEC source reader wiring (A3-R). DEFAULT OFF: the admitted source
+# is configured only when CATALYST_PUBLIC_ENABLED=1 over the production R2
+# store; every refusal or failure leaves admission unconfigured (fail closed).
+# ---------------------------------------------------------------------------
+try:
+    from app.catalyst_source_wiring import configure_from_environment  # noqa: E402
+    configure_from_environment()
+except Exception as _catalyst_source_exc:  # noqa: BLE001
+    import logging as _logging  # noqa: PLC0415
+    _logging.getLogger("macro.api").warning(
+        "catalyst source reader not configured: %s",
+        type(_catalyst_source_exc).__name__)
+
+
 # Session 02 secure Catalyst opt-in router (DRAFT/HOLD sibling source).
 # Mount only the existing owner-backed request/verify API WHEN its source lands.
 # Do not auto-configure a consent service, allocate email state or send messages.

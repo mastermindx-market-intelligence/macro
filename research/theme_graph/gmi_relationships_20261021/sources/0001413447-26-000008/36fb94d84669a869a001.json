@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-19T11:04:33Z",
+ "accession": "0001413447-26-000008",
+ "cik": "0001413447",
+ "doc_byte_length": 2585048,
+ "doc_sha256": "bd63a1a7ae40fc4dc3587208358674eb79b7a653177e7155254a36c3caabd135",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-19",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "nxpi-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2526060,
+  "byte_start": 2525734,
+  "normalized": "Intellectual Property Transfer and License Agreement dated as of November 16, 2009 among NXP B.V., Virage Logic Corporation and VL C.V. (incorporated by reference to Exhibit 10.2 of the Amendment No. 3 to the Registration Statement on Form F-1 of NXP Semiconductors N.V. filed on June 30, 2010 (File No. 333-166128))",
+  "normalized_sha256": "81bfe149a28adc5e0c9756616e980ecb6ca92e26706bd649c8d1844e2f7784d9",
+  "raw": "Intellectual Property Transfer and License Agreement dated as of November&#160;16, 2009 among NXP B.V., Virage Logic Corporation and VL C.V. (incorporated by reference to Exhibit 10.2 of the Amendment No. 3 to the Registration Statement on Form F-1 of NXP Semiconductors N.V. filed on June&#160;30, 2010 (File No. 333-166128))",
+  "raw_sha256": "36fb94d84669a869a001508637ded3c2f69686f58f7f822a4c649fdbcab7fd4c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1413447/000141344726000008/nxpi-20251231.htm",
+ "xbrl_contexts": []
+}

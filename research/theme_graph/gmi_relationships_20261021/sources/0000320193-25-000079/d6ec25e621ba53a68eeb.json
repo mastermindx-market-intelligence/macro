@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2025-10-31T10:01:26Z",
+ "accession": "0000320193-25-000079",
+ "cik": "0000320193",
+ "doc_byte_length": 1520323,
+ "doc_sha256": "dc4f28c5b4eb82b192154630e4e97f338e50d378e02a1d4a042b53876adcade6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-10-31",
+ "form": "10-K",
+ "period_of_report": "2025-09-27",
+ "primary_document": "aapl-20250927.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 275310,
+  "byte_start": 274480,
+  "normalized": "Further, the Company has commercial relationships with other companies in the technology industry that are or may become subject to investigations and litigation that, if resolved against those other companies, could materially adversely affect the Company’s commercial relationships with those business partners and materially adversely affect the Company’s business, results of operations, financial condition and stock price. For example, the Company earns revenue from licensing arrangements with Google LLC (“Google”) and other companies to offer their search services on the Company’s platforms and applications, and certain of these arrangements are currently subject to government investigations and legal proceedings. On August 5, 2024, Google was found to have violated U.S. antitrust laws.",
+  "normalized_sha256": "53178baf2efe65bf1652fb51c2c9f4bbe1c0e99779b7e27f36f8919692057a62",
+  "raw": "Further, the Company has commercial relationships with other companies in the technology industry that are or may become subject to investigations and litigation that, if resolved against those other companies, could materially adversely affect the Company&#8217;s commercial relationships with those business partners and materially adversely affect the Company&#8217;s business, results of operations, financial condition and stock price. For example, the Company earns revenue from licensing arrangements with Google LLC (&#8220;Google&#8221;) and other companies to offer their search services on the Company&#8217;s platforms and applications, and certain of these arrangements are currently subject to government investigations and legal proceedings. On August 5, 2024, Google was found to have violated U.S. antitrust laws.",
+  "raw_sha256": "d6ec25e621ba53a68eeb5b7fce80102c7b63783320f214e5ea483a94552dc935"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+ "xbrl_contexts": []
+}

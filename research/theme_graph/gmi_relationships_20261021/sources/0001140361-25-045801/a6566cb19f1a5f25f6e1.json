@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2025-12-17T19:22:38Z",
+ "accession": "0001140361-25-045801",
+ "cik": "0000810136",
+ "doc_byte_length": 2832969,
+ "doc_sha256": "d8cbc894fb591653384b5569dac28f569a54636fbaa899f583491b78edee3d68",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-12-17",
+ "form": "10-K",
+ "period_of_report": "2025-10-31",
+ "primary_document": "ef20057458_10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2274843,
+  "byte_start": 2273339,
+  "normalized": "Customer B 13 % 12",
+  "normalized_sha256": "5d0959b5fd33cffbc9a408d15ac3109c17dbbb1339d1f698bd6d9deea4f3731a",
+  "raw": "Customer B</div>\n                    </td>\n                    <td class=\"cftguttercell\" colspan=\"1\" style=\"font-size: 10pt; vertical-align: bottom; width: 1%;\" valign=\"bottom\">&#160;</td>\n                    <td class=\"cftcurrcell\" colspan=\"1\" style=\"font-size: 10pt; vertical-align: bottom; width: 1%;\" valign=\"bottom\">&#160;</td>\n                    <td class=\"cftnumcell\" colspan=\"1\" style=\"font-size: 10pt; vertical-align: bottom; text-align: right; width: 9%;\" valign=\"bottom\"> <div><ix:nonFraction contextRef=\"c229\" decimals=\"2\" format=\"ixt:num-dot-decimal\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" unitRef=\"pure\" id=\"ixv-21071\">13</ix:nonFraction></div> </td>\n                    <td class=\"cftfncell\" colspan=\"1\" style=\"font-size: 10pt; vertical-align: bottom; width: 1%; white-space: nowrap;\" valign=\"bottom\">\n                      <div>%</div>\n                    </td>\n                    <td class=\"cftguttercell\" colspan=\"1\" style=\"font-size: 10pt; vertical-align: bottom; width: 1%;\" valign=\"bottom\">&#160;</td>\n                    <td class=\"cftcurrcell\" colspan=\"1\" style=\"font-size: 10pt; vertical-align: bottom; width: 1%;\" valign=\"bottom\">&#160;</td>\n                    <td class=\"cftnumcell\" colspan=\"1\" style=\"font-size: 10pt; vertical-align: bottom; text-align: right; width: 9%;\" valign=\"bottom\"> <div><ix:nonFraction contextRef=\"c230\" decimals=\"2\" format=\"ixt:num-dot-decimal\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" unitRef=\"pure\" id=\"ixv-21072\">12",
+  "raw_sha256": "a6566cb19f1a5f25f6e13a97b805d121e6eceffba6fa8f31bca81e12b37c7e74"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/810136/000114036125045801/ef20057458_10k.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 2807586,
+   "byte_start": 2806858,
+   "context_ref": "c230",
+   "raw": "<xbrli:context xmlns=\"\" id=\"c230\">\n  <xbrli:entity>\n    <xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000810136</xbrli:identifier>\n    <xbrli:segment>\n      <xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">plab:CustomerBMember</xbrldi:explicitMember>\n      <xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember>\n      <xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember>\n    </xbrli:segment>\n  </xbrli:entity>\n  <xbrli:period>\n    <xbrli:startDate>2023-11-01</xbrli:startDate>\n    <xbrli:endDate>2024-10-31</xbrli:endDate>\n  </xbrli:period>\n</xbrli:context>",
+   "raw_sha256": "909e465f566c0a95ea282cdc4c15cdd4233283aa7324feda81fdd05fc776f4a9"
+  }
+ ]
+}

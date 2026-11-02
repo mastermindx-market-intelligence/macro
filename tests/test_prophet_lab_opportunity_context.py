@@ -1330,3 +1330,109 @@ def test_native_plain_owner_objects_still_compose_and_json_round_trip():
     assert out["fresh_entry"]["entry_open"] is False
     assert out["evidence_summary"]["support"]["state"] == "UNAVAILABLE"
     validate_opportunity_context(json.loads(json.dumps(out)))
+
+
+# P0 native read adapter: in-process proof that the route can consume one native
+# B3 verified pair, exact B1 source identity and Data OS alias without new state.
+def _native_oli_admitted_stub(monkeypatch, *, assessment_changes=None):
+    from types import SimpleNamespace
+    import engine.prophet_lab.opportunity_context as oli
+
+    candidate = projection()
+    assessment = {
+        "episode_id": eid(),
+        "security_id": "SEC:US-XNAS-AAPL",
+        "market_session": "2026-09-18",
+        "source_receipt": "sha256:" + "a" * 64,
+    }
+    if assessment_changes:
+        assessment.update(assessment_changes)
+    calls = {"builder": 0, "pair": 0}
+
+    class NativeOwnerResult:
+        def verified_pair(self):
+            calls["pair"] += 1
+            return deepcopy(assessment), deepcopy(candidate)
+
+    def native_builder(
+        snapshot, *, candidate_source_event_id, candidate_source_receipt,
+    ):
+        calls["builder"] += 1
+        assert candidate_source_event_id == "candidate:2026-09-18:AAPL:us_prophet_v3"
+        assert candidate_source_receipt == "sha256:" + "b" * 64
+        return NativeOwnerResult()
+
+    monkeypatch.setattr(
+        oli, "build_native_factual_assessment_result", native_builder,
+    )
+    snapshot = SimpleNamespace(
+        generation_id=candidate["candidate_generation_id"],
+    )
+    return oli, snapshot, assessment, candidate, calls
+
+
+def _native_oli_adapter_call(oli, snapshot, **kwargs):
+    return oli.build_native_oli_read(
+        snapshot,
+        candidate_source_event_id="candidate:2026-09-18:AAPL:us_prophet_v3",
+        candidate_source_receipt="sha256:" + "b" * 64,
+        aliases=_identity_aliases(),
+        display_symbol=kwargs.pop("display_symbol", "AAPL"),
+        **kwargs,
+    )
+
+
+def test_native_oli_adapter_reuses_one_source_verified_pair(monkeypatch):
+    oli, snapshot, assessment, candidate, calls = _native_oli_admitted_stub(
+        monkeypatch,
+    )
+    result = _native_oli_adapter_call(oli, snapshot)
+    assert type(result) is oli.NativeOLIRead
+    assert calls == {"builder": 1, "pair": 1}
+    assert result.native_b3_source_receipt == assessment["source_receipt"]
+    assert result.identity_binding["episode_id"] == assessment["episode_id"]
+    assert result.identity_binding["candidate_state_projection_id"] == candidate["projection_id"]
+    assert result.context["decision_clock"]["market_session"] == assessment["market_session"]
+    assert result.context["fresh_entry"]["entry_open"] is None
+    assert result.context["fresh_entry"]["reason"] == "B4_NOT_AVAILABLE"
+    assert result.context["user_state"]["portfolio"]["state"] == "NOT_JOINED"
+    assert all(v is False for v in result.context["authority"].values())
+
+
+def test_native_oli_adapter_passes_existing_owner_b4_without_new_evaluator(monkeypatch):
+    oli, snapshot, _, candidate, calls = _native_oli_admitted_stub(monkeypatch)
+    original_b4 = availability(candidate)
+    result = _native_oli_adapter_call(
+        oli, snapshot, entry_availability=original_b4,
+    )
+    assert calls == {"builder": 1, "pair": 1}
+    assert result.context["fresh_entry"]["availability_id"] == original_b4["availability_id"]
+    assert result.context["fresh_entry"]["entry_open"] is original_b4["entry_open"]
+
+
+def test_native_oli_adapter_refuses_display_symbol_without_alias_fallback(monkeypatch):
+    oli, snapshot, _, _, _ = _native_oli_admitted_stub(monkeypatch)
+    with pytest.raises(OpportunityContextContractError, match="unmapped"):
+        _native_oli_adapter_call(oli, snapshot, display_symbol="UNMAPPED")
+
+
+@pytest.mark.parametrize("changes,reason", [
+    ({"market_session": "2026-09-19"}, "market_session"),
+    ({"episode_id": "pe:other:epoch_0:sa:other:1"}, "disagree"),
+    ({"security_id": "SEC:US-XNAS-OTHER"}, "disagree"),
+    ({"source_receipt": None}, "source receipt missing"),
+])
+def test_native_oli_adapter_refuses_native_owner_binding_drift(monkeypatch, changes, reason):
+    oli, snapshot, _, _, _ = _native_oli_admitted_stub(
+        monkeypatch, assessment_changes=changes,
+    )
+    with pytest.raises(OpportunityContextContractError, match=reason):
+        _native_oli_adapter_call(oli, snapshot)
+
+
+def test_native_oli_adapter_refuses_generation_mismatch(monkeypatch):
+    from types import SimpleNamespace
+    oli, _, _, candidate, _ = _native_oli_admitted_stub(monkeypatch)
+    snapshot = SimpleNamespace(generation_id="peg:" + "d" * 64)
+    with pytest.raises(OpportunityContextContractError, match="disagree"):
+        _native_oli_adapter_call(oli, snapshot)

@@ -228,3 +228,55 @@ Next action: merge #10351 at a3b84009 → W3 F2 (adversarial review of the F1 ma
   re-running its script on M2 and reproducing every verdict. A BROKEN control is recorded as
   evidence; its repair is a separately commissioned build lane, never part of the F2 lane.
 - Spent lane ids (never relaunch): the three ids above.
+
+## Eighth write 2026-11-02 01:28Z — W3 F2 adjudicated; seven repair PRs; nine controls closed on main; §9.1 readiness mapped
+
+- **Leadership continuity (Chairman 2026-10-24 ruling).** Seat 602cd180's session ended after merging #10411 at 2026-11-01 13:13Z with this eighth write drafted but never committed (draft recovered from its scratchpad, verified against main: every PR and merge commit below re-read from GitHub/main by this seat). Seat e3d62d36 (Fable 5.1, the original 2026-10-22 commission seat, resumed 2026-11-02 01:2xZ) is the current receiver: takeover recorded here and in the workstream landmine, no owner wait, no work redone.
+
+- **F2 evidence MERGED.** macro #10366 → c31b2526 (06:16:15Z). The seat re-ran all three lane
+  scripts on M2 and reproduced every verdict before accepting. 52 controls executed:
+  | Family | Executed | HELD | BROKEN | NO_MECHANISM |
+  |---|---|---|---|---|
+  | Time and corrections (T01–T15) | 15 | 13 | 1 (T04) | 1 (T15) |
+  | Rights and identity (R01–R15) | 17 | 16 | 1 (R15) | 0 |
+  | Model context (M01–M15) | 20 | 11 | 5 (M01c, M05, M06a, M06b, M11) | 4 (M04, M07b, M08, M13) |
+- **§9.1 readiness map MERGED.** macro #10369 → a10ceb05 (06:48:41Z), evidence only. No vertical
+  reaches ANON_DEPLOYED without a human. Best rung without a human: V1 and V4 COMMITTED_ARTIFACT;
+  V2, V3, V5 and V7 OFFLINE_FIXTURE; V6 SIGNED_IN_HUMAN_GATE for the read step and NONE for save,
+  follow and propose.
+- **Repairs, each a separately commissioned build with an independent non-author review.** Every
+  review was a native Opus read-only auditor because Fabric admission returned rc=75 on every
+  host; that fallback is the standing rule, not a waiver.
+  | Finding | PR | Review | Merged | Proof on main |
+  |---|---|---|---|---|
+  | M01c, M06a, M06b, M11 | #10372 | FAIL at 34671a0f (M-1 text_safe arrays skipped S14; m-1 slot test; m-2 rate units took currency), repaired, re-review PASS_WITH_NOTES | 6a894b6f (08:39:34Z) | nc_model_context at 1d3f3ae1: all four HELD |
+  | T04 possession bound (B3) | #10378 | FAIL at 8efb17bb (V3 OverflowError not fail-closed), repaired, re-review PASS_WITH_NOTES | 0b167979 (09:15:18Z) | nc_time_corrections at 1d3f3ae1: T04 HELD, r24h=0 daily28d=0 |
+  | T15 provider stamps after receipt | #10386 | PASS_WITH_NOTES at 2fabfa3d | 1d3f3ae1 (09:59:31Z) | T15 HELD, three anomalies flagged; summary held=15 of 15 |
+  | R15 syndicated-copy source count (B4) | #10393 | PASS_WITH_NOTES at 2da2f882 | 5e08c8db (10:07:51Z) | nc_rights_identity on 5e08c8db: R15 HELD (syndicated wire collapsed, source_count=1); held=17 of 17 |
+  | M05b producer fingerprint by fact-key period | #10398 | FAIL at f2458a28 (R3 absence period hashed whole; R3 nit raw period dict; R7 two doc overstatements; R2 unit spellings), repaired at cf0ce682, re-review PASS_WITH_NOTES at cf0ce682 | b114f35c (10:37:13Z) | nc_model_context on b114f35c: M05b HELD (percent, pp and "percentage points" collapse to one fact_revision chain); held=16, broken=1 (M05a), no_mechanism=4, total=21 |
+  | Validator: fold-split role markers and control-split URI schemes (NOTE-A) | #10405 | FAIL at a67a92ff (deleting tab/LF/CR across the whole value refused ordinary prose), r2 FAIL on wording, r3 code PASS with body FAIL fixed in r3b, re-review PASS_WITH_NOTES | f59b3547 (12:38:37Z) | validator rule; tests only, no control maps to it |
+  | M04 fabricated number: quantity grounded against the verified span | #10411 | FAIL at 1d6df1ae (US and European readings both grounded, so a 1000x-off value passed; Decimal overflow raised), repaired at f7970bfb (one reading per numeral; numerals over 64 characters fail closed), re-review PASS_WITH_NOTES at f7970bfb | b15b9405 (2026-11-01 13:13:16Z) | nc_model_context: M04 HELD (stated USD 50m -> emitted capital_allocation_event.v1; fabricated 777 from the same span -> rejected quantity_value_ungrounded); summary held=17, broken=1 (M05a), no_mechanism=3 (M07b, M08, M13), total=21 — re-run by seat e3d62d36 at main f50fc7b7 (descends from b15b9405) |
+  #10386 CI: ci-pack-2 failed on its first attempt; the failed job was rerun once as a principal
+  act and passed. Its cause was not diagnosed. Never rerun it again.
+- **M05a stays BROKEN by contract, not by defect.** The grader's unit map binds `"pp": "percent"`
+  in the frozen endpoints.v1 contract, so a percentage-point answer graded against percent still
+  scores correct. Changing that needs a versioned contract, not an edit under `contracts/`.
+- **NO_MECHANISM triage.** M04 is closed by #10411. M07b (52/53-week and claim-versus-evidence
+  period) remains: the claim-versus-evidence part is an engine candidate that builds on #10398; the
+  52/53-week part changes the fiscal-period token and is a named contract gap. M08
+  (adjusted versus reported basis) and M13 (coalescing, timeout and spend budget before a model
+  call, the E4 B2/B4 bindings) are recorded gaps owned by their contracts, not repaired here.
+- **Review follow-ups queued, none blocking:** from #10411, the grouping sentence is less precise
+  than the code, the newly fail-closed lakh `1,23,456` and `1,234,56` forms are not named, the
+  overflow test case does not pin the overflow, and a two-period numeral is not width-checked
+  (`5.1.3` reads 513; pre-existing); from #10405, the fold-skip and S8 cost note and the vbscript
+  double report; M04 refusal rate on real labels is unmeasured (no producer bundles local); nc_m11 should assert
+  the refusal reason (n-5); a malformed `published_at` raises instead of refusing; "25 index points
+  USD" wording (NOTE-D); the B4 UI verifier checks only the Chinese note (N2).
+- Spent lane ids (never relaunch): news-w3-f2-time-corrections-r1, news-w3-f2-rights-identity-r1,
+  news-w3-f2-model-context-r1, news-w3-f2-review-r1, news-w4-v91-readiness-r1/r2,
+  news-w4-v91-review-r1/r2, news-w4-f2fix-b1-amounts-r1, news-w4-f2fix-b1-review-r1, news-w4-f2fix-notea-r1.
+
+Next action: build the M07b claim-versus-evidence period check as a fresh lane (seat-direct on rc=75)
+after reading each event type's slot-period semantics; then the §9.1 vertical proofs to their best rung without a human. F3/F4 signed-in observation is a
+human gate, named once: a person must sign in to the deployed product for the SIGNED_IN rungs.
