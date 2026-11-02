@@ -28,16 +28,21 @@ bound here are bytes that already exist in the evidence. In the nightly step it
 runs as an alarm, never a gate: a refusal never flips the checkpoint contract.
 
 Refusal classes (closed vocabulary): inventory missing/unreadable/malformed or
-population changed, source snapshot missing/unbound/unqualified path, durable
+population changed, baseline evidence missing/unreadable/malformed (fail
+closed — the complete delta can never be qualified without it), source
+snapshot missing/unbound/unqualified path/unqualified encoding, durable
 snapshot missing (including a corrupt gzip body), path not normalized/missing,
 symlink, bytes changed after freeze, candidate store empty, index clock
-missing/unqualified, index/board binding mismatch, split checkpoint (delta TSV
-vs inventory vs live disagreement), and GMI family unreadable / receipt not
-supplied / unreadable / invalid / not available / state identity mismatch /
-theme state not qualified, with incumbent owner refusal reasons passed through
-under a ``GMI_`` prefix. A ``VALID_EMPTY`` owner receipt is an accepted
-reference (a validly published empty theme state), an empty candidate store is
-not.
+missing/unqualified, index mutated during its single identity read,
+index/board binding mismatch (SHA, snapshot path and snapshot encoding), delta
+not exactly the baseline→inventory symmetric difference (duplicate, missing or
+unexpected TSV rows, mismatched before fingerprints, deleted outputs), split
+checkpoint (delta TSV vs inventory vs live disagreement), and GMI family
+unreadable / receipt not supplied / unreadable / invalid / not available /
+state identity mismatch / theme state not qualified, with incumbent owner
+refusal reasons passed through under a ``GMI_`` prefix. A ``VALID_EMPTY``
+owner receipt is an accepted reference (a validly published empty theme
+state), an empty candidate store is not.
 """
 from __future__ import annotations
 
@@ -58,6 +63,8 @@ from scripts.prophet_output_inventory import (
     INDEX_REL,
     canonical_json,
     candidate_store_entries,
+    # Retained imported (not called): the index identity must come from ONE
+    # immutable read — tests pin that no second digest() read ever returns.
     digest,
     snapshot,
     store_sha256,
@@ -202,15 +209,19 @@ def _source_binding(source_snapshot_path: Path):
     return source, None
 
 
-def _bind_board(root: Path, source_snapshot_path: Path, source_blob_path: Path,
+def _bind_board(root: Path, source, source_code: str | None, source_blob_path: Path,
                 persisted=None):
-    """Frozen source leg: snapshot/bundle/live triple equality + durable recovery."""
+    """Frozen source leg: snapshot/bundle/live triple equality + durable recovery.
+
+    The caller passes the ONE parsed source-snapshot object (review finding 2):
+    the board leg and the index leg must bind the same frozen binding, never
+    two reads an intervening rewrite could desynchronize.
+    """
     reasons: list[str] = []
-    source, code = _source_binding(source_snapshot_path)
     if source is None:
         # A settlement that cannot be proven still leaves a typed receipt
         # (never a missing run): the leg refuses, nothing is raised.
-        return dict(_leg([code], {"path": None, "snapshot_path": None}), sha256=None)
+        return dict(_leg([source_code], {"path": None, "snapshot_path": None}), sha256=None)
     expected_sha = str(source["sha256"])
     board_rel = str(source["path"])
     if board_rel != BOARD_REL:
@@ -243,9 +254,17 @@ def _bind_board(root: Path, source_snapshot_path: Path, source_blob_path: Path,
         # and inside the persisted inventory; nothing outside the repo or the
         # allowlist is ever read as the durable source.
         reasons.append("SNAPSHOT_PATH_UNQUALIFIED")
+    declared_encoding = source.get("snapshot_encoding")
+    encoding_ok = declared_encoding == "gzip"
+    if not encoding_ok:
+        # The durable recovery below speaks exactly one encoding; a source
+        # snapshot declaring anything else is unqualified even when the bytes
+        # at its path happen to gunzip (review finding 3).
+        reasons.append("SNAPSHOT_ENCODING_UNQUALIFIED")
     durable_path = root / str(snapshot_rel if snapshot_ok else "")
     durable_raw = None
-    if snapshot_ok and durable_path.is_file() and not durable_path.is_symlink():
+    if (snapshot_ok and encoding_ok and durable_path.is_file()
+            and not durable_path.is_symlink()):
         try:
             durable_raw = gzip.decompress(durable_path.read_bytes())
         except (OSError, EOFError, zlib.error):   # round-2 N1: a corrupt deflate body is a typed loss
@@ -261,25 +280,91 @@ def _bind_board(root: Path, source_snapshot_path: Path, source_blob_path: Path,
 
 
 def _parse_delta(delta_path: Path):
-    """Incumbent delta TSV rows; None when unreadable or non-normalized."""
+    """Incumbent delta TSV rows: ``(rows or None, duplicate paths)``.
+
+    Rows map ``rel -> (before, after)`` with ``mode:sha256`` fingerprints (or
+    the writer's literal ``MISSING``). A path appearing in more than one row is
+    never silently overwritten (review finding 1): the duplicates are returned
+    so the index leg can refuse them — a contradictory duplicate followed by a
+    correct row must not qualify. ``None`` rows mean the manifest is unreadable
+    or carries a non-normalized / wrong-width row.
+    """
     try:
         text = delta_path.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError):
-        return None
+        return None, []
     rows: dict[str, tuple[str, str]] = {}
+    duplicates: list[str] = []
     for line in text.splitlines():
         if not line:
             continue
         parts = line.split("\t")
         if len(parts) != 3 or not _normalized_rel(parts[0]):
-            return None
+            return None, []
+        if parts[0] in rows:
+            duplicates.append(parts[0])
         rows[parts[0]] = (parts[1], parts[2])
-    return rows
+    return rows, duplicates
 
 
-def _bind_index(root: Path, persisted, delta_rows, delta_path: Path,
-                frozen_board_sha: str | None):
-    """Final index leg: raw bytes, genuine computed_at, split-checkpoint binding."""
+def _bind_baseline(baseline_path: Path):
+    """``(baseline fingerprints or None, typed refusal code or None)``.
+
+    Missing, unreadable or malformed ``PROPHET_BASELINE`` evidence fails
+    closed: the complete delta can never be proven to be the exact symmetric
+    difference without it, so the index leg refuses instead of skipping the
+    qualification.
+    """
+    if not baseline_path.exists():
+        return None, "BASELINE_MISSING"
+    baseline = _read_json(baseline_path)
+    if baseline is None:
+        return None, "BASELINE_UNREADABLE"
+    if not _well_formed_inventory(baseline):
+        return None, "BASELINE_MALFORMED"
+    return baseline, None
+
+
+def _stat(path: Path) -> os.stat_result:
+    """Pre/post capture seam (one indirection over ``os.stat``) so controlled
+    fault-injections can simulate an intervening rewrite between the two
+    captures that fence the index identity read."""
+    return os.stat(path)
+
+
+_IMMUTABLE_STAT_FIELDS = ("st_mode", "st_ino", "st_size", "st_mtime_ns")
+
+
+def _immutable_bytes(path: Path) -> tuple[bytes, os.stat_result, bool]:
+    """ONE raw byte capture fenced by pre/post stat equality (review finding 2).
+
+    The final index's identity is derived from these bytes and this stat only —
+    never from a second ``digest()`` read that an intervening rewrite could
+    desynchronize from the receipt's artifact hash. The third item is True when
+    the fence caught a mutation between the two captures; the caller then
+    refuses instead of binding.
+    """
+    before = _stat(path)
+    raw = path.read_bytes()
+    after = _stat(path)
+    mutated = any(
+        getattr(before, field) != getattr(after, field)
+        for field in _IMMUTABLE_STAT_FIELDS
+    )
+    return raw, after, mutated
+
+
+# The delta writer's literal for a path absent from the baseline snapshot
+# (first-seen output); scripts/ci/daily_engine_prophet_nightly.sh heredoc 3.
+DELTA_MISSING_FINGERPRINT = "MISSING"
+
+
+def _bind_index(root: Path, persisted, baseline, baseline_code: str | None,
+                delta_rows, delta_duplicates, delta_path: Path,
+                source, frozen_board_sha: str | None):
+    """Final index leg: ONE immutable raw read, genuine computed_at, the full
+    index/board snapshot binding (SHA + snapshot path + encoding) and the
+    complete delta qualification against baseline and inventory."""
     reasons: list[str] = []
     detail: dict = {}
     index_path = root / INDEX_REL
@@ -288,9 +373,19 @@ def _bind_index(root: Path, persisted, delta_rows, delta_path: Path,
     if not index_path.is_file():
         reasons.append("INDEX_MISSING")
         return dict(_leg(reasons, detail), sha256=None, computed_at=None)
-    raw = index_path.read_bytes()
+    try:
+        raw, stat_after, mutated = _immutable_bytes(index_path)
+    except OSError:
+        # A read fault is a typed loss, never a partial identity: the byte set
+        # behind this receipt must be one provably immutable read.
+        return dict(_leg(["INDEX_MUTATED_DURING_READ"], detail), sha256=None,
+                    computed_at=None)
+    if mutated:
+        reasons.append("INDEX_MUTATED_DURING_READ")
     raw_sha = _sha256(raw)
-    live_fingerprint = digest(index_path)
+    # Identity comes from the SAME single read: mode bits from the post-read
+    # capture, digest from those exact bytes. No second digest() read exists.
+    live_fingerprint = f"{stat_after.st_mode & 0o7777:04o}:{raw_sha}"
     try:
         doc = json.loads(raw)
     except (UnicodeDecodeError, ValueError):
@@ -300,12 +395,25 @@ def _bind_index(root: Path, persisted, delta_rows, delta_path: Path,
         reasons.append("INDEX_CLOCK_MISSING")
     elif not COMPUTED_AT_RE.fullmatch(computed_at) or _unparseable(computed_at):
         reasons.append("INDEX_CLOCK_UNQUALIFIED")
+    # Review finding 3: the index must bind all three frozen-source fields.
+    # The snapshot path named here is exactly the path the board leg proved
+    # recovers the frozen bytes durably, and the encoding is exactly the gzip
+    # recovery that proof speaks.
+    qualified_snapshot_rel = str(source.get("snapshot_path")) if source else None
     if (
         frozen_board_sha is None
         or not isinstance(doc, dict)
         or doc.get("source_board_sha256") != frozen_board_sha
     ):
         reasons.append("INDEX_BOARD_BINDING_MISMATCH")
+    if not isinstance(doc, dict) or doc.get("source_board_snapshot_path") != qualified_snapshot_rel:
+        reasons.append("INDEX_SNAPSHOT_PATH_MISMATCH")
+    if (
+        not isinstance(doc, dict)
+        or doc.get("source_board_snapshot_encoding") != "gzip"
+        or (source is not None and source.get("snapshot_encoding") != "gzip")
+    ):
+        reasons.append("INDEX_SNAPSHOT_ENCODING_MISMATCH")
     if persisted is not None and persisted.get(INDEX_REL) != live_fingerprint:
         reasons.append("INVENTORY_POPULATION_CHANGED")
     if not delta_path.exists():
@@ -323,6 +431,44 @@ def _bind_index(root: Path, persisted, delta_rows, delta_path: Path,
                 reasons.append("PATH_MISSING")
             elif persisted is not None and persisted.get(rel) != after:
                 reasons.append("SPLIT_CHECKPOINT_TSV_STALE")
+    if baseline_code is not None:
+        # Fail closed: without qualified baseline evidence the complete delta
+        # can never be bound as the exact symmetric difference.
+        reasons.append(baseline_code)
+    elif baseline is not None and persisted is not None and delta_rows is not None:
+        # Review finding 1: the retained checkpoint publisher processes ONLY
+        # the delta TSV rows, so the preflight must bind the manifest as the
+        # EXACT symmetric difference between PROPHET_BASELINE and the final
+        # full-population inventory: every changed or first-seen path present
+        # exactly once with its true before/after fingerprints, no extra row,
+        # and no deleted output at all (the writer refuses deletions too).
+        expected = {
+            rel: (baseline.get(rel, DELTA_MISSING_FINGERPRINT), fingerprint)
+            for rel, fingerprint in persisted.items()
+            if baseline.get(rel) != fingerprint
+        }
+        removed = sorted(rel for rel in baseline if rel not in persisted)
+        if removed:
+            reasons.append("DELTA_OUTPUT_DELETED")
+            detail["deleted_outputs"] = removed[:8]
+        missing_rows = sorted(rel for rel in expected if rel not in delta_rows)
+        if missing_rows:
+            reasons.append("DELTA_ROW_MISSING")
+            detail["delta_rows_missing"] = missing_rows[:8]
+        unexpected_rows = sorted(rel for rel in delta_rows if rel not in expected)
+        if unexpected_rows:
+            reasons.append("DELTA_ROW_UNEXPECTED")
+            detail["delta_rows_unexpected"] = unexpected_rows[:8]
+        before_mismatch = sorted(
+            rel for rel, (exp_before, _after) in expected.items()
+            if rel in delta_rows and delta_rows[rel][0] != exp_before
+        )
+        if before_mismatch:
+            reasons.append("DELTA_BEFORE_MISMATCH")
+            detail["delta_before_mismatch"] = before_mismatch[:8]
+    if delta_duplicates:
+        reasons.append("DELTA_ROW_DUPLICATE")
+        detail["delta_duplicate_paths"] = sorted(set(delta_duplicates))[:8]
     detail["source_board_sha256"] = doc.get("source_board_sha256") if isinstance(doc, dict) else None
     leg = _leg(reasons, detail)
     leg["sha256"] = raw_sha if not reasons else None
@@ -440,6 +586,7 @@ def run_preflight(
     root: Path,
     *,
     inventory_path: Path,
+    baseline_path: Path,
     source_snapshot_path: Path,
     source_blob_path: Path,
     delta_path: Path,
@@ -452,11 +599,17 @@ def run_preflight(
     if persisted is not None and not _well_formed_inventory(persisted):
         persisted, malformed = None, True
     inventory_leg = _bind_inventory(root, inventory_path, persisted, malformed=malformed)
-    source, _code = _source_binding(source_snapshot_path)
+    # ONE parse of the frozen source snapshot (review finding 2): the board
+    # leg and the index leg bind the same object, never two reads that an
+    # intervening rewrite could desynchronize.
+    source, source_code = _source_binding(source_snapshot_path)
     frozen_board_sha = str(source["sha256"]) if source is not None else None
-    board_leg = _bind_board(root, source_snapshot_path, source_blob_path, persisted)
-    index_leg = _bind_index(root, persisted, _parse_delta(delta_path), delta_path,
-                            frozen_board_sha)
+    board_leg = _bind_board(root, source, source_code, source_blob_path, persisted)
+    baseline, baseline_code = _bind_baseline(baseline_path)
+    delta_rows, delta_duplicates = _parse_delta(delta_path)
+    index_leg = _bind_index(root, persisted, baseline, baseline_code,
+                            delta_rows, delta_duplicates, delta_path,
+                            source, frozen_board_sha)
     store_leg = _bind_candidate_store(root, persisted)
     gmi_leg = _bind_gmi_theme_state(root, gmi_receipt_path)
 
@@ -548,6 +701,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--root", default=os.environ.get("GITHUB_WORKSPACE") or os.getcwd())
     parser.add_argument("--inventory", default=os.environ.get("PROPHET_INVENTORY"))
+    parser.add_argument(
+        "--baseline",
+        default=os.environ.get("PROPHET_BASELINE"),
+        help="pre-build closed-allowlist baseline the delta must exactly explain",
+    )
     parser.add_argument("--source-snapshot", default=os.environ.get("PROPHET_SOURCE_SNAPSHOT"))
     parser.add_argument("--source-blob", default=os.environ.get("PROPHET_SOURCE_BLOB"))
     parser.add_argument("--delta", default=os.environ.get("PROPHET_DELTA"))
@@ -562,6 +720,7 @@ def main(argv: list[str] | None = None) -> int:
         name
         for name, value in (
             ("--inventory", args.inventory),
+            ("--baseline", args.baseline),
             ("--source-snapshot", args.source_snapshot),
             ("--source-blob", args.source_blob),
             ("--delta", args.delta),
@@ -580,6 +739,7 @@ def main(argv: list[str] | None = None) -> int:
         receipt = run_preflight(
             Path(args.root),
             inventory_path=Path(args.inventory),
+            baseline_path=Path(args.baseline),
             source_snapshot_path=Path(args.source_snapshot),
             source_blob_path=Path(args.source_blob),
             delta_path=Path(args.delta),
