@@ -2164,3 +2164,54 @@ def test_u1c_a_later_amendment_with_an_unreadable_total_leaves_the_amount_unknow
     assert path["registered_amount"]["value"] is None
     assert f"fee_table_total_indeterminate:{ACC_A2}" in evaluation.envelope.blockers
     assert evaluation.envelope.aggregate_bound.status == "unknown"
+
+
+def test_u1c_a_later_amendment_in_another_currency_leaves_the_amount_unknown() -> None:
+    # The amendment's fee table is stated in euros.  It is still the latest
+    # filing, so the original's dollar amount must not stand for it.
+    reg, shares = _amended_registration(f"{shift(SALE, 20)}T21:00:00Z")
+    amendment = _row_by_id(reg, "doc:amend")
+    amendment["normalized"] = {**amendment["normalized"], "currency": "EUR"}
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "unknown"
+    assert path["registered_amount"]["value"] is None
+    assert f"fee_table_value_unusable:{ACC_A2}" in evaluation.envelope.blockers
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+
+
+def test_u1c_a_later_amendment_in_thousands_leaves_the_amount_unknown() -> None:
+    reg, shares = _amended_registration(f"{shift(SALE, 20)}T21:00:00Z")
+    amendment = _row_by_id(reg, "doc:amend")
+    amendment["normalized"] = {**amendment["normalized"], "scale": "1000"}
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "unknown"
+    assert f"fee_table_value_unusable:{ACC_A2}" in evaluation.envelope.blockers
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+
+
+def test_u1c_a_total_in_another_scale_is_not_replaced_by_a_security_row() -> None:
+    # The amendment carries a dollar security row and a total stated in
+    # thousands.  The total exists but cannot be read here, so the lone
+    # security row must not stand in for it.
+    stamp = f"{shift(SALE, 20)}T21:00:00Z"
+    reg, shares = _amended_registration(stamp)
+    total = total_fee_row(ACC_A2, "30000", available_at=stamp, observation_id="doc:amend-total")
+    total["normalized"] = {**total["normalized"], "scale": "1000"}
+    reg.append(total)
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "unknown"
+    assert f"fee_table_total_indeterminate:{ACC_A2}" in evaluation.envelope.blockers
+
+
+def test_u1c_an_earlier_filing_in_another_currency_does_not_block_a_later_dollar_amount() -> None:
+    reg, shares = _amended_registration(f"{shift(SALE, 20)}T21:00:00Z")
+    original = _row_by_id(reg, f"doc:{PATH_A[-6:]}")
+    original["normalized"] = {**original["normalized"], "currency": "EUR"}
+    evaluation = _zero_usage_evaluation(reg, shares)
+    path = evaluation.inputs["registration_paths"][0]
+    assert path["registered_amount"]["status"] == "known"
+    assert path["registered_amount"]["value"] == "30000000"
+    assert path["fee_table_accession"] == ACC_A2

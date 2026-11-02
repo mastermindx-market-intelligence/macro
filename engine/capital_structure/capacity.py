@@ -1549,8 +1549,11 @@ class _Builder:
         # per-security row must not stand in for it.  Such a filing also
         # joins the filing ordering below: when it is the latest, its
         # unreadable total leaves the amount unknown rather than letting an
-        # earlier filing's amount stand.  An amendment with no fee table at
-        # all emits no total row and never displaces the original's amount.
+        # earlier filing's amount stand.  An observed row stated in another
+        # currency or scale joins the ordering too (a total among them counts
+        # as unreadable), so a later amendment this evaluator cannot read
+        # still makes the earlier amount stale.  An amendment with no fee
+        # table at all emits no row and never displaces the original's amount.
         unobserved_totals: Counter[str] = Counter()
         stated: list[tuple[str, datetime | None]] = []
         for observation in self.read.fee_rows:  # type: ignore[union-attr]
@@ -1564,19 +1567,19 @@ class _Builder:
                         unobserved_totals[unobserved] += 1
                         stated.append((unobserved, _filing_instant(body)))
                 continue
-            normalized = body.get("normalized") if isinstance(body.get("normalized"), Mapping) else {}
-            currency = _text(normalized.get("currency"))
-            if currency is None or currency.upper() != "USD":
-                continue
-            raw_scale = normalized.get("scale")
-            scale = _decimal_or_none(raw_scale if isinstance(raw_scale, str) else str(raw_scale))
-            if scale is None or scale != 1:
-                continue
             accession = _text(_nested(body, "filing", "accession"))
             if accession is None or accession not in path.accessions:
                 continue
-            rows.append((observation, accession))
             stated.append((accession, _filing_instant(body)))
+            normalized = body.get("normalized") if isinstance(body.get("normalized"), Mapping) else {}
+            currency = _text(normalized.get("currency"))
+            raw_scale = normalized.get("scale")
+            scale = _decimal_or_none(raw_scale if isinstance(raw_scale, str) else str(raw_scale))
+            if currency is None or currency.upper() != "USD" or scale is None or scale != 1:
+                if _text(_nested(body, "term", "scope")) == "registration_fee_table_total":
+                    unobserved_totals[accession] += 1
+                continue
+            rows.append((observation, accession))
 
         def missing(
             note: str,
@@ -1635,6 +1638,12 @@ class _Builder:
                 )
             accession = leaders[0]
         group = [item for item in rows if item[1] == accession]
+        if not group and not unobserved_totals[accession]:
+            return missing(
+                f"the fee-table rows of {accession} are not stated in whole US dollars, "
+                "so the latest filing's amount cannot be read",
+                blockers=(f"fee_table_value_unusable:{accession}",),
+            )
         contradicted = any(
             _sequence(_nested(item[0].body, "relationships", "contradiction_ids")) for item in group
         )
@@ -1659,8 +1668,8 @@ class _Builder:
         ]
         if unobserved_totals[accession] and not total_rows:
             return missing(
-                f"the fee-table total of {accession} is present but not observed, so "
-                "no per-security row may stand in for it",
+                f"the fee-table total of {accession} is present but not readable as a "
+                "whole-dollar USD amount, so no per-security row may stand in for it",
                 blockers=(f"fee_table_total_indeterminate:{accession}",),
             )
         if len(total_rows) == 1 and not unobserved_totals[accession]:
