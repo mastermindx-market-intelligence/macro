@@ -17092,6 +17092,7 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json"
+      - "research/theme_graph/gmi_relationships_20261021/m3/describe_premises_v1.json"
       - "research/theme_graph/microtheme_membership_candidates_2026-10-08.json"
       - "templates/gmi*"
       - "templates/theme.css"
