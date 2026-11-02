@@ -348,6 +348,7 @@ jobs:
       - "collectors/sec_capital_structure.py"
       - "config/capital_structure_share_source_admission.v1.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_registration_lifecycle.schema.json"
@@ -2480,6 +2481,7 @@ jobs:
       - "collectors/sec_capital_structure.py"
       - "config/capital_structure_share_source_admission.v1.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_registration_lifecycle.schema.json"
@@ -3539,6 +3541,7 @@ jobs:
       - "collectors/sec_capital_structure.py"
       - "config/capital_structure_share_source_admission.v1.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_registration_lifecycle.schema.json"
@@ -6247,6 +6250,7 @@ jobs:
       - "engine/capital_structure/projection.py"
       - "engine/capital_structure/source_identity.py"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_projection.schema.json"
       - "collectors/edgar_8k.py"
       - "collectors/edgar_dilution.py"
@@ -7321,6 +7325,7 @@ jobs:
       - "scripts/build_sector_cycles.py"
       - "scripts/validate_regime_fwd.py"
       - "templates/country_cycles.html.j2"
+      - "templates/sector_cycles.css"
       - "templates/sector_cycles.html.j2"
       - "templates/sector_cycles.js"
       - "templates/sector_cycles_china.html.j2"
@@ -7667,6 +7672,7 @@ jobs:
       - "config/us_search_aliases_zh.json"
       - "contracts/capital_structure_capacity_inputs.v1.schema.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_projection.schema.json"
@@ -11964,6 +11970,7 @@ jobs:
       - "config/us_names_zh.json"
       - "config/us_search_aliases_zh.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -12979,7 +12986,11 @@ jobs:
     # hard gate. Document and candidate terms remain pre-instrument transcriptions,
     # never capacity/risk math.
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Was 10. Run 41265081416 stopped at 28% of this suite, about 32-36 min of work,
+    # and a timed-out job leaves settlement unknown, so run_ci_pack marked all ten
+    # later jobs in data-pack-5 infrastructure unknown, tests/test_admin_research_tools.py
+    # among them. That law stays. The job gets room to finish instead.
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -13051,6 +13062,7 @@ jobs:
           tests/test_capital_structure_instrument_resolution.py
           tests/test_c19_wp14_capital_observation_pins.py
           tests/test_capital_structure_event_spine.py
+          tests/test_capital_structure_registration_lifecycle.py
           tests/test_capital_structure_graph.py
           tests/test_capital_structure_legacy_compat.py
           tests/test_capital_structure_pit.py
@@ -13066,6 +13078,7 @@ jobs:
           tests/test_capital_policy_projection.py
           tests/test_capital_structure_api.py
           tests/test_capital_structure_state_bundle.py
+          tests/test_capital_structure_state_bundle_document_terms.py
           tests/test_capital_structure_state_api.py
           tests/test_capital_structure_source_identity.py
           tests/test_capital_structure_source_manifest.py
@@ -13137,6 +13150,7 @@ jobs:
       - "config/capability_manifest.yml"
       - "config/metabolism_budget.yml"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_projection.schema.json"
       - "data/capital_structure/**"
       - "engine/__init__.py"
@@ -14908,6 +14922,48 @@ jobs:
       - name: trigger-closure guard unit tests
         run: python -m pytest tests/test_ci_trigger_closure.py -q
 
+  admin-research-tools:
+    if: ${{ false }}
+    gate: code
+    # The admin Research Tools directory, and the guard that stops a public template
+    # linking to a page served only on the admin host. That link is a 404 for the
+    # reader. The suite ran only in `unrun-ops-workers`, which is `gate: data`, and
+    # ci.yml packs `--gate code`, so a pull request could add such a link and still
+    # merge on green. The `unrun-ops-workers` line stays for the heartbeat.
+    #
+    # `scope: exclusive` so that these paths replace inference. `templates/**` is not
+    # listed on purpose: the suite walks every template, and naming the tree would wake
+    # this job on every template edit. The templates with a pinned link count are
+    # listed, because those counts are the contract, and a test holds that.
+    scope: exclusive
+    paths:
+      - ".github/ci/legacy-jobs.yml"
+      - "admin/__init__.py"
+      - "admin/static/app.js"
+      - "admin/static/styles.css"
+      - "app/__init__.py"
+      - "app/deploy/Caddyfile"
+      - "templates/alerts.html.j2"
+      - "templates/canada.html.j2"
+      - "templates/dashboard.html.j2"
+      - "templates/hk.html.j2"
+      - "templates/macro_context.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/seasonality.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_admin_research_tools.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml
+      - name: admin research tools and public links to internal pages
+        run: python -m pytest tests/test_admin_research_tools.py -q
+
   workflow-yaml:
     if: ${{ false }}
     gate: code
@@ -15747,6 +15803,7 @@ jobs:
       - "config/capital_structure_share_source_admission.v1.json"
       - "contracts/capital_structure_capacity_inputs.v1.schema.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_registration_lifecycle.schema.json"
@@ -17035,6 +17092,7 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json"
+      - "research/theme_graph/gmi_relationships_20261021/m3/describe_premises_v1.json"
       - "research/theme_graph/microtheme_membership_candidates_2026-10-08.json"
       - "templates/gmi*"
       - "templates/theme.css"
@@ -29337,6 +29395,7 @@ jobs:
       - "collectors/sec_capital_structure.py"
       - "config/capital_structure_share_source_admission.v1.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_registration_lifecycle.schema.json"
@@ -37943,7 +38002,9 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
-    timeout-minutes: 5
+    # Was 5. It stopped at 43% of its tests and voided the four later jobs in
+    # data-pack-2 the same way as capital-structure-intelligence above.
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38632,6 +38693,7 @@ jobs:
       - "collectors/sec_capital_structure.py"
       - "config/capital_structure_share_source_admission.v1.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_registration_lifecycle.schema.json"
@@ -41913,6 +41975,7 @@ jobs:
       - "config/capital_structure_share_source_admission.v1.json"
       - "contracts/capital_structure_capacity_inputs.v1.schema.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_registration_lifecycle.schema.json"
@@ -43916,6 +43979,7 @@ jobs:
       - "config/market_memory_retained_use.v1.json"
       - "contracts/capital_structure_capacity_inputs.v1.schema.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_registration_lifecycle.schema.json"
@@ -48997,6 +49061,7 @@ jobs:
       - "config/intl_source_rights_matrix_v1.json"
       - "contracts/capital_structure_capacity_inputs.v1.schema.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_document_term_parse_receipt.schema.json"
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_registration_lifecycle.schema.json"

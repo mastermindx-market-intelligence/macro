@@ -1,5 +1,44 @@
 {
  "active": {},
- "candidates": {},
+ "candidates": {
+  "xlk->xlu": {
+   "pair_id": "xlk->xlu",
+   "donor": "xlk",
+   "receiver": "xlu",
+   "tier": "secondary",
+   "started": "2026-10-14",
+   "lapse_count": 0,
+   "confirm_streak": 1,
+   "last_receipts": {
+    "event_type": "into_strength",
+    "donor_signature": "contagion_bleed",
+    "donor": {
+     "state": "contagion_bleed",
+     "rs20": null,
+     "at_40d_low": true,
+     "asof": "2026-10-30"
+    },
+    "receiver": {
+     "off_low_pct": 0.1065,
+     "rs20": 0.1085,
+     "ratio_chg_20s": 0.2137,
+     "ratio_20s_high": true,
+     "breadth_above50": 87.1,
+     "breadth_rising": true,
+     "breadth_above_donor": true,
+     "donor_breadth_above50": 39.19,
+     "donor_breadth_state": "MEASURED"
+    },
+    "ratio": {
+     "ratio_chg_10s": 0.0516,
+     "inflected": false,
+     "ratio_20s_high": true
+    },
+    "blowoff": null,
+    "turn": null,
+    "asof": "2026-10-30"
+   }
+  }
+ },
  "closed": {}
 }
