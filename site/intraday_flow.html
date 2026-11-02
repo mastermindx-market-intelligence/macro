@@ -39,29 +39,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Intraday Flow · 盘中资金流</title>
 
-<meta name="description" content="Which washed-out market leaders (Mag 7, AI, semis, defense, power grid) are being bought back on real volume right now — with a plain-word call on each.">
+<meta name="description" content="Scan institutional market leaders, review recorded intraday setups, and inspect price, volume, options-flow and dealer evidence.">
 <link rel="canonical" href="https://www.mastermind-x.com/intraday_flow.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="MastermindX">
 <meta property="og:title" content="Intraday Flow Tracker — Mastermind">
-<meta property="og:description" content="Which washed-out market leaders (Mag 7, AI, semis, defense, power grid) are being bought back on real volume right now — with a plain-word call on each.">
+<meta property="og:description" content="Scan institutional market leaders, review recorded intraday setups, and inspect price, volume, options-flow and dealer evidence.">
 <meta property="og:url" content="https://www.mastermind-x.com/intraday_flow.html">
 <meta property="og:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Intraday Flow Tracker — Mastermind">
-<meta name="twitter:description" content="Which washed-out market leaders (Mag 7, AI, semis, defense, power grid) are being bought back on real volume right now — with a plain-word call on each.">
+<meta name="twitter:description" content="Scan institutional market leaders, review recorded intraday setups, and inspect price, volume, options-flow and dealer evidence.">
 <meta name="twitter:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=29ec9caa">
-<link rel="stylesheet" href="assets/css/1b3a1152.css?v=1b3a1152">
-<link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
-<link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="intraday-flow.css">
 </head>
 <body class="page-intraday-flow tape-quiet">
-<div class="ift-aurora" id="ift-aurora"></div>
+
 
 
 
@@ -69,7 +67,7 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=edfd821b">
+    <link rel="stylesheet" href="navigation-refresh.css">
     <div class="nav-links">
     
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -287,10 +285,10 @@
     </div>
   </div>
   
-  <script src="logo_config.js?v=b37d33d3" defer></script>
-  <script src="stock-logos.js?v=cc29be53" defer></script>
-  <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=f8cda39d" defer></script>
+  <script src="logo_config.js"></script>
+  <script src="stock-logos.js"></script>
+  <script src="live_config.js"></script>
+  <script src="live.js"></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -314,158 +312,173 @@
 
 
 
-<!-- ══ HERO — Session Pulse (Tier 1: state + stance + one plain line) ══ -->
-<header class="ift-hero glass reveal" id="ift-hero">
-  <div class="hero-inner">
-    <div class="hero-eyebrow">
-      <span class="sess-pill sess-closed" id="sess-pill"><span class="live-dot"></span><span id="sess-state"><span class="l-en">Loading tape…</span><span class="l-zh">读取资金带…</span></span></span>
-      <span class="delayed-tag"><span class="l-en">≈15-min delayed</span><span class="l-zh">≈15分钟延迟</span></span>
-      <span class="help">?<span class="tip"><span class="l-en">A fixed watchlist of institutional leaders — Mag 7, AI infrastructure/software/semis, semicap, reshoring, defense and power grid. It looks for one thing: a leader that sold off, absorbed the selling, and is being bought back on real volume. Every read is a deterministic rule — no score, no black box. Options-tape direction is approximate (~soft): it leans, it does not confirm. Nothing here is trade advice.</span><span class="l-zh">一份固定的机构领涨股观察名单——Mag 7、AI基础设施/软件/半导体、半导体设备、回流制造、国防与电网。它只找一件事：某只领涨股下跌、消化卖压、如今正被放量重新买入。每个判断均为确定性规则——无评分、无黑箱。期权带方向为近似（~软性）：只作倾向，不作确认。所有内容均不构成交易建议。</span></span></span>
+<main class="ift-workspace" id="main-content">
+  <header class="ift-page-header">
+    <div class="ift-page-title">
+      <div class="ift-page-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18V9m5 12V3m5 15V6m5 15V11"/><path d="M2 9h4m1 2h4m1-5h4m1 9h4"/></svg></div>
+      <div><p class="ift-eyebrow"><span class="l-en">Market intelligence</span><span class="l-zh">市场情报</span></p><h1><span class="l-en">Intraday Flow</span><span class="l-zh">盘中资金流</span></h1></div>
     </div>
+    <div class="ift-session">
+      <span class="sess-pill sess-closed" id="sess-pill"><span class="live-dot" aria-hidden="true"></span><span id="sess-state"><span class="l-en">Checking session</span><span class="l-zh">检查时段</span></span></span>
+      <span class="delayed-tag"><span class="l-en">≈15-min delayed</span><span class="l-zh">≈15分钟延迟</span></span>
+    </div>
+  </header>
+
+  <section class="ift-brief" id="ift-hero" aria-label="Session and data status">
     <div class="ift-skel-host" id="ift-hero-copy" aria-busy="true">
       <span class="sr-only"><span class="l-en">Loading</span><span class="l-zh">加载中</span></span>
-      <h1 class="hero-thesis thesis-slate" id="hero-thesis"><span class="skel ift-skel-thesis" aria-hidden="true"></span></h1>
+      <h2 class="hero-thesis" id="hero-thesis"><span class="skel ift-skel-thesis" aria-hidden="true"></span></h2>
       <p class="hero-sub" id="hero-sub"><span class="skel ift-skel-sub" aria-hidden="true"></span></p>
     </div>
+    <button type="button" class="gbtn ift-refresh" id="ift-refresh" aria-label="Refresh available data">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5"/><path d="M4 17v-5h5"/><path d="M6 7a7 7 0 0 1 12-1l2 3M4 15l2 3a7 7 0 0 0 12-1"/></svg>
+      <span class="ift-refresh-copy"><span class="l-en">Refresh</span><span class="l-zh">刷新</span></span>
+    </button>
+    <div class="ift-provenance">
 
-    <div class="hero-grid">
-      <div class="hero-score">
-        <div class="hs-top">
-          <span class="hs-num" id="hs-count">—</span>
-          <div class="hs-label">
-            <span class="hs-l1"><span class="l-en">setups live</span><span class="l-zh">活跃布局</span></span>
-            <span class="hs-l2"><span class="l-en">buy-now + almost-ready</span><span class="l-zh">现在买入 + 即将就绪</span></span>
-          </div>
-        </div>
-        <div class="comp" id="comp-bar" aria-hidden="true"></div>
-        <div class="comp-legend" id="comp-legend"></div>
-      </div>
-      <div class="hero-ctx">
-        <div class="ctx-row"><span class="ctx-ic">⚡</span><span id="ctx-strong"><span class="l-en">Waiting for the tape…</span><span class="l-zh">等待资金带……</span></span></div>
-        <div class="ctx-row muted"><span id="ctx-watch"><span class="l-en">The board below carries every name and the reasoning behind each call.</span><span class="l-zh">下方看板列出每只标的及其结论依据。</span></span></div>
-        
         <div class="ctx-stamp" id="ift-stamp"><span class="l-en">Board built 31 Oct 12:54am UTC</span><span class="l-zh">看板构建于10月31日 00:54 UTC</span><span class="skel ift-skel-inline" aria-hidden="true"></span></div>
         
-      </div>
+      <div class="ctx-stamp" id="ift-source-times"></div>
     </div>
-  </div>
-</header>
+  </section>
 
-<!-- ══ "What's set up now" stance strip — the glance filter ══ -->
-<section class="panel glass reveal reveal-1">
-  <h2 class="sect-h"><span class="l-en">What's set up now</span><span class="l-zh">当前布局一览</span>
-    <span class="sect-note"><span class="l-en">click a lane to filter the board</span><span class="l-zh">点击类别以筛选看板</span></span>
-    <span class="help">?<span class="tip"><span class="l-en">Each leader is sorted into one plain-word call from deterministic rules — no score, no black box. Click a card to show only those names on the board. Counts update as the tape refreshes.</span><span class="l-zh">每只领涨股按确定性规则归入一个通俗结论——无评分、无黑箱。点击卡片仅在看板显示该类标的。计数随资金带刷新而更新。</span></span></span>
-  </h2>
+  <section class="ift-overview" aria-labelledby="ift-stages-heading">
+    <p class="ift-stage-hint"><span class="l-en">Filter by setup · swipe for more</span><span class="l-zh">按布局筛选 · 滑动查看更多</span> <span aria-hidden="true">→</span></p>
+    <div class="ift-filter-caption">
+      <h2 id="ift-stages-heading"><span class="l-en">Setup stages</span><span class="l-zh">布局阶段</span></h2>
+      <span class="ift-record-mode" id="ift-record-mode"><span class="l-en">Classifications are being checked</span><span class="l-zh">正在检查分类</span></span>
+    </div>
   <div class="stance-strip" id="stance-strip">
-    <div class="stance-card lane-act" data-stance="act">
-      <div class="sc-top"><span class="sc-dot"></span><span class="sc-label"><span class="l-en">Buy now</span><span class="l-zh">现在买入</span></span></div>
-      <div class="sc-count" data-count="act">0</div>
-      <div class="sc-sub"><span class="l-en">reclaimed on durable volume</span><span class="l-zh">放量收复</span></div>
-    </div>
-    <div class="stance-card lane-ready" data-stance="get_ready">
-      <div class="sc-top"><span class="sc-dot"></span><span class="sc-label"><span class="l-en">Almost ready</span><span class="l-zh">即将就绪</span></span></div>
-      <div class="sc-count" data-count="get_ready">0</div>
-      <div class="sc-sub"><span class="l-en">base built, awaiting reclaim</span><span class="l-zh">底部已成，待收复</span></div>
-    </div>
-    <div class="stance-card lane-fav" data-stance="in_favour">
-      <div class="sc-top"><span class="sc-dot"></span><span class="sc-label"><span class="l-en">In favour</span><span class="l-zh">走势占优</span></span></div>
-      <div class="sc-count" data-count="in_favour">0</div>
-      <div class="sc-sub"><span class="l-en">trending — ride, no fresh chase</span><span class="l-zh">趋势中——持有不追</span></div>
-    </div>
-    <div class="stance-card lane-profit" data-stance="take_profits">
-      <div class="sc-top"><span class="sc-dot"></span><span class="sc-label"><span class="l-en">Take profits</span><span class="l-zh">获利了结</span></span></div>
-      <div class="sc-count" data-count="take_profits">0</div>
-      <div class="sc-sub"><span class="l-en">stretched into resistance</span><span class="l-zh">冲高至阻力</span></div>
-    </div>
-    <div class="stance-card lane-watch" data-stance="watch">
-      <div class="sc-top"><span class="sc-dot"></span><span class="sc-label"><span class="l-en">Watch — don't chase</span><span class="l-zh">观望——勿追</span></span></div>
-      <div class="sc-count" data-count="watch">0</div>
-      <div class="sc-sub"><span class="l-en">moving without a base</span><span class="l-zh">无底部的异动</span></div>
-    </div>
-    <div class="stance-card lane-aside" data-stance="stand_aside">
-      <div class="sc-top"><span class="sc-dot"></span><span class="sc-label"><span class="l-en">Stand aside</span><span class="l-zh">暂时观望</span></span></div>
-      <div class="sc-count" data-count="stand_aside">0</div>
-      <div class="sc-sub"><span class="l-en">quiet — no setup</span><span class="l-zh">平静——无布局</span></div>
-    </div>
+    <button type="button" class="stance-card lane-act" data-stance="act" aria-pressed="false">
+      <span class="sc-top"><span class="sc-dot"></span><span class="sc-label"><span class="l-en">Buy now</span><span class="l-zh">现在买入</span></span></span>
+      <span class="sc-count" data-count="act">0</span>
+      <span class="sc-sub"><span class="l-en">reclaimed on durable volume</span><span class="l-zh">放量收复</span></span>
+    </button>
+    <button type="button" class="stance-card lane-ready" data-stance="get_ready" aria-pressed="false">
+      <span class="sc-top"><span class="sc-dot"></span><span class="sc-label"><span class="l-en">Almost ready</span><span class="l-zh">即将就绪</span></span></span>
+      <span class="sc-count" data-count="get_ready">0</span>
+      <span class="sc-sub"><span class="l-en">base built, awaiting reclaim</span><span class="l-zh">底部已成，待收复</span></span>
+    </button>
+    <button type="button" class="stance-card lane-fav" data-stance="in_favour" aria-pressed="false">
+      <span class="sc-top"><span class="sc-dot"></span><span class="sc-label"><span class="l-en">In favour</span><span class="l-zh">走势占优</span></span></span>
+      <span class="sc-count" data-count="in_favour">0</span>
+      <span class="sc-sub"><span class="l-en">trending — ride, no fresh chase</span><span class="l-zh">趋势中——持有不追</span></span>
+    </button>
+    <button type="button" class="stance-card lane-profit" data-stance="take_profits" aria-pressed="false">
+      <span class="sc-top"><span class="sc-dot"></span><span class="sc-label"><span class="l-en">Take profits</span><span class="l-zh">获利了结</span></span></span>
+      <span class="sc-count" data-count="take_profits">0</span>
+      <span class="sc-sub"><span class="l-en">stretched into resistance</span><span class="l-zh">冲高至阻力</span></span>
+    </button>
+    <button type="button" class="stance-card lane-watch" data-stance="watch" aria-pressed="false">
+      <span class="sc-top"><span class="sc-dot"></span><span class="sc-label"><span class="l-en">Watch — don't chase</span><span class="l-zh">观望——勿追</span></span></span>
+      <span class="sc-count" data-count="watch">0</span>
+      <span class="sc-sub"><span class="l-en">moving without a base</span><span class="l-zh">无底部的异动</span></span>
+    </button>
+    <button type="button" class="stance-card lane-aside" data-stance="stand_aside" aria-pressed="false">
+      <span class="sc-top"><span class="sc-dot"></span><span class="sc-label"><span class="l-en">Stand aside</span><span class="l-zh">暂时观望</span></span></span>
+      <span class="sc-count" data-count="stand_aside">0</span>
+      <span class="sc-sub"><span class="l-en">quiet — no setup</span><span class="l-zh">平静——无布局</span></span>
+    </button>
   </div>
-</section>
+  </section>
 
-<!-- ══ Spotlight — Look here first ══ -->
-<section class="panel glass reveal reveal-2" id="spotlight-panel">
-  <h2 class="sect-h"><span class="l-en">Look here first</span><span class="l-zh">优先关注</span>
-    <span class="sect-note" id="spot-note"><span class="l-en">the strongest setups on the tape right now</span><span class="l-zh">当前资金带上最强的布局</span></span>
-  </h2>
-  <div class="spot-grid ift-skel-host" id="spot-grid" aria-busy="true">
-    <span class="sr-only"><span class="l-en">Loading</span><span class="l-zh">加载中</span></span>
-    <article class="spot-card spot-skel lane-aside" aria-hidden="true"><div class="skel ift-skel-spot-hd"></div><div class="skel ift-skel-spot-reason"></div><div class="skel ift-skel-spot-reason short"></div><div class="spot-metrics"><div class="skel ift-skel-spot-metric"></div><div class="skel ift-skel-spot-metric"></div></div></article>
-    <article class="spot-card spot-skel lane-aside" aria-hidden="true"><div class="skel ift-skel-spot-hd"></div><div class="skel ift-skel-spot-reason"></div><div class="skel ift-skel-spot-reason short"></div><div class="spot-metrics"><div class="skel ift-skel-spot-metric"></div><div class="skel ift-skel-spot-metric"></div></div></article>
-    <article class="spot-card spot-skel lane-aside" aria-hidden="true"><div class="skel ift-skel-spot-hd"></div><div class="skel ift-skel-spot-reason"></div><div class="skel ift-skel-spot-reason short"></div><div class="spot-metrics"><div class="skel ift-skel-spot-metric"></div><div class="skel ift-skel-spot-metric"></div></div></article>
-  </div>
-</section>
-
-<!-- ══ Board ══ -->
-<section class="panel glass reveal reveal-3">
-  <h2 class="sect-h"><span class="l-en">The full board</span><span class="l-zh">完整看板</span>
-    <span class="sect-note" id="sort-label"><span class="l-en">grouped by call · most active first</span><span class="l-zh">按结论分组 · 最活跃优先</span></span>
-    <div class="board-tools">
-      <div class="basket-scroll">
-        <span class="chip active" data-basket="all"><span class="l-en">All</span><span class="l-zh">全部</span></span>
-        <span class="chip" data-basket="mag7">Mag7</span>
-        <span class="chip" data-basket="ai_infra"><span class="l-en">AI Infra</span><span class="l-zh">AI基础</span></span>
-        <span class="chip" data-basket="ai_software"><span class="l-en">AI Software</span><span class="l-zh">AI软件</span></span>
-        <span class="chip" data-basket="ai_semiconductors"><span class="l-en">AI Semis</span><span class="l-zh">AI芯片</span></span>
-        <span class="chip" data-basket="semicap_equipment"><span class="l-en">Semicap</span><span class="l-zh">设备</span></span>
-        <span class="chip" data-basket="reshoring"><span class="l-en">Reshoring</span><span class="l-zh">回流</span></span>
-        <span class="chip" data-basket="defense"><span class="l-en">Defense</span><span class="l-zh">国防</span></span>
-        <span class="chip" data-basket="power_grid"><span class="l-en">Power Grid</span><span class="l-zh">电网</span></span>
+  <div class="ift-desk">
+    <section class="ift-board panel" aria-labelledby="ift-board-title">
+      <div class="ift-board-heading">
+        <h2 id="ift-board-title"><span class="l-en">The scan</span><span class="l-zh">扫描看板</span></h2>
+        <details class="ift-theme-menu" id="ift-theme-menu">
+          <summary><span id="ift-theme-name"><span class="l-en">All themes</span><span class="l-zh">全部主题</span></span><span aria-hidden="true">⌄</span></summary>
+        <div class="basket-scroll" role="group" aria-label="Theme filters">
+        <button type="button" class="chip active" data-basket="all" aria-pressed="true"><span class="l-en">All themes</span><span class="l-zh">全部主题</span></button>
+        <button type="button" class="chip" data-basket="mag7" aria-pressed="false">Mag7</button>
+        <button type="button" class="chip" data-basket="ai_infra" aria-pressed="false"><span class="l-en">AI Infra</span><span class="l-zh">AI基础</span></button>
+        <button type="button" class="chip" data-basket="ai_software" aria-pressed="false"><span class="l-en">AI Software</span><span class="l-zh">AI软件</span></button>
+        <button type="button" class="chip" data-basket="ai_semiconductors" aria-pressed="false"><span class="l-en">AI Semis</span><span class="l-zh">AI芯片</span></button>
+        <button type="button" class="chip" data-basket="semicap_equipment" aria-pressed="false"><span class="l-en">Semicap</span><span class="l-zh">设备</span></button>
+        <button type="button" class="chip" data-basket="reshoring" aria-pressed="false"><span class="l-en">Reshoring</span><span class="l-zh">回流</span></button>
+        <button type="button" class="chip" data-basket="defense" aria-pressed="false"><span class="l-en">Defense</span><span class="l-zh">国防</span></button>
+        <button type="button" class="chip" data-basket="power_grid" aria-pressed="false"><span class="l-en">Power Grid</span><span class="l-zh">电网</span></button>
+        </div>
+        </details>
+        <label class="ift-mobile-sort-control">
+          <span class="sr-only"><span class="l-en">Sort scan</span><span class="l-zh">扫描排序</span></span>
+          <select id="ift-mobile-sort" aria-label="Sort scan">
+            <option value="grouped" data-en="By setup" data-zh="按布局">By setup</option>
+            <option value="ticker-asc" data-en="Name A–Z" data-zh="代码 A–Z">Name A–Z</option>
+            <option value="ticker-desc" data-en="Name Z–A" data-zh="代码 Z–A">Name Z–A</option>
+            <option value="stance-asc" data-en="Setup order" data-zh="布局正序">Setup order</option>
+            <option value="stance-desc" data-en="Setup reverse" data-zh="布局倒序">Setup reverse</option>
+            <option value="last-desc" data-en="Price high–low" data-zh="价格从高到低">Price high–low</option>
+            <option value="last-asc" data-en="Price low–high" data-zh="价格从低到高">Price low–high</option>
+            <option value="rvol-desc" data-en="Activity high–low" data-zh="活跃度从高到低">Activity high–low</option>
+            <option value="rvol-asc" data-en="Activity low–high" data-zh="活跃度从低到高">Activity low–high</option>
+          </select>
+        </label>
+          <button type="button" class="toggle-btn active" id="group-toggle" aria-pressed="true">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 3h3v3H2zM7 4.5h7M2 10h3v3H2zM7 11.5h7"/></svg>
+            <span class="l-en">Group by setup</span><span class="l-zh">按布局分组</span>
+          </button>
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+          <label for="ift-search" class="sr-only"><span class="l-en">Search ticker</span><span class="l-zh">搜索代码</span></label>
+          <input type="search" id="ift-search" placeholder="Find a ticker…" data-ph-zh="搜索代码…" autocomplete="off" spellcheck="false">
+        </div>
       </div>
-      <span class="toggle-btn active" id="group-toggle"><span class="l-en">Group by call</span><span class="l-zh">按结论分组</span></span>
-      <div class="search-box">
-        <input type="text" id="ift-search" placeholder="Ticker…" data-ph-zh="搜索代码…" autocomplete="off">
-      </div>
-    </div>
-  </h2>
-  <div class="leaders-wrap ift-skel-host" id="ift-board-skel" aria-busy="true">
-    <span class="sr-only"><span class="l-en">Loading</span><span class="l-zh">加载中</span></span>
-    <table class="leaders" id="leaders-table">
-      <thead>
-        <tr>
-          <th data-col="ticker" class="col-ticker"><span class="l-en">Name</span><span class="l-zh">代码</span><span class="sort-ic"></span></th>
-          <th data-col="stance" class="col-stance"><span class="l-en">The call</span><span class="l-zh">结论</span><span class="sort-ic"></span></th>
-          <th data-col="last" class="col-last hide-narrow"><span class="l-en">Price</span><span class="l-zh">价格</span><span class="sort-ic"></span></th>
-          <th data-col="rvol" class="sort-desc col-rvol"><span class="l-en">Volume</span><span class="l-zh">成交量</span><span class="help">?<span class="tip"><span class="l-en">This session's volume vs a normal day at this exact time. “2.4× normal” means 2.4 times the usual pace. “Holding” = buyers keep closing bars in the upper half on above-normal volume.</span><span class="l-zh">本时段成交量与同一时段正常水平之比。“2.4×正常”即为通常速度的2.4倍。“持稳”=买盘持续将K线收在上半段且量高于正常。</span></span></span><span class="sort-ic"></span></th>
-          <th data-col="tape" class="col-tape hide-narrow"><span class="l-en">Tape</span><span class="l-zh">盘口</span><span class="help">?<span class="tip"><span class="l-en">Where price sits vs the session’s average price (VWAP) and whether the options tape is leaning call-heavy or put-heavy. The options lean is approximate (~soft) — a lean, not a confirmation.</span><span class="l-zh">价格相对当日均价（VWAP）的位置，以及期权带偏看涨还是看跌。期权倾向为近似（~软性）——只作倾向，不作确认。</span></span></span></th>
-          <th data-col="dealer" class="col-dealer hide-narrow"><span class="l-en">Dealer map</span><span class="l-zh">做市商地图</span><span class="help">?<span class="tip"><span class="l-en">From daily options chains: the nearby ceiling/floor levels dealers defend, the day’s expected move, and whether price is being pinned. A levels-and-timing map for stops — never a direction call, and single-name gamma is a near-constant product trait, not a signal.</span><span class="l-zh">来自每日期权链：做市商防守的上方天花板/下方地板价位、当日预期波动幅度、以及价格是否被钉住。仅为止损用的价位与择时地图——非方向判断；单只标的gamma为近乎恒定的产品属性，非信号。</span></span></span></th>
-          <th data-col="expand" class="col-expand"></th>
-        </tr>
-      </thead>
-      <tbody id="leaders-body">
-        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
-        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
-        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
-        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
-        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
-        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
-        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
-        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p class="xs muted" style="margin-top:10px;text-align:right" id="count-label"></p>
-</section>
+      <div class="board-tools">
 
-<!-- ══ Field guide ══ -->
-<section class="panel glass">
-  <h2 class="sect-h"><span class="l-en">How to read this board</span><span class="l-zh">如何看懂本看板</span>
-    <span class="sect-note"><span class="l-en">field guide</span><span class="l-zh">实战指南</span></span>
-  </h2>
+        <div class="ift-view-tools" id="ift-view-tools" hidden>
+
+          <p class="ift-filter-state" id="ift-filter-state"><span class="l-en">All leaders</span><span class="l-zh">全部标的</span></p>
+          <button type="button" class="ift-filter-reset" id="ift-reset" hidden><span class="l-en">Reset filters</span><span class="l-zh">重置筛选</span></button>
+        </div>
+      </div>
+      <div class="leaders-wrap ift-skel-host" id="ift-board-skel" aria-busy="true">
+        <span class="sr-only"><span class="l-en">Loading</span><span class="l-zh">加载中</span></span>
+        <table class="leaders" id="leaders-table" aria-label="Intraday setup scan">
+          <thead><tr>
+            <th data-col="ticker" class="col-ticker" scope="col" aria-sort="none"><button type="button" class="ift-sort"><span class="l-en">Name</span><span class="l-zh">代码</span><span class="sort-ic" aria-hidden="true"></span></button></th>
+            <th data-col="stance" class="col-stance" scope="col" aria-sort="none"><button type="button" class="ift-sort"><span class="l-en">Setup · next confirmation</span><span class="l-zh">布局 · 下一确认</span><span class="sort-ic" aria-hidden="true"></span></button></th>
+            <th data-col="last" class="col-last" scope="col" aria-sort="none"><button type="button" class="ift-sort"><span class="l-en">Price</span><span class="l-zh">价格</span><span class="sort-ic" aria-hidden="true"></span></button></th>
+            <th data-col="rvol" class="col-rvol" scope="col" aria-sort="none"><button type="button" class="ift-sort"><span class="l-en">Activity</span><span class="l-zh">活跃度</span><span class="sort-ic" aria-hidden="true"></span></button><span class="help"><button type="button" class="help-trigger" id="ift-activity-help" popovertarget="ift-activity-tip" aria-controls="ift-activity-tip" aria-describedby="ift-activity-tip" aria-label="Explain activity">?</button><span class="tip" id="ift-activity-tip" popover role="note"><span class="l-en">This session's volume vs a normal day at this exact time. “2.4× normal” means 2.4 times the usual pace. “Holding” = buyers keep closing bars in the upper half on above-normal volume.</span><span class="l-zh">本时段成交量与同一时段正常水平之比。“2.4×正常”即为通常速度的2.4倍。“持稳”=买盘持续将K线收在上半段且量高于正常。</span></span></span></th>
+            <th data-col="tape" class="ift-detail-column" scope="col"><span class="l-en">Tape</span><span class="l-zh">盘口</span></th>
+            <th data-col="dealer" class="ift-detail-column" scope="col"><span class="l-en">Dealer map</span><span class="l-zh">做市商地图</span></th>
+            <th data-col="expand" class="col-expand" scope="col"><span class="sr-only"><span class="l-en">Evidence</span><span class="l-zh">依据</span></span></th>
+          </tr></thead>
+          <tbody id="leaders-body">
+
+            <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="ift-detail-column"></td><td class="ift-detail-column"></td><td></td></tr>
+
+            <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="ift-detail-column"></td><td class="ift-detail-column"></td><td></td></tr>
+
+            <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="ift-detail-column"></td><td class="ift-detail-column"></td><td></td></tr>
+
+            <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="ift-detail-column"></td><td class="ift-detail-column"></td><td></td></tr>
+
+            <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="ift-detail-column"></td><td class="ift-detail-column"></td><td></td></tr>
+
+            <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="ift-detail-column"></td><td class="ift-detail-column"></td><td></td></tr>
+
+          </tbody>
+        </table>
+      </div>
+      <div id="count-label" role="status" aria-live="polite" aria-atomic="true"></div>
+    </section>
+    <aside class="ift-inspector" id="ift-inspector" aria-label="Selected name">
+      <p class="ift-eyebrow"><span class="l-en">Name in focus</span><span class="l-zh">焦点标的</span></p>
+      <h2><span class="l-en">Explore the evidence</span><span class="l-zh">查看依据</span></h2>
+      <p class="ift-inspect-foot"><span class="l-en">Select a name to inspect its setup, source availability and reference levels.</span><span class="l-zh">选择标的，查看其布局、数据可用性及参考价位。</span></p>
+    </aside>
+  </div>
+
+<!-- Field guide remains available without interrupting the scan. -->
+<details class="ift-guide">
+  <summary><span><span class="l-en">How to read the scan</span><span class="l-zh">如何读懂扫描</span></span><span><span class="l-en">The rules, options tape and dealer map</span><span class="l-zh">规则、期权资金带与做市商地图</span> ⌄</span></summary>
 
   <div class="playbook-section open">
-    <div class="playbook-hd">
+    <button type="button" class="playbook-hd" aria-expanded="true">
       <span><span class="l-en">1 · The one job of this board</span><span class="l-zh">1 · 本看板的唯一任务</span></span>
       <span class="caret">▸</span>
-    </div>
+    </button>
     <div class="playbook-body">
       <p class="l-en">This board watches a fixed list of institutional leaders — the Mag 7, AI infrastructure, AI software and semiconductors, semicap equipment, reshoring, defense and power-grid names. It looks for one specific thing: a leader that sold off, absorbed the selling, and is now being <em>bought back on real volume</em>. For every name it gives you a plain call — buy now, almost ready, in favour, take profits, watch, or stand aside — and the reason behind it. It is not a stock screener for cheap stocks; it is a timing board for continuation entries in names that already have sponsorship.</p>
       <p class="l-zh">本看板跟踪一份固定的机构领涨股名单——Mag 7、AI基础设施、AI软件与半导体、半导体设备、回流制造、国防与电网标的。它只找一件事：某只领涨股经历下跌、消化卖压、如今正被<em>放量重新买入</em>。对每只标的给出一个通俗结论——现在买入、即将就绪、走势占优、获利了结、观望或暂时观望——并附上理由。这不是找廉价股的筛选器，而是为已有机构参与的标的把握延续入场时机的择时看板。</p>
@@ -473,10 +486,10 @@
   </div>
 
   <div class="playbook-section">
-    <div class="playbook-hd">
+    <button type="button" class="playbook-hd" aria-expanded="false">
       <span><span class="l-en">2 · What each call means</span><span class="l-zh">2 · 每个结论的含义</span></span>
       <span class="caret">▸</span>
-    </div>
+    </button>
     <div class="playbook-body">
       <ul class="l-en">
         <li><b><span class="regime-dot lane-act" aria-hidden="true"></span> Buy now</b> — sold off recently, reclaimed above the day’s average price on durable (not one-spike) volume, and it is a clean leader. The continuation setup is live; stop goes below the washout base.</li>
@@ -498,10 +511,10 @@
   </div>
 
   <div class="playbook-section">
-    <div class="playbook-hd">
+    <button type="button" class="playbook-hd" aria-expanded="false">
       <span><span class="l-en">3 · The options tape (approximate direction)</span><span class="l-zh">3 · 期权资金带（方向为近似）</span></span>
       <span class="caret">▸</span>
-    </div>
+    </button>
     <div class="playbook-body">
       <p class="l-en">The options column shows tape activity and how persistently it leans call-heavy or put-heavy. <em>The direction is approximate</em> — it is signed by a tape rule, not by matching each trade to the bid/offer, so read it as a lean, never a confirmation (that is what the <span class="soft-tag">~soft</span> mark means). Unusual-size flags (big blocks, fresh positions, size-vs-open-interest) are exact counts. It is a supporting input, not a trigger on its own.</p>
       <p class="l-zh">期权栏展示资金带的活跃度，以及其偏看涨或看跌的持续程度。<em>方向为近似</em>——它由盘口规则定向，而非将每笔交易与买卖报价匹配，故仅作倾向、绝非确认（这正是 <span class="soft-tag">~软性</span> 标记的含义）。异常规模标记（大单、新建仓、规模对比未平仓量）为精确计数。它是辅助输入，不单独作为触发。</p>
@@ -509,10 +522,10 @@
   </div>
 
   <div class="playbook-section">
-    <div class="playbook-hd">
+    <button type="button" class="playbook-hd" aria-expanded="false">
       <span><span class="l-en">4 · The dealer map (levels &amp; stops, not direction)</span><span class="l-zh">4 · 做市商地图（价位与止损，非方向）</span></span>
       <span class="caret">▸</span>
-    </div>
+    </button>
     <div class="playbook-body">
       <p class="l-en">Built from daily options chains, the dealer map shows the nearby levels market-makers tend to defend — a <em>ceiling</em> above and a <em>floor</em> below — the day’s expected move, and whether price is being pinned near a big strike into expiry. Use it for timing and stop placement: a hard ceiling just overhead argues against chasing; a strong floor below is a logical stop reference. It is never a direction call, and for a single stock the long/short-gamma label is a near-constant trait of the product, not a live signal — so it is shown as context only.</p>
       <p class="l-zh">做市商地图由每日期权链构建，展示做市商倾向防守的邻近价位——上方<em>天花板</em>与下方<em>地板</em>——当日预期波动幅度，以及价格是否在到期临近时被钉在某大行权价附近。用于择时与设置止损：头顶紧邻硬天花板则不宜追高；下方有强地板可作止损参考。它绝非方向判断；对单只股票而言，多头/空头gamma标签是产品近乎恒定的属性，而非实时信号——故仅供参考展示。</p>
@@ -522,11 +535,12 @@
   <p class="foot-note">
     <span class="l-en">Options-tape direction is approximate (~soft — a tape rule, not bid/offer matching). Every call is a deterministic rule with no score and no black box. Reference levels and the dealer map are context for timing and stops, not trade advice.</span><span class="l-zh">期权带方向为近似（~软性——盘口规则，非买卖报价匹配）。每个结论均为确定性规则，无评分、无黑箱。参考价位与做市商地图仅为择时与止损背景，不构成交易建议。</span>
   </p>
-</section>
+</details>
+</main>
 
 <!-- data_base.js sets window.DATA_BASE → routes the live options-flow fetch to the
      public R2 data plane (present on 171 site pages; v1 omitted it, so R2 flow never loaded). -->
-<script src="data_base.js?v=2aaceaf9" defer></script>
+<script src="data_base.js"></script>
 <!-- Inline JS — data loads, polling, hero/spotlight/board render -->
 <script>
 (function(){
@@ -549,6 +563,8 @@ var flowState = {};    // ticker -> {ncp(~soft net CALL premium), net_all(~soft 
                        //            flow_dur, badges[], session_tier, call_share}
 var flowAsof = null, flowRTH = false;
 var quotesStatus = 'connecting', pulseStatus = 'connecting', flowStatus = 'connecting';
+// Display provenance only: these clocks do not change the classifier or freshness policy.
+var quotesSourceAsof = null, pulseSourceAsof = null, pulseSourceStale = null;
 
 // ── View state ─────────────────────────────────────────────────────────────
 var sortCol = 'rvol', sortDir = -1;
@@ -556,6 +572,7 @@ var activeBasket = 'all', activeStance = 'all', searchQ = '', groupByStance = tr
 var openRows = {};     // ticker -> true when detail expanded
 var BOARD_CAP = 8;
 var boardExpanded = false;
+var selectedTicker = null, computedByTicker = {};
 
 // ── Stance lane metadata (labels localized; keys deterministic) ────────────
 var STANCE_META = {
@@ -833,6 +850,7 @@ function fetchQuotes() {
     return r.json();
   }).then(function(data){
     var q = data.quotes || {};
+    quotesSourceAsof = data.meta && data.meta.source_asof || null;
     Object.keys(q).forEach(function(tk){ if (q[tk] && typeof q[tk] === 'object') quoteState[tk] = q[tk]; });
     quotesStatus = boardPriceCoverage() >= 0.90 ? 'live' : 'unavailable';
     quotesInflight = false;
@@ -843,6 +861,7 @@ function fetchQuotes() {
       quotesInflight = false;
       quotesStatus = 'unavailable';
       updateFlowStamp(flowAsof, flowMeta);
+      scheduleRender();
       return;
     }
     throw err;
@@ -857,6 +876,8 @@ function fetchPulse() {
     if (!r.ok) throw new Error('pulse '+r.status);
     return r.json();
   }).then(function(data){
+    pulseSourceAsof = data.as_of || null;
+    pulseSourceStale = typeof data.stale === 'boolean' ? data.stale : null;
     (data.tickers || []).forEach(function(t){ if (t && t.ticker) pulseState[t.ticker] = t; });
     pulseStatus = boardPulseCoverage() >= 0.80 ? 'live' : 'unavailable';
     pulseInflight = false;
@@ -867,6 +888,7 @@ function fetchPulse() {
       pulseInflight = false;
       pulseStatus = 'unavailable';
       updateFlowStamp(flowAsof, flowMeta);
+      scheduleRender();
       return;
     }
     throw err;
@@ -959,6 +981,7 @@ function fetchFlow() {
       flowInflight = false;
       flowStatus = 'unavailable';
       updateFlowStamp(flowAsof, flowMeta);
+      scheduleRender();
       return;
     }
     throw err;
@@ -998,6 +1021,21 @@ function fetchRootFlow(root) {
     scheduleRender();
   }).catch(function(){});
 }
+function displaySourceTime(value) {
+  var validType = typeof value === 'number' ? value > 0 : (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value));
+  var date = new Date(value);
+  if (!validType || !Number.isFinite(date.getTime())) return lz('time unavailable','时间不可用');
+  var iso = date.toISOString();
+  return esc(iso.slice(0,10)+' '+iso.slice(11,16)+' UTC');
+}
+function updateSourceTimes() {
+  var el = document.getElementById('ift-source-times');
+  if (!el) return;
+  el.innerHTML = '<span>'+lz('Price source ','价格来源 ')+displaySourceTime(quotesSourceAsof)+'</span>'
+    + '<span class="ift-stamp-separator" aria-hidden="true">·</span>'
+    + '<span>'+lz('Volume source ','成交量来源 ')+displaySourceTime(pulseSourceAsof)+'</span>';
+}
+
 function updateFlowStamp(asof, meta) {
   var stamp = document.getElementById('ift-stamp');
   if (!stamp) return;
@@ -1024,7 +1062,7 @@ function updateFlowStamp(asof, meta) {
     + '?<span class="lens-src" data-lens-kind="define" hidden>'+tipHtml+'</span></button>';
 }
 
-// ══ compute-once pipeline (shared by hero, spotlight, board) ═══════════════
+// ══ compute-once pipeline (shared by summary, scan and evidence) ═══════════════
 function computeAll() {
   return leaders.map(function(l){
     var rawQ = quoteState[l.ticker], rawP = pulseState[l.ticker], rawF = flowState[l.ticker];
@@ -1059,107 +1097,42 @@ function animateCount(el, to) {
 // ══ HERO — Session Pulse ═══════════════════════════════════════════════════
 function buildHero(rows, counts) {
   var phase = sessionPhase();
-  var live = phase === 'live';
-  var actionable = counts.act + counts.get_ready;
-
-  // session pill
   var pill = document.getElementById('sess-pill'), sstate = document.getElementById('sess-state');
-  var pmap = { live:['sess-live', lz('Market open','开盘中')], pre:['sess-pre', lz('Pre-market','盘前')],
-    post:['sess-post', lz('After hours','盘后')], closed:['sess-closed', lz('Market closed','已收盘')] };
-  if (pill) { pill.className = 'sess-pill '+pmap[phase][0]; }
+  // SessionPhase is the existing ET clock window, not an exchange-calendar authority.
+  var pmap = { live:['sess-live', lz('Regular-session window','常规交易时段')],
+    pre:['sess-pre', lz('Pre-market window','盘前时段')],
+    post:['sess-post', lz('After-hours window','盘后时段')],
+    closed:['sess-closed', lz('Outside session hours','非交易时段')] };
+  if (pill) pill.className = 'sess-pill '+pmap[phase][0];
   if (sstate) sstate.innerHTML = pmap[phase][1];
-
-  // thesis + sub + tint
-  var thesis, sub, tint, tape;
-  if (live && counts.act > 0) {
-    var n = counts.act;
-    thesis = lz(n+' leader'+(n>1?'s are':' is')+' being bought back on real volume.', n+' 只领涨股正被放量重新买入。');
-    sub = lz('Each reclaimed a washout on durable volume — the continuation setups are live.',
-             '各标的在放量中收复了洗盘底部——延续布局已激活。');
-    tint = 'thesis-green'; tape = 'tape-green';
-  } else if (live && counts.get_ready > 0) {
-    var g = counts.get_ready;
-    thesis = lz('Bases are building — '+g+' name'+(g>1?'s':'')+' almost ready, none triggered yet.', g+' 只标的底部渐成、即将就绪，暂无触发。');
-    sub = lz('Bases are in place, waiting for a reclaim on volume — watch, don\'t pre-empt.',
-             '底部已就位，等待放量收复——观察为宜，勿抢跑。');
-    tint = 'thesis-blue'; tape = 'tape-blue';
-  } else if (live && counts.take_profits > 0) {
-    thesis = lz('Leaders are stretched — protect gains, don\'t chase.', '领涨股已拉伸——保护利润，勿追高。');
-    sub = lz('The movers are stretched or pinned into a ceiling — nothing fresh to start here.',
-             '活跃标的已拉伸或顶到天花板——此处无新入场。');
-    tint = 'thesis-amber'; tape = 'tape-amber';
-  } else if (live) {
-    thesis = lz('Quiet tape — nothing set up to chase right now.', '资金带平静——当前无可追布局。');
-    sub = lz('No leader is being bought back from a washout yet — the board updates itself.',
-             '暂无领涨股在洗盘后被买回——看板将自动更新。');
-    tint = 'thesis-slate'; tape = 'tape-quiet';
+  var thesis, sub;
+  if (!leaders.length) {
+    thesis = lz('The scan is unavailable.','扫描暂不可用。');
+    sub = lz('The watchlist could not be loaded. Refresh to check again.','观察名单未能加载。刷新后重试。');
+  } else if (quotesStatus === 'connecting' || pulseStatus === 'connecting') {
+    thesis = lz('Checking the latest observations.','正在检查最新观测。');
+    sub = lz('Recorded classifications remain visible while the sources connect.','连接数据来源期间，仍显示已有分类供参考。');
+  } else if (quotesStatus !== 'live') {
+    thesis = lz('Current prices are unavailable.','当前价格暂不可用。');
+    sub = lz('Recorded classifications only; current confirmation is unavailable.','已有分类仅供参考，当前确认依据不可用。');
+  } else if (pulseStatus !== 'live' || pulseSourceStale === true) {
+    thesis = lz('Price observations received. Confirmation is incomplete.','已收到价格观测，确认依据尚不完整。');
+    sub = lz('Volume evidence is missing or marked stale. Recorded classifications are reference only.','成交量依据缺失或已标记过期，已有分类仅供参考。');
+  } else if (phase !== 'live') {
+    thesis = lz('Review the recorded scan.','查看已有扫描。');
+    sub = lz('Outside the regular-session window. Check source times before interpreting a setup.','当前不在常规交易时段内。解读布局前，请核对来源时间。');
   } else {
-    // off-hours skeleton
-    var readyN = counts.get_ready;
-    if (readyN > 0) {
-      thesis = lz('Market\'s '+(phase==='pre'?'not open yet':'closed')+' — '+readyN+' name'+(readyN>1?'s have':' has')+' a base ready for the open.', '市场'+(phase==='pre'?'尚未开盘':'已收盘')+'——'+readyN+' 只标的底部已就位、静候开盘。');
-      sub = lz('Built a washout base overnight — watch for a reclaim on volume at the open.',
-               '隔夜筑成洗盘底部——开盘后留意放量收复。');
-      tint = 'thesis-blue'; tape = 'tape-blue';
-    } else {
-      thesis = lz('Market\'s '+(phase==='pre'?'not open yet':'closed')+' — nothing set up for the open.', '市场'+(phase==='pre'?'尚未开盘':'已收盘')+'——暂无为开盘准备的布局。');
-      sub = lz('No washout base is ready across the watchlist — check back when the tape runs.',
-               '观察名单中暂无就绪底部——资金带运行时再来。');
-      tint = 'thesis-slate'; tape = 'tape-quiet';
-    }
+    thesis = lz('The latest received observations, in one view.','一览最近收到的观测。');
+    sub = lz('Prices are delayed. Source availability does not establish a fresh trading signal.','价格存在延迟。数据已收到，并不代表当前交易信号已确认。');
   }
-  var thEl = document.getElementById('hero-thesis');
-  if (thEl) { thEl.className = 'hero-thesis '+tint; thEl.innerHTML = thesis; }
+  var thEl = document.getElementById('hero-thesis'); if (thEl) thEl.innerHTML = thesis;
   var subEl = document.getElementById('hero-sub'); if (subEl) subEl.innerHTML = sub;
-  if (typeof iftSkelDone === 'function') iftSkelDone(document.getElementById('ift-hero-copy'));
-  // toggle only the tape-* tint class — never clobber classes theme.js owns on <body>
-  document.body.classList.remove('tape-green','tape-blue','tape-amber','tape-quiet');
-  document.body.classList.add(tape);
-
-  // score number
-  var num = document.getElementById('hs-count');
-  var scoreC = actionable>0 ? (counts.act>0 ? 'var(--ok,#3da564)' : 'var(--info,#5b9bf0)')
-             : (live && counts.take_profits>0 ? 'var(--orange,#e08b45)' : 'var(--muted)');
-  if (num) { num.style.setProperty('--score-c', scoreC); animateCount(num, actionable); }
-
-  // composition ribbon + legend — segment/dot color comes from the .lane-* class
-  // (CSS var --lane), so in_favour auto-flips red in zh with no re-render. No title=
-  // tooltip (would jam EN+ZH into an OS tooltip that ignores the lang toggle); the
-  // legend below is the key.
-  var order = ['act','get_ready','in_favour','take_profits','watch','stand_aside'];
-  var seg = '', leg = '';
-  order.forEach(function(k){
-    var v = counts[k]||0; if (v<=0) return;
-    var meta = STANCE_META[k], cls = 'lane-'+laneSuffix(k);
-    seg += '<div class="comp-seg '+cls+'" style="flex:'+v+' '+v+' 0%"></div>';
-    leg += '<span class="cl-item"><span class="cl-dot '+cls+'"></span>'+lz(meta.en,meta.zh)+'</span>';
-  });
-  var comp = document.getElementById('comp-bar'); if (comp) comp.innerHTML = seg || '<div class="comp-seg" style="flex:1;background:var(--muted);opacity:.3"></div>';
-  var legEl = document.getElementById('comp-legend'); if (legEl) legEl.innerHTML = leg;
-
-  // strongest tape / most-ready context
-  var strong = document.getElementById('ctx-strong');
-  if (strong) {
-    if (live) {
-      var pool = rows.filter(function(r){ return r.rvol != null; }).sort(function(a,b){ return (b.rvol||0)-(a.rvol||0); });
-      if (pool.length && pool[0].rvol >= 0.8) {
-        var top = pool[0]; var vw = volumeWords(top.rvol, top.p?top.p.vol_durability:null);
-        strong.innerHTML = lz('Strongest tape: <b>'+esc(top.l.ticker)+'</b> · '+vw.en, '最强资金带：<b>'+esc(top.l.ticker)+'</b> · '+vw.zh);
-      } else strong.innerHTML = lz('No name is trading at unusual volume yet.','暂无标的出现异常放量。');
-    } else {
-      var ready = rows.filter(function(r){ return r.st.key==='get_ready'; }).sort(function(a,b){ return (b.conf.K||0)-(a.conf.K||0); });
-      if (ready.length) strong.innerHTML = lz('Most ready for the open: <b>'+esc(ready[0].l.ticker)+'</b> · base built', '最接近开盘就绪：<b>'+esc(ready[0].l.ticker)+'</b> · 底部已成');
-      else strong.innerHTML = lz('No base is set up across the watchlist right now.','观察名单中暂无就绪布局。');
-    }
-  }
-  var watchEl = document.getElementById('ctx-watch');
-  if (watchEl) {
-    if (live && counts.take_profits>0) watchEl.innerHTML = lz(counts.take_profits+' name'+(counts.take_profits>1?'s are':' is')+' stretched into resistance — take profits, don\'t chase.', counts.take_profits+' 只标的冲高至阻力——获利了结，勿追。');
-    else if (counts.watch>0) watchEl.innerHTML = lz(counts.watch+' name'+(counts.watch>1?'s are':' is')+' moving without a base — watch, don\'t chase.', counts.watch+' 只标的无底部异动——观望，勿追。');
-    else watchEl.innerHTML = lz('The board below carries every name and the reasoning behind each call.','下方看板列出每只标的及其结论依据。');
-  }
+  var mode = document.getElementById('ift-record-mode');
+  if (mode) mode.innerHTML = lz('Recorded classifications · select to filter','已有分类 · 点击筛选');
+  iftSkelDone(document.getElementById('ift-hero-copy'));
+  updateFlowStamp(flowAsof, flowMeta);
+  updateSourceTimes();
 }
-function laneSuffix(k){ return { act:'act',get_ready:'ready',in_favour:'fav',take_profits:'profit',watch:'watch',stand_aside:'aside' }[k]||'aside'; }
 function iftSkelDone(el) {
   if (!el) return;
   el.setAttribute('aria-busy', 'false');
@@ -1167,93 +1140,18 @@ function iftSkelDone(el) {
   for (var i = 0; i < sr.length; i++) sr[i].parentNode.removeChild(sr[i]);
 }
 
-// ══ SPOTLIGHT — Look here first ════════════════════════════════════════════
-// The grid is rebuilt from a string on every render, so the DOM node for a card is a new
-// node each time even when nothing about the card changed. Two pieces of state keep that
-// from being visible: _spotHtml skips the write entirely when the markup is unchanged,
-// and _spotSeen decides which cards are NEW and may therefore play the entrance.
-var _spotHtml = '', _spotSeen = {};
-function buildSpotlight(rows, counts) {
-  var grid = document.getElementById('spot-grid'), note = document.getElementById('spot-note');
-  if (!grid) return;
-  if (typeof iftSkelDone === 'function') iftSkelDone(grid);
-  var live = sessionPhase() === 'live';
-  var pick = [];
-  // priority: act (rvol desc) → get_ready (K desc) → live: take_profits (protect, 1)
-  var acts = rows.filter(function(r){ return r.st.key==='act'; }).sort(function(a,b){ return (b.rvol||0)-(a.rvol||0); });
-  var readies = rows.filter(function(r){ return r.st.key==='get_ready'; }).sort(function(a,b){ return (b.conf.K||0)-(a.conf.K||0) || (b.rvol||0)-(a.rvol||0); });
-  pick = acts.concat(readies).slice(0,3);
-  var noteTxt = live ? lz('the strongest setups on the tape right now','当前资金带上最强的布局')
-                     : lz('bases ready for the open','静候开盘的就绪底部');
-  if (!pick.length && live && counts.take_profits>0) {
-    pick = rows.filter(function(r){ return r.st.key==='take_profits'; }).slice(0,2);
-    noteTxt = lz('stretched — protect gains, don\'t chase','已拉伸——保护利润，勿追');
-  }
-  if (note) note.innerHTML = noteTxt;
-
-  if (!pick.length) {
-    var emptyHtml = '<div class="spot-empty">'+
-      (live ? lz('<b>No fresh setups right now.</b> No leader is being bought back out of a washout — the board below is on watch and will surface names here as they set up.',
-                 '<b>当前无新布局。</b> 暂无领涨股在洗盘后被重新买入——下方看板处于观察状态，一旦成形便会在此呈现。')
-            : lz('<b>Nothing set up for the open yet.</b> When a leader builds a washout base, it will appear here first.',
-                 '<b>暂无为开盘准备的布局。</b> 一旦有领涨股筑成洗盘底部，将优先在此显示。'))
-      +'</div>';
-    if (emptyHtml !== _spotHtml) { grid.innerHTML = emptyHtml; _spotHtml = emptyHtml; }
-    _spotSeen = {};   // the grid is empty — whatever comes back next is genuinely new
-    return;
-  }
-  var tks = pick.map(function(r){ return r.l.ticker; });
-  var html = pick.map(function(r, i){ return spotCard(r, i); }).join('');
-  if (html === _spotHtml) return;   // nothing changed — leave the live nodes alone
-  grid.innerHTML = html;
-  _spotHtml = html;
-  // A card already on screen was just replaced by an identical-looking new node: it is an
-  // update, not an arrival, so it must not fade in from zero. Only a ticker that was NOT
-  // in the previous pick gets the entrance. Set before first paint, so it still animates.
-  var cards = grid.querySelectorAll('.spot-card');
-  for (var ci = 0; ci < cards.length; ci++) { if (!_spotSeen[tks[ci]]) cards[ci].classList.add('spot-in'); }
-  _spotSeen = {};
-  tks.forEach(function(t){ _spotSeen[t] = true; });
-}
-function spotCard(r, i) {
-  var l = r.l, meta = r.meta, st = r.st, d = r.d, q = r.q, p = r.p, f = r.f;
-  var vw = volumeWords(r.rvol, p ? p.vol_durability : null);
-  var vwapDelta = r.vwapDelta;
-  var vwapV = vwapDelta!=null ? '<span class="'+(vwapDelta>=0?'pos':'neg')+'">'+fmtPct(vwapDelta)+'</span>' : '<span class="muted">—</span>';
-  var leanV;
-  if (f && f.ncp != null) leanV = lz((f.ncp>0?'~call buying':'~call selling'), (f.ncp>0?'~买入看涨':'~卖出看涨'));
-  else if (f && f.net_all != null) leanV = '<span class="muted">'+lz('side unknown','方向未知')+'</span>';
-  else leanV = '<span class="muted">'+lz('quiet','平静')+'</span>';
-  var entry = l.entry_signal || {};
-  var stopV = entry.stop!=null ? fmtDollar(entry.stop) : (d && d.put_wall!=null ? '~$'+fmtNum(d.put_wall,0) : (q && q.lo!=null ? fmtDollar(q.lo) : '—'));
-  var breathe = (i===0 && st.key==='act' && !REDUCED_MOTION) ? ' breathe' : '';
-  var bk = (l.baskets||[]).slice(0,1).map(prettyBasket).join('');
-  return '<article class="spot-card '+meta.lane+breathe+'">'
-    + '<div class="spot-hd">'
-    +   '<div><a class="spot-tk" href="stock.html#'+l.ticker+'">'+esc(l.ticker)+'</a>'+(bk?'<div class="spot-tk-sub">'+bk+'</div>':'')+'</div>'
-    +   '<span class="stance-pill '+meta.lane+'"><span class="sp-dot"></span>'+lz(meta.en,meta.zh)+'</span>'
-    + '</div>'
-    + '<p class="spot-reason">'+lz(st.reason_en, st.reason_zh)+'</p>'
-    + '<div class="spot-metrics">'
-    +   '<div><span class="sm-k">'+lz('Volume','成交量')+'</span><span class="sm-v">'+lz(vw.en,vw.zh)+'</span></div>'
-    +   '<div><span class="sm-k">'+lz('Vs avg price','对均价')+'</span><span class="sm-v">'+vwapV+'</span></div>'
-    +   '<div><span class="sm-k">'+lz('Options lean','期权倾向')+'</span><span class="sm-v">'+leanV+'</span></div>'
-    +   '<div><span class="sm-k">'+lz('Stop ref','止损参考')+'</span><span class="sm-v">'+stopV+'</span></div>'
-    + '</div>'
-    + '</article>';
-}
-
 // ── Build one leader row (glance) + detail row (Tier-2) ───────────────────
-function buildRow(row) {
+function buildRow(row, language) {
+  language = language || 'en';
   var leader = row.l, quote = row.q, pulse = row.p, flow = row.f, conf = row.conf;
   var tk = leader.ticker;
   var stance = row.st, meta = row.meta, rvol = row.rvol, rangePos = row.rangePos, vwapDelta = row.vwapDelta, d = row.d;
 
   var bk = (leader.baskets || []).slice(0,1).map(function(b){ return prettyBasket(b); }).join('');
-  var nameCell = '<td><a class="tk-link" href="stock.html#'+tk+'">'+tk+'</a>'
+  var nameCell = '<td><button type="button" class="tk-link ift-select-name" data-select="'+esc(tk)+'" aria-label="'+esc(tk)+' '+(language==='zh'?'查看依据':'inspect evidence')+'">'+esc(tk)+'</button>'
     + (bk ? '<div class="tk-baskets">'+bk+'</div>' : '') + '</td>';
 
-  var pill = '<span class="stance-pill '+meta.lane+'"><span class="sp-dot"></span>' + lz(meta.en, meta.zh) + '</span>';
+  var pill = '<span class="ift-record-tag">'+lz('Recorded','已有')+'</span><span class="stance-pill '+meta.lane+'"><span class="sp-dot" aria-hidden="true"></span>' + lz(meta.en, meta.zh) + '</span>';
   var reason = '<div class="stance-reason '+(stance.muted?'muted':'')+'">'+lz(stance.reason_en, stance.reason_zh)+'</div>';
   var stanceCell = '<td class="stance-cell '+meta.lane+'">'+pill+reason+'</td>';
   var aux = stance.key === 'degraded' ? ' ift-aux-muted' : '';
@@ -1262,15 +1160,17 @@ function buildRow(row) {
   var chg = quote && quote.changePct != null ? fmtPct(quote.changePct) : '';
   var chgCls = quote && quote.changePct != null ? (quote.changePct>=0?'pos':'neg') : '';
   var rw = rangeWords(rangePos);
-  var priceCell = '<td class="price-cell hide-narrow'+aux+'"><span class="nb-px" data-sym="'+tk+'" data-mkt="us">'+px+'</span>'
+  var priceCell = '<td class="price-cell'+aux+'"><span class="ift-mobile-metric-label">'+lz('Price','价格')+'</span><span class="nb-px" data-sym="'+tk+'" data-mkt="us">'+px+'</span>'
     + '<span class="pct-chg '+chgCls+'">'+chg+'</span>'
+    + (px === '—' ? '<span class="metric-sub">'+lz('Unavailable','不可用')+'</span>' : '')
     + (rw ? '<div class="metric-sub">'+rw+'</div>' : '') + '</td>';
 
   var volDur = pulse ? pulse.vol_durability : null;
   var vw = volumeWords(rvol, volDur);
-  var volCell = '<td class="vol-cell'+aux+'">'
-    + '<div class="gauge-wrap"><div class="gauge-bar"><div class="gauge-fill '+vw.cls+'" style="width:'+vw.pct.toFixed(0)+'%"></div></div>'
-    + '<span class="metric-lead">'+lz(vw.en, vw.zh)+'</span></div>'
+  var volCell = '<td class="vol-cell'+aux+'"><span class="ift-mobile-metric-label">'+lz('Activity','活跃度')+'</span>'
+    + (rvol == null ? '<span class="metric-lead muted">'+lz('Unavailable','不可用')+'</span>' :
+      '<div class="gauge-wrap"><div class="gauge-bar" aria-hidden="true"><div class="gauge-fill '+vw.cls+'" style="width:'+vw.pct.toFixed(0)+'%"></div></div>'
+      + '<span class="metric-lead">'+lz(vw.en, vw.zh)+'</span></div>')
     + (pulse && pulse.higher_lows != null && pulse.higher_lows > 0 ? '<div class="metric-sub">'+lz('higher lows ×'+pulse.higher_lows, '更高低点 ×'+pulse.higher_lows)+'</div>' : '')
     + '</td>';
 
@@ -1290,20 +1190,24 @@ function buildRow(row) {
   }
   var badges = flow && flow.badges ? flow.badges : [];
   var badgeHtml = badges.length ? '<div class="chip-row">'+badges.slice(0,3).map(function(b){ return '<span class="badge badge-blue">'+b+'</span>'; }).join('')+'</div>' : '';
-  var tapeCell = '<td class="hide-narrow'+aux+'"><span class="metric-lead '+vwapCls+'">'+vwapWord+'</span>'+lean+badgeHtml+'</td>';
+  var tapeCell = '<td class="ift-detail-column'+aux+'"><span class="metric-lead '+vwapCls+'">'+vwapWord+'</span>'+lean+badgeHtml+'</td>';
 
-  var dealerCell = '<td class="dealer-cell hide-narrow'+aux+'">'+dealerCompact(d, quote)+'</td>';
-  var expCell = '<td class="col-expand"><span class="expander" data-exp="'+tk+'">'+(openRows[tk]?'▾':'▸')+'</span></td>';
+  var dealerCell = '<td class="dealer-cell ift-detail-column'+aux+'">'+dealerCompact(d, quote)+'</td>';
+  var expCell = '<td class="col-expand"><button type="button" class="expander" data-exp="'+esc(tk)+'" aria-controls="ift-evidence-'+esc(tk)+'" aria-expanded="'+!!openRows[tk]+'" aria-label="'+esc(tk)+' '+(language==='zh'?'切换详细依据':'toggle full evidence')+'">'+evidenceButtonContent(!!openRows[tk])+'</button></td>';
 
   var tr = '<tr class="lead-row" data-ticker="'+tk+'" data-stance="'+stance.key+'"'
     + ' data-rvol="'+(rvol||0)+'" data-k="'+conf.K+'" data-last="'+((quote&&quote.price)||0)+'"'
     + ' data-stance-order="'+meta.order+'" data-baskets="'+esc((leader.baskets||[]).join(' ')||'all')+'">'
     + nameCell + stanceCell + priceCell + volCell + tapeCell + dealerCell + expCell + '</tr>';
 
-  var detail = '<tr class="detail-row'+(openRows[tk]?' open':'')+'" data-detail="'+tk+'"><td colspan="7"><div class="detail-inner">'
+  var detail = '<tr id="ift-evidence-'+esc(tk)+'" class="detail-row'+(openRows[tk]?' open':'')+'" tabindex="-1" data-detail="'+tk+'"><td colspan="7"><div class="detail-inner">'
     + detailContent(leader, quote, pulse, flow, conf, d) + '</div></td></tr>';
 
   return tr + detail;
+}
+
+function evidenceButtonContent(open) {
+  return '<span class="ift-expand-label">'+(open ? lz('Hide evidence','收起依据') : lz('Show evidence','查看依据'))+'</span><span class="ift-expand-icon" aria-hidden="true">'+(open?'⌃':'⌄')+'</span>';
 }
 
 function prettyBasket(b) {
@@ -1368,7 +1272,17 @@ function detailContent(leader, quote, pulse, flow, conf, d) {
   tapeDl.push(dlRow(lz('~Net call premium','~净看涨权利金'), flow&&flow.ncp!=null ? '~'+(flow.ncp>=0?'+':'')+fmtK(flow.ncp) : '—'));
   tapeDl.push(dlRow(lz('~Net premium (calls+puts)','~净权利金（看涨+看跌）'), flow&&flow.net_all!=null ? '~'+(flow.net_all>=0?'+':'')+fmtK(flow.net_all) : '—'));
   tapeDl.push(dlRow(lz('Flow durability','资金持续'), flow&&flow.flow_dur!=null ? (flow.flow_dur*100).toFixed(0)+'%' : '—'));
-  blocks.push(detailBlock(lz('Tape &amp; volume','盘口与量能'), '<div class="dl">'+tapeDl.join('')+'</div>'));
+  var leanWord = lz('Unavailable','不可用');
+  if (flow && flow.ncp != null) {
+    var callsBought = flow.ncp > 0;
+    leanWord = lz(callsBought?'~call buying':'~call selling',callsBought?'~买入看涨':'~卖出看涨');
+  } else if (flow && flow.net_all != null) {
+    leanWord = lz('side unknown','方向未知');
+  }
+  tapeDl.push(dlRow(lz('Approximate call lean','近似看涨期权倾向'),leanWord));
+  var flags = flow && flow.badges && flow.badges.length
+    ? '<div class="chip-row">'+flow.badges.map(function(b){return '<span class="badge badge-blue">'+b+'</span>';}).join('')+'</div>' : '';
+  blocks.push(detailBlock(lz('Tape &amp; volume','盘口与量能'), '<div class="dl">'+tapeDl.join('')+'</div>'+flags));
 
   var names = [
     lz('Recent washout','近期洗盘'), lz('Reclaimed above VWAP','收复VWAP上方'), lz('Volume elevated','放量'),
@@ -1377,7 +1291,8 @@ function detailContent(leader, quote, pulse, flow, conf, d) {
   var checks = conf.legs.map(function(on, i){
     var cls = on===true ? 'on' : (on===false ? 'off' : 'na');
     var ic = on===true ? '✓' : (on===false ? '✗' : '·');
-    return '<span class="check '+cls+'"><span class="ic">'+ic+'</span>'+names[i]+'</span>';
+    var state = on===true ? lz('Met','已满足') : (on===false ? lz('Not met','未满足') : lz('Unavailable','不可用'));
+    return '<span class="check '+cls+'"><span class="ic" aria-hidden="true">'+ic+'</span><span class="check-name">'+names[i]+'</span><span class="check-state">'+state+'</span></span>';
   }).join('');
   blocks.push(detailBlock(lz(conf.K+' of 7 checks aligned','7项中'+conf.K+'项一致'), '<div class="checks">'+checks+'</div>'));
 
@@ -1438,6 +1353,101 @@ function updateStanceCounts(counts) {
   Object.keys(counts).forEach(function(k){ var el = document.querySelector('[data-count="'+k+'"]'); if (el) animateCount(el, counts[k]); });
 }
 
+// Selected-name evidence is a presentation of the same computed row; no new ranking.
+function renderInspector() {
+  var panel = document.getElementById('ift-inspector');
+  if (!panel) return;
+  var row = computedByTicker[selectedTicker];
+  if (!row) {
+    panel.innerHTML = '<p class="ift-eyebrow">'+lz('Name in focus','焦点标的')+'</p><h2>'+lz('No matching names','暂无匹配标的')+'</h2><p class="ift-inspect-foot">'+lz('Clear a filter or try another ticker.','清除筛选或尝试其他代码。')+'</p>';
+    return;
+  }
+  var tk = row.l.ticker;
+  var quoteTime = row.q && row.q.tsSynthetic !== true && typeof row.q.ts === 'number' && row.q.ts > 0 ? row.q.ts : null;
+  function inputRow(label, state, time) {
+    return '<div class="ift-input-row"><span>'+label+'</span><span class="ift-input-state">'+state+(time ? '<br>'+displaySourceTime(time) : '')+'</span></div>';
+  }
+  var priceState = quotePx(row.q) != null ? lz('Observed · delayed','已观测 · 延迟') : lz('Unavailable','不可用');
+  var volumeState = row.p && row.p.bars_today > 0 ? (pulseSourceStale === true ? lz('Marked stale','已标记过期') : lz('Received · check time','已收到 · 请核对时间')) : lz('Unavailable','不可用');
+  var flowText = flowStatus === 'connecting' ? lz('Connecting','连接中') : (row.f && flowStatus === 'live' ? lz('Received · approximate','已收到 · 近似') : lz('Unavailable','不可用'));
+  panel.innerHTML = '<p class="ift-eyebrow">'+lz('Name in focus','焦点标的')+'</p>'
+    + '<div class="ift-inspect-title"><div><h2>'+esc(tk)+'</h2><p class="ift-inspect-sector">'+(row.l.baskets||[]).map(prettyBasket).join(' · ')+'</p></div>'
+    + '<a class="ift-stock-link" id="ift-stock-overview" href="stock.html#'+encodeURIComponent(tk)+'" aria-label="'+esc(tk)+' '+(document.documentElement.getAttribute('data-lang')==='zh'?'股票概览':'stock overview')+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg></a></div>'
+    + '<div class="ift-inspect-verdict"><p class="ift-eyebrow">'+lz('Recorded classification','已有分类')+'</p><strong class="stance-pill '+row.meta.lane+'">'+lz(row.meta.en,row.meta.zh)+'</strong><p>'+lz(esc(row.st.reason_en),esc(row.st.reason_zh))+'</p></div>'
+    + '<section class="ift-inspect-section"><h3>'+lz('Evidence availability','依据可用性')+'</h3>'
+    + inputRow(lz('Price','价格'),priceState,quoteTime)
+    + inputRow(lz('Volume & VWAP','成交量与均价'),volumeState,pulseSourceAsof)
+    + inputRow(lz('Options flow','期权资金流'),flowText,flowAsof)+'</section>'
+    + '<p class="ift-inspect-foot">'+lz('Read the seven rule inputs, reference levels and dealer context before interpreting this classification. Missing evidence stays unknown.','解读分类前，请查看七项规则输入、参考价位与做市商背景。缺失依据保留为未知。')+'</p>'
+    + '<button type="button" class="gbtn ift-inspect-action" id="ift-open-evidence" data-exp="'+esc(tk)+'" aria-controls="ift-evidence-'+esc(tk)+'" aria-expanded="'+!!openRows[tk]+'">'+(openRows[tk]?lz('Hide evidence','收起依据'):lz('Show full evidence','展开完整依据'))+' <span aria-hidden="true">'+(openRows[tk]?'⌃':'⌄')+'</span></button>';
+}
+function selectName(tk) {
+  selectedTicker = tk;
+  document.querySelectorAll('tr.lead-row').forEach(function(row){
+    var selected = row.getAttribute('data-ticker')===tk;
+    row.classList.toggle('ift-selected', selected);
+    var button=row.querySelector('[data-select]'); if(button) button.setAttribute('aria-pressed',String(selected));
+  });
+  renderInspector();
+  if (window.__mmLang) window.__mmLang();
+}
+function toggleEvidence(tk, forceOpen) {
+  openRows[tk] = forceOpen === true ? true : !openRows[tk];
+  var dr = document.getElementById('ift-evidence-'+tk);
+  if (dr) dr.classList.toggle('open', !!openRows[tk]);
+  document.querySelectorAll('.expander').forEach(function(btn){
+    if (btn.getAttribute('data-exp') !== tk) return;
+    btn.innerHTML = evidenceButtonContent(!!openRows[tk]);
+    btn.setAttribute('aria-expanded', String(!!openRows[tk]));
+  });
+  selectName(tk);
+}
+function localizeControls() {
+  var zh = document.documentElement.getAttribute('data-lang') === 'zh';
+  [['ift-hero','Session and data status','时段及数据状态'],
+   ['ift-refresh','Refresh available data','刷新可用数据'],
+   ['leaders-table','Intraday setup scan','盘中布局扫描'],
+   ['ift-inspector','Selected name','所选标的'],
+   ['ift-mobile-sort','Sort scan','扫描排序'],
+   ['ift-activity-help','Explain activity','查看活跃度说明']].forEach(function(item){
+    var el=document.getElementById(item[0]); if(el) el.setAttribute('aria-label',item[zh?2:1]);
+  });
+  var group=document.querySelector('.basket-scroll'); if(group) group.setAttribute('aria-label',zh?'主题筛选':'Theme filters');
+  document.querySelectorAll('#ift-mobile-sort option').forEach(function(option){ option.textContent=option.getAttribute(zh?'data-zh':'data-en'); });
+  document.querySelectorAll('.ift-select-name').forEach(function(button){ button.setAttribute('aria-label',button.getAttribute('data-select')+' '+(zh?'查看依据':'inspect evidence')); });
+  document.querySelectorAll('.expander').forEach(function(button){ button.setAttribute('aria-label',button.getAttribute('data-exp')+' '+(zh?'切换详细依据':'toggle full evidence')); });
+  var stock = document.querySelector('.ift-stock-link'); if(stock) stock.setAttribute('aria-label',selectedTicker+' '+(zh?'股票概览':'stock overview'));
+}
+
+function syncFilterControls() {
+  var sortSelect = document.getElementById('ift-mobile-sort'); if(sortSelect) sortSelect.value = groupByStance ? 'grouped' : sortCol+'-'+(sortDir<0?'desc':'asc');
+  document.querySelectorAll('.chip[data-basket]').forEach(function(chip){
+    var on = chip.getAttribute('data-basket') === activeBasket;
+    chip.classList.toggle('active',on); chip.setAttribute('aria-pressed',String(on));
+  });
+  document.querySelectorAll('.stance-card[data-stance]').forEach(function(card){
+    var on = card.getAttribute('data-stance') === activeStance;
+    card.classList.toggle('active',on); card.setAttribute('aria-pressed',String(on));
+  });
+  var reset = document.getElementById('ift-reset');
+  var clean = activeBasket === 'all' && activeStance === 'all' && !searchQ;
+  if (reset) reset.hidden = clean;
+  var tools = document.getElementById('ift-view-tools'); if (tools) tools.hidden = clean;
+  var themeName = document.getElementById('ift-theme-name');
+  if (themeName) themeName.innerHTML = activeBasket === 'all' ? lz('All themes','全部主题') : prettyBasket(activeBasket);
+  var state = document.getElementById('ift-filter-state'), parts = [];
+  if (activeBasket !== 'all') parts.push(prettyBasket(activeBasket));
+  if (activeStance !== 'all') { var meta=STANCE_META[activeStance]; parts.push(lz(meta.en,meta.zh)); }
+  if (searchQ) parts.push(esc(searchQ.toUpperCase()));
+  if (state) state.innerHTML = parts.join(' · ') || lz('All leaders','全部标的');
+}
+function resetFilters() {
+  activeBasket = 'all'; activeStance = 'all'; searchQ = ''; boardExpanded = false;
+  var input = document.getElementById('ift-search'); if(input) input.value = '';
+  applyView();
+  if(input) input.focus({preventScroll:true});
+}
+
 // ── Sort / filter / group ──────────────────────────────────────────────────
 var COL_ATTR = { ticker:'data-ticker', last:'data-last', rvol:'data-rvol', stance:'data-stance-order', dealer:'data-rvol' };
 function sortRows(rows) {
@@ -1451,14 +1461,14 @@ function sortRows(rows) {
     }
     var av = a.getAttribute(attr)||'0', bv = b.getAttribute(attr)||'0';
     var an = isNaN(av)?av:Number(av), bn = isNaN(bv)?bv:Number(bv);
-    if (an < bn) return sortDir; if (an > bn) return -sortDir; return 0;
+    if (an < bn) return -sortDir; if (an > bn) return sortDir; return 0;
   });
   return rows;
 }
 function applyView() {
   var tbody = document.getElementById('leaders-body');
   if (!tbody) return;
-  [].slice.call(tbody.querySelectorAll('tr.group-head')).forEach(function(g){ g.parentNode.removeChild(g); });
+  [].slice.call(tbody.querySelectorAll('tr.group-head, tr.ift-empty-row')).forEach(function(g){ g.parentNode.removeChild(g); });
   var leadRows = [].slice.call(tbody.querySelectorAll('tr.lead-row'));
   var detailByTk = {};
   [].slice.call(tbody.querySelectorAll('tr.detail-row')).forEach(function(d){ detailByTk[d.getAttribute('data-detail')] = d; });
@@ -1487,22 +1497,31 @@ function applyView() {
       curGroup = st;
       var meta = STANCE_META[st] || STANCE_META.stand_aside;
       var gh = document.createElement('tr'); gh.className='group-head '+meta.lane;
-      gh.innerHTML = '<td colspan="7"><span class="gh-dot"></span>'+lz(meta.en, meta.zh)+'</td>';
+      gh.innerHTML = '<td colspan="7"><span class="gh-dot" aria-hidden="true"></span>'+lz('Recorded · ','已有 · ')+lz(meta.en, meta.zh)+'</td>';
       frag.appendChild(gh);
     }
     r.style.display=''; frag.appendChild(r);
     if (detailByTk[tk]) { detailByTk[tk].style.display=''; frag.appendChild(detailByTk[tk]); }
   });
   tbody.appendChild(frag);
+  if (!matching.length && leaders.length) {
+    var empty = document.createElement('tr'); empty.className='ift-empty-row';
+    empty.innerHTML = '<td colspan="7"><div class="mx-empty"><strong>'+lz('No names match these filters','没有符合当前筛选的标的')+'</strong><p class="mx-empty-why">'+lz('Try another ticker or clear the filters to return to the full scan.','尝试其他代码，或清除筛选以返回完整扫描。')+'</p><button type="button" class="gbtn" data-reset-filters>'+lz('Reset filters','重置筛选')+'</button></div></td>';
+    tbody.appendChild(empty);
+  }
+  var visible = matching.slice(0,showN).map(function(row){ return row.getAttribute('data-ticker'); });
+  if (visible.indexOf(selectedTicker)<0) selectedTicker = visible[0] || null;
+  selectName(selectedTicker);
+  syncFilterControls();
   var lbl = document.getElementById('count-label');
   if (lbl) {
     if (total > BOARD_CAP && !boardExpanded) {
-      lbl.innerHTML = lz('Showing '+showN+' of '+total+' leaders · ', '显示 '+showN+' / '+total+' 只 · ')
+      lbl.innerHTML = lz('Showing '+showN+' of '+total+' leaders', '显示 '+showN+' / '+total+' 只')
         + '<button type="button" class="ift-see-all" id="ift-see-all">'
         + lz('See all '+total, '查看全部 '+total+' 只')
         + '</button>';
     } else if (total > BOARD_CAP && boardExpanded) {
-      lbl.innerHTML = lz('Showing '+total+' of '+total+' leaders · ', '显示 '+total+' / '+total+' 只 · ')
+      lbl.innerHTML = lz('Showing '+total+' of '+total+' leaders', '显示 '+total+' / '+total+' 只')
         + '<button type="button" class="ift-see-all" id="ift-see-all" data-ift-collapse="1">'
         + lz('Show top '+BOARD_CAP, '只看前 '+BOARD_CAP+' 只')
         + '</button>';
@@ -1512,7 +1531,14 @@ function applyView() {
     }
   }
   var ths = document.querySelectorAll('table.leaders th[data-col]');
-  ths.forEach(function(th){ th.classList.remove('sort-asc','sort-desc'); if (!groupByStance && th.getAttribute('data-col')===sortCol) th.classList.add(sortDir<0?'sort-desc':'sort-asc'); });
+  ths.forEach(function(th){
+    th.classList.remove('sort-asc','sort-desc');
+    if (!th.querySelector('.ift-sort')) return;
+    var sorted = !groupByStance && th.getAttribute('data-col')===sortCol;
+    th.setAttribute('aria-sort', sorted ? (sortDir<0?'descending':'ascending') : 'none');
+    if (sorted) th.classList.add(sortDir<0?'sort-desc':'sort-asc');
+  });
+  if (window.__mmLang) window.__mmLang();
 }
 
 // ── Full render ────────────────────────────────────────────────────────────
@@ -1535,12 +1561,20 @@ function render() {
   _rendering = true;
   var tbody = document.getElementById('leaders-body');
   if (!tbody) { _rendering = false; return; }
+  var focused = document.activeElement;
+  var focusTicker = focused && focused.getAttribute && (focused.getAttribute('data-exp') || focused.getAttribute('data-select'));
+  var focusKind = focused && focused.classList && focused.classList.contains('expander') ? 'data-exp' : 'data-select';
+  var restoreBoardFocus = focusTicker && tbody.contains(focused);
+  var focusId = focused && focused.id && ['leaders-body','ift-inspector','count-label'].some(function(id){
+    var owner=document.getElementById(id); return owner && typeof owner.contains==='function' && owner.contains(focused);
+  }) ? focused.id : null;
   var computed = computeAll();
+  computedByTicker = {};
+  computed.forEach(function(row){ computedByTicker[row.l.ticker]=row; });
   var counts = laneCounts(computed);
 
-  // hero + spotlight from the shared compute
+  // The scan and selected-name evidence share one computed dataset.
   buildHero(computed, counts);
-  buildSpotlight(computed, counts);
   updateStanceCounts(counts);
 
   // board
@@ -1548,25 +1582,36 @@ function render() {
   computed.forEach(function(row){
     var d = row.d;
     if (d) { d._tk = row.l.ticker; d._eq = (row.l.options_entry||{}).evidence_quality; }
-    html += buildRow(row);
+    html += buildRow(row, document.documentElement.getAttribute('data-lang'));
   });
   tbody.innerHTML = html || '<tr class="loading-row"><td colspan="7">'+lz('No data yet','暂无数据')+'</td></tr>';
   if (typeof iftSkelDone === 'function') iftSkelDone(document.getElementById('ift-board-skel'));
   applyView();
   if (window.__mmLang) window.__mmLang();
+  localizeControls();
+  var focusTarget = focusId ? document.getElementById(focusId) : null;
+  if (!focusTarget && restoreBoardFocus) {
+    var candidates = tbody.querySelectorAll('['+focusKind+']');
+    for (var i=0;i<candidates.length;i++) if(candidates[i].getAttribute(focusKind)===focusTicker) { focusTarget=candidates[i]; break; }
+  }
+  if (focusTarget && focusTarget.getClientRects().length) focusTarget.focus({preventScroll:true});
+  else if (focusId || restoreBoardFocus) {
+    var fallback=document.getElementById('ift-search'); if(fallback) fallback.focus({preventScroll:true});
+  }
   _rendering = false;
 }
 
 // ── Events ─────────────────────────────────────────────────────────────────
 document.querySelectorAll('.playbook-hd').forEach(function(hd){
-  hd.addEventListener('click', function(){ hd.parentElement.classList.toggle('open'); });
+  hd.addEventListener('click', function(){ var on=hd.parentElement.classList.toggle('open'); hd.setAttribute('aria-expanded',String(on)); });
 });
 document.querySelectorAll('table.leaders th[data-col]').forEach(function(th){
-  th.addEventListener('click', function(){
+  th.addEventListener('click', function(e){
+    if(e && e.target && e.target.closest && e.target.closest('.help')) return;
     var col = th.getAttribute('data-col');
     if (col === 'expand' || col === 'tape' || col === 'dealer') return;
     if (groupByStance) { groupByStance = false; setGroupToggle(false); }
-    if (col === sortCol) sortDir = -sortDir; else { sortCol = col; sortDir = -1; }
+    if (col === sortCol) sortDir = -sortDir; else { sortCol = col; sortDir = (col === 'ticker' || col === 'stance') ? 1 : -1; }
     boardExpanded = false;
     applyView();
     var sl = document.getElementById('sort-label'); if (sl) sl.textContent = '';
@@ -1576,6 +1621,7 @@ document.querySelectorAll('.chip[data-basket]').forEach(function(chip){
   chip.addEventListener('click', function(){
     document.querySelectorAll('.chip[data-basket]').forEach(function(c){ c.classList.remove('active'); });
     chip.classList.add('active'); activeBasket = chip.getAttribute('data-basket'); boardExpanded = false; applyView();
+    var menu = document.getElementById('ift-theme-menu'); if (menu) { menu.open = false; menu.querySelector('summary').focus({preventScroll:true}); }
   });
 });
 document.querySelectorAll('.stance-card[data-stance]').forEach(function(card){
@@ -1583,24 +1629,65 @@ document.querySelectorAll('.stance-card[data-stance]').forEach(function(card){
     var s = card.getAttribute('data-stance');
     if (activeStance === s) { activeStance = 'all'; card.classList.remove('active'); }
     else { document.querySelectorAll('.stance-card').forEach(function(c){ c.classList.remove('active'); }); activeStance = s; card.classList.add('active'); }
-    // scroll the board into view when a lane is picked
-    if (activeStance !== 'all') { var bd = document.getElementById('leaders-table'); if (bd && bd.scrollIntoView) bd.scrollIntoView({behavior: REDUCED_MOTION?'auto':'smooth', block:'start'}); }
     boardExpanded = false;
     applyView();
   });
 });
 var groupToggle = document.getElementById('group-toggle');
-function setGroupToggle(on){ groupByStance = on; if (groupToggle) groupToggle.classList.toggle('active', on); }
+function setGroupToggle(on){ groupByStance = on; if (groupToggle) { groupToggle.classList.toggle('active', on); groupToggle.setAttribute('aria-pressed',String(on)); } }
 if (groupToggle) groupToggle.addEventListener('click', function(){ setGroupToggle(!groupByStance); boardExpanded = false; applyView(); });
 var _lb = document.getElementById('leaders-body');
 if (_lb) _lb.addEventListener('click', function(e){
-  var exp = e.target.closest ? e.target.closest('.expander') : null;
-  if (!exp) return;
-  var tk = exp.getAttribute('data-exp');
-  openRows[tk] = !openRows[tk];
-  exp.textContent = openRows[tk] ? '▾' : '▸';
-  var dr = document.querySelector('tr.detail-row[data-detail="'+tk+'"]');
-  if (dr) dr.classList.toggle('open', openRows[tk]);
+  if (!e.target.closest) return;
+  if (e.target.closest('[data-reset-filters]')) { resetFilters(); return; }
+  var exp = e.target.closest('.expander');
+  if (exp) { toggleEvidence(exp.getAttribute('data-exp')); return; }
+  var name = e.target.closest('[data-select]');
+  if (name) {
+    var ticker = name.getAttribute('data-select');
+    selectName(ticker);
+    if (window.matchMedia('(max-width:1199px)').matches) toggleEvidence(ticker, true);
+    return;
+  }
+  var row = e.target.closest('tr.lead-row');
+  if (row && !e.target.closest('a,button,input')) selectName(row.getAttribute('data-ticker'));
+});
+var inspector = document.getElementById('ift-inspector');
+if (inspector) inspector.addEventListener('click',function(e){
+  var btn = e.target.closest && e.target.closest('#ift-open-evidence');
+  if (!btn) return;
+  var tk = btn.getAttribute('data-exp'); toggleEvidence(tk);
+  var dr = document.getElementById('ift-evidence-'+tk);
+  if (!openRows[tk]) { var replacement = document.getElementById('ift-open-evidence'); if(replacement) replacement.focus({preventScroll:true}); }
+  if (dr && openRows[tk]) {
+    dr.setAttribute('tabindex','-1');
+    dr.focus({preventScroll:true});
+    dr.scrollIntoView({behavior:REDUCED_MOTION?'auto':'smooth',block:'nearest'});
+  }
+});
+var mobileSort = document.getElementById('ift-mobile-sort');
+if(mobileSort) mobileSort.addEventListener('change',function(){
+  if(mobileSort.value === 'grouped') setGroupToggle(true);
+  else {
+    var parts=mobileSort.value.split('-'); setGroupToggle(false);
+    sortCol=parts[0]; sortDir=parts[1]==='asc'?1:-1;
+  }
+  boardExpanded=false; applyView();
+});
+var themeMenu = document.getElementById('ift-theme-menu');
+document.addEventListener('keydown',function(e){
+  if (e.key === 'Escape' && themeMenu && themeMenu.open) {
+    themeMenu.open = false; themeMenu.querySelector('summary').focus({preventScroll:true});
+  }
+});
+document.addEventListener('click',function(e){
+  if (themeMenu && themeMenu.open && !themeMenu.contains(e.target)) themeMenu.open = false;
+});
+var resetButton = document.getElementById('ift-reset');
+if(resetButton) resetButton.addEventListener('click',resetFilters);
+var refreshButton = document.getElementById('ift-refresh');
+if(refreshButton) refreshButton.addEventListener('click',function(){
+  fetchQuotes(); fetchPulse(); fetchFlow(); updateFlowStamp(flowAsof,flowMeta);
 });
 var countLabel = document.getElementById('count-label');
 if (countLabel) countLabel.addEventListener('click', function(e){
@@ -1608,12 +1695,20 @@ if (countLabel) countLabel.addEventListener('click', function(e){
   if (!btn) return;
   boardExpanded = btn.getAttribute('data-ift-collapse') !== '1';
   applyView();
+  var replacement = document.getElementById('ift-see-all');
+  if(boardExpanded) {
+    var shown=Array.prototype.filter.call(document.querySelectorAll('tr.lead-row'),function(row){return row.style.display!=='none';});
+    var firstNew=shown[BOARD_CAP] && shown[BOARD_CAP].querySelector('[data-select]');
+    if(firstNew) replacement=firstNew;
+  }
+  if(replacement) { replacement.focus({preventScroll:true}); replacement.scrollIntoView({block:'nearest',behavior:REDUCED_MOTION?'auto':'smooth'}); }
 });
 var searchEl = document.getElementById('ift-search');
 if (searchEl) {
   searchEl.addEventListener('input', function(){ searchQ = searchEl.value.trim(); boardExpanded = false; applyView(); });
   (function(){ var en=searchEl.placeholder, zh=searchEl.getAttribute('data-ph-zh')||en;
     function setPh(){ searchEl.placeholder = document.documentElement.getAttribute('data-lang')==='zh'?zh:en; }
+    document.addEventListener('langchange',localizeControls);
     setPh(); document.addEventListener('langchange', setPh); })();
 }
 // No langchange→render needed: static bilingual spans swap via CSS (l-en/l-zh), and the
@@ -1633,6 +1728,6 @@ render();
 
 })();
 </script>
-<script src="theme.js?v=2454e0ca" defer></script>
+<script src="theme.js"></script>
 </body>
 </html>

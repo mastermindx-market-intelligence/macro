@@ -56,7 +56,7 @@ def test_delayed_tag_is_byte_identical():
 
 def test_stamp_static_has_no_iso_or_base_or_live_vocab():
     src = _src()
-    stamp = _region(src, 'id="ift-stamp"', "</header>")
+    stamp = _region(src, 'id="ift-stamp"', "</section>")
     assert "live" not in stamp
     assert "实时" not in stamp
     assert "BASE" not in stamp
@@ -262,25 +262,34 @@ def test_pretty_basket_reuses_filter_chip_zh_through_lz():
     assert out["power_grid"]["zh"] == "电网"
     src = _src()
     # Filter chips keep the same ZH strings; Mag7 stays untranslated in the chip.
-    assert '<span class="chip" data-basket="mag7">Mag7</span>' in src
+    assert '<button type="button" class="chip" data-basket="mag7" aria-pressed="false">Mag7</button>' in src
     assert "{{ t('AI Infra', 'AI基础') }}" in src
     assert "{{ t('Power Grid', '电网') }}" in src
 
 
 # ── M3 hero legend ───────────────────────────────────────────────────────────
 
-def test_hero_legend_drops_integers_hs_count_untouched():
+def test_scan_replaces_duplicate_hero_count_and_legend():
+    """The redesign retires the misleading live-count and duplicate composition."""
     src = _src()
-    legend = _region(src, "leg += ", "var comp = document.getElementById")
-    assert "lz(meta.en,meta.zh)+'</span>'" in legend
-    assert "lz(meta.en,meta.zh)+' '+v" not in src
-    assert "id=\"hs-count\"" in src
-    assert "animateCount(num, actionable)" in src
+    assert 'id="hs-count"' not in src
+    assert 'id="comp-legend"' not in src
+    assert 'id="spot-grid"' not in src
+    assert "Recorded classifications" in src
+    assert 'id="stance-strip"' in src
+    assert 'id="leaders-body"' in src
 
 
 # ── C2 counted control ───────────────────────────────────────────────────────
 
 _DOM_SHIM = r"""
+// The extracted pagination unit now has selected-name and filter-control hooks.
+// Their integrated behavior is verified by verify_browser.py; keep this harness
+// focused on the original counted-cap contract.
+var selectedTicker=null, leaders=[], window={};
+function selectName(tk){selectedTicker=tk;}
+function syncFilterControls(){}
+
 function Node() {
   this.childNodes = [];
   this.style = {display: ''};
@@ -314,7 +323,7 @@ function Node() {
   this.querySelectorAll = function(sel){
     var out = [];
     (this.childNodes||[]).forEach(function(ch){
-      if (sel==='tr.group-head' && /\bgroup-head\b/.test(ch.className)) out.push(ch);
+      if (sel.indexOf('tr.group-head')>=0 && /\bgroup-head\b/.test(ch.className)) out.push(ch);
       else if (sel==='tr.lead-row' && /\blead-row\b/.test(ch.className)) out.push(ch);
       else if (sel==='tr.detail-row' && /\bdetail-row\b/.test(ch.className)) out.push(ch);
     });
@@ -444,8 +453,8 @@ def test_filter_narrowing_below_8_shows_the_set_with_no_control():
 
 def test_counted_control_copy_is_the_packet_form_in_source():
     src = _src()
-    assert "Showing '+showN+' of '+total+' leaders · " in src
-    assert "显示 '+showN+' / '+total+' 只 · " in src
+    assert "Showing '+showN+' of '+total+' leaders" in src
+    assert "显示 '+showN+' / '+total+' 只" in src
     assert "See all '+total" in src
     assert "查看全部 '+total+' 只" in src
     assert "var BOARD_CAP = 8" in src
@@ -453,11 +462,12 @@ def test_counted_control_copy_is_the_packet_form_in_source():
 
 def test_mag7_chip_and_honesty_chips_untouched():
     src = _src()
-    assert '<span class="chip" data-basket="mag7">Mag7</span>' in src
+    assert '<button type="button" class="chip" data-basket="mag7" aria-pressed="false">Mag7</button>' in src
     assert DELAYED_TAG in src
     assert "~call buying" in src
     assert "~买入看涨" in src
-    assert "id=\"hs-count\"" in src
+    assert "id=\"hs-count\"" not in src
+    assert "Recorded classifications" in src
 
 
 # ── --as-of / checked_at lock + ephemeral run_status skip (reviewer RED-first)

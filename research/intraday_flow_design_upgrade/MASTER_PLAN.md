@@ -87,10 +87,10 @@ coverage functions remain the source; preserve #6867's separate timing work.
 |---|---|---|---|---|
 | P1 | none | implementation_complete | Baseline screenshot, live UI observation, template and ownership census; main base above | Principal; design adviser consulted |
 | P2 | P1 | blocked | Editable Paper light/dark desktop/mobile and meaningful states; exact file/page/node IDs, screenshots and JSX | Principal designer; Paper schema qualification required |
-| P2.1 | P1 | ready | Exact HTML/CSS reference and interaction specification, explicitly NOT_APPLIED_TO_PAPER while gate persists | Principal design; independent visual critique |
-| P3 | P2.1 | proposed | Integrate reference into existing template/page; preserve engine and feed contracts; isolated source branch | Bounded economical Fabric builder if admitted |
-| P3.1 | P3 | proposed | Functional and responsive state verification; same original semantics tests plus new user-path regressions | Builder; no weakened assertions |
-| P4 | P3.1 | proposed | Independent code/visual review and bounded repair on exact candidate | Separate reviewer; principal adjudicates |
+| P2.1 | P1 | implementation_complete | DESIGN_SPEC.md and the paired template/CSS reference; NOT_APPLIED_TO_PAPER | Principal design; independent visual critique |
+| P3 | P2.1 | implementation_complete | Real template, paired page stylesheet and rendered page replaced; 15 core regions byte-identical to base | Principal retained: design judgment and critical path while audit admission waited |
+| P3.1 | P3 | verification_in_progress | 381 browser checks pass across eight cells and six explicit synthetic transport scenarios; final canonical visual evidence pending | Regression and source-contract evidence; no production claim |
+| P4 | P3.1 | ready_after_visual_evidence | Independent exact-head code/visual review and bounded repair | Separate paid reviewer; principal adjudicates |
 | P5 | P2,P4 | blocked | Exact-head CI, permitted integration/release and served desktop/mobile proof | Existing release owner; no premature merge |
 
 The Paper gate blocks canvas effects and final acceptance; independent design-reference
@@ -136,3 +136,41 @@ Initial live browser reproduced the supplied closed-market screen: six recorded
 candidates, missing quotes, duplicate spotlight and board below the first screen.
 This is a UI observation, not real-time feed qualification or trading validation.
 Source and plan readbacks are recorded by their containing commits.
+
+## Current cumulative frontier — 2026-11-02
+
+Source implementation is complete in the isolated branch. The redesigned scan retains
+all six classifications, nine theme filters, both languages, both themes, grouping,
+numeric/name sorting, call-only context and all seven evidence legs. New phone sort,
+explicit Price/Activity labels, keyboard controls, preserved focus/expansion across
+refresh, visible input timestamps and a selected-name evidence panel are exercised
+by `verify_browser.py`. The final source also preserves focus on the sidebar,
+stock-overview link, full evidence region and counted expansion control during
+refresh. Expansion continues at the first newly revealed ticker; seven checks have
+explicit localized states; Activity help is keyboard accessible and does not sort.
+The desktop scan begins 298.98px below navigation with seven
+complete rows visible at 1440×900. Fifteen classifier/coverage/session/leg functions
+are byte-identical to the initial base; see `model_preservation.json`.
+
+`browser_verification.json` records 381/381 successful checks. All 280 Intraday
+pytest cases pass; inline JavaScript syntax and paired stylesheet equality pass. Synthetic empty,
+loading, missing, partial, producer-stale and populated responses exist only in the
+isolated regression harness. They are not site data or live market evidence.
+
+The principal retained implementation for product judgment and a critical-path
+shortcut while the independently commissioned baseline contract audit waited for
+its provider lease. The audit remains the original Fabric run
+`intraday-design-contract-audit-20261101-c2`, controller 40460, under the operation
+above; no duplicate worker was started. Native design advice is advisory and does
+not replace the required independent visual review.
+
+The latest read-only compatibility check against main
+`e4009c94d75770739844240b22f5fc915668aa9b` found no changes since the initial base in
+the scoped Intraday template/page/tests, shared navigation/theme, producer,
+`lib/pages.py`, or product-experience configuration. No merge/rebase is claimed.
+
+Next: save the verified candidate, capture the canonical eight-cell resting plus
+hover/focus matrix, obtain independent exact-head review, resolve relevant CI,
+and finish the normal integration path once the Paper gate is qualified. See
+`PAPER_QUALIFICATION_HANDOFF.md` for the bounded owner remedy. No Paper canvas effect,
+source merge, production deployment, live-page proof or final acceptance has occurred.

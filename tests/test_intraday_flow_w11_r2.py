@@ -131,7 +131,7 @@ def test_builder_absolute_form_has_no_relative_day_words():
 
 def test_static_stamp_and_payload_have_no_relative_day_words():
     src = _src()
-    stamp = _region(src, 'id="ift-stamp"', "</header>")
+    stamp = _region(src, 'id="ift-stamp"', "</section>")
     for word in RELATIVE_DAY:
         assert word not in stamp
     assert "still connecting" not in stamp
@@ -489,10 +489,10 @@ def test_stamp_tip_is_canonical_lens_not_page_local_help():
     assert "{{ help(" in src
 
 
-def test_copy_nits_drop_realtime_overclaim():
+def test_copy_preserves_unavailable_and_recorded_qualification():
     src = _src()
-    assert "Counts update as the tape refreshes." in src
-    assert "计数随资金带刷新而更新。" in src
+    assert "Recorded classifications" in src
+    assert "已有分类" in src
     assert "Counts update live as the tape moves." not in src
     assert "计数随资金带实时更新。" not in src
     assert "tape not flowing yet" in src
@@ -505,12 +505,11 @@ def test_copy_nits_drop_realtime_overclaim():
 
 def test_per_row_soft_chip_removed_footnote_and_tilde_kept():
     src = _src()
-    row = _region(src, "function spotCard", "function buildRow")
     board = _region(src, "function buildRow", "function prettyBasket")
-    assert 'soft-tag">~soft' not in row
+    detail = _region(src, "function detailContent", "function detailBlock")
     assert 'soft-tag">~soft' not in board
-    assert "~call buying" in src
-    assert "~买入看涨" in src
+    assert 'soft-tag">~soft' not in detail
+    assert "~call buying" in detail and "~买入看涨" in detail
     assert "~soft — a tape rule" in src
     assert "~软性" in src
 
@@ -520,14 +519,11 @@ def test_loading_is_skeleton_geometry_not_empty_copy():
     hero = _region(src, 'id="hero-thesis"', 'id="hero-sub"')
     assert "skel" in hero
     assert "Reading the tape" not in hero
-    spot = _region(src, 'id="spot-grid"', "</section>")
-    assert "spot-skel" in spot
-    assert "spot-empty" not in spot  # loading must not reuse empty
-    assert "Reading the tape" not in spot
-    # empty structural still exists for the live empty branch
-    assert "spot-empty" in src
-    assert "ift-skel-row" in src
-    assert "Loading leaders" not in src
+    board = _region(src, 'id="ift-board-skel"', 'id="count-label"')
+    assert "ift-skel-row" in board
+    assert "ift-empty-row" not in board
+    assert "No names match these filters" in src
+    assert 'id="spot-grid"' not in src
 
 
 @needs_node
@@ -558,11 +554,10 @@ def test_quotes_outage_during_rth_is_degraded_not_stand_aside():
     assert out["connecting"]["key"] != "degraded"
 
 
-def test_light_rules_cover_the_three_new_surfaces():
-    src = _src()
-    assert "post-stack: consolidate" in src
-    light = src[src.index("post-stack: consolidate") :]
-    assert ".ift-see-all" in light
-    assert ".ctx-stamp" in light
-    assert ".skel" in light
-    assert "html[data-theme=\"light\"]" in light
+def test_light_rules_cover_scan_selection_and_evidence_surfaces():
+    css = (ROOT / "templates/intraday-flow.css").read_text()
+    assert 'html[data-theme="light"]' in css
+    assert ".ift-board.panel" in css and ".ift-inspector" in css
+    assert ".lead-row.ift-selected" in css
+    assert "box-shadow:var(--card-shadow)" in css
+    assert ".ctx-stamp" in css and ".skel" in css and ".ift-see-all" in css

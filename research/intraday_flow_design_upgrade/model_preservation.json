@@ -1,0 +1,81 @@
+{
+  "base": "f754bdee6b803b18191841863c35527c0a74571e",
+  "path": "templates/intraday_flow.html.j2",
+  "regions": [
+    {
+      "function": "_etMinutes",
+      "unchanged": true,
+      "sha256": "442e6424dec92aadc5a6648d2b8c0ea990f64a895c10321e9bcef34a93ffe872"
+    },
+    {
+      "function": "isMarketHours",
+      "unchanged": true,
+      "sha256": "66f77e5844a9a29c6e7b278be9e29c8d4e2dc2f7d7593c07b7c2fc4816d35bf8"
+    },
+    {
+      "function": "flowMetaFresh",
+      "unchanged": true,
+      "sha256": "2fddc0b1b9c74d9b9263810e09e1e7358d397b6bf3fedff3f2dbfea23c1e3910"
+    },
+    {
+      "function": "sessionPhase",
+      "unchanged": true,
+      "sha256": "7dc8ef2cfb0c8d6a2526354ca2c585257cd9b8a60b336104e856aa7b98fd42a2"
+    },
+    {
+      "function": "computeRvol",
+      "unchanged": true,
+      "sha256": "6040a0b3fe40332190b6ef366db53b9a5072ee03ee3136781051e6b41da99e04"
+    },
+    {
+      "function": "computeRangePos",
+      "unchanged": true,
+      "sha256": "23d6cb2527a9dab99426aa047efcc69c8d8c88e6e8b71b6ca1b6e1bbd95f3222"
+    },
+    {
+      "function": "computeVwapDelta",
+      "unchanged": true,
+      "sha256": "1c186c0e943dabce989f8a7fd7d6ce402d924984c16b2df8214ed9b7bf8998cb"
+    },
+    {
+      "function": "computeLegs",
+      "unchanged": true,
+      "sha256": "3ba7bf1dbba8ed6404fa5f8f22f83a95dde1d0122a749c546a94ff709abf4342"
+    },
+    {
+      "function": "dealerOf",
+      "unchanged": true,
+      "sha256": "8b8bd36742ed9641d3bf6fefaeee40f66b367a1677865c8a7e8f9f3feca24931"
+    },
+    {
+      "function": "quotePx",
+      "unchanged": true,
+      "sha256": "e1fdaf82b25a39b3387b46b4e759d24852d4f3e7b464ed2e4d76a63c4776dcb4"
+    },
+    {
+      "function": "boardPriceCoverage",
+      "unchanged": true,
+      "sha256": "426d7762a3bb1b2715324b99360b106e949347a5502f940e74a590b37efd0eec"
+    },
+    {
+      "function": "boardPulseCoverage",
+      "unchanged": true,
+      "sha256": "258788de84f472e661e30e604f7a77fc4a2ad0c532f0621efb69ef8c98d299cd"
+    },
+    {
+      "function": "computeStance",
+      "unchanged": true,
+      "sha256": "c149bcb797d3e7193ff4b227aa41070a8dfcaf34fe5db4ddb0b070b219596a21"
+    },
+    {
+      "function": "computeAll",
+      "unchanged": true,
+      "sha256": "7e19bc4935b205892cd02b3921ee63409496355bc13f1dae4fa874921c57b9db"
+    },
+    {
+      "function": "laneCounts",
+      "unchanged": true,
+      "sha256": "31dbf449b4f880d23d0b9caf33d8a1643586ab421425bd259d0eee7d557c2831"
+    }
+  ]
+}
