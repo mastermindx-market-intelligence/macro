@@ -15600,3 +15600,86 @@ def test_pk08_lossy_quarterly_without_item_section_stays_typed_absent() -> None:
             for line in result["limitations"]
         ), field_id
     assert contract.validate_pack_result(result) == []
+
+
+# §TESTS (nil_bs_vs_note repair): a locator miss is "could not look" --------
+
+
+def test_pk08_nil_bs_line_with_unlocatable_note_is_not_evaluable() -> None:
+    # PIN (review): a nil balance-sheet line on a filing whose contingencies
+    # note heading the frozen NOTE_CC locator (and its v2 fallbacks) cannot
+    # find leaves the block row not_evaluable — "could not look" is never a
+    # finding against the issuer, so the check abstains with
+    # missing_dependency instead of asserting the nil line lacks a note
+    # explanation.
+    result = produce_pack(
+        "PK08",
+        _pk08_v2_input(
+            facts=(_PK08_V2_NIL_FACT,),
+            contexts=_PK08_V2_BASE_CONTEXTS,
+            paragraphs=(
+                "<p>The Company operates in a single reportable segment.</p>",
+                "<p>No amounts were recorded for loss contingencies in the "
+                "period.</p>",
+            ),
+        ),
+    )
+    rows = {row["field_id"]: row for row in result["fields"]}
+    bs_state = rows["commitments_and_contingencies_bs_state"]
+    assert bs_state["quality_state"] == "valued"
+    assert bs_state["text_value"] == "nil_disclosed"
+    block = rows["commitments_text_block"]
+    assert block["quality_state"] == "not_evaluable"
+    assert block["reason"] == "missing_dependency"
+    check = _check(result, "nil_bs_vs_note")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_nil_bs_line_with_confirmed_absent_note_fails() -> None:
+    # The retained fail arm: a nil balance-sheet line whose commitments
+    # block is a typed absence (a confirmed absence, not a locator miss) is
+    # a finding against the issuer. Row-level: through produce_pack a
+    # confirmed-absent block only arises without a retained narrative
+    # document, which also leaves the balance-sheet line unvalued.
+    catalogue = contract.load_pack_schema("PK08")
+    catalogue_check = {
+        check["check_id"]: check for check in catalogue["checks"]
+    }["nil_bs_vs_note"]
+    rows = {
+        "commitments_and_contingencies_bs_state": {
+            "quality_state": "valued",
+            "text_value": "nil_disclosed",
+        },
+        "commitments_text_block": {
+            "quality_state": "missing",
+            "reason": "missing_dependency",
+        },
+    }
+    check_row = pk08_contingencies._nil_bs_vs_note_row(rows, catalogue_check)
+    assert check_row["status"] == "fail"
+    assert check_row["reason"] is None
+
+
+def test_pk08_nil_bs_line_with_valued_note_passes() -> None:
+    # The unchanged pass arm: a located contingencies note explains the
+    # nil line.
+    result = produce_pack(
+        "PK08",
+        _pk08_v2_input(
+            facts=(_PK08_V2_NIL_FACT,),
+            contexts=_PK08_V2_BASE_CONTEXTS,
+            paragraphs=(
+                "<p>Note 12 – Commitments and Contingencies. The Company has "
+                "entered into certain unconditional purchase obligations.</p>",
+                f"<p>{_PK08_CONTING_CLEAN}</p>",
+            ),
+        ),
+    )
+    rows = {row["field_id"]: row for row in result["fields"]}
+    assert rows["commitments_text_block"]["quality_state"] == "valued"
+    check = _check(result, "nil_bs_vs_note")
+    assert check["status"] == "pass"
+    assert check["reason"] is None
+    assert contract.validate_pack_result(result) == []

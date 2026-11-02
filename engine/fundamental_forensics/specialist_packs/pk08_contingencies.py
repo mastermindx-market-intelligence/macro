@@ -1317,6 +1317,13 @@ def _nil_bs_vs_note_row(
     # The nil literal: the note must explain the nil line.
     if block.get("quality_state") == "valued":
         return _check_row(catalogue_check, "pass")
+    if block.get("quality_state") == "not_evaluable":
+        # The governing note could not be located (B.2): "could not look"
+        # is never a finding against the issuer — same ruling as
+        # _item3_vs_note_row.
+        return _check_row(
+            catalogue_check, "not_evaluable", reason="missing_dependency"
+        )
     return _check_row(catalogue_check, "fail")
 
 
