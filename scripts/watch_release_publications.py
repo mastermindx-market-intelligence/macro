@@ -709,11 +709,12 @@ def _probe_interval_s(
     return NORMAL_PROBE_INTERVAL_S
 
 
-def _probe_blocked_until(prior: dict[str, Any]) -> datetime | None:
+def _probe_blocked_until(*observations: dict[str, Any]) -> datetime | None:
     """The later of an upstream Retry-After and this row's error backoff."""
     stamps = [
-        _state_time(prior.get(PROBE_RETRY_AFTER_KEY)),
-        _state_time(prior.get(PROBE_BACKOFF_KEY)),
+        _state_time(observation.get(key))
+        for observation in observations
+        for key in (PROBE_RETRY_AFTER_KEY, PROBE_BACKOFF_KEY)
     ]
     stamps = [stamp for stamp in stamps if stamp is not None]
     return max(stamps) if stamps else None
@@ -1137,6 +1138,13 @@ def _repair_event(publication: dict[str, Any]) -> dict[str, Any] | None:
     return {field: publication[field] for field in fields if field in publication}
 
 
+def _cpi_archive_for_event(event: dict[str, Any]) -> str | None:
+    day = date.fromisoformat(event["date"])
+    if event.get("event_id") == f"cpi:{day.isoformat()}":
+        return f"https://www.bls.gov/news.release/archives/cpi_{day:%m%d%Y}.htm"
+    return None
+
+
 def _retained_cpi_archive(publication: dict[str, Any]) -> str | None:
     """Accept only the original BLS archive for this detected, unresolved release."""
     if (
@@ -1147,10 +1155,12 @@ def _retained_cpi_archive(publication: dict[str, Any]) -> str | None:
         or not str(publication.get("reference_period") or "").strip()
     ):
         return None
-    day = date.fromisoformat(publication["date"])
-    url = f"https://www.bls.gov/news.release/archives/cpi_{day:%m%d%Y}.htm"
-    if (publication.get("event_id") == f"cpi:{day.isoformat()}"
-            and publication.get("source_url") == url):
+    url = _cpi_archive_for_event(publication)
+    source = publication.get("source_url")
+    if source == url or (
+        source == "https://www.bls.gov/feed/cpi.rss"
+        and publication.get("feed_entry_document_url") == url
+    ):
         return url
     return None
 
@@ -1348,9 +1358,11 @@ def _prepare_official_document(
     if not detail_url:
         return document, True, "UnsafeFeedLink"
     detail_key = f"{state_key}:document"
-    detail_prior = (
-        {} if force_unconditional else dict(source_state.get(detail_key) or {})
-    )
+    detail_prior = dict(source_state.get(detail_key) or {})
+    if detail_prior.get("source_url") != detail_url:
+        detail_prior = {}
+    now = datetime.fromisoformat(checked_at)
+    detail_attempt = _begin_source_attempt(detail_prior, now=now, source_url=detail_url)
     detail_spec = replace(
         spec,
         url=detail_url,
@@ -1358,20 +1370,15 @@ def _prepare_official_document(
         follow_entry_link=False,
     )
     try:
-        detail = fetcher(detail_spec, detail_prior, timeout)
+        detail = fetcher(detail_spec, {} if force_unconditional else detail_prior, timeout)
         if detail.get("status") == 304 and force_unconditional:
             return document, True, "UnconditionalDetailNotModified"
         if detail.get("status") == 304:
             # An unresolved parser needs bytes, not only a validator.
             detail = fetcher(detail_spec, {}, timeout)
-        source_state[detail_key] = {
-            "fingerprint": detail.get("fingerprint"),
-            "etag": detail.get("etag"),
-            "last_modified": detail.get("last_modified"),
-            "content_type": detail.get("content_type"),
-            "checked_at": checked_at,
-            "source_url": detail_url,
-        }
+        source_state[detail_key] = _complete_source_attempt(
+            detail_attempt, now=now, source_url=detail_url, result=detail
+        )
         document.update(detail)
         document["source_url"] = detail_url
         document["source_released_at"] = entry.get("source_released_at")
@@ -1380,6 +1387,10 @@ def _prepare_official_document(
         document["binding_kind"] = "detail_document"
         return document, True, None
     except Exception as exc:  # noqa: BLE001 - retain exact feed publication evidence
+        source_state[detail_key] = _fail_source_attempt(
+            detail_attempt, now=now, source_url=detail_url, error=type(exc).__name__,
+            retry_after_s=getattr(exc, "retry_after_s", None),
+        )
         return document, True, type(exc).__name__
 
 
@@ -1554,7 +1565,9 @@ def detect(
             now_et=now_et,
             in_fast_window=in_fast_window,
         )
-        blocked_until = _probe_blocked_until(prior)
+        # The feed and dated report are separate HTTP resources for this event.
+        detail_state = source_state.get(f"{state_key}:document") or {}
+        blocked_until = _probe_blocked_until(prior, detail_state)
         due_at = _probe_due_at(
             prior,
             now=now,
@@ -1877,6 +1890,14 @@ def detect(
                                 document.get("fingerprint")
                                 or publication.get("source_sha256")
                             )
+                    if resolved.actual_parser == "cpi" and resolved.follow_entry_link:
+                        dated_url = _cpi_archive_for_event(event)
+                        if dated_url and (prior_source_url == dated_url or (
+                            publication_evidence and document_url == dated_url
+                        )):
+                            # The feed identifies this link even when its document is offline.
+                            # source_url and its digest still describe the bytes we obtained.
+                            publication["feed_entry_document_url"] = dated_url
                     publication.update(
                         {
                             **event,

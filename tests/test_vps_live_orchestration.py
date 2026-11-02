@@ -172,6 +172,75 @@ def _cpi_feed_or_detail(spec, *, event_date: str):
     return _http_result(_bls_cpi_feed(event_date=event_date))
 
 
+def _release_detail_outage(monkeypatch):
+    """A BLS entry is available immediately, but its dated document returns 429."""
+    from urllib.error import HTTPError
+
+    start = datetime(2026, 7, 14, 12, 31, tzinfo=timezone.utc)
+    key = "cpi:2026-07-14"
+    archive = "https://www.bls.gov/news.release/archives/cpi_07142026.htm"
+    calls = []
+    blocked = [True]
+    monkeypatch.setattr(wrp, "SOURCES", tuple(s for s in wrp.SOURCES if s.source_id == "bls_cpi"))
+
+    def fetch(spec, prior, timeout):
+        calls.append(spec.url)
+        if spec.feed_kind:
+            return _http_result(_bls_cpi_feed(event_date="2026-07-14"))
+        assert spec.url == archive
+        if blocked[0]:
+            err = HTTPError(archive, 429, "rate limited", {"Retry-After": "60"}, None)
+            err.retry_after_s = 60  # _fetch converts the actual response header.
+            raise err
+        return {**_http_result(CPI_JULY_14_PAGE), "url": archive}
+
+    state, _ = wrp.detect(now=start, state={}, fetcher=fetch)
+    assert state["publications"][key]["status"] == "published_unparsed"
+    return start, key, archive, calls, blocked, fetch, state
+
+
+def test_archive_rate_limit_survives_restart_during_hot_window(monkeypatch):
+    start, key, archive, calls, blocked, fetch, state = _release_detail_outage(monkeypatch)
+    for seconds in (2, 4, 15, 59):
+        state, _ = wrp.detect(now=start + timedelta(seconds=seconds),
+                              state=json.loads(json.dumps(state)), fetcher=fetch)
+    assert calls.count(archive) == 1
+    blocked[0] = False
+    state, _ = wrp.detect(now=start + timedelta(seconds=60), state=state, fetcher=fetch)
+    assert calls.count(archive) == 2
+    assert state["publications"][key]["data_ready"] is True
+
+
+def test_feed_only_cpi_recovers_after_date_ages_out(monkeypatch):
+    start, key, archive, calls, blocked, fetch, state = _release_detail_outage(monkeypatch)
+    before = state["publications"][key].copy()
+    assert before["source_url"].endswith("/feed/cpi.rss")  # digest is for RSS bytes
+    blocked[0] = False
+    calls.clear()
+    state, _ = wrp.detect(now=start + timedelta(days=18), state=state, fetcher=fetch)
+    assert calls == [archive]
+    row = state["publications"][key]
+    assert row["data_ready"] is True and row["status"] == "published"
+    assert row["source_url"] == row["actual"]["source_url"] == archive
+    assert row["reference_period"] == before["reference_period"] == "June 2026"
+    assert row["detected_at"] == before["detected_at"]
+    assert row["source_sha256"] != before["source_sha256"]
+
+
+@pytest.mark.parametrize("observed_link", [
+    None, "https://www.bls.gov/news.release/archives/cpi_06102026.htm",
+    "https://www.bls.gov.evil.test/news.release/archives/cpi_07142026.htm",
+])
+def test_feed_only_cpi_never_guesses_an_unobserved_archive(monkeypatch, observed_link):
+    start, key, _, calls, blocked, fetch, state = _release_detail_outage(monkeypatch)
+    state["publications"][key]["feed_entry_document_url"] = observed_link
+    calls.clear()
+    blocked[0] = False
+    state, _ = wrp.detect(now=start + timedelta(days=18), state=state, fetcher=fetch)
+    assert not calls
+    assert state["publications"][key]["data_ready"] is False
+
+
 def test_release_watcher_seeds_before_release_then_detects_change():
     before = datetime(2026, 7, 14, 12, 25, tzinfo=timezone.utc)  # 08:25 ET
     after = datetime(2026, 7, 14, 12, 31, tzinfo=timezone.utc)   # 08:31 ET
