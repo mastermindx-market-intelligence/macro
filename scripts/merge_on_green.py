@@ -241,6 +241,7 @@ from __future__ import annotations
 
 import base64
 import datetime as dt
+import functools
 import io
 import json
 import math
@@ -459,6 +460,60 @@ MAIN_COMMIT_FILE_CAP = 50
 # root's tree ID, while an unchanged source root is cryptographic proof that none of
 # its descendants moved.
 COMMIT_FILES_TRUNCATED_AT = 300
+# The CI pack's own selector facts, copied rather than imported: the sweeper's
+# sparse checkout carries `scripts/run_ci_pack.py` but not the modules it imports
+# (`ci_scope_dependencies` -> `audit_unrun_tests`), so the import cannot succeed
+# where this file runs.  tests/test_merge_on_green.py pins every copy below to its
+# source, and `run_ci_pack.py` is itself a global invalidator, so the copy and the
+# original cannot drift without a full-suite run that fails on the difference.
+LEGACY_MANIFEST_PATH = ".github/ci/legacy-jobs.yml"
+PACK_JOB_ID = "ci-pack"
+PACK_GLOBAL_INVALIDATORS = (
+    ".github/workflows/**",
+    ".github/ci/**",
+    ".github/ci/legacy-jobs.yml",
+    ".github/workflows/ci.yml",
+    "scripts/run_ci_pack.py",
+    "scripts/ci_scope_dependencies.py",
+    "scripts/check_ci_trigger_closure.py",
+    "scripts/audit_unrun_tests.py",
+    "config/dag.yml",  # ci-trigger-closure: data — global-invalidator pattern, matched by name, never opened
+    "config/synapse.yml",  # ci-trigger-closure: data — global-invalidator pattern, matched by name, never opened
+    "conftest.py",
+    "**/conftest.py",
+    "requirements*.txt",
+    "**/requirements*.txt",
+    "constraints*.txt",
+    "**/constraints*.txt",
+    "pyproject.toml",
+    "**/pyproject.toml",
+    "setup.cfg",
+    "**/setup.cfg",
+    "setup.py",
+    "**/setup.py",
+    "tox.ini",
+    "**/tox.ini",
+    "pytest.ini",
+    "**/pytest.ini",
+    "package.json",
+    "**/package.json",
+    "package-lock.json",
+    "**/package-lock.json",
+    "uv.lock",
+    "**/uv.lock",
+    "poetry.lock",
+    "**/poetry.lock",
+)
+# A main commit touching one of these re-plans every pull request as full-suite,
+# so every existing green is stale whatever the pull request's own footprint.  The
+# `.github/` entries are left out on purpose: `.github/ci/**` and the PR-gate
+# workflows are already check definitions above, and a dispatch-only workflow
+# edit deliberately does not send the queue through CI again.
+MAIN_GLOBAL_INVALIDATORS = tuple(
+    pattern
+    for pattern in PACK_GLOBAL_INVALIDATORS
+    if not pattern.startswith(".github/")
+)
 # `/pulls/{n}/files` pages, 100 each. A pull request bigger than this has a footprint
 # we cannot fully see, and an UNDER-read footprint under-detects, so it is re-proven.
 PR_FILE_PAGE_CAP = 3
@@ -1919,8 +1974,8 @@ def load_pr_gates(workflows_dir: Path = WORKFLOWS_DIR) -> list[dict[str, Any]]:
         likely cause is a sparse-checkout that stopped fetching it, and a surface
         derived from nothing is the no-op-that-reviews-as-protection this gate
         exists to avoid;
-      * no PR-triggered workflow declares a specific (non-catch-all) path at all
-        — same reason;
+      * no PR-triggered workflow declares a specific path at all, one that is
+        neither a catch-all nor a root (`is_root_catch_all`) — same reason;
       * a filter contains a `!` negation, which `gh_path_filter` does not model.
         Refusing loudly beats mis-evaluating a surface nobody re-derived.
     """
@@ -1977,7 +2032,13 @@ def load_pr_gates(workflows_dir: Path = WORKFLOWS_DIR) -> list[dict[str, Any]]:
 
     if not gates:
         raise RuntimeError(f"no on.pull_request workflow found under {workflows_dir}")
-    if not any(gate["patterns"] for gate in gates):
+    # A root catch-all such as `engine/**` never stales a proof (`stale_for`), so a
+    # gate set holding nothing but roots would judge every pull request fresh.
+    if not any(
+        not is_root_catch_all(entry)
+        for gate in gates
+        for entry in gate["patterns"] or []
+    ):
         raise RuntimeError(
             f"no PR-triggered workflow under {workflows_dir} declares a paths "
             "filter with a specific non-catch-all entry"
@@ -1999,6 +2060,115 @@ def ownership_matches(rel: str, patterns: list[str] | None) -> list[str]:
         return []
     owned = [entry for entry in patterns if entry not in START_ONLY_PATH_PATTERNS]
     return matching_patterns(rel, owned)
+
+
+def is_root_catch_all(entry: str) -> bool:
+    """True for ``*``, ``**`` and a whole top-level tree such as ``engine/**``.
+
+    ci.yml lists every root so a new file cannot slip past the pack selector, but
+    a root entry names no job: the pack picks jobs by their own `paths`, and the
+    measurement behind this rule (375 merged pull requests with a green proof,
+    2026-10-20..11-02) found 65% of greens already stale when they went green,
+    against 31% once roots were left out, with every culprit of six of the seven
+    main-red episodes in that history still caught.  A root therefore
+    cannot be the reason a main commit stales a proof; a specific entry such as
+    ``engine/signal_quality.py`` or ``engine/regime/**`` still can.
+    """
+    if entry in ("*", "**"):
+        return True
+    if not entry.endswith("/**"):
+        return False
+    root = entry[:-3]
+    return bool(root) and "/" not in root and not any(char in root for char in "*?[")
+
+
+# Pinned copy of `run_ci_pack._glob_to_regex` (see LEGACY_MANIFEST_PATH above for
+# why it is a copy).  These are the semantics a job's own `paths` are matched
+# with, which differ from GitHub's `on.pull_request.paths` (`gh_path_filter`): a
+# trailing `/` means the whole subtree and `**/` also matches zero directories.
+@functools.lru_cache(maxsize=None)
+def _selector_glob_to_regex(pattern: str) -> re.Pattern[str]:
+    """Compile one CI-pack selector glob to an anchored regular expression."""
+    if pattern.endswith("/"):
+        pattern += "**"
+    out: list[str] = []
+    index = 0
+    while index < len(pattern):
+        char = pattern[index]
+        if pattern.startswith("**/", index):
+            out.append("(?:.*/)?")
+            index += 3
+        elif pattern.startswith("**", index):
+            out.append(".*")
+            index += 2
+        elif char == "*":
+            out.append("[^/]*")
+            index += 1
+        elif char == "?":
+            out.append("[^/]")
+            index += 1
+        else:
+            out.append(re.escape(char))
+            index += 1
+    return re.compile("^" + "".join(out) + "$")
+
+
+def _selector_matches_any(patterns: Any, path: str) -> bool:
+    return any(_selector_glob_to_regex(pattern).match(path) for pattern in patterns)
+
+
+def _classify_bounded_manifest_job_delta(
+    base_document: object, candidate_document: object
+) -> tuple[str, ...] | None:
+    """Pinned copy of `run_ci_pack._classify_bounded_manifest_job_delta`.
+
+    The changed job ids of a manifest edit the pack scopes per job, or ``None``
+    when the edit stays full-suite (non-job keys, a deleted, renamed or reordered
+    job, a re-gated job, or a malformed document).
+    """
+    if not isinstance(base_document, dict) or not isinstance(candidate_document, dict):
+        return None
+    if set(base_document) != set(candidate_document):
+        return None
+    for key in base_document:
+        if key != "jobs" and base_document[key] != candidate_document[key]:
+            return None
+    base_jobs = base_document.get("jobs")
+    candidate_jobs = candidate_document.get("jobs")
+    if not isinstance(base_jobs, dict) or not isinstance(candidate_jobs, dict):
+        return None
+    base_order = list(base_jobs)
+    candidate_order = list(candidate_jobs)
+    if any(job_id not in candidate_jobs for job_id in base_order):
+        # Deletion/rename removes a proof surface and remains full-suite.
+        return None
+    if [job_id for job_id in candidate_order if job_id in base_jobs] != base_order:
+        # Reordering existing jobs changes ordinal/partition semantics. Additive
+        # jobs may be inserted anywhere, but incumbent relative order is frozen.
+        return None
+    changed_job_ids: list[str] = []
+    for job_id in candidate_order:
+        after = candidate_jobs[job_id]
+        if job_id not in base_jobs:
+            # The loader validates every ordinary candidate job before this
+            # classifier. PACK_JOB_ID is a synthetic-fixture compatibility hole
+            # in that loader and is therefore never eligible for bounded add.
+            if job_id == PACK_JOB_ID or not isinstance(after, dict):
+                return None
+            changed_job_ids.append(str(job_id))
+            continue
+        before = base_jobs[job_id]
+        if before == after:
+            continue
+        if not isinstance(before, dict) or not isinstance(after, dict):
+            return None
+        # Moving a job between code and post-nightly data proof planes changes
+        # which authority workflow can execute it. Preserve the full-suite
+        # invalidator rather than treating that as an ordinary job-local edit.
+        if before.get("gate", "code") != after.get("gate", "code"):
+            return None
+        changed_job_ids.append(str(job_id))
+    return tuple(changed_job_ids)
 
 
 def _is_full_sha(value: Any) -> bool:
@@ -2091,6 +2261,11 @@ class ProofFreshness:
         self._root_trees: dict[str, dict[str, tuple[str, str, str]]] = {}
         self._recursive_trees: dict[str, dict[str, tuple[str, str, str]]] = {}
         self._blobs: dict[str, bytes] = {}
+        self._first_parents: dict[str, str] = {}
+        # Parsed legacy-jobs.yml keyed by blob ID, and each main commit's changed
+        # jobs as ``{job_id: (before, after)}`` (``None``: not a bounded edit).
+        self._manifest_documents: dict[str, object] = {}
+        self._manifest_deltas: dict[str, dict[str, tuple[Any, Any]] | None] = {}
         self._pr_files: dict[Any, list[str] | None] = {}
         # Exact checked head -> newest main commit already contained by that head.
         # This is a compatibility fallback for older/external check records that do
@@ -2392,6 +2567,186 @@ class ProofFreshness:
             raise RuntimeError(f"blob {blob_sha[:12]} has invalid base64") from exc
         self._blobs[blob_sha] = content
         return content
+
+    def _first_parent(self, commit_sha: str) -> str:
+        """First parent of one main commit. Raises when it cannot be read."""
+        cached = self._first_parents.get(commit_sha)
+        if cached:
+            return cached
+        status, payload = _request(
+            "GET",
+            f"{GITHUB_API}/repos/{self.repo}/git/commits/{commit_sha}",
+            self.token,
+        )
+        if status >= 400 or not isinstance(payload, dict):
+            raise _read_failed(
+                status, payload, f"git commit {commit_sha[:12]} unreadable"
+            )
+        parents = payload.get("parents")
+        first = parents[0] if isinstance(parents, list) and parents else None
+        parent_sha = first.get("sha") if isinstance(first, dict) else None
+        if not _is_full_sha(parent_sha):
+            raise RuntimeError(f"git commit {commit_sha[:12]} has no readable first parent")
+        tree_sha = str(((payload.get("tree") or {}).get("sha")) or "")
+        if tree_sha:
+            self._commit_tree_shas.setdefault(commit_sha, tree_sha)
+        self._first_parents[commit_sha] = parent_sha
+        return parent_sha
+
+    def _manifest_document(self, commit_sha: str) -> object:
+        """`LEGACY_MANIFEST_PATH` as parsed at one commit. Raises when unreadable.
+
+        Walks the non-recursive trees `.github` -> `ci` -> the file, so the read is
+        three small tree objects and one blob, never a truncatable recursive tree.
+        Parsed documents are cached by blob ID: consecutive manifest edits share
+        a side, and the 2 MB file is parsed once per sweep, not once per commit.
+        """
+        *directories, leaf = LEGACY_MANIFEST_PATH.split("/")
+        entries = self._root_tree(self._commit_tree_sha(commit_sha))
+        for directory in directories:
+            kind, _mode, tree_sha = entries.get(directory, ("", "", ""))
+            if kind != "tree" or not tree_sha:
+                raise RuntimeError(
+                    f"commit {commit_sha[:12]} has no {LEGACY_MANIFEST_PATH}"
+                )
+            entries = self._root_tree(tree_sha)
+        kind, _mode, blob_sha = entries.get(leaf, ("", "", ""))
+        if kind != "blob" or not blob_sha:
+            raise RuntimeError(f"commit {commit_sha[:12]} has no {LEGACY_MANIFEST_PATH}")
+        if blob_sha in self._manifest_documents:
+            return self._manifest_documents[blob_sha]
+        try:
+            import yaml  # local: the sweeper is the only caller and it installs it
+        except ImportError as exc:  # pragma: no cover - environment, not logic
+            raise RuntimeError(f"PyYAML is unavailable: {exc}") from exc
+        try:
+            text = self._blob(blob_sha).decode("utf-8")
+            # Same documents as the pack's `yaml.safe_load`, about 4x faster.
+            document = yaml.load(text, Loader=getattr(yaml, "CSafeLoader", yaml.SafeLoader))
+        except (UnicodeDecodeError, yaml.YAMLError) as exc:
+            raise RuntimeError(
+                f"{LEGACY_MANIFEST_PATH} at {commit_sha[:12]} could not be parsed"
+            ) from exc
+        self._manifest_documents[blob_sha] = document
+        return document
+
+    def _manifest_job_delta(
+        self, commit_sha: str
+    ) -> dict[str, tuple[Any, Any]] | None:
+        """Changed jobs of one main commit's manifest edit, as the pack scopes them.
+
+        ``{job_id: (before, after)}`` with ``before`` ``None`` for an added job, or
+        ``None`` when the pack would plan the edit full-suite. Raises when either
+        side cannot be read.
+        """
+        if commit_sha in self._manifest_deltas:
+            return self._manifest_deltas[commit_sha]
+        before_document = self._manifest_document(self._first_parent(commit_sha))
+        after_document = self._manifest_document(commit_sha)
+        changed = _classify_bounded_manifest_job_delta(before_document, after_document)
+        delta: dict[str, tuple[Any, Any]] | None = None
+        if changed is not None:
+            # The classifier has already proven both documents carry a `jobs` dict.
+            before_jobs = before_document["jobs"]  # type: ignore[index]
+            after_jobs = after_document["jobs"]  # type: ignore[index]
+            if all(isinstance(job_id, str) for job_id in after_jobs):
+                delta = {
+                    job_id: (before_jobs.get(job_id), after_jobs[job_id])
+                    for job_id in changed
+                }
+        self._manifest_deltas[commit_sha] = delta
+        return delta
+
+    def _bounded_manifest_verdict(self, commit_sha: str, number: Any) -> str | None:
+        """Why a main commit's job-scoped manifest edit stales this proof, or None.
+
+        The CI pack plans an edit to `LEGACY_MANIFEST_PATH` that only changes or adds
+        jobs (`_classify_bounded_manifest_job_delta`) as a run of those jobs, not a
+        full suite. Such an edit changes this pull request's checks only when it
+        could select a changed job. The sweeper cannot run the pack's import
+        inference, so it decides from the two documents alone and fails closed:
+
+          * a job on the `data` gate never runs on a pull request, so it is
+            ignored (the classifier already refuses a job that changes gate);
+          * the pull request itself edits the manifest, or touches a global
+            invalidator (planned full-suite, so every job runs): stale;
+          * a job that is, or was, not `scope: exclusive` is selected by inferred
+            imports the sweeper cannot see: stale;
+          * an exclusive job without `paths` on either side is one the pack
+            refuses to load: stale;
+          * an exclusive job is stale when one of the pull request's files matches
+            its old or new `paths` under the pack's own glob semantics.
+
+        Anything unreadable, an edit the pack plans full-suite, or a pull request
+        whose files cannot be listed is stale.
+        """
+        short = commit_sha[:12]
+        try:
+            delta = self._manifest_job_delta(commit_sha)
+        except RuntimeError as exc:
+            return f"main commit {short} edited {LEGACY_MANIFEST_PATH} and it could not be read ({exc})"
+        if delta is None:
+            return (
+                f"main commit {short} edited {LEGACY_MANIFEST_PATH} in a way the CI pack "
+                "plans as a full suite, so no existing green describes the checks that run now"
+            )
+        pr_files = self.pull_files(number)
+        if not pr_files:
+            return (
+                f"main commit {short} edited jobs in {LEGACY_MANIFEST_PATH} and the pull "
+                "request's own changed files could not be established"
+            )
+        for job_id, (before, after) in delta.items():
+            if not isinstance(after, dict):
+                return f"main commit {short} left job {job_id!r} malformed"
+            if after.get("gate", "code") == "data":
+                continue
+            if LEGACY_MANIFEST_PATH in pr_files:
+                return (
+                    f"main commit {short} edited job {job_id!r} and this pull request "
+                    f"also edits {LEGACY_MANIFEST_PATH}"
+                )
+            invalidator = next(
+                (name for name in pr_files if _selector_matches_any(PACK_GLOBAL_INVALIDATORS, name)),
+                None,
+            )
+            if invalidator is not None:
+                return (
+                    f"main commit {short} edited job {job_id!r} and this pull request "
+                    f"changes {invalidator}, so the pack runs every job for it"
+                )
+            if after.get("scope") != "exclusive" or (
+                isinstance(before, dict) and before.get("scope") != "exclusive"
+            ):
+                return (
+                    f"main commit {short} edited job {job_id!r}, which is not "
+                    "scope: exclusive, so its selection cannot be decided here"
+                )
+            declared: list[str] = []
+            for side in (before, after):
+                if not isinstance(side, dict):
+                    continue
+                paths = side.get("paths")
+                if paths is not None and (
+                    not isinstance(paths, list)
+                    or not all(isinstance(entry, str) for entry in paths)
+                ):
+                    return f"main commit {short} left job {job_id!r} with malformed paths"
+                if not paths:
+                    # The pack refuses to load an exclusive job without paths, so
+                    # main's CI cannot plan this manifest at all.
+                    return f"main commit {short} edited job {job_id!r}, which declares no paths"
+                declared.extend(paths)
+            selected = next(
+                (name for name in pr_files if _selector_matches_any(declared, name)),
+                None,
+            )
+            if selected is not None:
+                return (
+                    f"main commit {short} edited job {job_id!r}, which this pull "
+                    f"request's {selected} selects"
+                )
+        return None
 
     @staticmethod
     def _without_asset_stamps(content: bytes) -> bytes:
@@ -2795,8 +3150,8 @@ class ProofFreshness:
         surface only after the SAME matcher, over the SAME gates, has already
         found main's files inside a gate path (a non-empty ``candidates`` set);
         a broken matcher or an unloaded gate set therefore never reaches this
-        branch — it short-circuits earlier as "none inside any gate's path
-        filter", exactly as it did before. An empty surface here means the
+        branch — it short-circuits earlier as "none of them inside a specific
+        (non-root) entry", exactly as it did before. An empty surface here means the
         matcher works and the pull request's files are simply outside it.
         """
         files = self.pull_files(number)
@@ -2888,37 +3243,61 @@ class ProofFreshness:
                     f"proof, more than the {MAIN_COMMIT_FILE_CAP} this sweep will "
                     "classify"
                 )
-            if any(
-                name.startswith(CI_DEFINITION_TREES)
-                or name in self.ci_definition_files
+            ci_definition = {
+                name
                 for name in files
-            ):
-                return True, (
-                    f"main commit {commit['sha'][:12]} changed the check definitions "
-                    "themselves, so no existing green describes the checks that run now"
-                )
+                if name.startswith(CI_DEFINITION_TREES)
+                or name in self.ci_definition_files
+            }
+            bounded_manifest = False
+            if ci_definition:
+                if ci_definition != {LEGACY_MANIFEST_PATH}:
+                    return True, (
+                        f"main commit {commit['sha'][:12]} changed the check definitions "
+                        "themselves, so no existing green describes the checks that run now"
+                    )
+                # An edit to the job manifest alone that the pack scopes to the
+                # jobs it changes stales only the pull requests those jobs select.
+                reason = self._bounded_manifest_verdict(commit["sha"], number)
+                if reason is not None:
+                    return True, reason
+                bounded_manifest = True
             if files and all(name.startswith(PIPELINE_TREES) for name in files):
                 continue  # a render/nightly bake, not an edit
+            invalidator = next(
+                (
+                    name
+                    for name in files
+                    if _selector_matches_any(MAIN_GLOBAL_INVALIDATORS, name)
+                ),
+                None,
+            )
+            if invalidator is not None:
+                return True, (
+                    f"main commit {commit['sha'][:12]} changed {invalidator}, a global "
+                    "CI invalidator, so every pull request is now planned full-suite"
+                )
             for name in files:
-                matched_specific = False
-                for gate in self.gates:
-                    matches = ownership_matches(name, gate["patterns"])
-                    candidates.update(matches)
-                    matched_specific = matched_specific or bool(matches)
-                # Unowned catch-all (mockups/refs/**, DESIGN_NOTES.md, a new
-                # root seen only by ``**``) must NOT invalidate every PR.
-                # Measured 2026-08-13: #5545's DESIGN_NOTES.md matched the
-                # start catch-all with no owner and stale'd six check-clean
-                # heads at once (run 31736859799). A file with no tested-
-                # surface owner is outside every PR's proof, not inside all
-                # of them.
-                if not matched_specific:
+                if bounded_manifest and name == LEGACY_MANIFEST_PATH:
                     continue
+                # Unowned files (mockups/refs/**, DESIGN_NOTES.md, a new root
+                # seen only by ``**``) and root catch-alls such as `engine/**`
+                # must NOT invalidate every PR. Measured 2026-08-13: #5545's
+                # DESIGN_NOTES.md matched the start catch-all with no owner and
+                # stale'd six check-clean heads at once (run 31736859799); see
+                # `is_root_catch_all` for the root measurement. A file only a
+                # root owns is outside every PR's proof, not inside all of them.
+                for gate in self.gates:
+                    candidates.update(
+                        entry
+                        for entry in ownership_matches(name, gate["patterns"])
+                        if not is_root_catch_all(entry)
+                    )
 
         if not candidates:
             return False, (
                 f"main took {len(window)} commit(s) since the proof, none of them "
-                "inside any gate's path filter"
+                "inside a specific (non-root) entry of any gate's path filter"
             )
 
         surface = self.surface_of(number)

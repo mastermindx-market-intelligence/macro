@@ -436,7 +436,12 @@ def _proof(
     )
 
 
-def _gates(patterns=("engine/**", "scripts/*.py", "tests/**")) -> list[dict]:
+#: Like ci.yml: root catch-alls plus specific entries. A root (`engine/**`) never
+#: stales a proof on its own, so a main move that should stale one lands inside
+#: `engine/signal_quality.py`, a specific entry ci.yml also carries.
+def _gates(
+    patterns=("engine/**", "engine/signal_quality.py", "scripts/*.py", "tests/**"),
+) -> list[dict]:
     return [{"workflow": "ci.yml", "patterns": list(patterns)}]
 
 
@@ -3846,21 +3851,31 @@ def test_one_source_file_defeats_the_pipeline_bake_exclusion():
     the commit is judged normally."""
     freshness = _freshness(
         commits=[(MAIN_MOVED_AT_1026, ["site/stocks/index.html", "engine/signal_quality.py"])],  # ci-trigger-closure: data — fixture changed-file name, never opened
-        gates=[{"workflow": "ci.yml", "patterns": ["site/**", "engine/**"]}],
+        gates=[{"workflow": "ci.yml", "patterns": ["site/**", "engine/**", "engine/signal_*.py"]}],
         pull_files={4242: ["engine/signal_gate.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
     )
-    assert stale and "engine/**" in reason, reason
+    assert stale and "engine/signal_*.py" in reason, reason
 
 
-def test_a_commit_changing_the_check_definitions_re_proves_every_pull_request():
-    """A legacy-jobs.yml edit changes WHAT would run. No pull request's
-    existing green describes those checks, whatever its own footprint is — note the
-    footprint here shares nothing with the commit."""
+@pytest.mark.parametrize(
+    "definition_files",
+    [
+        [".github/ci/selector-overrides.yml"],
+        [".github/ci/legacy-jobs.yml", ".github/workflows/ci.yml"],
+    ],
+)
+def test_a_commit_changing_the_check_definitions_re_proves_every_pull_request(
+    definition_files,
+):
+    """A CI-definition edit changes WHAT would run. No pull request's existing
+    green describes those checks, whatever its own footprint is — note the
+    footprint here shares nothing with the commit. A commit that edits only
+    legacy-jobs.yml is judged job by job instead (the bounded-manifest tests)."""
     freshness = _freshness(
-        commits=[(MAIN_MOVED_AT_1026, [".github/ci/legacy-jobs.yml"])],
+        commits=[(MAIN_MOVED_AT_1026, definition_files)],
         gates=[{"workflow": "ci.yml", "patterns": ["engine/**"]}],
         pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
@@ -3914,7 +3929,7 @@ def test_only_main_commits_newer_than_the_heads_merge_base_are_classified(
     """An included base is not permission to ignore main commits after it."""
     freshness = _freshness(
         commits=[
-            ("2026-08-05T10:50:00Z", [".github/ci/legacy-jobs.yml"]),
+            ("2026-08-05T10:50:00Z", [".github/ci/selector-overrides.yml"]),
             ("2026-08-05T10:26:00Z", ["data/nightly.json"]),
         ],
         gates=[{"workflow": "ci.yml", "patterns": ["engine/**"]}],
@@ -3996,7 +4011,7 @@ def test_inconsistent_exact_proof_bases_use_the_oldest_conservatively(
             }
         },
         main_commits=[
-            ("2026-08-05T10:50:00Z", ["engine/new.py"]),
+            ("2026-08-05T10:50:00Z", ["engine/signal_quality.py"]),  # ci-trigger-closure: data — fixture changed-file name, never opened
             ("2026-08-05T10:26:00Z", ["engine/old.py"]),
         ],
         update_status=202,
@@ -4321,12 +4336,14 @@ def test_a_proof_older_than_the_visible_timeline_stays_current_if_only_skip_ci_t
 
 
 def test_a_product_commit_in_the_visible_window_still_reproves_an_old_proof():
-    """#4583 survives: a tests/ edit in the window is still a surface hit."""
+    """#4583 survives: a product edit inside a specific ci.yml entry in the
+    window is still a surface hit (a file only a root like `tests/**` covers is
+    not — see the root catch-all tests)."""
     commits = [
         (f"2026-08-05T12:{index:02d}:00Z", ["docs/x.md"])
         for index in range(3)
     ]
-    commits[0] = (MAIN_MOVED_AT_1026, ["tests/test_us_reclaim_veto_packet.py"])
+    commits[0] = (MAIN_MOVED_AT_1026, ["engine/signal_quality.py"])  # ci-trigger-closure: data — fixture changed-file name, never opened
     freshness = _freshness(
         commits=commits,
         gates=MOG.load_pr_gates(),
@@ -9794,14 +9811,14 @@ def test_paging_rename_chain_preserves_shared_old_and_new_names(monkeypatch):
 
 @pytest.mark.parametrize("hidden,expected_stale", [
     ("reports/signal-sanity.md", False),
-    ("engine/changed.py", True),
+    ("engine/signal_quality.py", True),  # ci-trigger-closure: data — fixture changed-file name, never opened
     (".github/workflows/ci.yml", True),
 ])
 def test_paging_completed_inventory_uses_unchanged_surface_rules(monkeypatch, hidden, expected_stale):
     rows = [_paging_row(f"reports/file{i}.md") for i in range(579)] + [_paging_row(hidden)]
     pages = [rows[i:i + 100] for i in range(0, len(rows), 100)]
     freshness, _ = _paging_commit(monkeypatch, pages)
-    freshness._pr_files[4242] = ["engine/product.py"]
+    freshness._pr_files[4242] = ["engine/signal_quality.py"]  # ci-trigger-closure: data — fixture changed-file name, never opened
     stale, reason = freshness.stale_for(_pull(), [_run("ci-pack-1", conclusion="success")])
     assert stale is expected_stale, reason
     assert "too many files" not in reason
@@ -10074,3 +10091,419 @@ def test_authority_lookup_cost_and_pagination_fit_the_admitted_budget():
             + admitted * MOG.MAX_REQUESTS_PER_PULL
             + MOG.MAX_REFRESHES_PER_SWEEP
             + MOG.RATE_LIMIT_RESERVE) <= MOG.RATE_LIMIT_FLOOR
+
+
+# -- R2: root catch-alls, global invalidators, bounded legacy-jobs.yml edits -----
+
+
+def _clean_proof():
+    return [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
+
+
+@pytest.mark.parametrize(
+    "entry, root",
+    [
+        ("*", True),
+        ("**", True),
+        ("engine/**", True),
+        ("engine/regime/**", False),
+        ("scripts/*.py", False),
+        ("engine/signal_quality.py", False),
+        ("e*/**", False),
+        ("/**", False),
+    ],
+)
+def test_only_star_and_whole_top_level_trees_are_root_catch_alls(entry, root):
+    assert MOG.is_root_catch_all(entry) is root
+
+
+def test_the_real_pr_filter_carries_roots_to_drop_and_specific_entries_to_keep():
+    """The rule has teeth only while ci.yml lists both kinds: roots that no longer
+    stale a proof, and specific entries that still do."""
+    entries = [entry for gate in MOG.load_pr_gates() for entry in gate["patterns"] or []]
+    assert any(MOG.is_root_catch_all(entry) for entry in entries)
+    assert sum(not MOG.is_root_catch_all(entry) for entry in entries) > 100
+
+
+def test_a_main_move_only_a_root_catch_all_owns_keeps_every_proof():
+    """`engine/**` and `tests/**` name no job, so main adding a module under them
+    says nothing about this pull request's green (65% -> 31% stale at green)."""
+    freshness = _freshness(
+        commits=[
+            (MAIN_MOVED_AT_1026, ["engine/brand_new_module.py"]),  # ci-trigger-closure: data — fixture changed-file name, never opened
+            (MAIN_MOVED_AT_1026, ["tests/test_brand_new_module.py"]),  # ci-trigger-closure: data — fixture changed-file name, never opened
+        ],
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
+    )
+    stale, reason = freshness.stale_for(_pull(), _clean_proof())
+    assert stale is False, reason
+    assert "specific (non-root) entry" in reason
+
+
+def test_a_root_catch_all_does_not_stale_a_proof_a_specific_entry_still_does():
+    """Same pull request, same window: one more main commit inside a specific entry
+    (`engine/signal_quality.py`) is a surface hit again."""
+    freshness = _freshness(
+        commits=[
+            (MAIN_MOVED_AT_1026, ["engine/brand_new_module.py"]),  # ci-trigger-closure: data — fixture changed-file name, never opened
+            (MAIN_MOVED_AT_1026, ["engine/signal_quality.py"]),  # ci-trigger-closure: data — fixture changed-file name, never opened
+        ],
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
+    )
+    stale, reason = freshness.stale_for(_pull(), _clean_proof())
+    assert stale is True, reason
+    assert "engine/signal_quality.py" in reason and "engine/**" not in reason
+
+
+def test_load_pr_gates_refuses_a_filter_of_nothing_but_roots(tmp_path):
+    """Roots never stale a proof, so a roots-only filter would judge every pull
+    request fresh: a no-op that reviews as protection."""
+    (tmp_path / "ci.yml").write_text(
+        'on:\n  pull_request:\n    paths:\n      - "engine/**"\n      - "tests/**"\njobs: {}\n'
+    )
+    with pytest.raises(RuntimeError, match="specific non-catch-all entry"):
+        MOG.load_pr_gates(tmp_path)
+
+
+@pytest.mark.parametrize(
+    "invalidator",
+    [
+        "requirements.txt",
+        "conftest.py",
+        "engine/conftest.py",
+        "pyproject.toml",
+        "config/dag.yml",
+        "scripts/run_ci_pack.py",
+    ],
+)
+def test_a_main_commit_touching_a_global_invalidator_re_proves_every_pull_request(
+    invalidator,
+):
+    """The pack plans every pull request full-suite after one of these lands, so
+    no green computed before it describes the checks that run now, whatever the
+    pull request's own footprint and whether or not a root is all that owns it."""
+    freshness = _freshness(
+        commits=[(MAIN_MOVED_AT_1026, [invalidator])],
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
+    )
+    stale, reason = freshness.stale_for(_pull(), _clean_proof())
+    assert stale is True, reason
+    assert f"changed {invalidator}, a global CI invalidator" in reason
+
+
+def test_a_dispatch_only_workflow_edit_is_not_a_global_invalidator():
+    """The pack lists `.github/workflows/**` as an invalidator, but only the PR-gate
+    workflows decide a pull request's checks; editing a dispatch-only workflow must
+    not send the whole queue through CI again."""
+    assert not any(name.startswith(".github/") for name in MOG.MAIN_GLOBAL_INVALIDATORS)
+    freshness = _freshness(
+        commits=[(MAIN_MOVED_AT_1026, [".github/workflows/daily.yml"])],
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
+    )
+    stale, reason = freshness.stale_for(_pull(), _clean_proof())
+    assert stale is False, reason
+
+
+def _manifest(**jobs) -> dict:
+    """A legacy-jobs.yml document. Job order is the keyword order."""
+    return {"version": 1, "jobs": {name.replace("_", "-"): job for name, job in jobs.items()}}
+
+
+def _legacy_job(paths=None, *, scope="exclusive", gate="code") -> dict:
+    job = {"if": "${{ false }}", "gate": gate}
+    if scope is not None:
+        job["scope"] = scope
+    if paths is not None:
+        job["paths"] = paths
+    job["run"] = "python -m pytest -q"
+    return job
+
+
+def _base_manifest() -> dict:
+    return _manifest(
+        fx_guard=_legacy_job(["engine/fx/**", "tests/test_fx_guard.py"]),  # ci-trigger-closure: data — fixture changed-file name, never opened
+        broad=_legacy_job(scope=None),
+        nightly_data=_legacy_job(["data/nightly/**"], gate="data"),
+    )
+
+
+def _seed_manifest_edit(freshness, commit_sha, before, after) -> None:
+    """Both sides of one main commit's legacy-jobs.yml edit, laid out the way the
+    sweeper walks them (root tree -> `.github` -> `ci` -> blob). No network."""
+    parent = "f" + commit_sha[1:]
+    freshness._first_parents[commit_sha] = parent
+    for sha, document in ((parent, before), (commit_sha, after)):
+        root, github, ci, blob = (f"{kind}-{sha}" for kind in ("root", "github", "ci", "blob"))
+        freshness._commit_tree_shas[sha] = root
+        freshness._root_trees[root] = {".github": ("tree", "040000", github)}
+        freshness._root_trees[github] = {"ci": ("tree", "040000", ci)}
+        freshness._root_trees[ci] = {"legacy-jobs.yml": ("blob", "100644", blob)}
+        freshness._blobs[blob] = yaml.safe_dump(document, sort_keys=False).encode()
+
+
+def _judge_manifest_edit(after, pr_files, *, before=None, also_changed=()):
+    freshness = _freshness(
+        commits=[(MAIN_MOVED_AT_1026, [MOG.LEGACY_MANIFEST_PATH, *also_changed])],
+        pull_files={4242: pr_files},
+    )
+    _seed_manifest_edit(freshness, f"{1:040d}", before or _base_manifest(), after)
+    return freshness.stale_for(_pull(), _clean_proof())
+
+
+def _edited(job_id, **changes) -> dict:
+    document = _base_manifest()
+    document["jobs"][job_id] = {**document["jobs"][job_id], **changes}
+    return document
+
+
+def test_a_bounded_manifest_edit_no_changed_job_selects_keeps_the_proof():
+    """The pack runs only the jobs a bounded edit changes; when none of them can
+    select this pull request, its green still describes its checks."""
+    after = _edited("fx-guard", paths=["engine/fx/**", "tests/test_fx_rates.py"])  # ci-trigger-closure: data — fixture changed-file name, never opened
+    stale, reason = _judge_manifest_edit(after, ["engine/signal_quality.py"])  # ci-trigger-closure: data — fixture changed-file name, never opened
+    assert stale is False, reason
+
+
+@pytest.mark.parametrize(
+    "new_paths, pr_file",
+    [
+        # The edit adds a path this pull request touches.
+        (["engine/fx/**", "engine/signal_quality.py"], "engine/signal_quality.py"),  # ci-trigger-closure: data — fixture changed-file name, never opened
+        # The edit drops a path this pull request touches: its green ran a job
+        # that no longer runs for it.
+        (["tests/test_fx_guard.py"], "engine/fx/spot.py"),  # ci-trigger-closure: data — fixture changed-file name, never opened
+    ],
+)
+def test_an_exclusive_job_selected_by_its_old_or_new_paths_re_proves(new_paths, pr_file):
+    stale, reason = _judge_manifest_edit(_edited("fx-guard", paths=new_paths), [pr_file])
+    assert stale is True, reason
+    assert f"'fx-guard', which this pull request's {pr_file} selects" in reason
+
+
+@pytest.mark.parametrize(
+    "before, after",
+    [
+        # Never exclusive: selected by import inference the sweeper cannot run.
+        (_base_manifest(), _edited("broad", run="python -m pytest -q -x")),
+        # Exclusive -> inferred.
+        (
+            _base_manifest(),
+            _manifest(
+                fx_guard={k: v for k, v in _base_manifest()["jobs"]["fx-guard"].items() if k != "scope"},
+                broad=_legacy_job(scope=None),
+                nightly_data=_legacy_job(["data/nightly/**"], gate="data"),
+            ),
+        ),
+        # Inferred -> exclusive.
+        (_base_manifest(), _edited("broad", scope="exclusive", paths=["engine/fx/**"])),
+    ],
+    ids=["inferred", "exclusive-to-inferred", "inferred-to-exclusive"],
+)
+def test_a_job_that_is_or_was_not_exclusive_re_proves(before, after):
+    stale, reason = _judge_manifest_edit(
+        after, ["engine/signal_quality.py"], before=before  # ci-trigger-closure: data — fixture changed-file name, never opened
+    )
+    assert stale is True, reason
+    assert "not scope: exclusive" in reason
+
+
+def test_a_data_gate_job_edit_never_stales_a_pull_request_proof():
+    """A `gate: data` job runs only after the nightly, never on a pull request."""
+    after = _edited("nightly-data", paths=["data/nightly/**", "data/intraday/**"], scope=None)
+    stale, reason = _judge_manifest_edit(after, ["engine/signal_quality.py"])  # ci-trigger-closure: data — fixture changed-file name, never opened
+    assert stale is False, reason
+
+
+def test_a_pull_request_that_edits_the_manifest_itself_re_proves():
+    after = _edited("fx-guard", paths=["engine/fx/**"])
+    stale, reason = _judge_manifest_edit(after, [MOG.LEGACY_MANIFEST_PATH])
+    assert stale is True, reason
+    assert "also edits .github/ci/legacy-jobs.yml" in reason
+
+
+def test_a_pull_request_touching_a_global_invalidator_runs_every_job_so_re_proves():
+    after = _edited("fx-guard", paths=["engine/fx/**"])
+    stale, reason = _judge_manifest_edit(after, ["requirements.txt"])
+    assert stale is True, reason
+    assert "changes requirements.txt, so the pack runs every job" in reason
+
+
+def _reordered() -> dict:
+    jobs = _base_manifest()["jobs"]
+    return {"version": 1, "jobs": {key: jobs[key] for key in ("broad", "fx-guard", "nightly-data")}}
+
+
+def _without(job_id) -> dict:
+    document = _base_manifest()
+    del document["jobs"][job_id]
+    return document
+
+
+def _with_added(job_id, job) -> dict:
+    document = _base_manifest()
+    document["jobs"][job_id] = job
+    return document
+
+
+@pytest.mark.parametrize(
+    "after",
+    [
+        {**_base_manifest(), "version": 2},
+        _without("fx-guard"),
+        _reordered(),
+        _edited("fx-guard", gate="data"),
+        _with_added("ci-pack", _legacy_job(["engine/fx/**"])),
+    ],
+    ids=["top-level-key", "deleted-job", "reordered", "re-gated", "ci-pack-added"],
+)
+def test_a_manifest_edit_the_pack_plans_full_suite_re_proves(after):
+    stale, reason = _judge_manifest_edit(after, ["engine/signal_quality.py"])  # ci-trigger-closure: data — fixture changed-file name, never opened
+    assert stale is True, reason
+    assert "plans as a full suite" in reason
+
+
+def test_an_added_exclusive_job_stales_only_the_pull_requests_it_selects():
+    after = _with_added("rates-guard", _legacy_job(["engine/rates/**"]))
+    stale, reason = _judge_manifest_edit(after, ["engine/signal_quality.py"])  # ci-trigger-closure: data — fixture changed-file name, never opened
+    assert stale is False, reason
+    stale, reason = _judge_manifest_edit(after, ["engine/rates/curve.py"])  # ci-trigger-closure: data — fixture changed-file name, never opened
+    assert stale is True, reason
+    assert "'rates-guard', which this pull request's engine/rates/curve.py selects" in reason
+
+
+def _fx_guard_without_paths() -> dict:
+    return _manifest(
+        fx_guard={k: v for k, v in _base_manifest()["jobs"]["fx-guard"].items() if k != "paths"},
+        broad=_legacy_job(scope=None),
+        nightly_data=_legacy_job(["data/nightly/**"], gate="data"),
+    )
+
+
+@pytest.mark.parametrize(
+    "after, expected",
+    [
+        (_edited("fx-guard", paths="engine/fx/**"), "'fx-guard' with malformed paths"),
+        # The pack refuses to load an exclusive job without paths
+        # (run_ci_pack.load_legacy_jobs), so even with the old paths
+        # outside this pull request, main's CI cannot plan the new manifest.
+        (_fx_guard_without_paths(), "'fx-guard', which declares no paths"),
+        (_edited("fx-guard", paths=[]), "'fx-guard', which declares no paths"),
+        (_with_added("unscoped", _legacy_job(None)), "'unscoped', which declares no paths"),
+    ],
+    ids=["paths-not-a-list", "paths-removed", "paths-emptied", "added-without-paths"],
+)
+def test_an_exclusive_job_with_unusable_paths_re_proves(after, expected):
+    stale, reason = _judge_manifest_edit(after, ["engine/signal_quality.py"])  # ci-trigger-closure: data — fixture changed-file name, never opened
+    assert stale is True, reason
+    assert expected in reason
+
+
+def test_a_bounded_manifest_edit_with_unknown_pull_request_files_re_proves():
+    after = _edited("fx-guard", paths=["engine/fx/**"])
+    stale, reason = _judge_manifest_edit(after, None)
+    assert stale is True, reason
+    assert "own changed files could not be established" in reason
+
+
+def test_a_bounded_manifest_edit_still_classifies_its_other_files():
+    """The manifest is skipped as a candidate, not the rest of the commit."""
+    after = _edited("fx-guard", paths=["engine/fx/**"])
+    also = ["engine/signal_quality.py"]  # ci-trigger-closure: data — fixture changed-file name, never opened
+    stale, reason = _judge_manifest_edit(after, also, also_changed=also)
+    assert stale is True, reason
+    assert "inside this pull request's tested surface" in reason
+    stale, reason = _judge_manifest_edit(after, ["scripts/validate_signals.py"], also_changed=also)  # ci-trigger-closure: data — fixture changed-file name, never opened
+    assert stale is False, reason
+    stale, reason = _judge_manifest_edit(after, ["scripts/validate_signals.py"], also_changed=["requirements.txt"])  # ci-trigger-closure: data — fixture changed-file name, never opened
+    assert stale is True, reason
+    assert "a global CI invalidator" in reason
+
+
+def test_the_manifest_read_walks_small_trees_and_fails_closed(monkeypatch):
+    """Over the wire: three non-recursive trees and one blob per side, never a
+    truncatable recursive tree; an unreadable side re-proves."""
+    commit, parent = f"{1:040d}", "f" + f"{1:040d}"[1:]
+    seeded = _freshness(commits=[(MAIN_MOVED_AT_1026, [MOG.LEGACY_MANIFEST_PATH])])
+    _seed_manifest_edit(seeded, commit, _base_manifest(), _edited("fx-guard", paths=["engine/fx/**"]))
+    routes = {f"{MOG.GITHUB_API}/repos/acme/widgets/git/commits/{commit}": {
+        "tree": {"sha": f"root-{commit}"}, "parents": [{"sha": parent}]}}
+    routes[f"{MOG.GITHUB_API}/repos/acme/widgets/git/commits/{parent}"] = {
+        "tree": {"sha": f"root-{parent}"}, "parents": [{"sha": "e" * 40}]}
+    for tree_sha, entries in seeded._root_trees.items():
+        routes[f"{MOG.GITHUB_API}/repos/acme/widgets/git/trees/{tree_sha}"] = {
+            "tree": [{"path": path, "type": kind, "mode": mode, "sha": sha}
+                     for path, (kind, mode, sha) in entries.items()]}
+    for blob_sha, content in seeded._blobs.items():
+        routes[f"{MOG.GITHUB_API}/repos/acme/widgets/git/blobs/{blob_sha}"] = {
+            "encoding": "base64", "content": base64.b64encode(content).decode()}
+    requested = []
+
+    def fake_request(method, url, token, payload=None):
+        requested.append(url)
+        if url not in routes:
+            pytest.fail(f"unexpected request {url}")
+        return 200, routes[url]
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    freshness = _freshness(
+        commits=[(MAIN_MOVED_AT_1026, [MOG.LEGACY_MANIFEST_PATH])],
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
+    )
+    stale, reason = freshness.stale_for(_pull(), _clean_proof())
+    assert stale is False, reason
+    assert not any("recursive" in url for url in requested)
+    assert sum("/git/blobs/" in url for url in requested) == 2
+
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: (404, {"message": "Not Found"}))
+    freshness = _freshness(
+        commits=[(MAIN_MOVED_AT_1026, [MOG.LEGACY_MANIFEST_PATH])],
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
+    )
+    stale, reason = freshness.stale_for(_pull(), _clean_proof())
+    assert stale is True, reason
+    assert "edited .github/ci/legacy-jobs.yml and it could not be read" in reason
+
+
+def _top_level_function(tree, name):
+    return next(
+        node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == name
+    )
+
+
+def _without_docstring(function) -> list[str]:
+    body = function.body
+    if body and isinstance(body[0], ast.Expr) and isinstance(body[0].value, ast.Constant):
+        body = body[1:]
+    return [ast.dump(statement) for statement in body]
+
+
+@pytest.mark.parametrize(
+    "pack_name, sweeper_name",
+    [
+        ("_glob_to_regex", "_selector_glob_to_regex"),
+        ("_classify_bounded_manifest_job_delta", "_classify_bounded_manifest_job_delta"),
+    ],
+)
+def test_the_sweepers_pinned_copies_still_match_the_ci_pack(pack_name, sweeper_name):
+    """The sweeper's sparse checkout cannot import run_ci_pack, so it carries copies.
+    A pack change that is not mirrored here fails this test, not a sweep."""
+    pack = ast.parse((ROOT / "scripts" / "run_ci_pack.py").read_text())
+    sweeper = ast.parse((ROOT / "scripts" / "merge_on_green.py").read_text())
+    pack_function = _top_level_function(pack, pack_name)
+    sweeper_function = _top_level_function(sweeper, sweeper_name)
+    assert ast.dump(pack_function.args) == ast.dump(sweeper_function.args)
+    assert _without_docstring(pack_function) == _without_docstring(sweeper_function)
+
+
+def test_the_sweepers_pinned_constants_still_match_the_ci_pack():
+    pack = ast.parse((ROOT / "scripts" / "run_ci_pack.py").read_text())
+    constants = {
+        target.id: node.value
+        for node in pack.body
+        if isinstance(node, ast.Assign)
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    }
+    assert ast.literal_eval(constants["GLOBAL_INVALIDATORS"]) == MOG.PACK_GLOBAL_INVALIDATORS
+    assert ast.literal_eval(constants["PACK_JOB_ID"]) == MOG.PACK_JOB_ID
+    assert ast.literal_eval(constants["LEGACY_MANIFEST_PATH"]) == MOG.LEGACY_MANIFEST_PATH
