@@ -357,22 +357,39 @@ def test_ledger_seals_a_fourth_binding_and_both_dispositions(pack, tmp_path):
     assert family["records"][-len(fee):] == fee
 
 
-def test_capacity_reads_the_sealed_registered_amount_as_known(pack, tmp_path):
+def _single_row_ledger() -> list[dict[str, Any]]:
+    """The standard ledger without its ambiguous sibling: one fee-table row and its correction."""
+    return [row for row in _standard_ledger() if row["logical_observation_id"] != "document-term-logical:cs:fee-b"]
+
+
+def _capacity_of(pack, tmp_path, observations):
     events, edges = _s3_amended_effective_post_effective()
-    ledger = _write_ledger(tmp_path / DOCUMENT_LEDGER_FILENAME, _standard_ledger())
+    ledger = _write_ledger(tmp_path / DOCUMENT_LEDGER_FILENAME, observations)
     _, _, bundle = _bundle(events, edges, pack, ledger_path=ledger)
     state = state_from_record(_state_record(bundle, ISSUER))
     built = ra.build_rule_pack(pack, SALE)[0]
     assert built is not None, f"no qualified rule text on {SALE}"
-    evaluation = explain_capacity(state, _scenario(), built, pack=pack)
-    bound = [
-        row
-        for row in evaluation.inputs["registration_paths"]
-        if row.get("fee_table_accession") == ACC
-    ]
-    assert bound, f"no path bound to the fixture fee row: {evaluation.inputs['registration_paths']}"
+    return explain_capacity(state, _scenario(), built, pack=pack)
+
+
+def test_capacity_reads_the_sealed_registered_amount_as_known(pack, tmp_path):
+    paths = _capacity_of(pack, tmp_path, _single_row_ledger()).inputs["registration_paths"]
+    bound = [row for row in paths if row.get("fee_table_accession") == ACC]
+    assert bound, f"no path bound to the fixture fee row: {paths}"
     assert all(row["registered_amount"]["status"] == "known" for row in bound)
     assert all(row["registered_amount"]["value"] == "60000000" for row in bound)
+
+
+def test_an_unreadable_sibling_row_keeps_the_sealed_amount_unknown(pack, tmp_path):
+    # A lone readable row beside an unreadable row of the same fee table is only
+    # part of that table, so it never stands in for the registered amount.
+    evaluation = _capacity_of(pack, tmp_path, _standard_ledger())
+    paths = evaluation.inputs["registration_paths"]
+    assert paths, "the fixture must still yield a registration path"
+    assert not [row for row in paths if row.get("fee_table_accession") == ACC]
+    assert all(row["registered_amount"]["status"] == "unknown" for row in paths)
+    assert all(row["registered_amount"].get("value") is None for row in paths)
+    assert f"fee_table_multi_row:{ACC}" in evaluation.envelope.blockers
 
 
 def test_a_correction_after_the_cutoff_is_invisible_then_visible(pack, tmp_path):
