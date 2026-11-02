@@ -42,21 +42,62 @@ SPEC = PackSpec(
 )
 
 # B.2 governing sections.
+# Dev-corpus recall repair (2026-11-01, corpora diversified_v1 + litigation_v1):
+# four locator shapes kept standard-wording sections out of reach. (1) The
+# financial-statement index pages list "Report of Independent Registered
+# Public Accounting Firm 42" and "Controls and Procedures 123" with a bare
+# trailing page number and no "Item N." fingerprint, so the shared TOC-skip
+# rule chose the index line and the real section fell outside the span; a
+# heading arm that refuses a bare 1-3 digit successor kills those lines.
+# (2) Some issuers set the real Item 9A / audit heading in forms the plain
+# arm never matches (an em/en dash between number and title, or the
+# title-only all-caps heading with the item number dropped from the text);
+# the dash-tolerant and all-caps title-only arms carry them. (3) The
+# auditor's own scope paragraph says "...appearing under Item 9A", and the
+# bare "Item 9A\." end boundary matched it mid-report, truncating the audit
+# span before the signature block; the end boundaries below are attached to
+# the item TITLE, which the scope cross-reference never carries.
+_TOC_PAGE_GUARD = r"(?!\s+\d{1,3}\b)"
+_ITEM9_END = r"Item\s+9\b[\s.]*[—–-]?\s*Changes"
+_ITEM9A_END = r"Item\s+9A\b[\s.]*[—–-]?\s*Controls"
+_REPORT_END_HEADINGS = (
+    _ITEM9A_END,
+    _ITEM9_END,
+    r"Item\s+9B\b",
+    r"Part\s+III",
+)
 ITEM9A = narrative.SectionSpec(
-    r"Item\s+9A\.?\s*Controls and Procedures",
+    r"Item\s+9A\.?\s*Controls and Procedures"
+    r"|Item\s+9A\b[\s.]*[—–-]?\s*Controls and Procedures" + _TOC_PAGE_GUARD
+    # Title-only heading, rendered in capitals with the item number outside
+    # the heading text; the scoped (?-i:) keeps it off body prose.
+    + r"|(?-i:CONTROLS\s+AND\s+PROCEDURES)" + _TOC_PAGE_GUARD,
     (r"Item\s+9B\.", r"Item\s+9C\.", r"Part\s+III"),
 )
 ITEM4_CONTROLS = narrative.SectionSpec(
-    r"Item\s+4\.?\s*Controls and Procedures",
+    r"Item\s+4\b[\s.]*[—–-]?\s*Controls and Procedures" + _TOC_PAGE_GUARD,
     (r"Part\s+II", r"Item\s+1\."),
 )
-AUDIT = narrative.SectionSpec(
-    r"Report of Independent Registered Public Accounting Firm",
-    (r"Item\s+9\.", r"Item\s+9A\."),
+_AUDIT_HEADING = (
+    r"Report of Independent Registered Public Accounting Firm" + _TOC_PAGE_GUARD
 )
+AUDIT = narrative.SectionSpec(_AUDIT_HEADING, _REPORT_END_HEADINGS)
 ICFR_REPORT = narrative.SectionSpec(
-    r"Opinion on Internal Control Over Financial Reporting",
-    (r"Item\s+9\.",),
+    r"Opinion on Internal Control Over Financial Reporting" + _TOC_PAGE_GUARD
+    + r"|"
+    + _AUDIT_HEADING,
+    _REPORT_END_HEADINGS,
+)
+# Management's own ICFR report heading: the conclusion sentence lives here
+# when the issuer files it inside Item 8 instead of Item 9A (the Item 9A text
+# then incorporates it by reference). Searched only by the finalize fallback.
+MGMT_ICFR_REPORT = narrative.SectionSpec(
+    r"Management.s (?:Annual )?Report on Internal Control Over Financial Reporting"
+    + _TOC_PAGE_GUARD
+    + r"|Report of Management on [^.]{3,120}?Internal Control Over Financial Reporting"
+    + _TOC_PAGE_GUARD,
+    (r"Report of Independent Registered Public Accounting Firm",)
+    + _REPORT_END_HEADINGS,
 )
 
 # B.3 patterns (frozen). The critical-audit-matters guard is the one frozen
@@ -79,6 +120,37 @@ ICFR_REPORT = narrative.SectionSpec(
 # and when no negator sits immediately before the anchor verb. A stated
 # effective/ineffective conclusion anywhere in the same sentence governs
 # over the mention; that precedence is resolved by _icfr_conclusion_value.
+# Dev-corpus recall repair (2026-11-01, corpora diversified_v1 + litigation_v1):
+# three standard management-conclusion wordings matched no pre-existing arm —
+# the adjective-first conclusion ("management determined that the Company
+# maintained effective internal control over financial reporting"), the
+# issuer-named copula ("the internal control over financial reporting of
+# a diversified issuer is effective") and the lowercase possessive change
+# sentence. The
+# new arms stay anchored to the standard conclusion verbs and to the exact
+# noun phrase, and an arm that resolves to effective refuses a negation
+# between verb and conclusion plus a trailing "except for" qualifier (B.3
+# rule: a negated, conditional or except-for sentence never resolves to
+# effective/unqualified).
+_ICFR_MGMT_VERB = r"(?:concluded|concludes|determin(?:e|ed)|believes?)"
+_ICFR_BRIDGE = (
+    r"internal control over financial reporting"
+    r"(?:\s+(?:of|at)\s+[^.]{0,60}?)?\s+(?:was|is|were) "
+)
+_ICFR_MGMT_CONCLUSION_ARMS = (
+    _ICFR_MGMT_VERB + r"(?:(?!\b(?:not|never|unable)\b)[^.]){0,200}?"
+    + _ICFR_BRIDGE + r"(?P<mgmt_effective>effective)(?![^.]{0,120}\bexcept\b)"
+    r"|" + _ICFR_MGMT_VERB + r"[^.]{0,200}?"
+    + _ICFR_BRIDGE + r"(?P<mgmt_ineffective>not effective|ineffective)"
+    r"|" + _ICFR_MGMT_VERB + r"(?:(?!\b(?:not|never|unable)\b)[^.]){0,160}?"
+    r"maintained\s*(?:,\s*in all material respects,\s*)?"
+    r"(?P<mgmt_effective_adj>effective) internal control over financial reporting"
+    r"(?![^.]{0,120}\bexcept\b)"
+    r"|" + _ICFR_MGMT_VERB + r"[^.]{0,160}?"
+    r"(?:did not maintain|do not maintain|does not maintain|has not maintained|"
+    r"have not maintained|failed to maintain|not maintain|never maintain)"
+    r"[^.]{0,60}?effective internal control over financial reporting"
+)
 ICFR_CONCLUSION = (
     r"internal control over financial reporting (?:was|is|were) "
     r"(?P<effective>effective)"
@@ -92,7 +164,14 @@ ICFR_CONCLUSION = (
     r"[^.]{0,80}?material weakness"
     r"(?![^.]{0,60}?\b(?:does not exist|did not exist|has been remediated|"
     r"was remediated|were remediated|were not|was not|is not)\b))"
+    + r"|" + _ICFR_MGMT_CONCLUSION_ARMS
 )
+# The management-conclusion arms alone: what the finalize fallback searches
+# inside Management's own ICFR report, where the un-anchored arms would
+# otherwise latch onto Section 404 requirement boilerplate ("... required to
+# report ... whether the Company's internal control over financial reporting
+# is effective") instead of the stated conclusion.
+_ICFR_MGMT_CONCLUSION = _ICFR_MGMT_CONCLUSION_ARMS
 # B.3 pattern revision v2 (review F1/F2, 2026-10-20): the ineffective arm
 # carries the same disclosure-controls anchor as the effective arm.
 DISCLOSURE_CONTROLS = (
@@ -177,18 +256,47 @@ MATERIAL_WEAKNESS_IDENTIFIED = (
     + _MW_EXISTENCE_GUARD
 )
 ICFR_CHANGE = (
-    r"(?:no changes|changes) in (?:the Company.s |our )?"
+    r"(?:no changes|changes) in (?:the Company.s |the company.s |our |"
+    r"[A-Z][A-Za-z.’']+ )?"
     r"internal control over financial reporting"
 )
-AUDITOR_FIRM = r"/s/\s*(?P<firm>[A-Z][A-Za-z&.,\s]{2,80}?LLP)"
+# Dev-corpus recall repair (2026-11-01): two standard signature-block forms
+# matched no arm — the conformed signature set in capitals ("/S/ BIG FOUR &
+# CO LLP") and the bare signature block with no conformed "/s/" prefix at
+# all ("Auditor & Co LLP City, State February 24, 2026"). The bare arm stays
+# anchored to the auditor signature-block shape
+# (firm name ending LLP, then the office city/state and the report date).
+#
+# Precedence repair (review follow-up, 2026-11-01): the framework resolves a
+# selector with one leftmost search, so a predecessor auditor's bare dated
+# block before the incumbent's conformed block used to win the field. The
+# two arms are split here (concatenation is byte-identical to the v2
+# pattern, so the mapping digest is unchanged) so ``_auditor_firm_value``
+# can prefer the conformed arm across the whole audit span; see the
+# resolver below.
+_AUDITOR_FIRM_CONFORMED = (
+    r"/[sS]/\s*(?P<firm>[A-Z][A-Za-z&.,\s'’]{2,80}?LLP)"
+)
+_AUDITOR_FIRM_BARE = (
+    r"(?P<firm2>[A-Z][A-Za-z&,'’\s]{2,80}?LLP)\s+"
+    r"(?:[A-Z][A-Za-z.,'’]*\s+){0,4}"
+    r"(?:January|February|March|April|May|June|July|August|September|October|"
+    r"November|December)\s+\d{1,2},\s*\d{4}"
+)
+AUDITOR_FIRM = _AUDITOR_FIRM_CONFORMED + "|" + _AUDITOR_FIRM_BARE
+# Dev-corpus precision guard (2026-11-01): an except-for qualifier after the
+# opinion phrase is a qualified opinion the enum does not carry; it must stay
+# typed-absent, never resolve to unqualified/effective.
 AUDITOR_OPINION_FS = (
     r"(?P<unqualified>present fairly, in all material respects)"
+    r"(?![^.]{0,120}\bexcept\b)"
     r"|(?P<adverse>do not present fairly)"
     r"|(?P<disclaimer>do not express an opinion)"
 )
 AUDITOR_OPINION_ICFR = (
     r"(?P<effective>maintained, in all material respects, effective internal "
-    r"control)|(?P<adverse>has not maintained effective internal control)"
+    r"control)(?![^.]{0,120}\bexcept\b)"
+    r"|(?P<adverse>has not maintained effective internal control)"
 )
 CRITICAL_AUDIT_MATTERS = r"Critical Audit Matters?\b(?!.{0,15}communicated)"
 GOING_CONCERN_DOUBT = (
@@ -307,11 +415,53 @@ _CHECKS = (
 # --- text_value overrides (B.3 fields whose value is not the sentence) ------
 
 
+def _normalize_firm_name(name: str) -> str:
+    return " ".join(name.split())
+
+
+def _collect_auditor_firm_matches(
+    nt: Any, section_span: tuple[int, int]
+) -> tuple[str, list[tuple[str, int, int]]]:
+    """Collect every auditor-firm candidate across the whole audit span.
+
+    Returns ``(arm, matches)``. The conformed ``/s/`` arm wins whenever the
+    span carries at least one conformed signature — the incumbent signs the
+    report, so a predecessor's bare office block never outranks it — and the
+    bare dated-block arm is read only when no conformed signature exists.
+    Each match is the raw firm name and its span.
+    """
+    lo, hi = section_span
+    conformed = [
+        (m.group("firm"), m.start("firm"), m.end("firm"))
+        for m in re.compile(_AUDITOR_FIRM_CONFORMED).finditer(nt.text, lo, hi)
+    ]
+    if conformed:
+        return "conformed", conformed
+    bare = [
+        (m.group("firm2"), m.start("firm2"), m.end("firm2"))
+        for m in re.compile(_AUDITOR_FIRM_BARE).finditer(nt.text, lo, hi)
+    ]
+    return "bare", bare
+
+
 def _auditor_firm_value(
     nt: Any, section_span: tuple[int, int], match: Any
 ) -> tuple[str, tuple[int, int]]:
-    firm = match.group("firm")
-    return firm, (match.start("firm"), match.end("firm"))
+    # 2026-11-01: the bare signature-block arm captures through ``firm2``.
+    # Precedence repair (review follow-up, 2026-11-01): the passed match is
+    # the framework's single leftmost search over the span, which a
+    # predecessor's earlier bare block wins. Re-read the whole span instead:
+    # the conformed arm outranks every bare block, and the chosen arm's
+    # first candidate is returned. When the chosen arm names two distinct
+    # firms the override still returns the first candidate — a text-value
+    # override cannot mint an absence — and ``finalize_result`` demotes that
+    # row to the framework's typed absence (never guess between two firms).
+    _arm, matches = _collect_auditor_firm_matches(nt, section_span)
+    if matches:
+        firm, lo, hi = matches[0]
+        return firm, (lo, hi)
+    name = "firm" if match.group("firm") is not None else "firm2"
+    return match.group(name), (match.start(name), match.end(name))
 
 
 def _cam_value(
@@ -332,6 +482,20 @@ _ICFR_STATED_CONCLUSION = re.compile(
     r"(?P<effective>effective)"
     r"|internal control over financial reporting (?:was|is|were) "
     r"(?P<ineffective>not effective|ineffective)"
+    # Dev-corpus recall repair (2026-11-01): the issuer-named copula and the
+    # adjective-first conclusion resolve through these added arms; the
+    # negated adjective forms ("did not maintain effective ...") resolve
+    # ineffective.
+    r"|internal control over financial reporting\s+(?:of|at)\s+[^.]{0,60}?\s+"
+    r"(?:was|is|were) (?P<effective_bridge>effective)"
+    r"|internal control over financial reporting\s+(?:of|at)\s+[^.]{0,60}?\s+"
+    r"(?:was|is|were) (?P<ineffective_bridge>not effective|ineffective)"
+    r"|maintained\s*(?:,\s*in all material respects,\s*)?"
+    r"(?P<effective_adj>effective) internal control over financial reporting"
+    r"|(?:did not maintain|do not maintain|does not maintain|"
+    r"has not maintained|have not maintained|failed to maintain|"
+    r"not maintain|never maintain)[^.]{0,60}?"
+    r"(?P<ineffective_adj>effective) internal control over financial reporting"
 )
 # B.3 v3 (review F1-b): the identifying verb whose lead the presence
 # resolver scans for a negation token.
@@ -522,7 +686,12 @@ def _icfr_conclusion_value(
     stated = _ICFR_STATED_CONCLUSION.search(text, lo, hi)
     if stated is not None:
         literal = (
-            "effective" if stated.group("effective") is not None else "ineffective"
+            "effective"
+            if any(
+                stated.group(name) is not None
+                for name in ("effective", "effective_bridge", "effective_adj")
+            )
+            else "ineffective"
         )
         return literal, (stated.start(), stated.end())
     return "material_weakness", (match.start(), match.end())
@@ -867,7 +1036,8 @@ def _section_text_span(nt: Any, section: Any) -> tuple[int, int] | None:
 
 
 class Pk09Producer(PackProducer):
-    """PK09 declaration plus the B.3 v7 dated-remediation finalize hook.
+    """PK09 declaration plus the B.3 v7 dated-remediation finalize hook and
+    the 2026-11-01 management-report ICFR fallback.
 
     The framework's override pass resolves ``material_weakness_present``
     with the period of report unknown (its ``text_value_overrides``
@@ -887,19 +1057,181 @@ class Pk09Producer(PackProducer):
     disagreement flips the boolean, and with it the conditional
     ``remediation_span`` row, the coverage counts, the one stale
     limitation line and the content digest.
+
+    The second finalize pass (2026-11-01 dev-corpus repair, corpora
+    diversified_v1 + litigation_v1) resolves ``icfr_management_conclusion``
+    for the annual issuers that file Management's own ICFR report inside
+    Item 8 and only incorporate it by reference from Item 9A: when the
+    Item 9A span carries no conclusion, the verb-anchored
+    management-conclusion arms are searched inside the
+    ``MGMT_ICFR_REPORT`` section and a hit mints the row with the stock
+    resolver's mapping identity. Quarterly forms never carry that
+    report, so the pass is annual-only and 10-Qs keep their typed
+    absence.
     """
 
     def finalize_result(
         self, result: dict[str, Any], pack_input: PackInput
     ) -> dict[str, Any]:
         rows = {row["field_id"]: row for row in result["fields"]}
-        weakness = rows.get("material_weakness_present")
-        if weakness is None or weakness.get("quality_state") != "valued":
-            return result  # no affirmed weakness mention to re-date
         primary, form_matched = _select_primary(pack_input.packages, SPEC.forms)
         primary_form = (
             str(primary.manifest.get("form") or "") if form_matched else None
         )
+        if self._apply_icfr_management_fallback(result, rows, primary, primary_form):
+            self._repair_envelope_after_finalize(result, rows)
+        self._finalize_auditor_firm(result, rows, primary, primary_form)
+        return self._finalize_material_weakness(result, rows, primary, primary_form)
+
+    @staticmethod
+    def _apply_icfr_management_fallback(
+        result: Mapping[str, Any],
+        rows: Mapping[str, Mapping[str, Any]],
+        primary: Any,
+        primary_form: str | None,
+    ) -> bool:
+        """Mint the ICFR management conclusion from Management's own report.
+
+        Returns True when the row moved from a typed miss to a valued
+        conclusion. The search runs ONLY through the verb-anchored arms
+        (``_ICFR_MGMT_CONCLUSION``) so Section 404 requirement boilerplate
+        inside the same report ("... whether the Company's internal control
+        over financial reporting is effective") never satisfies the field;
+        the value itself resolves through the same sentence-bounded
+        stated-conclusion resolver the stock row uses.
+        """
+        if primary_form in _QUARTERLY_FORMS or primary_form is None:
+            return False
+        row = rows.get("icfr_management_conclusion")
+        if row is None or row.get("quality_state") != "missing":
+            return False
+        if primary is None:
+            return False
+        nt = narrative.primary_document_text(primary)
+        section_span = narrative.locate_section(nt, MGMT_ICFR_REPORT)
+        if section_span is None:
+            return False
+        lo, hi = section_span
+        match = re.compile(_ICFR_MGMT_CONCLUSION).search(nt.text, lo, hi)
+        if match is None:
+            return False
+        value, span = _icfr_conclusion_value(nt, section_span, match)
+        mapping = _FIELD_MAPPINGS["icfr_management_conclusion"]
+        accession = str(primary.manifest.get("accession") or "")
+        row["quality_state"] = "valued"
+        row["non_value_state"] = None
+        row["coverage_state"] = "source_trace_complete"
+        row["reason"] = None
+        row["value"] = None
+        row["text_value"] = value
+        row["evidence_kind"] = "text_span"
+        row["required_evidence_kind"] = "text_span"
+        row["mapping_rule_id"] = (
+            f"{SPEC.pack_id}.icfr_management_conclusion.text_span/v1"
+        )
+        row["mapping_rule_digest"] = _text_span_digest(mapping)
+        row["source_span"] = _raw_span(nt, span[0], span[1], accession)
+        row["dependency_field_ids"] = []
+        return True
+
+    @staticmethod
+    def _repair_envelope_after_finalize(
+        result: dict[str, Any], rows: Mapping[str, Mapping[str, Any]]
+    ) -> None:
+        """Drop the stale limitation line, refresh the cross check, coverage
+        and digest after a finalize pass minted a valued row."""
+        result["limitations"] = [
+            line
+            for line in result["limitations"]
+            if not line.startswith("pk09.icfr_management_conclusion: non-valued")
+        ]
+        for index, check in enumerate(result["checks"]):
+            if check.get("check_id") != "management_vs_auditor_icfr":
+                continue
+            result["checks"][index] = _management_vs_auditor_icfr(check, rows)
+        _recompute_coverage(result)
+        result["pack_content_sha256"] = contract.pack_content_digest(result)
+        errors = contract.validate_pack_result(result)
+        if errors:
+            raise SpecialistPackError(
+                "PK09 finalize refused: " + "; ".join(errors[:5])
+            )
+
+    @staticmethod
+    def _finalize_auditor_firm(
+        result: dict[str, Any],
+        rows: Mapping[str, Mapping[str, Any]],
+        primary: Any,
+        primary_form: str | None,
+    ) -> None:
+        """Demote an ambiguous auditor_firm read to the framework's typed
+        absence.
+
+        ``_auditor_firm_value`` cannot mint an absence row, so an audit span
+        whose chosen arm names two distinct firms (after whitespace
+        normalisation) reaches finalize briefly valued with the first
+        candidate. This pass re-runs the same two-arm collection and, on
+        ambiguity, restores the typed absence the framework's own miss
+        produces — quality_state ``missing`` under the declared reason
+        ``narrative_span_not_located`` — with a limitation naming the
+        ambiguity. Never guess between two firms.
+        """
+        row = rows.get("auditor_firm")
+        if row is None or row.get("quality_state") != "valued":
+            return
+        if primary is None or primary_form in _QUARTERLY_FORMS:
+            return
+        nt = narrative.primary_document_text(primary)
+        section = _effective_section("auditor_firm", primary_form)
+        section_span = _section_text_span(nt, section)
+        if section_span is None:
+            return
+        arm, matches = _collect_auditor_firm_matches(nt, section_span)
+        distinct = {_normalize_firm_name(name) for name, _lo, _hi in matches}
+        if len(distinct) <= 1:
+            return  # one firm in the chosen arm: the resolver's value stands
+        section_text = "whole document" if section is None else section.heading
+        mapping = _FIELD_MAPPINGS["auditor_firm"]
+        row["quality_state"] = "missing"
+        row["non_value_state"] = "missing"
+        row["coverage_state"] = "unmapped"
+        row["reason"] = "narrative_span_not_located"
+        row["value"] = None
+        row["text_value"] = None
+        row["evidence_kind"] = "text_span"
+        row["required_evidence_kind"] = "text_span"
+        row["mapping_rule_id"] = f"{SPEC.pack_id}.auditor_firm.text_span/v1"
+        row["mapping_rule_digest"] = _text_span_digest(mapping)
+        row["source_span"] = None
+        row["dependency_field_ids"] = []
+        # F6-3: never the line that breaks the framework's R-F10 cap.
+        if len(result["limitations"]) < _LIMITATION_CAP:
+            result["limitations"].append(
+                "pk09.auditor_firm: non-valued (narrative_span_not_located); "
+                f"auditor signature block ambiguous: {len(distinct)} distinct "
+                f"firm names in the {arm} arm; section searched: "
+                f"{section_text}"
+            )
+        _recompute_coverage(result)
+        result["pack_content_sha256"] = contract.pack_content_digest(result)
+        errors = contract.validate_pack_result(result)
+        if errors:
+            raise SpecialistPackError(
+                "PK09 finalize refused: " + "; ".join(errors[:5])
+            )
+
+    def _finalize_material_weakness(
+        self,
+        result: dict[str, Any],
+        rows: Mapping[str, Mapping[str, Any]],
+        primary: Any,
+        primary_form: str | None,
+    ) -> dict[str, Any]:
+        weakness = rows.get("material_weakness_present")
+        if weakness is None or weakness.get("quality_state") != "valued":
+            return result  # no affirmed weakness mention to re-date
+        if primary is None:
+            return result
         por_text = str(primary.manifest.get("period_of_report") or "")
         if not por_text:
             return result
@@ -1031,6 +1363,7 @@ __all__ = [
     "ICFR_REPORT",
     "ITEM4_CONTROLS",
     "ITEM9A",
+    "MGMT_ICFR_REPORT",
     "PRODUCER",
     "SPEC",
 ]

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-20T00:05:13Z",
+ "accession": "0001628280-26-009921",
+ "cik": "0000078814",
+ "doc_byte_length": 3811736,
+ "doc_sha256": "f7b19fe4fac6601926d8f5df5d3419c911c63f3b9d9916bc6cdfea1ad2982399",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-20",
+ "form": "10-K/A",
+ "period_of_report": "2025-12-31",
+ "primary_document": "pbi-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 447510,
+  "byte_start": 446950,
+  "normalized": "This Amendment No. 1 on Form 10-K/A (\"Amendment No. 1\") to the Annual Report on Form 10-K of Pitney Bowes Inc for the fiscal year ended December 31, 2025, originally filed with the Securities and Exchange Commission on February 19, 2026 (the \"Original Filing\") is being filed solely for the purpose of correcting the office location noted on the Report of Independent Registered Public Accounting Firm of PricewaterhouseCoopers LLP and Consent of Independent Registered Accounting Firm of PricewaterhouseCoopers LLP, filed as an exhibit to the Original Filing.",
+  "normalized_sha256": "74440933ff0e7f5bbdda10cfc53248a80785855b8c7ef76dbb2b6c444d3430e9",
+  "raw": "This Amendment No. 1 on Form 10-K/A (\"Amendment No. 1\") to the Annual Report on Form 10-K of Pitney Bowes Inc for the fiscal year ended December 31, 2025, originally filed with the Securities and Exchange Commission on February 19, 2026 (the \"Original Filing\") is being filed solely for the purpose of correcting the office location noted on the Report of Independent Registered Public Accounting Firm of PricewaterhouseCoopers LLP and Consent of Independent Registered Accounting Firm of PricewaterhouseCoopers LLP, filed as an exhibit to the Original Filing.",
+  "raw_sha256": "74440933ff0e7f5bbdda10cfc53248a80785855b8c7ef76dbb2b6c444d3430e9"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/78814/000162828026009921/pbi-20251231.htm",
+ "xbrl_contexts": []
+}
