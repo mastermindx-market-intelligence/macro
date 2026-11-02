@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-09T21:24:05Z",
+ "accession": "0001097864-26-000006",
+ "cik": "0001097864",
+ "doc_byte_length": 2781990,
+ "doc_sha256": "28b760672ffe0b798bc137892d3a5c7e3acc0d5c4d6e23339916756738ea0cd9",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-09",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "on-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 395816,
+  "byte_start": 395532,
+  "normalized": "Sales to distributors accounted for approximately 54%, 53% and 52% of our revenue in 2025, 2024 and 2023, respectively. We had one distributor whose revenue accounted for approximately 11% and 10% of the total revenue for the years ended December 31, 2025 and 2024, respectively.",
+  "normalized_sha256": "92580d76910aa00bb15c98494c7a1b56ff1f56737134dbcd39cdd51bd1129346",
+  "raw": "Sales to distributors accounted for approximately 54%, 53% and 52% of our revenue in 2025, 2024 and 2023, respectively. We had one distributor whose revenue accounted for approximately 11% and 10% of the total revenue for the years ended December&#160;31, 2025 and 2024, respectively.",
+  "raw_sha256": "bafb466e0c809d2bbc6b2c64739921ffa4477cf9bcb3a24f15ae73cee6523b15"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1097864/000109786426000006/on-20251231.htm",
+ "xbrl_contexts": []
+}

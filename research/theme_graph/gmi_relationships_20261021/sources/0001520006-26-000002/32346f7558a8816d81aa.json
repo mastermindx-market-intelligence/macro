@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T11:57:51Z",
+ "accession": "0001520006-26-000002",
+ "cik": "0001520006",
+ "doc_byte_length": 3442242,
+ "doc_sha256": "22c0e2aa60cb315e42979179098d7e8f3b25c27568632da3ff63b41d1c220098",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mtdr-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2351072,
+  "byte_start": 2349408,
+  "normalized": "three significant purchasers accounted for 72%, 79% and 76%, respectively, of the Company’s total oil, natural gas and NGL revenues: Plains Marketing, L.P. (49%, 53% and 42%, respectively), Exxon Mobil Corporation (13%, 15% and 24%, respectively) and Enterprise Products Partners L.P.",
+  "normalized_sha256": "b243e2aa0d931e073b4f189edbfbb49421ca7e4c7361012540c99a223bda3986",
+  "raw": "three</ix:nonFraction></ix:nonFraction></ix:nonFraction> significant purchasers accounted for <ix:nonFraction unitRef=\"number\" contextRef=\"c-78\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-543\">72</ix:nonFraction>%, <ix:nonFraction unitRef=\"number\" contextRef=\"c-79\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-544\">79</ix:nonFraction>% and <ix:nonFraction unitRef=\"number\" contextRef=\"c-80\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-545\">76</ix:nonFraction>%, respectively, of the Company&#8217;s total oil, natural gas and NGL revenues: Plains Marketing, L.P. (<ix:nonFraction unitRef=\"number\" contextRef=\"c-81\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-546\">49</ix:nonFraction>%, <ix:nonFraction unitRef=\"number\" contextRef=\"c-82\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-547\">53</ix:nonFraction>% and <ix:nonFraction unitRef=\"number\" contextRef=\"c-83\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-548\">42</ix:nonFraction>%, respectively), Exxon Mobil Corporation (<ix:nonFraction unitRef=\"number\" contextRef=\"c-84\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-549\">13</ix:nonFraction>%, <ix:nonFraction unitRef=\"number\" contextRef=\"c-85\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-550\">15</ix:nonFraction>% and <ix:nonFraction unitRef=\"number\" contextRef=\"c-86\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-551\">24</ix:nonFraction>%, respectively) and Enterprise Products Partners L.P.",
+  "raw_sha256": "32346f7558a8816d81aa1efe8ef86a42d353ea624d245e969727b70a6da4f789"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1520006/000152000626000002/mtdr-20251231.htm",
+ "xbrl_contexts": []
+}

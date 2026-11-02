@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-26T20:35:23Z",
+ "accession": "0001973239-26-000097",
+ "cik": "0001973239",
+ "doc_byte_length": 3137018,
+ "doc_sha256": "8ab052cc035f9cc93429c0bfd76edf2bc11a686a80f0cc7b568fbd456b2ec815",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-26",
+ "form": "20-F",
+ "period_of_report": "2026-03-31",
+ "primary_document": "arm-20260331.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1955223,
+  "byte_start": 1954549,
+  "normalized": "As such, revenue presented by the Company is the net amount calculated as a percentage of license and royalty fees earned by Arm China from sub-license arrangements entered into with end customers. The Company applies the royalty exception, under which revenue is recognized when the subsequent sale or usage occurs, assuming control of the license to which the royalty relates has transferred to the customer. Where the revenue is derived as a percentage of the license fee of Arm China, the Company categorizes that portion as license revenue while the other portion, which represents the Company’s share of Arm China’s royalties, is categorized as royalties.",
+  "normalized_sha256": "fbc64f28142aecb1cea5726f0b6cdc41f01abafc8c6612270ecaa1d3ec21a9f7",
+  "raw": " As such, revenue presented by the Company is the net amount calculated as a percentage of license and royalty fees earned by Arm China from sub-license arrangements entered into with end customers. The Company applies the royalty exception, under which revenue is recognized when the subsequent sale or usage occurs, assuming control of the license to which the royalty relates has transferred to the customer. Where the revenue is derived as a percentage of the license fee of Arm China, the Company categorizes that portion as license revenue while the other portion, which represents the Company&#8217;s share of Arm China&#8217;s royalties, is categorized as royalties.",
+  "raw_sha256": "057c3571860cef3ff8748df008785ab70356f76bdb142241a7350fc90f3ebedf"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1973239/000197323926000097/arm-20260331.htm",
+ "xbrl_contexts": []
+}
