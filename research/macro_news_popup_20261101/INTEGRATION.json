@@ -1,27 +1,49 @@
 {
   "site/macro.html": {
-    "bytes": 609351,
-    "sha256": "69a8fc67b897c8afea6f89c8ad89e90e02554e93b1359d0e723ba6aeb91dcaa6",
+    "bytes": 627769,
+    "sha256": "43f78af36c384566a350b5c455aa7ee0c69c6c24a7b98813a225f76bd57bccc0",
     "outside_allowed_regions_byte_identical": true,
     "outside_news_visible_text_identical": true,
-    "preserved_region_sha256": "b6e3d2a2fb91ee381d7eed2d1d6206ff2753c81241e57fe43037bca6cd4ae471",
-    "host_script_replacements": 1
+    "preserved_region_sha256": "127be3220fc3ce777edea667e58a00c76adb81c8137643aa74c93a6166febcb2",
+    "host_script_replacements": 1,
+    "incoming_theme_stamp": {
+      "before": "theme.css?v=655fb67f",
+      "after": "theme.css?v=9bd171a6",
+      "content_matches_integrated_main": true
+    }
   },
   "site/us_stocks.html": {
-    "bytes": 758503,
-    "sha256": "6f63a31f336b2add183fba6e050f44e4f950b5f3108fa3941e21fcbad400f31a",
+    "bytes": 758489,
+    "sha256": "36a1c66bf139aceb83a0d6f73a9608ef53ea19da616fbd6a432bdf3023d2dcbf",
     "outside_allowed_regions_byte_identical": true,
     "outside_news_visible_text_identical": true,
-    "preserved_region_sha256": "7db0498650fe75a191c2940834224e06c735e6c263a117ea42259716997f8dee",
-    "host_script_replacements": 0
+    "preserved_region_sha256": "ed2bda37e06b8432b4ab571e21d3ffe3ea8ca6dc28a0c3c8ccb8908f3c4b0e7a",
+    "host_script_replacements": 0,
+    "incoming_theme_stamp": {
+      "before": "theme.css?v=655fb67f",
+      "after": "theme.css?v=9bd171a6",
+      "content_matches_integrated_main": true
+    }
   },
-  "main": "75c68c5f4141b4f82674ec503b69f0b8de2a718b",
-  "candidate_parent": "2247d23e59b6d9b94060444659e7a0c02697444b",
+  "main": "729fd695836c3f4b0002b72249f80792accb9802",
+  "candidate_parent": "8fd362f550d929b458e123774b5d33a2f90dfe9e",
   "alerts": [
+    {
+      "rule": "gex_flip_cross",
+      "observation": "GEX: spot crossed the gamma flip (net -71bn, spot vs flip +0.3%) — measured across 4 sessions, not overnight: no chain snapshot exists for 2026-10-27, 2026-10-28, 2026-10-29, so the crossing point inside that span is unobserved",
+      "translation": "GEX：现价穿越 gamma 翻转点（净 -71bn，现价相对翻转点 +0.3%） — 该变化跨越 4 个交易日，并非隔夜发生：2026-10-27, 2026-10-28, 2026-10-29 无期权链快照，其间的穿越时点无法观测",
+      "observed_time_supplied": false
+    },
     {
       "rule": "event_risk",
       "observation": "Event-risk window: Jobs report (nonfarm payrolls) in 5 days — high two-sided volatility expected. Not a sell signal; size for the noise.",
       "translation": "事件风险窗口：非农就业报告（5 天后）—— 预计偏高的两面性波动。非卖出信号；按噪声调整仓位。",
+      "observed_time_supplied": false
+    },
+    {
+      "rule": "sector_holdings_accumulation",
+      "observation": "XLV: LLY weight +1.19pp beyond price (≈+$579M est. rebalance flow) (accumulating), 2026-10-22..2026-10-29 — cycle UPTREND·HOLD",
+      "translation": "XLV：LLY 权重较价格多变动 +1.19pp（≈+$579M 估算再平衡资金流）（增持），2026-10-22..2026-10-29 — 周期 上涨趋势·持有",
       "observed_time_supplied": false
     },
     {
@@ -53,13 +75,19 @@
       "observation": "ARKW: manager added NVDA by +26% of position (2026-09-23..2026-10-06, flow-normalized)",
       "translation": "ARKW：经理 加仓 NVDA 仓位 +26%（2026-09-23..2026-10-06，已按资金流标准化）",
       "observed_time_supplied": false
+    },
+    {
+      "rule": "sector_holdings_accumulation",
+      "observation": "XLRE: EQIX weight +0.54pp beyond price (≈+$44M est. rebalance flow) (accumulating), 2026-10-22..2026-10-29 — cycle DOWNTREND·AVOID",
+      "translation": "XLRE：EQIX 权重较价格多变动 +0.54pp（≈+$44M 估算再平衡资金流）（增持），2026-10-22..2026-10-29 — 周期 下跌趋势·回避",
+      "observed_time_supplied": false
     }
   ],
   "headlines": [
     {
       "url": "https://www.marketwatch.com/story/apples-new-earnings-era-begins-at-a-critical-time-for-big-tech-2236a44e?mod=mw_rss_topstories",
       "title": "Apple’s new earnings era begins at a critical time for Big Tech",
-      "title_zh": "苹果的新盈利时代在大型科技公司的关键时刻开启",
+      "title_zh": "苹果新财报时代在大型科技公司的关键时刻开启",
       "published_date_label": "Nov 2",
       "recovered_time": "2026-11-02T00:21:00+00:00",
       "clock_matches": 1,
@@ -68,7 +96,7 @@
     {
       "url": "https://www.cnbc.com/2026/10/29/norwegian-earnings-guidance-shares.html",
       "title": "Norwegian shares surge 13% on earnings beat, guidance raise",
-      "title_zh": "挪威股市上涨13%，因盈利超预期并上调指引",
+      "title_zh": "挪威股市因财报超预期并上调指引大涨13%",
       "published_date_label": "Oct 29",
       "recovered_time": "2026-10-29T20:14:15+00:00",
       "clock_matches": 1,
@@ -86,25 +114,25 @@
     {
       "url": "https://seekingalpha.com/news/4661896-elon-musk-sees-orbital-ai-surpassing-data-centers-as-colossus-leads?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
       "title": "Elon Musk sees orbital AI surpassing data centers as Colossus leads",
-      "title_zh": "Elon Musk认为轨道AI将超越数据中心，Colossus领先",
+      "title_zh": "埃隆·马斯克认为轨道AI将超越数据中心，Colossus领先",
       "published_date_label": "Nov 1",
       "recovered_time": "2026-11-01T23:37:25+00:00",
       "clock_matches": 1,
       "distinct_clock_matches": 1
     },
     {
-      "url": "https://www.cnbc.com/2026/10/31/trump-big-oil-refining-profits.html",
-      "title": "Trump called out Big Oil profits. Here’s how much their refining earnings have surged since",
-      "title_zh": "特朗普点名批评大型石油公司利润。以下是它们的炼油利润自那以来飙升的幅度",
-      "published_date_label": "Oct 31",
-      "recovered_time": null,
-      "clock_matches": 0,
-      "distinct_clock_matches": 0
+      "url": "https://seekingalpha.com/news/4660669-quant-snapshot-iovance-biotherapeutics-and-diamondrock-hospitality-company-lead-top-rated-names-as-intact-financial-and-fiserv-payments-lag?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+      "title": "Quant snapshot: Iovance Biotherapeutics and DiamondRock Hospitality Company lead top-rated names as Intact Financial and Fiserv Payments lag",
+      "title_zh": "量化快照：Iovance Biotherapeutics和DiamondRock Hospitality Company领跑高评级股票，Intact Financial和Fiserv Payments落后",
+      "published_date_label": "Nov 2",
+      "recovered_time": "2026-11-02T02:57:06+00:00",
+      "clock_matches": 1,
+      "distinct_clock_matches": 1
     },
     {
       "url": "https://seekingalpha.com/news/4661897-johnson-and-johnson-reports-94-percent-success-rate-in-trial-of-coronary-artery-device?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
       "title": "Johnson & Johnson reports 94% success rate in trial of coronary artery device",
-      "title_zh": "Johnson & Johnson报告冠状动脉设备试验成功率达94%",
+      "title_zh": "强生公司报告冠状动脉设备试验成功率达94%",
       "published_date_label": "Nov 1",
       "recovered_time": "2026-11-01T23:57:52+00:00",
       "clock_matches": 1,
@@ -113,7 +141,7 @@
     {
       "url": "https://www.cnbc.com/2026/10/30/meta-outlook-to-revised-to-negative-by-sp-after-cash-flow-negative.html",
       "title": "Meta outlook revised downward by S&P on cash flow and capex concerns",
-      "title_zh": "S&P因现金流和资本支出担忧下调Meta展望",
+      "title_zh": "标普因现金流和资本支出担忧下调Meta展望",
       "published_date_label": "Oct 30",
       "recovered_time": "2026-10-30T22:42:26+00:00",
       "clock_matches": 1,
@@ -129,33 +157,49 @@
       "distinct_clock_matches": 1
     },
     {
-      "url": "https://www.cnbc.com/2026/10/29/reddit-rddt-q3-2026.html",
-      "title": "Reddit shares sink on weak sales guidance and plans login requirement test as Google search traffic shrinks",
-      "title_zh": "Reddit股价下跌，因销售指引疲软且计划测试登录要求，同时Google搜索流量萎缩",
+      "url": "https://www.cnbc.com/2026/10/30/reddit-stock-q3-earnings.html",
+      "title": "Reddit stock plunges 29% after weak outlook, wrapping its worst day ever",
+      "title_zh": "Reddit股价因展望疲弱暴跌29%，创下史上最差单日表现",
       "published_date_label": "Oct 30",
-      "recovered_time": null,
-      "clock_matches": 0,
-      "distinct_clock_matches": 0
+      "recovered_time": "2026-10-30T20:11:12+00:00",
+      "clock_matches": 1,
+      "distinct_clock_matches": 1
     },
     {
-      "url": "https://www.npr.org/2026/10/28/nx-s1-6020425/federal-reserve-interest-rates-inflation",
-      "title": "Fed holds interest rates steady even as inflation remains stubborn",
-      "title_zh": "美联储维持利率不变，尽管通胀依然顽固",
-      "published_date_label": "Oct 28",
-      "recovered_time": "2026-10-28T18:04:42+00:00",
+      "url": "https://www.cnbc.com/2026/10/30/trump-tech-allies-swap-ai-for-super-intelligence-in-earnings-calls.html",
+      "title": "Musk and Zuckerberg echo Trump's push to rebrand AI as 'super intelligence' on earnings calls. Others do not",
+      "title_zh": "马斯克和扎克伯格在财报电话会上呼应特朗普将AI重新定义为“超级智能”的推动。其他公司则不然",
+      "published_date_label": "Oct 30",
+      "recovered_time": "2026-10-30T15:14:27+00:00",
       "clock_matches": 1,
       "distinct_clock_matches": 1
     }
   ],
   "counts": {
-    "all": 16,
-    "priority": 1,
-    "context": 5,
+    "all": 19,
+    "priority": 2,
+    "context": 7,
     "headlines": 10,
-    "clock_known": 8,
-    "clock_unknown": 2
+    "clock_known": 10,
+    "clock_unknown": 0
   },
   "health_inferred": false,
   "canonical_writer": "lib.pages.write_page",
-  "canonical_optimizer": "scripts.optimize_assets.make_optimizer"
+  "canonical_optimizer": "scripts.optimize_assets.make_optimizer",
+  "allowed_replacements": [
+    "Macro dlg-news component",
+    "Macro static mx5 modal owner script",
+    "new News CSS and JS references",
+    "owned release-publications client content stamp",
+    "incoming main theme.css content stamp"
+  ],
+  "source_blobs": {
+    "templates/dashboard.html.j2": "d4579779e221375594cc8b4387304a3bb1205141",
+    "templates/_macro_news_intelligence.html.j2": "ec8646c14bf3feeba3405414aa7a6a04063b7129",
+    "templates/macro_news_intelligence.css": "0eafdf810efa19a802b8bef03fc441e86519db0f",
+    "templates/macro_news_intelligence.js": "cfc1dfdba7abd094497c599498f05c2494f2668c",
+    "templates/release_publications_live.js": "abc50fec5c19a91b5017ee1092bac3a97da77e3b",
+    "scripts/optimize_assets.py": "62d7daf72add439d4880e1f0533b45524d4f141d",
+    "lib/pages.py": "db175c463a31828263b57a3287afba661439a765"
+  }
 }

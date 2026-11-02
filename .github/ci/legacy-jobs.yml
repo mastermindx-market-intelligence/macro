@@ -706,6 +706,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -1360,6 +1361,119 @@ jobs:
         run: pip install pytest
       - name: Private directory boundary and deployment refusal contracts
         run: python -m pytest tests/test_company_intelligence_private_roots.py -q
+
+  company-intelligence-relationships:
+    if: ${{ false }}
+    gate: code
+    # GMI ORCH-REL (M1/M2/M3, 2026-10-21..23): the relationship-envelope suites —
+    # contracts, the M1 SWKS->AAPL primary-source record, the derivation battery,
+    # the M2 EDGAR harvest / source keys / judge / precision / recall / envelope
+    # measures, and the M3 descriptive renderer. Registered by the GMI COMPLETION
+    # seat (A25) from the lanes' ci_registration_proposal*.yml under
+    # research/theme_graph/gmi_relationships_20261021/: `scope: exclusive`, paths =
+    # the union of the measured import/read closures those proposals carry.
+    # test_curated_exclusive_scopes_cover_their_own_import_closure keeps it honest.
+    scope: exclusive
+    paths:
+      - "contracts/company_intelligence/relationship_extraction.v1.schema.json"
+      - "contracts/company_intelligence/relationship_source_excerpt.v1.schema.json"
+      - "contracts/company_intelligence/relationship_observation_package.v2.schema.json"
+      - "contracts/company_intelligence/relationship_edges.v1.schema.json"
+      - "engine/__init__.py"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/company_intelligence/relationships/__init__.py"
+      - "engine/company_intelligence/relationships/clock.py"
+      - "engine/company_intelligence/relationships/package_v2.py"
+      - "engine/company_intelligence/relationships/replay.py"
+      - "lib/__init__.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/identity.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
+      - "scripts/build_relationship_observations.py"
+      - "research/theme_graph/gmi_relationships_20261021/extraction/swks_aapl_m1.jsonl"
+      - "research/theme_graph/gmi_relationships_20261021/extraction/m2/P.jsonl"
+      - "research/theme_graph/gmi_relationships_20261021/extraction/m2/D1a.jsonl"
+      - "research/theme_graph/gmi_relationships_20261021/extraction/m2/D1b.jsonl"
+      - "research/theme_graph/gmi_relationships_20261021/extraction/m2/D2a.jsonl"
+      - "research/theme_graph/gmi_relationships_20261021/extraction/m2/D2b.jsonl"
+      - "research/theme_graph/gmi_relationships_20261021/sources/0000004127-24-000131.json"
+      - "research/theme_graph/gmi_relationships_20261021/sources/0000004127-25-000085.json"
+      - "research/theme_graph/gmi_relationships_20261021/sources/0000004127-26-000003.json"
+      - "research/theme_graph/coverage_20261019/UNIVERSE_MANIFEST.json"
+      - "data/company_intelligence/relationships/observation_package.v2.json"
+      - "data/company_intelligence/relationships/relationship_edges.json"
+      - "tests/conftest.py"
+      - "tests/test_relationship_contracts.py"
+      - "tests/test_relationship_m1_swks_aapl.py"
+      - "tests/test_relationship_battery.py"
+      - "engine/company_intelligence/relationships/envelope.py"
+      - "scripts/relationship_m2_envelope.py"
+      - "research/theme_graph/gmi_relationships_20261021/m2_inputs/envelope_panel_v1.json"
+      - "tests/test_relationship_m2_envelope.py"
+      - "engine/company_intelligence/relationships/edgar.py"
+      - "engine/company_intelligence/relationships/harvest.py"
+      - "scripts/__init__.py"
+      - "scripts/relationship_m2_harvest.py"
+      - "research/theme_graph/gmi_relationships_20261021/m2_inputs/curated_aliases_v1.json"
+      - "research/theme_graph/gmi_relationships_20261021/m2_inputs/filing_census_v1.json"
+      - "research/theme_graph/gmi_relationships_20261021/m2_inputs/leaves_v1.json"
+      - "research/theme_graph/gmi_relationships_20261021/m2_inputs/resolver_us_issuers_v1.json"
+      - "tests/test_relationship_m2_harvest.py"
+      - "engine/company_intelligence/relationships/resolve.py"
+      - "engine/company_intelligence/relationships/judge.py"
+      - "scripts/relationship_m2_judge.py"
+      - "tests/test_relationship_m2_judge.py"
+      - "tests/test_relationship_m2_capfix.py"
+      - "tests/test_relationship_m2_keys.py"
+      - "engine/company_intelligence/relationships/precision.py"
+      - "scripts/relationship_m2_precision.py"
+      - "tests/test_relationship_m2_precision.py"
+      - "engine/company_intelligence/relationships/recall.py"
+      - "scripts/relationship_m2_recall.py"
+      - "tests/test_relationship_m2_recall.py"
+      - "research/theme_graph/gmi_relationships_20261021/m2_recall/recall_corpus_v1.json"
+      - "engine/company_intelligence/relationships/describe.py"
+      - "scripts/relationship_m3_describe.py"
+      - "research/theme_graph/gmi_relationships_20261021/m3/describe_premises_v1.json"
+      - "tests/test_relationship_m3_describe.py"
+      - "tests/__init__.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Install relationship contract test dependencies
+        run: pip install pytest jsonschema tzdata
+      - name: Relationship contract schemas
+        run: python -m pytest tests/test_relationship_contracts.py -q
+      - name: Relationship M1 SWKS->AAPL primary-source record
+        run: python -m pytest tests/test_relationship_m1_swks_aapl.py -q
+      - name: Relationship derivation battery
+        run: python -m pytest tests/test_relationship_battery.py -q
+      - name: Relationship M2 envelope (§8.2 measures)
+        run: python -m pytest tests/test_relationship_m2_envelope.py -q
+      - name: Relationship M2 EDGAR harvest
+        run: python -m pytest tests/test_relationship_m2_harvest.py -q
+      - name: Relationship M2 judge pack/verify/materialize
+        run: python -m pytest tests/test_relationship_m2_judge.py -q
+      - name: Relationship M2 cap fix (per-filing caps, doc-order tie-break, unjudged packing)
+        run: python -m pytest tests/test_relationship_m2_capfix.py -q
+      - name: Relationship M2 source keys and identity
+        run: python -m pytest tests/test_relationship_m2_keys.py -q
+      - name: Relationship M2 precision sample and scorer
+        run: python -m pytest tests/test_relationship_m2_precision.py -q
+      - name: Relationship M2 recall corpus, scan and compare
+        run: python -m pytest tests/test_relationship_m2_recall.py -q
+      - name: Relationship M3 descriptive renderer + correction demo
+        run: python -m pytest tests/test_relationship_m3_describe.py -q
 
   microstructure-pressure-response-r0:
     if: ${{ false }}
@@ -2717,6 +2831,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -3781,6 +3896,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -7754,6 +7870,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -8469,6 +8586,7 @@ jobs:
       - "tests/test_options_observed_qqq.py"
       - "scripts/repair_gex_history.py"
       - "tests/test_repair_gex_history.py"
+      - "tests/test_gex_archive_correction.py"
       - "lib/options_source_receipts.py"
       - "lib/options_reference_pages.py"
       - "tests/test_options_reference_pages.py"
@@ -9087,7 +9205,7 @@ jobs:
       - name: install deps
         # jinja2 + pyarrow are for the options-screener suite below: the builder imports
         # jinja2 at module scope and reads its inputs from parquet.
-        run: pip install pytest pyyaml numpy pandas scipy jinja2 pyarrow jsonschema fastapi httpx requests
+        run: pip install pytest pyyaml numpy pandas scipy jinja2 pyarrow jsonschema fastapi httpx requests boto3
       - name: flow surface + dated archive cadence truth (poll floor, observed sparse spacing, retention)
         run: python -m pytest tests/test_flow_surface.py tests/test_flow_archive.py -q
       # PRISM's daily matrix shares this options data-plane lane.  Keep the
@@ -9145,7 +9263,7 @@ jobs:
       - name: intraday greek + conditional scenario surface tests (IV solve, Greek parity, source clocks, price×time contours)
         run: python -m pytest tests/test_intraday_greeks.py tests/test_options_scenario_surface.py tests/test_options_scenario_admission.py -q
       - name: qualified joint exposure and legacy Hub publication compatibility
-        run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_snapshot_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_observed_qqq.py tests/test_repair_gex_history.py tests/test_options_reference_pages.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
+        run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_snapshot_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_observed_qqq.py tests/test_repair_gex_history.py tests/test_gex_archive_correction.py tests/test_options_reference_pages.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
       - name: structure payoff / scenario / greeks-drift engine (shared BS core reuse, bounded vs UNBOUNDED, typed nulls, zero entry authority)
         run: python -m pytest tests/test_options_payoff.py tests/test_options_plan_expiry.py tests/test_options_plan_quote_context.py -q
       # OEU M-XP(b)+(c): the two payloads the Terminal / Options workspace fetch. Both are
@@ -12684,9 +12802,11 @@ jobs:
           tests/test_fundamental_forensics_attestation_admission.py
           tests/test_fundamental_forensics_attested_history_reader.py
           tests/test_fundamental_forensics_attested_query_snapshots.py
+          tests/test_fundamental_forensics_catalog_api.py
           tests/test_fundamental_forensics_companyfacts.py
           tests/test_fundamental_forensics_companyfacts_ledger.py
           tests/test_fundamental_forensics_contract.py
+          tests/test_fundamental_forensics_contract_issuers.py
           tests/test_fundamental_forensics_coverage_proof.py
           tests/test_fundamental_forensics_cost_ledger.py
           tests/test_fundamental_forensics_detector_applicability.py
@@ -16029,6 +16149,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -16813,6 +16934,105 @@ jobs:
         run: python -m pytest tests/test_price_pressure_research.py tests/test_h20_supplier_conditional.py tests/test_gmi_native_disclosure_propagation.py -q
       - name: ontology explorer — real browser, selected context, responsive and failure states
         run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_ontology_explorer_brain_browser.py tests/test_ontology_company_browser.py tests/test_ontology_company_controller.py tests/test_ontology_exposure_company_browser.py tests/test_ontology_theme_browser.py tests/test_ontology_research_browser.py tests/test_ontology_radar_research_browser.py tests/test_ontology_radar_quote_lineage_browser.py tests/test_ontology_supplier_research_browser.py -q
+
+  gmi-explorer:
+    if: ${{ false }}
+    gate: code
+    # GMI explorer static surfaces (site/gmi*.html — map + index, issuer, theme,
+    # path, states), the siblings of ontology.html. The builder
+    # (scripts/build_gmi_explorer.py + scripts/gmi_explorer/) reads the committed
+    # theme-graph store and runs scripts/gmi_coverage_proof.py in-process, so the
+    # suites below prove the model, the rendered pages, the shared assets and the
+    # reason-code vocabulary pin against the live committed data. `gate: code`
+    # keeps them on the merge gate: they are this feature's entire proof.
+    # CURATED SCOPE (2026-10-22). Inference widened this job to whole scan
+    # roots (the identity reader names scripts/build_security_master.py by
+    # path, pulling its subprocess call and parquet traversal into the
+    # closure), which selected it on the templates/index.html,
+    # scripts/build_free_content.py and engine/prophet/plan_book.py
+    # PACKING_PROBES in tests/test_ci_pack.py. `scope: exclusive` makes the
+    # paths below REPLACE inference: the exact static closure of the suites,
+    # measured with run_ci_pack.inferred_as_if_not_exclusive, plus program
+    # globs so new GMI templates, builder modules and suites keep selecting it.
+    # A suite that imports a new tree must widen this list;
+    # test_curated_exclusive_scopes_cover_their_own_import_closure fails until
+    # it does.
+    scope: exclusive
+    paths:
+      - "scripts/__init__.py"
+      - "engine/__init__.py"
+      - "engine/earnings_narrative/__init__.py"
+      - "engine/research_vault/__init__.py"
+      - "tests/__init__.py"
+      - "scripts/build_gmi_explorer.py"
+      - "scripts/gmi_explorer/**"
+      - "scripts/gmi_coverage_proof.py"
+      - "scripts/check_design_system.py"
+      - "scripts/build_security_master.py"
+      - "scripts/publish_company_disclosure.py"
+      - "config/gmi_reason_codes.yml"
+      - "config/dataset_registry.yml"
+      - "config/delisted_symbols.yml"
+      - "config/issuer_group_allowlist.yml"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_graph_identity_breaks.yml"
+      - "config/theme_sources.yml"
+      - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "contracts/theme_graph/**"
+      - "engine/theme_graph/**"
+      - "engine/company_intelligence/**"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/research_vault/r2_store.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/dataos/**"
+      - "lib/delisted_symbols.py"
+      - "lib/pages.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "lib/symbol_directory_receipts.py"
+      - "lib/ticker_aliases.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json"
+      - "research/theme_graph/microtheme_membership_candidates_2026-10-08.json"
+      - "templates/gmi*"
+      - "templates/theme.css"
+      - "templates/landing.css"
+      - "templates/navigation-refresh.css"
+      - "tests/test_gmi_explorer_*.py"
+      - "tests/test_gmi_reason_codes.py"
+      # Widened 2026-11-01 (seat merge of main f50fc7b7 into #10099): #10178's
+      # identity reader now reaches the SEC document spine / fundamental
+      # forensics chain via lib/dataos identity -> engine/neuralweb
+      # market_memory_identity_candidate; the closure test names these.
+      - "collectors/edgar_forensics.py"
+      # ancestor inits of the #10178 closure (tests/test_ci_pack.py ancestor-init ratchet)
+      - "collectors/__init__.py"
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/neuralweb/__init__.py"
+      - "collectors/fundamental_forensics_*.py"
+      - "collectors/sec_document_spine.py"
+      - "collectors/sec_filing_parser.py"
+      - "collectors/sec_request_pacer.py"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/fundamental_forensics/**"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
+      - "research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json"
+      - "research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        run: pip install pytest pandas numpy pyyaml pyarrow jsonschema jinja2
+      - name: gmi explorer — model, shared assets, reason-code pin, S1-S5 pages
+        run: TZ=UTC python -m pytest tests/test_gmi_explorer_model.py tests/test_gmi_explorer_shared.py tests/test_gmi_explorer_assets.py tests/test_gmi_reason_codes.py tests/test_gmi_explorer_s2.py tests/test_gmi_explorer_s1_s5.py tests/test_gmi_explorer_s3_s4.py -q
 
   research-factory-authority:
     if: ${{ false }}
@@ -27492,6 +27712,35 @@ jobs:
       - name: Connected deployment Git history contracts
         run: python -m pytest tests/test_deploy_git_history.py -q
 
+  deploy-git-store-maintenance:
+    if: ${{ false }}
+    gate: code
+    # 2026-10-19 root-disk incident: the nightly bounded repack of /opt/macro's
+    # Git store, its units, the journald cap and the update.sh/setup.sh stanzas
+    # that self-arm them. The functional half runs the real script against
+    # hermetic file:// repositories and needs Linux flock/ionice/GNU df.
+    scope: exclusive
+    paths:
+      - "app/deploy/macro-git-store-maintenance.sh"
+      - "app/deploy/macro-git-store-maintenance.service"
+      - "app/deploy/macro-git-store-maintenance.timer"
+      - "app/deploy/journald-macro-vps.conf"
+      - "app/deploy/update.sh"
+      - "app/deploy/setup.sh"
+      - "app/deploy/*.sh"
+      - "tests/test_deploy_git_store_maintenance.py"
+    timeout-minutes: 12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Git store maintenance test dependencies
+        run: pip install pytest
+      - name: Bounded Git store maintenance contracts
+        run: python -m pytest tests/test_deploy_git_store_maintenance.py -q
+
   biocatalyst-regulatory:
     if: ${{ false }}
     gate: code
@@ -29402,6 +29651,7 @@ jobs:
       - engine/fundamental_forensics/attested_history_credentials.py
       - engine/fundamental_forensics/attested_history_store.py
       - engine/fundamental_forensics/attested_query_snapshots.py
+      - engine/fundamental_forensics/catalog_service.py
       - engine/fundamental_forensics/companyfacts_ledger.py
       - engine/fundamental_forensics/context_projection.py
       - engine/fundamental_forensics/detectors.py
@@ -32402,6 +32652,12 @@ jobs:
       # second navigation owner is created.
       - name: one product header + nav prefix + hover/anchor geometry + All tools integration
         run: python -m pytest tests/test_product_chrome.py tests/test_subdir_nav_prefix.py tests/test_nav_hover_bridge.py tests/test_nav_menu_mockup_hover.py tests/test_nav_wide_menu_anchor.py tests/test_all_tools_menu.py -q
+      # ITP-ES wave 2 (2026-10-22): the Expectation Surface row in the Research
+      # mega-menu — partial inventory, bridge icon entries, mask fallback and the
+      # template↔site pairs. Same navigation owner as the hover-bridge suite above;
+      # no parallel job or second navigation owner is created.
+      - name: Expectation Surface nav row — inventory, bridge icon, pairs (ITP-ES wave 2)
+        run: python -m pytest tests/test_expectation_surface_nav.py -q
       - name: landing IA + nav front-door regroup + start-page voice and publish integrity
         run: python -m pytest tests/test_landing_navigation.py tests/test_oip_w1_nav_regroup.py tests/test_hub_welcome_persona.py tests/test_start_publish_integrity.py -q
       - name: terminal entitlement copy + chat-allowance truth + full-screen portal contract
@@ -38248,6 +38504,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -41474,6 +41731,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"
@@ -43164,6 +43422,7 @@ jobs:
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "engine/fundamental_forensics/__init__.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/detectors.py"
       - "engine/fundamental_forensics/excel_export.py"
       - "engine/fundamental_forensics/issuer_sic.py"
@@ -47429,6 +47688,7 @@ jobs:
       - "engine/fundamental_forensics/attested_history_credentials.py"
       - "engine/fundamental_forensics/attested_history_store.py"
       - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/catalog_service.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/detectors.py"

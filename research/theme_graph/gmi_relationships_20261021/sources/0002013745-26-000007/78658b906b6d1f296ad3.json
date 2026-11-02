@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-27T21:02:59Z",
+ "accession": "0002013745-26-000007",
+ "cik": "0002013745",
+ "doc_byte_length": 4950613,
+ "doc_sha256": "9c222278fdb7b316069aef1075946fab530249989175ae7ffea5507b60a53373",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-27",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "clmt-20251231x10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2942388,
+  "byte_start": 2941253,
+  "normalized": "On October 3, 2023, Montana Renewables, LLC (“MRL”) and Wells Fargo Commodities, LLC (“Wells Fargo”) entered into (a) an ISDA 2002 Master Agreement (the “Master Agreement”), (ii) a Schedule to the ISDA 2002 Master Agreement (the “Schedule”), (iii) a Credit Support Annex to the ISDA 2002 Master Agreement (the “Credit Support Annex”), and (iv) a Renewable Fuel and Feedstock Repurchase Master Confirmation (together with the Master Agreement, the Schedule and the Credit Support Annex, collectively the “MRL Supply and Offtake Agreement” and, together with the Shreveport Supply and Offtake Agreement, the “Supply and Offtake Agreements”). Pursuant to the MRL Supply and Offtake Agreement, Wells Fargo agreed to, among other things, (a) purchase from MRL renewable feedstocks and finished products located at MRL’s Great Falls facility, subject to MRL’s repurchase obligations with respect thereto, and (b) provide certain financial accommodations to MRL secured by liens on certain renewable feedstocks and finished products owned by MRL.",
+  "normalized_sha256": "f872ad751440e6f04fdffd12370bf189b593a6120852d4607ede29fdf8d69350",
+  "raw": "On October 3, 2023, Montana Renewables, LLC (&#8220;MRL&#8221;) and Wells Fargo Commodities, LLC (&#8220;Wells Fargo&#8221;) entered into (a) an ISDA 2002 Master Agreement (the &#8220;Master Agreement&#8221;), (ii) a Schedule to the ISDA 2002 Master Agreement (the &#8220;Schedule&#8221;), (iii) a Credit Support Annex to the ISDA 2002 Master Agreement (the &#8220;Credit Support Annex&#8221;), and (iv) a Renewable Fuel and Feedstock Repurchase Master Confirmation (together with the Master Agreement, the Schedule and the Credit Support Annex, collectively the &#8220;MRL Supply and Offtake Agreement&#8221; and, together with the Shreveport Supply and Offtake Agreement, the &#8220;Supply and Offtake Agreements&#8221;). Pursuant to the MRL Supply and Offtake Agreement, Wells Fargo agreed to, among other things, (a) purchase from MRL renewable feedstocks and finished products located at MRL&#8217;s Great Falls facility, subject to MRL&#8217;s repurchase obligations with respect thereto, and (b) provide certain financial accommodations to MRL secured by liens on certain renewable feedstocks and finished products owned by MRL.",
+  "raw_sha256": "78658b906b6d1f296ad355d675cacd516c1202f41e96117c49040054d328f621"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2013745/000201374526000007/clmt-20251231x10k.htm",
+ "xbrl_contexts": []
+}

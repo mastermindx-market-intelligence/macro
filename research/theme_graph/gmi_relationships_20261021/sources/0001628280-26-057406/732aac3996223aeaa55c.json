@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-17T20:50:29Z",
+ "accession": "0001628280-26-057406",
+ "cik": "0002023554",
+ "doc_byte_length": 2223398,
+ "doc_sha256": "67db98cde04724db6c97f165d660b795179294112814bbf0a5411ad916651848",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-17",
+ "form": "10-K",
+ "period_of_report": "2026-07-03",
+ "primary_document": "sndk-20260703.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 242866,
+  "byte_start": 242487,
+  "normalized": "We and Kioxia jointly own these co-developed flash technologies. We and Kioxia also contribute to the collaboration and license to each other technologies that are independently developed and owned by each of us and are reasonably necessary to our joint development or manufacture of flash-based memory. We hold a 49.9% ownership position in each of the Flash Ventures entities.",
+  "normalized_sha256": "708117b7b956a192433a68ce792945b4fcd5d305b252e1b0688259deb6192173",
+  "raw": " We and Kioxia jointly own these co-developed flash technologies. We and Kioxia also contribute to the collaboration and license to each other technologies that are independently developed and owned by each of us and are reasonably necessary to our joint development or manufacture of flash-based memory. We hold a 49.9% ownership position in each of the Flash Ventures entities.",
+  "raw_sha256": "732aac3996223aeaa55c2dd92a6400f478b561eb1acd74505247d6893a7b3d45"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2023554/000162828026057406/sndk-20260703.htm",
+ "xbrl_contexts": []
+}
