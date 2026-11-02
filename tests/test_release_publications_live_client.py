@@ -580,7 +580,12 @@ def test_release_publication_client_uses_current_immutable_asset_hash():
     expected = hashlib.sha256(SITE.read_bytes()).hexdigest()[:8]
     optimizer = make_optimizer(ROOT / "site")
     for page_name in ("macro.html", "us_stocks.html"):
-        page = optimizer((ROOT / "site" / page_name).read_text(), ROOT / "site")
+        committed_page = (ROOT / "site" / page_name).read_text()
+        committed_match = re.search(r"release_publications_live\.js\?v=([0-9a-f]{8})", committed_page)
+        assert committed_match and committed_match.group(1) == expected, (
+            f"{page_name} would serve a previously cached release client before the next render"
+        )
+        page = optimizer(committed_page, ROOT / "site")
         match = re.search(r"release_publications_live\.js\?v=([0-9a-f]{8})", page)
         assert match, f"{page_name} does not version the live event client"
         assert match.group(1) == expected, (
@@ -993,7 +998,7 @@ async function main() {
   emit(documentListeners, document, "DOMContentLoaded");
   assert.strictEqual(requests.length, 1, "start() must initiate one fetch");
   assert.strictEqual(intervals().length, 1);
-  assert.strictEqual(intervals()[0].every, 15000);
+  assert(intervals()[0].every <= 2000, "release-window tick must stay responsive");
   assert.strictEqual(
     (documentListeners.get("visibilitychange") || []).length, 1
   );
@@ -1133,7 +1138,7 @@ async function main() {
 
   // The existing periodic poll continues after recovery. A second successful
   // transport envelope must preserve current labels and mounted identities.
-  advanceClock(5000);
+  advanceClock(16000);  // Ordinary 15-second cadence, quantized by the 2-second tick.
   assert.strictEqual(requests.length, 5, "periodic polling did not resume");
   requests[4].succeed(envelope(recoveryRows));
   await drainClient();
@@ -1546,3 +1551,163 @@ if (JSON.stringify(faceSelectors.map(facePair)) !==
         capture_output=True, text=True, timeout=30,
     )
     assert result.returncode == 0, result.stdout + result.stderr
+
+
+# Live freshness must be proven through the actual timer/render entry points.
+FRESHNESS_DRIVER = r"""
+const fs = require("fs");
+const vm = require("vm");
+const NativeDate = Date;
+let clock = NativeDate.parse("2026-11-05T13:29:45Z");
+class ClockDate extends NativeDate {
+  constructor(...args) { super(...(args.length ? args : [clock])); }
+  static now() { return clock; }
+}
+global.Date = ClockDate;
+let ready;
+let intervalCallback;
+let intervalMs;
+let requests = 0;
+let verified = false;
+const windowEvents = {};
+const documentEvents = {};
+global.window = {
+  location: {href: "https://www.mastermind-x.com/macro.html"},
+  setInterval: (fn, ms) => { intervalCallback = fn; intervalMs = ms; return 1; },
+  setTimeout: () => 2,
+  clearTimeout: () => {},
+  addEventListener: (name, fn) => { windowEvents[name] = fn; }
+};
+global.document = {
+  readyState: "loading",
+  visibilityState: "visible",
+  addEventListener: (name, fn) => {
+    if (name === "DOMContentLoaded") ready = fn;
+    else documentEvents[name] = fn;
+  },
+  querySelector: () => null,
+  querySelectorAll: () => [],
+  getElementById: () => null,
+  createElement: () => ({setAttribute: () => {}}),
+  head: {appendChild: () => {}}
+};
+function payload(built) {
+  return {
+    built: built || new Date().toISOString(),
+    publications: [],
+    events: [{
+      event_id: "claims:2026-11-05",
+      type: "CLAIMS", date: "2026-11-05", time_et: "08:30",
+      scheduled_at: "2026-11-05T08:30:00-05:00",
+      status: verified ? "published" : "watching",
+      data_ready: verified
+    }]
+  };
+}
+global.fetch = async () => {
+  requests++;
+  return {ok: true, json: async () => payload()};
+};
+vm.runInThisContext(fs.readFileSync(process.argv[1], "utf8"));
+const api = window.__mmReleasePublicationTest;
+const flush = async () => { for (let i = 0; i < 12; i++) await Promise.resolve(); };
+"""
+
+
+def test_live_release_poll_accelerates_only_during_unresolved_release_window():
+    driver = FRESHNESS_DRIVER + r"""
+(async () => {
+  ready();
+  await flush();
+  if (requests !== 1) throw new Error("initial request missing");
+  if (intervalMs > 2000) throw new Error("hot release timer cannot update within two seconds");
+  clock += 2000;
+  intervalCallback();
+  await flush();
+  if (requests !== 2) throw new Error("hot window did not poll at two seconds");
+  document.visibilityState = "hidden";
+  clock += 2000;
+  intervalCallback();
+  await flush();
+  if (requests !== 2) throw new Error("hidden tab polled");
+  document.visibilityState = "visible";
+  verified = true;
+  documentEvents.visibilitychange();
+  await flush();
+  if (requests !== 3) throw new Error("resume did not revalidate immediately");
+  clock += 2000;
+  intervalCallback();
+  await flush();
+  if (requests !== 3) throw new Error("verified event kept high-frequency polling");
+  clock += 15000;
+  intervalCallback();
+  await flush();
+  if (requests !== 4) throw new Error("normal visible polling stopped");
+})().catch(error => { console.error(error); process.exitCode = 1; });
+"""
+    completed = subprocess.run(
+        ["node", "-e", driver, str(TEMPLATE)],
+        capture_output=True, text=True, check=False, timeout=15,
+    )
+    assert completed.returncode == 0, completed.stderr
+
+
+def test_live_release_render_cannot_roll_back_a_newer_snapshot():
+    driver = FRESHNESS_DRIVER + r"""
+const now = new Date("2026-11-05T13:30:30Z");
+if (!api.render(payload("2026-11-05T13:30:25Z"), now)) {
+  throw new Error("newest valid snapshot rejected");
+}
+if (api.render(payload("2026-11-05T13:30:10Z"), now)) {
+  throw new Error("older response replaced newer accepted snapshot");
+}
+if (!api.render(payload("2026-11-05T13:30:29Z"), now)) {
+  throw new Error("rejected old response prevented subsequent recovery");
+}
+if (!api.render(payload("2026-11-05T13:35:50Z"), new Date("2026-11-05T13:35:00Z"))) {
+  throw new Error("plausible producer clock lead rejected");
+}
+if (!api.render(payload("2026-11-05T13:35:40Z"), new Date("2026-11-05T13:38:01Z"))) {
+  throw new Error("expired ordering guard blocked recovery after producer clock correction");
+}
+"""
+    completed = subprocess.run(
+        ["node", "-e", driver, str(TEMPLATE)],
+        capture_output=True, text=True, check=False, timeout=15,
+    )
+    assert completed.returncode == 0, completed.stderr
+
+
+def test_live_release_poll_enters_and_leaves_bounded_window_without_new_payload():
+    driver = FRESHNESS_DRIVER + r"""
+(async () => {
+  clock = Date.parse("2026-11-05T13:29:20Z");
+  ready();
+  await flush();
+  clock += 2000;
+  intervalCallback();
+  await flush();
+  if (requests !== 1) throw new Error("ordinary polling ran too often");
+  clock = Date.parse("2026-11-05T13:29:31Z");
+  intervalCallback();
+  await flush();
+  if (requests !== 2) throw new Error("clock did not activate the known release window");
+  clock = Date.parse("2026-11-05T13:40:01Z");
+  intervalCallback();
+  await flush();
+  if (requests !== 3) throw new Error("overdue release stopped refreshing");
+  clock += 2000;
+  intervalCallback();
+  await flush();
+  if (requests !== 3) throw new Error("unresolved event kept fast polling beyond the window");
+  clock += 15000;
+  intervalCallback();
+  await flush();
+  if (requests !== 4) throw new Error("overdue release lost normal recovery polling");
+})().catch(error => { console.error(error); process.exitCode = 1; });
+"""
+    completed = subprocess.run(
+        ["node", "-e", driver, str(TEMPLATE)],
+        capture_output=True, text=True, check=False, timeout=15,
+    )
+    assert completed.returncode == 0, completed.stderr

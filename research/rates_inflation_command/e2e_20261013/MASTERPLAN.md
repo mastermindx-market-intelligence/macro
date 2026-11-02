@@ -830,3 +830,33 @@ mobile, with no reload required for the actual update.
 All release effects remain gated by current source and deployment law. No fixture,
 local replay, green CI, plan label or PR description establishes live acceptance.
 
+
+### November 1 client and health implementation checkpoint
+
+V0.LIVE.1 now has a regression for a retained eighteen-day-old unresolved CPI row
+with an empty calendar. The API preserves scheduled-to-current publication lag and
+adds detected-to-current extraction lag; both clear when that same row becomes
+verified. The existing API envelope remains a successful status read. The host
+health checker already flags an unresolved publication outside the event window;
+the repaired defect is loss of its age, not proof that no monitor existed.
+
+The client portion of B1.LIVE.3 is implemented in the mirrored release client:
+a two-second visible-page tick fetches at two seconds only from thirty seconds
+before to ten minutes after a valid, timezone-qualified unresolved release; other
+visible requests retain a fifteen-second minimum. It stops requesting while hidden,
+revalidates immediately on focus, and coalesces in-flight requests. An older built
+snapshot is rejected while the last accepted snapshot remains current. The guard
+expires with the freshness TTL so a corrected producer clock can recover.
+
+The actual committed macro and US Stocks HTML now carry the release client's new
+SHA-256 asset stamp. The old regression only tested optimizer output, so it missed
+an unchanged immutable URL in the deployed-ready HTML; the strengthened regression
+failed with d9a19340 versus the candidate hash before the two references were fixed.
+The paired client/API suite passes twenty tests. The new timer, ordering and old-row
+age tests each failed against the incoming candidate before implementation.
+
+Server isolation, source pacing, transaction-wide publication locking, controlled
+browser timing, independent review, final integrated CI and production proof remain
+open. A source-census suggestion to infer a 07:50 BLS release time from RSS metadata
+was rejected: a feed timestamp read after release does not prove early availability.
+The existing official schedule, embargo gate and dated-document bindings are preserved.

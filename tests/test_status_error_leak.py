@@ -181,3 +181,49 @@ def test_status_exposes_unparsed_high_impact_publication(
     assert check["verified_publications"] == 0
     assert check["unparsed_publications"] == 1
     assert 3 <= check["max_publication_lag_min"] <= 5
+
+
+def test_status_retains_age_of_unparsed_publication_outside_calendar_window(
+    client, tmp_path, monkeypatch
+):
+    """A current heartbeat and future calendar must not erase an old CPI backlog."""
+    import app.main as main
+
+    scheduled = datetime.now(ZoneInfo("America/New_York")) - timedelta(days=18)
+    release = tmp_path / "release_publications.json"
+    release.write_text(
+        json.dumps({
+            "schema": "release_publications.v2",
+            "built": datetime.now().astimezone().isoformat(),
+            "events": [],
+            "publications": [{
+                "event_id": f"cpi:{scheduled.date().isoformat()}",
+                "type": "CPI", "date": scheduled.date().isoformat(),
+                "time_et": scheduled.strftime("%H:%M"),
+                "scheduled_at": scheduled.isoformat(),
+                "detected_at": (scheduled + timedelta(seconds=77)).isoformat(),
+                "status": "published_unparsed", "data_ready": False,
+                "parser": {"name": "cpi", "version": 1},
+            }],
+            "source_health": [],
+        }),
+        encoding="utf-8",
+    )
+    missing = tmp_path / "missing"
+    monkeypatch.setattr(main, "_live_artifact",
+                        lambda name: release if name == "release_publications.json" else missing)
+    monkeypatch.setattr(main, "TERMINAL_MANIFEST", missing)
+    response = client.get("/api/status")
+    assert response.status_code == 200
+    release_health = response.json()["checks"]["release_publications"]
+    assert release_health["unparsed_publications"] == 1
+    assert release_health["max_publication_lag_min"] >= 18 * 24 * 60 - 1
+    assert release_health["max_extraction_lag_min"] >= 18 * 24 * 60 - 3
+
+    recovered = json.loads(release.read_text(encoding="utf-8"))
+    recovered["publications"][0].update(status="published", data_ready=True)
+    release.write_text(json.dumps(recovered), encoding="utf-8")
+    release_health = client.get("/api/status").json()["checks"]["release_publications"]
+    assert release_health["unparsed_publications"] == 0
+    assert release_health["max_publication_lag_min"] == 0
+    assert release_health["max_extraction_lag_min"] == 0

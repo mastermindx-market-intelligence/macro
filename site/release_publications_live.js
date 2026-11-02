@@ -23,6 +23,8 @@
   ];
   var timer = null;
   var lastSuccessfulPollAt = 0;
+  var lastAcceptedBuiltAt = 0;
+  var lastAcceptedPayload = null;
   var missedPolls = 0;
   var feedFreshness = "unknown";
   var hadLivePrimary = false;
@@ -1296,6 +1298,16 @@
       notePollFailure(now);
       return false;
     }
+    var builtAt = new Date(payload.built).getTime();
+    if (builtAt < lastAcceptedBuiltAt &&
+        now.getTime() - lastSuccessfulPollAt < STALE_AFTER_MS) {
+      // Reject older snapshots while the accepted one is current. Expiring this
+      // guard with the freshness window also permits a corrected producer clock.
+      notePollFailure(now);
+      return false;
+    }
+    lastAcceptedBuiltAt = builtAt;
+    lastAcceptedPayload = payload;
     lastSuccessfulPollAt = now.getTime();
     missedPolls = 0;
     markFeedFresh();
@@ -1350,10 +1362,30 @@
   }
 
   var VISIBLE_POLL_MS = 15000;
+  var RELEASE_POLL_MS = 2000;
+  var RELEASE_BEFORE_MS = 30 * 1000;
+  var RELEASE_AFTER_MS = 10 * 60 * 1000;
+  var lastRequestStartedAt = 0;
   var pollRequest = null;
+
+  function visiblePollInterval(now) {
+    var events = lastAcceptedPayload && lastAcceptedPayload.events;
+    if (!Array.isArray(events)) return VISIBLE_POLL_MS;
+    var hot = events.some(function (event) {
+      if (!event || event.data_ready === true || !event.event_id ||
+          typeof event.scheduled_at !== "string" ||
+          !/(Z|[+-][0-9]{2}:[0-9]{2})$/i.test(event.scheduled_at)) return false;
+      var scheduled = new Date(event.scheduled_at).getTime();
+      if (!Number.isFinite(scheduled)) return false;
+      return now >= scheduled - RELEASE_BEFORE_MS &&
+        now <= scheduled + RELEASE_AFTER_MS;
+    });
+    return hot ? RELEASE_POLL_MS : VISIBLE_POLL_MS;
+  }
 
   function poll() {
     if (pollRequest) return pollRequest;
+    lastRequestStartedAt = Date.now();
     var controller = new AbortController();
     var timeout = window.setTimeout(function () { controller.abort(); }, 10000);
     pollRequest = fetch(ENDPOINT, {
@@ -1376,14 +1408,18 @@
   }
 
   function start() {
-    function pollVisible() {
-      if (document.visibilityState !== "hidden") poll();
+    function pollVisible(force) {
+      if (document.visibilityState === "hidden") return;
+      var now = Date.now();
+      if (force || !lastRequestStartedAt ||
+          now - lastRequestStartedAt >= visiblePollInterval(now)) poll();
     }
-    pollVisible();
+    pollVisible(true);
     if (!timer) {
-      timer = window.setInterval(pollVisible, VISIBLE_POLL_MS);
-      document.addEventListener("visibilitychange", pollVisible);
-      window.addEventListener("focus", pollVisible);
+      // The cheap tick also notices entry into a release window between fetches.
+      timer = window.setInterval(function () { pollVisible(false); }, RELEASE_POLL_MS);
+      document.addEventListener("visibilitychange", function () { pollVisible(true); });
+      window.addEventListener("focus", function () { pollVisible(true); });
     }
   }
 

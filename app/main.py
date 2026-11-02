@@ -746,20 +746,43 @@ def status() -> dict:
                 elif key == "release_publications":
                     event_status: dict[str, int] = {}
                     max_lag_min = 0.0
+                    max_extraction_lag_min = 0.0
                     now_utc = datetime.fromtimestamp(now, tz=timezone.utc)
-                    for event in data.get("events") or []:
+                    events = [
+                        row for row in (data.get("events") or [])
+                        if isinstance(row, dict)
+                    ]
+                    publications = [
+                        row for row in (data.get("publications") or [])
+                        if isinstance(row, dict)
+                    ]
+                    for event in events:
                         state = str(event.get("status") or "unknown")
                         event_status[state] = event_status.get(state, 0) + 1
-                        if state not in (
+                    # Retained unresolved publications outlive the calendar lookback.
+                    # A fresh heartbeat must not reset their original overdue age.
+                    for event in events + publications:
+                        state = str(event.get("status") or "unknown")
+                        unresolved = state in (
                             "awaiting_publication",
                             "published_unparsed",
                             "verification_delayed",
-                        ):
+                        ) or (
+                            event.get("data_ready") is False and event.get("parser")
+                        )
+                        if not unresolved or event.get("data_ready") is True:
                             continue
                         try:
-                            scheduled = datetime.fromisoformat(
+                            scheduled_text = event.get("scheduled_at") or (
                                 f"{event['date']}T{event['time_et']}:00"
-                            ).replace(tzinfo=ZoneInfo("America/New_York"))
+                            )
+                            scheduled = datetime.fromisoformat(
+                                str(scheduled_text).replace("Z", "+00:00")
+                            )
+                            if scheduled.tzinfo is None:
+                                scheduled = scheduled.replace(
+                                    tzinfo=ZoneInfo("America/New_York")
+                                )
                             max_lag_min = max(
                                 max_lag_min,
                                 (now_utc - scheduled.astimezone(timezone.utc))
@@ -768,6 +791,22 @@ def status() -> dict:
                             )
                         except (KeyError, TypeError, ValueError):
                             pass
+                        detected_text = event.get("detected_at") or event.get("first_seen_at")
+                        if detected_text:
+                            try:
+                                detected = datetime.fromisoformat(
+                                    str(detected_text).replace("Z", "+00:00")
+                                )
+                                if detected.tzinfo is None:
+                                    detected = detected.replace(tzinfo=timezone.utc)
+                                max_extraction_lag_min = max(
+                                    max_extraction_lag_min,
+                                    (now_utc - detected.astimezone(timezone.utc))
+                                    .total_seconds()
+                                    / 60,
+                                )
+                            except (TypeError, ValueError):
+                                pass
                     checks[key].update(
                         {
                             "due": len(data.get("due") or []),
@@ -793,6 +832,7 @@ def status() -> dict:
                                 if source.get("status") == "error"
                             ),
                             "max_publication_lag_min": round(max_lag_min, 1),
+                            "max_extraction_lag_min": round(max_extraction_lag_min, 1),
                             "schedule_status": (
                                 (data.get("schedule_coverage") or {}).get("status")
                             ),
