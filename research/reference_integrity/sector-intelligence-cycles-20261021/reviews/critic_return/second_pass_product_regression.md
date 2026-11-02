@@ -1,58 +1,74 @@
-<!-- RIG round 8 · pass 2 · product_regression · reviewer agent a29cc1ceb621c5201 · artifact 213a91b9428f339dcac3ddf7dd1dd3d1346d5c17 ·
-     stored byte-exact from the agent's final message (sha256 of the message body below: 1c64b3f7e91bc6829493be915eb5fe5af2c119218adf0dbb7082c723af8be225) -->
+<!-- RIG round 9 · pass 2 · product_regression · reviewer agent a29cc1ceb621c5201 · artifact 4161d40440a050ec3c03229475ef5938e0fa6c49 ·
+     stored byte-exact from the agent's final message (sha256 of the message body below: 4508bea2b8d3caa8564849e78077c42d98fa7c79180c4e75048f68f5f29c8d5b) -->
 
 STATUS: PARTIAL
-RESULT: Round 8 pass 2 verdict stays PASS_WITH_CONDITIONS. C05 is met and PRC-052 is cured at 213a91b9. PRC-053 stays a minor DEFECT and PRC-054 stays a minor NON-BINDING NOTE. One new minor DEFECT, PRC-055 (source: rationale), is filed against a wrong line pointer in the frozen record.
+RESULT: My verdict stays PASS_WITH_CONDITIONS. PRC-056 is still a minor defect in the record, not in the product. I am rewording it because I named the wrong source in pass 1: the false "2260 lines" figure appears in the wave-8 commit message (4161d404), the re-freeze-8 commit message (2c55ac13) and the ledger row proposal.yml:2283. It does not appear in verdict.yml. The "keeps 2260 lines" wording I pinned on SIC-V8-C04 came from the seat's commission message to me. verdict.yml:77 has no line count, so SIC-V8-C04 is now fully met for the product lane; SIC-V8-C01 and SIC-V8-C03 also remain met. PRC-053 and PRC-055 stay cured, and PRC-054 stays bound to the production proof as SIC-V8-C02. On the cure path I choose option (i): a ledger-only fix in the approval commit, bound as SIC-V9-C01 and read back at P19-P23 without a round 10, is enough for my verdict to support APPROVE_WITH_CONDITIONS. The seat's list of where the false figure lives is right; the sic_v9_c01_targets field below pins it.
 
-EVIDENCE:
 ```yaml
 receipt:
-  critic: opus-auditor-product-regression-sic-20261021-r8
+  critic: opus-auditor-product-regression-sic-20261021-r9
   role: product_regression
   reference: sector-intelligence-cycles-20261021
-  round: 8
-  pass: 2 (rationale revealed)
-  frozen_sha: 213a91b9428f339dcac3ddf7dd1dd3d1346d5c17
-  verdict: PASS_WITH_CONDITIONS
-  round7_dispositions_after_pass2:
-    - {id: PRC-052, disposition: cured, evidence: ["git show 213a91b9:proposal.yml :2067 bracketed residual reads 'at 66829d17 the sentence omitted the Peak extended-uptrend HOLD override (engine/cycle_ontology.py:1059-1063)'", "at 213a91b9, grep -n '1060-1063' proposal.yml hits only :2190, which carries the SHA qualifier 'the :1060-1063 range quoted here is the finding as filed against 204500aa'"]}
-  conditions_check_after_pass2:
-    - {id: SIC-V7-C05, result: met, evidence: ["213a91b9:proposal.yml:2067 cites 1059-1063", "213a91b9:proposal.yml:2190 is the only 1060-1063 hit and is SHA-qualified", "the cross-reference inside that qualifier is wrong at the frozen bytes, filed as PRC-055"]}
+  round: 9
+  pass: 2
+  frozen_sha: 4161d40440a050ec3c03229475ef5938e0fa6c49
+  pass1_receipt: {path: research/reference_integrity/sector-intelligence-cycles-20261021/reviews/critic_return/first_pass_product_regression.md, file_sha256: 2663d593cdfb82b7a2f9205a0f9e1ba6d094bcbfc6d582055096ae7b891e88d8, verdict_in_pass1: PASS_WITH_CONDITIONS}
+  rationale_adequacy:
+    - {id: PRC-056, adequate: true, note: "The seat accepts the counts (2227/2259/2259/2295 at 213a91b9/4356fa60/4161d404/2c55ac13) and the three places the figure appears; I confirmed each by readback. The source correction is right: verdict.yml has no '2260' and its SIC-V8-C04 text (:77) has no line count. The rationale claims no cure at 4161d404, so the finding stands."}
   amendments:
-    - {id: PRC-053, change: upheld, reason: "Keeps class DEFECT, severity minor. The rationale accepts it and confirms it against the tree (norm :137-140; _present docstring :155-157; :297-299; header :9-11). Nothing is cured at 213a91b9, and a promised cure does not cure."}
-    - {id: SIC-V8-C01, change: reworded, reason: "Answers the author's question: the optional pin is bound. The new docstring sentence ('a component of a snake_case or dotted identifier is a hit') then becomes falsifiable, not just prose. The pin is test-only and uses literals, not engine line numbers, so it cannot drift. Production code, deck and boards stay unchanged."}
-    - {id: PRC-054, change: upheld, reason: "Keeps class NON-BINDING NOTE, severity minor. The author accepts it as implementation-bound. Not reopening the frozen test rule in wave 8 is consistent with SIC-ADJ-05."}
-    - {id: SIC-V8-C02, change: reworded, reason: "Answers the author's question: either form stays acceptable, but the production proof must name the chosen form, state the list, and carry a falsifier. Otherwise 'either form' cannot be checked. The concrete stopword exposure is grader :328 'if col not in', one line outside the :332 fixture window."}
-    - {id: SIC-V7-C05, change: upgraded, reason: "From deferred_to_pass2 to met; evidence in conditions_check_after_pass2."}
-    - {id: PRC-052, change: upgraded, reason: "From upheld (pending pass 2) to cured; evidence in round7_dispositions_after_pass2."}
-  new_findings:
-    - id: PRC-055
-      severity: minor
-      class: DEFECT
-      source: rationale
-      finding: "The wave-7 C05 qualifier carries a wrong line citation at the frozen bytes. At 213a91b9:proposal.yml:2190 it reads ':2066 — the round-5 PRC-037 residual, :2061 before the round-7 header lines — reads :1059-1063 from wave 7'. At 213a91b9 the residual is at :2067; :2066 holds a different line. The seat discloses this (re-freeze body 4356fa60; HEAD proposal.yml:2253) and corrected the qualifier at the re-freeze 4356fa60. That correction is after frozen_sha, so it is not part of the approved bytes (SIC-ADJ-04). The corrected HEAD :2190 qualifier SHA-qualifies every line it names (:2056 at 78c14f7d, :2061 at the round-6 re-freeze, :2066 at 90e9682d, :2067 at 213a91b9), so the form is robust. One more detail in the HEAD record: :2253 calls :2190 'the only other 1060-1063 string', but :2252 and :2253 themselves contain it (mandate rows quoting the finding)."
-      evidence: ["git show 213a91b9:research/reference_integrity/sector-intelligence-cycles-20261021/proposal.yml :2190 vs :2067", "HEAD proposal.yml:2190 (SHA-qualified form), :2252-2253", "git diff --stat 213a91b9 HEAD -- proposal.yml: 35 insertions, 3 deletions"]
-      cure: "Record only, already present at 4356fa60: the wave-8 frozen sha carries the SHA-qualified :2190 form, so the defect is cured by the wave-8 freeze with no further edit."
+    - {id: PRC-056, action: reworded, reason: "Severity and class unchanged (minor DEFECT of the record, not of the artifact). Source list corrected: drop the authority's SIC-V8-C04 wording (the figure came from the seat's pass-1 commission message, and verdict.yml:77 has no count); add the seat-authored ledger row proposal.yml:2283 ('the file keeps 2260 lines through wave 8'). The commit messages 4161d404 and 2c55ac13 stay listed."}
+  findings_after_pass2: []
+  round8_dispositions_after_pass2:
+    - {id: PRC-053, disposition: cured}
+    - {id: PRC-055, disposition: cured}
+    - {id: PRC-054, disposition: implementation_bound}
+  conditions_check_after_pass2:
+    - {id: SIC-V8-C01, result: met}
+    - {id: SIC-V8-C03, result: met}
+    - {id: SIC-V8-C04, result: met, note: "Changed from pass-1 'partial'. The condition text in verdict.yml:77 carries no line count, and every clause it states holds at 4161d404 (diff set, the proposal.yml diff confined to the header lines plus :1329/:2231/:2253, PNG and boards_manifest byte identity, tests 64 passed 2 skipped, hero-title band grep, commit-message statements). PRC-056 is a record defect outside the C04 clauses."}
+  cure_path_position: {option: i, reason: "SIC-ADJ-04 binds approval to the shipped bytes, and PRC-056 touches none of them: no PNG, design_refs, test, engine or template byte changes. The cure is one in-place ledger edit plus an appended row, each checkable by a mechanical readback (wc -l per sha, one grep). A round-10 read would check exactly what the P19-P23 readback checks. Option (i) is adequate if SIC-V9-C01 names the readback commands and their expected outputs, so that the unreviewed approval commit is checked against facts rather than the seat's statement."}
+  sic_v9_c01_targets:
+    - "proposal.yml:2283 (revision_mandate_round8 PRC-055 proof): '(the file keeps 2260 lines through wave 8; ...)' corrected in place to 2259, with the line history"
+    - "proposal.yml EOF: a revision_mandate_round9 row for PRC-056 recording 2259 lines at 4356fa60 and 4161d404, 2295 at 2c55ac13 (+36 at EOF), and naming both immutable commit messages as wrongly saying 2260"
+    - "verdict.yml: SIC-V9-C01 carried as an approval condition"
+    - "immutable commit 4161d40440a050ec3c03229475ef5938e0fa6c49 ('proposal.yml keeps 2260 lines'): named, not editable"
+    - "immutable commit 2c55ac135b4870bf2492e76e585d89d5bb5901e8 ('2260 → 2295 lines only by the EOF append'): named, not editable"
+    - "Not targets, because they are 1440x2260 pixel heights: proposal.yml:306, :311, :1329, :2232; reviews/product_regression.yml:186; reviews/round8_213a91b9/product_regression.yml:186; reviews/round8_213a91b9/critic_return/first_pass_product_regression.md:52. reviews/** receipts that quote PRC-056 (including be8a2010's stored pass-1 receipt) are quotations and also excluded. verdict.yml, reviews/README.md, continuity.yml and manifest.yml have no '2260'."
+  verdict: PASS_WITH_CONDITIONS
   conditions:
-    - {id: SIC-V8-C01, class: DEFECT, text: "tests/test_sector_paper_copy_deck.py header :9-11, the _present docstring :155-158 and the test_cited_sources_carry_a_fragment docstring :297-299 state all of the following: norm splits on every non-alphanumeric character, including '_' and '.'; a Latin fragment must equal a whole alphanumeric run; a substring of a run (win in window, stance in stanceHTML / stances) is not a hit; a component of a snake_case or dotted identifier (hit in dir_hit_rate, stance in nw.stance / stance_zh) is. No docstring says 'keeps an identifier as one word' or 'an identifier substring never satisfies it'. The only code change is one added test assertion pinning both halves with literals: _present(norm('dir_hit_rate'), 'hit') is True and _present(norm('window'), 'win') is False. No other assertion changes. Production code, deck and PNGs are byte-identical to 213a91b9."}
-    - {id: SIC-V8-C02, class: NON-BINDING NOTE, text: "At the production proof (implementation-bound in approval.yml), the deck EN check names its form: either (a) a stopword list stated in the test is excluded from EN fragments, or (b) each cited row needs at least one whole-word hit outside that stated list. A falsifier asserts that a row whose only whole-word EN hit is a listed stopword fails: grader_caption cited at engine/sector_central_grader.py:331, window :328-334, where only 'not' (:328) matches. Every cited deck row still passes."}
-    - {id: SIC-V8-C03, class: DEFECT, text: "At the wave-8 frozen sha, the proposal.yml revision_mandate_round6 PRC-047 cure note (the :2190 row at 213a91b9) carries the SHA-qualified line history of the PRC-037 round-5 residual as at 4356fa60. Every line number it names is paired with the SHA at which that line holds, and the pointer for the wave-8 frozen sha resolves to the line reading 'HOLD override (engine/cycle_ontology.py:1059-1063)'. grep -n '1060-1063' proposal.yml returns only that note and revision_mandate rows quoting a finding as filed."}
-  user_tasks_after_rationale:
-    brief: BETTER
-    cycles: BETTER
-    dossier: EQUIVALENT
-    rotation: EQUIVALENT
-    others: UNKNOWN
-  inputs_opened_pass2:
-    - "HEAD proposal.yml: grep -n '1060-1063'; lines 2248-2253"
-    - "git show 213a91b9:proposal.yml and git show HEAD:proposal.yml: grep for 1060-1063 and the :2067 1059-1063 string; lines :2067 (residual excerpt) and :2190 (qualifier excerpt)"
-    - "git diff --stat 213a91b9 HEAD -- proposal.yml"
-    - "verdict.yml: grep SIC-V7-C05 (lines 44, 62 header)"
-    - "git log -1 --format=%B 4356fa60 (excerpt around ':2066')"
-    - "Not opened: wave-7 commit body, continuity.yml, own round-7 receipts, any visual_taste file"
-  quarantine: "Held. No visual_taste file, Reviewer B output, agentos/**, .claude/**, research/sector_completion_20261021/** or scratchpad opened."
-  tool_calls_pass2: 3
+    - {id: SIC-V9-C01, text: "In the verdict-9/approval commit, ledger-only: correct proposal.yml:2283 in place from '2260' to '2259', and append at EOF a revision_mandate_round9 PRC-056 row recording proposal.yml at 2259 lines at 4356fa60 and 4161d404 and 2295 at 2c55ac13 (+36 at EOF). The row names commits 4161d404 and 2c55ac13 as carrying the false figure 2260 in immutable messages, and states that nothing was inserted above :2067 or :2190 (every hunk of git diff 4356fa60 4161d404 -- proposal.yml is equal-count). No PNG, design_refs, test, engine or template byte changes; frozen_sha stays 4161d404. Verified at P19-P23 by readback: git show <sha>:proposal.yml | wc -l prints 2259 at 4356fa60 and 4161d404 and 2295 at 2c55ac13; git grep -n '2260' on the ledger at the approval commit outside reviews/** prints only the 1440x2260 pixel-height lines (:306, :311, :1329, :2232) and the round-9 row's own quotation."}
+    - {id: SIC-V8-C02, text: "carried unchanged (PRC-054), verified at production proof P19-P23"}
+  inputs_opened: ["research/reference_integrity/sector-intelligence-cycles-20261021/reviews/critic_return/first_pass_product_regression.md (sha256 only)", "proposal.yml at HEAD be8a2010 (grep '2260' / '2259|2295|2227'; lines 306, 311, 1329, 2232 in context; 2261-2295 at 150 chars; 2277 and 2283 in full)", "proposal.yml at 4161d404 (grep '2260')", "verdict.yml at HEAD (grep; lines 69-90; :77 in full)", "continuity.yml, reviews/README.md, manifest.yml at HEAD (grep '2260' only)", "reviews/product_regression.yml, reviews/round8_213a91b9/product_regression.yml, reviews/round8_213a91b9/critic_return/first_pass_product_regression.md (contexts of '2260')", "git log -1 --format=%B 4161d404 and 2c55ac13 (contexts of '2260')", "git diff --name-only 2c55ac13 HEAD (names only)"]
+  quarantine: {held: true, breaches: []}
+  tool_calls: 4
 ```
 
-GAPS: The test result (63 passed, 2 skipped) and the one-channel pixel delta on boards 31/39 are still the seat's claims; I did not run or re-measure them.
-DEVIATIONS: None.
+EVIDENCE:
+- **HEAD and my pass-1 receipt:** `git rev-parse HEAD` returns be8a2010432ce11807f8793d81cf8e5a22c20cda. `shasum -a 256` of the stored pass-1 receipt returns 2663d593cdfb82b7a2f9205a0f9e1ba6d094bcbfc6d582055096ae7b891e88d8, which matches the coordinator's file hash.
+- **be8a2010 adds only receipts:** `git diff --name-only 2c55ac13 HEAD` lists only reviews/critic_return/first_pass_product_regression.md and first_pass_visual_taste.md. I listed the names only and did not open the visual_taste file.
+- **`2260` in proposal.yml at HEAD** appears on lines 306, 311, 1329, 2232 and 2283:
+  - :306 and :311 read "png_px 1440x2260";
+  - :1329 reads "34/35 1440x2260";
+  - :2232 reads "34/35 1440x2260";
+  - :2283 reads "insert nothing above :2067 or :2190 (the file keeps 2260 lines through wave 8; this re-freeze appends revision_mandate_round8 at EOF only)".
+  At 4161d404 only 306, 311, 1329 and 2232 match, all of them pixel heights.
+- **Other ledger files:**
+  - verdict.yml, continuity.yml, reviews/README.md and manifest.yml: no `2260`.
+  - reviews/product_regression.yml:186, reviews/round8_213a91b9/product_regression.yml:186 and round8 first_pass_product_regression.md:52: all "34 1440x2260; 35 1440x2260".
+  - No 2259, 2295 or 2227 figure appears in proposal.yml, reviews/README.md or verdict.yml.
+- **verdict.yml:77 (SIC-V8-C04), 1421 characters:** it names the diff set, the proposal.yml diff confined to the header lines, :1329, :2231, :2253 and the appended revision_mandate_round8, the PNG and boards_manifest identity, the pytest pass, the hero-title band grep and the two commit-message statements. It has no line count.
+- **Commit messages:**
+  - 2c55ac13: "header line (:41) edited in place, no header line inserted (2260 → 2295 lines only by the EOF append".
+  - 4161d404: "nothing is inserted above :2067 or :2190 (proposal.yml keeps 2260 lines)".
+- **Line counts:** carried from pass 1 (`awk 'END{print NR}'`): 213a91b9 = 2227, 4356fa60 = 2259, 4161d404 = 2259, 2c55ac13 = 2295. The seat reports the same figures from wc -l.
+- **Rows reread in full:** proposal.yml:2277 (PRC-053 proof) matches what I verified in pass 1, including the 64 passed / 2 skipped test result. proposal.yml:2283 (PRC-055 proof) is accurate except for the "2260".
+
+GAPS:
+- I re-ran no counts, per the pass-2 rule of no scripts or tests. The line counts come from my pass-1 measurement and agree with the seat's report.
+- I did not open continuity.yml or reviews/README.md beyond the `2260` grep. Neither bears on PRC-056 or my conditions.
+- SIC-V9-C01 and SIC-V8-C02 can only be verified at P19-P23. Neither is cured at 4161d404.
+
+DEVIATIONS:
+- I ran no scripts or tests and wrote nothing to the tree. git was read-only (rev-parse, show, grep, diff --name-only, log -1 with explicit shas 4161d404 and 2c55ac13). I did not read be8a2010's commit body.
+- Quarantine held: I opened no visual_taste file, nothing Reviewer B produced, and nothing under agentos/, .claude/ or research/sector_completion_20261021/.
+- I used 4 of the 5 permitted tool calls.
