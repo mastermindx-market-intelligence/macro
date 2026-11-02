@@ -18,15 +18,15 @@ THIS SCRIPT DOES NOT JUDGE TASTE. It checks two mechanical things only:
      scripts/capture_page_evidence.py — see its ``entry`` dict construction),
      and every page in it carries all eight REST cells this gate requires:
      desktop/mobile x en/zh x dark/light, each genuinely captured with the
-     requested theme/locale/viewport actually applied and its screenshot PNG
-     present on disk. A page may ALSO carry `force_state` cells (an
+     requested theme/locale/viewport actually applied, and its screenshot
+     PNG passing the capture-integrity floor: present on disk, sha256 (when
+     recorded) and byte length matching the recorded values, and pixel
+     dimensions sane. A page may ALSO carry `force_state` cells (an
      additional interaction state beyond the eight, e.g. sanctions_map's
      `theme_toggle_dark_to_light`) — those are outside the required matrix
-     (never counted toward the eight), but each one still gets its own
-     integrity floor: captured, PNG present on disk, sha256/byte-length match
-     the recorded values, and pixel dimensions are sane. This is the same
-     "is this evidence real" check as the rest cells get, not a taste
-     judgment (MINOR-3).
+     (never counted toward the eight), but each one gets that same integrity
+     floor through the same helper. This is an "is this evidence real"
+     check, not a taste judgment (MINOR-3).
   3. A manifest whose cells disagree on which tool captured them (a cell-level
      `capture_tool_module_sha256` differing from the manifest's top-level
      `tool.module_sha256`) must disclose every tool sha it used at the top
@@ -847,12 +847,13 @@ def _validate_force_state_cell(receipt_path: Path, manifest_path: Path, manifest
     cells the gate demands on every page. That exclusion was previously total:
     a force_state cell received NO validation at all, so a corrupted or
     hand-edited force_state row (wrong sha, truncated PNG, deleted file)
-    passed silently. This checks the same integrity floor a rest cell gets:
-    captured, the PNG actually exists, its bytes match the recorded sha256
-    (when a sha256 is recorded at all — r2 BLOCKER-1: some capture schemas,
-    e.g. the clipped-element cells in freshness-chip-invariant/manifest.json,
-    record bytes/width/height/css_width/clip_target but no sha256 key at
-    all; an ABSENT sha256 means "this schema does not capture one", never a
+    passed silently. This checks captured, then the same integrity floor a
+    rest cell gets, via the shared ``_validate_capture_integrity``: the PNG
+    actually exists, its bytes match the recorded sha256 (when a sha256 is
+    recorded at all — r2 BLOCKER-1: some capture schemas, e.g. the
+    clipped-element cells in freshness-chip-invariant/manifest.json, record
+    bytes/width/height/css_width/clip_target but no sha256 key at all; an
+    ABSENT sha256 means "this schema does not capture one", never a
     mismatch, while a PRESENT-but-wrong sha256 still reds) and byte length,
     and its recorded pixel dimensions are sane (present, positive integers)
     — not a taste judgment, just "is this evidence real".
@@ -869,12 +870,41 @@ def _validate_force_state_cell(receipt_path: Path, manifest_path: Path, manifest
     place is never itself the disclosure.
     """
     label = f"{page_id} force_state={state.get('force_state')!r}"
-    findings: list[str] = []
 
     if state.get("captured") is not True:
         reason = state.get("reason", "not captured")
-        findings.append(f"{receipt_path}: {label} was not captured ({reason})")
-        return findings
+        return [f"{receipt_path}: {label} was not captured ({reason})"]
+
+    return _validate_capture_integrity(receipt_path, manifest_path, label, state)
+
+
+def _validate_capture_integrity(receipt_path: Path, manifest_path: Path, label: str,
+                                 state: dict[str, Any]) -> list[str]:
+    """The shared "is this evidence real" floor for EVERY captured cell — the
+    eight required rest cells (``_validate_one_cell``) and any optional
+    force_state cell (``_validate_force_state_cell``) alike: the recorded
+    pixel dimensions are sane (present, positive integers), the screenshot
+    PNG exists and is readable, its bytes match the recorded ``sha256`` (when
+    one is recorded at all — r2 BLOCKER-1, below), and its length matches the
+    recorded ``bytes``. Not a taste judgment.
+
+    One helper on purpose: before it existed, only the optional force_state
+    cells read the PNG bytes, while the required rest cells checked mere file
+    existence — a truncated, swapped or hand-edited rest-cell PNG whose
+    manifest recorded a sha256 passed silently. Callers check ``captured``
+    (and, for a rest cell, the applied theme/locale/viewport identity) first;
+    this runs only on a captured row.
+    """
+    findings: list[str] = []
+
+    width = state.get("width")
+    height = state.get("height")
+    if not isinstance(width, int) or isinstance(width, bool) or width <= 0 \
+            or not isinstance(height, int) or isinstance(height, bool) or height <= 0:
+        findings.append(
+            f"{receipt_path}: {label} has non-sane captured PNG pixel dimensions "
+            f"(width={width!r}, height={height!r})"
+        )
 
     file_rel = state.get("file")
     if not file_rel:
@@ -918,15 +948,6 @@ def _validate_force_state_cell(receipt_path: Path, manifest_path: Path, manifest
         findings.append(
             f"{receipt_path}: {label} bytes={recorded_bytes!r} does not match the "
             f"screenshot's actual byte length {actual_byte_length}"
-        )
-
-    width = state.get("width")
-    height = state.get("height")
-    if not isinstance(width, int) or isinstance(width, bool) or width <= 0 \
-            or not isinstance(height, int) or isinstance(height, bool) or height <= 0:
-        findings.append(
-            f"{receipt_path}: {label} has non-sane captured PNG pixel dimensions "
-            f"(width={width!r}, height={height!r})"
         )
 
     return findings
@@ -995,21 +1016,9 @@ def _validate_one_cell(receipt_path: Path, manifest_path: Path, manifest_rel: st
             f"expected {expected_width} (the REQUESTED viewport, not the PNG's pixel width)"
         )
 
-    # Capture-integrity check (spec-permitted, not the identity assertion).
-    if state.get("width") is None or state.get("height") is None:
-        findings.append(f"{receipt_path}: {label} is missing captured PNG pixel dimensions (width/height)")
-
-    file_rel = state.get("file")
-    if not file_rel:
-        findings.append(f"{receipt_path}: {label} has no screenshot file recorded")
-    else:
-        png_path = manifest_path.parent / file_rel
-        if not png_path.exists():
-            findings.append(
-                f"{receipt_path}: {label} references screenshot '{file_rel}' which does not "
-                f"exist at {png_path}"
-            )
-
+    # Capture-integrity check (spec-permitted, not the identity assertion):
+    # the same byte-level floor every force_state cell gets.
+    findings.extend(_validate_capture_integrity(receipt_path, manifest_path, label, state))
     return findings
 
 
@@ -1166,6 +1175,13 @@ def evaluate(diff_text: str, repo_root: Path) -> list[str]:
 # ---------------------------------------------------------------------------
 
 
+# The fixed byte content `_selftest_write` plants for every captured file
+# (below). Every captured fixture cell — rest and force_state — records the
+# REAL sha256/byte length of these bytes, because the capture-integrity floor
+# reads them back; a test that wants a red corrupts one deliberately.
+_SELFTEST_PNG_BYTES = b"\x89PNG\r\n\x1a\nselftest"
+
+
 def _selftest_state(viewport: str, locale: str, theme: str, *, captured: bool = True,
                      file: str = "shot.png", applied_theme: str | None = None,
                      applied_locale: str | None = None, viewport_width: int | None = None,
@@ -1185,8 +1201,8 @@ def _selftest_state(viewport: str, locale: str, theme: str, *, captured: bool = 
     entry.update({
         "captured": True,
         "file": file,
-        "sha256": "a" * 64,
-        "bytes": 999,
+        "sha256": hashlib.sha256(_SELFTEST_PNG_BYTES).hexdigest(),
+        "bytes": len(_SELFTEST_PNG_BYTES),
         "width": width,
         "height": height,
         "applied_theme": theme if applied_theme is None else applied_theme,
@@ -1202,12 +1218,6 @@ def _selftest_full_states() -> list[dict[str, Any]]:
         for locale in REQUIRED_LOCALES
         for theme in REQUIRED_THEMES
     ]
-
-
-# The fixed byte content `_selftest_write` plants for every captured file
-# (below). MINOR-3's force_state fixtures need to assert a REAL sha256 that
-# actually matches (or is deliberately corrupted against) what lands on disk.
-_SELFTEST_PNG_BYTES = b"\x89PNG\r\n\x1a\nselftest"
 
 
 def _selftest_force_state_cell(*, force_state: str = "selftest_toggle",
@@ -1429,6 +1439,19 @@ def run_selftest() -> int:
         result = evaluate(_selftest_diff(), root)
         if result:
             failures.append(f"well-formed page_tree_sha unexpectedly red: {result}")
+
+    # 14. A REQUIRED rest cell whose committed PNG bytes no longer match its
+    # recorded sha256 must red — rest cells get the same byte-level floor as
+    # force_state cells, not mere file existence.
+    with tempfile.TemporaryDirectory(prefix="ui_visual_evidence_selftest_") as tmp:
+        root = Path(tmp)
+        _selftest_write(root, _selftest_full_states())
+        (root / "mockups" / "evidence" / "selftest" / "shot.png").write_bytes(
+            b"\x89PNG\r\n\x1a\nswapped"
+        )
+        result = evaluate(_selftest_diff(), root)
+        if not result:
+            failures.append("rest cell with swapped PNG bytes unexpectedly passed")
 
     if failures:
         for failure in failures:
