@@ -185,3 +185,90 @@ def test_leaf_is_never_wired_into_a_scoring_path():
     for forbidden in ("conviction", "alerts", "signals", "master_brain", "axes",
                       "regime", "meta_label"):
         assert forbidden not in import_lines, f"leaf must not import {forbidden}"
+
+
+# P12.T22: a named weekly comparison must not borrow a shorter window.
+def _weekly_spr(values):
+    return pd.Series(values, index=pd.date_range("2025-10-31", periods=len(values), freq="W-FRI"))
+
+
+def _spr_vm(monkeypatch, values, feeds=None):
+    from scripts import build_spr
+    feeds = feeds or {}
+    monkeypatch.setattr(build_spr.store, "read", lambda group, name: feeds.get(name))
+    return build_spr._us_spr_vm(_weekly_spr(values), {"spr_capacity_mb": 714.0})
+
+
+def _render_spr_context(us):
+    from jinja2 import Environment, StrictUndefined
+    source = (Path(__file__).resolve().parents[1] / "templates/spr.html.j2").read_text()
+    macros = source[:source.index("<!DOCTYPE html>")]
+    hero = source[source.index("  <!-- ===================== US SPR HERO"):
+                  source.index("  <!-- ===================== SPR vs OIL PRICE")]
+    return Environment(autoescape=True, undefined=StrictUndefined).from_string(macros + hero).render(
+        us=us, caveat=sr.SPR_CAVEAT, as_of=us["as_of"])
+
+
+def test_us_spr_named_windows_require_the_requested_observations(monkeypatch):
+    for count, four, fifty_two in ((1, None, None), (2, None, None), (4, None, None),
+                                   (5, 4.0, None), (52, 4.0, None), (53, 4.0, 52.0)):
+        vm = _spr_vm(monkeypatch, [400000 + 1000 * i for i in range(count)])
+        assert vm["chg_4w_mb"] == four, count
+        assert vm["chg_52w_mb"] == fifty_two, count
+        assert vm["level_mb"] == 400 + count - 1
+        assert vm["as_of"] == _weekly_spr(range(count)).index[-1].strftime("%b %d, %Y")
+
+
+def test_us_spr_measured_flat_and_signed_full_history_are_preserved(monkeypatch):
+    flat = _spr_vm(monkeypatch, [400000] * 53)
+    assert flat["chg_4w_mb"] == flat["chg_52w_mb"] == 0.0
+    declining = _spr_vm(monkeypatch, [400000 - 1000 * i for i in range(60)])
+    assert declining["chg_4w_mb"] == -4.0
+    assert declining["chg_52w_mb"] == -52.0
+
+
+def test_us_spr_missing_comparisons_render_unavailable_not_flat(monkeypatch):
+    import re
+    missing = _render_spr_context(_spr_vm(monkeypatch, [400000]))
+    flat = _render_spr_context(_spr_vm(monkeypatch, [400000] * 53))
+    metric = r'<div class="v [^"]*">(.*?)<small> M</small>'
+    assert re.findall(metric, missing)[:2] == ["—", "—"]
+    assert re.findall(metric, flat)[:2] == ["+0.0", "+0"]
+    assert "4-week" in missing and "4周" in missing
+    assert "52-week" in missing and "52周" in missing
+    assert "Comparison unavailable where weekly history is insufficient." in missing
+    assert "每周历史数据不足的比较窗口暂不可用。" in missing
+    assert "Comparison unavailable where weekly history is insufficient." not in flat
+
+
+def test_us_spr_optional_feed_fields_are_explicit_and_render_independently(monkeypatch):
+    cases = (
+        ({}, (), ("imp", "exp", "net")),
+        ({"crude_imports": 7000.0}, (("7.0", "imp", "进"),), ("exp", "net")),
+        ({"crude_exports": 5000.0}, (("5.0", "exp", "出"),), ("imp", "net")),
+        ({"crude_net_imports": 1000.0}, (("1.0", "net", "净"),), ("imp", "exp")),
+        ({"crude_imports": 0.0, "crude_exports": 0.0},
+         (("0.0", "imp", "进"), ("0.0", "exp", "出")), ("net",)),
+        ({"crude_imports": 7000.0, "crude_exports": 5000.0, "crude_net_imports": 2000.0},
+         (("7.0", "imp", "进"), ("5.0", "exp", "出"), ("2.0", "net", "净")), ()),
+    )
+    import re
+    for feeds, expected, absent in cases:
+        vm = _spr_vm(monkeypatch, [400000] * 53,
+                     {name: _weekly_spr([value] * 53) for name, value in feeds.items()})
+        assert all(key in vm for key in ("days_cover", "import_cover_days", "imports_mbd",
+                                        "exports_mbd", "net_imports_mbd"))
+        rendered = _render_spr_context(vm)
+        row = re.search(r'US crude trade.*?</div>', rendered, re.S)
+        if not expected:
+            assert row is None
+            continue
+        assert row is not None
+        text = row.group()
+        for value, en, zh in expected:
+            assert f"<b>{value}</b>" in text
+            assert f'class="l-en">{en}</span>' in text
+            assert f'class="l-zh">{zh}</span>' in text
+        for en in absent:
+            assert f'class="l-en">{en}</span>' not in text
+        assert "undefined" not in text.lower() and "None" not in text

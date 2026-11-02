@@ -141,13 +141,16 @@ def _us_spr_vm(spr_kbbl: pd.Series, scfg: dict) -> dict:
         "level_mb": _r(level_mb, 0),
         "capacity_mb": cap,
         "fill_pct": sr.fill_pct(level_mb, cap),
-        "chg_4w_mb": _r((sr.change(s, 4) or 0) / 1000.0, 1),
-        "chg_52w_mb": _r((sr.change(s, 52) or 0) / 1000.0, 1),
+        # This page names full weekly windows; the shared helper may clip them.
+        "chg_4w_mb": _r(sr.change(s, 4) / 1000.0, 1) if len(s) > 4 else None,
+        "chg_52w_mb": _r(sr.change(s, 52) / 1000.0, 1) if len(s) > 52 else None,
         "peak_mb": _r(peak_kbbl / 1000.0, 0), "peak_date": s.idxmax().strftime("%b %Y"),
         "low_mb": _r(low_kbbl / 1000.0, 0), "low_date": s.idxmin().strftime("%b %Y"),
         "above_low_mb": _r((last_kbbl - low_kbbl) / 1000.0, 0),
         "below_peak_mb": _r((peak_kbbl - last_kbbl) / 1000.0, 0),
         "as_of": s.index.max().strftime("%b %d, %Y"),
+        "days_cover": None, "import_cover_days": None,
+        "imports_mbd": None, "exports_mbd": None, "net_imports_mbd": None,
     }
     # days of US refinery-crude-run cover (SPR alone ÷ refiner net crude inputs, kbbl/d)
     ri = sr.series(store.read("eia", "refinery_inputs"))
