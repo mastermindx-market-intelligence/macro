@@ -14,11 +14,11 @@
     "note_zh": "\u534a\u5bfc\u4f53\u7ec4\u5408\uff08SMH/SOXX\u7b49\u6743\uff09\u8ddd\u8fc7\u53bb120\u65e5\u9ad8\u70b9-24.9%\u3002\u56de\u64a4\u6df1\u5ea6\u662f\u8f6e\u52a8\u53cd\u8f6c\u6761\u4ef6\u7684\u7ed3\u6784\u6027\u80cc\u666f\u3002"
   },
   "jawboning": {
-    "n_7d": 1,
-    "n_30d": 12,
-    "last_alert_ts": "2026-10-29T14:28:02+00:00",
-    "last_alert_summary": "US-Finland tech-industrial MOU spans SMRs, quantum, shipbuilding \u2014 sector re-rating catalyst",
-    "last_alert_summary_zh": "\u7f8e\u82ac\u79d1\u6280\u4ea7\u4e1a\u5907\u5fd8\u5f55\u8986\u76d6SMR\u3001\u91cf\u5b50\u3001\u9020\u8239 \u2014\u2014 \u677f\u5757\u91cd\u4f30\u50ac\u5316\u5242"
+    "n_7d": 2,
+    "n_30d": 13,
+    "last_alert_ts": "2026-10-29T20:00:00+00:00",
+    "last_alert_summary": "Treasury rebuilt TGA by ~$168bn \u2014 reserves drain into an exhausted RRP buffer",
+    "last_alert_summary_zh": "\u8d22\u653f\u90e8\u91cd\u5efaTGA\u7ea61680\u4ebf\u7f8e\u5143\u2014\u2014\u51c6\u5907\u91d1\u5728RRP\u8017\u5c3d\u4e4b\u9645\u88ab\u62bd\u8d70"
   },
   "calendar": {
     "days_to_midterm": 1,
