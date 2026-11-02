@@ -1,0 +1,1043 @@
+{
+ "auditor": "Fabric lane NEWS-ORCH3-ROUTE (glm-5.3), run news-orch3-route-r2, 2026-10-31",
+ "authority": "context_only",
+ "cases": [
+  {
+   "case_id": "00fbc0439f95b43f",
+   "class": "WRONG_ISSUER",
+   "fold": "f1",
+   "group_id": "grp:d46757f8d0f91b14",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-07-28T17:12:11Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-07-27",
+     "2026-07-28",
+     "2026-08-03"
+    ]
+   },
+   "kind": "other_company_subject",
+   "new_kind": false,
+   "note": "Guidance-hike headline about the parcel carrier; the resolved issuer appears only as the party whose delivery cutback drove the move.",
+   "proxy_cell": "negative",
+   "template": "T2",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "0bfe0de4daacf678",
+   "class": "MATCH",
+   "fold": "f2",
+   "group_id": "grp:81845d680f0306c7",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-08-06T10:45:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-08-05",
+     "2026-08-06",
+     "2026-08-12"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Results headline with a raised profitability outlook; the attached results release reports both.",
+   "proxy_cell": "positive",
+   "template": "T2",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "0cb9995f45d1263b",
+   "class": "MATCH",
+   "fold": "f4",
+   "group_id": "grp:642f98192d4eb76a",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-09-14T20:42:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-09-11",
+     "2026-09-14",
+     "2026-09-18"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Proposed-combination platform headline; the attached filing furnishes the same term-sheet announcement.",
+   "proxy_cell": "positive",
+   "template": "T3",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "0dd90619c05a78c1",
+   "class": "MATCH",
+   "fold": "f4",
+   "group_id": "grp:c35ca0490b786f5b",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-08-31T21:45:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-08-28",
+     "2026-08-31",
+     "2026-09-04"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Preferred-stock offering headline; the attached filing reports the announced offering.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "0e10bbddc088fe56",
+   "class": "NO_EVENT",
+   "fold": "f5",
+   "group_id": "grp:647a932dede73007",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-10-09T03:49:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-10-07",
+     "2026-10-08",
+     "2026-10-14"
+    ]
+   },
+   "kind": "commentary",
+   "new_kind": false,
+   "note": "Steadiness question piece on dividend stalwarts; the headline reports no capital-return event, a routine declaration aside.",
+   "proxy_cell": "ambiguous",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "127c769f84a9a105",
+   "class": "MATCH",
+   "fold": "f2",
+   "group_id": "grp:b469121080d8cf05",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-07-31T12:39:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-07-30",
+     "2026-07-31",
+     "2026-08-06"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Registered-direct pricing headline; the attached filing reports the purchase agreement and the pricing.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "1f97c92013bda92b",
+   "class": "NO_EVENT",
+   "fold": "f2",
+   "group_id": "grp:2de8ad3535c5210b",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-08-02T11:15:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-07-31",
+     "2026-08-03",
+     "2026-08-07"
+    ]
+   },
+   "kind": "commentary",
+   "new_kind": false,
+   "note": "Sector watch piece citing the issuer's earlier base-dividend reduction; the headline reports no new capital-return event.",
+   "proxy_cell": "negative",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "20d3fd3b4df231c4",
+   "class": "MATCH",
+   "fold": "f1",
+   "group_id": "grp:d48a21e38e64d9d1",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-07-17T02:45:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-07-15",
+     "2026-07-16",
+     "2026-07-22"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Reverse-split headline; the attached filings report the split and its charter amendment.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "20d89273ab193880",
+   "class": "MATCH",
+   "fold": "f2",
+   "group_id": "grp:9dfe798882aaeb70",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-07-30T18:23:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-07-29",
+     "2026-07-30",
+     "2026-08-05"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Private-placement pricing headline; the attached filing reports the purchase agreement and pricing.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "24f36f3187f6dda1",
+   "class": "MATCH",
+   "fold": "f3",
+   "group_id": "grp:5b31d9bf68893211",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-08-28T12:00:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-08-27",
+     "2026-08-28",
+     "2026-09-03"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Reverse-split headline; the attached filing reports the split amendment and the same announcement.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "2efd29a51585bc8d",
+   "class": "MATCH",
+   "fold": "f1",
+   "group_id": "grp:e839b9830898a883",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-07-21T17:45:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-07-20",
+     "2026-07-21",
+     "2026-07-27"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Shareholder-approval headline on a deadline extension and redemption reversals; the same-session filings report the approval and charter amendment, a share-structure event at the capital family's borderline.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "42ac98edfe0d93b1",
+   "class": "MATCH",
+   "fold": "f5",
+   "group_id": "grp:a1d5f66bbd3f2adb",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-09-30T17:57:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-09-29",
+     "2026-09-30",
+     "2026-10-06"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Registered-direct pricing headline; the attached filing furnishes the same pricing release.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "42be09305ed34365",
+   "class": "MATCH",
+   "fold": "f4",
+   "group_id": "grp:e1805d45a92bafa0",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-09-01T03:03:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-08-28",
+     "2026-08-31",
+     "2026-09-04"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Offering-pricing headline; an attached filing reports the underwriting agreement and the pricing release.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "4b22413b0bc8bd7c",
+   "class": "MATCH",
+   "fold": "f3",
+   "group_id": "grp:cac9fbccbe81dbab",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-08-26T20:38:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-08-25",
+     "2026-08-26",
+     "2026-09-01"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Buyback-authorization headline; the attached filing reports the board authorization.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "4ebd7e5286323806",
+   "class": "MATCH",
+   "fold": "f2",
+   "group_id": "grp:a044e9e5fd944477",
+   "identity": {
+    "issuer_same": true,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": "2026-07-29T23:22:47Z",
+    "seendate_v3": "2026-07-30T08:16:00Z",
+    "template_same": true,
+    "window_v2": null,
+    "window_v3": [
+     "2026-07-29",
+     "2026-07-30",
+     "2026-08-05"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Earnings headline on cloud strength and steady capital-spending plans; the attached results filing reports the results event.",
+   "proxy_cell": "positive",
+   "template": "T2",
+   "v2_overlap": "same_group:ac46e1ff6b122b6c"
+  },
+  {
+   "case_id": "4ec17f189d0724c3",
+   "class": "WRONG_ISSUER",
+   "fold": "f5",
+   "group_id": "grp:4f9542f9995aaec6",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-10-08T13:14:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-10-07",
+     "2026-10-08",
+     "2026-10-14"
+    ]
+   },
+   "kind": "other_company_subject",
+   "new_kind": false,
+   "note": "The headline's outlook and robotics subject is the technology company known by that name; the resolved drilling issuer behind the symbol is not the subject.",
+   "proxy_cell": "positive",
+   "template": "T2",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "5519b8850c1df944",
+   "class": "MATCH",
+   "fold": "f5",
+   "group_id": "grp:15a61fa9f86c6b3c",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-10-09T11:00:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-10-08",
+     "2026-10-09",
+     "2026-10-15"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Buyback increase-and-extension headline; the same-session filing reports the expanded authorization.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "5b5e076f6f4c5c25",
+   "class": "MATCH",
+   "fold": "f3",
+   "group_id": "grp:55d5f366087a9c5f",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-08-07T19:45:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-08-06",
+     "2026-08-07",
+     "2026-08-13"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Placement-agent offering headline; the same-session filing reports the agency and purchase agreements for the offering.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "5dfe220924a401f5",
+   "class": "OTHER_EVENT",
+   "fold": "f4",
+   "group_id": "grp:4def8a39218d53ac",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-09-11T04:43:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-09-10",
+     "2026-09-11",
+     "2026-09-17"
+    ]
+   },
+   "kind": "event_filing_absent",
+   "new_kind": false,
+   "note": "Launch-mission headline; the attached filing reports acquisition-financing updates, not the mission.",
+   "proxy_cell": "positive",
+   "template": "T3",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "67e5571ab44a68af",
+   "class": "MATCH",
+   "fold": "f3",
+   "group_id": "grp:d7eb86225e17825c",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-08-11T14:42:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-08-10",
+     "2026-08-11",
+     "2026-08-17"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Partnership-rally headline; the attached filing reports the multi-year data-center partnership with credit support announced in the same window.",
+   "proxy_cell": "negative",
+   "template": "T3",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "6e212636947aab91",
+   "class": "MATCH",
+   "fold": "f5",
+   "group_id": "grp:9aa3364e247f4a51",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-10-09T11:55:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-10-08",
+     "2026-10-09",
+     "2026-10-15"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Results headline with a raised outlook; the attached release reports the results and the updated outlook.",
+   "proxy_cell": "positive",
+   "template": "T2",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "788a5b3081ccf72c",
+   "class": "MATCH",
+   "fold": "f5",
+   "group_id": "grp:6929c586cc61f36f",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-10-06T14:29:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-10-05",
+     "2026-10-06",
+     "2026-10-12"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Guidance-reiteration headline alongside an executive change; the attached release reports the reaffirmed full-year guidance.",
+   "proxy_cell": "negative",
+   "template": "T2",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "79eab39d952b9aef",
+   "class": "OTHER_EVENT",
+   "fold": "f3",
+   "group_id": "grp:0723347bceceb56b",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-08-08T12:05:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-08-07",
+     "2026-08-10",
+     "2026-08-14"
+    ]
+   },
+   "kind": "event_filing_absent",
+   "new_kind": false,
+   "note": "Technology-unveiling claim in a watch piece; the attached filings report results, merger steps and an equity program, not an unveiling.",
+   "proxy_cell": "positive",
+   "template": "T3",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "803084e99a2cbe60",
+   "class": "MATCH",
+   "fold": "f3",
+   "group_id": "grp:b134567794386ef7",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-08-26T17:00:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-08-25",
+     "2026-08-26",
+     "2026-09-01"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Reverse-split headline; the attached filings report the split amendment and the same-titled release.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "853f5d2f9f43c3a6",
+   "class": "MATCH",
+   "fold": "f5",
+   "group_id": "grp:1990cef3f7833819",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-10-12T14:49:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-10-09",
+     "2026-10-12",
+     "2026-10-16"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Backlog-addition headline from new and converted awards; an attached filing reports the same backlog announcement.",
+   "proxy_cell": "positive",
+   "template": "T2",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "9b1b6db61b46eb60",
+   "class": "OTHER_EVENT",
+   "fold": "f2",
+   "group_id": "grp:2efc8697fa384b6a",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-08-04T23:16:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-08-03",
+     "2026-08-04",
+     "2026-08-10"
+    ]
+   },
+   "kind": "event_filing_absent",
+   "new_kind": false,
+   "note": "Contract-award headline; the only attached filing is the quarterly results release, which reports records but not this award.",
+   "proxy_cell": "positive",
+   "template": "T2",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "a251a893e10f4130",
+   "class": "MATCH",
+   "fold": "f3",
+   "group_id": "grp:601a231c339c21ab",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-08-27T21:34:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-08-26",
+     "2026-08-27",
+     "2026-09-02"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Reverse-split headline; an attached filing reports the split alongside the special-meeting vote.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "a34346473b7ff19a",
+   "class": "MATCH",
+   "fold": "f1",
+   "group_id": "grp:61d365785b2fcf05",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-07-23T23:44:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-07-22",
+     "2026-07-23",
+     "2026-07-29"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Quarterly-dividend headline; the attached filing reports the declaration.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "a81a872f1696d9c6",
+   "class": "NO_EVENT",
+   "fold": "f2",
+   "group_id": "grp:09f695e8df59772f",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-07-29T14:15:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-07-28",
+     "2026-07-29",
+     "2026-08-04"
+    ]
+   },
+   "kind": "commentary",
+   "new_kind": false,
+   "note": "Dividend-durability question piece; the headline reports no capital-return event though the attached release declares the regular dividend.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "b1f8439867c811b6",
+   "class": "MATCH",
+   "fold": "f4",
+   "group_id": "grp:5a2dcc6190cfc62f",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-09-04T11:00:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-09-03",
+     "2026-09-04",
+     "2026-09-11"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Common-and-preferred dividend headline; the attached filing reports both declarations.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "b6f83832faa0fee9",
+   "class": "NO_EVENT",
+   "fold": "f1",
+   "group_id": "grp:beb48738e4bd3f99",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-07-24T18:40:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-07-23",
+     "2026-07-24",
+     "2026-07-30"
+    ]
+   },
+   "kind": "template_family_mismatch",
+   "new_kind": false,
+   "note": "Regulatory product-approval headline routed to the demand family; the attached filing reports the approval, a product milestone, not a demand or guidance event.",
+   "proxy_cell": "positive",
+   "template": "T2",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "b8c881960abce66c",
+   "class": "MATCH",
+   "fold": "f4",
+   "group_id": "grp:5a3714f7d156008a",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-09-15T01:26:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-09-11",
+     "2026-09-14",
+     "2026-09-18"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Reverse-split headline tied to a merger step; the attached filing furnishes the same corrected split release.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "b9119cfb98ad0aa6",
+   "class": "MATCH",
+   "fold": "f3",
+   "group_id": "grp:c070745e126e88bc",
+   "identity": {
+    "issuer_same": true,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": "2026-08-07T18:11:51Z",
+    "seendate_v3": "2026-08-06T11:55:00Z",
+    "template_same": true,
+    "window_v2": null,
+    "window_v3": [
+     "2026-08-05",
+     "2026-08-06",
+     "2026-08-12"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Bond-sale headline; the attached filing reports the closed senior-notes offering.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "same_group:bea9e4ca79450a7a"
+  },
+  {
+   "case_id": "bc29e5e48c80378a",
+   "class": "MATCH",
+   "fold": "f2",
+   "group_id": "grp:4c6ab37f77127765",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-08-05T15:50:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-08-04",
+     "2026-08-05",
+     "2026-08-11"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Reverse-split headline; the attached filing reports the split and furnishes the same release.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "c5e8d851d7c5756a",
+   "class": "MATCH",
+   "fold": "f4",
+   "group_id": "grp:70f05d17197195b2",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-09-07T07:53:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-09-04",
+     "2026-09-08",
+     "2026-09-14"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Notes-offering launch headline; an attached filing reports the same offering's pricing.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "c6690b067520bdfc",
+   "class": "MATCH",
+   "fold": "f3",
+   "group_id": "grp:73fe9ebe6fe62bc3",
+   "identity": {
+    "issuer_same": true,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": "2026-08-27T20:36:00Z",
+    "seendate_v3": "2026-08-27T00:39:00Z",
+    "template_same": true,
+    "window_v2": null,
+    "window_v3": [
+     "2026-08-25",
+     "2026-08-26",
+     "2026-09-01"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "First year-ahead outlook given with results; the attached results filing and commentary carry the results event.",
+   "proxy_cell": "positive",
+   "template": "T2",
+   "v2_overlap": "same_group:eff279aeb30a6267"
+  },
+  {
+   "case_id": "d0ca522fc4b1e0b5",
+   "class": "MATCH",
+   "fold": "f5",
+   "group_id": "grp:ec7eb86b9730799b",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-09-24T13:45:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-09-23",
+     "2026-09-24",
+     "2026-09-30"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "New business-line launch headline; the attached filing furnishes the same subsidiary-launch release.",
+   "proxy_cell": "positive",
+   "template": "T3",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "d1eeb29c475402b4",
+   "class": "MATCH",
+   "fold": "f3",
+   "group_id": "grp:08cf2d3e95b71798",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-08-26T16:59:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-08-25",
+     "2026-08-26",
+     "2026-09-01"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Regulatory-approval headline; the attached filing reports the same approval.",
+   "proxy_cell": "positive",
+   "template": "T3",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "d9cc14d215da6b7a",
+   "class": "MATCH",
+   "fold": "f4",
+   "group_id": "grp:de8dbf7cd3017456",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-09-08T12:50:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-09-04",
+     "2026-09-08",
+     "2026-09-14"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Exclusive distribution agreement headline; the attached filing reports entering the agreement.",
+   "proxy_cell": "positive",
+   "template": "T3",
+   "v2_overlap": "none"
+  },
+  {
+   "case_id": "e464be3a287f284a",
+   "class": "MATCH",
+   "fold": "f3",
+   "group_id": "grp:39add6e7a467d485",
+   "identity": {
+    "issuer_same": null,
+    "label_transfer": "none \u2014 a group id shares no label, verdict or independence across versions",
+    "seendate_v2": null,
+    "seendate_v3": "2026-08-26T21:20:00Z",
+    "template_same": null,
+    "window_v2": null,
+    "window_v3": [
+     "2026-08-25",
+     "2026-08-26",
+     "2026-09-01"
+    ]
+   },
+   "kind": "",
+   "new_kind": false,
+   "note": "Proposed-offering headline; the attached filings report the underwriting agreement, pricing and closing.",
+   "proxy_cell": "positive",
+   "template": "T1",
+   "v2_overlap": "none"
+  }
+ ],
+ "class_counts": {
+  "MATCH": 31,
+  "NO_EVENT": 4,
+  "OTHER_EVENT": 3,
+  "WRONG_ISSUER": 2
+ },
+ "class_counts_by_template": {
+  "T1": {
+   "MATCH": 20,
+   "NO_EVENT": 3
+  },
+  "T2": {
+   "MATCH": 6,
+   "NO_EVENT": 1,
+   "OTHER_EVENT": 1,
+   "WRONG_ISSUER": 2
+  },
+  "T3": {
+   "MATCH": 5,
+   "OTHER_EVENT": 2
+  }
+ },
+ "n_new": 40,
+ "rule": "A case already in gated_v2 keeps its routing verdict and grade. A case new to gated_v3 needs a routing verdict from a census card before it scores, and only MATCH scores.",
+ "schema": "news-estate.b4-v3-new-case-routing.v1",
+ "source": {
+  "bodies_sha256": "59bbeb2251d4e1577003d2eb118672592651b6428904256b098039a04b98c86c",
+  "gated_v3_pr": 10063,
+  "head": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2"
+ },
+ "taxonomy": {
+  "MATCH": "The headline reports an event of the routed template family at the resolved issuer, and at least one attached filing reports that event.",
+  "NO_EVENT": "The headline reports no issuer event of the template family (market report, commentary, list, quote page, solicitation).",
+  "OTHER_EVENT": "The headline event is real and the resolved issuer is its subject, but no attached filing reports it.",
+  "WRONG_ISSUER": "The resolved issuer is not the subject of the headline."
+ },
+ "unreadable": 0
+}

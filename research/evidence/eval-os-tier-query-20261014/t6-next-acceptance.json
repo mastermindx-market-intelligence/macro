@@ -1,0 +1,23 @@
+{
+  "scope": "Two additional supplied-adjudication-text cases under current doctrine; historical source availability unverified",
+  "historical_fixture_count": 4,
+  "new_tests": {
+    "passed": 167,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "junit_seconds": "15.093"
+  },
+  "source_hashes": {
+    "engine/neuralweb/response_eval.py": "644b97794e0cdbf2d6ba687b25ace167a5f0b4cd13ccb119956a59a98914ebbd",
+    "tests/test_response_eval.py": "6ec5c449c26ce727a60fc3f07cb652b40380ca4a080eb0288c6110b7855987a7",
+    "engine/neuralweb/eval/benchmark_mag7_forced_override_2026-07-11.json": "cee090e93dcd00fecfe7f687a079ce099ee248365e850e9b55fa618c60080909",
+    "engine/neuralweb/eval/benchmark_mag7_narration_2026-08-03.json": "88689c9582d7c5e40828ecb3578c0dbbe52f8277c11c4a84191f966b7463d5c3",
+    "engine/neuralweb/eval/benchmark_capex_bind_2026-07-22.json": "ac099733b8248d4155eb3be4748b7f00384fa07d84d1e38850769951da20ae64",
+    ".github/ci/legacy-jobs.yml": "e605c3b52de61bc284105a69f7c02e10286832df280eb1e32e26a7066b1af856"
+  },
+  "dependence": "Three Mag7/capex cases share the same episode; metadata is descriptive and no independence claim is made",
+  "final_review": "Independent scientific draft review accepted; root verified integrated guard IDs/source registrations and unchanged prior function logic; no additional independent guard-review claim",
+  "actual_head_closure": "pending finalcontaininglocalcommit",
+  "programme_complete": false
+}

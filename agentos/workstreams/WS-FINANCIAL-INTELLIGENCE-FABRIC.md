@@ -141,27 +141,49 @@ decisions:
   - DEC:FIF-C0-ADMISSION-CLOCK-PLAN-BEFORE-WRITE
   - DEC:FIF-PARSER-FINGERPRINT-BINDS-ACCEPTED-OUTPUT
   - DEC:FIF-X2-SAVED-VIEW-BINDS-EXPORT-CONTRACT
+  - DEC:FIF-HELD-OUT-BYTES-ARE-STAGED-NOT-COMMITTED
+  - DEC:FIF-PACK-PATTERN-REPINS-ARE-DIGEST-ONLY
+  - DEC:FIF-Q1-PRECISION-FLOOR-PREDECLARED-0-80
+  - DEC:FIF-PARSER-NIL-FACT-INERT-ATTRIBUTES-TOLERATED
+  - DEC:FIF-Q1-EVALUATOR-BINDS-SIC-FROM-HELD-OUT-CONTRACT
+  - DEC:FIF-Q1-SECOND-GENERATION-SCOPE
+  - DEC:FIF-PACK-GENERALIZATION-DEV-CORPUS
+  - DEC:FIF-Q0-SPLIT-DECISION-2-SECOND-LABELING-WAVE
+  - DEC:FIF-Q1-EVALUATOR-ENVELOPE-SIC-SOURCE-FOLLOWS-PRODUCTION-RESOLVER
+  - DEC:FIF-Q0-SPLIT-DECISION-3-PK12-BIOTECH-HELD-OUT
+  - DEC:FIF-PACK-MAPPING-DIGEST-PIN-RE-RECORD
 next_action: >
-  Z0 closure wave (handoff FINANCIAL-INTELLIGENCE-FABRIC-2026-10-20-fif-z0-closure-wave).
-  Production serves fif_financial_dataset_mode=production (A0 flipped; schedule run
-  39389080686 is the natural-cycle witness). Landed 2026-10-19/20: train #9773, Z0
-  #9792, A1 #9759, PK-FW #9843, PK01 #9845, clock #9761, repair #9853, z0gaps #9858,
-  A52 #9859, A18 #9863, A14 #9870, A20 #9869, step 5 #9794, twelve-pack fold #9872,
-  A21 #9871 (c304c027c26b75d0f954a0699ddc56e0a3ec3e61), A43 #9879 (67638926282eb17c6c5a5ab631fce06527004914), step 6 #9799 (44c244f05debb1e468b5b635b5234d98b36fb7c3), doctrine
-  #9882 (69288ad8d58ecb17cc39d016adef62746e5d8d40), cov-wire #9884 (38e22414cdb21096536086d3f3460893a1d94df1). Z0 matrix:
-  A14/A18/A20/A43 CLOSED; A21/A36 PENDING_LIVE; A42/A45/A46 HUMAN_GATE (entitled
-  browser profile, named once). Next: second A36 remeasure after the 2026-10-21T00:00Z
-  core-catalogue clock (the manifest now runs the production pack and packet
-  producers); Z1 r1 (fabric lane fif-z1rev-20261020-r1) CONSUMED 2026-10-20 —
-  FAIL: A43/A22 lowered to PARTIAL (test gaps), A54 RATIFIED, F3/F5 rebutted
-  (legacy-pack convention), record research/financial_intelligence_fabric/
-  FIF_Z1_INDEPENDENT_REVIEW_2026-10-20.md; next a fabric build lane adds the
-  tablet REQUIRED_CELLS cell + focus-restore assertion (A43) and a caplog
-  no-leak test (A22), then re-review only that diff; Q1 held-out labels from an
-  independent labeler (A37 is a qualified abstain until then).
-  Merge by hand with --match-head-commit on concluded green; never arm; never
-  dispatch filing-forensics-sec, daily.yml or research-ingest.
+  2026-11-01 dev-corpus repair ladder (handoff
+  FINANCIAL-INTELLIGENCE-FABRIC-2026-11-01-dev-corpus-repairs-and-split-3).
+  On main: PK09 wave-two labels (#10382), Q1 generation three (#10400, honest
+  negative at the predeclared 0.80 floor), the g3 family diagnosis (#10430), the
+  dev-corpus instrument (#10440), the counts-only Q0 label-conformance gate
+  (#10436), Q0 split decision 3 (#10453, PK12 biotech cohort), and dev-corpus pack
+  repairs PK11 (#10445), PK03 (#10451), PK12 (#10458) and PK07 (#10463). Each pack repair is one
+  main-based commit with add-only tests and a regenerated A34 ledger; held-out
+  dispositions do not move until fresh labels under a new Q0 split decision.
+  Ladder: (1) merge the open repairs pinned to their reviewed heads as CI
+  concludes: PK05 (#10461), PK01 (#10465), PK02 (#10467, pins
+  re-recorded under DEC:FIF-PACK-MAPPING-DIGEST-PIN-RE-RECORD), and the split-3
+  capture (#10464: 18 of 24 predeclared 10-K rows admitted; the 6 refusals are
+  capture verdicts, and a second split-3 capture needs a reviewed member-naming /
+  embedded-linkbase fix first); (2) PK08 (#10452) after its fourth independent
+  review; PK04 and PK09 third repairs after review FAILs on narrow guard / pin
+  findings; PK01 hardening follow-up; (3) the conformance gate learns pack-scoped
+  split cohorts from an explicit --contract (never a default); (4) the PK12 wave-3
+  independent labeler over the admitted split-3 rows, the gate with --contract,
+  then Q1 generation four into a new reports directory under a new evaluator lane
+  id with independent review; (5) A37 re-adjudication only from the g4 INDEX.
+  PK10 stays not_measurable. A42/A45/A46 remain EXACT_HUMAN_GATE.
 landmines:
+  - >
+    P0 no-reclaim (Meta-CEO via Grok Secretary, Mastermind #1632, 2026-10-31):
+    no git worktree remove/prune, gc, rm, cleanup script or new cleaner on any
+    host from the seat or any FIF lane. A free-space refusal is WAITING_CAPACITY,
+    final for that launch; the exact target goes to #1632 for an owner RELEASE
+    with an exclusive locked PRE_EFFECT/AFTER. Every lane packet carries the DISK
+    LAW line. ubuntu4 is telemetry/candidate only and is not an admitted
+    alternative host. The wave-two packages are staged only on ubuntu2.
   - >
     Core catalog is consolidated_only. Company Facts conversion sets
     dimensions_known=false. Querying companyfacts_versions.json through
@@ -230,6 +252,22 @@ landmines:
     (additional evidence: PR #6157 merged 2026-08-21T16:08:36Z while HOLD FOR SOL
     remained in the body and comments).
 do_not_redo:
+  - Do not rebuild or re-review the merged dev-corpus work: #10382 (PK09 wave-two labels), #10400 (Q1 g3), #10430 (g3 diagnosis), #10435, #10440, #10436, #10445 (PK11), #10451 (PK03), #10453 (split decision 3), #10458 (PK12) or #10463 (PK07); returns are accepted on the PRs.
+  - Do not edit reports/q1_held_out_20261031_g3 (#10400); generation four is a new directory under a new evaluator lane id.
+  - Do not re-record any pack's pinned envelope literals outside DEC:FIF-PACK-MAPPING-DIGEST-PIN-RE-RECORD (masked-envelope sha256 equal, pack-scoped, one repair at a time).
+  - Spent lane ids (2026-11-01): fif-pk04dev2rev-20261101-r1/-r2; fif-pk08devrev4-20261101-r1/-r2/-r3; fif-heldout-lab3-pk12-20261101-r1/-r2/-r3; fif-q0conf-split3-20261101-r1/-r2/-r3; fif-pk09dev3-20261101-r1; fif-pk04dev3-20261101-r1; fif-heldout-cap3-20261101-r1; fif-split3rev-20261101-r1.
+  - Do not re-review or re-run #10332, #10336, #10337, #10342, #10343 or #10345 (merged, records on the PRs). Spent lane ids: fif-heldout-lab2-pk01, pk02, pk04, pk05, pk06, pk07, pk08, pk11, pk12 -20261031-r1; fif-heldout-lab2-pk03-20261031-r1 and -r2; fif-q1pinsrev-20261031-r1 and -r2; fif-q1pinsfcrev-20261031-r1 and -r2. fif-heldout-lab2-pk09-20261031-r1 is unspent. Labels and seals are never authored, edited or harmonised by the seat.
+  - Do not re-review, re-run or widen #10312, #10314, #10316 or #10322 (returns accepted on the PRs; a second wave-two capture run needs a seat decision; the envelope enum stays frozen per DEC:FIF-Q1-EVALUATOR-ENVELOPE-SIC-SOURCE-FOLLOWS-PRODUCTION-RESOLVER).
+  - Do not edit reports/q1_held_out_20261031_g2 once merged (#10332); generation three is a new directory under a new evaluator lane id.
+  - Do not edit or regenerate research/financial_intelligence_fabric/reports/q1_held_out_20261031/; a second generation is a new directory under a new evaluator lane id, and the 2026-10-31 failed families reopen only on fresh labels under a new Q0 split decision.
+  - Do not move the predeclared 0.80 floor, lower N, relabel a failed family accepted or drop a failed cell from the denominator (DEC:FIF-Q1-PRECISION-FLOOR-PREDECLARED-0-80).
+  - Do not rebuild or re-review PK09 B.3 v7 (#10272), PK08 F3-3 (#10271), the PK09 follow-up bundle (#10298), the evaluator (#10293) or the A37 Q1 record (#10299); returns are accepted on the PRs.
+  - Do not rewrite the staged held-out witnesses to add a SIC; the evaluator binds it from held_out_contract.json (DEC:FIF-Q1-EVALUATOR-BINDS-SIC-FROM-HELD-OUT-CONTRACT).
+  - Do not edit reports/q1_held_out_20261031 after the kernel repairs; the second measurement is a new directory q1_held_out_20261031_g2 from a new evaluator lane (DEC:FIF-Q1-SECOND-GENERATION-SCOPE).
+  - Do not rebuild the A33 receipt (PASS, #9910), PK10 fix4 (PASS, #9906), PK09 B.3 v5 (#9907, review r2 PASS_WITH_NOTES) or PK08 F3-1 (#10246, review PASS_WITH_NOTES); the notes are commissioned as B.3 v6 and F3-2 follow-ups.
+  - Do not relabel or re-seal the lab-a held-out labels (#9915, 107 records); labels come only from independent labeler lanes and are merged unchanged.
+  - Do not re-review PK09 fix4, the held-out tidy or PK08 F3-1; the fabric review returns are recorded in the 2026-10-31 handoff.
+  - Do not relaunch a lane under a spent id; a refused or dead lane gets a new id on a host whose donor carries the base.
   - Do not rebuild the 2026-10-20 Z0 closure wave: A14 owner-binding collapse (#9870), A18 fault drill (#9863), A20 shared SEC pacer (#9869), A21 observation wiring with R-A21-T8B/R-A21-STORE-TRACE (#9871), A43 tablet desk header + three-viewport evidence sets (#9879), step 5/6 (#9794/#9799), the twelve-pack fold (#9872), the desk doctrine stripe removal (#9882) and the coverage-manifest producer wiring (#9884).
   - Do not author Q1 held-out labels or reports from the seat or a pack lane; the A37 qualified abstain stands until an independent labeler produces them.
   - Do not create a second semantic model, query kernel, or metric registry.
@@ -400,6 +438,10 @@ waves:
     title: Neural Web, outcomes, and Prophet shadow
     status: todo
     depends_on: [FIF-4]
+    next_action: >
+      The Prophet shadow component is EXCLUDED from the 2026-10-11
+      commission (masterplan line 19) — excluded, not done. Neural Web and
+      outcomes stay in scope.
   - id: FIF-11
     title: Broad scale and independent closure
     status: todo
@@ -561,3 +603,67 @@ literal-match law and the lane-host dependency split are recorded as
 `DSC:CONTRACT-DELTA-UNRUN-SUITE-GATE-IS-LITERAL-MATCH` and
 `DSC:FIF-LANE-HOST-DEPENDENCY-SPLIT`. Full state, evidence and obligations:
 `agentos/handoffs/FINANCIAL-INTELLIGENCE-FABRIC-2026-10-12-fif-e2e-wave1.md`.
+
+## Commission scope and execution envelope (2026-11-01)
+
+### Excluded programs (A50): excluded, not done
+
+The 2026-10-11 commission (masterplan at Macro `44e3c09b`,
+`research/financial_intelligence_fabric/e2e_20261011/MASTERPLAN.md` line 19)
+excludes these programs from FIF delivery. Each one is **excluded from this
+commission, not done**. FIF may consume an existing owner's output, but it
+improves none of them:
+
+| Program | FIF status |
+|---|---|
+| Single-Name Intelligence (SNI) | excluded, not done |
+| Grey Deer Risk | excluded, not done |
+| Market OS | excluded, not done |
+| Mastermind OS | excluded, not done |
+| Options Intelligence | excluded, not done |
+| Prophet, including the original FIF-10 Prophet shadow component | excluded, not done |
+| Market Ontology | excluded, not done |
+| GMI | excluded, not done |
+| Executive OS | excluded, not done |
+| Subagent Fabric (buildout) | excluded, not done |
+| BioCatalyst clinical prediction | excluded, not done |
+| New capital-risk or relationship engines | excluded, not done |
+
+The FIF-10 wave keeps Neural Web and outcomes. Its Prophet shadow component
+is recorded as excluded, never as completed. No FIF PR implements any program
+in this table.
+
+### Single global execution envelope (A49)
+
+Masterplan line 149 sets one global envelope. It covers the principal, any
+coordinators the runtime counts, workers, reviewers and repair reserves, with
+no per-coordinator multiplication of concurrency or budget. FIF ran inside
+that one envelope:
+
+- **Shape.** One principal seat (session 96dc937a) adjudicated and
+  integrated. All build, label, capture, evaluation and review labor ran as
+  admitted Fabric lanes (`ext/remote_sub.sh`, GLM pool). Each lane had a
+  frozen packet, its own run id and its own host admission. No native labor
+  subagent and no simulated fleet.
+- **Admission is final per launch.** A host refusal (temperature, disk
+  below the staging reserve, REFUSED) ended that launch. The seat never
+  edited admission configuration and never ran the refused work directly
+  on the refusing host. A later launch used a fresh run id, never a reused
+  one.
+- **Consumed returns.** Every DONE or BLOCKED return was read and
+  adjudicated by the seat before any pull, PR or matrix change.
+  Independent review lanes are separate run ids; the seat's own review is
+  never counted as independent.
+- **Lane-ledger reconciliation, 2026-10-20.** 143 rows, 0 non-terminal.
+- **Lane-ledger reconciliation, 2026-11-01** (seat ledger, 2026-10-31T06:34Z
+  to 2026-11-01T07:59Z). 64 launches (39 build, 25 review), all terminal:
+
+  | Outcome | Count |
+  |---|---|
+  | DONE, return consumed | 43 |
+  | BLOCKED, return consumed | 4 |
+  | Early exit, superseded by a later run id that finished DONE | 2 |
+  | Refused at admission (9 temperature, 3 disk, 1 REFUSED) | 13 |
+  | Failed start, no output (rc=3) | 2 |
+
+  0 non-terminal rows; 0 effect-unknown. Spent run ids are never relaunched.

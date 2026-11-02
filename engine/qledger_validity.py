@@ -265,3 +265,78 @@ def audit(
                     )
                 )
     return findings
+
+
+
+def project_research_findings(
+    claims: Sequence[dict], grades: Sequence[dict], *,
+    reported_metrics: dict[str, set[str]], registry: dict, evidence_link: str,
+) -> dict[str, Any]:
+    """Project the metric owner's two integrity findings for Agent OS (T12).
+
+    Explicit metrics describe an intended report, not proof it was published.
+    The caller owns the supplied registry/receipt's source identity and any DSC
+    admission. This pure function does not read evidence, calculate new metrics,
+    infer a numerical/time delta, execute a tier, publish, prioritise or route.
+    Only an exact unique canonical ledger binding can name the engine.
+    """
+    def bounded_text(value: Any) -> bool:
+        if not isinstance(value, str) or not value.strip():
+            return False
+        try:
+            return len(value.encode("utf-8")) <= 2048
+        except UnicodeEncodeError:
+            return False
+
+    if not bounded_text(evidence_link):
+        raise ValueError("evidence_link must be bounded non-empty UTF-8 text")
+    families = set(profile_families(claims))
+    if (not isinstance(reported_metrics, dict)
+        or any(not bounded_text(f) or not isinstance(metrics, set)
+               or any(not bounded_text(m) for m in metrics)
+               for f, metrics in reported_metrics.items())
+        or not families.issubset(reported_metrics)):
+        raise ValueError("reported_metrics must explicitly supply a set for every claim family")
+    if (not isinstance(registry, dict) or registry.get("schema") != "intelligence_registry.v1"
+        or not isinstance(registry.get("engines"), list)
+        or not isinstance(registry.get("excluded"), list)
+        or any(not isinstance(r, dict) for r in registry["engines"] + registry["excluded"])):
+        raise ValueError("a canonical registry snapshot is required")
+    result: dict[str, Any] = {"schema": "qledger.research_findings.v1",
+        "scope": "intended_report_metric_validity", "evaluation_status": "not_assessed",
+        "issues": [], "unresolved": []}
+    for family in sorted(set(reported_metrics) - families):
+        result["unresolved"].append({"family": family, "reason": "family_has_no_claims"})
+    for family in sorted(families):
+        for metric in sorted(reported_metrics[family] - {"excess_mean", "hit_rate"}):
+            result["unresolved"].append({"family": family, "metric": metric, "reason": "unsupported_metric"})
+    metric_by_code = {"SIGNED_EXCESS_POOLED_ACROSS_DIRECTIONS": "excess_mean",
+                      "HIT_RATE_ON_A_SALIENCE_FAMILY": "hit_rate"}
+    all_rows = registry["engines"] + registry["excluded"]
+    for finding in audit(claims, grades, reported_metrics=reported_metrics):
+        failure = {"family": finding.family, "code": finding.code}
+        if finding.code not in metric_by_code or finding.severity != SEVERITY_INVALID:
+            result["unresolved"].append({**failure, "reason": "unsupported_owner_finding"})
+            continue
+        ledger = "qledger:" + finding.family
+        rows = [r for r in registry["engines"] if r.get("ledger") == ledger]
+        excluded = [r for r in registry["excluded"]
+                    if r.get("ledger") == ledger or r.get("would_be_ledger") == ledger]
+        if len(rows) != 1 or excluded:
+            result["unresolved"].append({**failure, "reason": "engine_binding_unavailable_or_ambiguous"})
+            continue
+        row = rows[0]
+        producer, owner, eid = row.get("producer"), row.get("owner_program"), row.get("engine_id")
+        evidence = row.get("ledger_evidence")
+        if (not bounded_text(producer) or producer.startswith("/") or "\\" in producer
+            or any(part in {"", ".", ".."} for part in producer.split("/"))
+            or not bounded_text(owner) or not bounded_text(eid) or eid != f"{producer}::{owner}"
+            or sum(r.get("engine_id") == eid for r in all_rows) != 1
+            or not isinstance(evidence, dict) or type(evidence.get("rule")) is not int
+            or evidence["rule"] != 2 or evidence.get("desk") != finding.family):
+            result["unresolved"].append({**failure, "reason": "engine_binding_invalid"})
+            continue
+        result["issues"].append({"engine": eid, "metric": metric_by_code[finding.code],
+            "observed_change": "Snapshot of intended-report metric validity: " + finding.detail,
+            "segment": finding.family, "evidence_link": evidence_link, "suggested_tier": "T0"})
+    return result

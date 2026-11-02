@@ -1,0 +1,78 @@
+{
+  "schema": "eval_os_independent_T21_scope_adjudication.v1",
+  "adjudication": "ACCEPTED_T21_A39_GENUINE_PRE_RELEASE_OWNER_PROGRESSION_T23_OPEN",
+  "observed_at": "2026-10-13T23:51:29.898052+00:00",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "reviewer": "01a13341-2c83-79b2-9a5a-dddb12e780e3",
+  "governing_scope": {
+    "package": "eval_os_fable_20261012",
+    "TASK_GRAPH_sha256": "df19869fce4eee295268ef94aabd3258a5847561087385019a02fcf60b15dadf",
+    "T21_outcome": "At least one genuine normal run demonstrates progression or a precisely qualified no-eligible/no-change state without fake data.",
+    "T21_verification": "Return original run/release/time/source identity and actual state, no changed schedules or new watchers created by planning. Mature/no-eligible differences remain visible.",
+    "T23_verification": "Exact code/release/source/response/render chain and supported negative state are recorded. No customer notice, financial action, data migration or excluded-engine change. Verify an actual authorized operator can distinguish what was measured, its horizon/support, current health and absence of trade authority. Any material post-T21 source change requires fresh post-release normal-run/update proof.",
+    "PRODUCT_ACCEPTANCE_rule": "Section Naturalupdate/completion expressly says post-release normal-run/update evidence is required and earlier incompatible T21 cannot substitute.",
+    "scope_ruling": "T21 requires at least one genuine subsequent normal run demonstrating progression or qualified no-change. It does not require candidate installation or postrelease consumer proof, which are T23. This new run qualifies T21 rather than rehabilitating original failed daily run."
+  },
+  "receipt_binding": {
+    "normal_owner_receipt": "research/evidence/eval-os-20261012/normal-owner-progression-20261013.json",
+    "sha256": "01e9caa6154c5081a5c8b1f0894f59d6d1bfd747b4945daaab6a3e7579f6b15b",
+    "retained_log": "../integration/asia-38406512307.log",
+    "log_sha256": "182e2cb3f28570924a7674766a82dde40b7e8307f4ae69502658f9c49d9243d2",
+    "production_observation": "../integration/natural-owner-status-20261013T2350.json",
+    "production_observation_sha256": "8bdf919dcd9df109ec5540f5518330d59f48e48154d0be8352ccb4ec01a79b07",
+    "production_metadata_matches": true,
+    "published_source_blob": {
+      "local_git_read_rc": 0,
+      "lazy_fetch_disabled": true,
+      "bytes": 877,
+      "sha256": "0978e2e51f2ee7c36486efa7ccdc1c310e2e5b616c4959b604a5641644146278",
+      "status_matches_receipt": true
+    }
+  },
+  "genuine_execution": {
+    "id": 38406512307,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38406512307",
+    "event": "schedule",
+    "conclusion": "success",
+    "head_sha": "1dec2bf96fb0bf508643fa023c5baa075250b8f2",
+    "job_id": 115350383434,
+    "job_name": "asia",
+    "started_at": "2026-10-13T15:02:07Z",
+    "completed_at": "2026-10-13T16:35:34Z",
+    "published_data_commit": "98a395f149decf146dd19826a70e6cc1fd00a1e9",
+    "published_at": "2026-10-13T15:52:57Z"
+  },
+  "semantic_observation": {
+    "generated_at": "2026-10-13T15:50:09.665675+00:00",
+    "as_of": "2026-10-13",
+    "dry_run": false,
+    "graded_today": 812,
+    "n_open": 118124,
+    "coverage_blocked": 22896,
+    "ungradeable": 22,
+    "already_graded": 178212,
+    "clock_reasons": {
+      "n": 22,
+      "by_reason": {
+        "clock_unresolvable:mixed_markets": 12,
+        "clock_unresolvable:unsupported_exchange_suffix:.BJ": 10
+      },
+      "by_family": {
+        "cn_special_sits": 10,
+        "us_importance_v0": 6,
+        "us_importance_v0_pit": 6
+      }
+    },
+    "interpretation": "812actualnewgrades on non-dry-run normal scheduled owner execution demonstrate progression. Coverage blocks and22unresolvable clocks remain measured limitations. Zero ready families is distinct from grader outage and no grade progression. No per-class validity/investment authority/fleetcomplete claim is inferred."
+  },
+  "limits": [
+    "This is pre-release scheduled owner progression. CandidateA1/readiness-receipt publisher remains uninstalled; no candidateAPI/render or postrelease generation proof.",
+    "Original daily38340204231 remains failed with its own source/log identity. This is a separate genuine subsequent schedule; no manual rerun/rescue replacement.",
+    "No protected grade/outcome rows were read; status/log evidence only.",
+    "This acceptance does not establish all in-scope cases or either completion flag.",
+    "T23 still needs accepted normalrelease, installedcode, authenticated source/API/paint, correction/reconnect and genuinepostrelease run/update after materialsourcechanges plus authorizedoperator acceptance."
+  ],
+  "no_manual_dispatch_or_clock_reset_or_schedule_change": true,
+  "new_network_logs_CI_tests": false,
+  "source_writes": false
+}

@@ -644,6 +644,7 @@ COPY_IDS = frozenset({
 P3_PRIMER_OPEN = frozenset({"overview", "money", "policy"})
 _STALE_NOTE_TITLES = frozenset({
     "Required source not current",
+    "Required source late, within tolerance",
     "Optional legs degraded",
 })
 _DISAGREE_NOTE_TITLES = frozenset({"Contradictory signals"})
@@ -1420,6 +1421,10 @@ def _fragment_context(value: Any) -> Any:
 def write_fragments(env: Environment, sections: Sequence[Mapping[str, Any]],
                     out_dir: Path) -> list[Path]:
     """Emit `site/macro/fragments/<id>.html` — the inner HTML of `[data-mc-figure]`."""
+    # macro-api imports this module but never writes fragments. A module-level import
+    # would put lib/pages.py in its load-time closure.
+    from lib.pages import write_unshimmed_html  # noqa: PLC0415
+
     dest = Path(out_dir) / "macro" / "fragments"
     dest.mkdir(parents=True, exist_ok=True)
     tmpl = env.get_template("_macro_command_fragment.html.j2")
@@ -1435,7 +1440,7 @@ def write_fragments(env: Environment, sections: Sequence[Mapping[str, Any]],
         path = dest / f"{section['id']}.html"
         temp = _temp_sibling(path)
         try:
-            temp.write_text(html, encoding="utf-8")
+            write_unshimmed_html(temp, html, encoding="utf-8")
             os.replace(temp, path)
         finally:
             temp.unlink(missing_ok=True)
