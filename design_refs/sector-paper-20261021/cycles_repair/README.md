@@ -133,7 +133,7 @@ for a string; the PRC-049 falsifier is restated (stanceHTML opens at `templates/
 the EN half on the whole token `nw.stance` at :157 and fails the ZH half) and `test_en_rule_rejects_identifier_substrings`
 is the EN-half falsifier (the PRC-051 grader shape at :332, the stance shape at :153). Deck sources: `stance_label` cites
 stanceHTML opening at :158 (C01); `grader_caption` cites `engine/sector_central_grader.py:498-506` (C02). Boards
-28-31/34-36/39-41 re-rendered; the other 32 PNGs are byte-identical; EN Cycles boards 28/29/40 byte-identical to 78c14f7d; 31/39 re-encoded with the same png_px and the same face (Chrome antialiasing nondeterminism, measured against the 78c14f7d bytes: 31: 761 px differ by at most 1 in a channel, all inside x 16-374 / y 82-116; 39: 752 px differ by at most 1 in a channel, all inside x 16-374 / y 82-116 — the hero-title band; no EN string changed in wave 7); heights above equal `png_px` in
+28-31/34-36/39-41 re-rendered; the other 32 PNGs are byte-identical; EN Cycles boards 28/29/40 byte-identical to 78c14f7d; 31/39 re-encoded with the same png_px and the same face (Chrome antialiasing nondeterminism, measured against the 78c14f7d bytes: 31: 761 px differ by at most 1 in a channel, all inside x 16-374 / y 82-116; 39: 752 px differ by at most 1 in a channel, all inside x 16-374 / y 82-116 — the global header search-field row (the site-nav search input; the seat's measured bounding box (16, 82, 374, 116) at 390 px; the wave-7 record's region label was wrong — VTC-048, corrected in wave 8); no EN string changed in wave 7); heights above equal `png_px` in
 `boards_manifest.yml` (C06).
 
 ## How to render

@@ -7,8 +7,8 @@
 # cited row must itself have a fragment in the cited window (JS unicode escapes decoded), unless the
 # source declares the ZH NEW or gives the ZH its own `ZH path:line` that carries it — an EN hit alone
 # never vouches for a misattributed ZH string. SIC-V7-C03 (i) (PRC-050/051): the EN half matches whole
-# words of the normalized window (`_present`) — an identifier substring (`win` inside `window`, `stance`
-# inside `stanceHTML`) is not a hit; a CJK fragment matches as a substring.
+# alphanumeric runs of the normalized window (`_present`; `norm` splits on every non-alphanumeric character, `_` and `.` included) — a Latin fragment must equal a whole run: a substring of a run (`win` in `window`,
+# `stance` in `stanceHTML` / `stances`) is not a hit, a component of a snake_case or dotted identifier (`hit` in `dir_hit_rate`, `stance` in `nw.stance` / `stance_zh`) is; a CJK fragment matches as a substring.
 """Tests for the Sector Paper bilingual copy deck."""
 
 import json
@@ -152,10 +152,10 @@ _CJK = re.compile(r"[一-鿿]")
 
 
 def _present(window, frag):
-    """SIC-V7-C03 outcome (i): a Latin fragment counts only as a whole word of the normalized window —
-    ``norm`` keeps an identifier as one word, so ``win`` inside ``window`` or ``stance`` inside ``stanceHTML``
-    is not a hit, while ``nw.stance`` (member access; the dot becomes a space) is. A CJK fragment matches as
-    a substring, since ZH has no word boundary."""
+    """SIC-V7-C03 outcome (i): a Latin fragment counts only as a whole alphanumeric run of the normalized window.
+    ``norm`` splits on every non-alphanumeric character, ``_`` and ``.`` included, so a substring of a run (``win`` in
+    ``window``, ``stance`` in ``stanceHTML`` / ``stances``) is not a hit, while a component of a snake_case or dotted
+    identifier (``hit`` in ``dir_hit_rate``, ``stance`` in ``nw.stance`` / ``stance_zh``) is. A CJK fragment matches as a substring, since ZH has no word boundary."""
     if _CJK.search(frag):
         return frag in window
     return re.search(r"(?<![0-9a-z])" + re.escape(frag) + r"(?![0-9a-z])", window) is not None
@@ -294,9 +294,9 @@ def test_exactly_one_h1_per_board():
 
 
 def test_cited_sources_carry_a_fragment():
-    """Every cited (non-note) deck row carries a fragment of its EN string as a whole word of the cited
-    window (SIC-V7-C03 outcome (i): word-boundary matching on the normalized window; an identifier substring
-    never satisfies it) and clears the ZH rule of row_gaps (SIC-V6-C04)."""
+    """Every cited (non-note) deck row carries a fragment of its EN string as a whole alphanumeric run of the
+    normalized cited window (SIC-V7-C03 outcome (i); ``norm`` splits on every non-alphanumeric character, ``_`` and ``.`` included, so
+    a substring of a run is not a hit while a snake_case or dotted identifier component is) and clears the ZH rule of row_gaps (SIC-V6-C04)."""
     deck = load_deck()
     missing = []
     for board, key, entry in entries(deck):
@@ -401,3 +401,9 @@ def test_stance_rows_equal_the_engine_doctrine_vocabulary():
     for key, rec in DOCTRINE_STANCES.items():
         row = comp[f"stance_{key}"]
         assert (row["en"], row["zh"]) == (rec["en"], rec["zh"]), key
+
+
+def test_present_pins_the_normalizer_split():
+    """SIC-V8-C01 pin (PRC-053): ``norm`` splits on ``_`` and ``.``, so a snake_case component is a whole-run hit and a
+    substring of a run is not — both halves pinned with literals."""
+    assert _present(norm("dir_hit_rate"), "hit") is True and _present(norm("window"), "win") is False
