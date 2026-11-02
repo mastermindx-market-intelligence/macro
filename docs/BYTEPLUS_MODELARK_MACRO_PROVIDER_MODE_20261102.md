@@ -32,6 +32,33 @@ or missing token counts are not fabricated.
 entitlement and uses `/api/coding` or `/api/coding/v3`. This route refuses
 that path, never borrows subscription usage, and never falls back to it.
 
+## Operator-only commercial canary (source stage)
+
+`python3 -m engine.modelark_commercial_canary` is an explicit **one-request**
+issuer qualification helper, not production activation. It requires all
+checked-in provider modes OFF, an exact source SHA-256 pin, an independently
+qualified `ai_costs` estimate at or below $0.01 for 256 input + 32 output
+tokens, and both `--execute` plus `MM_MODELARK_COMMERCIAL_CANARY_MODE`
+matching one of the three pinned mode IDs. Without these it refuses before
+reading any commercial credential. A successful request does NOT prove
+account-level debit, quota, Worker registration or entitlement.
+
+Only the private credential owner may run the real canary in a single-use
+operator process with the commercial key supplied by its existing private
+secret mechanism. The runner temporarily enables one mode and marks one
+profile qualified **only in that isolated process**, calls through the
+existing `call_mode`/receipt writer, and immediately restores the original
+source globals. It does not edit shipped configuration, deploy, enable
+normal traffic, or authorize Fabric. It never prints the credential,
+response text, or subscription account data. A caller-injected fake
+transport is always reported as unverified rehearsal, never as an issuer
+canary.
+
+No actual canary is executed or billed by this source PR. The preflight
+cost estimate is not a provider-enforced spending limit; the credential
+owner must verify the console account spend cap and independently
+reconcile real provider billing/usage after the call.
+
 **Not yet proven:** Commercial issuer entitlement, correct account/region,
 actual API key presence, authoritative quota/debit, real price for the model,
 WorkerRegistry + Capacity admission, Executive Job/Attempt, or a production
