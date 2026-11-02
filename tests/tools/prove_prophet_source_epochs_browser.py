@@ -28,7 +28,136 @@ from tests.test_prophet_source_epochs_reader import (
 )
 
 
-def prove(output: Path):
+
+def capture_design_evidence(browser, origin, state, canonical_payload, proof, output):
+    """Use the repo's canonical emitter with a real reader-path browser driver."""
+    from datetime import datetime, timezone
+    from scripts import capture_page_evidence as evidence
+
+    output.mkdir(parents=True, exist_ok=True)
+    driver_cells = []
+
+    class ReaderDriver:
+        def capture(self, *, url, cell, timeout_s):
+            context = browser.new_context(
+                viewport={"width": cell.width, "height": cell.height})
+            context.add_init_script(
+                "localStorage.setItem('theme'," + json.dumps(cell.theme) + ");"
+                "localStorage.setItem('lang'," + json.dumps(cell.locale) + ");")
+            page = context.new_page()
+            page.route("**/*", lambda route: route.continue_()
+                       if route.request.url.startswith(origin + "/") else route.abort())
+            errors, failures = [], []
+            counters = {"requests": 0, "bytes": 0}
+            page.on("pageerror", lambda error: errors.append(
+                {"text": str(error), "source_url": None}))
+            page.on("response", lambda response: failures.append(
+                {"url": response.url, "status": response.status})
+                if response.status >= 400 else None)
+            page.on("request", lambda request: counters.__setitem__(
+                "requests", counters["requests"] + 1))
+
+            def finished(request):
+                try:
+                    counters["bytes"] += int(request.sizes().get("responseBodySize") or 0)
+                except Exception:
+                    pass
+
+            page.on("requestfinished", finished)
+            state.update(payload=canonical_payload, status=200, requests=0)
+            try:
+                response = page.goto(url, wait_until="domcontentloaded",
+                                     timeout=timeout_s * 1000)
+                assert response is not None and response.ok
+                page.wait_for_function("!document.getElementById('us-life-wall')",
+                                       timeout=15000)
+                page.locator("#us-src-btn-plan").click()
+                disclosure = page.locator("#us-prophet-source-epochs")
+                disclosure.wait_for(state="visible")
+                disclosure.locator("summary").click()
+                assert disclosure.locator("details").evaluate("el => el.open")
+                assert disclosure.get_attribute("data-settlement-status") == "PENDING"
+                page.evaluate("""() => {
+                  const label=document.createElement('p');
+                  label.textContent='LOCAL CANDIDATE · SYNTHETIC FIXTURES · NOT PRODUCTION';
+                  label.style.cssText='font:12px monospace;color:inherit;margin:0 0 8px';
+                  document.getElementById('us-prophet-source-epochs').prepend(label);
+                }""")
+                disclosure.scroll_into_view_if_needed()
+                applied_force = None
+                if cell.force_state is not None:
+                    # Establish keyboard modality before the canonical focus helper.
+                    page.keyboard.press("Tab")
+                    applied_force = evidence._apply_interaction_force(page, cell.force_state)
+                    assert applied_force == cell.force_state.name
+                    assert disclosure.locator("summary").evaluate(
+                        "el => el.matches(':focus-visible')")
+                applied = page.evaluate("""() => ({
+                  theme:document.documentElement.dataset.theme,
+                  locale:document.documentElement.dataset.lang,
+                  radius:getComputedStyle(document.querySelector(
+                    '#us-prophet-source-epochs details')).borderTopLeftRadius
+                })""")
+                assert applied == {"theme": cell.theme, "locale": cell.locale,
+                                   "radius": "8px"}, applied
+                assert not errors, errors
+                observed = page.evaluate(evidence._OBSERVER_SCRIPT.strip(),
+                                         dict(evidence.DEFAULT_OBSERVER_CONFIG)) or {}
+                screenshot = page.screenshot(full_page=True)
+                driver_cells.append({"cell_id": cell.cell_id, **applied,
+                                     "focus_visible": cell.force_state is not None})
+                return evidence.CellObservation(
+                    cell_id=cell.cell_id, loaded=True, screenshot_png=screenshot,
+                    observed=observed, console_errors=tuple(errors),
+                    failed_responses=tuple(failures),
+                    request_count=counters["requests"],
+                    payload_bytes_total=counters["bytes"],
+                    applied_theme=applied["theme"], applied_locale=applied["locale"],
+                    applied_force_state=applied_force)
+            finally:
+                context.close()
+
+    target = {
+        "kind": "local_synthetic_reader_fixture",
+        "resolved_sha_or_none": proof["head"],
+        "source_sha256": proof["source_sha256"],
+        "harness_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "rendered_html_sha256": proof["rendered_html_sha256"],
+        "disclosure": proof["environment"],
+        "driver": "ReaderDriver in tests/tools/prove_prophet_source_epochs_browser.py; "
+                  "real Plans click and disclosure interaction; no account or live payload",
+    }
+    result = evidence.run_capture(
+        rows=[evidence.normalize_row(
+            {"page_id": "macro:us-stocks-prophet-source-epochs",
+             "route": "/us_stocks.html", "repo": "macro"}, index=0)],
+        driver=ReaderDriver(), base_url=origin, output_dir=output,
+        manifest_dir=output, viewports=("desktop", "mobile"),
+        locales=("en", "zh"), themes=("dark", "light"), delay_ms=0,
+        timeout_s=20, generated_at=datetime.now(timezone.utc).isoformat(),
+        target=target,
+        selection={"basis": "local production-template synthetic reader path"},
+        force_states=evidence.parse_force_states(
+            ["epoch_summary_focus:focus(#us-prophet-source-epochs summary)"]))
+    manifest = result["manifest"]
+    (output / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    assert manifest["totals"]["states_captured"] == 16, manifest["totals"]
+    assert len(driver_cells) == 16
+    receipt = (
+        "schema: mastermind.page_evidence_receipt.v1\n"
+        "changed_paths:\n"
+        "  - templates/_prophet_source_epochs.html.j2\n"
+        "manifest: " + (output / "manifest.json").relative_to(ROOT).as_posix() + "\n"
+    )
+    (output / "EVIDENCE.yml").write_text(receipt)
+    proof["canonical_visual_evidence"] = {
+        "manifest": (output / "manifest.json").relative_to(ROOT).as_posix(),
+        "states": driver_cells,
+        "emitter_sha256": evidence.module_source_sha256(),
+    }
+
+
+def prove(output: Path, visual_output: Path | None = None):
     output.mkdir(parents=True, exist_ok=True)
     proof = {
         "schema": "prophet_source_epochs.browser_proof.v1",
@@ -53,6 +182,8 @@ def prove(output: Path):
             run_production_refresh(fixture, patch)
         payload_path = fixture["site"] / "premiumdata" / "us_stocks.json"
         canonical_payload = json.loads(payload_path.read_text())
+        proof["rendered_html_sha256"] = hashlib.sha256(
+            (fixture["site"] / "us_stocks.html").read_bytes()).hexdigest()
         state = {"payload": canonical_payload, "status": 200, "requests": 0}
 
         class Handler(BaseHTTPRequestHandler):
@@ -144,6 +275,7 @@ def prove(output: Path):
                               right:el.getBoundingClientRect().right,
                               viewport:window.innerWidth,
                               summaryHeight:el.querySelector('summary').getBoundingClientRect().height,
+                              radius:getComputedStyle(el.querySelector('details')).borderTopLeftRadius,
                               theme:document.documentElement.dataset.theme,
                               lang:document.documentElement.dataset.lang,
                               unoccluded:Array.from(el.querySelectorAll('dd')).every(row=>{
@@ -155,6 +287,7 @@ def prove(output: Path):
                             assert bounds["scrollWidth"] <= bounds["clientWidth"] + 1, bounds
                             assert bounds["right"] <= bounds["viewport"] + 1, bounds
                             assert bounds["summaryHeight"] >= 40, bounds
+                            assert bounds["radius"] == "8px", bounds
                             assert bounds["unoccluded"], bounds
                             assert bounds["theme"] == theme and bounds["lang"] == language, bounds
                             filename = f"{width}-{theme}-{language}.png"
@@ -208,6 +341,9 @@ def prove(output: Path):
                         page.locator("#us-prophet-source-epochs").evaluate("el => el.scrollIntoView({block:'center'})")
                         page.locator("#us-prophet-source-epochs").screenshot(path=str(output / "390-refused-index.png"))
                     context.close()
+                if visual_output is not None:
+                    capture_design_evidence(
+                        browser, origin, state, canonical_payload, proof, visual_output)
                 browser.close()
         finally:
             server.shutdown()
@@ -222,4 +358,8 @@ def prove(output: Path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
-    prove(parser.parse_args().output.resolve())
+    parser.add_argument("--visual-output", type=Path,
+                        help="Canonical visual evidence directory inside this checkout.")
+    args = parser.parse_args()
+    prove(args.output.resolve(),
+          args.visual_output.resolve() if args.visual_output else None)

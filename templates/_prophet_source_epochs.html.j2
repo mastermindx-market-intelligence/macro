@@ -6,7 +6,7 @@
 {%- set _epoch_origin = _epochs.get('origination_board') or {} -%}
 <style>
   .mx-source-epochs{margin:8px 0 18px;color:var(--text);font-size:13px;line-height:1.5;min-width:0}
-  .mx-source-epochs details{border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+  .mx-source-epochs details{border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel)}
   .mx-source-epochs summary{min-height:40px;padding:10px 12px;cursor:pointer;font-weight:600;box-sizing:border-box}
   .mx-source-epochs summary:focus-visible{outline:2px solid var(--info);outline-offset:2px}
   .mx-source-epochs .epoch-body{padding:0 12px 12px}
