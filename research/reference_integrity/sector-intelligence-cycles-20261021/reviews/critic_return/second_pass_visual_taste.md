@@ -1,61 +1,47 @@
-<!-- RIG round 5 · pass 2 · visual_taste · reviewer agent a48a38779cafe1df4 · artifact 66829d178798f9226be7f668e82fe7c15e38b5e4 ·
-     stored byte-exact from the agent's final message (sha256 of the message body below: d27f396ae643202f1266c33da99bd8dc65e6146ecbed18940197e818aff6a990) -->
+<!-- RIG round 6 · pass 2 · visual_taste · reviewer agent a48a38779cafe1df4 · artifact 204500aa619c95677eee8f3bb2133f454847f792 ·
+     stored byte-exact from the agent's final message (sha256 of the message body below: 06e8d1cf8efe70759b8e2cf865abc829449c3089772bc79cb8bd1f710e3efc14) -->
 
-STATUS: PARTIAL
-RESULT: Pass 2 verdict is PASS_WITH_CONDITIONS (filed as PASS_WITH_NOTES): no blocker or major; VTC-035, 036 and 039 reworded with binding conditions, VTC-037, 038 and 040 upheld, one new minor (VTC-042) from the opened proposal.yml.
+STATUS: PASS
+RESULT: Round 6 pass 2 for Reviewer B (visual_taste): the verdict at 204500aa stays PASS with no conditions. All four author positions are adequate. VTC-043, 045 and 046 are upheld as minor advisories. VTC-044 is reworded to cover only the empty band, because the seat's reason for keeping the Clocks block above the sections holds. None of the four becomes a condition.
 EVIDENCE:
------BEGIN RIG RECEIPT-----
-role: visual_taste
-reviewer_identity: opus-auditor-visual-taste-sic-20261021-r5
+RIG round 6 · PASS 2 (rationale reveal)
 pass: 2
-artifact_sha: 66829d178798f9226be7f668e82fe7c15e38b5e4
-first_pass_path: reviews/critic_return/first_pass_visual_taste.md
-judged_as_frozen: 'Every finding is judged at 66829d17. The wave-5 cure plan in the rationale cures nothing at this sha. Each accepted cure is bound below as a checkable condition.'
+rig: sector-intelligence-cycles-20261021
+issue: 'macro #7646'
+review_round: 6
+artifact_sha: 204500aa619c95677eee8f3bb2133f454847f792
+role: visual_taste
+reviewer_identity: opus-auditor-visual-taste-sic-20261021-r6
+mode: READ_ONLY
+pass1_receipt: 'research/reference_integrity/sector-intelligence-cycles-20261021/reviews/critic_return/first_pass_visual_taste.md (commit bdf5ab722e67); pass-1 findings frozen, amended below only'
+pass2_status: COMPLETE
+rationale_verification:
+- {item: VTC-043, verified: true, evidence: 'design_refs/sector-paper-20261021/copy_deck.json:177 hazard_mismatch_pattern zh "{a_name}为{leg}，趋向{turn} · {b_name}为{phase}，下一拐点为{expected}" and :178 rhythm_mismatch_pattern zh "{a_name}为下一拐点{turn} · ..." are the source of the stiff construction, as the seat states. EN patterns at the same lines read naturally ("says").'}
+- {item: VTC-046, verified: true, evidence: 'copy_deck.json:249 cycles.aligned_qualifier en "Clocks aligned on the history day {d}; not current under this banner" / zh "时钟在历史日 {d} 对齐；在此横幅下并非当前". This confirms the two-object use of "clock(s)" that the rename targets.'}
+- {item: VTC-041, verified: true, evidence: 'grep finds no VTC-041 in reviews/round5_66829d17/*visual_taste* or in verdict.yml. The pass-1 withdrawn disposition stands.'}
+- {item: round5_mandate, verified: true, evidence: 'proposal.yml revision_mandate_round5 :2079-2121 records VTC-035..040 and 042 with the cure and condition (SIC-V5-C05..C12) matching my round-5 conditions. Each wave-5 proof agrees with the pass-1 evidence I took independently from the frozen tree.'}
 amendments:
-  - id: VTC-035
-    change: reworded
-    reason: 'Answer to the author''s question. A stated exemption is sufficient only for drawers, not for faces.
-      - The drawer does not have to be zh-latin=0. SIC-ADJ-01 already places engine words and identifiers in the labeled provenance drawer (verdict.yml:30, :72).
-      - SIC-V4-C05 (verdict.yml:54) says "no internal study id ... on either face". That bars a letter-plus-digit id on the face whether or not it sits in <code>.
-      - A written exemption alone leaves the hole open. zh_latin_grep.py:5 and :15 skip <code> wherever it appears, so a face <code> id would still pass the probe.
-      - The cure must therefore keep the <details> (drawer) skip and stop skipping <code> outside a drawer. Moving the context-card and desk-caption identifiers into drawers is the right cure.
-      Severity stays minor.'
-  - id: VTC-036
-    change: reworded
-    reason: 'Answer to the author''s question. Use outline-neutral chips, not plain text labels.
-      - A chip keeps each disagree state scannable as a state and keeps the four labels parallel in EN and ZH. Plain text would merge into the explanatory sentence that follows it (boards 28/34).
-      - The outline must be an even all-round neutral border with neutral or muted ink, never warn ink or fill. It must not be a one-sided rule, because the CLAUDE.md permanent visual rule bans edge accents.
-      - "Live parity unproven" is also a caveat chip. It must take the same neutral treatment, or the doctrine chip is still not the only warn chip on the card (board 28, XLF hazard section).
-      Severity stays minor.'
-  - id: VTC-039
-    change: reworded
-    reason: 'The scope widens to the proposal record. proposal.yml:316-317 lists board 41 with locale ZH and declares only the dark-theme capture, not that the crop is the EN-language production render. The locale declaration therefore has to be added in three places: the face chip, boards_manifest row 41 and proposal.yml screenshots entry 41. Keeping the d86344b93a0b crop instead of re-capturing it is accepted. Severity stays minor.'
-new_findings:
-  - id: VTC-042
-    severity: minor
-    source: rationale
-    finding: 'Stale screenshot records in proposal.yml (opened in pass 2), the SIC-V2-C07 class.
-      - Board 39 png_px: proposal.yml:307 says 390x4863, but the wave-4 capture is 390x5154 (cycles_repair/capture.log:29).
-      - Board 40 png_px: proposal.yml:312 says 1440x3348, but the capture is 1440x3427 (capture.log:30).
-      - The board 39 note (proposal.yml:307) still describes the round-3 "XLC Clocks-disagree read state". SIC-V4-C03 replaced that one label with distinct Read / Hazard / Rhythm disagree states (cycles.html:356-357).'
-verdict: PASS_WITH_CONDITIONS
-verdict_as_filed: PASS_WITH_NOTES
-blockers_remaining: []
-conditions:
-  - 'VTC-035a: components/zh_latin_grep.py skips <details> (drawer) content but no longer skips <code> outside <details>. capture.log reports zh-latin=0 under that rule on boards 25/30/32/33/34/35/36/38/41.'
-  - 'VTC-035b: no ZH face outside a <details> drawer carries sector_cycles.semantic_families.v2, price_c4414dcb, site/sector_cycles.html, d86344b93a0b, chrome-headless-1x, now.phase or phase_v2. Board 41''s desk caption names both clocks in plain ZH, with the identifiers in the drawer. Every capture.log line that claims zh-latin=0 states the exemption scope.'
-  - 'VTC-036: in cycles.html and boards 28/29/34/35/41, the doctrine chip is the only warn-ink or warn-fill chip on each card. The Ladder / Hazard / Rhythm / Read disagrees chips and the Live parity unproven chip take a neutral, even all-round outline with no edge accent. The XLF Ladder-disagrees chip is not a child of cyc-stance-row.'
-  - 'VTC-037: each card draws at most one Clocks block, with one line per disagreeing clock naming both clocks. The sentence "The projected window and its overdue flag are kept in the provenance drawer" appears at most once per card, inside the drawer. The Descriptive rhythm chip is drawn only when a rhythm value is drawn on the face.'
-  - 'VTC-038: the ZH PRIOR fixture title and body use 先验, matching its cell badges (cycles.html fixture card; boards 34/35/41). The string "doctrine_stance" does not appear on the EN or ZH face outside a drawer.'
-  - 'VTC-039: board 41 shows a face chip declaring that the production crop has an EN interface (for example 英文界面截图) beside 生产截图 / 深色主题截图. boards_manifest row 41 and proposal.yml screenshots entry 41 declare the crop''s locale and limit the "ZH deck copy end-to-end" claim to the specimen deck.'
-  - 'VTC-040: every boards_manifest Cycles row lists only the doctrine stances its PNG draws (Watch / Protect). EN rows 28/29/31/39/40 name no ZH strings. Rows 32/33/38 spell the allow entry GLP-1, as zh_face_latin_allow.txt does. No wave bullet is shared verbatim across rows.'
-  - 'VTC-042: proposal.yml screenshots png_px equals the latest capture.log size for every board 23-41, and the board 39 note names the SIC-V4-C03 disagree states.'
+- {id: VTC-043, change: upheld, reason: 'The seat accepts the finding and names the exact deck source (copy_deck.json:177/178). The proposed verb/colon wording (风险时钟：向上段，趋向顶部 · 阶段时钟显示回落中，下一拐点为底部; 节律时钟显示下一拐点为顶部) is an adequate cure. Severity stays minor because it is polish on correct, legible copy, so it is not a condition.'}
+- {id: VTC-044, change: reworded, reason: 'The seat explains that clock trust gates the reading of the sections beneath it (wave-5 IA, SIC-V5-C07/C08). That is a sound IA reason to keep clocks_block above hazard/rhythm/read: a reader should meet the disagreement before a reading it qualifies. I withdraw the "caveats come before the read" half. The finding is reworded to the empty-band half only (the XLC card leaves about 280px of empty card height in the desktop 3-up grid on boards 28/29/34/35/41). The seat''s cure, .cyc-cards align-items:start, is adequate for it. Minor, not a condition.'}
+- {id: VTC-045, change: upheld, reason: '.cyc-method .spc-chip{align-self:flex-start} is exactly the cure I proposed and is adequate. Minor, not a condition.'}
+- {id: VTC-046, change: upheld, reason: 'The plan is adequate. The per-card Clocks block keeps the name "clock"; the page-level session family moves to data vocabulary (Events data · aligned / 事件数据 · 一致; aligned_qualifier to Data sessions aligned on the history day {d} / 数据交易日在历史日 {d} 一致；在此横幅下并非当前; manifest tag rotation data aligned (fresh)). The plan also binds the wording in copy_deck.json, not build_cycles.py, which keeps deck sourcing intact. One wording note for round 7: replace both 对齐 and the EN "Clocks aligned" so no "clock" or 时钟 term survives in the page-level family. Minor, not a condition.'}
+advisory_notes: 'I now hold VTC-043, VTC-044 (empty band only), VTC-045 and VTC-046 as minor advisory polish. None becomes a condition after the rationale: none violates doctrine or worsens the core object at 204500aa. The seat may apply them in wave 6. Round 7 may confirm that each landed as described and that the re-rendered Cycles boards 28-41 regress nothing (one doctrine warn chip per card, neutral outline chips, ZH faces zh-latin=0 under the SIC-ADJ-03 scope, png_px parity). That confirmation follows from the seat''s plan; it is not a gate created by this review.'
+round5_dispositions_unchanged: 'VTC-035..040 and VTC-042 cured, VTC-041 withdrawn, and the carried round-4 rows (VTC-029/028/030/031/032/034/021/024/016) cured, as filed in pass 1. The rationale gives no reason to amend them.'
+verdict: PASS
+verdict_as_filed: PASS
+conditions: []
 inputs_opened_pass2:
-  - research/reference_integrity/sector-intelligence-cycles-20261021/proposal.yml lines 305-320 (screenshots entries 39 tail, 40, 41)
-  - research/reference_integrity/sector-intelligence-cycles-20261021/verdict.yml lines 1-75 and 200-296
-  - wc -l verdict.yml
-not_opened_pass2: 'proposal.yml revision_mandate_round4 (:1980) and wave4_summary (:1290); continuity.yml; round-4 critic_return visual_taste files. The rationale message and verdict.yml were enough for the six amendments.'
+- 'research/reference_integrity/sector-intelligence-cycles-20261021/proposal.yml:2079-2158 (revision_mandate_round5)'
+- 'design_refs/sector-paper-20261021/copy_deck.json:177-178, :249 (artifact file, verifying the rationale citations)'
+- 'grep "VTC-041" over research/reference_integrity/sector-intelligence-cycles-20261021/reviews/round5_66829d17/*visual_taste* (my own round-5 receipts) and verdict.yml: no matches'
+- 'ls design_refs/sector-paper-20261021/cycles_repair/'
+not_opened:
+- 'proposal.yml wave5_summary :1313 and round-4 annotations :2036-2051 (not needed; the mandate rows sufficed)'
+- 'continuity.yml'
+- 'verdict.yml beyond the VTC-041 grep'
+- 'reviews/critic_return/*product_regression*.md, reviews/round5_66829d17/*product_regression*, reviews/product_regression.yml'
+- 'anything written by Reviewer A, including task output a29cc1ce'
 quarantine_breaches: []
------END RIG RECEIPT-----
-GAPS: Not opened in pass 2: proposal.yml wave4_summary and revision_mandate_round4, and continuity.yml; the pass-1 board-coverage gaps still stand.
-DEVIATIONS: None; used 4 of the 5 permitted tool calls, made no writes, and opened nothing quarantined or from Reviewer A.
+END PASS 2
+GAPS: I did not open wave5_summary, the round-4 annotations or continuity.yml; they were not needed for adjudication. Wave-6 promises were not judged as evidence.
+DEVIATIONS: You asked for STATUS COMPLETE|PARTIAL, but the return guard only accepts PASS|PARTIAL|BLOCKED|FAIL. So the top-level STATUS is PASS and the receipt carries pass2_status COMPLETE. I used 3 of the 5 allowed tool calls and wrote or ran nothing.
