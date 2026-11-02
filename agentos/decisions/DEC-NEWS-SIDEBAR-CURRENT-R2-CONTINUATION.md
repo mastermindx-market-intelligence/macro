@@ -10,21 +10,21 @@ answer: >
   Defer the old review-control removal until its save semantics are reconciled.
 rationale: >
   The old renderer predates current editorial views, evidence handling and the
-  saved-basis correction journey. Mark reviewed is currently the sole News save
-  entry. Replacing the whole renderer or deleting that action would lose a
+  saved-basis correction journey. Both per-story and bulk review actions currently capture the saved
+  evidence basis through the same mark function. Replacing the whole renderer or deleting that action would lose a
   functioning journey. The surviving layout/text improvements can be specified
   against current source without reverting those capabilities.
 alternatives:
   - option: "Merge or transplant the old PR 1081 renderer."
     why_not: "It overlaps current R2 and Journey 6 source and would remove newer behavior; its accepted review applies only to its old head."
   - option: "Remove every review control immediately."
-    why_not: "The action now also captures the saved evidence basis. No separate News save entry was found and R3 is design-only."
+    why_not: "Both per-story Mark reviewed and bulk Mark shown as reviewed capture the saved basis. No separate save workflow was found and R3 remains design-only."
   - option: "Discard the paused project."
     why_not: "The original full-height reading and activity-strip cleanup are still visible needs; the dated shared-Brief assessment remains useful input to E4."
 evidence:
   - "Terminal PR 1081 at a10657ee8eaa0aa12c98e2ba5563a8680bfb9c9b; fresh GitHub read on 2026-11-02: open, Draft, merge-blocked, unmerged."
   - "Terminal master fd1e500c54376c7ea763b8eaec23a0929b08f4c8: TickerNewsPanel.tsx, TickerNewsPanel.module.css, newsDisplay.ts and TerminalShell.tsx read from git show."
-  - "git grep -n -E 'NewsMarkReviewed|markReviewed\\(|saveBasis\\(' origin/master -- terminal: NewsMarkReviewed used only by TickerNewsPanel; row action calls catchup.markStory."
+  - "Current useNewsCatchup.ts: markStory calls mark([storyId]); markShown calls mark(unreadShown); both reach markStoriesReviewed with the current rights receipt. NewsCatchup.tsx mounts the bulk action and TickerNewsPanel.tsx mounts the per-story action."
   - "Terminal PR 1196 merged saved-basis corrections; PR 1129 owns the open ladder-layout follow-up; PR 1130 is R3 design exploration."
   - "Macro research/product_intelligence_local_delivery/NEWS_INTELLIGENCE_RAIL_R2_SPEC_2026-10-22.md at 9af0a33eb38b08d902c3e593cb0e276d3f0d6a18 expressly retained strip, catch-up, review and Mark reviewed in that R2 build."
   - "Macro PR 10351 merged E4_BRIEF_BINDING_CENSUS.md: B1-B4 PARTIAL; B5 NONE at its census head; repaired legacy news inference gates default false."
