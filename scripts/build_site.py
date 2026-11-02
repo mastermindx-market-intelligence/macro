@@ -8616,8 +8616,20 @@ def main() -> int:
         from scripts.build_capital_structure_page import render as _render_capital_structure
         _cs_page = _render_capital_structure(config.ROOT)
         log.info("wrote %s", _cs_page)
-    except Exception as _cs_e:  # noqa: BLE001 — additive; never break main build
-        log.warning("capital_structure.html render failed (%s); page skipped", _cs_e)
+    except Exception as _cs_e:  # noqa: BLE001 — annotate loudly; never break main build
+        # A withheld page keeps the last build's bytes, whose "in N days" copy is
+        # wrong a day later. A log WARNING let that ride a green run from 10-24 to
+        # 11-02. Bare print, NOT a logger call: GitHub only parses a workflow
+        # command when "::" starts the line (see the sitemap note below).
+        _cs_msg = ("capital_structure.html NOT rebuilt, stale page retained — "
+                   f"{type(_cs_e).__name__}: {(str(_cs_e).splitlines() or [''])[0]}")
+        print(f"::error title=capital_structure::{_cs_msg}", flush=True)
+        try:
+            if os.environ.get("GITHUB_STEP_SUMMARY"):
+                with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as _cs_fh:
+                    _cs_fh.write(f"### ❌ {_cs_msg}\n")
+        except OSError:
+            pass
 
     # Finance Intelligence dossier — render only the registered preview shell.
     # Per Chairman directive 2026-09-24 (relayed from Astra CEO): Finance ships

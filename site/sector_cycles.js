@@ -941,12 +941,60 @@
       return pa !== pb ? pa - pb : a.now.pos - b.now.pos;
     });
   }
+  function turnRecordText(r) {
+    var nFunds = r.funds.length;
+    var nFalse = r["false"];
+    var en = "The turn record dated " + r.as_of
+      + " grades an earlier version of this method,"
+      + " run on a shorter price history."
+      + " It is not a record of the method behind this month's cards."
+      + " Across " + nFunds + " US sector funds it met " + r.met
+      + " of " + r.turns + " real turns. " + r.right
+      + " calls were right and " + nFalse + " were false;"
+      + " right means within " + r.tau_months
+      + " months of a real turn.";
+    var zh = "转折记录（日期 " + r.as_of
+      + "）检验的是本方法的早期版本，所用价格历史较短，"
+      + "并不是本月卡片所用方法的记录。在 " + nFunds
+      + " 只美国行业基金中，它命中了 " + r.turns
+      + " 个实际转折中的 " + r.met + " 个。判断正确 "
+      + r.right + " 次、错误 " + nFalse
+      + " 次；正确指与实际转折相差不超过 " + r.tau_months
+      + " 个月。";
+    return L(en, zh);
+  }
+  function mountTurnRecord(list) {
+    var grid = document.getElementById("sc-cards");
+    if (!grid) return;
+    var p = document.getElementById("sc-turnrec");
+    if (!p) {
+      p = el("p", "sc-prov-text");
+      p.id = "sc-turnrec";
+      grid.insertAdjacentElement("afterend", p);
+    }
+    var rec = DATA.turn_record;
+    var hit = false;
+    var i = 0;
+    if (!IS_CN && rec && rec.funds && list) {
+      for (i = 0; i < list.length; i++) {
+        if (rec.funds.indexOf(list[i].id) >= 0) hit = true;
+      }
+    }
+    if (!hit) {
+      p.hidden = true;
+      p.textContent = "";
+      return;
+    }
+    p.hidden = false;
+    p.textContent = turnRecordText(rec);
+  }
   function mountCards() {
     var grid = document.getElementById("sc-cards");
     if (!grid) return;
     Object.keys(sparks).forEach(function (k) { try { sparks[k].destroy(); } catch (e) {} });
     sparks = {};
     grid.innerHTML = "";
+    mountTurnRecord(sortedActive());
     sortedActive().forEach(function (s) {
       var nw = s.now, tilt = tiltOf(s);
       var card = el("article", "cyc-card");

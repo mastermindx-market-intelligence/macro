@@ -1,12 +1,12 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-11-02T10:04:25+00:00",
+  "generated_at": "2026-11-02T11:14:47+00:00",
   "markets": {
     "us": {
       "asof_last_row": "2026-10-30",
       "monitoring": {
-        "log_fresh": false,
-        "last_logged_days_ago": 13,
+        "log_fresh": true,
+        "last_logged_days_ago": 3,
         "ungraded_backlog": 0,
         "awaiting_maturity": 13,
         "backlog_cutoff_bd": 28,
