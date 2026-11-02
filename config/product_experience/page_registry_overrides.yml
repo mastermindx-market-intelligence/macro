@@ -1328,3 +1328,57 @@ pages:
 
   macro:report_price_of_duration:
     archetype: "editorial"
+
+  # P12.T9: source inventory and Shared Shell consumer admission are separate.
+  # These classifications retain the source serving policy; the explicit
+  # consumer marker is enforced by export_shared_shell_routes.py (P12.T14).
+  macro:gmi:
+    archetype: "discovery_board"
+    evidence: [scripts/build_gmi_explorer.py, templates/gmi_map.html.j2, config/site_access.yml]
+    why: "The published taxonomy map is a browse surface over the existing GMI producer."
+
+  macro:gmi_index:
+    archetype: "discovery_board"
+    evidence: [scripts/build_gmi_explorer.py, templates/gmi_index.html.j2]
+    why: "The published micro-theme index is the list form of the taxonomy browse surface."
+
+  macro:gmi_coverage:
+    archetype: "intelligence_desk"
+    evidence: [scripts/build_gmi_explorer.py, templates/gmi_coverage.html.j2]
+    why: "The published coverage desk explains measured denominators, dispositions and receipts."
+
+  macro:gmi_issuer_mu:
+    archetype: "instrument_analyzer"
+    known_contracts: ["site_access.v1:default_insider", "shared_shell:admission_withheld"]
+    evidence: [scripts/build_gmi_explorer.py, scripts/gmi_explorer/model.py, templates/gmi_issuer.html.j2, agentos/handoffs/GMI-THEME-GRAPH-2026-11-02.md]
+    note: "Standalone publication retains its source serving policy and excerpt redactions. Shared Shell consumer-purpose qualification is unresolved; this marker grants no graph payload, source excerpt or held integration."
+    why: "The issuer explainer is published; a separate Shell audience must not be inferred from that fact or from the unrelated ThemeState S1 qualification leg."
+
+  macro:gmi_relationships:
+    archetype: "instrument_analyzer"
+    known_contracts: ["site_access.v1:default_insider", "shared_shell:admission_withheld"]
+    evidence: [scripts/build_gmi_explorer.py, templates/gmi_relationships.html.j2, agentos/decisions/DEC-GMI-RELATIONSHIP-ENVELOPE-CONTRACT.md]
+    note: "Standalone descriptive display retains its printed envelope, framing and redactions. Shared Shell consumer-purpose qualification is unresolved; publication does not grant package redistribution, promotion or app activation."
+    why: "Existing display-tier publication is distinct from a qualified downstream audience; source purpose and redistribution remain separately controlled."
+
+  macro:gmi_states:
+    archetype: "utility"
+    lifecycle: "internal"
+    evidence: [scripts/build_gmi_explorer.py, templates/gmi_states.html.j2, mockups/refs/gmi_explorer/SPECS.md]
+    note: "Builder-only noindex reference sheet; its state keys are explicitly not shown in the product. This lifecycle classification does not add a serving or authentication gate."
+    why: "The producer and template identify a reference sheet rather than an investor-facing product route."
+
+  macro:expectation_surface:
+    archetype: "discovery_board"
+    known_contracts: ["site_access.v1:default_insider", "shared_shell:admission_withheld"]
+    evidence: [scripts/build_expectation_surface.py, templates/expectation_surface.html.j2]
+    note: "Preserve the published standalone descriptive consensus surface. Shared Shell admission remains withheld; registry discovery supplies no new consumer-purpose permission."
+    why: "Coverage, revision breadth, consensus movers and a per-ticker explorer form a descriptive discovery board; this classification grants no additional audience."
+
+  macro:consumer_cyclical_plnt:
+    archetype: "instrument_analyzer"
+    lifecycle: "parked"
+    known_contracts: ["site_access.v1:default_insider", "shared_shell:admission_withheld"]
+    evidence: [scripts/build_consumer_cyclical_plnt_page.py, config/site_access.yml]
+    note: "Diagnostic builder-write inventory only: the synthetic fixture card was withdrawn from the public carrier by Product Trust F-6 (#10237/#10268), and has no committed site HTML. Preserve its public-build refusal and consumer exclusion."
+    why: "The source builder explicitly refuses the public carrier while its sole input is the synthetic fixture; inventory must not relabel that withdrawal as live publication."
