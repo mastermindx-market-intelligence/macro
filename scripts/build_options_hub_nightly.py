@@ -39,6 +39,10 @@ import numpy as np
 _REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO))
 
+from lib.options_publication_custody import assert_admission_open  # noqa: E402
+assert_admission_open()
+
+
 from engine.thetadata_store import _load_parquets, _normalise_date, store_root, clear_parquet_cache
 from engine.options_hub import (
     compute_vol,
@@ -253,7 +257,17 @@ def _r2_client(*, single_attempt: bool = False):
 
 
 def _upload_r2(s3, bucket: str, local_path: Path, r2_key: str) -> bool:
+    from lib.options_publication_custody import publication_custody, assert_target_available
+    with publication_custody():
+        assert_target_available(bucket, r2_key)
+        return _upload_r2_locked(s3, bucket, local_path, r2_key)
+
+
+def _upload_r2_locked(s3, bucket: str, local_path: Path, r2_key: str) -> bool:
     """Upload a local file to R2. Returns True on success."""
+    from lib.options_publication_custody import require_custody, assert_target_available
+    require_custody()
+    assert_target_available(bucket, r2_key)
     try:
         s3.upload_file(
             str(local_path),
@@ -1234,6 +1248,16 @@ def main() -> None:
     ap.add_argument("--exposure-context", default=None, metavar="JSON",
                     help="Explicit admitted owner receipts, bound to exact source inputs (no default)")
     args = ap.parse_args()
+    from contextlib import nullcontext
+    from lib.options_publication_custody import publication_custody
+    with publication_custody() if args.publish else nullcontext():
+        _run(args)
+
+
+def _run(args) -> None:
+    if args.publish:
+        from lib.options_publication_custody import require_custody
+        require_custody()
     exposure_contexts = load_exposure_contexts(args.exposure_context)
 
     # A relative, missing, or non-directory input root stops here, before the

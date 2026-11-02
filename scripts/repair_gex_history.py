@@ -57,6 +57,10 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from lib.options_publication_custody import assert_admission_open  # noqa: E402
+assert_admission_open()
+
+
 from engine.options_hub import compute_gex  # noqa: E402
 from engine.thetadata_store import store_root  # noqa: E402
 
@@ -224,6 +228,38 @@ def _strict_correction_json(body: bytes):
 
 def correct_archive_artifact(artifact: Path, binding: dict, *, apply: bool = False,
                              client_factory=None, bucket: str | None = None) -> dict:
+    # Pure preparation stays lock/claim/client-free. The actual operator holds an
+    # outer custody interval across the separately admitted preimage/readback.
+    prepared = _correct_archive_artifact_locked(artifact, binding, apply=False)
+    if not apply or prepared["status"] != "prepared":
+        return prepared
+    actual_bucket = bucket if bucket is not None else os.environ.get("R2_BUCKET")
+    if actual_bucket != prepared["bucket"]:
+        return {**prepared, "status": "not_attempted", "reason": "bucket_mismatch"}
+    from lib.options_publication_custody import (
+        publication_custody, require_custody, begin_correction, retain_correction_result, PublicationCustodyError,
+    )
+    result = None
+    claim_started = False
+    try:
+        require_custody()  # Outer operator interval must also own fresh read/readback.
+        with publication_custody():
+            begin_correction(binding)
+            claim_started = True
+            result = _correct_archive_artifact_locked(
+                artifact, binding, apply=True, client_factory=client_factory, bucket=bucket)
+            retain_correction_result(result)
+            return result
+    except (PublicationCustodyError, OSError) as exc:
+        reason = str(exc) if isinstance(exc, PublicationCustodyError) else "publication_custody_io_failure"
+        failure = {**(result or prepared), "status": "unknown" if claim_started else "not_attempted", "reason": reason}
+        if claim_started and result is None:
+            failure["wrapper_invocations"] = None
+        return failure
+
+
+def _correct_archive_artifact_locked(artifact: Path, binding: dict, *, apply: bool = False,
+                             client_factory=None, bucket: str | None = None) -> dict:
     """Opt-in replacement of ONE existing dated object, using already-built bytes.
 
     A binding is an input pin, not authorization, source qualification or proof of
@@ -303,10 +339,14 @@ def correct_archive_artifact(artifact: Path, binding: dict, *, apply: bool = Fal
     if not apply:
         result["status"] = "prepared"
         return result
+    from lib.options_publication_custody import require_custody
+    require_custody()
     actual_bucket = bucket if bucket is not None else os.environ.get("R2_BUCKET")
     if actual_bucket != target_bucket:
         result["reason"] = "bucket_mismatch"
         return result
+    from lib.options_publication_custody import mark_correction_dispatch
+    mark_correction_dispatch(binding)
     try:
         if client_factory is None:
             from scripts.build_options_hub_nightly import _r2_client
@@ -466,6 +506,14 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _publish(repaired: list[tuple[str, Path]], *, store=None) -> dict:
+    if not repaired:
+        return _publish_locked(repaired, store=store)
+    from lib.options_publication_custody import publication_custody
+    with publication_custody():
+        return _publish_locked(repaired, store=store)
+
+
+def _publish_locked(repaired: list[tuple[str, Path]], *, store=None) -> dict:
     """Upload the repaired snapshots, then refresh each root's dated index.
 
     Returns a truthful summary. A missing import, client or credentials means
@@ -501,6 +549,8 @@ def _publish(repaired: list[tuple[str, Path]], *, store=None) -> dict:
 
     if not repaired:
         return summary
+    from lib.options_publication_custody import require_custody
+    require_custody()
     try:
         from scripts.build_options_hub_nightly import _r2_client, _upload_r2, publish_gex_history_index
     except Exception:  # noqa: BLE001
