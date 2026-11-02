@@ -1376,11 +1376,21 @@
         "评分对照的基准：本时段内，我们跟踪的对象中仅 " + pct + "% 在随后一个月跑赢大盘。只有超过这条线才算有效，而非超过五五开。") + "</p>";
     }
 
+    // Retain whole percentages unless they erase a difference in the producer's
+    // three-decimal rates. This is display precision, not a significance test.
+    function ratePair(a, b) {
+      var left = Math.round(a * 100), right = b != null ? Math.round(b * 100) : null;
+      if (b != null && a !== b && left === right) {
+        return [(a * 100).toFixed(1), (b * 100).toFixed(1)];
+      }
+      return [left, right];
+    }
+
     // Claims vs already-priced split — the cohorts are different products.
     var splitLine = "";
     if (nEp >= 30 && epClaims.dir_accuracy != null) {
-      var ca = Math.round(epClaims.dir_accuracy * 100);
-      var cb = epClaims.base_dart != null ? Math.round(epClaims.base_dart * 100) : null;
+      var claimsPair = ratePair(epClaims.dir_accuracy, epClaims.base_dart);
+      var ca = claimsPair[0], cb = claimsPair[1];
       var da = diag.dir_accuracy != null ? Math.round(diag.dir_accuracy * 100) : null;
       splitLine = '<p class="rx-h-split">' + bi(
         "Split honestly: the radar's actual calls — the divergence reads — were right " + ca + "% of the time" + (cb != null ? " against a " + cb + "% bar" : "") + ". Panels marked “already priced” are context, not calls" + (da != null ? " — and that cohort kept only " + da + "% direction, which is why it now ranks near the bottom of the board, not the top" : "") + ".",
@@ -1392,10 +1402,10 @@
     // is graded elsewhere, at the horizon with a valid HAC.
     var horizonLine = "";
     if (hpC.n >= 30 && hpC.dir_accuracy != null && hpC.base_dart != null) {
-      var pa = Math.round(hpC.dir_accuracy * 100);
-      var pb = Math.round(hpC.base_dart * 100);
-      var cmpEn = pa < pb ? "below it" : (pa > pb ? "above it" : "level with it");
-      var cmpZh = pa < pb ? "低于基准" : (pa > pb ? "高于基准" : "与基准持平");
+      var promisePair = ratePair(hpC.dir_accuracy, hpC.base_dart);
+      var pa = promisePair[0], pb = promisePair[1];
+      var cmpEn = hpC.dir_accuracy < hpC.base_dart ? "below it" : (hpC.dir_accuracy > hpC.base_dart ? "above it" : "level with it");
+      var cmpZh = hpC.dir_accuracy < hpC.base_dart ? "低于基准" : (hpC.dir_accuracy > hpC.base_dart ? "高于基准" : "与基准持平");
       var epTail = hpEp.n_matured != null
         ? " from " + (hpEp.n_matured || 0).toLocaleString() + " matured episodes" : "";
       var epTailZh = hpEp.n_matured != null
