@@ -317,7 +317,31 @@ def p2_ceiling_versus_recognised(scratch: Path) -> str:
         and all(v is None for v in ceil_amounts.values())
     )
     stripped = PA.adapt_batch([full])[0].stripped_fields
-    verdict = "PROVEN" if (full_ok and ceil_ok) else ("PARTIAL" if full_ok or ceil_ok else "ABSENT")
+    # Semantic mislabel, the same standard P1 applies: the 2B quoted from the
+    # option sentence filed as the firm stated_amount.  Held only if the engine
+    # refuses it or keeps it out of the firm bookings quantity.
+    mis = t2("v3-p2-mislabel", stated_amount=q_point(2_000_000_000, "incremental", OPT))
+    mis_report = validate_event(mis)
+    mis_mapped = nq_values(M.map_event(mis).to_dict()) if mis_report.ok else {}
+    mislabel_held = (not mis_report.ok) or (
+        mis_mapped.get("stated_bookings", (None,))[0] != 2_000_000_000)
+    # Pre-summed firm order plus ceiling filed as one incremental amount.
+    summed = t2("v3-p2-summed",
+                stated_amount=q_point(2_400_000_000, "incremental", FIRM + " " + OPT))
+    summed_report = validate_event(summed)
+    summed_held = not summed_report.ok
+    # Reader copy for the ceiling-only event: a template placeholder in the
+    # subtitle is a reader defect the ceiling-only path exposes.
+    ceil_copy = ""
+    if ceil_report.ok:
+        ceil_copy = PA.render_glance_copy(PA.adapt_batch([ceil])[0])["en"]["subtitle"]
+    copy_clean = "{" not in ceil_copy and "}" not in ceil_copy
+    if full_ok and ceil_ok and mislabel_held and summed_held and copy_clean:
+        verdict = "PROVEN"
+    elif full_ok or ceil_ok:
+        verdict = "PARTIAL"
+    else:
+        verdict = "ABSENT"
     print(
         f"V3 P2 {verdict} firm order + 2B option ceiling: validate ok={full_report.ok}, "
         f"map_event named_quantities={nq_values(full_map)} rules={full_map.get('rule_ids')}, "
@@ -325,9 +349,17 @@ def p2_ceiling_versus_recognised(scratch: Path) -> str:
         f"in no map or producer output (adapter stripped {sorted(stripped)}); ceiling-only "
         f"negative: validate ok={ceil_report.ok}, named_quantities={nq_values(ceil_map)}, "
         f"not_yet_quantifiable present={bool(ceil_map.get('not_yet_quantifiable'))}, prophet "
-        f"amounts={ceil_amounts}; the ceiling is dropped, never summed nor shown as a labelled "
-        f"ceiling; {at_def(M.map_event)} {at_text('engine/news_impact/prophet_adapter.py', 'ALWAYS_DROP = frozenset(')} "
-        f"{at_test('tests/test_news_impact_mechanisms.py', 'test_t2_option_ceiling_not_summed')}"
+        f"amounts={ceil_amounts}, reader copy {ceil_copy!r}; semantic mislabel (2B quoted "
+        f"from the option sentence filed as stated_amount) validate ok={mis_report.ok}, map "
+        f"stated_bookings={mis_mapped.get('stated_bookings', (None,))[0]}; pre-summed 2.4B "
+        f"validate ok={summed_report.ok} codes={codes(summed_report)}: the engine keeps "
+        f"ceiling and firm order apart only when the extractor already filed them in "
+        f"separate fields, and the ceiling itself is dropped, never shown as a labelled "
+        f"ceiling, so the row's ceiling-versus-recognised-economics is not preserved; "
+        f"{at_def(M.map_event)} {at_text('engine/news_impact/prophet_adapter.py', 'ALWAYS_DROP = frozenset(')} "
+        f"{at_text('engine/news_impact/producer_facts.py', 'EVIDENCE_LADDER')} "
+        f"{at_test('tests/test_news_impact_mechanisms.py', 'test_t2_option_ceiling_not_summed')} "
+        f"(that test's final assertion cannot fail because map_event never writes option_ceiling)"
     )
     return verdict
 
