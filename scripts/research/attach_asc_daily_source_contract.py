@@ -8,7 +8,11 @@ with its daily contract attached. Only the checked-in dataset catalog is read.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 import sys
+
+_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_ROOT))
 
 from lib.dataos.registry import DatasetStatus, Registry, load_registry
 

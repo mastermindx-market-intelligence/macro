@@ -132,8 +132,10 @@ def test_the_measured_price_bases_reach_the_registry_schema() -> None:
     assert registry.get("equity.bars.daily.massive").schema["close"]["basis"] == "raw"
 
 
-def test_asc_preaccess_request_exposes_daily_ohlc_without_upgrading_evidence():
+@pytest.mark.parametrize("entrypoint", ["module", "file"])
+def test_asc_preaccess_request_exposes_daily_ohlc_without_upgrading_evidence(entrypoint, tmp_path):
     import json
+    import os
     import subprocess
     import sys
 
@@ -143,10 +145,18 @@ def test_asc_preaccess_request_exposes_daily_ohlc_without_upgrading_evidence():
         "candidate_only": {"vendor": "polygon", "research_admitted": False},
         "required_return": ["qualified daily prior-confirmed ATR14 input"],
     }
-    run = subprocess.run(
-        [sys.executable, "-m", "scripts.research.attach_asc_daily_source_contract"],
-        cwd=ROOT, input=json.dumps(request), text=True, capture_output=True, check=True,
-    )
+    if entrypoint == "file":
+        # An ambient installation must not supply the catalog or reader for this checkout.
+        foreign = tmp_path / "lib"
+        foreign.mkdir()
+        (foreign / "__init__.py").write_text('raise SystemExit("foreign catalog import")\n')
+        args = [str(ROOT / "scripts/research/attach_asc_daily_source_contract.py")]
+        cwd = tmp_path
+    else:
+        args = ["-m", "scripts.research.attach_asc_daily_source_contract"]
+        cwd = ROOT
+    run = subprocess.run([sys.executable, *args], cwd=cwd, env={**os.environ, "PYTHONPATH": str(tmp_path)},
+                         input=json.dumps(request), text=True, capture_output=True, check=True)
     result = json.loads(run.stdout)
     daily = result.pop("registered_daily_source_contract")
     assert result == request
