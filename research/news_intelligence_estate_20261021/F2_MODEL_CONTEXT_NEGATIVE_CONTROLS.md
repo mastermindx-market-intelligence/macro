@@ -254,13 +254,20 @@ period: for `demand_guidance_contract_event.v1` the `stated_amount` and `option_
 periods must be able to evidence `fiscal_period`; for `capital_allocation_event.v1`
 `incremental_amount.period` must be able to evidence `horizon_period`; for
 `strategic_product_partnership_event.v1` `stated_quantity.period` must be able to evidence
-`horizon_period`. Both sides must be real fiscal periods, otherwise the rule is silent
-(absence unions, malformed dates the schema or S6 already refuse). Two tests refuse, with
-the existing `schema_violation` code at the quantity's `period` pointer: label years more
-than one year apart (no date needed), or, when both carry a `calendar_end`, calendar ranges
-that do not overlap once each is shrunk by seven days at both ends. Containment and partial
-overlap pass; a dateless period within one label year passes (a fiscal year straddles two
-calendar years, so a calendar-labelled quarter can sit one label year off). `prior_amount`
+`horizon_period`. Both sides must be real fiscal periods (a dict with an integer year and a
+contract period kind), otherwise the rule is silent (absence unions and the schema's shape
+refusals). Two tests refuse, with the existing `schema_violation` code at the quantity's
+`period` pointer: label years more than one year apart (no date needed), or, when both are
+sub-year periods with a `calendar_end` the calendar can place, calendar ranges that do not
+overlap once each is shrunk by seven days at both ends. A multi-year period takes the label
+test only, bounded below alone when it carries no `end_year` (the contract does not require
+one and the producer drops it, token `FY<year>M`), because the contract never says whether its
+`calendar_end` closes the span or its first year. A date the schema pattern admits but the
+calendar cannot place (`0001-06-30`) drops that period's date test and nothing else; an
+impossible date such as `2026-02-30` is S6's finding and S15 may report alongside it when the
+label years are also apart. Containment and partial overlap pass; a dateless period within one
+label year passes (a fiscal year straddles two calendar years, so a calendar-labelled quarter
+can sit one label year off). `prior_amount`
 (a timing revision names the period the guidance moved from), `remaining_authorization`
 and `executed_amount` (dated as of a point) and every `baseline.period` are exempt.
 `contracts/news_impact/` is untouched and the reason-code set is unchanged. The control is
@@ -271,13 +278,28 @@ original control is now its own control **M07c NO_MECHANISM** (`period_token` st
 `FY2026` for years ending 2026-09-27 and 2026-12-31; no fiscal-week concept in the contract),
 giving 18 HELD, 1 BROKEN (M05a) and 3 NO_MECHANISM (M07c, M08, M13) of 22. The control
 script's synthetic `point_qty` default period was moved from an unrelated half year to the
-T1/T2 slot (Q4-2026) so the fixtures evidence their own slot; no other verdict changed.
+T1/T2 slot (Q4-2026) so the fixtures evidence their own slot; no other verdict changed. The
+move was necessary, not cosmetic: with the old half-year default, S15 refused the fixtures'
+own quantity and M08 (whose predicate counts any validator refusal as a mechanism) would have
+read a false HELD, with M01a/M01b picking up a stray `schema_violation` code. Independent
+review of #10480 (2026-11-02) found two blocking defects in the first cut, both repaired before
+merge: a multi-year horizon without `end_year` was read as one year and refused real
+in-horizon amounts, and one unplaceable date raised inside the rule so the per-rule guard
+dropped every S15 finding for that payload.
 Limits:
 - **Period lengths are month arithmetic:** a quarter is three months before its
   `calendar_end`, a year twelve; the seven-day shrink absorbs a fourteen-week quarter or a
-  fifty-three-week year, so adjacent periods still refuse and contained ones never do, but
-  two real periods overlapping by under fourteen days would be refused (issuer periods tile,
-  so none is expected).
+  fifty-three-week year, so adjacent periods still refuse and a period dated inside another
+  by the same calendar does not, but two real periods overlapping by under fourteen days
+  would be refused (issuer periods tile, so none is expected).
+- **Quarterly versus annual is still open:** S15 refuses disjoint periods only. A quarter's
+  figure filed under the annual slot that contains it (MASTERPLAN 5.3 "quarterly versus
+  annual") passes in both directions, and control M07b deliberately keeps "Q4 inside FY" as
+  the desired result because an annual slot may legitimately quote a quarterly run-rate.
+  Telling the two apart needs a basis the contract does not carry (see M08); follow-up
+  alongside the M08 contract gap, not a validator rule.
+- **Multi-year periods are compared by label only:** a span without `end_year` refuses
+  nothing above it; an `end_year` before `year` is S13's finding and is clamped here.
 - **One label year of tolerance without dates:** FY2026 against a dateless FY2027 passes;
   only a gap of two or more label years refuses when neither side carries a date.
 - **Sub-year labels are not compared without dates:** Q1 against Q4 of the same label year

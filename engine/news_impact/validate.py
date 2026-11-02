@@ -1078,9 +1078,11 @@ _S15_PAIRS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
 )
 _S15_MONTHS = {"quarter": 3, "half_year": 6, "nine_months": 9, "fiscal_year": 12}
 #: Shrink each calendar range by this many days at both ends before the overlap
-#: test: a fourteen-week quarter or a fifty-three-week year is up to seven days longer than the
-#: month arithmetic assumes, so adjacent periods (Q1 of the next year against
-#: this year) still read as disjoint and a contained period never does.
+#: test: a fourteen-week quarter or a fifty-three-week year is up to seven days
+#: longer than the month arithmetic assumes, so adjacent periods (Q1 of the next
+#: year against this year) still read as disjoint while a period dated inside
+#: another by the same calendar does not.  Multi-year periods never enter this
+#: test (see ``_period_calendar_range``).
 _S15_EDGE_DAYS = 7
 #: Label years may differ by one without dates: a fiscal year straddles two
 #: calendar years, so a calendar-labelled quarter can sit one year off its
@@ -1097,12 +1099,21 @@ def _is_fiscal_period(value) -> bool:
             and (value.get("period_kind") in _S15_MONTHS or value.get("period_kind") == "multi_year"))
 
 
-def _period_label_years(fp: dict) -> tuple[int, int]:
+def _period_label_years(fp: dict) -> tuple[int, int | None]:
+    """(first, last) label years; ``last`` is None for an open multi-year span.
+
+    The contract does not require ``end_year`` and the producer drops it when
+    the labeler leaves it out (its token is ``FY<year>M``), so a multi-year
+    period without one is bounded below only.  An ``end_year`` before ``year``
+    is S13's finding; it is clamped here so the span stays well formed.
+    """
     year = fp["year"]
-    end_year = fp.get("end_year") if fp.get("period_kind") == "multi_year" else None
-    if not _is_int(end_year) or end_year < year:
-        end_year = year
-    return year, end_year
+    if fp.get("period_kind") != "multi_year":
+        return year, year
+    end_year = fp.get("end_year")
+    if not _is_int(end_year):
+        return year, None
+    return year, max(end_year, year)
 
 
 def _period_label(fp: dict) -> str:
@@ -1111,7 +1122,7 @@ def _period_label(fp: dict) -> str:
     if kind == "quarter" and _is_int(fp.get("quarter")):
         return f"FY{first}Q{fp['quarter']}"
     if kind == "multi_year":
-        return f"FY{first}-{last}"
+        return f"FY{first}-{last}" if last is not None else f"FY{first} multi_year (open end)"
     return f"FY{first} {kind}"
 
 
@@ -1123,32 +1134,44 @@ def _months_before(day: _date, months: int) -> _date:
 
 
 def _period_calendar_range(fp: dict) -> tuple[_date, _date] | None:
-    """[start, end] from calendar_end and the kind's length; None without a real date."""
+    """[start, end] from calendar_end and the kind's length; None when unusable.
+
+    None for a multi-year period: the contract never says whether its
+    ``calendar_end`` closes the whole span or its first year, so only the label
+    test applies to it.  None too for any date the calendar arithmetic cannot
+    place (the schema's pattern admits ``0001-06-30``; stepping back from it
+    leaves year zero) so one bad date never silences the rule for the payload.
+    """
     end = fp.get("calendar_end")
     if not isinstance(end, str):
         return None
+    months = _S15_MONTHS.get(fp.get("period_kind"))
+    if months is None:
+        return None
     try:
         end_day = _date.fromisoformat(end)
-    except ValueError:
+        return _months_before(end_day, months) + _timedelta(days=1), end_day
+    except (ValueError, OverflowError):
         return None
-    first, last = _period_label_years(fp)
-    months = _S15_MONTHS.get(fp.get("period_kind")) or 12 * (last - first + 1)
-    return _months_before(end_day, months) + _timedelta(days=1), end_day
 
 
 def _periods_disjoint(slot: dict, period: dict) -> str | None:
     """Why ``period`` cannot evidence ``slot``; None when they may overlap.
 
     Containment and partial overlap pass.  Two tests refuse: label years more
-    than ``_S15_LABEL_GAP_YEARS`` apart (no date needed), or, when both carry
-    a real ``calendar_end``, calendar ranges that do not overlap once each is
-    shrunk by ``_S15_EDGE_DAYS`` at both ends.  A period without a date and
-    within the label tolerance is never refused here.
+    than ``_S15_LABEL_GAP_YEARS`` apart (no date needed; an open multi-year
+    span has no upper label year, so only its lower bound can refuse), or, when
+    both are sub-year periods with a usable ``calendar_end``, calendar ranges
+    that do not overlap once each is shrunk by ``_S15_EDGE_DAYS`` at both ends.
+    A period without a usable date and within the label tolerance is never
+    refused here.
     """
     a_first, a_last = _period_label_years(slot)
     b_first, b_last = _period_label_years(period)
-    if a_first - b_last > _S15_LABEL_GAP_YEARS or b_first - a_last > _S15_LABEL_GAP_YEARS:
-        return f"label years {b_first}-{b_last} and {a_first}-{a_last} are more than one year apart"
+    if ((b_last is not None and a_first - b_last > _S15_LABEL_GAP_YEARS)
+            or (a_last is not None and b_first - a_last > _S15_LABEL_GAP_YEARS)):
+        return (f"label years {_period_label(period)} and {_period_label(slot)} "
+                f"are more than one year apart")
     a, b = _period_calendar_range(slot), _period_calendar_range(period)
     if a is None or b is None:
         return None
@@ -1162,13 +1185,17 @@ def _periods_disjoint(slot: dict, period: dict) -> str | None:
 def _s15_claim_evidence_period(payload, ctx: _Context) -> list[ValidationIssue]:
     """S15: a quantity whose own period cannot evidence the event's claim slot.
 
-    F2 control M07b (MASTERPLAN 5.3 "quarterly versus annual, fiscal versus
-    calendar period"; 9.3 "fiscal periods"): a Q4-2026 guidance slot whose
-    stated amount is an FY2027 figure validated.  For each pair in
-    ``_S15_PAIRS`` both periods must be real fiscal periods; otherwise the
-    rule is silent (absence unions, malformed dates and the schema's own
-    refusals are not reported twice).  A fifty-two or fifty-three week fiscal
-    calendar itself is a contract gap (F2 N2, control M07c), not repaired here.
+    F2 control M07b (MASTERPLAN 5.3 "fiscal versus calendar period"; 9.3
+    "fiscal periods"): a Q4-2026 guidance slot whose stated amount is an
+    FY2027 figure validated.  Only DISJOINT periods are refused: a quarter's
+    figure filed under the annual slot that contains it (MASTERPLAN 5.3
+    "quarterly versus annual") still passes and stays an open gap recorded in
+    the F2 negative-control doc.  For each pair in ``_S15_PAIRS`` both periods
+    must be real fiscal periods; otherwise the rule is silent (absence unions
+    and the schema's own shape refusals are not reported twice).  A date the
+    schema admits but the calendar cannot place drops only that period's date
+    test, never the rule.  A fifty-two or fifty-three week fiscal calendar
+    itself is a contract gap (F2 N2, control M07c), not repaired here.
     """
     issues = []
     for obj, keys in _iter_objects(payload):

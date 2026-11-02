@@ -730,7 +730,8 @@ def test_s13_end_year_before_year_rejected():
 
 # S15 (F2 control M07b): a quantity's own period must be able to evidence the
 # event's claim slot.  Kill tests: delete _s15_claim_evidence_period and the
-# three "rejected" tests below fail; the "accepted" tests pin the tolerance.
+# "rejected" tests below fail; the "accepted" tests pin the tolerance, and the
+# review-R1/R2 tests pin open multi-year spans and unplaceable dates.
 
 def _s15_period(kind, year, end=None, quarter=None, end_year=None):
     period = {"year": year, "quarter": quarter, "calendar_end": end, "period_kind": kind}
@@ -818,6 +819,58 @@ def test_s15_capital_allocation_incremental_amount_against_horizon():
     payload["incremental_amount"]["period"] = _s15_period("fiscal_year", 2027, "2027-12-31")
     payload["remaining_authorization"]["period"] = _s15_period("fiscal_year", 2024, "2024-12-31")
     assert V.validate_event(payload, contract=CONTRACT).ok
+
+
+def test_s15_multi_year_without_end_year_is_open_ended():
+    # Review R1 (#10480): the contract does not require end_year and the producer
+    # drops it (token FY<year>M), so the span is bounded below only.
+    payload = _w1()
+    payload["horizon_period"] = _s15_period("multi_year", 2026, "2028-12-31")
+    payload["incremental_amount"]["period"] = _s15_period("fiscal_year", 2027, "2027-12-31")
+    assert V.validate_event(payload, contract=CONTRACT).ok
+    payload["horizon_period"] = _s15_period("multi_year", 2026)
+    payload["incremental_amount"]["period"] = _s15_period("fiscal_year", 2028)
+    assert V.validate_event(payload, contract=CONTRACT).ok
+    # Only the lower bound can refuse an open span.
+    payload["incremental_amount"]["period"] = _s15_period("fiscal_year", 2024, "2024-12-31")
+    report = V.validate_event(payload, contract=CONTRACT)
+    _one_code_path(report, V.SCHEMA_VIOLATION, "/incremental_amount/period")
+    assert any("open end" in i.message for i in report.issues)
+    # A closed span still refuses a figure beyond its last label year.
+    payload["horizon_period"] = _s15_period("multi_year", 2026, end_year=2028)
+    payload["incremental_amount"]["period"] = _s15_period("fiscal_year", 2030)
+    _one_code_path(V.validate_event(payload, contract=CONTRACT),
+                   V.SCHEMA_VIOLATION, "/incremental_amount/period")
+
+
+def test_s15_multi_year_calendar_end_is_not_interpreted():
+    # The contract never says whether a multi-year calendar_end closes the span
+    # or its first year, so a multi-year period takes the label test only.
+    payload = _w1()
+    payload["horizon_period"] = _s15_period("multi_year", 2026, "2026-12-31", end_year=2028)
+    payload["incremental_amount"]["period"] = _s15_period("fiscal_year", 2027, "2027-12-31")
+    assert V.validate_event(payload, contract=CONTRACT).ok
+    payload["horizon_period"] = _s15_period("multi_year", 2026, "2028-12-31", end_year=2028)
+    payload["incremental_amount"]["period"] = _s15_period("multi_year", 2026, "2030-12-31",
+                                                          end_year=2030)
+    assert V.validate_event(payload, contract=CONTRACT).ok
+    assert V._period_calendar_range(payload["horizon_period"]) is None
+
+
+def test_s15_unplaceable_date_drops_only_that_date_test():
+    # Review R2 (#10480): the schema pattern admits "0001-06-30"; stepping back a
+    # year from it leaves year zero.  That must not raise, and must not silence
+    # S15 for the rest of the payload.
+    assert V._period_calendar_range(_s15_period("fiscal_year", 2027, "0001-06-30")) is None
+    payload = _w3()
+    payload["fiscal_period"] = _s15_period("quarter", 2026, "2026-12-31", quarter=4)
+    payload["stated_amount"]["period"] = _s15_period("fiscal_year", 2027, "0001-06-30")
+    payload["option_ceiling"] = copy.deepcopy(payload["stated_amount"])
+    payload["option_ceiling"]["period"] = _s15_period("fiscal_year", 2031, "2031-12-31")
+    report = V.validate_event(payload, contract=CONTRACT)
+    assert not report.ok
+    s15 = [i for i in report.issues if "rule S15" in i.message]
+    assert [i.path for i in s15] == ["/option_ceiling/period"]
 
 
 def test_s15_frozen_cases_keep_their_verdicts():
