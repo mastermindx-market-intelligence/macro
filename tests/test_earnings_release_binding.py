@@ -23,6 +23,7 @@ import hashlib
 from pathlib import Path
 import re
 import socket
+import time
 
 import pytest
 
@@ -1302,6 +1303,9 @@ def test_a_statement_title_qualified_as_another_basis_declares_no_basis(caption:
         "Twenty\u200bSix Weeks Ended December 28, 2025",
         "Twenty&#8203;Six Weeks Ended December 28, 2025",
         "Twenty\ufeffSix Weeks Ended December 28, 2025",
+        "Twenty\u200eSix Weeks Ended December 28, 2025",
+        "Twenty\u2066Six Weeks Ended December 28, 2025",
+        "Twenty\u034fSix Weeks Ended December 28, 2025",
     ],
     ids=["en-dash-count", "em-dash-count", "spaced-count", "unlisted-spaced-count",
          "ampersand-join", "slash-join", "bare-ampersand-join", "two-ended-clauses",
@@ -1309,7 +1313,8 @@ def test_a_statement_title_qualified_as_another_basis_declares_no_basis(caption:
          "figure-dash-count", "minus-count", "spaced-hyphen-count", "spaced-en-dash-count",
          "slash-fy-join", "ampersand-fy-join", "and-fy-join", "en-dash-join", "semicolon-join",
          "pipe-join", "plus-join", "zero-width-space-count", "entity-zero-width-count",
-         "byte-order-mark-count"],
+         "byte-order-mark-count", "left-to-right-mark-count", "isolate-count",
+         "grapheme-joiner-count"],
 )
 def test_a_header_joining_periods_or_counting_in_an_unread_form_declares_no_span(header: str) -> None:
     """NF3: every spelling of a count or a join the span reader cannot resolve refuses."""
@@ -1343,9 +1348,11 @@ def test_a_single_period_header_still_declares_its_span(header: str, months: int
     "caption",
     ["Non‑GAAP Results", "Non–GAAP Results", "NON&#8209;GAAP RESULTS", "Non GAAP Results",
      "Non‐GAAP Results", "Non−GAAP Results", "Non\u200b-GAAP Results", "Non&#8203;-GAAP Results",
-     "Non\ufeffGAAP Results", "Non\u2060GAAP Results"],
+     "Non\ufeffGAAP Results", "Non\u2060GAAP Results", "Non\u200eGAAP Results",
+     "Non-\u2066GAAP Results", "Non\u034f-GAAP Results"],
     ids=["non-breaking-hyphen", "en-dash", "entity-hyphen", "space", "hyphen", "minus",
-         "zero-width-space", "entity-zero-width-space", "byte-order-mark", "word-joiner"],
+         "zero-width-space", "entity-zero-width-space", "byte-order-mark", "word-joiner",
+         "left-to-right-mark", "isolate", "grapheme-joiner"],
 )
 @pytest.mark.parametrize("after_gaap", [False, True], ids=["alone", "after-gaap"])
 def test_a_non_gaap_caption_spelled_with_any_dash_declares_non_gaap(caption: str, after_gaap: bool) -> None:
@@ -1403,6 +1410,26 @@ def test_a_company_named_without_a_ticker_or_reporting_verb_is_not_the_issuer(op
     assert eps is not None
     assert (eps.value, eps.basis) == (1.23, fig.Basis.GAAP.value)
     result = _extract(_eps_statement("Diluted EPS attributable to Acme", opening))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+
+
+@pytest.mark.parametrize(
+    "opening",
+    ["NEW YORK--(BUSINESS WIRE)--Acme Corp. (NYSE: ACM) today reported results.",
+     "NEW YORK, Jan. 29, 2026 /PRNewswire/ -- Acme Corp. (NYSE: ACM) today reported results."],
+    ids=["business-wire", "pr-newswire"],
+)
+def test_the_issuer_is_named_directly_after_a_wire_dateline(opening: str) -> None:
+    """A wire service glues the dateline's dashes to the issuer's name, which still names it."""
+    eps = _extract(_eps_statement("Diluted EPS attributable to Acme", opening)).figure("eps_diluted")
+    assert eps is not None
+    assert (eps.value, eps.basis) == (1.23, fig.Basis.GAAP.value)
+
+
+def test_a_name_glued_to_a_hyphenated_word_is_not_the_issuer() -> None:
+    """"e-Commerce Co." is no company named "Commerce Co."."""
+    result = _extract(_eps_statement("Diluted EPS attributable to Commerce", _opening("Acme e-Commerce Co.")))
     assert result.figure("eps_diluted") is None
     assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
 
@@ -1478,10 +1505,34 @@ def _scoped_eps_statement(scope: str, issuer: str = "") -> str:
         "Earnings per share excluding special items:",
         "Earnings per share from continuing operations:",
         "Pro forma earnings per share:",
+        "Earnings per share of SpinCo Inc.:",
+        "SpinCo Inc. earnings per share:",
+        "Earnings per share for Acme Operating LLC:",
+        "Net income attributable to SpinCo Inc. per share:",
+        "Core earnings per share:",
+        "Operating earnings per share:",
+        "Cash earnings per share:",
+        "Comparable earnings per share:",
+        "Underlying earnings per share:",
+        "Distributable earnings per share:",
+        "FFO per share:",
+        "Earnings per share impact of goodwill impairment:",
+        "Earnings per share - Class B:",
+        "Earnings per share (Predecessor):",
+        "Earnings per share guidance:",
+        "Dividends declared per share:",
+        "Book value per share:",
+        "Earnings per share - Class B*:",
+        "Core earnings per share*:",
+        "Earnings per share guidance1:",
     ],
 )
 def test_a_bare_diluted_row_under_a_component_or_foreign_scope_is_not_eps(scope: str) -> None:
-    """M2: a scope row naming a component or another company refuses as the same label would."""
+    """M2: a scope row naming a component, another company or another number refuses.
+
+    Before "per share" the row may say only a basis, basic or diluted, and net
+    income, earnings or loss; after it, only the closed EPS tail.
+    """
     result = _extract(_scoped_eps_statement(scope, _opening("Walmart Inc.")))
     assert result.figure("eps_diluted") is None
     assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
@@ -1493,13 +1544,30 @@ def test_a_bare_diluted_row_under_a_component_or_foreign_scope_is_not_eps(scope:
         ("Earnings per share:", fig.Basis.GAAP.value),
         ("Earnings (loss) per share:", fig.Basis.GAAP.value),
         ("Earnings per share (1):", fig.Basis.GAAP.value),
+        ("Earnings per share*:", fig.Basis.GAAP.value),
+        ("Earnings per share\u2020:", fig.Basis.GAAP.value),
+        ("Earnings per share1:", fig.Basis.GAAP.value),
+        ("Earnings per share\u00b9:", fig.Basis.GAAP.value),
+        ("Per share data*:", fig.Basis.GAAP.value),
         ("Earnings per share attributable to common stockholders:", fig.Basis.GAAP.value),
         ("Net income per share attributable to Walmart:", fig.Basis.GAAP.value),
         ("Adjusted earnings per share:", fig.Basis.NON_GAAP.value),
+        ("Per share data:", fig.Basis.GAAP.value),
+        ("Earnings per share – diluted", fig.Basis.GAAP.value),
+        ("Basic and diluted net income per share:", fig.Basis.GAAP.value),
+        ("Net (loss) income per share:", fig.Basis.GAAP.value),
+        ("Earnings per share of common stock:", fig.Basis.GAAP.value),
+        ("Net income per common share:", fig.Basis.GAAP.value),
+        ("Earnings per share (basic and diluted):", fig.Basis.GAAP.value),
     ],
 )
 def test_a_bare_diluted_row_under_the_issuers_eps_scope_is_eps(scope: str, basis: str) -> None:
-    """M2 control: the issuer's own EPS scope still binds its bare Diluted row."""
+    """M2 control: the issuer's own EPS scope still binds its bare Diluted row.
+
+    A footnote mark before the colon (``(1)``, ``*``, a dagger, a glued or
+    superscript digit) is stepped over; the census found ``*`` on a live
+    statement.
+    """
     eps = _extract(_scoped_eps_statement(scope, _opening("Walmart Inc."))).figure("eps_diluted")
     assert eps is not None
     assert (eps.value, eps.basis) == (1.23, basis)
@@ -1586,13 +1654,24 @@ def test_a_quarter_dashed_to_its_numbered_fiscal_year_is_one_quarter(header: str
 @pytest.mark.parametrize(
     "header",
     ["Q4 FY26 and FY25", "Q4 FY26 / FY25", "Q4-FY26/FY25", "Q4-FY26 and FY25",
-     "Fourth Quarter - Fiscal 2026 and Fiscal Year Ended", "Fourth Quarter - Fiscal Year 2026"],
+     "Fourth Quarter - Fiscal 2026 and Fiscal Year Ended", "Fourth Quarter - Fiscal Year 2026",
+     "Q4-FY26 vs Q4-FY25", "Q4-FY26 vs. Q4-FY25", "Q4-FY26 compared to Q4-FY25",
+     "Q4 FY26 versus Q4 FY25", "Q4 FY26 vs Q4 FY25"],
     ids=["and-fy", "slash-fy", "hyphen-then-slash-fy", "hyphen-then-and-fy",
-         "qualified-then-joined", "unnumbered-fiscal-year"],
+         "qualified-then-joined", "unnumbered-fiscal-year", "hyphen-vs", "hyphen-vs-dot",
+         "hyphen-compared-to", "spaced-versus", "spaced-vs"],
 )
 def test_a_quarter_dashed_to_a_second_period_still_names_two(header: str) -> None:
     """m2 control: only a numbered fiscal year qualifies; another period still joins."""
     assert fig._declared_period_months(header) is None
+
+
+def test_a_header_longer_than_a_period_name_declares_no_span() -> None:
+    """A header of hundreds of characters is no period name, and is refused before the slow join scan."""
+    started = time.perf_counter()
+    assert fig._declared_period_months("Three Months Ended December 28, 2025 " + "x " * 25000) is None
+    assert time.perf_counter() - started < 2.0
+    assert fig._declared_period_months("Three Months Ended December 28, 2025 " + "x" * 300) is None
 
 
 def test_a_quarter_dashed_to_its_fiscal_year_wins_over_the_year() -> None:

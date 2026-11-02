@@ -245,7 +245,7 @@ the other 59 selected cases are controls that pass on both.
 | Finding | Shape | Now | Test |
 |---|---|---|---|
 | M1 | In Title Case or all caps ("Diluted EPS Attributable To Goodwill Impairment Co.") the label named its own issuer, because the name pattern began at "EPS" and the attribution sat outside the 120-character look-back window. A company named first without being the reporter (an advisor, a merger partner, "Co-Founder", "a Delaware corporation") was also taken as the issuer. | The issuer is the first company named by its corporate form, as a company sets it (no case folding), and named as the reporter. That means an exchange ticker ("(NYSE: WMT)") or a reports/announces/posts verb, optionally after "today". The attribution check now spans the name itself, not only the 120 characters before it. | `test_an_eps_line_in_any_case_cannot_name_its_own_issuer` (4 labels × 2 openings), `test_a_company_named_without_a_ticker_or_reporting_verb_is_not_the_issuer` (advisor, co-founder, Delaware corporation), `test_only_the_first_company_the_release_names_is_the_issuer` (now 3 cases, each opening cued) |
-| M2 (in the base) | A bare "Diluted" row under a scope such as "Earnings per share attributable to discontinued operations:", "… noncontrolling interests:", "… Acme Operating LLC:", "… excluding special items:" or "Pro forma earnings per share:" bound as the issuer's GAAP EPS. | A per-share scope row is held to the same closed tail as a full EPS label. A component, an exclusion or a pro forma names another number. An attribution must name the issuer or its holders. | `test_a_bare_diluted_row_under_a_component_or_foreign_scope_is_not_eps` (7 scopes), `test_a_bare_diluted_row_under_the_issuers_eps_scope_is_eps` (6 controls), `test_a_scope_attributed_to_the_issuer_needs_the_release_to_name_the_issuer` |
+| M2 (in the base) | A bare "Diluted" row under a scope such as "Earnings per share attributable to discontinued operations:", "… noncontrolling interests:", "… Acme Operating LLC:", "… excluding special items:" or "Pro forma earnings per share:" bound as the issuer's GAAP EPS. | A scope row whose tail says "attributable to" is held to the same closed tail as a full EPS label, and its attribution must name the issuer or its holders. A component, an exclusion or a pro forma names another number and refuses. The fifth review showed that scopes naming another entity or another measure still bound; the whole scope row is closed below. | `test_a_bare_diluted_row_under_a_component_or_foreign_scope_is_not_eps` (7 scopes), `test_a_bare_diluted_row_under_the_issuers_eps_scope_is_eps` (6 controls), `test_a_scope_attributed_to_the_issuer_needs_the_release_to_name_the_issuer` |
 | m1 | The fold kept zero-width characters, so "Non\u200b-GAAP", "Non&#8203;-GAAP" and "Non\ufeffGAAP" read as GAAP, and "Twenty\u200bSix Weeks" read as one month. | The zero-width space, non-joiner, joiner, word joiner and byte-order mark are dropped with the soft hyphen. | 4 captions added to `test_a_non_gaap_caption_spelled_with_any_dash_declares_non_gaap`, 3 headers added to `test_a_header_joining_periods_or_counting_in_an_unread_form_declares_no_span`, `test_a_per_share_line_holding_a_zero_width_character_is_eps` |
 | m2 | "Q4-FY26", "Q4 - Fiscal 2026" and "Fourth Quarter - Fiscal 2026" read as two joined periods, so they declared no span. | A quarter dashed to a numbered fiscal year is one quarter. "Q4 FY26 and FY25", "Q4 FY26 / FY25" and "Fourth Quarter - Fiscal Year 2026" still name two periods and still declare none: they join two periods, so the over-refusal the review listed for them stands by design. | `test_a_quarter_dashed_to_its_numbered_fiscal_year_is_one_quarter` (5), `test_a_quarter_dashed_to_a_second_period_still_names_two` (6), `test_a_quarter_dashed_to_its_fiscal_year_wins_over_the_year` |
 | m3 | Removing the fold from `_basis_for`, `_concept_for`, `_issuer_names`, `_observed_kind` or `_row_is_header`, or the `(?<![a-z])` lookbehind, broke no test. | Each of 12 mutants now fails at least one test: the fold removed from the caption, the issuer block, the header label, the period header, and separately from the label and the scope in `_observed_kind`, `_concept_for` and `_basis_for`; and the `(?<![a-z])` lookbehind removed from the caption and the inline check. Two constructs had no effect and were removed: the lookbehind in `_BASIS_COMPARISON_RE` (its alternative already requires the word "non") and the fold in `_normalize_issuer` (every caller folds first). | `test_a_non_gaap_eps_label_with_a_non_breaking_hyphen_is_non_gaap`, `test_an_issuer_and_its_attribution_match_across_hyphen_spellings`, `test_a_year_valued_row_with_a_hyphenated_roster_label_is_data_not_a_header`, `test_a_non_gaap_scope_row_with_a_non_breaking_hyphen_is_non_gaap`, `test_the_non_of_a_word_ending_in_non_is_not_non_gaap` |
@@ -259,6 +259,34 @@ The census rerun on this head equals the NF baseline exactly: 31 parsed, 54
 projected, 29 with EPS, 25 with revenue, 208 figures bound. No figure changed
 on any of the 40 releases, and every sha256 matched. The live six bind the
 same values.
+
+### Fail-closed hardening (fifth review)
+
+The fifth review (of `e4b89cfac4d9`) found that a scope row was closed only
+when its tail said "attributable to". Under a scope naming another entity or
+another measure, a bare "Diluted" row still bound as the issuer's GAAP EPS.
+It also found three minor gaps. 36 of the 50 new test cases fail on
+`e4b89cfac4d9`; the other 14 are controls that pass on both.
+
+| Finding | Shape | Now | Test |
+|---|---|---|---|
+| M2 remainder | A bare "Diluted" row bound 1.23 GAAP under "Earnings per share of SpinCo Inc.:", "SpinCo Inc. earnings per share:", "Core", "Operating", "Cash", "Comparable", "Underlying" or "Distributable earnings per share:", "FFO per share:", "Earnings per share - Class B:", "Earnings per share (Predecessor):", "Earnings per share guidance:", "Dividends declared per share:" and "Book value per share:". | The whole scope row is closed. Before "per share" it may carry only a basis (GAAP, non-GAAP, adjusted), basic or diluted, and net income, earnings or loss. After it, it may carry only "data", "amounts", "information" or "of common stock", basic or diluted, and the closed EPS tail, whose attribution must name the issuer or its holders. A trailing footnote mark ("(1)", "*", "†", "‡", a digit glued to the word, or a superscript) is stepped over first. | `test_a_bare_diluted_row_under_a_component_or_foreign_scope_is_not_eps` (27 scopes, 20 new), `test_a_bare_diluted_row_under_the_issuers_eps_scope_is_eps` (18 controls, 12 new) |
+| Minor 1 (regression in `e4b89cfac4d9`) | "NEW YORK--(BUSINESS WIRE)--Acme Corp. (NYSE: ACM) …" named no issuer, because the name lookbehind rejected every name after a hyphen. | Only a name glued to a hyphenated word is rejected ("Acme e-Commerce Co." does not name "Commerce"). A name after dateline dashes is read. | `test_the_issuer_is_named_directly_after_a_wire_dateline` (Business Wire, PR Newswire), `test_a_name_glued_to_a_hyphenated_word_is_not_the_issuer` |
+| Minor 2 | The fourth-review dash rewrite stripped the joiner from "Q4-FY26 vs Q4-FY25", "… compared to …" and similar headers, so they read as 3 months. | "vs", "vs.", "versus", "compared to" and "compared with" join two periods, so these headers declare no span. | 5 cases added to `test_a_quarter_dashed_to_a_second_period_still_names_two` |
+| Minor 3 | Other invisible format characters survived the fold: the left-to-right and right-to-left marks, the bidirectional isolates and embeddings, the invisible operators and the combining grapheme joiner. | Every Unicode format (Cf) character, and U+034F, is dropped with the soft hyphen. | 6 captions added to `test_a_non_gaap_caption_spelled_with_any_dash_declares_non_gaap`, 3 headers to `test_a_header_joining_periods_or_counting_in_an_unread_form_declares_no_span` |
+| Note (header time) | The existing two-period header pattern took about 8.4 s on a 50,000-character header, and the dash rewrite now reached it from the dashed form too. | A header label longer than 300 characters declares no span. | `test_a_header_longer_than_a_period_name_declares_no_span` |
+
+The census caught a regression in the first version of the closed scope row.
+Both NFLX releases carry a footnote mark on their EPS scope row, which the
+closed tail read as an unknown word. Each release fell from 8 bound figures
+to 6 and lost its projected GAAP EPS actual. The footnote step now covers
+asterisks, daggers, glued digits and superscripts as well as "(n)". Removing
+it fails the 5 footnote controls.
+
+The census rerun on this head equals the fourth-review head exactly: 31
+parsed, 54 projected, 29 with EPS, 25 with revenue, 208 figures bound. No
+figure changed on any of the 40 releases, and every sha256 matched. The live
+six bind the same values.
 
 ## Live releases that production showed UNAVAILABLE
 
@@ -373,6 +401,27 @@ Recorded after the fourth review:
 - **Removed constructs.** The lookbehind in `_BASIS_COMPARISON_RE` and the
   fold in `_normalize_issuer` had no effect and were removed. No result
   changed.
+
+Recorded after the fifth review:
+
+- **Basis after a dash or comma (fails closed).** "Earnings per share -
+  GAAP:" and "Earnings per share, GAAP:" scope rows refuse. The basis is read
+  only before "per share" ("GAAP earnings per share:"). No census release lost
+  a figure.
+- **Attribution before "per share" (fails closed).** "Net income attributable
+  to <issuer> per share:" refuses even when it names the issuer, because the
+  closed head does not read an attribution. "Earnings per share attributable
+  to <issuer>:" binds.
+- **Em dash glued to the dateline (fails closed).** "NEW YORK—Acme Corp." folds
+  to a hyphenated word, so it names no issuer. The doubled "--" of a wire
+  dateline and a spaced en or em dash are read.
+- **A later mention can steer the issuer (open, as at `e4b89cfac4d9`).** An
+  "attributable to holders" window that swallows the first name, or the noun
+  "reports" read as the reporter verb, can still pick a later company.
+- **Row-label footnote marks (fails closed, as at `e4b89cfac4d9`).** A full
+  EPS row label ending in "*", "†", a superscript or a glued digit ("Diluted
+  EPS*") refuses, and so does a bare "Diluted*" row under a scope. Row labels
+  step over "(n)" footnotes only.
 
 These are follow-ups, not regressions. None of them is fixed by widening a
 pattern; each needs its own evidence, and some need a source other than the

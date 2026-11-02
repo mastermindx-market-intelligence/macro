@@ -35,6 +35,7 @@ from datetime import datetime
 from enum import Enum
 import math
 import re
+import unicodedata
 from typing import Any, Iterable, Mapping, Sequence
 
 from engine.fundamental_forensics.disclosure_diff import (
@@ -114,12 +115,15 @@ _CURRENCY_SYMBOL = {"$": "USD", "US$": "USD", "€": "EUR", "£": "GBP", "¥": "
 # folded: a label, a caption, a period header.  A value cell never is, because
 # its literal is replayed against the raw source, and a folded "−1.2" (U+2212)
 # would read as negative while the "-1.2" the receipt cites is not in it.
-# A zero-width space, joiner or byte-order mark ("Non\u200b-GAAP") is invisible
-# too, and is dropped with the soft hyphen.
+# Every other invisible format character is dropped with the soft hyphen: a
+# zero-width space or joiner, a byte-order mark, a direction mark or isolate
+# ("Non\u200b-GAAP", "Non\u200eGAAP"), and the combining grapheme joiner.
 _DASH_FOLD = str.maketrans({
+    **{code: None
+       for block in (range(0x10000), range(0x1D173, 0x1D17B), range(0xE0000, 0xE0080))
+       for code in block if unicodedata.category(chr(code)) == "Cf"},
     **{chr(code): "-" for code in range(0x2010, 0x2016)},
-    "−": "-", "﹣": "-", "－": "-", "­": None,
-    "\u200b": None, "\u200c": None, "\u200d": None, "\u2060": None, "\ufeff": None,
+    "−": "-", "﹣": "-", "－": "-", "\u034f": None,
 })
 
 
@@ -244,6 +248,7 @@ _SPAN_PAIR_RE = re.compile(
 )
 _QUARTER_COUNT_RE = re.compile(r"\b(two|three|four|[1-4])\s+quarters\b", re.I)
 _QUARTER_COUNTS = {"two": 2, "three": 3, "four": 4}
+_PERIOD_LABEL_MAX = 300
 _YEAR_TO_DATE_RE = re.compile(r"\bYTD\b|\byear[\s-]+to[\s-]+date\b", re.I)
 # "Fourth Quarter and Fiscal Year Ended", "Q4 and Full Year 2025", "Twelve
 # Weeks and Forty Weeks Ended": a header that joins two periods.  "Ended
@@ -251,11 +256,12 @@ _YEAR_TO_DATE_RE = re.compile(r"\bYTD\b|\byear[\s-]+to[\s-]+date\b", re.I)
 # The second period may follow a date ("Quarter Ended December 28, 2025 and
 # Year Ended") or another joiner, with at most two words before its name; a
 # second date ("..., 2025 and December 29, 2024") names no period.  A header
-# also joins its periods with a dash, ";", "|" or "plus", and names the second
-# as "FY2025" or "FY25": "Fourth Quarter - Fiscal Year", "Quarter | Full Year",
-# "Fourth Quarter / FY2025".  This reads "Year-over-Year" and "Half-Year" as
+# also joins its periods with a dash, ";", "|", "plus" or a comparison ("vs",
+# "compared to"), and names the second as "FY2025" or "FY25": "Fourth Quarter -
+# Fiscal Year", "Quarter | Full Year", "Fourth Quarter / FY2025", "Q4-FY26 vs
+# Q4-FY25".  This reads "Year-over-Year" and "Half-Year" as
 # two periods too, which refuses rather than binds.
-_TWO_PERIOD_JOINER = r"(?:\s+(?:and|plus)\s+|\s*[&/,;|-]\s*(?:and\s+)?)"
+_TWO_PERIOD_JOINER = r"(?:\s+(?:and|plus|vs\.?|versus|compared\s+(?:to|with))\s+|\s*[&/,;|-]\s*(?:and\s+)?)"
 _TWO_PERIOD_HEADER_RE = re.compile(
     r"\b(?:quarter|Q[1-4]|year|half|months?|weeks?)\b"
     r"(?:[^,]*?\band\b[^,]*?|.*?" + _TWO_PERIOD_JOINER
@@ -359,7 +365,7 @@ _ISSUER_CUE = (
     r"|(?:\s*\([^()]{0,40}\))?\s+(?:today\s+)?(?:reports?|reported|announces?|announced|posts?|posted)\b)"
 )
 _ISSUER_MENTION_RE = re.compile(
-    r"(?<![\w'’&.-])(" + _EPS_NAME + r"),?\s+" + _ISSUER_FORM + _ISSUER_CUE
+    r"(?<![\w'’&.])(?<!\w-)(" + _EPS_NAME + r"),?\s+" + _ISSUER_FORM + _ISSUER_CUE
 )
 _ISSUER_SUFFIX_RE = re.compile(
     r"(?:,?\s+(?:inc|corp|corporation|co|company|plc|n\.v|ltd|llc|l\.p|s\.a|ag|se)\.?)+\Z"
@@ -370,16 +376,33 @@ _ISSUER_SUFFIX_RE = re.compile(
 # or inside the words the name pattern takes in ("EPS Attributable To Acme").
 _ATTRIBUTED_NAME_RE = re.compile(r"(?i:\battributable\s+to\b)(?:[^.;:]|\.(?=\S)){0,160}\Z")
 # A per-share scope row ("Earnings per share attributable to Walmart:") is the
-# label its bare "Basic" and "Diluted" rows complete, so it is held to the
-# same closed tail: a component, an exclusion or a pro forma names another number.
-_EPS_SCOPE_COMPONENT_RE = re.compile(
-    r"\b(?:excluding|before|after|from|growth|change|operations|continuing|discontinued|"
-    r"charges|act|tax|pro[\s-]*forma|proforma|restructuring|items|special|non-?controlling|"
-    r"minority|interests?|preferred|participating|securities)\b",
+# label its bare "Basic" and "Diluted" rows complete, so the whole row is
+# closed, as a full EPS label is.  Before "per share" it may say only a basis,
+# basic or diluted, and net income, earnings or loss: "Core earnings", "FFO",
+# "Book value" and "SpinCo Inc. earnings" are other numbers.  After it, it
+# may say "data", "of common stock", which of basic and diluted, and the closed
+# EPS tail: "for Acme Operating LLC", "impact of", "- Class B", "guidance" and
+# "(Predecessor)" name another entity or another number, and refuse.
+_EPS_SCOPE_HEAD_RE = re.compile(
+    r"\A(?:(?:GAAP|non-?GAAP|adjusted)\s+)?"
+    r"(?:(?:basic|diluted)(?:\s*(?:and|&|/|,)\s*(?:basic|diluted))?\s+)?"
+    r"(?:(?:net\s+)?(?:\(\s*loss\s*\)\s+)?(?:income|earnings|loss)"
+    r"(?:\s*\(\s*(?:loss|income|earnings)\s*\))?\s+)?\Z",
     re.I,
 )
-_EPS_SCOPE_ATTRIBUTION_RE = re.compile(r"\battributable\s+to\b", re.I)
-_EPS_SCOPE_TAIL_RE = re.compile(_EPS_LABEL_TAIL, re.I)
+_EPS_SCOPE_TAIL_RE = re.compile(
+    r"(?:\s+(?:data|amounts|information|of\s+common\s+stock))?"
+    r"(?:\s*[-,;:(]?\s*(?:basic|diluted)(?:\s*(?:and|&|/|,)\s*(?:basic|diluted))?\)?)?"
+    + _EPS_LABEL_TAIL,
+    re.I,
+)
+# "Earnings per share (1):", "Earnings per share*:", "Earnings per share1:":
+# a footnote mark before the scope's colon.  ``_scope_names_eps`` reads the
+# text after "per share", so a digit at its start is glued to "share".
+_SCOPE_FOOTNOTE_RE = re.compile(
+    r"(?:\s*\(\d{1,2}\)|\s*[*\u2020\u2021]{1,3}|(?:\A|(?<=[A-Za-z]))\d{1,2}"
+    r"|[\u00b9\u00b2\u00b3\u2070\u2074-\u2079]{1,2})(?=\s*:?\s*\Z)"
+)
 # A multi-class issuer reports EPS once per class of common stock: "Class A
 # common stock" rows under a "Basic Earnings Per Share" scope.  No class row is
 # the release's EPS by its label, and the unqualified "Earnings per share" of
@@ -805,15 +828,10 @@ def _attributes_to_another(match: re.Match[str], issuers: frozenset[str]) -> boo
 def _scope_names_eps(scope: str, issuers: frozenset[str]) -> bool:
     """Whether a per-share scope row names the issuer's reported EPS."""
     per_share = _PER_SHARE_SCOPE_RE.search(scope)
-    if per_share is None:
+    if per_share is None or not _EPS_SCOPE_HEAD_RE.match(scope[:per_share.start()]):
         return False
-    head, tail = scope[:per_share.start()], _FOOTNOTE_SUFFIX_RE.sub("", scope[per_share.end():])
-    if _EPS_SCOPE_COMPONENT_RE.search(head) or _EPS_SCOPE_COMPONENT_RE.search(tail):
-        return False
-    if not _EPS_SCOPE_ATTRIBUTION_RE.search(tail):
-        return True
-    attributed = _EPS_SCOPE_TAIL_RE.match(tail)
-    return attributed is not None and not _attributes_to_another(attributed, issuers)
+    tail = _EPS_SCOPE_TAIL_RE.match(_SCOPE_FOOTNOTE_RE.sub("", scope[per_share.end():]))
+    return tail is not None and not _attributes_to_another(tail, issuers)
 
 
 _INLINE_CURRENCY_RE = re.compile(r"\A(US\$|\$|€|£|¥)\s*")
@@ -1747,6 +1765,10 @@ def _declared_period_months(period_label: str) -> int | None:
     # "Twenty - Six" and "Twenty–Six" are "Twenty-Six": one count, not "Six".
     period_label = re.sub(r"\s*-\s*", "-", " ".join(_fold_dashes(period_label).split()))
     period_label = _QUARTER_OF_FISCAL_YEAR_RE.sub(r"\1 \2", period_label)
+    # A header is a few words.  A longer one is no period name this reader
+    # knows, and the two-period pattern is slow on it.
+    if len(period_label) > _PERIOD_LABEL_MAX:
+        return None
     if _YEAR_TO_DATE_RE.search(period_label) or _TWO_PERIOD_HEADER_RE.search(period_label):
         return None
 
