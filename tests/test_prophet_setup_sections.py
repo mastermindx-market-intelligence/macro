@@ -15,7 +15,10 @@ generated navigation to its contract:
   * identity and the independent source clock stay outside every panel and stay available;
   * a body without markers — Plan records, legacy and other callers — gains nothing, and
     the existing Previous/Next browsing, Plan hop/return and access invalidation keep
-    working, each new candidate defaulting to Structure with no duplicated or leaked state;
+    working with no duplicated or leaked state; the Plan hop/return reopens the SAME
+    candidate on the section the reader left from (recorded as a semantic name before
+    dismiss), while every fresh open and every Previous/Next step — and any return whose
+    recorded group is no longer a visible panel — still lands on Structure;
   * close/release removes the generated bar, ids, roles and hidden state so the exact
     original nodes return home intact.
 
@@ -332,11 +335,17 @@ assert.equal(second.body.querySelectorAll('[data-pvs-section][hidden]').length, 
     )
 
 
-def test_plan_relation_stays_operable_from_sources_and_return_resets_section():
+def test_plan_relation_stays_operable_from_sources_and_return_restores_section():
     """From the Sources panel the exact Plan hop still works through the shipped owner, and
-    the hop/return leaves the reopened detail on Structure with one tablist and no leak."""
+    returning to the SAME candidate reopens that body with Sources selected again: one
+    connected tablist, the tab/panel aria intact, nothing leaked. The restore is bound to
+    this one return only — a fresh open of the same row and a Previous/Next step still
+    default to Structure."""
     _run(
-        _PREP + _OPEN
+        _PREP + """
+const second = sectioned(candidate('board', 'SECOND', 'OTHER-BULL-20260811'));
+candGrid.append(second.row); await flush();
+""" + _OPEN
         + """
 const sourcePanel = panels().find(p => p.getAttribute('data-pvs-section') === 'sources');
 fire(tabs()[3]); await flush();
@@ -357,10 +366,61 @@ assert.equal(window.USProphetSource.get(), 'candidates');
 assert.equal(dialogEl().querySelector('.pvs-dialog-content').querySelector('.pv-setup-body'),
              origins.board.body, 'the same body reopened');
 assert.equal(document.querySelectorAll('.pvs-section-tabs').length, 1, 'exactly one tablist');
-assert.equal(sectionOf(), 'structure', 'the return must not leak the old section state');
-assert.equal(returnBtns().length, 0);
+assert.equal(sectionOf(), 'sources', 'the return restores the section the reader left from');
+const t = tabs(), ps = panels();
+assert.equal(t.length, 4, 'the rebuilt layer is whole');
+assert.equal(t[3].getAttribute('aria-selected'), 'true', 'Sources is the selected tab');
+assert.deepEqual(t.slice(0, 3).map(x => x.getAttribute('aria-selected')), ['false', 'false', 'false']);
+assert.deepEqual(t.map(x => x.getAttribute('tabindex')), ['-1', '-1', '-1', '0'], 'one roving stop, on Sources');
+assert.equal(visiblePanels().length, 1);
+const controls = document.getElementById(t[3].getAttribute('aria-controls'));
+assert.equal(controls, ps[3], 'the selected tab is connected to its own panel');
+assert.equal(controls.getAttribute('data-pvs-section'), 'sources');
+assert.equal(controls.getAttribute('aria-labelledby'), t[3].id, 'the panel is labelled by its tab');
+assert.equal(new Set(t.map(x => x.id)).size, 4, 'tab ids stay unique in the rebuilt layer');
+assert.equal(returnBtns().length, 0, 'the journey is spent');
 fire(closeBtn()); await flush();
 assert.equal(document.activeElement, origins.board.trigger);
+
+fire(origins.board.trigger); await flush();      // an explicit fresh open of the same row
+assert.equal(sectionOf(), 'structure', 'a fresh open still defaults to Structure');
+fire(document.querySelector('[data-pvs-browse="next"]')); await flush();   // while the dialog is open
+assert.equal(dialogEl().querySelector('#pvs-dialog-title').textContent, 'SECOND');
+assert.equal(sectionOf(), 'structure', 'the next candidate still opens on Structure');
+fire(document.querySelector('[data-pvs-browse="previous"]')); await flush();
+assert.equal(dialogEl().querySelector('#pvs-dialog-title').textContent, 'BOAR');
+assert.equal(sectionOf(), 'structure', 'stepping back carries no restore either');
+fire(closeBtn()); await flush();
+""",
+    )
+
+
+def test_return_falls_back_to_structure_when_the_section_is_gone():
+    """The recorded name is a hint, never an authority: if the recorded group is no longer
+    a visible panel of this same body when the reader comes back, the detail opens on
+    Structure instead of a dangling or failed selection."""
+    _run(
+        _PREP + _OPEN
+        + """
+fire(tabs()[3]); await flush();                  // leave from Sources, as the panel invites
+fire(origins.board.link); await flush();
+assert.equal(window.PVSetupReturn.available(), true);
+origins.board.groups.find(p => p.getAttribute('data-pvs-section') === 'sources').remove();
+await flush();                                   // the same row/generation lost that group
+assert.equal(window.PVSetupReturn.available(), true, 'row custody is unchanged: the journey stands');
+
+assert.equal(window.PVSetupReturn.run(), true);
+await flush();
+assert.equal(dialogEl().querySelector('.pvs-dialog-content').querySelector('.pv-setup-body'),
+             origins.board.body, 'the same body reopened');
+assert.equal(document.querySelectorAll('.pvs-section-tabs').length, 1, 'exactly one tablist');
+const t = tabs();
+assert.equal(t.length, 3, 'the remaining groups ship three tabs, never a stub');
+assert.equal(sectionOf(), 'structure', 'a missing section falls back to Structure');
+assert.equal(t[0].getAttribute('aria-selected'), 'true');
+assert.equal(visiblePanels().length, 1);
+assert.equal(t.every(x => document.getElementById(x.getAttribute('aria-controls'))), true,
+             'every surviving tab is still connected');
 """,
     )
 

@@ -6797,7 +6797,15 @@
     });
     return panels;
   }
-  function mountSections() {
+  /* The semantic name of the one section the reader has selected in the currently held
+     body, read BEFORE the dialog releases it; null when this body carries no generated
+     sections at all (Plan records, legacy and other callers). In-memory only. */
+  function currentSectionName() {
+    if (!sections) return null;
+    var picked = sections.refs.filter(function (ref) { return ref.tab.getAttribute('aria-selected') === 'true'; })[0];
+    return picked ? picked.panel.getAttribute('data-pvs-section') : null;
+  }
+  function mountSections(restore) {
     clearSections();
     if (!active || active.moved.length !== 1) return;
     var body = active.moved[0].node;
@@ -6854,7 +6862,12 @@
     sections = {bar: bar, refs: refs};
     var grid = body.querySelector(':scope > .pvs-grid');   // below the identity and the source clock
     (grid && grid.parentNode === body ? grid : panels[0]).before(bar);
-    selectSection(0, false);                 // Structure first — every candidate, every open
+    /* Only the one caller that reopens the SAME candidate's held body may ask for a
+       section back, by published name. A fresh open, Previous/Next and every other
+       caller pass nothing and land on Structure; a name the body no longer carries
+       (a group removed or hidden since the snapshot) falls back to Structure too. */
+    var at = restore ? refs.findIndex(function (ref) { return ref.panel.getAttribute('data-pvs-section') === restore; }) : -1;
+    selectSection(at > 0 ? at : 0, false);   // Structure first — every candidate, every fresh open
   }
   function clearSections() {
     if (!sections) return;
@@ -6887,11 +6900,13 @@
     }
     window.scrollTo({left: j.x, top: j.y, behavior: 'instant'});
     if (!journeyUsable(j, true)) { clearJourney(); return false; }
-    if (open(j.trigger, j.details, j.row) !== true) { clearJourney(); return false; }
+    // Home again on the SAME candidate: hand the section the reader left from back to
+    // its own body. Any other open path (trigger, Previous/Next) passes nothing.
+    if (open(j.trigger, j.details, j.row, j.section) !== true) { clearJourney(); return false; }
     clearJourney();                           // home again: nothing left to return from
     return true;
   }
-  function open(trigger, details, row) {
+  function open(trigger, details, row, restoreSection) {
     if (!row.isConnected || !row.getClientRects().length || !trigger.getClientRects().length ||
         row.closest('[aria-hidden="true"],[hidden],.mx-tier-hidden,.mx-tier-blurred')) return;
     var link = row.querySelector('.pv-setup-stock-link,.pv-record-link,.ucp-identity>a,.stf-tkr');
@@ -6950,7 +6965,7 @@
     nodes.forEach(function (n) { var home = n.parentNode, mark = document.createComment('pv-setup-home'); n.before(mark); active.moved.push({node:n,mark:mark,home:home,owner:holder || details}); target.append(n); });
     document.documentElement.classList.add('pv-setup-lock');
     if (!dialog.open) dialog.showModal(); dialog.scrollTop = 0; dialog.querySelector('.pvs-close').focus({preventScroll:true});
-    mountSections();                      // sections exist only while the native dialog holds the body
+    mountSections(restoreSection);        // sections exist only while the native dialog holds the body
     mountBrowse(wasOpen);
     mountJourney();
     return true;
@@ -6998,7 +7013,8 @@
         journeyPass = 'plans';                // armed for this journey's own Plans hop
         return {trigger: active.trigger, details: active.details, row: active.row,
           stamp: active.sourceStamp, href: active.href, ticker: active.ticker,
-          x: active.x, y: active.y, mode: origin && origin.mode, view: origin && origin.view};
+          x: active.x, y: active.y, mode: origin && origin.mode, view: origin && origin.view,
+          section: currentSectionName()};
       }
       // Re-clicking the same candidate's link (a double click, or coming back for the
       // same record) has no live detail to snapshot; the bound origin has not changed,
@@ -7020,7 +7036,8 @@
       if (!targetId || !planCard || (snap.stamp !== sourceStamp(snap.row))) { clearJourney(); return false; }
       journey = {trigger: snap.trigger, details: snap.details, row: snap.row, stamp: snap.stamp,
         href: snap.href, ticker: snap.ticker, x: snap.x, y: snap.y,
-        mode: snap.mode || 'candidates', view: snap.view || 'grid', targetId: targetId, planCard: planCard};
+        mode: snap.mode || 'candidates', view: snap.view || 'grid', targetId: targetId, planCard: planCard,
+        section: snap.section || null};
       mountJourney();
       return true;
     },
