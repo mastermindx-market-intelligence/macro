@@ -278,7 +278,7 @@
     // Proof is a private client capability. It stays only in a closure and is
     // passed solely to the same-origin, positive-consent owner after disclosure.
     // The 02 proof authority signs the contract v1 and live Stage A v2 scans
-    // alike; checkScan validated the (schema, schema_version) pair before this
+    // alike; checkScan checked the (schema, schema_version) pair before this
     // point. The server mints a receipt only while the opt-in funnel is
     // reachable, so an absent token keeps the form hidden.
     if (eligible.length && typeof data.scan_receipt === "string" &&
