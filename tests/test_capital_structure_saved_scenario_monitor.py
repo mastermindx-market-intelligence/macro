@@ -914,7 +914,10 @@ def test_u2_monitor_dedupes_against_outbox_and_writes_outcome_only_on_ok(
     assert blinded.recorded_n == 2 and blinded.observed_n == 3
     assert len(outbox.posts()) == 2
     assert len(reads) == 2 and sorted(reads[1]) == sorted(both_fids), reads
-    assert not any("outcome write failed" in note for note in blinded.notes)
+    assert not any(
+        "not recorded" in note or "outcome write failed" in note
+        for note in blinded.notes
+    ), blinded.notes
     written = _store.written()
     assert all(
         written[saved_id][1] == served_gen for saved_id in firing_ids
@@ -939,7 +942,7 @@ def test_u2_monitor_dedupes_against_outbox_and_writes_outcome_only_on_ok(
     assert unconfirmed.enqueued_n == 0 and unconfirmed.duplicate_n == 2
     assert unconfirmed.recorded_n == 0
     assert (
-        "enqueued outcome write failed (duplicate_unconfirmed_http_503)"
+        "enqueued firing not recorded (duplicate_unconfirmed_http_503)"
         in unconfirmed.notes
     ), unconfirmed.notes
     written = _store.written()
@@ -998,7 +1001,7 @@ def test_u2_monitor_records_a_landed_alert_whose_write_failed_on_the_next_night(
     monkeypatch.setattr(monitor, "write_outcome", _firing_write_fails)
     first = monitor.run(root=tmp_path, dry_run=False)
     assert first.enqueued_n == 2 and first.recorded_n == 0
-    assert "enqueued outcome write failed (http_503)" in first.notes, first.notes
+    assert "enqueued firing not recorded (http_503)" in first.notes, first.notes
     written = store_fake.written()
     assert all(written[saved_id] == (None, None) for saved_id in firing_ids)
 
@@ -1047,7 +1050,7 @@ def test_u2_monitor_records_nothing_for_a_conflict_whose_alert_is_not_in_the_out
     assert first.enqueued_n == 0 and first.duplicate_n == 2
     assert first.recorded_n == 0
     assert (
-        "enqueued outcome write failed (conflict_not_in_outbox)" in first.notes
+        "enqueued firing not recorded (conflict_not_in_outbox)" in first.notes
     ), first.notes
     assert outbox.fids() == []
     written = store_fake.written()
@@ -1057,6 +1060,48 @@ def test_u2_monitor_records_nothing_for_a_conflict_whose_alert_is_not_in_the_out
     second = monitor.run(root=tmp_path, dry_run=False)
     assert second.planned_n == 2 and second.recorded_n == 0
     assert len(outbox.posts()) == 4
+
+
+# ---------------------------------------------------------------------------
+# A mixed absorbed batch records only the ids the re-read returns
+# ---------------------------------------------------------------------------
+def test_u2_monitor_mixed_absorbed_batch_records_only_the_landed_id(
+    world: _World, fixture_rows: _Fixture, tmp_path, monkeypatch
+):
+    served_gen = world.current["generation_id"]
+    landed_fid = monitor.fire_event_id(
+        saved_id=fixture_rows.correction.saved_id,
+        outcome="correction",
+        to_generation_id=served_gen,
+        user_id=USER,
+    )
+    store_fake, _seeded = _install(
+        monkeypatch, fixture_rows, world=world, root=tmp_path, seeded=[]
+    )
+    # The correction alert sits in the outbox; the new_events POST conflicts
+    # without landing.  Both come back 409.
+    outbox = _ConflictOutbox(fire_event_ids=[landed_fid])
+    monkeypatch.setattr(monitor, "_pg", outbox)
+    real_read = monitor.read_existing_fire_ids
+    reads: list[list[str]] = []
+
+    def _blind_first_read(ids):
+        reads.append(list(ids))
+        if len(reads) == 1:
+            return monitor.TypedRead(monitor.READ_OK_ZERO, [])
+        return real_read(ids)
+
+    monkeypatch.setattr(monitor, "read_existing_fire_ids", _blind_first_read)
+    first = monitor.run(root=tmp_path, dry_run=False)
+    assert first.enqueued_n == 0 and first.duplicate_n == 2
+    assert first.recorded_n == 1
+    assert len(outbox.posts()) == 2 and len(reads) == 2
+    assert (
+        "enqueued firing not recorded (conflict_not_in_outbox)" in first.notes
+    ), first.notes
+    written = store_fake.written()
+    assert written[fixture_rows.correction.saved_id] == ("correction", served_gen)
+    assert written[fixture_rows.new_events.saved_id] == (None, None)
 
 
 # ---------------------------------------------------------------------------

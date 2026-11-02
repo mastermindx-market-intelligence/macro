@@ -44,6 +44,10 @@ night, a conflict whose row is not in the outbox records nothing, and a
 deduped firing still
 records its pair (a prior night whose enqueue landed but whose write failed
 would otherwise leave ``last_seen`` behind and break the attribution chain).
+That next-night catch covers firings keyed by a served generation.  An
+outage's id carries the UTC day it was planned (``_outage_episode``), so an
+outage alert that landed but went unrecorded is planned again the next night
+under a new id and may be sent once more; nothing here suppresses that repeat.
 
 The stored pair is the row's LAST CLASSIFIED outcome, not its last alert: a
 non-firing outcome whose pair differs is recorded too (no enqueue), so the
@@ -892,7 +896,8 @@ def _enqueue_and_record(
     ``"duplicate"`` status is only the HTTP shape of a conflict (409/23505),
     so an absorbed id the re-read does not return records nothing, and an
     unreadable re-read records none of them: the next night's pre-insert
-    SELECT finds whatever did land.  Never before the POST, never for a
+    SELECT finds whatever did land, except an outage, whose id is day-keyed
+    (see the module docstring).  Never before the POST, never for a
     failed or unattempted row, and nothing at all on a dry run.
     Returns ``(enqueued, duplicates, written, error_class, write_error)`` —
     ``write_error`` names the first reason a provable row went unrecorded."""
@@ -1015,7 +1020,7 @@ def run(
     if error_class is not None:
         notes.append(f"enqueue stopped early ({error_class})")
     if write_error is not None:
-        notes.append(f"enqueued outcome write failed ({write_error})")
+        notes.append(f"enqueued firing not recorded ({write_error})")
     present_n, present_error = _record_observed(present, dry_run=dry_run)
     if present_error is not None:
         notes.append(f"deduped outcome write failed ({present_error})")
