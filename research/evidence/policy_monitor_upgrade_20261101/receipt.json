@@ -1,0 +1,518 @@
+{
+  "schema": "policy_monitor_browser_evidence.v1",
+  "template": "templates/dashboard.html.j2",
+  "normalizer": "lib/policy_monitor_view.py",
+  "payloads": [
+    "site/policy_lever.json",
+    "data/regime/latest.json"
+  ],
+  "command": "CI=1 python3 tests/probe_policy_monitor_browser.py --out research/evidence/policy_monitor_upgrade_20261101 --states populated,partial,missing",
+  "resolved_sha": "4bcba1f0a5ed2a1db440b07a820c4dfc8df1c7e1",
+  "template_blob": "013bfe94ad4dbefd8d36e8e15028b7dcfabdea48",
+  "normalizer_blob": "39594ef8322838750045c8f62974b79fa9fb5ffa",
+  "face_fragment_blob": "50057761f26882b1237467d81f7bd19445c5a295",
+  "dialog_fragment_blob": "b5ef05fed9cf45fc7e24a3241a35ea50a6fb7a68",
+  "stylesheet_blob": "45ea7b9232b3d1ef421cf51ac5c38f5ef3c6f094",
+  "harness_note": "The macro page's detailed dialogs are the registration benefit: the page's own MMXAccessPreview resolves an anonymous visitor to the sign-in sheet, so the probe resolves that preview as a signed-in tier before it clicks the face. The page's own mx5OpenDlg/mx5CloseDlg controller opens the real dialog; no markup or controller code is patched.",
+  "shapes": [
+    {
+      "state": "populated",
+      "theme": "dark",
+      "lang": "en",
+      "width": 1440,
+      "height": 1000,
+      "files": [
+        {
+          "kind": "card-face",
+          "file": "policy-populated-en-dark-1440-face.png",
+          "clip": {
+            "x": 28,
+            "y": 342.1,
+            "width": 353.5,
+            "height": 316.5
+          },
+          "bytes": 30461
+        },
+        {
+          "kind": "dialog",
+          "file": "policy-populated-en-dark-1440-dialog.png",
+          "clip": {
+            "x": 218,
+            "y": 78,
+            "width": 1004,
+            "height": 844
+          },
+          "bytes": 123825
+        }
+      ],
+      "table_rows": 5,
+      "fed_dot_rows": 8,
+      "reopen_ok": true,
+      "escape_closed": true,
+      "focus_returned": true,
+      "no_page_overflow": true
+    },
+    {
+      "state": "populated",
+      "theme": "dark",
+      "lang": "en",
+      "width": 390,
+      "height": 844,
+      "files": [
+        {
+          "kind": "card-face",
+          "file": "policy-populated-en-dark-390-face.png",
+          "clip": {
+            "x": 6,
+            "y": 277.4,
+            "width": 378.0,
+            "height": 289.5
+          },
+          "bytes": 36389
+        },
+        {
+          "kind": "dialog",
+          "file": "policy-populated-en-dark-390-dialog.png",
+          "clip": {
+            "x": 0.0,
+            "y": 114.6,
+            "width": 390,
+            "height": 729.4
+          },
+          "bytes": 75355
+        },
+        {
+          "kind": "chart",
+          "file": "policy-populated-en-dark-390-chart.png",
+          "clip": {
+            "x": 19,
+            "y": 397.7,
+            "width": 352,
+            "height": 258.7
+          },
+          "bytes": 17180
+        }
+      ],
+      "table_rows": 5,
+      "fed_dot_rows": 8,
+      "reopen_ok": true,
+      "escape_closed": true,
+      "focus_returned": true,
+      "no_page_overflow": true
+    },
+    {
+      "state": "populated",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 1440,
+      "height": 1000,
+      "files": [
+        {
+          "kind": "card-face",
+          "file": "policy-populated-zh-dark-1440-face.png",
+          "clip": {
+            "x": 28,
+            "y": 355.1,
+            "width": 353.5,
+            "height": 289.5
+          },
+          "bytes": 28440
+        },
+        {
+          "kind": "dialog",
+          "file": "policy-populated-zh-dark-1440-dialog.png",
+          "clip": {
+            "x": 218,
+            "y": 78,
+            "width": 1004,
+            "height": 844
+          },
+          "bytes": 142347
+        }
+      ],
+      "table_rows": 5,
+      "fed_dot_rows": 8,
+      "reopen_ok": true,
+      "escape_closed": true,
+      "focus_returned": true,
+      "no_page_overflow": true
+    },
+    {
+      "state": "populated",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 390,
+      "height": 844,
+      "files": [
+        {
+          "kind": "card-face",
+          "file": "policy-populated-zh-dark-390-face.png",
+          "clip": {
+            "x": 6,
+            "y": 277.2,
+            "width": 378.0,
+            "height": 289.5
+          },
+          "bytes": 35753
+        },
+        {
+          "kind": "dialog",
+          "file": "policy-populated-zh-dark-390-dialog.png",
+          "clip": {
+            "x": 0.0,
+            "y": 114.6,
+            "width": 390,
+            "height": 729.4
+          },
+          "bytes": 86367
+        },
+        {
+          "kind": "chart",
+          "file": "policy-populated-zh-dark-390-chart.png",
+          "clip": {
+            "x": 19,
+            "y": 596.5,
+            "width": 352,
+            "height": 247.5
+          },
+          "bytes": 25197
+        }
+      ],
+      "table_rows": 5,
+      "fed_dot_rows": 8,
+      "reopen_ok": true,
+      "escape_closed": true,
+      "focus_returned": true,
+      "no_page_overflow": true
+    },
+    {
+      "state": "populated",
+      "theme": "light",
+      "lang": "en",
+      "width": 1440,
+      "height": 1000,
+      "files": [
+        {
+          "kind": "card-face",
+          "file": "policy-populated-en-light-1440-face.png",
+          "clip": {
+            "x": 28,
+            "y": 342.1,
+            "width": 353.5,
+            "height": 316.5
+          },
+          "bytes": 18385
+        },
+        {
+          "kind": "dialog",
+          "file": "policy-populated-en-light-1440-dialog.png",
+          "clip": {
+            "x": 218,
+            "y": 78,
+            "width": 1004,
+            "height": 844
+          },
+          "bytes": 108512
+        }
+      ],
+      "table_rows": 5,
+      "fed_dot_rows": 8,
+      "reopen_ok": true,
+      "escape_closed": true,
+      "focus_returned": true,
+      "no_page_overflow": true
+    },
+    {
+      "state": "populated",
+      "theme": "light",
+      "lang": "en",
+      "width": 390,
+      "height": 844,
+      "files": [
+        {
+          "kind": "card-face",
+          "file": "policy-populated-en-light-390-face.png",
+          "clip": {
+            "x": 6,
+            "y": 277.4,
+            "width": 378.0,
+            "height": 289.5
+          },
+          "bytes": 18881
+        },
+        {
+          "kind": "dialog",
+          "file": "policy-populated-en-light-390-dialog.png",
+          "clip": {
+            "x": 0.0,
+            "y": 114.6,
+            "width": 390,
+            "height": 729.4
+          },
+          "bytes": 64676
+        },
+        {
+          "kind": "chart",
+          "file": "policy-populated-en-light-390-chart.png",
+          "clip": {
+            "x": 19,
+            "y": 397.7,
+            "width": 352,
+            "height": 258.7
+          },
+          "bytes": 13294
+        }
+      ],
+      "table_rows": 5,
+      "fed_dot_rows": 8,
+      "reopen_ok": true,
+      "escape_closed": true,
+      "focus_returned": true,
+      "no_page_overflow": true
+    },
+    {
+      "state": "populated",
+      "theme": "light",
+      "lang": "zh",
+      "width": 1440,
+      "height": 1000,
+      "files": [
+        {
+          "kind": "card-face",
+          "file": "policy-populated-zh-light-1440-face.png",
+          "clip": {
+            "x": 28,
+            "y": 355.1,
+            "width": 353.5,
+            "height": 289.5
+          },
+          "bytes": 18045
+        },
+        {
+          "kind": "dialog",
+          "file": "policy-populated-zh-light-1440-dialog.png",
+          "clip": {
+            "x": 218,
+            "y": 78,
+            "width": 1004,
+            "height": 844
+          },
+          "bytes": 130610
+        }
+      ],
+      "table_rows": 5,
+      "fed_dot_rows": 8,
+      "reopen_ok": true,
+      "escape_closed": true,
+      "focus_returned": true,
+      "no_page_overflow": true
+    },
+    {
+      "state": "populated",
+      "theme": "light",
+      "lang": "zh",
+      "width": 390,
+      "height": 844,
+      "files": [
+        {
+          "kind": "card-face",
+          "file": "policy-populated-zh-light-390-face.png",
+          "clip": {
+            "x": 6,
+            "y": 277.2,
+            "width": 378.0,
+            "height": 289.5
+          },
+          "bytes": 19337
+        },
+        {
+          "kind": "dialog",
+          "file": "policy-populated-zh-light-390-dialog.png",
+          "clip": {
+            "x": 0.0,
+            "y": 114.6,
+            "width": 390,
+            "height": 729.4
+          },
+          "bytes": 80046
+        },
+        {
+          "kind": "chart",
+          "file": "policy-populated-zh-light-390-chart.png",
+          "clip": {
+            "x": 19,
+            "y": 596.5,
+            "width": 352,
+            "height": 247.5
+          },
+          "bytes": 22501
+        }
+      ],
+      "table_rows": 5,
+      "fed_dot_rows": 8,
+      "reopen_ok": true,
+      "escape_closed": true,
+      "focus_returned": true,
+      "no_page_overflow": true
+    },
+    {
+      "state": "partial",
+      "theme": "dark",
+      "lang": "en",
+      "width": 1440,
+      "height": 1000,
+      "files": [
+        {
+          "kind": "card-face",
+          "file": "policy-partial-en-dark-1440-face.png",
+          "clip": {
+            "x": 28,
+            "y": 342.1,
+            "width": 353.5,
+            "height": 316.5
+          },
+          "bytes": 29560
+        },
+        {
+          "kind": "dialog",
+          "file": "policy-partial-en-dark-1440-dialog.png",
+          "clip": {
+            "x": 218,
+            "y": 78,
+            "width": 1004,
+            "height": 844
+          },
+          "bytes": 118820
+        }
+      ],
+      "table_rows": 5,
+      "fed_dot_rows": 8,
+      "reopen_ok": true,
+      "escape_closed": true,
+      "focus_returned": true,
+      "no_page_overflow": true
+    },
+    {
+      "state": "partial",
+      "theme": "light",
+      "lang": "zh",
+      "width": 390,
+      "height": 844,
+      "files": [
+        {
+          "kind": "card-face",
+          "file": "policy-partial-zh-light-390-face.png",
+          "clip": {
+            "x": 6,
+            "y": 277.2,
+            "width": 378.0,
+            "height": 289.5
+          },
+          "bytes": 18640
+        },
+        {
+          "kind": "dialog",
+          "file": "policy-partial-zh-light-390-dialog.png",
+          "clip": {
+            "x": 0.0,
+            "y": 114.6,
+            "width": 390,
+            "height": 729.4
+          },
+          "bytes": 80258
+        },
+        {
+          "kind": "chart",
+          "file": "policy-partial-zh-light-390-chart.png",
+          "clip": {
+            "x": 19,
+            "y": 596.5,
+            "width": 352,
+            "height": 247.5
+          },
+          "bytes": 20435
+        }
+      ],
+      "table_rows": 5,
+      "fed_dot_rows": 8,
+      "reopen_ok": true,
+      "escape_closed": true,
+      "focus_returned": true,
+      "no_page_overflow": true
+    },
+    {
+      "state": "missing",
+      "theme": "dark",
+      "lang": "en",
+      "width": 1440,
+      "height": 1000,
+      "files": [
+        {
+          "kind": "card-face",
+          "file": "policy-missing-en-dark-1440-face.png",
+          "clip": {
+            "x": 28,
+            "y": 366.1,
+            "width": 353.5,
+            "height": 268.5
+          },
+          "bytes": 26453
+        },
+        {
+          "kind": "dialog",
+          "file": "policy-missing-en-dark-1440-dialog.png",
+          "clip": {
+            "x": 218,
+            "y": 78,
+            "width": 1004,
+            "height": 844
+          },
+          "bytes": 99827
+        }
+      ],
+      "table_rows": 0,
+      "fed_dot_rows": 4,
+      "reopen_ok": true,
+      "escape_closed": true,
+      "focus_returned": true,
+      "no_page_overflow": true
+    },
+    {
+      "state": "missing",
+      "theme": "light",
+      "lang": "zh",
+      "width": 390,
+      "height": 844,
+      "files": [
+        {
+          "kind": "card-face",
+          "file": "policy-missing-zh-light-390-face.png",
+          "clip": {
+            "x": 6,
+            "y": 301.2,
+            "width": 378.0,
+            "height": 241.5
+          },
+          "bytes": 16190
+        },
+        {
+          "kind": "dialog",
+          "file": "policy-missing-zh-light-390-dialog.png",
+          "clip": {
+            "x": 0.0,
+            "y": 114.6,
+            "width": 390,
+            "height": 729.4
+          },
+          "bytes": 77999
+        }
+      ],
+      "table_rows": 0,
+      "fed_dot_rows": 4,
+      "reopen_ok": true,
+      "escape_closed": true,
+      "focus_returned": true,
+      "no_page_overflow": true
+    }
+  ]
+}

@@ -81,3 +81,74 @@ This is a consequential single-domain product capability with frozen authority/d
 
 ## Evidence
 Initial source readback: this file's Git commit is the task-tree revision; later evidence must cite exact implementation/review revisions and browser artifacts. No construction, tests, worker START, deployment or acceptance is claimed by this initial plan.
+
+## Implementation record (2026-11-01, branch claude/policy-monitor-upgrade-20261101)
+
+Source revision: `4bcba1f0a5ed2a1db440b07a820c4dfc8df1c7e1` (this branch; base
+`9af0a33eb38b08d902c3e593cb0e276d3f0d6a18`). Independent source/visual review,
+hosted CI and release remain with the root — nothing here is a production or
+acceptance claim.
+
+### What was built
+
+* `lib/policy_monitor_view.py` — the PURE display normalizer. It projects the
+  existing payloads (`site/policy_lever.json`, `latest.fed_path`,
+  `latest.fed_stance`, the existing flip-confirmation and event-window views)
+  into safe display values: strict mapping/sequence/finite-number/date
+  validation, bool-as-number refused, NaN/infinity refused, unsafe URLs
+  refused, text and array sizes bounded at the display boundary, no raw
+  payload mutated. One bad section degrades on its own.
+* `scripts/build_site.py` — narrow wiring: the normalizer is registered as the
+  template global `pm_view` and ONE view-model entry (`policy_monitor`) is
+  added. The three existing policy inputs are read once, so the card and the
+  dialog cannot disagree.
+* `templates/_policy_monitor_face.html.j2`, `templates/_policy_monitor_dialog.html.j2`,
+  `templates/_policy_monitor.css.j2` — the scoped markup and the token-only
+  stylesheet. `templates/dashboard.html.j2` shrinks by ~35 KB: the policy
+  markup and the `plx-*` rules leave the 1.4MB template for the fragments.
+  The ids `sx-policy-v2`, `dlg-policy`, `dlg-policy-lever-card` and the
+  `mx5OpenDlg` / `mx5CloseDlg` contract are unchanged.
+
+### Falsifier outcomes
+
+| Falsifier | Outcome |
+|---|---|
+| Rising market path and lower same-horizon market-vs-Fed projection render coherently | `tests/test_policy_monitor_view.py::TestRatesPanel` + the browser evidence (market path rises 3.88% → 4.44%; the qualified end-2026 comparison reads −14 bp) |
+| All-null, partial, invalid types, nonfinite values, valid zero, stale dates, unknown guidance and missing arming never crash or fabricate a calm/current/zero claim | `tests/test_policy_monitor_view.py` (72 cases) + `tests/test_policy_monitor_ui.py::TestDegradation` |
+| Year rollover and non-midyear snapshots do not misplace Fed dots | `tests/test_policy_monitor_view.py::TestFedDotPlacement` (Nov-2026 → 2.03m, Jun-2026 → 6.03m, Jan-2027 → 11.5m; a dot past the horizon or before the snapshot is tabulated, never plotted) |
+| Source gap basis ambiguity suppresses the unsupported comparison, while valid observations remain useful | `tests/test_policy_monitor_view.py::TestComparisonBasis` (no `implied_source_meta` ⇒ no spread; `not_comparable` ⇒ no spread, the rule's reason is shown) |
+| Recorded policy alert counts are never relabelled Fed speeches without evidence | `tests/test_policy_monitor_view.py::TestRecordedActivity` + `tests/test_policy_monitor_ui.py::TestHonesty` |
+| Both themes x EN/ZH x desktop 1440/mobile 390 visibly reviewed; no coloured edge, clipped value, invisible label or duplicate id | `research/evidence/policy_monitor_upgrade_20261101/` (29 captures) + `tests/test_policy_monitor_ui.py::TestDomContract` |
+| Actual dashboard template and existing dialog controller are exercised, not only a mockup | `tests/probe_policy_monitor_browser.py` renders `templates/dashboard.html.j2` with the real payloads and opens the dialog through the page's own `mx5OpenDlg` |
+| No source/production acceptance claim without its actual receipt | this section; the browser receipt carries the resolved revision and blob hashes |
+
+### Browser evidence
+
+`research/evidence/policy_monitor_upgrade_20261101/` — 29 PNGs + `receipt.json`,
+captured at revision `4bcba1f0a5ed2a1db440b07a820c4dfc8df1c7e1` with
+
+```
+CI=1 python3 tests/probe_policy_monitor_browser.py \
+  --out research/evidence/policy_monitor_upgrade_20261101 \
+  --states populated,partial,missing
+```
+
+12 shapes: the populated state across dark/light x EN/ZH x 1440/390 (card face,
+dialog, and the mobile chart), plus the partial and missing states at one
+desktop and one mobile shape each. Every shape records: the values-table row
+count, the Fed-projection row count, a successful close/reopen through the
+controller with a single dialog instance, Escape closing it, focus returning to
+the trigger, and no page-level horizontal overflow at 390.
+
+### Known boundaries (not resolved by this delivery)
+
+* The macro page's detailed dialogs are the registration benefit: the page's
+  own access preview sends an anonymous visitor to the sign-in sheet, so the
+  probe resolves that preview as a signed-in tier before clicking the face.
+  The markup and the controller are untouched.
+* `site/policy_lever.json` is dated 2026-10-30, the lever narrative copy is
+  dated 2026-07-18 (stale), and the recorded-alert windows do not record their
+  end date. The panel reports those limits; it does not refresh them.
+* The separate stocks-mode `policy-lever-card` fallback band is outside the
+  named scope of this task. Its QUIET fallback and its malformed-row crash
+  were hardened in passing; its layout and labels are unchanged.
