@@ -20646,7 +20646,7 @@ function initStockTableView(){
   function exposeSectorAction() {
     window.USStockTable._selectSector = tableController &&
       typeof tableController.setSectorFilter === 'function' ? selectSector : null;
-    window.dispatchEvent(new Event('us-screener:availability'));
+    if (typeof window.dispatchEvent === 'function') window.dispatchEvent(new Event('us-screener:availability')); /* feature-detected: the Prophet node harnesses run this script under a window without dispatchEvent */
   }
 
   /* _getView is the read half of the existing view owner: the candidate→Plan return
@@ -20718,7 +20718,7 @@ if (document.readyState === 'loading') {
        single explicit action renders. It is not a fourth source option: it restores the
        exact originating row, so no generic navigation is duplicated. */
     returnHost: function(){ return tog.parentNode; } };
-  window.dispatchEvent(new Event('us-screener:availability'));
+  if (typeof window.dispatchEvent === 'function') window.dispatchEvent(new Event('us-screener:availability')); /* feature-detected: the Prophet node harnesses run this script under a window without dispatchEvent */
 
   document.addEventListener('click', function(event){
     var button = event.target && event.target.closest ? event.target.closest('.pvs-plan-link[data-pvs-plan-target]') : null;

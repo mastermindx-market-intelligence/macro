@@ -743,10 +743,10 @@ def _lens_date(value) -> str | None:
 def _fast_lens_status(armed: bool, rotation_raw: dict) -> dict:
     """What the page tells the reader about the fast lens: state fresh, stale or absent.
 
-    _load_rotation_artifact() answers "may this re-order the board" and returns {} for both
-    a missing and an old file. The reader needs the difference. A file that holds instruments
-    but did not arm the board can only have failed the age guard, so it is stale, and its own
-    asof is the date to name. Read-only; never changes the order.
+    compute() answers "may this re-order the board": the loader returns {} for a missing file and
+    the settled-session gate (SIC-D-B02) blanks a misaligned one. The reader needs the difference.
+    A file that holds instruments but did not arm the board can only have failed that gate, so it
+    is stale, and its own asof is the date to name. Read-only; never changes the order.
     """
     if armed:
         return {"state": "fresh", "asof": _lens_date((rotation_raw or {}).get("asof"))}
