@@ -109,6 +109,15 @@ def layout_and_controls(browser, url, theme, locale, width):
           })""")
         check(key+"/touch-target",len(boxes)==8 and all(b["height"]>=44 and b["width"]>=44 for b in boxes),boxes=boxes)
         check(key+"/evidence-clear-of-assistant",all(b["x"]+b["width"]<315 for b in boxes),box=boxes[0])
+        metric_geometry=page.evaluate("""() => {
+          const right=[...document.querySelectorAll('tr.lead-row .price-cell .nb-px,tr.lead-row .price-cell .pct-chg,tr.lead-row .price-cell .metric-sub,tr.lead-row .vol-cell .metric-lead,tr.lead-row .ift-mobile-metric-label')]
+            .filter(el=>el.getBoundingClientRect().height>0).map(el=>el.getBoundingClientRect().right);
+          const stamp=document.getElementById('ift-stamp'),lens=stamp.querySelector('.lens-q');
+          return {maxRight:Math.max(...right),stampTop:stamp.getBoundingClientRect().top,lensTop:lens?lens.getBoundingClientRect().top:null};
+        }""")
+        check(key+"/metrics-clear-of-assistant",metric_geometry["maxRight"]<=315,**metric_geometry)
+        check(key+"/status-help-attached",metric_geometry["lensTop"] is not None and abs(metric_geometry["lensTop"]-metric_geometry["stampTop"])<=3,**metric_geometry)
+
 
     if width>760:
         original=page.locator('th[data-col="rvol"]').get_attribute("aria-sort")
@@ -200,10 +209,10 @@ def layout_and_controls(browser, url, theme, locale, width):
     check(key+"/no-script-errors",not errors,errors=errors)
     context.close()
 
-def scenario(browser,url,name):
+def scenario(browser,url,name,width=1440):
     base=json.loads((ROOT/"site/flowtracker/base.json").read_text())
     tickers=[r["ticker"] for r in base["leaders"]]
-    context=source_context(browser)
+    context=source_context(browser,width=width)
     # Fixed session clock makes the existing classifier's time window deterministic.
     context.add_init_script("const RealDate=Date;window.Date=class extends RealDate {constructor(...args){super(...(args.length?args:["+json.dumps(NOW)+"]));}static now(){return "+str(NOW_MS)+";}};")
     if name=="empty":
@@ -234,6 +243,14 @@ def scenario(browser,url,name):
     page.on("pageerror",lambda error:errors.append(str(error)))
     page.goto(url,wait_until="domcontentloaded")
     page.wait_for_timeout(600)
+    if width==390:
+        geometry=page.evaluate("""() => {
+          const labels=[...document.querySelectorAll('tr.lead-row .price-cell .nb-px,tr.lead-row .price-cell .pct-chg,tr.lead-row .vol-cell .metric-lead')]
+            .filter(el=>el.getBoundingClientRect().height>0);
+          return {scrollWidth:document.documentElement.scrollWidth,maxMetricRight:Math.max(...labels.map(el=>el.getBoundingClientRect().right))};
+        }""")
+        check("fixture/"+name+"/mobile-no-overflow",geometry["scrollWidth"]<=390,**geometry)
+        check("fixture/"+name+"/mobile-metrics-clear",geometry["maxMetricRight"]<=315,**geometry)
     title=page.locator("#hero-thesis").inner_text()
     if name=="empty":
         check("fixture/empty",page.locator("tr.lead-row").count()==0 and "scan is unavailable" in title,title=title)
@@ -280,6 +297,8 @@ def main():
             try:scenario(browser,url,name)
             except Exception as e:
                 results.append({"check":"fixture/"+name+"/exception","passed":False,"error":str(e)})
+        try:scenario(browser,url,"populated",width=390)
+        except Exception as e:results.append({"check":"fixture/populated/mobile/exception","passed":False,"error":str(e)})
         browser.close()
     out=ROOT/args.output
     out.parent.mkdir(parents=True,exist_ok=True)

@@ -361,3 +361,11 @@ body.page-intraday-flow .lens-pop .ift-feed-row + .ift-feed-row { margin-top:0.4
 
 .page-intraday-flow .check-name { flex:1; }
 .page-intraday-flow .check-state { white-space:nowrap; color:var(--muted); font-size:var(--fs-label); }
+
+/* Keep phone metrics readable beside the shared floating assistant. */
+@media (max-width:760px) {
+ .page-intraday-flow table.leaders .lead-row .price-cell,
+ .page-intraday-flow table.leaders .lead-row .vol-cell { padding-right:var(--sp-8,44px); }
+ .page-intraday-flow #ift-stamp { display:block; position:relative; padding-right:22px; }
+ .page-intraday-flow #ift-stamp > .lens-q { position:absolute; right:0; top:1px; }
+}

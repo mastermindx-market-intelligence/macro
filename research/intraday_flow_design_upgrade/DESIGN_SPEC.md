@@ -123,3 +123,9 @@ Activity help uses a native popover, supports keyboard open and Escape, and cann
 trigger column sorting. Theme menus remain visible on one-name and empty boards.
 The menu, focus and touch-target assertions query the current DOM atomically to
 avoid treating an already replaced element as the current interactive target.
+
+The phone metric column reserves 44px beside the shared floating assistant; both
+unavailable and populated values are checked outside its footprint. The canonical
+feed-status help button stays anchored beside its status text instead of occupying
+an orphaned line. Shared navigation styling, markup, behavior and script order remain
+unchanged. Its observed startup layout shifts are separately documented for review.

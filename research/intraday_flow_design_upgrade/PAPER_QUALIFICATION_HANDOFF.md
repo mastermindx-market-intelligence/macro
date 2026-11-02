@@ -41,3 +41,12 @@ issue from the successful explicit-file read.
 
 This is a prepared source handoff, not a claim that an owner has been notified or that
 the runtime has changed. Paper remains a release/acceptance prerequisite in MASTER_PLAN.
+
+## Latest read-only recheck — 2026-11-02 03:48 UTC
+
+The service now reports paper-desktop 0.5.18. The observed catalog digest is still
+`16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd`.
+`server_version_policy` is `OBSERVED_NOT_PINNED`, and version compatibility is true,
+but `catalog_compatible` and `accepted_for_write` remain false. This is the same
+catalog qualification gate; changing the app version does not authorize a write.
+No prepare/edit effect was attempted after this recheck.
