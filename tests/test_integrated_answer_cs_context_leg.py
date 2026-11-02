@@ -289,6 +289,35 @@ def test_missing_state_file_is_absent_state_unavailable(served, tmp_path: Path) 
     _assert_absent(_leg(), "state_unavailable")
 
 
+def test_contract_violation_from_the_state_path_is_absent_contract_invalid(
+    served, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _serve_single_holder(served)
+
+    def _violating(*_args: Any) -> Any:
+        raise cs.ContractViolation("state: tampered")
+
+    monkeypatch.setattr(cs, "_state_view", _violating)
+    _assert_absent(_leg(), "contract_invalid")
+
+
+def test_empty_published_coverage_records_a_not_applicable_denominator(
+    served, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _serve_single_holder(served)
+    real_state_view = cs._state_view
+
+    def _empty_coverage(*args: Any) -> Any:
+        return real_state_view(*args)._replace(coverage={})
+
+    monkeypatch.setattr(cs, "_state_view", _empty_coverage)
+    leg = _leg()
+    assert leg["status"] == "ok"
+    consumed = leg["ref"].consumed_receipt
+    assert consumed["receipt"]["denominator"] is None
+    assert consumed["null_reasons"]["denominator"] == "NOT_APPLICABLE"
+
+
 def test_projection_state_generation_mismatch_is_absent_state_not_bound(
     served,
 ) -> None:
@@ -346,6 +375,9 @@ def _walk_keys(node: object, *, allow_authority_exception: bool = False) -> None
             for token in _FORBIDDEN_KEY_TOKENS:
                 assert token not in lowered, (key, token)
             _walk_keys(value)
+    elif isinstance(node, list):
+        for item in node:
+            _walk_keys(item)
 
 
 def test_payload_keys_carry_no_amount_or_sizing_vocabulary(served) -> None:

@@ -611,7 +611,7 @@ def _leg_capital_structure(ticker: str, composed_at: str) -> dict[str, Any]:
         if exc.status_code == 503:
             return _absent("state_unavailable")
         return _absent(f"unavailable:http_{exc.status_code}")
-    except ContractError:
+    except (ContractError, cs.ContractViolation):
         return _absent("contract_invalid")
     except Exception as exc:  # noqa: BLE001
         return _absent(f"unavailable:{type(exc).__name__}")
@@ -687,7 +687,8 @@ def _leg_capital_structure(ticker: str, composed_at: str) -> dict[str, Any]:
             {
                 "bytes_sha256": "NOT_READ_AT_CONSUME",
                 "data_interval": "NOT_EXPOSED_BY_PRODUCER",
-                "denominator": "NOT_READ_AT_CONSUME",
+                # Coverage was read; an empty published coverage has no denominator.
+                "denominator": "NOT_APPLICABLE",
             },
         ),
     )
