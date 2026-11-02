@@ -423,6 +423,34 @@ def test_stale_cached_snapshot_never_reaches_the_put(auth, store):
     assert meta["brain_depth"] == "concise"
 
 
+@pytest.mark.xfail(strict=True, reason=(
+    "C05 (known, documented): the writer PUTs the whole merged snapshot taken by its own "
+    "fresh GET. An opt-out committed by another request between that GET and this PUT is "
+    "overwritten with the stale True. Closing it needs a conditional write (version/ETag or "
+    "a server-side patch), not another read. Strict: the day the writer stops losing the "
+    "opt-out, this XPASSes and the marker must come off."))
+def test_opt_out_landing_between_the_fresh_get_and_the_put_is_not_overwritten(auth, store,
+                                                                              monkeypatch):
+    auth.metadata = {"lang": "en", "alert_email_optin": True,
+                     "alert_categories": ["sector_rotation_relative"], "tz": "America/New_York"}
+    recorded = auth.urlopen
+
+    def racing(req, timeout=None):
+        resp = recorded(req, timeout)
+        if req.get_method() == "GET":
+            # Another request's opt-out commits the instant our fresh read returned.
+            auth.metadata["alert_email_optin"] = False
+        return resp
+
+    monkeypatch.setattr(urllib.request, "urlopen", racing)
+    account_prefs.save_prefs(account_prefs.PrefsRequest(brain_depth="concise"), user=USER)
+    assert [c[0] for c in auth.calls] == ["GET", "PUT"]
+    meta = auth.put()[2]["user_metadata"]
+    assert meta["brain_depth"] == "concise"
+    # The other user's decision must survive a write that never touched that key.
+    assert meta.get("alert_email_optin") is not True
+
+
 def test_the_route_merges_from_the_fresh_reader_not_the_cached_snapshot(auth, store,
                                                                         monkeypatch):
     """Seat R2: the route-boundary contract, driven through the REAL handler with the

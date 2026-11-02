@@ -208,4 +208,13 @@ process.stdout.write(JSON.stringify(saved));
     assert sorted(saved[0]["value"])==sorted(expected)
     # Selecting a topic cannot implicitly enable email delivery.
     assert all(entry["key"]!="alert_email_optin" for entry in saved)
+
+
+@pytest.mark.needs_full_checkout("site")
+def test_account_js_site_copy_is_byte_identical_to_the_template_under_test():
+    # The executable contract above reads templates/account.js; the page serves
+    # site/account.js. Parity is its own verdict so a sparse tree (policy R8) skips
+    # exactly this read instead of failing the behavioural cases with it.
+    from pathlib import Path
+    root=Path(__file__).resolve().parents[1]
     assert (root/"templates/account.js").read_bytes()==(root/"site/account.js").read_bytes()
