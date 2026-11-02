@@ -1,0 +1,100 @@
+{% macro t(en,zh) -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{%- endmacro %}
+{% macro icon(name) -%}<svg class="ref-icon" viewBox="0 0 24 24" aria-hidden="true">{% if name=='arrow' %}<path d="M5 12h14m-5-5 5 5-5 5"/>{% elif name=='clock' %}<circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/>{% elif name=='chart' %}<path d="M4 4v16h16M8 15l4-5 4 3 4-7"/>{% elif name=='search' %}<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/>{% elif name=='grid' %}<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>{% elif name=='layers' %}<path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/>{% elif name=='brief' %}<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/>{% elif name=='chevron' %}<path d="m9 5 7 7-7 7"/>{% elif name=='moon' %}<path d="M20 14A8 8 0 0 1 10 4a8 8 0 1 0 10 10Z"/>{% else %}<path d="M4 18 9 12l4 3 7-10M15 5h5v5"/>{% endif %}</svg>{%- endmacro %}
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<base href="/site/">
+<title>Options research desk · design reference</title>
+<script>const qp=new URLSearchParams(location.search);document.documentElement.dataset.theme=qp.get('theme')||'dark';document.documentElement.dataset.lang=qp.get('lang')||'en';document.documentElement.lang=qp.get('lang')||'en';</script>
+<link rel="stylesheet" href="../templates/theme.css"><link rel="stylesheet" href="../mockups/options_workspace_revamp/reference.css">
+</head>
+<body class="page-options-ref">
+{% include "_site_nav.html.j2" %}
+<main class="ref">
+<header class="ref-head">
+<div><div class="ref-k">{{ t('Research desk / US markets','研究工作台 / 美国市场') }}</div><h1 class="ref-title">{{ t('Options','期权工作台') }}</h1><p class="ref-sub">{{ t('The settled close, in perspective.','看清收盘数据，掌握市场全貌。') }}</p></div>
+<div class="ref-head-right">
+<div class="ref-session"><span class="ref-session-icon">{{ icon('clock') }}</span><div><div class="ref-k">{{ t('Latest completed session','最近完成场次') }}</div><div class="ref-date ref-num">30 Oct 2026 <span style="color:var(--muted);font-weight:400">· 16:00 ET</span></div></div></div>
+<div class="ref-controls"><button class="ref-ctrl" id="ref-theme" aria-label="Switch color theme" title="Switch color theme">{{ icon('moon') }}</button><button class="ref-ctrl" id="ref-language" aria-label="Switch language" title="Switch language">中 / EN</button></div>
+</div>
+</header>
+<details class="ref-panel ref-context-drawer"><summary><span class="ref-k">{{ t('Market context','市场背景') }}</span><span>{{ t('Volatility: Mixed — normalizing','波动率：混合 — 正在恢复正常') }} <span class="ref-num">· VIX 19.4 · 30 Oct</span></span><span class="ref-source-status">{{ t('Other readings behind','其他读数落后') }}</span>{{ icon('chevron') }}</summary>
+<div class="ref-context">
+{% for k,z,v,vz,n,nz,date,status in [('Whole market','整体市场','Mixed — normalizing','混合 — 正在恢复正常','VIX 19.4','VIX 19.4','2026-10-30','current'),('S&P dealers','标普做市商','Amplifying','放大波动','1 day in this state','此状态持续 1 天','2026-10-20','behind'),('Options tape','期权成交','Average','中等','$21.8B traded','成交额 $21.8B','2026-08-13','behind'),('Same-day premium','当日到期期权金','11%','11%','of total premium','占总期权金','2026-08-13','behind')] %}
+<section class="ref-reading"><div class="ref-reading-top"><span class="ref-k">{{ t(k,z) }}</span></div><div class="ref-reading-value ref-num">{{ t(v,vz) }}</div><div class="ref-reading-foot"><span>{{ t(n,nz) }}</span></div><div class="ref-reading-foot"><time class="ref-num">{{ date }}</time><span class="ref-source-status {{ status }}">{{ t('At target close','目标收盘') if status=='current' else t('Retained history','历史记录') }}</span></div></section>
+{% endfor %}</div><p class="ref-reading-note">{{ t('Four independent readings; never combined into one score. Dated history does not describe the latest close.','四项独立读数，不会合成单一评分。历史读数不代表最新收盘。') }}</p></details>
+<nav class="ref-tabs" role="tablist" aria-label="Options workspace modes">
+{% for key,en,zh,ic,cnt in [('brief','Daily Brief','每日简报','brief',''),('flow','Flow','资金流','chart','12'),('scanner','Scanner','筛选','grid','408'),('ticker','Ticker','个股','search','SPY'),('leaders','Leaders','领头股','layers','2')] %}
+<button class="ref-tab" role="tab" data-mode="{{ key }}" id="ref-tab-{{ key }}" aria-controls="ref-mode-{{ key }}" aria-selected="{{ 'true' if key=='brief' else 'false' }}" tabindex="{{ '0' if key=='brief' else '-1' }}">{{ icon(ic) }}{{ t(en,zh) }}{% if cnt %}<small class="ref-num">{{ cnt }}</small>{% endif %}</button>
+{% endfor %}
+</nav>
+<section class="ref-mode" id="ref-mode-brief" role="tabpanel" aria-labelledby="ref-tab-brief">
+<article class="ref-panel ref-notice">
+<div><div class="ref-state">{{ icon('clock') }}{{ t('Brief unavailable for 30 Oct','10 月 30 日简报不可用') }}</div><p>{{ t('The latest brief is from 19 Aug. Current dealer levels are available below.','最新简报来源于 8 月 19 日。当前做市商价位见下方。') }}</p></div>
+<div class="ref-actions"><a class="ref-secondary" href="#historical-research" data-disclose="historical-research">{{ t('View dated history','查看历史记录') }}{{ icon('arrow') }}</a><a class="ref-text-link" href="#source-availability" data-disclose="source-availability">{{ t('Source details','来源详情') }}</a></div>
+</article>
+<section class="ref-section" id="index-structure">
+<div class="ref-section-head"><div><h2>{{ t('Dealer levels at the close','收盘做市商价位') }}</h2><p>{{ t('Four index products · dealer-positioning source: 30 Oct 2026','四个指数产品 · 做市商持仓来源：2026-10-30') }}</p></div><a class="ref-text-link" href="#ticker?t=SPY" data-open="ticker">{{ t('Explore a ticker','查看个股') }}{{ icon('arrow') }}</a></div>
+<div class="ref-indices">
+{% for sym,name,namezh,price,floor,flip,ceiling,pct,flpct,dist,move in [('SPX','S&P 500 Index','标普 500 指数','7,580.07','7,500','7,699.43','8,100',13.345,33.238,'1.6','0.97'),('SPY','S&P 500 ETF','标普 500 ETF','755.72','750','772.93','800',11.44,45.86,'2.3','0.97'),('QQQ','Nasdaq 100 ETF','纳斯达克 100 ETF','690.49','680','727.45','760',13.1125,59.3125,'5.3','1.54'),('IWM','Russell 2000 ETF','罗素 2000 ETF','279.33','270','289.73','300',31.1,65.7667,'3.7','1.25')] %}
+<a class="ref-index" href="#ticker?t={{ sym }}" data-open="ticker" aria-label="Explore {{ sym }}">
+<div class="ref-index-top"><div><div class="ref-symbol">{{ sym }}</div><div class="ref-index-name">{{ t(name,namezh) }}</div></div><div class="ref-index-price ref-num">{{ price }}</div></div>
+<p class="ref-regime">{{ icon('trend') }}{{ t('Jumpy — moves get amplified','剧烈 — 波动被放大') }}</p>
+<div class="ref-map" style="--price:{{ pct }}%;--flip:{{ flpct }}%" role="img" aria-label="{{ sym }} close {{ price }}, floor {{ floor }}, flip {{ flip }}, ceiling {{ ceiling }}"><div class="ref-map-line"></div><span class="ref-map-label">{{ t('Flip','翻转') }}</span><span class="ref-map-flip"></span><span class="ref-map-price"></span></div>
+<div class="ref-levels"><div>{{ t('Floor','支撑') }}<b class="ref-num">{{ floor }}</b></div><div>{{ t('Flip','翻转') }}<b class="ref-num">{{ flip }}</b></div><div>{{ t('Ceiling','阻力') }}<b class="ref-num">{{ ceiling }}</b></div></div>
+<div class="ref-index-foot"><span>{{ t(dist+'% below flip','低于翻转位 '+dist+'%') }}</span><span class="ref-num">±{{ move }}% {{ t('expected','预期波动') }}</span></div>
+</a>
+{% endfor %}
+</div>
+<p class="ref-legend"><span><i class="ref-dot"></i>{{ t('Last close','收盘价') }}</span><span><i class="ref-rule"></i>{{ t('Gamma flip','Gamma 翻转位') }}</span><span>{{ t('Model estimates. A daily close beyond a level is required; intraday moves do not count.','模型估算。须以日收盘突破价位为准，盘中突破不计。') }}</span></p>
+</section>
+<div class="ref-bottom">
+<details class="ref-panel ref-archive" id="historical-research"><summary><div><div class="ref-archive-title">{{ t('Earlier-session research','较早场次研究') }}</div><div class="ref-archive-sub">{{ t('Retained context, with original dates. None describes the latest close.','保留原始日期的历史背景，均不代表最新收盘。') }}</div>{{ icon('chevron') }}</summary>
+<div class="ref-archive-content">
+{% for en,zh,desc,desczh,date in [('Intelligence brief','情报简报','Data behind · 51 trading days at capture','数据落后 · 截图时落后 51 个交易日','2026-08-19'),('What changed','变化概览','Tape held steady · Dealers now amplify moves','成交保持稳定 · 做市商现放大波动','2026-08-13'),('Where the money went','资金去向','Technology and index ETFs accounted for 78% of premium','科技与指数 ETF 占期权金的 78%','2026-08-13')] %}
+<div class="ref-archive-card"><div><h3>{{ t(en,zh) }}</h3><p>{{ t(desc,desczh) }}</p></div><time class="ref-num">{{ date }}</time></div>
+{% endfor %}
+</div></details>
+<details class="ref-panel ref-archive" id="source-availability"><summary><div><div class="ref-archive-title">{{ t('Source details','来源详情') }}</div><div class="ref-archive-sub">{{ t('7 sources · original session dates','7 个来源 · 原始场次日期') }}</div>{{ icon('chevron') }}</summary><div class="ref-archive-content">
+{% for en,zh,date,status in [('Dealer positioning','做市商持仓','2026-10-30','current'),('Volatility regime','波动状态','2026-10-30','current'),('Index context','指数背景','2026-10-20','behind'),('Intelligence brief','情报简报','2026-08-19','behind'),('Options tape','期权成交','2026-08-13','behind'),('Scanner rows','筛选表标的','2026-08-13','behind'),('Flow leaders','资金领跑','2026-08-12','behind')] %}
+<div class="ref-source-row"><strong>{{ t(en,zh) }}</strong><time class="ref-source-status {{ status }} ref-num">{{ date }}</time></div>{% endfor %}
+<p class="ref-archive-sub">{{ t('Coverage 372/408 belongs to the retained scanner record, not proof of coverage at the target close.','372/408 为保留筛选记录的覆盖数，不代表目标收盘已完成覆盖。') }}</p>
+</div></details>
+</div>
+</section>
+<section class="ref-mode" id="ref-mode-flow" role="tabpanel" aria-labelledby="ref-tab-flow" hidden>
+<article class="ref-panel"><div class="ref-mode-intro"><div class="ref-k">{{ t('Retained session · 13 Aug 2026','历史场次 · 2026-08-13') }}</div><h2>{{ t('Follow the premium','查看期权金流向') }}</h2><p>{{ t("Where options money went in this source session. Direction is approximate and isn't reliable on its own.","查看该来源场次的期权资金去向。方向为近似估计，不宜单独使用。") }}</p></div>
+<div class="ref-toolbar"><strong>{{ t('Premium by sector','按板块划分的期权金') }}</strong><span class="ref-state">{{ icon('clock') }}{{ t('Earlier-session data','较早场次数据') }}</span></div>
+<div class="ref-table-wrap"><table class="ref-table"><thead><tr><th>{{ t('Sector','板块') }}</th><th>{{ t('Relative premium','相对期权金') }}</th><th class="num">{{ t('Premium','期权金') }}</th><th>{{ t('Estimated tone','估计方向') }}</th></tr></thead><tbody>
+{% for en,zh,v,width,tone,tonezh in [('Technology','科技','$10.9B',100,'Buying ~','买入 ~'),('Index ETFs','指数 ETF','$3.9B',35.8,'Buying ~','买入 ~'),('Consumer discretionary','可选消费','$1.6B',14.7,'Buying ~','买入 ~'),('Communication','通信','$1.2B',11,'Selling ~','卖出 ~'),('Health care','医疗保健','$424M',3.9,'Selling ~','卖出 ~'),('Industrials','工业','$423M',3.9,'Buying ~','买入 ~')] %}
+<tr><td>{{ t(en,zh) }}</td><td style="width:48%"><div style="height:7px;background:var(--panel2);border-radius:var(--r-pill)"><div style="height:7px;width:{{ width }}%;background:var(--muted);border-radius:var(--r-pill)"></div></div></td><td class="num">{{ v }}</td><td>{{ t(tone,tonezh) }}</td></tr>
+{% endfor %}</tbody></table></div></article>
+</section>
+<section class="ref-mode" id="ref-mode-scanner" role="tabpanel" aria-labelledby="ref-tab-scanner" hidden>
+<article class="ref-panel"><div class="ref-mode-intro"><div class="ref-k">{{ t('Options scanner','期权筛选器') }}</div><h2>{{ t('Find the structure worth a closer look.','筛选值得进一步研究的期权结构。') }}</h2><p>{{ t('Search names, compare dealer positioning, and export the rows you are researching.','搜索标的、比较做市商持仓，并导出所研究的筛选结果。') }}</p></div>
+<div class="ref-answer"><div class="ref-state">{{ icon('clock') }}{{ t('Recovery-state reference','加载恢复状态示例') }}</div><h2>{{ t('The scanner could not finish loading.','筛选器未能完成加载。') }}</h2><p>{{ t('Keep your selected filters and try again. Other workspaces remain available while this source is unavailable.','保留已选筛选条件并重试。此来源不可用时，仍可访问其他工作区。') }}</p><div class="ref-actions"><button class="ref-primary" id="ref-retry">{{ t('Retry loading','重新加载') }}{{ icon('arrow') }}</button><a class="ref-secondary" data-open="ticker" href="#ticker?t=SPY">{{ t('Look up a ticker','查看个股') }}</a></div><p id="ref-retry-note" role="status" style="font-size:var(--fs-sm);margin-top:var(--sp-4)"></p></div>
+</article></section>
+<section class="ref-mode" id="ref-mode-ticker" role="tabpanel" aria-labelledby="ref-tab-ticker" hidden>
+<article class="ref-panel"><div class="ref-toolbar"><label class="ref-search">{{ icon('search') }}<input aria-label="Look up a ticker" placeholder="Search ticker or company" value="SPY" readonly></label><span class="ref-k">{{ t('Structure · 30 Oct 2026','结构 · 2026-10-30') }}</span></div><div class="ref-mode-intro"><div class="ref-k">SPY · {{ t('S&P 500 ETF','标普 500 ETF') }}</div><h2>{{ t('Jumpy — moves get amplified','剧烈 — 波动被放大') }}</h2><p>{{ t('Dealer hedging is trading with the market today, so swings run larger and sell-offs can pick up speed.','做市商对冲与市场同向，波动幅度会扩大，下跌可能加速。') }}</p></div>
+<div class="ref-answer"><div class="ref-overline"><h3>{{ t('The dealer hedging map','做市商对冲图') }}</h3><span class="ref-num">755.72 {{ t('last close','收盘价') }}</span></div><div class="ref-map" style="--price:11.44%;--flip:45.86%;margin-top:var(--sp-7)" role="img" aria-label="SPY close 755.72, floor 750, flip 772.93, ceiling 800"><div class="ref-map-line"></div><span class="ref-map-label">{{ t('Flip','翻转') }}</span><span class="ref-map-flip"></span><span class="ref-map-price"></span></div><div class="ref-levels"><div>{{ t('Floor','支撑') }}<b>750</b></div><div>{{ t('Magnet','磁吸位') }}<b>770</b></div><div>{{ t('Flip','翻转') }}<b>772.93</b></div><div>{{ t('Ceiling','阻力') }}<b>800</b></div></div><p style="margin-top:var(--sp-5);font-size:var(--fs-sm)">{{ t('Only a daily close beyond a level counts. Walls are model estimates; real dealer books are unobservable.','以日收盘突破价位为准。价位为模型估算，真实做市商持仓不可观测。') }}</p></div></article>
+<div class="ref-bottom"><article class="ref-panel ref-availability"><h2>{{ t('Rich or cheap?','期权贵还是便宜？') }}</h2><p>{{ t("Options on SPY cost more than 98% of the last 40 sessions we have on file. Still building toward a full year of history.","SPY 期权价格高于所存档的最近 40 个场次中 98% 的观测，仍在积累完整一年的历史。") }}</p><time class="ref-k">30 Oct 2026</time></article><article class="ref-panel ref-availability"><h2>{{ t('Other evidence has earlier dates','其他证据来源日期较早') }}</h2><p>{{ t('Intraday record: 16 Oct. Position changes and measured flow: 13 Aug. Open each dated module before comparing.','盘中记录：10 月 16 日。持仓变化与实测资金流：8 月 13 日。比较前请查看各模块的原始日期。') }}</p></article></div>
+</section>
+<section class="ref-mode" id="ref-mode-leaders" role="tabpanel" aria-labelledby="ref-tab-leaders" hidden>
+<article class="ref-panel ref-answer"><div class="ref-k">{{ t('Flow leaders','资金领跑') }}</div><h2>{{ t('Keep the strategy and its evidence together.','将策略与其证据一并查看。') }}</h2><p>{{ t('The two existing leader strategies retain their own horizons, eligibility, and source dates. A missing source opens an explanation and a retry action, never an empty leaderboard that looks like no candidates.','两种现有领跑策略保留各自的期限、资格条件和来源日期。来源缺失时显示原因与重试操作，不会以空排行榜误导为没有候选。') }}</p><div class="ref-actions"><a class="ref-secondary" href="#brief" data-open="brief">{{ t('Return to the brief','返回简报') }}</a></div></article>
+</section>
+<footer class="ref-footer"><span>{{ t('Settled research. For live tape, replay, and alerts, open the Terminal.','收盘研究。实时成交、回放和提醒请使用 Terminal。') }}</span><span>Design reference · NOT_APPLIED_TO_PAPER · captured 2026-11-01</span></footer>
+</main>
+<script>
+(()=>{const tabs=[...document.querySelectorAll('.ref-tab')];
+function select(mode,focus=false){if(!tabs.some(t=>t.dataset.mode===mode))mode='brief';tabs.forEach(t=>{const yes=t.dataset.mode===mode;t.setAttribute('aria-selected',String(yes));t.tabIndex=yes?0:-1;if(yes&&focus)t.focus()});document.querySelectorAll('.ref-mode').forEach(p=>p.hidden=p.id!=='ref-mode-'+mode)}
+tabs.forEach((t,i)=>{t.addEventListener('click',()=>{select(t.dataset.mode);history.replaceState(null,'','#'+t.dataset.mode)});t.addEventListener('keydown',e=>{let n;if(e.key==='ArrowRight')n=(i+1)%tabs.length;else if(e.key==='ArrowLeft')n=(i+tabs.length-1)%tabs.length;else if(e.key==='Home')n=0;else if(e.key==='End')n=tabs.length-1;else return;e.preventDefault();select(tabs[n].dataset.mode,true);history.replaceState(null,'','#'+tabs[n].dataset.mode)})});
+document.querySelectorAll('[data-open]').forEach(a=>a.addEventListener('click',()=>select(a.dataset.open)));
+document.querySelectorAll('[data-disclose]').forEach(a=>a.addEventListener('click',()=>{const d=document.getElementById(a.dataset.disclose);if(d)d.open=true}));
+document.querySelector('#ref-theme').addEventListener('click',()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'});
+document.querySelector('#ref-language').addEventListener('click',()=>{const l=document.documentElement.dataset.lang==='en'?'zh':'en';document.documentElement.dataset.lang=l;document.documentElement.lang=l});
+document.querySelector('#ref-retry').addEventListener('click',()=>{document.querySelector('#ref-retry-note').textContent=document.documentElement.dataset.lang==='zh'?'这是恢复状态设计示例；真实重试将在实现中验证。':'This is the recovery-state design reference. Real retry behavior is verified in the implementation.'});
+select(location.hash.slice(1).split('?')[0]||'brief');window.addEventListener('hashchange',()=>{const m=location.hash.slice(1).split('?')[0];if(tabs.some(t=>t.dataset.mode===m))select(m)});
+})();
+</script>
+</body></html>

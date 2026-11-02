@@ -72,3 +72,12 @@ The implementation candidate stays Draft/HOLD until the complete reference, Pape
 Falsifiers: missing advanced capability; mismatched dates described as one session; stale publication promoted by a recent build; misleading zero; direction inferred as buyer intent; contradictory visible counts; dead controls; race overwriting a newer selection; no-result/error confusion; invisible focus; page-wide horizontal overflow; an unqualified light or ZH layout; lack of independent review or live proof.
 
 Initial organizational linkage: PLAN_NOT_ORG_LINKED until this task-tree path and the material frontier are accepted through the existing Agent OS writer. The source draft is durable GitHub evidence, not a merged Agent OS update.
+
+
+## Continuation checkpoint — 2026-11-02 UTC / 2026-11-01 Chicago
+
+P1.T2 source census returned and was reviewed/accepted as bounded inventory (Fabric options-revamp-source-census-20261101-01, response digest 7754e884847c288dcc6297ac4e4f902a2a78c5c952641aa1bf7087c4836034b2). Principal corrections are durable in mockups/options_workspace_revamp/DESIGN_SPEC.md: market_structure is Oct20, scanner is Aug13, producer-stall causation and Ticker race safety are unproven.
+P2.T2 supporting reference authored, with a critical reasoning pass applied: compact unavailable notice, dated retained context, current dealer levels prioritized. NOT_APPLIED_TO_PAPER; pixels not yet visually accepted. P2.T1/T3 remain blocked on exact Paper catalog qualification. P2.T4 independent visual/reference integrity remains open.
+P3.T1 concrete implementation packet is DESIGN_SPEC.md. P3.T2 candidate source build may proceed reversibly under RELEASE HOLD while Paper qualification is unavailable. Preserve every capability in SOURCE_AUDIT.md and the packet; no engine/store changes.
+Studio typed Git operations with an explicit repository argument fail NOT_APPLIED / INVALID_ARGUMENT. Read-only source diagnosis plus omission of that optional argument resolved the installed closed-profile selector to this exact macro workspace and branch; it observed head/remote 5a999fbd09aed736c07ca189f273ad9308eb57c9, dirty only reference files. Use this same observed carrier binding for publication.
+Browser can inspect live public options UI. It cannot reach the design host's localhost. A data: URL preview was explicitly denied by browser URL policy; that path is closed, no retries or policy workarounds. Complete source-native testing and authorized HTTP(S) proof without misrepresenting unavailable pixels.
