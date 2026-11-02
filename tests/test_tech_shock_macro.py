@@ -227,3 +227,16 @@ def test_overnight_bars_have_no_low_contrast_text():
     assert '<div class="tvs-bar tvs-overnight" style="width:{{ row.overnight_share }}%"></div>' in tpl
     assert '<div class="tvs-bar tvs-intraday" style="width:{{ 100 - row.overnight_share }}%"></div>' in tpl
     assert 'class="tvs-bars" aria-hidden="true"' in tpl
+
+
+def test_volatility_cards_obey_neutral_edge_design_doctrine():
+    """Card geometry must not revive state-colored container edge stripes."""
+    template = (ROOT / "templates" / "_tech_volatility_shock.html.j2").read_text(encoding="utf-8")
+    for selector in (".tvs-card{", ".tvs-relative{"):
+        assert template.count(selector) == 1
+        rule = template.split(selector, 1)[1].split("}", 1)[0]
+        assert "border:1px solid var(--line)" in rule
+        assert "border-left:" not in rule
+        assert "border-right:" not in rule
+        assert "border-top:" not in rule
+        assert "border-bottom:" not in rule

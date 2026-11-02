@@ -62,7 +62,16 @@ Field rules (ported from the census writer):
 Issuer rollups (W-R2 M1): ``present_cells``, ``core_pass`` and ``deep_pass``
 are any-basis and count qualified present cells; ``present_cells_strict``,
 ``core_pass_strict`` and ``deep_pass_strict`` count only present cells that
-carry no qualifier and no derivation.
+carry no qualifier and no derivation.  The deep tier (A36) additionally follows
+the prover's component rule: ``deep_pass`` also requires every deep component
+cell — per deep period each required package role and statement, plus the
+wildcard-period specialist packs, packet and journey — to be present (a
+``not_applicable`` specialist pack still passes), and ``deep_pass_strict``
+additionally fails on any component cell the prover counts as labelled.
+Both strict passes also mirror the prover's scope-label rule (A36 deep fix,
+2026-11-02): a ``not_applicable`` metric cell inside the tier's metric window
+whose ``na_basis`` is neither absent nor ``kernel`` fails that tier's strict
+pass while every any-basis output is untouched.
 """
 
 from __future__ import annotations
@@ -148,6 +157,22 @@ ROLLUP_BASIS: dict[str, str] = {
 CORE_WINDOW_SLOTS = ("A1", "I1")
 DEEP_WINDOW_SLOTS = ("A1", "A2", "I1", "I2")
 PACKAGE_ROLES = ("primary", "schema", "presentation", "calculation", "definition", "label")
+
+# FIF A36 deep components: ``tiers.deep`` of the frozen thresholds config
+# (config/fundamental_forensics/coverage/c2_thresholds_v1.json), restated as
+# constants so the writer's import graph is unchanged; pinned field by field
+# against the config by test_deep_pass_mirrors_prover_component_specs.
+WILDCARD_PERIOD = "*"
+LEGACY_PACKAGE_ALIAS_PREFIX = "package."
+DEEP_PACKAGE_ROLES = ("primary", "schema", "presentation", "calculation", "definition", "label")
+DEEP_STATEMENTS = ("income_statement", "balance_sheet", "cash_flow")
+DEEP_SPECIALIST_PACKS = tuple(f"PK{pack:02d}" for pack in range(1, 13))
+DEEP_REQUIRE_PACKET = True
+DEEP_REQUIRE_JOURNEY = True
+# The prover's present-label pairs (coverage_proof._PRESENT_LABELS): a deep
+# component cell carrying a non-null value under any of these keys is labelled
+# and keeps its issuer out of deep_pass_strict.
+COMPONENT_LABEL_KEYS = ("qualifier", "qualifier_policy", "derivation", "derivation_policy")
 
 COMPANYFACTS_URL_PREFIX = "https://data.sec.gov/api/xbrl/companyfacts/CIK"
 
@@ -1253,22 +1278,142 @@ def _window_pass(cells, tier_assigned, periods, metric_ids):
     return (not failed) and applicable > 0 and present == applicable
 
 
-def _deep_pass(cells, tier_assigned, metric_ids):
-    """The prover's deep_pass rule; statements/specialist/packet/journey cells are
-    not written by this census, so a deep pass is never reached from it."""
+def _deep_component_specs():
+    """The prover's deep component list, in its order (coverage_proof.py): for
+    each deep period every required package role then statement, then the
+    wildcard-period specialist packs, packet and journey.  Each entry is
+    (period_id, field_id, allows_not_applicable); only a specialist pack may be
+    ``not_applicable`` and still pass."""
+    specs: list[tuple[str, str, bool]] = []
+    for period_id in DEEP_WINDOW_SLOTS:
+        for role in DEEP_PACKAGE_ROLES:
+            specs.append((period_id, f"package:{role}", False))
+        for kind in DEEP_STATEMENTS:
+            specs.append((period_id, f"statement:{kind}", False))
+    for pack in DEEP_SPECIALIST_PACKS:
+        specs.append((WILDCARD_PERIOD, f"specialist:{pack}", True))
+    if DEEP_REQUIRE_PACKET:
+        specs.append((WILDCARD_PERIOD, "packet", False))
+    if DEEP_REQUIRE_JOURNEY:
+        specs.append((WILDCARD_PERIOD, "journey", False))
+    return specs
+
+
+DEEP_COMPONENT_SPECS = tuple(_deep_component_specs())
+DEEP_COMPONENT_KEYS = frozenset(
+    (period_id, field_id) for period_id, field_id, _allows_na in DEEP_COMPONENT_SPECS
+)
+
+
+def _canonical_deep_component_field(field_id: str) -> str:
+    """The prover's declared legacy alias (seat ruling K-V1A-R1): a
+    ``package.<role>`` cell whose role is one of the deep package roles is
+    indexed as ``package:<role>``; every other spelling is returned unchanged
+    and then simply matches no component spec."""
+    if field_id.startswith(LEGACY_PACKAGE_ALIAS_PREFIX):
+        role = field_id[len(LEGACY_PACKAGE_ALIAS_PREFIX):]
+        if role and role in DEEP_PACKAGE_ROLES:
+            return "package:" + role
+    return field_id
+
+
+def _component_status_by_key(cells):
+    """Status by canonical (period_id, field_id) over one issuer's cells, built
+    in cell order the way the prover indexes a manifest: a later duplicate key
+    wins (the prover refuses a duplicate outright; the writer only reads, so it
+    mirrors the index's last-write order)."""
+    status_by_key: dict[tuple[str, str], str] = {}
+    for period_id, field_id, status in cells:
+        status_by_key[(period_id, _canonical_deep_component_field(field_id))] = status
+    return status_by_key
+
+
+def _component_is_labelled(cell: Mapping[str, Any]) -> bool:
+    """The prover's component-labelled rule (seat ruling BLOCKER-1): the cell
+    carries a non-null value under any present-label key, or an ``na_basis``
+    that is neither absent nor the kernel's own."""
+    if any(cell.get(key) is not None for key in COMPONENT_LABEL_KEYS):
+        return True
+    na_basis = cell.get("na_basis")
+    return na_basis is not None and na_basis != NA_BASIS_KERNEL
+
+
+def _labelled_deep_component_keys(cells) -> frozenset[tuple[str, str]]:
+    """Canonical keys of one issuer's deep component cells the prover counts as
+    labelled, decided on the cell the index order selects (a later duplicate
+    spelling wins)."""
+    selected: dict[tuple[str, str], Mapping[str, Any]] = {}
+    for cell in cells:
+        key = (
+            str(cell.get("period_id", "")),
+            _canonical_deep_component_field(str(cell.get("field_id", ""))),
+        )
+        if key in DEEP_COMPONENT_KEYS:
+            selected[key] = cell
+    return frozenset(
+        key for key, cell in selected.items() if _component_is_labelled(cell)
+    )
+
+
+def _scope_cell_is_labelled_na(cell: Mapping[str, Any]) -> bool:
+    """The prover's scope-label rule for a window metric cell (seat ruling
+    BLOCKER-1): a ``not_applicable`` cell whose ``na_basis`` is neither absent
+    nor the kernel's own — ``metric_scope`` counts it ``na_not_presented`` or
+    ``na_class``, and ``scope_unlabelled`` then fails the tier's strict
+    verdict while the any-basis pass is untouched."""
+    if str(cell.get("status", "")) != "not_applicable":
+        return False
+    na_basis = cell.get("na_basis")
+    return na_basis is not None and na_basis != NA_BASIS_KERNEL
+
+
+def _scope_labelled_na_metric_keys(
+    cells, periods: tuple[str, ...]
+) -> frozenset[tuple[str, str]]:
+    """Keys of one issuer's scope-labelled ``not_applicable`` metric cells
+    inside one tier's metric window — exactly the cells the prover's
+    ``metric_scope`` counts for that tier (core or deep periods times the
+    metric ids).  A windowed (period, field) key is unique in a manifest the
+    prover accepts; a later duplicate wins the way the component mirror
+    decides."""
+    window = frozenset(periods)
+    selected: dict[tuple[str, str], Mapping[str, Any]] = {}
+    for cell in cells:
+        field_id = str(cell.get("field_id", ""))
+        period_id = str(cell.get("period_id", ""))
+        if field_id.startswith("metric:") and period_id in window:
+            selected[(period_id, field_id)] = cell
+    return frozenset(
+        key for key, cell in selected.items() if _scope_cell_is_labelled_na(cell)
+    )
+
+
+def _deep_pass(cells, tier_assigned, metric_ids, labelled_components=None):
+    """The prover's deep_pass rule (coverage_proof.py): a deep-tier issuer whose
+    deep metric window passes and whose every deep component cell — per deep
+    period each required package role and statement, then the wildcard-period
+    specialist packs, packet and journey — is present; a ``not_applicable``
+    specialist pack still passes, and a missing cell or any other status fails.
+    A ``package.<role>`` cell is indexed as ``package:<role>`` exactly when the
+    role is one of the deep package roles.  ``labelled_components`` (the strict
+    basis) additionally fails the pass on every component cell the prover
+    counts as labelled."""
     if tier_assigned != "deep":
         return False
     if not _window_pass(cells, tier_assigned, DEEP_WINDOW_SLOTS, metric_ids):
         return False
-    status_by_key = {}
-    for period_id, field_id, status in cells:
-        if field_id.startswith("package:") or field_id.startswith("package."):
-            status_by_key[(period_id, field_id)] = status
-    for period_id in DEEP_WINDOW_SLOTS:
-        for role in PACKAGE_ROLES:
-            if status_by_key.get((period_id, "package." + role)) != "present":
-                return False
-    return False
+    status_by_key = _component_status_by_key(cells)
+    for period_id, field_id, allows_not_applicable in DEEP_COMPONENT_SPECS:
+        key = (period_id, field_id)
+        if labelled_components is not None and key in labelled_components:
+            return False
+        status = status_by_key.get(key)
+        if status == "present":
+            continue
+        if allows_not_applicable and status == "not_applicable":
+            continue
+        return False
+    return True
 
 
 # --- Manifest rewrite ----------------------------------------------------------
@@ -1346,11 +1491,32 @@ def rewrite_manifest(
 
     triples_by_cik: dict[str, list[tuple[str, str, str]]] = {}
     strict_triples_by_cik: dict[str, list[tuple[str, str, str]]] = {}
+    component_cells_by_cik: dict[str, list[Mapping[str, Any]]] = {}
+    metric_cells_by_cik: dict[str, list[Mapping[str, Any]]] = {}
     for cell in cells_out:
         cik_key = str(cell.get("cik", ""))
         period_field = (str(cell.get("period_id", "")), str(cell.get("field_id", "")))
         triples_by_cik.setdefault(cik_key, []).append((*period_field, str(cell.get("status", ""))))
         strict_triples_by_cik.setdefault(cik_key, []).append((*period_field, _strict_status(cell)))
+        if (period_field[0], _canonical_deep_component_field(period_field[1])) in DEEP_COMPONENT_KEYS:
+            component_cells_by_cik.setdefault(cik_key, []).append(cell)
+        if period_field[1].startswith("metric:"):
+            metric_cells_by_cik.setdefault(cik_key, []).append(cell)
+    labelled_components_by_cik = {
+        cik_key: _labelled_deep_component_keys(issuer_cells)
+        for cik_key, issuer_cells in component_cells_by_cik.items()
+    }
+    # The prover's scope-label rule per issuer and tier: a scope-labelled N/A
+    # metric cell inside the tier's metric window fails that tier's strict
+    # rollup (the core set for core_pass_strict, the deep set for
+    # deep_pass_strict) without touching any-basis outputs.
+    scope_labelled_by_cik = {
+        cik_key: (
+            _scope_labelled_na_metric_keys(issuer_cells, CORE_WINDOW_SLOTS),
+            _scope_labelled_na_metric_keys(issuer_cells, DEEP_WINDOW_SLOTS),
+        )
+        for cik_key, issuer_cells in metric_cells_by_cik.items()
+    }
     metric_ids = sorted(specs)
     issuers_out: list[dict[str, Any]] = []
     rollups = {
@@ -1360,8 +1526,13 @@ def rewrite_manifest(
     for issuer in base_manifest.get("issuers", []):
         new_issuer = dict(issuer)
         tier_assigned = issuer.get("tier_assigned")
-        cells = triples_by_cik.get(str(issuer.get("cik", "")), [])
-        strict_cells = strict_triples_by_cik.get(str(issuer.get("cik", "")), [])
+        cik_key = str(issuer.get("cik", ""))
+        cells = triples_by_cik.get(cik_key, [])
+        strict_cells = strict_triples_by_cik.get(cik_key, [])
+        labelled_components = labelled_components_by_cik.get(cik_key, frozenset())
+        core_scope_labelled, deep_scope_labelled = scope_labelled_by_cik.get(
+            cik_key, (frozenset(), frozenset())
+        )
         present_cells, absent_cells, na_cells = _count_rollup_cells(cells, tier_assigned)
         new_issuer.update(
             {
@@ -1371,8 +1542,16 @@ def rewrite_manifest(
                 "core_pass": _window_pass(cells, tier_assigned, CORE_WINDOW_SLOTS, metric_ids),
                 "deep_pass": _deep_pass(cells, tier_assigned, metric_ids),
                 "present_cells_strict": _count_rollup_cells(strict_cells, tier_assigned)[0],
-                "core_pass_strict": _window_pass(strict_cells, tier_assigned, CORE_WINDOW_SLOTS, metric_ids),
-                "deep_pass_strict": _deep_pass(strict_cells, tier_assigned, metric_ids),
+                "core_pass_strict": (
+                    _window_pass(strict_cells, tier_assigned, CORE_WINDOW_SLOTS, metric_ids)
+                    and not core_scope_labelled
+                ),
+                "deep_pass_strict": (
+                    _deep_pass(
+                        strict_cells, tier_assigned, metric_ids, labelled_components
+                    )
+                    and not deep_scope_labelled
+                ),
             }
         )
         rollups["any_basis"]["core_pass"] += int(new_issuer["core_pass"])
