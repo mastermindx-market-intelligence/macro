@@ -44163,6 +44163,7 @@ jobs:
       - "site/leaderradar/radar.json"
       - "site/macro.html"
       - "site/marketdata/subsector_rotation.json"
+      - "site/riskdata/risk_envelope.json" # settled source fixture/consumer closure
       - "site/master_brief.json"
       - "site/qledger/track_record.json"
       - "site/theme.css"
