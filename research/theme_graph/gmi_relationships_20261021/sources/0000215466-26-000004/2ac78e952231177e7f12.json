@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-18T21:55:17Z",
+ "accession": "0000215466-26-000004",
+ "cik": "0000215466",
+ "doc_byte_length": 3547169,
+ "doc_sha256": "cc814e3c24419e09f2864e6f257ae3afcabacd26e94779a7bec9453ab6a4359e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-18",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "cde-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1204614,
+  "byte_start": 1203928,
+  "normalized": "Revenue increased by $94.7 million, or 25%, of which $123.9 million was due to higher gold and silver prices, partially offset by $29.2 million due to lower volume of gold and silver production. Gold ounces sold associated with the Franco-Nevada Gold Stream Agreement increased to 48% from 34% in the prior year driven by mine sequencing. Costs applicable to sales per gold and silver ounce decreased 3% and increased 11%, respectively, due to the mix of gold and silver sales which impacted co-product cost allocation, lower consumable (power and cement) and maintenance costs, partially offset by lower production, unfavorable foreign exchange rates and higher outside service costs.",
+  "normalized_sha256": "0699f67cdee66a0d0110c61d1329b966df807f8d810dda41c4f0d75f3a78e1cc",
+  "raw": " Revenue increased by $94.7 million, or 25%, of which $123.9 million was due to higher gold and silver prices, partially offset by $29.2 million due to lower volume of gold and silver production. Gold ounces sold associated with the Franco-Nevada Gold Stream Agreement increased to 48% from 34% in the prior year driven by mine sequencing. Costs applicable to sales per gold and silver ounce decreased 3% and increased 11%, respectively, due to the mix of gold and silver sales which impacted co-product cost allocation, lower consumable (power and cement) and maintenance costs, partially offset by lower production, unfavorable foreign exchange rates and higher outside service costs.",
+  "raw_sha256": "2ac78e952231177e7f1287a6f26198d5364e992fe688caf16f4068cfa5c9d52f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/215466/000021546626000004/cde-20251231.htm",
+ "xbrl_contexts": []
+}

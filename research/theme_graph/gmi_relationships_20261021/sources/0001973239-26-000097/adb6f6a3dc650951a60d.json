@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-26T20:35:23Z",
+ "accession": "0001973239-26-000097",
+ "cik": "0001973239",
+ "doc_byte_length": 3137018,
+ "doc_sha256": "8ab052cc035f9cc93429c0bfd76edf2bc11a686a80f0cc7b568fbd456b2ec815",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-26",
+ "form": "20-F",
+ "period_of_report": "2026-03-31",
+ "primary_document": "arm-20260331.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 493969,
+  "byte_start": 493470,
+  "normalized": "We can provide no assurances regarding the outcome of either litigation or how the litigation will affect our relationship with or revenue from Qualcomm, which is currently a major customer of ours and accounted for 9% of our total revenue for the fiscal year ended March 31, 2026. These cases will likely require significant legal expenditures going forward and may also require substantial time and attention from our executives or employees, which could distract them from operating our business.",
+  "normalized_sha256": "adb6f6a3dc650951a60df1ac0558cc670269226a773777be5e8e02b93c4fa530",
+  "raw": "We can provide no assurances regarding the outcome of either litigation or how the litigation will affect our relationship with or revenue from Qualcomm, which is currently a major customer of ours and accounted for 9% of our total revenue for the fiscal year ended March 31, 2026. These cases will likely require significant legal expenditures going forward and may also require substantial time and attention from our executives or employees, which could distract them from operating our business.",
+  "raw_sha256": "adb6f6a3dc650951a60df1ac0558cc670269226a773777be5e8e02b93c4fa530"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1973239/000197323926000097/arm-20260331.htm",
+ "xbrl_contexts": []
+}

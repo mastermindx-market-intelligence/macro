@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-27T13:35:51Z",
+ "accession": "0001709048-26-000022",
+ "cik": "0001709048",
+ "doc_byte_length": 3366728,
+ "doc_sha256": "91f8b188891263b28ffd3adf94928f122e72858a7c4b711490d0efc5b8581f83",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-27",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "gfs-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 809285,
+  "byte_start": 809009,
+  "normalized": "We have entered into patent cross-licenses with a number of other leading advanced semiconductor companies, including AMD, Samsung, TSMC and IBM. These cross-licenses provide us with valuable freedom of operation under patents owned or subsequently divested by such companies.",
+  "normalized_sha256": "cc89d9d06ebfefa03679c8f39a9e19fad18cb5ddebbac290afc6684abbdc1d27",
+  "raw": "We have entered into patent cross-licenses with a number of other leading advanced semiconductor companies, including AMD, Samsung, TSMC and IBM. These cross-licenses provide us with valuable freedom of operation under patents owned or subsequently divested by such companies.",
+  "raw_sha256": "cc89d9d06ebfefa03679c8f39a9e19fad18cb5ddebbac290afc6684abbdc1d27"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1709048/000170904826000022/gfs-20251231.htm",
+ "xbrl_contexts": []
+}
