@@ -106,15 +106,37 @@ waves:
       DEC:MX-CATALYST-GAPS-SEAT-RULINGS-20261101. Still carried by design: MAIL_CATALYST_ENABLED
       stays OFF while the strict xfail B04 per-user dedup test fails; the consent RPC review
       needs PostgreSQL. DO_NOT_REDO.
-  - id: OWNER-GATES
-    title: Owner acts outside the seat — flags ON, hosted proofs, acceptance
-    status: todo
+  - id: FLAGS-ON
+    title: Public surface ON in production + hosted A2 proof (Chairman delegation 2026-11-02)
+    status: done
     depends_on: [A3-SOURCE, GAPS]
     next_action: >
-      (1) The flag operator (Chris) turns CATALYST_PUBLIC_ENABLED / CATALYST_OPTIN_ENABLED / CATALYST_UX_ENABLED
-      on; (2) hosted A2 live-scan proof; (3) B2 opt-in return needs a sender, C2 external cohort a partner
-      editor, D1 live conversions the Website/D07 UTM join, E1 the Chairman decision.
+      DEC:MX-CATALYST-FLAGS-ON-20261102. Host: CATALYST_PUBLIC_ENABLED=1, CATALYST_UX_ENABLED=0,
+      CATALYST_OPTIN_ENABLED=0, CATALYST_SCAN_RECEIPT_SECRET set; MAIL off; macro-api restarted
+      2026-11-02T06:12Z. Hosted A2 PROVEN at https://www.mastermind-x.com/api/catalyst (V SUPPORTED
+      with the SEC source, ZZZQ NOT_COVERED, no-JS route, no identity side effect). Runbook
+      section "Flags ON — 2026-11-02". DO_NOT_REDO.
+  - id: B1-PRECONDITIONS
+    title: Clear what kept the opt-in path unreachable — v2 scan receipts, accurate UX banner
+    status: in_progress
+    depends_on: [FLAGS-ON]
+    next_action: >
+      PR from branch claude/mx-catalyst-flags-on-20261102: receipts minted/verified for the live
+      catalyst.scan/v2 shape (authority + UI), _ux_banner() replaces the false "not admitted"
+      staged banner, tests. After merge + deploy: set CATALYST_UX_ENABLED=1 and restart macro-api.
+      Still open for B1: wire build_existing_owner_service under CATALYST_OPTIN_ENABLED from
+      app/main.py (today it has no caller → 503 CATALYST_INTEGRATION_NOT_READY) and provision the
+      catalyst_consent_* RPCs (contract v2) with the identity/consent owner; no SMTP on the host.
+  - id: OWNER-GATES
+    title: Remaining owner acts — B2 sender, C2 partner, D1 UTM join, E1 decision
+    status: todo
+    depends_on: [B1-PRECONDITIONS]
+    next_action: >
+      B2 opt-in return needs the sender wave (consolidated per-user message; MAIL_CATALYST_ENABLED
+      stays OFF while the B04 strict xfail stands), C2 external cohort a partner editor, D1 live
+      conversions the Website/D07 UTM join, E1 the Chairman decision.
 decisions:
+  - DEC:MX-CATALYST-FLAGS-ON-20261102
   - DEC:ENTRY-RADAR-CATALYST-LIVE-READ-IS-OPT-IN
   - DEC:MX-CATALYST-SEC-ISSUER-EARNINGS-RELEASE-PUBLIC-FACTS
   - DEC:MX-CATALYST-GAPS-SEAT-RULINGS-20261101
@@ -140,6 +162,7 @@ landmines:
     examples/catalyst_partner_previews/** (fictional packs) and mockups/evidence/** (PNG) from
     #8683 are not adopted; fictional packs are not evidence.
 do_not_redo:
+  - "Flags ON is done (2026-11-02): never re-ask the Chairman for the flags decision; the host env carries the four CATALYST_* names and MAIL stays absent until the B04 xfail passes."
   - "Do not re-verify or re-apply the Stage-A v2 / Stage-B patches; lane/mx-cat-a1-base = 55dc7cab is the verified materialization (eight blob ids checked)."
   - "Do not re-measure the main-vs-55dc7cab conflict set from scratch; it is exactly three single-hunk files with frozen resolution rules."
   - "Do not treat if: ${{ false }} on legacy-jobs.yml jobs as a defect; it is the pack-planner convention."
@@ -151,11 +174,12 @@ artifacts:
   - research/marketing_dockets/D07_FUNNEL_LIFECYCLE_MNZ.md
   - research/marketing_dockets/catalyst_fable_20261031/SEC_ISSUER_EARNINGS_RELEASE_PUBLIC_FACTS.json
 next_action: >
-  A3-SOURCE and GAPS are MERGED in PR #10379 (636abe2a66d2); the writer timer runs in production and
-  publishes the namespaced index (PRODUCTION_PROOF of the writer). Remaining: the operator's
-  flags-ON decision (CATALYST_PUBLIC_ENABLED / CATALYST_OPTIN_ENABLED / CATALYST_UX_ENABLED, then
-  restart macro-api), the hosted A2 live-scan proof after that, and the figure-yield follow-up
-  in engine/earnings_release/figures.py.
+  The public surface is ON and the hosted A2 journey is PROVEN (2026-11-02, Chairman delegation,
+  DEC:MX-CATALYST-FLAGS-ON-20261102). In flight: the B1-PRECONDITIONS PR (v2 scan receipts +
+  accurate UX banner), after which CATALYST_UX_ENABLED goes to 1. Next engineering: wire the
+  opt-in funnel seam under CATALYST_OPTIN_ENABLED and provision the catalyst_consent_* RPCs with
+  the identity/consent owner (B1), then the consolidated-message sender wave (B2). Figure yield
+  #10468 is with the repo sweeper. See agentos/handoffs/MARKETING-X-CATALYST-LOOP-2026-11-02-FLAGS-ON.md.
 ---
 
 # Marketing X — Catalyst Loop acquisition engine

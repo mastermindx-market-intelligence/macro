@@ -102,6 +102,41 @@ def test_initial_generation_zero_scan_is_signed_and_verified():
     assert authority.issue({**scan, "generation": -1}) is None
 
 
+def _stage_a_v2(packet):
+    # The live reader returns the Stage A v2 shape: same rows, plus the
+    # attested source-check window the v2 sanitizer requires.
+    live = copy.deepcopy(packet)
+    live["schema"], live["schema_version"] = "catalyst.scan/v2", 2
+    live["checked_window"] = {"kind": "earnings_8k",
+                              # the v2 sanitizer demands a window that reaches
+                              # back at least seven days from the clock
+                              "start_utc": "2026-10-01T03:30:00Z",
+                              "end_utc": "2026-10-09T03:28:00Z",
+                              "checked_at_utc": "2026-10-09T03:29:00Z"}
+    return live
+
+
+def test_live_stage_a_v2_scan_is_signed_and_verified():
+    # Production serves catalyst.scan/v2 from the SEC source cycle; a receipt
+    # must be minted for it or the opt-in path can never start.
+    live = _stage_a_v2(FIXTURE)
+    scan = sanitize_public_scan(live, ["NVDA", "ZZZZ"], now_utc=NOW)
+    assert (scan["schema"], scan["schema_version"]) == ("catalyst.scan/v2", 2)
+    authority = _owner(reader=lambda tickers, *, event_id=None, now_utc=None:
+                       _reader(tickers, event_id=event_id, now_utc=now_utc, packet=live))
+    proof = authority.issue(scan)
+    assert isinstance(proof, str) and proof.count(".") == 1
+    accepted = authority.require_public_scan(proof)
+    assert accepted.public_safe and accepted.tickers == ("NVDA",)
+    assert accepted.event_id == scan["event_id"]
+    raw = base64.urlsafe_b64decode(proof.split(".")[0] + "==").decode()
+    assert "ZZZZ" not in raw and "checked_window" not in raw
+    # A schema/version pair that does not match is never signed.
+    assert authority.issue({**scan, "schema_version": 1}) is None
+    assert authority.issue({**scan, "schema": "catalyst.scan/v1"}) is None
+    assert authority.issue({**scan, "schema": "catalyst.scan/v3", "schema_version": 3}) is None
+
+
 def test_receipt_expires_in_twenty_minutes_even_when_mac_was_valid():
     issued = _owner()
     proof = issued.issue(_public())

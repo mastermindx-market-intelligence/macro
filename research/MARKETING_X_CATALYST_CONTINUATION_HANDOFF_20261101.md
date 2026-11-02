@@ -192,3 +192,72 @@ touched.
   but it limits usefulness until the figure-yield follow-up lands. V binds
   revenue but not EPS.
 - The public HTTP surface stays 503 until the operator's flags-ON decision.
+
+## Flags ON — 2026-11-02 (DEC:MX-CATALYST-FLAGS-ON-20261102)
+
+The Chairman delegated the flags decision to the seat on 2026-11-02 ("get this
+project finished autonomously end to end without requiring me to do anything,
+u have full authority"). The seat enabled the public surface the same hour.
+
+- Host state (`/etc/macro-api.env`, NAMES only; backup of the prior file at
+  `/etc/macro-api.env.pre-catalyst-public-20261102`): `CATALYST_PUBLIC_ENABLED=1`,
+  `CATALYST_UX_ENABLED=0`, `CATALYST_OPTIN_ENABLED=0`,
+  `CATALYST_SCAN_RECEIPT_SECRET` set (generated on the host, at least 32
+  characters, never recorded anywhere). `MAIL_CATALYST_ENABLED` is absent (OFF
+  while the B04 strict xfail stands). `systemctl restart macro-api` ran at
+  2026-11-02T06:12Z; health 200.
+- Hosted proof (rung: hosted user journey, A2): the canonical public host is
+  `https://www.mastermind-x.com` (the `mastermindx.ai` names answer 525 at the
+  edge). `GET /api/catalyst/scan?tickers=V,ZZZQ` → 200, schema
+  `catalyst.scan/v2`, `publication_state` PARTIAL, V SUPPORTED with the SEC 8-K
+  Item 2.02 source and its rights receipt, ZZZQ NOT_COVERED with the honest
+  coverage note; `POST /api/catalyst/scan` → 200; `/api/catalyst` and
+  `/api/catalyst/nojs` → 200 server-rendered first value (viewport meta,
+  44 px controls under 420 px, visible focus outlines, `<noscript>` path, the
+  opt-in section hidden); `/api/catalyst/optin/request` → 503 (no identity
+  side effect). Response headers: CSP, HSTS, `X-Frame-Options: DENY`,
+  `nosniff`, `Cache-Control: private, no-store`.
+- Rollback: delete the four `CATALYST_*` lines (or restore the backup file)
+  and `systemctl restart macro-api`; the scan returns its disabled 503 again.
+
+### Why `CATALYST_UX_ENABLED` stayed 0
+
+`_render_polished_scan` carried a staged banner claiming source rights were
+not admitted. Rights are asserted per result row by admission (family
+`sec_issuer_earnings_release_facts`), so that copy was false once the row was
+on main. The banner is now computed by `_ux_banner()` from the opt-in switch.
+Once that change is deployed: set `CATALYST_UX_ENABLED=1`, restart macro-api,
+and re-check `/api/catalyst?tickers=V` renders the polished page with the
+`PUBLIC PREVIEW` banner and the no-JS fallback link.
+
+### Why `CATALYST_OPTIN_ENABLED` stayed 0 (B1 — permission to communicate)
+
+Three facts, each checked on main at 5085667c:
+
+1. Scan receipts were minted only for the contract `catalyst.scan/v1` shape;
+   the live source cycle serves `catalyst.scan/v2`, so no `scan_receipt` was
+   ever issued in production and `request_optin` would always answer
+   `SCAN_PROOF_REQUIRED`. `app/catalyst_scan_authority.py` and
+   `app/catalyst_scan_ui.js` now sign and carry the token for both schema
+   pairs (same receipt body, same producer re-read on verify).
+2. The funnel service seam `build_existing_owner_service` has no caller:
+   `app/main.py` mounts the router but never calls `catalyst_optin.configure`,
+   so even with the flag on the route answers 503
+   `CATALYST_INTEGRATION_NOT_READY`. Wiring it is the next engineering step
+   (flag-gated, mounted from `app/main.py`, injecting `ScanReceiptAuthority`
+   and the revision loader).
+3. The consent owner is `SupabaseConsentRpcOwner`, contract version 2 over the
+   service-role RPCs `catalyst_consent_contract/begin/resolve/confirm/current/
+   interested/revoke`, which the host's Supabase project does not provision
+   yet (the host carries `SUPABASE_URL`, `SUPABASE_ANON_KEY` and
+   `SUPABASE_SERVICE_ROLE_KEY`; no SMTP names, so suppression and delivery
+   report `skipped_no_smtp`). Provisioning the RPCs is an identity/consent
+   owner change (docket: "the identity/consent owner admits database
+   changes") and needs its own reviewed migration plus a staging witness
+   before the flag.
+
+### Environment variable NAMES added
+
+- `CATALYST_SCAN_RECEIPT_SECRET` — HMAC key for the anonymous scan receipt
+  (absent or shorter than 32 characters ⇒ no receipt is minted; the scan still
+  serves first value).

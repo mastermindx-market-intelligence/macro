@@ -609,6 +609,21 @@ def scan_ui_javascript():
     return Response(content, media_type="text/javascript", headers=_HEADERS)
 
 
+def _ux_banner() -> str:
+    """State-accurate banner for the polished UI.
+
+    Source rights are asserted per result row by admission (the
+    sec_issuer_earnings_release_facts family), so the banner never claims
+    rights are unadmitted. Email updates follow the separate opt-in switch:
+    without it the page says so instead of promising verified delivery.
+    """
+    if _enabled("CATALYST_OPTIN_ENABLED"):
+        return ("PUBLIC PREVIEW · Limited coverage from rights-qualified SEC sources; "
+                "optional email updates require separate verification.")
+    return ("PUBLIC PREVIEW · Limited coverage from rights-qualified SEC sources; "
+            "verified email updates are not yet enabled.")
+
+
 def _render_polished_scan() -> str:
     """Render the returned Session 03 UI without granting publication rights.
 
@@ -622,7 +637,7 @@ def _render_polished_scan() -> str:
                           undefined=StrictUndefined, autoescape=True)
         return env.get_template("catalyst_scan.html.j2").render(
             asset_base="/api/catalyst/assets/",
-            preview_banner="STAGED PREVIEW · Public source rights and verified email delivery are not admitted.",
+            preview_banner=_ux_banner(),
             no_js_path="/api/catalyst/nojs",
         )
     except Exception:
