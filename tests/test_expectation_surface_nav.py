@@ -72,10 +72,24 @@ def test_six_preexisting_research_drill_rows_unchanged() -> None:
 
 def test_icon_rule_and_accent_group_membership() -> None:
     css = (TEMPLATES / "product-nav-icons.css").read_text(encoding="utf-8")
-    assert css.count(".research-icon-expectation-surface{") == 1
-    mask_pos = css.find(".research-icon-expectation-surface{")
+    # The icon declares its mask DIRECTLY on both pseudo-elements (full
+    # shorthand, so position/size/repeat survive) instead of through the
+    # family's --research-icon-mask custom property: the design ratchet
+    # (scripts/check_design_system.py rule 4, literal-custom-property) blocks
+    # new literal-valued custom properties outside theme.css.
+    selector = (".nav-mega .research-icon-expectation-surface::before,\n"
+                ".nav-mega .research-icon-expectation-surface::after{")
+    assert css.count(selector) == 1
+    assert ".research-icon-expectation-surface{" not in css, (
+        "icon must not reintroduce a --research-icon-mask custom property"
+    )
+    mask_pos = css.find(selector)
     rule = css[mask_pos:css.find("}", mask_pos)]
-    assert "--research-icon-mask:url(\"data:image/svg+xml," in rule, "icon rule must carry the mask data URI"
+    assert rule.count("-webkit-mask:url(\"data:image/svg+xml,") == 1, "prefixed mask shorthand once"
+    # `-webkit-mask:url(` contains `mask:url(`, so the unprefixed count is 2.
+    assert rule.count("mask:url(\"data:image/svg+xml,") == 2, "unprefixed mask shorthand once"
+    assert rule.count("center / contain no-repeat") == 2, "mask shorthand must restate position/size/repeat"
+    assert "--research-icon-mask" not in rule
     # Family idiom on the mask itself.
     for token in ("viewBox='0 0 24 24'", "fill='none'", "stroke='black'",
                   "stroke-width='1.5'", "stroke-linecap='round'", "stroke-linejoin='round'"):
