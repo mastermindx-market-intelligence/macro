@@ -5098,6 +5098,11 @@ CURATED_EXCLUSIVE = {
     # single-suite owner. Its explicit paths cover the static import closure
     # and package ancestor init, without accepting unrelated render probes.
     "aibrief-countdown-pr",
+    # EW-P4 descriptive UI (Grey Deer early-warning, EW-P5 FU2 split from
+    # dashboard-render-contract): the suite's import closure IS the dashboard render
+    # closure through tests/test_macro_risk_dialog.py, declared verbatim plus what the
+    # suite reads by name; the curated-closure guard audits it like its parent.
+    "ew-p4-descriptive-ui",
 }
 
 
