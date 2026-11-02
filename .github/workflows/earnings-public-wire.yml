@@ -66,6 +66,7 @@ jobs:
         run: python -m pip install --quiet boto3 jinja2 pyyaml requests
 
       - name: regenerate current wire from latest main and publish
+        id: publication
         env:
           ADMIN_GH_TOKEN: ${{ secrets.ADMIN_GH_TOKEN }}
           # Member continuations and exact context use the existing private
@@ -178,6 +179,9 @@ jobs:
             if push_do origin HEAD:main; then
               echo "earnings-public-wire: pushed regenerated publication on attempt ${PUSH_ATTEMPT}"
               push_won
+              # Only the successful transaction supplies the consumer-review seam.
+              # Failed attempts and the no-change exit above emit no identities.
+              printf 'base_sha=%s\npublished_sha=%s\n' "$WIRE_BASE" "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
               exit 0
             fi
             # A ref race is retried by resetting to the winner and running the
@@ -187,6 +191,35 @@ jobs:
           push_lost
           echo "::error title=earnings-public-wire::could not publish after ${PUSH_ATTEMPT} attempts"
           exit 1
+
+      - name: classify successful publication for Shared Shell review
+        id: shared_shell_delta
+        if: ${{ steps.publication.outputs.published_sha != '' }}
+        env:
+          PUBLICATION_BEFORE: ${{ steps.publication.outputs.base_sha }}
+          PUBLICATION_AFTER: ${{ steps.publication.outputs.published_sha }}
+        run: |
+          set -euo pipefail
+          receipt="$RUNNER_TEMP/shared-shell-publication-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.json"
+          delta_rc=0
+          python scripts/check_shared_shell_publication_delta.py \
+            --before "$PUBLICATION_BEFORE" --after "$PUBLICATION_AFTER" --output "$receipt" || delta_rc=$?
+          if [ -f "$receipt" ]; then
+            echo "artifact_written=true" >> "$GITHUB_OUTPUT"
+          fi
+          if [ "$delta_rc" -eq 3 ]; then
+            echo "::error title=Shared Shell consumer review required::The public publication succeeded; consume this run's retained delta through the existing compatibility/release owner. No catalog admission or pickup is implied."
+          fi
+          exit "$delta_rc"
+
+      - name: retain successful-publication consumer review cue
+        if: ${{ always() && steps.shared_shell_delta.outputs.artifact_written == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: shared-shell-publication-delta-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/shared-shell-publication-${{ github.run_id }}-${{ github.run_attempt }}.json
+          if-no-files-found: error
+          retention-days: 14
 
       # DEAD-MAN'S SWITCH (2026-08-14). Everything above can succeed while the
       # archive is dead. This lane is DOWNSTREAM of the only ingest lane
