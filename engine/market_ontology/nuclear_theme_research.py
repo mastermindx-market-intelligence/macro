@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 from collections.abc import Mapping
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Any, Literal
 
 from engine.market_ontology.theme_research_binding import (
@@ -105,6 +106,19 @@ _ROW_ORDER = (
     "curation_revision",
 )
 
+
+
+def _utc_instant(value: Any) -> datetime | None:
+    """An owner review clock as an aware-UTC instant, or None when it cannot
+    be read (a non-string, an empty string, or an impossible date such as
+    ``2026-13-45T00:00:00Z``, which the curation pattern alone admits). The
+    parse is the shell's ``parse_clock``; this only converts and catches."""
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        return parse_clock(value).astimezone(timezone.utc)
+    except (ValueError, TypeError):
+        return None
 
 @dataclass(frozen=True)
 class ResearchQuery:
@@ -449,12 +463,19 @@ class _Selection:
             return self.query.recorded_cutoff
         if self.query.recorded_cutoff is not None:
             parse_day(self.query.recorded_cutoff)
-        stamps = [
-            (assertion.get("review") or {}).get("reviewed_at")
-            for assertion in self.assertions
-        ]
-        return max((stamp for stamp in stamps if isinstance(stamp, str) and stamp),
-                   default=None)
+        # The newest stamp is chosen by its aware-UTC instant, never by string
+        # order: "2026-09-20T22:00:00+05:00" (17:00Z) sorts after
+        # "2026-09-20T18:00:00Z" as text but is earlier. The stamp is returned
+        # as written, so a date-only due date keeps comparing on the stamp's own
+        # day (the shell ``le`` contract). An unreadable stamp never sets the
+        # clock; its own assertion is withheld as expired.
+        newest: tuple[datetime, str] | None = None
+        for assertion in self.assertions:
+            stamp = (assertion.get("review") or {}).get("reviewed_at")
+            moment = _utc_instant(stamp)
+            if moment is not None and (newest is None or (moment, stamp) > newest):
+                newest = (moment, stamp)
+        return newest[1] if newest is not None else None
 
     def _review_excluded(self, assertion: Mapping[str, Any]) -> bool:
         review = assertion.get("review") or {}
@@ -463,9 +484,21 @@ class _Selection:
             self.limitations.add(
                 "held_present" if disposition == "held" else "rejected_present")
             return True
+        # An owner clock this composer cannot read withholds the row (fail
+        # closed, never a 503): an unreadable ``reviewed_at`` counts as expired,
+        # and an unreadable ``review_due_at`` cannot show the review is current.
+        reviewed = review.get("reviewed_at")
+        if reviewed is not None and _utc_instant(reviewed) is None:
+            self.limitations.add("review_expired_present")
+            return True
         due = review.get("review_due_at")
+        if due is None:
+            return False
+        if _utc_instant(due) is None:
+            self.limitations.add("review_expired_present")
+            return True
         now = self._now_of_query()
-        if isinstance(due, str) and due and now is not None and le(due, now):
+        if now is not None and le(due, now):
             self.limitations.add("review_expired_present")
             return True
         return False
@@ -528,8 +561,11 @@ class _Selection:
             if result.get("source_business_label") != label:
                 continue
             learned = result.get("mapping_learned_at")
+            # An unreadable vintage is withheld like a late one. Only the row's
+            # clock is read first, so a bad query cutoff still surfaces.
             if self.query.time_mode == "system_replay" and learned \
-                    and not le(learned, self.query.recorded_cutoff):
+                    and (not readable(learned)
+                         or not le(learned, self.query.recorded_cutoff)):
                 return {"company_node_id": None,
                         "reason": "identity_not_yet_learned", "security": None}
             node = result.get("company_node_id")

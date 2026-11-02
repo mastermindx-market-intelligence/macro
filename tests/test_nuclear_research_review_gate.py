@@ -249,3 +249,56 @@ def test_a_fresh_before_z_stale_leaves_mixed_coverage_unmarked():
     assert "[stale interpretation] " + coverage not in texts
     assert "FRESH mechanism." in texts
     assert "[stale interpretation] STALE mechanism." in texts
+
+
+# R-36 item 17 rule 9: review clocks compare as aware-UTC instants, and an
+# owner review clock this composer cannot read withholds its row -- never a
+# 503 and never a pass. The impossible date below passes the curation clock
+# pattern, so the codec admits it.
+UNREADABLE = "2026-13-45T00:00:00Z"
+
+
+def accepted(reviewed_at="2026-09-20T00:00:00Z", due=None):
+    return {"disposition": "accepted", "reviewer": "synthetic-energy-test",
+            "reviewed_at": reviewed_at, "review_due_at": due}
+
+
+def served(*records):
+    payload = nuclear.compose_nuclear_research(nuclear_query(), nuclear_bundle(*records))
+    return (set(payload["authorized_coverage"]["input_refs"]),
+            "review_expired_present" in payload["limitations"])
+
+
+def test_the_latest_expiry_clock_is_the_newest_review_instant_not_string():
+    """23:00+05:00 is 18:00Z: older than 22:00Z although it sorts after it as
+    text. The clock is 22:00Z either way, so a review due at 20:00Z expired."""
+    newest = variant("N01", "R36NOW1", review=accepted("2026-09-20T22:00:00Z"))
+    for written in ("2026-09-20T18:00:00Z", "2026-09-20T23:00:00+05:00"):
+        older = variant("N02", "R36NOW2", review=accepted(written, "2026-09-20T20:00:00Z"))
+        assert served(newest, older) == ({newest["curation_revision"]}, True), written
+
+
+def test_a_review_due_after_the_newest_review_keeps_the_row():
+    newest = variant("N01", "R36NOW1", review=accepted("2026-09-20T22:00:00Z"))
+    later = variant("N02", "R36NOW3",
+                    review=accepted("2026-09-20T18:00:00Z", "2026-09-20T23:00:00+00:00"))
+    assert served(newest, later) == (
+        {newest["curation_revision"], later["curation_revision"]}, False)
+
+
+def test_an_unreadable_review_due_withholds_that_row_only():
+    kept = variant("N01", "R36DUE1", review=accepted())
+    bad = variant("N02", "R36DUE2", review=accepted(due=UNREADABLE))
+    assert served(kept, bad) == ({kept["curation_revision"]}, True)
+
+
+def test_an_unreadable_reviewed_at_counts_as_expired_and_never_sets_the_clock():
+    kept = variant("N01", "R36REV1", review=accepted("2026-09-20T22:00:00Z"))
+    bad = variant("N02", "R36REV2", review=accepted("2026-02-30T18:00:00Z"))
+    assert served(kept, bad) == ({kept["curation_revision"]}, True)
+    # The unreadable stamp sorts last as text; it must not become the clock
+    # that judges the readable record's due date.
+    unreadable = variant("N01", "R36REV3", review=accepted(UNREADABLE))
+    due_later = variant("N02", "R36REV4",
+                        review=accepted("2026-09-20T18:00:00Z", "2026-09-20T20:00:00Z"))
+    assert served(unreadable, due_later) == ({due_later["curation_revision"]}, True)

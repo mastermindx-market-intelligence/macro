@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import dataclasses
+
 from engine.market_ontology import nuclear_theme_research as nuclear
 from engine.theme_graph.curation_assertion import source_ref_for
 from tests.nuclear_research_helpers import (
@@ -186,3 +188,27 @@ def test_archival_record_of_an_open_target_stays_next_evidence():
     assert N03["curation_revision"] in {
         revision for item in payload["summary"]["next_evidence"]
         for revision in item["input_refs"]}
+
+
+def test_a_replay_withholds_an_identity_whose_vintage_cannot_be_read():
+    """R-36 item 17 rule 9 (#9124 F3): an unreadable mapping_learned_at raised
+    ValueError (the route's 503). It is now withheld like a vintage learned
+    after the recorded cutoff."""
+    query = nuclear_query("nuclear_components", "economics", time_mode="system_replay",
+                          source_cutoff="2026-09-20", recorded_cutoff="2026-09-21",
+                          expected_generation=None)
+
+    def company(learned):
+        bundle = dataclasses.replace(nuclear_bundle(N04), identity_results=({
+            "source_business_label": "BWX Technologies", "resolution": "RESOLVED",
+            "company_node_id": "co:us:BWXT", "security_id": None,
+            "listing_valid_from": None, "listing_valid_to": None,
+            "mapping_learned_at": learned},))
+        rows = nuclear.compose_nuclear_research(query, bundle)["companies"]["rows"]
+        return next(row for row in rows if row["source_business_label"] == "BWX Technologies")
+
+    assert company("2026-09-01T00:00:00Z")["company_node_id"] == "co:us:BWXT"
+    for withheld in ("2026-09-22T00:00:00Z", "2026-13-45T00:00:00Z"):
+        row = company(withheld)
+        assert row["company_node_id"] is None, withheld
+        assert row["navigation"]["reason"] == "identity_not_yet_learned", withheld
