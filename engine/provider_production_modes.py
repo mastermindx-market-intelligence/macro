@@ -76,6 +76,7 @@ import time
 from dataclasses import dataclass
 from http import HTTPStatus
 from pathlib import Path
+from types import MappingProxyType
 from typing import Any, Callable, Mapping
 from urllib.parse import urlsplit
 
@@ -97,7 +98,8 @@ DEFAULT_TIMEOUT_S = 120.0
 
 PROTOCOL_ANTHROPIC = "anthropic_compat"
 PROTOCOL_OPENAI = "openai_compat"
-PROTOCOLS = (PROTOCOL_ANTHROPIC, PROTOCOL_OPENAI)
+PROTOCOL_RESPONSES = "responses_api"
+PROTOCOLS = (PROTOCOL_ANTHROPIC, PROTOCOL_OPENAI, PROTOCOL_RESPONSES)
 
 PRODUCTION_USAGE_CLASS = "production_api"
 METERED_BILLING_MODE = "metered"
@@ -132,6 +134,11 @@ PRICE_STATES = frozenset({"known", "unknown"})
 #: :func:`lib.ai_costs.estimate_cost_usd` without a translation table.
 MINIMAX_PINNED_MODEL = "MiniMax-M3"
 GLM_PINNED_MODEL = "glm-5.3-flash"
+MODELARK_MODELS = MappingProxyType({
+    "modelark_glm_flash_api": "glm-5-3-flash-260828",
+    "modelark_deepseek_flash_api": "deepseek-v4-1-flash-261017",
+    "modelark_dola_coding_api": "dola-seed-2-1-turbo-260628",
+})
 
 
 @dataclass(frozen=True)
@@ -187,6 +194,22 @@ _MODE_IDENTITY = {
         cap_id="prod_api:glm",
         model=GLM_PINNED_MODEL,
     ),
+    **{
+        mode_id: ModeIdentity(
+            provider_id="byteplus",
+            protocol=PROTOCOL_RESPONSES,
+            scheme="https",
+            authority="ark.ap-southeast.bytepluses.com",
+            path="/api/v3",
+            secret_ref="BYTEPLUS_MODELARK_API_KEY",
+            usage_class=PRODUCTION_USAGE_CLASS,
+            billing_mode=METERED_BILLING_MODE,
+            cost_identity="byteplus/metered",
+            cap_id="prod_api:byteplus",
+            model=model_id,
+        )
+        for mode_id, model_id in MODELARK_MODELS.items()
+    },
 }
 
 
@@ -229,6 +252,31 @@ class RequestProfile:
             "temperature": self.temperature,
             "max_tokens": min(int(requested_max_tokens), int(self.max_tokens)),
         }
+
+
+@dataclass(frozen=True)
+class ResponsesProfile:
+    """Owner-held commercial Responses profile; never itself grants Capacity."""
+
+    model: str
+    max_output_tokens: int
+    qualification: str = PROFILE_UNQUALIFIED_PENDING_CANARY
+
+    def __post_init__(self) -> None:
+        if (
+            type(self.model) is not str
+            or self.model not in MODELARK_MODELS.values()
+            or type(self.max_output_tokens) is not int
+            or not 1 <= self.max_output_tokens <= 512
+            or self.qualification not in REQUEST_PROFILE_QUALIFICATIONS
+        ):
+            raise ProductionModeConfigError("invalid pinned ModelArk Responses profile")
+
+
+MODELARK_RESPONSES_PROFILES = MappingProxyType({
+    mode_id: ResponsesProfile(model=model_id, max_output_tokens=512)
+    for mode_id, model_id in MODELARK_MODELS.items()
+})
 
 
 #: GLM production body overlay.  The current ``glm-5.3-flash`` parameter
@@ -638,9 +686,18 @@ def _resolve_credential(mode: ProductionMode, env: Mapping[str, str] | None) -> 
     return value if isinstance(value, str) and value.strip() else None
 
 
-def _request_profile_for_mode(mode: ProductionMode) -> RequestProfile | None:
+def _request_profile_for_mode(mode: ProductionMode) -> RequestProfile | ResponsesProfile | None:
     """Return and revalidate the provider-owned profile that gates ``mode``."""
 
+    if mode.mode_id in MODELARK_MODELS:
+        profile = MODELARK_RESPONSES_PROFILES.get(mode.mode_id)
+        if (
+            type(profile) is not ResponsesProfile
+            or profile.model != mode.default_model
+            or profile.qualification not in REQUEST_PROFILE_QUALIFICATIONS
+        ):
+            raise ProductionModeConfigError("ModelArk Responses profile identity drift")
+        return profile
     if mode.mode_id != "glm_general_api":
         return None
     profile = GLM_REQUEST_PROFILE
@@ -1018,6 +1075,81 @@ def _minimax_transport(
     return normalize_anthropic_response(_message_to_payload(message))
 
 
+def _modelark_responses_transport(
+    mode: ProductionMode,
+    system: str,
+    user: str,
+    *,
+    max_tokens: int,
+    timeout_s: float,
+    credential: str,
+) -> TransportOutcome:
+    """Commercial ModelArk Responses API only; no Coding Plan or fallback.
+
+    The default checked-in profiles are UNQUALIFIED and the modes are OFF.
+    This transport cannot qualify an issuer account, Worker or Capacity.
+    The SDK is invoked only after existing mode/profile/credential gates.
+    """
+    profile = _request_profile_for_mode(mode)
+    if type(profile) is not ResponsesProfile or profile.qualification != PROFILE_QUALIFIED_CANARY:
+        return TransportOutcome(reason="unqualified", error_class="unsupported")
+    if not credential:
+        return TransportOutcome(reason="unconfigured", error_class="unconfigured")
+    try:
+        import openai  # noqa: PLC0415 — no import or HTTP for disabled mode
+    except ImportError:
+        return TransportOutcome(reason="sdk_unavailable", error_class="unsupported")
+    try:
+        client = openai.OpenAI(
+            api_key=credential,
+            base_url=mode.base_url,
+            max_retries=0,
+            timeout=timeout_s,
+        )
+        response = client.responses.create(
+            model=profile.model,
+            input=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": user},
+            ],
+            max_output_tokens=min(max_tokens, profile.max_output_tokens),
+            store=False,
+        )
+    except BaseException as exc:  # noqa: BLE001 — one attempt, bounded taxonomy
+        code = _exception_status_code(exc)
+        return TransportOutcome(
+            reason=type(exc).__name__,
+            status_code=code,
+            error_class=None if code is not None else _incumbent_error_class(exc=exc),
+        )
+    # A server-side model fallback or missing served identity is NOT proof of
+    # the pinned model, even when text and usage are returned.
+    if getattr(response, "model", None) != profile.model:
+        return TransportOutcome(reason="served_model_unverified", error_class="unsupported")
+    if getattr(response, "status", None) != "completed":
+        return TransportOutcome(reason="response_not_completed", error_class="error")
+
+    text = getattr(response, "output_text", None)
+    if not isinstance(text, str) or not text.strip():
+        parts: list[str] = []
+        for output in getattr(response, "output", None) or ():
+            if getattr(output, "type", None) != "message":
+                continue
+            for block in getattr(output, "content", None) or ():
+                if getattr(block, "type", None) == "output_text":
+                    value = getattr(block, "text", None)
+                    if isinstance(value, str) and value:
+                        parts.append(value)
+        text = "".join(parts)
+    usage = getattr(response, "usage", None)
+    return TransportOutcome(
+        text=text if isinstance(text, str) and text.strip() else None,
+        input_tokens=_int_or_none(_usage_field(usage, "input_tokens")),
+        output_tokens=_int_or_none(_usage_field(usage, "output_tokens")),
+        status_code=HTTPStatus.OK,
+    )
+
+
 def _default_transport(
     *,
     mode: ProductionMode,
@@ -1027,6 +1159,11 @@ def _default_transport(
     timeout_s: float,
     credential: str,
 ) -> TransportOutcome:
+    if mode.protocol == PROTOCOL_RESPONSES:
+        return _modelark_responses_transport(
+            mode, system, user, max_tokens=max_tokens, timeout_s=timeout_s,
+            credential=credential,
+        )
     if mode.protocol == PROTOCOL_OPENAI:
         return _glm_transport(
             mode, system, user, max_tokens=max_tokens, timeout_s=timeout_s,
