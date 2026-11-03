@@ -666,3 +666,16 @@ def test_editorial_reader_presentation_has_no_decorative_edges_or_local_palette(
     assert '.wh-hero::before' not in css and '.wh-tre::before' not in css
     assert 'var(--panel)' in css and 'var(--fs-body)' in css
     assert 'prefers-reduced-motion' in css or 'transition:' not in css
+
+
+@pytest.mark.parametrize('section,section_zh',[('news','白宫公告'),('treasury','财政部')])
+@pytest.mark.parametrize('confidence,confidence_zh',[('low','低'),('medium','中'),('high','高')])
+def test_editorial_reader_localizes_declared_ui_enums_only(section,section_zh,confidence,confidence_zh):
+    row=_rec('wh-enum-localized',4,5,72)
+    row.update(section=section,confidence=confidence,analysis='Original retained English analysis.')
+    html=bw._render_page(config.ROOT,[row])
+    assert section_zh in html and confidence_zh in html
+    assert 'AI confidence' in html and 'AI置信度' in html
+    assert 'aria-label="Report sections:' not in html
+    assert 'Original retained English analysis.' in html
+    assert row['section']==section and row['confidence']==confidence

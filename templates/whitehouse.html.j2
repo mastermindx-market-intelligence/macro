@@ -189,10 +189,10 @@
           {% elif a.tone == 'mixed' %}{{ t('Mixed', '涨跌互现') }}
           {% else %}{{ t('Neutral', '中性') }}{% endif %}
         </span>
-        <span class="wh-when">{{ t('Published', '来源发布') }} {{ a.date_display or t('Source date unavailable', '来源日期不可用') }}{% if a.section %} · {{ a.section }}{% endif %}</span>
+        <span class="wh-when">{% if a.date_display %}{{ t('Published', '来源发布') }} {{ a.date_display }}{% else %}{{ t('Source date unavailable', '来源日期不可用') }}{% endif %}{% if a.section %} · {% if a.section == 'news' %}{{ t('news', '白宫公告') }}{% elif a.section == 'treasury' %}{{ t('treasury', '财政部') }}{% else %}{{ a.section }}{% endif %}{% endif %}</span>
         {% if a.live and a.expires_display %}<span class="wh-when">· {{ t('banner live until', '横幅有效至') }} {{ a.expires_display }}</span>{% endif %}
         {% if a.generated_display %}<span class="wh-when">· {{ t('read written', '解读撰写于') }} {{ a.generated_display }}</span>{% else %}<span class="wh-when">{{ t('AI read date unavailable', 'AI解读日期不可用') }}</span>{% endif %}
-        {% if a.confidence %}<span class="wh-when">· {{ t('confidence', '置信度') }}: {{ a.confidence }}</span>{% endif %}
+        {% if a.confidence %}<span class="wh-when">· {{ t('AI confidence', 'AI置信度') }}: {% if a.confidence == 'low' %}{{ t('low', '低') }}{% elif a.confidence == 'medium' %}{{ t('medium', '中') }}{% elif a.confidence == 'high' %}{{ t('high', '高') }}{% else %}{{ a.confidence }}{% endif %}</span>{% endif %}
         {% if a.served_by %}<span class="wh-when">· {{ t('read by fallback', '备用模型撰写') }}: {{ a.served_by }}</span>{% endif %}
       </div>
 
@@ -202,8 +202,8 @@
 
       <div class="wh-reader-layout">
       <aside class="wh-report-tools">
-        <details class="mx-disc wh-outline" data-wh-outline><summary>{{ t('On this report', '本篇目录') }}</summary>
-          <nav aria-label="{{ 'Report sections: ' ~ a.id }}">
+        <details class="mx-disc wh-outline" data-wh-outline><summary id="{{ a.id }}-outline-label">{{ t('On this report', '本篇目录') }}</summary>
+          <nav aria-labelledby="{{ a.id }}-outline-label">
             {% if a.paragraphs %}<a href="#{{ a.id }}-analysis">{{ t('AI analysis', 'AI解读') }}</a>{% endif %}
             {% if a.sectors %}<a href="#{{ a.id }}-sectors">{{ t('Sector impact', '行业影响') }}</a>{% endif %}
             {% if a.benefit %}<a href="#{{ a.id }}-benefit">{{ t('Names that benefit', '受益标的') }}</a>{% endif %}
