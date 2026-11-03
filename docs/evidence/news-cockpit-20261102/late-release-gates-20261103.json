@@ -1,0 +1,185 @@
+{
+  "schema": "news.late-release-gates.v1",
+  "recorded_at": "2026-11-03 06:46:22 UTC",
+  "source_head": "360c9f11ef6d98e42c561177f42bc0fcd14cd2c8",
+  "accepted_main": "19a896b97ae20f2c12475a0207678f92dc4f335b",
+  "merge_tree": "2e0ea545ae43943da271c034c50ab0e384e5a7c4",
+  "commit": {
+    "action_ref": "e046df636e873c590ceeea0a4b1d450d019215a20810ce21800332e3b47f0f6c",
+    "effect_state": "APPLIED",
+    "readback": "Local HEAD, both parents, index and commit tree verified; clean workspace and managed publisher readback confirmed."
+  },
+  "push": {
+    "action_ref": "c6af254de61df8f5125fa267c52d866260bcb1d749ee955619b95a45a627c692",
+    "effect_state": "APPLIED",
+    "local_head": "360c9f11ef6d98e42c561177f42bc0fcd14cd2c8",
+    "remote_head": "360c9f11ef6d98e42c561177f42bc0fcd14cd2c8"
+  },
+  "focused_validation": {
+    "receipt": "late-integration-focused-20261103.json",
+    "passed": 330,
+    "warnings": 27,
+    "news_and_theme_research_routes_mounted": true
+  },
+  "hosted_ci": {
+    "observed_at": "2026-11-03 06:45:00 UTC",
+    "run_id": 41591289173,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41591289173",
+    "state": "PENDING",
+    "jobs": [
+      {
+        "id": 125768376121,
+        "name": "ci-plan",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 125768376456,
+        "name": "contract-delta",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 125769293499,
+        "name": "ci-pack-3",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 125769293526,
+        "name": "ci-pack-1",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 125769293538,
+        "name": "ci-pack-6",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 125769293542,
+        "name": "ci-pack-5",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 125769293545,
+        "name": "ci-pack-11",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 125769293557,
+        "name": "ci-pack-8",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 125769293575,
+        "name": "ci-pack-4",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 125769293588,
+        "name": "ci-pack-2",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 125769293590,
+        "name": "ci-pack-9",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 125769293592,
+        "name": "ci-pack-0",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 125769293692,
+        "name": "ci-pack-7",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 125769293758,
+        "name": "ci-pack-10",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 125769295100,
+        "name": "trusted-ci",
+        "status": "completed",
+        "conclusion": "skipped"
+      }
+    ],
+    "other_successful_workflows": [
+      {
+        "name": "fences",
+        "run_id": 41591289042
+      },
+      {
+        "name": "medtech-contracts",
+        "run_id": 41591289082
+      },
+      {
+        "name": "ci-authority",
+        "run_id": 41591285127
+      }
+    ]
+  },
+  "independent_review": {
+    "schema": "mastermind.fabric_mcp.v1",
+    "action": "fabric_status",
+    "run_id": "news-9612-f07ba3-source-review-20261022",
+    "effective_run_id": "news-9612-f07ba3-source-review-20261022",
+    "expected_root_id": "news-cockpit-rebuild-20261018-astra-01",
+    "status": {
+      "acceptance_reason": "EXECUTION_NOT_ELIGIBLE",
+      "acceptance_state": "UNVERIFIED",
+      "accepted": null,
+      "accepted_by": null,
+      "lineage_state": "VERIFIED_TERMINAL",
+      "parent_run_id": "news-cockpit-rebuild-20261018-astra-01",
+      "rc": 1,
+      "result_available": true,
+      "result_bytes": 690,
+      "root_id": "news-cockpit-rebuild-20261018-astra-01",
+      "run_id": "news-9612-f07ba3-source-review-20261022",
+      "schema": "mastermind.fabric_task_status.v1",
+      "signal": "other",
+      "state": "TERMINAL",
+      "continuation": {
+        "requested_run_id": "news-9612-f07ba3-source-review-20261022",
+        "effective_run_id": "news-9612-f07ba3-source-review-20261022",
+        "prior_attempts": [],
+        "controller_return": "RECORDED",
+        "controller_reason": "continuation_evidence_unqualified"
+      }
+    },
+    "parent_recovery": {
+      "schema": "mastermind.fabric_parent_recovery_projection.v1",
+      "requested_run_id": "news-9612-f07ba3-source-review-20261022",
+      "effective_run_id": "news-9612-f07ba3-source-review-20261022",
+      "root_verified": true,
+      "request_correlation_only": false,
+      "disposition": "RECONCILE_TERMINAL_FAILURE",
+      "parent_attention_required": true,
+      "wake_proven": false,
+      "retry_authorized": false,
+      "dispatch_authorized": false,
+      "result_consumption_authorized": false
+    },
+    "root_verified": true,
+    "execution_absence_proven": false,
+    "retry_allowed": false
+  },
+  "formal_github_reviews": [],
+  "production_status": "NOT_MERGED_NOT_DEPLOYED",
+  "hold": "Original independent review requires lawful disposition; retry, dispatch and result consumption remain unauthorized. Required current-source independent acceptance, non-author formal approval, hosted CI and normal release/real-path proof remain open."
+}
