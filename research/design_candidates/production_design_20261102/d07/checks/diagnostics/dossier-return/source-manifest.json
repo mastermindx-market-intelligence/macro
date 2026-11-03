@@ -1,0 +1,46 @@
+{
+  "kind": "D07 advisory source diagnostic bundle",
+  "evidence_class": "CURRENT_SOURCE_BASELINE",
+  "status": "SOURCE_BOUNDARIES_REPRODUCED",
+  "witnesses": 2,
+  "runtime": "v24.22.1",
+  "sources": [
+    {
+      "file": "sources/company-intelligence-dossier.js",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "site/assets/js/company-intelligence-dossier.js",
+      "bytes": 33001,
+      "sha256": "a3f07e0863fc8323b99068e0c52dc7192d65960de03707e7cf73b59c2622e6e3",
+      "git_blob": "f211bb2aa8fa5cbfe78c522159402231c1267840",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/assets/js/company-intelligence-dossier.js"
+    },
+    {
+      "file": "sources/watchlistEventPlanner.ts",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "commit": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/lib/watchlistEventPlanner.ts",
+      "bytes": 25646,
+      "sha256": "e8d419fad52bacf56c28be70ac2dea8f64d86b63978d7efe058b5c9c96bc8fa2",
+      "git_blob": "131b7c0a6881d65d8a7023363969748542a495aa",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/watchlistEventPlanner.ts"
+    }
+  ],
+  "artifacts": [
+    {
+      "file": "probe.mjs",
+      "bytes": 5622,
+      "sha256": "e17143565e3b1e0b3e4de5b708690e88b1bb530aec7775efdd5fe55593af37c0"
+    },
+    {
+      "file": "results.json",
+      "bytes": 1488,
+      "sha256": "99ba0e1b50ac330c1c2b369b7c83e00c129fa17f51b6bec17f6e2d8fa5a56abd"
+    },
+    {
+      "file": "README.md",
+      "bytes": 3733,
+      "sha256": "060004ee3941e557fffd38dd734bb9cde350446c17a94a15bcc4535043b7cc58"
+    }
+  ]
+}

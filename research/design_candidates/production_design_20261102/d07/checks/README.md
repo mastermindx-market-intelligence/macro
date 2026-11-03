@@ -37,6 +37,18 @@ From the D07 directory run `node checks/diagnostics/earnings-hydration/probe-hyd
 
 From the D07 directory run `python checks/verify-geometry.py`. The 42 assertions transcribe F01-F02-SHELL/1.0.0-candidate.2 at `245a7d2c` and F02's concurrence at `f7c25c4b`. They verify available-width arithmetic, dock thresholds, fractional widths, extra local chrome and basic control/table budgets. Actual rendered text, focus, contrast and responsive behavior require their own evidence. [Results](geometry-results.txt) · [Responsive requirements](../RESPONSIVE.md)
 
+## Statement period helpers
+
+From the D07 package run `node checks/diagnostics/statements/probe-statements.mjs`. The harness imports the unchanged pinned helpers with two bounded extensionless-import resolutions. It validates four Git blobs, SHA-256 values and byte lengths. The 22 cases contain 69 helper assertions and 12 integrity checks. ST22 preserves the undesirable missing-Q2 baseline as an explicit finding. UI assertions and CN forecast-rendering execution are outside this harness. [Reproduction and interpretation](diagnostics/statements/README.md) · [Results](diagnostics/statements/results.json)
+
+## Dossier and planner return
+
+Run `node checks/diagnostics/dossier-return/probe.mjs checks/diagnostics/dossier-return/sources/company-intelligence-dossier.js checks/diagnostics/dossier-return/sources/watchlistEventPlanner.ts`. The two witnesses use extracted original functions, a v1 callback recorder and a minimal v2 DOM. They reproduce requested-call drift and null-period schedule-date change. A matching-call positive control is included. [Method and exact hashes](diagnostics/dossier-return/README.md) · [Results](diagnostics/dossier-return/results.json)
+
+## Paper task-state artifacts
+
+Run `python checks/verify-task-study.py` with Pillow available. The 433 checks cover eight JPEG/JSX pairs and their identities/digests, displayed historical and synthetic values, selected evidence, five local views, arithmetic, 249 text-color pairs, 62 explicit control minimum heights and operation/retention records. The script parses exported styles and opens the images for dimensions. It executes zero UI interactions. [Results](task-study-results.json) · [Study method and limits](../paper/task-study/README.md)
+
 ## Evidence categories
 
 | Suite | Recorded result | What it establishes |
@@ -46,5 +58,8 @@ From the D07 directory run `python checks/verify-geometry.py`. The 42 assertions
 | Added estimates | 9 producer + 4 client diagnostics reproduced | Controlled source behavior and typed repair requirements |
 | Earnings hydration | Six witnesses reproduced | Current loader behavior under controlled auth, data and response timing |
 | Joint geometry | 42 assertions passed | Candidate specification arithmetic |
+| Statement helpers | 22 cases, 69 helper assertions, 12 integrity checks reproduced | Pinned period, family and missingness behavior, including the open ST22 baseline |
+| Dossier/planner return | Two witnesses reproduced, with a matching-call control | Selected current source functions and callback/minimal-DOM behavior |
+| Paper task-state artifacts | 433 static checks passed | Eight native export pairs, values, geometry declarations, contrast and capture integrity |
 
 The source and specification results remain distinct from served browser observations, final Paper visual review, RIG acceptance and production proof.

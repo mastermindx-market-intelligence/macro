@@ -1,0 +1,1181 @@
+[
+  {
+    "operation_id": "D07-20261103-resume-study-bind-01",
+    "state": "PAPER_READY",
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "snapshot": "bdaa6f590d67691a5fd497b6922eb4f4ec583c5bfc424d4489759f770a192a33",
+    "response_observed": true,
+    "write_qualified": true
+  },
+  {
+    "operation_id": "D07-20261103-study-a320-create-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "create_artboard",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"id\": \"1NH5-0\",\n  \"name\": \"D07 · Provisional task study A · 320 · Historical comparison\",\n  \"worldX\": 1520,\n  \"worldY\": 0,\n  \"width\": 320,\n  \"height\": 900\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-a320-header-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NH5-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NH6-0\",\n      \"name\": \"Study label\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NH7-0\",\n      \"name\": \"D07 · PROVISIONAL TA…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NH8-0\",\n      \"name\": \"320px viewport · 288…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-a320-identity-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NH5-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NHA-0\",\n      \"name\": \"Historical company identity\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NHB-0\",\n      \"name\": \"NVDA NVIDIA\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NHC-0\",\n      \"name\": \"Historical · 27 Aug …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-a320-navigation-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NH5-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NHE-0\",\n      \"name\": \"Family and view chooser\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NHF-0\",\n      \"name\": \"Lab · Expectations\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NHG-0\",\n      \"name\": \"⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-a320-scope-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NH5-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NHI-0\",\n      \"name\": \"Metric period and comparator\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NHJ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NHK-0\",\n      \"name\": \"Revenue · Q2 FY2026\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NHL-0\",\n      \"name\": \"⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NHM-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NHN-0\",\n      \"name\": \"Prior management gui…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NHO-0\",\n      \"name\": \"⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NHP-0\",\n      \"name\": \"Quarterly · USD bill…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-a320-text-color-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "update_styles",
+    "target": "1NH5-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NHB-0\"\n    },\n    {\n      \"nodeId\": \"1NHF-0\"\n    },\n    {\n      \"nodeId\": \"1NHG-0\"\n    },\n    {\n      \"nodeId\": \"1NHK-0\"\n    },\n    {\n      \"nodeId\": \"1NHL-0\"\n    },\n    {\n      \"nodeId\": \"1NHN-0\"\n    },\n    {\n      \"nodeId\": \"1NHO-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-a320-comparison-heading-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NH5-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NHR-0\",\n      \"name\": \"Selected comparison\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NHS-0\",\n      \"name\": \"Revenue · Q2 FY2026\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NHT-0\",\n      \"name\": \"Quarterly · USD bill…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-a320-actual-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NH5-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NHV-0\",\n      \"name\": \"Reported revenue\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NHW-0\",\n      \"name\": \"Reported revenue\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NHX-0\",\n      \"name\": \"46.743 USD bn\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NHY-0\",\n      \"name\": \"Published 27 Aug 202…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-a320-benchmark-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NH5-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NI0-0\",\n      \"name\": \"Prior guidance midpoint\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NI1-0\",\n      \"name\": \"Prior management gui…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NI2-0\",\n      \"name\": \"45.000 USD bn\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NI3-0\",\n      \"name\": \"Midpoint · issued 28…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-a320-result-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NH5-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NI5-0\",\n      \"name\": \"Comparable result\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NI6-0\",\n      \"name\": \"+3.9% above prior gu…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NI7-0\",\n      \"name\": \"Versus the guidance …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-a320-source-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NH5-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NI9-0\",\n      \"name\": \"Open selected source and calculation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NIA-0\",\n      \"name\": \"View source & calcul…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-a320-priority-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "move_nodes",
+    "target": "1NH5-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"1NHI-0\",\n      \"parentId\": \"1NH5-0\",\n      \"index\": 8\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"1NH5-0\",\n      \"childIds\": [\n        \"1NH6-0\",\n        \"1NHA-0\",\n        \"1NHE-0\",\n        \"1NHR-0\",\n        \"1NHV-0\",\n        \"1NI0-0\",\n        \"1NI5-0\",\n        \"1NI9-0\",\n        \"1NHI-0\"\n      ]\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-a320-next-outlook-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NH5-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NIC-0\",\n      \"name\": \"Separate next quarter outlook\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NID-0\",\n      \"name\": \"Next quarter · Q3 FY…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NIE-0\",\n      \"name\": \"Management guidance …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NIF-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NIG-0\",\n      \"name\": \"View outlook and ass…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-a320-fit-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "update_styles",
+    "target": "1NH5-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NH5-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-b390-duplicate-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "duplicate_nodes",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"duplicatedNodes\": [\n    {\n      \"sourceId\": \"1NH5-0\",\n      \"newId\": \"1NII-0\",\n      \"name\": \"D07 · Provisional task study A · 320 · Historical comparison\",\n      \"component\": \"Frame\",\n      \"worldX\": 1920,\n      \"worldY\": 0,\n      \"x\": 1920,\n      \"y\": 0,\n      \"descendantIdMap\": {\n        \"1NH6-0\": \"1NJI-0\",\n        \"1NHA-0\": \"1NJF-0\",\n        \"1NHE-0\": \"1NJC-0\",\n        \"1NHR-0\": \"1NJ9-0\",\n        \"1NHV-0\": \"1NJ5-0\",\n        \"1NI0-0\": \"1NJ1-0\",\n        \"1NI5-0\": \"1NIY-0\",\n        \"1NI9-0\": \"1NIW-0\",\n        \"1NHI-0\": \"1NIO-0\",\n        \"1NIC-0\": \"1NIJ-0\",\n        \"1NID-0\": \"1NIN-0\",\n        \"1NIE-0\": \"1NIM-0\",\n        \"1NIF-0\": \"1NIK-0\",\n        \"1NIG-0\": \"1NIL-0\",\n        \"1NHJ-0\": \"1NIT-0\",\n        \"1NHM-0\": \"1NIQ-0\",\n        \"1NHP-0\": \"1NIP-0\",\n        \"1NHN-0\": \"1NIS-0\",\n        \"1NHO-0\": \"1NIR-0\",\n        \"1NHK-0\": \"1NIV-0\",\n        \"1NHL-0\": \"1NIU-0\",\n        \"1NIA-0\": \"1NIX-0\",\n        \"1NI6-0\": \"1NJ0-0\",\n        \"1NI7-0\": \"1NIZ-0\",\n        \"1NI1-0\": \"1NJ4-0\",\n        \"1NI2-0\": \"1NJ3-0\",\n        \"1NI3-0\": \"1NJ2-0\",\n        \"1NHW-0\": \"1NJ8-0\",\n        \"1NHX-0\": \"1NJ7-0\",\n        \"1NHY-0\": \"1NJ6-0\",\n        \"1NHS-0\": \"1NJB-0\",\n        \"1NHT-0\": \"1NJA-0\",\n        \"1NHF-0\": \"1NJE-0\",\n        \"1NHG-0\": \"1NJD-0\",\n        \"1NHB-0\": \"1NJH-0\",\n        \"1NHC-0\": \"1NJG-0\",\n        \"1NH7-0\": \"1NJK-0\",\n        \"1NH8-0\": \"1NJJ-0\"\n      }\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-b390-width-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "update_styles",
+    "target": "1NII-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NII-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-b390-label-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "set_text_content",
+    "target": "1NII-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NJJ-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-b390-name-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "rename_nodes",
+    "target": "1NII-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NII-0\",\n      \"name\": \"D07 · Study B · 390 · Historical comparison\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-c1008-create-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "create_artboard",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"id\": \"1NJL-0\",\n  \"name\": \"D07 · Study C · Financials 664 + evidence 320\",\n  \"worldX\": 2390,\n  \"worldY\": 0,\n  \"width\": 1008,\n  \"height\": 900\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-c1008-header-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NJL-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NJM-0\",\n      \"name\": \"Study C title\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NJN-0\",\n      \"name\": \"D07 · PROVISIONAL IN…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NJO-0\",\n      \"name\": \"Select a financial v…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NJP-0\",\n      \"name\": \"1008px content = 664…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-c1008-columns-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NJL-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NJR-0\",\n      \"name\": \"Primary and evidence slots\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NJS-0\",\n      \"name\": \"Financials primary 664\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NJT-0\",\n      \"name\": \"Selected value evidence 320\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-c1008-primary-title-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NJS-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NJV-0\",\n      \"name\": \"Financials identity\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NJW-0\",\n      \"name\": \"Financials\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NJX-0\",\n      \"name\": \"Synthetic annual fix…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-c1008-local-tabs-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NJS-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NJZ-0\",\n      \"name\": \"All Financials local views\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NK0-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NK1-0\",\n      \"name\": \"Statements\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NK2-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NK3-0\",\n      \"name\": \"Statistics\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NK4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NK5-0\",\n      \"name\": \"Revenue\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NK6-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NK7-0\",\n      \"name\": \"Dividends\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NK8-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NK9-0\",\n      \"name\": \"Compare\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-c1008-statement-types-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NJS-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NKB-0\",\n      \"name\": \"Statement type controls\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NKC-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NKD-0\",\n      \"name\": \"Income statement\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NKE-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NKF-0\",\n      \"name\": \"Balance sheet\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NKG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NKH-0\",\n      \"name\": \"Cash flow\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-c1008-cadence-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NJS-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NKJ-0\",\n      \"name\": \"Cadence and available history\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NKK-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NKL-0\",\n      \"name\": \"Annual\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NKM-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NKN-0\",\n      \"name\": \"Quarterly\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NKO-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NKP-0\",\n      \"name\": \"All available period…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NKQ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NKR-0\",\n      \"name\": \"USD millions\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-c1008-table-container-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NJS-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NKT-0\",\n      \"name\": \"Annual values table\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-c1008-table-header-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NKT-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NKV-0\",\n      \"name\": \"Annual column headers\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NKW-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NKX-0\",\n      \"name\": \"Reported metric\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NKY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NKZ-0\",\n      \"name\": \"FY2024\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NL0-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NL1-0\",\n      \"name\": \"FY2025\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NL2-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NL3-0\",\n      \"name\": \"YoY change\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-c1008-revenue-row-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NKT-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NL5-0\",\n      \"name\": \"Revenue field and period targets\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NL6-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NL7-0\",\n      \"name\": \"Revenue\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NL8-0\",\n      \"name\": \"USD millions\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NL9-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLA-0\",\n      \"name\": \"Revenue FY2024 selected\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLB-0\",\n      \"name\": \"100.0\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLC-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLD-0\",\n      \"name\": \"Revenue FY2025 available\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLE-0\",\n      \"name\": \"120.0\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLF-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLG-0\",\n      \"name\": \"+20.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-c1008-eps-row-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NKT-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NLI-0\",\n      \"name\": \"Reported zero and missing EPS\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLJ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLK-0\",\n      \"name\": \"Diluted EPS\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLL-0\",\n      \"name\": \"USD per share\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLM-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLN-0\",\n      \"name\": \"0.00\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLO-0\",\n      \"name\": \"Reported zero\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLP-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLQ-0\",\n      \"name\": \"—\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLR-0\",\n      \"name\": \"Unavailable\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLT-0\",\n      \"name\": \"Unavailable\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-c1008-evidence-header-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NJT-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NLV-0\",\n      \"name\": \"Evidence heading and close\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLW-0\",\n      \"name\": \"Selected evidence\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLX-0\",\n      \"name\": \"Close evidence control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NLY-0\",\n      \"name\": \"Close\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-c1008-selected-value-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NJT-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NM0-0\",\n      \"name\": \"Revenue FY2024 evidence identity\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NM1-0\",\n      \"name\": \"Revenue · FY2024\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NM2-0\",\n      \"name\": \"100.0 USD m\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NM3-0\",\n      \"name\": \"Annual · 12 months\\n1…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-c1008-source-clocks-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NJT-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NM5-0\",\n      \"name\": \"Separate fixture clocks\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NM6-0\",\n      \"name\": \"Fixture source clock…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NM7-0\",\n      \"name\": \"Filing date\\n15 Feb 2…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NM8-0\",\n      \"name\": \"Statement acquired\\n1…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NM9-0\",\n      \"name\": \"Fund file built\\n3 No…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-c1008-source-limit-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NJT-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NMB-0\",\n      \"name\": \"Fixture document state\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NMC-0\",\n      \"name\": \"Document unavailable…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NMD-0\",\n      \"name\": \"The value and clocks…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-c1008-return-control-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NJT-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NMF-0\",\n      \"name\": \"Return to selected financial value\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NMG-0\",\n      \"name\": \"Return to Revenue · …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-c1008-primary-footer-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NJS-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NMI-0\",\n      \"name\": \"History and selection contract\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NMJ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NMK-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NML-0\",\n      \"name\": \"Values\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NMM-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NMN-0\",\n      \"name\": \"Chart\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NMO-0\",\n      \"name\": \"Selected · Revenue, …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-c1008-fit-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "update_styles",
+    "target": "1NJL-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NJL-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-d1008-duplicate-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "duplicate_nodes",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"duplicatedNodes\": [\n    {\n      \"sourceId\": \"1NJL-0\",\n      \"newId\": \"1NMQ-0\",\n      \"name\": \"D07 · Study C · Financials 664 + evidence 320\",\n      \"component\": \"Frame\",\n      \"worldX\": 3478,\n      \"worldY\": 0,\n      \"x\": 3478,\n      \"y\": 0,\n      \"descendantIdMap\": {\n        \"1NJM-0\": \"1NPB-0\",\n        \"1NJR-0\": \"1NMR-0\",\n        \"1NJS-0\": \"1NNB-0\",\n        \"1NJT-0\": \"1NMS-0\",\n        \"1NLV-0\": \"1NN7-0\",\n        \"1NM0-0\": \"1NN3-0\",\n        \"1NM5-0\": \"1NMY-0\",\n        \"1NMB-0\": \"1NMV-0\",\n        \"1NMF-0\": \"1NMT-0\",\n        \"1NMG-0\": \"1NMU-0\",\n        \"1NMC-0\": \"1NMX-0\",\n        \"1NMD-0\": \"1NMW-0\",\n        \"1NM6-0\": \"1NN2-0\",\n        \"1NM7-0\": \"1NN1-0\",\n        \"1NM8-0\": \"1NN0-0\",\n        \"1NM9-0\": \"1NMZ-0\",\n        \"1NM1-0\": \"1NN6-0\",\n        \"1NM2-0\": \"1NN5-0\",\n        \"1NM3-0\": \"1NN4-0\",\n        \"1NLW-0\": \"1NNA-0\",\n        \"1NLX-0\": \"1NN8-0\",\n        \"1NLY-0\": \"1NN9-0\",\n        \"1NJV-0\": \"1NP8-0\",\n        \"1NJZ-0\": \"1NOX-0\",\n        \"1NKB-0\": \"1NOQ-0\",\n        \"1NKJ-0\": \"1NOH-0\",\n        \"1NKT-0\": \"1NNJ-0\",\n        \"1NMI-0\": \"1NNC-0\",\n        \"1NMJ-0\": \"1NNE-0\",\n        \"1NMO-0\": \"1NND-0\",\n        \"1NMK-0\": \"1NNH-0\",\n        \"1NMM-0\": \"1NNF-0\",\n        \"1NMN-0\": \"1NNG-0\",\n        \"1NML-0\": \"1NNI-0\",\n        \"1NKV-0\": \"1NO8-0\",\n        \"1NL5-0\": \"1NNW-0\",\n        \"1NLI-0\": \"1NNK-0\",\n        \"1NLJ-0\": \"1NNT-0\",\n        \"1NLM-0\": \"1NNQ-0\",\n        \"1NLP-0\": \"1NNN-0\",\n        \"1NLS-0\": \"1NNL-0\",\n        \"1NLT-0\": \"1NNM-0\",\n        \"1NLQ-0\": \"1NNP-0\",\n        \"1NLR-0\": \"1NNO-0\",\n        \"1NLN-0\": \"1NNS-0\",\n        \"1NLO-0\": \"1NNR-0\",\n        \"1NLK-0\": \"1NNV-0\",\n        \"1NLL-0\": \"1NNU-0\",\n        \"1NL6-0\": \"1NO5-0\",\n        \"1NL9-0\": \"1NO2-0\",\n        \"1NLC-0\": \"1NNZ-0\",\n        \"1NLF-0\": \"1NNX-0\",\n        \"1NLG-0\": \"1NNY-0\",\n        \"1NLD-0\": \"1NO0-0\",\n        \"1NLE-0\": \"1NO1-0\",\n        \"1NLA-0\": \"1NO3-0\",\n        \"1NLB-0\": \"1NO4-0\",\n        \"1NL7-0\": \"1NO7-0\",\n        \"1NL8-0\": \"1NO6-0\",\n        \"1NKW-0\": \"1NOF-0\",\n        \"1NKY-0\": \"1NOD-0\",\n        \"1NL0-0\": \"1NOB-0\",\n        \"1NL2-0\": \"1NO9-0\",\n        \"1NL3-0\": \"1NOA-0\",\n        \"1NL1-0\": \"1NOC-0\",\n        \"1NKZ-0\": \"1NOE-0\",\n        \"1NKX-0\": \"1NOG-0\",\n        \"1NKK-0\": \"1NOO-0\",\n        \"1NKM-0\": \"1NOM-0\",\n        \"1NKO-0\": \"1NOK-0\",\n        \"1NKQ-0\": \"1NOI-0\",\n        \"1NKR-0\": \"1NOJ-0\",\n        \"1NKP-0\": \"1NOL-0\",\n        \"1NKN-0\": \"1NON-0\",\n        \"1NKL-0\": \"1NOP-0\",\n        \"1NKC-0\": \"1NOV-0\",\n        \"1NKE-0\": \"1NOT-0\",\n        \"1NKG-0\": \"1NOR-0\",\n        \"1NKH-0\": \"1NOS-0\",\n        \"1NKF-0\": \"1NOU-0\",\n        \"1NKD-0\": \"1NOW-0\",\n        \"1NK0-0\": \"1NP6-0\",\n        \"1NK2-0\": \"1NP4-0\",\n        \"1NK4-0\": \"1NP2-0\",\n        \"1NK6-0\": \"1NP0-0\",\n        \"1NK8-0\": \"1NOY-0\",\n        \"1NK9-0\": \"1NOZ-0\",\n        \"1NK7-0\": \"1NP1-0\",\n        \"1NK5-0\": \"1NP3-0\",\n        \"1NK3-0\": \"1NP5-0\",\n        \"1NK1-0\": \"1NP7-0\",\n        \"1NJW-0\": \"1NPA-0\",\n        \"1NJX-0\": \"1NP9-0\",\n        \"1NJN-0\": \"1NPE-0\",\n        \"1NJO-0\": \"1NPD-0\",\n        \"1NJP-0\": \"1NPC-0\"\n      }\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-d1008-selection-copy-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "set_text_content",
+    "target": "1NMQ-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NN6-0\"\n    },\n    {\n      \"nodeId\": \"1NN5-0\"\n    },\n    {\n      \"nodeId\": \"1NN4-0\"\n    },\n    {\n      \"nodeId\": \"1NN1-0\"\n    },\n    {\n      \"nodeId\": \"1NN0-0\"\n    },\n    {\n      \"nodeId\": \"1NMU-0\"\n    },\n    {\n      \"nodeId\": \"1NND-0\"\n    },\n    {\n      \"nodeId\": \"1NPE-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-d1008-selection-style-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "update_styles",
+    "target": "1NMQ-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NO3-0\"\n    },\n    {\n      \"nodeId\": \"1NO4-0\"\n    },\n    {\n      \"nodeId\": \"1NO0-0\"\n    },\n    {\n      \"nodeId\": \"1NO1-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-d1008-name-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "rename_nodes",
+    "target": "1NMQ-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NMQ-0\",\n      \"name\": \"D07 · Study D · Revenue FY2025 selected\"\n    },\n    {\n      \"nodeId\": \"1NO3-0\",\n      \"name\": \"Revenue FY2024 available\"\n    },\n    {\n      \"nodeId\": \"1NO0-0\",\n      \"name\": \"Revenue FY2025 selected\"\n    },\n    {\n      \"nodeId\": \"1NN3-0\",\n      \"name\": \"Revenue FY2025 evidence identity\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-e320-create-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "create_artboard",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"id\": \"1NPF-0\",\n  \"name\": \"D07 · Study E · 320 evidence return\",\n  \"worldX\": 4566,\n  \"worldY\": 0,\n  \"width\": 320,\n  \"height\": 900\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-f390-duplicate-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "duplicate_nodes",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"duplicatedNodes\": [\n    {\n      \"sourceId\": \"1NII-0\",\n      \"newId\": \"1NPG-0\",\n      \"name\": \"D07 · Study B · 390 · Historical comparison\",\n      \"component\": \"Frame\",\n      \"worldX\": 4966,\n      \"worldY\": 0,\n      \"x\": 4966,\n      \"y\": 0,\n      \"descendantIdMap\": {\n        \"1NJI-0\": \"1NQG-0\",\n        \"1NJF-0\": \"1NQD-0\",\n        \"1NJC-0\": \"1NQA-0\",\n        \"1NJ9-0\": \"1NQ7-0\",\n        \"1NJ5-0\": \"1NQ3-0\",\n        \"1NJ1-0\": \"1NPZ-0\",\n        \"1NIY-0\": \"1NPW-0\",\n        \"1NIW-0\": \"1NPU-0\",\n        \"1NIO-0\": \"1NPM-0\",\n        \"1NIJ-0\": \"1NPH-0\",\n        \"1NIN-0\": \"1NPL-0\",\n        \"1NIM-0\": \"1NPK-0\",\n        \"1NIK-0\": \"1NPI-0\",\n        \"1NIL-0\": \"1NPJ-0\",\n        \"1NIT-0\": \"1NPR-0\",\n        \"1NIQ-0\": \"1NPO-0\",\n        \"1NIP-0\": \"1NPN-0\",\n        \"1NIS-0\": \"1NPQ-0\",\n        \"1NIR-0\": \"1NPP-0\",\n        \"1NIV-0\": \"1NPT-0\",\n        \"1NIU-0\": \"1NPS-0\",\n        \"1NIX-0\": \"1NPV-0\",\n        \"1NJ0-0\": \"1NPY-0\",\n        \"1NIZ-0\": \"1NPX-0\",\n        \"1NJ4-0\": \"1NQ2-0\",\n        \"1NJ3-0\": \"1NQ1-0\",\n        \"1NJ2-0\": \"1NQ0-0\",\n        \"1NJ8-0\": \"1NQ6-0\",\n        \"1NJ7-0\": \"1NQ5-0\",\n        \"1NJ6-0\": \"1NQ4-0\",\n        \"1NJB-0\": \"1NQ9-0\",\n        \"1NJA-0\": \"1NQ8-0\",\n        \"1NJE-0\": \"1NQC-0\",\n        \"1NJD-0\": \"1NQB-0\",\n        \"1NJH-0\": \"1NQF-0\",\n        \"1NJG-0\": \"1NQE-0\",\n        \"1NJK-0\": \"1NQI-0\",\n        \"1NJJ-0\": \"1NQH-0\"\n      }\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-e320-header-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NPF-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NQJ-0\",\n      \"name\": \"Phone evidence study label\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NQK-0\",\n      \"name\": \"D07 · PROVISIONAL EV…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NQL-0\",\n      \"name\": \"320px · same FY2025 …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-e320-body-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NPF-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NQN-0\",\n      \"name\": \"Selected value evidence 320\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NQO-0\",\n      \"name\": \"Evidence heading and close\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NQP-0\",\n      \"name\": \"Selected evidence\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NQQ-0\",\n      \"name\": \"Close evidence control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NQR-0\",\n      \"name\": \"Close\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NQS-0\",\n      \"name\": \"Revenue FY2025 evidence identity\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NQT-0\",\n      \"name\": \"Revenue · FY2025\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NQU-0\",\n      \"name\": \"120.0 USD m\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NQV-0\",\n      \"name\": \"Annual · 12 months\\n1…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NQW-0\",\n      \"name\": \"Separate fixture clocks\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NQX-0\",\n      \"name\": \"Fixture source clock…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NQY-0\",\n      \"name\": \"Filing date\\n15 Feb 2…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NQZ-0\",\n      \"name\": \"Statement acquired\\n1…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NR0-0\",\n      \"name\": \"Fund file built\\n3 No…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NR1-0\",\n      \"name\": \"Fixture document state\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NR2-0\",\n      \"name\": \"Document unavailable…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NR3-0\",\n      \"name\": \"The value and clocks…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NR4-0\",\n      \"name\": \"Return to selected financial value\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NR5-0\",\n      \"name\": \"Return to Revenue · …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-e320-fit-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "update_styles",
+    "target": "1NPF-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NPF-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-f390-light-theme-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "update_styles",
+    "target": "1NPG-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NPG-0\"\n    },\n    {\n      \"nodeId\": \"1NQG-0\"\n    },\n    {\n      \"nodeId\": \"1NQI-0\"\n    },\n    {\n      \"nodeId\": \"1NQH-0\"\n    },\n    {\n      \"nodeId\": \"1NQD-0\"\n    },\n    {\n      \"nodeId\": \"1NQF-0\"\n    },\n    {\n      \"nodeId\": \"1NQE-0\"\n    },\n    {\n      \"nodeId\": \"1NQA-0\"\n    },\n    {\n      \"nodeId\": \"1NQC-0\"\n    },\n    {\n      \"nodeId\": \"1NQB-0\"\n    },\n    {\n      \"nodeId\": \"1NQ7-0\"\n    },\n    {\n      \"nodeId\": \"1NQ9-0\"\n    },\n    {\n      \"nodeId\": \"1NQ8-0\"\n    },\n    {\n      \"nodeId\": \"1NQ3-0\"\n    },\n    {\n      \"nodeId\": \"1NQ6-0\"\n    },\n    {\n      \"nodeId\": \"1NQ5-0\"\n    },\n    {\n      \"nodeId\": \"1NQ4-0\"\n    },\n    {\n      \"nodeId\": \"1NPZ-0\"\n    },\n    {\n      \"nodeId\": \"1NQ2-0\"\n    },\n    {\n      \"nodeId\": \"1NQ1-0\"\n    },\n    {\n      \"nodeId\": \"1NQ0-0\"\n    },\n    {\n      \"nodeId\": \"1NPW-0\"\n    },\n    {\n      \"nodeId\": \"1NPY-0\"\n    },\n    {\n      \"nodeId\": \"1NPX-0\"\n    },\n    {\n      \"nodeId\": \"1NPU-0\"\n    },\n    {\n      \"nodeId\": \"1NPV-0\"\n    },\n    {\n      \"nodeId\": \"1NPM-0\"\n    },\n    {\n      \"nodeId\": \"1NPR-0\"\n    },\n    {\n      \"nodeId\": \"1NPT-0\"\n    },\n    {\n      \"nodeId\": \"1NPS-0\"\n    },\n    {\n      \"nodeId\": \"1NPO-0\"\n    },\n    {\n      \"nodeId\": \"1NPQ-0\"\n    },\n    {\n      \"nodeId\": \"1NPP-0\"\n    },\n    {\n      \"nodeId\": \"1NPN-0\"\n    },\n    {\n      \"nodeId\": \"1NPH-0\"\n    },\n    {\n      \"nodeId\": \"1NPL-0\"\n    },\n    {\n      \"nodeId\": \"1NPK-0\"\n    },\n    {\n      \"nodeId\": \"1NPI-0\"\n    },\n    {\n      \"nodeId\": \"1NPJ-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-f390-chinese-copy-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "set_text_content",
+    "target": "1NPG-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NQI-0\"\n    },\n    {\n      \"nodeId\": \"1NQH-0\"\n    },\n    {\n      \"nodeId\": \"1NQF-0\"\n    },\n    {\n      \"nodeId\": \"1NQE-0\"\n    },\n    {\n      \"nodeId\": \"1NQC-0\"\n    },\n    {\n      \"nodeId\": \"1NQ9-0\"\n    },\n    {\n      \"nodeId\": \"1NQ8-0\"\n    },\n    {\n      \"nodeId\": \"1NQ6-0\"\n    },\n    {\n      \"nodeId\": \"1NQ5-0\"\n    },\n    {\n      \"nodeId\": \"1NQ4-0\"\n    },\n    {\n      \"nodeId\": \"1NQ2-0\"\n    },\n    {\n      \"nodeId\": \"1NQ1-0\"\n    },\n    {\n      \"nodeId\": \"1NQ0-0\"\n    },\n    {\n      \"nodeId\": \"1NPY-0\"\n    },\n    {\n      \"nodeId\": \"1NPX-0\"\n    },\n    {\n      \"nodeId\": \"1NPV-0\"\n    },\n    {\n      \"nodeId\": \"1NPT-0\"\n    },\n    {\n      \"nodeId\": \"1NPQ-0\"\n    },\n    {\n      \"nodeId\": \"1NPN-0\"\n    },\n    {\n      \"nodeId\": \"1NPL-0\"\n    },\n    {\n      \"nodeId\": \"1NPK-0\"\n    },\n    {\n      \"nodeId\": \"1NPJ-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-f390-name-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "rename_nodes",
+    "target": "1NPG-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NPG-0\",\n      \"name\": \"D07 · Study F · 390 ZH light · Historical\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-g320-duplicate-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "duplicate_nodes",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"duplicatedNodes\": [\n    {\n      \"sourceId\": \"1NPG-0\",\n      \"newId\": \"1NR7-0\",\n      \"name\": \"D07 · Study F · 390 ZH light · Historical\",\n      \"component\": \"Frame\",\n      \"worldX\": 5436,\n      \"worldY\": 0,\n      \"x\": 5436,\n      \"y\": 0,\n      \"descendantIdMap\": {\n        \"1NQG-0\": \"1NS7-0\",\n        \"1NQD-0\": \"1NS4-0\",\n        \"1NQA-0\": \"1NS1-0\",\n        \"1NQ7-0\": \"1NRY-0\",\n        \"1NQ3-0\": \"1NRU-0\",\n        \"1NPZ-0\": \"1NRQ-0\",\n        \"1NPW-0\": \"1NRN-0\",\n        \"1NPU-0\": \"1NRL-0\",\n        \"1NPM-0\": \"1NRD-0\",\n        \"1NPH-0\": \"1NR8-0\",\n        \"1NPL-0\": \"1NRC-0\",\n        \"1NPK-0\": \"1NRB-0\",\n        \"1NPI-0\": \"1NR9-0\",\n        \"1NPJ-0\": \"1NRA-0\",\n        \"1NPR-0\": \"1NRI-0\",\n        \"1NPO-0\": \"1NRF-0\",\n        \"1NPN-0\": \"1NRE-0\",\n        \"1NPQ-0\": \"1NRH-0\",\n        \"1NPP-0\": \"1NRG-0\",\n        \"1NPT-0\": \"1NRK-0\",\n        \"1NPS-0\": \"1NRJ-0\",\n        \"1NPV-0\": \"1NRM-0\",\n        \"1NPY-0\": \"1NRP-0\",\n        \"1NPX-0\": \"1NRO-0\",\n        \"1NQ2-0\": \"1NRT-0\",\n        \"1NQ1-0\": \"1NRS-0\",\n        \"1NQ0-0\": \"1NRR-0\",\n        \"1NQ6-0\": \"1NRX-0\",\n        \"1NQ5-0\": \"1NRW-0\",\n        \"1NQ4-0\": \"1NRV-0\",\n        \"1NQ9-0\": \"1NS0-0\",\n        \"1NQ8-0\": \"1NRZ-0\",\n        \"1NQC-0\": \"1NS3-0\",\n        \"1NQB-0\": \"1NS2-0\",\n        \"1NQF-0\": \"1NS6-0\",\n        \"1NQE-0\": \"1NS5-0\",\n        \"1NQI-0\": \"1NS9-0\",\n        \"1NQH-0\": \"1NS8-0\"\n      }\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-h320-create-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "create_artboard",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"id\": \"1NSA-0\",\n  \"name\": \"D07 · Study H · 320 Financials chooser\",\n  \"worldX\": 5906,\n  \"worldY\": 0,\n  \"width\": 320,\n  \"height\": 740\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-g320-width-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "update_styles",
+    "target": "1NR7-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NR7-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-g320-label-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "set_text_content",
+    "target": "1NR7-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NS8-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-g320-name-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "rename_nodes",
+    "target": "1NR7-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NR7-0\",\n      \"name\": \"D07 · Study G · 320 ZH light · Historical\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-h320-header-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NSA-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NSB-0\",\n      \"name\": \"Chooser study label\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NSC-0\",\n      \"name\": \"D07 · PROVISIONAL CH…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NSD-0\",\n      \"name\": \"320px viewport · 288…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-h320-title-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NSA-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NSF-0\",\n      \"name\": \"Financials chooser heading\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NSG-0\",\n      \"name\": \"Financials\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NSH-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NSI-0\",\n      \"name\": \"Close\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-h320-row-0-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NSA-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NSK-0\",\n      \"name\": \"Financials Statements choice\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NSL-0\",\n      \"name\": \"Statements\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NSM-0\",\n      \"name\": \"Current\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-h320-row-1-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NSA-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NSO-0\",\n      \"name\": \"Financials Statistics choice\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NSP-0\",\n      \"name\": \"Statistics\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-h320-row-2-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NSA-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NSR-0\",\n      \"name\": \"Financials Revenue choice\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NSS-0\",\n      \"name\": \"Revenue\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-h320-row-3-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NSA-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NSU-0\",\n      \"name\": \"Financials Dividends choice\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NSV-0\",\n      \"name\": \"Dividends\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-h320-row-4-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NSA-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NSX-0\",\n      \"name\": \"Financials Compare choice\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NSY-0\",\n      \"name\": \"Compare\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-h320-return-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "write_html",
+    "target": "1NSA-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NT0-0\",\n      \"name\": \"Chooser return behavior\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NT1-0\",\n      \"name\": \"Close returns to Fin…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-h320-fit-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "update_styles",
+    "target": "1NSA-0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NSA-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-finish-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "finish_working_on_nodes",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "OK"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-selected-ink-contrast-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "update_styles",
+    "target_node_ids": [
+      "1NKD-0",
+      "1NLB-0",
+      "1NOW-0",
+      "1NO1-0",
+      "1NSL-0"
+    ],
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1NKD-0\"\n    },\n    {\n      \"nodeId\": \"1NLB-0\"\n    },\n    {\n      \"nodeId\": \"1NOW-0\"\n    },\n    {\n      \"nodeId\": \"1NO1-0\"\n    },\n    {\n      \"nodeId\": \"1NSL-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "D07-20261103-study-contrast-finish-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "tool": "finish_working_on_nodes",
+    "target_node_ids": [
+      "1NJL-0",
+      "1NMQ-0",
+      "1NSA-0"
+    ],
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "OK"
+        }
+      ]
+    }
+  }
+]

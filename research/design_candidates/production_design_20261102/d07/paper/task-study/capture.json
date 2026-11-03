@@ -1,0 +1,287 @@
+{
+  "classification": "PROVISIONAL_CONTENT_AND_INTERACTION_STUDIES",
+  "observed_date_utc": "2026-11-03",
+  "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+  "page_id": "p-11-0",
+  "paper_url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-11-0",
+  "source_carrier": "macro Draft #10617 / design/paper-production-audit-20261102-ryan / production_design_20261102/d07",
+  "assignment_pin": "6e1862867193ec6486a22001a0e4fb515da20448",
+  "procedure_pin": "d47cdb5652096e038a8bfb24e431ebe48ccf7ff2",
+  "geometry_input": "F01-F02-SHELL/1.0.0-candidate.2 at 245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7",
+  "latest_foundation_readback": {
+    "F01": "d6ebeefcba90387b42817f8e87792e630d5862eb",
+    "F02": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
+    "released": false
+  },
+  "read_write_evidence": {
+    "carrier": "Mastermind Paper direct app",
+    "desktop_version": "0.5.18",
+    "catalog_sha256": "16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd",
+    "write_schema_accepted": true,
+    "concurrency_rule": "MULTI_WRITER_PER_FILE_TARGET_SCOPED",
+    "coordination_scope": "BOARD_ARTBOARD_NODE",
+    "target_guard": "bdaa6f590d67691a5fd497b6922eb4f4ec583c5bfc424d4489759f770a192a33",
+    "guard_meaning": "Target drift guard only",
+    "new_operation_records": 66,
+    "ready_responses": 1,
+    "applied_responses_observed": 65,
+    "unknown_D07_effects": 0,
+    "exact_target_indicators_finished": true
+  },
+  "token_content_hash": "55dd37b7",
+  "tokens": {
+    "--mx-dark-bg": "#0F1115",
+    "--mx-dark-panel": "#181B21",
+    "--mx-dark-panel2": "#1E222A",
+    "--mx-dark-text": "#D7DCE3",
+    "--mx-dark-muted": "#8B93A1",
+    "--mx-dark-line": "#3A4150",
+    "--mx-dark-up": "#45B873",
+    "--mx-dark-down": "#E06464",
+    "--mx-dark-warn": "#E0A030",
+    "--mx-dark-act": "#E05555",
+    "--mx-dark-ok": "#3DA564",
+    "--mx-dark-info": "#5B9BF0",
+    "--mx-dark-link": "#7AA7E0",
+    "--mx-dark-orange": "#E08B45",
+    "--mx-light-bg": "#F7F8FA",
+    "--mx-light-panel": "#FFFFFF",
+    "--mx-light-panel2": "#EEF1F6",
+    "--mx-light-text": "#1C2430",
+    "--mx-light-muted": "#5D6B7E",
+    "--mx-light-line": "#C9CCD1",
+    "--mx-light-up": "#1F9A55",
+    "--mx-light-down": "#CF4040",
+    "--mx-light-warn": "#B9791A",
+    "--mx-light-act": "#C43D3D",
+    "--mx-light-ok": "#2F8A52",
+    "--mx-light-info": "#285FFF",
+    "--mx-light-link": "#285FFF",
+    "--mx-light-orange": "#C4781F",
+    "--mx-dark-prov": "#62A0E8",
+    "--mx-dark-prov-ink": "#62A0E8",
+    "--mx-dark-tier-accent": "#7C5CFF",
+    "--mx-dark-tier-fill": "#6340D8",
+    "--mx-dark-tier-ink": "#9B86FF",
+    "--mx-dark-ser-1": "#5B9BF0",
+    "--mx-dark-ser-2": "#D4A017",
+    "--mx-dark-ser-3": "#0EA5E9",
+    "--mx-dark-ser-4": "#E08B45",
+    "--mx-light-prov": "#2F6FD0",
+    "--mx-light-prov-ink": "#2C62B3",
+    "--mx-light-tier-accent": "#7C5CFF",
+    "--mx-light-tier-fill": "#6340D8",
+    "--mx-light-tier-ink": "#5B3FC4",
+    "--mx-light-ser-1": "#2F63C4",
+    "--mx-light-ser-2": "#8F6A04",
+    "--mx-light-ser-3": "#0284C7",
+    "--mx-light-ser-4": "#B06A25",
+    "--mx-light-ink-up": "#1E6D47",
+    "--mx-light-ink-down": "#B23C3D",
+    "--mx-light-ink-warn": "#7D5922",
+    "--mx-light-ink-link": "#2758E6",
+    "--font-ui": "\"Inter\"",
+    "--fs-micro": "10px",
+    "--fs-label": "11px",
+    "--fs-sm": "12.5px",
+    "--fs-body": "14px",
+    "--fs-h3": "14px",
+    "--fs-md": "15px",
+    "--fs-h2": "17px",
+    "--fs-num-lg": "22px",
+    "--fs-h1": "28px",
+    "--fs-num-xl": "38px",
+    "--fs-display": "46px",
+    "--fw-regular": "400",
+    "--fw-medium": "500",
+    "--fw-semibold": "600",
+    "--fw-bold": "700",
+    "--fw-extrabold": "800",
+    "--bp-mobile": "390px",
+    "--bp-tablet": "768px",
+    "--bp-desktop": "1440px",
+    "--sp-1": "4px",
+    "--sp-2": "8px",
+    "--sp-3": "12px",
+    "--sp-4": "16px",
+    "--sp-5": "20px",
+    "--sp-6": "24px",
+    "--sp-7": "32px",
+    "--sp-8": "44px",
+    "--r-ctl": "8px",
+    "--r-btn": "10px",
+    "--r-card": "12px",
+    "--r-panel": "14px",
+    "--r-pill": "999px"
+  },
+  "boards": [
+    {
+      "key": "A",
+      "id": "1NH5-0",
+      "image": "a320.jpg",
+      "jsx": "a320.jsx",
+      "image_pixels": [
+        320,
+        973
+      ],
+      "image_sha256": "1b009832bb4df10ea94e0362b187efc7b721d5d07ed558eacde6cba9f589ae22",
+      "jsx_sha256": "ebbc66f966dd6a90bda33a1ce0838cb06079b4bf7be088e52e56f13d801d036b",
+      "locale": "en",
+      "theme": "dark",
+      "purpose": "Historical management-guidance comparison"
+    },
+    {
+      "key": "B",
+      "id": "1NII-0",
+      "image": "b390.jpg",
+      "jsx": "b390.jsx",
+      "image_pixels": [
+        390,
+        973
+      ],
+      "image_sha256": "56430a71b3017d2dc99d27aaaf1d602a896853507971ea2382d3948a4e8119d8",
+      "jsx_sha256": "20adf26bb3ca777d2252279e286b63f60f895dbb3c55055e663798930e7c2edb",
+      "locale": "en",
+      "theme": "dark",
+      "purpose": "Historical comparison at 390"
+    },
+    {
+      "key": "C",
+      "id": "1NJL-0",
+      "image": "c664-evidence320.jpg",
+      "jsx": "c664-evidence320.jsx",
+      "image_pixels": [
+        1008,
+        735
+      ],
+      "image_sha256": "63533fb321b4280d8ffe908915b91e9fd661275ea5fd4459ca7fc83865c4c34c",
+      "jsx_sha256": "21843e71fb5b2e5f1fcaabc4a2e9e2d8b2708ec9c6da717b6cd698a40ff84ba9",
+      "locale": "en",
+      "theme": "light",
+      "purpose": "Synthetic annual Revenue FY2024 selected"
+    },
+    {
+      "key": "D",
+      "id": "1NMQ-0",
+      "image": "d664-selection.jpg",
+      "jsx": "d664-selection.jsx",
+      "image_pixels": [
+        1008,
+        735
+      ],
+      "image_sha256": "09181db7770c91c11e8a696e83e30e16d50f2dbe57433ace1b0db6c2a5fe00c5",
+      "jsx_sha256": "5398594c99653f4b7012b336cce6b30f964c518315a13dc6c1ac882cc5e9410b",
+      "locale": "en",
+      "theme": "light",
+      "purpose": "Synthetic annual Revenue FY2025 selected"
+    },
+    {
+      "key": "E",
+      "id": "1NPF-0",
+      "image": "e320-evidence.jpg",
+      "jsx": "e320-evidence.jsx",
+      "image_pixels": [
+        320,
+        671
+      ],
+      "image_sha256": "71014b095bfb1607b0f7c8ec9f2e1018b6c57b84e9e0e35a47270fbe28c30f78",
+      "jsx_sha256": "bbc8a09a6bff4fdae075078b90d02a3139792c8838355f893eb7f182aab18d75",
+      "locale": "en",
+      "theme": "light",
+      "purpose": "Narrow evidence companion to D"
+    },
+    {
+      "key": "F",
+      "id": "1NPG-0",
+      "image": "f390-zh.jpg",
+      "jsx": "f390-zh.jsx",
+      "image_pixels": [
+        390,
+        973
+      ],
+      "image_sha256": "8fd1ed3da64ff0211589a9da9166c73faf192635bf44b39f22a7528ab863180a",
+      "jsx_sha256": "6e86a05eb5500641f4c0de4d7c691289e4f53d85a4c42cfe0b39ad76b98caa26",
+      "locale": "zh",
+      "theme": "light",
+      "purpose": "Historical comparison at 390"
+    },
+    {
+      "key": "G",
+      "id": "1NR7-0",
+      "image": "g320-zh.jpg",
+      "jsx": "g320-zh.jsx",
+      "image_pixels": [
+        320,
+        973
+      ],
+      "image_sha256": "51f3bea71906ab59862e4bd627970dd681975ef0915d908dac14f3bf7eb72a9e",
+      "jsx_sha256": "4cbb5e39e0cf2ebb6e51a2f91948b011c183a8f0dd61db4b85ef6a4fae39e204",
+      "locale": "zh",
+      "theme": "light",
+      "purpose": "Historical comparison at 320"
+    },
+    {
+      "key": "H",
+      "id": "1NSA-0",
+      "image": "h320-chooser.jpg",
+      "jsx": "h320-chooser.jsx",
+      "image_pixels": [
+        320,
+        508
+      ],
+      "image_sha256": "4b71df1130835816bfc4150a1ccf88b7e6c4725d8f4192130b5e5ca9ea6dcb9b",
+      "jsx_sha256": "9836ac526a5b8a940c54a88b3852af016cfd7ef1b3c2dd121774b4e8ddfef4ba",
+      "locale": "en",
+      "theme": "light",
+      "purpose": "Five-view Financials chooser"
+    }
+  ],
+  "contrast_correction": {
+    "nodes": [
+      "1NKD-0",
+      "1NLB-0",
+      "1NOW-0",
+      "1NO1-0",
+      "1NSL-0"
+    ],
+    "earlier_foreground": "#285FFF",
+    "background": "#EEF1F6",
+    "final_existing_token": "--mx-light-ink-link",
+    "final_foreground": "#2758E6",
+    "earlier_export_sha256": {
+      "c664-evidence320": {
+        ".jsx": "36378ef199e29a679b96e198ed40089a8bec5e713f18bcf00406ba4cc084ceb1",
+        ".jpg": "292422caa7d9fd7316e047dda85499eb99e39f5b18436d4e85fd7d28630ef95d"
+      },
+      "d664-selection": {
+        ".jsx": "8ee0f5b4bd9068da7a651d6e17021103bc098a0f0dc7704439bffc695008986f",
+        ".jpg": "1cd372782594d36052e35499426ffd357f17e971aac4e3bce4173bea5229aaa1"
+      },
+      "h320-chooser": {
+        ".jsx": "2a8e91d17a66fb12fdbea4ee280915929639f45fa4fcd782dcc7664fa7634e20",
+        ".jpg": "cb53b52cebef79c77e1304b75cca05d67d06940d0e61f9d8e5a57472a7c84553"
+      }
+    },
+    "native_operation_id": "D07-20261103-study-selected-ink-contrast-01"
+  },
+  "internal_quality_checks": {
+    "reviewed_pairs": 8,
+    "contrast_repair_pairs_rechecked": [
+      "C",
+      "D",
+      "H"
+    ],
+    "method": "Internal static image and JSX inspection with author context, followed by numeric artifact checks",
+    "formal_independent_review": false
+  },
+  "limits": [
+    "Static editable Paper exports",
+    "Historical NVDA values reuse R3 source examples",
+    "Financial statement values and clocks are synthetic",
+    "E is D’s evidence companion",
+    "Historical comparison evidence destination remains to be composed",
+    "Complete Company family chooser, full history and cadence transition remain open",
+    "Interactive focus, keyboard, screen reader, zoom, resize, touch and body-level browser qualification remain open",
+    "Final shell composition waits for verified F01/F02 v1"
+  ]
+}

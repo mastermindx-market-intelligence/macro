@@ -1,0 +1,38 @@
+{
+  "status": "SOURCE_BOUNDARIES_REPRODUCED",
+  "sourceBlobs": {
+    "dossier": "f211bb2aa8fa5cbfe78c522159402231c1267840",
+    "planner": "131b7c0a6881d65d8a7023363969748542a495aa"
+  },
+  "witnesses": [
+    {
+      "case": "requested-call-missing-from-latest-dossier",
+      "v1": {
+        "requested": "2026Q3",
+        "renderEventCallback": "2026Q4",
+        "query": "?from=earnings-wire&tx=2026Q3"
+      },
+      "v1Matching": {
+        "requested": "2026Q4",
+        "renderEventCallback": "2026Q4",
+        "callbackCount": 1,
+        "query": "?from=earnings-wire&tx=2026Q4"
+      },
+      "v2": {
+        "requested": "2026Q3",
+        "rootEventAttribute": "evt_cik0000320193_2026q4_results",
+        "transcriptHref": "https://app.mastermind-x.com/terminal?sym=AAPL&pane=transcripts&tx=2026Q4&from=company-intelligence",
+        "fullEventHref": "https://app.mastermind-x.com/analysis?symbol=AAPL&page=intelligence",
+        "historyHidden": true
+      },
+      "scope": "Original showPayload and renderV2 functions. v1 renderEvent is a recorder. v2 uses a minimal DOM adapter. Browser verification remains pending."
+    },
+    {
+      "case": "unknown-period-date-change",
+      "id": "earnings:AAPL:next",
+      "previousDay": "2026-11-05",
+      "shownDay": "2027-02-05",
+      "scope": "Original eventIdentity and noteReschedule function bodies after TypeScript type erasure. The output records a date change without establishing which issuer event changed."
+    }
+  ]
+}

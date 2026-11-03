@@ -1,0 +1,35 @@
+{
+  "repository": "mastermindx-market-intelligence/mastermind-terminal",
+  "commit": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+  "execution": "Unmodified TypeScript imports using Node 24 native type stripping and exact relative-import resolution",
+  "files": [
+    {
+      "path": "terminal/lib/finStatementMath.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/finStatementMath.ts",
+      "git_blob": "9bf1e3077a66d65f2546261cb9efa7b27140fda5",
+      "sha256": "81d9d6aab076b165dec07045533015344b215ee67672d6985cf44acb9beab3b2",
+      "bytes": 29784
+    },
+    {
+      "path": "terminal/lib/finStatements.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/finStatements.ts",
+      "git_blob": "d6b0cff78c94f6c4cead423122cf4fcd6a5f19d5",
+      "sha256": "be18116d51b66222cf78247c5882b43abc6967cb82a9a09232c77fe8b6c343d2",
+      "bytes": 6411
+    },
+    {
+      "path": "terminal/lib/markets.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/markets.ts",
+      "git_blob": "6168662381b7d0a32af90eb262ae2c8862883a1b",
+      "sha256": "6a113c2faa6237f134792f0988d44e657f9fa182fecff9c57eef2919964a50f0",
+      "bytes": 19574
+    },
+    {
+      "path": "terminal/lib/fund.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/fund.ts",
+      "git_blob": "7d60914b44d123bc30e63dc7a0652b9ea24aa9a1",
+      "sha256": "37bb8a8631fcc5ee0dd748079e17397dfa520a707eb07f164de95122c0b25808",
+      "bytes": 27726
+    }
+  ]
+}

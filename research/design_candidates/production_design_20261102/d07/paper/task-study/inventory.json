@@ -1,0 +1,170 @@
+{
+  "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+  "pageId": "p-11-0",
+  "boards": [
+    {
+      "id": "1NFS-0",
+      "name": "D07 · Phase 2A · Read me & Build contract",
+      "childCount": 11,
+      "width": 1440,
+      "height": null,
+      "worldX": 0,
+      "worldY": 0
+    },
+    {
+      "id": "1NH5-0",
+      "name": "D07 · Provisional task study A · 320 · Historical comparison",
+      "childCount": 10,
+      "width": 320,
+      "height": null,
+      "worldX": 1520,
+      "worldY": 0
+    },
+    {
+      "id": "1NII-0",
+      "name": "D07 · Study B · 390 · Historical comparison",
+      "childCount": 10,
+      "width": 390,
+      "height": null,
+      "worldX": 1920,
+      "worldY": 0
+    },
+    {
+      "id": "1NPG-0",
+      "name": "D07 · Study F · 390 ZH light · Historical",
+      "childCount": 10,
+      "width": 390,
+      "height": null,
+      "worldX": 4966,
+      "worldY": 0
+    },
+    {
+      "id": "1NR7-0",
+      "name": "D07 · Study G · 320 ZH light · Historical",
+      "childCount": 10,
+      "width": 320,
+      "height": null,
+      "worldX": 5436,
+      "worldY": 0
+    },
+    {
+      "id": "1NJL-0",
+      "name": "D07 · Study C · Financials 664 + evidence 320",
+      "childCount": 2,
+      "width": 1008,
+      "height": null,
+      "worldX": 2390,
+      "worldY": 0
+    },
+    {
+      "id": "1NMQ-0",
+      "name": "D07 · Study D · Revenue FY2025 selected",
+      "childCount": 2,
+      "width": 1008,
+      "height": null,
+      "worldX": 3478,
+      "worldY": 0
+    },
+    {
+      "id": "1NPF-0",
+      "name": "D07 · Study E · 320 evidence return",
+      "childCount": 2,
+      "width": 320,
+      "height": null,
+      "worldX": 4566,
+      "worldY": 0
+    },
+    {
+      "id": "1NSA-0",
+      "name": "D07 · Study H · 320 Financials chooser",
+      "childCount": 8,
+      "width": 320,
+      "height": null,
+      "worldX": 5906,
+      "worldY": 0
+    }
+  ],
+  "retainedR3": [
+    {
+      "id": "1BEK-0",
+      "name": "01 · R3 · Intelligence Brief · Desktop",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 0,
+      "worldY": 0
+    },
+    {
+      "id": "1CD3-0",
+      "name": "06 · R3 · Lab Expectations · Desktop",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 7600,
+      "worldY": 0
+    },
+    {
+      "id": "1CIP-0",
+      "name": "07 · R3 · Lab Valuation · Desktop",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 9120,
+      "worldY": 0
+    },
+    {
+      "id": "1COB-0",
+      "name": "08 · R3 · Lab Replay · Desktop",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 10640,
+      "worldY": 0
+    },
+    {
+      "id": "1BKQ-0",
+      "name": "02 · R3 · Financials · Desktop",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 1520,
+      "worldY": 0
+    },
+    {
+      "id": "1BQC-0",
+      "name": "03 · R3 · Earnings · Desktop",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 3040,
+      "worldY": 0
+    },
+    {
+      "id": "1BVY-0",
+      "name": "04 · R3 · Market · Desktop",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 4560,
+      "worldY": 0
+    },
+    {
+      "id": "1C1K-0",
+      "name": "05 · R3 · Ownership · Desktop",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 6080,
+      "worldY": 0
+    },
+    {
+      "id": "1D9K-0",
+      "name": "09 · R3 · Lab Expectations · Mobile",
+      "childCount": 0,
+      "width": 390,
+      "height": 844,
+      "worldX": 12160,
+      "worldY": 0
+    }
+  ]
+}

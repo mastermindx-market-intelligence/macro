@@ -20,3 +20,8 @@ The direct Mastermind Paper app read the exact target, returned write qualificat
 The baseline R3 page `p-S-0` was read back with its nine original boards, including the empty `1D9K-0` phone frame. The current capture documents the build contract. The required final responsive and interaction compositions remain the next reference deliverable after verified F01/F02 v1.
 
 A source-only dependency check after this capture observed F01 candidate 3. It preserves candidate 2 geometry and adds interaction proposals pending F02/D06 review. The captured board records the agreed input it consumed. [Continuation addendum](../CONTINUATION.md#post-publication-foundation-delta)
+
+
+## Resumed task studies
+
+The same owned page now contains eight provisional content/interaction studies alongside this original build-contract board. Their separate index records exact board IDs, image/JSX pairs, historical versus synthetic fixtures, transitions, static checks and remaining foundation/browser gates. [Open the task-study index](task-study/README.md)

@@ -1,13 +1,16 @@
 {
   "schema": "d07.phase2a.continuation-verification.v1",
-  "observed_at": "2026-11-03T07:39:19.016Z",
+  "observed_date_utc": "2026-11-03",
   "assignment_pin": "6e1862867193ec6486a22001a0e4fb515da20448",
-  "procedure_pin": "b2326bbe30e9988d26199f5e774a482b9c09068a",
+  "procedure_pin": "d47cdb5652096e038a8bfb24e431ebe48ccf7ff2",
   "source_carrier": {
     "pr": 10617,
     "branch": "design/paper-production-audit-20261102-ryan",
-    "observed_head": "4c0e54e378dc0b3a447e05372d95f8707259f076",
-    "draft": true
+    "observed_head": "739821372ca4cce1def155e670c89dc638ab7ef7",
+    "draft": true,
+    "state": "open",
+    "merged": false,
+    "owned_subtree": "research/design_candidates/production_design_20261102/d07/"
   },
   "foundations": {
     "joint": {
@@ -20,6 +23,14 @@
       "commit": "c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82",
       "current_return": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
       "release": "unreleased"
+    },
+    "latest_F01": {
+      "commit": "d6ebeefcba90387b42817f8e87792e630d5862eb",
+      "version": "F01-F02-SHELL/1.0.0-candidate.3",
+      "geometry": "candidate.2 preserved",
+      "new_interactions": "pending F02/D06",
+      "release": "unreleased",
+      "status": "PARTIAL / REQUEST_CHANGES / RIG draft"
     }
   },
   "tests": [
@@ -62,73 +73,219 @@
       "assertions": 42,
       "status": "PASS",
       "recorded_output_reproduced": true
+    },
+    {
+      "name": "statement helpers",
+      "cases": 22,
+      "helper_assertions": 69,
+      "integrity_checks": 12,
+      "source_files": 4,
+      "status": "BASELINE_REPRODUCED",
+      "known_undesirable_case": "ST22",
+      "ui_assertions": 0,
+      "recorded_output_reproduced": true
+    },
+    {
+      "name": "dossier and planner return",
+      "witnesses": 2,
+      "positive_control": "matching v1 tx",
+      "status": "BASELINE_REPRODUCED",
+      "ui_assertions": 0,
+      "recorded_output_reproduced": true
+    },
+    {
+      "name": "Paper task-state static artifacts",
+      "assertions": 433,
+      "status": "PASS",
+      "image_jsx_pairs": 8,
+      "text_nodes": 249,
+      "control_heights": 62,
+      "minimum_text_contrast": 4.737883,
+      "ui_execution_assertions": 0,
+      "recorded_output_reproduced": true,
+      "inline_spans_included": 28
+    }
+  ],
+  "rerun_receipts": [
+    {
+      "suite": "routes",
+      "exit_code": 0,
+      "recorded_output_reproduced": true
+    },
+    {
+      "suite": "original-estimates",
+      "exit_code": 0,
+      "recorded_output_reproduced": true
+    },
+    {
+      "suite": "estimate-producer",
+      "exit_code": 0,
+      "recorded_output_reproduced": true
+    },
+    {
+      "suite": "estimate-client",
+      "exit_code": 0,
+      "recorded_output_reproduced": true
+    },
+    {
+      "suite": "earnings-hydration",
+      "exit_code": 0,
+      "recorded_output_reproduced": true
+    },
+    {
+      "suite": "geometry",
+      "exit_code": 0,
+      "recorded_output_reproduced": true
+    },
+    {
+      "suite": "statements",
+      "exit_code": 0,
+      "recorded_output_reproduced": true
+    },
+    {
+      "suite": "dossier-planner",
+      "exit_code": 0,
+      "recorded_output_reproduced": true
+    },
+    {
+      "suite": "paper-studies",
+      "exit_code": 0,
+      "recorded_output_reproduced": true
     }
   ],
   "retention": {
     "total": 29,
-    "RETAIN": 13,
-    "IMPROVE": 10,
+    "RETAIN": 12,
+    "IMPROVE": 11,
     "RELOCATE": 2,
     "BLOCKED_DATA": 4,
     "REMOVE": 0
   },
+  "proposed_end_to_end_cases": 24,
+  "responsive_cases": 12,
+  "semantic_task_oracles": 12,
   "paper": {
-    "observed_at": "2026-11-03T07:37:43.874Z",
-    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
-    "page_id": "p-11-0",
-    "artboard_id": "1NFS-0",
-    "children": 11,
-    "operation_count": 22,
-    "operation_states": [
-      "PAPER_READY",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED",
-      "APPLIED_RESPONSE_OBSERVED"
-    ]
+    "original_build_contract": {
+      "observed_at": "2026-11-03T07:37:43.874Z",
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-11-0",
+      "artboard_id": "1NFS-0",
+      "children": 11,
+      "operation_count": 22,
+      "operation_states": [
+        "PAPER_READY",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED",
+        "APPLIED_RESPONSE_OBSERVED"
+      ]
+    },
+    "new_task_studies": {
+      "capture": "paper/task-study/capture.json",
+      "boards": [
+        {
+          "key": "A",
+          "id": "1NH5-0"
+        },
+        {
+          "key": "B",
+          "id": "1NII-0"
+        },
+        {
+          "key": "C",
+          "id": "1NJL-0"
+        },
+        {
+          "key": "D",
+          "id": "1NMQ-0"
+        },
+        {
+          "key": "E",
+          "id": "1NPF-0"
+        },
+        {
+          "key": "F",
+          "id": "1NPG-0"
+        },
+        {
+          "key": "G",
+          "id": "1NR7-0"
+        },
+        {
+          "key": "H",
+          "id": "1NSA-0"
+        }
+      ],
+      "operations": 66,
+      "ready_responses": 1,
+      "applied_responses": 65,
+      "unknown_effects": 0,
+      "token_hash": "55dd37b7",
+      "indicators_finished": true,
+      "classification": "PROVISIONAL_CONTENT_AND_INTERACTION_STUDIES"
+    }
   },
-  "pinned_source_targets": 98,
+  "pinned_source_targets": 109,
   "reference_acceptance": "open",
   "rig_submission": "unsubmitted",
-  "phase2a": "complete",
+  "phase2a": "research_and_specification_complete",
+  "task_studies": "provisional",
   "full_assignment": "PARTIAL",
   "finalization_classification": "CHECKPOINTED_CONTINUATION",
   "mission_complete": false,
-  "served_article_continuation": "body verification incomplete after browser timeout",
+  "served_article_continuation": {
+    "url": "https://beta.mastermind-x.com/stocks/earnings/aal-2026q3-call-record.html",
+    "observed_title": "aal 2026q3 call record · Mastermind",
+    "url_and_title_observed": true,
+    "visible_dom": "MCP -32603 timeout",
+    "bounded_status_read": "same URL and title",
+    "body_access_cta_back_verified": false
+  },
   "source_qa_amendments": [
     "Public glance projection fields and display-string arithmetic",
     "Catalog fallback age distinct from serving expiry",
     "Client callback delivery distinct from browser repaint",
     "Original integrated page/pane cleanup retained",
     "Interrupted publication asserts exact index output",
-    "Changed raw observations require owner-selected revision and preserved lineage"
+    "Changed raw observations require owner-selected revision and preserved lineage",
+    "Planner fund-file clock distinguished from schedule observation",
+    "Existing planner list/batch controls distinguished from proposed date/filter controls",
+    "Requested historical call retained when latest dossier advances",
+    "Legacy heuristic cross-fiscal stored-value chunk documented",
+    "CN forecast consumer execution remains unexecuted",
+    "Partial metadata guard qualified by duration/basis presence",
+    "Styled inline spans are parsed with their own inherited or explicit colors",
+    "Matching-call control resets the recorder and asserts one fresh callback"
   ],
-  "post_publication_dependency": {
-    "observed_at": "2026-11-03T07:43:55.631028+00:00",
-    "initial_d07_commit": "f3db83d72d944db7e8fcea588b7a8644b90c6f24",
-    "initial_d07_blobs_verified": 41,
-    "F01_head": "b55efe221d16ae5e64935af4c60572701b2a43a0",
-    "F01_version": "F01-F02-SHELL/1.0.0-candidate.3",
-    "geometry": "candidate.2 preserved",
-    "interaction_additions": "pending F02/D06 review",
-    "release": "unreleased",
-    "native_reconciliation": "open"
-  }
+  "internal_visual_qa": {
+    "pairs_reviewed": 8,
+    "contrast_repair_pairs_rechecked": [
+      "C",
+      "D",
+      "H"
+    ],
+    "formal_reviewer_class_receipt": false
+  },
+  "previous_checkpoint": {
+    "commit": "739821372ca4cce1def155e670c89dc638ab7ef7",
+    "files_verified": 41
+  },
+  "publication_state": "PREPARED_FOR_SAME_CARRIER_COMMIT"
 }
