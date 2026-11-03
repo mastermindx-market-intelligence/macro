@@ -5,7 +5,9 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import os
 from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
 
 import pytest
 
@@ -260,9 +262,50 @@ def test_builder_view_failure_leaves_the_legacy_publication_byte_identical(canon
     assert not list((site / "marketdata").glob(".rotation_events.*"))
 
 
-def test_builder_disabled_flag_never_publishes_a_view(canonical, monkeypatch):
+def test_builder_published_view_is_world_readable(canonical, monkeypatch):
     data, site = canonical
-    monkeypatch.delenv("ROTATION_OBSERVATION_RECORDING_ENABLED")
+    seen = []
+    prepare(monkeypatch, packet("2026-10-21", -1.0, 1.0), seen)
+    builder.build()
+    prepare(monkeypatch, packet("2026-10-22", 2.0, -1.0), seen)
+    assert builder.build()["early_observation_recording"]["view"] == "published"
+    mode = (site / "marketdata" / "rotation_events.json").stat().st_mode & 0o777
+    assert mode == 0o644
+
+
+def test_builder_replace_failure_leaves_the_legacy_publication_byte_identical(canonical, monkeypatch):
+    data, site = canonical
+    seen = []
+    prepare(monkeypatch, packet("2026-10-21", -1.0, 1.0), seen)
+    builder.build()
+    prepare(monkeypatch, packet("2026-10-22", 2.0, -1.0), seen)
+    captured = {}
+    real_record = builder._record_early_observations
+    real_replace = os.replace
+
+    def spy(payload, **kw):
+        captured["before"] = (site / "marketdata" / "rotation_events.json").read_bytes()
+        return real_record(payload, **kw)
+
+    def replace(src, dst, *a, **k):
+        if Path(src).name.startswith(".rotation_events."):
+            raise OSError("replace failed")
+        return real_replace(src, dst, *a, **k)
+    monkeypatch.setattr(builder, "_record_early_observations", spy)
+    monkeypatch.setattr(os, "replace", replace)
+    result = builder.build()
+    assert result["early_observation_recording"] == {"status": "recorded", "receipts": 1, "view": "unavailable"}
+    assert (site / "marketdata" / "rotation_events.json").read_bytes() == captured["before"]
+    assert not list((site / "marketdata").glob(".rotation_events.*"))
+
+
+@pytest.mark.parametrize("value", [None, "true", "0"])
+def test_builder_disabled_flag_never_publishes_a_view(value, canonical, monkeypatch):
+    data, site = canonical
+    if value is None:
+        monkeypatch.delenv("ROTATION_OBSERVATION_RECORDING_ENABLED")
+    else:
+        monkeypatch.setenv("ROTATION_OBSERVATION_RECORDING_ENABLED", value)
     seen = []
     prepare(monkeypatch, packet("2026-10-22", 2.0, -1.0), seen)
     result = builder.build()

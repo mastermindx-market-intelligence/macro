@@ -216,9 +216,12 @@ def point_qty(value: float = 5, unit: str = "percent", currency: str = "NA",
     return {
         "form": "point", "value": value, "bound": "exact", "unit": unit,
         "currency": currency, "basis": basis,
+        # Default period equals the T1 horizon_period and T2 fiscal_period slots so the
+        # synthetic quantities evidence their own slot (rule S15, control M07b, 2026-11-02);
+        # before S15 the default was an unrelated half year that no rule read.
         "period": period if period is not None else {
-            "year": 2026, "quarter": None, "calendar_end": "2026-06-30",
-            "period_kind": "half_year",
+            "year": 2026, "quarter": 4, "calendar_end": "2026-12-31",
+            "period_kind": "quarter",
         },
         "negated": False,
         "evidence": evidence_span(),
@@ -636,26 +639,46 @@ def nc_m07a() -> None:
 
 
 def nc_m07b() -> None:
-    """52/53-week fiscal year and claim-vs-evidence period-token mismatch."""
-    import subprocess
+    """Claim-vs-evidence period: a quantity whose own period cannot evidence the slot."""
     from engine.news_impact import validate as V
+    event = t2_event()  # slot Q4-2026 ending 2026-12-31
+    event["stated_amount"]["period"] = {
+        "year": 2027, "quarter": None, "calendar_end": "2027-12-31",
+        "period_kind": "fiscal_year"}
+    disjoint = V.validate_event(event)
+    refused = (not disjoint.ok) and any(
+        i.path == "/stated_amount/period" and i.code == "schema_violation"
+        for i in disjoint.issues)
+    contained = t2_event()
+    contained["fiscal_period"] = {
+        "year": 2026, "quarter": None, "calendar_end": "2026-12-31",
+        "period_kind": "fiscal_year"}
+    kept = V.validate_event(contained).ok  # the default Q4-2026 quantity inside FY2026
+    dateless = t2_event()
+    dateless["stated_amount"]["period"] = {
+        "year": 2027, "quarter": None, "calendar_end": None, "period_kind": "fiscal_year"}
+    tolerated = V.validate_event(dateless).ok  # one label year, no dates: fiscal-vs-calendar tolerance
+    held = refused and kept and tolerated
+    report("M07b", "HELD" if held else "BROKEN",
+           f"claim Q4-2026 vs qty FY2027 refused={refused} codes={codes_of(disjoint)}; "
+           f"Q4 inside FY kept={kept}; dateless FY2027 tolerated={tolerated}")
+
+
+def nc_m07c() -> None:
+    """52/53-week fiscal year: no token or contract concept (contract gap, F2 N2)."""
+    import subprocess
     from engine.news_impact.producer_facts import period_token
     same = (period_token({"period_kind": "fiscal_year", "year": 2026,
                           "calendar_end": "2026-09-27"})
             == period_token({"period_kind": "fiscal_year", "year": 2026,
                              "calendar_end": "2026-12-31"}))
-    event = t2_event()
-    event["stated_amount"]["period"] = {
-        "year": 2027, "quarter": None, "calendar_end": "2027-12-31",
-        "period_kind": "fiscal_year"}
-    rep = V.validate_event(event)
     grep = subprocess.run(
         ["grep", "-rn", "-i", "-E", "52.week|53.week|fiscal.week",
          str(REPO / "contracts" / "news_impact"), str(REPO / "engine" / "news_impact")],
         capture_output=True, text=True)
-    no_mechanism = same and rep.ok and grep.stdout.strip() == ""
-    report("M07b", "NO_MECHANISM" if no_mechanism else "HELD",
-           f"52/53w tokens equal={same}; claim Q4-2026 vs qty FY2027 validator ok={rep.ok}")
+    no_mechanism = same and grep.stdout.strip() == ""
+    report("M07c", "NO_MECHANISM" if no_mechanism else "HELD",
+           f"52/53w tokens equal={same}; grep hits={len(grep.stdout.splitlines())}")
 
 
 def nc_m08() -> None:
@@ -870,7 +893,7 @@ def main() -> int:
         ("M01a", nc_m01a), ("M01b", nc_m01b), ("M01c", nc_m01c),
         ("M01d", lambda: nc_m01d(RESULTS_SCRATCH)),
         ("M02", nc_m02), ("M03", nc_m03), ("M04", nc_m04), ("M05a", nc_m05a), ("M05b", nc_m05b),
-        ("M06a", nc_m06a), ("M06b", nc_m06b), ("M07a", nc_m07a), ("M07b", nc_m07b),
+        ("M06a", nc_m06a), ("M06b", nc_m06b), ("M07a", nc_m07a), ("M07b", nc_m07b), ("M07c", nc_m07c),
         ("M08", nc_m08), ("M09", nc_m09), ("M10", nc_m10), ("M11", nc_m11),
         ("M12", nc_m12), ("M13", nc_m13), ("M14", nc_m14),
         ("M15", lambda: nc_m15(RESULTS_SCRATCH)),

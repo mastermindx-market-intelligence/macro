@@ -136,6 +136,10 @@ def _publish_latest_observation(payload, data_dir, site):
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as out:
                 out.write(text)
+                out.flush()
+                os.fsync(out.fileno())
+            # mkstemp creates 0600; the published file must stay world-readable
+            os.chmod(tmp, 0o644)
             os.replace(tmp, target)
         except BaseException:
             try:
@@ -143,6 +147,16 @@ def _publish_latest_observation(payload, data_dir, site):
             except OSError:
                 pass
             raise
+        # The rename is durable only once the directory entry is flushed as well. The file
+        # is already published, so a failure here is logged, never reported as unavailable.
+        try:
+            dfd = os.open(str(target.parent), os.O_RDONLY)
+            try:
+                os.fsync(dfd)
+            finally:
+                os.close(dfd)
+        except OSError as exc:
+            log.warning("rotation observation view directory fsync skipped: %s", type(exc).__name__)
         return "published"
     except Exception as exc:  # the view is display-only; never damage the publication
         log.warning("rotation observation view unavailable: %s", type(exc).__name__)

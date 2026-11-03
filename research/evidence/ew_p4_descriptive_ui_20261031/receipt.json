@@ -1,16 +1,34 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "1eb0b75c7515d6c2337f492acefa9586c0725758",
+  "source_revision": "5d6fcf2aae32b7f7de6b4cd94aa461b6e89957d5",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
-  "script_sha256": "2856f51743b48565f8646541d8be9c1d0534822d5d6442b8e7bb409099e1f846",
-  "band_template_sha256": "2fed7411c41d1766433de158c88c8a5a7c4bf2d1642a454b0fe39a77ee75a11f",
+  "script_sha256": "b1ddf67b07865465e72d2822fa6f5cc9efe0636e2cae58c9fa8f8b2bed372296",
+  "band_template_sha256": "a711fa7b8f63e8f6dbbb16d64a0decba77eb7122bc70f6c23cf408ef1cab718e",
+  "glance_css_sha256": "ed17c4ba8a85a1a356a0129ad3fc50b160abd44f3305af5dcaad2317813e81ec",
+  "matrix": {
+    "widths": [
+      1440,
+      1280,
+      390,
+      320
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "langs": [
+      "en",
+      "zh"
+    ],
+    "state_shots": "every degraded state at 390/en in both themes on both hosts"
+  },
   "fixtures": {
     "conflict_20s.json": "ee262b676d41235fd77059c54f56395aea05ddb85fccaf0d3be2debcf4b9c7eb",
     "corrected.json": "b7b4038c047615f3a71f57eebf8a5cacd868b2f42a7766ddbfed80c995920fb3",
-    "expected.json": "01a51d58cf667eae8417d28886ddce4e8ba179adebc67242141e1c2224e67bfa",
+    "expected.json": "37c20b1e83287fbc317419d65ce0d9e5d47a38a2136fd147e802dcecd28be214",
     "journey_b_both_fell.json": "6e59fd762b35bbf46091882b1a992efd511f105f99f32160a4e3026ecaee2a16",
     "journey_c_envelope_1d253e1d.json": "ce20bb87d141c371dc2850c984da08b0f51522c51a5db889b8cf4dcba74f776a",
     "malformed_blank_pair.json": "654398703f579d80a6fe24996393d7277575ea672d1bbc7a0a3c6489e3f58eb0",
@@ -32,9 +50,9 @@
       "state": "stale",
       "lang": "en",
       "theme": "dark",
-      "width": 1280,
-      "screenshot": "shots/radar-stale-en-dark-1280.png",
-      "sha256": "9ccc84c147dec74637737523b4044dff5a6018dd6921d03b7a772303c9eb3b6a",
+      "width": 1440,
+      "screenshot": "shots/radar-stale-en-dark-1440.png",
+      "sha256": "00765f26062862e1f37d2690ce3efe40cb2c5d7bf36141316d0614f6663830d8",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": {
@@ -43,7 +61,47 @@
         "opened_by_enter": true,
         "focus_outline": true
       },
-      "focus_outline": true
+      "focus_outline": true,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
+    },
+    {
+      "surface": "radar",
+      "state": "stale",
+      "lang": "en",
+      "theme": "dark",
+      "width": 1280,
+      "screenshot": "shots/radar-stale-en-dark-1280.png",
+      "sha256": "6eaf5872f42885a45cd271830b3dcc8ea850fa2e71f77f47db4f7535150d1740",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": {
+        "reached": true,
+        "outline_style": "solid",
+        "opened_by_enter": true,
+        "focus_outline": true
+      },
+      "focus_outline": true,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -52,7 +110,7 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/radar-stale-en-dark-390.png",
-      "sha256": "faede2384ce3f216ac4ac863f18e9945ba36c425db327f5b9538bfdccf48ffa3",
+      "sha256": "a0f815c5ce8475c5a8e85c6f7d6fcc2d4dc66ea179f2b7f9db2f94ab755ecdc6",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": {
@@ -61,7 +119,18 @@
         "opened_by_enter": true,
         "focus_outline": true
       },
-      "focus_outline": true
+      "focus_outline": true,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -70,7 +139,7 @@
       "theme": "dark",
       "width": 320,
       "screenshot": "shots/radar-stale-en-dark-320.png",
-      "sha256": "5c9112d4a837ace317091584c224f7c114e133379addd47cc9b4b6408d673bd1",
+      "sha256": "4f56b4cc8fdc10cf600832a16f1bd5159c968aa897d914ffba257b7825618c58",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": {
@@ -79,7 +148,47 @@
         "opened_by_enter": true,
         "focus_outline": true
       },
-      "focus_outline": true
+      "focus_outline": true,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
+    },
+    {
+      "surface": "radar",
+      "state": "stale",
+      "lang": "en",
+      "theme": "light",
+      "width": 1440,
+      "screenshot": "shots/radar-stale-en-light-1440.png",
+      "sha256": "96f404c64b9d010c29160a4d309e5d9d2a3529beac46d4fd80fda910a80d2e6d",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": {
+        "reached": true,
+        "outline_style": "solid",
+        "opened_by_enter": true,
+        "focus_outline": true
+      },
+      "focus_outline": true,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -88,11 +197,27 @@
       "theme": "light",
       "width": 1280,
       "screenshot": "shots/radar-stale-en-light-1280.png",
-      "sha256": "f39dbc3cbcaad685cc6dcc4548ce861b11f9811c282953a65e8ed42b1b6f4313",
+      "sha256": "96f404c64b9d010c29160a4d309e5d9d2a3529beac46d4fd80fda910a80d2e6d",
       "no_horizontal_overflow": true,
       "page_errors": [],
-      "keyboard_details": null,
-      "focus_outline": null
+      "keyboard_details": {
+        "reached": true,
+        "outline_style": "solid",
+        "opened_by_enter": true,
+        "focus_outline": true
+      },
+      "focus_outline": true,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -101,11 +226,27 @@
       "theme": "light",
       "width": 390,
       "screenshot": "shots/radar-stale-en-light-390.png",
-      "sha256": "3ba8ce14470952b2e29c25320394ebd1f738e6175cd366dbfdf63c08c1c4e554",
+      "sha256": "ad7b06e7213a79019a5d623e8eae53c081b1e819308d13b9cd820095581d29cc",
       "no_horizontal_overflow": true,
       "page_errors": [],
-      "keyboard_details": null,
-      "focus_outline": null
+      "keyboard_details": {
+        "reached": true,
+        "outline_style": "solid",
+        "opened_by_enter": true,
+        "focus_outline": true
+      },
+      "focus_outline": true,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -114,11 +255,51 @@
       "theme": "light",
       "width": 320,
       "screenshot": "shots/radar-stale-en-light-320.png",
-      "sha256": "3511fe6c694bfe70db40dcade65898806e505b2986a1d79208b598e851a24c7b",
+      "sha256": "3d686dd5fbd1f56cf8aadfdfcb5ea6ddf1813fd93adf50d52ce481b8a287cb09",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": {
+        "reached": true,
+        "outline_style": "solid",
+        "opened_by_enter": true,
+        "focus_outline": true
+      },
+      "focus_outline": true,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
+    },
+    {
+      "surface": "radar",
+      "state": "stale",
+      "lang": "zh",
+      "theme": "dark",
+      "width": 1440,
+      "screenshot": "shots/radar-stale-zh-dark-1440.png",
+      "sha256": "59d0db3c4f3fceb0ca7b8c50f02940eb295c934cf461ceb21dc8554988e71999",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -127,11 +308,22 @@
       "theme": "dark",
       "width": 1280,
       "screenshot": "shots/radar-stale-zh-dark-1280.png",
-      "sha256": "da41ceeeb2654ea77fdeedfbd2f2d139d54895a662076ba332549efc49fffbfc",
+      "sha256": "90a9fbcb40fe06949360d2169cb19cf9c2be9c142342333503825e941125acc2",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -140,11 +332,22 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/radar-stale-zh-dark-390.png",
-      "sha256": "cca4a018e8fbeda3612b6502c2788bc71e14d37c7703aae0dc5896bca608f8c9",
+      "sha256": "cbfeae9aa13a25d35e8f117a20c269890ec49a23afa2a1eebb06059ba177534a",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -153,11 +356,46 @@
       "theme": "dark",
       "width": 320,
       "screenshot": "shots/radar-stale-zh-dark-320.png",
-      "sha256": "188c47165b027c58434e8e93b055aa4da709babd6feef933dcfb666e6fd39bfd",
+      "sha256": "aecdd8483ff130a8450a0b498246bdedc22675d6b338b96493bd9eb3b66d36d6",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
+    },
+    {
+      "surface": "radar",
+      "state": "stale",
+      "lang": "zh",
+      "theme": "light",
+      "width": 1440,
+      "screenshot": "shots/radar-stale-zh-light-1440.png",
+      "sha256": "365282bc87817765696daeca93b4d5aa70488542b82e6d5310da401e2cb95b73",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": null,
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -166,11 +404,22 @@
       "theme": "light",
       "width": 1280,
       "screenshot": "shots/radar-stale-zh-light-1280.png",
-      "sha256": "8fd5653d780b9801eb64f412f350b0972d9c347879989f3216596f63a1260640",
+      "sha256": "365282bc87817765696daeca93b4d5aa70488542b82e6d5310da401e2cb95b73",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -179,11 +428,22 @@
       "theme": "light",
       "width": 390,
       "screenshot": "shots/radar-stale-zh-light-390.png",
-      "sha256": "19ade2db375b8c4f15666654f82b6621b866adb76ec67b08eb33afb1732f7703",
+      "sha256": "da82b6982c001fc1d606a9512c8a082b799b8ce699a112d800cc1acf6fb51b83",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -192,11 +452,46 @@
       "theme": "light",
       "width": 320,
       "screenshot": "shots/radar-stale-zh-light-320.png",
-      "sha256": "ddda028caded2b53a7cf194e9a8c3088660e574199db2fbb5b4d8d31ba031567",
+      "sha256": "4e8be4dfdb522b6141d558a320c8836e6716f7bf1a77037580c2d0c708b16454",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
+    },
+    {
+      "surface": "radar",
+      "state": "observed",
+      "lang": "en",
+      "theme": "dark",
+      "width": 1440,
+      "screenshot": "shots/radar-observed-en-dark-1440.png",
+      "sha256": "fdaea581007f446cad4dc82d216a783eb1c254ec1ea934d30bf1d21725872745",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": null,
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -205,11 +500,22 @@
       "theme": "dark",
       "width": 1280,
       "screenshot": "shots/radar-observed-en-dark-1280.png",
-      "sha256": "9e86bb06188737987b4e46871289b5ff3f45877d76eb384a7df0e40686deb8cb",
+      "sha256": "fdbc8f6d25b05e3bcc62bab53467b2b5a14749eae984250448cc9512d46e0005",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -218,11 +524,22 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/radar-observed-en-dark-390.png",
-      "sha256": "1cc217e9714182aa9a54e165f596ad4eb58715562c403d6174afa317318ee21d",
+      "sha256": "7300bae2fdcd3161f42f559f6cd4d4a701cec49d64d1f5813109a69f345c3be2",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -231,11 +548,46 @@
       "theme": "dark",
       "width": 320,
       "screenshot": "shots/radar-observed-en-dark-320.png",
-      "sha256": "9c9d4c5f5eff3ef07f12ed49189cf7b7691ebeeffeb76c1e60c6b3c3f2bb71cf",
+      "sha256": "da5a3f7e8d5f2c3a3c3ffb138ec922367cd1bbd20b7dd79b3045d6104c725009",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
+    },
+    {
+      "surface": "radar",
+      "state": "observed",
+      "lang": "en",
+      "theme": "light",
+      "width": 1440,
+      "screenshot": "shots/radar-observed-en-light-1440.png",
+      "sha256": "6f29779e94258901c3b747e89698e7e34835e0e6de0f2001ea5ea9e53e417b33",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": null,
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -244,11 +596,22 @@
       "theme": "light",
       "width": 1280,
       "screenshot": "shots/radar-observed-en-light-1280.png",
-      "sha256": "21b552a63c1a40ae1fa14e5e56a41d40f70a4b5cd86f2bac71149b44b431af3f",
+      "sha256": "6f29779e94258901c3b747e89698e7e34835e0e6de0f2001ea5ea9e53e417b33",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -257,11 +620,22 @@
       "theme": "light",
       "width": 390,
       "screenshot": "shots/radar-observed-en-light-390.png",
-      "sha256": "ec931661289c77c87d52d304e74feaa491cefe3d61932c305346a5d67b9678c2",
+      "sha256": "a18d6daea24f90cca3af05c10e7f30db6caa0b15e5ef8583b1c4ff83c34e6841",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -270,11 +644,46 @@
       "theme": "light",
       "width": 320,
       "screenshot": "shots/radar-observed-en-light-320.png",
-      "sha256": "d295c5fddbe8437a6e8f8d7ccebf23759a9e1c7c058f0919437d3581528264cc",
+      "sha256": "8aa9204cb9408f2cc81a9d215a47da0ab76d46a2477b98848053756726031bb8",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
+    },
+    {
+      "surface": "radar",
+      "state": "observed",
+      "lang": "zh",
+      "theme": "dark",
+      "width": 1440,
+      "screenshot": "shots/radar-observed-zh-dark-1440.png",
+      "sha256": "df3266c97e4d2802f1cd28a2369526d6d66f95f77da834383f364dc1159f7b3c",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": null,
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -283,11 +692,22 @@
       "theme": "dark",
       "width": 1280,
       "screenshot": "shots/radar-observed-zh-dark-1280.png",
-      "sha256": "7a96fe16d2d6269f302a1794562a85975301ffb11f13243e2dcbf95c6d0e827d",
+      "sha256": "aab2592a01fbbee1ede0c7339a3e4d3fcbd9efe96131ca87b72ead202686b169",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -296,11 +716,22 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/radar-observed-zh-dark-390.png",
-      "sha256": "0205ee44a027b8db9e1886b8cadac40a0c614b21bf6bd1d145efc4e707513915",
+      "sha256": "c77df3fb4d6b0664a97809d8ac5f704e8b46159f165ed96887f9b7ccad7ec0d9",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -309,11 +740,46 @@
       "theme": "dark",
       "width": 320,
       "screenshot": "shots/radar-observed-zh-dark-320.png",
-      "sha256": "908e16914ec16d5a2ba7fca407ff547560a0afd9a3b38e2d6ad9df71302c40a9",
+      "sha256": "9dcf5e2639ffa082f3bd2d134c11873d54c41ec12a8cb0527bd1026557c6090f",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
+    },
+    {
+      "surface": "radar",
+      "state": "observed",
+      "lang": "zh",
+      "theme": "light",
+      "width": 1440,
+      "screenshot": "shots/radar-observed-zh-light-1440.png",
+      "sha256": "6f110ffa4e64d3cd25ca7547c4f6b5b1aa7be138a49e64668630ab2ae7fff9db",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": null,
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -322,11 +788,22 @@
       "theme": "light",
       "width": 1280,
       "screenshot": "shots/radar-observed-zh-light-1280.png",
-      "sha256": "76c9b4918723ac3185b6687e82ab709786e068942aa321b926982b9f937c21c1",
+      "sha256": "6f110ffa4e64d3cd25ca7547c4f6b5b1aa7be138a49e64668630ab2ae7fff9db",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -335,11 +812,22 @@
       "theme": "light",
       "width": 390,
       "screenshot": "shots/radar-observed-zh-light-390.png",
-      "sha256": "5800988e6491b3531331daef4fa2a2b8cdc2dfcee576341cdc11ccb7897105a8",
+      "sha256": "114b6019282899a68e6158443dede43eb25f6e87b539bb65c80d289981722138",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -348,11 +836,41 @@
       "theme": "light",
       "width": 320,
       "screenshot": "shots/radar-observed-zh-light-320.png",
-      "sha256": "d71fd17edeb7ff8755c538f0b7a8b1d655c289047a61cb1992cec1918e1cf1d5",
+      "sha256": "0ea8f4966d96721c7bb41e4bc4098f85ea02ed2e4c8167f16fc6e07c8320014e",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
+    },
+    {
+      "surface": "sc",
+      "state": "observed",
+      "lang": "en",
+      "theme": "dark",
+      "width": 1440,
+      "screenshot": "shots/sc-observed-en-dark-1440.png",
+      "sha256": "4e7def89a2034688783f1f61307369bf82003de048743510e7c54e134055c9c8",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": {
+        "reached": true,
+        "outline_style": "solid",
+        "opened_by_enter": true,
+        "focus_outline": true
+      },
+      "focus_outline": true,
+      "warning_ink": null
     },
     {
       "surface": "sc",
@@ -361,7 +879,7 @@
       "theme": "dark",
       "width": 1280,
       "screenshot": "shots/sc-observed-en-dark-1280.png",
-      "sha256": "51095fce5551e7c9ccbff254a788bd4f7fa5d571b0d31ca3e3bdf92fba852140",
+      "sha256": "dbaf3aeddd3bae79181d8cadb4301bd76b0a98020b7255183a34d3897cd7f82f",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": {
@@ -370,7 +888,8 @@
         "opened_by_enter": true,
         "focus_outline": true
       },
-      "focus_outline": true
+      "focus_outline": true,
+      "warning_ink": null
     },
     {
       "surface": "sc",
@@ -379,7 +898,7 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/sc-observed-en-dark-390.png",
-      "sha256": "6cb8a6628463c2c718b9954b19dfef47a5352285d9ee1572b7da6da63748fd9f",
+      "sha256": "b0ad67033826b137e3367aa9f5ab6a95d397b56562304d1e4541daa985cf1f47",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": {
@@ -388,7 +907,8 @@
         "opened_by_enter": true,
         "focus_outline": true
       },
-      "focus_outline": true
+      "focus_outline": true,
+      "warning_ink": null
     },
     {
       "surface": "sc",
@@ -397,7 +917,7 @@
       "theme": "dark",
       "width": 320,
       "screenshot": "shots/sc-observed-en-dark-320.png",
-      "sha256": "575b6848664aaff3216cbffe64fd623216f9cea2336de88a9f66607dbaa0ce8d",
+      "sha256": "1fb99c78a484eb367c38ee3d1d17748b15b3cdaf853b46b06c88031406a5319e",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": {
@@ -406,7 +926,27 @@
         "opened_by_enter": true,
         "focus_outline": true
       },
-      "focus_outline": true
+      "focus_outline": true,
+      "warning_ink": null
+    },
+    {
+      "surface": "sc",
+      "state": "observed",
+      "lang": "en",
+      "theme": "light",
+      "width": 1440,
+      "screenshot": "shots/sc-observed-en-light-1440.png",
+      "sha256": "3bbb2a6f943038be40f12d7c43d770582d20bac21a0b3e882ee8b3722eb1ee08",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": {
+        "reached": true,
+        "outline_style": "solid",
+        "opened_by_enter": true,
+        "focus_outline": true
+      },
+      "focus_outline": true,
+      "warning_ink": null
     },
     {
       "surface": "sc",
@@ -415,11 +955,17 @@
       "theme": "light",
       "width": 1280,
       "screenshot": "shots/sc-observed-en-light-1280.png",
-      "sha256": "2ddb1c384099dfae496c7970cece38879f4dde329cce0d11b097c56854703e4c",
+      "sha256": "10d7ccfc702ffeac0b43dbd6beaa47d249fcf649cdd42bdfd9d6e66896ee521d",
       "no_horizontal_overflow": true,
       "page_errors": [],
-      "keyboard_details": null,
-      "focus_outline": null
+      "keyboard_details": {
+        "reached": true,
+        "outline_style": "solid",
+        "opened_by_enter": true,
+        "focus_outline": true
+      },
+      "focus_outline": true,
+      "warning_ink": null
     },
     {
       "surface": "sc",
@@ -428,11 +974,17 @@
       "theme": "light",
       "width": 390,
       "screenshot": "shots/sc-observed-en-light-390.png",
-      "sha256": "95041346fb003dd4fccd07b8760f9ec05f962817f5d766016077dd81a510bb02",
+      "sha256": "8debf89752376d3410bd20a1b00adf879c3b20454a62ef34828816db6f3e2747",
       "no_horizontal_overflow": true,
       "page_errors": [],
-      "keyboard_details": null,
-      "focus_outline": null
+      "keyboard_details": {
+        "reached": true,
+        "outline_style": "solid",
+        "opened_by_enter": true,
+        "focus_outline": true
+      },
+      "focus_outline": true,
+      "warning_ink": null
     },
     {
       "surface": "sc",
@@ -441,11 +993,31 @@
       "theme": "light",
       "width": 320,
       "screenshot": "shots/sc-observed-en-light-320.png",
-      "sha256": "ac3a7b30fafbda48cde813120e72563a748062a978d4ec313b69cef24a7fd1be",
+      "sha256": "62f386560c1291aed533322f2ab17414208e02b9f399674d26b1160770922930",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": {
+        "reached": true,
+        "outline_style": "solid",
+        "opened_by_enter": true,
+        "focus_outline": true
+      },
+      "focus_outline": true,
+      "warning_ink": null
+    },
+    {
+      "surface": "sc",
+      "state": "observed",
+      "lang": "zh",
+      "theme": "dark",
+      "width": 1440,
+      "screenshot": "shots/sc-observed-zh-dark-1440.png",
+      "sha256": "9d5b3381231485a250b091c7812eebd94fbc06f53e5ed135d4e49d60ab691278",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": null
     },
     {
       "surface": "sc",
@@ -454,11 +1026,12 @@
       "theme": "dark",
       "width": 1280,
       "screenshot": "shots/sc-observed-zh-dark-1280.png",
-      "sha256": "cece7787cedabda07aef4e6369c73167e83f8220d833a4df9eb6d2c0651d183c",
+      "sha256": "3809c5c361a62aebbc20f6eee6d84aeeb4f5bb2afd42d48e360d56f9cd8bb1d8",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": null
     },
     {
       "surface": "sc",
@@ -467,11 +1040,12 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/sc-observed-zh-dark-390.png",
-      "sha256": "8ea5d248a7b760b7f669c6f66685a1dffb75612910dff3c2012792f0ff752ce5",
+      "sha256": "03b7ed47eb4198d8e83dc21afc87301512588c8fd39967c316d71a0310fd5b11",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": null
     },
     {
       "surface": "sc",
@@ -480,11 +1054,26 @@
       "theme": "dark",
       "width": 320,
       "screenshot": "shots/sc-observed-zh-dark-320.png",
-      "sha256": "81dc0eac786eb2133da479c6e88e893ff23c15ccc8890cae958b6cc98cbbfc05",
+      "sha256": "aa97f96c8c720ed6be513b5f91a09be361aa2eeb83675fc97d8a675780536953",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": null
+    },
+    {
+      "surface": "sc",
+      "state": "observed",
+      "lang": "zh",
+      "theme": "light",
+      "width": 1440,
+      "screenshot": "shots/sc-observed-zh-light-1440.png",
+      "sha256": "0bc628fcc39e5071fbd3d11a4693402f917bf0bd67858bf551312cc099765b42",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": null,
+      "focus_outline": null,
+      "warning_ink": null
     },
     {
       "surface": "sc",
@@ -493,11 +1082,12 @@
       "theme": "light",
       "width": 1280,
       "screenshot": "shots/sc-observed-zh-light-1280.png",
-      "sha256": "185853ebc5d67a108245e63bbf188132f382245a41be8a2fda5ae22cf6454b57",
+      "sha256": "df6f7e14be98ac92d46e4138b385215f3cb737fdc115919febee5037606222f2",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": null
     },
     {
       "surface": "sc",
@@ -506,11 +1096,12 @@
       "theme": "light",
       "width": 390,
       "screenshot": "shots/sc-observed-zh-light-390.png",
-      "sha256": "a0730ffe60df6d0291805b8681ef30b8eb13ed5005afd97b4710221e6d1fb79e",
+      "sha256": "f981d47a602f26eba8af0c7d4d8159a96e0d97fbd358250ea07872006aa3423a",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": null
     },
     {
       "surface": "sc",
@@ -519,11 +1110,12 @@
       "theme": "light",
       "width": 320,
       "screenshot": "shots/sc-observed-zh-light-320.png",
-      "sha256": "5d5df830a11c5780b415fab29255004ff92bc604639a05704925bd6e68a13cc1",
+      "sha256": "c8fc606aa879a02a3265b226e31eb3a80bc6b2e6542c4d3a993dfceb7349f24e",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": null
     },
     {
       "surface": "radar",
@@ -532,11 +1124,46 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/radar-partial-en-dark-390.png",
-      "sha256": "49231779af185e533c2d945e514248411edafebc39b765e3b4674bd8febcb10f",
+      "sha256": "cc3ab8b1f38194ec98f48185cd0c515a795b3a1b3c9e525dd90ac2078c8ae4b1",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
+    },
+    {
+      "surface": "radar",
+      "state": "partial",
+      "lang": "en",
+      "theme": "light",
+      "width": 390,
+      "screenshot": "shots/radar-partial-en-light-390.png",
+      "sha256": "2fcb6ab806a0cd005ac4814c1ce04dbe1fd50dee26a017591a06a15e3eaa83ce",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": null,
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -545,11 +1172,46 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/radar-conflicting-en-dark-390.png",
-      "sha256": "8fe167c0aa0fe0478269c66497ac34897960ea9c6c45adbdee9bfeabf78d7ff0",
+      "sha256": "6f217c0b99a981e4870b442b6db9b2f41d8ada7bda65c0669c8a180f8543db94",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
+    },
+    {
+      "surface": "radar",
+      "state": "conflicting",
+      "lang": "en",
+      "theme": "light",
+      "width": 390,
+      "screenshot": "shots/radar-conflicting-en-light-390.png",
+      "sha256": "c4445a22a639616253ddab5312f9530e8b2ac597b0db579408302feeb5df5d99",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": null,
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -558,11 +1220,46 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/radar-unavailable-en-dark-390.png",
-      "sha256": "d83c5028cc927a88d57daa63b46130593564908ee431f64a726a1ed583d99333",
+      "sha256": "f71f0636cdcd202320c6a8c9afb63c3811658737469d9639a1674b5084bfd26e",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
+    },
+    {
+      "surface": "radar",
+      "state": "unavailable",
+      "lang": "en",
+      "theme": "light",
+      "width": 390,
+      "screenshot": "shots/radar-unavailable-en-light-390.png",
+      "sha256": "f63a984bd383e19f49747b0bf122df6e10e063bd65b417c2b074e10a7e5fd43b",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": null,
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -571,11 +1268,46 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/radar-withdrawn-en-dark-390.png",
-      "sha256": "2a91c9f095932f97f4929bb58d0134fcc0b10cabb6da8514e68e02c2b37d3c0e",
+      "sha256": "039c55c9a06896b861b3877b3623e2289833c0cd46016919c1ccc6c3b208bc4f",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
+    },
+    {
+      "surface": "radar",
+      "state": "withdrawn",
+      "lang": "en",
+      "theme": "light",
+      "width": 390,
+      "screenshot": "shots/radar-withdrawn-en-light-390.png",
+      "sha256": "3e77991f30c563a4c225c3ec93e1667100787d49e957352870aa8fdbf98fbf4e",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": null,
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -584,11 +1316,46 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/radar-corrected-en-dark-390.png",
-      "sha256": "7d3f0e46a36a02e3ab1a80da3d0f509efb9a2f476f66902e64c8150bc898aee8",
+      "sha256": "17d6e83448e0a086bec45e5284e453c8c4822b7edf753d2d4a41aad0ef0dcb72",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
+    },
+    {
+      "surface": "radar",
+      "state": "corrected",
+      "lang": "en",
+      "theme": "light",
+      "width": 390,
+      "screenshot": "shots/radar-corrected-en-light-390.png",
+      "sha256": "ecbc2713c1b614f4dd10c5ad65acfbc7df15c807e8bec0d8ffc5c6eabe34d10b",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": null,
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "radar",
@@ -597,11 +1364,46 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/radar-unreadable-en-dark-390.png",
-      "sha256": "4ecd1d40a5657b55f9d88ce505d919451cc720532d3b7efdbf541e7fad46d808",
+      "sha256": "e01e9f52764415f3f9ffe7b150745845001529af28df794173321652ae5a7def",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "warn": [
+          "color(srgb 0.878431 0.627451 0.188235)"
+        ],
+        "token_ink_warn": "color(srgb 0.878431 0.627451 0.188235)",
+        "consistent": true,
+        "matches_token": true
+      }
+    },
+    {
+      "surface": "radar",
+      "state": "unreadable",
+      "lang": "en",
+      "theme": "light",
+      "width": 390,
+      "screenshot": "shots/radar-unreadable-en-light-390.png",
+      "sha256": "e74e045a7b30e3ecb3fa7962ef9871217dd7e3d821f6b948cac76baae07956c5",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": null,
+      "focus_outline": null,
+      "warning_ink": {
+        "caveat": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "warn": [
+          "color(srgb 0.491529 0.347843 0.134745)"
+        ],
+        "token_ink_warn": "color(srgb 0.491529 0.347843 0.134745)",
+        "consistent": true,
+        "matches_token": true
+      }
     },
     {
       "surface": "sc",
@@ -610,11 +1412,26 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/sc-stale-en-dark-390.png",
-      "sha256": "ed551c4df781a31a27a6efab06a6665c1252eae0679fada374d31f964514d1cd",
+      "sha256": "99a4168ffa1e2f03f2b946451d8d1064a49ac05aa1afbd262f482d0921f546a6",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": null
+    },
+    {
+      "surface": "sc",
+      "state": "stale",
+      "lang": "en",
+      "theme": "light",
+      "width": 390,
+      "screenshot": "shots/sc-stale-en-light-390.png",
+      "sha256": "e7e4c89b4e6d8cd5f7ee379d8f59dbae5e04d034caadfd96c946ad2744cf7e20",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": null,
+      "focus_outline": null,
+      "warning_ink": null
     },
     {
       "surface": "sc",
@@ -623,11 +1440,26 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/sc-withdrawn-en-dark-390.png",
-      "sha256": "6b729b5454e502cf00132a5d1fd5319f8f1a5ad2aedc506820253491704fa0db",
+      "sha256": "7e90042418225c828b9b2e42a4e0923fa6b2919d69ba8705f9cd0a6db536d7c7",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": null
+    },
+    {
+      "surface": "sc",
+      "state": "withdrawn",
+      "lang": "en",
+      "theme": "light",
+      "width": 390,
+      "screenshot": "shots/sc-withdrawn-en-light-390.png",
+      "sha256": "f17955157bca0b565b2a26b0a0c68b9c31b2add177519dc4801ccf24ebff5423",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": null,
+      "focus_outline": null,
+      "warning_ink": null
     },
     {
       "surface": "sc",
@@ -636,11 +1468,26 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/sc-corrected-en-dark-390.png",
-      "sha256": "d6a9f91a1a46a9fcdb486a9f1d8f799b24af7af972629085f51f6f271e42cd58",
+      "sha256": "c3e150784c606a582e1cbdb8a6af8d6f1cf993a0e7fc4f8f72394b96751dbee1",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": null
+    },
+    {
+      "surface": "sc",
+      "state": "corrected",
+      "lang": "en",
+      "theme": "light",
+      "width": 390,
+      "screenshot": "shots/sc-corrected-en-light-390.png",
+      "sha256": "53b694cb1c719c73bf1fc6e8f24859a6da284a8ae06d73f4ba71e472e6bf304a",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": null,
+      "focus_outline": null,
+      "warning_ink": null
     },
     {
       "surface": "sc",
@@ -649,15 +1496,30 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/sc-unreadable-en-dark-390.png",
-      "sha256": "44d56da5e9e1d2a2689f875c88dd6ba92ff5301db6f06599ab953ec34ee1b3e7",
+      "sha256": "5eb57c75755390a0daf35a94f3886ac7b4ebe688067ef667dd42a8d41f84f777",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
-      "focus_outline": null
+      "focus_outline": null,
+      "warning_ink": null
+    },
+    {
+      "surface": "sc",
+      "state": "unreadable",
+      "lang": "en",
+      "theme": "light",
+      "width": 390,
+      "screenshot": "shots/sc-unreadable-en-light-390.png",
+      "sha256": "dc75d1b87e83f84d1411a24fc5a2056c1eab2cb34273c3b3f636ce70c9f787bd",
+      "no_horizontal_overflow": true,
+      "page_errors": [],
+      "keyboard_details": null,
+      "focus_outline": null,
+      "warning_ink": null
     }
   ],
   "blocked_requests": [
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -665,7 +1527,7 @@
     "http://ew-p4-descriptive.test/risk_envelope_live.js",
     "http://ew-p4-descriptive.test/risk_radar_workspace.js",
     "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -673,7 +1535,7 @@
     "http://ew-p4-descriptive.test/risk_envelope_live.js",
     "http://ew-p4-descriptive.test/risk_radar_workspace.js",
     "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -681,7 +1543,7 @@
     "http://ew-p4-descriptive.test/risk_envelope_live.js",
     "http://ew-p4-descriptive.test/risk_radar_workspace.js",
     "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -689,7 +1551,7 @@
     "http://ew-p4-descriptive.test/risk_envelope_live.js",
     "http://ew-p4-descriptive.test/risk_radar_workspace.js",
     "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -697,7 +1559,7 @@
     "http://ew-p4-descriptive.test/risk_envelope_live.js",
     "http://ew-p4-descriptive.test/risk_radar_workspace.js",
     "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -705,7 +1567,7 @@
     "http://ew-p4-descriptive.test/risk_envelope_live.js",
     "http://ew-p4-descriptive.test/risk_radar_workspace.js",
     "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -713,11 +1575,7 @@
     "http://ew-p4-descriptive.test/risk_envelope_live.js",
     "http://ew-p4-descriptive.test/risk_radar_workspace.js",
     "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/fonts/Inter-700.woff2",
-    "http://ew-p4-descriptive.test/fonts/Inter-500.woff2",
-    "http://ew-p4-descriptive.test/fonts/Inter-600.woff2",
-    "http://ew-p4-descriptive.test/fonts/Inter-400.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -725,11 +1583,7 @@
     "http://ew-p4-descriptive.test/risk_envelope_live.js",
     "http://ew-p4-descriptive.test/risk_radar_workspace.js",
     "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/fonts/Inter-700.woff2",
-    "http://ew-p4-descriptive.test/fonts/Inter-500.woff2",
-    "http://ew-p4-descriptive.test/fonts/Inter-600.woff2",
-    "http://ew-p4-descriptive.test/fonts/Inter-400.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -741,7 +1595,7 @@
     "http://ew-p4-descriptive.test/fonts/Inter-500.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-600.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-400.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -753,7 +1607,7 @@
     "http://ew-p4-descriptive.test/fonts/Inter-500.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-600.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-400.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -765,7 +1619,7 @@
     "http://ew-p4-descriptive.test/fonts/Inter-500.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-600.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-400.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -777,55 +1631,7 @@
     "http://ew-p4-descriptive.test/fonts/Inter-500.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-600.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-400.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
-    "http://ew-p4-descriptive.test/theme.js",
-    "http://ew-p4-descriptive.test/tier_preview.js",
-    "http://ew-p4-descriptive.test/tablesort.js",
-    "http://ew-p4-descriptive.test/risk_state_live.js",
-    "http://ew-p4-descriptive.test/risk_envelope_live.js",
-    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
-    "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
-    "http://ew-p4-descriptive.test/theme.js",
-    "http://ew-p4-descriptive.test/tier_preview.js",
-    "http://ew-p4-descriptive.test/tablesort.js",
-    "http://ew-p4-descriptive.test/risk_state_live.js",
-    "http://ew-p4-descriptive.test/risk_envelope_live.js",
-    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
-    "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
-    "http://ew-p4-descriptive.test/theme.js",
-    "http://ew-p4-descriptive.test/tier_preview.js",
-    "http://ew-p4-descriptive.test/tablesort.js",
-    "http://ew-p4-descriptive.test/risk_state_live.js",
-    "http://ew-p4-descriptive.test/risk_envelope_live.js",
-    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
-    "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
-    "http://ew-p4-descriptive.test/theme.js",
-    "http://ew-p4-descriptive.test/tier_preview.js",
-    "http://ew-p4-descriptive.test/tablesort.js",
-    "http://ew-p4-descriptive.test/risk_state_live.js",
-    "http://ew-p4-descriptive.test/risk_envelope_live.js",
-    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
-    "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
-    "http://ew-p4-descriptive.test/theme.js",
-    "http://ew-p4-descriptive.test/tier_preview.js",
-    "http://ew-p4-descriptive.test/tablesort.js",
-    "http://ew-p4-descriptive.test/risk_state_live.js",
-    "http://ew-p4-descriptive.test/risk_envelope_live.js",
-    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
-    "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
-    "http://ew-p4-descriptive.test/theme.js",
-    "http://ew-p4-descriptive.test/tier_preview.js",
-    "http://ew-p4-descriptive.test/tablesort.js",
-    "http://ew-p4-descriptive.test/risk_state_live.js",
-    "http://ew-p4-descriptive.test/risk_envelope_live.js",
-    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
-    "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -837,7 +1643,7 @@
     "http://ew-p4-descriptive.test/fonts/Inter-500.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-600.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-400.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -849,7 +1655,7 @@
     "http://ew-p4-descriptive.test/fonts/Inter-500.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-600.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-400.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -861,7 +1667,7 @@
     "http://ew-p4-descriptive.test/fonts/Inter-500.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-600.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-400.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -873,7 +1679,71 @@
     "http://ew-p4-descriptive.test/fonts/Inter-500.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-600.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-400.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -885,7 +1755,7 @@
     "http://ew-p4-descriptive.test/fonts/Inter-500.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-600.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-400.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -897,31 +1767,7 @@
     "http://ew-p4-descriptive.test/fonts/Inter-500.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-600.woff2",
     "http://ew-p4-descriptive.test/fonts/Inter-400.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
-    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
-    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
-    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
-    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
-    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
-    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
-    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
-    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
-    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
-    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
-    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
-    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -929,7 +1775,11 @@
     "http://ew-p4-descriptive.test/risk_envelope_live.js",
     "http://ew-p4-descriptive.test/risk_radar_workspace.js",
     "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/fonts/Inter-700.woff2",
+    "http://ew-p4-descriptive.test/fonts/Inter-500.woff2",
+    "http://ew-p4-descriptive.test/fonts/Inter-600.woff2",
+    "http://ew-p4-descriptive.test/fonts/Inter-400.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -937,7 +1787,11 @@
     "http://ew-p4-descriptive.test/risk_envelope_live.js",
     "http://ew-p4-descriptive.test/risk_radar_workspace.js",
     "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/fonts/Inter-700.woff2",
+    "http://ew-p4-descriptive.test/fonts/Inter-500.woff2",
+    "http://ew-p4-descriptive.test/fonts/Inter-600.woff2",
+    "http://ew-p4-descriptive.test/fonts/Inter-400.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -945,7 +1799,11 @@
     "http://ew-p4-descriptive.test/risk_envelope_live.js",
     "http://ew-p4-descriptive.test/risk_radar_workspace.js",
     "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/fonts/Inter-700.woff2",
+    "http://ew-p4-descriptive.test/fonts/Inter-500.woff2",
+    "http://ew-p4-descriptive.test/fonts/Inter-600.woff2",
+    "http://ew-p4-descriptive.test/fonts/Inter-400.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -953,7 +1811,11 @@
     "http://ew-p4-descriptive.test/risk_envelope_live.js",
     "http://ew-p4-descriptive.test/risk_radar_workspace.js",
     "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/fonts/Inter-700.woff2",
+    "http://ew-p4-descriptive.test/fonts/Inter-500.woff2",
+    "http://ew-p4-descriptive.test/fonts/Inter-600.woff2",
+    "http://ew-p4-descriptive.test/fonts/Inter-400.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -961,7 +1823,11 @@
     "http://ew-p4-descriptive.test/risk_envelope_live.js",
     "http://ew-p4-descriptive.test/risk_radar_workspace.js",
     "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/fonts/Inter-700.woff2",
+    "http://ew-p4-descriptive.test/fonts/Inter-500.woff2",
+    "http://ew-p4-descriptive.test/fonts/Inter-600.woff2",
+    "http://ew-p4-descriptive.test/fonts/Inter-400.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/theme.js",
     "http://ew-p4-descriptive.test/tier_preview.js",
     "http://ew-p4-descriptive.test/tablesort.js",
@@ -969,48 +1835,189 @@
     "http://ew-p4-descriptive.test/risk_envelope_live.js",
     "http://ew-p4-descriptive.test/risk_radar_workspace.js",
     "http://ew-p4-descriptive.test/release_publications_live.js",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/fonts/Inter-700.woff2",
+    "http://ew-p4-descriptive.test/fonts/Inter-500.woff2",
+    "http://ew-p4-descriptive.test/fonts/Inter-600.woff2",
+    "http://ew-p4-descriptive.test/fonts/Inter-400.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
-    "http://ew-p4-descriptive.test/product-nav-icons.css?v=093ad1ea",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/theme.js",
+    "http://ew-p4-descriptive.test/tier_preview.js",
+    "http://ew-p4-descriptive.test/tablesort.js",
+    "http://ew-p4-descriptive.test/risk_state_live.js",
+    "http://ew-p4-descriptive.test/risk_envelope_live.js",
+    "http://ew-p4-descriptive.test/risk_radar_workspace.js",
+    "http://ew-p4-descriptive.test/release_publications_live.js",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
+    "http://ew-p4-descriptive.test/fonts/Inter-800.woff2",
+    "http://ew-p4-descriptive.test/product-nav-icons.css?v=432f6a45",
     "http://ew-p4-descriptive.test/fonts/Inter-800.woff2"
   ],
   "contact_sheets": {
     "radar-stale": "contact-radar-stale.html",
     "radar-observed": "contact-radar-observed.html",
     "sc-observed": "contact-sc-observed.html",
-    "sc-states": "contact-sc-states.html"
+    "sc-states": "contact-sc-states.html",
+    "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "Shots were rendered by the Grey Deer early-warning CEO seat (local Playwright Chromium) at source_revision, the EW-P4-ACT code commit on the PR branch; the PR head carries byte-identical render inputs (equal git blob ids below), so the shots depict the PR source. tests/test_ew_p4_descriptive_ui.py re-checks the blob ids against the tested tree. Test-only and CI-manifest files are excluded from the render set.",
-    "pr_branch": "claude/gd-ew-p4-act-20261101",
-    "pr_parent_of_evidence_commit": "1eb0b75c7515d6c2337f492acefa9586c0725758",
+    "note": "Shots were rendered by the Grey Deer early-warning CEO seat (local Playwright Chromium) at source_revision, the EW-P5 FU2 recapture commit on the PR branch (1440 width, every degraded state in both themes, per-theme keyboard focus, L4 warning ink); the PR head carries byte-identical render inputs (equal git blob ids below), so the shots depict the PR source. tests/test_ew_p4_descriptive_ui.py re-checks the blob ids against the tested tree. Test-only and CI-manifest files are excluded from the render set.",
+    "pr_branch": "claude/gd-ew-p5-fu2-20261101",
+    "pr_parent_of_evidence_commit": "5d6fcf2aae32b7f7de6b4cd94aa461b6e89957d5",
     "render_files": [
       {
         "path": "site/rotation_events.js",
-        "blob_at_source_revision": "27d1c9adfd293c98f76ea3258b00f5a04eb49d8c",
-        "blob_on_pr_branch": "27d1c9adfd293c98f76ea3258b00f5a04eb49d8c",
+        "blob_at_source_revision": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
+        "blob_on_pr_branch": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
         "equal": true
       },
       {
         "path": "templates/_risk_envelope_band.css.j2",
-        "blob_at_source_revision": "0592474c613921c0b5672e41df0392ca13d75009",
-        "blob_on_pr_branch": "0592474c613921c0b5672e41df0392ca13d75009",
+        "blob_at_source_revision": "09c15c1a022beba816a4adc92dd1a83751dab638",
+        "blob_on_pr_branch": "09c15c1a022beba816a4adc92dd1a83751dab638",
         "equal": true
       },
       {
         "path": "templates/_risk_envelope_band.html.j2",
-        "blob_at_source_revision": "364a926ff63b948662a5c1cab7581c50976214bd",
-        "blob_on_pr_branch": "364a926ff63b948662a5c1cab7581c50976214bd",
+        "blob_at_source_revision": "57af6f51d5f68d30eae9e7e913efd258c306681f",
+        "blob_on_pr_branch": "57af6f51d5f68d30eae9e7e913efd258c306681f",
         "equal": true
       },
       {
         "path": "templates/rotation_events.js",
-        "blob_at_source_revision": "27d1c9adfd293c98f76ea3258b00f5a04eb49d8c",
-        "blob_on_pr_branch": "27d1c9adfd293c98f76ea3258b00f5a04eb49d8c",
+        "blob_at_source_revision": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
+        "blob_on_pr_branch": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
         "equal": true
       },
       {
@@ -1027,8 +2034,8 @@
       },
       {
         "path": "tests/fixtures/ew_p4_observation/expected.json",
-        "blob_at_source_revision": "bb334b7564217aa41858a3152c208839c43e4721",
-        "blob_on_pr_branch": "bb334b7564217aa41858a3152c208839c43e4721",
+        "blob_at_source_revision": "87d7182c216d2aaac69bbd37a524a2869a8b012c",
+        "blob_on_pr_branch": "87d7182c216d2aaac69bbd37a524a2869a8b012c",
         "equal": true
       },
       {
@@ -1099,8 +2106,8 @@
       },
       {
         "path": "tests/probe_ew_p4_descriptive_ui_browser.py",
-        "blob_at_source_revision": "7dd43bdcebe106c2ecc94d6181f44b3bf00bd87d",
-        "blob_on_pr_branch": "7dd43bdcebe106c2ecc94d6181f44b3bf00bd87d",
+        "blob_at_source_revision": "9961f3d02347a41c4fd3e573be4946ce24c7a071",
+        "blob_on_pr_branch": "9961f3d02347a41c4fd3e573be4946ce24c7a071",
         "equal": true
       },
       {
@@ -1119,6 +2126,60 @@
         "path": "tests/fixtures/ew_p4_observation/malformed_missing_recorded.json",
         "blob_at_source_revision": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
         "blob_on_pr_branch": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
+        "equal": true
+      },
+      {
+        "path": "templates/rotation_glance.css",
+        "blob_at_source_revision": "5d1653f8f99f71685e5123fae22767240819fdda",
+        "blob_on_pr_branch": "5d1653f8f99f71685e5123fae22767240819fdda",
+        "equal": true
+      },
+      {
+        "path": "site/rotation_glance.css",
+        "blob_at_source_revision": "5d1653f8f99f71685e5123fae22767240819fdda",
+        "blob_on_pr_branch": "5d1653f8f99f71685e5123fae22767240819fdda",
+        "equal": true
+      },
+      {
+        "path": "templates/theme.css",
+        "blob_at_source_revision": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+        "blob_on_pr_branch": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+        "equal": true
+      },
+      {
+        "path": "templates/dashboard.html.j2",
+        "blob_at_source_revision": "512a9af50b804fa2eae856e18ccb2bb82196dd14",
+        "blob_on_pr_branch": "512a9af50b804fa2eae856e18ccb2bb82196dd14",
+        "equal": true
+      },
+      {
+        "path": "templates/_risk_radar_workspace.html.j2",
+        "blob_at_source_revision": "59599c343078e786ccd45657e15b2dd8fef40ee9",
+        "blob_on_pr_branch": "59599c343078e786ccd45657e15b2dd8fef40ee9",
+        "equal": true
+      },
+      {
+        "path": "templates/sector_central.html.j2",
+        "blob_at_source_revision": "2f02586b5177d1cc1bdba0a2dd9c105480bdd9bb",
+        "blob_on_pr_branch": "2f02586b5177d1cc1bdba0a2dd9c105480bdd9bb",
+        "equal": true
+      },
+      {
+        "path": "templates/si_workspace.js",
+        "blob_at_source_revision": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
+        "blob_on_pr_branch": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
+        "equal": true
+      },
+      {
+        "path": "site/theme.css",
+        "blob_at_source_revision": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+        "blob_on_pr_branch": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+        "equal": true
+      },
+      {
+        "path": "site/si_workspace.js",
+        "blob_at_source_revision": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
+        "blob_on_pr_branch": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
         "equal": true
       }
     ],

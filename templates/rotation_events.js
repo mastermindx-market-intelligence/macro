@@ -52,7 +52,7 @@ function earlyContextHtml(ev, lang, nowMs) {
     flatBoth: ['Both legs flat; no measured shift', '两端均持平；无可测变化'],
     defFlat: ['Defensive leg flat', '防御端持平'], riskFlat: ['Risk leg flat', '风险端持平'],
     riskOff: ['Defensive leg rising; risk leg falling', '防御端上涨；风险端下跌'],
-    shelter: ['Relative shelter only: both legs falling', '仅相对抗跌：两端均下跌'],
+    fellLess: ['Both legs falling; defensive leg fell less', '两端均下跌；防御端跌幅较小'],
     bothUp: ['Both legs rising; compare their relative returns', '两端均上涨；请比较相对收益'],
     defDown: ['Defensive leg falling; risk leg rising', '防御端下跌；风险端上涨'],
     bothDown: ['Both legs falling; no positive relative shift', '两端均下跌；无正向相对变化'],
@@ -148,7 +148,7 @@ function earlyContextHtml(ev, lang, nowMs) {
     if (n > 0 && d > 0) return 'bothUp';
     if (n > 0) return 'riskOff';
     if (d > 0) return 'defDown';
-    return r > 0 ? 'shelter' : 'bothDown';
+    return r > 0 ? 'fellLess' : 'bothDown';
   }
   function winHtml(title, c) {
     if (!c.ok) return '<p class="rc-ec-win-na" role="note">' + E(title + ' — ' + T('winNA') + ': ' + c.why) + '</p>';
@@ -244,6 +244,17 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
     return isFinite(v) && new Date(v).toISOString().slice(0, 10) === s ? v : NaN;
   }
   function pct2(x) { return (x > 0 ? '+' : '') + x.toFixed(2) + '%'; }
+  // Display names for the registered defensive-sector legs; they mirror the
+  // name_en / name_zh halves in data/oracle/ratio_pairs.json (parity-tested).
+  // An unregistered symbol falls back to the ticker symbol alone.
+  var SECTOR_NAMES = {
+    XLP: ['consumer staples', '必需消费'], XLU: ['utilities', '公用事业'],
+    XLV: ['health care', '医疗保健'], XLK: ['technology', '科技'], SMH: ['semiconductors', '半导体']
+  };
+  function hasName(sym) { return Object.prototype.hasOwnProperty.call(SECTOR_NAMES, sym); }
+  function nmEn(sym) { return hasName(sym) ? SECTOR_NAMES[sym][0] + ' (' + sym + ')' : sym; }
+  function nmEnCap(sym) { var s = nmEn(sym); return s.charAt(0).toUpperCase() + s.slice(1); }
+  function nmZh(sym) { return hasName(sym) ? SECTOR_NAMES[sym][1] + '（' + sym + '）' : sym; }
   function dEn(d) { return ME[parseInt(d.slice(5, 7), 10) - 1] + ' ' + parseInt(d.slice(8, 10), 10); }
   function dZh(d) { return parseInt(d.slice(5, 7), 10) + '月' + parseInt(d.slice(8, 10), 10) + '日'; }
   function valsOk(v) {
@@ -349,20 +360,22 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
       if (isFinite(t) && nowOk && Math.floor((Math.floor(nowMs / DAY) * DAY - t) / DAY) >= STALE_DAYS) state = 'stale';
     }
   }
+  // an unreadable view (including a lib-valid one for a future session) claims no id
+  if (state === 'unreadable') oid = '';
   var word = WORDS[state] || WORDS.unavailable;
   var legs = valid && state !== 'withdrawn' && state !== 'stale' && state !== 'unreadable'
     && state !== 'unavailable' && win && winEndOk;
   var whatEn = '', whatZh = '';
   if (legs) {
-    if (v.r > 0 && v.n < 0 && v.d < 0) { whatEn = 'Both fell; ' + n.num + ' fell less than ' + n.den + '.'; whatZh = '两者都下跌；' + n.num + '跌幅小于' + n.den + '。'; }
-    else if (v.r < 0 && v.n > 0 && v.d > 0) { whatEn = 'Both rose; ' + n.num + ' rose less than ' + n.den + '.'; whatZh = '两者都上涨；' + n.num + '涨幅小于' + n.den + '。'; }
-    else if (v.r > 0) { whatEn = n.num + ' outperformed ' + n.den + ' by ' + pct2(v.r) + ' over two sessions.'; whatZh = '两个交易日内，' + n.num + '相对' + n.den + '跑赢' + pct2(v.r) + '。'; }
-    else if (v.r < 0) { whatEn = n.num + ' trailed ' + n.den + ' by ' + Math.abs(v.r).toFixed(2) + '% over two sessions.'; whatZh = '两个交易日内，' + n.num + '相对' + n.den + '落后' + Math.abs(v.r).toFixed(2) + '%。'; }
-    else { whatEn = n.num + ' and ' + n.den + ' moved together over two sessions.'; whatZh = '两个交易日内，' + n.num + '与' + n.den + '同步变动。'; }
+    if (v.r > 0 && v.n < 0 && v.d < 0) { whatEn = 'Both sectors fell; ' + nmEn(n.num) + ' fell less than ' + nmEn(n.den) + '.'; whatZh = '两个板块都下跌；' + nmZh(n.num) + '跌幅小于' + nmZh(n.den) + '。'; }
+    else if (v.r < 0 && v.n > 0 && v.d > 0) { whatEn = 'Both sectors rose; ' + nmEn(n.num) + ' rose less than ' + nmEn(n.den) + '.'; whatZh = '两个板块都上涨；' + nmZh(n.num) + '涨幅小于' + nmZh(n.den) + '。'; }
+    else if (v.r > 0) { whatEn = nmEnCap(n.num) + ' outperformed ' + nmEn(n.den) + ' by ' + pct2(v.r) + ' over two sessions.'; whatZh = '两个交易日内，' + nmZh(n.num) + '相对' + nmZh(n.den) + '跑赢' + pct2(v.r) + '。'; }
+    else if (v.r < 0) { whatEn = nmEnCap(n.num) + ' trailed ' + nmEn(n.den) + ' by ' + Math.abs(v.r).toFixed(2) + '% over two sessions.'; whatZh = '两个交易日内，' + nmZh(n.num) + '相对' + nmZh(n.den) + '落后' + Math.abs(v.r).toFixed(2) + '%。'; }
+    else { whatEn = nmEnCap(n.num) + ' and ' + nmEn(n.den) + ' moved together over two sessions.'; whatZh = '两个交易日内，' + nmZh(n.num) + '与' + nmZh(n.den) + '同步变动。'; }
     if (state === 'reversal') { whatEn = 'Reversal: ' + whatEn; whatZh = '方向反转：' + whatZh; }
   } else if (state === 'withdrawn') {
-    whatEn = 'Evidence for ' + n.num + ' vs ' + n.den + ' was withdrawn on ' + dEn(n.event_as_of) + '.';
-    whatZh = n.num + '对' + n.den + '的依据已于' + dZh(n.event_as_of) + '撤回。';
+    whatEn = 'Evidence for ' + nmEn(n.num) + ' vs ' + nmEn(n.den) + ' was withdrawn on ' + dEn(n.event_as_of) + '.';
+    whatZh = nmZh(n.num) + '对' + nmZh(n.den) + '的依据已于' + dZh(n.event_as_of) + '撤回。';
   } else if (state === 'stale' && has && valid) {
     whatEn = 'Latest observation is from ' + dEn(n.event_as_of) + ', before ' + (DATE_RE.test(session) ? dEn(session) : E(session)) + '.';
     whatZh = '最新观察来自' + dZh(n.event_as_of) + '，早于' + (DATE_RE.test(session) ? dZh(session) : E(session)) + '。';
@@ -373,7 +386,7 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
   } else if (state === 'unreadable') {
     whatEn = 'Rotation record failed checks and is not shown.'; whatZh = '轮动记录未通过校验，未予显示。';
   } else if (state === 'partial') {
-    whatEn = 'Partial evidence for ' + n.num + ' vs ' + n.den + '; ratio withheld.'; whatZh = n.num + '对' + n.den + '证据不完整；比值暂不显示。';
+    whatEn = 'Partial evidence for ' + nmEn(n.num) + ' vs ' + nmEn(n.den) + '; ratio withheld.'; whatZh = nmZh(n.num) + '对' + nmZh(n.den) + '证据不完整；比值暂不显示。';
   } else {
     whatEn = 'Rotation data unavailable — not proof of stability.'; whatZh = '轮动依据暂不可用，不代表市场稳定。';
   }
@@ -401,9 +414,9 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
   if (legs) {
     out += '<div class="rc-ew-tablewrap"><table class="rc-ew-legs">'
       + '<caption>' + L2('2 sessions, ' + dEn(win.start) + ' → ' + dEn(win.end) + ' · US cash sessions', '2个交易日，' + dZh(win.start) + ' → ' + dZh(win.end) + ' · 美股交易日') + '</caption><tbody>'
-      + '<tr><th scope="row">' + L2('Receiver (numerator)', '接收方（分子）') + '</th><td>' + E(n.num) + '</td><td>' + E(pct2(v.n)) + '</td></tr>'
-      + '<tr><th scope="row">' + L2('Donor (denominator)', '出让方（分母）') + '</th><td>' + E(n.den) + '</td><td>' + E(pct2(v.d)) + '</td></tr>'
-      + '<tr><th scope="row">' + L2('Relative (' + n.num + ' vs ' + n.den + ')', '相对（' + n.num + ' 对 ' + n.den + '）') + '</th><td>—</td><td>' + E(pct2(v.r)) + '</td></tr>'
+      + '<tr><th scope="row">' + L2('Receiver (numerator)', '接收方（分子）') + '</th><td>' + L2(E(nmEnCap(n.num)), E(nmZh(n.num))) + '</td><td>' + E(pct2(v.n)) + '</td></tr>'
+      + '<tr><th scope="row">' + L2('Donor (denominator)', '出让方（分母）') + '</th><td>' + L2(E(nmEnCap(n.den)), E(nmZh(n.den))) + '</td><td>' + E(pct2(v.d)) + '</td></tr>'
+      + '<tr><th scope="row">' + L2('Relative', '相对') + '</th><td>' + L2(E(nmEnCap(n.num) + ' vs ' + nmEn(n.den)), E(nmZh(n.num) + ' 对 ' + nmZh(n.den))) + '</td><td>' + E(pct2(v.r)) + '</td></tr>'
       + '</tbody></table>';
     out += '</div>'
       + '<div class="rc-ew-horizons">'
@@ -413,7 +426,7 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
       + '</div>';
     if (state === 'conflicting') out += '<p class="rc-ew-contextline">' + L2('The two-session move conflicts with the 20-session trend.', '两个交易日的变化与20个交易日趋势不一致。') + '</p>';
     out += '<p class="rc-ew-h">' + L2('What argues against this', '反方证据') + '</p><ul class="rc-ew-against">';
-    if (v.n < 0 && v.d < 0) out += '<li>' + L2('Relative shelter only: ' + n.num + ' also fell.', '仅为相对抗跌：' + n.num + '同样下跌。') + '</li>';
+    if (v.n < 0 && v.d < 0) out += '<li>' + L2('A smaller loss is still a loss: ' + nmEn(n.num) + ' also fell.', '较小的跌幅仍是亏损：' + nmZh(n.num) + '同样下跌。') + '</li>';
     if (state === 'conflicting') out += '<li>' + L2('The 20-session trend points the other way.', '20个交易日趋势方向相反。') + '</li>';
     if (!hz) out += '<li>' + L2('No 20-session comparison was supplied.', '未提供20个交易日对比。') + '</li>';
     out += '<li>' + L2('Two sessions are a short window; one session can undo it.', '两个交易日窗口很短，一个交易日即可逆转。') + '</li></ul>'
@@ -430,7 +443,7 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
       + (typeof n.previous_observation_id === 'string' ? '<div><dt>' + L2('Previous ID', '前一编号') + '</dt><dd class="rc-ew-id">' + E(n.previous_observation_id) + '</dd></div>' : '')
       + '<div><dt>' + L2('Definition', '定义') + '</dt><dd>' + L2('macro.rotation_observation.v1 · notification only · basis ' + E(view.basis || 'dividend_adjusted_close'), 'macro.rotation_observation.v1 · 仅通知 · 基准 ' + E(view.basis || 'dividend_adjusted_close')) + '</dd></div>'
       + '<div><dt>' + L2('Calendar', '日历') + '</dt><dd>' + L2('US cash-equity sessions', '美股现货交易日') + '</dd></div>'
-      + '<div><dt>' + L2('Pair', '配对') + '</dt><dd>' + E(n.num + ' / ' + n.den + ' · ' + (typeof n.pair_id === 'string' ? n.pair_id : '') + ' · relative = (1+n)/(1+d) − 1') + '</dd></div>'
+      + '<div><dt>' + L2('Pair', '配对') + '</dt><dd>' + L2(E(nmEnCap(n.num) + ' / ' + nmEn(n.den) + ' · ' + (typeof n.pair_id === 'string' ? n.pair_id : '') + ' · relative = (1+n)/(1+d) − 1'), E(nmZh(n.num) + ' / ' + nmZh(n.den) + ' · ' + (typeof n.pair_id === 'string' ? n.pair_id : '') + ' · 相对 = (1+分子)/(1+分母) − 1')) + '</dd></div>'
       + '<div><dt>' + L2('Close basis', '收盘基准') + '</dt><dd>' + L2('Dividend-adjusted daily close; adjusted prices can be revised when distributions are restated.', '股息调整后日收盘价；分红数据更正时调整价格可能被修订。') + '</dd></div>'
       + '<div><dt>' + L2('Source timestamps', '来源时间戳') + '</dt><dd>' + L2(E('source_as_of ' + srcAs + ' · event_as_of ' + n.event_as_of + ' · observed ' + obsAt + ' UTC · not_after ' + notAfter + ' UTC (notification window closes)'), E('数据源日期 ' + srcAs + ' · 事件日期 ' + n.event_as_of + ' · 观察于 ' + obsAt + ' UTC · 通知窗口截止 ' + notAfter + ' UTC')) + '</dd></div>';
     var cov = (view.coverage && typeof view.coverage === 'object') ? view.coverage : null;
@@ -546,51 +559,8 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
       +'  .rcf-lane { gap:6px 8px; }'
       +'  .rcf-state { flex-basis:100%; }'
       +'  .rcf-decay { margin-top:3px; }'
-      +'}'
-      /* ── EW-P4.T1 descriptive observation glance (.rc-ew*). Chairman 2026-10-18:
-         even borders on all four sides, token surfaces only, no edge stripe or
-         accent rail; state is text + ink color, never color alone. ── */
-      +'.rc-ew{margin:14px 0;padding:14px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--esurf-neutral-soft);overflow-wrap:anywhere;}'
-      +'.rc-ew[data-ew-state="stale"],.rc-ew[data-ew-state="unavailable"],.rc-ew[data-ew-state="unreadable"],.rc-ew[data-ew-state="withdrawn"],.rc-ew[data-ew-state="partial"],.rc-ew[data-ew-state="conflicting"]{background:var(--surface-warn-subtle);}'
-      +'.rc-ew-head{margin:0;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-size:15px;font-weight:800;}'
-      +'.rc-ew-scope{font-weight:800;}'
-      +'.rc-ew-state{font-weight:800;color:var(--text);}'
-      +'.rc-ew[data-ew-state="stale"] .rc-ew-state,.rc-ew[data-ew-state="unavailable"] .rc-ew-state,.rc-ew[data-ew-state="unreadable"] .rc-ew-state,.rc-ew[data-ew-state="withdrawn"] .rc-ew-state,.rc-ew[data-ew-state="partial"] .rc-ew-state,.rc-ew[data-ew-state="conflicting"] .rc-ew-state{color:var(--ink-warn,var(--warn));}'
-      +'.rc-ew[data-ew-state="corrected"] .rc-ew-state{color:var(--ink-info,var(--link));}'
-      +'.rc-ew-what{margin:6px 0 0;font-size:13px;line-height:1.5;}'
-      +'.rc-ew-note{margin:4px 0 0;font-size:11px;color:var(--ink-2,var(--text));}'
-      +'.rc-ew-when{margin:4px 0 0;font-size:11px;color:var(--muted);}'
-      +'.rc-ew-built{color:var(--muted);font-size:10.5px;}'
-      +'.rc-ew-means{margin:4px 0 0;font-size:11px;color:var(--muted);}'
-      +'.rc-ew-next{display:inline-block;margin-top:6px;font-size:11px;color:var(--link);}'
-      +'.rc-ew-next:focus-visible,.rc-ew-study summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;}'
-      +'.rc-ew-h{font-size:12px;font-weight:800;margin:12px 0 4px;}'
-      +'.rc-ew-tablewrap{margin-top:10px;max-width:100%;}'
-      +'.rc-ew-legs{width:100%;border-collapse:collapse;font-size:11px;}'
-      +'.rc-ew-legs caption{caption-side:top;text-align:left;padding:0 8px 4px;color:var(--muted);font-size:10.5px;}'
-      +'.rc-ew-legs th,.rc-ew-legs td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere;}'
-      +'.rc-ew-legs th{color:var(--muted);font-weight:600;}'
-      +'.rc-ew-legs td{color:var(--text);font-variant-numeric:tabular-nums;}'
-      +'.rc-ew-contextline{margin:6px 0 0;font-size:12px;line-height:1.5;}'
-      +'.rc-ew-horizons{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}'
-      +'.rc-ew-hz{flex:1 1 150px;min-width:0;border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:8px 10px;font-size:11px;color:var(--muted);display:flex;gap:6px 10px;align-items:baseline;flex-wrap:wrap;}'
-      +'.rc-ew-hz-k{font-weight:700;color:var(--text);}'
-      +'.rc-ew-hz-v{font-size:14px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;}'
-      +'.rc-ew-hz-q{color:var(--muted);}'
-      +'.rc-ew-against{padding-left:16px;margin:0;font-size:11px;line-height:1.5;color:var(--ink-2,var(--text));}'
-      +'.rc-ew-study{margin-top:10px;font-size:11px;}'
-      +'.rc-ew-study summary{cursor:pointer;padding:5px 0;color:var(--muted);}'
-      +'.rc-ew-dl{margin:4px 0 0;}'
-      +'.rc-ew-dl>div{display:flex;gap:4px 12px;flex-wrap:wrap;padding:5px 0;border-bottom:1px solid var(--line);}'
-      +'.rc-ew-dl dt{flex:0 0 auto;color:var(--muted);font-weight:600;}'
-      +'.rc-ew-dl dd{margin:0;min-width:0;flex:1 1 120px;color:var(--text);overflow-wrap:anywhere;}'
-      +'.rc-ew-id{user-select:all;font-family:var(--font-mono);}'
-      +'@media (max-width:520px) {'
-      +'  .rc-ew-horizons { flex-direction:column; }'
-      +'  .rc-ew-hz { flex-basis:100%; }'
-      +'  .rc-ew-legs tr { display:block; border-bottom:1px solid var(--line); padding:4px 0; }'
-      +'  .rc-ew-legs th, .rc-ew-legs td { display:block; width:100%; box-sizing:border-box; border-bottom:none; padding:2px 8px; }'
       +'}';
+    /* The observation glance (.rc-ew*) is styled by the governed rotation_glance.css. */
     var s=document.createElement('style');
     s.id='rc-events-style';
     s.textContent=c;
