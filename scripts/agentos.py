@@ -3826,8 +3826,11 @@ def pure_section(state: dict[str, Any]) -> dict[str, Any]:
     return pure
 
 
-def _dump_json(payload: dict[str, Any]) -> str:
-    return json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+def _dump_json(payload: dict[str, Any], *, compact: bool = False) -> str:
+    return json.dumps(
+        payload, indent=None if compact else 2, ensure_ascii=False,
+        separators=(",", ":") if compact else None,
+    ) + "\n"
 
 
 DO_NOT_EDIT = (
@@ -5933,7 +5936,10 @@ def cmd_compile_context(args: argparse.Namespace) -> int:
     # Mirrors context_index_query.py exactly: machines get the default, humans opt in, and
     # `--json --text` together resolves to JSON in BOTH tools rather than one each way.
     as_json = args.json or not args.text
-    sys.stdout.write(_dump_json(bundle) if as_json else render_bundle(bundle))
+    # The owner emits complete compact wire bytes. Native readers retain them
+    # verbatim; formatting overhead must not crowd out the bounded envelope.
+    # Selection, all constraint/accounting fields and human text stay unchanged.
+    sys.stdout.write(_dump_json(bundle, compact=True) if as_json else render_bundle(bundle))
     return 0
 
 
