@@ -163,6 +163,30 @@ def _check_registrations(paths: list[Path], username: str) -> None:
                     raise Refusal("registered_worktree_in_candidate")
 
 
+def _hold_unreconciled(base: Path, receipt: Path) -> None:
+    """Never silently start another sweep after a crashed or partial deletion."""
+    if any(e.name.startswith(".reclaim-") for e in os.scandir(base)):
+        raise Refusal("quarantined_previous_effect_requires_reconciliation")
+    try:
+        with open(receipt, "rb") as stream:
+            stream.seek(0, os.SEEK_END)
+            total = stream.tell()
+            stream.seek(max(0, total - 32768))
+            lines = stream.read().splitlines()
+    except FileNotFoundError:
+        return
+    except OSError as exc:
+        raise Refusal("ledger_read_unavailable") from exc
+    if not lines:
+        raise Refusal("ledger_empty_untrusted")
+    try:
+        last = json.loads(lines[-1])
+    except (ValueError, TypeError) as exc:
+        raise Refusal("ledger_unreadable") from exc
+    if last.get("schema") != SCHEMA or last.get("event") != "complete":
+        raise Refusal("previous_reclaim_not_terminal")
+
+
 def _receipt(path: Path, event: dict) -> None:
     parent = path.parent
     s = parent.lstat()
@@ -202,6 +226,8 @@ def reclaim(
         return result
     if os.geteuid() != 0 or tmp_root != "/tmp":
         raise Refusal("requires_root_and_canonical_tmp")
+    ledger = Path(receipt)
+    _hold_unreconciled(base, ledger)
     _check_mounts(selected)
     _check_procs(selected)
     _check_registrations(selected, username)
@@ -209,7 +235,6 @@ def reclaim(
     if root.st_uid != owner or root.st_dev != device:
         raise Refusal("base_changed")
     operation = uuid.uuid4().hex
-    ledger = Path(receipt)
     _receipt(ledger, {"event": "begin", "operation": operation,
                       "username": username, "candidates": len(selected)})
     for original in selected:
