@@ -1,9 +1,9 @@
 {
   "base": "91b2942304f8d32e1da22d5ea98d8474f8956c50",
   "source_paths": {
-    "scripts/build_ticker_pages.py": "e0af29ae243a34ba3d8ef88f03bdc4ab78ce1b4cd232f8d9865fc88add00b98e",
+    "scripts/build_ticker_pages.py": "b17d0a99c3e0bc2a3cddd7854f10b27e058e4b0c28037d976f7f6a2ec995f371",
     "templates/ticker.html.j2": "7f7f8799b75832ed105a92d5a06a9a0fe05747731b274db713ced9d039e136ad",
-    "tests/test_ticker_pages.py": "cf7481ae5f63d61b085cfcb143b99b6a92b32508f392a38998988e6934da9b71",
+    "tests/test_ticker_pages.py": "b0146f80d19db0370269e720f182daa67facf5311e48c28e2072887d6e397e85",
     "tests/test_dossier_live_quote_surface.py": "5441125340bc8b41dc01f951e6e54e8fef21b279f2131ed1f85cc33b5cf839e6"
   },
   "style_blocks_byte_identical": true,
@@ -15,5 +15,8 @@
     "reason": "no eligible remote mode; lane/disk/qualification/reconciliation holds",
     "retry_or_alternate_worker": false,
     "parent_native_integration": true
-  }
+  },
+  "qualified_source_commit": "cccd44848923d083b59ada4a3e073e26da86c07a",
+  "focused_clock_cases_passed": 21,
+  "retained_rerender_cases": 3
 }
