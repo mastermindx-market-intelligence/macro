@@ -966,7 +966,7 @@
     // visitor between init() and the 401.
     ui.gate.setAttribute('aria-busy', 'true');
 
-    withAuth({ Accept: 'application/gzip' })
+    return withAuth({ Accept: 'application/gzip' })
       .then(function (headers) {
         return fetch(DATA_URL, {
           headers: headers,
@@ -1012,8 +1012,9 @@
           return;
         }
         selectInitialCompany();
-        applyUrlState(true);
+        var entry = applyUrlState(true);
         renderAll();
+        openDrawerFromUrl(entry);
         loadHealth();
       })
       .catch(function (error) {
@@ -1095,8 +1096,10 @@
     }
     var search = params.toString();
     var next = window.location.pathname + (search ? '?' + search : '') + window.location.hash;
-    if (push) window.history.pushState({ ffDesk: true }, '', next);
-    else window.history.replaceState({ ffDesk: true }, '', next);
+    var historyFrame = { ffDesk: true, ffDrawer: !!(drawerExtra && drawerExtra.drawer &&
+      (push || (window.history.state && window.history.state.ffDrawer === true))) };
+    if (push) window.history.pushState(historyFrame, '', next);
+    else window.history.replaceState(historyFrame, '', next);
   }
 
   // Applies a parsed URL frame to the desk. `first` normalises the landing URL
@@ -1119,19 +1122,91 @@
     if (url.disc) state.disclosureFindingId = url.disc;
     if (url.redline) state.redlineId = url.redline;
     setTab(url.peers ? 'peers' : url.tab, false);
-    if (first) writeUrl(false);
+    if (first && (!url.drawer || sourceDrawerMatchesDesk(url))) writeUrl(false, url);
     return url;
   }
 
   // A drawer frame on the URL re-opens the exact occurrence a permalink points
   // at. Source controls (row 4) carry the data attributes this resolves
   // against; with no match the drawer simply stays closed — never a throw.
+  // Drawer addresses are untrusted. Read only already admitted controls from
+  // the selected desk; never issue a capture read or substitute a newer snapshot.
+  function sourceDrawerMatchesDesk(url) {
+    if (!url || !url.drawer || state.access !== 'open' ||
+        !url.symbol || resolveSymbol(url.symbol) !== state.symbol ||
+        (url.peers ? 'peers' : url.tab) !== state.tab || url.asOfDate !== state.asOfDate || url.policy !== state.policy) return false;
+    if (url.finding && (state.findingId !== url.finding || !selectedFinding())) return false;
+    if (url.disc && (state.disclosureFindingId !== url.disc || !selectedDisclosureFinding())) return false;
+    if (url.redline && (state.redlineId !== url.redline || !selectedRedline())) return false;
+    var params = new URLSearchParams(window.location.search);
+    var keys = ['symbol', 'tab', 'as_of', 'policy', 'drawer', 'occ', 'cell', 'snap', 'span'];
+    if (keys.some(function (key) { return params.getAll(key).length > 1; })) return false;
+    if (params.has('tab') && URL_TABS.indexOf(params.get('tab')) < 0) return false;
+    if (params.has('policy') && URL_POLICIES.indexOf(params.get('policy')) < 0) return false;
+    if (params.has('as_of')) {
+      var date = params.get('as_of');
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date) ||
+          !Number.isFinite(Date.parse(date + 'T00:00:00Z')) ||
+          new Date(date + 'T00:00:00Z').toISOString().slice(0, 10) !== date) return false;
+    }
+    if (!url.snap || (!url.occ && !url.cell) ||
+        [url.occ, url.cell, url.snap].some(function (value) { return value.length > 256; })) return false;
+    if (!/^\d{1,10}-\d{1,10}$/.test(url.span)) return false;
+    var span = url.span.split('-').map(Number);
+    return span[0] < span[1];
+  }
+
+  function loadedDrawerSource(url) {
+    var controls = [];
+    if (state.financial.phase === 'ready' && Array.isArray(state.queryNodes)) {
+      controls = state.queryNodes.map(function (node) { return controlFromQueryNode(node, ''); });
+    }
+    if (state.statements.phase === 'ready' && Array.isArray(state.statements.statements)) {
+      state.statements.statements.filter(objectValue).forEach(function (statement) {
+        (Array.isArray(statement.rows) ? statement.rows : []).filter(objectValue).forEach(function (row) {
+          (Array.isArray(row.cells) ? row.cells : []).forEach(function (cell) {
+            if (cell && cell.quality_state === 'available') controls.push(controlFromStatementCell(cell, ''));
+          });
+        });
+      });
+    }
+    return controls.some(function (control) {
+      return spanOk(control) && (!url.occ || control.occurrenceId === url.occ) &&
+        (!url.cell || control.rootCellId === url.cell) && control.snapshotId === url.snap &&
+        control.spanStart + '-' + control.spanEnd === url.span;
+    });
+  }
+
   function openDrawerFromUrl(url) {
-    if (!url || !url.drawer) return;
+    if (!url || !url.drawer || state.access !== 'open') return false;
     var control = null;
-    if (url.occ) control = document.querySelector('[data-occurrence-id="' + cssEscape(url.occ) + '"]');
-    if (!control && url.cell) control = document.querySelector('[data-root-cell-id="' + cssEscape(url.cell) + '"].ff-source-control');
-    if (control) activateSourceControl(control);
+    if (sourceDrawerMatchesDesk(url) && loadedDrawerSource(url)) {
+      // Exact string comparisons avoid interpreting query text as CSS. A
+      // matching occurrence alone cannot silently cross snapshots/cells/spans.
+      var controls = document.querySelectorAll('.ff-source-control');
+      for (var index = 0; index < controls.length; index += 1) {
+        var candidate = controls[index];
+        if (candidate.disabled || candidate.getAttribute('aria-disabled') === 'true') continue;
+        if (url.occ && candidate.getAttribute('data-occurrence-id') !== url.occ) continue;
+        if (url.cell && candidate.getAttribute('data-root-cell-id') !== url.cell) continue;
+        if (candidate.getAttribute('data-snapshot-id') !== url.snap) continue;
+        if (candidate.getAttribute('data-span-start') + '-' + candidate.getAttribute('data-span-end') !== url.span) continue;
+        control = candidate;
+        break;
+      }
+    }
+    if (!control) {
+      closeEvidence(false);
+      state.cellEvidence = null;
+      state.evidenceKind = 'cell';
+      renderCellEvidence({});
+      ui.evidenceBody.insertAdjacentHTML('afterbegin', '<p class="ff-proof-compact-line">' +
+        pair('The requested source is unavailable for this company, cutoff and snapshot.',
+             '此公司、截止日与快照下的所请求来源不可用。') + '</p>');
+      return false;
+    }
+    activateSourceControl(control, false);
+    return true;
   }
 
   function cssEscape(value) {
@@ -1143,7 +1218,7 @@
   // Closing the drawer (Escape, close button, scrim): back out of a pushed
   // drawer frame, else rewrite the URL without drawer keys (§6.2).
   function closeDrawerAndSync() {
-    if (readUrlParams().drawer) {
+    if (readUrlParams().drawer && window.history.state && window.history.state.ffDrawer === true) {
       closeEvidence(true);
       window.history.back();
       return;
@@ -1857,12 +1932,12 @@
   // §2.5 — activating a control pushes one drawer frame (§6.2) and renders
   // the cell evidence view: plain-word title, exact API bytes, compact
   // secondary, bounded excerpt, technical ids folded into a details block.
-  function activateSourceControl(control) {
+  function activateSourceControl(control, updateUrl) {
     if (!control || control.disabled) return;
     state.lastFocus = control;
     state.evidenceKind = 'cell';
     state.cellEvidence = cellEvidenceFromControl(control);
-    writeUrl(true, {
+    if (updateUrl !== false) writeUrl(true, {
       drawer: true,
       occ: control.getAttribute('data-occurrence-id') || '',
       cell: control.getAttribute('data-root-cell-id') || '',
@@ -1871,6 +1946,7 @@
     });
     renderCellEvidence(state.cellEvidence);
     openAnalysisDrawer();
+    state.lastFocus = control;
   }
 
   function metricLabelById(metricId) {
@@ -2369,6 +2445,11 @@
   // §3.3 — three columns map to the three policies; a restated value that
   // differs from its root tints the column (dark fill / light hairline+fill).
   function renderRevisions() {
+    renderRevisionsContents();
+    openDrawerFromUrl(readUrlParams());
+  }
+
+  function renderRevisionsContents() {
     var host = byId('ff-revisions-table');
     if (!host) return;
     var financial = state.financial || { phase: 'idle' };
@@ -2830,6 +2911,11 @@
 
   // S0 as-reported labels lead; spans come from each cell's source_receipt.
   function renderStatementTree() {
+    renderStatementTreeContents();
+    openDrawerFromUrl(readUrlParams());
+  }
+
+  function renderStatementTreeContents() {
     if (!ui.statements) return;
     var statements = state.statements || { phase: 'idle' };
     if (statements.phase === 'idle' || statements.phase === 'unavailable' || statements.phase === 'error' || statements.phase === 'empty') {
@@ -6123,6 +6209,9 @@
       writeUrl: writeUrl,
       readUrlParams: readUrlParams,
       applyUrlState: applyUrlState,
+      openDrawerFromUrl: openDrawerFromUrl,
+      activateSourceControl: activateSourceControl,
+      loadData: loadData,
       setTab: setTab,
       closeDrawerAndSync: closeDrawerAndSync,
       renderCellEvidence: renderCellEvidence,

@@ -372,7 +372,11 @@ def test_url_state_contract_node_suite():
     if node is None:
         return
     result = subprocess.run(
-        [node, "--test", str(ROOT / "tests" / "fundamental_forensics_url_state.test.mjs")],
+        [
+            node, "--test",
+            str(ROOT / "tests" / "fundamental_forensics_url_state.test.mjs"),
+            str(ROOT / "tests" / "fundamental_forensics_drawer_resume.test.mjs"),
+        ],
         capture_output=True,
         text=True,
         check=False,
