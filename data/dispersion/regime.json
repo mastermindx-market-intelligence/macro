@@ -1,7 +1,7 @@
 {
-  "as_of": "2026-11-02",
+  "as_of": "2026-11-03",
   "state": "neutral",
-  "dispersion_pctile": 0.51,
+  "dispersion_pctile": 0.55,
   "avg_corr": 0.07,
   "shadow_gross_mult": 1.0,
   "gross_mult_live": 1.0,
@@ -501,17 +501,23 @@
       "state": "neutral",
       "dispersion_pctile": 0.51,
       "avg_corr": 0.07
+    },
+    {
+      "as_of": "2026-11-03",
+      "state": "neutral",
+      "dispersion_pctile": 0.55,
+      "avg_corr": 0.07
     }
   ],
   "label": "Mixed selection backdrop",
   "label_zh": "\u9009\u80a1\u73af\u5883\u4e2d\u6027",
   "eigen": {
     "basis": "trailing_252d_fixed",
-    "n_names_used": 1471,
+    "n_names_used": 1470,
     "n_days_used": 252,
-    "dominant_equity_pc_share": 0.1679,
-    "effective_universe_bets_pr": 23.37,
-    "idio_dispersion_share": 0.646,
+    "dominant_equity_pc_share": 0.1697,
+    "effective_universe_bets_pr": 22.98,
+    "idio_dispersion_share": 0.6399,
     "sector_pc_loadings": null,
     "note": "sector map not wired (deferred); display-only \u2014 DISP-EIGEN-1 registered, activation DEFERRED pending DISP-GATE-1 non-stationarity resolution",
     "display_only": true

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ALHC-BULL-20261016",
-  "asof": "2026-11-02",
+  "asof": "2026-11-03",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 14.1,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 52.9
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.045,
+    "dist_to_stop_r": -0.33,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 26.7,
-    "p1": -0.6964,
-    "p2": -0.3482,
+    "horizon_pct_used": 28.9,
+    "p1": -0.8869,
+    "p2": -0.4435,
     "p3": null,
-    "move_r": -1.045,
+    "move_r": -1.33,
     "mfe_r": 0.036,
-    "mae_r": -1.045
+    "mae_r": -1.33
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.03999954223632862,
-  "_mae": -1.1700000190734858,
+  "_mae": -1.4900001907348628,
   "_max_p1": 0.023809251331147994,
   "_first_trigger_ts": "2026-10-22",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 12,
-  "tau": 0.2667
+  "days_elapsed": 13,
+  "tau": 0.2889
 }

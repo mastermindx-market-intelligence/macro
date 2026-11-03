@@ -1,16 +1,16 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-11-03T15:07:48.696833+00:00",
+  "as_of": "2026-11-03T20:58:45.419454+00:00",
   "posts_seen": 7,
-  "seen_total": 313,
+  "seen_total": 314,
   "evaluated": 1,
-  "activated": 0,
+  "activated": 1,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-11-03-first-lady-melania-trump-to-convene-russian-and-ukrainian-representatives-at-the",
-      "importance": 15,
-      "activated": false,
+      "id": "wh-2026-11-03-president-trump-is-powering-an-american-manufacturing-renaissance",
+      "importance": 65,
+      "activated": true,
       "degraded_reason": "served_by:deepseek"
     }
   ]
