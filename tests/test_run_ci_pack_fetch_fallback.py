@@ -394,6 +394,8 @@ def test_fetch_depth_zero_consumers_own_the_narrow_history_contract() -> None:
         if job_id in _INTERNATIONAL_CANONICAL_JOBS:
             _assert_international_canonical_fetch(
                 definition, *_INTERNATIONAL_CANONICAL_JOBS[job_id])
+        elif job_id == "design-governance":
+            _assert_design_canonical_fetch(definition)
         elif job_id == "ruling-graph":
             _assert_ruling_graph_exact_base_contract(definition)
         else:
@@ -552,3 +554,54 @@ def test_complete_history_survives_multiple_consumers_without_refetching(
     run_ci_pack._prepare_provided_actions(job, root=isolated, tested_tree_sha=tested)
     assert len(fetches) > len(first_fetches)
     assert run_ci_pack._tested_tree_ancestry_ready(isolated, env, tested)
+
+
+# These snapshots pin each actual canonical acquisition and its complete
+# fail-closed consumer. Fixed guard paths and dynamic comparison scopes differ.
+_DESIGN_CANONICAL_STEPS = {'forward-only design ratchet (new forbidden decisions on changed lines)': {'python': 'import os\nfrom pathlib import Path\nfrom scripts.run_ci_pack import prepare_canonical_main\nprepare_canonical_main(\n    Path.cwd(),\n    tested_tree_sha=os.environ.get("CI_TESTED_TREE_SHA") or os.environ["TESTED_TREE_SHA"],\n    base_ref="${{ github.base_ref || \'main\' }}",\n    frozen_paths=("scripts/check_design_system.py",),\n    comparison_paths=("templates",),\n)', 'tail': 'export GIT_NO_LAZY_FETCH=1 GIT_ALLOW_PROTOCOL=\nif ! mb=$(git merge-base "origin/${{ github.base_ref || \'main\' }}" HEAD); then\n  echo "::error title=design-governance::no merge base with ${{ github.base_ref || \'main\' }}; the forward-only design ratchet has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."\n  exit 1\nfi\ngit diff --unified=0 "$mb" HEAD -- templates > /tmp/design.diff\npython3 scripts/check_design_system.py --mode enforce-added --diff-file /tmp/design.diff\n'}, 'visual evidence required for a material UI change': {'python': 'import os\nfrom pathlib import Path\nfrom scripts.run_ci_pack import prepare_canonical_main\nprepare_canonical_main(\n    Path.cwd(),\n    tested_tree_sha=os.environ.get("CI_TESTED_TREE_SHA") or os.environ["TESTED_TREE_SHA"],\n    base_ref="${{ github.base_ref || \'main\' }}",\n    frozen_paths=("scripts/check_ui_visual_evidence.py",),\n    comparison_paths=("templates", "site"),\n)', 'tail': 'export GIT_NO_LAZY_FETCH=1 GIT_ALLOW_PROTOCOL=\nif ! mb=$(git merge-base "origin/${{ github.base_ref || \'main\' }}" HEAD); then\n  echo "::error title=design-governance::no merge base with ${{ github.base_ref || \'main\' }}; the visual-evidence gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."\n  exit 1\nfi\ngit diff --unified=0 "$mb" HEAD -- templates site > /tmp/ui.diff\npython3 scripts/check_ui_visual_evidence.py --diff-file /tmp/ui.diff\n'}}
+
+
+def _assert_design_canonical_fetch(definition: dict[str, object]) -> None:
+    for name, expected in _DESIGN_CANONICAL_STEPS.items():
+        gates = [step for step in definition.get('steps', [])
+                 if isinstance(step, dict) and step.get('name') == name]
+        assert len(gates) == 1, 'design canonical gate must exist exactly once'
+        gate = gates[0]
+        assert set(gate) == {'name', 'run'}, 'design canonical gate must be unconditional'
+        command = gate['run']
+        assert isinstance(command, str)
+        # Documentation may live in YAML comments, not in the executable gate.
+        assert command.startswith("python - <<'PY_CANONICAL'\n")
+        sections = command.split("python - <<'PY_CANONICAL'\n", 1)[1].split('\nPY_CANONICAL\n')
+        assert len(sections) == 2, 'design helper must be uncaught and precede its consumer'
+        code, tail = sections
+        assert ast.dump(ast.parse(code), include_attributes=False) == ast.dump(
+            ast.parse(expected['python']), include_attributes=False,
+        ), 'design acquisition must bind exact tested tree, canonical main and full compared paths'
+        assert tail == expected['tail'], 'design diff and guard must remain complete and fail closed'
+
+
+@pytest.mark.parametrize('case', [
+    'literal-fetch-only', 'wrong-tested-identity', 'missing-comparison-scope',
+    'swallow-helper', 'allow-lazy-fetch', 'swallow-guard',
+])
+def test_design_canonical_contract_rejects_unsafe_replacements(case: str) -> None:
+    definition = copy.deepcopy(yaml.safe_load(MANIFEST.read_text())['jobs']['design-governance'])
+    gate = next(step for step in definition['steps'] if step.get('name') in _DESIGN_CANONICAL_STEPS)
+    command = gate['run']
+    if case == 'literal-fetch-only':
+        command = "git fetch origin ${{ github.base_ref || 'main' }}\n" + command.split('\nPY_CANONICAL\n', 1)[1]
+    elif case == 'wrong-tested-identity':
+        command = command.replace('os.environ.get("CI_TESTED_TREE_SHA") or os.environ["TESTED_TREE_SHA"]', 'os.environ["GITHUB_SHA"]')
+    elif case == 'missing-comparison-scope':
+        command = command.replace('    comparison_paths=("templates",),\n', '')
+    elif case == 'swallow-helper':
+        command = command.replace("python - <<'PY_CANONICAL'", "python - <<'PY_CANONICAL' || true", 1)
+    elif case == 'allow-lazy-fetch':
+        command = command.replace('export GIT_NO_LAZY_FETCH=1 GIT_ALLOW_PROTOCOL=\n', '')
+    elif case == 'swallow-guard':
+        command = command.rstrip() + ' || true\n'
+    assert command != gate['run'], 'mutation must change the actual gate'
+    gate['run'] = command
+    with pytest.raises(AssertionError):
+        _assert_design_canonical_fetch(definition)

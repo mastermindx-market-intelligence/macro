@@ -25716,10 +25716,10 @@ jobs:
       - name: runtime-style injection ratchet (budgets may only stay flat or shrink)
         run: python3 scripts/check_runtime_style_injection.py
       - name: forward-only design ratchet (new forbidden decisions on changed lines)
+        # Pin actual canonical main with the incumbent bounded acquisition.
+        # Acquire only missing fixed-guard/diff blobs in one bounded batch;
+        # the offline diff retains all added/deleted/renamed paths.
         run: |
-          # Pin actual canonical main with the incumbent bounded acquisition.
-          # Acquire only missing fixed-guard/diff blobs in one bounded batch;
-          # the offline diff retains all added/deleted/renamed paths.
           python - <<'PY_CANONICAL'
           import os
           from pathlib import Path
@@ -25740,10 +25740,10 @@ jobs:
           git diff --unified=0 "$mb" HEAD -- templates > /tmp/design.diff
           python3 scripts/check_design_system.py --mode enforce-added --diff-file /tmp/design.diff
       - name: visual evidence required for a material UI change
+        # Pin actual canonical main with the incumbent bounded acquisition.
+        # Acquire only missing fixed-guard/diff blobs in one bounded batch;
+        # the offline diff retains all added/deleted/renamed paths.
         run: |
-          # Pin actual canonical main with the incumbent bounded acquisition.
-          # Acquire only missing fixed-guard/diff blobs in one bounded batch;
-          # the offline diff retains all added/deleted/renamed paths.
           python - <<'PY_CANONICAL'
           import os
           from pathlib import Path
