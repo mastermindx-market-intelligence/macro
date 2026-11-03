@@ -306,10 +306,34 @@ def test_basket_detail_diff_is_exactly_one_inserted_line():
         f"git diff failed:\nSTDOUT={result.stdout}\nSTDERR={result.stderr}"
     )
     line = result.stdout.strip()
-    assert line, (
-        f"basket_detail.html.j2 is unchanged vs the integration base {base}: "
-        f"the aggregator include this suite exists to pin is absent from the diff"
-    )
+    if not line:
+        # The branch under test did not touch the template, so the include
+        # must already be integrated in the base (any branch that merged a
+        # main carrying #7870 lands here, as does main itself). The -0 claim
+        # is then vacuous; what remains checkable is that the base carries
+        # exactly one aggregator include between the back link and #app.
+        shown = subprocess.run(
+            ["git", "show", f"{base}:templates/basket_detail.html.j2"],
+            capture_output=True, text=True, cwd=str(REPO_ROOT),
+        )
+        assert shown.returncode == 0, (
+            f"git show failed:\nSTDOUT={shown.stdout}\nSTDERR={shown.stderr}"
+        )
+        base_targets = [
+            m.group(1) for m in _INCLUDE_RE.finditer(shown.stdout)
+            if "basket_intelligence_mounts" in m.group(1)
+        ]
+        assert len(base_targets) == 1, (
+            f"basket_detail.html.j2 is unchanged vs the integration base {base} "
+            f"and that base carries {len(base_targets)} aggregator include(s), "
+            f"not 1: the include this suite exists to pin is absent"
+        )
+        back, inc, app = _back_app_marker_lines(shown.stdout)
+        assert 0 < back < inc < app, (
+            f"base include must sit AFTER back link and BEFORE #app; got "
+            f"back={back}, include={inc}, #app={app}"
+        )
+        return
     parts = line.split("\t")
     assert len(parts) >= 2, f"unexpected numstat output: {line!r}"
     added, deleted = int(parts[0]), int(parts[1])
