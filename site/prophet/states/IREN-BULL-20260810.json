@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "IREN-BULL-20260810",
-  "asof": "2026-11-02",
+  "asof": "2026-11-03",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.7,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 52.9
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.274,
+    "dist_to_stop_r": -0.283,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 180.0,
-    "p1": -0.8496,
-    "p2": -0.4248,
+    "horizon_pct_used": 182.2,
+    "p1": -0.8553,
+    "p2": -0.4276,
     "p3": null,
-    "move_r": -1.274,
+    "move_r": -1.283,
     "mfe_r": 0.259,
-    "mae_r": -1.274
+    "mae_r": -1.283
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 4.234201660156252,
-  "_mae": -20.809999237060545,
+  "_mae": -20.950000534057615,
   "_max_p1": 0.17285983507476024,
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 81,
-  "tau": 1.8,
+  "days_elapsed": 82,
+  "tau": 1.8222,
   "closed": true,
   "outcome": "EXPIRED"
 }

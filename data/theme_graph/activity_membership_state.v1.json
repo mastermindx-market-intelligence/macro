@@ -7,31 +7,62 @@
     "may_rank": false,
     "may_size": false
   },
-  "event_count": 0,
+  "event_count": 1,
   "events_path": "data/theme_graph/probation/activity_history_events.jsonl",
-  "events_sha256": null,
+  "events_sha256": "2f9902c9c7f3e73e90fa2cef9f5c3c3670eda2f38793a3f1c7e5aa786b97eda5",
   "fold": {
-    "current": 0,
+    "current": 1,
     "excluded_after_cutoff": 0,
     "history": 0,
     "refused": 0,
     "refused_rows": [],
     "retained": 0
   },
-  "generated_at": "2026-11-02T11:57:37.651122+00:00",
+  "generated_at": "2026-11-03T21:55:44.119383+00:00",
   "graph_agreement": {
     "extra_in_graph": [],
     "extra_in_graph_count": 0,
     "graph_activity_count": 0,
-    "missing_in_graph": [],
-    "missing_in_graph_count": 0,
-    "projected_count": 0,
+    "missing_in_graph": [
+      "member_of:co:us:MU->theme:hbm_packaging@2026-11-02"
+    ],
+    "missing_in_graph_count": 1,
+    "projected_count": 1,
     "rule": "latest_belief MEMBER_OF activity_history valid_to null",
-    "status": "AGREE"
+    "status": "DISAGREE"
   },
   "mode": "ACTIVITY_MEMBERSHIP_STATE",
-  "projected_edges": [],
-  "projected_evidence_count": 0,
+  "projected_edges": [
+    {
+      "attention_share": null,
+      "attention_share_display": null,
+      "attention_share_formula_id": null,
+      "belief_time": "2026-11-03",
+      "computed_at": "2026-11-03T21:55:44.119383+00:00",
+      "confidence_basis": "activity_history.v1",
+      "date_provenance": "activity_history",
+      "dst": "theme:hbm_packaging",
+      "economic_share": null,
+      "economic_share_display": null,
+      "economic_share_formula_id": null,
+      "edge_id": "member_of:co:us:MU->theme:hbm_packaging@2026-11-02",
+      "engine_version": "theme_graph.v1",
+      "era": "observed",
+      "evidence_refs": [
+        "ev:42b06751b2743e30"
+      ],
+      "evidence_time": "2026-11-02",
+      "source_class": "curated",
+      "src": "co:us:MU",
+      "trading_beta": null,
+      "trading_beta_display": null,
+      "trading_beta_formula_id": null,
+      "type": "MEMBER_OF",
+      "valid_from": "2026-11-02",
+      "valid_to": null
+    }
+  ],
+  "projected_evidence_count": 1,
   "projection_refusals": [],
   "qualification": {
     "reason_codes": [

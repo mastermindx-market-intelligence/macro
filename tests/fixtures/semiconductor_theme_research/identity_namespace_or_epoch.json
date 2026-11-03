@@ -1,0 +1,27 @@
+{
+  "synthetic": true,
+  "case_key": "identity_namespace_or_epoch",
+  "task_refs": [
+    "T04",
+    "T05",
+    "T08"
+  ],
+  "status": "ready",
+  "expected_regression": "venue:symbol does not become SEC ID; default 1970 window not historical evidence",
+  "cases": [
+    {
+      "label": "venue_symbol_is_not_sec_identity",
+      "subject": {
+        "type": "cik",
+        "value": "XNAS:SYNB"
+      },
+      "expect": "refused"
+    },
+    {
+      "label": "alias_epoch_default_is_not_history",
+      "alias_valid_from": "1970-01-01",
+      "event_date": "2026-06-30",
+      "expect": "not_historical_evidence"
+    }
+  ]
+}

@@ -61,7 +61,7 @@ HELD_OUT_ROOT_REL = "tests/fixtures/fundamental_forensics_held_out"
 # The current Q1 generation. Move it, in the same change that regenerates the
 # ledger, whenever a newer generation directory lands (the A34 test fails
 # while a newer one exists).
-Q1_REPORTS_REL = "research/financial_intelligence_fabric/reports/q1_held_out_20261031_g3"
+Q1_REPORTS_REL = "research/financial_intelligence_fabric/reports/q1_held_out_20261102_g4"
 Q1_MEASURED_LABEL = "held_out_measured"
 
 LEDGER_SCHEMA = "fif.a34_pack_proof_ledger.v1"
