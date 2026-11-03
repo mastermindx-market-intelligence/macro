@@ -1,0 +1,69 @@
+{
+  "status": "applied; awaiting narrow independent review",
+  "changed_files": [
+    {
+      "file": "README.md",
+      "before_sha256": "8076dc266d2e8450fc4c63390bfb5550b57d7928d292c6547711dc17b65a739c",
+      "after_sha256": "b9920950ee2b8f6d50f8efe772f90bb573e97b0ef781a85aa81948a49ccfcc83"
+    },
+    {
+      "file": "draw_sheets.py",
+      "before_sha256": "336bdcb8baea49c2cb9fe166dfd61667ce2eebf80ae5c7d69078e2875d5255df",
+      "after_sha256": "ad8de8d8c1bb7e6378570d397517318d5a497fcdd9816a57a83310a589e2109a"
+    },
+    {
+      "file": "macro-dark-390.png",
+      "before_sha256": "1121747389d5bcde0a04550ca5f4a84dbd8dbd641f0b5e79787a77a6da4ca551",
+      "after_sha256": "126c3d3c47f87cccc6cc1f742afe982d48483d410f4cada2447f4f17fb9d9f43"
+    },
+    {
+      "file": "macro-dark-390.svg",
+      "before_sha256": "5becc460d533884ab4d7157bca76077795c82ce6e884c590c4fc821f59495c61",
+      "after_sha256": "dc08f2e539dda259c604470a545475f2fceb1f1095123e7a15cb0ffb6872d4da"
+    },
+    {
+      "file": "macro-light-zh-390.svg",
+      "before_sha256": "d01aa527f6b3e3c447d4c6655f076e24a5d7fde4b577fc892453e77c5449eec9",
+      "after_sha256": "31053440313b44abd1489a4ef40780ea104cbe141605599dc62b3c80f60c989b"
+    },
+    {
+      "file": "manifest.json",
+      "before_sha256": "d43d0e61146a01138912510c146fdc262380f7845fe92d0cb31c4eb78e559053",
+      "after_sha256": "fc005a82031f4c299e29063eb437754a6ad5a43349856869b71465df0bb1b692"
+    },
+    {
+      "file": "mobile-comparison.png",
+      "before_sha256": "ad58059374568b6381c4699772e8ba713d6551f1322b299aeea2553bdb0adefb",
+      "after_sha256": "90c3485ee8a2ea68259bc7003dc5854196ca42a27ee643498c5c58d8282d8c38"
+    },
+    {
+      "file": "mobile-comparison.svg",
+      "before_sha256": "227c7bef8a1b3e79d2bafc4eaab61751941111f46e1e10ee9095b5c810231dad",
+      "after_sha256": "59ec902c09eb380cc86cedb1a91fdcfe24a4b2f21212dbeadc7a01b5244e023e"
+    }
+  ],
+  "unchanged_file_count": 19,
+  "input_pattern_lab_sha256": "f206a0274bd710835aabe3f80053bc87b359f7409ff09ea6d3bc49afdf4cb5f4",
+  "company_fixture_sha256": "75a50198c9adfe8f2592aba2d87addd01b17b9c812ef7a4e78d17da567ec7df6",
+  "png_changed_bounds": {
+    "macro-dark-390": [
+      14,
+      309,
+      224,
+      325
+    ],
+    "mobile-comparison": [
+      38,
+      381,
+      248,
+      397
+    ]
+  },
+  "svg_count": 13,
+  "png_count": 11,
+  "total_file_count": 27,
+  "off_canvas_text": 0,
+  "cjk_raster_proof": false,
+  "browser_renderer_used": false,
+  "paper_mutations": 0
+}

@@ -1,7 +1,7 @@
 {
   "artifact_kind": "original_static_design_sheets",
   "generator": "draw_sheets.py",
-  "input_pattern_lab_sha256": "126fd3bce0677f73ca0f422c762f0ce47bc239d61f04d959688c1a93d2555360",
+  "input_pattern_lab_sha256": "f206a0274bd710835aabe3f80053bc87b359f7409ff09ea6d3bc49afdf4cb5f4",
   "fonts": {
     "raster": "Noto Sans Regular / Bold",
     "svg_english": "Noto Sans, Arial, sans-serif",
@@ -195,7 +195,8 @@
       "browser_verified": false,
       "paper_applied": false,
       "notes": [
-        "Candidate 2:390px viewport,358px content,first sector text y=398; all ten rows precede the chart. Each source control is44×44px within a56px row."
+        "Candidate 2:390px viewport,358px content,first sector text y=398; all ten rows precede the chart. Each source control is44×44px within a56px row.",
+        "VTC-007: pre-table overflow/coverage hint at x=16,y=320; existing post-table hint remains at y=951."
       ],
       "off_canvas_text": []
     },
@@ -236,7 +237,8 @@
       "paper_applied": false,
       "notes": [
         "Original logical frames: macro-dark-390.svg and company-evidence-light-320.svg. The Macro frame also has its own PNG for native-scale inspection.",
-        "PNG plate is a static composite from two independently drawn vector frames."
+        "PNG plate is a static composite from two independently drawn vector frames.",
+        "VTC-007: Macro pre-table hint appears at plate x=40,y=392; first sector text remains at plate y=470."
       ],
       "off_canvas_text": []
     },
@@ -257,7 +259,8 @@
       "notes": [
         "Editable SVG text and geometry only; NOT rasterized.",
         "No CJK font is installed in the narrowly inspected local font locations.",
-        "Requires qualified native-font visual review and browser/Paper proof."
+        "Requires qualified native-font visual review and browser/Paper proof.",
+        "VTC-007: pre-table overflow/coverage hint at x=16,y=320; CJK remains unrendered."
       ],
       "off_canvas_text": []
     },

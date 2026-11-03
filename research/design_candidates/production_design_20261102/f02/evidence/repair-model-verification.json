@@ -1,7 +1,7 @@
 {
-  "observed_at": "2026-11-03T02:31:29.160Z",
+  "observed_at": "2026-11-03T02:47:09.878Z",
   "scope": "Pure source-model, fixture, identity and generated-SVG-text checks. No browser, DOM, focus, scroll, pixel, font, input, service or Paper execution.",
-  "html_sha256": "126fd3bce0677f73ca0f422c762f0ce47bc239d61f04d959688c1a93d2555360",
+  "html_sha256": "f206a0274bd710835aabe3f80053bc87b359f7409ff09ea6d3bc49afdf4cb5f4",
   "result": "PASS_WITH_SCOPE_LIMITS",
   "state_combinations": 480,
   "read_invariance_transitions": 3360,

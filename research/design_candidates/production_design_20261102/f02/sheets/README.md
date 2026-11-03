@@ -33,6 +33,10 @@ The first-pass artifacts remain separately frozen by the parent session. These r
 | VTC-006 — implementation vocabulary in user copy | Saved state says “Your view is saved”; access copy names the subscription requirement; unknown-save copy explains the user consequence | Readback, generation and client-payload language are absent from the product specimens. Source requirements remain in implementation documentation. |
 | PRC-001 — save overwrites read warnings | A combined stale + partial + pending-save example is paired with session expiry during the same save | Both warnings remain visible in both panels. The latter outcome is unknown and asks the user to sign in and check the view. This is a drawn state contract, not an executed transition. |
 
+## Narrow mobile follow-up after candidate-2 review
+
+VTC-007 identified that the only horizontal-scroll/coverage hint appeared after all ten rows. A concise hint now precedes the table at **x=16, baseline y=320** in the English dark and Chinese light 390px frames. The first sector text remains at **y=398**, and the longer post-table hint remains at y=951. In the combined plate the new hint is at x=40, y=392. No row, control, chart or inspector geometry changes. The Chinese SVG remains unrendered; this addition does not provide CJK visual proof. The amendment affects only these three mobile frames plus their metadata.
+
 The shared Company fixture is `../fixtures/company-history.json`, schema `f02.illustrative.company-history.v2`. The generator reads it directly rather than parsing the old three-period HTML array. The manifest records its SHA-256. The Company chart uses the same five ordered semantic series and USD bn fixture values as the standalone specimen, with a numbered legend and zero baseline.
 
 ## Geometry, units and retained context
@@ -57,4 +61,4 @@ Run `python3 draw_sheets.py` with Pillow and the installed Noto Sans / DejaVu fo
 
 Author visual QA inspected the revised Macro, Options, Company, mobile and combined-state compositions in both themes where material. It checked selected-row continuity, all five Company periods, ten mobile sector rows, zero/unknown values, neutral rules, readable mathematical/navigation symbols and persistence of both warnings through the illustrated save sequence. SVG parsing and the drawing-boundary guard verify file structure and whether text placements exceed the overall canvases. They do not verify browser layout, CJK shaping, screen readers, virtualized lists, real source binding, access enforcement, save authority, 400% zoom or served production.
 
-These bytes need the second independent advisory review and actual required admission/authority process before an acceptance claim. Browser/Paper qualification and complete consumer integration remain separate open requirements. Any later redraw requires affected evidence and review to be refreshed; the author is not an independent critic of these sheets.
+Acceptance remains subject to independent review of the exact delivered bytes and the actual required admission/authority process. Browser/Paper qualification and complete consumer integration remain separate open requirements. The narrow mobile amendment requires its affected evidence and review to be refreshed; the author is not an independent critic of these sheets.

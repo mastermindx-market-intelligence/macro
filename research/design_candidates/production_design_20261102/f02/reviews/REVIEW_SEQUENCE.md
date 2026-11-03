@@ -13,3 +13,11 @@ Two independent native critics received the product job, before/after evidence a
 Original first-pass findings will not be rewritten. Separate rationale responses and a separately frozen repair-set review follow. Root owns implementation corrections; the component author owns static drawing changes. Neither author is counted as an independent critic.
 
 These are native advisory reviews, not admitted Opus reviewer-class RIG receipts or design-authority approval. The Executive Fabric read returned `backend_unavailable`; admission and review execution readiness were not established. RIG remains draft.
+
+## Candidate 2 repair sequence
+
+The first-pass findings were committed unchanged at `71c5e0c7a59a15bf7dced5459083d3f23ea71c1f`. Product rationale pass froze at 02:20:55 UTC with SHA256 `0599244070916d53ce282551141d2e55c407e12e942da96ef2aaadb6cc41dbfe`. Taste rationale pass froze at 02:18:22 UTC with SHA256 `1b1e80990431ca337bb27ee5aeca738b0b9dbfd1205816a15c269ee1546ba8d7`. Neither withdrew a finding.
+
+Candidate 2's 53-file repair set froze at 02:33:00 UTC and was committed at `1253a647d193e1eacd1eb6f523a7a031529d2150`. Set SHA256 is `6c1f8ba6937c620a306644764d69d7adef5672d27f6c512a080dcb35063f9ca3`. Both critics independently validated all file lengths/hashes and recomputed the aggregate. Canonical aggregate encoding is UTF-8 of the lexically sorted relative-path + NUL + lowercase SHA256 + newline for each manifest entry; the manifest excludes itself.
+
+The Taste Critic froze its separate repair pass at 02:39:28 UTC, SHA256 `8bf57d9891d6f38aba45a3d6f840cfbd1e5211d92fcb633f432879d25671b3fd`, PASS_WITH_CONDITIONS for the bounded static reference. Original VTC-001–006 are resolved in static evidence; new minor VTC-007 requires the mobile overflow hint before the rows. That report remains unchanged. A separately frozen narrow correction and scoped follow-up will carry this remaining condition.

@@ -1,0 +1,27 @@
+{
+  "schema": "f02.followup_source_verification.v1",
+  "observed_at": "2026-11-03T02:48:09.230731+00:00",
+  "html_sha256": "f206a0274bd710835aabe3f80053bc87b359f7409ff09ea6d3bc49afdf4cb5f4",
+  "scope": "Syntax and declared CSS source policy plus unchanged pure model recheck; no browser geometry or computed-style observation",
+  "javascript_syntax_exit": 0,
+  "density_policy": {
+    "desktop_dense_row_token_px": 40,
+    "desktop_comfortable_row_token_px": 52,
+    "phone_dense_token_px": 48,
+    "phone_options_floor_px": 52,
+    "phone_comfortable_token_px": 64,
+    "desktop_options_rule": "height:var(--row)",
+    "phone_options_rule": "height:max(52px,var(--row))",
+    "intrinsic_height_may_exceed_policy": true
+  },
+  "prior_unconditional_options_overrides_absent": true,
+  "model_check": {
+    "states": 480,
+    "read_invariance_transitions": 3360,
+    "evidence_records": 59,
+    "same_behavior_model": true
+  },
+  "browser_execution": "NOT_VERIFIED",
+  "javascript_identical_to_repair_freeze": true,
+  "javascript_sha256": "593eb4acf659f184eb42c308913ce0d18f9448581007017a07cff922e9973f4b"
+}

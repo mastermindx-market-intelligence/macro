@@ -1,0 +1,101 @@
+{
+  "schema": "f02.persistence_readback.v1",
+  "observed_at": "2026-11-03 02:36–02:38 UTC",
+  "observation_time_precision": "bounded session interval; not a document revision",
+  "repository": "mastermindx-market-intelligence/macro",
+  "branch": "design/f02-system-v1-20261102-c2",
+  "draft_pr": 10630,
+  "base": "main",
+  "assignment_commit": "6e1862867193ec6486a22001a0e4fb515da20448",
+  "first_artifact_commit": "6ee221069deba909b0f1eceee53869d4f4569ac9",
+  "first_critique_commit": "71c5e0c7a59a15bf7dced5459083d3f23ea71c1f",
+  "repair_artifact_commit": "1253a647d193e1eacd1eb6f523a7a031529d2150",
+  "repair_tree": "12de5b60418b5d73acef22b8aad0b6a033676413",
+  "manifest_blob_readback": "b0122251ec515e21a94e24aa7aa1b79b08274fe2",
+  "html_blob_readback": "cdc3e5e4f0e06a3cafaac6459744e5963a688b03",
+  "expected_blob_hashes_match": true,
+  "uploaded_changed_blobs": 42,
+  "all_uploaded_blobs_match_local_git_blob_sha": true,
+  "pr_changed_paths": 81,
+  "out_of_scope_paths": [],
+  "scope": [
+    "research/design_candidates/production_design_20261102/f02/**",
+    "research/design_candidates/production_design_20261102/SESSION_RETURNS.md: F02 row only"
+  ],
+  "ci_observation": {
+    "head": "1253a647d193e1eacd1eb6f523a7a031529d2150",
+    "checks": [
+      {
+        "name": "contract-delta",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "name": "ci-plan",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "name": "grader-manifest",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "capability-broker",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "self-mod-fence",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "ci-authority",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "name": "ci-authority/main",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "ci-authority/codex/merge-queue-pilot",
+        "status": "completed",
+        "conclusion": "failure",
+        "reason": "inactive_base_context",
+        "context_active": false
+      },
+      {
+        "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "fence-pack",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "ci-authority",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "all_ci_green_claim": false,
+    "merge_authorized": false
+  },
+  "no_force_push": true,
+  "no_ci_policy_change": true
+}

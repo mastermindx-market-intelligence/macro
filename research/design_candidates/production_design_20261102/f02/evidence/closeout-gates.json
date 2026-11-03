@@ -1,0 +1,50 @@
+{
+  "schema": "f02.closeout_dependency_observation.v1",
+  "started_at": "2026-11-03 02:39:19 UTC",
+  "finished_at": "2026-11-03 02:39:52 UTC",
+  "paper_catalog": {
+    "server": {
+      "name": "paper-desktop",
+      "version": "0.5.18"
+    },
+    "catalog_sha256": "16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd",
+    "write_schema": {
+      "server_name": "paper-desktop",
+      "server_version": "0.5.18",
+      "catalog_sha256": "16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd",
+      "accepted_for_write": false,
+      "expected_server": [
+        "paper-desktop",
+        null
+      ],
+      "server_name_compatible": true,
+      "server_version_compatible": true,
+      "server_version_policy": "OBSERVED_NOT_PINNED",
+      "catalog_compatible": false,
+      "expected_catalog_sha256": "1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db"
+    },
+    "mutations_dispatched": 0
+  },
+  "review_runtime": [
+    {
+      "arguments": {
+        "view": "roots",
+        "limit": 10
+      },
+      "result": {
+        "error_code": "INVALID_ARGUMENT"
+      }
+    },
+    {
+      "arguments": {
+        "view": "roots"
+      },
+      "result": {
+        "error_code": "INVALID_ARGUMENT"
+      }
+    }
+  ],
+  "earlier_runtime_observation": "At 02:00:58 UTC the same roots read returned backend_unavailable; exact evidence remains in review-runtime-observation.json.",
+  "conclusion": "Paper write qualification remains false. No current review admission/execution binding was established. These reads do not prove all possible submission services unavailable.",
+  "formal_reviews_dispatched": 0
+}

@@ -414,6 +414,7 @@ def mobile_macro(theme='dark',lang='en'):
     s.text(16,264,'9/10行业 · 医疗保健0.0pp · — 不可用' if zh else '9/10 sectors · Health care 0.0 pp · — unavailable',11,'secondary')
     s.text(16,299,'行业对比' if zh else 'Sector comparison',15,'ink',True)
     s.button(270,275,'查看图表' if zh else 'View chart',104)
+    s.text(16,320,'横向滚动查看覆盖率和全部列 →' if zh else 'Scroll → for coverage and all columns',11,'secondary')
     # The first182px keep both the sector identity and its44px source target.
     # Above 50D(80px) and change(96px) still fit the358px initial content view.
     with s.clip(16,329,358,596):
@@ -481,23 +482,23 @@ def mobile_inspector():
 
 def mobile_comparison():
     a,b=mobile_macro(),mobile_inspector()
-    a.save('macro-dark-390',['Candidate 2:390px viewport,358px content,first sector text y=398; all ten rows precede the chart. Each source control is44×44px within a56px row.'],390)
+    a.save('macro-dark-390',['Candidate 2:390px viewport,358px content,first sector text y=398; all ten rows precede the chart. Each source control is44×44px within a56px row.','VTC-007: pre-table overflow/coverage hint at x=16,y=320; existing post-table hint remains at y=951.'],390)
     b.save('company-evidence-light-320',['320px overlay width;280px body measure;44px close target;five fiscal periods plus change;legitimate focus outline.','Exact fiscal observation basis replaces a misleading single market-clock label.'],320)
-    # Keep ten raster review files in total: combine the two mobile originals in one plate.
+    # Keep eleven raster review files: combine both mobiles and retain the standalone Macro PNG.
     plate=Sheet(782,1516,'dark','Mobile comparison plate · 390px and 320px static compositions')
     plate.text(24,32,'F02 / MOBILE PATTERNS',14,'ink',True)
     plate.text(24,57,'390px dense comparison',11,'secondary');plate.text(438,57,'320px evidence overlay',11,'secondary')
     for sub,x in [(a,24),(b,438)]:
         plate.im.alpha_composite(sub.im,(x*SCALE,72*SCALE))
         plate.parts.append(f'<g transform="translate({x},72)">'+''.join(sub.parts)+'</g>')
-    plate.save('mobile-comparison', ['Original logical frames: macro-dark-390.svg and company-evidence-light-320.svg. The Macro frame also has its own PNG for native-scale inspection.','PNG plate is a static composite from two independently drawn vector frames.'],None)
+    plate.save('mobile-comparison', ['Original logical frames: macro-dark-390.svg and company-evidence-light-320.svg. The Macro frame also has its own PNG for native-scale inspection.','PNG plate is a static composite from two independently drawn vector frames.','VTC-007: Macro pre-table hint appears at plate x=40,y=392; first sector text remains at plate y=470.'],None)
     # Individual mobile PNGs are redundant with the review plate, and intentionally omitted.
     for name in ['company-evidence-light-320']:
         (HERE/f'{name}.png').unlink()
         for item in MANIFEST:
             if item['id']==name:item['png']=None;item['raster_in_plate']='mobile-comparison.png'
     zh=mobile_macro('light','zh')
-    zh.save('macro-light-zh-390',['Editable SVG text and geometry only; NOT rasterized.','No CJK font is installed in the narrowly inspected local font locations.','Requires qualified native-font visual review and browser/Paper proof.'],390)
+    zh.save('macro-light-zh-390',['Editable SVG text and geometry only; NOT rasterized.','No CJK font is installed in the narrowly inspected local font locations.','Requires qualified native-font visual review and browser/Paper proof.','VTC-007: pre-table overflow/coverage hint at x=16,y=320; CJK remains unrendered.'],390)
 
 def states():
     s=Sheet(1440,1480,'dark','Shared state and semantic distinctions · static specimen matrix')

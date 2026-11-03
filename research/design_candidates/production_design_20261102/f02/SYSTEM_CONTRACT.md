@@ -58,7 +58,7 @@ Semantic roles are specification vocabulary until implemented by the existing fo
 
 **Numeric face remains an explicit source decision.** Macro's normative document and current resolved CSS differ; Terminal intentionally uses Inter/tabular figures for finance and reserves its code face for code-like surfaces. This candidate preserves that separation. Do not silently turn every Terminal number into monospace.
 
-The specimen's spacing rhythm is 4/8/12/16/20/24/32/44px, addressed by semantic usage rather than unqualified cross-repository token names. Dense table rows target 40px, comfortable rows 52px; important mobile controls target 44px and mobile rows at least 48px. Neutral separators can be low emphasis; control boundaries and focus indicators must be independently distinguishable.
+The specimen's spacing rhythm is 4/8/12/16/20/24/32/44px, addressed by semantic usage rather than unqualified cross-repository token names. Dense desktop table rows target 40px and comfortable desktop rows 52px. Important phone controls target 44px; phone rows retain at least 48px. In the Options reference, the mobile row floor is 52px and the Comfortable phone row token is 64px. These are minimum spacing policies; wrapped content or controls may require taller rows. Density uses the shared row token instead of a fixed Options-cell override. Neutral separators can be low emphasis; control boundaries and focus indicators must be independently distinguishable.
 
 Container edges are neutral. Selected surfaces use a quiet fill and text weight; hover uses another quiet fill; keyboard focus has an explicit accessible outline. Status is conveyed by a word, icon and/or sign before color. A focus outline and a genuine data mark are not decorative container stripes.
 
