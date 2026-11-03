@@ -1,0 +1,25 @@
+diff --git a/templates/_macro_suite_shell.html.j2 b/templates/_macro_suite_shell.html.j2
+index 4f133b388a58a..c6f4f50623c0d 100644
+--- a/templates/_macro_suite_shell.html.j2
++++ b/templates/_macro_suite_shell.html.j2
+@@ -682 +682 @@
+-               <dd>{% if metric.definition_label %}{{ bl(metric.definition_label) }}{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
++               <dd>{% if view.workspace.id == 'business_activity' %}{{ scalar_or_dash(metric.definition_version, True) }}{% elif metric.definition_label %}{{ bl(metric.definition_label) }}{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
+diff --git a/templates/macro_business_activity.html.j2 b/templates/macro_business_activity.html.j2
+index b3cfcd2fcaa50..35478ddfc09f6 100644
+--- a/templates/macro_business_activity.html.j2
++++ b/templates/macro_business_activity.html.j2
+@@ -31,0 +32,13 @@
++<style>
++/* Keep the existing disclosure affordance and materials; give depth controls
++   the canonical 44px touch geometry on this retained workspace only. */
++body[data-mq-workspace="business_activity"] .mc-details > summary {
++  min-height: 44px;
++  padding-block: 12px;
++}
++body[data-mq-workspace="business_activity"] .mq-drawer-close {
++  width: 44px;
++  height: 44px;
++  flex-shrink: 0;
++}
++</style>

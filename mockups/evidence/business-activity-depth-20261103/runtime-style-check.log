@@ -1,0 +1,1 @@
+runtime style injection guard REFUSED: sparse worktree — site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full

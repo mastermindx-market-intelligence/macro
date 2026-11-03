@@ -1,0 +1,83 @@
+{
+  "baseline": "52e312afdc3192abc945ea3fb4954fe21309e579",
+  "frozenViewSha256": "c8f86cf9eca1fb9f3a68af8530cbff1eacbd5b4ce930b78fe09d596efd11a1d2",
+  "pageBuiltAt": "2026-11-03T18:26:44.559881+00:00",
+  "inputs": {
+    "site/macrodata/workspaces/manifest.json": "52f33387da95501f6d70e8f1a144cdccae2d65e1ea431bf03c0f32495b4778fd",
+    "site/macrodata/workspaces/business_activity/US/latest.json": "90306290684a1f746d386f862c154167ab73e23b259c086fbd63eeb9a7be5af5"
+  },
+  "candidateSource": {
+    "templates/_macro_suite_shell.html.j2": "e1965dfee6f62828eebc1d6441f11b22a6aa5f26a3294fd8fbfc04500e621d60",
+    "templates/macro_business_activity.html.j2": "eda7c4a7723d764206d031ca8805ca07d89a1b8d6790697ab2c1ec0ba5b36fa1",
+    "tests/test_macro_business_activity_depth.py": "b0651f2b74d98fcd1fab56a52c62f68903719241a3d0b5439ea5c83c20d1c208"
+  },
+  "unchangedOtherWorkspaces": [
+    {
+      "workspace": "liquidity_regime",
+      "identicalBytes": 197441,
+      "sha256": "bac43e6cdd738765563a70e31e5fdb549d91dc1a1ed0acdefe702e4cc3d30e9d"
+    },
+    {
+      "workspace": "growth_real_economy",
+      "identicalBytes": 264102,
+      "sha256": "51e0bdde59929d94a99b920080f0c90d4e734057539cd7221388abcbe63da8e5"
+    },
+    {
+      "workspace": "labor_markets",
+      "identicalBytes": 249139,
+      "sha256": "ae035828af89c4a968ca008422c30463f508e07a26531b9ba869ff05a22c015c"
+    },
+    {
+      "workspace": "inflation_system",
+      "identicalBytes": 208000,
+      "sha256": "9a953bfc09bd93edd1cc42914029e2bbe9809ca6817187dac2b2eac4f9c1324f"
+    },
+    {
+      "workspace": "monetary_policy",
+      "identicalBytes": 267010,
+      "sha256": "fb0c6cdea9e9f2751f0a65039b5fb29128910e976ece9246cef854e0b8b74c45"
+    },
+    {
+      "workspace": "financial_conditions",
+      "identicalBytes": 303554,
+      "sha256": "124c310902fe5380a73d1147a6bc5cc907a99410f1c83874c2fde773dd9dd59f"
+    },
+    {
+      "workspace": "liquidity_central_banks",
+      "identicalBytes": 296288,
+      "sha256": "a4254270b7276969e82cb4b993ae59d4d82f8809bf53ec0dd37b0e5c23072421"
+    },
+    {
+      "workspace": "capital_structure",
+      "identicalBytes": 293213,
+      "sha256": "0e59ae5015fd0be8a98295490695e109ed1b361f707033d867cc61ea28678684"
+    },
+    {
+      "workspace": "housing_real_estate",
+      "identicalBytes": 260443,
+      "sha256": "a63aa370d80f4211e71bb1c2662de518836491b731df4d4b2852711a9e72ec2a"
+    },
+    {
+      "workspace": "consumer_payments",
+      "identicalBytes": 307160,
+      "sha256": "0f51fe7f75d79abcb1580eefdf832bb92400939bc130c602ee56be4c00fe922b"
+    },
+    {
+      "workspace": "national_debt_liabilities",
+      "identicalBytes": 345999,
+      "sha256": "7f765a259dafbb81595f08b9f40f98900cc66e0d2a17324108c0e3dfe47951df"
+    },
+    {
+      "workspace": "rates_curves",
+      "identicalBytes": 417046,
+      "sha256": "7009ef3b1fe5707abf8c6301a23d68cdb5d8a3fc767749be439900ee4401ecc0"
+    },
+    {
+      "workspace": "trade_flows",
+      "identicalBytes": 264266,
+      "sha256": "1f35aaaa6d8345b5970398e1fb3c3a89676a89d700aecfb8b3fde67c7a46fcc4"
+    }
+  ],
+  "networkAttempts": [],
+  "semanticViewUnchanged": true
+}

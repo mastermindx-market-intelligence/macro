@@ -1,0 +1,488 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "tool": {
+    "module_ref": "mockups/evidence/business-activity-depth-20261103/capture_settled.py",
+    "module_sha256": "dea8c6b85eb4e793b4d15ce59a79853a3d2a86c5de029989a320c67c0530c79f",
+    "version": "P12.T40 bounded offline native-renderer capture"
+  },
+  "target": {
+    "route": "/macro_business_activity.html",
+    "baseline": "52e312afdc3192abc945ea3fb4954fe21309e579",
+    "source": {
+      "templates/_macro_suite_shell.html.j2": "e1965dfee6f62828eebc1d6441f11b22a6aa5f26a3294fd8fbfc04500e621d60",
+      "templates/macro_business_activity.html.j2": "eda7c4a7723d764206d031ca8805ca07d89a1b8d6790697ab2c1ec0ba5b36fa1",
+      "tests/test_macro_business_activity_depth.py": "b0651f2b74d98fcd1fab56a52c62f68903719241a3d0b5439ea5c83c20d1c208"
+    },
+    "kind": "controlled standalone native-renderer retained snapshot; not served/inShell/current-economic acceptance"
+  },
+  "axes": {
+    "force_states": [
+      {
+        "name": "metric-depth",
+        "kind": "native-disclosure"
+      },
+      {
+        "name": "source-drawer",
+        "kind": "native-dialog"
+      }
+    ]
+  },
+  "pages": [
+    {
+      "page_id": "macro:macro_business_activity",
+      "route": "/macro_business_activity.html",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "dark",
+          "locale": "en",
+          "access": "controlled-retained-local",
+          "force_state": null,
+          "captured": true,
+          "file": "settled-1440-dark-en-entry.png",
+          "sha256": "6c85a2b50fde3e4ec864a5abb1c34ab63f78974a132c71f7d0e9a7311599ca0e",
+          "bytes": 321655,
+          "width": 1440,
+          "height": 900,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "applied_force_state": null,
+          "errors": [],
+          "networkBlocked": [
+            {
+              "origin": "cloud.umami.is",
+              "path": "/script.js"
+            }
+          ]
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "dark",
+          "locale": "en",
+          "access": "controlled-retained-local",
+          "force_state": "metric-depth",
+          "captured": true,
+          "file": "settled-1440-dark-en-depth.png",
+          "sha256": "40b8db0aad448f503d11f71d1ade3cbfd2bb126a695e3653d82aa60b50ff537b",
+          "bytes": 179322,
+          "width": 1440,
+          "height": 900,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "applied_force_state": "metric-depth",
+          "errors": [],
+          "networkBlocked": [
+            {
+              "origin": "cloud.umami.is",
+              "path": "/script.js"
+            }
+          ]
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "dark",
+          "locale": "en",
+          "access": "controlled-retained-local",
+          "force_state": "source-drawer",
+          "captured": true,
+          "file": "settled-1440-dark-en-drawer.png",
+          "sha256": "4713c944afb927599c19e80ef881b7953b882d2da164c2a25decdf4b7896e5ba",
+          "bytes": 167877,
+          "width": 1440,
+          "height": 900,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "applied_force_state": "source-drawer",
+          "errors": [],
+          "networkBlocked": [
+            {
+              "origin": "cloud.umami.is",
+              "path": "/script.js"
+            }
+          ]
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "dark",
+          "locale": "zh",
+          "access": "controlled-retained-local",
+          "force_state": null,
+          "captured": true,
+          "file": "settled-1440-dark-zh-entry.png",
+          "sha256": "5e2ec43d267a0dedd4d87cb8cb285a35657eaae53f2eccae270f91c40b5a88ea",
+          "bytes": 326814,
+          "width": 1440,
+          "height": 900,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "applied_force_state": null,
+          "errors": [],
+          "networkBlocked": [
+            {
+              "origin": "cloud.umami.is",
+              "path": "/script.js"
+            }
+          ]
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "dark",
+          "locale": "zh",
+          "access": "controlled-retained-local",
+          "force_state": "metric-depth",
+          "captured": true,
+          "file": "settled-1440-dark-zh-depth.png",
+          "sha256": "61894ea68a796951080cb5b0ed7d9345d6d4a9dd5452a0d6ee2688684b9426bb",
+          "bytes": 188796,
+          "width": 1440,
+          "height": 900,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "applied_force_state": "metric-depth",
+          "errors": [],
+          "networkBlocked": [
+            {
+              "origin": "cloud.umami.is",
+              "path": "/script.js"
+            }
+          ]
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "light",
+          "locale": "en",
+          "access": "controlled-retained-local",
+          "force_state": null,
+          "captured": true,
+          "file": "settled-1440-light-en-entry.png",
+          "sha256": "382562b1add4cff04b3f1774b14326289834e6f12ef2de0823374fdaedd71e4e",
+          "bytes": 307475,
+          "width": 1440,
+          "height": 900,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "applied_force_state": null,
+          "errors": [],
+          "networkBlocked": [
+            {
+              "origin": "cloud.umami.is",
+              "path": "/script.js"
+            }
+          ]
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "light",
+          "locale": "en",
+          "access": "controlled-retained-local",
+          "force_state": "metric-depth",
+          "captured": true,
+          "file": "settled-1440-light-en-depth.png",
+          "sha256": "f530fa02979c68b6d2decd42f7508dec44e83ae778b5a90059dafd63fca8b787",
+          "bytes": 162163,
+          "width": 1440,
+          "height": 900,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "applied_force_state": "metric-depth",
+          "errors": [],
+          "networkBlocked": [
+            {
+              "origin": "cloud.umami.is",
+              "path": "/script.js"
+            }
+          ]
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "light",
+          "locale": "zh",
+          "access": "controlled-retained-local",
+          "force_state": null,
+          "captured": true,
+          "file": "settled-1440-light-zh-entry.png",
+          "sha256": "c3c6bd3527814540b3565d37eefa0a54751be8a6dfcf57fb4f07f4a147de18b5",
+          "bytes": 313456,
+          "width": 1440,
+          "height": 900,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "applied_force_state": null,
+          "errors": [],
+          "networkBlocked": [
+            {
+              "origin": "cloud.umami.is",
+              "path": "/script.js"
+            }
+          ]
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "light",
+          "locale": "zh",
+          "access": "controlled-retained-local",
+          "force_state": "metric-depth",
+          "captured": true,
+          "file": "settled-1440-light-zh-depth.png",
+          "sha256": "921a8af2d9ab9b86e4433ed8c497df36caaca7e6107eba2ac0f59be7ae9a6262",
+          "bytes": 172162,
+          "width": 1440,
+          "height": 900,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "applied_force_state": "metric-depth",
+          "errors": [],
+          "networkBlocked": [
+            {
+              "origin": "cloud.umami.is",
+              "path": "/script.js"
+            }
+          ]
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "dark",
+          "locale": "en",
+          "access": "controlled-retained-local",
+          "force_state": null,
+          "captured": true,
+          "file": "settled-390-dark-en-entry.png",
+          "sha256": "ea43159cf77dec365cbec5776db4e4f3fcc8951709d339920e25eb46383e82bc",
+          "bytes": 97067,
+          "width": 390,
+          "height": 844,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "applied_force_state": null,
+          "errors": [],
+          "networkBlocked": [
+            {
+              "origin": "cloud.umami.is",
+              "path": "/script.js"
+            }
+          ]
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "dark",
+          "locale": "en",
+          "access": "controlled-retained-local",
+          "force_state": "metric-depth",
+          "captured": true,
+          "file": "settled-390-dark-en-depth.png",
+          "sha256": "b0a38d0c39a498ad79f1d0f348a3e3f8fbc8c72e47a04972993e9b5a7a9df508",
+          "bytes": 72883,
+          "width": 390,
+          "height": 844,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "applied_force_state": "metric-depth",
+          "errors": [],
+          "networkBlocked": [
+            {
+              "origin": "cloud.umami.is",
+              "path": "/script.js"
+            }
+          ]
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "dark",
+          "locale": "zh",
+          "access": "controlled-retained-local",
+          "force_state": null,
+          "captured": true,
+          "file": "settled-390-dark-zh-entry.png",
+          "sha256": "e3d54ded7b911883a83c04164aeb6104a607da44b6edadb114f3b9828285585b",
+          "bytes": 96322,
+          "width": 390,
+          "height": 844,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "applied_force_state": null,
+          "errors": [],
+          "networkBlocked": [
+            {
+              "origin": "cloud.umami.is",
+              "path": "/script.js"
+            }
+          ]
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "dark",
+          "locale": "zh",
+          "access": "controlled-retained-local",
+          "force_state": "metric-depth",
+          "captured": true,
+          "file": "settled-390-dark-zh-depth.png",
+          "sha256": "03dae410970e333cf382e504dbd86a677144f955f6db1591ace6f4aa9933b2bd",
+          "bytes": 75411,
+          "width": 390,
+          "height": 844,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "applied_force_state": "metric-depth",
+          "errors": [],
+          "networkBlocked": [
+            {
+              "origin": "cloud.umami.is",
+              "path": "/script.js"
+            }
+          ]
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "light",
+          "locale": "en",
+          "access": "controlled-retained-local",
+          "force_state": null,
+          "captured": true,
+          "file": "settled-390-light-en-entry.png",
+          "sha256": "62858227c0d27e9ad85316e3c0f10c593b42200988a376e099598f1abc0638bd",
+          "bytes": 93732,
+          "width": 390,
+          "height": 844,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "applied_force_state": null,
+          "errors": [],
+          "networkBlocked": [
+            {
+              "origin": "cloud.umami.is",
+              "path": "/script.js"
+            }
+          ]
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "light",
+          "locale": "en",
+          "access": "controlled-retained-local",
+          "force_state": "metric-depth",
+          "captured": true,
+          "file": "settled-390-light-en-depth.png",
+          "sha256": "185b5509f8816a79a396f6b1d732034ca61a64770ee9e1085b8ca276a024909d",
+          "bytes": 67751,
+          "width": 390,
+          "height": 844,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "applied_force_state": "metric-depth",
+          "errors": [],
+          "networkBlocked": [
+            {
+              "origin": "cloud.umami.is",
+              "path": "/script.js"
+            }
+          ]
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "light",
+          "locale": "zh",
+          "access": "controlled-retained-local",
+          "force_state": null,
+          "captured": true,
+          "file": "settled-390-light-zh-entry.png",
+          "sha256": "9479609f7555b598266c9e1f933b310d15d22a688f26c57fb7d1e3a0a66c8b5b",
+          "bytes": 93968,
+          "width": 390,
+          "height": 844,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "applied_force_state": null,
+          "errors": [],
+          "networkBlocked": [
+            {
+              "origin": "cloud.umami.is",
+              "path": "/script.js"
+            }
+          ]
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "light",
+          "locale": "zh",
+          "access": "controlled-retained-local",
+          "force_state": "metric-depth",
+          "captured": true,
+          "file": "settled-390-light-zh-depth.png",
+          "sha256": "b494c07ed3f58db89a1ff9145f40686aa78c4702c866c84b48cead45e241a0b3",
+          "bytes": 71042,
+          "width": 390,
+          "height": 844,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "applied_force_state": "metric-depth",
+          "errors": [],
+          "networkBlocked": [
+            {
+              "origin": "cloud.umami.is",
+              "path": "/script.js"
+            }
+          ]
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "light",
+          "locale": "zh",
+          "access": "controlled-retained-local",
+          "force_state": "source-drawer",
+          "captured": true,
+          "file": "settled-390-light-zh-drawer.png",
+          "sha256": "3fc455fe702f550840fec87098a09d171cd48ddc5dd70c8f855ca0b9330c9767",
+          "bytes": 60714,
+          "width": 390,
+          "height": 844,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "applied_force_state": "source-drawer",
+          "errors": [],
+          "networkBlocked": [
+            {
+              "origin": "cloud.umami.is",
+              "path": "/script.js"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
