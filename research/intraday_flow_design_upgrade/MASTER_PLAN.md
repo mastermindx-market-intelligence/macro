@@ -274,10 +274,10 @@ and LOWER_TOTAL_OVERHEAD; a separate admitted reviewer must judge the final sour
 Files: template + paired CSS + rendered HTML; tests/test_intraday_flow_recovery_ux.py;
 existing verify_browser.py and scoped evidence. No new app, feed or publication plane.
 
-- [ ] P3.3.a RED: executed JS contracts fail for query-only clear and correct no-watchlist presentation.
-- [ ] P3.3.b GREEN: implement clearSearch(), emptyScanContent(), missing counts, localized recovery controls.
-- [ ] P3.3.c Verify template/site parity, model preservation, 280 existing regressions and browser matrix.
-- [ ] P3.3.d Align the existing Paper empty-state recovery labels; record exact nodes and readbacks.
+- [x] P3.3.a RED: executed JS contracts fail for query-only clear and correct no-watchlist presentation.
+- [x] P3.3.b GREEN: implement clearSearch(), emptyScanContent(), missing counts, localized recovery controls.
+- [x] P3.3.c Verify template/site parity, model preservation, 280 existing regressions and browser matrix.
+- [x] P3.3.d Align the existing Paper empty-state recovery labels; record exact nodes and readbacks.
 - [ ] P3.3.e Obtain independent source review, capture changed states, push same branch after verification.
 
 Review focus: combined query/theme/setup filters; nonexistent watchlist versus empty

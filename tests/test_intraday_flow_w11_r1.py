@@ -334,6 +334,8 @@ function visibleLeads(tbody){
   return tbody.querySelectorAll('tr.lead-row').filter(function(r){ return r.style.display !== 'none'; });
 }
 function makeLead(tk, rvol){
+  // A rendered row represents an available watchlist record, not a missing base.
+  leaders.push({ticker:tk});
   var r = new Node();
   r.className = 'lead-row';
   r.attrs = {

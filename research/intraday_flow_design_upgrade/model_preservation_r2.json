@@ -1,0 +1,81 @@
+{
+  "base": "f29d69e431bbc97f89ae8f4486618f5ebde7597b",
+  "path": "templates/intraday_flow.html.j2",
+  "regions": [
+    {
+      "function": "_etMinutes",
+      "unchanged_from_predecessor": true,
+      "sha256": "23c2fe9a70d2cf044504fe6414809b01786ab89086a5fb5ed34fbda03c932039"
+    },
+    {
+      "function": "isMarketHours",
+      "unchanged_from_predecessor": true,
+      "sha256": "c01734f1282724c5146755d0e963f8b6c3f52efa356c61e7e5aa108cc86c7a4a"
+    },
+    {
+      "function": "flowMetaFresh",
+      "unchanged_from_predecessor": true,
+      "sha256": "9a1ea93af31898cc478f26eeedd68558cfa7fd9eb9145b7a07e94a315ff36082"
+    },
+    {
+      "function": "sessionPhase",
+      "unchanged_from_predecessor": true,
+      "sha256": "90e7fe0532a4d2af35f247c055afbfbe33ba8f66160b35a8dac83c708b8ac384"
+    },
+    {
+      "function": "computeRvol",
+      "unchanged_from_predecessor": true,
+      "sha256": "2934766af23f563e3693d0f6c2b6ddf2debd24ec24f9a6b378e112a6b5c0e1f6"
+    },
+    {
+      "function": "computeRangePos",
+      "unchanged_from_predecessor": true,
+      "sha256": "08a659896bc0fd808d79a01067abc4c11071af4d4d14603c3e63b7c092754392"
+    },
+    {
+      "function": "computeVwapDelta",
+      "unchanged_from_predecessor": true,
+      "sha256": "b09a21436b79fd62f640215575eb5f6cdecc54931db112164ff69c9f10f8884e"
+    },
+    {
+      "function": "computeLegs",
+      "unchanged_from_predecessor": true,
+      "sha256": "d7234a536fba1f7183030e376d1ae9b815cf202f2297bbfdafff303e06915480"
+    },
+    {
+      "function": "dealerOf",
+      "unchanged_from_predecessor": true,
+      "sha256": "d0776e62e0dd9cfccc24bb584efed695695bc2ad3b8356c91be9ee14f2cf5171"
+    },
+    {
+      "function": "quotePx",
+      "unchanged_from_predecessor": true,
+      "sha256": "af1dc56dc594af74b8c2418976ca5bb4c68217c189d5543276235cc714712f37"
+    },
+    {
+      "function": "boardPriceCoverage",
+      "unchanged_from_predecessor": true,
+      "sha256": "c52802dc726e196d1e029f54fd66faf9e2c857f51a351e193125232771c9adc1"
+    },
+    {
+      "function": "boardPulseCoverage",
+      "unchanged_from_predecessor": true,
+      "sha256": "e6b0521d915dca1c178613db168fc7ed53c9b2ac57939e24c14785f132c9188c"
+    },
+    {
+      "function": "computeStance",
+      "unchanged_from_predecessor": true,
+      "sha256": "9337a2ef21be7113513d7a9b7c6eff5ba9c450ee5469dea80758f8c0dc7d48b2"
+    },
+    {
+      "function": "computeAll",
+      "unchanged_from_predecessor": true,
+      "sha256": "f4e9191fc783601174addc7948fd9c97a71eeb4643ce445e42ebfacd1a3d232b"
+    },
+    {
+      "function": "laneCounts",
+      "unchanged_from_predecessor": true,
+      "sha256": "61d62f4530ff054fc5d090c8d6f1f999b2f4dc007ccdaa07c528fee35cf19242"
+    }
+  ]
+}

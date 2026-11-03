@@ -56,7 +56,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css?v=9bd171a6">
-<link rel="stylesheet" href="intraday-flow.css?v=098b9abf">
+<link rel="stylesheet" href="intraday-flow.css?v=a56f6833">
 <link rel="preload" as="style" href="product-nav-icons.css?v=432f6a45">
 <link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
 </head>
@@ -1113,7 +1113,7 @@ function buildHero(rows, counts) {
   var thesis, sub;
   if (!leaders.length) {
     thesis = lz('The scan is unavailable.','扫描暂不可用。');
-    sub = lz('The watchlist could not be loaded. Refresh to check again.','观察名单未能加载。刷新后重试。');
+    sub = lz('The watchlist could not be loaded. Reload this page to check again.','观察名单未能加载。重新加载页面后重试。');
   } else if (quotesStatus === 'connecting' || pulseStatus === 'connecting') {
     thesis = lz('Checking the latest observations.','正在检查最新观测。');
     sub = lz('Recorded classifications remain visible while the sources connect.','连接数据来源期间，仍显示已有分类供参考。');
@@ -1380,7 +1380,12 @@ function evidenceWord(q){ var m={ full:lz('full','完整'), partial:lz('partial'
 
 // ── Stance counts (strip) ──────────────────────────────────────────────────
 function updateStanceCounts(counts) {
-  Object.keys(counts).forEach(function(k){ var el = document.querySelector('[data-count="'+k+'"]'); if (el) animateCount(el, counts[k]); });
+  Object.keys(counts).forEach(function(k){
+    var el = document.querySelector('[data-count="'+k+'"]');
+    if (!el) return;
+    if (!leaders.length) { el.textContent = '—'; return; }
+    animateCount(el, counts[k]);
+  });
 }
 
 // Selected-name evidence is a presentation of the same computed row; no new ranking.
@@ -1389,7 +1394,9 @@ function renderInspector() {
   if (!panel) return;
   var row = computedByTicker[selectedTicker];
   if (!row) {
-    panel.innerHTML = '<p class="ift-eyebrow">'+lz('Name in focus','焦点标的')+'</p><h2>'+lz('No matching names','暂无匹配标的')+'</h2><p class="ift-inspect-foot">'+lz('Clear a filter or try another ticker.','清除筛选或尝试其他代码。')+'</p>';
+    var emptyTitle = leaders.length ? lz('No matching names','暂无匹配标的') : lz('Watchlist unavailable','观察名单不可用');
+    var emptyHelp = leaders.length ? lz('Clear a filter or try another ticker.','清除筛选或尝试其他代码。') : lz('Reload the page to request the recorded watchlist.','重新加载页面以获取已有观察名单。');
+    panel.innerHTML = '<p class="ift-eyebrow">'+lz('Name in focus','焦点标的')+'</p><h2>'+emptyTitle+'</h2><p class="ift-inspect-foot">'+emptyHelp+'</p>';
     return;
   }
   var tk = row.l.ticker;
@@ -1472,6 +1479,34 @@ function syncFilterControls() {
   if (searchQ) parts.push(esc(searchQ.toUpperCase()));
   if (state) state.innerHTML = parts.join(' · ') || lz('All leaders','全部标的');
 }
+function emptyScanContent() {
+  var hasWatchlist = leaders.length > 0;
+  var kind = hasWatchlist ? 'filtered' : 'unavailable';
+  var title = hasWatchlist ? lz('No matching names','暂无匹配标的') : lz('Watchlist unavailable','观察名单不可用');
+  var description = hasWatchlist
+    ? lz('No names match these filters.','没有符合当前筛选的标的。')
+    : lz('Reload this page to request the recorded watchlist.','重新加载页面以获取已有观察名单。');
+  var query = hasWatchlist && searchQ
+    ? '<p class="ift-empty-query">'+lz('Search: ','搜索：')+'<strong>'+esc(searchQ)+'</strong></p>' : '';
+  var actions;
+  if (!hasWatchlist) {
+    actions = '<button type="button" id="ift-empty-reload" class="gbtn ift-empty-primary" data-reload-board>'+lz('Reload page','重新加载页面')+'</button>';
+  } else {
+    actions = (searchQ ? '<button type="button" id="ift-empty-clear-search" class="gbtn ift-empty-primary" data-clear-search>'+lz('Clear search','清除搜索')+'</button>' : '')
+      + '<button type="button" id="ift-empty-reset" class="gbtn" data-reset-filters>'+lz('Reset all filters','重置全部筛选')+'</button>';
+  }
+  return '<div class="mx-empty ift-empty" data-ift-empty-kind="'+kind+'">'
+    + '<div class="ift-empty-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></div>'
+    + '<h3>'+title+'</h3><p class="mx-empty-why">'+description+'</p>'+query
+    + '<div class="ift-empty-actions">'+actions+'</div>'
+    + '<p class="ift-empty-note">'+(hasWatchlist ? lz('No matches does not mean no setups.','没有匹配结果，不代表没有布局。') : lz('Unavailable is not an observed zero.','不可用不等于已观测到零。'))+'</p></div>';
+}
+function clearSearch() {
+  searchQ = ''; boardExpanded = false;
+  var input = document.getElementById('ift-search'); if (input) input.value = '';
+  applyView();
+  if (input) input.focus({preventScroll:true});
+}
 function resetFilters() {
   activeBasket = 'all'; activeStance = 'all'; searchQ = ''; boardExpanded = false;
   var input = document.getElementById('ift-search'); if(input) input.value = '';
@@ -1535,9 +1570,9 @@ function applyView() {
     if (detailByTk[tk]) { detailByTk[tk].style.display=''; frag.appendChild(detailByTk[tk]); }
   });
   tbody.appendChild(frag);
-  if (!matching.length && leaders.length) {
+  if (!matching.length) {
     var empty = document.createElement('tr'); empty.className='ift-empty-row';
-    empty.innerHTML = '<td colspan="7"><div class="mx-empty"><strong>'+lz('No names match these filters','没有符合当前筛选的标的')+'</strong><p class="mx-empty-why">'+lz('Try another ticker or clear the filters to return to the full scan.','尝试其他代码，或清除筛选以返回完整扫描。')+'</p><button type="button" class="gbtn" data-reset-filters>'+lz('Reset filters','重置筛选')+'</button></div></td>';
+    empty.innerHTML = '<td colspan="7">'+emptyScanContent()+'</td>';
     tbody.appendChild(empty);
   }
   var visible = matching.slice(0,showN).map(function(row){ return row.getAttribute('data-ticker'); });
@@ -1547,7 +1582,9 @@ function applyView() {
   var lbl = document.getElementById('count-label');
   if (lbl) {
     var countHTML;
-    if (total > BOARD_CAP && !boardExpanded) {
+    if (!leaders.length) {
+      countHTML = lz('Watchlist unavailable','观察名单不可用');
+    } else if (total > BOARD_CAP && !boardExpanded) {
       countHTML = lz('Showing '+showN+' of '+total+' leaders', '显示 '+showN+' / '+total+' 只')
         + '<button type="button" class="ift-see-all" id="ift-see-all">'
         + lz('See all '+total, '查看全部 '+total+' 只')
@@ -1620,7 +1657,7 @@ function render() {
     if (d) { d._tk = row.l.ticker; d._eq = (row.l.options_entry||{}).evidence_quality; }
     html += buildRow(row, document.documentElement.getAttribute('data-lang'));
   });
-  tbody.innerHTML = html || '<tr class="loading-row"><td colspan="7">'+lz('No data yet','暂无数据')+'</td></tr>';
+  tbody.innerHTML = html;
   if (typeof iftSkelDone === 'function') iftSkelDone(document.getElementById('ift-board-skel'));
   applyView();
   if (window.__mmLang) window.__mmLang();
@@ -1675,7 +1712,9 @@ if (groupToggle) groupToggle.addEventListener('click', function(){ setGroupToggl
 var _lb = document.getElementById('leaders-body');
 if (_lb) _lb.addEventListener('click', function(e){
   if (!e.target.closest) return;
+  if (e.target.closest('[data-clear-search]')) { clearSearch(); return; }
   if (e.target.closest('[data-reset-filters]')) { resetFilters(); return; }
+  if (e.target.closest('[data-reload-board]')) { window.location.reload(); return; }
   var exp = e.target.closest('.expander');
   if (exp) { toggleEvidence(exp.getAttribute('data-exp')); return; }
   var name = e.target.closest('[data-select]');

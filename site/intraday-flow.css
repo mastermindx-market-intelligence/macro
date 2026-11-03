@@ -380,3 +380,22 @@ body.page-intraday-flow .lens-pop .ift-feed-row + .ift-feed-row { margin-top:0.4
 @media (max-width:1199px) {
  .page-intraday-flow .ift-workspace .ift-evidence-overview { display:inline-flex; min-height:44px; }
 }
+
+/* R2 recovery states: same scan, distinct query and source recovery. */
+.page-intraday-flow .ift-empty { display:flex; flex-direction:column; align-items:center; gap:var(--sp-3,12px); padding:var(--sp-7,32px) var(--sp-5,20px); }
+.page-intraday-flow .ift-empty-symbol { display:grid; place-items:center; width:48px; height:48px; border:1px solid var(--line); border-radius:var(--r-pill,999px); background:var(--panel2); color:var(--muted); }
+.page-intraday-flow .ift-empty-symbol svg { width:24px; height:24px; }
+.page-intraday-flow .ift-empty h3 { margin:0; font-size:var(--fs-h2); line-height:1.3; color:var(--text); }
+.page-intraday-flow .ift-empty .mx-empty-why { margin:0; max-width:42ch; line-height:1.6; }
+.page-intraday-flow .ift-empty-query { margin:0; max-width:100%; color:var(--muted); font-size:var(--fs-sm); overflow-wrap:anywhere; }
+.page-intraday-flow .ift-empty-query strong { font-weight:600; color:var(--text); }
+.page-intraday-flow .ift-empty-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:var(--sp-2,8px); width:100%; margin-top:var(--sp-1,4px); }
+.page-intraday-flow .ift-empty-actions .gbtn { min-height:44px; max-width:100%; white-space:normal; }
+.page-intraday-flow .ift-empty-actions .ift-empty-primary { background:var(--panel2); border-color:var(--muted); }
+.page-intraday-flow .ift-empty-note { margin:0; color:var(--muted); font-size:var(--fs-label); line-height:1.5; }
+html[data-theme="light"] .page-intraday-flow .ift-empty-symbol { border-color:var(--line-quiet,var(--line)); box-shadow:var(--card-shadow); }
+@media (max-width:760px) {
+ .page-intraday-flow .ift-empty-actions { align-self:flex-start; width:calc(100% - var(--sp-8,44px)); justify-content:flex-start; }
+ .page-intraday-flow .ift-empty-actions .gbtn { flex:1 1 100%; }
+ .page-intraday-flow .ift-empty { padding:var(--sp-6,24px) var(--sp-4,16px); }
+}
