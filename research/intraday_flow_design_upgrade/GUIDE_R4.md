@@ -97,3 +97,18 @@ diagnosis, GLM helper or Paper row operation was retried or moved to another car
 No new runtime, watcher, queue, authentication or shared-navigation work was created.
 The original branch, workspace and root operation retain custody. No Ready, un-draft,
 label, enqueue, merge or deployment action is authorized or performed.
+
+## Final canonical binding
+
+R4 material commit: `d3665db28f34737ddbe7b712a3e48a0e41f1f93b`. The incumbent canonical driver then captured
+**24/24 states** at 2026-11-03T08:19:07Z on the clean material source. All image
+digests and source bytes match. Console errors, failed responses and page-wide
+horizontal overflow are zero. All eight resting page layouts were inspected;
+their widths and document heights match their R3 counterparts exactly.
+
+Current matrix: [guide-r4-canonical/manifest.json](../../mockups/refs/intraday-flow-upgrade/guide-r4-canonical/manifest.json).
+Verification: [guide-r4-canonical/verification.json](../../mockups/refs/intraday-flow-upgrade/guide-r4-canonical/verification.json).
+Resting lab CLS: desktop 0.67893–0.69153, phone 0.00994–0.02440; existing shared-navigation
+startup stability remains unresolved. No refused startup diagnosis was repeated.
+The generic source/as-of detector mismatch is retained and explained in the receipt.
+The containing evidence commit changes no product blobs from the material commit.

@@ -4,4 +4,4 @@ changed_paths:
   - templates/intraday-flow.css
   - site/intraday_flow.html
   - site/intraday-flow.css
-manifest: mockups/refs/intraday-flow-upgrade/source-r3-canonical/manifest.json
+manifest: mockups/refs/intraday-flow-upgrade/guide-r4-canonical/manifest.json

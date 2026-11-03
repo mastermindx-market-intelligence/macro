@@ -84,15 +84,17 @@ waves:
     pr: 10498
     depends_on: [PR-1, PR-2]
     next_action: >
-      Continue original claude/intraday-flow-design-upgrade-20261101-c2 and its
-      task tree research/intraday_flow_design_upgrade/MASTER_PLAN.md. Preserve
-      verified source repairs and historical screenshot identities. R2 source
-      55b651320d79f5a4ebf530eeb0175803b981baaa adds truthful recovery states;
-      consume the 2026-11-03 handoff, its canonical capture and exact review-refusal
-      evidence. Paper is write-qualified with six specimens, not fully accepted.
-      Complete qualified independent source/visual review, latest-base integration,
-      final-head CI and normal authorized release with served desktop/phone proof. Keep PR-4 live-plane obligations
-      separate; this UI wave changes no classifier, feed or trade authority.
+      Current assigned successor owns original claude/intraday-flow-design-upgrade-20261101-c2
+      and research/intraday_flow_design_upgrade/MASTER_PLAN.md; no archived reply is required.
+      Existing integration d992e30a and R3 source 74afb2b are retained. R3 canonical proof
+      was published at 703f3c9c before guide-only R4 at d3665db28f34737ddbe7b712a3e48a0e41f1f93b.
+      R4 has 105 targeted checks, eight opened-guide and 24 canonical captures with hashes.
+      Consume the cumulative 2026-11-03 handoff and current evidence README. Paper is
+      write-qualified with ten specimens; remaining coverage and qualified acceptance
+      stay open. Preserve reviewer refusal and visual placement; no denied retry,
+      replacement or reroute. Resolve own published-head CI and canonical shared-navigation
+      stability through existing owners. Keep Draft/HOLD: no Ready, un-draft, label,
+      enqueue, merge or deploy. PR-4 live-plane obligations and #6867 remain separate.
 decisions:
   - "DEC:INTRADAY-FLOW-PR4-MERGED-PRODUCTION-ACCEPTANCE-OWED"
 discoveries:
@@ -100,9 +102,11 @@ discoveries:
   - "DSC:OPEX-FUTURE-MONTH-LAST-OBS-CLAMP"
   - "DSC:INTRADAY-FLOW-AGE-HEALTH-CAN-HIDE-EMPTY-BOARD"
 next_action: >
-  UI-1/#10498: continue the existing redesign task tree and dated 2026-11-03 handoff;
-  complete Paper, qualified visual, final-head checks and served release proof on
-  the original branch. Preserve the separate current-session obligation below.
+  UI-1/#10498: R3 verification and bounded R4 guide implementation are complete on
+  the original source carrier. Follow the existing task tree and cumulative 2026-11-03
+  handoff for independent acceptance, Paper coverage, current-head checks and shared-
+  navigation stability. Draft/HOLD and no release effects remain. Preserve the separate
+  current-session obligation below.
   PR-4/#6105 is merged but BUILT_NOT_PROVEN. Execute exactly one genuine current-
   session production dossier: prove board-scoped quote coverage + source freshness;
   current-session pulse mode/coverage; the reviewed com.mastermind.liveflow M1/R2 plane
@@ -145,6 +149,9 @@ do_not_redo:
 artifacts:
   - research/intraday_flow_design_upgrade/MASTER_PLAN.md
   - agentos/handoffs/INTRADAY-FLOW-P0-RECOVERY-2026-11-02.md
+  - agentos/handoffs/INTRADAY-FLOW-P0-RECOVERY-2026-11-03.md
+  - research/intraday_flow_design_upgrade/SOURCE_DETAILS_R3.md
+  - research/intraday_flow_design_upgrade/GUIDE_R4.md
   - templates/intraday_flow.html.j2
   - scripts/build_intraday_flow.py
   - scripts/build_intraday_flow_quotes.py

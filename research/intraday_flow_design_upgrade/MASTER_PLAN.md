@@ -35,12 +35,13 @@ Not done unless:
 - Initial base: f754bdee6b803b18191841863c35527c0a74571e
 - Branch: claude/intraday-flow-design-upgrade-20261101-c2
 - Operation: intraday-flow-design-upgrade-20261101-c2
-- Protected procedure: Mastermind@19cb00cfed26b68f0a8a5cdc0f2f1a9463a3feec,
+- Protected procedure: Mastermind@e39a617b6771cb6b07323a533b4cf9db7e78900a,
   mastermind.sol_skillpack.v1 / 1.0.1 / bootstrap-major 1
 - Task-tree revision: the Git commit containing this file; subsequent evidence cites
   the exact commit, rather than a self-referential fabricated SHA.
-- Source owner: current ChatGPT2 Chairman-assigned redesign session; the current
-  authenticated GitHub connector is mastermindx-2.
+- Source owner: current Chairman-assigned ChatGPT2 successor on the original C2
+  carrier; no archived-session reply or ownership lease is required. The authenticated
+  GitHub connector remains mastermindx-2.
 - Existing organizational record:
   agentos/workstreams/WS-INTRADAY-FLOW-P0-RECOVERY.md
 - Existing programme planning carrier: macro #8770.
@@ -86,17 +87,20 @@ coverage functions remain the source; preserve #6867's separate timing work.
 | ID | Dependencies | Status | Outcome and evidence | Lane / review |
 |---|---|---|---|---|
 | P1 | none | implementation_complete | Baseline screenshot, live UI observation, template and ownership census; main base above | Principal; design adviser consulted |
-| P2 | P1 | blocked | Editable Paper light/dark desktop/mobile and meaningful states; exact file/page/node IDs, screenshots and JSX | Principal designer; Paper schema qualification required |
-| P2.1 | P1 | implementation_complete | DESIGN_SPEC.md and the paired template/CSS reference; NOT_APPLIED_TO_PAPER | Principal design; independent visual critique |
+| P2 | P1 | blocked | Ten editable R1–R4 specimens exist; remaining coverage and qualified acceptance are open | Direct Paper qualification resolved; denied dark-ZH row effect remains held |
+| P2.1 | P1 | implementation_complete | DESIGN_SPEC.md, paired source and editable R1–R4 specimens; coverage limits recorded | Principal design; qualified independent visual verdict remains open |
 | P3 | P2.1 | implementation_complete | Real template, paired page stylesheet and rendered page replaced; 15 core regions byte-identical to base | Principal retained: design judgment and critical path while audit admission waited |
-| P3.1 | P3 | implementation_complete | 280 pytest cases; 515 browser checks; 24 canonical screenshots and passing visual receipt | Regression and source-contract evidence; no production claim |
+| P3.1 | P3 | implementation_complete | R3 retains 329 scoped pytest, 515 baseline, 244 recovery and 201 source-detail checks; actual R3 canonical 24/24 verified before R4 | Historical execution and exact source identity; no production claim |
 | P3.2 | P3.1 | implementation_complete | Canonical publication asset normalization; 283 pytest cases and 515 browser assertions pass; normalized-r5 captures 24/24 states at d927f82; final-head checks and release remain | Deterministic canonical transform; no shared-navigation source change |
-| P4 | P3.1 | in_progress | Independent repair follow-up at 99b615153016 returns CODE=PASS; qualified human/Opus visual judgment remains open | Paid reviewer; principal adjudicates |
+| P3.3 | P3.2 | implementation_complete | R2 recovery and R3 source details implemented; R3 canonical proof published at 703f3c9c | Current independent acceptance remains in P4 |
+| P3.4 | P3.3 | implementation_complete | R4 guide at d3665db28f34; 105 targeted checks, eight opened-guide and 24 canonical captures | Principal semantic design; no model/CSS/data changes |
+| P4 | P3.1 | blocked | Historical repair CODE=PASS does not approve R2/R3/R4; source-review request refused before launch and qualified visual verdict absent | Preserve original refusal and placement; no replay or replacement |
 | P5 | P2,P4 | blocked | Exact-head CI, permitted integration/release and served desktop/mobile proof | Existing release owner; no premature merge |
 
-The Paper gate blocks canvas effects and final acceptance; independent design-reference
-preparation, source integration and offline verification remain useful. A supporting
-HTML preview cannot be represented as completion of P2.
+Current direct Paper write qualification is accepted. The exact denied dark-ZH
+row batch remains prohibited; remaining coverage and qualified visual acceptance keep
+P2 open. Editable specimens and local browser proof do not complete P2 or authorize
+release effects. Earlier catalog observations below are historical.
 
 ## Integration boundaries and falsifiers
 
@@ -265,7 +269,8 @@ CLOSEOUT.md is a pointer to those owners rather than another copied frontier.
 
 Goal: translate reviewed recovery-state design into usable scan behavior, preserving
 the existing Jinja/vanilla-JS architecture, tokens and deterministic model.
-Spec: DESIGN_SPEC.md, R2 section. Parent: P3.2. Editorial state: in_progress.
+Spec: DESIGN_SPEC.md, R2 section. Parent: P3.2. Editorial state: implementation_complete;
+independent acceptance remains blocked in P4.
 Protected procedure pin reused: Mastermind@2e59f43323af25f1b8e00186d7f118d95c56be7c.
 Current Chairman continuation authorizes design and implementation; Draft/HOLD remains.
 Principal retains this tightly coupled design/interaction repair for PRINCIPAL_JUDGMENT
@@ -298,11 +303,15 @@ startup remain distinct dependencies; no merge, rebase, deployment or release-st
 - [ ] Resolve original independent-review/visual-placement gates without denied replay;
   latest-head CI, shared-nav stability and genuine production proof remain required.
 
-R3 implementation verification:329scoped pytest,515baselinebrowser,244recoverycompat,201source-disclosure browser assertions; see SOURCE_DETAILS_R3.md. Current-source canonical capture, publication and independent acceptance remain next.
+R3 implementation verification: 329 scoped pytest, 515 baseline browser, 244 recovery
+compatibility and 201 source-disclosure assertions; see SOURCE_DETAILS_R3.md. Actual-source
+canonical verification and publication are complete at 703f3c9c. Independent acceptance
+remains open.
 
 ### P3.4 — Field-guide meaning parity (bounded continuation)
 
-Dependency: R3 canonical source verification. Editorial state: ready.
+Dependency: R3 canonical source verification (completed before R4).
+Editorial state: implementation_complete; independent acceptance remains held.
 Outcome: opening the existing field guide explains the same recorded assessment
 and source limits as the scan and source panel, in EN/ZH. Preserve all six labels,
 all four guide sections and the advanced evidence journey. Existing descriptions
@@ -320,3 +329,23 @@ keyboard disclosures preserve filters/selection; 390/1440 layouts wrap without
 overflow. All model/fetch/polling regions remain byte-identical. Principal retains
 this coupled semantic design repair for PRINCIPAL_JUDGMENT and LOWER_TOTAL_OVERHEAD.
 Independent review remains separately held; this task does not replace it.
+
+### P3.4 completion and held frontier — 2026-11-03
+
+- [x] Inspect/freeze editable guide specimens `71UJ-0` and `720J-0`; retain JSX.
+- [x] Apply bilingual guide-only copy and canonical page generation at `d3665db28f34737ddbe7b712a3e48a0e41f1f93b`.
+- [x] Preserve all six label strings/markers, all script elements, CSS and board bytes.
+- [x] Pass 105 actual-browser/source checks and inspect all eight opened-guide captures.
+- [x] Capture 24 canonical states on committed R4; verify hashes and inspect all eight
+  resting layouts. Resting dimensions equal R3; no page-wide overflow.
+- [x] Added-change design guard and whitespace pass. Proof/continuity records accompany
+  the containing checkpoint; exact publication/hosted-check readbacks belong to its PR receipt.
+
+See GUIDE_R4.md and the current evidence README. R3 and its main integration were not
+rebuilt. Current source custody remains on the original branch/workspace. No archived
+session is awaited. The refused reviewer, startup diagnosis, GLM helper and Paper row
+effects were not replayed, substituted or routed to another actor.
+Remaining frontier: independent source/qualified visual approval through existing owners,
+remaining Paper coverage, current-head CI, shared-navigation stability and separately
+authorized served production proof. Preserve Draft/HOLD and the user's explicit no
+Ready/un-draft/label/enqueue/merge/deploy boundary.

@@ -1,4 +1,59 @@
-# Intraday Flow — current R3 visual evidence
+# Intraday Flow — current R4 visual evidence
+
+Material source: `d3665db28f34737ddbe7b712a3e48a0e41f1f93b`. This guide-only refinement follows the completed actual-R3
+canonical verification at `dcda26d6d58bce0cbbe798d659eb7cdb8f755f9c`, published in
+`703f3c9c230730cf9f0f5dbb99c7bd416b85859b`. R3 source details and its main integration
+were retained.
+
+HTML SHA-256: `aa82b215294514edd929bce48512d56fc44b6aaa1604e8079032c2314de70fc9`.
+
+[Current canonical matrix](guide-r4-canonical/manifest.json): **24/24** captures at
+2026-11-03T08:19:07Z, with every image hash verified, no console errors or failed
+responses, and no page-wide horizontal overflow. Resting, real hover and real keyboard
+focus are included. All eight resting layouts were visually inspected. Their captured
+widths and document heights match the corresponding R3 resting cells exactly.
+
+| Viewport | Theme | Locale | Actual screenshot |
+|---|---|---|---|
+| desktop | light | en | [Open](guide-r4-canonical/79bc75b9292cc57b.png) |
+| desktop | dark | en | [Open](guide-r4-canonical/1b84e4680b690d11.png) |
+| desktop | light | zh | [Open](guide-r4-canonical/fcb4741ffeb1ef52.png) |
+| desktop | dark | zh | [Open](guide-r4-canonical/29f4fbbefadc8c09.png) |
+| mobile | light | en | [Open](guide-r4-canonical/5aaad5e74a011afa.png) |
+| mobile | dark | en | [Open](guide-r4-canonical/0d1a5000d818a5e6.png) |
+| mobile | light | zh | [Open](guide-r4-canonical/dce8b11d55da4720.png) |
+| mobile | dark | zh | [Open](guide-r4-canonical/f666d1a915f1faa2.png) |
+
+[Opened-guide proof](guide-r4/verification.json): **105/105 checks**, eight actual-page
+captures at 1440/390 × light/dark × EN/ZH, all visually inspected. Enter/Space, subsection
+state, locale visibility, wrapping, closed-height restoration, filters, selection and
+expanded evidence passed. Candidate file hashes bind that pre-commit proof to the
+same product blobs now committed at `d3665db28f34`.
+
+R4 changes only the bilingual guide region. All template/page content outside it,
+all 4 template and 10 generated script elements, both CSS files and the committed
+board are unchanged against the R3 proof checkpoint. The guide's six labels remain
+identical; their meanings now agree with recorded classifications and source limits.
+
+Paper guide specimens in the incumbent exact file/page are `71UJ-0` (desktop light EN)
+and `720J-0` (mobile dark ZH). These were inspected and released, and JSX retained in
+the existing research folder. They are not independent visual acceptance.
+
+Resting lab CLS is **0.67893–0.69153 desktop** and **0.00994–0.02440 phone**. Shared-navigation
+startup stability remains open; this is not a performance-fix claim. The generic
+source/as-of detector's raw false values remain unchanged despite visible labels.
+Authenticated access and synthetic state gaps remain explicit in the canonical
+manifest; separate R3 source/recovery fixtures retain their original identity.
+
+[Canonical hash/source verification](guide-r4-canonical/verification.json) ·
+[Capture observations](guide-r4-canonical/smells.json) · [Receipt](EVIDENCE.yml) ·
+[R4 design and implementation record](../../../research/intraday_flow_design_upgrade/GUIDE_R4.md)
+
+PR10498 remains **Draft/HOLD**. No Ready, un-draft, label, enqueue, merge or deploy.
+
+---
+
+## R3 canonical source checkpoint — retained
 
 Capture source: `dcda26d6d58bce0cbbe798d659eb7cdb8f755f9c`, product-identical to
 material R3 `74afb2b538f4df4851214c242274a07c3b6f98f2`. HTML SHA256:
