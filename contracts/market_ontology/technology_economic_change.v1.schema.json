@@ -368,7 +368,7 @@
         "counts": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["included", "missing", "stale", "rights_blocked", "unresolved", "unsupported_assertions", "invalid_assertions", "after_cutoff", "source_unavailable"],
+          "required": ["included", "missing", "stale", "rights_blocked", "unresolved", "unsupported_assertions", "invalid_assertions", "after_cutoff", "undatable_withheld", "source_unavailable"],
           "properties": {
             "included": {"type": ["integer", "null"], "minimum": 0},
             "missing": {"type": ["integer", "null"], "minimum": 0},
@@ -378,6 +378,7 @@
             "unsupported_assertions": {"type": ["integer", "null"], "minimum": 0},
             "invalid_assertions": {"type": ["integer", "null"], "minimum": 0},
             "after_cutoff": {"type": ["integer", "null"], "minimum": 0},
+            "undatable_withheld": {"type": ["integer", "null"], "minimum": 0},
             "source_unavailable": {"type": ["integer", "null"], "minimum": 0}
           }
         },

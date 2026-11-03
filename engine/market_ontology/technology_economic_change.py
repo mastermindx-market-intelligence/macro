@@ -30,9 +30,15 @@ Laws restated from the saved plan:
   identity-joined view entirely (typed refusal, typed missingness) and NEVER
   performs a name-similarity join. The enrichment view itself stays out of the
   first unit either way.
-* Freshness — assertion content dated after the selected cutoff is excluded and
-  counted (``after_cutoff``): a later supplementary filing cannot appear in an
-  earlier selected cutoff.
+* Freshness — an assertion renders at a cutoff only when every source clock it
+  carries is on or before that day: ``available_at`` (or ``published_at`` when
+  ``available_at`` is absent), ``published_at``, ``observed_at`` and
+  ``retained_at``. A clock is late when either its own-offset day or its UTC day
+  is after the cutoff. Late content is counted (``after_cutoff``): a later
+  supplementary filing cannot appear in an earlier selected cutoff. Content
+  whose clocks cannot be dated (``available_at`` "unknown", no publication
+  clock, or an unreadable clock) is withheld and counted
+  (``undatable_withheld``). ``review.reviewed_at`` is not gated.
 * Bounds (ECD-44 and first-unit scope) — at most 25 cards, 50 business rows,
   100 typed relationships, 2000 chars of free text per field and 262144 bytes of
   native input. Exceeding any bound REFUSES the compose; nothing is silently
@@ -57,6 +63,7 @@ import hashlib
 import importlib
 import json
 import re
+import types
 from collections.abc import Iterable, Mapping
 from pathlib import Path
 from typing import Any
@@ -128,11 +135,27 @@ SUPPORTED_ASSERTION_FORMS: frozenset[tuple[str, str]] = frozenset({
     ("workload_usage_direction", "contrary_observation"),
 })
 SUPPORTED_VERTICAL = "technology_ex_semis"
+#: Shared-contract vocabulary is disjoint from the allowlist (the schema
+#: predicate enum has no ``product_workload_role``). One pair, under the
+#: technology theme and facet, projects onto the allowlist form.
+_SHARED_CONTRACT_TECHNOLOGY_THEME_IDS = frozenset({
+    SUPPORTED_VERTICAL,
+    "theme:technology-ex-semis",
+})
+_SHARED_CONTRACT_ALLOWLIST: dict[tuple[str, str], tuple[str, str]] = {
+    ("PRODUCT_CAPABILITY", "ATTRIBUTED_INTERPRETATION"): (
+        "product_workload_role",
+        "attributed",
+    ),
+}
 
-#: Where a datable field may live in an assertion's ``temporal`` section. The
-#: shared contract owns the exact shape; the first key present wins, and an
-#: assertion with no datable field is not cutoff-policed (admitted as-is).
-TEMPORAL_DATE_KEYS: tuple[str, ...] = ("observed_on", "effective_from", "as_of")
+#: The shared clock helpers the cutoff gate reads (macro#7870). The gate never
+#: parses a clock itself: one reading of a date-or-instant, shared with the
+#: other theme-research verticals.
+SHARED_TIME_HELPERS_MODULE = "engine.market_ontology.theme_research_binding"
+_SHARED_TIME_HELPER_NAMES: tuple[str, ...] = (
+    "le", "readable", "is_instant", "parse_clock", "parse_day",
+)
 
 SOURCE_REF_FIELDS: tuple[str, ...] = (
     "owner", "object_id", "schema", "generation", "sha256", "selector",
@@ -340,12 +363,29 @@ def validate_dossier(payload: Mapping[str, Any]) -> None:
 # --- TR3: the shared curation contract, imported lazily -------------------------
 
 
+def _load_shared_time_helpers() -> types.SimpleNamespace | None:
+    """The five shared clock helpers, or ``None`` when the binding module is
+    absent or lacks any of them. Without them no cutoff can be read, so the
+    composer refuses (``shared_contract_unavailable``) rather than admit
+    undated content."""
+    # String literal for scripts/ci_scope_dependencies.py, as below.
+    try:
+        binding = importlib.import_module("engine.market_ontology.theme_research_binding")
+    except ImportError:
+        return None
+    helpers = {name: getattr(binding, name, None) for name in _SHARED_TIME_HELPER_NAMES}
+    if not all(callable(helper) for helper in helpers.values()):
+        return None
+    return types.SimpleNamespace(**helpers)
+
+
 def _load_shared_curation_contract() -> Any | None:
     """Import the shared ``engine.theme_graph.curation_assertion`` lazily (TR3).
 
     Returns the module, or ``None`` when it is absent (the carrier base) or does
     not expose BOTH callables the composer relies on (``validate_assertion`` and
-    ``curation_revision``) — either way the composer must refuse the
+    ``curation_revision``), or when the shared clock helpers the cutoff gate
+    needs are unavailable — either way the composer must refuse the
     assertion-dependent sections rather than guess at payloads.
     """
     # A string import, not a static ``from engine.theme_graph import ...``: the
@@ -368,7 +408,10 @@ def _load_shared_curation_contract() -> Any | None:
     # an un-scoped dependency of that job.
     try:
         shared = importlib.import_module("engine.theme_graph.curation_assertion")
+        time_helpers = _load_shared_time_helpers()
     except ImportError:
+        return None
+    if time_helpers is None:
         return None
     if not callable(getattr(shared, "validate_assertion", None)) \
             or not callable(getattr(shared, "curation_revision", None)):
@@ -695,18 +738,78 @@ class _AssertionOutcome:
     unsupported: int = 0
     invalid: int = 0
     after_cutoff: int = 0
+    undatable_withheld: int = 0
     source_unavailable: int = 0
     entity_meta: dict[str, list[tuple[str, str | None, str | None]]] = dataclasses.field(
         default_factory=dict
     )
 
 
-def _assertion_source_ref(source: Any) -> dict[str, Any] | None:
+_ABSENT = object()
+
+
+def _clock_on_or_before(value: str, cutoff_day: str, helpers: Any) -> bool:
+    """A readable clock is on or before a date-only cutoff when its own-offset
+    day is (the shared ``le`` reading) AND, for an instant, its UTC day is too.
+    Either reading after the cutoff makes the clock late."""
+    if not helpers.le(value, cutoff_day):
+        return False
+    if helpers.is_instant(value):
+        utc_day = helpers.parse_clock(value).astimezone(datetime.timezone.utc).date()
+        return utc_day <= helpers.parse_day(cutoff_day)
+    return True
+
+
+def _cutoff_verdict(source: Any, cutoff_day: str, helpers: Any) -> str:
+    """``"admit"``, ``"after"`` (a clock is after the cutoff) or ``"undatable"``
+    (the publication time cannot be established, or a clock is unreadable).
+
+    The availability clock is ``available_at``; when that key is absent it is
+    ``published_at``. A source with neither clock is undatable, and so is
+    ``available_at`` "unknown", which no helper reads as a day.
+    ``published_at``, ``observed_at`` and ``retained_at`` are gated as well;
+    ``review.reviewed_at`` is not."""
+    if not isinstance(source, Mapping):
+        return "undatable"
+    available = source.get("available_at", _ABSENT)
+    published = source.get("published_at")
+    clocks: list[Any] = []
+    if available is not _ABSENT:
+        clocks.append(available)
+    elif published is None:
+        return "undatable"
+    if published is not None:
+        clocks.append(published)
+    clocks += [source.get("observed_at"), source.get("retained_at")]
+    if not all(helpers.readable(clock) for clock in clocks):
+        return "undatable"
+    if all(_clock_on_or_before(clock, cutoff_day, helpers) for clock in clocks):
+        return "admit"
+    return "after"
+
+
+def _observed_on(source: Mapping[str, Any], helpers: Any) -> str:
+    """The row's ``observed_on``: the own-offset day of ``source.observed_at``
+    (readable on every admitted assertion)."""
+    return helpers.parse_day(source["observed_at"]).isoformat()
+
+
+def _assertion_source_ref(source: Any, *, schema_id: str | None = None) -> dict[str, Any] | None:
     """The closed six-field reference, or None when the source is unavailable.
 
     An assertion renders ONLY after its own source is available — a payload
-    whose source section does not yield the closed reference shape is counted
-    (``source_unavailable``), never rendered."""
+    whose source section does not yield a reference is counted
+    (``source_unavailable``), never rendered. The Technology six-field shape
+    wins. A shared-contract source (publisher, retention_ref, locator,
+    native_digest, retained_at) projects onto that shape when the six fields
+    are absent."""
+    closed = _closed_technology_source_ref(source)
+    if closed is not None:
+        return closed
+    return _shared_contract_source_ref(source, schema_id)
+
+
+def _closed_technology_source_ref(source: Any) -> dict[str, Any] | None:
     if not isinstance(source, Mapping):
         return None
     ref: dict[str, Any] = {}
@@ -722,24 +825,51 @@ def _assertion_source_ref(source: Any) -> dict[str, Any] | None:
     return ref
 
 
-def _assertion_observed_date(validated: Mapping[str, Any]) -> datetime.date | None:
-    temporal = validated.get("temporal")
-    if not isinstance(temporal, Mapping):
+def _shared_contract_source_ref(source: Any, schema_id: str | None) -> dict[str, Any] | None:
+    if not isinstance(source, Mapping) or schema_id != SHARED_ASSERTION_SCHEMA_ID:
         return None
-    for key in TEMPORAL_DATE_KEYS:
-        value = temporal.get(key)
-        if isinstance(value, str) and _DATE_RE.match(value):
-            try:
-                return datetime.date.fromisoformat(value)
-            except ValueError:
-                continue
-    return None
+    publisher = source.get("publisher")
+    locator = source.get("locator")
+    digest = source.get("native_digest")
+    retention = source.get("retention_ref")
+    retained = source.get("retained_at")
+    if not all(isinstance(value, str) and value for value in (
+        publisher, locator, digest, retention, retained,
+    )):
+        return None
+    if (
+        not _OWNER_RE.match(publisher)
+        or len(publisher) > 128
+        or len(retention) > 128
+        or len(locator) > 256
+        or len(schema_id) > 128
+        or not _SHA256_RE.match(digest)
+    ):
+        return None
+    generation = retained[:10]
+    if not _DATE_RE.match(generation) or not _GENERATION_RE.match(generation):
+        return None
+    return {
+        "owner": publisher,
+        "object_id": retention,
+        "schema": schema_id,
+        "generation": generation,
+        "sha256": digest,
+        "selector": locator,
+    }
 
 
 def _observation_text(validated: Mapping[str, Any]) -> str:
     observation = validated.get("observation")
     if isinstance(observation, Mapping) and isinstance(observation.get("text"), str):
         return observation["text"]
+    limitations = validated.get("limitations")
+    if isinstance(limitations, Mapping):
+        establishes = limitations.get("establishes")
+        if isinstance(establishes, list):
+            parts = [item.strip() for item in establishes if isinstance(item, str) and item.strip()]
+            if parts:
+                return "; ".join(parts)
     return ""
 
 
@@ -748,10 +878,17 @@ def _entity_side(value: Any) -> tuple[str | None, str | None, str | None]:
     if not isinstance(value, Mapping):
         return None, None, None
     entity_id = value.get("entity_id")
-    entity_id = entity_id if isinstance(entity_id, str) and entity_id else None
+    if not isinstance(entity_id, str) or not entity_id:
+        node_id = value.get("company_node_id")
+        entity_id = node_id if isinstance(node_id, str) and node_id else None
     paid_unit = value.get("paid_unit")
     paid_unit = paid_unit if isinstance(paid_unit, str) and paid_unit else None
-    return entity_id, _optional_name(value.get("display_name")), paid_unit
+    display_name = _optional_name(value.get("display_name"))
+    if display_name is None:
+        display_name = _optional_name(value.get("source_business_label"))
+    if display_name is None:
+        display_name = _optional_name(value.get("source_product_label"))
+    return entity_id, display_name, paid_unit
 
 
 def _record_entity_meta(out: _AssertionOutcome, entity_id: str | None,
@@ -767,8 +904,25 @@ def _record_entity_meta(out: _AssertionOutcome, entity_id: str | None,
     )
 
 
-def _process_assertions(payloads: Iterable[Any], shared: Any,
-                        cutoff: datetime.date) -> _AssertionOutcome:
+def _technology_allowlist_form(
+    scope_section: Any, predicate: Any, statement_mode: Any,
+) -> tuple[str, str] | None:
+    """Allowlist pair for a Technology-shaped assertion, or the one shared-contract
+    projection. ``None`` means counted unsupported, not rendered."""
+    if not isinstance(scope_section, Mapping):
+        return None
+    pair = (predicate, statement_mode)
+    if scope_section.get("vertical") == SUPPORTED_VERTICAL:
+        return pair if pair in SUPPORTED_ASSERTION_FORMS else None
+    if scope_section.get("canonical_theme_id") not in _SHARED_CONTRACT_TECHNOLOGY_THEME_IDS:
+        return None
+    if scope_section.get("technology_facet") != "product_workload_role":
+        return None
+    return _SHARED_CONTRACT_ALLOWLIST.get(pair)
+
+
+def _process_assertions(payloads: Iterable[Any], shared: Any, cutoff_day: str,
+                        helpers: Any) -> _AssertionOutcome:
     out = _AssertionOutcome()
     seen_row_ids: set[str] = set()
     for payload in payloads:
@@ -791,21 +945,26 @@ def _process_assertions(payloads: Iterable[Any], shared: Any,
         if not isinstance(revision, str) or not _CURATION_REVISION_RE.match(revision):
             out.invalid += 1
             continue
-        predicate = validated.get("predicate")
-        statement_mode = validated.get("statement_mode")
-        scope_section = validated.get("scope")
-        if not isinstance(scope_section, Mapping) or scope_section.get("vertical") != SUPPORTED_VERTICAL:
+        form = _technology_allowlist_form(
+            validated.get("scope"),
+            validated.get("predicate"),
+            validated.get("statement_mode"),
+        )
+        if form is None:
             out.unsupported += 1
             continue
-        if (predicate, statement_mode) not in SUPPORTED_ASSERTION_FORMS:
-            out.unsupported += 1
-            continue
-        observed = _assertion_observed_date(validated)
-        if observed is not None and observed > cutoff:
+        predicate, statement_mode = form
+        source = validated.get("source")
+        verdict = _cutoff_verdict(source, cutoff_day, helpers)
+        if verdict == "after":
             # A later supplementary filing cannot appear in an earlier cutoff.
             out.after_cutoff += 1
             continue
-        source_ref = _assertion_source_ref(validated.get("source"))
+        if verdict != "admit":
+            out.undatable_withheld += 1
+            continue
+        observed_on = _observed_on(source, helpers)
+        source_ref = _assertion_source_ref(source, schema_id=validated.get("schema"))
         if source_ref is None:
             out.source_unavailable += 1
             continue
@@ -834,7 +993,7 @@ def _process_assertions(payloads: Iterable[Any], shared: Any,
                 "statement": statement,
                 "attributed_to": {"entity_id": subject_id, "display_name": subject_name},
                 "source_ref": source_ref,
-                "observed_on": observed.isoformat() if observed is not None else None,
+                "observed_on": observed_on,
                 "effect_on_comparison": "none_display_only",
                 "authority": _false_authority(),
             })
@@ -868,7 +1027,7 @@ def _process_assertions(payloads: Iterable[Any], shared: Any,
                 "object": {"entity_id": object_id, "display_name": object_name, "paid_unit": paid_unit},
                 "statement": statement,
                 "source_ref": source_ref,
-                "observed_on": observed.isoformat() if observed is not None else None,
+                "observed_on": observed_on,
                 "authority": _false_authority(),
             })
         out.revisions.append(revision)
@@ -1129,27 +1288,29 @@ def compose_technology_economic_change(
         )
 
     _parse_iso_date(native.as_of, "native_context_shape_invalid")
-    cutoff = _parse_iso_date(native.cutoff, "native_context_shape_invalid")
+    _parse_iso_date(native.cutoff, "native_context_shape_invalid")
 
     navigation = _navigation(scope_o)
     comparison_section = _comparison_section(comparison_o)
 
     shared = _load_shared_curation_contract()
-    if shared is None:
+    time_helpers = _load_shared_time_helpers() if shared is not None else None
+    if shared is None or time_helpers is None:
         # TR3: the iterable is deliberately NOT consumed here — without the
         # shared validator nothing in it can be classified, so it is counted as
         # unknown rather than guessed at.
         business = _refusal(
             "shared_contract_unavailable",
-            "The shared theme_graph.curation_assertion.v1 contract module is not "
-            "importable on this base, so assertion-dependent content is refused "
+            "The shared theme_graph.curation_assertion.v1 contract module or the "
+            "shared clock helpers are not importable on this base, so "
+            "assertion-dependent content is refused "
             "rather than rendered from unvalidated payloads "
             f"(pinned to macro#7870@45eb37bb, module {SHARED_CONTRACT_MODULE}).",
         )
         out = _AssertionOutcome()
         assertion_counts_available = False
     else:
-        out = _process_assertions(business_assertions, shared, cutoff)
+        out = _process_assertions(business_assertions, shared, native.cutoff, time_helpers)
         assertion_counts_available = True
 
     cards, relationships = _cards_and_relationships(out, comparison_section)
@@ -1221,6 +1382,7 @@ def compose_technology_economic_change(
             "unsupported_assertions": out.unsupported if assertion_counts_available else None,
             "invalid_assertions": out.invalid if assertion_counts_available else None,
             "after_cutoff": out.after_cutoff if assertion_counts_available else None,
+            "undatable_withheld": out.undatable_withheld if assertion_counts_available else None,
             "source_unavailable": out.source_unavailable if assertion_counts_available else None,
         },
         "assertion_counts_available": assertion_counts_available,

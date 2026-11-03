@@ -15165,6 +15165,10 @@ jobs:
       - "engine/theme_graph/curation_assertion.py"
       - "engine/market_ontology/theme_research_registry.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
+      # technology_economic_change import_module's theme_research_binding for
+      # the cutoff clock helpers (le, readable, is_instant, parse_clock,
+      # parse_day); the absent-binding arm blocks it in sys.modules.
+      - "engine/market_ontology/theme_research_binding.py"
       # The owned import closure of those modules: the data files
       # curation_assertion.py reads, then the modules
       # semiconductor_theme_research.py and curation_assertion.py reach
